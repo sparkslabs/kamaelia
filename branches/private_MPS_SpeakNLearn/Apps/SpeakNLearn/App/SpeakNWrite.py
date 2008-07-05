@@ -153,6 +153,15 @@ from Kamaelia.Util.Console import ConsoleEchoer
 pgd = PygameDisplay( width=800, height=480 ).activate()
 PygameDisplay.setDisplayService(pgd)
 
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Introspector import Introspector
+from Kamaelia.Internet.TCPClient import TCPClient
+
+Pipeline(
+    Introspector(),
+    ConsoleEchoer(),
+#    TCPClient("127.0.0.1", 1500),
+).activate()
 
 
 Backplane("SPEECH").activate()    
@@ -182,6 +191,7 @@ TEXT  = Textbox(size = (800, 100),
                        text_height=48,
                        transparent =1,
                       ).activate()
+
 Image("/usr/local/share/kamaelia/kamaelia_logo_whitebg.png", position=(600,40)).activate()
 Graphline(
            CHALLENGER  = Challenger(),
@@ -191,10 +201,10 @@ Graphline(
                       
            CHALLENGE  = CHALLENGE,
            TEXT  = TEXT,
-           CANVAS  = Canvas( position=(0,40),
-                             size=(800,320),
-                             bgcolour = bgcolour,
-                           ),
+           CANVAS  = CANVAS, #Canvas( position=(0,40),
+                            # size=(800,320),
+                            # bgcolour = bgcolour,
+                           #),
 
            PEN     = Pen(bgcolour = bgcolour),
            STROKER = StrokeRecogniser(),
@@ -223,4 +233,3 @@ Graphline(
                ("CHALLENGE_CHECKER", "challengesignal") : ("CHALLENGER", "inbox"),
                },
         ).run()
-
