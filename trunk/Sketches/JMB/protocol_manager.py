@@ -53,6 +53,8 @@ class ProtocolManager(AdaptiveCommsComponent):
         protocol_component.activate()
         out_boxname = self.addOutbox("out_%s" % (protocol_component.name))
         #print 'added ' + out_boxname
+        sig_boxname = self.addOutbox("sig_%s" % (protocol_component.name))
+        #print 'added ' + sig_boxname
         in_boxname = self.addInbox("in_%s" % (protocol_component.name))
         #print 'added ' + in_boxname
         ctl_boxname = self.addInbox("ctl_%s" % (protocol_component.name))
@@ -61,6 +63,7 @@ class ProtocolManager(AdaptiveCommsComponent):
         tracked_data =  {'in' : in_boxname,
                          'ctl' : ctl_boxname,
                          'out' : out_boxname,
+                         'sig' : sig_boxname,
                          'msg' : msg,}
 
         self.tracked_components[protocol_component.name] = tracked_data
@@ -74,6 +77,7 @@ class ProtocolManager(AdaptiveCommsComponent):
         print 'received ' + request
 
         self.send(request, out_boxname)
+        self.send(producerFinished(self), sig_boxname)
         
     def _processMainControlBox(self, msg):
         msg = self.recv('control')
@@ -96,9 +100,9 @@ class ProtocolManager(AdaptiveCommsComponent):
             
     def _processProtoInbox(self, boxname, orig_msg):
         for msg in self.igetInbox(boxname):
-            #print 'proto_inbox received "%s"' % (msg)
-            #print 'boxname=' + boxname
-            #print 'orig_msg=' + repr(orig_msg)
+            print 'proto_inbox received "%s"' % (msg)
+            print 'boxname=' + boxname
+            print 'orig_msg=' + repr(orig_msg)
             out = '%s %s' % (orig_msg.from_jid, msg)
             self.send(out, 'outbox')
             
@@ -126,22 +130,36 @@ class ProtocolManager(AdaptiveCommsComponent):
         while self.dataReady(name):
             yield self.recv(name)
                 
+
 class Echoer(component):
-    def __init__(self, **argd):
+    request = None
+    def __init__(self, request, **argd):
         super(Echoer, self).__init__(**argd)
+        self.request = request
         
-    def main(self):
-        not_done = True
-        while not_done:
-            while self.dataReady('inbox'):
-                self.send(self.recv('inbox'))
-                not_done = False
+    def main(self):                
+        #response = pformat(self.request)
+        response = u'Hello, world!'
+        #response = 'Hello, world!'
+        #print 'Processing request!'
+        #print prequest
+        #print type(prequest)
+        #print 'response length-', str(len(response))
+        resource = {
+            'statuscode' : 200,
+            'headers' : [('Content-Type' , 'text/plain')],
+            'charset' : 'utf-8',
+            'data' : response,
+        }
+        
+        self.send(resource)
                 
-            yield 1
+        yield 1
                 
         self.send(producerFinished(self), 'signal')
         
     def __repr__(self):
         return '<%s>' % (self.name)
         
-class BadProtocol(Exception): pass
+class BadProtocol(Exception):
+    pass
