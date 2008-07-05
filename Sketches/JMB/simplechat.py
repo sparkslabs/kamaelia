@@ -527,7 +527,7 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        log = Logger(path=None, stdout=False, name='XmppLogger')
+        log = Logger(path=None, stdout=True, name='XmppLogger')
         Backplane('LOG_' + self.log_location).activate()
         Pipeline(SubscribeTo('LOG_' + self.log_location), log).activate()
         log_writable = WsgiLogWritable(self.log_location)
@@ -553,7 +553,8 @@ class Client(component):
         'server_admin' : "Jason Baker",
         'wsgi_ver' : (1,0),
         }
-        routing = [ ["/", SimpleWsgiFactory(log_writable, WsgiConfig, simple_app, '/simple')], ]
+        #routing = [ ["/", SimpleWsgiFactory(log_writable, WsgiConfig, simple_app, '/simple')], ]
+        routing = [ ['/', Echoer]]
 
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
