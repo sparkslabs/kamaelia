@@ -298,7 +298,7 @@ def doPicking(pos):
     glMatrixMode(GL_PROJECTION)
     glPushMatrix()
     glLoadIdentity()
-    gluPickMatrix(pos[0], height-pos[1], 1, 1)
+    gluPickMatrix(pos[0], height-pos[1], 1, 1, viewport=None)
     gluPerspective(45, 1.0*width/height, 1.0, 100.0)
     
 

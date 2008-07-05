@@ -44,11 +44,13 @@ class Particle3D(BaseParticle):
         #self.posVector = Vector( *argd.get("position", (0,0,0)) )
         self.rotation = Vector( *argd.get("rotation", (0.0,0.0,0.0)) )
         self.scaling = Vector( *argd.get("scaling", (1,1,1) ) )
+        self.axisRotation = Vector( *argd.get("axisRotation", (0.0,0.0,0.0)) )
         
         # for detection of changes
         self.oldrot = Vector()
         self.oldpos = self.initialpos = Vector()
         self.oldscaling = Vector()
+        self.oldAxisRot = Vector()
         self.transform = Transform()
         
         
@@ -190,7 +192,7 @@ class Particle3D(BaseParticle):
     def applyTransforms(self):
         """ Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened. """
         # generate new transformation matrix if needed
-        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != Vector(*self.pos):
+        if self.oldscaling != self.scaling or self.oldrot != self.rotation or self.oldpos != Vector(*self.pos) or self.oldAxisRot != self.axisRotation:
             self.transform = Transform()
             self.transform.applyScaling(self.scaling)
             self.transform.applyRotation(self.rotation)
@@ -203,7 +205,31 @@ class Particle3D(BaseParticle):
                 self.oldrot = self.rotation.copy()
 
             if self.oldpos != Vector(*self.pos):
-                self.oldpos = Vector(*self.pos)  
+                self.oldpos = Vector(*self.pos)
+            
+            
+#            transform1 = Transform()
+#            print self.pos
+##                axisPos = Vector(*self.pos) - Vector(Vector(*self.pos).x*self.axisRotation.norm().x, 
+##                                                     Vector(*self.pos).y*self.axisRotation.norm().y, 
+##                                                     Vector(*self.pos).z*self.axisRotation.norm().z)
+#            
+#            axisPos = Vector(-Vector(*self.pos).x, 
+#                                                 -Vector(*self.pos).y, 
+#                                                 0)
+##                print axisPos
+#            #self.transform.applyTranslation(Vector())
+#            #axisPos = Vector()
+#            transform1.applyTranslation(axisPos)
+#            transform1.applyRotation(self.axisRotation)
+#            transform2 = Transform()
+#            transform2.applyTranslation(Vector(Vector(*self.pos).x, 
+#                                                 Vector(*self.pos).y, 
+#                                                 0))
+#            self.transform =  self.transform*transform1
+#            self.transform =  self.transform*transform2
+#            if self.oldAxisRot != self.axisRotation:
+#                self.oldAxisRot = self.axisRotation
             # send new transform to display service
             transform_update = { "TRANSFORM_UPDATE": True,
                                  "objectid": id(self),
