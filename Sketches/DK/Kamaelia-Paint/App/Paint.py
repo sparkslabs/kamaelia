@@ -106,6 +106,7 @@ class Paint(Axon.Component.component):
 
       if not position is None:
         self.disprequest["position"] = position
+        self.layer["position"] = position
 
    def waitBox(self,boxname):
       """Generator. yields 1 until data ready on the named inbox."""
@@ -253,8 +254,11 @@ class Paint(Axon.Component.component):
                         #self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
-                       self.activeLayer = self.display2
-                       self.drawBG()
+                       if self.activeLayer == self.layers[0]:
+                           self.activeLayer = self.layers[1]
+                       else:
+                           self.activeLayer = self.layers [0]
+                    #   self.drawBG()
                        self.blitToSurface()
                     elif event.key == pygame.K_l:
                        self.activeLayer.set_alpha(0)
