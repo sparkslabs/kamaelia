@@ -138,10 +138,10 @@ class Particle3D(BaseParticle):
         glDisable(GL_TEXTURE_2D)
         
         # Draw links
+        glRotatef(-self.rotation.x,1.0,0.0,0.0)
+        glRotatef(-self.rotation.y,0.0,1.0,0.0)
+        glRotatef(-self.rotation.z,0.0,0.0,1.0)
         for p in self.bondedTo:
-            glRotatef(-self.rotation.x,1.0,0.0,0.0)
-            glRotatef(-self.rotation.y,0.0,1.0,0.0)
-            glRotatef(-self.rotation.z,0.0,0.0,1.0)
             glBegin(GL_LINES)
             glVertex3f(*self.initialpos.toTuple())
             glVertex3f(*(Vector(*p.pos)-Vector(*self.pos)).toTuple())

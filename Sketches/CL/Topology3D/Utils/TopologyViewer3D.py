@@ -623,10 +623,16 @@ if __name__ == "__main__":
     print "Please type the command you want to draw"
     Graphline(
         CONSOLEREADER = ConsoleReader(">>> "),
+#        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',
+#                                 'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
+#                                 'ADD LINK 1Node 2Node','ADD LINK 2Node 3Node', 'ADD LINK 3Node 4Node',
+#                                 'ADD LINK 4Node 1Node']),
         DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',
                                  'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
-                                 'ADD LINK 1Node 2Node','ADD LINK 2Node 3Node', 'ADD LINK 3Node 4Node',
-                                 'ADD LINK 4Node 1Node']),
+                                 'ADD NODE 5Node 5Node randompos -', 'ADD NODE 6Node 6Node randompos -',
+                                 'ADD NODE 7Node 7Node randompos -',
+                                 'ADD LINK 1Node 2Node','ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',
+                                 'ADD LINK 1Node 5Node','ADD LINK 1Node 6Node', 'ADD LINK 1Node 7Node']),
         TOKENS = lines_to_tokenlists(),
         VIEWER = TopologyViewer3D(),
         CONSOLEECHOER = ConsoleEchoer(),
