@@ -299,14 +299,14 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         posVector = Vector(*particle.pos)
                         centrePoint += posVector
                     centrePoint /= len(particles)
-                    dAngle = 20*math.pi/180
+                    dAngle = -20*math.pi/180
                     for particle in particles:
                         posVector = Vector(*particle.pos)
                         relativePosVector = posVector - centrePoint
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
-                        newAngle = (math.atan2(relativePosVector.y,relativePosVector.z)+dAngle)
-                        particle.pos = (posVector.x, radius*math.sin(newAngle)+centrePoint.y, radius*math.cos(newAngle)+centrePoint.z)
-                        particle.rotation += Vector(-dAngle*180/math.pi,0,0)     
+                        newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle)
+                        particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
+                        #particle.rotation += Vector(dAngle*180/math.pi,0,0)     
                 elif event.key == pygame.K_DOWN:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -317,14 +317,14 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         posVector = Vector(*particle.pos)
                         centrePoint += posVector
                     centrePoint /= len(particles)
-                    dAngle = -20*math.pi/180
+                    dAngle = 20*math.pi/180
                     for particle in particles:
                         posVector = Vector(*particle.pos)
                         relativePosVector = posVector - centrePoint
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
-                        newAngle = (math.atan2(relativePosVector.y,relativePosVector.z)+dAngle)
-                        particle.pos = (posVector.x, radius*math.sin(newAngle)+centrePoint.y, radius*math.cos(newAngle)+centrePoint.z)
-                        particle.rotation += Vector(-dAngle*180/math.pi,0,0)
+                        newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle)
+                        particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
+                        #particle.rotation += Vector(dAngle*180/math.pi,0,0)   
                 elif event.key == pygame.K_LEFT:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -342,7 +342,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
                         newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
-                        particle.rotation += Vector(0,-dAngle*180/math.pi,0)
+                        #particle.rotation += Vector(0,-dAngle*180/math.pi,0)
                 elif event.key == pygame.K_RIGHT:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -360,7 +360,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
                         newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
-                        particle.rotation += Vector(0,-dAngle*180/math.pi,0)
+                        #particle.rotation += Vector(0,-dAngle*180/math.pi,0)
                 elif event.key == pygame.K_COMMA:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -378,7 +378,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
                         newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
-                        particle.rotation += Vector(0,0,dAngle*180/math.pi)
+                        #particle.rotation += Vector(0,0,dAngle*180/math.pi)
                 elif event.key == pygame.K_PERIOD:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -396,7 +396,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
                         newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
-                        particle.rotation += Vector(0,0,dAngle*180/math.pi)
+                        #particle.rotation += Vector(0,0,dAngle*180/math.pi)
                 
                 #print self.display.viewerposition
                 # Scroll if self.display.viewerposition changes
@@ -404,9 +404,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.scroll()
                     for particle in self.physics.particles:
                         particle.oldpoint = None
-                    
-                
-#
+                                    
     
     def scroll( self ):
         # Scroll the surface by resetting gluLookAt
@@ -627,12 +625,15 @@ if __name__ == "__main__":
 #                                 'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
 #                                 'ADD LINK 1Node 2Node','ADD LINK 2Node 3Node', 'ADD LINK 3Node 4Node',
 #                                 'ADD LINK 4Node 1Node']),
-        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',
+        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -'
+                                 , 'ADD NODE 2Node 2Node randompos -',
                                  'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
                                  'ADD NODE 5Node 5Node randompos -', 'ADD NODE 6Node 6Node randompos -',
                                  'ADD NODE 7Node 7Node randompos -',
-                                 'ADD LINK 1Node 2Node','ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',
-                                 'ADD LINK 1Node 5Node','ADD LINK 1Node 6Node', 'ADD LINK 1Node 7Node']),
+                                 'ADD LINK 1Node 2Node'
+                                 ,'ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',
+                                 'ADD LINK 1Node 5Node','ADD LINK 1Node 6Node', 'ADD LINK 1Node 7Node'
+                                 ]),
         TOKENS = lines_to_tokenlists(),
         VIEWER = TopologyViewer3D(),
         CONSOLEECHOER = ConsoleEchoer(),
