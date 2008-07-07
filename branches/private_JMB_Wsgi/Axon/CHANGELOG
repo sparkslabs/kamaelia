@@ -1,3 +1,14 @@
+
+   * Added support for *basic* software transactional memory
+    * Software transactional memory is a fancy phrase for something
+      that boils down to something similar to version control for
+      variables. You can checkout the current state, make modifications
+      and try to commit them back. If the commit succeeds, you
+      successfully updated it. If it doesn't, you didn't.
+
+      This implements it, and provides a mechanism for making the CAT
+      safe for threads to use as well as standard components. 
+
     Added in LikeFile
     Added in support for monkey patching the internals of a component
     system.

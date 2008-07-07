@@ -1,3 +1,12 @@
+   * Kamaelia/Visualisation/Axon/ExtraWindowFurniture.py
+     Added in the facility to pull in the official, installed Kamaelia
+     logo as well as from the local directory, or just not at all.
+
+   * Kamaelia/Kamaelia/UI/Pygame/Multiclick.py -
+     Added outbox pygamesignal - to avoid accidental bugs when used in a pipeline
+
+   * Minor bugfix to SSL support
+
    * Kamaelia.UI.Pygame.Text Added - (similar to Ticker, but input as well
      as output. Line oriented rather than word)
 

@@ -79,9 +79,9 @@ A to B to C to D::
     boxC = makeInbox( <notify callback> )
     boxD = makeInbox( <notify callback> )
         
-    boxB.addSource(boxA)
-    boxC.addSource(boxB)
-    boxD.addSource(boxC)
+    boxB.addsource(boxA)
+    boxC.addsource(boxB)
+    boxD.addsource(boxC)
 
 We can also remove one of those linkages::
 
@@ -133,7 +133,7 @@ Boxes can be wired up in a many-to-one tree structure - where many sources feed
 their messages, along one or more hops through inbetween postboxes, towards a
 single destination:
 
-* postbox.addSource(source_postbox)
+* postbox.addsource(source_postbox)
 * postbox.removeSource(source_postbox)
 
 Suppose you wire up boxes to form a tree::
@@ -211,18 +211,18 @@ each postbox. For example::
     E.sources = [D]
     F.sources = [E]
 
-Links are created an destroyed by calling addSource() or removeSource(). So
+Links are created an destroyed by calling addsource() or removeSource(). So
 for example, to wire up postbox D in the above example, the following calls were
 made::
 
-    D.addSource(B)
-    D.addSource(C)
+    D.addsource(B)
+    D.addsource(C)
 
-Internally, addSource() and removeSource() calls _retarget() which recurses back
+Internally, addsource() and removeSource() calls _retarget() which recurses back
 up the chain of linkages, updating any other boxes that feed into the source,
 to make sure they all now point at the new target too.
 
-addSource() also delivers any messages waiting in the source's storage to the
+addsource() also delivers any messages waiting in the source's storage to the
 new destination's storage. This ensures that messages do not get lost halfway
 along a chain of linkages when the chain is extended.
 
@@ -260,7 +260,7 @@ method is called.
 
 When linkages are added or removed, the storage of all inboxes downstream of
 where the change has occurred must update their list of 'wakeOnPop' callbacks.
-Therefore addSource() or removeSource() also call _addNotifys() or
+Therefore addsource() or removeSource() also call _addNotifys() or
 _removeNotifys() respectively, which recurse down the chain of linkages towards
 the target, updating the list of callbacks as they go.
 
@@ -282,6 +282,8 @@ tradeoff.
 from AxonExceptions import noSpaceInBox
 from AxonExceptions import BoxAlreadyLinkedToDestination
 
+ShowAllTransits = False
+
 class nullsink(object):
     """\
     nullsink() -> new nullsink object
@@ -297,7 +299,7 @@ class nullsink(object):
         super(nullsink,self).__init__()
         self.size = None
         self.tag = None
-        self.showtransit = None
+        self.showtransit = ShowAllTransits
         self.wakeOnPop = []   # callbacks for when a pop() happens
 
     def append(self, data):
@@ -323,8 +325,9 @@ class nullsink(object):
     def pop(self,index):
         """Returns an item from the list (always raises IndexError"""
         raise IndexError("nullsink: You can't pop from an empty piece of storage!")
-    
-    
+    def __repr__(self):
+        return "<>"
+
 class realsink(list):
     """\
     realsink(notify[,size]) -> new realsink object.
@@ -359,7 +362,7 @@ class realsink(list):
 
         Calls self.notify() callback
         """
-        if self.showtransit:
+        if self.showtransit or ShowAllTransits:
             print "Delivery via [", self.tag, "] of ", repr(data)
         if self.size is not None:
            if len(self) >= self.size:
@@ -530,7 +533,9 @@ class postbox(object):
     def isFull(self):
         """Returns True if the destination box is full (and has a size limit)"""
         return (self.sink.size != None) and (len(self) >= self.sink.size)
-            
+
+    def __repr__(self):
+        return repr(self.sink)
 
 def makeInbox(notify, size = None):
     """\

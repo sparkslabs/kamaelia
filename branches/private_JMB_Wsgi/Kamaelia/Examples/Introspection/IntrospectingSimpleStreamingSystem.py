@@ -30,7 +30,7 @@ from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Introspector import Introspector
 
-file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
+file_to_stream = "../SupportingMediaFiles/KDE_Startup_2.ogg"
 clientServerTestPort = 1501
 
 def AdHocFileProtocolHandler(filename):

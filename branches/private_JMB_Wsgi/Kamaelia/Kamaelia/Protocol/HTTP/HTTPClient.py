@@ -182,7 +182,7 @@ class SingleShotHTTPClient(component):
     }
 
     def __init__(self, starturl, postbody = "", connectionclass = TCPClient, extraheaders = None, method = None):
-        #print "SingleShotHTTPClient.__init__()"
+#        print "SingleShotHTTPClient.__init__()"
         super(SingleShotHTTPClient, self).__init__()
         self.tcpclient = None
         self.httpparser = None
@@ -230,7 +230,7 @@ class SingleShotHTTPClient(component):
 
         splituri["request"] = [string.join(splituri["request"], "")] # might improve performance by sending more together
 
-        print splituri["request"]
+#        print splituri["request"]
 
         if self.postbody not in [None, ""]:
             splituri["request"].append(self.postbody)
@@ -300,7 +300,7 @@ class SingleShotHTTPClient(component):
         """Main loop."""
         self.requestqueue.append(HTTPRequest(self.formRequest(self.starturl), 0))
         while self.mainBody():
-            #print "SingleShotHTTPClient.main"
+#            print "SingleShotHTTPClient.main"
             yield 1
         self.send(producerFinished(self), "signal")
         yield 1

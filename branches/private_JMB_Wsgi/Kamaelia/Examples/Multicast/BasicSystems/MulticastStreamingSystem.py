@@ -10,7 +10,7 @@ from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Detuple import SimpleDetupler
 
-file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
+file_to_stream = "../../SupportingMediaFiles/KDE_Startup_2.ogg"
 
 # Server
 Pipeline(

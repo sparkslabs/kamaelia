@@ -81,6 +81,7 @@ its "control" inbox, then this will be forwarded out of its "signal" outbox and
 the component will then terminate.
 """
 
+import StringIO
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
@@ -120,7 +121,8 @@ class Image(Axon.Component.component):
                       bgcolour = (128,128,128), 
                       size = None, 
                       displayExtra = None,
-                      maxpect = 0):
+                      maxpect = 0,
+                      expect_file_strings = 0):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Image, self).__init__()
       self.display = None
@@ -129,6 +131,7 @@ class Image(Axon.Component.component):
       self.size             = size
       self.imagePosition    = (0,0)
       self.maxpect = maxpect
+      self.expect_file_strings = expect_file_strings
       
       self.fetchImage(image)
       
@@ -194,7 +197,10 @@ class Image(Axon.Component.component):
 
          if self.dataReady("inbox"):
             newImg = self.recv("inbox")
-            self.fetchImage(newImg)
+            if not self.expect_file_strings:
+                self.fetchImage(newImg)
+            else:
+                self.imageFromString(newImg)
             change = True
             
          if self.dataReady("bgcolour"):
@@ -213,6 +219,15 @@ class Image(Axon.Component.component):
       self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal") 
       yield 1
       print "NOT HERE"
+
+   def imageFromString(self, newImage):
+       Y = StringIO.StringIO(newImage)
+       self.image = pygame.image.load(Y)
+       if self.maxpect:
+            self.image = pygame.transform.scale(self.image, (self.maxpect[0], self.maxpect[1]))
+       if self.size is None:
+           self.size = self.image.get_size()
+
         
    def fetchImage(self, newImage):
       """\

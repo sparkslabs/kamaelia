@@ -450,6 +450,10 @@ class component(microprocess):
 
       self.postoffice = postoffice("component :" + self.name)
 
+   def setInboxSize(self, boxname, size):
+       "boxname - some boxname, must be an inbox ; size - maximum number of items we're happy with"
+       self.inboxes[boxname].setSize(size)
+
    def __str__(self):
       """Provides a useful string representation of the component.
       You probably want to override this, and append this description using
@@ -525,7 +529,10 @@ class component(microprocess):
        """
        for box in self.inboxes:
           if self.dataReady(box):
-             return True
+             if box:
+                return box 
+             else:
+                return True
        return False
 
    def dataReady(self,boxname="inbox"):
@@ -557,7 +564,7 @@ class component(microprocess):
 
       See Axon.Postoffice.postoffice.link() for more information.
       """
-
+#      print "DEBUGLINK", self.name, source, sink
       return self.postoffice.link(source, sink, *optionalargs, **kwoptionalargs)
 
 
@@ -593,7 +600,10 @@ class component(microprocess):
       """
       return self.inboxes[boxname].pop(0)
 
-   
+   def Inbox(self, boxname="inbox"):
+       while self.dataReady(boxname):
+           yield self.recv(boxname)
+
    def send(self,message, boxname="outbox"):
       """\
       appends message to the requested outbox.
