@@ -34,19 +34,15 @@ When a message is received, the Logger will write the message's contents to a fi
 (named by logname).
 
 How do I create a Logger?
--------------------
+--------------------------
 You may either create the logger directly using its initializer method or you may
 use the provided convenience method createLogger.  If you use the initializer method,
 you will be responsible for also activating it and linking its control box to a
 signal box.
 
-It is recommended that you use the function createLogger if at all possible.  This
-is primarily because it will automatically create the component, add it as a child
-to an existing component, and link its control box to a signal box on that same
-component.
 
 How do I link a component to the Logger so that it can write messages to the log?
--------------------
+----------------------------------------------------------------------------------
 The easiest way to go about doing this is to use the provided convenience method
 connectToLogger.  This will link a log outbox on your component to a PublishTo
 component that will send messages to the logger, and it will also link a signal box
@@ -110,7 +106,7 @@ class LogWriter(component):
     Outboxes = {'outbox' : 'NOT USED',
                 'signal' : 'Send shutdown messages',}
 
-    def __init__(self,  logname, wrapper = nullWrapper):
+    def __init__(self,  logname, wrapper = nullWrapper, stdout=False):
         """
         Initializes a new Logger.
 
@@ -123,6 +119,7 @@ class LogWriter(component):
         self.bplane = Backplane('LOG_' + logname)
         self.subscriber = SubscribeTo('LOG_' + logname)
         self.wrapper = wrapper
+        self.stdout = stdout
 
         #add the components as children
         self.addChildren(self.subscriber, self.bplane)
@@ -147,7 +144,8 @@ class LogWriter(component):
                 file = open(self.logname, 'a')
                 while self.dataReady('inbox'):
                     msg = self.recv('inbox')
-                    #print 'received %s!' % (msg)
+                    if self.stdout:
+                        print msg
                     file.write(self.wrapper(msg))
                 file.close()
 
