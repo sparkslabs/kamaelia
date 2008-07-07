@@ -37,15 +37,15 @@ find . -name "*.ini"|zip -@g9 kpublish.zip
 find . -name "*.tar" | zip -@g9 kpublish.zip
 #find . -name "*.pyc"|zip -@g kpublish.zip
 #find . -name "*.pyo"|zip -@g kpublish.zip
-cat zipheader.unix kserve.zip > kserve
+cat zipheader.unix kpublish.zip > kpublish
 
 if [ ! -d ../dist ]
 then
     mkdir ../dist
 fi
 
-mv kserve ../dist
-chmod a+x ../dist/kserve
+mv kpublish ../dist
+chmod a+x ../dist/kpublish
 )
 
 if [ "$CLEANUP" = "clean" ]
