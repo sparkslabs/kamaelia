@@ -163,8 +163,14 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 
     def stop(self):
         if self.trackedby is not None:
-            self.trackedby.deRegisterService("selector")
-            self.trackedby.deRegisterService("selectorshutdown")
+            try:
+                self.trackedby.deRegisterService("selector")
+            except Axon.AxonExceptions.MultipleServiceDeletion:
+                pass
+            try:
+                self.trackedby.deRegisterService("selectorshutdown")
+            except Axon.AxonExceptions.MultipleServiceDeletion:
+                pass  
         super(Selector, self).stop()
 
     def addLinks(self, replyService, selectable, meta, selectables, boxBase):
@@ -246,8 +252,15 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                    shuttingDown = True
                    if self.trackedby is not None:
 #                       print "we are indeed tracked"
-                       self.trackedby.deRegisterService("selector")
-                       self.trackedby.deRegisterService("selectorshutdown")
+                       try:
+                           self.trackedby.deRegisterService("selector")
+                       except Axon.AxonExceptions.MultipleServiceDeletion:
+                           pass
+                            
+                       try:
+                           self.trackedby.deRegisterService("selectorshutdown")
+                       except Axon.AxonExceptions.MultipleServiceDeletion:
+                           pass
                        self.trackedby = None
             if shuttingDown:
 #               print "we're shutting down"
@@ -323,13 +336,25 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                 break	
 
         if self.trackedby is not None:
-               self.trackedby.deRegisterService("selector")
-               self.trackedby.deRegisterService("selectorshutdown")
+               try:
+                   self.trackedby.deRegisterService("selector")
+               except Axon.AxonExceptions.MultipleServiceDeletion:
+                   pass
+               try:
+                   self.trackedby.deRegisterService("selectorshutdown")
+               except Axon.AxonExceptions.MultipleServiceDeletion:
+                   pass
 
         if self.trackedby is not None:
-            self.trackedby.deRegisterService("selector")
-            self.trackedby.deRegisterService("selectorshutdown")
-            self.trackedby = None
+           try:
+                self.trackedby.deRegisterService("selector")
+           except Axon.AxonExceptions.MultipleServiceDeletion:
+               pass
+           try:
+                self.trackedby.deRegisterService("selectorshutdown")
+           except Axon.AxonExceptions.MultipleServiceDeletion:
+               pass
+           self.trackedby = None
 #        print "SELECTOR HAS EXITTED"
 
 
