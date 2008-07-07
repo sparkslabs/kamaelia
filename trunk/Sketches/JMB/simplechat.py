@@ -553,8 +553,8 @@ class Client(component):
         'server_admin' : "Jason Baker",
         'wsgi_ver' : (1,0),
         }
-        #routing = [ ["/", SimpleWsgiFactory(log_writable, WsgiConfig, simple_app, '/simple')], ]
-        routing = [ ['/', Echoer]]
+        routing = [ ["/", SimpleWsgiFactory(log_writable, WsgiConfig, simple_app, '/simple')], ]
+        #routing = [ ['/', Echoer]]
 
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
