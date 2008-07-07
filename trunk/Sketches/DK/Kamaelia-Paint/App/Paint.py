@@ -123,8 +123,9 @@ class Paint(Axon.Component.component):
       
    def floodFill(self, x, y, newColour, oldColour):
        """Flood fill on a region of non-BORDER_COLOR pixels."""
-       if (self.activeLayer.get_at((x,y)) == newColour):
-           print "hergfhe"
+       #print "colour here = ",self.activeLayer.get_at((x,y))[0]
+       #print "newColour = ",newColour[0]
+       if (self.activeLayer.get_at((x,y))[0] == newColour[0] and self.activeLayer.get_at((x,y))[1] == newColour[1] and self.activeLayer.get_at((x,y))[2] == newColour[2]):
            return
        edge = [(x, y)]
        self.activeLayer.set_at((x, y), newColour)
