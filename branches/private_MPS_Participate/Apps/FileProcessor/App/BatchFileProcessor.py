@@ -5,6 +5,7 @@ import time
 import Axon
 import Image
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.File.UnixProcess import UnixProcess
 
 class DirectoryWatcher(Axon.ThreadedComponent.threadedcomponent):
     watch = "uploads"
@@ -67,31 +68,6 @@ class FileProcessor(Axon.Component.component):
                     yield i
             yield 1
 
-class VideoTranscoder(FileProcessor):
-    destdir = "moderate"
-    conversion = "ffmpeg -i %(sourcefile)s %(deststem)s.flv"
-    template = "player-template.html"
-    def processfile(self, directory, filename):
-        thefile = filename[:filename.rfind(".")]
-
-        sourcefile = os.path.join(directory, filename)
-        command = self.conversion % {
-                                     "sourcefile" : sourcefile,
-                                     "deststem"   : self.destdir + "/" + thefile,
-                                    }
-        yield self.system( command )
-
-        F = open(self.template)
-        t = F.read()
-        F.close()
-
-        X = t % {"videofile" : thefile + ".flv" }
-        F = open(self.destdir + "/" + thefile + ".html", "w")
-        F.write(X)
-        F.close()
-
-        os.unlink(sourcefile)
-
 class ImageTranscoder(FileProcessor):
     destdir = "moderate"
     sizes = {
@@ -122,8 +98,8 @@ class ImageTranscoder(FileProcessor):
             return
         for size in self.sizes:
             if size == "microthumb":
-                dest_file1 = self.destdir + "/" + thefile + "/" + "nanothumb" + file_ending
-                dest_file2 = self.destdir + "/" + thefile + "/" + size + file_ending
+                dest_file1 = self.destdir + "/" + thefile + "/" + "nanothumb" + ".jpg"
+                dest_file2 = self.destdir + "/" + thefile + "/" + size + ".jpg"
 
 
                 print "convert %s -crop %dx%d+0+0 -resize 18x %s" % (sourcefile, side_size,side_size, dest_file1)
@@ -137,7 +113,7 @@ class ImageTranscoder(FileProcessor):
                 dest_filename = size + "-" + filename
                 full_dest_filename = os.path.join(self.destdir, dest_filename)
 
-                full_dest_filename = self.destdir + "/" + thefile + "/" + size + file_ending
+                full_dest_filename = self.destdir + "/" + thefile + "/" + size + ".jpg"
 
                 resize_arg = "-resize %dx" % width
 
@@ -145,6 +121,7 @@ class ImageTranscoder(FileProcessor):
                 yield self.system( " ".join( [ "convert", sourcefile, resize_arg, full_dest_filename ]) )
 
         os.unlink(sourcefile)
+
 
 class ImageMover(FileProcessor):
     destdir = "/tmp"
@@ -154,18 +131,102 @@ class ImageMover(FileProcessor):
             os.rename( os.path.join(directory, filename),
                        os.path.join(self.destdir, filename)
                      )
+        yield 1
+
+class VideoTranscoder(FileProcessor):
+    destdir = "moderate"
+    conversion = "ffmpeg -i %(sourcefile)s %(deststem)s.flv"
+    template = "player-template.html"
+    def processfile(self, directory, filename):
+        thefile = filename[:filename.rfind(".")]
+
+        sourcefile = os.path.join(directory, filename)
+        command = self.conversion % {
+                                     "sourcefile" : sourcefile,
+                                     "deststem"   : self.destdir + "/" + thefile,
+                                    }
+        yield self.system( command )
+
+        F = open(self.template)
+        t = F.read()
+        F.close()
+
+        X = t % {"videofile" : thefile + ".flv" }
+        F = open(self.destdir + "/" + thefile + ".html", "w")
+        F.write(X)
+        F.close()
+
+        os.unlink(sourcefile)
+
+class VideoMover(FileProcessor):
+    destdir = "/tmp"
+    extensions = [ ".3gp", ".3gp2", ".3gpp", ".asf", ".asx", ".avi", ".dv",
+                   ".flv", ".m1v", ".m4e", ".m4u", ".m4v", ".mjp", ".moov",
+                   ".mov", ".movie", ".mp4", ".mpe", ".mpeg", ".mpg", ".qt",
+                   ".rm", ".swf", ".ts", ".wmv"]
+    def processfile(self, directory, filename):
+        extn = filename[filename.rfind("."):].lower()
+        if extn.lower() in self.extensions:
+            os.rename( os.path.join(directory, filename),
+                       os.path.join(self.destdir, filename)
+                     )
+        yield 1
+
+def read_config(filename):
+
+    conf = {}
+    try:
+        F = open(filename)
+        for line in F:
+            line = line.strip().rstrip()
+            if line == "":
+               continue
+            if line[0] == "#":
+               continue
+            try:
+                key, value = line.split()
+                conf[key] = value
+            except:
+                print "BAD CONFIG LINE: ", repr(line)
+
+        F.close()
+    except:
+        print "General error parsing", filename
+    return conf
+
+conf = {}
+
+default_conf = {
+    "main_incoming_queue"    : "/tmp/uploads",
+    "image_queue"            : "/tmp/uploads/images",
+    "video_queue"            : "/tmp/uploads/videos",
+    "image_moderation_queue" : "/tmp/moderate/images",
+    "video_moderation_queue" : "/tmp/moderate/videos",
+}
+
+local_def_conf = read_config("/etc/batch_converter.conf.dist")
+local_conf = read_config("/etc/batch_converter.conf")
+
+conf.update(default_conf)
+conf.update(local_def_conf)
+conf.update(local_conf)
 
 Pipeline(
-    DirectoryWatcher(),
-    ImageMover(),
+    DirectoryWatcher(watch = conf["main_incoming_queue"]),
+    ImageMover(destdir = conf["image_queue"]),
 ).activate()
 
 Pipeline(
-    DirectoryWatcher(),
-    ImageTranscoder(),
+    DirectoryWatcher(watch = conf["image_queue"]),
+    ImageTranscoder(destdir = conf["image_moderation_queue"]),
 ).activate()
 
 Pipeline(
-    DirectoryWatcher(),
-    VideoTranscoder(),
+    DirectoryWatcher(watch = conf["main_incoming_queue"]),
+    VideoMover(destdir = conf["video_queue"]),
+).activate()
+
+Pipeline(
+    DirectoryWatcher(watch = conf["video_queue"]),
+    VideoTranscoder(destdir = conf["video_moderation_queue"]),
 ).run()
