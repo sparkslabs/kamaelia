@@ -34,7 +34,7 @@ fi
 
 echo "Creating setup file"
 
-./revomit.py setup.py.src ../../../../Code/Python/Axon/setup.py ../../../../Code/Python/Kamaelia/setup.py ../library/trunk/setup.py ../application/trunk/setup.py setup.py
+./setupcombiner.py setup.py.src ../../../../Code/Python/Axon/setup.py ../../../../Code/Python/Kamaelia/setup.py ../library/trunk/setup.py ../application/trunk/setup.py setup.py
 echo "Copying setup file"
 mv setup.py ../build/setup.py
 echo "Building sdist"
