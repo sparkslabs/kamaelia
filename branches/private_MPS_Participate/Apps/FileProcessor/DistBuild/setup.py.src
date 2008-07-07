@@ -22,7 +22,7 @@
 
 from distutils.core import setup
 
-setup(name = "FileProcessor",
+setup(name = "Kamaelia-FileProcessor",
       version = "0.1.0",
       description = "Batch File processor. Currently acts as a transcode engine",
       author = "Michael Sparks & Kamaelia Contributors",
@@ -32,8 +32,10 @@ setup(name = "FileProcessor",
       packages = [\
 # REPLACE
                   ""],
-      scripts = [ 'App/FileProcessor' ],
-#      data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png', 'App/kamaelia_logo_whitebg.png']) ],
+      scripts = [ 'App/BatchFileProcessor.py' ],
+
+      data_files=[ ('/etc', ['Config/batch_converter.conf.dist']) ],
+
       long_description = """
 Batch File processor. Currently acts as a transcode engine
 """,
