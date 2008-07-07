@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+import re
 from pprint import pprint, pformat
+from xml.sax.saxutils import escape
 
 import Axon
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
@@ -24,6 +26,7 @@ class ProtocolManager(AdaptiveCommsComponent):
         'log' : 'Send messages to the chat log',
     }
     Protocol=None
+    LineEnding='\r\n'
     def __init__(self, **argd):
         super(ProtocolManager, self).__init__(**argd)
         if not self.Protocol:
@@ -72,9 +75,11 @@ class ProtocolManager(AdaptiveCommsComponent):
         self.link((protocol_component, 'outbox'), (self, in_boxname))
         self.link((protocol_component, 'signal'), (self, ctl_boxname))
     
-        buffer = [str(body) for body in msg.bodies]
-        request = ''.join(buffer)
-        print 'received ' + request
+        request = self.normalizeMsgBodies(msg)
+        #printable_request = request
+        #print 'received ' + printable_request
+        
+        
 
         self.send(request, out_boxname)
         self.send(producerFinished(self), sig_boxname)
@@ -100,10 +105,11 @@ class ProtocolManager(AdaptiveCommsComponent):
             
     def _processProtoInbox(self, boxname, orig_msg):
         for msg in self.igetInbox(boxname):
-            print 'proto_inbox received "%s"' % (msg)
-            print 'boxname=' + boxname
-            print 'orig_msg=' + repr(orig_msg)
-            out = '%s %s' % (orig_msg.from_jid, msg)
+            #print 'proto_inbox received "%s"' % (msg)
+            #print 'boxname=' + boxname
+            #print 'orig_msg=' + repr(orig_msg)
+            msg = normalizeXML(msg)
+            out = u'%s %s' % (orig_msg.from_jid, msg)
             self.send(out, 'outbox')
             
     def _processProtoControl(self, boxname, proto_name):
@@ -129,7 +135,17 @@ class ProtocolManager(AdaptiveCommsComponent):
     def igetInbox(self, name='inbox'):
         while self.dataReady(name):
             yield self.recv(name)
+            
+    _CRLF_re = re.compile('(?<!\r)\n')
+    def normalizeMsgBodies(self, msg):
+        buffer = [str(body) for body in msg.bodies]
+        buffer = ''.join(buffer)
+        return self._CRLF_re.sub(self.LineEnding, buffer)
                 
+                
+def normalizeXML(text=''):
+    text = text.encode('utf-8')
+    return escape(text)
 
 class Echoer(component):
     request = None
