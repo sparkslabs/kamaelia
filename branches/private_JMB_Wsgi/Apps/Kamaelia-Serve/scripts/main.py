@@ -27,13 +27,13 @@ from pprint import pprint
 from autoinstall import autoinstall
 import console_io
 
-from Kamaelia.Experimental.Wsgi.Factory import WsgiFactory
-import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
+from Kamaelia.Apps.Wsgi.Factory import WsgiFactory
+import Kamaelia.Apps.Wsgi.LogWritable as LogWritable
 from Kamaelia.Chassis.ConnectedServer import ServerCore
-import Kamaelia.Experimental.Wsgi.Log as Log
+import Kamaelia.Apps.Wsgi.Log as Log
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Experimental.Wsgi.Config import ParseUrlFile
+from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
 
 sys.path.insert(0, sys.argv[0] + '/data')
 
