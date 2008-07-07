@@ -6,6 +6,7 @@ setup(name="Kamaelia Jam Library",
                   "Axon",
                   "Kamaelia.Apps.Jam.Internet", #STARTPACKAGES
                   "Kamaelia.Apps.Jam.Protocol",
+                  "Kamaelia.Apps.Jam.Support.Data",
                   "Kamaelia.Apps.Jam.UI",
                   "Kamaelia.Apps.Jam.Util", #LASTPACKAGES
                  ],
