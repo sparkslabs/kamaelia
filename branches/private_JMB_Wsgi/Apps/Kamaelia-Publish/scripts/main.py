@@ -39,10 +39,12 @@ from Kamaelia.Util.Console import ConsoleReader
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 from Kamaelia.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Experimental.Wsgi.Factory import SimpleWsgiFactory
-from Kamaelia.Experimental.Wsgi.Apps.Simple import simple_app
-from Kamaelia.Experimental.Wsgi.LogWritable import WsgiLogWritable
-from Kamaelia.Experimental.Wsgi.Log import LogWriter
+from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory
+from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
+from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
+from Kamaelia.Apps.Wsgi.Log import LogWriter
+from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
+
 from protocol_manager import ProtocolManager, Echoer
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
@@ -470,21 +472,24 @@ class Client(component):
                 "lw-signal" : "Shutdown signal for WsgiLogWritable",
                 "doregistration" : ""}
 
-    def __init__(self, username, password, domain, resource=u"headstock-client1", 
-                 server=u'localhost', port=5222, usetls=False, register=False,
-                 log='/home/jason/chat.log'):
+    def __init__(self, XMPPConfig, WSGIConfig):
         super(Client, self).__init__() 
-        self.jid = JID(username, domain, resource)
-        self.username = username
-        self.password = password
-        self.server = server
-        self.port = port
+        self.jid = JID(
+            XMPPConfig.username,
+            XMPPConfig.domain,
+            XMPPConfig.resource)
+        self.username = XMPPConfig.username
+        self.password = XMPPConfig.password
+        self.server = XMPPConfig.server
+        self.port = XMPPConfig.port
         self.client = None
         self.graph = None
-        self.domain = domain
-        self.usetls = usetls
-        self.register = register
-        self.log_location = log
+        self.domain = XMPPConfig.domain
+        self.usetls = XMPPConfig.usetls
+        self.register = False
+        self.log_location = WSGIConfig['log']
+        
+        self.WSGIConfig = WSGIConfig
 
     def passwordLookup(self, jid):
         return self.password
@@ -548,12 +553,7 @@ class Client(component):
 
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
         
-        WsgiConfig ={
-        'server_software' : "Example WSGI Web Server",
-        'server_admin' : "Jason Baker",
-        'wsgi_ver' : (1,0),
-        }
-        routing = [ ["/", SimpleWsgiFactory(log_writable, WsgiConfig, simple_app, '/simple')], ]
+        routing = [ ["/", SimpleWsgiFactory(log_writable, self.WSGIConfig, simple_app, '/simple')], ]
         #routing = [ ['/', Echoer]]
 
         self.graph = Graphline(client = self,
@@ -696,46 +696,73 @@ class Client(component):
         self.stop()
         print "You can hit Ctrl-C to shutdown all processes now." 
 
-if __name__ == '__main__':
+
+
+def parse_commandline():
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-d", "--xmpp-domain", dest="domain",
+                      help="XMPP server domain (default: localhost)")
+    parser.set_defaults(domain='localhost')
+    parser.add_option("-a", "--address", dest="address", action="store",
+                       help="XMPP server address (default: localhost:5222) ")
+    parser.set_defaults(address='localhost:5222')
+    parser.add_option("-u", "--username", dest="username",
+                      help="XMPP username", action="store")
+    parser.set_defaults(username=None)
+    parser.add_option("-p", "--password", action="store", dest="password",
+                      help="XMPP password. You may also be prompted for it if you do not pass this parameter")
+    parser.set_defaults(password=None)
+    parser.add_option("-r", "--register", action="store_true", dest="register",
+                      help="Register the user if the server supports in-band registration (default: False)")
+    parser.set_defaults(register=False)
+    parser.add_option("-t", "--usetls", dest="usetls", action="store_true",
+                       help="Use TLS (default: False)")
+    parser.set_defaults(usetls=False)
+    (options, args) = parser.parse_args()
+
+    return options
+
+class XMPPConfigObject(object):
+    def __init__(self, dictionary):
+        self.username = u''
+        self.domain = u''
+        self.address = u''
+        self.usetls = u''
+        self.password = u''
+        self.resource = u'headstock'
+        #for key in dictionary:
+        #    self.__dict__[key] = unicode(dictionary[key], 'utf-8')
+        self.__dict__.update(dictionary)
+        self.username = unicode(self.username)
+        self.domain = unicode(self.domain)
+        self.resource = unicode(self.resource)
+        self.server, self.port = self.address.split(':')
+        self.port = int(self.port)
+        if self.usetls:
+            self.usetls = True
+        else:
+            self.usetls = False
+            
+    def __str__(self):
+        return str(self.__dict__)
+    def __repr__(self):
+        return repr(self.__dict__)
+
+def main():
+    Config = ParseConfigFile('~/kp.ini', DictFormatter())
     
-    def parse_commandline():
-        from optparse import OptionParser
-        parser = OptionParser()
-        parser.add_option("-d", "--xmpp-domain", dest="domain",
-                          help="XMPP server domain (default: localhost)")
-        parser.set_defaults(domain='localhost')
-        parser.add_option("-a", "--address", dest="address", action="store",
-                           help="XMPP server address (default: localhost:5222) ")
-        parser.set_defaults(address='localhost:5222')
-        parser.add_option("-u", "--username", dest="username",
-                          help="XMPP username", action="store")
-        parser.set_defaults(username=None)
-        parser.add_option("-p", "--password", action="store", dest="password",
-                          help="XMPP password. You may also be prompted for it if you do not pass this parameter")
-        parser.set_defaults(password=None)
-        parser.add_option("-r", "--register", action="store_true", dest="register",
-                          help="Register the user if the server supports in-band registration (default: False)")
-        parser.set_defaults(register=False)
-        parser.add_option("-t", "--usetls", dest="usetls", action="store_true",
-                           help="Use TLS (default: False)")
-        parser.set_defaults(usetls=False)
-        (options, args) = parser.parse_args()
-
-        return options
-
-    def main():
-        options = parse_commandline()
-        if not options.password:
-            from getpass import getpass
-            options.password = getpass()
-        host, port = options.address.split(':')
-        client = Client(unicode(options.username), 
-                        unicode(options.password), 
-                        unicode(options.domain),
-                        server=host, port=int(port),
-                        usetls=options.usetls,
-                        register=options.register)
-        client.run()
+    WSGIConfig = Config['WSGI'] #FIXME: The WSGI Handler should really be refactored to use an object rather than a dict
+    XMPPConfig = XMPPConfigObject(Config['XMPP'])
+    
+    print XMPPConfig
+    
+    #options = parse_commandline()
+    #if not options.password:
+    #    from getpass import getpass
+    #    options.password = getpass()
+    client = Client(XMPPConfig, WSGIConfig)
+    client.run()
 
 if __name__ == '__main__':
     main()

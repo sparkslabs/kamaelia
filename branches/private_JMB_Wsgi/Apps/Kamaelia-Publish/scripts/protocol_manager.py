@@ -76,9 +76,9 @@ class ProtocolManager(AdaptiveCommsComponent):
         self.link((protocol_component, 'signal'), (self, ctl_boxname))
     
         request = self.normalizeMsgBodies(msg)
-        #printable_request = request
+        #printable_request = request.replace('\r\n', '\\r\\n\n')
         #print 'received ' + printable_request
-        
+        #
         
 
         self.send(request, out_boxname)
@@ -140,8 +140,11 @@ class ProtocolManager(AdaptiveCommsComponent):
     def normalizeMsgBodies(self, msg):
         buffer = [str(body) for body in msg.bodies]
         buffer = ''.join(buffer)
-        return self._CRLF_re.sub(self.LineEnding, buffer)
-                
+        text = self._CRLF_re.sub(self.LineEnding, buffer)
+        if not text.endswith(self.LineEnding):
+            text += self.LineEnding
+            
+        return text
                 
 def normalizeXML(text=''):
     text = text.encode('utf-8')
