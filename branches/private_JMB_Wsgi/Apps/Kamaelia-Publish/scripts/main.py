@@ -696,33 +696,6 @@ class Client(component):
         self.stop()
         print "You can hit Ctrl-C to shutdown all processes now." 
 
-
-
-def parse_commandline():
-    from optparse import OptionParser
-    parser = OptionParser()
-    parser.add_option("-d", "--xmpp-domain", dest="domain",
-                      help="XMPP server domain (default: localhost)")
-    parser.set_defaults(domain='localhost')
-    parser.add_option("-a", "--address", dest="address", action="store",
-                       help="XMPP server address (default: localhost:5222) ")
-    parser.set_defaults(address='localhost:5222')
-    parser.add_option("-u", "--username", dest="username",
-                      help="XMPP username", action="store")
-    parser.set_defaults(username=None)
-    parser.add_option("-p", "--password", action="store", dest="password",
-                      help="XMPP password. You may also be prompted for it if you do not pass this parameter")
-    parser.set_defaults(password=None)
-    parser.add_option("-r", "--register", action="store_true", dest="register",
-                      help="Register the user if the server supports in-band registration (default: False)")
-    parser.set_defaults(register=False)
-    parser.add_option("-t", "--usetls", dest="usetls", action="store_true",
-                       help="Use TLS (default: False)")
-    parser.set_defaults(usetls=False)
-    (options, args) = parser.parse_args()
-
-    return options
-
 class XMPPConfigObject(object):
     def __init__(self, dictionary):
         self.username = u''
@@ -754,13 +727,7 @@ def main():
     
     WSGIConfig = Config['WSGI'] #FIXME: The WSGI Handler should really be refactored to use an object rather than a dict
     XMPPConfig = XMPPConfigObject(Config['XMPP'])
-    
-    print XMPPConfig
-    
-    #options = parse_commandline()
-    #if not options.password:
-    #    from getpass import getpass
-    #    options.password = getpass()
+
     client = Client(XMPPConfig, WSGIConfig)
     client.run()
 
