@@ -212,11 +212,17 @@ class XYPad(Axon.Component.component):
             lineb = Button(caption="Line",position=(10,50), msg = (("Tool", "Line"),)).activate()
             bucketb = Button(caption="Bucket",position=(10,90), msg = (("Tool", "Bucket"),)).activate()
             eyeb = Button(caption="Eyedropper",position=(10,130), msg = (("Tool", "Eyedropper"),)).activate()
+            addlayerb = Button(caption="Add Layer",position=(10,540), msg = (("Layer", "Add"),)).activate()
+            prevlayerb = Button(caption="<-",position=(100,540), msg = (("Layer", "Prev"),)).activate()
+            nextlayerb = Button(caption="->",position=(130,540), msg = (("Layer", "Next"),)).activate()
             self.link( (circleb,"outbox"), (self,"outbox"), passthrough = 2 )
             self.link( (eraseb,"outbox"), (self,"outbox"), passthrough = 2 )
             self.link( (lineb,"outbox"), (self,"outbox"), passthrough = 2 )
             self.link( (bucketb,"outbox"), (self,"outbox"), passthrough = 2 )
             self.link( (eyeb,"outbox"), (self,"outbox"), passthrough = 2 )
+            self.link( (addlayerb,"outbox"), (self,"outbox"), passthrough = 2 )
+            self.link( (prevlayerb,"outbox"), (self,"outbox"), passthrough = 2 )
+            self.link( (nextlayerb,"outbox"), (self,"outbox"), passthrough = 2 )
             SizePicker = XYPad(size=(255, 50), bouncingPuck = False, position = (10, 480),
                      bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), slider = True).activate()
             self.link( (SizePicker,"outbox"), (self,"outbox"), passthrough = 2 )
@@ -429,7 +435,7 @@ class XYPad(Axon.Component.component):
                             self.display.get_rect(), self.borderWidth)
             self.send((("colour",self.selectedColour),), "outbox")
         if self.slider:
-            print float(self.size[1])/float(self.size[0])*self.sliderPos
+          #  print float(self.size[1])/float(self.size[0])*self.sliderPos
             self.selectedSize = float(self.size[1])/float(self.size[0])*self.sliderPos
             self.send((("Size",self.selectedSize),), "outbox")
             box = pygame.Rect(self.sliderPos, 0, 5, self.selectedSize)
