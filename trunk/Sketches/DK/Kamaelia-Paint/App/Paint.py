@@ -39,6 +39,7 @@ import Axon
 import math
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
+from Kamaelia.UI.Pygame.Text import TextDisplayer
 class Paint(Axon.Component.component):
    """\
    MagnaDoodle(...) -> A new MagnaDoodle component.
@@ -64,6 +65,7 @@ class Paint(Axon.Component.component):
                "drawn"    : "Information on what was drawn on other Paint canvas"
              }
    Outboxes = { "outbox" : "Used to talk to other Paint canvas",
+                "laynum" : "Used to show the Active Layer number on the text displayer",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
@@ -75,6 +77,7 @@ class Paint(Axon.Component.component):
       self.backgroundColour = bgcolour
       self.foregroundColour = fgcolour
       self.activeLayer = activeLayer
+      self.activeLayIn = 0
       self.margin = margin
       self.oldpos = None
       self.drawing = False
@@ -140,12 +143,11 @@ class Paint(Axon.Component.component):
        self.blitToSurface()
        
    def addLayer(self):
-      print "adding layer"
+   #   print "adding layer"
       self.send( self.layer, "display_signal")
       if not self.dataReady('callback'): 
           self.pause()
           yield 1
-      print "here"
       x = self.recv("callback")
       self.layers.append(x)
       
@@ -160,6 +162,10 @@ class Paint(Axon.Component.component):
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
       self.layers.append(self.display)
+      
+      layerDisp = TextDisplayer(size = (20, 20),position = (520,10)).activate()
+      self.link( (self,"laynum"), (layerDisp,"inbox") )
+    #  self.send( "hi", "laynum" )
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
                   "display_signal")
@@ -175,13 +181,13 @@ class Paint(Axon.Component.component):
       self.send({ "ADDLISTENEVENT" : pygame.KEYDOWN,
 		  "surface" : self.display},
 		  "display_signal")
-      self.activeLayer = self.layers[0]
+      self.activeLayer = self.layers[self.activeLayIn]
 
 
       self.drawBG()
       self.blitToSurface()
       
-      yield WaitComplete( self.addLayer() )
+      #yield WaitComplete( self.addLayer() )
       # The above line is essentially equivalent to the next two:
       #    for _ in self.addLayer():
       #      yield 1
@@ -192,16 +198,10 @@ class Paint(Axon.Component.component):
 
       #for _ in self.waitBox("callback"): yield 1
       #self.display2 = self.recv("callback")
-
-      print self.layers
-      self.activeLayer = self.layers[1]
-      self.drawBG()
-      self.blitToSurface()
-      self.activeLayer = self.display
       done = False
       while not done:
          if not self.anyReady():
-             print "in this box"
+            # print "in this box"
              self.pause()
          yield 1
          while self.dataReady("control"):
@@ -213,24 +213,36 @@ class Paint(Axon.Component.component):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if isinstance(event, tuple):
-                    if event[0] == "Tool":
+                    if event[0] == "Layer":
+                        if event[1] == "Add":
+                            yield WaitComplete( self.addLayer() )
+                            self.activeLayIn = len(self.layers)-1
+                            self.activeLayer = self.layers[self.activeLayIn]
+                         #   self.send( self.activeLayIn, "laynum" )
+                            self.drawBG()
+                            self.blitToSurface()
+                        elif event[1] == "Next":
+                            try:
+                                self.activeLayIn += 1
+                                self.activeLayer = self.layers[self.activeLayIn]
+                            except IndexError:
+                                self.activeLayIn = 0
+                                self.activeLayer = self.layers[self.activeLayIn]
+                         #   self.send( self.activeLayIn, "laynum" )
+                        elif event[1] == "Prev":
+                            try:
+                                self.activeLayIn -= 1
+                                self.activeLayer = self.layers[self.activeLayIn]
+                            except IndexError:
+                                self.activeLayIn = len(self.layers)-1
+                                self.activeLayer = self.layers[self.activeLayIn]
+                        self.send( self.activeLayIn, "laynum" )
+                    elif event[0] == "Tool":
                         self.tool = event[1]
-                    if event[0] == "Size":
+                    elif event[0] == "Size":
                         self.toolSize = event[1]
-                    elif event[0] == 'circle':
-                        pygame.draw.circle(self.activeLayer, (255,0,0), event[1], event[2], 0)
-                        self.blitToSurface()
-                    elif event[0] == 'line':
-                        pygame.draw.line(self.activeLayer, (0,0,0), event[1], event[2], 3)
-                        self.blitToSurface()
                     elif event[0] == 'colour':
                         self.selectedColour = event[1]
-                    break
-                if event == "clear":
-                    print "YAY!"
-                    self.oldpos = None
-                    self.drawBG()
-                    self.blitToSurface()
                     break
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.tool == "Circle":
@@ -323,7 +335,7 @@ if __name__ == "__main__":
             ),
 
        WINDOW1 = Seq(
-                 DisplayConfig(width=520, height=520),
+                 DisplayConfig(width=555, height=520),
                  Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = False),
                   ),
         linkages = {
