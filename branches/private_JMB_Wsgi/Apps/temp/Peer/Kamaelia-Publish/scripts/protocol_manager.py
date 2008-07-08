@@ -142,8 +142,8 @@ class ProtocolManager(AdaptiveCommsComponent):
         buffer = [str(body) for body in msg.bodies]
         buffer = ''.join(buffer)
         text = self._CRLF_re.sub(self.LineEnding, buffer)
-        if not text.endswith(self.LineEnding):
-            text += self.LineEnding
+        if not text.endswith(self.LineEnding * 2):
+            text += self.LineEnding * 2
             
         return text
                 
