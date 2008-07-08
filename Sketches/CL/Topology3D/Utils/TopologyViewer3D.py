@@ -306,7 +306,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
                         newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle)
                         particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
-                        #particle.rotationList.append(Vector(dAngle*180/math.pi,0,0))
                         particle.drotation = Vector(dAngle*180/math.pi,0,0)      
                 elif event.key == pygame.K_DOWN:
                     if self.selectedParticles:
@@ -325,7 +324,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
                         newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle)
                         particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
-                        #particle.rotationList.append(Vector(dAngle*180/math.pi,0,0))   
                         particle.drotation = Vector(dAngle*180/math.pi,0,0) 
                 elif event.key == pygame.K_LEFT:
                     if self.selectedParticles:
@@ -344,7 +342,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
                         newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
-                        #particle.rotationList.append(Vector(0,-dAngle*180/math.pi,0))
                         particle.drotation = Vector(0,-dAngle*180/math.pi,0)
                 elif event.key == pygame.K_RIGHT:
                     if self.selectedParticles:
@@ -363,7 +360,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
                         newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
-                        #particle.rotationList.append(Vector(0,-dAngle*180/math.pi,0))
                         particle.drotation = Vector(0,-dAngle*180/math.pi,0)
                 elif event.key == pygame.K_COMMA:
                     if self.selectedParticles:
@@ -382,7 +378,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
                         newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
-                        #particle.rotationList.append(Vector(0,0,dAngle*180/math.pi))
                         particle.drotation = Vector(0,0,dAngle*180/math.pi)
                 elif event.key == pygame.K_PERIOD:
                     if self.selectedParticles:
@@ -401,7 +396,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
                         newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
-                        #particle.rotationList.append(Vector(0,0,dAngle*180/math.pi))
                         particle.drotation = Vector(0,0,dAngle*180/math.pi)
                 
                 #print self.display.viewerposition
