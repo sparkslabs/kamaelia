@@ -21,4 +21,23 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
+from Axon.Component import component
+from Axon.Ipc import producerFinished
 
+from pprint import pformat
+
+class Interface(component):
+    def __init__(self, request, **argd):
+        self.request = request
+        super(Interface, self).__init__(**argd)
+        
+    def main(self):
+        text = pformat(self.request)
+        resource = {
+            'content-type' : 'text/plain',
+            'statuscode' : 200,
+            'data' : text,
+        }
+        self.send(resource, 'outbox')
+        yield 1
+        self.send(producerFinished(self), 'signal')
