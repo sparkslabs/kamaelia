@@ -182,7 +182,7 @@ def ParseConfigFile(filename, formatters, defaults=None, vars=None):
         try:
             components = [ConfigFileReader(filename)] + formatters
         except TypeError:
-            raise ParseException('formatters must be a list')
+            raise ParseException('Unknown argument passed to ParseConfigFile')
         [x.activate() for x in formatters]
         RecursiveLink(iter(components)).run()
     return formatters[-1].getResults()

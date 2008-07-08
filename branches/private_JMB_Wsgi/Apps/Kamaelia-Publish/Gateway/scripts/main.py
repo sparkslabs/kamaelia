@@ -25,9 +25,12 @@ import socket
 
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import HTTPProtocol
-from Interface import Interface
+from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 
-def constructServer():
+from Interface import Interface
+from xmpp import constructXMPPClient, XMPPConfigObject
+
+def constructHTTPServer():
     routing = [ ('/', Interface) ]    
 
     return ServerCore(
@@ -36,5 +39,12 @@ def constructServer():
         socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     )
 
-constructServer().run()
+def main():
+    Config = ParseConfigFile('~/kp.ini', DictFormatter())
+    
+    server = constructHTTPServer()
+    server.activate()
+    xmpp = constructXMPPClient(XMPPConfigObject(Config['XMPP']))
+    xmpp.run()
+    
 

@@ -15,9 +15,9 @@ echo "Assembling Axon/Kamaelia files"
 echo "----------------------------------------------------"
 
 echo "Copying Axon from branch to assembly directory"
-cp -R ../../Axon/Axon/ assembly/Axon
+cp -R ../../../Axon/Axon/ assembly/Axon
 echo "Copying Kamaelia from branch to assembly directory"
-cp -R ../../Kamaelia/Kamaelia/ assembly/Kamaelia
+cp -R ../../../Kamaelia/Kamaelia/ assembly/Kamaelia
 echo "Copying zipheader.unix to assembly directory"
 cp zipheader.unix assembly/zipheader.unix
 echo "Copying scripts into the assembly directory"

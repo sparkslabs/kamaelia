@@ -44,8 +44,6 @@ from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
 from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
 from Kamaelia.Apps.Wsgi.Log import LogWriter
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
-
-from protocol_manager import ProtocolManager, Echoer
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -208,10 +206,10 @@ class WebMessageHandler(component):
                 # In this case we actually received a message
                 # from a contact, we print it.
                 elif isinstance(m, Message):
-                    #b_list = [str(body) for body in m.bodies]
-                    #abody = ''.join(b_list)
-                    #print 'body = ', abody
-                    self.send(m, 'proto')
+                    b_list = [str(body) for body in m.bodies]
+                    abody = ''.join(b_list)
+                    print 'body = ', abody
+                    #self.send(m, 'proto')
                 else:
                     print 'unknown instance received!'
                     
@@ -472,7 +470,7 @@ class Client(component):
                 "lw-signal" : "Shutdown signal for WsgiLogWritable",
                 "doregistration" : ""}
 
-    def __init__(self, XMPPConfig, WSGIConfig):
+    def __init__(self, XMPPConfig):
         super(Client, self).__init__() 
         self.jid = JID(
             XMPPConfig.username,
@@ -487,9 +485,6 @@ class Client(component):
         self.domain = XMPPConfig.domain
         self.usetls = XMPPConfig.usetls
         self.register = False
-        self.log_location = WSGIConfig['log']
-        
-        self.WSGIConfig = WSGIConfig
 
     def passwordLookup(self, jid):
         return self.password
@@ -532,12 +527,7 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        log = Logger(path=None, stdout=True, name='XmppLogger')
-        Backplane('LOG_' + self.log_location).activate()
-        Pipeline(SubscribeTo('LOG_' + self.log_location), log).activate()
-        log_writable = WsgiLogWritable(self.log_location)
-        log.activate()
-        log_writable.activate()   
+        log = Logger(path=None, stdout=True, name='XmppLogger')  
         
         # We pipe everything typed into the console
         # directly to the console backplane so that
@@ -552,13 +542,10 @@ class Client(component):
         ClientStream.Outboxes["%s.query" % XMPP_DISCO_INFO_NS] = "Discovery"
 
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
-        
-        routing = [ ["/", SimpleWsgiFactory(log_writable, self.WSGIConfig, simple_app, '/simple')], ]
-        #routing = [ ['/', Echoer]]
 
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
-                               logger = PublishTo('LOG_' + self.log_location),
+                               logger = log,
                                tcp = TCPClient(self.server, self.port),
                                xmlparser = XMLIncrParser(),
                                xmpp = self.client,
@@ -578,7 +565,6 @@ class Client(component):
                                registerdisp = RegisterDispatcher(),
                                pjid = PublishTo("JID"),
                                pbound = PublishTo("BOUND"),
-                               proto_man = ProtocolManager(Protocol=HTTPProtocol(routing)),
 
                                linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
                                            ('console', 'outbox'): ('client', 'control'),
@@ -637,8 +623,6 @@ class Client(component):
                                            ("msgdisp", "xmpp.chat"): ('msgdummyhandler', 'inbox'),
                                            ("msgdummyhandler", "outbox"): ('msgdisp', 'forward'),
                                            ("msgdisp", "outbox"): ("xmpp", "forward"),
-                                           ('msgdummyhandler', 'proto') : ('proto_man' , 'inbox'),
-                                           ('proto_man', 'outbox') : ('msgdummyhandler', 'inbox'),
 
                                            # Activity
                                            ("xmpp", "%s.query" % XMPP_LAST_NS): ("activitydisp", "inbox"),
@@ -722,16 +706,8 @@ class XMPPConfigObject(object):
     def __repr__(self):
         return repr(self.__dict__)
 
-def main():
-    Config = ParseConfigFile('~/kp.ini', DictFormatter())
-    
-    WSGIConfig = Config['WSGI'] #FIXME: The WSGI Handler should really be refactored to use an object rather than a dict
-    XMPPConfig = XMPPConfigObject(Config['XMPP'])
-    
-    print XMPPConfig
-
-    client = Client(XMPPConfig, WSGIConfig)
-    client.run()
+def constructXMPPClient(XMPPConfig):    
+    return Client(XMPPConfig)
 
 if __name__ == '__main__':
     main()
