@@ -21,23 +21,10 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
-import socket
-
-from Kamaelia.Chassis.ConnectedServer import ServerCore
-from Kamaelia.Protocol.HTTP import HTTPProtocol
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 
-from Interface import Interface
 from xmpp import constructXMPPClient, XMPPConfigObject
-
-def constructHTTPServer():
-    routing = [ ('/', Interface) ]    
-
-    return ServerCore(
-        protocol=HTTPProtocol(routing),
-        port=8080,
-        socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    )
+from http import constructHTTPServer
 
 def main():
     Config = ParseConfigFile('~/kp.ini', DictFormatter())

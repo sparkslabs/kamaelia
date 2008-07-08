@@ -26,10 +26,10 @@ from Axon.Ipc import producerFinished
 
 from pprint import pformat
 
-class Interface(component):
+class HTTPInterface(component):
     def __init__(self, request, **argd):
         self.request = request
-        super(Interface, self).__init__(**argd)
+        super(HTTPInterface, self).__init__(**argd)
         
     def main(self):
         text = pformat(self.request)
