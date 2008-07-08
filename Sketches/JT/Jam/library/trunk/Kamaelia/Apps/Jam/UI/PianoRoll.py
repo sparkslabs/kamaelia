@@ -7,6 +7,7 @@ Piano Roll
 
 import time
 import pygame
+import operator
 
 from Axon.SchedulingComponent import SchedulingComponent
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
@@ -90,6 +91,7 @@ class PianoRoll(MusicTimingComponent):
         note = {"beat": beat, "length" : length, "noteNumber" : noteNumber,
                 "velocity" : velocity}
         noteId = id(note)
+        #print "Adding note - id =", noteId
         self.notes[noteNumber][noteId] = note
         self.idNoteNumberMap[noteId] = noteNumber
         self.scheduleNote(noteId)
@@ -98,14 +100,17 @@ class PianoRoll(MusicTimingComponent):
                                                     noteNumber, velocity)
                       ), "localChanges")
 
-    def removeNote(self, step, channel, send=False):
+    def removeNote(self, noteId, send=False):
         """
         Turn a step off and remove it from the scheduler.  If the send argument
         is true then also send a message indicating the step has been removed
         to the "localChanges" outbox
         """
-        self.channels[channel][step][0] = 0
-        self.cancelStep(step, channel)
+        #print "Removing note - id =", noteId
+        self.cancelNote(noteId)
+        noteNumber = self.idNoteNumberMap[noteId]
+        del self.notes[noteNumber][noteId]
+        del self.idNoteNumberMap[noteId]
         if send:
             self.send((self.messagePrefix + "Remove", (step, channel)),
                       "localChanges")
@@ -134,36 +139,6 @@ class PianoRoll(MusicTimingComponent):
     ###
     # Timing Functions
     ###
-# Don't think we'll need an equivalent to this stuff
-#    def startStep(self): # FIXME: Could maybe do with a better name?
-#        """
-#        For use after any clock synchronising.  Update the various timing
-#        variables, and schedule an initial step update.
-#        """
-#        self.step = (self.loopBar * self.beatsPerBar + self.beat) * self.stepsPerBeat   
-#        self.lastStepTime = self.lastBeatTime
-#        self.stepLength = self.beatLength / self.stepsPerBeat
-#        self.scheduleAbs("Step", self.lastStepTime + self.stepLength, 2)
-# 
-#
-#    def updateStep(self):
-#        """
-#        Increment, and roll over if necessary, the step position counter, then
-#        update the position display.
-#        """
-#        if self.step < self.numSteps - 1:
-#            self.step += 1
-#        else:
-#            self.step = 0
-#        self.lastStepTime += self.stepLength
-#        if self.step == 0:
-#            prevStep = self.numSteps - 1
-#        else:
-#            prevStep = self.step - 1
-#        self.drawPositionRect(self.step, True)
-#        self.drawPositionRect(prevStep, False)
-#        self.scheduleAbs("Step", self.lastStepTime + self.stepLength, 2)
-
     def scheduleNote(self, noteId):
         """
         Schedule a step which has been just been activated
@@ -175,25 +150,20 @@ class PianoRoll(MusicTimingComponent):
         loopLength = self.loopBars * self.beatsPerBar * self.beatLength
 
         noteTime = loopStart + (note["beat"] * self.beatLength)
-        if note["beat"] <= currentBeat:
+        # Fraction
+        beatFraction = (time.time() - self.lastBeatTime)/self.beatLength
+        if note["beat"] <= currentBeat + beatFraction:
             noteTime += loopLength
+        #print "Scheduling note for", noteTime - time.time()
         event = self.scheduleAbs(("NoteActive", noteId), noteTime, 3)
         note["event"] = event
 
-    def rescheduleNote(self, step, channel):
-        """
-        Reschedule a step to occur again in a loop's time
-        """
-        stepTime = self.lastStepTime + self.numSteps * self.stepLength
-        event = self.scheduleAbs(("StepActive", step, channel), stepTime, 3)
-        self.channels[channel][step][1] = event
-
-    def cancelNote(self, step, channel):
+    def cancelNote(self, noteId):
         """
         Delete a step event from the scheduler
         """
-        self.cancelEvent(self.channels[channel][step][1])
-        self.channels[channel][step][1] = None
+        note = self.getNote(noteId)
+        self.cancelEvent(note["event"])
 
     ###
     # UI Functions
@@ -217,6 +187,9 @@ class PianoRoll(MusicTimingComponent):
         yPos = self.size[1] - (note["noteNumber"] - self.minVisibleNote) * self.noteSize[1]
         position = (note["beat"] * self.beatWidth, yPos)
         size = (note["length"] * self.beatWidth, self.noteSize[1])
+        pygame.draw.rect(self.display, (0, 0, 0), pygame.Rect(position, size))
+        position = (position[0] + 1, position[1] + 1)
+        size = (size[0] - 2, size[1] - 2)
         pygame.draw.rect(self.display, (255, 255*(1-note["velocity"]),
                                         255*(1-note["velocity"])),
                          pygame.Rect(position, size))
@@ -289,28 +262,41 @@ class PianoRoll(MusicTimingComponent):
                         if bounds.collidepoint(*event.pos):
                             beat, noteNumber = self.positionToNote(event.pos)
                             ids = self.getNoteIds(beat, noteNumber)
-                            if event.button == 1:
-                                # Left click
-                                if ids:
+                            if ids:
+                                # We have clicked on one or more notes
+                                notes = [self.getNote(noteId) for noteId in ids]
+                                # Use the earliest note
+                                # FIXME: A little ugly maybe?  Short though...
+                                note = min(notes,
+                                           key=operator.itemgetter("beat"))
+                                noteId = ids[notes.index(note)]
+
+                                if event.button == 1:
+                                    # Left click - Move or resize
                                     pass
-                                    # Note off
-                                    # self.removeNote(id)
-                                else:
-                                    # Step on
+
+                                if event.button == 3:
+                                    # Right click - Note off
+                                    self.removeNote(noteId)
+
+                                if event.button == 4:
+                                    # Scroll up - Velocity up
+                                    if velocity > 0 and velocity <= 0.95:
+                                        velocity += 0.05
+                                        self.setVelocity(step, channel,
+                                                         velocity, True)
+                                if event.button == 5:
+                                    # Scroll down - Velocity down
+                                    if velocity > 0.05:
+                                        velocity -= 0.05
+                                        self.setVelocity(step, channel,
+                                                         velocity, True)
+                            else:
+                                if event.button == 1:
+                                    # Left click - Note on
                                     self.addNote(beat, self.noteLength,
                                                  noteNumber, 0.7, True)
-                            if event.button == 4:
-                                # Scroll up
-                                if velocity > 0 and velocity <= 0.95:
-                                    velocity += 0.05
-                                    self.setVelocity(step, channel, velocity,
-                                                     True)
-                            if event.button == 5:
-                                # Scroll down
-                                if velocity > 0.05:
-                                    velocity -= 0.05
-                                    self.setVelocity(step, channel, velocity,
-                                                     True)
+                                    
                             self.render()
 
             if self.dataReady("remoteChanges"):
@@ -332,12 +318,14 @@ class PianoRoll(MusicTimingComponent):
                     self.updateBeat()
                 elif data == "Step":
                     self.updateStep()
-                elif data[0] == "StepActive":
-                    message, step, channel = data
-                    velocity = self.channels[channel][step]
-                    self.send((self.messagePrefix + "On", (channel, velocity)),
+                elif data[0] == "NoteActive":
+                    noteId = data[1]
+                    note = self.getNote(noteId)
+                    freq = noteList[note["noteNumber"]]["freq"]
+                    velocity = note["velocity"]
+                    self.send((self.messagePrefix + "On", (freq, velocity)),
                               "outbox")
-                    self.rescheduleStep(step, channel)
+                    self.scheduleNote(noteId)
 
             if self.dataReady("sync"):
                 # Ignore any sync messages once as we have already synced by
