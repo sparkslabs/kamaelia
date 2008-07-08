@@ -19,50 +19,31 @@ class Particle3D(BaseParticle):
                  size=(0,0,0), **argd):
         super(Particle3D, self).__init__(position=position, ID = ID)
         self.pos = position
-        #self.posVector = Vector(*position)
         self.sideColour = sidecolour
         self.size = Vector(*size)
         self.ID = ID
         self.name = name
         self.backgroundColour = argd.get("bgcolour", (244,244,244))
         self.foregroundColour = argd.get("fgcolour", (0,0,0))
-        #self.sideColour = argd.get("sidecolour", (200,200,244))
         self.margin = argd.get("margin", 8)
         self.key = argd.get("key", None)
 
         self.fontsize = argd.get("fontsize", 50)
         self.pixelscaling = argd.get("pixelscaling", 100)
         self.thickness = argd.get("thickness", 0.3)
-        #self.margin = 8
         self.buildCaption()        
         #  It's after buildCaption() because self.size is decided only after buildCaption() if size=(0,0,0)
         self.radius = self.size.length()
                 
         self.identifier = None
         
-        # get transformation data and convert to vectors
-        #self.posVector = Vector( *argd.get("position", (0,0,0)) )
-        #self.rotation = Vector( *argd.get("rotation", (0.0,0.0,0.0)) )
-        # Use list to solve the rotation order problem
-#        if argd.get("rotation", False):   
-#            self.oldrotList = self.rotationList = [Vector( *argd.get("rotation") )]
-#        else:
-#            self.oldrotList = self.rotationList = []
-        
         self.drotation = Vector()
-#        self.rotationx = 0
-#        self.rotationy = 0
-#        self.rotationz = 0
-        
         
         self.scaling = Vector( *argd.get("scaling", (1,1,1) ) )
-        #self.axisRotation = Vector( *argd.get("axisRotation", (0.0,0.0,0.0)) )
         
         # for detection of changes
-        #self.oldrot = Vector()
         self.oldpos = self.initialpos = Vector()
         self.oldscaling = Vector()
-        #self.oldAxisRot = Vector()
         
         self.transform = Transform()
         self.linkTransform = Transform()
@@ -151,18 +132,8 @@ class Particle3D(BaseParticle):
         glDisable(GL_TEXTURE_2D)
         
         # Draw links        
-#        for rotation in self.rotationList:
-#            glRotatef(-rotation.x,1.0,0.0,0.0)
-#            glRotatef(-rotation.y,0.0,1.0,0.0)
-#            glRotatef(-rotation.z,0.0,0.0,1.0)
-#        glRotatef(-self.rotationx,1.0,0.0,0.0)
-#        glRotatef(-self.rotationy,0.0,1.0,0.0)
-#        glRotatef(-self.rotationz,0.0,0.0,1.0)
         glMatrixMode(GL_MODELVIEW)
-#        currentModelviewMatrix = glGetFloatv(GL_MODELVIEW_MATRIX)
         glPushMatrix()
-#        rotMatrix = self.oldrotTransform.getMatrix()
-#        newModelviewMatrix = glMultMatrix(self.oldrotTransform)
         glLoadMatrixf(self.linkTransform.getMatrix())
         for p in self.bondedTo:
             glBegin(GL_LINES)
@@ -218,15 +189,7 @@ class Particle3D(BaseParticle):
     def applyTransforms(self):
         """ Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened. """
         # generate new transformation matrix if needed
-        #if self.oldscaling != self.scaling or self.oldrotList != self.rotationList or self.oldpos != Vector(*self.pos):
         if self.oldscaling != self.scaling or self.drotation != Vector() or self.oldpos != Vector(*self.pos):
-#            self.rotation += self.drotation
-#            if self.drotation.x != 0:
-#                self.rotationx += self.drotation.x 
-#            if self.drotation.y != 0:
-#                self.rotationy += self.drotation.y 
-#            if self.drotation.z != 0:
-#                self.rotationz += self.drotation.z 
             self.transform = Transform()
             self.linkTransform = Transform()
             drotationTransform = Transform()
@@ -238,19 +201,11 @@ class Particle3D(BaseParticle):
             self.transform = self.transform*self.oldrotTransform*drotationTransform
             self.oldrotTransform = self.oldrotTransform*drotationTransform
             
-#            for rotation in self.rotationList:
-#                self.transform.applyRotation(rotation)
-            
             self.transform.applyTranslation(Vector(*self.pos))
             self.linkTransform.applyTranslation(Vector(*self.pos))
 
             if self.oldscaling != self.scaling:
                 self.oldscaling = self.scaling.copy()
-
-#            if self.oldrotList != self.rotationList:
-#                self.oldrotList = []
-#                for rotation in self.rotationList:
-#                    self.oldrotList.append(rotation.copy())
             
             self.drotation = Vector()    
             
