@@ -86,6 +86,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
         
         self.hitParticles = []
+        self.multiSelectMode = False
         self.selectedParticles = []
         self.grabbed = False
         
@@ -122,7 +123,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         while not self.dataReady("callback"):  yield 1
         self.identifier = self.recv("callback")
         
-        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION, pygame.KEYDOWN ])
+        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION, pygame.KEYDOWN, pygame.KEYUP ])
         
         while True:
             # process incoming messages
@@ -142,8 +143,11 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             yield 1        
             
             if self.lastIdleTime + 1.0 < time.time():
-                #print [particle.pos for particle in self.physics.particles]                    
-                self.physics.run(self.simCyclesPerRedraw, avoidedList=self.hitParticles)
+                #print [particle.pos for particle in self.physics.particles]
+                avoidedList = []
+                avoidedList.extend(self.hitParticles)
+                avoidedList.extend(self.selectedParticles)                    
+                self.physics.run(self.simCyclesPerRedraw, avoidedList=avoidedList)
                 #print [particle.pos for particle in self.physics.particles]
                 
                 # Draw particles if new or updated
@@ -241,17 +245,20 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         if particle.identifier in event.hitobjects:
                             #particle.oldpos = particle.oldpos - self.display.viewerposition
                             self.grabbed = True
-                            particle.scaling = Vector(0.9,0.9,0.9)
+                            #particle.scaling = Vector(0.9,0.9,0.9)
                             self.hitParticles.append(particle)
+                            self.selectParticle(particle)
                             #print str(id(particle))+'hit'
                             #print self.hitParticles
+                    # If click places other than particles in non multiSelectMode, deselect all
+                    if not self.hitParticles and not self.multiSelectMode:
+                        self.deselectAll()
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  
                     for particle in self.hitParticles:
                         self.grabbed = False
                         particle.oldpoint = None
-                        particle.scaling = Vector(1,1,1)
-                        self.send( "('SELECT', 'NODE', '"+particle.name+"')", "outbox" )
+                        #particle.scaling = Vector(1,1,1)
                         self.hitParticles.pop(self.hitParticles.index(particle))
                         #print self.hitParticles
             if event.type == pygame.MOUSEMOTION and self.grabbed:  
@@ -277,7 +284,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if event.type == pygame.KEYDOWN:
                 #print self.display.viewerposition
                 viewerOldPos = self.display.viewerposition.copy()
-                if event.key == pygame.K_PAGEUP:
+                if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                    self.multiSelectMode = True
+                elif event.key == pygame.K_PAGEUP:
                     self.display.viewerposition.z -= 0.5
                 elif event.key == pygame.K_PAGEDOWN:
                     self.display.viewerposition.z += 0.5
@@ -404,7 +413,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.scroll()
                     for particle in self.physics.particles:
                         particle.oldpoint = None
-                                    
+            
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                    self.multiSelectMode = False                   
     
     def scroll( self ):
         # Scroll the surface by resetting gluLookAt
@@ -555,6 +567,30 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.physics.removeByID(*ids)
         #print self.physics.particles
     
+    
+    def selectParticle(self, particle):
+        """Select the specified particle."""
+        if self.multiSelectMode:
+            if particle not in self.selectedParticles:
+                particle.select()
+                self.selectedParticles.append(particle)
+                self.send( "('SELECT', 'NODE', '"+particle.name+"')", "outbox" )
+            else:
+                particle.deselect()
+                self.selectedParticles.remove(particle)
+                self.send( "('DESELECT', 'NODE', '"+particle.name+"')", "outbox" )
+        else:
+            self.deselectAll()
+            self.selectedParticles = []
+            particle.select()
+            self.selectedParticles.append(particle)
+            self.send( "('SELECT', 'NODE', '"+particle.name+"')", "outbox" )
+
+    def deselectAll(self):
+        """Deselect all particles."""
+        for particle in self.selectedParticles:
+            particle.deselect()
+        self.selectedParticles = []
     
     def makeBond(self, source, dest):
         """Make a bond from source to destination particle, specified by IDs"""
