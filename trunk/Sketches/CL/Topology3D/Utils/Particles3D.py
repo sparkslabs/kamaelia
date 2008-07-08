@@ -221,8 +221,22 @@ class Particle3D(BaseParticle):
         else:
             return None
 
+    
+    def select( self ):
+        """Tell this particle it is selected"""
+        #self.selected = True
+        self.sideColour = (200,200,244)
+        self.backgroundColour = (0,0,0)
+        self.foregroundColour = (244,244,244)
+        self.buildCaption()
 
-        
+    def deselect( self ):
+        """Tell this particle it is deselected"""
+        #self.selected = False
+        self.sideColour = (200,200,244)
+        self.backgroundColour = (244,244,244)
+        self.foregroundColour = (0,0,0)
+        self.buildCaption()
 
 
 from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
