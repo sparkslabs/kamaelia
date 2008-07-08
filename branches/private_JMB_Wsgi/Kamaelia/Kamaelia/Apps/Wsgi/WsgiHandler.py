@@ -370,14 +370,17 @@ class _WsgiHandler(threadedcomponent):
         not_done = True
         while not_done:
             while self.dataReady('control'):
-                if isinstance(self.recv('control'), producerFinished):
+                msg = self.recv('control')
+                print msg
+                if isinstance(msg, producerFinished):
                     not_done = False
 
             while self.dataReady('inbox'):
-                buffer.append(self.recv('inbox').bodychunk)
+                buffer.append(self.recv('inbox'))
 
             if not_done and not self.anyReady():
                 self.pause()
+                
         return ''.join(buffer)
 
 

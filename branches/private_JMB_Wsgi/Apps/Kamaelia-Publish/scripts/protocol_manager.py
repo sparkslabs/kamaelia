@@ -72,6 +72,7 @@ class ProtocolManager(AdaptiveCommsComponent):
         self.tracked_components[protocol_component.name] = tracked_data
 
         self.link((self, out_boxname), (protocol_component, 'inbox'))
+        self.link((self, sig_boxname), (protocol_component, 'control'))
         self.link((protocol_component, 'outbox'), (self, in_boxname))
         self.link((protocol_component, 'signal'), (self, ctl_boxname))
     

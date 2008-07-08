@@ -703,7 +703,7 @@ class XMPPConfigObject(object):
         self.address = u''
         self.usetls = u''
         self.password = u''
-        self.resource = u'headstock'
+        self.resource = u'headstock-client1'
         #for key in dictionary:
         #    self.__dict__[key] = unicode(dictionary[key], 'utf-8')
         self.__dict__.update(dictionary)
@@ -727,6 +727,8 @@ def main():
     
     WSGIConfig = Config['WSGI'] #FIXME: The WSGI Handler should really be refactored to use an object rather than a dict
     XMPPConfig = XMPPConfigObject(Config['XMPP'])
+    
+    print XMPPConfig
 
     client = Client(XMPPConfig, WSGIConfig)
     client.run()
