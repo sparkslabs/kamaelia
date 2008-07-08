@@ -52,19 +52,20 @@ class PianoRoll(MusicTimingComponent):
 
         super(PianoRoll, self).__init__(**argd)
 
-        self.notes = []
+        self.notes = {}
+        self.notesByNumber = []
         for i in range(len(noteList)):
-            self.notes.append({})
-
-        self.idNoteNumberMap = {}
+            self.notesByNumber.append([])
 
         # Start at C5
         self.minVisibleNote = 0
         self.maxVisibleNote = self.minVisibleNote + self.notesVisible
 
         totalBeats = self.loopBars * self.beatsPerBar
-        self.size = (self.size[0] - self.size[0] % totalBeats,
-                     self.size[1] - self.size[1] % self.notesVisible)
+        # Make size fit to an exact number of beats and notes
+        # Add 1 for the border
+        self.size = (self.size[0] - (self.size[0] % totalBeats) + 1,
+                     self.size[1] - (self.size[1] % self.notesVisible) + 1)
 
         self.noteLength = 1
 
@@ -92,8 +93,8 @@ class PianoRoll(MusicTimingComponent):
                 "velocity" : velocity}
         noteId = id(note)
         #print "Adding note - id =", noteId
-        self.notes[noteNumber][noteId] = note
-        self.idNoteNumberMap[noteId] = noteNumber
+        self.notes[noteId] = note
+        self.notesByNumber[noteNumber].append(noteId)
         self.scheduleNote(noteId)
         if send:
             self.send((self.messagePrefix + "Add", (beat, length,
@@ -108,16 +109,12 @@ class PianoRoll(MusicTimingComponent):
         """
         #print "Removing note - id =", noteId
         self.cancelNote(noteId)
-        noteNumber = self.idNoteNumberMap[noteId]
-        del self.notes[noteNumber][noteId]
-        del self.idNoteNumberMap[noteId]
+        noteNumber = self.notes[noteId]["noteNumber"]
+        del self.notes[noteId]
+        self.notesByNumber[noteNumber].remove(noteId)
         if send:
             self.send((self.messagePrefix + "Remove", (step, channel)),
                       "localChanges")
-
-    def getNote(self, noteId):
-        noteNumber = self.idNoteNumberMap[noteId]
-        return self.notes[noteNumber][noteId]
 
     def setVelocity(self, step, channel, velocity, send=False):
         """
@@ -143,7 +140,7 @@ class PianoRoll(MusicTimingComponent):
         """
         Schedule a step which has been just been activated
         """
-        note = self.getNote(noteId)
+        note = self.notes[noteId]
         # Easier if we define some stuff here
         currentBeat = self.beat + (self.loopBar * self.beatsPerBar)
         loopStart = self.lastBeatTime - (currentBeat * self.beatLength)
@@ -162,7 +159,7 @@ class PianoRoll(MusicTimingComponent):
         """
         Delete a step event from the scheduler
         """
-        note = self.getNote(noteId)
+        note = self.notes[noteId]
         self.cancelEvent(note["event"])
 
     ###
@@ -174,16 +171,25 @@ class PianoRoll(MusicTimingComponent):
         Initial render of all of the blank steps
         """
         self.display.fill((255, 255, 255))
-        for i in range(self.notesVisible - 1):
-            pygame.draw.line(self.display, (0, 0, 0),
-                             (0, (i + 1) * self.noteSize[1]),
-                             (self.size[0], (i + 1) * self.noteSize[1]))
+        for i in range(self.notesVisible + 1):
+            pygame.draw.line(self.display, (127, 127, 127),
+                             (0, i * self.noteSize[1]),
+                             (self.size[0], i * self.noteSize[1]))
+        for i in range(self.loopBars + 1):
+            xPos = i * self.barWidth
+            for i in range(self.beatsPerBar):
+                pygame.draw.line(self.display, (127, 127, 127),
+                                 (xPos + i * self.beatWidth, 0),
+                                 (xPos + i * self.beatWidth, self.size[1]))
+            pygame.draw.line(self.display, (0, 0, 0), (xPos, 0),
+                             (xPos, self.size[1]))
+                
 
     def drawNoteRect(self, noteId):
         """
         Render a single step with a colour corresponding to its velocity
         """
-        note = self.getNote(noteId)
+        note = self.notes[noteId]
         yPos = self.size[1] - (note["noteNumber"] - self.minVisibleNote) * self.noteSize[1]
         position = (note["beat"] * self.beatWidth, yPos)
         size = (note["length"] * self.beatWidth, self.noteSize[1])
@@ -196,10 +202,10 @@ class PianoRoll(MusicTimingComponent):
 
     def render(self):
         self.drawMarkings()
-        visibleNotes = self.notes[self.minVisibleNote:self.maxVisibleNote + 1]
-        
-        for noteId in sum([x.keys() for x in visibleNotes], []):
-            self.drawNoteRect(noteId)
+        visibleNotes = self.notesByNumber[self.minVisibleNote:self.maxVisibleNote + 1]
+        for noteList in visibleNotes:
+            for noteId in noteList:
+                self.drawNoteRect(noteId)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
     def positionToNote(self, position):
@@ -214,8 +220,8 @@ class PianoRoll(MusicTimingComponent):
     def getNoteIds(self, beat, noteNumber):
         # TODO: Optimise me
         ids = []
-        for noteId in self.notes[noteNumber]:
-            note = self.notes[noteNumber][noteId]
+        for noteId in self.notesByNumber[noteNumber]:
+            note = self.notes[noteId]
             # TODO: Clean me up - this is pretty *ewww*.  Maybe should be a 
             #       seperate function?
             if beat >= note["beat"] and beat <= note["beat"] + note["length"]:
@@ -264,7 +270,7 @@ class PianoRoll(MusicTimingComponent):
                             ids = self.getNoteIds(beat, noteNumber)
                             if ids:
                                 # We have clicked on one or more notes
-                                notes = [self.getNote(noteId) for noteId in ids]
+                                notes = [self.notes[noteId] for noteId in ids]
                                 # Use the earliest note
                                 # FIXME: A little ugly maybe?  Short though...
                                 note = min(notes,
@@ -320,7 +326,7 @@ class PianoRoll(MusicTimingComponent):
                     self.updateStep()
                 elif data[0] == "NoteActive":
                     noteId = data[1]
-                    note = self.getNote(noteId)
+                    note = self.notes[noteId]
                     freq = noteList[note["noteNumber"]]["freq"]
                     velocity = note["velocity"]
                     self.send((self.messagePrefix + "On", (freq, velocity)),
