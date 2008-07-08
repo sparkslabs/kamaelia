@@ -179,7 +179,7 @@ class HTTPParser(component):
                 self.debug("HTTPParser should shutdown")
                 return True
             elif isinstance(temp, producerFinished):
-                print 'HTTPParser received producerFinished in shouldShutdown'
+                #print 'HTTPParser received producerFinished in shouldShutdown'
                 self.full_message_sent = True
 
         return False
@@ -326,7 +326,6 @@ class HTTPParser(component):
         self.debug("HTTPParser::main - stage 3.connection-close start\n")
         connectionopen = True
         while connectionopen:
-            #print 'loop!'
             #print "HTTPParser::main - stage 3.connection close.1"
             if self.shouldShutdown(): return
             while self.dataFetch():
@@ -342,10 +341,7 @@ class HTTPParser(component):
             while self.dataReady("control"):
 #                print "!"
                 temp = self.recv("control")
-                print 'temp = ', temp
-                print type(temp)
                 if isinstance(temp, producerFinished):
-                    print 'HTTPParser received producerFinish in the body method'
                     connectionopen = False
                     break
                 elif isinstance(temp, shutdown):
@@ -485,7 +481,7 @@ class HTTPParser(component):
         #state 4 - request complete, send it on
         self.debug("HTTPParser::main - request sent on\n")
 #        print requestobject
-        print 'closing connection!'
+        #print 'closing connection!'
         self.closeConnection()
         yield 1
 
