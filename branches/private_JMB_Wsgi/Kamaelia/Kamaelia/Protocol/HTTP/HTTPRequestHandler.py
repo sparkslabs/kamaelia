@@ -422,7 +422,6 @@ class HTTPRequestHandler(component):
             if isinstance(request, ParsedHTTPEnd):
                 self.requestEndReached = True
                 self.send(producerFinished(self), "_handlersignal")
-                print 'BODY DONE'
             else:
                 assert(isinstance(request, ParsedHTTPBodyChunk))
                 self.send(request.bodychunk, "_handleroutbox")
@@ -479,7 +478,7 @@ class HTTPRequestHandler(component):
 
             self.pause()
         
-        print 'HTTP Handler dead'
+        #print 'HTTP Handler dead'
 
 __kamaelia_components__  = ( HTTPRequestHandler, )
 
