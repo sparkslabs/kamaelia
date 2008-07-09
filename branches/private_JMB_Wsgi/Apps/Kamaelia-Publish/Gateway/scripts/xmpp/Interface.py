@@ -34,6 +34,7 @@ class XMPPInterface(component):
     def main(self):
         self.not_done = True
         self.send(producerFinished(self), 'signal')
+        
         while self.not_done:
             [self.handleMainInbox(msg) for msg in self.Inbox('inbox')]
             [self.handleControlInbox(msg) for msg in self.Inbox('control')]
@@ -42,6 +43,8 @@ class XMPPInterface(component):
                 self.handleBoxBundleInbox(bundle)
                 self.handleBoxBundleControl(bundle)
                 
+            #FIXME:  Could this be susceptible to race conditions when interfacing
+            #with threadedcomponents?
             if not self.anyReady() and not self.not_done:
                 self.pause()
                 
@@ -59,7 +62,7 @@ class XMPPInterface(component):
                 bundle.unbind()
             self.not_done = False
             
-    def handleBoxBundleInbox(self, component):
+    def handleBoxBundleInbox(self, bundle):
         pass
     
     def handleBoxBundleControl(self, bundle):
