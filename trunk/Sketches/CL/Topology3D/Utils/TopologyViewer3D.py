@@ -243,18 +243,19 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         newpoint = event.direction * z
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    for particle in self.physics.particles:
-                        if particle.identifier in event.hitobjects:
-                            #particle.oldpos = particle.oldpos - self.display.viewerposition
-                            self.grabbed = True
-                            #particle.scaling = Vector(0.9,0.9,0.9)
-                            self.hitParticles.append(particle)
-                            self.selectParticle(particle)
-                            #print str(id(particle))+'hit'
-                            #print self.hitParticles
-                    # If click places other than particles in non multiSelectMode, deselect all
-                    if not self.hitParticles and not self.multiSelectMode:
-                        self.deselectAll()
+                    if not self.rotationMode:
+                        for particle in self.physics.particles:
+                            if particle.identifier in event.hitobjects:
+                                #particle.oldpos = particle.oldpos - self.display.viewerposition
+                                self.grabbed = True
+                                #particle.scaling = Vector(0.9,0.9,0.9)
+                                self.hitParticles.append(particle)
+                                self.selectParticle(particle)
+                                #print str(id(particle))+'hit'
+                                #print self.hitParticles
+                        # If click places other than particles in non multiSelectMode, deselect all
+                        if not self.hitParticles and not self.multiSelectMode:
+                            self.deselectAll()
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  
                     for particle in self.hitParticles:
@@ -263,8 +264,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         #particle.scaling = Vector(1,1,1)
                         self.hitParticles.pop(self.hitParticles.index(particle))
                         #print self.hitParticles
-            if event.type == pygame.MOUSEMOTION and self.grabbed: 
-                if not self.rotationMode: 
+            if event.type == pygame.MOUSEMOTION: 
+                if not self.rotationMode and self.grabbed: 
                     for particle in self.hitParticles:
                         try:
                             if particle.oldpoint is not None:
@@ -277,8 +278,30 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         # Redraw the link so that the link can move with the particle
                         for p in particle.bondedFrom:
                             p.needRedraw = True
-                else:
-                    for particle in self.hitParticles:
+                elif self.rotationMode:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    
+                    centrePoint = Vector() 
+                    for particle in particles:
+                        posVector = Vector(*particle.pos)
+                        centrePoint += posVector
+                    centrePoint /= len(particles)
+                    dAnglex = float(event.rel[1])*math.pi/180
+                    dAngley = float(event.rel[0])*math.pi/180
+                    for particle in particles:
+                        posVector = Vector(*particle.pos)
+                        relativePosVector = posVector - centrePoint
+                        radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
+                        newAnglex = (math.atan2(relativePosVector.z,relativePosVector.y)+dAnglex)
+                        particle.pos = (posVector.x, radius*math.cos(newAnglex)+centrePoint.y, radius*math.sin(newAnglex)+centrePoint.z)
+                        posVector = Vector(*particle.pos)
+                        relativePosVector = posVector - centrePoint
+                        radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
+                        newAngley = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngley)
+                        particle.pos = (radius*math.cos(newAngley)+centrePoint.x, posVector.y, radius*math.sin(newAngley)+centrePoint.z)      
                         particle.drotation.y = float(event.rel[0])
                         particle.drotation.x = float(event.rel[1])
                         particle.drotation %= 360
