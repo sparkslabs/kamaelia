@@ -129,6 +129,7 @@ class XYPad(Axon.Component.component):
                  selectedColour = (0,0,0),
                  saturator=False,
                  slider = False,
+                 alpha = False,
                  colourSelector = False,
                  collisionMsg = ("Top", "Right", "Bottom", "Left"),
                  size=(100, 100), editable=True):
@@ -155,6 +156,8 @@ class XYPad(Axon.Component.component):
         self.puckPos = [self.size[0]/2, self.size[1]/2]
         self.puckVel = [0, 0]
         
+        self.alpha = alpha
+        self.selectedAlpha = 255
         self.slider = slider
         self.selectedSize = 3
         self.borderWidth = 5
@@ -226,6 +229,9 @@ class XYPad(Axon.Component.component):
             SizePicker = XYPad(size=(255, 50), bouncingPuck = False, position = (10, 480),
                      bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), slider = True).activate()
             self.link( (SizePicker,"outbox"), (self,"outbox"), passthrough = 2 )
+            AlphaPicker = XYPad(size=(255, 20), bouncingPuck = False, position = (10, 575),
+                     bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), slider = True, alpha = True).activate()
+            self.link( (AlphaPicker,"outbox"), (self,"outbox"), passthrough = 2 )
         
         
         #clock - don't really need this
@@ -400,11 +406,11 @@ class XYPad(Axon.Component.component):
             self.display.fill( (255,255,255) )
             pygame.draw.rect(self.display, (0,0,0),
                              self.display.get_rect(), 2)
-        if self.saturator:
+        elif self.saturator:
             for y in range(0, self.size[0], self.size[0]/25):
                 box = pygame.Rect(self.size[0]/2, y, 10, 10)
                 pygame.draw.rect(self.display, (self.selectedColour[0],self.selectedColour[1],self.selectedColour[2],y), box, 0)
-        if self.colourSelector:
+        elif self.colourSelector:
             if (self.colours == "RG"):
                 for y in range(0, self.size[0], self.size[0]/25):
                     for x in range(0, self.size[1], self.size[1]/25):
@@ -434,12 +440,19 @@ class XYPad(Axon.Component.component):
             pygame.draw.rect(self.display, self.selectedColour,
                             self.display.get_rect(), self.borderWidth)
             self.send((("colour",self.selectedColour),), "outbox")
-        if self.slider:
+        if self.slider and not self.alpha:
           #  print float(self.size[1])/float(self.size[0])*self.sliderPos
             self.selectedSize = float(self.size[1])/float(self.size[0])*self.sliderPos
             self.send((("Size",self.selectedSize),), "outbox")
             box = pygame.Rect(self.sliderPos, 0, 5, self.selectedSize)
-            pygame.draw.rect(self.display, (123,123,123),
+            pygame.draw.rect(self.display, (0,0,0),
+                            box, 0)
+        if self.slider and self.alpha:
+           # print self.sliderPos
+            self.selectedAlpha = self.sliderPos
+            self.send((("Alpha",self.selectedAlpha),), "outbox")
+            box = pygame.Rect(self.sliderPos, 0, 5, 20)
+            pygame.draw.rect(self.display, (0,0,0),
                             box, 0)
         # Puck
    #     pygame.draw.circle(self.display, self.fgcolour,
