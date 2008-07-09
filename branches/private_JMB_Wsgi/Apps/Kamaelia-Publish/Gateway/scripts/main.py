@@ -23,15 +23,20 @@
 
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 
-from xmpp import constructXMPPClient, XMPPConfigObject
+from jabber import constructXMPPClient, XMPPConfigObject
+from jabber.Interface import XMPPInterface
 from http import constructHTTPServer
 
 def main():
     Config = ParseConfigFile('~/kp.ini', DictFormatter())
     
-    server = constructHTTPServer()
-    server.activate()
     xmpp = constructXMPPClient(XMPPConfigObject(Config['XMPP']))
-    xmpp.run()
+    xmpp.activate()
+    
+    xmppi = XMPPInterface(DebugMemory=True)
+    xmppi.activate()
+    
+    server = constructHTTPServer(xmppi)
+    server.run()
     
 

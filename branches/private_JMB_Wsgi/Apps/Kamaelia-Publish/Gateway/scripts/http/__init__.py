@@ -23,12 +23,12 @@
 
 import socket
 
-from Interface import HTTPInterface
+from Interface import getHTTPInterfaceFactory
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 
-def constructHTTPServer():
-    routing = [ ('/', HTTPInterface) ]    
+def constructHTTPServer(xmpp_interface):
+    routing = [ ('/', getHTTPInterfaceFactory(xmpp_interface)) ]    
 
     return ServerCore(
         protocol=HTTPProtocol(routing),

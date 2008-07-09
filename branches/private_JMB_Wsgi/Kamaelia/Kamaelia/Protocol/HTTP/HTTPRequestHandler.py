@@ -246,7 +246,7 @@ class HTTPRequestHandler(component):
                 hl.append( ("Connection", "close" ))
 
             for header in resource.get("headers",[]):
-                if header[0] == "Content-Type":
+                if header[0].lower() == "content-type":
                     if resource.has_key("charset"): # Maintain charset support for now
                         header = header[0], header[1] + "; " + resource["charset"]
                 hl.append(header)

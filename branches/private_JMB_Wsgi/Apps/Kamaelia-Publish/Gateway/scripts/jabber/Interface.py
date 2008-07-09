@@ -23,32 +23,41 @@
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
+import gc
 
 class XMPPInterface(component):
+    DebugMemory=False
     def __init__(self, **argd):
         super(XMPPInterface, self).__init__(**argd)
-        self.not_done = False
-        self.box_bundles = set()
+        self.not_done = True
+        
+        #note that a box bundle should NOT ever get a reference to either of these
+        #next two attributes.  That would create a circular reference.
+        self.box_bundles = set()      #The bundles we're currently tracking
         self.ready_bundles = set()    #The bundles that currently have messages waiting
+        self.marked_bundles = set()
                 
     def main(self):
         """
         FIXME:  This will need to be reviewed for possible race conditions when
         dealing with threaded components.
         """        
-        self.not_done = True
         self.send(producerFinished(self), 'signal')
         
         while self.not_done:
             [self.handleMainInbox(msg) for msg in self.Inbox('inbox')]
             [self.handleControlInbox(msg) for msg in self.Inbox('control')]
             
-            for bundle in self.ready_bundles:
-                self.ready_bundles.discard(bundle)
+            buffer = self.ready_bundles
+            self.ready_bundles = set()
+            for bundle in buffer:
                 self.handleBoxBundleInbox(bundle)
                 self.handleBoxBundleControl(bundle)
+            
+            if self.marked_bundles:    
+                self.clearMarkedBundles()
                 
-            if not self.anyReady() and not self.not_done:
+            if not self.anyReady() and self.not_done:
                 self.pause()
                 
             yield 1
@@ -57,7 +66,9 @@ class XMPPInterface(component):
             
     def handleMainInbox(self, msg):
         if isinstance(msg, component):
-            self.box_bundles.add(msg)
+            self.registerBundle(msg)
+            
+
             
     def handleControlInbox(self, msg):
         if isinstance(msg, shutdownMicroprocess):
@@ -69,25 +80,47 @@ class XMPPInterface(component):
         pass
     
     def handleBoxBundleControl(self, bundle):
-        #if bundle.dataReady('control'):
-        #    print "dataReady in %s's control box" % (bundle)
-        #else:
-        #    print "There are no messages in %s's control box" % (bundle)
         for msg in bundle.Inbox('control'):
             if isinstance(msg, (producerFinished, shutdownMicroprocess)):
-                bundle.unbind()
-                self.box_bundles.discard(component)
-                self.not_done = False
+                self.marked_bundles.add(bundle)
+                
+        #print bundle, ' marked for removal.'
+                
+    def clearMarkedBundles(self):
+        #print 'Purging marked bundles.'
+        [self.unregisterBundle(bundle) for bundle in self.marked_bundles]
+        self.marked_bundles.clear()
+        
+        #print 'box_bundles:\n', self.box_bundles
+        
+        if self.DebugMemory:
+            gc.collect()
+            if gc.garbage:
+                print '='*6, 'GARBAGE FOUND', '='*6
+                print gc.garbage
                 
     def anyReady(self):
-        return super(XMPPInterface, self).anyReady() and self.ready_bundles
+        if super(XMPPInterface, self).anyReady() or self.ready_bundles:
+            return True
+        else:
+            return False
     
     def registerBundle(self, bundle):
-        if bundle.bound:
-            bundle.unbind()
+        try:
+            if bundle.bound:
+                bundle.unbind()
+                
+            bundle.bind(self.unpause, self.setReady)
+            self.box_bundles.add(bundle)
             
-        bundle.bind(self.unpause, self.setReady)
-        self.box_bundles.add(bundle)
+            #print msg, ' added.'
+            #print 'box_bundles:\n', self.box_bundles,
+        except AttributeError:
+            raise AttributeError('The component that was registered does not appear to be a valid box bundle')
+        
+    def unregisterBundle(self, bundle):
+        bundle.unbind()
+        self.box_bundles.discard(bundle)
         
     def setReady(self, bundle):
         self.ready_bundles.add(bundle)
@@ -110,7 +143,7 @@ class BoxBundle(component):
         
     def unpause(self):
         if self.bound:
-            print 'Calling ParentUnpause: %s' % (self.ParentUnpause)
+            #print 'Calling ParentUnpause: %s' % (self.ParentUnpause)
             self.ParentUnpause()
             self.ParentAddMethod(self)
         else:
