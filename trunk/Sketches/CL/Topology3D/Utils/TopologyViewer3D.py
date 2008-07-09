@@ -256,6 +256,24 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         # If click places other than particles in non multiSelectMode, deselect all
                         if not self.hitParticles and not self.multiSelectMode:
                             self.deselectAll()
+                if event.button == 4:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    for particle in particles:
+                        posVector = Vector(*particle.pos)
+                        posVector.z -= 1
+                        particle.pos = posVector.toTuple()
+                if event.button == 5:
+                    if self.selectedParticles:
+                        particles = self.selectedParticles
+                    else:
+                        particles = self.physics.particles
+                    for particle in particles:
+                        posVector = Vector(*particle.pos)
+                        posVector.z += 1
+                        particle.pos = posVector.toTuple()
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  
                     for particle in self.hitParticles:
