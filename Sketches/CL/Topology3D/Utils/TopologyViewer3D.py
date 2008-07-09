@@ -89,6 +89,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.multiSelectMode = False
         self.selectedParticles = []
         self.grabbed = False
+        self.rotationMode = False  
         
         
         if laws==None:
@@ -231,6 +232,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         while self.dataReady("events"):
             event = self.recv("events")
             if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEMOTION and self.grabbed:
+                if not self.rotationMode:
                     for particle in self.hitParticles:
                         p1 = Vector(*particle.pos).copy()
                         p1.x += 10
@@ -261,19 +263,25 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         #particle.scaling = Vector(1,1,1)
                         self.hitParticles.pop(self.hitParticles.index(particle))
                         #print self.hitParticles
-            if event.type == pygame.MOUSEMOTION and self.grabbed:  
-                for particle in self.hitParticles:
-                    try:
-                        if particle.oldpoint is not None:
-                            #print particle.pos
-                            diff = newpoint-particle.oldpoint
-                            amount = (diff.x, diff.y)
-                            particle.pos = (Vector(*particle.pos)+Vector(*amount)).toTuple()
-                    except NameError: pass
-                    
-                    # Redraw the link so that the link can move with the particle
-                    for p in particle.bondedFrom:
-                        p.needRedraw = True
+            if event.type == pygame.MOUSEMOTION and self.grabbed: 
+                if not self.rotationMode: 
+                    for particle in self.hitParticles:
+                        try:
+                            if particle.oldpoint is not None:
+                                #print particle.pos
+                                diff = newpoint-particle.oldpoint
+                                amount = (diff.x, diff.y)
+                                particle.pos = (Vector(*particle.pos)+Vector(*amount)).toTuple()
+                        except NameError: pass
+                        
+                        # Redraw the link so that the link can move with the particle
+                        for p in particle.bondedFrom:
+                            p.needRedraw = True
+                else:
+                    for particle in self.hitParticles:
+                        particle.drotation.y = float(event.rel[0])
+                        particle.drotation.x = float(event.rel[1])
+                        particle.drotation %= 360
             
             try:
                 for particle in self.hitParticles:
@@ -284,8 +292,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if event.type == pygame.KEYDOWN:
                 #print self.display.viewerposition
                 viewerOldPos = self.display.viewerposition.copy()
-                if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                     self.multiSelectMode = True
+                elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                    self.rotationMode = True
                 elif event.key == pygame.K_PAGEUP:
                     self.display.viewerposition.z -= 0.5
                 elif event.key == pygame.K_PAGEDOWN:
@@ -415,8 +425,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         particle.oldpoint = None
             
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
-                    self.multiSelectMode = False                   
+                if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                    self.multiSelectMode = False
+                elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                    self.rotationMode = False                 
     
     def scroll( self ):
         # Scroll the surface by resetting gluLookAt
