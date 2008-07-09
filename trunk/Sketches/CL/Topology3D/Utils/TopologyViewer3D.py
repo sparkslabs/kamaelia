@@ -308,7 +308,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         centrePoint += posVector
                     centrePoint /= len(particles)
                     dAnglex = float(event.rel[1])*math.pi/180
-                    dAngley = float(event.rel[0])*math.pi/180
+                    dAngley = -float(event.rel[0])*math.pi/180
                     for particle in particles:
                         posVector = Vector(*particle.pos)
                         relativePosVector = posVector - centrePoint
