@@ -32,6 +32,10 @@ class XMPPInterface(component):
         self.ready_bundles = set()    #The bundles that currently have messages waiting
                 
     def main(self):
+        """
+        FIXME:  This will need to be reviewed for possible race conditions when
+        dealing with threaded components.
+        """        
         self.not_done = True
         self.send(producerFinished(self), 'signal')
         
@@ -40,11 +44,10 @@ class XMPPInterface(component):
             [self.handleControlInbox(msg) for msg in self.Inbox('control')]
             
             for bundle in self.ready_bundles:
+                self.ready_bundles.discard(bundle)
                 self.handleBoxBundleInbox(bundle)
                 self.handleBoxBundleControl(bundle)
                 
-            #FIXME:  Could this be susceptible to race conditions when interfacing
-            #with threadedcomponents?
             if not self.anyReady() and not self.not_done:
                 self.pause()
                 
