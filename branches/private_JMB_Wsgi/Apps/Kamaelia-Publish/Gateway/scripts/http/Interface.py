@@ -25,7 +25,10 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished
 from jabber.Interface import BoxBundle
 
+from headstock.api.im import Message
+
 from pprint import pformat
+import cPickle, base64
 
 class HTTPInterface(component):
     Inboxes = {'inbox' : 'Receive body chunks from the HTTPServer',
@@ -41,18 +44,24 @@ class HTTPInterface(component):
         super(HTTPInterface, self).__init__(**argd)
         
     def main(self):       
-        text = self.reconstructHTTPHeaders(self.request)        
+        text = cPickle.dumps(self.request)
+        text = base64.encodestring(text)
+        text = unicode(text)
         
-        for i in self.waitForBody():
-            yield i
-        text += self.body
+        #text = self.reconstructHTTPHeaders(self.request)        
+        #
+        #for i in self.waitForBody():
+        #    yield i
+        #text += self.body
         
-        resource = {
-            'headers' : [('content-type', 'text/plain')],
-            'statuscode' : 200,
-            'data' : text,
-        }
-        self.send(resource, 'outbox')
+        print 'text len: ', len(text)
+        
+        #resource = {
+        #    'headers' : [('content-type', 'text/plain')],
+        #    'statuscode' : 200,
+        #    'data' : text,
+        #}
+        #self.send(resource, 'outbox')
         yield 1
         self.send(producerFinished(self), 'signal')
         self.send(producerFinished(self), 'xmpp_signal')
