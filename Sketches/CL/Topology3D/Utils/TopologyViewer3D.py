@@ -125,6 +125,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.identifier = self.recv("callback")
         
         self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION, pygame.KEYDOWN, pygame.KEYUP ])
+        pygame.key.set_repeat(100,100)
         
         while True:
             # process incoming messages
