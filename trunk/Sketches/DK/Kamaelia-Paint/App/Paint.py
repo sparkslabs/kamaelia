@@ -35,6 +35,7 @@ right to erase your artwork.
 
 import pprocess
 import pygame
+import time
 import Axon
 import math
 from Axon.Ipc import producerFinished, WaitComplete
@@ -119,7 +120,31 @@ class Paint(Axon.Component.component):
         else: yield 1
         
 
-
+   def animate(self):
+       self.activeLayer = self.layers[1]
+       self.activeLayer.set_alpha(0)
+       print self.activeLayer.get_alpha()
+       self.blitToSurface()
+       self.pause()
+       return
+       for i in range(len(self.layers)):
+           self.activeLayer = self.layers[i]
+           self.activeLayer.set_alpha(0)
+           print self.activeLayer.get_alpha()
+           self.blitToSurface()
+       self.activeLayer = self.layers[0]
+       self.activeLayer.set_alpha(255)
+       self.blitToSurface()
+       time.sleep(5)
+       for i in range(len(self.layers)-1):
+           print "here2 ",i
+           self.activeLayer = self.layers[i+1]
+           self.activeLayer.set_alpha(255)
+           self.blitToSurface()
+           time.sleep(1)
+           self.activeLayer.set_alpha(0)
+           self.blitToSurface()
+       return
    def drawBG(self):
       self.activeLayer.fill( (255,0,0) )
       self.activeLayer.fill( self.backgroundColour, self.innerRect )
@@ -222,19 +247,18 @@ class Paint(Axon.Component.component):
                             self.drawBG()
                             self.blitToSurface()
                         elif event[1] == "Next":
-                            try:
-                                self.activeLayIn += 1
-                                self.activeLayer = self.layers[self.activeLayIn]
-                            except IndexError:
+                            if self.activeLayIn == len(self.layers)-1:
                                 self.activeLayIn = 0
                                 self.activeLayer = self.layers[self.activeLayIn]
-                         #   self.send( self.activeLayIn, "laynum" )
-                        elif event[1] == "Prev":
-                            try:
-                                self.activeLayIn -= 1
+                            else:
+                                self.activeLayIn += 1
                                 self.activeLayer = self.layers[self.activeLayIn]
-                            except IndexError:
+                        elif event[1] == "Prev":
+                            if self.activeLayIn == 0:
                                 self.activeLayIn = len(self.layers)-1
+                                self.activeLayer = self.layers[self.activeLayIn]
+                            else:
+                                self.activeLayIn -= 1
                                 self.activeLayer = self.layers[self.activeLayIn]
                         self.send( self.activeLayIn, "laynum" )
                     elif event[0] == "Tool":
@@ -271,12 +295,7 @@ class Paint(Axon.Component.component):
                         #self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
-                       if self.activeLayer == self.layers[0]:
-                           self.activeLayer = self.layers[1]
-                       else:
-                           self.activeLayer = self.layers [0]
-                    #   self.drawBG()
-                       self.blitToSurface()
+                       self.animate()
                     elif event.key == pygame.K_l:
                        self.activeLayer.set_alpha(0)
                        self.activeLayer = self.display
