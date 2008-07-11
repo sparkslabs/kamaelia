@@ -8,6 +8,7 @@ Piano Roll
 import time
 import pygame
 import operator
+import uuid
 
 from Axon.SchedulingComponent import SchedulingComponent
 from Axon.Ipc import producerFinished
@@ -75,6 +76,10 @@ class PianoRoll(MusicTimingComponent):
 
         self.noteSize = [self.beatWidth, self.size[1]/self.notesVisible]
 
+        self.tabWidth = 5
+
+        self.resizing = False
+        self.moving = False
 
     def addNote(self, beat, length, noteNumber, velocity, send=False):
         """
@@ -84,7 +89,8 @@ class PianoRoll(MusicTimingComponent):
         """
         note = {"beat": beat, "length" : length, "noteNumber" : noteNumber,
                 "velocity" : velocity, "surface" : None}
-        noteId = id(note)
+        # Making a UUID may be overkill, but better safe than sorry
+        noteId = uuid.uuid4()
         #print "Adding note - id =", noteId
         self.notes[noteId] = note
         self.notesByNumber[noteNumber].append(noteId)
@@ -123,11 +129,14 @@ class PianoRoll(MusicTimingComponent):
             self.send((self.messagePrefix + "Velocity",
                        velocity), "localChanges")
 
-    def moveNote(self):
+    def moveNote(self, beat, send=False):
         pass
 
-    def resizeNote(self):
-        pass
+    def resizeNote(self, noteId, length, send=False):
+        self.notes[noteId]["length"] = length
+        if send:
+            self.send((self.messagePrefix + "Length",
+                       length), "localChanges")
 
     ###
     # Timing Functions
@@ -216,7 +225,7 @@ class PianoRoll(MusicTimingComponent):
         surface.fill((0, 0, 0))
         
         # Adjust for a border
-        size = (size[0] - 2, size[1] - 2)
+        size = (size[0] - (2 + self.tabWidth), size[1] - 2)
 
         surface.fill((255, 0, 0), pygame.Rect((1, 1), size))
         velocity = self.notes[noteId]["velocity"]
@@ -308,7 +317,15 @@ class PianoRoll(MusicTimingComponent):
                                 velocity = self.notes[noteId]["velocity"]
                                 if event.button == 1:
                                     # Left click - Move or resize
-                                    pass
+                                    # Number of beats between the click and the
+                                    # start and end of the note
+                                    toEnd = note["beat"] + note["length"] - beat
+                                    if toEnd < float(self.tabWidth) / self.beatWidth:
+                                        # Resize
+                                        self.resizing = (noteId, event.pos[0])
+                                    else:
+                                        # Move
+                                        self.moving = (noteId, event.pos[0])
 
                                 if event.button == 3:
                                     # Right click - Note off
@@ -323,6 +340,7 @@ class PianoRoll(MusicTimingComponent):
                                         self.setVelocity(noteId, velocity,
                                                          True)
                                         surface.set_alpha(255 * velocity)
+
                                 if event.button == 5:
                                     # Scroll down - Velocity down
                                     if velocity > 0.05:
@@ -337,7 +355,34 @@ class PianoRoll(MusicTimingComponent):
                                                           noteNumber, 0.7, True)
                                     self.drawNoteRect(noteId)
                             self.requestRedraw()
-                                    
+
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        if event.button == 1:
+                            if self.moving:
+                                self.moving = False
+                            if self.resizing:
+                                noteId, startPos = self.resizing
+
+                                beat = self.notes[noteId]["beat"]
+                                length = self.notes[noteId]["length"]
+                                numBeats = self.beatsPerBar * self.loopBars
+
+                                deltaLength = float(event.pos[0] - startPos)
+                                deltaLength /= self.beatWidth
+
+                                length += deltaLength
+
+                                if beat + length > numBeats:
+                                    length = numBeats - beat
+                                self.resizeNote(noteId, length)
+                                # Delete the note rect and recreate it
+                                surface = self.notes[noteId]["surface"]
+                                self.send(producerFinished(message=surface),
+                                          "display_signal")
+                                self.notes[noteId]["surface"] = None
+                                self.drawNoteRect(noteId)
+                                self.resizing = False
+                            self.requestRedraw()
 
             if self.dataReady("remoteChanges"):
                 data = self.recv("remoteChanges")
