@@ -207,6 +207,7 @@ class Paint(Axon.Component.component):
 		  "surface" : self.display},
 		  "display_signal")
       self.activeLayer = self.layers[self.activeLayIn]
+      self.send( self.activeLayIn, "laynum" )
 
 
       self.drawBG()
@@ -246,7 +247,13 @@ class Paint(Axon.Component.component):
                          #   self.send( self.activeLayIn, "laynum" )
                             self.drawBG()
                             self.blitToSurface()
-                        elif event[1] == "Next":
+                        elif event[1] == "Delete":
+                            self.send( producerFinished(message=self.activeLayer),"display_signal")
+                            self.layers.remove(self.activeLayer)
+                            self.activeLayIn = 0
+                            self.activeLayer = self.layers[self.activeLayIn]
+                            print self.layers
+                        if event[1] == "Next":
                             if self.activeLayIn == len(self.layers)-1:
                                 self.activeLayIn = 0
                                 self.activeLayer = self.layers[self.activeLayIn]
