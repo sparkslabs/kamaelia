@@ -43,7 +43,7 @@ from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory
 from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
 from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
 from Kamaelia.Apps.Wsgi.Log import LogWriter
-from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
+from translator import Translator
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -140,12 +140,13 @@ class RosterHandler(component):
             yield 1
 
 class WebMessageHandler(component):
-    Inboxes = {"inbox"    : "headstock.api.contact.Message instance received from a peer"\
-                   "or the string input in the console",
+    Inboxes = {"inbox"    : "headstock.api.contact.Message instance received from a peer",
+               "trans_inbox" : "Receive messages from the inbound translator",
                "jid"      : "headstock.api.jid.JID instance received from the server",
                "control"  : "stops the component",}
     
     Outboxes = {"outbox"  : "headstock.api.im.Message to send to the client",
+                "trans_outbox" : "Send messages to the outbound translator",
                 "signal"  : "Shutdown signal",
                 "proto" : "Send messages to the protocol manager",}
 
@@ -159,15 +160,9 @@ class WebMessageHandler(component):
         self.addChildren(sub)
         sub.activate()
 
-        sub = SubscribeTo("CONSOLE")
-        self.link((sub, 'outbox'), (self, 'inbox'))
-        self.addChildren(sub)
-        sub.activate()
-
-        return 1
-
     def main(self):
-        yield self.initComponents()
+        self.initComponents()
+        yield 1
 
         while 1:
             while self.dataReady("control"):
@@ -176,42 +171,11 @@ class WebMessageHandler(component):
                     self.send(producerFinished(), "signal")
                     break
 
-            while self.dataReady("jid"):
+            if self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
             
-            while self.dataReady("inbox"):
-                m = self.recv("inbox")
-                # in this first case, we want to send the message
-                # typed in the console.
-                # The message is of the form:
-                #    contant_jid message
-                if isinstance(m, (str, unicode)) and m != '':
-                    #print self.name + ' received string!'
-                    try:
-                        contact_jid, message = m.split(' ', 1)
-                    except ValueError:
-                        print "Messages format: contact_jid message"
-                        continue
-                    m = Message(unicode(self.from_jid), unicode(contact_jid), 
-                                type=u'chat', stanza_id=generate_unique())
-                    m.event = Event.composing # note the composing event status
-                    m.bodies.append(Body(unicode(message)))
-                    self.send(m, "outbox")
-                    
-                    # Right after we sent the first message
-                    # we send another one reseting the event status
-                    m = Message(unicode(self.from_jid), unicode(contact_jid), 
-                                type=u'chat', stanza_id=generate_unique())
-                    self.send(m, "outbox")
-                # In this case we actually received a message
-                # from a contact, we print it.
-                elif isinstance(m, Message):
-                    b_list = [str(body) for body in m.bodies]
-                    abody = ''.join(b_list)
-                    print 'body = ', abody
-                    #self.send(m, 'proto')
-                else:
-                    print 'unknown instance received!'
+            [self.send(msg, 'trans_outbox') for msg in self.Inbox('inbox')]
+            [self.send(msg, 'outbox') for msg in self.Inbox('trans_inbox')]
                     
             if not self.anyReady():
                 self.pause()
@@ -565,6 +529,7 @@ class Client(component):
                                registerdisp = RegisterDispatcher(),
                                pjid = PublishTo("JID"),
                                pbound = PublishTo("BOUND"),
+                               trans=Translator(),
 
                                linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
                                            ('console', 'outbox'): ('client', 'control'),
@@ -630,6 +595,10 @@ class Client(component):
                                            ("activitydisp", "outbox"): ("xmpp", "forward"),
                                            ("activityhandler", 'activity-supported'): ('rosterhandler', 'ask-activity'),
                                            ("rosterhandler", 'activity'): ('activitydisp', 'forward'),
+                                            
+                                            #Translator
+                                            ('trans', 'outbox') : ('msgdummyhandler', 'trans_inbox'),
+                                            ('msgdummyhandler', 'trans_outbox') : ('trans', 'inbox'),
                                            }
                                )
         self.addChildren(self.graph)

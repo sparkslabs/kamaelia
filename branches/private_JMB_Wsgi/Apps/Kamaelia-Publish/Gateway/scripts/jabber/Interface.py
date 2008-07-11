@@ -126,6 +126,8 @@ class XMPPInterface(component):
         self.ready_bundles.add(bundle)
         
 class BoxBundle(component):
+    """This component is not meant to be activated.  Use it instead as a bundle of
+    boxes."""
     # The ParentUnpause attribute is used to notify the component that uses this
     #bundle that it has a new message.
     ParentUnpause=None
@@ -158,6 +160,12 @@ class BoxBundle(component):
         self.bound = True
         self.ParentUnpause = parent_unpause
         self.ParentAddMethod = parent_add_method
+        
+    def activate(self, scheduler=None, tracker=None, mainmethod='main'):
+        pass
+    
+    def run(self):
+        pass
         
 if __name__ == '__main__':
     xmpp = XMPPInterface()
