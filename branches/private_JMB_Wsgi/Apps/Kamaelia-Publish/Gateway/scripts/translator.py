@@ -28,7 +28,8 @@ from Kamaelia.Chassis.Graphline import Graphline
 from headstock.api.im import Message, Body, Event
 from headstock.lib.utils import generate_unique
 
-import cPickle, base64
+import pickle as pickle
+import base64
 
 class requestToMessageTranslator(component):
     """Note that sending messages via XMPP is considered outbound.  This converts
@@ -36,35 +37,36 @@ class requestToMessageTranslator(component):
     ThisJID = 'amnorvend_gateway@jabber.org'
     ToJID = 'amnorvend@gmail.com'
     def __init__(self, **argd):
-        super(translator, self).__init__(**argd)
+        super(requestToMessageTranslator, self).__init__(**argd)
         self.not_done=True
         
     def main(self):
         while self.not_done:
-            [handleInbox(msg) for msg in self.Inbox('inbox')]
-            [handleControlBox(msg) for msg in self.Inbox('control')]
+            [self.handleInbox(msg) for msg in self.Inbox('inbox')]
+            [self.handleControlBox(msg) for msg in self.Inbox('control')]
             
-            if not self.anyReady() and not_done:
+            if not self.anyReady() and self.not_done:
                 self.pause()
                 
             yield 1
     
     def handleInbox(self, msg):
         assert(isinstance(msg, dict))
-        serial = cPickle.dumps(msg)
+        serial = pickle.dumps(msg)
         serial = base64.encodestring(serial)
+        
         
         #hMessage being a headstock message
         hMessage = Message(unicode(self.ThisJID), unicode(self.ToJID),
                            type=u'chat', stanza_id=generate_unique())
         
         hMessage.event = Event.composing
-        hMessage.bodies.append(Body(serial))
+        hMessage.bodies.append(unicode(Body(serial)))
         self.send(hMessage, 'outbox')
         
         # Right after we sent the first message
         # we send another one reseting the event status
-        m = Message(unicode(self.from_jid), unicode(contact_jid), 
+        m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
                     type=u'chat', stanza_id=generate_unique())
         self.send(m, "outbox")
     
@@ -75,42 +77,53 @@ class requestToMessageTranslator(component):
             
             
 class messageToResponseTranslator(component):
+    ThisJID = 'amnorvend_gateway@jabber.org'
+    ToJID = 'amnorvend@gmail.com'
     def __init__(self, **argd):
-        super(OutboundTranslator, self).__init__(**argd)
+        super(messageToResponseTranslator, self).__init__(**argd)
         
     def main(self):
         self.not_done = True
-        while not_done:
-            [handleInbox(msg) for msg in self.Inbox('inbox')]
-            [handleControlBox(msg) for msg in self.Inbox('control')]
+        while self.not_done:
+            [self.handleInbox(msg) for msg in self.Inbox('inbox')]
+            [self.handleControlBox(msg) for msg in self.Inbox('control')]
             
-            if not self.anyReady() and not_done:
+            if not self.anyReady() and self.not_done:
                 self.pause()
                 
             yield 1
     
     def handleInbox(self, msg):
-        serial = [str(body) for body in msg.bodies]
-        serial = base64.decodestring(serial)
-        resource = cPickle.loads(serial)
-
-        assert(isinstance(resource, dict))
-        self.send(resource, 'outbox')
+        serial = ''.join([str(body) for body in msg.bodies])
+        
+        #Sometimes an emty message comes through to reset the event status.  This
+        #will cause errors if we process it.
+        if serial:
+            serial = base64.b64decode(str(serial))
+            resource = pickle.loads(serial)
+    
+            assert(isinstance(resource, dict))
+            self.send(resource, 'outbox')
         
     def handleControlBox(self, msg):
         if isinstance(msg, shutdownMicroprocess):
             self.not_done = False
             self.send(msg, 'signal')
+
+if __name__ == '__main__':
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    
+    class Producer(component):
+        Request = {'a' : 'b',
+                   'c' : 'd',
+                   'e' : 'f',}
+        def __init__(self, **argd):
+            super(Producer, self).__init__(**argd)
             
-def Translator():
-    return Graphline(
-        ibound=requestToMessageTranslator(),
-        obound=MessageToResponseTranslator(),
-        linkages={
-            ('self', 'inbox') : ('ibound', 'inbox'),
-            ('obound', 'outbox') : ('self', 'outbox'),
-            ('self', 'control') : ('ibound', 'control'),
-            ('ibound', 'signal') : ('obound', 'control'),
-            ('obound', 'signal') : ('self', 'signal'),
-        }
-    )
+        def main(self):
+            self.send(self.Request, 'outbox')
+            yield 1
+            self.send(shutdownMicroprocess(self), 'signal')
+            
+    Pipeline(Producer(), requestToMessageTranslator(), messageToResponseTranslator(), ConsoleEchoer()).run()
