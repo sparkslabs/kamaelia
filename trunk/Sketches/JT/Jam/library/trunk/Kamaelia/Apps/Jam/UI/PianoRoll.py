@@ -10,6 +10,7 @@ import pygame
 import operator
 
 from Axon.SchedulingComponent import SchedulingComponent
+from Axon.Ipc import producerFinished
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 from Kamaelia.Apps.Jam.Util.MusicTiming import MusicTimingComponent
@@ -74,14 +75,6 @@ class PianoRoll(MusicTimingComponent):
 
         self.noteSize = [self.beatWidth, self.size[1]/self.notesVisible]
 
-        self.dispRequest = {"DISPLAYREQUEST" : True,
-                            "callback" : (self,"callback"),   
-                            "events" : (self, "inbox"),
-                            "size": self.size,
-                           }
-
-        if self.position:
-            self.dispRequest["position"] = self.position
 
     def addNote(self, beat, length, noteNumber, velocity, send=False):
         """
@@ -90,7 +83,7 @@ class PianoRoll(MusicTimingComponent):
         has been activated to the "localChanges" outbox
         """
         note = {"beat": beat, "length" : length, "noteNumber" : noteNumber,
-                "velocity" : velocity}
+                "velocity" : velocity, "surface" : None}
         noteId = id(note)
         #print "Adding note - id =", noteId
         self.notes[noteId] = note
@@ -100,6 +93,7 @@ class PianoRoll(MusicTimingComponent):
             self.send((self.messagePrefix + "Add", (beat, length,
                                                     noteNumber, velocity)
                       ), "localChanges")
+        return noteId
 
     def removeNote(self, noteId, send=False):
         """
@@ -113,19 +107,21 @@ class PianoRoll(MusicTimingComponent):
         del self.notes[noteId]
         self.notesByNumber[noteNumber].remove(noteId)
         if send:
-            self.send((self.messagePrefix + "Remove", (step, channel)),
+            # TODO: Make me send sensible stuff
+            self.send((self.messagePrefix + "Remove", 1),
                       "localChanges")
 
-    def setVelocity(self, step, channel, velocity, send=False):
+    def setVelocity(self, noteId, velocity, send=False):
         """
         Change the velocity of a step.   If the send argument is true then also
         send a message indicating the velocity has changed to the
         "localChanges" outbox
         """
-        self.channels[channel][step][0] = velocity
+        self.notes[noteId]["velocity"] = velocity
         if send:
+            # TODO: Make me send sensible stuff
             self.send((self.messagePrefix + "Velocity",
-                       (step, channel, velocity)), "localChanges")
+                       velocity), "localChanges")
 
     def moveNote(self):
         pass
@@ -166,22 +162,32 @@ class PianoRoll(MusicTimingComponent):
     # UI Functions
     ###
 
+    def createSurface(self, displayRequest):
+        self.send(displayRequest, "display_signal")
+        while not self.dataReady("callback"):
+            self.pause()
+        display = self.recv("callback")
+        return display
+
+    def requestRedraw(self):
+        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+
     def drawMarkings(self):
         """
         Initial render of all of the blank steps
         """
-        self.display.fill((255, 255, 255))
+        self.background.fill((255, 255, 255))
         for i in range(self.notesVisible + 1):
-            pygame.draw.line(self.display, (127, 127, 127),
+            pygame.draw.line(self.background, (127, 127, 127),
                              (0, i * self.noteSize[1]),
                              (self.size[0], i * self.noteSize[1]))
         for i in range(self.loopBars + 1):
             xPos = i * self.barWidth
             for i in range(self.beatsPerBar):
-                pygame.draw.line(self.display, (127, 127, 127),
+                pygame.draw.line(self.background, (127, 127, 127),
                                  (xPos + i * self.beatWidth, 0),
                                  (xPos + i * self.beatWidth, self.size[1]))
-            pygame.draw.line(self.display, (0, 0, 0), (xPos, 0),
+            pygame.draw.line(self.background, (0, 0, 0), (xPos, 0),
                              (xPos, self.size[1]))
                 
 
@@ -189,24 +195,33 @@ class PianoRoll(MusicTimingComponent):
         """
         Render a single step with a colour corresponding to its velocity
         """
-        note = self.notes[noteId]
-        yPos = self.size[1] - (note["noteNumber"] - self.minVisibleNote) * self.noteSize[1]
-        position = (note["beat"] * self.beatWidth, yPos)
-        size = (note["length"] * self.beatWidth, self.noteSize[1])
-        pygame.draw.rect(self.display, (0, 0, 0), pygame.Rect(position, size))
-        position = (position[0] + 1, position[1] + 1)
-        size = (size[0] - 2, size[1] - 2)
-        pygame.draw.rect(self.display, (255, 255*(1-note["velocity"]),
-                                        255*(1-note["velocity"])),
-                         pygame.Rect(position, size))
+        if not self.notes[noteId]["surface"]:
+            # We don't have a surface for the note yet, so make a new one                
+            # The number of notes from this note to the bottom
+            notesUp = self.notes[noteId]["noteNumber"] - self.minVisibleNote
+            position = (self.notes[noteId]["beat"] * self.beatWidth,
+                        self.size[1] - notesUp * self.noteSize[1])
+            size = (self.notes[noteId]["length"] * self.beatWidth,
+                    self.noteSize[1])
 
-    def render(self):
-        self.drawMarkings()
-        visibleNotes = self.notesByNumber[self.minVisibleNote:self.maxVisibleNote + 1]
-        for noteList in visibleNotes:
-            for noteId in noteList:
-                self.drawNoteRect(noteId)
-        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+            displayRequest = {"DISPLAYREQUEST" : True,
+                              "size" : size,
+                              "position" : position,
+                              "callback" : (self, "callback")}
+
+            surface = self.createSurface(displayRequest)
+        else:
+            surface = self.notes[noteId]["surface"]
+
+        surface.fill((0, 0, 0))
+        
+        # Adjust for a border
+        size = (size[0] - 2, size[1] - 2)
+
+        surface.fill((255, 0, 0), pygame.Rect((1, 1), size))
+        velocity = self.notes[noteId]["velocity"]
+        surface.set_alpha(255 * velocity)
+        self.notes[noteId]["surface"] = surface
 
     def positionToNote(self, position):
         """
@@ -233,15 +248,16 @@ class PianoRoll(MusicTimingComponent):
         displayService = PygameDisplay.getDisplayService()
         self.link((self,"display_signal"), displayService)
 
-        self.send(self.dispRequest, "display_signal")
-
-        # Wait until we get a display
-        while not self.dataReady("callback"):
-            self.pause()
-        self.display = self.recv("callback")
-
-        # Initial render
-        self.render()
+        # Display surface - this is what we call to redraw
+        displayRequest = {"DISPLAYREQUEST" : True,
+                          "callback" : (self,"callback"),
+                          "events" : (self, "inbox"),
+                          "size" : self.size,
+                          "position" : (0, 0)
+                         }
+        if self.position:
+            displayRequest["position"] = self.position
+        self.display = self.createSurface(displayRequest)
 
         self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                    "surface" : self.display},
@@ -250,6 +266,18 @@ class PianoRoll(MusicTimingComponent):
         self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
                    "surface" : self.display},
                   "display_signal")
+        
+        # Background surface - this is what we draw the background markings onto
+        displayRequest = {"DISPLAYREQUEST" : True,
+                          "callback" : (self,"callback"),
+                          "size": self.size,
+                          "position" : (0, 0)
+                         }
+        self.background = self.createSurface(displayRequest)
+
+        # Initial render
+        self.drawMarkings()
+        self.requestRedraw()
 
         # Timing init
         # In main because timingSync needs the scheduler to be working
@@ -276,34 +304,40 @@ class PianoRoll(MusicTimingComponent):
                                 note = min(notes,
                                            key=operator.itemgetter("beat"))
                                 noteId = ids[notes.index(note)]
-
+                                surface = self.notes[noteId]["surface"]
+                                velocity = self.notes[noteId]["velocity"]
                                 if event.button == 1:
                                     # Left click - Move or resize
                                     pass
 
                                 if event.button == 3:
                                     # Right click - Note off
+                                    self.send(producerFinished(message=surface),
+                                              "display_signal")
                                     self.removeNote(noteId)
 
                                 if event.button == 4:
                                     # Scroll up - Velocity up
                                     if velocity > 0 and velocity <= 0.95:
                                         velocity += 0.05
-                                        self.setVelocity(step, channel,
-                                                         velocity, True)
+                                        self.setVelocity(noteId, velocity,
+                                                         True)
+                                        surface.set_alpha(255 * velocity)
                                 if event.button == 5:
                                     # Scroll down - Velocity down
                                     if velocity > 0.05:
                                         velocity -= 0.05
-                                        self.setVelocity(step, channel,
-                                                         velocity, True)
+                                        self.setVelocity(noteId, velocity,
+                                                         True)
+                                        surface.set_alpha(255 * velocity)
                             else:
                                 if event.button == 1:
                                     # Left click - Note on
-                                    self.addNote(beat, self.noteLength,
-                                                 noteNumber, 0.7, True)
+                                    noteId = self.addNote(beat, self.noteLength,
+                                                          noteNumber, 0.7, True)
+                                    self.drawNoteRect(noteId)
+                            self.requestRedraw()
                                     
-                            self.render()
 
             if self.dataReady("remoteChanges"):
                 data = self.recv("remoteChanges")
