@@ -25,10 +25,10 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished
 from jabber.Interface import BoxBundle
 
-class getHTTPInterfaceFactory(object):
-    def __init__(self, xmpp_interface):
+class getBundleFactory(object):
+    def __init__(self, master_interface):
         self.bundle_sender = component()
-        self.bundle_sender.link((self.bundle_sender, 'outbox'), (xmpp_interface, 'inbox'))
+        self.bundle_sender.link((self.bundle_sender, 'outbox'), (master_interface, 'inbox'))
         
     def __call__(self, request):
         bundle = BoxBundle()

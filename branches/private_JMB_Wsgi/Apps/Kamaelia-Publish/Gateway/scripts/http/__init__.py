@@ -27,7 +27,7 @@ from Interface import getHTTPInterfaceFactory
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 
-def constructHTTPServer(xmpp_interface):
+def constructHTTPServer(master_interface):
     routing = [ ('/', getHTTPInterfaceFactory(xmpp_interface)) ]    
 
     return ServerCore(

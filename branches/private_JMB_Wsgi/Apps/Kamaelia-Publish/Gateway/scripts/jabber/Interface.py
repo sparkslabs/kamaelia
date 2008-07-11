@@ -26,6 +26,11 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 import gc
 
 class XMPPInterface(component):
+    Inboxes = {'inbox' : 'receive new box bundles',
+               'response' : 'receive incoming responses',
+               'control' : 'receive shutdown signals'}
+    Outboxes = {'outbox' : 'Send data received from the HTTPServer.',
+                'signal' : 'send shutdown signals'}
     DebugMemory=False
     def __init__(self, **argd):
         super(XMPPInterface, self).__init__(**argd)
