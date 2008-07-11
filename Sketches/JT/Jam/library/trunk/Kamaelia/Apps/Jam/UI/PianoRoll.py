@@ -129,13 +129,16 @@ class PianoRoll(MusicTimingComponent):
             self.send((self.messagePrefix + "Velocity",
                        velocity), "localChanges")
 
-    def moveNote(self, beat, send=False):
-        pass
+    def moveNote(self, noteId, beat, send=False):
+        self.notes[noteId]["beat"] = beat
+        if send:
+            self.send((self.messagePrefix + "Move",
+                       length), "localChanges")
 
     def resizeNote(self, noteId, length, send=False):
         self.notes[noteId]["length"] = length
         if send:
-            self.send((self.messagePrefix + "Length",
+            self.send((self.messagePrefix + "Resize",
                        length), "localChanges")
 
     ###
@@ -359,7 +362,30 @@ class PianoRoll(MusicTimingComponent):
                     if event.type == pygame.MOUSEBUTTONUP:
                         if event.button == 1:
                             if self.moving:
+                                noteId, startPos = self.moving
+
+                                beat = self.notes[noteId]["beat"]
+                                length = self.notes[noteId]["length"]
+                                numBeats = self.beatsPerBar * self.loopBars
+
+                                deltaPos = float(event.pos[0] - startPos)
+                                deltaPos /= self.beatWidth
+
+                                beat += deltaPos
+
+                                if beat + length > numBeats:
+                                    beat = numBeats - length
+                                if beat < 0:
+                                    beat = 0
+                                self.moveNote(noteId, beat)
+                                # Delete the note rect and recreate it
+                                surface = self.notes[noteId]["surface"]
+                                self.send(producerFinished(message=surface),
+                                          "display_signal")
+                                self.notes[noteId]["surface"] = None
+                                self.drawNoteRect(noteId)
                                 self.moving = False
+
                             if self.resizing:
                                 noteId, startPos = self.resizing
 
