@@ -25,14 +25,13 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished
 from jabber.Interface import BoxBundle
 
-class getBundleFactory(object):
-    def __init__(self, master_interface):
-        self.bundle_sender = component()
-        self.bundle_sender.link((self.bundle_sender, 'outbox'), (master_interface, 'inbox'))
+def getProxyHandler(master_interface):
+    proxy_sender = component
+    self.link((proxy_sender, 'outbox'), (master_interface, 'receptor'))
         
-    def __call__(self, request):
-        bundle = BoxBundle()
-        
-        self.bundle_sender.send(bundle, 'outbox')
-
-        return bundle
+    def ProxyFactory(self, request):
+        proxy = BoxBundle()        
+        self.proxy_sender.send(proxy, 'outbox')
+        return proxy
+    
+    return ProxyFactory
