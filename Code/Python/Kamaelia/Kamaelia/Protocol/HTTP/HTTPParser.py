@@ -148,6 +148,7 @@ class HTTPParser(component):
         self.readbuffer = ""
         self.currentline = ""
         self.bodiedrequest = False
+        self.full_message_sent = False
 
     def splitProtocolVersion(self, protvers, requestobject):
         protvers = protvers.split("/")
@@ -177,6 +178,9 @@ class HTTPParser(component):
             if isinstance(temp, shutdown):
                 self.debug("HTTPParser should shutdown")
                 return True
+            elif isinstance(temp, producerFinished):
+                #print 'HTTPParser received producerFinished in shouldShutdown'
+                self.full_message_sent = True
 
         return False
 
@@ -322,7 +326,7 @@ class HTTPParser(component):
         self.debug("HTTPParser::main - stage 3.connection-close start\n")
         connectionopen = True
         while connectionopen:
-#            print "HTTPParser::main - stage 3.connection close.1"
+            #print "HTTPParser::main - stage 3.connection close.1"
             if self.shouldShutdown(): return
             while self.dataFetch():
 #                print "!"
@@ -331,6 +335,8 @@ class HTTPParser(component):
             if len(self.readbuffer) > 0:
                 self.send(ParsedHTTPBodyChunk(self.readbuffer), "outbox")
                 self.readbuffer = ""
+            elif self.full_message_sent:
+                connectionopen = False
 
             while self.dataReady("control"):
 #                print "!"
@@ -342,7 +348,7 @@ class HTTPParser(component):
                     return
 
 
-            if connectionopen:
+            if connectionopen and not self.anyReady():
                 self.pause()
                 yield 1
 
@@ -475,6 +481,7 @@ class HTTPParser(component):
         #state 4 - request complete, send it on
         self.debug("HTTPParser::main - request sent on\n")
 #        print requestobject
+        #print 'closing connection!'
         self.closeConnection()
         yield 1
 
