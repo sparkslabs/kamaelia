@@ -81,6 +81,8 @@ class PianoRoll(MusicTimingComponent):
         self.resizing = False
         self.moving = False
 
+        self.resizeCount = 0
+
     def addNote(self, beat, length, noteNumber, velocity, send=False):
         """
         Turn a step on with a given velocity and add it to the scheduler.  If
@@ -129,14 +131,20 @@ class PianoRoll(MusicTimingComponent):
             self.send((self.messagePrefix + "Velocity",
                        velocity), "localChanges")
 
-    def moveNote(self, noteId, beat, send=False):
-        self.notes[noteId]["beat"] = beat
+    def moveNote(self, noteId, send=False):
+        self.cancelNote(noteId)
+        storedNoteNumber = noteNumber = self.notes[noteId]["storedNoteNumber"]
+        noteNumber = self.notes[noteId]["noteNumber"]
+        self.notesByNumber[storedNoteNumber].remove(noteId)
+        self.notesByNumber[noteNumber].append(noteId)
+        self.scheduleNote(noteId)
         if send:
             self.send((self.messagePrefix + "Move",
                        length), "localChanges")
 
-    def resizeNote(self, noteId, length, send=False):
-        self.notes[noteId]["length"] = length
+    def resizeNote(self, noteId, send=False):
+        self.cancelNote(noteId)
+        self.scheduleNote(noteId)
         if send:
             self.send((self.messagePrefix + "Resize",
                        length), "localChanges")
@@ -154,21 +162,25 @@ class PianoRoll(MusicTimingComponent):
         loopStart = self.lastBeatTime - (currentBeat * self.beatLength)
         loopLength = self.loopBars * self.beatsPerBar * self.beatLength
 
-        noteTime = loopStart + (note["beat"] * self.beatLength)
+        noteOnTime = loopStart + (note["beat"] * self.beatLength)
         # Fraction
         beatFraction = (time.time() - self.lastBeatTime)/self.beatLength
         if note["beat"] <= currentBeat + beatFraction:
-            noteTime += loopLength
-        #print "Scheduling note for", noteTime - time.time()
-        event = self.scheduleAbs(("NoteActive", noteId), noteTime, 3)
-        note["event"] = event
+            noteOnTime += loopLength
+        noteOffTime = noteOnTime + note["length"] * self.beatLength
+        #print "Scheduling note for", noteOnTime - time.time()
+        onEvent = self.scheduleAbs(("NoteOn", noteId), noteOnTime, 3)
+        offEvent = self.scheduleAbs(("NoteOff", noteId), noteOffTime, 3)
+        note["onEvent"] = onEvent
+        note["offEvent"] = offEvent
 
     def cancelNote(self, noteId):
         """
         Delete a step event from the scheduler
         """
         note = self.notes[noteId]
-        self.cancelEvent(note["event"])
+        self.cancelEvent(note["onEvent"])
+        self.cancelEvent(note["offEvent"])
 
     ###
     # UI Functions
@@ -180,6 +192,16 @@ class PianoRoll(MusicTimingComponent):
             self.pause()
         display = self.recv("callback")
         return display
+
+    def addListenEvent(self, eventType):
+        self.send({"ADDLISTENEVENT" : eventType,
+                   "surface" : self.display},
+                  "display_signal")
+       
+    def removeListenEvent(self, eventType):
+        self.send({"REMOVELISTENEVENT" : eventType,
+                   "surface" : self.display},
+                  "display_signal")
 
     def requestRedraw(self):
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
@@ -212,7 +234,7 @@ class PianoRoll(MusicTimingComponent):
             # The number of notes from this note to the bottom
             notesUp = self.notes[noteId]["noteNumber"] - self.minVisibleNote
             position = (self.notes[noteId]["beat"] * self.beatWidth,
-                        self.size[1] - notesUp * self.noteSize[1])
+                        self.size[1] - (notesUp + 1) * self.noteSize[1])
             size = (self.notes[noteId]["length"] * self.beatWidth,
                     self.noteSize[1])
 
@@ -235,14 +257,36 @@ class PianoRoll(MusicTimingComponent):
         surface.set_alpha(255 * velocity)
         self.notes[noteId]["surface"] = surface
 
+    def redrawNoteRect(self, noteId):
+        surface = self.notes[noteId]["surface"]
+        self.send(producerFinished(message=surface),
+                  "display_signal")
+        self.notes[noteId]["surface"] = None
+        self.drawNoteRect(noteId)
+
+    def moveNoteRect(self, noteId):
+        notesUp = self.notes[noteId]["noteNumber"] - self.minVisibleNote
+        position = (self.notes[noteId]["beat"] * self.beatWidth,
+                    self.size[1] - (notesUp + 1) * self.noteSize[1])
+        self.send({"CHANGEDISPLAYGEO" : True,
+                   "surface" : self.notes[noteId]["surface"],
+                   "position" : position},
+                  "display_signal")
+
     def positionToNote(self, position):
         """
         Convert an (x, y) tuple from the mouse position to a (step, channel)
         tuple
         """
-        noteNumber = self.notesVisible - int(self.notesVisible * float(position[1]) / self.size[1]) + self.minVisibleNote
+        noteNumber = self.notesVisible -  1 - int(self.notesVisible * float(position[1]) / self.size[1]) + self.minVisibleNote
         beat = float(position[0]) / self.beatWidth
         return (beat, noteNumber)
+
+    def noteToPosition(self, noteId):
+        note = self.notes[noteId]
+        xPos = note["beat"] * self.beatWidth
+        yPos = (self.maxVisibleNote - note["noteNumber"]) * self.noteSize[1]
+        return (xPos, yPos)
 
     def getNoteIds(self, beat, noteNumber):
         # TODO: Optimise me
@@ -255,6 +299,144 @@ class PianoRoll(MusicTimingComponent):
                 ids.append(noteId)
         return ids
 
+    def handleMouseDown(self, event):
+        beat, noteNumber = self.positionToNote(event.pos)
+        ids = self.getNoteIds(beat, noteNumber)
+        if ids:
+            # We have clicked on one or more notes
+            notes = [self.notes[noteId] for noteId in ids]
+            # Use the earliest note
+            # FIXME: A little ugly maybe?  Short though...
+            note = min(notes, key=operator.itemgetter("beat"))
+            noteId = ids[notes.index(note)]
+            surface = self.notes[noteId]["surface"]
+            velocity = self.notes[noteId]["velocity"]
+
+            if event.button == 1:
+                # Left click - Move or resize
+                # Number of beats between the click position and the end of
+                # the note
+                toEnd = note["beat"] + note["length"] - beat
+                notePos = self.noteToPosition(noteId)
+                deltaPos = []
+                for i in xrange(2):
+                    deltaPos.append(event.pos[i] - notePos[i])
+                if toEnd < float(self.tabWidth) / self.beatWidth:
+                    # Resize
+                    # SMELL: Should really be boolean
+                    self.resizing = (noteId, deltaPos)
+                    self.resizeCount = 0
+                else:
+                    # Move
+                    # SMELL: Should really be boolean
+                    self.moving = (noteId, deltaPos)
+                    # Keep a copy of the note number at the start of the move
+                    # This allows us to keep track of the note in notesByNumber
+                    self.notes[noteId]["storedNoteNumber"] = self.notes[noteId]["noteNumber"]
+                self.addListenEvent(pygame.MOUSEBUTTONUP)
+                self.addListenEvent(pygame.MOUSEMOTION)
+
+            if event.button == 3:
+                # Right click - Note off
+                self.send(producerFinished(message=surface),
+                          "display_signal")
+                self.removeNote(noteId)
+
+            if event.button == 4:
+                # Scroll up - Velocity up
+                if velocity > 0 and velocity <= 0.95:
+                    velocity += 0.05
+                    self.setVelocity(noteId, velocity,
+                                     True)
+                    surface.set_alpha(255 * velocity)
+
+            if event.button == 5:
+                # Scroll down - Velocity down
+                if velocity > 0.05:
+                    velocity -= 0.05
+                    self.setVelocity(noteId, velocity,
+                                     True)
+                    surface.set_alpha(255 * velocity)
+        else:
+            if event.button == 1:
+                # Left click - Note on
+                if beat + self.noteLength > self.loopBars * self.beatsPerBar:
+                    self.noteLength = self.loopBars * self.beatsPerBar - beat
+                noteId = self.addNote(beat, self.noteLength,
+                                      noteNumber, 0.7, True)
+                self.drawNoteRect(noteId)
+        self.requestRedraw()
+
+    def handleMouseUp(self, event):
+        if event.button == 1:
+            if self.moving:
+                noteId, deltaPos = self.moving
+                self.moveNote(noteId)
+                self.moveNoteRect(noteId)
+                self.moving = False
+
+            if self.resizing:
+                noteId, deltaPos = self.resizing
+                self.resizeNote(noteId)
+                self.redrawNoteRect(noteId)
+                self.noteLength = self.notes[noteId]["length"]
+                self.resizing = False
+            self.requestRedraw()
+            self.removeListenEvent(pygame.MOUSEBUTTONUP)
+            self.removeListenEvent(pygame.MOUSEMOTION)
+
+    def handleMouseMotion(self, event):
+        if self.moving:
+            noteId, deltaPos = self.moving
+            position = []
+            for i in xrange(2):
+                position.append(event.pos[i] - deltaPos[i])
+            beat, noteNumber = self.positionToNote(position)
+
+            totalBeats = self.loopBars * self.beatsPerBar
+            length = self.notes[noteId]["length"]
+
+            if noteNumber < 0:
+                noteNumber = 0
+            if noteNumber > len(noteList):
+                noteNumber = len(noteList)
+            if noteNumber < self.minVisibleNote:
+                # Scroll down
+                pass
+            if noteNumber > self.maxVisibleNote:
+                # Scroll up
+                pass
+
+            if beat < 0:
+                beat = 0
+            if beat + length > totalBeats:
+                beat = totalBeats - length
+
+            self.notes[noteId]["beat"] = beat
+            self.notes[noteId]["noteNumber"] = noteNumber
+            self.moveNoteRect(noteId)
+
+        if self.resizing:
+            noteId, deltaPos = self.resizing
+
+            endBeat, noteNumber = self.positionToNote(event.pos)
+            beat = self.notes[noteId]["beat"]
+
+            length = endBeat - beat
+            if length < 0:
+                # Minimum of an eighth note
+                # TODO : Check is this is too big
+                length = 1.0/8
+            if endBeat > self.loopBars * self.beatsPerBar:
+                length = self.loopBars * self.beatsPerBar - beat
+
+            # SMELL: Slow down the refresh rate by only drawing every few 
+            # resizes.  This makes resizing much more responsive, but smellier
+            self.notes[noteId]["length"] = length
+            if self.resizeCount % 3 == 0:
+                self.redrawNoteRect(noteId)
+            self.resizeCount += 1
+            
     def main(self):
         """Main loop."""
         displayService = PygameDisplay.getDisplayService()
@@ -271,14 +453,8 @@ class PianoRoll(MusicTimingComponent):
             displayRequest["position"] = self.position
         self.display = self.createSurface(displayRequest)
 
-        self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
-                   "surface" : self.display},
-                  "display_signal")
+        self.addListenEvent(pygame.MOUSEBUTTONDOWN)
 
-        self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
-                   "surface" : self.display},
-                  "display_signal")
-        
         # Background surface - this is what we draw the background markings onto
         displayRequest = {"DISPLAYREQUEST" : True,
                           "callback" : (self,"callback"),
@@ -298,7 +474,6 @@ class PianoRoll(MusicTimingComponent):
         else:
             self.lastBeatTime = time.time()
         self.startBeat()
-#        self.startStep()
 
         while 1:
             if self.dataReady("inbox"):
@@ -306,110 +481,15 @@ class PianoRoll(MusicTimingComponent):
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         bounds = self.display.get_rect()
                         if bounds.collidepoint(*event.pos):
-                            beat, noteNumber = self.positionToNote(event.pos)
-                            ids = self.getNoteIds(beat, noteNumber)
-                            if ids:
-                                # We have clicked on one or more notes
-                                notes = [self.notes[noteId] for noteId in ids]
-                                # Use the earliest note
-                                # FIXME: A little ugly maybe?  Short though...
-                                note = min(notes,
-                                           key=operator.itemgetter("beat"))
-                                noteId = ids[notes.index(note)]
-                                surface = self.notes[noteId]["surface"]
-                                velocity = self.notes[noteId]["velocity"]
-                                if event.button == 1:
-                                    # Left click - Move or resize
-                                    # Number of beats between the click and the
-                                    # start and end of the note
-                                    toEnd = note["beat"] + note["length"] - beat
-                                    if toEnd < float(self.tabWidth) / self.beatWidth:
-                                        # Resize
-                                        self.resizing = (noteId, event.pos[0])
-                                    else:
-                                        # Move
-                                        self.moving = (noteId, event.pos[0])
-
-                                if event.button == 3:
-                                    # Right click - Note off
-                                    self.send(producerFinished(message=surface),
-                                              "display_signal")
-                                    self.removeNote(noteId)
-
-                                if event.button == 4:
-                                    # Scroll up - Velocity up
-                                    if velocity > 0 and velocity <= 0.95:
-                                        velocity += 0.05
-                                        self.setVelocity(noteId, velocity,
-                                                         True)
-                                        surface.set_alpha(255 * velocity)
-
-                                if event.button == 5:
-                                    # Scroll down - Velocity down
-                                    if velocity > 0.05:
-                                        velocity -= 0.05
-                                        self.setVelocity(noteId, velocity,
-                                                         True)
-                                        surface.set_alpha(255 * velocity)
-                            else:
-                                if event.button == 1:
-                                    # Left click - Note on
-                                    noteId = self.addNote(beat, self.noteLength,
-                                                          noteNumber, 0.7, True)
-                                    self.drawNoteRect(noteId)
-                            self.requestRedraw()
+                            self.handleMouseDown(event)
 
                     if event.type == pygame.MOUSEBUTTONUP:
-                        if event.button == 1:
-                            if self.moving:
-                                noteId, startPos = self.moving
+                        self.handleMouseUp(event)
 
-                                beat = self.notes[noteId]["beat"]
-                                length = self.notes[noteId]["length"]
-                                numBeats = self.beatsPerBar * self.loopBars
+                    if event.type == pygame.MOUSEMOTION:
+                        self.handleMouseMotion(event)
 
-                                deltaPos = float(event.pos[0] - startPos)
-                                deltaPos /= self.beatWidth
-
-                                beat += deltaPos
-
-                                if beat + length > numBeats:
-                                    beat = numBeats - length
-                                if beat < 0:
-                                    beat = 0
-                                self.moveNote(noteId, beat)
-                                # Delete the note rect and recreate it
-                                surface = self.notes[noteId]["surface"]
-                                self.send(producerFinished(message=surface),
-                                          "display_signal")
-                                self.notes[noteId]["surface"] = None
-                                self.drawNoteRect(noteId)
-                                self.moving = False
-
-                            if self.resizing:
-                                noteId, startPos = self.resizing
-
-                                beat = self.notes[noteId]["beat"]
-                                length = self.notes[noteId]["length"]
-                                numBeats = self.beatsPerBar * self.loopBars
-
-                                deltaLength = float(event.pos[0] - startPos)
-                                deltaLength /= self.beatWidth
-
-                                length += deltaLength
-
-                                if beat + length > numBeats:
-                                    length = numBeats - beat
-                                self.resizeNote(noteId, length)
-                                # Delete the note rect and recreate it
-                                surface = self.notes[noteId]["surface"]
-                                self.send(producerFinished(message=surface),
-                                          "display_signal")
-                                self.notes[noteId]["surface"] = None
-                                self.drawNoteRect(noteId)
-                                self.resizing = False
-                            self.requestRedraw()
-
+            # TODO - Convert me to work for Piano Roll
             if self.dataReady("remoteChanges"):
                 data = self.recv("remoteChanges")
                 # Only the last part of an OSC address
@@ -427,9 +507,7 @@ class PianoRoll(MusicTimingComponent):
                 data = self.recv("event")
                 if data == "Beat":
                     self.updateBeat()
-                elif data == "Step":
-                    self.updateStep()
-                elif data[0] == "NoteActive":
+                elif data[0] == "NoteOn":
                     noteId = data[1]
                     note = self.notes[noteId]
                     freq = noteList[note["noteNumber"]]["freq"]
