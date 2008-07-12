@@ -10,7 +10,7 @@ import copy
 import os
 
 from Axon.Ipc import producerFinished, WaitComplete
-from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
+from Kamaelia.Chassis.ConnectedServer import ServerCore
 
 from Kamaelia.IPC import socketShutdown
 
@@ -597,7 +597,7 @@ else:
     config = default_config
     config_used = "DEFAULT INTERNAL"
 
-class GreylistServer(MoreComplexServer):
+class GreylistServer(ServerCore):
     logfile = config["greylist_log"]
     debuglogfile = config["greylist_debuglog"]
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
