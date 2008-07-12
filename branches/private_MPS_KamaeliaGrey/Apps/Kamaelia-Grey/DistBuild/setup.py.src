@@ -55,7 +55,7 @@ setup(name = "Kamaelia-Grey",
       author = "Michael Sparks & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
       url = "http://edit.kamaelia.org/KamaeliaGrey",
-      license = "Copyright (c)2007 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
+      license = "Copyright (c)2008 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
       packages = [\
 # REPLACE
                   ""],
