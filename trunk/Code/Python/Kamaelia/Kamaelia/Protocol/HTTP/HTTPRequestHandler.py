@@ -216,6 +216,7 @@ class HTTPRequestHandler(component):
         super(HTTPRequestHandler, self).__init__()
         self.ShouldShutdownCode = 0 # should shutdown code, 1 bit = shutdown when idle, 2 bit = immediate shutdown
         self.requestHandlerFactory = requestHandlerFactory
+        self.requestEndReached = False
 
     def formResponseHeader(self, resource, protocolversion, lengthMethod = "explicit"):
         if isinstance(resource.get("statuscode"), int):
@@ -394,7 +395,6 @@ class HTTPRequestHandler(component):
 
     def sendMessageChunks(self, msg):
         # Loop through message sending data chunks
-        requestEndReached = False
         while 1:
             if msg:
                 self.sendChunk(msg)
@@ -404,15 +404,8 @@ class HTTPRequestHandler(component):
             if self.ShouldShutdownCode & 2 > 0:
                 break # immediate shutdown
 
-            if self.dataReady("inbox") and not requestEndReached:
-                request = self.recv("inbox")
-                if isinstance(request, ParsedHTTPEnd):
-                    requestEndReached = True
-                    self.send(producerFinished(self), "_handlersignal")
-                else:
-                    assert(isinstance(request, ParsedHTTPBodyChunk))
-                    self.send(request.bodychunk, "_handleroutbox")
-            elif self.dataReady("_handlerinbox"):
+            self.forwardBodyChunks()
+            if self.dataReady("_handlerinbox"):
                 msg = self.recv("_handlerinbox")
             elif self.dataReady("_handlercontrol") and not self.dataReady("_handlerinbox"):
                 ctrl = self.recv("_handlercontrol")
@@ -422,6 +415,16 @@ class HTTPRequestHandler(component):
             else:
                 yield 1
                 self.pause()
+                
+    def forwardBodyChunks(self):
+        while self.dataReady("inbox") and not self.requestEndReached:
+            request = self.recv("inbox")
+            if isinstance(request, ParsedHTTPEnd):
+                self.requestEndReached = True
+                self.send(producerFinished(self), "_handlersignal")
+            else:
+                assert(isinstance(request, ParsedHTTPBodyChunk))
+                self.send(request.bodychunk, "_handleroutbox")
 
     def handleRequest(self, request):
         if not self.isValidRequest(request):
@@ -437,7 +440,9 @@ class HTTPRequestHandler(component):
             self.updateShouldShutdown()
             if self.ShouldShutdownCode & 2 > 0: # if we've received a shutdown request
                 raise "BreakOut"
-            self.pause()
+            self.forwardBodyChunks()
+            if not self.anyReady():
+                self.pause()
 
 
         msg = self.recv("_handlerinbox") # XXX OK, due to loop above?
@@ -472,6 +477,8 @@ class HTTPRequestHandler(component):
                 return
 
             self.pause()
+        
+        #print 'HTTP Handler dead'
 
 __kamaelia_components__  = ( HTTPRequestHandler, )
 
