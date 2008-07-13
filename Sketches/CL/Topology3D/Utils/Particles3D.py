@@ -267,6 +267,7 @@ class SphereParticle3D(Particle3D):
         
         # Draw sphere
         gluSphere(quadratic,hs,32,32)
+        #glutSolidSphere(hs,32,32)
         
         glDisable(GL_TEXTURE_2D)
         
