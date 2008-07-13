@@ -80,6 +80,7 @@ class PianoRoll(MusicTimingComponent):
 
         self.resizing = False
         self.moving = False
+        self.scrolling = 0
 
         self.resizeCount = 0
     
@@ -134,12 +135,13 @@ class PianoRoll(MusicTimingComponent):
             self.send((self.messagePrefix + "Velocity",
                        velocity), "localChanges")
 
-    def moveNote(self, noteId, send=False):
+    def moveNote(self, noteId, beat, noteNumber, send=False):
         self.cancelNote(noteId)
-        storedNoteNumber = noteNumber = self.notes[noteId]["storedNoteNumber"]
-        noteNumber = self.notes[noteId]["noteNumber"]
-        self.notesByNumber[storedNoteNumber].remove(noteId)
+        self.notes[noteId]["beat"] = beat
+        oldNoteNumber = self.notes[noteId]["noteNumber"]
+        self.notesByNumber[oldNoteNumber].remove(noteId)
         self.notesByNumber[noteNumber].append(noteId)
+        self.notes[noteId]["noteNumber"] = noteNumber
         self.scheduleNote(noteId)
         if send:
             self.send((self.messagePrefix + "Move",
@@ -216,6 +218,7 @@ class PianoRoll(MusicTimingComponent):
         self.background.fill((255, 255, 255))
         for i in range(self.notesVisible):
             noteName = noteList[self.maxVisibleNote - i - 1]["name"]
+            octave = noteList[self.maxVisibleNote - i - 1]["octave"]
             if noteName[-1] == "#":
                 # Sharp note, so shade it darker
                 colour = (224, 224, 224)
@@ -227,7 +230,7 @@ class PianoRoll(MusicTimingComponent):
             pygame.draw.line(self.background, (127, 127, 127),
                              (0, i * self.noteSize[1]),
                              (self.size[0], i * self.noteSize[1]))
-            surface = self.font.render(noteName, True, (0, 0, 0))
+            surface = self.font.render(noteName + str(octave), True, (0, 0, 0))
             self.background.blit(surface, (5, i * self.noteSize[1]))
         
         for i in range(self.loopBars + 1):
@@ -244,27 +247,23 @@ class PianoRoll(MusicTimingComponent):
         """
         Render a single step with a colour corresponding to its velocity
         """
-        if not self.notes[noteId]["surface"]:
-            # We don't have a surface for the note yet, so make a new one                
-            # The number of notes from this note to the bottom
-            notesUp = self.notes[noteId]["noteNumber"] - self.minVisibleNote
-            position = (self.notes[noteId]["beat"] * self.beatWidth,
-                        self.size[1] - (notesUp + 1) * self.noteSize[1])
-            # Adjust surface position for the position of the Piano Roll
-            if self.position:
-                position = (position[0] + self.position[0],
-                            position[1] + self.position[1])
-            size = (self.notes[noteId]["length"] * self.beatWidth,
-                    self.noteSize[1])
+        # The number of notes from this note to the bottom
+        notesUp = self.notes[noteId]["noteNumber"] - self.minVisibleNote
+        position = (self.notes[noteId]["beat"] * self.beatWidth,
+                    self.size[1] - (notesUp + 1) * self.noteSize[1])
+        # Adjust surface position for the position of the Piano Roll
+        if self.position:
+            position = (position[0] + self.position[0],
+                        position[1] + self.position[1])
+        size = (self.notes[noteId]["length"] * self.beatWidth,
+                self.noteSize[1])
 
-            displayRequest = {"DISPLAYREQUEST" : True,
-                              "size" : size,
-                              "position" : position,
-                              "callback" : (self, "callback")}
+        displayRequest = {"DISPLAYREQUEST" : True,
+                          "size" : size,
+                          "position" : position,
+                          "callback" : (self, "callback")}
 
-            surface = self.createSurface(displayRequest)
-        else:
-            surface = self.notes[noteId]["surface"]
+        surface = self.createSurface(displayRequest)
 
         surface.fill((0, 0, 0))
         
@@ -276,11 +275,14 @@ class PianoRoll(MusicTimingComponent):
         surface.set_alpha(255 * velocity)
         self.notes[noteId]["surface"] = surface
 
-    def redrawNoteRect(self, noteId):
+    def deleteNoteRect(self, noteId):
         surface = self.notes[noteId]["surface"]
         self.send(producerFinished(message=surface),
                   "display_signal")
         self.notes[noteId]["surface"] = None
+
+    def redrawNoteRect(self, noteId):
+        self.deleteNoteRect(noteId)
         self.drawNoteRect(noteId)
 
     def moveNoteRect(self, noteId):
@@ -295,6 +297,36 @@ class PianoRoll(MusicTimingComponent):
                    "surface" : self.notes[noteId]["surface"],
                    "position" : position},
                   "display_signal")
+
+    def scrollUp(self):
+        self.minVisibleNote += 1
+        self.maxVisibleNote += 1
+        self.drawMarkings()
+        # Delete any note rects which will be off screen
+        for noteId in self.notesByNumber[self.minVisibleNote - 1]:
+            self.deleteNoteRect(noteId)
+        # Move any note rects which will still be on screen
+        notes = self.notesByNumber[self.minVisibleNote:self.maxVisibleNote - 1]
+        for noteId in sum(notes, []):
+            self.moveNoteRect(noteId)
+        # Add any note rects which have come on screen
+        for noteId in self.notesByNumber[self.maxVisibleNote]: 
+            self.drawNoteRect(noteId)
+
+    def scrollDown(self):
+        self.minVisibleNote -= 1
+        self.maxVisibleNote -= 1
+        self.drawMarkings()
+        # Delete any note rects which will be off screen
+        for noteId in self.notesByNumber[self.maxVisibleNote + 1]:
+            self.deleteNoteRect(noteId)
+        # Move any note rects which will still be on screen
+        notes = self.notesByNumber[self.minVisibleNote + 1:self.maxVisibleNote]
+        for noteId in sum(notes, []):
+            self.moveNoteRect(noteId)
+        # Add any note rects which have come on screen
+        for noteId in self.notesByNumber[self.minVisibleNote]:
+            self.drawNoteRect(noteId)
 
     def positionToNote(self, position):
         """
@@ -353,9 +385,6 @@ class PianoRoll(MusicTimingComponent):
                     # Move
                     # SMELL: Should really be boolean
                     self.moving = (noteId, deltaPos)
-                    # Keep a copy of the note number at the start of the move
-                    # This allows us to keep track of the note in notesByNumber
-                    self.notes[noteId]["storedNoteNumber"] = self.notes[noteId]["noteNumber"]
                 self.addListenEvent(pygame.MOUSEBUTTONUP)
                 self.addListenEvent(pygame.MOUSEMOTION)
 
@@ -395,8 +424,6 @@ class PianoRoll(MusicTimingComponent):
         if event.button == 1:
             if self.moving:
                 noteId, deltaPos = self.moving
-                self.moveNote(noteId)
-                self.moveNoteRect(noteId)
                 self.moving = False
 
             if self.resizing:
@@ -420,25 +447,37 @@ class PianoRoll(MusicTimingComponent):
             totalBeats = self.loopBars * self.beatsPerBar
             length = self.notes[noteId]["length"]
 
-            if noteNumber < 0:
-                noteNumber = 0
-            if noteNumber > len(noteList):
-                noteNumber = len(noteList)
-            if noteNumber < self.minVisibleNote:
-                # Scroll down
-                pass
             if noteNumber > self.maxVisibleNote:
-                # Scroll up
-                pass
+                noteNumber = self.maxVisibleNote
+            if noteNumber < self.minVisibleNote:
+                noteNumber = self.minVisibleNote
 
             if beat < 0:
                 beat = 0
             if beat + length > totalBeats:
                 beat = totalBeats - length
-
-            self.notes[noteId]["beat"] = beat
+            
+            oldNoteNumber = self.notes[noteId]["noteNumber"]
+            self.notesByNumber[oldNoteNumber].remove(noteId)
+            self.notesByNumber[noteNumber].append(noteId)
             self.notes[noteId]["noteNumber"] = noteNumber
+            self.notes[noteId]["beat"] = beat 
+#            self.moveNote(noteId, beat, noteNumber)
             self.moveNoteRect(noteId)
+
+            if event.pos[1] > self.size[1]:
+                # Scroll down
+                if noteNumber > 0:
+                    self.scrolling = -1
+                    self.scrollDown()
+            elif event.pos[1] == 0:
+                # Scroll up
+                if noteNumber < len(noteList):
+                    print noteNumber
+                    self.scrolling = 1
+                    self.scrollUp()
+            else:
+                self.scrolling = 0
 
         if self.resizing:
             noteId, deltaPos = self.resizing
