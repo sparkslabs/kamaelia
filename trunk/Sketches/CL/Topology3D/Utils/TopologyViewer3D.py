@@ -1,6 +1,67 @@
 #!/usr/bin/env python
 
 """
+TopologyViewer3D is a 3D version of TopologyViewer, which shows Topology in PyGame surface.
+Operation supported:
+* a --- viewer position move left
+* d --- viewer position move right
+* w --- viewer position move up
+* s --- viewer position move down
+* pgup --- viewer position move forward (zoom in)
+* pgdn --- viewer position move backward (zoom out)
+
+* left --- rotate selected particles to left around y axis  (all particles if none of them is selected)
+* right --- rotate selected particles to right around y axis  (all particles if none of them is selected)
+* up --- rotate selected  particles to up around x axis  (all particles if none of them is selected)
+* down --- rotate selected particles to down around x axis  (all particles if none of them is selected)
+* < --- rotate selected particles anticlock-wise around z axis  (all particles if none of them is selected)
+*> --- rotate selected particles clock-wise around z axis  (all particles if none of them is selected)
+
+* Mouse click --- click node to select one, click empty area to deselect all
+* Mouse drag: move particles
+
+* shift --- multi Select Mode; shift+click for multiple selection/deselection
+* ctrl ---  rotation Mode; when ctrl is pressed, mouse dragging will rotate the selected particle (all particles if none of them is selected) rather than move it
+
+
+Commands supported:
+1.) ADD NODE
+        Command format: ADD NODE    
+        - id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.
+        - name          -- string name label for the particle
+        - posSpec       -- string describing initial x,y (see _generateXY)
+        - particleType  -- particle type (currently supported: "-" same as cuboid, cuboid, sphere and teapot)
+
+2.) DEL NODE
+        Command format: DEL NODE
+        Remove a node (also removes all links to and from it)
+
+3.) ADD LINK
+        Command format: ADD LINK  
+        Add a link, directional from fromID to toID
+
+4.)  DEL LINK
+        Command format: DEL LINK  
+        Remove a link, directional from fromID to toID
+
+5.) DEL ALL
+        Command format: DEL ALL
+        Clears all nodes and links
+
+6.) GET ALL
+        Command format: GET ALL
+        Outputs the current topology as a list of commands, just like
+        those used to build it. The list begins with a 'DEL ALL'.
+
+7.) UPDATE_NAME
+        Command format: UPDATE_NAME NODE  
+        If the node does not already exist, this does NOT cause it to be created.
+
+8.) GET_NAME
+        Command format: GET_NAME NODE
+        Returns UPDATE_NAME NODE message for the specified node 
+
+
 References: 1. Kamaelia.Visualisation.PhysicsGraph.TopologyViewer
 2. Kamaelia.UI.OpenGL.OpenGLComponent
 3. Kamaelia.UI.OpenGL.MatchedTranslationInteractor
@@ -38,6 +99,11 @@ from ParticleSystemX import ParticleSystemX
                  
 class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """\
+    TopologyViewer3D(...) -> new TopologyViewer3D component.
+    
+    A component that takes incoming topology (change) data and displays it live
+    using pygame OpenGL. A simple physics model assists with visual layout. Particle
+    types, appearance and physics interactions can be customised.
    
     """
     

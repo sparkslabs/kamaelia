@@ -1,4 +1,6 @@
 """
+3D particles
+
 References: 1. Kamaelia.UI.OpenGL.Button
 2. Kamaelia.UI.OpenGL.OpenGLComponent
 """
@@ -16,6 +18,10 @@ from Kamaelia.UI.OpenGL.Transform import Transform
 from Kamaelia.Support.Particles import Particle as BaseParticle
 
 class Particle3D(BaseParticle):
+    """\
+    A super class for 3D particles
+    """
+    
     def __init__(self, position = (-1,0,-10), ID='', **argd):
         super(Particle3D, self).__init__(position=position, ID = ID)
         
@@ -170,6 +176,10 @@ class Particle3D(BaseParticle):
         self.buildCaption()
 
 class CuboidParticle3D(Particle3D):
+    """\
+    Cuboid particle
+    """
+    
     def __init__(self, **argd):
         super(CuboidParticle3D, self).__init__(**argd)
 
@@ -247,6 +257,10 @@ class CuboidParticle3D(Particle3D):
 
 
 class SphereParticle3D(Particle3D):
+    """\
+    Sphere particle
+    """
+    
     def __init__(self, **argd):
         super(SphereParticle3D, self).__init__(**argd)
         self.drotation = Vector(0,0,90)
@@ -284,6 +298,10 @@ class SphereParticle3D(Particle3D):
 
 
 class TeapotParticle3D(Particle3D):
+    """\
+    Teapot particle
+    """
+    
     def __init__(self, **argd):
         super(TeapotParticle3D, self).__init__(**argd)
 
