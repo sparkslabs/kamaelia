@@ -14,6 +14,7 @@ import pygame
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from OpenGL.GLUT import *
 
 import Axon
 import Kamaelia.Support.Particles
@@ -31,7 +32,7 @@ from Kamaelia.UI.OpenGL.Transform import Transform
 
 _cat = Axon.CoordinatingAssistantTracker
 
-from Particles3D import CuboidParticle3D, SphereParticle3D
+from Particles3D import CuboidParticle3D, SphereParticle3D, TeapotParticle3D
 from ParticleSystemX import ParticleSystemX
 
                  
@@ -70,6 +71,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         
         super(TopologyViewer3D, self).__init__()
         
+        glutInit(sys.argv)
+        
         tracker = _cat.coordinatingassistanttracker.getcat()
         self.display = OpenGLDisplay(width=screensize[0], height=screensize[1],fullscreen=fullscreen,
                                 title=caption)
@@ -80,7 +83,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.border = border
         
         if particleTypes == None:
-            self.particleTypes = {"-":CuboidParticle3D, "cuboid":CuboidParticle3D, "sphere":SphereParticle3D}
+            self.particleTypes = {"-":CuboidParticle3D, "cuboid":CuboidParticle3D, "sphere":SphereParticle3D,
+                                  "teapot":TeapotParticle3D}
         else:
             self.particleTypes = particleTypes
             
@@ -718,7 +722,7 @@ if __name__ == "__main__":
         DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -'
                                  , 'ADD NODE 2Node 2Node randompos -',
                                  'ADD NODE 3Node 3Node randompos sphere', 'ADD NODE 4Node 4Node randompos -',
-                                 'ADD NODE 5Node 5Node randompos -', 'ADD NODE 6Node 6Node randompos -',
+                                 'ADD NODE 5Node 5Node randompos teapot', 'ADD NODE 6Node 6Node randompos -',
                                  'ADD NODE 7Node 7Node randompos -',
                                  'ADD LINK 1Node 2Node'
                                  ,'ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',

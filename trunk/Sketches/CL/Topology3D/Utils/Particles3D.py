@@ -3,11 +3,12 @@ References: 1. Kamaelia.UI.OpenGL.Button
 2. Kamaelia.UI.OpenGL.OpenGLComponent
 """
 
-import math
+import math, sys
 
 import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from OpenGL.GLUT import *
 
 from Kamaelia.UI.OpenGL.Vector import Vector
 from Kamaelia.UI.OpenGL.Transform import Transform
@@ -21,7 +22,7 @@ class Particle3D(BaseParticle):
         self.pos = position
         self.initSize = Vector(*argd.get("size", (0,0,0)))
 
-        self.backgroundColourWhenUnselected = self.backgroundColour = argd.get("bgcolour", (244,244,244))
+        self.backgroundColourWhenUnselected = self.backgroundColour = argd.get("bgcolour", (230,230,230))
         self.foregroundColourWhenUnselected = self.foregroundColour = argd.get("fgcolour", (0,0,0))
         self.sideColourWhenUnselected = self.sideColour = argd.get("sidecolour", (200,200,244))
         
@@ -281,6 +282,48 @@ class SphereParticle3D(Particle3D):
         glPopMatrix()
 
 
+class TeapotParticle3D(Particle3D):
+    def __init__(self, **argd):
+        super(TeapotParticle3D, self).__init__(**argd)
+
+    def draw(self):
+        """ DRAW teapot particle."""
+        hs = self.radius
+        
+        # Add texture
+        glMatrixMode(GL_TEXTURE)
+        glPushMatrix()
+        glLoadIdentity()
+        glRotatef(180.0,0.0,0.0,1.0)
+        glMatrixMode(GL_MODELVIEW)
+        
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.texID)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+        
+        
+        
+        # Draw teapot
+        glFrontFace(GL_CW);
+        glutSolidTeapot(hs)
+        glFrontFace(GL_CCW)
+        
+        glDisable(GL_TEXTURE_2D)
+        
+        glMatrixMode(GL_TEXTURE)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        
+        # Draw links        
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadMatrixf(self.linkTransform.getMatrix())
+        for p in self.bondedTo:
+            glBegin(GL_LINES)
+            glVertex3f(*self.initialpos.toTuple())
+            glVertex3f(*(Vector(*p.pos)-Vector(*self.pos)).toTuple())
+            glEnd()
+        glPopMatrix()
 
 
 from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
