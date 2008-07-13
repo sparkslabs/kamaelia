@@ -560,9 +560,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 name = self.getParticleLabel(node_id)
                 self.send( ("GET_NAME", "NODE", node_id, name), "outbox" )        
             else:
-                raise "Command Error"
+                print "Command Error: please check your command format!"
         else:
-            raise "Command Error"
+            print "Command Error: not enough parameters!"
 
   
   
