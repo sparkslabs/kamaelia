@@ -108,6 +108,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.simCyclesPerRedraw = simCyclesPerRedraw
         self.lastIdleTime = time.time()
         
+        # Tell if new node is added; if true, new id needs adding to OpenGLDisplay list
+        self.isNewNode = False
+        
         
     def main(self):
         """\
@@ -139,10 +142,10 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 #print message
 
                 # wait for response on displayrequest and get identifier of the particle
-                cmd = message[0].upper(), message[1].upper()
-                if cmd == ("ADD", "NODE") and len(message) == 6:
+                if self.isNewNode:
                     while not self.dataReady("callback"):  yield 1
                     self.physics.particles[-1].identifier = self.recv("callback")
+                    self.isNewNode = False
             else:
                 self.lastIdleTime = 0
             
@@ -500,25 +503,29 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             cmd = msg[0].upper(), msg[1].upper()
 
             if cmd == ("ADD", "NODE") and len(msg) == 6:
-                #print 'ADD NODE begin'
-                if self.particleTypes.has_key(msg[5]):
-                    ptype = self.particleTypes[msg[5]]
-                    ident    = msg[2]
-                    name  = msg[3]
-                    
-                    posSpec = msg[4]
-                    pos     = self._generatePos(posSpec)
-                    #print pos
-
-                    particle = ptype(position = pos, ID=ident, name=name)
-                    
-                    particle.originaltype = msg[5]
-                    #self.particles.append(particle)
-                    #print self.particles[0]
-                    self.addParticle(particle)
-                    #print id(particle)
-                    
-                    #print 'ADD NODE end'
+                if msg[2] in [p.ID for p in self.physics.particles]:
+                    print "Node exists, please use a new node ID!"
+                else:
+                    if self.particleTypes.has_key(msg[5]):
+                        #print 'ADD NODE begin'
+                        ptype = self.particleTypes[msg[5]]
+                        ident    = msg[2]
+                        name  = msg[3]
+                        
+                        posSpec = msg[4]
+                        pos     = self._generatePos(posSpec)
+                        #print pos
+    
+                        particle = ptype(position = pos, ID=ident, name=name)
+                        
+                        particle.originaltype = msg[5]
+                        #self.particles.append(particle)
+                        #print self.particles[0]
+                        self.addParticle(particle)
+                        self.isNewNode = True
+                        #print id(particle)
+                        
+                        #print 'ADD NODE end'
                 
                 
             elif cmd == ("DEL", "NODE") and len(msg) == 3:
@@ -719,11 +726,11 @@ if __name__ == "__main__":
 #                                 'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
 #                                 'ADD LINK 1Node 2Node','ADD LINK 2Node 3Node', 'ADD LINK 3Node 4Node',
 #                                 'ADD LINK 4Node 1Node']),
-        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -'
+        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos teapot'
                                  , 'ADD NODE 2Node 2Node randompos -',
                                  'ADD NODE 3Node 3Node randompos sphere', 'ADD NODE 4Node 4Node randompos -',
-                                 'ADD NODE 5Node 5Node randompos teapot', 'ADD NODE 6Node 6Node randompos -',
-                                 'ADD NODE 7Node 7Node randompos -',
+                                 'ADD NODE 5Node 5Node randompos sphere', 'ADD NODE 6Node 6Node randompos -',
+                                 'ADD NODE 7Node 7Node randompos sphere',
                                  'ADD LINK 1Node 2Node'
                                  ,'ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',
                                  'ADD LINK 1Node 5Node','ADD LINK 1Node 6Node', 'ADD LINK 1Node 7Node'
