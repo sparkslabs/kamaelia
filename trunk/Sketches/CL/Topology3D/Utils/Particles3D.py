@@ -19,35 +19,38 @@ class Particle3D(BaseParticle):
         super(Particle3D, self).__init__(position=position, ID = ID)
         
         self.pos = position
-        self.sideColour = argd.get("sidecolour", (200,200,244))
         self.initSize = Vector(*argd.get("size", (0,0,0)))
 
-        self.backgroundColour = argd.get("bgcolour", (244,244,244))
-        self.foregroundColour = argd.get("fgcolour", (0,0,0))
+        self.backgroundColourWhenUnselected = self.backgroundColour = argd.get("bgcolour", (244,244,244))
+        self.foregroundColourWhenUnselected = self.foregroundColour = argd.get("fgcolour", (0,0,0))
+        self.sideColourWhenUnselected = self.sideColour = argd.get("sidecolour", (200,200,244))
+        
+        self.backgroundColourWhenSelected = argd.get("bgcolourselected", (0,0,0))
+        self.foregroundColourWhenSelected = argd.get("fgcolourselected", (244,244,244))
+        self.sideColourWhenSelected = argd.get("sidecolourselected", (200,200,244))
+        
         self.margin = argd.get("margin", 8)
-        self.key = argd.get("key", None)
-
         self.fontsize = argd.get("fontsize", 50)
         self.pixelscaling = argd.get("pixelscaling", 100)
         self.thickness = argd.get("thickness", 0.3)
         
         name = argd.get("name","NoName")
         self.set_label(name)
-                
-        self.identifier = None
         
+        # For rotation and scaling
         self.drotation = Vector()
-        
         self.scaling = Vector( *argd.get("scaling", (1,1,1) ) )
         
-        # for detection of changes
+        # For detection of changes
         self.oldpos = self.initialpos = Vector()
         self.oldscaling = Vector()
         
+        # For transformation matrix multiplication
         self.transform = Transform()
         self.linkTransform = Transform()
         self.oldrotTransform = Transform()
         
+        # For redraw detection
         self.needRedraw = True
         
         # For drag handling
@@ -152,17 +155,17 @@ class Particle3D(BaseParticle):
     def select( self ):
         """Tell this particle it is selected"""
         #self.selected = True
-        self.sideColour = (200,200,244)
-        self.backgroundColour = (0,0,0)
-        self.foregroundColour = (244,244,244)
+        self.sideColour = self.sideColourWhenSelected
+        self.backgroundColour = self.backgroundColourWhenSelected
+        self.foregroundColour = self.foregroundColourWhenSelected
         self.buildCaption()
 
     def deselect( self ):
         """Tell this particle it is deselected"""
         #self.selected = False
-        self.sideColour = (200,200,244)
-        self.backgroundColour = (244,244,244)
-        self.foregroundColour = (0,0,0)
+        self.sideColour = self.sideColourWhenUnselected
+        self.backgroundColour = self.backgroundColourWhenUnselected
+        self.foregroundColour = self.foregroundColourWhenUnselected
         self.buildCaption()
 
 class CuboidParticle3D(Particle3D):
