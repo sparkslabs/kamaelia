@@ -82,6 +82,9 @@ class PianoRoll(MusicTimingComponent):
         self.moving = False
 
         self.resizeCount = 0
+    
+        pygame.font.init()
+        self.font = pygame.font.Font(None, 14)
 
     def addNote(self, beat, length, noteNumber, velocity, send=False):
         """
@@ -211,10 +214,22 @@ class PianoRoll(MusicTimingComponent):
         Initial render of all of the blank steps
         """
         self.background.fill((255, 255, 255))
-        for i in range(self.notesVisible + 1):
+        for i in range(self.notesVisible):
+            noteName = noteList[self.maxVisibleNote - i - 1]["name"]
+            if noteName[-1] == "#":
+                # Sharp note, so shade it darker
+                colour = (224, 224, 224)
+            else:
+                colour = (255, 255, 255)
+            pygame.draw.rect(self.background, colour,
+                             pygame.Rect((0, i * self.noteSize[1]),
+                                         (self.size[0], self.noteSize[1])))
             pygame.draw.line(self.background, (127, 127, 127),
                              (0, i * self.noteSize[1]),
                              (self.size[0], i * self.noteSize[1]))
+            surface = self.font.render(noteName, True, (0, 0, 0))
+            self.background.blit(surface, (5, i * self.noteSize[1]))
+        
         for i in range(self.loopBars + 1):
             xPos = i * self.barWidth
             for i in range(self.beatsPerBar):
@@ -235,6 +250,10 @@ class PianoRoll(MusicTimingComponent):
             notesUp = self.notes[noteId]["noteNumber"] - self.minVisibleNote
             position = (self.notes[noteId]["beat"] * self.beatWidth,
                         self.size[1] - (notesUp + 1) * self.noteSize[1])
+            # Adjust surface position for the position of the Piano Roll
+            if self.position:
+                position = (position[0] + self.position[0],
+                            position[1] + self.position[1])
             size = (self.notes[noteId]["length"] * self.beatWidth,
                     self.noteSize[1])
 
@@ -268,6 +287,10 @@ class PianoRoll(MusicTimingComponent):
         notesUp = self.notes[noteId]["noteNumber"] - self.minVisibleNote
         position = (self.notes[noteId]["beat"] * self.beatWidth,
                     self.size[1] - (notesUp + 1) * self.noteSize[1])
+        # Adjust surface position for the position of the Piano Roll
+        if self.position:
+            position = (position[0] + self.position[0],
+                        position[1] + self.position[1])
         self.send({"CHANGEDISPLAYGEO" : True,
                    "surface" : self.notes[noteId]["surface"],
                    "position" : position},
@@ -344,7 +367,8 @@ class PianoRoll(MusicTimingComponent):
 
             if event.button == 4:
                 # Scroll up - Velocity up
-                if velocity > 0 and velocity <= 0.95:
+                # Floating point strangeness - use 0.951 rather than 0.95
+                if velocity > 0 and velocity <= 0.951:
                     velocity += 0.05
                     self.setVelocity(noteId, velocity,
                                      True)
@@ -461,6 +485,8 @@ class PianoRoll(MusicTimingComponent):
                           "size": self.size,
                           "position" : (0, 0)
                          }
+        if self.position:
+            displayRequest["position"] = self.position
         self.background = self.createSurface(displayRequest)
 
         # Initial render
