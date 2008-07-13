@@ -62,7 +62,7 @@ class Particle3D(BaseParticle):
         self.name = new_name
         self.buildCaption()        
         #  It's after buildCaption() because self.size is decided only after buildCaption() if size=(0,0,0)
-        self.radius = self.size.length()
+        self.radius = self.size.length()/2
     
     def draw(self):
         """\Stub method
@@ -173,7 +173,7 @@ class CuboidParticle3D(Particle3D):
         super(CuboidParticle3D, self).__init__(**argd)
 
     def draw(self):
-        """ DRAW BUTTON CUBOID."""
+        """ DRAW CUBOID Particle."""
         hs = self.size/2
         
         # draw faces
@@ -243,6 +243,43 @@ class CuboidParticle3D(Particle3D):
             glVertex3f(*(Vector(*p.pos)-Vector(*self.pos)).toTuple())
             glEnd()
         glPopMatrix()
+
+
+class SphereParticle3D(Particle3D):
+    def __init__(self, **argd):
+        super(SphereParticle3D, self).__init__(**argd)
+        self.drotation = Vector(0,0,90)
+
+    def draw(self):
+        """ DRAW sphere particle."""
+        hs = self.radius
+        
+        # Create a quadratic object for sphere rendering
+        quadratic = gluNewQuadric()
+        gluQuadricNormals(quadratic, GLU_SMOOTH)
+        gluQuadricTexture(quadratic, GL_TRUE)
+        
+        # Add texture
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self.texID)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+        
+        # Draw sphere
+        gluSphere(quadratic,hs,32,32)
+        
+        glDisable(GL_TEXTURE_2D)
+        
+        # Draw links        
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadMatrixf(self.linkTransform.getMatrix())
+        for p in self.bondedTo:
+            glBegin(GL_LINES)
+            glVertex3f(*self.initialpos.toTuple())
+            glVertex3f(*(Vector(*p.pos)-Vector(*self.pos)).toTuple())
+            glEnd()
+        glPopMatrix()
+
 
 
 
