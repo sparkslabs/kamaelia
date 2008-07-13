@@ -31,7 +31,7 @@ from Kamaelia.UI.OpenGL.Transform import Transform
 
 _cat = Axon.CoordinatingAssistantTracker
 
-from Particles3D import Particle3D
+from Particles3D import CuboidParticle3D
 from ParticleSystemX import ParticleSystemX
 
                  
@@ -80,7 +80,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.border = border
         
         if particleTypes == None:
-            self.particleTypes = {"-":Particle3D}
+            self.particleTypes = {"-":CuboidParticle3D}
         else:
             self.particleTypes = particleTypes
             
