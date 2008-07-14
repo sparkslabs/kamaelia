@@ -309,7 +309,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             # to find the broken ones, and remove
 #                            print "We're failing here for some reason"
 #                            print "readers, writers, exceptionals", readers, writers, exceptionals
-                            raise e
+                            raise
 
                 except select.error, e:
                     if e[0] == 9:
@@ -320,7 +320,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             # to find the broken ones, and remove
 #                            print "We're failing here for some reason"
 #                            print "readers, writers, exceptionals", readers, writers, exceptionals
-                            raise e
+                            raise
 
                 self.sync()
 

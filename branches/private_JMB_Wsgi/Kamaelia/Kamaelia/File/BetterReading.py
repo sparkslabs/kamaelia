@@ -41,7 +41,7 @@ from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.IPC import newReader
+from Kamaelia.IPC import newReader, removeReader
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Internet.Selector import Selector
@@ -153,6 +153,9 @@ class IntelligentFileReader(component):
             if not self.done:
                 self.pause()
           
+        self.send(removeReader((self, '_selectorready'), self.fd), '_selectorask')
+        os.close(self.fd)
+        
         self.send(producerFinished(self), "signal")
         self.debug("IntelligentFileReader terminated")
 
