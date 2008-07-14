@@ -61,7 +61,7 @@ class PianoRoll(MusicTimingComponent):
 
         # Start at C5
         self.minVisibleNote = 0
-        self.maxVisibleNote = self.minVisibleNote + self.notesVisible
+        self.maxVisibleNote = self.minVisibleNote + self.notesVisible - 1
 
         totalBeats = self.loopBars * self.beatsPerBar
         # Make size fit to an exact number of beats and notes
@@ -135,13 +135,8 @@ class PianoRoll(MusicTimingComponent):
             self.send((self.messagePrefix + "Velocity",
                        velocity), "localChanges")
 
-    def moveNote(self, noteId, beat, noteNumber, send=False):
+    def moveNote(self, noteId, send=False):
         self.cancelNote(noteId)
-        self.notes[noteId]["beat"] = beat
-        oldNoteNumber = self.notes[noteId]["noteNumber"]
-        self.notesByNumber[oldNoteNumber].remove(noteId)
-        self.notesByNumber[noteNumber].append(noteId)
-        self.notes[noteId]["noteNumber"] = noteNumber
         self.scheduleNote(noteId)
         if send:
             self.send((self.messagePrefix + "Move",
@@ -217,8 +212,8 @@ class PianoRoll(MusicTimingComponent):
         """
         self.background.fill((255, 255, 255))
         for i in range(self.notesVisible):
-            noteName = noteList[self.maxVisibleNote - i - 1]["name"]
-            octave = noteList[self.maxVisibleNote - i - 1]["octave"]
+            noteName = noteList[self.maxVisibleNote - i]["name"]
+            octave = noteList[self.maxVisibleNote - i]["octave"]
             if noteName[-1] == "#":
                 # Sharp note, so shade it darker
                 colour = (224, 224, 224)
@@ -425,6 +420,7 @@ class PianoRoll(MusicTimingComponent):
             if self.moving:
                 noteId, deltaPos = self.moving
                 self.moving = False
+                self.moveNote(noteId)
 
             if self.resizing:
                 noteId, deltaPos = self.resizing
@@ -462,7 +458,6 @@ class PianoRoll(MusicTimingComponent):
             self.notesByNumber[noteNumber].append(noteId)
             self.notes[noteId]["noteNumber"] = noteNumber
             self.notes[noteId]["beat"] = beat 
-#            self.moveNote(noteId, beat, noteNumber)
             self.moveNoteRect(noteId)
 
             if event.pos[1] > self.size[1]:
@@ -472,8 +467,7 @@ class PianoRoll(MusicTimingComponent):
                     self.scrollDown()
             elif event.pos[1] == 0:
                 # Scroll up
-                if noteNumber < len(noteList):
-                    print noteNumber
+                if noteNumber < len(noteList) - 1:
                     self.scrolling = 1
                     self.scrollUp()
             else:
