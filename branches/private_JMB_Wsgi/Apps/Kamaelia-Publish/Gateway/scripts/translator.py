@@ -22,108 +22,138 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 
 from Axon.Component import component
+from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Graphline import Graphline
 
 from headstock.api.im import Message, Body, Event
 from headstock.lib.utils import generate_unique
 
-import pickle as pickle
 import base64
+from xml.sax.saxutils import escape, unescape
+
+import simplejson
 
 class requestToMessageTranslator(component):
     """Note that sending messages via XMPP is considered outbound.  This converts
-    an HTTP request object into a headstock message."""
+    an HTTP request object into a headstock message.""" 
     ThisJID = 'amnorvend_gateway@jabber.org'
     ToJID = 'amnorvend@gmail.com'
-    def __init__(self, **argd):
+    def __init__(self, request, **argd):
         super(requestToMessageTranslator, self).__init__(**argd)
-        self.not_done=True
+        self.request = request
+        self.signal = None
         
     def main(self):
-        while self.not_done:
-            [self.handleInbox(msg) for msg in self.Inbox('inbox')]
-            [self.handleControlBox(msg) for msg in self.Inbox('control')]
+        serialize = simplejson.dumps(self.request)
+        serialize = escape(serialize)   #make the data suitable for transmission via XML
+        
+        hMessage = Message(unicode(self.ThisJID), unicode(self.ToJID),
+                           type=u'chat', stanza_id=generate_unique())
+        
+        hMessage.bodies.append(Body(serialize))
+        
+        self.send(hMessage, 'outbox')
+        
+        m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
+                    type=u'chat', stanza_id=generate_unique())
+        
+        self.send(m, "outbox")
+        
+        yield 1
+        
+        while not self.signal:
+            for msg in self.Inbox('control'):
+                self.handleControlBox(msg)
             
-            if not self.anyReady() and self.not_done:
+            for msg in self.Inbox('inbox'):
+                self.handleInbox(msg)
+                
+            if not self.signal and self.anyReady():
                 self.pause()
                 
             yield 1
+            
+        self.send(self.signal, 'signal')
     
     def handleInbox(self, msg):
-        assert(isinstance(msg, dict))
-        serial = pickle.dumps(msg)
-        serial = base64.encodestring(serial)
-        
+        chunk = {
+            'data' : escape(msg)
+        }
+        serialize = simplejson.dumps(chunk)
         
         #hMessage being a headstock message
         hMessage = Message(unicode(self.ThisJID), unicode(self.ToJID),
                            type=u'chat', stanza_id=generate_unique())
         
         hMessage.event = Event.composing
-        hMessage.bodies.append(unicode(Body(serial)))
+        hMessage.bodies.append(unicode(Body(serialize)))
         self.send(hMessage, 'outbox')
         
         # Right after we sent the first message
         # we send another one reseting the event status
         m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
                     type=u'chat', stanza_id=generate_unique())
+        
         self.send(m, "outbox")
     
     def handleControlBox(self, msg):
-        if isinstance(msg, shutdownMicroprocess):
-            self.not_done = False
-            self.send(msg, 'signal')
-            
+        if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+            self.signal = msg           
             
 class messageToResponseTranslator(component):
     ThisJID = 'amnorvend_gateway@jabber.org'
     ToJID = 'amnorvend@gmail.com'
     def __init__(self, **argd):
         super(messageToResponseTranslator, self).__init__(**argd)
+        self.signal = None
         
     def main(self):
         self.not_done = True
-        while self.not_done:
-            [self.handleInbox(msg) for msg in self.Inbox('inbox')]
+        while not self.signal:
             [self.handleControlBox(msg) for msg in self.Inbox('control')]
+            [self.handleInbox(msg) for msg in self.Inbox('inbox')]
             
-            if not self.anyReady() and self.not_done:
+            if not self.anyReady() and not self.signal:
                 self.pause()
                 
             yield 1
-    
+            
+        self.send(self.signal, 'signal')
+        
     def handleInbox(self, msg):
-        serial = ''.join([str(body) for body in msg.bodies])
+        deserialize = ''.join([str(body) for body in msg.bodies])
         
         #Sometimes an emty message comes through to reset the event status.  This
         #will cause errors if we process it.
-        if serial:
-            serial = base64.b64decode(str(serial))
-            resource = pickle.loads(serial)
-    
+        if deserialize:
+            deserialize = unescape(deserialize) #FIXME:  This is a security issue:  Will also escape escaped HTML.
+            resource = simplejson.loads(deserialize)
+            
             assert(isinstance(resource, dict))
             self.send(resource, 'outbox')
         
     def handleControlBox(self, msg):
-        if isinstance(msg, shutdownMicroprocess):
-            self.not_done = False
-            self.send(msg, 'signal')
+        if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+            self.signal = msg
+            
+def Translator(ThisJID='amnorvend_gateway@jabber.org', ToJID='amnorvend@gmail.com'):
+    pass
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import Pipeline
     
-    class Producer(component):
-        Request = {'a' : 'b',
-                   'c' : 'd',
-                   'e' : 'f',}
-        def __init__(self, **argd):
-            super(Producer, self).__init__(**argd)
-            
+    class Producer(component):            
         def main(self):
-            self.send(self.Request, 'outbox')
+            self.send('foo')
             yield 1
-            self.send(shutdownMicroprocess(self), 'signal')
+            self.send(producerFinished(self), 'signal')
             
-    Pipeline(Producer(), requestToMessageTranslator(), messageToResponseTranslator(), ConsoleEchoer()).run()
+    request={
+        'a' : 'b',
+        'c' : 'd',
+        'e' : 'f',
+    }
+    Pipeline(Producer(), requestToMessageTranslator(request), messageToResponseTranslator(), ConsoleEchoer()).run()
+    print '\n'
