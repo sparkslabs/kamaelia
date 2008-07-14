@@ -81,6 +81,7 @@ class PianoRoll(MusicTimingComponent):
         self.resizing = False
         self.moving = False
         self.scrolling = 0
+        self.scrollEvent = None
 
         self.resizeCount = 0
     
@@ -148,6 +149,12 @@ class PianoRoll(MusicTimingComponent):
         if send:
             self.send((self.messagePrefix + "Resize",
                        length), "localChanges")
+
+    def reassignNoteNumber(self, noteId, noteNumber):
+        oldNoteNumber = self.notes[noteId]["noteNumber"]
+        self.notesByNumber[oldNoteNumber].remove(noteId)
+        self.notesByNumber[noteNumber].append(noteId)
+        self.notes[noteId]["noteNumber"] = noteNumber
 
     ###
     # Timing Functions
@@ -431,6 +438,7 @@ class PianoRoll(MusicTimingComponent):
             self.requestRedraw()
             self.removeListenEvent(pygame.MOUSEBUTTONUP)
             self.removeListenEvent(pygame.MOUSEMOTION)
+            self.scrolling = 0
 
     def handleMouseMotion(self, event):
         if self.moving:
@@ -453,10 +461,7 @@ class PianoRoll(MusicTimingComponent):
             if beat + length > totalBeats:
                 beat = totalBeats - length
             
-            oldNoteNumber = self.notes[noteId]["noteNumber"]
-            self.notesByNumber[oldNoteNumber].remove(noteId)
-            self.notesByNumber[noteNumber].append(noteId)
-            self.notes[noteId]["noteNumber"] = noteNumber
+            self.reassignNoteNumber(noteId, noteNumber)
             self.notes[noteId]["beat"] = beat 
             self.moveNoteRect(noteId)
 
@@ -464,14 +469,18 @@ class PianoRoll(MusicTimingComponent):
                 # Scroll down
                 if noteNumber > 0:
                     self.scrolling = -1
-                    self.scrollDown()
+#                    self.scrollDown()
             elif event.pos[1] == 0:
                 # Scroll up
                 if noteNumber < len(noteList) - 1:
                     self.scrolling = 1
-                    self.scrollUp()
+#                    self.scrollUp()
             else:
                 self.scrolling = 0
+
+            if ((self.scrolling == 1 or self.scrolling == -1) and
+                not self.scrollEvent):
+                self.scrollEvent = self.scheduleRel("Scroll", 0.2, 4)
 
         if self.resizing:
             noteId, deltaPos = self.resizing
@@ -566,6 +575,29 @@ class PianoRoll(MusicTimingComponent):
                 data = self.recv("event")
                 if data == "Beat":
                     self.updateBeat()
+
+                elif data == "Scroll":
+                    if self.scrolling == 1:
+                        if self.maxVisibleNote < len(noteList):
+                            self.scrollUp()
+                            # Make sure the note we are dragging stays at the
+                            # top of the piano roll
+                            noteId = self.moving[0]
+                            self.reassignNoteNumber(noteId, self.maxVisibleNote)
+                            self.moveNoteRect(noteId)
+
+                    if self.scrolling == -1:
+                        if self.minVisibleNote > 0:
+                            self.scrollDown()
+                            noteId = self.moving[0]
+                            self.reassignNoteNumber(noteId, self.minVisibleNote)
+                            self.moveNoteRect(noteId)
+
+                    if self.scrolling != 0:
+                        self.scrollEvent = self.scheduleRel("Scroll", 0.2, 4)
+                    else:
+                        self.scrollEvent = None
+
                 elif data[0] == "NoteOn":
                     noteId = data[1]
                     note = self.notes[noteId]
