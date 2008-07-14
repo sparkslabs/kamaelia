@@ -101,7 +101,8 @@ class PianoRoll(MusicTimingComponent):
         #print "Adding note - id =", noteId
         self.notes[noteId] = note
         self.notesByNumber[noteNumber].append(noteId)
-        self.scheduleNote(noteId)
+        self.scheduleNoteOn(noteId)
+        self.scheduleNoteOff(noteId)
         if send:
             self.send((self.messagePrefix + "Add", (beat, length,
                                                     noteNumber, velocity)
@@ -138,14 +139,16 @@ class PianoRoll(MusicTimingComponent):
 
     def moveNote(self, noteId, send=False):
         self.cancelNote(noteId)
-        self.scheduleNote(noteId)
+        self.scheduleNoteOn(noteId)
+        self.scheduleNoteOff(noteId)
         if send:
             self.send((self.messagePrefix + "Move",
                        length), "localChanges")
 
     def resizeNote(self, noteId, send=False):
         self.cancelNote(noteId)
-        self.scheduleNote(noteId)
+        self.scheduleNoteOn(noteId)
+        self.scheduleNoteOff(noteId)
         if send:
             self.send((self.messagePrefix + "Resize",
                        length), "localChanges")
@@ -159,7 +162,7 @@ class PianoRoll(MusicTimingComponent):
     ###
     # Timing Functions
     ###
-    def scheduleNote(self, noteId):
+    def scheduleNoteOn(self, noteId):
         """
         Schedule a step which has been just been activated
         """
@@ -174,12 +177,26 @@ class PianoRoll(MusicTimingComponent):
         beatFraction = (time.time() - self.lastBeatTime)/self.beatLength
         if note["beat"] <= currentBeat + beatFraction:
             noteOnTime += loopLength
-        noteOffTime = noteOnTime + note["length"] * self.beatLength
         #print "Scheduling note for", noteOnTime - time.time()
-        onEvent = self.scheduleAbs(("NoteOn", noteId), noteOnTime, 3)
-        offEvent = self.scheduleAbs(("NoteOff", noteId), noteOffTime, 3)
-        note["onEvent"] = onEvent
-        note["offEvent"] = offEvent
+        event = self.scheduleAbs(("NoteOn", noteId), noteOnTime, 3)
+        note["onEvent"] = event
+
+    def scheduleNoteOff(self, noteId):
+        note = self.notes[noteId]
+        # Easier if we define some stuff here
+        currentBeat = self.beat + (self.loopBar * self.beatsPerBar)
+        loopStart = self.lastBeatTime - (currentBeat * self.beatLength)
+        loopLength = self.loopBars * self.beatsPerBar * self.beatLength
+
+        noteOnTime = loopStart + (note["beat"] * self.beatLength)
+        beatFraction = (time.time() - self.lastBeatTime)/self.beatLength
+        if note["beat"] <= currentBeat + beatFraction:
+            noteOnTime += loopLength
+        noteOffTime = noteOnTime + note["length"] * self.beatLength
+
+        event = self.scheduleAbs(("NoteOff", noteId), noteOffTime, 3)
+        note["offEvent"] = event
+
 
     def cancelNote(self, noteId):
         """
@@ -470,7 +487,7 @@ class PianoRoll(MusicTimingComponent):
                 if noteNumber > 0:
                     self.scrolling = -1
 #                    self.scrollDown()
-            elif event.pos[1] == 0:
+            elif event.pos[1] < 0:
                 # Scroll up
                 if noteNumber < len(noteList) - 1:
                     self.scrolling = 1
@@ -603,9 +620,17 @@ class PianoRoll(MusicTimingComponent):
                     note = self.notes[noteId]
                     freq = noteList[note["noteNumber"]]["freq"]
                     velocity = note["velocity"]
+                    #print "Note On", freq, velocity
                     self.send((self.messagePrefix + "On", (freq, velocity)),
                               "outbox")
-                    self.scheduleNote(noteId)
+                    self.scheduleNoteOn(noteId)
+                elif data[0] == "NoteOff":
+                    noteId = data[1]
+                    note = self.notes[noteId]
+                    freq = noteList[note["noteNumber"]]["freq"]
+                    #print "Note Off", freq 
+                    self.send((self.messagePrefix + "Off", freq), "outbox")
+                    self.scheduleNoteOff(noteId)
 
             if self.dataReady("sync"):
                 # Ignore any sync messages once as we have already synced by
