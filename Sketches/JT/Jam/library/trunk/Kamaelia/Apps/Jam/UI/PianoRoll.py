@@ -88,7 +88,8 @@ class PianoRoll(MusicTimingComponent):
         pygame.font.init()
         self.font = pygame.font.Font(None, 14)
 
-    def addNote(self, beat, length, noteNumber, velocity, send=False):
+    def addNote(self, beat, length, noteNumber, velocity, noteId=None,
+                send=False):
         """
         Turn a step on with a given velocity and add it to the scheduler.  If
         the send argument is true then also send a message indicating the step
@@ -97,14 +98,15 @@ class PianoRoll(MusicTimingComponent):
         note = {"beat": beat, "length" : length, "noteNumber" : noteNumber,
                 "velocity" : velocity, "surface" : None, "playing" : False}
         # Making a UUID may be overkill, but better safe than sorry
-        noteId = uuid.uuid4()
+        if not noteId:
+            noteId = str(uuid.uuid4())
         #print "Adding note - id =", noteId
         self.notes[noteId] = note
         self.notesByNumber[noteNumber].append(noteId)
         self.scheduleNoteOn(noteId)
         self.scheduleNoteOff(noteId)
         if send:
-            self.send((self.messagePrefix + "Add", (beat, length,
+            self.send((self.messagePrefix + "Add", (noteId, beat, length,
                                                     noteNumber, velocity)
                       ), "localChanges")
         return noteId
@@ -116,14 +118,15 @@ class PianoRoll(MusicTimingComponent):
         to the "localChanges" outbox
         """
         #print "Removing note - id =", noteId
-        self.sendNoteOff(noteId)
+        if self.notes[noteId]["playing"] == True:
+            self.sendNoteOff(noteId)
         self.cancelNote(noteId)
         noteNumber = self.notes[noteId]["noteNumber"]
         del self.notes[noteId]
         self.notesByNumber[noteNumber].remove(noteId)
         if send:
             # TODO: Make me send sensible stuff
-            self.send((self.messagePrefix + "Remove", 1),
+            self.send((self.messagePrefix + "Remove", noteId),
                       "localChanges")
 
     def setVelocity(self, noteId, velocity, send=False):
@@ -136,21 +139,24 @@ class PianoRoll(MusicTimingComponent):
         if send:
             # TODO: Make me send sensible stuff
             self.send((self.messagePrefix + "Velocity",
-                       velocity), "localChanges")
+                       (noteId, velocity)), "localChanges")
 
     def moveNote(self, noteId, send=False):
         self.scheduleNoteOn(noteId)
         self.scheduleNoteOff(noteId)
         if send:
+            beat = self.notes[noteId]["beat"]
+            noteNumber = self.notes[noteId]["noteNumber"]
             self.send((self.messagePrefix + "Move",
-                       length), "localChanges")
+                       (noteId, beat, noteNumber)), "localChanges")
 
     def resizeNote(self, noteId, send=False):
         self.scheduleNoteOn(noteId)
         self.scheduleNoteOff(noteId)
         if send:
+            length = self.notes[noteId]["length"]
             self.send((self.messagePrefix + "Resize",
-                       length), "localChanges")
+                       (noteId, length)), "localChanges")
 
     def reassignNoteNumber(self, noteId, noteNumber):
         oldNoteNumber = self.notes[noteId]["noteNumber"]
@@ -163,7 +169,7 @@ class PianoRoll(MusicTimingComponent):
         noteNumber = self.notes[noteId]["noteNumber"]
         freq = noteList[noteNumber]["freq"]
         velocity = self.notes[noteId]["velocity"]
-        print "Note On", freq, velocity
+        #print "Note On", freq, velocity
         self.send((self.messagePrefix + "On", (freq, velocity)),
                   "outbox")
 
@@ -171,7 +177,7 @@ class PianoRoll(MusicTimingComponent):
         self.notes[noteId]["playing"] = False
         noteNumber = self.notes[noteId]["noteNumber"]
         freq = noteList[noteNumber]["freq"]
-        print "Note Off", freq
+        #print "Note Off", freq
         self.send((self.messagePrefix + "Off", freq),
                   "outbox")
 
@@ -363,6 +369,11 @@ class PianoRoll(MusicTimingComponent):
         for noteId in self.notesByNumber[self.minVisibleNote]:
             self.drawNoteRect(noteId)
 
+    def noteIsVisible(self, noteId):
+        noteNumber = self.notes[noteId]["noteNumber"]
+        return (noteNumber <= self.maxVisibleNote and
+                noteNumber >= self.minVisibleNote)
+
     def positionToNote(self, position):
         """
         Convert an (x, y) tuple from the mouse position to a (step, channel)
@@ -406,9 +417,9 @@ class PianoRoll(MusicTimingComponent):
                 # Left click - Move or resize
                 # Stop the note playing before moving or resizing, so we
                 # don't leave notes hanging
-                self.cancelNote(noteId)
                 if self.notes[noteId]["playing"]:
                     self.sendNoteOff(noteId)
+                self.cancelNote(noteId)
 
                 # Number of beats between the click position and the end of
                 # the note
@@ -434,7 +445,7 @@ class PianoRoll(MusicTimingComponent):
                 # Right click - Note off
                 self.send(producerFinished(message=surface),
                           "display_signal")
-                self.removeNote(noteId)
+                self.removeNote(noteId, True)
 
             if event.button == 4:
                 # Scroll up - Velocity up
@@ -458,7 +469,7 @@ class PianoRoll(MusicTimingComponent):
                 if beat + self.noteLength > self.loopBars * self.beatsPerBar:
                     self.noteLength = self.loopBars * self.beatsPerBar - beat
                 noteId = self.addNote(beat, self.noteLength,
-                                      noteNumber, 0.7, True)
+                                      noteNumber, 0.7, send=True)
                 self.drawNoteRect(noteId)
         self.requestRedraw()
 
@@ -467,11 +478,11 @@ class PianoRoll(MusicTimingComponent):
             if self.moving:
                 noteId, deltaPos = self.moving
                 self.moving = False
-                self.moveNote(noteId)
+                self.moveNote(noteId, True)
 
             if self.resizing:
                 noteId, deltaPos = self.resizing
-                self.resizeNote(noteId)
+                self.resizeNote(noteId, True)
                 self.redrawNoteRect(noteId)
                 self.noteLength = self.notes[noteId]["length"]
                 self.resizing = False
@@ -597,19 +608,71 @@ class PianoRoll(MusicTimingComponent):
                     if event.type == pygame.MOUSEMOTION:
                         self.handleMouseMotion(event)
 
-            # TODO - Convert me to work for Piano Roll
             if self.dataReady("remoteChanges"):
                 data = self.recv("remoteChanges")
                 # Only the last part of an OSC address
                 address = data[0].split("/")[-1]
                 if address == "Add":
-                    self.addStep(*data[1])
+                    noteId = data[1][0]
+                    self.addNote(noteId=noteId, *data[1][1:])
+                    if self.noteIsVisible(noteId):
+                        self.drawNoteRect(noteId)
                 if address == "Remove":
-                    self.removeStep(*data[1])
+                    noteId = data[1][0]
+                    if self.notes.has_key(noteId):
+                        if self.noteIsVisible(noteId):
+                            self.deleteNoteRect(noteId)
+                        self.removeNote(noteId)
                 if address == "Velocity":
-                    self.setVelocity(*data[1])
-                step, channel = data[1][0], data[1][1]
-                self.drawStepRect(step, channel)
+                    noteId = data[1][0]
+                    if self.notes.has_key(noteId):
+                        velocity = data[1][1]
+                        surface = self.notes[noteId]["surface"]
+                        self.setVelocity(noteId, velocity)
+                        if self.noteIsVisible(noteId):
+                            surface = self.notes[noteId]["surface"]
+                            surface.set_alpha(255 * velocity)
+                if address == "Move":
+                    noteId = data[1][0]
+                    if self.notes.has_key(noteId):
+                        oldNoteNumber = self.notes[noteId]["noteNumber"]
+                        beat = data[1][1]
+                        noteNumber = data[1][2]
+                        # Stop the note if it is playing
+                        if self.notes[noteId]["playing"]:
+                            self.sendNoteOff(noteId)
+                        # Whether the note is visible
+                        isVisible = self.noteIsVisible(noteId)
+                        # Set the new beat and note number
+                        self.notes[noteId]["beat"] = beat
+                        self.reassignNoteNumber(noteId, noteNumber)
+                        # Reschedule the note for the new time
+                        self.cancelNote(noteId)
+                        self.moveNote(noteId)
+                        # Whether the note should be visible
+                        needVisible = self.noteIsVisible(noteId)
+                        # Either draw, move or delete the note rect, depending
+                        # on whether it was and should be visible
+                        if isVisible:
+                            if needVisible:
+                                self.moveNoteRect(noteId)
+                            else:
+                                self.deleteNoteRect(noteId)
+                        elif needVisible:
+                            self.drawNoteRect(noteId)
+                if address == "Resize":
+                    noteId = data[1][0]
+                    if self.notes.has_key(noteId):
+                        length = data[1][1]
+                        noteNumber = self.notes[noteId]["playing"]
+                        if self.notes[noteId]["playing"]:
+                            self.sendNoteOff(noteId)
+                        self.notes[noteId]["length"] = length
+                        self.cancelNote(noteId)
+                        self.resizeNote(noteId)
+                        if self.noteIsVisible(noteId):
+                            self.redrawNoteRect(noteId)
+                self.requestRedraw()
 
             if self.dataReady("event"):
                 data = self.recv("event")
@@ -659,5 +722,5 @@ class PianoRoll(MusicTimingComponent):
 if __name__ == "__main__":
     PianoRoll().run()
     #from Kamaelia.Chassis.Graphline import Graphline
-    #Graphline(ss1 = StepSequencer(), ss2 = StepSequencer(position=(600, 0)),
-    #         linkages={("ss1","localChanges"):("ss2", "remoteChanges")}).run()
+    #Graphline(pr1 = PianoRoll(), pr2 = PianoRoll(position=(600, 0)),
+    #          linkages={("pr1","localChanges"):("pr2", "remoteChanges")}).run()
