@@ -60,7 +60,7 @@ class PianoRoll(MusicTimingComponent):
             self.notesByNumber.append([])
 
         # Start at C5
-        self.minVisibleNote = 0
+        self.minVisibleNote = 60
         self.maxVisibleNote = self.minVisibleNote + self.notesVisible - 1
 
         totalBeats = self.loopBars * self.beatsPerBar
@@ -95,7 +95,7 @@ class PianoRoll(MusicTimingComponent):
         has been activated to the "localChanges" outbox
         """
         note = {"beat": beat, "length" : length, "noteNumber" : noteNumber,
-                "velocity" : velocity, "surface" : None}
+                "velocity" : velocity, "surface" : None, "playing" : False}
         # Making a UUID may be overkill, but better safe than sorry
         noteId = uuid.uuid4()
         #print "Adding note - id =", noteId
@@ -116,6 +116,7 @@ class PianoRoll(MusicTimingComponent):
         to the "localChanges" outbox
         """
         #print "Removing note - id =", noteId
+        self.sendNoteOff(noteId)
         self.cancelNote(noteId)
         noteNumber = self.notes[noteId]["noteNumber"]
         del self.notes[noteId]
@@ -138,7 +139,6 @@ class PianoRoll(MusicTimingComponent):
                        velocity), "localChanges")
 
     def moveNote(self, noteId, send=False):
-        self.cancelNote(noteId)
         self.scheduleNoteOn(noteId)
         self.scheduleNoteOff(noteId)
         if send:
@@ -146,7 +146,6 @@ class PianoRoll(MusicTimingComponent):
                        length), "localChanges")
 
     def resizeNote(self, noteId, send=False):
-        self.cancelNote(noteId)
         self.scheduleNoteOn(noteId)
         self.scheduleNoteOff(noteId)
         if send:
@@ -158,6 +157,23 @@ class PianoRoll(MusicTimingComponent):
         self.notesByNumber[oldNoteNumber].remove(noteId)
         self.notesByNumber[noteNumber].append(noteId)
         self.notes[noteId]["noteNumber"] = noteNumber
+
+    def sendNoteOn(self, noteId):
+        self.notes[noteId]["playing"] = True
+        noteNumber = self.notes[noteId]["noteNumber"]
+        freq = noteList[noteNumber]["freq"]
+        velocity = self.notes[noteId]["velocity"]
+        print "Note On", freq, velocity
+        self.send((self.messagePrefix + "On", (freq, velocity)),
+                  "outbox")
+
+    def sendNoteOff(self, noteId):
+        self.notes[noteId]["playing"] = False
+        noteNumber = self.notes[noteId]["noteNumber"]
+        freq = noteList[noteNumber]["freq"]
+        print "Note Off", freq
+        self.send((self.messagePrefix + "Off", freq),
+                  "outbox")
 
     ###
     # Timing Functions
@@ -388,6 +404,12 @@ class PianoRoll(MusicTimingComponent):
 
             if event.button == 1:
                 # Left click - Move or resize
+                # Stop the note playing before moving or resizing, so we
+                # don't leave notes hanging
+                self.cancelNote(noteId)
+                if self.notes[noteId]["playing"]:
+                    self.sendNoteOff(noteId)
+
                 # Number of beats between the click position and the end of
                 # the note
                 toEnd = note["beat"] + note["length"] - beat
@@ -395,6 +417,7 @@ class PianoRoll(MusicTimingComponent):
                 deltaPos = []
                 for i in xrange(2):
                     deltaPos.append(event.pos[i] - notePos[i])
+
                 if toEnd < float(self.tabWidth) / self.beatWidth:
                     # Resize
                     # SMELL: Should really be boolean
@@ -617,19 +640,11 @@ class PianoRoll(MusicTimingComponent):
 
                 elif data[0] == "NoteOn":
                     noteId = data[1]
-                    note = self.notes[noteId]
-                    freq = noteList[note["noteNumber"]]["freq"]
-                    velocity = note["velocity"]
-                    #print "Note On", freq, velocity
-                    self.send((self.messagePrefix + "On", (freq, velocity)),
-                              "outbox")
+                    self.sendNoteOn(noteId)
                     self.scheduleNoteOn(noteId)
                 elif data[0] == "NoteOff":
                     noteId = data[1]
-                    note = self.notes[noteId]
-                    freq = noteList[note["noteNumber"]]["freq"]
-                    #print "Note Off", freq 
-                    self.send((self.messagePrefix + "Off", freq), "outbox")
+                    self.sendNoteOff(noteId)
                     self.scheduleNoteOff(noteId)
 
             if self.dataReady("sync"):
