@@ -51,19 +51,20 @@ def normalizeUrlList(url_list):
             
 def processServerConfig(ServerConfig):
     """Use the Server configuration data to actually configure the server."""
-    if ServerConfig.get('pypath-append'):
-        path_append = ServerConfig['pypath-append'].split(':')
+    print ServerConfig
+    if ServerConfig.get('pypath_append'):
+        path_append = ServerConfig['pypath_append'].split(':')
         sys.path.extend(path_append)
     
-    if ServerConfig.get('pypath-prepend'):
-        path_prepend = ServerConfig['pypath-prepend'].split(':')
+    if ServerConfig.get('pypath_prepend'):
+        path_prepend = ServerConfig['pypath_prepend'].split(':')
         path_prepend.reverse()
         for path in path_prepend:
             sys.path.insert(0, path)
     
     #uncomment this if you want to debug what this code is doing to sys.path.
-    #print 'sys.path-'
-    #print sys.path
+    print 'sys.path-'
+    print sys.path
 
 def run_program():
     """The main entry point for the application."""
@@ -108,6 +109,16 @@ def run_program():
         routing = [
                       ["/", WsgiFactory(log_writable, WsgiConfig, url_list)],
                   ]
+        
+        if ServerConfig.get('use_hrouting'):
+            #this assumes of course that hrouting.py is on the python path
+            from hrouting import custom_routing
+            custom_routing.reverse()
+            for item in custom_routing:
+                routing.insert(0, item)
+            
+            
+        #print routing
     
         log.activate()
     
