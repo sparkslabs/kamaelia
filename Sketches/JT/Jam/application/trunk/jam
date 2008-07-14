@@ -48,6 +48,7 @@ from Kamaelia.Apps.Jam.Internet.UDP_ng import UDPReceiver, UDPSender, PostboxPee
 from Kamaelia.Apps.Jam.Internet.UDPDispatcher import UDPDispatcher
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad
 from Kamaelia.Apps.Jam.UI.StepSequencer import StepSequencer
+from Kamaelia.Apps.Jam.UI.PianoRoll import PianoRoll
 from Kamaelia.Apps.Jam.Util.PeerSelector import PeerSelector
 from Kamaelia.Apps.Jam.Util.MusicTiming import SyncMaster
 
@@ -121,6 +122,17 @@ class StepSequencerFilter(Axon.Component.component):
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
                 if data[0][0].find("/StepSequencer/") >= 0:
+                    self.send(data[0], "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class PianoRollFilter(Axon.Component.component):
+    def main(self):
+        while 1:    
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                if data[0][0].find("/PianoRoll/") >= 0:
                     self.send(data[0], "outbox")
             if not self.anyReady():
                 self.pause()
@@ -259,6 +271,21 @@ if __name__ == "__main__":
                           ("ss", "localChanges"):("remotePub", "inbox")}
               ).activate()
 
+    # Piano roll
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              syncSub = SubscribeTo("sync"),
+              prFilter = PianoRollFilter(),
+              pr = PianoRoll(position=(0, 360),
+                             messagePrefix="/PianoRoll/",
+                             sync=True),
+              localPub = PublishTo("localDataOut"),
+              remotePub = PublishTo("remoteDataOut"),
+              linkages = {("dataSub", "outbox"):("prFilter", "inbox"),
+                          ("prFilter", "outbox"):("pr", "remoteChanges"),
+                          ("syncSub", "outbox"):("pr", "sync"),
+                          ("pr", "outbox"):("localPub", "inbox"),
+                          ("pr", "localChanges"):("remotePub", "inbox")}
+              ).activate()
     # Local OSC messages
     Pipeline(SubscribeTo("localDataOut"), Osc("/Jam"),
              UDPSender(receiver_addr=options.oscAddress,
