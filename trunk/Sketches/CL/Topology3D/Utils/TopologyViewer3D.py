@@ -3,6 +3,8 @@
 """
 TopologyViewer3D is a 3D version of TopologyViewer, which shows Topology in PyGame surface.
 Operation supported:
+* esc --- quit
+
 * a --- viewer position move left
 * d --- viewer position move right
 * w --- viewer position move up
@@ -19,6 +21,8 @@ Operation supported:
 
 * Mouse click --- click node to select one, click empty area to deselect all
 * Mouse drag: move particles
+* Mouse double-click --- show next level's topology
+* Mouse right-click --- show last level's topology
 
 * shift --- multi Select Mode; shift+click for multiple selection/deselection
 * ctrl ---  rotation Mode; when ctrl is pressed, mouse dragging will rotate the selected particle (all particles if none of them is selected) rather than move it
