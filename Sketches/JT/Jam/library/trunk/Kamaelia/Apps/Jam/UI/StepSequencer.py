@@ -10,6 +10,7 @@ drum beats.
 
 import time
 import pygame
+import Axon
 
 from Axon.SchedulingComponent import SchedulingComponent
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
@@ -326,7 +327,7 @@ class StepSequencer(MusicTimingComponent):
                     self.updateStep()
                 elif data[0] == "StepActive":
                     message, step, channel = data
-                    velocity = self.channels[channel][step]
+                    velocity = self.channels[channel][step][0]
                     self.send((self.messagePrefix + "On", (channel, velocity)),
                               "outbox")
                     self.rescheduleStep(step, channel)
@@ -339,9 +340,36 @@ class StepSequencer(MusicTimingComponent):
             if not self.anyReady():
                 self.pause()
 
+class StepSequencerMidiConverter(Axon.Component.component):
+    channel = 0
+    mapping = {3:36, # Bass drum
+               2:38, # Snare
+               1:42, # Closed HH
+               0:49} # Crash
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                note, velocity = self.recv("inbox")[1]
+                self.send((0x90 + self.channel, self.mapping[note],
+                           int(velocity*127)), "outbox")
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                   isinstance(msg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
 
 if __name__ == "__main__":
     StepSequencer().run()
+
     #from Kamaelia.Chassis.Graphline import Graphline
     #Graphline(ss1 = StepSequencer(), ss2 = StepSequencer(position=(600, 0)),
     #         linkages={("ss1","localChanges"):("ss2", "remoteChanges")}).run()
+
+    #from Kamaelia.Chassis.Pipeline import Pipeline
+    #from Kamaelia.Apps.Jam.Protocol.Midi import Midi
+    #Pipeline(StepSequencer(), StepSequencerMidiConverter(), Midi(0)).run()
