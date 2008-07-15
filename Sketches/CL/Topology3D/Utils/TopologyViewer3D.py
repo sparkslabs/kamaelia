@@ -145,6 +145,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.display.activate()
         OpenGLDisplay.setDisplayService(self.display, tracker)                
         self.link((self,"display_signal"), (self.display,"notify"))
+        self.link((self.display,"signal"), (self,"control"))
         
         self.border = border
         
@@ -265,11 +266,13 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
-                    self.send(msg, "signal")
-                    self.quit()
+                    self.quit(msg)
             
         
-    
+    def quit(self,msg=Axon.Ipc.shutdownMicroprocess()):
+        print 'Shut down...'
+        self.send(msg, "signal")
+        self.scheduler.stop()
     
     def draw(self):
         """\
@@ -462,6 +465,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     
             # Keyboard events handling
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.quit()
                 #print self.display.viewerposition
                 self.viewerOldPos = self.display.viewerposition.copy()
                 if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
