@@ -177,6 +177,16 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # Tell if new node is added; if true, new id needs adding to OpenGLDisplay list
         self.isNewNode = False
         
+        # For hierarchy structure
+        self.maxLevel = 0
+        self.currentLevel = 0
+        #self.currentDisplayParticles = []
+        self.currentDisplayedPhysics = ParticleSystemX(self.laws, [], 0)
+        
+        # For double click
+        self.lastClickPos = (0,0)
+        self.lastClickTime = time.time()
+        self.dClickRes = 30000
         
     def main(self):
         """\
@@ -221,12 +231,18 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 #print [particle.pos for particle in self.physics.particles]
                 avoidedList = []
                 avoidedList.extend(self.hitParticles)
-                avoidedList.extend(self.selectedParticles)                    
-                self.physics.run(self.simCyclesPerRedraw, avoidedList=avoidedList)
+                avoidedList.extend(self.selectedParticles)
+                
+                #self.currentDisplayedPhysics.particleDict[ident].breakAllBonds()
+                if self.currentDisplayedPhysics.particles == [] and self.physics.particles != []:
+                    for particle in self.physics.particles:
+                        if particle.ID.count(':') == self.currentLevel:
+                            self.currentDisplayedPhysics.add( particle )
+                self.currentDisplayedPhysics.run(self.simCyclesPerRedraw, avoidedList=avoidedList)
                 #print [particle.pos for particle in self.physics.particles]
                 
                 # Draw particles if new or updated
-                for particle in self.physics.particles:
+                for particle in self.currentDisplayedPhysics.particles:
                     if particle.needRedraw:
                         self.drawParticles(particle)
                         #particle.needRedraw = False                        
@@ -234,7 +250,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 self.handleEvents()
                 
                 # Perform transformation
-                for particle in self.physics.particles:
+                for particle in self.currentDisplayedPhysics.particles:
                     transform_update = particle.applyTransforms()
                     if transform_update is not None:
                         self.send(transform_update, "display_signal")
@@ -317,19 +333,34 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         newpoint = event.direction * z
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    if not self.rotationMode:
-                        for particle in self.physics.particles:
-                            if particle.identifier in event.hitobjects:
-                                #particle.oldpos = particle.oldpos - self.display.viewerposition
-                                self.grabbed = True
-                                #particle.scaling = Vector(0.9,0.9,0.9)
-                                self.hitParticles.append(particle)
-                                self.selectParticle(particle)
-                                #print str(id(particle))+'hit'
-                                #print self.hitParticles
-                        # If click places other than particles in non multiSelectMode, deselect all
-                        if not self.hitParticles and not self.multiSelectMode:
-                            self.deselectAll()
+                    # Handle double click
+                    clickPos = event.pos
+                    currentTime = time.time()
+                    elapsedTime = currentTime - self.lastClickTime
+                    if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
+                        if self.currentLevel < self.maxLevel:
+                            self.currentLevel += 1
+                            # Remove current displayed particles
+                            for particle in self.currentDisplayedPhysics.particles:
+                                self.display.ogl_displaylists.pop(id(particle))
+                                self.display.ogl_transforms.pop(id(particle))
+                            self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
+                    else:
+                        if not self.rotationMode:
+                            for particle in self.physics.particles:
+                                if particle.identifier in event.hitobjects:
+                                    #particle.oldpos = particle.oldpos - self.display.viewerposition
+                                    self.grabbed = True
+                                    #particle.scaling = Vector(0.9,0.9,0.9)
+                                    self.hitParticles.append(particle)
+                                    self.selectParticle(particle)
+                                    #print str(id(particle))+'hit'
+                                    #print self.hitParticles
+                            # If click places other than particles in non multiSelectMode, deselect all
+                            if not self.hitParticles and not self.multiSelectMode:
+                                self.deselectAll()
+                    self.lastClickPos = clickPos
+                    self.lastClickTime = currentTime
                 if event.button == 4:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -668,6 +699,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         for p in particles:
             if p.radius > self.biggestRadius:
                 self.biggestRadius = p.radius
+            pLevel = p.ID.count(':')
+            if self.maxLevel < pLevel:
+                self.maxLevel = pLevel
             # create display request for every particle added
             disprequest = { "OGL_DISPLAYREQUEST" : True,
                                  "objectid" : id(p),
@@ -799,7 +833,11 @@ if __name__ == "__main__":
                                  'ADD NODE 7Node 7Node randompos sphere',
                                  'ADD LINK 1Node 2Node'
                                  ,'ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',
-                                 'ADD LINK 1Node 5Node','ADD LINK 1Node 6Node', 'ADD LINK 1Node 7Node'
+                                 'ADD LINK 1Node 5Node','ADD LINK 1Node 6Node', 'ADD LINK 1Node 7Node',
+                                 'ADD NODE 1Node:1Node 1Node:1Node randompos -', 'ADD NODE 1Node:2Node 1Node:2Node randompos -',
+                                 'ADD NODE 1Node:3Node 1Node:3Node randompos -', 'ADD NODE 1Node:4Node 1Node:4Node randompos -',
+                                 'ADD LINK 1Node:1Node 1Node:2Node', 'ADD LINK 1Node:2Node 1Node:3Node',
+                                 'ADD LINK 1Node:3Node 1Node:4Node', 'ADD LINK 1Node:4Node 1Node:1Node'
                                  ]),
         TOKENS = lines_to_tokenlists(),
         VIEWER = TopologyViewer3D(),
