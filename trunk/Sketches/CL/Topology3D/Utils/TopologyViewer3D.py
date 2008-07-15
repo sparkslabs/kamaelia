@@ -186,7 +186,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # For double click
         self.lastClickPos = (0,0)
         self.lastClickTime = time.time()
-        self.dClickRes = 30000
+        self.dClickRes = 0.3
         
     def main(self):
         """\
@@ -238,6 +238,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     for particle in self.physics.particles:
                         if particle.ID.count(':') == self.currentLevel:
                             self.currentDisplayedPhysics.add( particle )
+                            particle.oldpos = particle.initialpos
                 self.currentDisplayedPhysics.run(self.simCyclesPerRedraw, avoidedList=avoidedList)
                 #print [particle.pos for particle in self.physics.particles]
                 
@@ -339,6 +340,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     elapsedTime = currentTime - self.lastClickTime
                     if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
                         if self.currentLevel < self.maxLevel:
+                            # Display next level
                             self.currentLevel += 1
                             # Remove current displayed particles
                             for particle in self.currentDisplayedPhysics.particles:
@@ -361,6 +363,15 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                 self.deselectAll()
                     self.lastClickPos = clickPos
                     self.lastClickTime = currentTime
+                if event.button == 3:
+                    if self.currentLevel > 0:
+                        # Display next level
+                        self.currentLevel -= 1
+                        # Remove current displayed particles
+                        for particle in self.currentDisplayedPhysics.particles:
+                            self.display.ogl_displaylists.pop(id(particle))
+                            self.display.ogl_transforms.pop(id(particle))
+                        self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
                 if event.button == 4:
                     if self.selectedParticles:
                         particles = self.selectedParticles
