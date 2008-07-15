@@ -862,7 +862,8 @@ if __name__ == "__main__":
                                  'ADD NODE 1Node:1Node 1Node:1Node randompos -', 'ADD NODE 1Node:2Node 1Node:2Node randompos -',
                                  'ADD NODE 1Node:3Node 1Node:3Node randompos -', 'ADD NODE 1Node:4Node 1Node:4Node randompos -',
                                  'ADD LINK 1Node:1Node 1Node:2Node', 'ADD LINK 1Node:2Node 1Node:3Node',
-                                 'ADD LINK 1Node:3Node 1Node:4Node', 'ADD LINK 1Node:4Node 1Node:1Node'
+                                 'ADD LINK 1Node:3Node 1Node:4Node', 'ADD LINK 1Node:4Node 1Node:1Node',
+                                 'ADD NODE 1Node:1Node:1Node 1Node:1Node:1Node randompos -'
                                  ]),
         TOKENS = lines_to_tokenlists(),
         VIEWER = TopologyViewer3D(),
