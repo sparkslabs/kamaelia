@@ -10,6 +10,7 @@ import pygame
 import operator
 import uuid
 
+from Axon.Component import component
 from Axon.SchedulingComponent import SchedulingComponent
 from Axon.Ipc import producerFinished
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
@@ -46,6 +47,7 @@ class PianoRoll(MusicTimingComponent):
     position=None
     messagePrefix=""
     size=(500, 200)
+    sendNoteNumber = False
 
     def __init__(self, **argd):
         """
@@ -193,11 +195,18 @@ class PianoRoll(MusicTimingComponent):
         """
         self.notes[noteId]["playing"] = True
         noteNumber = self.notes[noteId]["noteNumber"]
-        freq = noteList[noteNumber]["freq"]
         velocity = self.notes[noteId]["velocity"]
-        #print "Note On", freq, velocity
-        self.send((self.messagePrefix + "On", (freq, velocity)),
-                  "outbox")
+        if not self.sendNoteNumber:
+            freq = noteList[noteNumber]["freq"]
+            #print "Note On", freq, velocity
+            self.send((self.messagePrefix + "On", (freq, velocity)),
+                      "outbox")
+        else:
+            #print "Note On", noteNumber+1, velocity
+            # Use noteNumber + 1 because we are using a zero-index, where
+            # MIDI is 1-indexed
+            self.send((self.messagePrefix + "On", (noteNumber + 1, velocity)),
+                      "outbox")
 
     def sendNoteOff(self, noteId):
         """
@@ -522,6 +531,9 @@ class PianoRoll(MusicTimingComponent):
                     # Move
                     # SMELL: Should really be boolean
                     self.moving = (noteId, deltaPos)
+                ### FIXME: BUG: These cause a race hazard where if the listen
+                ### event isn't registered before we do a mouse up it crashes
+                ### when we try to drop the note.  Not cool.
                 self.addListenEvent(pygame.MOUSEBUTTONUP)
                 self.addListenEvent(pygame.MOUSEMOTION)
 
@@ -829,9 +841,39 @@ class PianoRoll(MusicTimingComponent):
             if not self.anyReady():
                 self.pause()
 
+class PianoRollMidiConverter(component):
+    channel = 0
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                message = self.recv("inbox")
+                address = message[0].split("/")[-1]
+                if address == "On":
+                    noteNumber, velocity = message[1]
+                    self.send((0x90 + self.channel, noteNumber,
+                               int(velocity*127)), "outbox")
+                elif address == "Off":
+                    noteNumber = message[1]
+                    self.send((0x80 + self.channel, noteNumber, 0), "outbox")
+                    
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                   isinstance(msg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
 
 if __name__ == "__main__":
-    PianoRoll().run()
+    #PianoRoll().run()
+
     #from Kamaelia.Chassis.Graphline import Graphline
     #Graphline(pr1 = PianoRoll(), pr2 = PianoRoll(position=(600, 0)),
     #          linkages={("pr1","localChanges"):("pr2", "remoteChanges")}).run()
+
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Apps.Jam.Protocol.Midi import Midi
+    Pipeline(PianoRoll(), PianoRollMidiConverter(), Midi()).run()
