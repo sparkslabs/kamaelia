@@ -23,6 +23,7 @@
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
 
 from headstock.api.im import Message, Body, Event
@@ -42,8 +43,10 @@ class requestToMessageTranslator(component):
         super(requestToMessageTranslator, self).__init__(**argd)
         self.request = request
         self.signal = None
+        self.batch_id = numId()
         
     def main(self):
+        self.request['batch'] = self.batch_id
         serialize = simplejson.dumps(self.request)
         serialize = escape(serialize)   #make the data suitable for transmission via XML
         
@@ -77,7 +80,8 @@ class requestToMessageTranslator(component):
     
     def handleInbox(self, msg):
         chunk = {
-            'data' : escape(msg)
+            'data' : escape(msg),
+            'batch' : self.batch_id,
         }
         serialize = simplejson.dumps(chunk)
         
