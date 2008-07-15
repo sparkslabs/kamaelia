@@ -180,7 +180,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         # For hierarchy structure
         self.maxLevel = 0
         self.currentLevel = 0
-        #self.currentDisplayParticles = []
+        self.viewerOldPos = Vector()
         self.currentDisplayedPhysics = ParticleSystemX(self.laws, [], 0)
         
         # For double click
@@ -342,6 +342,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         if self.currentLevel < self.maxLevel:
                             # Display next level
                             self.currentLevel += 1
+                            # Reset viewer position
+                            self.display.viewerposition = Vector()
                             # Remove current displayed particles
                             for particle in self.currentDisplayedPhysics.particles:
                                 self.display.ogl_displaylists.pop(id(particle))
@@ -349,7 +351,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                             self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
                     else:
                         if not self.rotationMode:
-                            for particle in self.physics.particles:
+                            for particle in self.currentDisplayedPhysics.particles:
                                 if particle.identifier in event.hitobjects:
                                     #particle.oldpos = particle.oldpos - self.display.viewerposition
                                     self.grabbed = True
@@ -367,6 +369,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.currentLevel > 0:
                         # Display next level
                         self.currentLevel -= 1
+                        # Reset viewer position
+                        self.display.viewerposition = Vector()
                         # Remove current displayed particles
                         for particle in self.currentDisplayedPhysics.particles:
                             self.display.ogl_displaylists.pop(id(particle))
@@ -376,7 +380,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     for particle in particles:
                         posVector = Vector(*particle.pos)
                         posVector.z -= 1
@@ -385,7 +389,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     for particle in particles:
                         posVector = Vector(*particle.pos)
                         posVector.z += 1
@@ -416,7 +420,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     
                     centrePoint = Vector() 
                     for particle in particles:
@@ -448,7 +452,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # Keyboard events handling
             if event.type == pygame.KEYDOWN:
                 #print self.display.viewerposition
-                viewerOldPos = self.display.viewerposition.copy()
+                self.viewerOldPos = self.display.viewerposition.copy()
                 if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                     self.multiSelectMode = True
                 elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
@@ -469,7 +473,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     centrePoint = Vector() 
                     for particle in particles:
                         posVector = Vector(*particle.pos)
@@ -487,7 +491,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     centrePoint = Vector() 
                     for particle in particles:
                         posVector = Vector(*particle.pos)
@@ -505,7 +509,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     centrePoint = Vector() 
                     for particle in particles:
                         posVector = Vector(*particle.pos)
@@ -523,7 +527,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     centrePoint = Vector() 
                     for particle in particles:
                         posVector = Vector(*particle.pos)
@@ -541,7 +545,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     centrePoint = Vector() 
                     for particle in particles:
                         posVector = Vector(*particle.pos)
@@ -559,7 +563,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
-                        particles = self.physics.particles
+                        particles = self.currentDisplayedPhysics.particles
                     centrePoint = Vector() 
                     for particle in particles:
                         posVector = Vector(*particle.pos)
@@ -574,12 +578,12 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
                         particle.drotation = Vector(0,0,dAngle*180/math.pi)
                 
-                #print self.display.viewerposition
-                # Scroll if self.display.viewerposition changes
-                if self.display.viewerposition.copy() != viewerOldPos:
-                    self.scroll()
-                    for particle in self.physics.particles:
-                        particle.oldpoint = None
+            #print self.display.viewerposition
+            # Scroll if self.display.viewerposition changes
+            if self.display.viewerposition.copy() != self.viewerOldPos:
+                self.scroll()
+                for particle in self.currentDisplayedPhysics.particles:
+                    particle.oldpoint = None
             
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
