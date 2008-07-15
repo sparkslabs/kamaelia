@@ -323,7 +323,7 @@ class TeapotParticle3D(Particle3D):
         
         
         # Draw teapot
-        glFrontFace(GL_CW);
+        glFrontFace(GL_CW)
         glutSolidTeapot(hs)
         glFrontFace(GL_CCW)
         
