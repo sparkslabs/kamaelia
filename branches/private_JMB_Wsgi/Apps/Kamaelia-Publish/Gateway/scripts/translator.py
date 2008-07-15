@@ -22,7 +22,6 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 
 from Axon.Component import component
-from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Graphline import Graphline
 
@@ -69,7 +68,7 @@ class requestToMessageTranslator(component):
             for msg in self.Inbox('inbox'):
                 self.handleInbox(msg)
                 
-            if not self.signal and self.anyReady():
+            if not self.signal and not self.anyReady():
                 self.pause()
                 
             yield 1
@@ -99,7 +98,7 @@ class requestToMessageTranslator(component):
     
     def handleControlBox(self, msg):
         if isinstance(msg, (shutdownMicroprocess, producerFinished)):
-            self.signal = msg           
+            self.signal = msg
             
 class messageToResponseTranslator(component):
     ThisJID = 'amnorvend_gateway@jabber.org'
@@ -137,23 +136,103 @@ class messageToResponseTranslator(component):
         if isinstance(msg, (shutdownMicroprocess, producerFinished)):
             self.signal = msg
             
-def Translator(ThisJID='amnorvend_gateway@jabber.org', ToJID='amnorvend@gmail.com'):
-    pass
+def Translator(request, ThisJID='amnorvend_gateway@jabber.org', ToJID='amnorvend@gmail.com', mtr=None, rtm=None):
+    if not mtr:
+        mtr = messageToResponseTranslator(ThisJID=ThisJID, ToJID=ToJID)
+    if not rtm:
+        rtm = requestToMessageTranslator(request=request, ThisJID=ThisJID, ToJID=ToJID)
+        
+    return Graphline(
+        mtr=mtr,
+        rtm=rtm,
+        linkages={
+            #These are the boxes that the HTTPServer will use
+            ('self', 'inbox') : ('rtm', 'inbox'),
+            ('mtr', 'outbox') : ('self', 'outbox'),
+                
+            #These are the boxes that the XMPP Handler will use.
+            ('rtm', 'outbox') : ('self', 'xmpp_out'),
+            ('self', 'xmpp_in') : ('mtr', 'inbox'),
+                
+            #This is the shutdown handling
+            ('self', 'control') : ('rtm', 'control'),
+            ('self', 'xmpp_control') : ('mtr', 'control'),
+            ('mtr', 'signal') : ('self', 'signal'),
+            ('rtm', 'signal') : ('self', 'xmpp_signal')
+        }
+    )
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import Pipeline
     
-    class Producer(component):            
+    class Server(component):            
         def main(self):
             self.send('foo')
             yield 1
             self.send(producerFinished(self), 'signal')
+            yield 1
+            signal = None
+            while not signal:
+                for msg in self.Inbox('control'):
+                    if isinstance(msg, (producerFinished, shutdownMicroprocess)):
+                        signal = msg
+                        print 'Server received:\n', repr(msg)
+                        
+                for msg in self.Inbox('inbox'):
+                    print 'Server received:\n', repr(msg)
+                    
+                if not (signal or self.anyReady()):
+                    self.pause()
+                    
+                yield 1
+            
+            
+            
+    class Client(component):
+        def main(self):
+            signal = None
+            while not signal:
+                for msg in self.Inbox('control'):
+                    if isinstance(msg, (producerFinished, shutdownMicroprocess)):
+                        signal = msg
+                        print 'Client received:\n', repr(msg)
+                        
+                for msg in self.Inbox('inbox'):
+                    print 'Client received:\n', repr(msg)
+                    self.send(msg, 'outbox')
+                    
+                if not (signal or self.anyReady()):
+                    self.pause()
+                    
+                yield 1
+                
+            self.send(signal, 'signal')
             
     request={
         'a' : 'b',
         'c' : 'd',
         'e' : 'f',
     }
-    Pipeline(Producer(), requestToMessageTranslator(request), messageToResponseTranslator(), ConsoleEchoer()).run()
+    Graphline(
+        server=Server(),
+        trans=Translator(request),
+        client=Client(),
+        
+        linkages={
+            #server
+            ('server', 'outbox') : ('trans', 'inbox'),
+            ('trans', 'outbox') : ('server', 'inbox'),
+                
+            #client
+            ('client', 'outbox') : ('trans', 'xmpp_in'),
+            ('trans', 'xmpp_out') : ('client', 'inbox'),
+                
+            #shutdown handling
+            ('client', 'signal') : ('trans', 'xmpp_control'),
+            ('server', 'signal') : ('trans', 'control'),
+            ('trans', 'signal') : ('server', 'control'),
+            ('trans', 'xmpp_signal') : ('client', 'control')
+        }
+    ).run()
     print '\n'
