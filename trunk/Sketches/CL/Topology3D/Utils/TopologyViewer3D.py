@@ -181,6 +181,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.maxLevel = 0
         self.currentLevel = 0
         self.viewerOldPos = Vector()
+        self.levelViewerPos = {}
         self.currentDisplayedPhysics = ParticleSystemX(self.laws, [], 0)
         
         # For double click
@@ -340,10 +341,15 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     elapsedTime = currentTime - self.lastClickTime
                     if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
                         if self.currentLevel < self.maxLevel:
+                            # Save current level's viewer position
+                            self.levelViewerPos[self.currentLevel] = self.display.viewerposition.copy()
                             # Display next level
                             self.currentLevel += 1
-                            # Reset viewer position
-                            self.display.viewerposition = Vector()
+                            # Reset viewer position to previous
+                            try:
+                                self.display.viewerposition = self.levelViewerPos[self.currentLevel].copy()
+                            except KeyError:
+                                self.display.viewerposition = self.levelViewerPos[self.currentLevel] = Vector()
                             # Remove current displayed particles
                             for particle in self.currentDisplayedPhysics.particles:
                                 self.display.ogl_displaylists.pop(id(particle))
@@ -367,10 +373,15 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.lastClickTime = currentTime
                 if event.button == 3:
                     if self.currentLevel > 0:
-                        # Display next level
+                        # Save current level's viewer position
+                        self.levelViewerPos[self.currentLevel] = self.display.viewerposition.copy()
+                        # Display upper level
                         self.currentLevel -= 1
-                        # Reset viewer position
-                        self.display.viewerposition = Vector()
+                        # Reset viewer position to previous
+                        try:
+                            self.display.viewerposition = self.levelViewerPos[self.currentLevel].copy()
+                        except KeyError:
+                            self.display.viewerposition = self.levelViewerPos[self.currentLevel] = Vector()
                         # Remove current displayed particles
                         for particle in self.currentDisplayedPhysics.particles:
                             self.display.ogl_displaylists.pop(id(particle))
@@ -582,9 +593,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # Scroll if self.display.viewerposition changes
             if self.display.viewerposition.copy() != self.viewerOldPos:
                 self.scroll()
-                for particle in self.currentDisplayedPhysics.particles:
-                    particle.oldpoint = None
-            
+#                for particle in self.currentDisplayedPhysics.particles:
+#                    particle.oldpoint = None
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                     self.multiSelectMode = False
