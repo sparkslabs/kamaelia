@@ -534,9 +534,10 @@ class PianoRoll(MusicTimingComponent):
 
             if event.button == 3:
                 # Right click - Note off
-                self.send(producerFinished(message=surface),
-                          "display_signal")
-                self.removeNote(noteId, True)
+                if not (self.moving or self.resizing):
+                    self.send(producerFinished(message=surface),
+                              "display_signal")
+                    self.removeNote(noteId, True)
 
             if event.button == 4:
                 # Scroll up - Velocity up
