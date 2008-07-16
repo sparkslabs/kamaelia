@@ -531,11 +531,6 @@ class PianoRoll(MusicTimingComponent):
                     # Move
                     # SMELL: Should really be boolean
                     self.moving = (noteId, deltaPos)
-                ### FIXME: BUG: These cause a race hazard where if the listen
-                ### event isn't registered before we do a mouse up it crashes
-                ### when we try to drop the note.  Not cool.
-                self.addListenEvent(pygame.MOUSEBUTTONUP)
-                self.addListenEvent(pygame.MOUSEMOTION)
 
             if event.button == 3:
                 # Right click - Note off
@@ -575,25 +570,25 @@ class PianoRoll(MusicTimingComponent):
         """
         Handle mouse up events from the pygame display
         """
-        if event.button == 1:
-            if self.moving:
-                noteId, deltaPos = self.moving
-                self.moving = False
-                self.moveNote(noteId, True)
+        if self.moving or self.resizing:
+            if event.button == 1:
+                if self.moving:
+                    noteId, deltaPos = self.moving
+                    self.moving = False
+                    self.moveNote(noteId, True)
 
-            if self.resizing:
-                noteId, deltaPos = self.resizing
-                self.resizeNote(noteId, True)
-                self.redrawNoteRect(noteId)
-                # Change the note length so the next note we create is the same
-                # length
-                # FIXME: This should probably happen when we move a note too
-                self.noteLength = self.notes[noteId]["length"]
-                self.resizing = False
-            self.requestRedraw()
-            self.removeListenEvent(pygame.MOUSEBUTTONUP)
-            self.removeListenEvent(pygame.MOUSEMOTION)
-            self.scrolling = 0
+                if self.resizing:
+                    noteId, deltaPos = self.resizing
+                    self.resizeNote(noteId, True)
+                    self.redrawNoteRect(noteId)
+                    # Change the note length so the next note we create is the
+                    # same length
+                    # FIXME: This should probably happen when we move a note
+                    # too
+                    self.noteLength = self.notes[noteId]["length"]
+                    self.resizing = False
+                self.requestRedraw()
+                self.scrolling = 0
 
     def handleMouseMotion(self, event):
         """
@@ -683,6 +678,8 @@ class PianoRoll(MusicTimingComponent):
         self.display = self.createSurface(displayRequest)
 
         self.addListenEvent(pygame.MOUSEBUTTONDOWN)
+        self.addListenEvent(pygame.MOUSEBUTTONUP)
+        self.addListenEvent(pygame.MOUSEMOTION)
 
         # Background surface - this is what we draw the background markings onto
         displayRequest = {"DISPLAYREQUEST" : True,
