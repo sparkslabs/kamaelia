@@ -47,7 +47,6 @@ class PianoRoll(MusicTimingComponent):
     position=None
     messagePrefix=""
     size=(500, 200)
-    sendNoteNumber = False
 
     def __init__(self, **argd):
         """
@@ -196,17 +195,10 @@ class PianoRoll(MusicTimingComponent):
         self.notes[noteId]["playing"] = True
         noteNumber = self.notes[noteId]["noteNumber"]
         velocity = self.notes[noteId]["velocity"]
-        if not self.sendNoteNumber:
-            freq = noteList[noteNumber]["freq"]
-            #print "Note On", freq, velocity
-            self.send((self.messagePrefix + "On", (freq, velocity)),
-                      "outbox")
-        else:
-            #print "Note On", noteNumber+1, velocity
-            # Use noteNumber + 1 because we are using a zero-index, where
-            # MIDI is 1-indexed
-            self.send((self.messagePrefix + "On", (noteNumber + 1, velocity)),
-                      "outbox")
+        freq = noteList[noteNumber]["freq"]
+        #print "Note On", freq, velocity
+        self.send((self.messagePrefix + "On", (noteNumber + 1, freq, velocity)),
+                  "outbox")
 
     def sendNoteOff(self, noteId):
         """
@@ -217,7 +209,7 @@ class PianoRoll(MusicTimingComponent):
         noteNumber = self.notes[noteId]["noteNumber"]
         freq = noteList[noteNumber]["freq"]
         #print "Note Off", freq
-        self.send((self.messagePrefix + "Off", freq),
+        self.send((self.messagePrefix + "Off", (noteNumber + 1, freq)),
                   "outbox")
 
     ###
@@ -847,11 +839,11 @@ class PianoRollMidiConverter(component):
                 message = self.recv("inbox")
                 address = message[0].split("/")[-1]
                 if address == "On":
-                    noteNumber, velocity = message[1]
+                    noteNumber, freq, velocity = message[1]
                     self.send((0x90 + self.channel, noteNumber,
                                int(velocity*127)), "outbox")
                 elif address == "Off":
-                    noteNumber = message[1]
+                    noteNumber, freq = message[1]
                     self.send((0x80 + self.channel, noteNumber, 0), "outbox")
                     
             if self.dataReady("control"):
