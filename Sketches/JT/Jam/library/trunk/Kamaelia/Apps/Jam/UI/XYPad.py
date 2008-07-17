@@ -307,6 +307,10 @@ class XYPad(Axon.Component.component):
                     # Update the position
                     for i in xrange(2):
                         self.puckPos[i] += self.puckVel[i]
+                        if self.puckPos[i] < 0:
+                            self.puckPos[i] = 0
+                        if self.puckPos[i] > self.size[i]:
+                            self.puckPos[i] = self.size[i]
                     self.render()
 
     def processCollisions(self):
@@ -347,6 +351,38 @@ class XYPad(Axon.Component.component):
                   (float(self.puckPos[0])/self.size[0],
                   float(self.puckPos[1])/self.size[1])), "outbox")
 
+class XYPadMidiConverter(Axon.Component.component):
+    channel = 0
+    mapping = {"Top" : 36,    # Bass drum
+               "Right" : 38,  # Snare
+               "Bottom" : 42, # Closed HH
+               "Left" : 49}   # Crash
+    positionCCNumbers = (0, 1)
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                message = self.recv("inbox")
+                address = message[0].split("/")[-1]
+                if address == "Position":
+                    xPos, yPos = message[1]
+                    self.send((0xB0 + self.channel, self.positionCCNumbers[0],
+                               int(xPos*127)), "outbox")
+                    self.send((0xB0 + self.channel, self.positionCCNumbers[1],
+                               int(yPos*127)), "outbox")
+                else:
+                    noteNumber = self.mapping[address]
+                    self.send((0x90 + self.channel, noteNumber, 64), "outbox")
+
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if (isinstance(msg, producerFinished) or
+                   isinstance(msg, shutdownMicroprocess)):
+                    self.send(msg, "signal")
+                    break
+            if not self.anyReady():
+                self.pause()
+            yield 1 
+
 if __name__ == "__main__":
     from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
     from Kamaelia.Util.Console import ConsoleEchoer
@@ -365,3 +401,15 @@ if __name__ == "__main__":
     xyPad.link((xyPad, "outbox"), (ce,"inbox"))
     xyPad2.link((xyPad2, "outbox"), (ce,"inbox"))
     Axon.Scheduler.scheduler.run.runThreads()  
+
+#    from Kamaelia.Chassis.Graphline import Graphline
+#    from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
+#    from Kamaelia.Apps.Jam.Protocol.Midi import Midi
+#    Graphline(clock = Clock(1.0/60),
+#              xyPad = XYPad(),
+#              converter = XYPadMidiConverter(),
+#              midi = Midi(),
+#              linkages = {("clock", "outbox"):("xyPad","newframe"),
+#                          ("xyPad", "outbox"):("converter","inbox"),
+#                          ("converter","outbox"):("midi", "inbox")}).run()
+
