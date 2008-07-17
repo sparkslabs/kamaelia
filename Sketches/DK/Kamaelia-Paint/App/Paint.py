@@ -351,7 +351,7 @@ class DisplayConfig(Axon.Component.component):
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
-   from XYPad import XYPad
+   from ToolBox import ToolBox
    from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline
    from Kamaelia.Chassis.Pipeline import Pipeline
@@ -360,8 +360,7 @@ if __name__ == "__main__":
    ProcessGraphline(
        COLOURS = Seq(
             DisplayConfig(width=270, height=600),
-            XYPad(size=(255, 255), bouncingPuck = False, position = (10, 200),
-                      bgcolour=(0, 0, 0), fgcolour=(255, 255, 255), colourSelector = True),
+            ToolBox(size=(270, 600)),
             ),
 
        WINDOW1 = Seq(
