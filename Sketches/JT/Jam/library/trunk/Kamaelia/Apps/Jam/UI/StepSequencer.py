@@ -197,7 +197,7 @@ class StepSequencer(MusicTimingComponent):
         pygame.draw.line(self.display, (0, 0, 0),
                          (0, 0), (self.size[0], 0))
         for i in range(self.numChannels + 1):
-            pygame.draw.line(self.display, (127, 127, 127),
+            pygame.draw.line(self.display, (0, 0, 0),
                              (0, self.positionSize[1] + i * self.stepSize[1]),
                              (self.size[0], self.positionSize[1] + i * self.stepSize[1]))
         for i in range(self.numSteps + 1):
@@ -286,6 +286,9 @@ class StepSequencer(MusicTimingComponent):
                         # Don't respond to clicks in the position bar
                         bounds.top += self.positionSize[1]
                         bounds.height -= self.positionSize[1]
+                        # Don't respond to clicks on the bottom or right border
+                        bounds.width -= 1
+                        bounds.height -= 1
                         if bounds.collidepoint(*event.pos):
                             step, channel = self.positionToStep(event.pos)
                             velocity = self.channels[channel][step][0]
