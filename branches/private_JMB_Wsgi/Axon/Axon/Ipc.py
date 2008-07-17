@@ -322,6 +322,21 @@ class errorInformation(ipc):
       self.caller = caller # the component that the error occured in.
       self.exception = exception # if an exception was caught the exception object
       self.message = message # the message with bad data that caused the exception or error
+      
+__ipc_msgs = [errorInformation, producerFinished, wouldblock, status, shutdown,
+              shutdownMicroprocess, notify, newComponent, reactivate, WaitComplete,
+              ipc]
+
+__ipc_lookup = {}
+
+def LookupByText(name):
+   global __ipc_lookup
+   if not __ipc_lookup:
+      for item in __ipc_msgs:
+         __ipc_lookup[item.__name__] = item
+         
+   return __ipc_lookup[name]
+   
 
 if __name__ == '__main__':
    print "This class currently contains no test code."
