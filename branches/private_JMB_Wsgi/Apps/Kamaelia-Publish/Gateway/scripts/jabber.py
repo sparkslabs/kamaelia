@@ -43,7 +43,7 @@ from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory
 from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
 from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
 from Kamaelia.Apps.Wsgi.Log import LogWriter
-from translator import Translator
+from gate.interface import Interface
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -424,7 +424,8 @@ class Client(component):
                "jid"        : "",
                "streamfeat" : "",
                "control"    : "Shutdown the client stream",
-               "http-inbox" : "Receive messages to an HTTP Server",}
+               "http-inbox" : "Receive messages to an HTTP Server",
+               "output" : "Forward messages to the WebMessageHandler"}
     
     Outboxes = {"outbox"  : "",
                 "forward" : "",
@@ -519,7 +520,6 @@ class Client(component):
                                activityhandler = ActivityHandler(),
                                rosterhandler = RosterHandler(self.jid),
                                registerhandler = RegistrationHandler(self.username, self.password),
-                               msgdummyhandler = WebMessageHandler(),
                                presencehandler = PresenceHandler(),
                                presencedisp = PresenceDispatcher(),
                                rosterdisp = RosterDispatcher(),
@@ -529,7 +529,7 @@ class Client(component):
                                registerdisp = RegisterDispatcher(),
                                pjid = PublishTo("JID"),
                                pbound = PublishTo("BOUND"),
-                               trans=Translator(),
+                               webhandler=Interface(),
 
                                linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
                                            ('console', 'outbox'): ('client', 'control'),
@@ -585,8 +585,8 @@ class Client(component):
                                            # Message
                                            ("xmpp", "%s.message" % XMPP_CLIENT_NS): ("msgdisp", "inbox"),
                                            ("msgdisp", "log"): ('logger', "inbox"),
-                                           ("msgdisp", "xmpp.chat"): ('msgdummyhandler', 'inbox'),
-                                           ("msgdummyhandler", "outbox"): ('msgdisp', 'forward'),
+                                           ("webhandler", "xmpp_outbox"): ('msgdisp', 'forward'),
+                                           ("msgdisp", "xmpp.chat"): ('webhandler', 'xmpp_inbox'),
                                            ("msgdisp", "outbox"): ("xmpp", "forward"),
 
                                            # Activity
@@ -595,10 +595,6 @@ class Client(component):
                                            ("activitydisp", "outbox"): ("xmpp", "forward"),
                                            ("activityhandler", 'activity-supported'): ('rosterhandler', 'ask-activity'),
                                            ("rosterhandler", 'activity'): ('activitydisp', 'forward'),
-                                            
-                                            #Translator
-                                            ('trans', 'outbox') : ('msgdummyhandler', 'trans_inbox'),
-                                            ('msgdummyhandler', 'trans_outbox') : ('trans', 'inbox'),
                                            }
                                )
         self.addChildren(self.graph)

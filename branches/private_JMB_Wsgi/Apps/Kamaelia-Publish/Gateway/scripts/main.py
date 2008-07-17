@@ -24,20 +24,14 @@
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 
 from jabber import constructXMPPClient, XMPPConfigObject
-from jabber.Interface import XMPPInterface
 from http import constructHTTPServer
-from MasterInterface import MasterInterface
 
 def main():
     Config = ParseConfigFile('~/kp.ini', DictFormatter())
     
-    mi = MasterInterface(DebugMemory=True)
-    
+    server = constructHTTPServer()    
     xmpp = constructXMPPClient(XMPPConfigObject(Config['XMPP']))
     
-    server = constructHTTPServer(mi)
-    
-    mi.activate()
     xmpp.activate()
     server.run()
     

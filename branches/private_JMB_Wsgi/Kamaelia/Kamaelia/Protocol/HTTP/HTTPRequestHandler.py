@@ -337,6 +337,8 @@ class HTTPRequestHandler(component):
 
     def createHandler(self, request):
         self.handler = self.requestHandlerFactory(request)
+        print 'requestHandlerFactory=', self.requestHandlerFactory
+        print 'handler=', self.handler
 
         # XXXX Do we *really* want to crash?
         assert(self.handler != None) # if no URL handlers match our request then requestHandlerFactory

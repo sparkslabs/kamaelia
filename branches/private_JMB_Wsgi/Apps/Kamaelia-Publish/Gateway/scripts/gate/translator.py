@@ -25,8 +25,10 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Backplane import PublishTo
 
-from headstock.api.im import Message, Body, Event
+from headstock.api.im import Message, Body, Event, Thread
+from headstock.api.jid import JID
 from headstock.lib.utils import generate_unique
 
 import base64
@@ -34,33 +36,33 @@ from xml.sax.saxutils import escape, unescape
 
 import simplejson
 
+from gate import OutboxBundle, BPLANE_NAME, InitialMessage
+
 class requestToMessageTranslator(component):
     """Note that sending messages via XMPP is considered outbound.  This converts
     an HTTP request object into a headstock message.""" 
-    ThisJID = 'amnorvend_gateway@jabber.org'
-    ToJID = 'amnorvend@gmail.com'
+    Inboxes = {'inbox' : 'Receive messages from the HTTPServer',
+               'control' : 'Receive signals from the HTTPServer'}
+    Outboxes = {'outbox' : 'Send messages to the Interface',
+                'signal' : 'Send signals',
+                'publisher_signal' : 'send signals to the publisher',}
+    
+    ThisJID = JID(u'amnorvend_gateway', u'jabber.org', u'headstock')
+    ToJID = u'amnorvend@jabber.org'
+    bundle = OutboxBundle()
     def __init__(self, request, **argd):
         super(requestToMessageTranslator, self).__init__(**argd)
         self.request = request
         self.signal = None
-        self.batch_id = numId()
+        self.batch_id = unicode(numId())
+        self.Publisher = PublishTo(BPLANE_NAME)
+        self.link((self, 'outbox'), (self.Publisher, 'inbox'))
         
     def main(self):
+        self.Publisher.activate()
         self.request['batch'] = self.batch_id
-        serialize = simplejson.dumps(self.request)
-        serialize = escape(serialize)   #make the data suitable for transmission via XML
         
-        hMessage = Message(unicode(self.ThisJID), unicode(self.ToJID),
-                           type=u'chat', stanza_id=generate_unique())
-        
-        hMessage.bodies.append(Body(serialize))
-        
-        self.send(hMessage, 'outbox')
-        
-        m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
-                    type=u'chat', stanza_id=generate_unique())
-        
-        self.send(m, "outbox")
+        self.sendInitialMessage()
         
         yield 1
         
@@ -77,6 +79,7 @@ class requestToMessageTranslator(component):
             yield 1
             
         self.send(self.signal, 'signal')
+        self.send(self.signal, 'publisher_signal')
     
     def handleInbox(self, msg):
         chunk = {
@@ -86,11 +89,12 @@ class requestToMessageTranslator(component):
         serialize = simplejson.dumps(chunk)
         
         #hMessage being a headstock message
-        hMessage = Message(unicode(self.ThisJID), unicode(self.ToJID),
+        hMessage = Message(self.ThisJID, self.ToJID,
                            type=u'chat', stanza_id=generate_unique())
         
         hMessage.event = Event.composing
         hMessage.bodies.append(unicode(Body(serialize)))
+        appendTID(hMessage, self.batch_id)
         self.send(hMessage, 'outbox')
         
         # Right after we sent the first message
@@ -104,9 +108,29 @@ class requestToMessageTranslator(component):
         if isinstance(msg, (shutdownMicroprocess, producerFinished)):
             self.signal = msg
             
+    def sendInitialMessage(self):
+        serialize = simplejson.dumps(self.request)
+        serialize = escape(serialize)   #make the data suitable for transmission via XML
+        
+        hMessage = Message(unicode(self.ThisJID), unicode(self.ToJID),
+                           type=u'chat', stanza_id=generate_unique())
+        
+        hMessage.bodies.append(Body(unicode(serialize)))
+        appendTID(hMessage, self.batch_id)
+        
+        out = InitialMessage(hMessage=hMessage,
+                             bundle=self.bundle, batch_id=self.batch_id)
+        
+        self.send(out, 'outbox')
+        
+        m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
+                    type=u'chat', stanza_id=generate_unique())
+        
+        self.send(m, "outbox")        
+            
 class messageToResponseTranslator(component):
     ThisJID = 'amnorvend_gateway@jabber.org'
-    ToJID = 'amnorvend@gmail.com'
+    ToJID = 'amnorvend@jabber.org/gateway'
     def __init__(self, **argd):
         super(messageToResponseTranslator, self).__init__(**argd)
         self.signal = None
@@ -140,13 +164,17 @@ class messageToResponseTranslator(component):
         if isinstance(msg, (shutdownMicroprocess, producerFinished)):
             self.signal = msg
             
-def Translator(request, ThisJID='amnorvend_gateway@jabber.org', ToJID='amnorvend@gmail.com', mtr=None, rtm=None):
+def appendTID(msg, thread_id):
+    tobj = Thread(thread_id)
+    msg.thread = tobj
+            
+def Translator(request, mtr=None, rtm=None):
     if not mtr:
-        mtr = messageToResponseTranslator(ThisJID=ThisJID, ToJID=ToJID)
+        mtr = messageToResponseTranslator()
     if not rtm:
-        rtm = requestToMessageTranslator(request=request, ThisJID=ThisJID, ToJID=ToJID)
+        rtm = requestToMessageTranslator(request=request)
         
-    return Graphline(
+    trans = Graphline(
         mtr=mtr,
         rtm=rtm,
         linkages={
@@ -155,7 +183,6 @@ def Translator(request, ThisJID='amnorvend_gateway@jabber.org', ToJID='amnorvend
             ('mtr', 'outbox') : ('self', 'outbox'),
                 
             #These are the boxes that the XMPP Handler will use.
-            ('rtm', 'outbox') : ('self', 'xmpp_out'),
             ('self', 'xmpp_in') : ('mtr', 'inbox'),
                 
             #This is the shutdown handling
@@ -165,6 +192,12 @@ def Translator(request, ThisJID='amnorvend_gateway@jabber.org', ToJID='amnorvend
             ('rtm', 'signal') : ('self', 'xmpp_signal')
         }
     )
+    
+    #prepare the outbox bundle so that it may be sent to the interface
+    rtm.bundle.link((rtm.bundle, 'outbox'), (trans, 'xmpp_in'))
+    rtm.bundle.link((rtm.bundle, 'signal'), (trans, 'xmpp_control'))
+    
+    return trans
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer

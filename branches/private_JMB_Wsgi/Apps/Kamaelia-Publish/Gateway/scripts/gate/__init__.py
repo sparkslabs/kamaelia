@@ -20,32 +20,18 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
+from Axon.Component import component
 
-from Kamaelia.Chassis.Graphline import Graphline
-
-from jabber.Interface import BoxBundle, XMPPInterface
-from translator import messageToResponseTranslator, requestToMessageTranslator
-
-def MasterInterface(DebugMemory=False):
-    return Graphline(
-        xmppi=XMPPInterface(DebugMemory=DebugMemory),
-        mtr=messageToResponseTranslator(),
-        rtm=requestToMessageTranslator(),
+class OutboxBundle(component):
+    Inboxes = {}
+    Outboxes = {'outbox' : 'send messages',
+                'signal' : 'send signals'}
+    
+class InitialMessage(object):
+    hMessage = None
+    bundle = None
+    batch_id = None
+    def __init__(self, **argd):
+        self.__dict__.update(**argd)
         
-        linkages={
-            #internal linkages
-            ('xmppi', 'outbox') : ('rtm', 'inbox'),
-            ('mtr', 'outbox') : ('xmppi', 'response'),
-            
-            #external linkages
-            ('self', 'to_http') : ('mtr', 'inbox'),
-            ('self', 'to_xmpp') : ('rtm', 'inbox'),
-            ('self', 'receptor') : ('xmppi', 'inbox'),
-                
-            #signal/control
-            ('self', 'control') : ('xmppi', 'control'),
-            ('xmppi', 'signal') : ('mtr', 'control'),
-            ('mtr', 'signal') : ('rtm', 'control'),
-            ('rtm', 'signal') : ('self', 'signal'),
-        }
-    )
+BPLANE_NAME = 'XMPP-INTERFACE'
