@@ -84,7 +84,7 @@ from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
 
-class Slider(Axon.Component.component):
+class ColourSelector(Axon.Component.component):
     """\
     XYPad([bouncingPuck, position, bgcolour, fgcolour, positionMsg,
            collisionMsg, size]) -> new XYPad component.
@@ -108,40 +108,49 @@ class Slider(Axon.Component.component):
 
     """
     Inboxes = {"inbox"    : "Receive events from Pygame Display",
+               "remoteChanges"  : "Receive messages to alter the state of the XY pad",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from Pygame Display",
+               "newframe" : "Recieve messages indicating a new frame is to be drawn",
+               "buttons" : "Recieve interrupts from the buttons"
               }
               
     Outboxes = {"outbox" : "XY positions emitted here",
+                "localChanges" : "Messages indicating change in the state of the XY pad emitted here",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface"
                }
    
-    def __init__(self, position=None,
+    def __init__(self, bouncingPuck=True, position=None,
                  bgcolour=(255, 255, 255), fgcolour=(0, 0, 0),
-                 messagePrefix = "",
+                 messagePrefix = "Colour",
                  positionMsg="Position",
-                 size=(100, 100)):
+                 colours="RG",
+                 selectedColour = (0,0,0),
+                 size=(100, 100), editable=True):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
         """
 
-        super(Slider, self).__init__()
+        super(ColourSelector, self).__init__()
 
         self.size = size
 
-
+        self.selectedColour = selectedColour
         self.mouseDown = False
-        self.clickTime = None
         self.mousePositions = []
         self.lastMousePos = (0, 0)
-        self.sliderPos = 0
-        self.messagePrefix = messagePrefix
+        self.puckPos = [self.size[0]/2, self.size[1]/2]
+        
 
-        self.selectedSize = 3
         self.borderWidth = 5
         self.bgcolour = bgcolour
         self.fgcolour = fgcolour
+        self.colours = colours
+        self.position = position
+        self.messagePrefix = messagePrefix
+
+        self.editable = editable
 
         self.dispRequest = {"DISPLAYREQUEST" : True,
                             "callback" : (self,"callback"),
@@ -151,6 +160,8 @@ class Slider(Axon.Component.component):
 
         if position:
             self.dispRequest["position"] = position
+        else:
+            self.position = (0,0)
     def waitBox(self, boxName):
         """Wait for a message on boxName inbox"""
         while 1:
@@ -161,6 +172,9 @@ class Slider(Axon.Component.component):
       
     def main(self):
         """Main loop."""
+    #    pgd = PygameDisplay( width=300, height=550 ).activate()
+     #   PygameDisplay.setDisplayService(pgd)
+
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"display_signal"), displayservice)
 
@@ -171,31 +185,46 @@ class Slider(Axon.Component.component):
         self.display = self.recv("callback")
 
         # colour buttons
+        rgbutton = Button(caption="Red/Green",position=(self.position[0],self.position[1]+self.size[1]+5), msg = ("Colour", "RG")).activate()
+        rbbutton = Button(caption="Red/Blue",position=(self.position[0]+70,self.position[1]+self.size[1]+5), msg = ("Colour", "RB")).activate()
+        gbbutton = Button(caption="Green/Blue",position=(self.position[0]+140,self.position[1]+self.size[1]+5), msg = ("Colour", "GB")).activate()
+        self.link( (rgbutton,"outbox"), (self,"buttons") )
+        self.link( (rbbutton,"outbox"), (self,"buttons") )
+        self.link( (gbbutton,"outbox"), (self,"buttons") )
 
         
 
 
+      
+
+
         # Initial render so we don't see a blank screen
         self.drawBG()
-        self.render()
+      #  self.render()
+        if self.editable:
+            self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
+                       "surface" : self.display},
+                      "display_signal")
 
-        self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
-                    "surface" : self.display},
-                    "display_signal")
+            self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
+                       "surface" : self.display},
+                      "display_signal")
 
-        self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP,
-                    "surface" : self.display},
-                    "display_signal")
-
-        self.send({"ADDLISTENEVENT" : pygame.MOUSEMOTION,
-                    "surface" : self.display},
-                    "display_signal")
+            self.send({"ADDLISTENEVENT" : pygame.MOUSEMOTION,
+                       "surface" : self.display},
+                      "display_signal")
 
         done = False
         while not done:
             if not self.anyReady():
                 self.pause()
             yield 1
+            while self.dataReady("buttons"):
+                bmsg = self.recv("buttons")
+                if bmsg[0]=="Colour":
+                    self.colours = bmsg[1]
+                    self.drawBG()
+                    
             while self.dataReady("control"):
                 cmsg = self.recv("control")
                 if (isinstance(cmsg, producerFinished)):
@@ -204,53 +233,67 @@ class Slider(Axon.Component.component):
 
             while self.dataReady("inbox"):
                 for event in self.recv("inbox"):
+
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if self.display.get_rect().collidepoint(*event.pos):
-                            self.sliderPos = event.pos[0]
-                            self.drawBG()
-                            self.render()
                             self.mouseDown = True
+                            self.puckPos = event.pos
+                            self.render()
+                                    
 
                     if event.type == pygame.MOUSEBUTTONUP:
                         if self.mouseDown:
-                            self.sliderPos = event.pos[0]
-                            self.drawBG()
+                            self.puckPos = event.pos
                             self.render()
                         self.mouseDown = False
                     
                     if event.type == pygame.MOUSEMOTION and self.mouseDown:
                         if self.display.get_rect().collidepoint(*event.pos):
-                            if event.pos[0] > self.size[0] or event.pos[0] < 0:
-                                self.mouseDown = False
-                                break
-                            self.sliderPos = event.pos[0]
-                            self.drawBG()
+                            self.puckPos = event.pos
                             self.render()
+
 
     
     def drawBG(self):
-        self.display.fill( (255,255,255) )
-        pygame.draw.rect(self.display, (0,0,0),
-                             self.display.get_rect(), 2)
+        if (self.colours == "RG"):
+            for y in range(0, self.size[0], self.size[0]/100):
+                for x in range(0, self.size[1], self.size[1]/100):
+                    box = pygame.Rect(x, y, 10, 10)
+                    pygame.draw.rect(self.display, (x,y,0), box, 0)
+        elif (self.colours == "RB"):
+            for y in range(0, self.size[0], self.size[0]/100):
+                for x in range(0, self.size[1], self.size[1]/100):
+                    box = pygame.Rect(x, y, 10, 10)
+                    pygame.draw.rect(self.display, (x,0,y), box, 0)
+        elif (self.colours == "GB"):
+            for y in range(0, self.size[0], self.size[0]/100):
+                for x in range(0, self.size[1], self.size[1]/100):
+                    box = pygame.Rect(x, y, 10, 10)
+                    pygame.draw.rect(self.display, (0,x,y), box, 0)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
         
     def render(self):
         """Draw the border and puck onto the surface"""
-        self.send(((self.messagePrefix,self.sliderPos),), "outbox")
-        box = pygame.Rect(self.sliderPos, 0, 5, self.size[1])
-        pygame.draw.rect(self.display, (0,0,0),
-                         box, 0)
+     #                    self.display.get_rect(), self.borderWidth)
+     #   print self.selectedColour
+        if (self.colours == "RG"):
+            self.selectedColour = (self.puckPos[0], self.puckPos[1], 0)
+        elif (self.colours == "RB"):
+            self.selectedColour = (self.puckPos[0], 0, self.puckPos[1])
+        elif (self.colours == "GB"):
+            self.selectedColour = (0, self.puckPos[0], self.puckPos[1])
+        pygame.draw.rect(self.display, self.selectedColour, self.display.get_rect(), self.borderWidth)
+        self.send((("colour",self.selectedColour),), "outbox")
+        #refresh the screen
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
         
 
 if __name__ == "__main__":
+    from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
     from Kamaelia.Util.Console import ConsoleEchoer
-    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Chassis.Graphline import Graphline
     
-    Pipeline(Slider(size=(255, 255), messagePrefix = "Fred"),
-            ConsoleEchoer()).run()
-
-
-    Axon.Scheduler.scheduler.run.runThreads()  
+    ColourSelector(position = (100,100), size = (255,255)).activate()
+    Axon.Scheduler.scheduler.run.runThreads()
     
 # Licensed to the BBC under a Contributor Agreement: JT/DK
