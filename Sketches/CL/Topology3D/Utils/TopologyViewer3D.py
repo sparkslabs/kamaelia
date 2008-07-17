@@ -18,6 +18,8 @@ Operation supported:
 * down --- rotate selected particles to down around x axis  (all particles if none of them is selected)
 * < --- rotate selected particles anticlock-wise around z axis  (all particles if none of them is selected)
 *> --- rotate selected particles clock-wise around z axis  (all particles if none of them is selected)
+return --- show next level's topology
+backspace --- show last level's topology
 
 * Mouse click --- click node to select one, click empty area to deselect all
 * Mouse drag: move particles
@@ -348,20 +350,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     elapsedTime = currentTime - self.lastClickTime
                     if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
                         if self.currentLevel < self.maxLevel:
-                            # Save current level's viewer position
-                            self.levelViewerPos[self.currentLevel] = self.display.viewerposition.copy()
-                            # Display next level
-                            self.currentLevel += 1
-                            # Reset viewer position to previous
-                            try:
-                                self.display.viewerposition = self.levelViewerPos[self.currentLevel].copy()
-                            except KeyError:
-                                self.display.viewerposition = self.levelViewerPos[self.currentLevel] = Vector()
-                            # Remove current displayed particles
-                            for particle in self.currentDisplayedPhysics.particles:
-                                self.display.ogl_displaylists.pop(id(particle))
-                                self.display.ogl_transforms.pop(id(particle))
-                            self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
+                            self.gotoDisplayLevel(1)
                     else:
                         if not self.rotationMode:
                             for particle in self.currentDisplayedPhysics.particles:
@@ -380,20 +369,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.lastClickTime = currentTime
                 if event.button == 3:
                     if self.currentLevel > 0:
-                        # Save current level's viewer position
-                        self.levelViewerPos[self.currentLevel] = self.display.viewerposition.copy()
-                        # Display upper level
-                        self.currentLevel -= 1
-                        # Reset viewer position to previous
-                        try:
-                            self.display.viewerposition = self.levelViewerPos[self.currentLevel].copy()
-                        except KeyError:
-                            self.display.viewerposition = self.levelViewerPos[self.currentLevel] = Vector()
-                        # Remove current displayed particles
-                        for particle in self.currentDisplayedPhysics.particles:
-                            self.display.ogl_displaylists.pop(id(particle))
-                            self.display.ogl_transforms.pop(id(particle))
-                        self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
+                        self.gotoDisplayLevel(-1)
                 if event.button == 4:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -469,11 +445,17 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     
             # Keyboard events handling
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.quit()
                 #print self.display.viewerposition
                 self.viewerOldPos = self.display.viewerposition.copy()
-                if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                if event.key == pygame.K_ESCAPE:
+                    self.quit()
+                elif event.key == pygame.K_BACKSPACE:
+                    if self.currentLevel > 0:
+                        self.gotoDisplayLevel(-1)
+                elif event.key == pygame.K_RETURN:
+                    if self.currentLevel < self.maxLevel:
+                        self.gotoDisplayLevel(1)
+                elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                     self.multiSelectMode = True
                 elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
                     self.rotationMode = True
@@ -616,7 +598,21 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glLoadIdentity()
         self.display.setProjection()
         
-        
+    def gotoDisplayLevel( self, dlevel):
+        # Save current level's viewer position
+        self.levelViewerPos[self.currentLevel] = self.display.viewerposition.copy()
+        # Display next level
+        self.currentLevel += dlevel
+        # Reset viewer position to previous
+        try:
+            self.display.viewerposition = self.levelViewerPos[self.currentLevel].copy()
+        except KeyError:
+            self.display.viewerposition = self.levelViewerPos[self.currentLevel] = Vector()
+        # Remove current displayed particles
+        for particle in self.currentDisplayedPhysics.particles:
+            self.display.ogl_displaylists.pop(id(particle))
+            self.display.ogl_transforms.pop(id(particle))
+        self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
         
     def doCommand(self, msg):
         """\
@@ -872,7 +868,9 @@ if __name__ == "__main__":
                                  'ADD NODE 1Node:3Node 1Node:3Node randompos -', 'ADD NODE 1Node:4Node 1Node:4Node randompos -',
                                  'ADD LINK 1Node:1Node 1Node:2Node', 'ADD LINK 1Node:2Node 1Node:3Node',
                                  'ADD LINK 1Node:3Node 1Node:4Node', 'ADD LINK 1Node:4Node 1Node:1Node',
-                                 'ADD NODE 1Node:1Node:1Node 1Node:1Node:1Node randompos -'
+                                 'ADD NODE 1Node:1Node:1Node 1Node:1Node:1Node randompos -',
+                                 'ADD NODE 1Node:1Node:2Node 1Node:1Node:2Node randompos -',
+                                 'ADD LINK 1Node:1Node:1Node 1Node:1Node:2Node'
                                  ]),
         TOKENS = lines_to_tokenlists(),
         VIEWER = TopologyViewer3D(),
