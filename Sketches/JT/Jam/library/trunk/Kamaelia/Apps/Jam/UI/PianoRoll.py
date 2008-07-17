@@ -319,12 +319,16 @@ class PianoRoll(MusicTimingComponent):
                              pygame.Rect((0, i * self.noteSize[1]),
                                          (self.size[0], self.noteSize[1])))
             # Draw lines to make the note boundaries clearer
-            pygame.draw.line(self.background, (127, 127, 127),
+            pygame.draw.line(self.background, (0, 0, 0),
                              (0, i * self.noteSize[1]),
                              (self.size[0], i * self.noteSize[1]))
             # Write note name to the left of the note
             surface = self.font.render(noteName + str(octave), True, (0, 0, 0))
             self.background.blit(surface, (5, i * self.noteSize[1]))
+        # Draw a line at the bottom
+        pygame.draw.line(self.background, (0, 0, 0),
+                         (0, self.size[1] - 1),
+                         (self.size[0],  self.size[1] - 1))
         
         for i in range(self.loopBars + 1):
             xPos = i * self.barWidth
