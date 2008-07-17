@@ -46,10 +46,14 @@ class MessageToRequestTranslator(component):
         while not self.signal:
             for msg in self.Inbox('inbox'):
                 msg = self.decodeMessage(msg)
+                
+                #signals may be included in the message by the gateway, so we
+                #check for a shutdown signal here.
                 sig = msg.get('signal')
                 if sig:
-                    self.signal = LookupByText(sig)(self)
-                #print 'MTRT received:\n', str(msg)
+                    msg['signal'] = LookupByText(sig)(self)
+                    print 'Signal received: ', msg['signal']
+                self.send(msg, 'outbox')
             
             for msg in self.Inbox('control'):
                 self.signal = msg
@@ -59,7 +63,7 @@ class MessageToRequestTranslator(component):
                 
             yield 1
             
-        print self.signal
+        #print self.signal
         self.send(self.signal, 'signal')
     
     def processInitialMessage(self):
@@ -78,9 +82,13 @@ class MessageToRequestTranslator(component):
 class TranslatorChassis(component):
     Inboxes = {'inbox' : 'Receive body messages.  Forwarded to message translator',
                'control' : '',
-               '_msg_translator' : 'Receive messages from the message translator'}
+               '_msg_translator' : 'Receive messages from the message translator',
+               '_handler' : 'Receive outgoing messages from the resource handler',
+               '_body_chunks_in' : 'Receive body chunks'}
     Outboxes = {'outbox' : '',
-                'signal' : ''}
+                'signal' : '',
+                '_body_chunks_out' : 'Send body chunks to the resource handler.',
+                '_msg_translator_signal' : 'Send signals to message translator',}
     
     messageTranslator = MessageToRequestTranslator
     #self.responseTranslator = ResponseToMessageTranslator
@@ -93,7 +101,8 @@ class TranslatorChassis(component):
     def initializeComponents(self):
         self._messageTranslator = self.messageTranslator(self.message)
         self.link((self, 'inbox'), (self._messageTranslator, 'inbox'), passthrough=1)
-        self.link((self, 'control'), (self._messageTranslator, 'control'), passthrough=1)
+        self.link((self, '_msg_translator_signal'), (self._messageTranslator, 'control'))
+        self.link((self._messageTranslator, 'outbox'), (self, '_body_chunks_in'))
         self.link((self._messageTranslator, '_initial'), (self, '_msg_translator'))
         
         self.addChildren(self._messageTranslator)
@@ -112,16 +121,29 @@ class TranslatorChassis(component):
         #print 'chassis received:\n', request
         
         self.handler = self.handler_factory(request)
-        self._messageTranslator.link((self._messageTranslator, 'outbox'), (self.handler, 'inbox'))
         self._messageTranslator.link((self._messageTranslator, 'signal'), (self.handler, 'control'))
+        self.link((self.handler, 'outbox'), (self, '_handler'))
+        self.link((self, '_body_chunks_out'), (self.handler, 'inbox'))
         self.addChildren(self.handler)
         self.handler.activate()
         
-        while not self.childrenDone():
-            #print 'Component died!'
-            #print 'children:\n', self.childComponents()
-            self.pause()
+        self.signal = None
+        while not self.childrenDone():            
+            for msg in self.Inbox('_handler'):
+                print 'Chassis Received', msg
+                
+            for msg in self.Inbox('_body_chunks_in'):
+                if msg.get('signal'):
+                    self.send(msg['signal'], '_msg_translator_signal')
+                self.send(msg, '_body_chunks_out')
+                
+            if not self.anyReady() and not self.childrenDone():
+                self.pause()
+            
             yield 1
+            
+        for msg in self.Inbox('_handler'):
+            print msg
             
     def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
@@ -142,20 +164,33 @@ if __name__ == '__main__':
             super(SimpleHandler, self).__init__(**argd)
             self.request = request
         def main(self):
-            print self.request
             self.signal = None
+            
+            resource = {
+                'statuscode' : '200 OK',
+                'headers' : [('content-type', 'text/plain')],
+                'data' : self.request.get('body'),
+            }
+            self.send(resource, 'outbox')
+            
             while not self.signal:
-                print 'loop in handler'
-                for msg in self.Inbox('inbox'):
-                    print msg
-                    
                 for msg in self.Inbox('control'):
                     self.signal = msg
+
+                for msg in self.Inbox('inbox'):
+                    print 'SimpleHandler received:\n', msg
+                    self.send(msg, 'outbox')
                     
                 if not (self.anyReady() or self.signal):
                     self.pause()
                     
                 yield 1
+                
+            for msg in self.Inbox('inbox'):
+                self.send(msg, 'outbox')
+                
+            self.send(self.signal, 'signal')
+            print 'SimpleHandler dying!'
     
     class FakeHTTPServer(component):
         body={u'body' : u'This is the body'}
@@ -170,6 +205,8 @@ if __name__ == '__main__':
             signal = {'signal' : 'producerFinished'}
             msg = self.makeMessage(signal)
             self.send(msg, 'outbox')
+            
+            print 'FakeHTTPServer dying!'
             
         def makeMessage(self, serializable):
             msg = Message(u'foo@foo.com', u'foo2@foo.com',
@@ -191,7 +228,7 @@ if __name__ == '__main__':
     serial = unicode(unescape(serial))
     msg = Message(u'foo@foo.com', u'foo2@foo.com',
                   type=u'chat')
-    msg.bodies.append(Body(serial))    
+    msg.bodies.append(Body(serial))
     
     https = FakeHTTPServer()
     tc = TranslatorChassis(msg, SimpleHandler)
