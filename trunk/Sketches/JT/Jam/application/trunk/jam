@@ -37,6 +37,7 @@ from optparse import OptionParser
 
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
 from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
 from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 from Kamaelia.Util.Fanout import Fanout
@@ -150,6 +151,14 @@ class TimingFilter(Axon.Component.component):
             if not self.anyReady():
                 self.pause()
             yield 1
+
+class DisplayConfig(Axon.Component.component):
+    width = 800
+    height = 600
+    def main(self):
+        pgd = PygameDisplay( width=self.width, height=self.height).activate()
+        PygameDisplay.setDisplayService(pgd)
+        yield 1
                     
 def parseOptions():
     parser = OptionParser()
@@ -240,12 +249,14 @@ if __name__ == "__main__":
                           }
               ).activate()
 
+    DisplayConfig().activate()
+
     # TODO: XY pads need sorting out to either create more, or have more pucks
     # on the one pad
     if options.midiPort == None:
         # XY pad 1
         Graphline(clockSub = SubscribeTo("frameRateClock"),
-                  xyPad = XYPad(messagePrefix = "/XY/1/", position = (0, 0)),
+                  xyPad = XYPad(messagePrefix = "/XY/1/", position = (20, 20)),
                   localPub = PublishTo("localDataOut"),
                   remotePub = PublishTo("remoteDataOut"),
                   linkages = {("clockSub", "outbox"):("xyPad", "newframe"),
@@ -259,7 +270,7 @@ if __name__ == "__main__":
                   clockSub = SubscribeTo("frameRateClock"),
                   xyFilter = XYFilter(1),
                   xyPad = XYPad(messagePrefix = "/XY/2/", editable=False,
-                                position=(120, 0)),
+                                position=(140, 20)),
                   localPub = PublishTo("localDataOut"),
                   linkages = {("dataSub", "outbox"):("xyFilter", "inbox"),
                               ("xyFilter", "outbox"):("xyPad", "remoteChanges"),
@@ -269,7 +280,7 @@ if __name__ == "__main__":
     else:
         # XY pad 1
         Graphline(clockSub = SubscribeTo("frameRateClock"),
-                  xyPad = XYPad(messagePrefix = "/XY/1/", position = (0, 0)),
+                  xyPad = XYPad(messagePrefix = "/XY/1/", position = (20, 20)),
                   xyPadToMidi = XYPadMidiConverter(channel=2),
                   localPub = PublishTo("localDataOut"),
                   midiPub = PublishTo("midiOut"),
@@ -287,7 +298,7 @@ if __name__ == "__main__":
                   clockSub = SubscribeTo("frameRateClock"),
                   xyFilter = XYFilter(1),
                   xyPad = XYPad(messagePrefix = "/XY/2/", editable=False,
-                                position=(120, 0)),
+                                position=(140, 20)),
                   xyPadToMidi = XYPadMidiConverter(channel=3),
                   localPub = PublishTo("localDataOut"),
                   midiPub = PublishTo("midiOut"),
@@ -305,9 +316,11 @@ if __name__ == "__main__":
         Graphline(dataSub = SubscribeTo("dataIn"),
                   syncSub = SubscribeTo("sync"),
                   ssFilter = StepSequencerFilter(),
-                  ss = StepSequencer(position=(0, 120),
+                  ss = StepSequencer(position=(20, 140),
+                                     size=(760, 200),
                                      messagePrefix="/StepSequencer/",
-                                     sync=True),
+                                     sync=True,
+                                     stepsPerBeat=4),
                   localPub = PublishTo("localDataOut"),
                   remotePub = PublishTo("remoteDataOut"),
                   linkages = {("dataSub", "outbox"):("ssFilter", "inbox"),
@@ -320,9 +333,11 @@ if __name__ == "__main__":
         Graphline(dataSub = SubscribeTo("dataIn"),
                   syncSub = SubscribeTo("sync"),
                   ssFilter = StepSequencerFilter(),
-                  ss = StepSequencer(position=(0, 120),
+                  ss = StepSequencer(position=(20, 140),
+                                     size=(760, 200),
                                      messagePrefix="/StepSequencer/",
-                                     sync=True),
+                                     sync=True,
+                                     stepsPerBeat=4),
                   fanout = Fanout(("midi", "osc")),
                   ssToMidi = StepSequencerMidiConverter(), 
                   localPub = PublishTo("localDataOut"),
@@ -343,7 +358,8 @@ if __name__ == "__main__":
         Graphline(dataSub = SubscribeTo("dataIn"),
                   syncSub = SubscribeTo("sync"),
                   prFilter = PianoRollFilter(),
-                  pr = PianoRoll(position=(0, 360),
+                  pr = PianoRoll(position=(20, 360),
+                                 size=(760, 200),
                                  messagePrefix="/PianoRoll/",
                                  sync=True),
                   localPub = PublishTo("localDataOut"),
@@ -358,7 +374,8 @@ if __name__ == "__main__":
         Graphline(dataSub = SubscribeTo("dataIn"),
                   syncSub = SubscribeTo("sync"),
                   prFilter = PianoRollFilter(),
-                  pr = PianoRoll(position=(0, 360),
+                  pr = PianoRoll(position=(20, 360),
+                                 size=(760, 200),
                                  messagePrefix="/PianoRoll/",
                                  sync=True),
                   fanout = Fanout(("midi", "osc")),
