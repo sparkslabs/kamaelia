@@ -21,21 +21,24 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 from Axon.Component import component
-from Axon.Ipc import LookupByText
+from Axon.Ipc import LookupByText, ToText
 
 from xml.sax.saxutils import unescape, escape
 
+from headstock.api.im import Message, Body, Thread
+
 import simplejson
 
-class MessageToRequestTranslator(component):
+class RequestTranslator(component):
     Inboxes = {'inbox' : '',
                'control' : '',}
     Outboxes = {'outbox' : '',
-                '_initial' : 'send the initial output',
-                'signal' : ''}
-    
+                'initial' : 'send the initial output',
+                'batch' : 'Output the batch id',
+                'signal' : '',
+                'chassis_signal' : '',}
     def __init__(self, message, **argd):
-        super(MessageToRequestTranslator, self).__init__(**argd)
+        super(RequestTranslator, self).__init__(**argd)
         self.batch_id = None
         self.message = message
     
@@ -51,8 +54,11 @@ class MessageToRequestTranslator(component):
                 #check for a shutdown signal here.
                 sig = msg.get('signal')
                 if sig:
-                    msg['signal'] = LookupByText(sig)(self)
-                    print 'Signal received: ', msg['signal']
+                    #FIXME:  This is just plain ugly.  Plus, do we really want to
+                    #signals mixed in with the body after this point?
+                    signal_instance = LookupByText(sig)(self)
+                    self.send(signal_instance, 'chassis_signal')
+
                 self.send(msg, 'outbox')
             
             for msg in self.Inbox('control'):
@@ -68,9 +74,11 @@ class MessageToRequestTranslator(component):
     
     def processInitialMessage(self):
         request = self.decodeMessage(self.message)
+        self.batch_id = request['batch']
+        self.send(self.batch_id, 'batch')
         
         assert(isinstance(request, dict))
-        self.send(request, '_initial')
+        self.send(request, 'initial')
         
     def decodeMessage(self, msg):
         temp = [str(x) for x in msg.bodies]
@@ -78,20 +86,68 @@ class MessageToRequestTranslator(component):
         
         body = unescape(body)
         return simplejson.loads(body)
+    
+class ResponseTranslator(component):
+    Inboxes = {
+        'inbox' : '',
+        'control' : '',
+        'batch' : 'receive the batch ID'
+    }
+    Outboxes = {
+        'outbox' : '',
+        'signal' : '',
+    }
+    def main(self):
+        #wait for the batch ID from the Request Translator
+        while not self.dataReady('batch'):
+            self.pause()
+            yield 1
+            
+        self.batch_id = self.recv('batch')
+        print '> BATCH ID: ', self.batch_id
+        
+        self.signal = None
+        while not self.signal:
+            for response in self.Inbox('inbox'):
+                print Message.to_element(self.makeMessage(response)).xml()
+                
+            for msg in self.Inbox('control'):
+                self.signal = msg
+                
+            if not self.anyReady() and not self.signal:
+                self.pause()
+                
+            yield 1
+            
+        self.send(self.signal, 'signal')
+        print 'Response Translator dying!'
+        
+    def makeMessage(self, serializable):            
+        text = simplejson.dumps(serializable)
+        text = escape(text) #FIXME:  Security issue.  Will unescape escaped HTML when deserialized
+        text = unicode(text)
+        
+        msg = Message(u'foo@foo.com', u'foo2@foo.com',
+                      type=u'chat')
+        msg.bodies.append(Body(text))
+        msg.thread = Thread(self.batch_id)
+        
+        return msg
+        
         
 class TranslatorChassis(component):
     Inboxes = {'inbox' : 'Receive body messages.  Forwarded to message translator',
                'control' : '',
                '_msg_translator' : 'Receive messages from the message translator',
-               '_handler' : 'Receive outgoing messages from the resource handler',
-               '_body_chunks_in' : 'Receive body chunks'}
+               '_body_chunks_in' : 'Receive body chunks',
+               '_request_control' : 'Receive signals from the request handler',}
     Outboxes = {'outbox' : '',
                 'signal' : '',
                 '_body_chunks_out' : 'Send body chunks to the resource handler.',
-                '_msg_translator_signal' : 'Send signals to message translator',}
+                '_request_signal' : 'Send signals to message translator',}
     
-    messageTranslator = MessageToRequestTranslator
-    #self.responseTranslator = ResponseToMessageTranslator
+    requestTranslator = RequestTranslator
+    responseTranslator = ResponseTranslator
     def __init__(self, message, handler_factory, **argd):
         super(TranslatorChassis, self).__init__(**argd)
         self.message = message
@@ -99,16 +155,24 @@ class TranslatorChassis(component):
         self.initializeComponents()
         
     def initializeComponents(self):
-        self._messageTranslator = self.messageTranslator(self.message)
-        self.link((self, 'inbox'), (self._messageTranslator, 'inbox'), passthrough=1)
-        self.link((self, '_msg_translator_signal'), (self._messageTranslator, 'control'))
-        self.link((self._messageTranslator, 'outbox'), (self, '_body_chunks_in'))
-        self.link((self._messageTranslator, '_initial'), (self, '_msg_translator'))
+        """Set up the response and request translators.
         
-        self.addChildren(self._messageTranslator)
+        FIXME:  This is a disorganized mess."""
+        self._requestTranslator = self.requestTranslator(self.message)
+        self.link((self, 'inbox'), (self._requestTranslator, 'inbox'), passthrough=1)
+        self.link((self, '_request_signal'), (self._requestTranslator, 'control'))
+        self.link((self._requestTranslator, 'outbox'), (self, '_body_chunks_in'))
+        self.link((self._requestTranslator, 'initial'), (self, '_msg_translator'))
+        self.link((self._requestTranslator, 'chassis_signal'), (self, '_request_control'))
+        
+        self._responseTranslator = self.responseTranslator()
+        self.link((self._requestTranslator, 'batch'), (self._responseTranslator, 'batch'))
+        self._responseTranslator.activate()
+        
+        self.addChildren(self._requestTranslator, self._responseTranslator)
         
     def main(self):
-        self._messageTranslator.activate()
+        self._requestTranslator.activate()
         
         self.signal = None
         initial_message_handled = False
@@ -117,33 +181,33 @@ class TranslatorChassis(component):
         while not self.dataReady('_msg_translator'):
             self.pause()
             yield 1
+            
         request = self.recv('_msg_translator')
         #print 'chassis received:\n', request
         
+        #FIXME: The below section is a disorganized mess
         self.handler = self.handler_factory(request)
-        self._messageTranslator.link((self._messageTranslator, 'signal'), (self.handler, 'control'))
-        self.link((self.handler, 'outbox'), (self, '_handler'))
+        self._requestTranslator.link((self._requestTranslator, 'signal'), (self.handler, 'control'))
         self.link((self, '_body_chunks_out'), (self.handler, 'inbox'))
+        self.link((self.handler, 'outbox'), (self._responseTranslator, 'inbox'))
+        self.link((self.handler, 'signal'), (self._responseTranslator, 'control'))
         self.addChildren(self.handler)
         self.handler.activate()
         
-        self.signal = None
-        while not self.childrenDone():            
-            for msg in self.Inbox('_handler'):
-                print 'Chassis Received', msg
-                
+        #We could eliminate checking the inboxes in this loop with a passthrough
+        #link, but we want to make sure that messages aren't lost before the handler
+        #is created.
+        while not self.childrenDone():                            
             for msg in self.Inbox('_body_chunks_in'):
-                if msg.get('signal'):
-                    self.send(msg['signal'], '_msg_translator_signal')
                 self.send(msg, '_body_chunks_out')
+                
+            for msg in self.Inbox('_request_control'):
+                self.send(msg, '_request_signal')
                 
             if not self.anyReady() and not self.childrenDone():
                 self.pause()
             
             yield 1
-            
-        for msg in self.Inbox('_handler'):
-            print msg
             
     def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
@@ -223,6 +287,7 @@ if __name__ == '__main__':
         'a' : 'b',
         'c' : 'd',
         'e' : 'f',
+        'batch' : '1234'
     }
     serial = simplejson.dumps(request)
     serial = unicode(unescape(serial))
