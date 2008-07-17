@@ -261,8 +261,8 @@ if __name__ == "__main__":
                   localPub = PublishTo("localDataOut"),
                   remotePub = PublishTo("remoteDataOut"),
                   linkages = {("clockSub", "outbox"):("xyPad", "newframe"),
-                              #("xyPad", "outbox"):("localPub", "inbox"),
-                              #("xyPad", "localChanges"):("remotePub", "inbox")}
+                              ("xyPad", "outbox"):("localPub", "inbox"),
+                              ("xyPad", "localChanges"):("remotePub", "inbox")
                     }
                   ).activate()
 
