@@ -74,9 +74,9 @@ class StepSequencer(MusicTimingComponent):
         # UI Init
         # --------
         # Make the size fit the exact number of beats and channels
-        self.size = (self.size[0] - self.size[0] % (self.numSteps),
-                     self.size[1] - self.size[1] % len(self.channels))
-        self.positionSize = (self.size[0]/self.numSteps, 25)
+        self.size = (self.size[0] - self.size[0] % (self.numSteps) + 1,
+                     self.size[1] - self.size[1] % len(self.channels) + 2)
+        self.positionSize = ((self.size[0]/self.numSteps), 25)
         self.stepSize = (self.size[0]/self.numSteps,
                          (self.size[1]-self.positionSize[1])/len(self.channels))
 
@@ -192,43 +192,50 @@ class StepSequencer(MusicTimingComponent):
     # UI Functions
     ###
 
-    def drawStartingRects(self):
-        """
-        Initial render of all of the blank steps
-        """
-        for i in range(len(self.channels)):
-            for j in range(self.numSteps):
-                self.drawStepRect(j, i)
-        for i in range(self.numSteps):
-            self.drawPositionRect(i, False)
+    def drawMarkings(self):
+        self.display.fill((255, 255, 255))
+        pygame.draw.line(self.display, (0, 0, 0),
+                         (0, 0), (self.size[0], 0))
+        for i in range(self.numChannels + 1):
+            pygame.draw.line(self.display, (127, 127, 127),
+                             (0, self.positionSize[1] + i * self.stepSize[1]),
+                             (self.size[0], self.positionSize[1] + i * self.stepSize[1]))
+        for i in range(self.numSteps + 1):
+            if i % (self.stepsPerBeat * self.loopBars) == 0:
+                colour = (0, 0, 0)
+            elif i % (self.stepsPerBeat) == 0:
+                colour = (127, 127, 127)
+            else:
+                colour = (190, 190, 190)
+            pygame.draw.line(self.display, colour,
+                             (i * self.stepSize[0], 0),
+                             (i * self.stepSize[0], self.size[1]))
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
     def drawStepRect(self, step, channel):
         """
         Render a single step with a colour corresponding to its velocity
         """
-        position = (step * self.stepSize[0], channel * self.stepSize[1] + self.positionSize[1])
+        position = (step * self.stepSize[0]+1, channel * self.stepSize[1] + self.positionSize[1] + 1)
+        size = (self.stepSize[0] - 1, self.stepSize[1]-1)
         velocity = self.channels[channel][step][0]
         pygame.draw.rect(self.display, (255, 255*(1-velocity),
                                         255*(1-velocity)),
-                         pygame.Rect(position, self.stepSize))
-        pygame.draw.rect(self.display, (0, 0, 0),
-                         pygame.Rect(position, self.stepSize), 1)
+                         pygame.Rect(position, size))
 
     def drawPositionRect(self, step, active):
         """
         Render a single step in the position display, using colour if the
         position is active
         """
-        position = (step * self.stepSize[0], 0)
+        position = (step * self.stepSize[0]+1, 1)
+        size = (self.positionSize[0] - 1, self.positionSize[1] - 1)
         if active:
             colour = (255, 255, 0)
         else:
             colour = (255, 255, 255)
         pygame.draw.rect(self.display, colour,
-                         pygame.Rect(position, self.positionSize))
-        pygame.draw.rect(self.display, (0, 0, 0),
-                         pygame.Rect(position, self.positionSize), 1)
+                         pygame.Rect(position, size))
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
 
     def positionToStep(self, position):
@@ -252,7 +259,7 @@ class StepSequencer(MusicTimingComponent):
             self.pause()
         self.display = self.recv("callback")
 
-        self.drawStartingRects()
+        self.drawMarkings()
 
         self.send({"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                    "surface" : self.display},
