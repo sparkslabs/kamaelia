@@ -47,7 +47,7 @@ class requestToMessageTranslator(component):
                 'signal' : 'Send signals',
                 'publisher_signal' : 'send signals to the publisher',}
     
-    ThisJID = JID(u'amnorvend_gateway', u'jabber.org', u'headstock')
+    ThisJID = u'amnorvend_gateway@jabber.org'
     ToJID = u'amnorvend@jabber.org'
     bundle = OutboxBundle()
     def __init__(self, request, **argd):
@@ -58,11 +58,14 @@ class requestToMessageTranslator(component):
         self.Publisher = PublishTo(BPLANE_NAME)
         self.link((self, 'outbox'), (self.Publisher, 'inbox'))
         
-    def main(self):
-        self.Publisher.activate()
-        self.request['batch'] = self.batch_id
+        if not isinstance(self.ToJID, unicode):
+            self.ToJID = unicode(self.ToJID)
+        if not isinstance(self.ThisJID, unicode):
+            self.ThisJID = unicode(self.ThisJID)
         
-        self.sendInitialMessage()
+    def main(self):
+        self.Publisher.activate()        
+        self.sendInitialMessage(self.request)
         
         yield 1
         
@@ -80,54 +83,46 @@ class requestToMessageTranslator(component):
             
         self.send(self.signal, 'signal')
         self.send(self.signal, 'publisher_signal')
+        
+        signal_msg = {'signal' : type(self.signal).__name__}
+        self.sendMessage(signal_msg)
     
     def handleInbox(self, msg):
         chunk = {
-            'data' : escape(msg),
+            'body' : escape(msg),
             'batch' : self.batch_id,
         }
-        serialize = simplejson.dumps(chunk)
-        
-        #hMessage being a headstock message
-        hMessage = Message(self.ThisJID, self.ToJID,
-                           type=u'chat', stanza_id=generate_unique())
-        
-        hMessage.event = Event.composing
-        hMessage.bodies.append(unicode(Body(serialize)))
-        appendTID(hMessage, self.batch_id)
-        self.send(hMessage, 'outbox')
-        
-        # Right after we sent the first message
-        # we send another one reseting the event status
-        m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
-                    type=u'chat', stanza_id=generate_unique())
-        
-        self.send(m, "outbox")
+        self.sendMessage(chunk)
     
     def handleControlBox(self, msg):
         if isinstance(msg, (shutdownMicroprocess, producerFinished)):
             self.signal = msg
             
-    def sendInitialMessage(self):
-        serialize = simplejson.dumps(self.request)
-        serialize = escape(serialize)   #make the data suitable for transmission via XML
+    def sendInitialMessage(self, request):
+        request['batch'] = self.batch_id
         
-        hMessage = Message(unicode(self.ThisJID), unicode(self.ToJID),
-                           type=u'chat', stanza_id=generate_unique())
-        
-        hMessage.bodies.append(Body(unicode(serialize)))
-        appendTID(hMessage, self.batch_id)
-        
+        hMessage = self.makeMessage(request)
         out = InitialMessage(hMessage=hMessage,
                              bundle=self.bundle, batch_id=self.batch_id)
         
         self.send(out, 'outbox')
         
-        m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
-                    type=u'chat', stanza_id=generate_unique())
-        
-        self.send(m, "outbox")        
+    def makeMessage(self, serializable):
+        hMessage = Message(self.ThisJID, self.ToJID,
+                           type=u'chat', stanza_id=generate_unique())
             
+        body = simplejson.dumps(serializable)
+        body = escape(body)
+        body = unicode(body)
+        hMessage.bodies.append(Body(body))
+        
+        hMessage.thread = Thread(self.batch_id)
+        
+        return hMessage
+    
+    def sendMessage(self, serializable):
+        self.send(self.makeMessage(serializable), 'outbox')
+        
 class messageToResponseTranslator(component):
     ThisJID = 'amnorvend_gateway@jabber.org'
     ToJID = 'amnorvend@jabber.org/gateway'
@@ -161,8 +156,9 @@ class messageToResponseTranslator(component):
             self.send(resource, 'outbox')
         
     def handleControlBox(self, msg):
-        if isinstance(msg, (shutdownMicroprocess, producerFinished)):
+        if isinstance(msg, (producerFinished, shutdownMicroprocess)):
             self.signal = msg
+            
             
 def appendTID(msg, thread_id):
     tobj = Thread(thread_id)

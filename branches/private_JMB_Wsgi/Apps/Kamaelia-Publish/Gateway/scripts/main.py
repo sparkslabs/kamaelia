@@ -27,7 +27,7 @@ from jabber import constructXMPPClient, XMPPConfigObject
 from http import constructHTTPServer
 
 def main():
-    Config = ParseConfigFile('~/kp.ini', DictFormatter())
+    Config = ParseConfigFile('~/kpgate.ini', DictFormatter())
     
     server = constructHTTPServer()    
     xmpp = constructXMPPClient(XMPPConfigObject(Config['XMPP']))
