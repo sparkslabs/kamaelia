@@ -336,6 +336,10 @@ def LookupByText(name):
          __ipc_lookup[item.__name__] = item
          
    return __ipc_lookup[name]
+
+def ToText(signal):
+   """Convert a signal into a text representation"""
+   return type(signal).__name__
    
 
 if __name__ == '__main__':

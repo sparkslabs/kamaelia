@@ -54,9 +54,11 @@ class RequestTranslator(component):
                 #check for a shutdown signal here.
                 sig = msg.get('signal')
                 if sig:
-                    #FIXME:  This is just plain ugly.  Plus, do we really want to
-                    #signals mixed in with the body after this point?
-                    signal_instance = LookupByText(sig)(self)
+                    #If there's a signal in the message, we send it to the chassis
+                    #to be sent right back to here after the request handler is
+                    #created.  This is done to prevent things from shutting down
+                    #too quickly.
+                    signal_instance = LookupByText(sig)(self)  #FIXME:  This is just plain ugly.
                     self.send(signal_instance, 'chassis_signal')
 
                 self.send(msg, 'outbox')
@@ -120,7 +122,6 @@ class ResponseTranslator(component):
             yield 1
             
         self.send(self.signal, 'signal')
-        print 'Response Translator dying!'
         
     def makeMessage(self, serializable):            
         text = simplejson.dumps(serializable)
@@ -136,6 +137,15 @@ class ResponseTranslator(component):
         
         
 class TranslatorChassis(component):
+    """
+    This is a chassis that will create a pair of translators and a resource handler
+    (aka Minimal or the WSGI Handler).  It will die only when all these components
+    die.
+    
+    Note that this component will also be responsible for forwarding messages from
+    the request translator to the resource handler.  It does this to prevent messages
+    that are sent before the resource handler is created from being lost.
+    """
     Inboxes = {'inbox' : 'Receive body messages.  Forwarded to message translator',
                'control' : '',
                '_msg_translator' : 'Receive messages from the message translator',
@@ -167,6 +177,7 @@ class TranslatorChassis(component):
         
         self._responseTranslator = self.responseTranslator()
         self.link((self._requestTranslator, 'batch'), (self._responseTranslator, 'batch'))
+        self.link((self._requestTranslator, 'signal'), (self, 'signal'), passthrough=2)
         self._responseTranslator.activate()
         
         self.addChildren(self._requestTranslator, self._responseTranslator)
@@ -194,13 +205,17 @@ class TranslatorChassis(component):
         self.addChildren(self.handler)
         self.handler.activate()
         
-        #We could eliminate checking the inboxes in this loop with a passthrough
-        #link, but we want to make sure that messages aren't lost before the handler
-        #is created.
         while not self.childrenDone():                            
+            #This just forwards body chunks from the request translator to the
+            #resource handler.  This is done to prevent any messages that were
+            #sent out by the request translator before the resource handler is
+            #created from being lost.
             for msg in self.Inbox('_body_chunks_in'):
                 self.send(msg, '_body_chunks_out')
                 
+            #essentially all the following code does is send a signal that was sent
+            #to us by the request translator.  It does this so that we can ensure
+            #that things don't get shut down too quickly.
             for msg in self.Inbox('_request_control'):
                 self.send(msg, '_request_signal')
                 
