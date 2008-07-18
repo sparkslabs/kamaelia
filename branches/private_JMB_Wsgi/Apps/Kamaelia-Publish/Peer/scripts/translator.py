@@ -29,7 +29,7 @@ from headstock.api.im import Message, Body, Thread
 
 import simplejson
 
-class RequestTranslator(component):
+class RequestDeserializer(component):
     Inboxes = {'inbox' : '',
                'control' : '',}
     Outboxes = {'outbox' : '',
@@ -38,7 +38,7 @@ class RequestTranslator(component):
                 'signal' : '',
                 'chassis_signal' : '',}
     def __init__(self, message, **argd):
-        super(RequestTranslator, self).__init__(**argd)
+        super(RequestDeserializer, self).__init__(**argd)
         self.batch_id = None
         self.message = message
     
@@ -70,14 +70,18 @@ class RequestTranslator(component):
                 self.pause()
                 
             yield 1
-            
-        #print self.signal
+
         self.send(self.signal, 'signal')
+        #print 'deserializer dying!'
     
     def processInitialMessage(self):
         request = self.decodeMessage(self.message)
         self.batch_id = request['batch']
         self.send(self.batch_id, 'batch')
+        sig = request.get('signal')
+        if sig:
+            signal_instance = LookupByText(sig)(self)  #FIXME:  This is just plain ugly.
+            self.send(signal_instance, 'chassis_signal')
         
         assert(isinstance(request, dict))
         self.send(request, 'initial')
@@ -89,7 +93,7 @@ class RequestTranslator(component):
         body = unescape(body)
         return simplejson.loads(body)
     
-class ResponseTranslator(component):
+class ResponseSerializer(component):
     Inboxes = {
         'inbox' : '',
         'control' : '',
@@ -106,15 +110,16 @@ class ResponseTranslator(component):
             yield 1
             
         self.batch_id = self.recv('batch')
-        print '> BATCH ID: ', self.batch_id
+        #print '> BATCH ID: ', self.batch_id
         
         self.signal = None
         while not self.signal:
             for response in self.Inbox('inbox'):
-                print Message.to_element(self.makeMessage(response)).xml()
+                self.send(self.makeMessage(response), 'outbox')
                 
             for msg in self.Inbox('control'):
                 self.signal = msg
+                self.send(self.makeMessage({'signal' : type(self.signal).__name__}))
                 
             if not self.anyReady() and not self.signal:
                 self.pause()
@@ -122,6 +127,7 @@ class ResponseTranslator(component):
             yield 1
             
         self.send(self.signal, 'signal')
+        #print 'serializer dying!'
         
     def makeMessage(self, serializable):            
         text = simplejson.dumps(serializable)
@@ -156,8 +162,8 @@ class TranslatorChassis(component):
                 '_body_chunks_out' : 'Send body chunks to the resource handler.',
                 '_request_signal' : 'Send signals to message translator',}
     
-    requestTranslator = RequestTranslator
-    responseTranslator = ResponseTranslator
+    requestTranslator = RequestDeserializer
+    responseTranslator = ResponseSerializer    
     def __init__(self, message, handler_factory, **argd):
         super(TranslatorChassis, self).__init__(**argd)
         self.message = message
@@ -177,13 +183,13 @@ class TranslatorChassis(component):
         
         self._responseTranslator = self.responseTranslator()
         self.link((self._requestTranslator, 'batch'), (self._responseTranslator, 'batch'))
-        self.link((self._requestTranslator, 'signal'), (self, 'signal'), passthrough=2)
-        self._responseTranslator.activate()
+        self.link((self._responseTranslator, 'signal'), (self, 'signal'), passthrough=2)
         
         self.addChildren(self._requestTranslator, self._responseTranslator)
         
     def main(self):
         self._requestTranslator.activate()
+        self._responseTranslator.activate()
         
         self.signal = None
         initial_message_handled = False
@@ -202,6 +208,7 @@ class TranslatorChassis(component):
         self.link((self, '_body_chunks_out'), (self.handler, 'inbox'))
         self.link((self.handler, 'outbox'), (self._responseTranslator, 'inbox'))
         self.link((self.handler, 'signal'), (self._responseTranslator, 'control'))
+        self.link((self._responseTranslator, 'outbox'), (self, 'outbox'), passthrough=2)
         self.addChildren(self.handler)
         self.handler.activate()
         
@@ -233,43 +240,45 @@ class TranslatorChassis(component):
                self.removeChild(child)   # deregisters linkages for us
 
        return 0==len(self.childComponents())
+    
+class SimpleHandler(component):
+    def __init__(self, request, **argd):
+        super(SimpleHandler, self).__init__(**argd)
+        self.request = request
+    def main(self):
+        self.signal = None
+        
+        resource = {
+            'statuscode' : '200 OK',
+            'headers' : [('content-type', 'text/plain')],
+            'data' : self.request.get('body'),
+        }
+        self.send(resource, 'outbox')
+        
+        while not self.signal:
+            for msg in self.Inbox('control'):
+                self.signal = msg
+
+            for msg in self.Inbox('inbox'):
+                print 'SimpleHandler received:\n', msg
+                self.send(msg, 'outbox')
+                
+            if not (self.anyReady() or self.signal):
+                self.pause()
+                
+            yield 1
+            
+        for msg in self.Inbox('inbox'):
+            self.send(msg, 'outbox')
+            
+        self.send(self.signal, 'signal')
+        print 'SimpleHandler dying!'
         
 if __name__ == '__main__':
     from headstock.api.im import Message, Body
     from Kamaelia.Chassis.Pipeline import Pipeline
     
-    class SimpleHandler(component):
-        def __init__(self, request, **argd):
-            super(SimpleHandler, self).__init__(**argd)
-            self.request = request
-        def main(self):
-            self.signal = None
-            
-            resource = {
-                'statuscode' : '200 OK',
-                'headers' : [('content-type', 'text/plain')],
-                'data' : self.request.get('body'),
-            }
-            self.send(resource, 'outbox')
-            
-            while not self.signal:
-                for msg in self.Inbox('control'):
-                    self.signal = msg
 
-                for msg in self.Inbox('inbox'):
-                    print 'SimpleHandler received:\n', msg
-                    self.send(msg, 'outbox')
-                    
-                if not (self.anyReady() or self.signal):
-                    self.pause()
-                    
-                yield 1
-                
-            for msg in self.Inbox('inbox'):
-                self.send(msg, 'outbox')
-                
-            self.send(self.signal, 'signal')
-            print 'SimpleHandler dying!'
     
     class FakeHTTPServer(component):
         body={u'body' : u'This is the body'}
@@ -312,5 +321,6 @@ if __name__ == '__main__':
     
     https = FakeHTTPServer()
     tc = TranslatorChassis(msg, SimpleHandler)
+    print repr(tc)
     
     Pipeline(https, tc).run()
