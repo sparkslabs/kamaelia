@@ -152,7 +152,7 @@ class IntelligentFileReader(component):
                     
             if not self.done:
                 self.pause()
-          
+        
         self.send(producerFinished(self), "signal")
         self.debug("IntelligentFileReader terminated")
 
