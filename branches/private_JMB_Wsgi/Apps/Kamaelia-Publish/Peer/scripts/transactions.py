@@ -91,6 +91,7 @@ def BoxBundle(adap, translator=None, thread=None):
         OutboxRmMethod = adap.deleteOutbox,
         LinkMethod = adap.link,
         thread = thread,
+        Translator=translator,
     )
     return bundle
 
@@ -103,16 +104,29 @@ class TransactionManager(threadedadaptivecommscomponent):
         self.transactions = {}
     
     def main(self):
-        not_done = True
-        while not_done:
+        self.signal = None
+        while not self.signal:
+            for msg in self.Inbox('control'):
+                self.signal = msg
+                
             for msg in self.Inbox('inbox'):
                 self.handleIncoming(msg)
 
+            marked = set()
             for thread, transaction in self.transactions.iteritems():
                 if transaction.anyReady():
+                    for msg in transaction.Inbox('control'):
+                        marked.add(thread)
+                        
                     for msg in transaction.Inbox('inbox'):
                         print 'TM received:\n', Message.to_element(msg).xml()
-                        not_done = False
+                        
+            self._cleanup(marked)
+
+            if not self.anyReady():
+                self.pause()
+        for k,v in self.transactions.iteritems():
+            print repr(v)                        
     
     def handleIncoming(self, msg):
         if not self.transactions.get(str(msg.thread)):
@@ -141,9 +155,17 @@ class TransactionManager(threadedadaptivecommscomponent):
         transaction = self.transactions[thread]
         transaction.send(msg, 'outbox')
         
+    def _cleanup(self, marked):
+        for thread in marked:
+            transaction = self.transactions[thread]
+            self.removeChild(transaction.Translator)
+            transaction.destroyBoxes()
+            del self.transactions[thread]
+        
 if __name__ == '__main__':
     from Axon.Component import component
     from Axon.Introspector import Introspector
+    from Axon.Ipc import producerFinished
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
     
@@ -151,20 +173,25 @@ if __name__ == '__main__':
     
     class Producer(component):
         def main(self):
-            msg = Message(u'foo@foo.com', u'foo2@foo.com',
-                          type=u'chat')
-            body = Body(simplejson.dumps({'batch' : '1234', 'signal' : 'producerFinished'}))
-            msg.bodies.append(body)
-            msg.thread = Thread(unicode('1234'))
-            self.send(msg, 'outbox')
-            yield 1
-            
-            msg = Message(u'foo@foo.com', u'foo2@foo.com',
-                          type=u'chat')
-            body = Body(simplejson.dumps({'signal' : 'producerFinished'}))
-            msg.bodies.append(body)
-            msg.thread = Thread(unicode('1234'))
-            self.send(msg, 'outbox')
+            for i in xrange(5):
+                msg = Message(u'foo@foo.com', u'foo2@foo.com',
+                              type=u'chat')
+                body = Body(simplejson.dumps({'batch' :  str(i), 'signal' : 'producerFinished'}))
+                msg.bodies.append(body)
+                msg.thread = Thread(unicode(i))
+                self.send(msg, 'outbox')
+                yield 1
+                
+                msg = Message(u'foo@foo.com', u'foo2@foo.com',
+                              type=u'chat')
+                body = Body(simplejson.dumps({'signal' : 'producerFinished', 'batch': str(i)}))
+                msg.bodies.append(body)
+                msg.thread = Thread(unicode(i))
+                self.send(msg, 'outbox')
+                
+                yield 1
+                
+            self.send(producerFinished(self), 'signal')
             
     Pipeline(
         Producer(),
