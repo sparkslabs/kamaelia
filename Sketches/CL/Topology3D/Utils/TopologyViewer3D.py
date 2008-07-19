@@ -912,7 +912,10 @@ if __name__ == "__main__":
                                  'ADD LINK 1Node:3Node 1Node:4Node', 'ADD LINK 1Node:4Node 1Node:1Node',
                                  'ADD NODE 1Node:1Node:1Node 1Node:1Node:1Node randompos -',
                                  'ADD NODE 1Node:1Node:2Node 1Node:1Node:2Node randompos -',
-                                 'ADD LINK 1Node:1Node:1Node 1Node:1Node:2Node'
+                                 'ADD LINK 1Node:1Node:1Node 1Node:1Node:2Node',
+                                 'ADD NODE 5Node:1Node 5Node:1Node randompos sphere',
+                                 'ADD NODE 5Node:2Node 5Node:2Node randompos sphere',
+                                 'ADD LINK 5Node:1Node 5Node:2Node'
                                  ]),
         TOKENS = lines_to_tokenlists(),
         VIEWER = TopologyViewer3D(),
