@@ -120,6 +120,7 @@ class Slider(Axon.Component.component):
     def __init__(self, position=None,
                  bgcolour=(255, 255, 255), fgcolour=(0, 0, 0),
                  messagePrefix = "",
+                 default = 0,
                  positionMsg="Position",
                  size=(100, 100)):
         """
@@ -137,7 +138,8 @@ class Slider(Axon.Component.component):
         self.lastMousePos = (0, 0)
         self.sliderPos = 0
         self.messagePrefix = messagePrefix
-
+        
+        self.default = default
         self.selectedSize = 3
         self.borderWidth = 5
         self.bgcolour = bgcolour
@@ -176,6 +178,7 @@ class Slider(Axon.Component.component):
 
 
         # Initial render so we don't see a blank screen
+        self.sliderPos = self.default
         self.drawBG()
         self.render()
 
@@ -190,7 +193,6 @@ class Slider(Axon.Component.component):
         self.send({"ADDLISTENEVENT" : pygame.MOUSEMOTION,
                     "surface" : self.display},
                     "display_signal")
-
         done = False
         while not done:
             if not self.anyReady():

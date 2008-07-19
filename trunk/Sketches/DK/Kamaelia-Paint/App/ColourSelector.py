@@ -283,7 +283,7 @@ class ColourSelector(Axon.Component.component):
         elif (self.colours == "GB"):
             self.selectedColour = (0, self.puckPos[0], self.puckPos[1])
         pygame.draw.rect(self.display, self.selectedColour, self.display.get_rect(), self.borderWidth)
-        self.send((("colour",self.selectedColour),), "outbox")
+        self.send(((self.messagePrefix,self.selectedColour),), "outbox")
         #refresh the screen
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
         
@@ -291,9 +291,9 @@ class ColourSelector(Axon.Component.component):
 if __name__ == "__main__":
     from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
     from Kamaelia.Util.Console import ConsoleEchoer
-    from Kamaelia.Chassis.Graphline import Graphline
-    
-    ColourSelector(position = (100,100), size = (255,255)).activate()
+    from Kamaelia.Chassis.Pipeline import Pipeline
+
+    Pipeline(ColourSelector(position = (100,100), size = (255,255)), ConsoleEchoer()).run()
     Axon.Scheduler.scheduler.run.runThreads()
     
 # Licensed to the BBC under a Contributor Agreement: JT/DK

@@ -271,12 +271,12 @@ class Paint(Axon.Component.component):
                     elif event[0] == "Tool":
                         self.tool = event[1]
                     elif event[0] == "Size":
-                        self.toolSize = event[1]
+                        self.toolSize = event[1]/3
                     elif event[0] == "Alpha":
                         self.layers[self.activeLayIn].set_alpha(event[1])
                         self.blitToSurface()
                       #  print self.activeLayer.get_alpha()
-                    elif event[0] == 'colour':
+                    elif event[0] == 'Colour':
                         self.selectedColour = event[1]
                     break
                 if event.type == pygame.MOUSEBUTTONDOWN:
