@@ -349,8 +349,13 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     currentTime = time.time()
                     elapsedTime = currentTime - self.lastClickTime
                     if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
-                        if self.currentLevel < self.maxLevel:
+                        if self.currentLevel < self.maxLevel and len(self.selectedParticles) == 1:
                             self.gotoDisplayLevel(1)
+                        else:
+                            if self.currentLevel == self.maxLevel:
+                                print "Warning: max hierarchy level has reached!"
+                            if len(self.selectedParticles) != 1:
+                                print "Tips: To extend a node, please double-click the node you want to extend"
                     else:
                         if not self.rotationMode:
                             for particle in self.currentDisplayedPhysics.particles:
@@ -370,6 +375,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 if event.button == 3:
                     if self.currentLevel > 0:
                         self.gotoDisplayLevel(-1)
+                    else:
+                        print "Warning: The first hierarchy level has reached!"
                 if event.button == 4:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -452,9 +459,17 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 elif event.key == pygame.K_BACKSPACE:
                     if self.currentLevel > 0:
                         self.gotoDisplayLevel(-1)
+                    else:
+                        print "Warning: The first hierarchy level has reached!"
                 elif event.key == pygame.K_RETURN:
-                    if self.currentLevel < self.maxLevel:
+                    if self.currentLevel < self.maxLevel and len(self.selectedParticles) == 1:
                         self.gotoDisplayLevel(1)
+                    else:
+                        if self.currentLevel == self.maxLevel:
+                            print "Warning: max hierarchy level has reached!"
+                        if len(self.selectedParticles) != 1:
+                            print "Tips: To extend a node, please click to select the node you want to extend first."
+                        
                 elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                     self.multiSelectMode = True
                 elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
