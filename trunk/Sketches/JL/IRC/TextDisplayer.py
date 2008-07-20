@@ -4,35 +4,43 @@
 import pygame
 import time
 from Kamaelia.UI.Pygame.Display import PygameDisplay
+from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
+from Axon.Ipc import WaitComplete
+from pygame.locals import *
+
 
 class TextDisplayer(component):
     Inboxes = {"inbox" : "for incoming lines of text",
                "_surface" : "for PygameDisplay to send surfaces to",
-               "_quitevents" : "for PygameDisplay to send quit events to",
+               "_quitevents" : "user-generated quit events",
                "control" : "shutdown handling"}
+    
     Outboxes = {"outbox" : "not used",
                 "_pygame" : "for sending requests to PygameDisplay",
                 "signal" : "propagates out shutdown signals"}
     
-    def __init__(self, screen_width=300, screen_height=200, text_height=18,
-                 background_color = (255,255,255), text_color=(0,0,0)):
+    def __init__(self, screen_width=500, screen_height=300, text_height=18,
+                 background_color = (255,255,240), text_color=(0,0,0), position=(0,0)):
         super(TextDisplayer, self).__init__()
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.text_height = text_height
         self.background_color = background_color
         self.text_color = text_color
+        self.position = position
         self.done = False
         
+        quithandler = KeyEvent(key_events = {K_ESCAPE : ("escape", "outbox")})
+        self.link((quithandler, "outbox"), (self, "_quitevents"))
+        self.addChildren(quithandler)
+        quithandler.activate()
+        
+    def initPygame(self, **argd):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self, "_pygame"), displayservice)
-        
-    def initPygame(self):
-        self.send({"DISPLAYREQUEST" : True,
-                   "size" : (self.screen_width, self.screen_height),
-                   "callback" : (self, "_surface")}, "_pygame")
+        self.send(argd, "_pygame")
         while not self.dataReady("_surface"):
             yield 1
         self.screen = self.recv("_surface")
@@ -40,6 +48,7 @@ class TextDisplayer(component):
         self.scratch = self.screen.copy()
         self.send({"REDRAW" : True,
                    "surface" : self.screen}, "_pygame")
+        yield 1
 
         h = self.screen_height
         w = self.screen_width
@@ -50,27 +59,30 @@ class TextDisplayer(component):
         self.scrollingRect = pygame.Rect((0, 0), (w, h - th))
         self.writeRect = pygame.Rect((0, h - th), (w, th))
 
-        self.send({"ADDLISTENEVENT" : pygame.QUIT,
-                   "surface" : self.screen})
-    
     def main(self):
-        for _ in self.initPygame():
-            yield 1
-    
+        yield WaitComplete(self.initPygame(DISPLAYREQUEST = True,
+                                           size = (self.screen_width, self.screen_height),
+                                           callback = (self, '_surface'),
+                                           position = self.position))
+        
         while not self.shutdown():
             yield 1
             if self.dataReady('inbox'):
-                line = self.recv('inbox')
+                line = str(self.recv('inbox'))
                 self.update(line)
 
     def update(self, text):
         while len(text) > self.linelen:
             cutoff = text.rfind(' ', 0, self.linelen)
+            if cutoff == -1:
+                cutoff = self.linelen
             self.updateLine(text[0:cutoff])
             text = text[cutoff + 1:]
         self.updateLine(text)
             
-    def updateLine(self, line):            
+    def updateLine(self, line):
+        line = line.replace('\r', ' ')
+        line = line.replace('\n', ' ')
         lineSurf = self.font.render(line, True, self.text_color)    
         self.screen.fill(self.background_color)
         self.screen.blit(self.scratch, self.scrollingRect, self.keepRect)
@@ -82,19 +94,21 @@ class TextDisplayer(component):
 
     def shutdown(self):
         while self.dataReady("control"):
-           msg = self.recv("control")
-           if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-               self.send(msg, "signal")
-               return True
-        while self.dataReady("_quitevents"):
-            msg = self.recv("_quitevents")
-            if msg.type == pygame.QUIT:
-                self.send(producerFinished(), "signal")
-                return True
-
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.done = True
+        if self.dataReady("_quitevents"):
+            self.done = True
+        if self.done:
+            self.send(shutdownMicroprocess(), 'signal')
+            return True
+            
+        
 
 if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Util.Console import ConsoleReader
     import time
     #the long lines are there on purpose, to see if the component wraps text correctly.
     text =  """\
@@ -118,7 +132,9 @@ That makes calamity of so long life;
             for one_line in lines:
                 time.sleep(0.5)
                 self.send(one_line)
+                print one_line
                 yield 1
-##            self.send(shutdownMicroprocess(), 'signal')
+##            self.send(producerFinished(), 'signal')
 
-    Pipeline(Chargen(), TextDisplayer()).run()
+    Pipeline(ConsoleReader('>>>'), TextDisplayer()).run()
+    
