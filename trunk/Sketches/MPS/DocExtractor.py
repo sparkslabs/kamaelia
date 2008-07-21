@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #
+
 # This program generates Kamaelia's documentation directly from the
 # source. I am currently running this as follows:
 #
