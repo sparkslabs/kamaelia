@@ -3,7 +3,10 @@ import wave
 import pygame
 import numpy
 import Axon
+
 from Axon.SchedulingComponent import SchedulingComponent
+from Kamaelia.Apps.Jam.Audio.Synth import Synth
+from Kamaelia.Apps.Jam.Audio.Polyphony import Targetter
 
 class WavVoice(SchedulingComponent):
     bufferSize = 1024
@@ -59,6 +62,14 @@ class WavVoice(SchedulingComponent):
             if not self.anyReady():
                 self.pause()
 
+def Sampler(fileList):
+    def voiceGenerator():
+        for fileName in fileList:
+            yield WavVoice(fileName)
+    return Synth(voiceGenerator, polyphoniser=Targetter,
+                 polyphony=len(fileList))
+    
+
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Apps.Jam.Util.Numpy import TypeConverter
@@ -70,11 +81,10 @@ if __name__ == "__main__":
 
     files = ["Ride", "HH", "Snare", "Kick"]
     files = ["/home/joe/Desktop/%s.wav"%fileName for fileName in files]
-    def voiceGenerator():
-        for i in range(4):
-            yield WavVoice(files[i])
 
-    Pipeline(StepSequencer(stepsPerBeat=4), Synth(voiceGenerator, polyphoniser=Targetter, polyphony=4), PureTransformer(lambda x:x*(2**15-1)), TypeConverter(type="int16"), AOAudioPlaybackAdaptor()).run()
+    Pipeline(StepSequencer(stepsPerBeat=4), Sampler(files),
+             PureTransformer(lambda x:x*(2**15-1)),
+             TypeConverter(type="int16"), AOAudioPlaybackAdaptor()).run()
     
                 
             
