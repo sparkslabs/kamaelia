@@ -8,7 +8,7 @@ class SineOsc(Axon.SchedulingComponent.SchedulingComponent):
     sampleRate = 44100
     bufferSize = 1024
     frequency = 440
-    amplitude = 0.7 * (2**15 - 1)
+    amplitude = 0.7 
 
     def __init__(self, **argd):
         super(SineOsc, self).__init__(**argd)
@@ -71,7 +71,7 @@ class SineVoice(SineOsc):
                     self.on = True
                     noteNumber, frequency, velocity = arguments
                     self.frequency = frequency
-                    self.amplitude = velocity * (2**15 - 1)
+                    self.amplitude = velocity
                 elif address == "Off":
                     self.on = False
                 
@@ -97,6 +97,7 @@ if __name__ == "__main__":
     from Kamaelia.Apps.Jam.Util.Numpy import TypeConverter
     from Kamaelia.Codec.Vorbis import AOAudioPlaybackAdaptor
     from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.PureTransformer import PureTransformer
     polyphony = 8
 
     def voiceGenerator():
@@ -104,6 +105,8 @@ if __name__ == "__main__":
             yield SineVoice()
             
 
-    Pipeline(PianoRoll(), Synth(voiceGenerator, polyphony=8), TypeConverter(type="int16"), AOAudioPlaybackAdaptor()).run()
+    Pipeline(PianoRoll(), Synth(voiceGenerator, polyphony=8),
+             PureTransformer(lambda x : x*(2**15 - 1)),
+             TypeConverter(type="int16"), AOAudioPlaybackAdaptor()).run()
 
 
