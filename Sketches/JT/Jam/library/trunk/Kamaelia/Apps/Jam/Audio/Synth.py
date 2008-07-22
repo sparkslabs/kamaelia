@@ -4,10 +4,11 @@ from Kamaelia.Apps.Jam.Audio.Mixer import MonoMixer
 
 class Synth(Axon.Component.component):
     polyphony = 8
+    polyphoniser = Polyphoniser
 
     def __init__(self, voiceGenerator, **argd):
         super(Synth, self).__init__(**argd)
-        polyphoniser = Polyphoniser(polyphony=self.polyphony).activate()
+        polyphoniser = self.polyphoniser(polyphony=self.polyphony).activate()
         mixer = MonoMixer(channels=self.polyphony).activate()
         self.link((self, "inbox"), (polyphoniser, "inbox"), passthrough=1)
         self.link((mixer, "outbox"), (self, "outbox"), passthrough=2)
