@@ -9,7 +9,7 @@ class Polyphoniser(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.addOutbox("voice%i" % i)
             self.voices.append(None)
 
-    def main(self, **argd):
+    def main(self):
         while 1:
             if self.dataReady("inbox"):
                 address, arguments = self.recv("inbox")
@@ -34,3 +34,21 @@ class Polyphoniser(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 self.pause()
             yield 1
 
+class Targetter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+    polyphony = 8
+    def __init__(self, **argd):
+        super(Targetter, self).__init__(**argd)
+        for i in range(self.polyphony):
+            self.addOutbox("voice%i" % i)
+
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                address, arguments = self.recv("inbox")
+                address = address.split("/")[-1]
+                if address == "On" or address == "Off":
+                    index = arguments[0]
+                    self.send((address, arguments), "voice%i" % index)
+            if not self.anyReady():
+                self.pause()
+            yield 1
