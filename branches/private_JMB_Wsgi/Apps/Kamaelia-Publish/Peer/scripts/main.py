@@ -45,7 +45,7 @@ from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
 from Kamaelia.Apps.Wsgi.Log import LogWriter
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 
-from protocol_manager import ProtocolManager, Echoer
+from transactions import TransactionManager
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -136,85 +136,6 @@ class RosterHandler(component):
                         a = Activity(unicode(self.from_jid), unicode(contact.jid))
                         self.send(a, 'activity')
 
-            if not self.anyReady():
-                self.pause()
-  
-            yield 1
-
-class WebMessageHandler(component):
-    Inboxes = {"inbox"    : "headstock.api.contact.Message instance received from a peer"\
-                   "or the string input in the console",
-               "jid"      : "headstock.api.jid.JID instance received from the server",
-               "control"  : "stops the component",}
-    
-    Outboxes = {"outbox"  : "headstock.api.im.Message to send to the client",
-                "signal"  : "Shutdown signal",
-                "proto" : "Send messages to the protocol manager",}
-
-    def __init__(self):
-        super(WebMessageHandler, self).__init__() 
-        self.from_jid = None
-
-    def initComponents(self):
-        sub = SubscribeTo("JID")
-        self.link((sub, 'outbox'), (self, 'jid'))
-        self.addChildren(sub)
-        sub.activate()
-
-        sub = SubscribeTo("CONSOLE")
-        self.link((sub, 'outbox'), (self, 'inbox'))
-        self.addChildren(sub)
-        sub.activate()
-
-        return 1
-
-    def main(self):
-        yield self.initComponents()
-
-        while 1:
-            while self.dataReady("control"):
-                mes = self.recv("control")
-                if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
-                    self.send(producerFinished(), "signal")
-                    break
-
-            while self.dataReady("jid"):
-                self.from_jid = self.recv('jid')
-            
-            while self.dataReady("inbox"):
-                m = self.recv("inbox")
-                # in this first case, we want to send the message
-                # typed in the console.
-                # The message is of the form:
-                #    contant_jid message
-                if isinstance(m, (str, unicode)) and m != '':
-                    #print self.name + ' received string!'
-                    try:
-                        contact_jid, message = m.split(' ', 1)
-                    except ValueError:
-                        print "Messages format: contact_jid message"
-                        continue
-                    m = Message(unicode(self.from_jid), unicode(contact_jid), 
-                                type=u'chat', stanza_id=generate_unique())
-                    m.event = Event.composing # note the composing event status
-                    m.bodies.append(Body(unicode(message)))
-                    self.send(m, "outbox")
-                    
-                    # Right after we sent the first message
-                    # we send another one reseting the event status
-                    m = Message(unicode(self.from_jid), unicode(contact_jid), 
-                                type=u'chat', stanza_id=generate_unique())
-                    self.send(m, "outbox")
-                # In this case we actually received a message
-                # from a contact, we print it.
-                elif isinstance(m, Message):
-                    #b_list = [str(body) for body in m.bodies]
-                    #abody = ''.join(b_list)
-                    #print 'body = ', abody
-                    self.send(m, 'proto')
-                else:
-                    print 'unknown instance received!'
-                    
             if not self.anyReady():
                 self.pause()
   
@@ -568,7 +489,7 @@ class Client(component):
                                activityhandler = ActivityHandler(),
                                rosterhandler = RosterHandler(self.jid),
                                registerhandler = RegistrationHandler(self.username, self.password),
-                               msgdummyhandler = WebMessageHandler(),
+                               msghandler = TransactionManager(),
                                presencehandler = PresenceHandler(),
                                presencedisp = PresenceDispatcher(),
                                rosterdisp = RosterDispatcher(),
@@ -578,7 +499,6 @@ class Client(component):
                                registerdisp = RegisterDispatcher(),
                                pjid = PublishTo("JID"),
                                pbound = PublishTo("BOUND"),
-                               proto_man = ProtocolManager(Protocol=HTTPProtocol(routing)),
 
                                linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
                                            ('console', 'outbox'): ('client', 'control'),
@@ -634,11 +554,9 @@ class Client(component):
                                            # Message
                                            ("xmpp", "%s.message" % XMPP_CLIENT_NS): ("msgdisp", "inbox"),
                                            ("msgdisp", "log"): ('logger', "inbox"),
-                                           ("msgdisp", "xmpp.chat"): ('msgdummyhandler', 'inbox'),
-                                           ("msgdummyhandler", "outbox"): ('msgdisp', 'forward'),
+                                           ("msgdisp", "xmpp.chat"): ('msghandler', 'inbox'),
+                                           ("msghandler", "outbox"): ('msgdisp', 'forward'),
                                            ("msgdisp", "outbox"): ("xmpp", "forward"),
-                                           ('msgdummyhandler', 'proto') : ('proto_man' , 'inbox'),
-                                           ('proto_man', 'outbox') : ('msgdummyhandler', 'inbox'),
 
                                            # Activity
                                            ("xmpp", "%s.query" % XMPP_LAST_NS): ("activitydisp", "inbox"),

@@ -22,7 +22,7 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.Ipc import producerFinished, shutdownMicroprocess, LookupByText
 from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
@@ -37,8 +37,9 @@ from xml.sax.saxutils import escape, unescape
 import simplejson
 
 from gate import OutboxBundle, BPLANE_NAME, InitialMessage
+from gate.JidLookup import ExtractJID
 
-class requestToMessageTranslator(component):
+class RequestSerializer(component):
     """Note that sending messages via XMPP is considered outbound.  This converts
     an HTTP request object into a headstock message.""" 
     Inboxes = {'inbox' : 'Receive messages from the HTTPServer',
@@ -47,24 +48,22 @@ class requestToMessageTranslator(component):
                 'signal' : 'Send signals',
                 'publisher_signal' : 'send signals to the publisher',}
     
-    ThisJID = u'amnorvend_gateway@jabber.org'
-    ToJID = u'amnorvend@jabber.org'
-    bundle = OutboxBundle()
+    ThisJID = u'amnorvend_gateway@jabber.org'    
     def __init__(self, request, **argd):
-        super(requestToMessageTranslator, self).__init__(**argd)
+        super(RequestSerializer, self).__init__(**argd)
         self.request = request
         self.signal = None
         self.batch_id = unicode(numId())
         self.Publisher = PublishTo(BPLANE_NAME)
         self.link((self, 'outbox'), (self.Publisher, 'inbox'))
         
-        if not isinstance(self.ToJID, unicode):
-            self.ToJID = unicode(self.ToJID)
         if not isinstance(self.ThisJID, unicode):
             self.ThisJID = unicode(self.ThisJID)
         
+        self.bundle = OutboxBundle()
     def main(self):
-        self.Publisher.activate()        
+        self.Publisher.activate()
+        
         self.sendInitialMessage(self.request)
         
         yield 1
@@ -99,6 +98,7 @@ class requestToMessageTranslator(component):
             self.signal = msg
             
     def sendInitialMessage(self, request):
+        self.ToJID = ExtractJID(request)
         request['batch'] = self.batch_id
         
         hMessage = self.makeMessage(request)
@@ -123,11 +123,11 @@ class requestToMessageTranslator(component):
     def sendMessage(self, serializable):
         self.send(self.makeMessage(serializable), 'outbox')
         
-class messageToResponseTranslator(component):
+class ResponseDeserializer(component):
     ThisJID = 'amnorvend_gateway@jabber.org'
     ToJID = 'amnorvend@jabber.org/gateway'
     def __init__(self, **argd):
-        super(messageToResponseTranslator, self).__init__(**argd)
+        super(ResponseDeserializer, self).__init__(**argd)
         self.signal = None
         
     def main(self):
@@ -152,6 +152,10 @@ class messageToResponseTranslator(component):
             deserialize = unescape(deserialize) #FIXME:  This is a security issue:  Will also escape escaped HTML.
             resource = simplejson.loads(deserialize)
             
+            signal = resource.get('signal')
+            if signal:
+                self.signal = LookupByText(signal)(self)
+            
             assert(isinstance(resource, dict))
             self.send(resource, 'outbox')
         
@@ -159,16 +163,11 @@ class messageToResponseTranslator(component):
         if isinstance(msg, (producerFinished, shutdownMicroprocess)):
             self.signal = msg
             
-            
-def appendTID(msg, thread_id):
-    tobj = Thread(thread_id)
-    msg.thread = tobj
-            
 def Translator(request, mtr=None, rtm=None):
     if not mtr:
-        mtr = messageToResponseTranslator()
+        mtr = ResponseDeserializer()
     if not rtm:
-        rtm = requestToMessageTranslator(request=request)
+        rtm = RequestSerializer(request=request)
         
     trans = Graphline(
         mtr=mtr,
@@ -199,7 +198,7 @@ if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import Pipeline
     
-    class Server(component):            
+    class Server(component):
         def main(self):
             self.send('foo')
             yield 1

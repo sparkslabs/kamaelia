@@ -26,6 +26,7 @@ from Axon.Ipc import LookupByText, ToText
 from xml.sax.saxutils import unescape, escape
 
 from headstock.api.im import Message, Body, Thread
+from headstock.lib.utils import generate_unique
 
 import simplejson
 
@@ -103,6 +104,8 @@ class ResponseSerializer(component):
         'outbox' : '',
         'signal' : '',
     }
+    ThisJID = u'amnorvend@jabber.org'
+    ToJID = u'amnorvend_gateway@jabber.org'
     def main(self):
         #wait for the batch ID from the Request Translator
         while not self.dataReady('batch'):
@@ -115,7 +118,11 @@ class ResponseSerializer(component):
         self.signal = None
         while not self.signal:
             for response in self.Inbox('inbox'):
-                self.send(self.makeMessage(response), 'outbox')
+                if response.get('signal'):
+                    del response['signal']
+                    
+                if response:
+                    self.send(self.makeMessage(response), 'outbox')
                 
             for msg in self.Inbox('control'):
                 self.signal = msg
@@ -129,13 +136,13 @@ class ResponseSerializer(component):
         self.send(self.signal, 'signal')
         #print 'serializer dying!'
         
-    def makeMessage(self, serializable):            
+    def makeMessage(self, serializable):
         text = simplejson.dumps(serializable)
         text = escape(text) #FIXME:  Security issue.  Will unescape escaped HTML when deserialized
         text = unicode(text)
         
-        msg = Message(u'foo@foo.com', u'foo2@foo.com',
-                      type=u'chat')
+        msg = Message(self.ThisJID, self.ToJID,
+                      type=u'chat', stanza_id=generate_unique())
         msg.bodies.append(Body(text))
         msg.thread = Thread(self.batch_id)
         
@@ -163,7 +170,10 @@ class TranslatorChassis(component):
                 '_request_signal' : 'Send signals to message translator',}
     
     requestTranslator = RequestDeserializer
-    responseTranslator = ResponseSerializer    
+    responseTranslator = ResponseSerializer
+    
+    ThisJID = None
+    ToJID = u'amnorvend_gateway@jabber.org'
     def __init__(self, message, handler_factory, **argd):
         super(TranslatorChassis, self).__init__(**argd)
         self.message = message
@@ -181,7 +191,7 @@ class TranslatorChassis(component):
         self.link((self._requestTranslator, 'initial'), (self, '_msg_translator'))
         self.link((self._requestTranslator, 'chassis_signal'), (self, '_request_control'))
         
-        self._responseTranslator = self.responseTranslator()
+        self._responseTranslator = self.responseTranslator(ThisJID=self.ThisJID, ToJID=self.ToJID)
         self.link((self._requestTranslator, 'batch'), (self._responseTranslator, 'batch'))
         self.link((self._responseTranslator, 'signal'), (self, 'signal'), passthrough=2)
         
@@ -251,7 +261,7 @@ class SimpleHandler(component):
         resource = {
             'statuscode' : '200 OK',
             'headers' : [('content-type', 'text/plain')],
-            'data' : self.request.get('body'),
+            'data' : 'Hello, world!',
         }
         self.send(resource, 'outbox')
         

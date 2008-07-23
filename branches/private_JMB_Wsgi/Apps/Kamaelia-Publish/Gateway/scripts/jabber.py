@@ -492,7 +492,7 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        log = Logger(path=None, stdout=True, name='XmppLogger')  
+        log = Logger(path=None, stdout=False, name='XmppLogger')  
         
         # We pipe everything typed into the console
         # directly to the console backplane so that

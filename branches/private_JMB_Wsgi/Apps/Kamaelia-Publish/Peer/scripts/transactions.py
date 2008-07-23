@@ -22,12 +22,17 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
+from Kamaelia.Util.Backplane import SubscribeTo
 
 from translator import TranslatorChassis, RequestDeserializer, ResponseSerializer, SimpleHandler
 
 from headstock.api.im import Message, Thread, Body
 
 class _BoxBundle(object):
+    """
+    This object is used to represent a set of boxes in an adaptive comms component.
+    It may also store metadata about the transaction.
+    """
     SendMethod=None
     RecvMethod=None
     DataReadyMethod=None
@@ -69,7 +74,7 @@ class _BoxBundle(object):
     def anyReady(self):
         return self.DataReadyMethod(self.inbox) or self.DataReadyMethod(self.control)
     def send(self, msg, boxname):
-        self.SendMethod(msg, boxname)
+        self.SendMethod(msg, self.__dict__[boxname])
     def __repr__(self):
         return '<transaction for thread %s: %s, %s, %s, %s>' \
             % (self.thread or '(unknown)', self.inbox, self.control, self.outbox, self.control)
@@ -96,22 +101,57 @@ def BoxBundle(adap, translator=None, thread=None):
     return bundle
 
 class TransactionManager(threadedadaptivecommscomponent):
+    Inboxes = {'inbox' : 'Receive output from the translators',
+               'control' : 'Receive shutdown messages',
+               'jid' : 'Receive the JID from headstock'}
+    Outboxes = {'outbox' : 'NOT USED',
+                'signal' : 'Send shutdown messages'}
+    
+    """
+    This component will manage all the various transactions going on at any given
+    point in time.  A transaction represents an HTTP request and response transaction.
+    Note that of course the actual HTTP request and response don't actually happen
+    here in this program.  They happen at the gateway.
+    
+    Upon receiving a message that is a part of a thread the TransactionManager has
+    not encountered yet, a new BoxBundle is created to represent the transaction.
+    In addition, a translator is created to translate data passed back and forth
+    between the TransactionManager and the resource handler (that will be created
+    by the translator).
+    """
+    #As of right now, there's not much reason to override the next two attributes.
+    #But there may be in the future!
     RequestTranslator = RequestDeserializer
     ResponseTranslator = ResponseSerializer
     HandlerFactory = SimpleHandler
+    
+    ThisJID=None
     def __init__(self, **argd):
         super(TransactionManager, self).__init__(**argd)
         self.transactions = {}
     
     def main(self):
+        self.jid_subscriber = SubscribeTo('JID')
+        self.link((self.jid_subscriber, 'outbox'), (self, 'jid'))
+        self.jid_subscriber.activate()
+        
         self.signal = None
         while not self.signal:
+            for msg in self.Inbox('jid'):
+                self.ThisJID = msg
+                file = open('/home/jason/foo.bar', 'a')
+                file.write(str(self.ThisJID))
+                file.close()
+                
             for msg in self.Inbox('control'):
                 self.signal = msg
                 
             for msg in self.Inbox('inbox'):
                 self.handleIncoming(msg)
 
+            #This is a set of all the transactions that will be removed once this
+            #loop is finished.  We do it this way to prevent the size of self.transactions
+            #from changing in the middle of the loop (which will cause an exception).
             marked = set()
             for thread, transaction in self.transactions.iteritems():
                 if transaction.anyReady():
@@ -119,14 +159,14 @@ class TransactionManager(threadedadaptivecommscomponent):
                         marked.add(thread)
                         
                     for msg in transaction.Inbox('inbox'):
-                        print 'TM received:\n', Message.to_element(msg).xml()
+                        self.send(msg, 'outbox')
                         
             self._cleanup(marked)
 
             if not self.anyReady():
                 self.pause()
         for k,v in self.transactions.iteritems():
-            print repr(v)                        
+            print repr(v)
     
     def handleIncoming(self, msg):
         if not self.transactions.get(str(msg.thread)):
@@ -161,6 +201,7 @@ class TransactionManager(threadedadaptivecommscomponent):
             self.removeChild(transaction.Translator)
             transaction.destroyBoxes()
             del self.transactions[thread]
+            #print thread, ' collected.'
         
 if __name__ == '__main__':
     from Axon.Component import component
