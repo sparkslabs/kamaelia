@@ -36,6 +36,7 @@ right to erase your artwork.
 import pprocess
 import pygame
 import time
+import os
 import Axon
 import math
 from Axon.Ipc import producerFinished, WaitComplete
@@ -184,9 +185,21 @@ class Paint(Axon.Component.component):
       self.send( self.disprequest,
                   "display_signal")
 
-      for _ in self.waitBox("callback"): yield 1
-      self.display = self.recv("callback")
-      self.layers.append(self.display)
+   #   for _ in self.waitBox("callback"): yield 1
+   #   self.display = self.recv("callback")
+   #   self.layers.append(self.display)
+      
+      f = os.path.join('', "pennyarcade.gif")
+      x = pygame.image.load(f)
+      colorkey = x.get_at((0, 0))
+      if colorkey is True:
+          x.set_colorkey(colorkey, pygame.RLEACCEL)
+      self.layers.append(x)
+      self.display = x
+      self.activeLayIn = len(self.layers)-1
+      self.activeLayer = self.layers[self.activeLayIn]
+      self.display.blit( x, (0,0) )
+
       
       layerDisp = TextDisplayer(size = (20, 20),position = (520,10)).activate()
       self.link( (self,"laynum"), (layerDisp,"inbox") )
@@ -302,10 +315,18 @@ class Paint(Axon.Component.component):
                         #self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
-                       self.animate()
+                        f = os.path.join('', "20080721.jpg")
+                    #    f = file("20080721.jpg")
+                        x = pygame.image.load(f)
+                        print x
+                        self.layers.append(x)
+                        self.activeLayIn = len(self.layers)-1
+                        self.activeLayer = self.layers[self.activeLayIn]
+                       # self.drawBG()
+                        self.blitToSurface()
                     elif event.key == pygame.K_l:
-                       self.activeLayer.set_alpha(0)
-                       self.activeLayer = self.display
+                        self.activeLayer.set_alpha(0)
+                        self.activeLayer = self.display
                        
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
