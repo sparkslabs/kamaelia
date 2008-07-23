@@ -229,6 +229,7 @@ class HTTPRequestHandler(component):
         except KeyError:
             statustext = resource["statuscode"]
 
+        #print '='*6, 'HEADERS', '='*6, '\n', resource['headers']
         hl = []
         if (protocolversion != "0.9"):
             status_line = "HTTP/1.0 " + statustext + "\r\n"
@@ -251,7 +252,8 @@ class HTTPRequestHandler(component):
                         header = header[0], header[1] + "; " + resource["charset"]
                 hl.append(header)
 
-            hl = [ x+": "+y for x,y in hl ]
+            #print hl
+            hl = [ str(x+": "+y) for x,y in hl ]
 
             header = "\r\n".join(hl) + "\r\n\r\n"
         else:
@@ -337,8 +339,8 @@ class HTTPRequestHandler(component):
 
     def createHandler(self, request):
         self.handler = self.requestHandlerFactory(request)
-        print 'requestHandlerFactory=', self.requestHandlerFactory
-        print 'handler=', self.handler
+        #print 'requestHandlerFactory=', self.requestHandlerFactory
+        #print 'handler=', self.handler
 
         # XXXX Do we *really* want to crash?
         assert(self.handler != None) # if no URL handlers match our request then requestHandlerFactory
