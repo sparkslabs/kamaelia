@@ -303,6 +303,14 @@ class producerFinished(ipc):
    def __init__(self,caller=None,message=None):
       self.caller = caller
       self.message = message
+      
+class internalNotify(ipc):
+   """
+   This class is used to indicate that a message was posted to shut a component
+   down internally.  This should not be sent through a component's signal box.
+   """
+   def __init__(self, message=None):
+      self.message = message
 
 class errorInformation(ipc):
    """\
