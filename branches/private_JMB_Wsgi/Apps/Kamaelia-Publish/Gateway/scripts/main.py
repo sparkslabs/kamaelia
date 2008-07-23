@@ -25,13 +25,22 @@ from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 
 from jabber import constructXMPPClient, XMPPConfigObject
 from http import constructHTTPServer
+import optparse
 
 def main():
     Config = ParseConfigFile('~/kpgate.ini', DictFormatter())
+    options = parseCmdOpts()
+    print options
     
     server = constructHTTPServer()    
-    xmpp = constructXMPPClient(XMPPConfigObject(Config['XMPP']))
+    xmpp = constructXMPPClient(XMPPConfigObject(Config['XMPP']), options)
     
     xmpp.activate()
     server.run()
     
+def parseCmdOpts():
+    parser = optparse.OptionParser()
+    parser.add_option('-x', '--xmpp-verbose', dest='xmpp_verbose', action='store_true',
+                      help='Use this option to view each incoming and outgoing XMPP message')
+    (options, args) = parser.parse_args()
+    return options

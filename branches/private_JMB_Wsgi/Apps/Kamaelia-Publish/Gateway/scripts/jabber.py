@@ -435,7 +435,7 @@ class Client(component):
                 "lw-signal" : "Shutdown signal for WsgiLogWritable",
                 "doregistration" : ""}
 
-    def __init__(self, XMPPConfig):
+    def __init__(self, XMPPConfig, options):
         super(Client, self).__init__() 
         self.jid = JID(
             XMPPConfig.username,
@@ -450,6 +450,7 @@ class Client(component):
         self.domain = XMPPConfig.domain
         self.usetls = XMPPConfig.usetls
         self.register = False
+        self.use_std_out = options.xmpp_verbose
 
     def passwordLookup(self, jid):
         return self.password
@@ -492,7 +493,7 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        log = Logger(path=None, stdout=False, name='XmppLogger')  
+        log = Logger(path=None, stdout=self.use_std_out, name='XmppLogger')  
         
         # We pipe everything typed into the console
         # directly to the console backplane so that
@@ -671,8 +672,8 @@ class XMPPConfigObject(object):
     def __repr__(self):
         return repr(self.__dict__)
 
-def constructXMPPClient(XMPPConfig):    
-    return Client(XMPPConfig)
+def constructXMPPClient(XMPPConfig, options):
+    return Client(XMPPConfig, options)
 
 if __name__ == '__main__':
     main()

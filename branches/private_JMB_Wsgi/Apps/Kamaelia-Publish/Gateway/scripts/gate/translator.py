@@ -22,10 +22,11 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess, LookupByText
+from Axon.Ipc import producerFinished, shutdownMicroprocess, internalNotify, LookupByText
 from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
+from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
 
 from headstock.api.im import Message, Body, Event, Thread
 from headstock.api.jid import JID
@@ -46,7 +47,8 @@ class RequestSerializer(component):
                'control' : 'Receive signals from the HTTPServer'}
     Outboxes = {'outbox' : 'Send messages to the Interface',
                 'signal' : 'Send signals',
-                'publisher_signal' : 'send signals to the publisher',}
+                'publisher_signal' : 'send signals to the publisher',
+                'response_signal' : 'send internal signals to the response deserializer'}
     
     ThisJID = u'amnorvend_gateway@jabber.org'    
     def __init__(self, request, **argd):
@@ -56,18 +58,28 @@ class RequestSerializer(component):
         self.batch_id = unicode(numId())
         self.Publisher = PublishTo(BPLANE_NAME)
         self.link((self, 'outbox'), (self.Publisher, 'inbox'))
+        self.link((self, 'signal'), (self.Publisher, 'control'))
         
         if not isinstance(self.ThisJID, unicode):
             self.ThisJID = unicode(self.ThisJID)
         
         self.bundle = OutboxBundle()
+        
+        #The following is used to indicate that we should send a signal to the serving
+        #client. Sometimes we want to disable this, like if a serving client isn't
+        #found.
+        self._send_xmpp_signal = True
+        
     def main(self):
         self.Publisher.activate()
+        self.ToJID = ExtractJID(self.request)
+        if self.ToJID:
+            self.sendInitialMessage(self.request)
+        else:
+            self.JIDNotFound()
         
-        self.sendInitialMessage(self.request)
-        
-        yield 1
-        
+        #Note that self.signal is set in the methods 'JIDNotFound' and 'handleControlBox'
+        #if JIDNotFound is run, this loop will not run.
         while not self.signal:
             for msg in self.Inbox('control'):
                 self.handleControlBox(msg)
@@ -81,10 +93,10 @@ class RequestSerializer(component):
             yield 1
             
         self.send(self.signal, 'signal')
-        self.send(self.signal, 'publisher_signal')
         
-        signal_msg = {'signal' : type(self.signal).__name__}
-        self.sendMessage(signal_msg)
+        if self._send_xmpp_signal:
+            signal_msg = {'signal' : type(self.signal).__name__}
+            self.sendMessage(signal_msg)
     
     def handleInbox(self, msg):
         chunk = {
@@ -98,7 +110,9 @@ class RequestSerializer(component):
             self.signal = msg
             
     def sendInitialMessage(self, request):
-        self.ToJID = ExtractJID(request)
+        print '='*6, 'REQUEST', '='*6, '\n'
+        print request
+        
         request['batch'] = self.batch_id
         
         hMessage = self.makeMessage(request)
@@ -106,6 +120,15 @@ class RequestSerializer(component):
                              bundle=self.bundle, batch_id=self.batch_id)
         
         self.send(out, 'outbox')
+        print '='*6, 'REQUEST', '='*6, '\n'
+        print request
+        
+    def JIDNotFound(self):
+        resource = getErrorPage(404, 'Could not find %s' % (self.request['raw-uri']))
+        out = internalNotify(message=resource)    #Prevents the loop from running.
+        self.send(out, 'response_signal')
+        self.signal = shutdownMicroprocess()
+        self._send_xmpp_signal = False
         
     def makeMessage(self, serializable):
         hMessage = Message(self.ThisJID, self.ToJID,
@@ -124,6 +147,12 @@ class RequestSerializer(component):
         self.send(self.makeMessage(serializable), 'outbox')
         
 class ResponseDeserializer(component):
+    Inboxes = {'inbox' : 'Receive responses to deserialize',
+               'control' : 'Receive shutdown signals',
+               'response_control' : 'Receive signals from the request serializer'}
+    Outboxes = {'outbox' : 'Send deserialized responses',
+                'signal' : 'Forward shutdown signals'}
+    
     ThisJID = 'amnorvend_gateway@jabber.org'
     ToJID = 'amnorvend@jabber.org/gateway'
     def __init__(self, **argd):
@@ -134,6 +163,7 @@ class ResponseDeserializer(component):
         self.not_done = True
         while not self.signal:
             [self.handleControlBox(msg) for msg in self.Inbox('control')]
+            [self.handleResponseControl(msg) for msg in self.Inbox('response_control')]
             [self.handleInbox(msg) for msg in self.Inbox('inbox')]
             
             if not self.anyReady() and not self.signal:
@@ -141,6 +171,7 @@ class ResponseDeserializer(component):
                 
             yield 1
             
+        
         self.send(self.signal, 'signal')
         
     def handleInbox(self, msg):
@@ -163,6 +194,13 @@ class ResponseDeserializer(component):
         if isinstance(msg, (producerFinished, shutdownMicroprocess)):
             self.signal = msg
             
+    def handleResponseControl(self, msg):
+        if isinstance(msg, internalNotify):
+            resource = msg.message
+            self.send(resource, 'outbox')
+            self.signal = producerFinished(self)
+            
+            
 def Translator(request, mtr=None, rtm=None):
     if not mtr:
         mtr = ResponseDeserializer()
@@ -184,7 +222,7 @@ def Translator(request, mtr=None, rtm=None):
             ('self', 'control') : ('rtm', 'control'),
             ('self', 'xmpp_control') : ('mtr', 'control'),
             ('mtr', 'signal') : ('self', 'signal'),
-            ('rtm', 'signal') : ('self', 'xmpp_signal')
+            ('rtm', 'response_signal') : ('mtr', 'response_control'),
         }
     )
     
