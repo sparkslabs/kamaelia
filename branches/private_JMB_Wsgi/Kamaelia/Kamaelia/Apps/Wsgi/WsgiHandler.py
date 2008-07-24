@@ -294,6 +294,8 @@ class _WsgiHandler(threadedcomponent):
         self.log_writable.flush()
         del self.environ
         del self.request
+        while not self.dataReady('control'):
+            self.pause()
         self.send(Axon.Ipc.producerFinished(self), "signal")
         #print 'WsgiHandler dead'
 

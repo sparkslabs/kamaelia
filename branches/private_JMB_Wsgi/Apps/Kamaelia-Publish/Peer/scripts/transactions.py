@@ -100,6 +100,9 @@ def BoxBundle(adap, translator=None, thread=None):
     )
     return bundle
 
+class NullBundle(object):
+    pass
+
 class TransactionManager(threadedadaptivecommscomponent):
     Inboxes = {'inbox' : 'Receive output from the translators',
                'control' : 'Receive shutdown messages',
@@ -129,6 +132,7 @@ class TransactionManager(threadedadaptivecommscomponent):
     def __init__(self, **argd):
         super(TransactionManager, self).__init__(**argd)
         self.transactions = {}
+        self.null = NullBundle()
     
     def main(self):
         self.jid_subscriber = SubscribeTo('JID')
@@ -156,8 +160,10 @@ class TransactionManager(threadedadaptivecommscomponent):
             for thread, transaction in self.transactions.iteritems():
                 if transaction.anyReady():
                     for msg in transaction.Inbox('control'):
+                        print msg
                         marked.add(thread)
                         
+                    self.sync()
                     for msg in transaction.Inbox('inbox'):
                         self.send(msg, 'outbox')
                         
@@ -171,6 +177,8 @@ class TransactionManager(threadedadaptivecommscomponent):
     def handleIncoming(self, msg):
         if not self.transactions.get(str(msg.thread)):
             self._createTranslator(msg)
+        elif isinstance(self.transactions[str(msg.thread)], NullBundle):
+            pass
         else:
             self._sendToTranslator(msg)
         
@@ -188,7 +196,7 @@ class TransactionManager(threadedadaptivecommscomponent):
         self.transactions[str(msg.thread)] = transaction
         
         translator.activate()
-        self.addChildren(translator)
+        #self.addChildren(translator)
         
     def _sendToTranslator(self, msg):
         thread = str(msg.thread)
@@ -198,10 +206,11 @@ class TransactionManager(threadedadaptivecommscomponent):
     def _cleanup(self, marked):
         for thread in marked:
             transaction = self.transactions[thread]
-            self.removeChild(transaction.Translator)
+            assert(not transaction.Translator._isStopped())
+            #self.removeChild(transaction.Translator)
             transaction.destroyBoxes()
             del self.transactions[thread]
-            #print thread, ' collected.'
+            print thread, ' collected.'
         
 if __name__ == '__main__':
     from Axon.Component import component

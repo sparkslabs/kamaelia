@@ -133,6 +133,7 @@ class ResponseSerializer(component):
                 
             yield 1
             
+        yield 1
         self.send(self.signal, 'signal')
         #print 'serializer dying!'
         
@@ -281,8 +282,9 @@ class SimpleHandler(component):
         for msg in self.Inbox('inbox'):
             self.send(msg, 'outbox')
             
+        yield 1
+        
         self.send(self.signal, 'signal')
-        print 'SimpleHandler dying!'
         
 if __name__ == '__main__':
     from headstock.api.im import Message, Body

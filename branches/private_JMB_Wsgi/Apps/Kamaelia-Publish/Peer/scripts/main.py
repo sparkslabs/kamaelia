@@ -476,6 +476,10 @@ class Client(component):
         
         routing = [ ["/", SimpleWsgiFactory(log_writable, self.WSGIConfig, simple_app, '/simple')], ]
         #routing = [ ['/', Echoer]]
+        
+        trans = TransactionManager(
+            HandlerFactory = SimpleWsgiFactory(log_writable, self.WSGIConfig, simple_app, '/simple')
+            )
 
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
@@ -489,7 +493,7 @@ class Client(component):
                                activityhandler = ActivityHandler(),
                                rosterhandler = RosterHandler(self.jid),
                                registerhandler = RegistrationHandler(self.username, self.password),
-                               msghandler = TransactionManager(),
+                               msghandler = trans,
                                presencehandler = PresenceHandler(),
                                presencedisp = PresenceDispatcher(),
                                rosterdisp = RosterDispatcher(),

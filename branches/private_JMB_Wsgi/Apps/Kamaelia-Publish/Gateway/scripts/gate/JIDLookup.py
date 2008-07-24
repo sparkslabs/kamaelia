@@ -21,16 +21,19 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
+from Kamaelia.Protocol.HTTP import PopURI
+
 _lookup_table = {
-    'amnorvend' : u'amnorvend@jabber.org',
+    'amnorvend' : 'amnorvend@jabber.org'
 }
 
 def ExtractJID(request):
-    #print request
+    print request
     raw = request['raw-uri']
     split_raw = raw.split('/')
     split_raw = [x for x in split_raw if x]  #remove empty strings
     #print split_raw
+    PopURI(request)
     if split_raw:
         return _lookup_table.get(split_raw[0])
     else:

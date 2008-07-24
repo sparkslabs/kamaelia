@@ -24,6 +24,7 @@
 import re
 
 from WsgiHandler import _WsgiHandler
+from Kamaelia.Protocol.HTTP import PopURI
 
 def WsgiFactory(log_writable, WsgiConfig, url_list):
     """
@@ -90,19 +91,20 @@ def SimpleWsgiFactory(log_writable, WsgiConfig, app_object, script_name='/'):
     """
     
     def _getWsgiHandler(request):
-        split_uri = request['raw-uri'].split('/')
+        print request
+        split_uri = request['PATH_INFO'].split('/')
         split_uri = [x for x in split_uri if x] #remove any empty strings
         
         script_name_trim = script_name.strip('/')
         if script_name:
             if script_name_trim == split_uri[0] and script_name != '/':
-                request['SCRIPT_NAME'] = '/' + split_uri.pop(0)
-                request['PATH_INFO'] = '/'.join(split_uri)
+                PopURI(request)
             elif script_name == '/':
                 request['SCRIPT_NAME'] = ''
                 request['PATH_INFO'] = '/'.join(split_uri)
             else:
-                raise WsgiImportError("script name doesn't match first part of raw-uri")
+                raise WsgiImportError('Script name error!')
+
         else:
             raise WsgiImportError("You must specify script_name to use SimpleWsgiFactory!")
         return _WsgiHandler(app_object, request, log_writable, WsgiConfig)

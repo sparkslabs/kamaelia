@@ -38,7 +38,7 @@ from xml.sax.saxutils import escape, unescape
 import simplejson
 
 from gate import OutboxBundle, BPLANE_NAME, InitialMessage
-from gate.JidLookup import ExtractJID
+from gate.JIDLookup import ExtractJID
 
 class RequestSerializer(component):
     """Note that sending messages via XMPP is considered outbound.  This converts
@@ -95,7 +95,8 @@ class RequestSerializer(component):
         self.send(self.signal, 'signal')
         
         if self._send_xmpp_signal:
-            signal_msg = {'signal' : type(self.signal).__name__}
+            signal_msg = {'signal' : type(self.signal).__name__,
+                          'batch' : self.batch_id}
             self.sendMessage(signal_msg)
     
     def handleInbox(self, msg):
