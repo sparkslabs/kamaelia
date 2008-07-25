@@ -63,8 +63,8 @@ def processServerConfig(ServerConfig):
             sys.path.insert(0, path)
     
     #uncomment this if you want to debug what this code is doing to sys.path.
-    print 'sys.path-'
-    print sys.path
+    #print 'sys.path-'
+    #print sys.path
 
 def run_program():
     """The main entry point for the application."""
