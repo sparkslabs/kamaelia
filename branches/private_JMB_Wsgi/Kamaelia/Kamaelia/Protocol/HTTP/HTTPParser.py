@@ -68,6 +68,7 @@ import string
 def splitUri(url):
     requestobject = { "raw-uri": url, "uri-protocol": "", "uri-server": "" }
     splituri = string.split(requestobject["raw-uri"], "://")
+    #print 'splituri = ', splituri
     if len(splituri) > 1:
         requestobject["uri-protocol"] = splituri[0]
         requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "://"):]
@@ -423,7 +424,6 @@ class HTTPParser(component):
                           "version": "0.9",
                           "method": "",
                           "protocol": "",
-                          "body": "" ,
                         }
         if self.mode == "request":
             requestobject["raw-uri"] = ""
