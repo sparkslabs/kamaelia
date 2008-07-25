@@ -42,15 +42,15 @@ def WsgiFactory(log_writable, WsgiConfig, url_list):
             for dict in url_list:
                 self.compiled_regexes[dict['kp.regex']] = re.compile(dict['kp.regex'])
         def __call__(self, request):
+            print request
             matched_dict = False
             regexes = self.compiled_regexes
             urls = self.url_list
-            split_uri = request['raw-uri'].split('/', 2)
+            split_uri = request['PATH_INFO'].split('/', 2)
             split_uri = [x for x in split_uri if x]  #remove any empty strings
             for url_item in urls:
                 if regexes[url_item['kp.regex']].search(split_uri[0]):
-                    request['SCRIPT_NAME'] = '/' + split_uri.pop(0)
-                    request['PATH_INFO'] = '/' + '/'.join(split_uri) #This is cleaned up in _WsgiHandler.InitRequiredVars
+                    PopURI(request)
                     matched_dict = url_item
                     break
     

@@ -42,5 +42,7 @@ def application(environ, start_response):
 
     start_response(status, response_headers)
 
-    ErrorPage = ErrorPages.getErrorPage(error)['data']
+    requested_path = environ['SCRIPT_NAME'] + environ['PATH_INFO']
+
+    ErrorPage = ErrorPages.getErrorPage(error, '%s not found.' % (requested_path))['data']
     yield ErrorPage
