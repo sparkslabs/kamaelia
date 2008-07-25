@@ -112,3 +112,29 @@ class removeExceptional(notify):
       super(removeExceptional, self).__init__(caller, CSA)
       self.hasOOB = False
 
+__ipc_msgs = [removeExceptional, removeWriter, removeReader, newExceptional, newReader,
+              newWriter, newServer, shutdownCSA, newCSA, serverShutdown, socketShutdown]
+from Axon.Ipc import GetIPCs
+__ipc_msgs.extend(GetIPCs())
+
+__ipc_lookup = {}
+
+def LookupByText(name):
+   global __ipc_lookup
+   if not __ipc_lookup:
+      for item in __ipc_msgs:
+         __ipc_lookup[item.__name__] = item
+         
+   return __ipc_lookup.get(name)
+
+def ToText(signal):
+   """Convert a signal into a text representation"""
+   return type(signal).__name__
+   
+if __name__ == '__main__':
+   signal_type = LookupByText('producerFinished')
+   signal = signal_type()
+   text = ToText(signal)
+   
+   print 'signal=%s' % (signal)
+   print 'text=%s' % (text)

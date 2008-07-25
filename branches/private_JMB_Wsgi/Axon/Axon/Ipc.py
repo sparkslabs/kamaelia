@@ -336,20 +336,8 @@ __ipc_msgs = [errorInformation, producerFinished, wouldblock, status, shutdown,
               shutdownMicroprocess, notify, newComponent, reactivate, WaitComplete,
               ipc]
 
-__ipc_lookup = {}
-
-def LookupByText(name):
-   global __ipc_lookup
-   if not __ipc_lookup:
-      for item in __ipc_msgs:
-         __ipc_lookup[item.__name__] = item
-         
-   return __ipc_lookup[name]
-
-def ToText(signal):
-   """Convert a signal into a text representation"""
-   return type(signal).__name__
-   
+def GetIPCs():
+   return __ipc_msgs
 
 if __name__ == '__main__':
    print "This class currently contains no test code."
