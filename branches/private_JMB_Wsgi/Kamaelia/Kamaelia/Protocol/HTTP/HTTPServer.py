@@ -229,7 +229,7 @@ class HTTPShutdownLogicHandling(component):
         self.send(producerFinished(), "signal")        # We're done, close the connection.
         yield 1                                        # And quit
 
-def HTTPServer(createRequestHandler, **argd):
+def HTTPServer(createRequestHandler, requestTranslator=None, **argd):
     """\
     HTTPServer() -> new HTTPServer component capable of handling a single connection
 
@@ -264,17 +264,29 @@ __kamaelia_prefabs__  = ( HTTPServer, )
 
 if __name__ == '__main__':
     import socket
+    from Kamaelia.Chassis.ConnectedServer import ServerCore
+    from Kamaelia.Protocol.HTTP import HTTPProtocol
+    from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
+    
+    class handler(component):
+        def __init__(self, request):
+            self.request = request
+            super(handler, self).__init__()
+        def main(self):
+            from pprint import pformat
+            resource = {
+                'statuscode' : 200,
+                'headers' : [('content-type', 'text/plain')],
+                'data' : pformat(self.request),
+            }
+            self.send(resource, 'outbox')
+            self.send(producerFinished(self), 'signal')
+            yield 1
 
-    from Kamaelia.Chassis.ConnectedServer import SimpleServer
+    routing = [['/', handler]]
 
-    # this works out what the correct response to a request is
-    from Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
-
-    def createhttpserver():
-        return HTTPServer(createRequestHandler)
-
-    SimpleServer(
-        protocol=createhttpserver,
+    ServerCore(
+        protocol=HTTPProtocol(routing, WSGILikeTranslator),
         port=8082,
         socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     ).run()

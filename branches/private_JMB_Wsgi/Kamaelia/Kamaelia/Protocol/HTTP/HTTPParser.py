@@ -68,7 +68,6 @@ import string
 def splitUri(url):
     requestobject = { "raw-uri": url, "uri-protocol": "", "uri-server": "" }
     splituri = string.split(requestobject["raw-uri"], "://")
-    #print 'splituri = ', splituri
     if len(splituri) > 1:
         requestobject["uri-protocol"] = splituri[0]
         requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "://"):]
@@ -164,7 +163,9 @@ class HTTPParser(component):
         """Read once from inbox (generally a TCP connection) and add
         what is received to the readbuffer. This is somewhat inefficient for long lines maybe O(n^2)"""
         if self.dataReady("inbox"):
-            self.readbuffer += self.recv("inbox")
+            request = self.recv('inbox')
+            print request
+            self.readbuffer += request
             return 1
         else:
             return 0
@@ -424,6 +425,7 @@ class HTTPParser(component):
                           "version": "0.9",
                           "method": "",
                           "protocol": "",
+                          "body": "" ,
                         }
         if self.mode == "request":
             requestobject["raw-uri"] = ""
