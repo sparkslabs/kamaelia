@@ -54,9 +54,34 @@ class PlayerAnalyser(Axon.Component.component):
             for update in self.Inbox("inbox"):
                 player, pos = update
                 players[player] = pos
-            print "woo", players
+#            print "woo", players
+            self.send(players, "outbox") # XXXX Note this is broken
             yield 1
 
+import math
+
+class Distancer(Axon.Component.component):
+    def main(self):
+        distance = {}
+        while True:
+            changed = False
+            for positions_dictionary in self.Inbox("inbox"):
+                for key in positions_dictionary:
+                    ax,ay = positions_dictionary[key]
+                    for other in positions_dictionary:
+                        if key == other:
+                            continue 
+                        else:
+                           changed = True
+                           bx,by = positions_dictionary[other]
+                           dx = ax-bx
+                           dy = ay-by
+                           d = int(math.sqrt((dx*dx)+(dy*dy)))
+                           distance[ (key,other) ] = d
+            if changed:
+                self.send(repr(distance)+"\n", "outbox") # XXXX Note this is broken
+            yield 1
+                            
 
 from Kamaelia.Util.Backplane import *
 Backplane("PLAYERS").activate()
@@ -70,8 +95,8 @@ Pipeline(
 
 Pipeline(
     MyGamesEventsComponent(up="up", down="down", left="left", right="right"),
-    BasicSprite("mouse.png", name = "player", border=40),
-    PureTransformer(lambda x: ("Person", x)),
+    BasicSprite("mouse.png", name = "mouse", border=40),
+    PureTransformer(lambda x: ("Mouse", x)),
     PublishTo("PLAYERS"),
 ).activate()
 
@@ -84,6 +109,8 @@ Pipeline(
 Pipeline(
     SubscribeTo("PLAYERS"),
     PlayerAnalyser(),
+    Distancer(),
+    ConsoleEchoer(),
 ).activate()
 
 SpriteScheduler(BasicSprite.allSprites()).run()
