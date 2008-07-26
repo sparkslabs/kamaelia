@@ -34,6 +34,7 @@ import Kamaelia.Apps.Wsgi.Log as Log
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
+from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
 
 sys.path.insert(0, sys.argv[0] + '/data')
 
@@ -123,7 +124,7 @@ def run_program():
         log.activate()
     
         kp = ServerCore(
-            protocol=HTTPProtocol(routing),
+            protocol=HTTPProtocol(routing, WSGILikeTranslator),
             port=int(ServerConfig['port']),
             socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
     
