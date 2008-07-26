@@ -111,9 +111,13 @@ class removeExceptional(notify):
    def __init__(self, caller, CSA):
       super(removeExceptional, self).__init__(caller, CSA)
       self.hasOOB = False
+      
+class userLoggedOut(notify):
+   pass
 
 __ipc_msgs = [removeExceptional, removeWriter, removeReader, newExceptional, newReader,
-              newWriter, newServer, shutdownCSA, newCSA, serverShutdown, socketShutdown]
+              newWriter, newServer, shutdownCSA, newCSA, serverShutdown, socketShutdown,
+              userLoggedOut]
 from Axon.Ipc import GetIPCs
 __ipc_msgs.extend(GetIPCs())
 
