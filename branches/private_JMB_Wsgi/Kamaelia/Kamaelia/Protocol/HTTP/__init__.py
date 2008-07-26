@@ -58,18 +58,33 @@ def HTTPProtocol(routing, requestTranslator=None):
     return _getHttpServer
 
 
-def PopURI(request, sn_key='SCRIPT_NAME', pi_key='PATH_INFO'):
+def PopURI(request, sn_key, pi_key, ru_key):
     if not request.get(sn_key):
-        split_uri = request['raw-uri'].split('/')
+        print '%s not found' % (sn_key)
+        split_uri = request[ru_key].split('/')
         split_uri = [x for x in split_uri if x]
-        request[sn_key] = split_uri.pop(0)
-        request[pi_key] = '/'.join(split_uri)
+        if split_uri:
+            request[sn_key] = '/' + split_uri.pop(0)
+            request[pi_key] = '/'.join(split_uri)
+            if request[pi_key]:
+                request[pi_key] = '/' + request[pi_key]
+        else:   #The request must have been for root
+            request[sn_key] = '/'
+            request[pi_key] = ''
     else:
         sn_split = request[sn_key].split('/')
         pi_split = request[pi_key].split('/')
         sn_split.append(pi_split.pop(0))
-        request[sn_key] = '/'.join(sn_split)
+        request[sn_key] = '/' + '/'.join(sn_split)
         request[pi_key] = '/'.join(pi_split)
+        if request[pi_key]:
+            request[pi_key] = '/' + request[pi_key]
+            
+def PopWsgiURI(request):
+    return PopURI(request, 'SCRIPT_NAME', 'PATH_INFO', 'NON_QUERY_URI')
+
+def PopKamaeliaURI(request):
+    return PopURI(request, 'uri-prefix-trigger', 'uri-suffix', 'raw-uri')
     
 
 MapTextToStatusCode = dict(izip(MapStatusCodeToText.itervalues(), MapStatusCodeToText.iterkeys()))

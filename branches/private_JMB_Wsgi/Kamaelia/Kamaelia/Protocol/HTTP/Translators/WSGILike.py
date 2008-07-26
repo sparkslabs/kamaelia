@@ -22,8 +22,14 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 
 def WSGILikeTranslator(request):
+    """
+    This function will translate the HTTPParser's syntax into a more WSGI-like syntax.
+    Pass it to the HTTPProtocol factory function and requests will be sent to your
+    resource handler with a subset of a WSGI environ dictionary.  You just need to
+    supply more of the wsgi variables (like wsgi.input).
+    """
     environ = {}
-    print request
+    #print request
     
     environ['REQUEST_METHOD'] = request['method']
     environ['REQUEST_URI'] = request['raw-uri']
@@ -36,12 +42,14 @@ def WSGILikeTranslator(request):
     if not environ['PATH_INFO'].startswith('/') and environ['PATH_INFO']:
         environ['PATH_INFO'] = '/%s' % (environ['PATH_INFO'])
     
-    if request['raw-uri'].find('?') != -1:
+    question_mark_index = request['raw-uri'].find('?')
+    if question_mark_index != -1:
         split_uri = request['raw-uri'].split('?')
         environ['QUERY_STRING'] = split_uri[1]
-        q_index = environ['PATH_INFO'].find('?')
-        if q_index != -1:
-            environ['PATH_INFO'] = environ['PATH_INFO'][:q_index]
+        pq_index = environ['PATH_INFO'].find('?')
+        if pq_index != -1:
+            environ['PATH_INFO'] = environ['PATH_INFO'][:pq_index]
+        environ['NON_QUERY_URI'] = request['raw-uri'][:question_mark_index]
     else:
         environ['QUERY_STRING'] = ''
     
@@ -62,7 +70,7 @@ def WSGILikeTranslator(request):
     environ['REMOTE_ADDR'] = request['peer']
     environ['REMOTE_PORT'] = request['peerport']
     
-    environ['wsgi.url_scheme'] = request['uri-protocol']
+    environ['wsgi.url_scheme'] = request['uri-protocol'].lower()
     
     ConvertHeaders(request, environ)
     

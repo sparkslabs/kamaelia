@@ -164,7 +164,7 @@ class HTTPParser(component):
         what is received to the readbuffer. This is somewhat inefficient for long lines maybe O(n^2)"""
         if self.dataReady("inbox"):
             request = self.recv('inbox')
-            print request
+            #print request
             self.readbuffer += request
             return 1
         else:

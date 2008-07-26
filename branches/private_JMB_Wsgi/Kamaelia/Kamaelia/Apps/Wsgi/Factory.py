@@ -24,7 +24,7 @@
 import re
 
 from WsgiHandler import _WsgiHandler
-from Kamaelia.Protocol.HTTP import PopURI
+from Kamaelia.Protocol.HTTP import PopWsgiURI
 
 def WsgiFactory(log_writable, WsgiConfig, url_list):
     """
@@ -39,18 +39,26 @@ def WsgiFactory(log_writable, WsgiConfig, url_list):
             self.url_list = url_list
             self.app_objs = {}
             self.compiled_regexes = {}
-            for dict in url_list:
-                self.compiled_regexes[dict['kp.regex']] = re.compile(dict['kp.regex'])
+            print url_list
+            for dictionary in url_list:
+                self.compiled_regexes[dictionary['kp.regex']] = re.compile(dictionary['kp.regex'])
         def __call__(self, request):
-            print request
+            #print request
             matched_dict = False
             regexes = self.compiled_regexes
             urls = self.url_list
             split_uri = request['PATH_INFO'].split('/', 2)
             split_uri = [x for x in split_uri if x]  #remove any empty strings
+            
+            #Potential FIXME:  If split_uri is empty, we set the fist item to something
+            #that wouldn't be in the url.  It feels like a hack, but seems to work.
+            #Could this be a potential security risk or source of a bug?
+            if not split_uri:
+                split_uri = ['||||']
+            
             for url_item in urls:
                 if regexes[url_item['kp.regex']].search(split_uri[0]):
-                    PopURI(request)
+                    PopWsgiURI(request)
                     matched_dict = url_item
                     break
     
@@ -68,7 +76,7 @@ def WsgiFactory(log_writable, WsgiConfig, url_list):
                     raise WsgiImportError("WSGI application file not found.  Please check your urls file.")
                 except AttributeError:
                     raise WsgiImportError("Your WSGI application file was found, but the application object was not. Please check your urls file.")
-            request['custom'] = matched_dict
+            request.update(matched_dict)
             #dump_garbage()
             return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
     return _getWsgiHandler(log_writable, WsgiConfig, url_list)
@@ -91,14 +99,14 @@ def SimpleWsgiFactory(log_writable, WsgiConfig, app_object, script_name='/'):
     """
     
     def _getWsgiHandler(request):
-        print request
+        #print request
         split_uri = request['PATH_INFO'].split('/')
         split_uri = [x for x in split_uri if x] #remove any empty strings
         
         script_name_trim = script_name.strip('/')
         if script_name:
             if script_name_trim == split_uri[0] and script_name != '/':
-                PopURI(request)
+                PopWsgiURI(request)
             elif script_name == '/':
                 request['SCRIPT_NAME'] = ''
                 request['PATH_INFO'] = '/'.join(split_uri)

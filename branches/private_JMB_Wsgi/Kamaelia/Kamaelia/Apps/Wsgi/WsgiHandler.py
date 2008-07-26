@@ -159,37 +159,6 @@ from wsgiref.validate import validator
 
 
 Axon.Box.ShowAllTransits = False
-
-def HTML_WRAP(app):
-    """
-    Wraps the Application object's results in HTML
-    """
-    def gen(environ, start_response):
-        """The standard WSGI interface"""
-        iterator = app(environ, start_response)
-        first_yield = iterator.next()
-        yield "<html>\n"
-        yield "<body>\n"
-        yield first_yield
-        for i in iterator:
-            yield i
-        yield "</body>\n"
-        yield "</html>\n"
-    return gen
-
-def normalizeEnviron(request, environ):
-    """
-    Converts environ variables to strings for wsgi compliance and deletes extraneous
-    fields.  Also puts the request headers into CGI variables.
-    """
-    for header in request["headers"]:
-        cgi_varname = "HTTP_"+header.replace("-","_").upper()
-        environ[cgi_varname] = request["headers"][header]
-
-    if environ.get('HTTP_CONTENT_TYPE'):
-        del environ['HTTP_CONTENT_TYPE']
-    if environ.get('HTTP_CONTENT_LENGTH'):
-        del environ['HTTP_CONTENT_LENGTH']
         
 class NullFileLike (object):
     """
@@ -213,7 +182,8 @@ class _WsgiHandler(threadedcomponent):
     """
     This is a WSGI handler that is used to serve WSGI applications.  Typically,
     URL routing is to be done in the factory method that creates this.  Thus,
-    the handler must be passed the application object.
+    the handler must be passed the application object.  You probably don't need
+    to instantiate this class directly.
     """
     Inboxes = {
         'inbox' : 'Used to receive the body of requests from the HTTPParser',
@@ -232,12 +202,9 @@ class _WsgiHandler(threadedcomponent):
         WsgiConfig - General configuration about the WSGI server.
         """
         super(_WsgiHandler, self).__init__(**argd)
-        self.request = request
-        self.environ = {}
-        if request.get('custom'):
-            self.environ.update(request['custom'] )
+        self.environ = request
 
-        print 'request received for [%s]' % (self.request['raw-uri'])
+        print 'request received for [%s]' % (self.environ['REQUEST_URI'])
 
         self.app = app
         self.log_writable = log_writable
@@ -246,30 +213,13 @@ class _WsgiHandler(threadedcomponent):
         self.write_called = False
 
     def main(self):
-        try:
-            self.server_name, self.server_port = self.request['uri-server'].split(':')
-        except ValueError:
-            self.server_name = self.request['uri-server']
-            self.server_port = '80'
-        #Get the server name and the port number from the server portion of the
-        #uri.  E.G. 127.0.0.1:8082/moin returns 127.0.0.1 and 8082
-
-        self.headers = self.request["headers"]
-
-        if self.request['method'] == 'POST' or self.request['method'] == 'PUT':
+        if self.environ['REQUEST_METHOD'] == 'POST' or self.environ['REQUEST_METHOD'] == 'PUT':
             body = self.waitForBody()
             self.memfile = cStringIO.StringIO(body)
         else:
             self.memfile = _null_fl
 
-        #The WSGI validator complains if we close the memfile from wsgi.input directly
-        self.environ['wsgi.input'] = self.memfile
-
-        self.initRequiredVars(self.wsgi_config)
-        self.initOptVars(self.wsgi_config)
-
-        normalizeEnviron(self.request, self.environ)
-#        pprint(self.request)
+        self.initWSGIVars(self.wsgi_config)
 
         try:
             #PEP 333 specifies that we're not supposed to buffer output here,
@@ -292,8 +242,6 @@ class _WsgiHandler(threadedcomponent):
         #self.pause(5)
         #print 'unpausing'
         self.log_writable.flush()
-        del self.environ
-        del self.request
         while not self.dataReady('control'):
             self.pause()
         self.send(Axon.Ipc.producerFinished(self), "signal")
@@ -398,57 +346,21 @@ class _WsgiHandler(threadedcomponent):
         #pprint(page)
         self.send(page, 'outbox')
 
-    def initRequiredVars(self, wsgi_config):
+    def initWSGIVars(self, wsgi_config):
         """
         This method initializes all variables that are required to be present
         (including ones that could possibly be empty).
         """
-        self.environ["REQUEST_METHOD"] = self.request["method"]
-
-        # Server name published to the outside world
-        self.environ["SERVER_NAME"] = self.server_name
-
-        # Server port published to the outside world
-        self.environ["SERVER_PORT"] =  self.server_port
-
-        #Protocol to respond to
-        self.environ["SERVER_PROTOCOL"] = "%s/%s" %(self.request['protocol'], self.request['version'])
-
-        self.environ['SCRIPT_NAME'] = self.request['SCRIPT_NAME']
-        path_info = self.request['PATH_INFO']
-        qindex = path_info.find('?')
-        if qindex != -1:
-            self.environ['PATH_INFO'] = path_info[:qindex]
-            self.environ['QUERY_STRING'] = path_info[(qindex+1):]
-        else:
-            self.environ['PATH_INFO'] = path_info
-            self.environ['QUERY_STRING'] = ''
-
         #==================================
         #WSGI variables
         #==================================
         self.environ["wsgi.version"] = wsgi_config['wsgi_ver']
-        self.environ["wsgi.url_scheme"] = self.request["protocol"].lower()
         self.environ["wsgi.errors"] = self.log_writable
+        self.environ['wsgi.input'] = self.memfile
 
         self.environ["wsgi.multithread"] = True
         self.environ["wsgi.multiprocess"] = False
         self.environ["wsgi.run_once"] = False
-
-    def initOptVars(self, wsgi_config):
-        """This method initializes all variables that are optional"""
-
-        # Contents of an HTTP_CONTENT_TYPE field
-        self.environ["CONTENT_TYPE"] = self.headers.get("content-type","")
-
-        # Contents of an HTTP_CONTENT_LENGTH field
-        self.environ["CONTENT_LENGTH"] = self.headers.get("content-length","")
-        #self.environ["DOCUMENT_ROOT"] = self.homedirectory
-        self.environ["SERVER_ADMIN"] = wsgi_config['server_admin']
-        self.environ["SERVER_SOFTWARE"] = wsgi_config['server_software']
-        self.environ["SERVER_SIGNATURE"] = "%s Server at %s port %s" % \
-                    (wsgi_config['server_software'], self.server_name, self.server_port)
-        self.environ['REMOTE_ADDR'] = self.request['peer']
 
 
 

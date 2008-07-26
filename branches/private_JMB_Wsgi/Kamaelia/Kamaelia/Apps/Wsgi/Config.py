@@ -108,11 +108,15 @@ class UrlListFormatter(FormatterBase):
 
             while self.dataReady('inbox'):
                 section, data = self.recv('inbox')
+                print section, '\n', data
                 if section == 'error_404':
                     if data.has_key('regex'):
                         raise ParseException('error_404 cannot contain a regex')
                     data['regex'] = '.*'
                     self.error_404 = self.normalizeDict(data)
+                elif section == 'root':
+                    data['regex'] = '\|' * 4
+                    self.results.append(self.normalizeDict(data))
                 else:
                     self.results.append(self.normalizeDict(data))
             if not self.anyReady() and not_done:
