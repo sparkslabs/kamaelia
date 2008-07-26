@@ -33,7 +33,7 @@ def WSGILikeTranslator(request):
     elif environ['SCRIPT_NAME'] == '/':
         environ['SCRIPT_NAME'] = ''
     environ['PATH_INFO'] = request['uri-suffix']
-    if not environ['PATH_INFO'].startswith('/'):
+    if not environ['PATH_INFO'].startswith('/') and environ['PATH_INFO']:
         environ['PATH_INFO'] = '/%s' % (environ['PATH_INFO'])
     
     if request['raw-uri'].find('?') != -1:
