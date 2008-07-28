@@ -159,7 +159,7 @@ public:
             inputArray = NULL;
         }
         // TODO:Make me send RtAudioStreamStatus properly
-        printf("Frames: %i Time: %f\n", nFrames, streamTime);
+        //printf("Frames: %i Time: %f\n", nFrames, streamTime);
         PyObject *result;
   
         result = PyEval_CallFunction(data->function, "OOidO", outputArray,
@@ -222,6 +222,8 @@ public:
     void closeStream();
 
     void startStream();
+
+    void stopStream();
 
     void abortStream();
 
