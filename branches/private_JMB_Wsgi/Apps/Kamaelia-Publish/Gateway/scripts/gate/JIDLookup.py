@@ -23,9 +23,18 @@
 
 from Kamaelia.Protocol.HTTP import PopURI
 
-_lookup_table = {
-    'amnorvend' : 'amnorvend@jabber.org'
+from headstock.api.jid import JID
+
+_uri_lookup_table = {
+    u'amnorvend@jabber.org' : 'amnorvend'
 }
+
+_uris_active = {}
+
+def GetURI(user):
+    JIDText = user.nodeid()
+    return _uri_lookup_table[JIDText]
+    
 
 def ExtractJID(request):
     print request
@@ -35,6 +44,16 @@ def ExtractJID(request):
     #print split_raw
     PopURI(request)
     if split_raw:
-        return _lookup_table.get(split_raw[0])
+        return _uris_active.get(split_raw[0])
     else:
         return ''
+
+def AddUser(user):
+    assert(isinstance(user, JID))
+    #Add the JID without the resource as the key to the JID instance
+    _uris_active[GetURI(user)] = user
+    print _uris_active    
+    
+def RmUser(user):
+    assert(isinstance(user, JID))
+    del _uris_active[GetURI(user)]

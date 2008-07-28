@@ -25,7 +25,7 @@ from Axon.Component import component
 class OutboxBundle(component):
     Inboxes = {}
     Outboxes = {'outbox' : 'send messages',
-                'signal' : 'send signals'}
+                'signal' : 'send signals',}
     
 class InitialMessage(object):
     hMessage = None

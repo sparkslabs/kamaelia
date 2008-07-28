@@ -22,11 +22,12 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess, internalNotify, LookupByText
+from Axon.Ipc import producerFinished, shutdownMicroprocess, internalNotify
 from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
+from Kamaelia.IPC import LookupByText
 
 from headstock.api.im import Message, Body, Event, Thread
 from headstock.api.jid import JID
@@ -67,7 +68,7 @@ class RequestSerializer(component):
         
         #The following is used to indicate that we should send a signal to the serving
         #client. Sometimes we want to disable this, like if a serving client isn't
-        #found.
+        #found or is unavailable.
         self._send_xmpp_signal = True
         
     def main(self):
@@ -150,7 +151,7 @@ class RequestSerializer(component):
 class ResponseDeserializer(component):
     Inboxes = {'inbox' : 'Receive responses to deserialize',
                'control' : 'Receive shutdown signals',
-               'response_control' : 'Receive signals from the request serializer'}
+               'error' : 'Receive signals indicating an error of some kind'}
     Outboxes = {'outbox' : 'Send deserialized responses',
                 'signal' : 'Forward shutdown signals'}
     

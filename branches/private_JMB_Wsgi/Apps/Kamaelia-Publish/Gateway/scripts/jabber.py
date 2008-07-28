@@ -538,7 +538,7 @@ class Client(component):
                                registerdisp = RegisterDispatcher(),
                                pjid = PublishTo("JID"),
                                pbound = PublishTo("BOUND"),
-                               webhandler=Interface(),
+                               webhandler=Interface(ThisJID=self.jid),
 
                                linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
                                            ('console', 'outbox'): ('client', 'control'),
@@ -575,8 +575,8 @@ class Client(component):
                                            ("presencehandler", "outbox"): ("presencedisp", "forward"),
                                            ("presencehandler", "roster"): ("rosterdisp", "forward"),
                                            ("presencedisp", "outbox"): ("xmpp", "forward"),
-                                           ("presencedisp", "xmpp.available") : ('presencehandler', 'available'),
-                                           ("presencedisp", 'xmpp.unavailable') : ('presencehandler', 'unavailable'),
+                                           ("presencedisp", "xmpp.available") : ('webhandler', 'xmpp.available'),
+                                           ("presencedisp", 'xmpp.unavailable') : ('webhandler', 'xmpp.unavailable'),
 
                                            # Roster
                                            ("xmpp", "%s.query" % XMPP_ROSTER_NS): ("rosterdisp", "inbox"),
@@ -596,8 +596,8 @@ class Client(component):
                                            # Message
                                            ("xmpp", "%s.message" % XMPP_CLIENT_NS): ("msgdisp", "inbox"),
                                            ("msgdisp", "log"): ('logger', "inbox"),
-                                           ("webhandler", "xmpp_outbox"): ('msgdisp', 'forward'),
-                                           ("msgdisp", "xmpp.chat"): ('webhandler', 'xmpp_inbox'),
+                                           ("webhandler", "xmpp.outbox"): ('msgdisp', 'forward'),
+                                           ("msgdisp", "xmpp.chat"): ('webhandler', 'xmpp.inbox'),
                                            ("msgdisp", "outbox"): ("xmpp", "forward"),
 
                                            # Activity
