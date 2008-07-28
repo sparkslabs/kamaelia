@@ -27,7 +27,7 @@ from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
-from Kamaelia.IPC import LookupByText
+from Kamaelia.IPC import LookupByText, userLoggedOut
 
 from headstock.api.im import Message, Body, Event, Thread
 from headstock.api.jid import JID
@@ -113,7 +113,7 @@ class RequestSerializer(component):
             
     def sendInitialMessage(self, request):
         print '='*6, 'REQUEST', '='*6, '\n'
-        print request
+        #print request
         
         request['batch'] = self.batch_id
         
@@ -122,8 +122,8 @@ class RequestSerializer(component):
                              bundle=self.bundle, batch_id=self.batch_id)
         
         self.send(out, 'outbox')
-        print '='*6, 'REQUEST', '='*6, '\n'
-        print request
+        #print '='*6, 'REQUEST', '='*6, '\n'
+        #print request
         
     def JIDNotFound(self):
         resource = getErrorPage(404, 'Could not find %s' % (self.request['REQUEST_URI']))
@@ -197,11 +197,17 @@ class ResponseDeserializer(component):
             self.signal = msg
             
     def handleResponseControl(self, msg):
+        print 'Received %s.' % (msg)
         if isinstance(msg, internalNotify):
             resource = msg.message
             self.send(resource, 'outbox')
             self.signal = producerFinished(self)
-            
+        elif isinstance(msg, userLoggedOut):
+            resource = getErrorPage(502, 'Thread %s terminated unexpectedly.' % (msg.thread))
+            print '='*6, 'RESOURCE', '='*6
+            print resource
+            self.send(resource, 'outbox')
+            self.signal = producerFinished(self)            
             
 def Translator(request, mtr=None, rtm=None):
     if not mtr:
@@ -222,9 +228,13 @@ def Translator(request, mtr=None, rtm=None):
                 
             #This is the shutdown handling
             ('self', 'control') : ('rtm', 'control'),
-            ('self', 'xmpp_control') : ('mtr', 'control'),
+            ('self', 'xmpp_control') : ('mtr', 'response_control'),
             ('mtr', 'signal') : ('self', 'signal'),
             ('rtm', 'response_signal') : ('mtr', 'response_control'),
+                
+            #bundle linkages
+            #('bundle', 'outbox') : ('mtr', 'inbox'),
+            #('bundle', 'signal') : ('mtr', 'control'),
         }
     )
     

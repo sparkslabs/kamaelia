@@ -51,7 +51,7 @@ class Interface(threadedcomponent):
     def __init__(self, **argd):
         super(Interface, self).__init__(**argd)
         self.transactions = {}
-        jids = {}
+        self.jids = {}
     
     def createSubcomponents(self):
         self.bplane = Backplane(BPLANE_NAME)
@@ -77,21 +77,52 @@ class Interface(threadedcomponent):
                     bundle.send(msg, 'outbox')
                     
             for msg in self.Inbox('xmpp.available'):
-                print 'Received available:  %s' % (repr(msg))
                 if msg.from_jid.nodeid() != self.ThisJID.nodeid():
-                    JIDLookup.AddUser(msg.from_jid)
+                    print '%s available.' % (msg.from_jid)
+                    self.handleAvailable(msg)
+                else:
+                    print '%s available.  No action taken.' % (msg.from_jid)
             for msg in self.Inbox('xmpp.unavailable'):
+                self.handleUnavailable(msg)
                 print 'Received unavailable:  %s' % (repr(msg))
-                JIDLookup.RmUser(msg.from_jid)
                 
             if not self.anyReady() and self.not_done:
                 self.pause()
     
     def handleMainInbox(self, msg):
-        if isinstance(msg, InitialMessage):            
+        if isinstance(msg, InitialMessage):
+            #This is the first message in the transaction.
+            
+            #Add the bundle to the transaction list so that we can look it up when
+            #we receive a response
             self.transactions[msg.batch_id] = msg.bundle
+            
+            #Add the thread to the jids dict so that we can get back to any associated
+            #bundles if the user goes offline
+            self.jids[msg.hMessage.to_jid.nodeid()].append(msg.batch_id)
             self.send(msg.hMessage, 'xmpp.outbox')
             #print 'Interface received the following:'
             #print Message.to_element(msg.hMessage).xml()
         elif isinstance(msg, Message):
             self.send(msg, 'xmpp.outbox')
+            
+    def handleAvailable(self, pres):
+        
+        jid = pres.from_jid.nodeid()
+        self.jids[jid] = []
+        JIDLookup.AddUser(pres.from_jid)
+        print self.jids
+    
+    def handleUnavailable(self, pres):
+        jid = pres.from_jid.nodeid()
+        for batch_id in self.jids[jid]:
+            print 'Killing %s...' % (batch_id)
+            bundle = self.transactions[batch_id]
+            print bundle
+            bundle.send(userLoggedOut(batch_id), 'signal')
+            bundle.kill()
+            del self.transactions[batch_id]
+        
+        del self.jids[jid]
+        JIDLookup.RmUser(pres.from_jid)
+        print self.jids
