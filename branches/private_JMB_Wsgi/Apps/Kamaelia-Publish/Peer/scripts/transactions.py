@@ -79,6 +79,11 @@ class _BoxBundle(object):
         return '<transaction for thread %s: %s, %s, %s, %s>' \
             % (self.thread or '(unknown)', self.inbox, self.control, self.outbox, self.control)
         
+    def _get_done(self):
+        return self.Translator._isStopped()
+    
+    done = property(fget=_get_done)
+        
 def BoxBundle(adap, translator=None, thread=None):
     """This factory function will create a new box bundle with all the necessary
     info about a component.  This is done this way to prevent circular references.
@@ -159,10 +164,9 @@ class TransactionManager(threadedadaptivecommscomponent):
             marked = set()
             for thread, transaction in self.transactions.iteritems():
                 if transaction.anyReady():
-                    for msg in transaction.Inbox('control'):
-                        print msg
-                        marked.add(thread)
-                        
+                    if transaction.done:
+                        marked.add(transaction)
+                    
                     self.sync()
                     for msg in transaction.Inbox('inbox'):
                         self.send(msg, 'outbox')
@@ -196,7 +200,7 @@ class TransactionManager(threadedadaptivecommscomponent):
         self.transactions[str(msg.thread)] = transaction
         
         translator.activate()
-        #self.addChildren(translator)
+        self.addChildren(translator)
         
     def _sendToTranslator(self, msg):
         thread = str(msg.thread)
@@ -204,13 +208,11 @@ class TransactionManager(threadedadaptivecommscomponent):
         transaction.send(msg, 'outbox')
         
     def _cleanup(self, marked):
-        for thread in marked:
-            transaction = self.transactions[thread]
-            assert(not transaction.Translator._isStopped())
-            #self.removeChild(transaction.Translator)
+        for transaction in marked:
+            assert(transaction.Translator._isStopped())
+            self.removeChild(transaction.Translator)
             transaction.destroyBoxes()
-            del self.transactions[thread]
-            print thread, ' collected.'
+            del self.transactions[transaction.thread]
         
 if __name__ == '__main__':
     from Axon.Component import component

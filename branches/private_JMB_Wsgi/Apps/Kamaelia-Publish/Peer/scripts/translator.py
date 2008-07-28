@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 from Axon.Component import component
-from Axon.Ipc import LookupByText, ToText
+from Kamaelia.IPC import LookupByText, ToText
 
 from xml.sax.saxutils import unescape, escape
 
@@ -180,6 +180,7 @@ class TranslatorChassis(component):
         self.message = message
         self.handler_factory = handler_factory
         self.initializeComponents()
+        self.done = False
         
     def initializeComponents(self):
         """Set up the response and request translators.

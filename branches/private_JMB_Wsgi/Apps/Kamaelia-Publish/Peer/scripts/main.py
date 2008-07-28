@@ -39,11 +39,12 @@ from Kamaelia.Util.Console import ConsoleReader
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 from Kamaelia.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory
+from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory, WsgiFactory
 from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
 from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
 from Kamaelia.Apps.Wsgi.Log import LogWriter
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
 
 from transactions import TransactionManager
     
@@ -393,7 +394,7 @@ class Client(component):
                 "lw-signal" : "Shutdown signal for WsgiLogWritable",
                 "doregistration" : ""}
 
-    def __init__(self, XMPPConfig, WSGIConfig):
+    def __init__(self, XMPPConfig, WSGIConfig, url_list):
         super(Client, self).__init__() 
         self.jid = JID(
             XMPPConfig.username,
@@ -411,6 +412,7 @@ class Client(component):
         self.log_location = WSGIConfig['log']
         
         self.WSGIConfig = WSGIConfig
+        self.url_list = url_list
 
     def passwordLookup(self, jid):
         return self.password
@@ -474,12 +476,9 @@ class Client(component):
 
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
         
-        routing = [ ["/", SimpleWsgiFactory(log_writable, self.WSGIConfig, simple_app, '/simple')], ]
-        #routing = [ ['/', Echoer]]
-        
         trans = TransactionManager(
-            HandlerFactory = SimpleWsgiFactory(log_writable, self.WSGIConfig, simple_app, '/simple')
-            )
+            HandlerFactory = WsgiFactory(log_writable, self.WSGIConfig, self.url_list)
+        )
 
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
@@ -650,9 +649,11 @@ def main():
     WSGIConfig = Config['WSGI'] #FIXME: The WSGI Handler should really be refactored to use an object rather than a dict
     XMPPConfig = XMPPConfigObject(Config['XMPP'])
     
+    url_list = ParseUrlFile(WSGIConfig['url_list'])
+    
     print XMPPConfig
 
-    client = Client(XMPPConfig, WSGIConfig)
+    client = Client(XMPPConfig, WSGIConfig, url_list)
     client.run()
 
 if __name__ == '__main__':
