@@ -95,7 +95,7 @@ if __name__ == "__main__":
     from Kamaelia.Apps.Jam.UI.PianoRoll import PianoRoll
     from Kamaelia.Apps.Jam.Audio.Synth import Synth
     from Kamaelia.Apps.Jam.Util.Numpy import TypeConverter
-    from Kamaelia.Codec.Vorbis import AOAudioPlaybackAdaptor
+    from Kamaelia.Apps.Jam.Audio.RTOutput import RTOutput
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.PureTransformer import PureTransformer
     polyphony = 8
@@ -107,6 +107,6 @@ if __name__ == "__main__":
 
     Pipeline(PianoRoll(), Synth(voiceGenerator, polyphony=8),
              PureTransformer(lambda x : x*(2**15 - 1)),
-             TypeConverter(type="int16"), AOAudioPlaybackAdaptor()).run()
+             TypeConverter(type="int16"), RTOutput(channels=1)).run()
 
 
