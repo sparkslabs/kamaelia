@@ -52,6 +52,7 @@ def WSGILikeTranslator(request):
         environ['NON_QUERY_URI'] = request['raw-uri'][:question_mark_index]
     else:
         environ['QUERY_STRING'] = ''
+        environ['NON_QUERY_URI'] = environ['REQUEST_URI']
     
     environ['CONTENT_TYPE'] = request['headers'].get('content-type', '')
     environ['CONTENT_LENGTH'] = request['headers'].get('content-length', '')

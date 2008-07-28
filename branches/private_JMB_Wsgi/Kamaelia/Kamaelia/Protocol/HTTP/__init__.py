@@ -76,10 +76,18 @@ def PopURI(request, sn_key, pi_key, ru_key):
         sn_split = request[sn_key].split('/')
         pi_split = request[pi_key].split('/')
         sn_split.append(pi_split.pop(0))
-        request[sn_key] = '/' + '/'.join(sn_split)
-        request[pi_key] = '/'.join(pi_split)
+        request[sn_key] = '/'.join(sn_split)
+        request[sn_key] = checkSlashes(request[sn_key])
         if request[pi_key]:
-            request[pi_key] = '/' + request[pi_key]
+            request[pi_key] = '/'+('/'.join(pi_split))
+        else:
+            request[pi_key] = ''
+        request[pi_key] = checkSlashes(request[pi_key])
+            
+def checkSlashes(item='', sl_char='/'):
+    if not item.startswith(sl_char):
+        item = sl_char + item
+    return item.rstrip('/')
             
 def PopWsgiURI(request):
     return PopURI(request, 'SCRIPT_NAME', 'PATH_INFO', 'NON_QUERY_URI')
