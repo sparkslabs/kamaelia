@@ -41,7 +41,8 @@ def requestHandlers(URLHandlers, requestTranslator, errorpages=None):
                 if request["raw-uri"][:len(prefix)] == prefix:
                     request['uri-prefix-trigger'] = prefix
                     request['uri-suffix'] = request["raw-uri"][len(prefix):]
-                    request = requestTranslator(request)
+                    if requestTranslator:
+                        request = requestTranslator(request)
                     return handler(request)
 
         return errorpages.getErrorPage(404, "No resource handlers could be found for the requested URL")
