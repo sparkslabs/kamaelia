@@ -1,12 +1,17 @@
 %Module RtAudio 0
 
+%ModuleHeaderCode
+#include "RtAudio.h"
+#include "NumpyInterface.h"
+#include <vector>
+%End
+
+%PostInitialisationCode
+importNumpy();
+%End
 
 class RtAudio
 {
-%TypeHeaderCode
-#include "RtAudio.h"
-#include "Numeric/arrayobject.h"
-%End
 public:
 
     enum Api {
@@ -20,19 +25,88 @@ public:
         RTAUDIO_DUMMY
     };
 
-
     RtAudio(RtAudio::Api api=UNSPECIFIED);
 
     ~RtAudio();
 
-// TODO: Make this a proper function returning a list :)
-//    static void getCompiledApi();
+    SIP_PYLIST getCompiledApi();
+%MethodCode
+    std::vector<RtAudio::Api> apiVec;
+    PyObject *apiList;
+
+    Py_BEGIN_ALLOW_THREADS
+    sipCpp->getCompiledApi(apiVec);
+    Py_END_ALLOW_THREADS
+    if ((apiList = PyList_New(apiVec.size())) == NULL) {
+        return NULL;
+    }
+
+    for (unsigned int i=0; i < apiVec.size(); i++) {
+        PyList_SET_ITEM(apiList, i, PyInt_FromLong(apiVec.at(i)));
+    }
+    return (PyObject *) apiList;
+%End
 
         
         
     RtAudio::Api getCurrentApi();
 
     unsigned int getDeviceCount();
+
+    SIP_PYDICT getDeviceInfo(unsigned int device=0);
+%MethodCode
+    RtAudio::DeviceInfo deviceInfo = sipCpp->getDeviceInfo(a0);
+
+    // Convert booleans to PyTrue or PyFalse
+    PyObject *probed;
+    PyObject *isDefaultOutput;
+    PyObject *isDefaultInput;
+
+    if (deviceInfo.probed) {
+        probed = Py_True;
+    }
+    else {
+        probed = Py_False;
+    }
+
+    if (deviceInfo.isDefaultOutput) {
+        isDefaultOutput = Py_True;  
+    }
+    else {
+        isDefaultOutput = Py_False;
+    }
+
+    if (deviceInfo.isDefaultInput) {
+        isDefaultInput = Py_True;    
+        }
+    else {
+        isDefaultInput = Py_False;
+    }
+
+    // Convert vector of supported sample rates to a list
+    PyObject *sampleRateList = PyList_New(deviceInfo.sampleRates.size());
+
+    for (unsigned int i=0; i < deviceInfo.sampleRates.size(); i++) {
+        PyList_SET_ITEM(sampleRateList, i,
+                        PyInt_FromLong(deviceInfo.sampleRates.at(i)));
+    }
+
+    PyObject *infoTuple = Py_BuildValue("{s:O,s:s,s:i,s:i,s:i}",
+                                        "probed", probed,
+                                        "name", deviceInfo.name.c_str(),
+                                        "outputChannels",
+                                        deviceInfo.outputChannels,
+                                        "inputChannels",
+                                        deviceInfo.inputChannels,
+                                        "duplexChannels",
+                                        deviceInfo.duplexChannels,
+                                        "isDefaultOutput",
+                                        isDefaultOutput,
+                                        "isDefaultInput",
+                                        isDefaultInput);
+    return infoTuple;
+
+%End
 
     unsigned int getDefaultOutputDevice();
 
@@ -41,26 +115,6 @@ public:
 
 %TypeCode
 
-    static int formatToType(unsigned long format) {
-        switch (format) {
-            case RTAUDIO_SINT8:
-                return PyArray_SHORT;     
-            case RTAUDIO_SINT16:
-                return PyArray_SHORT;
-            case RTAUDIO_SINT24:
-                // Numpy has no Int24 type, so use Int32 instead
-                return PyArray_SHORT;
-            case RTAUDIO_SINT32:
-                return PyArray_SHORT;
-            case RTAUDIO_FLOAT32:
-                return PyArray_DOUBLE;
-            case RTAUDIO_FLOAT64:
-                return PyArray_DOUBLE;
-        }
-        return -1;
-    }
-
-    
     typedef struct callbackData {
         PyObject *function;
         PyObject *param;
@@ -73,32 +127,50 @@ public:
                        unsigned int nFrames, double streamTime,
                        RtAudioStreamStatus status,
                        void *userData) {
-        // Numpy arrays for the input and output
-        PyArrayObject *outputArray, *inputArray;
-        // The array dimensions
-        int outputDims[1], inputDims[1];
         
-        struct callbackData *data = (callbackData *)userData;
+        // The array dimensions
+        PyObject *outputArray, *inputArray;
+        outputArray = Py_None;
+        inputArray = Py_None;
+        unsigned int outputBufferSize, inputBufferSize;
 
-        outputDims[0] = nFrames * data->outputChannels;
-        inputDims[0] = nFrames * data->inputChannels;
+        callbackData *data = (callbackData *)userData;
 
+        outputBufferSize = nFrames * data->outputChannels;
+        inputBufferSize = nFrames * data->inputChannels;
+        
+        PyGILState_STATE state;
+        state = PyGILState_Ensure();
         if (outputBuffer != NULL) {
-            outputArray = (PyArrayObject *)
-                              PyArray_FromDimsAndData(1, outputDims,
-                                                 formatToType(data->format),
-                                                      (char *) outputBuffer);
+            outputArray = bufferToArray((char *)outputBuffer, outputBufferSize,
+                                        data->format);
+        }
+        
+        else {
+            outputArray = NULL;
         }
 
-        inputArray = (PyArrayObject *)
-                          PyArray_FromDimsAndData(1, inputDims,
-                                                  formatToType(data->format),
-                                                  (char *) inputBuffer);
+        if (inputBuffer != NULL) {
+            inputArray = bufferToArray((char *)inputBuffer, inputBufferSize,
+                                        data->format);
+        }
+
+        else {
+            inputArray = NULL;
+        }
         // TODO:Make me send RtAudioStreamStatus properly
-        PyObject *args = Py_BuildValue("(OOidO)", outputArray, inputArray,
-                                        nFrames, streamTime, data->param);
-        PyEval_CallObject(data->function, args);
-        return 1;
+        printf("Frames: %i Time: %f\n", nFrames, streamTime);
+        PyObject *result;
+  
+        result = PyEval_CallFunction(data->function, "OOidO", outputArray,
+                            inputArray, nFrames, streamTime,
+                            data->param);
+//        std::cout << result << std::endl;
+
+        
+        PyGILState_Release(state);
+        
+        return 0;
     }
     
 %End
@@ -129,19 +201,22 @@ public:
     inputParameters.nChannels = a4;
     inputParameters.firstChannel = a5;
 
-    struct callbackData data;
-    data.function = a9;
-    data.param = a10;
-    data.format = a6;
-    data.outputChannels = outputParameters.nChannels;
-    data.inputChannels = inputParameters.nChannels;
+    callbackData *data = (callbackData *) calloc(1, sizeof(callbackData));
+
+    data->function = a9;
+    data->param = a10;
+    data->format = a6;
+    data->outputChannels = outputParameters.nChannels;
+    data->inputChannels = inputParameters.nChannels;
+
 
     // TODO: Handle stream options dict
     RtAudio::StreamOptions streamOptions;
-
+    
+    Py_BEGIN_ALLOW_THREADS
     sipCpp->openStream(&outputParameters, &inputParameters, a6, a7,
-                       &a8, &streamCallback, (void *) &data, &streamOptions);
-
+                       &a8, streamCallback, (void *)data, &streamOptions);
+    Py_END_ALLOW_THREADS
 %End
 
     void closeStream();
