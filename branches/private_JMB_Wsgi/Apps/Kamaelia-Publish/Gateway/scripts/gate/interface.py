@@ -90,8 +90,8 @@ class Interface(threadedcomponent):
     def handleMainInbox(self, msg):
         if isinstance(msg, InitialMessage):            
             self.transactions[msg.batch_id] = msg.bundle
-            self.send(msg.hMessage, 'xmpp_outbox')
+            self.send(msg.hMessage, 'xmpp.outbox')
             #print 'Interface received the following:'
             #print Message.to_element(msg.hMessage).xml()
         elif isinstance(msg, Message):
-            self.send(msg, 'xmpp_outbox')
+            self.send(msg, 'xmpp.outbox')

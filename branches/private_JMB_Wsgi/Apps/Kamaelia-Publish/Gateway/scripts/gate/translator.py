@@ -126,7 +126,7 @@ class RequestSerializer(component):
         print request
         
     def JIDNotFound(self):
-        resource = getErrorPage(404, 'Could not find %s' % (self.request['raw-uri']))
+        resource = getErrorPage(404, 'Could not find %s' % (self.request['REQUEST_URI']))
         out = internalNotify(message=resource)    #Prevents the loop from running.
         self.send(out, 'response_signal')
         self.signal = shutdownMicroprocess()
@@ -151,7 +151,7 @@ class RequestSerializer(component):
 class ResponseDeserializer(component):
     Inboxes = {'inbox' : 'Receive responses to deserialize',
                'control' : 'Receive shutdown signals',
-               'error' : 'Receive signals indicating an error of some kind'}
+               'response_control' : 'Receive signals indicating an error of some kind'}
     Outboxes = {'outbox' : 'Send deserialized responses',
                 'signal' : 'Forward shutdown signals'}
     

@@ -23,6 +23,7 @@
 
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import HTTPProtocol
+from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
 
 from gate.translator import Translator
 
@@ -31,7 +32,7 @@ import socket
 def constructHTTPServer():
     routing = [['/', Translator]]    
     return ServerCore(
-        protocol=HTTPProtocol(routing),
+        protocol=HTTPProtocol(routing, WSGILikeTranslator),
         port = 8080,
         socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
     )

@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
-from Kamaelia.Protocol.HTTP import PopURI
+from Kamaelia.Protocol.HTTP import PopWsgiURI
 
 from headstock.api.jid import JID
 
@@ -38,11 +38,11 @@ def GetURI(user):
 
 def ExtractJID(request):
     print request
-    raw = request['raw-uri']
+    raw = request['REQUEST_URI']
     split_raw = raw.split('/')
     split_raw = [x for x in split_raw if x]  #remove empty strings
     #print split_raw
-    PopURI(request)
+    PopWsgiURI(request)
     if split_raw:
         return _uris_active.get(split_raw[0])
     else:

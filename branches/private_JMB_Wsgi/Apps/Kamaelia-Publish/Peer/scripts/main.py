@@ -265,7 +265,9 @@ class PresenceHandler(component):
     Inboxes = {"inbox"       : "headstock.api.contact.Presence instance",
                "control"     : "Shutdown the client stream",
                "subscribe"   : "",
-               "unsubscribe" : "",}
+               "unsubscribe" : "",
+               "available"   : "Receive notification when a user comes online.",
+               "unavailable" : "Receive notification when a user becomes unavailable."}
     
     Outboxes = {"outbox" : "headstock.api.contact.Presence instance to return to the server",
                 "signal" : "Shutdown signal",
@@ -324,6 +326,12 @@ class PresenceHandler(component):
                 p = Presence(from_jid=p.from_jid, to_jid=unicode(p.to_jid),
                              type=u'unavailable')
                 self.send(p, "outbox")
+                
+            for msg in self.Inbox('available'):
+                pass
+            
+            for msg in self.Inbox('unavailable'):
+                pass
                 
             if not self.anyReady():
                 self.pause()
@@ -535,6 +543,8 @@ class Client(component):
                                            ("presencedisp", "log"): ('logger', "inbox"),
                                            ("presencedisp", "xmpp.subscribe"): ("presencehandler", "subscribe"),
                                            ("presencedisp", "xmpp.unsubscribe"): ("presencehandler", "unsubscribe"),
+                                           ("presencedisp", "xmpp.available") : ("presencehandler", "available"),
+                                           ("presencedisp", "xmpp.unavailable") : ("presencehandler", "unavailable"),
                                            ("presencehandler", "outbox"): ("presencedisp", "forward"),
                                            ("presencehandler", "roster"): ("rosterdisp", "forward"),
                                            ("presencedisp", "outbox"): ("xmpp", "forward"),
