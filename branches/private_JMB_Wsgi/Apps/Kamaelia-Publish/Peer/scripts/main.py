@@ -45,8 +45,10 @@ from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
 from Kamaelia.Apps.Wsgi.Log import LogWriter
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
+from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars
 
 from transactions import TransactionManager
+from config import StaticConfigObject, XMPPConfigObject, ConfigObject
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -279,7 +281,6 @@ class PresenceHandler(component):
 
     def main(self):
         while 1:
-            print 'loop!'
             while self.dataReady("control"):
                 mes = self.recv("control")
                 
@@ -402,25 +403,26 @@ class Client(component):
                 "lw-signal" : "Shutdown signal for WsgiLogWritable",
                 "doregistration" : ""}
 
-    def __init__(self, XMPPConfig, WSGIConfig, url_list):
+    def __init__(self, Config, url_list):
         super(Client, self).__init__() 
         self.jid = JID(
-            XMPPConfig.username,
-            XMPPConfig.domain,
-            XMPPConfig.resource)
-        self.username = XMPPConfig.username
-        self.password = XMPPConfig.password
-        self.server = XMPPConfig.server
-        self.port = XMPPConfig.port
+            Config.xmpp.username,
+            Config.xmpp.domain,
+            Config.xmpp.resource)
+        self.cfg = Config
+        self.username = Config.xmpp.username
+        self.password = Config.xmpp.password
+        self.server = Config.xmpp.server
         self.client = None
         self.graph = None
-        self.domain = XMPPConfig.domain
-        self.usetls = XMPPConfig.usetls
+        self.domain = Config.xmpp.domain
+        self.usetls = Config.xmpp.usetls
         self.register = False
-        self.log_location = WSGIConfig['log']
+        self.log_location = Config.wsgi['log']
         
-        self.WSGIConfig = WSGIConfig
         self.url_list = url_list
+        
+        self.use_stdout = Config.options.xmpp_verbose
 
     def passwordLookup(self, jid):
         return self.password
@@ -463,7 +465,7 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        log = Logger(path=None, stdout=True, name='XmppLogger')
+        log = Logger(path=None, stdout=self.use_stdout, name='XmppLogger')
         Backplane('LOG_' + self.log_location).activate()
         Pipeline(SubscribeTo('LOG_' + self.log_location), log).activate()
         log_writable = WsgiLogWritable(self.log_location)
@@ -485,13 +487,13 @@ class Client(component):
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
         
         trans = TransactionManager(
-            HandlerFactory = WsgiFactory(log_writable, self.WSGIConfig, self.url_list)
+            HandlerFactory = WsgiFactory(log_writable, self.cfg.wsgi, self.url_list)
         )
 
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
                                logger = PublishTo('LOG_' + self.log_location),
-                               tcp = TCPClient(self.server, self.port),
+                               tcp = TCPClient(self.cfg.xmpp.server, self.cfg.xmpp.port),
                                xmlparser = XMLIncrParser(),
                                xmpp = self.client,
                                streamerr = StreamError(),
@@ -627,44 +629,26 @@ class Client(component):
         self.stop()
         print "You can hit Ctrl-C to shutdown all processes now." 
 
-class XMPPConfigObject(object):
-    def __init__(self, dictionary):
-        self.username = u''
-        self.domain = u''
-        self.address = u''
-        self.usetls = u''
-        self.password = u''
-        self.resource = u'headstock-client1'
-        #for key in dictionary:
-        #    self.__dict__[key] = unicode(dictionary[key], 'utf-8')
-        self.__dict__.update(dictionary)
-        self.username = unicode(self.username)
-        self.domain = unicode(self.domain)
-        self.resource = unicode(self.resource)
-        self.server, self.port = self.address.split(':')
-        self.port = int(self.port)
-        if self.usetls:
-            self.usetls = True
-        else:
-            self.usetls = False
-            
-    def __str__(self):
-        return str(self.__dict__)
-    def __repr__(self):
-        return repr(self.__dict__)
+def main():   
+    ConfigDict = ParseConfigFile('~/kp.ini', DictFormatter())
+    options = parseCmdOpts()
+    
+    Config = ConfigObject(ConfigDict, options)
+    processPyPath(ConfigDict['SERVER'])
+    
+    url_list = ParseUrlFile(Config.wsgi['url_list'])
+    normalizeUrlList(url_list)
 
-def main():
-    Config = ParseConfigFile('~/kp.ini', DictFormatter())
-    
-    WSGIConfig = Config['WSGI'] #FIXME: The WSGI Handler should really be refactored to use an object rather than a dict
-    XMPPConfig = XMPPConfigObject(Config['XMPP'])
-    
-    url_list = ParseUrlFile(WSGIConfig['url_list'])
-    
-    print XMPPConfig
-
-    client = Client(XMPPConfig, WSGIConfig, url_list)
+    client = Client(Config, url_list)
     client.run()
+    
+def parseCmdOpts():
+    import optparse
+    parser = optparse.OptionParser()
+    parser.add_option('-v', '--verbose', dest='xmpp_verbose', action='store_true',
+                      help='Use this option to view each incoming and outgoing XMPP message')
+    (options, args) = parser.parse_args()
+    return options
 
 if __name__ == '__main__':
     main()

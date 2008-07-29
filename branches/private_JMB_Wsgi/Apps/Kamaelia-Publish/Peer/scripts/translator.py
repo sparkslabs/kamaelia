@@ -29,6 +29,7 @@ from headstock.api.im import Message, Body, Thread
 from headstock.lib.utils import generate_unique
 
 import simplejson
+import zlib, base64
 
 class RequestDeserializer(component):
     Inboxes = {'inbox' : '',
@@ -90,8 +91,9 @@ class RequestDeserializer(component):
     def decodeMessage(self, msg):
         temp = [str(x) for x in msg.bodies]
         body = ''.join(temp)
-        
-        body = unescape(body)
+        body = base64.decodestring(body)
+        body = zlib.decompress(body)
+        #print body
         return simplejson.loads(body)
     
 class ResponseSerializer(component):
@@ -139,7 +141,8 @@ class ResponseSerializer(component):
         
     def makeMessage(self, serializable):
         text = simplejson.dumps(serializable)
-        text = escape(text) #FIXME:  Security issue.  Will unescape escaped HTML when deserialized
+        text = zlib.compress(text)
+        text = base64.encodestring(text)
         text = unicode(text)
         
         msg = Message(self.ThisJID, self.ToJID,
