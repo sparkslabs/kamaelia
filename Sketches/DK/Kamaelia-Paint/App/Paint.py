@@ -42,6 +42,7 @@ import math
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Text import TextDisplayer
+from Kamaelia.UI.Pygame.Image import Image
 class Paint(Axon.Component.component):
    """\
    MagnaDoodle(...) -> A new MagnaDoodle component.
@@ -106,7 +107,7 @@ class Paint(Axon.Component.component):
                            "callback" : (self,"callback"),
                            "events" : (self, "inbox"),
                            "size": self.size,
-                           "transparency" : bgcolour }
+                           "transparency" : self.backgroundColour }
 
 
       if not position is None:
@@ -146,9 +147,11 @@ class Paint(Axon.Component.component):
            self.activeLayer.set_alpha(0)
            self.blitToSurface()
        return
-   def drawBG(self):
-      self.activeLayer.fill( (255,0,0) )
-      self.activeLayer.fill( self.backgroundColour, self.innerRect )
+   def drawBG(self, bg = False):
+      if bg == True:
+         self.activeLayer.fill( (255,0,0) )
+         self.activeLayer.fill( self.backgroundColour, self.innerRect )
+      else: self.activeLayer.fill( self.backgroundColour )
       
    def floodFill(self, x, y, newColour, oldColour):
        """Flood fill on a region of non-BORDER_COLOR pixels."""
@@ -177,33 +180,41 @@ class Paint(Axon.Component.component):
       x = self.recv("callback")
       self.layers.append(x)
       
+   def save(self, filename):
+       self.activeLayIn = 0
+       self.activeLayer = self.layers[self.activeLayIn]
+       self.send( self.activeLayIn, "laynum" )
+       for x in self.layers:
+           self.activeLayer.blit( x, (0,0) )
+       filename = filename+'.JPG'
+       pygame.image.save(self.activeLayer, filename)
+
+           
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
 
-      self.send( self.disprequest,
-                  "display_signal")
+      self.send( self.disprequest,"display_signal")
 
-   #   for _ in self.waitBox("callback"): yield 1
-   #   self.display = self.recv("callback")
-   #   self.layers.append(self.display)
+      for _ in self.waitBox("callback"): yield 1
+      self.display = self.recv("callback")
+      self.layers.append(self.display)
       
-      f = os.path.join('', "pennyarcade.gif")
-      x = pygame.image.load(f)
-      colorkey = x.get_at((0, 0))
-      if colorkey is True:
-          x.set_colorkey(colorkey, pygame.RLEACCEL)
-      self.layers.append(x)
-      self.display = x
-      self.activeLayIn = len(self.layers)-1
-      self.activeLayer = self.layers[self.activeLayIn]
-      self.display.blit( x, (0,0) )
+  #    f = os.path.join('', "pennyarcade.gif")
+  #    x = pygame.image.load(f)
+  #    colorkey = x.get_at((0, 0))
+  #    if colorkey is True:
+  #        x.set_colorkey(colorkey, pygame.RLEACCEL)
+  #    self.layers.append(x)
+  #    self.display = x
+  #    self.activeLayIn = len(self.layers)-1
+  #    self.activeLayer = self.layers[self.activeLayIn]
+  #    self.display.blit( x, (0,0) )
 
       
       layerDisp = TextDisplayer(size = (20, 20),position = (520,10)).activate()
       self.link( (self,"laynum"), (layerDisp,"inbox") )
-    #  self.send( "hi", "laynum" )
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
                   "display_signal")
@@ -223,24 +234,13 @@ class Paint(Axon.Component.component):
       self.send( self.activeLayIn, "laynum" )
 
 
-      self.drawBG()
+      self.drawBG(True)
       self.blitToSurface()
       
-      #yield WaitComplete( self.addLayer() )
-      # The above line is essentially equivalent to the next two:
-      #    for _ in self.addLayer():
-      #      yield 1
 
-
-      #self.send( self.disprequest2,
-                  #"display_signal")
-
-      #for _ in self.waitBox("callback"): yield 1
-      #self.display2 = self.recv("callback")
       done = False
       while not done:
          if not self.anyReady():
-            # print "in this box"
              self.pause()
          yield 1
          while self.dataReady("control"):
@@ -265,7 +265,7 @@ class Paint(Axon.Component.component):
                             self.layers.remove(self.activeLayer)
                             self.activeLayIn = 0
                             self.activeLayer = self.layers[self.activeLayIn]
-                            print self.layers
+                          #  print self.layers
                         if event[1] == "Next":
                             if self.activeLayIn == len(self.layers)-1:
                                 self.activeLayIn = 0
@@ -315,18 +315,32 @@ class Paint(Axon.Component.component):
                         #self.send(("clear",), "outbox")
                 elif event.type == (pygame.KEYDOWN):
                     if event.key == pygame.K_c:
-                        f = os.path.join('', "20080721.jpg")
-                    #    f = file("20080721.jpg")
-                        x = pygame.image.load(f)
-                        print x
-                        self.layers.append(x)
+                        image = pygame.image.load(os.path.join('', 'pennyarcade.gif'))
+                        yield WaitComplete( self.addLayer() )
                         self.activeLayIn = len(self.layers)-1
                         self.activeLayer = self.layers[self.activeLayIn]
-                       # self.drawBG()
+                        self.drawBG()
+                        self.activeLayer.blit( image, (10,10) )
                         self.blitToSurface()
+                        self.send( self.activeLayIn, "laynum" )
+                    elif event.key == pygame.K_s:
+                      #  temp = self.layers[0]
+                        self.save("tgfdg")
+                      #  self.layers.insert(0,temp)
+                      #  self.drawBG()
                     elif event.key == pygame.K_l:
-                        self.activeLayer.set_alpha(0)
-                        self.activeLayer = self.display
+                        self.layers[1].blit( self.layers[1], (100,100) )
+               #         temp = self.layers[1]
+               #         self.layers[1].fill(self.backgroundColour)
+               #         self.layers[1].blit( temp, (100,100) )
+                    elif event.key == pygame.K_o:
+                        move = {
+                                    "CHANGEDISPLAYGEO" : True,
+                                    "surface" : self.layers[1],
+                                    "position" : (100,100)
+                               }
+                        self.send(move, "display_signal")
+                                  
                        
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
