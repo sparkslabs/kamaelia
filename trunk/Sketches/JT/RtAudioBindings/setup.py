@@ -1,6 +1,7 @@
 from distutils.core import setup, Extension
 import sipdistutils
 import sys
+import numpy
 
 try:
     if sys.platform == "win32":
@@ -22,7 +23,7 @@ setup(
   version = '1.0',
   ext_modules=[
     Extension("RtAudio", sources = sources,
-              include_dirs=[".", path, path + "asio"],
+              include_dirs=[".", path, path + "asio", numpy.get_include()],
               define_macros = define_macros,
               libraries = libraries,
               extra_link_args = extra_link_args,

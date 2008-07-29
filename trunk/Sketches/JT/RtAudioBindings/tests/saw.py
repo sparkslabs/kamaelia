@@ -16,20 +16,21 @@ rate = 0.005
 def sawGen(bufferSize):
     """ Make a numpy array with a saw wave in """
     lastValue = 0
-    print 1
     while 1:
         arr = numpy.array([])
         for i in range(bufferSize):
-            arr = numpy.append(arr, lastValue)# * (2**15-1))
+            arr = numpy.append(arr, lastValue * (2**15-1))
             lastValue += rate
             if lastValue > 1:
                 lastValue -= 2
         yield arr
 
-def saw(outputBuffer, inputBuffer, bufferSize, streamTime, status, sawGen):
+makeSaw = sawGen(1024)
+
+def saw(inputBuffer, bufferSize, streamTime, status, sawGen):
     # Blank the output buffer
-    outputBuffer *= 0
-    outputBuffer += sawGen.next()
+    sawWave = makeSaw.next()
+    return sawWave
 
 if __name__ == "__main__":
 
@@ -42,8 +43,8 @@ if __name__ == "__main__":
                   0,        # Input offset
                   format, sampleRate, bufferSize, # Sound options
                   saw, # The audio callback
-                  sawGen(bufferSize))     # Extra data to the callback
+                  None)     # Extra data to the callback
     io.startStream()
-    raw_input("Press a key to stop it!")
+    raw_input("Press enter key to stop it!")
     io.stopStream()
     io.closeStream()

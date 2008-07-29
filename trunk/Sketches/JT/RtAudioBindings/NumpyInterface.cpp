@@ -1,6 +1,6 @@
 #define PY_ARRAY_UNIQUE_SYMBOL RtAudio_Numeric_PyArray_API
 #include "Python.h"
-#include <Numeric/arrayobject.h>
+#include <numpy/arrayobject.h>
 #include "RtAudio.h"
 
 void importNumpy() {
@@ -30,6 +30,12 @@ PyObject *bufferToArray(char *buffer, unsigned int bufferSize,
                        RtAudioFormat format) {
     int dims[1];
     dims[0] = bufferSize;
-    return PyArray_FromDimsAndData(1, dims, formatToType(format), buffer);
+    PyArrayObject *array = (PyArrayObject *) PyArray_SimpleNewFromData(1, dims,
+                                                formatToType(format), buffer);
+    return PyArray_Return(array);
+}
+
+char *arrayToBuffer(PyObject *array) {
+    return PyArray_BYTES(array);
 }
 

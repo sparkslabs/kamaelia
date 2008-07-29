@@ -1,6 +1,7 @@
 %Module RtAudio 0
 
 %ModuleHeaderCode
+#include "Python.h"
 #include "RtAudio.h"
 #include "NumpyInterface.h"
 #include <vector>
@@ -141,14 +142,7 @@ public:
         
         PyGILState_STATE state;
         state = PyGILState_Ensure();
-        if (outputBuffer != NULL) {
-            outputArray = bufferToArray((char *)outputBuffer, outputBufferSize,
-                                        data->format);
-        }
-        
-        else {
-            outputArray = NULL;
-        }
+        char *outBuffer = (char *)outputBuffer;
 
         if (inputBuffer != NULL) {
             inputArray = bufferToArray((char *)inputBuffer, inputBufferSize,
@@ -158,15 +152,22 @@ public:
         else {
             inputArray = NULL;
         }
+
         // TODO:Make me send RtAudioStreamStatus properly
         //printf("Frames: %i Time: %f\n", nFrames, streamTime);
         PyObject *result;
-  
-        result = PyEval_CallFunction(data->function, "OOidO", outputArray,
-                            inputArray, nFrames, streamTime,
-                            data->param);
-//        std::cout << result << std::endl;
 
+//        std::cout << PyEval_GetFuncName(data->function) << std::endl;
+        result = PyEval_CallFunction(data->function, "OidOO", inputArray,
+                            nFrames, streamTime, Py_None,
+                            data->param);
+        PyObject *error = PyErr_Occurred();
+        if (error) {
+            PyErr_Print();
+        }
+
+        outBuffer = arrayToBuffer(result);
+//        std::cout << outBuffer[0] << std::endl;
         
         PyGILState_Release(state);
         
