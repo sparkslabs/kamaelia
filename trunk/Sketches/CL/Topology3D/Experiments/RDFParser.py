@@ -30,20 +30,20 @@ g.parse("http://bigasterisk.com/foaf.rdf")
 #    print row[0], row[1]
 #    #print "%s %s" %row
 
-#! Space after { and before } is needed
-sparql = """
-SELECT DISTINCT ?name ?knows ?seeAlso ?img ?resource
-WHERE {
-  ?a foaf:knows ?knows .
-  OPTIONAL { ?knows foaf:name ?name } .
-  OPTIONAL { ?knows foaf:img ?img } .
-  OPTIONAL { ?knows rdfs:seeAlso ?seeAlso . ?seeAlso rdf:resource ?resource }
-}
-"""
-
-
-for row in g.query(sparql, initNs=ns):
-    print row
+##! Space after { and before } is needed
+#sparql = """
+#SELECT DISTINCT ?name ?knows ?seeAlso ?img ?resource
+#WHERE {
+#  ?a foaf:knows ?knows .
+#  OPTIONAL { ?knows foaf:name ?name } .
+#  OPTIONAL { ?knows foaf:img ?img } .
+#  OPTIONAL { ?knows rdfs:seeAlso ?seeAlso . ?seeAlso rdf:resource ?resource }
+#}
+#"""
+#
+#
+#for row in g.query(sparql, initNs=ns):
+#    print row
 
 ## ?x is needed even it is not useful
 #for row in g.query('SELECT ?bname WHERE { ?x foaf:knows ?b . ?b foaf:name ?bname . }', initNs=ns):
@@ -58,6 +58,6 @@ for row in g.query(sparql, initNs=ns):
 #for row in g.query('SELECT ?name ?mbox WHERE { ?x foaf:name ?name . ?x foaf:mbox ?mbox }', initNs=ns):
 #    print row
         
-#for row in g.query('SELECT ?aname ?bname WHERE { ?a foaf:knows ?b . ?a foaf:name ?aname . ?b foaf:name ?bname . }', 
-#                   initNs=ns):
-#    print "%s knows %s" % row
+for row in g.query('SELECT ?aname ?bname WHERE { ?a foaf:knows ?b . ?a foaf:name ?aname . ?b foaf:name ?bname . }', 
+                   initNs=ns):
+    print "%s knows %s" % row
