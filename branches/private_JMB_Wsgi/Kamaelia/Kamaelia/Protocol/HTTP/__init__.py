@@ -61,7 +61,7 @@ def HTTPProtocol(routing, requestTranslator=None):
 
 def PopURI(request, sn_key, pi_key, ru_key):
     if not request.get(sn_key):
-        print '%s not found' % (sn_key)
+        #print '%s not found' % (sn_key)
         split_uri = request[ru_key].split('/')
         split_uri = [x for x in split_uri if x]
         if split_uri:
@@ -75,6 +75,7 @@ def PopURI(request, sn_key, pi_key, ru_key):
     else:
         sn_split = request[sn_key].split('/')
         pi_split = request[pi_key].split('/')
+        pi_split = [x for x in pi_split if x]
         sn_split.append(pi_split.pop(0))
         request[sn_key] = '/'.join(sn_split)
         request[sn_key] = checkSlashes(request[sn_key])
