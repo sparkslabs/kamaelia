@@ -43,6 +43,7 @@ from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Text import TextDisplayer
 from Kamaelia.UI.Pygame.Image import Image
+from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
 class Paint(Axon.Component.component):
    """\
    MagnaDoodle(...) -> A new MagnaDoodle component.
@@ -65,7 +66,8 @@ class Paint(Axon.Component.component):
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from PygameDisplay",
-               "drawn"    : "Information on what was drawn on other Paint canvas"
+               "drawn"    : "Information on what was drawn on other Paint canvas",
+               "newframe" : "Input pulses from the clock, to mark new frames in animations"
              }
    Outboxes = { "outbox" : "Used to talk to other Paint canvas",
                 "laynum" : "Used to show the Active Layer number on the text displayer",
@@ -73,7 +75,7 @@ class Paint(Axon.Component.component):
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
-                transparent = False, size=(500,500), selectedColour=(0,0,0), activeLayer = None):
+                transparent = False, size=(500,500), selectedColour=(0,0,0), activeLayer = None, animator = False):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Paint,self).__init__()
 
@@ -83,7 +85,9 @@ class Paint(Axon.Component.component):
       self.activeLayIn = 0
       self.margin = margin
       self.oldpos = None
+      self.animator = animator
       self.drawing = False
+      self.currentFrame = None
       self.tool = "Line"
       self.toolSize = 3
       self.layers = []
@@ -123,30 +127,15 @@ class Paint(Axon.Component.component):
         
 
    def animate(self):
-       self.activeLayer = self.layers[1]
-       self.activeLayer.set_alpha(0)
-       print self.activeLayer.get_alpha()
-       self.blitToSurface()
-       self.pause()
-       return
-       for i in range(len(self.layers)):
-           self.activeLayer = self.layers[i]
-           self.activeLayer.set_alpha(0)
-           print self.activeLayer.get_alpha()
-           self.blitToSurface()
-       self.activeLayer = self.layers[0]
-       self.activeLayer.set_alpha(255)
-       self.blitToSurface()
-       time.sleep(5)
-       for i in range(len(self.layers)-1):
-           print "here2 ",i
-           self.activeLayer = self.layers[i+1]
-           self.activeLayer.set_alpha(255)
-           self.blitToSurface()
-           time.sleep(1)
-           self.activeLayer.set_alpha(0)
-           self.blitToSurface()
-       return
+       FPS = 2
+       clock = Clock(float(1)/FPS).activate()
+       clock.link((clock, "outbox"), (self, "newframe"))
+       for x in self.layers:
+           if not self.dataReady("newframe"):
+               self.pause()
+           self.recv("newframe")
+           print "now"
+       
    def drawBG(self, bg = False):
       if bg == True:
          self.activeLayer.fill( (255,0,0) )
@@ -248,6 +237,13 @@ class Paint(Axon.Component.component):
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
+         while self.dataReady("newframe"):
+             self.recv("newframe")
+             if self.currentFrame != 0:
+                self.layers[self.currentFrame].set_alpha(0)
+             self.currentFrame = self.currentFrame + 1
+             self.layers[self.currentFrame].set_alpha(255)
+             self.blitToSurface()
 
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
@@ -334,12 +330,15 @@ class Paint(Axon.Component.component):
                #         self.layers[1].fill(self.backgroundColour)
                #         self.layers[1].blit( temp, (100,100) )
                     elif event.key == pygame.K_o:
-                        move = {
-                                    "CHANGEDISPLAYGEO" : True,
-                                    "surface" : self.layers[1],
-                                    "position" : (100,100)
-                               }
-                        self.send(move, "display_signal")
+                        for x in self.layers:
+                            x.set_alpha(0)
+                        self.layers[0].set_alpha(255)
+                      # self.layers[1].set_alpha(255)
+                        self.currentFrame = 0
+                        FPS = 1
+                        clock = Clock(float(1)/FPS).activate()
+                        clock.link((clock, "outbox"), (self, "newframe"))
+                        self.blitToSurface()
                                   
                        
 
