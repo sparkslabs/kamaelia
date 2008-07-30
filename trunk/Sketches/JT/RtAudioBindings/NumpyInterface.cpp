@@ -10,18 +10,18 @@ void importNumpy() {
 int formatToType(RtAudioFormat format) {
     switch (format) {
         case RTAUDIO_SINT8:
-            return PyArray_SHORT;
+            return NPY_INT8;
         case RTAUDIO_SINT16:
-            return PyArray_SHORT;
+            return NPY_INT16;
         case RTAUDIO_SINT24:
             // Numpy has no Int24 type, so use Int32 instead
-            return PyArray_SHORT;
+            return NPY_INT32;
         case RTAUDIO_SINT32:
-            return PyArray_SHORT;
+            return NPY_INT32;
         case RTAUDIO_FLOAT32:
-            return PyArray_DOUBLE;
+            return NPY_FLOAT32;
         case RTAUDIO_FLOAT64:
-            return PyArray_DOUBLE;
+            return NPY_FLOAT64;
     }
     return -1;
 }
@@ -37,5 +37,9 @@ PyObject *bufferToArray(char *buffer, unsigned int bufferSize,
 
 char *arrayToBuffer(PyObject *array) {
     return PyArray_BYTES(array);
+}
+
+unsigned int arraySize(PyObject *array) {
+    return PyArray_ITEMSIZE(array);
 }
 

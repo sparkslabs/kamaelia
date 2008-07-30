@@ -9,3 +9,5 @@ PyObject *bufferToArray(char *buffer, unsigned int bufferSize,
                        RtAudioFormat format);
 
 char *arrayToBuffer(PyObject *array);
+
+unsigned int arraySize(PyObject *array);
