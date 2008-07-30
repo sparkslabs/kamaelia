@@ -58,7 +58,10 @@ def WsgiFactory(log_writable, WsgiConfig, url_list):
             
             for url_item in urls:
                 if regexes[url_item['kp.regex']].search(split_uri[0]):
+                    #from pprint import pprint
+                    #pprint(request)
                     PopWsgiURI(request)
+                    #pprint(request)
                     matched_dict = url_item
                     break
     
@@ -77,6 +80,9 @@ def WsgiFactory(log_writable, WsgiConfig, url_list):
                 except AttributeError:
                     raise WsgiImportError("Your WSGI application file was found, but the application object was not. Please check your urls file.")
             request.update(matched_dict)
+            if matched_dict.get('kp.nounicode'):
+                #Convert all elements in the request to strings
+                request = dict([(str(k), str(v)) for k, v in request.iteritems()])
             #dump_garbage()
             return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
     return _getWsgiHandler(log_writable, WsgiConfig, url_list)
