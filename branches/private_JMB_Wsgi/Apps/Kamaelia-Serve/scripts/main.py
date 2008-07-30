@@ -34,38 +34,12 @@ import Kamaelia.Apps.Wsgi.Log as Log
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
+from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars
 from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
 
 sys.path.insert(0, sys.argv[0] + '/data')
 
 _profile_ = False
-
-def normalizeWsgiVars(WsgiConfig):
-    """Put WSGI config data in a state that the server expects."""
-    WsgiConfig['wsgi_ver'] = tuple(WsgiConfig['wsgi_ver'].split('.'))
-    
-def normalizeUrlList(url_list):
-    """Add necessary default entries that the user did not enter."""
-    for dict in url_list:
-        if not dict.get('kp.app_object'):
-            dict['kp.app_object'] = 'application'
-            
-def processServerConfig(ServerConfig):
-    """Use the Server configuration data to actually configure the server."""
-    print ServerConfig
-    if ServerConfig.get('pypath_append'):
-        path_append = ServerConfig['pypath_append'].split(':')
-        sys.path.extend(path_append)
-    
-    if ServerConfig.get('pypath_prepend'):
-        path_prepend = ServerConfig['pypath_prepend'].split(':')
-        path_prepend.reverse()
-        for path in path_prepend:
-            sys.path.insert(0, path)
-    
-    #uncomment this if you want to debug what this code is doing to sys.path.
-    #print 'sys.path-'
-    #print sys.path
 
 def run_program():
     """The main entry point for the application."""
@@ -90,7 +64,7 @@ def run_program():
         ServerConfig = configs['SERVER']
         WsgiConfig = configs['WSGI']
         
-        processServerConfig(ServerConfig)
+        processPyPath(ServerConfig)
         
         #uncomment this if you wish to debug what is happening to WsgiConfig
         #from pprint import pprint
