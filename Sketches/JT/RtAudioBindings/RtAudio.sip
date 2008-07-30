@@ -142,7 +142,6 @@ public:
         
         PyGILState_STATE state;
         state = PyGILState_Ensure();
-        char *outBuffer = (char *)outputBuffer;
 
         if (inputBuffer != NULL) {
             inputArray = bufferToArray((char *)inputBuffer, inputBufferSize,
@@ -154,10 +153,8 @@ public:
         }
 
         // TODO:Make me send RtAudioStreamStatus properly
-        //printf("Frames: %i Time: %f\n", nFrames, streamTime);
         PyObject *result;
 
-//        std::cout << PyEval_GetFuncName(data->function) << std::endl;
         result = PyEval_CallFunction(data->function, "OidOO", inputArray,
                             nFrames, streamTime, Py_None,
                             data->param);
@@ -166,8 +163,9 @@ public:
             PyErr_Print();
         }
 
-        outBuffer = arrayToBuffer(result);
-//        std::cout << outBuffer[0] << std::endl;
+        char *outBuffer = arrayToBuffer(result);
+
+        memcpy(outputBuffer, outBuffer, 2046);
         
         PyGILState_Release(state);
         

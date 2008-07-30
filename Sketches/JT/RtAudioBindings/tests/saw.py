@@ -3,7 +3,7 @@ import numpy
 import sys
 
 # ID of the output device.  You can find this from printIODevices.py
-deviceId = 0
+deviceId = 2
 # Use signed 16 bit ints
 # Constant will eventually be defined in RtAudio
 format = 0x2
@@ -17,12 +17,13 @@ def sawGen(bufferSize):
     """ Make a numpy array with a saw wave in """
     lastValue = 0
     while 1:
-        arr = numpy.array([])
+        sawValues = []
         for i in range(bufferSize):
-            arr = numpy.append(arr, lastValue * (2**15-1))
+            sawValues.append(lastValue * (2**15-1))
             lastValue += rate
             if lastValue > 1:
                 lastValue -= 2
+        arr = numpy.array(sawValues, dtype="int16")
         yield arr
 
 makeSaw = sawGen(1024)
