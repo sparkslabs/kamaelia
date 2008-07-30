@@ -37,7 +37,7 @@ def GetURI(user):
     
 
 def ExtractJID(request):
-    print request
+    #print request
     raw = request['REQUEST_URI']
     split_raw = raw.split('/')
     split_raw = [x for x in split_raw if x]  #remove empty strings
@@ -52,7 +52,7 @@ def AddUser(user):
     assert(isinstance(user, JID))
     #Add the JID without the resource as the key to the JID instance
     _uris_active[GetURI(user)] = user
-    print _uris_active    
+    #print _uris_active    
     
 def RmUser(user):
     assert(isinstance(user, JID))

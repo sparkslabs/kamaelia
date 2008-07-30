@@ -84,7 +84,7 @@ class Interface(threadedcomponent):
                     print '%s available.  No action taken.' % (msg.from_jid)
             for msg in self.Inbox('xmpp.unavailable'):
                 self.handleUnavailable(msg)
-                print 'Received unavailable:  %s' % (repr(msg))
+                #print 'Received unavailable:  %s' % (repr(msg))
                 
             if not self.anyReady() and self.not_done:
                 self.pause()
@@ -101,8 +101,6 @@ class Interface(threadedcomponent):
             #bundles if the user goes offline
             self.jids[msg.hMessage.to_jid.nodeid()].append(msg.batch_id)
             self.send(msg.hMessage, 'xmpp.outbox')
-            #print 'Interface received the following:'
-            #print Message.to_element(msg.hMessage).xml()
         elif isinstance(msg, Message):
             self.send(msg, 'xmpp.outbox')
             
@@ -111,18 +109,17 @@ class Interface(threadedcomponent):
         jid = pres.from_jid.nodeid()
         self.jids[jid] = []
         JIDLookup.AddUser(pres.from_jid)
-        print self.jids
+        #print self.jids
     
     def handleUnavailable(self, pres):
         jid = pres.from_jid.nodeid()
         for batch_id in self.jids[jid]:
-            print 'Killing %s...' % (batch_id)
+            #print 'Killing %s...' % (batch_id)
             bundle = self.transactions[batch_id]
-            print bundle
+            #print bundle
             bundle.send(userLoggedOut(batch_id), 'signal')
             bundle.kill()
             del self.transactions[batch_id]
         
         del self.jids[jid]
         JIDLookup.RmUser(pres.from_jid)
-        print self.jids

@@ -35,6 +35,8 @@ from headstock.lib.utils import generate_unique
 
 import base64
 from xml.sax.saxutils import escape, unescape
+import zlib
+from pprint import pformat
 
 import simplejson
 
@@ -76,6 +78,7 @@ class RequestSerializer(component):
         self.ToJID = ExtractJID(self.request)
         if self.ToJID:
             self.sendInitialMessage(self.request)
+            #print 'Creating translator for request:\n%s' % (pformat(self.request))
         else:
             self.JIDNotFound()
         
@@ -112,7 +115,7 @@ class RequestSerializer(component):
             self.signal = msg
             
     def sendInitialMessage(self, request):
-        print '='*6, 'REQUEST', '='*6, '\n'
+        #print '='*6, 'REQUEST', '='*6, '\n'
         #print request
         
         request['batch'] = self.batch_id
@@ -137,7 +140,8 @@ class RequestSerializer(component):
                            type=u'chat', stanza_id=generate_unique())
             
         body = simplejson.dumps(serializable)
-        body = escape(body)
+        body = zlib.compress(body)
+        body = base64.encodestring(body)
         body = unicode(body)
         hMessage.bodies.append(Body(body))
         
@@ -182,7 +186,8 @@ class ResponseDeserializer(component):
         #Sometimes an emty message comes through to reset the event status.  This
         #will cause errors if we process it.
         if deserialize:
-            deserialize = unescape(deserialize) #FIXME:  This is a security issue:  Will also escape escaped HTML.
+            deserialize = base64.decodestring(deserialize)
+            deserialize = zlib.decompress(deserialize)
             resource = simplejson.loads(deserialize)
             
             signal = resource.get('signal')
@@ -197,15 +202,15 @@ class ResponseDeserializer(component):
             self.signal = msg
             
     def handleResponseControl(self, msg):
-        print 'Received %s.' % (msg)
+        #print 'Received %s.' % (msg)
         if isinstance(msg, internalNotify):
             resource = msg.message
             self.send(resource, 'outbox')
             self.signal = producerFinished(self)
         elif isinstance(msg, userLoggedOut):
             resource = getErrorPage(502, 'Thread %s terminated unexpectedly.' % (msg.thread))
-            print '='*6, 'RESOURCE', '='*6
-            print resource
+            #print '='*6, 'RESOURCE', '='*6
+            #print resource
             self.send(resource, 'outbox')
             self.signal = producerFinished(self)            
             
