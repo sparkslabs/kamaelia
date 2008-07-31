@@ -146,7 +146,7 @@ following items are required to be defined:
 """
 
 from pprint import pprint, pformat
-import sys, os, cStringIO, cgitb, copy, traceback
+import sys, os, cStringIO, cgitb, copy, traceback, xml
 from datetime import datetime
 from wsgiref.util import is_hop_by_hop
 import Axon
@@ -156,6 +156,7 @@ from Axon.Ipc import producerFinished
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 from wsgiref.validate import validator
+from xml.sax.saxutils import unescape
 
 
 Axon.Box.ShowAllTransits = False
@@ -214,10 +215,16 @@ class _WsgiHandler(threadedcomponent):
         self.response_dict = {}
         self.wsgi_config = WsgiConfig
         self.write_called = False
+        self.pf_received = False #Have we received a producerFinished signal?
 
     def main(self):
         if self.environ['REQUEST_METHOD'] == 'POST' or self.environ['REQUEST_METHOD'] == 'PUT':
-            body = self.waitForBody()
+            try:
+                body = self.waitForBody()
+            except:
+                self._error(503, sys.exc_info())
+                self.send(producerFinished(self), 'signal')
+                return
             self.memfile = cStringIO.StringIO(body)
         else:
             self.memfile = _null_fl
@@ -251,8 +258,9 @@ class _WsgiHandler(threadedcomponent):
         #self.pause(5)
         #print 'unpausing'
         self.log_writable.flush()
-        while not self.dataReady('control'):
-            self.pause()
+        if not self.pf_received:
+            while not self.dataReady('control'):
+                self.pause()
         self.send(Axon.Ipc.producerFinished(self), "signal")
         #print 'WsgiHandler dead'
 
@@ -298,7 +306,7 @@ class _WsgiHandler(threadedcomponent):
         else:
             raise WsgiError('Unkown error in write.')
 
-    def _error(self, status=503, body_data=('', '', '')):
+    def _error(self, status=500, body_data=('', '', '')):
         """
         This is an internal method used to print an error to the browser and log
         it in the wsgi log.
@@ -328,15 +336,25 @@ class _WsgiHandler(threadedcomponent):
         buffer = []     #Wait on the body to be sent to us
         not_done = True
         while not_done:
-            while self.dataReady('control'):
-                msg = self.recv('control')
+            for msg in self.Inbox('control'):
                 #print msg
                 if isinstance(msg, producerFinished):
                     not_done = False
+                    self.pf_received = True
 
-            while self.dataReady('inbox'):
-                buffer.append(self.recv('inbox'))
-
+            for msg in self.Inbox('inbox'):
+                if isinstance(msg, str):
+                    text = msg
+                elif isinstance(msg, dict):
+                    text = msg.get('body', '')
+                    text = unescape(text)
+                else:
+                    text = ''
+                if not isinstance(text, str):
+                    text = str(text)
+                    
+                buffer.append(text)
+                
             if not_done and not self.anyReady():
                 self.pause()
                 
