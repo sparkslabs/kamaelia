@@ -113,7 +113,8 @@ class removeExceptional(notify):
       self.hasOOB = False
       
 class userLoggedOut(notify):
-   pass
+   def __init__(self, thread):
+      self.thread = thread
 
 __ipc_msgs = [removeExceptional, removeWriter, removeReader, newExceptional, newReader,
               newWriter, newServer, shutdownCSA, newCSA, serverShutdown, socketShutdown,
