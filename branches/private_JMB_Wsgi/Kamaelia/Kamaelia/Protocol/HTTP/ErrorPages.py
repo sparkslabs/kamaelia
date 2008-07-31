@@ -53,6 +53,14 @@ def getErrorPage(errorcode, msg = ""):
             "data"       : u"<html>\n<title>501 Not Implemented</title>\n<body style='background-color: black; color: white;'>\n<h2>501 Not Implemented</h2>\n<p>" + msg + u"</p></body>\n</html>\n\n",
             "content-type"       : "text/html"
         }
+    
+    elif errorcode == 502:
+        return {
+            "statuscode" : 502,
+            "data" : u"<html>\n<title>502 Bad Gateway</title>\n<body style='background-color: black; color: white;'>\n<h2>502 Bad Gateway</h2>\n<p>%s</p></body>\n</html>\n\n" \
+                                                                                     % (msg),
+            "content-type" : "text/html"
+        }
 
     else:
         return {
