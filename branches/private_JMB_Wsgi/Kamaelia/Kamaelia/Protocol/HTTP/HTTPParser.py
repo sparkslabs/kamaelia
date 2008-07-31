@@ -98,6 +98,18 @@ def splitUri(url):
         if len(splituri) == 2:
             requestobject["uri-username"] = splituri[0]
             requestobject["uri-password"] = splituri[1]
+            
+    splituri = requestobject['raw-uri'].split('?')
+    if len(splituri) > 1:
+        splituri = requestobject['raw-uri'].split('?')
+        requestobject['non-query-uri'] = splituri[0]
+        requestobject['query'] = splituri[1]
+    elif len(splituri) == 1:
+        requestobject['non-query-uri'] = requestobject['raw-uri']
+        requestobject['query'] = ''
+    else:   #len(splituri) = 0
+        requestobject['non-query-uri'] = ''
+        requestobject['query'] = ''
 
     return requestobject
 
@@ -164,7 +176,7 @@ class HTTPParser(component):
         what is received to the readbuffer. This is somewhat inefficient for long lines maybe O(n^2)"""
         if self.dataReady("inbox"):
             request = self.recv('inbox')
-            print request, '\n'
+            #print request, '\n'
             self.readbuffer += request
             return 1
         else:

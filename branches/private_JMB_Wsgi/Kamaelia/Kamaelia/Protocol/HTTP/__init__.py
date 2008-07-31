@@ -38,9 +38,9 @@ def requestHandlers(URLHandlers, requestTranslator, errorpages=None):
             return errorpages.getErrorPage(400, request.get("errormsg",""))
         else:
             for (prefix, handler) in URLHandlers:
-                if request["raw-uri"][:len(prefix)] == prefix:
+                if request["non-query-uri"][:len(prefix)] == prefix:
                     request['uri-prefix-trigger'] = prefix
-                    request['uri-suffix'] = request["raw-uri"][len(prefix):]
+                    request['uri-suffix'] = request["non-query-uri"][len(prefix):]
                     if requestTranslator:
                         request = requestTranslator(request)
                     return handler(request)
