@@ -204,7 +204,10 @@ class _WsgiHandler(threadedcomponent):
         super(_WsgiHandler, self).__init__(**argd)
         self.environ = request
 
-        print 'request received for [%s]' % (self.environ['REQUEST_URI'])
+        batch_str = self.environ.get('batch', '')
+        if batch_str:
+            batch_str = 'batch ' + batch_str
+        print 'request received for [%s] %s' % (self.environ['REQUEST_URI'], batch_str)
 
         self.app = app
         self.log_writable = log_writable
@@ -221,15 +224,21 @@ class _WsgiHandler(threadedcomponent):
 
         self.initWSGIVars(self.wsgi_config)
 
+        #pprint(self.environ)
+
+        not_done = True
         try:
-            #PEP 333 specifies that we're not supposed to buffer output here,
-            #so pulling the iterator out of the app object
-            app_iter = iter(self.app(self.environ, self.start_response))
+            while not_done:
+                #PEP 333 specifies that we're not supposed to buffer output here,
+                #so pulling the iterator out of the app object
+                app_iter = iter(self.app(self.environ, self.start_response))
+    
+                first_response = app_iter.next()#  License:  LGPL
+                if first_response:
+                    self.write(first_response)
+                    not_done = False
 
-            first_response = app_iter.next()#  License:  LGPL
-            self.write(first_response)
-
-            [self.sendFragment(x) for x in app_iter]
+            [self.sendFragment(x) for x in app_iter if x]
         except:
             self._error(503, sys.exc_info())
         try:
@@ -321,7 +330,7 @@ class _WsgiHandler(threadedcomponent):
         while not_done:
             while self.dataReady('control'):
                 msg = self.recv('control')
-                print msg
+                #print msg
                 if isinstance(msg, producerFinished):
                     not_done = False
 
