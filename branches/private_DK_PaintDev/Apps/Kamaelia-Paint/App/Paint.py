@@ -71,6 +71,7 @@ class Paint(Axon.Component.component):
              }
    Outboxes = { "outbox" : "Used to talk to other Paint canvas",
                 "laynum" : "Used to show the Active Layer number on the text displayer",
+                "clock"  : "Used to stop the clock",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
    
@@ -94,6 +95,7 @@ class Paint(Axon.Component.component):
       self.size = size
       self.selectedColour = selectedColour
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
+      self.playing = False
 
       if msg is None:
          msg = ("CLICK", self.id)
@@ -225,6 +227,9 @@ class Paint(Axon.Component.component):
 
       self.drawBG(True)
       self.blitToSurface()
+      FPS = 1
+      clock = Clock(float(1)/FPS).activate()
+      clock.link((clock, "outbox"), (self, "newframe"))
       
 
       done = False
@@ -237,11 +242,13 @@ class Paint(Axon.Component.component):
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
-         while self.dataReady("newframe"):
+         while self.dataReady("newframe") and self.playing:
              self.recv("newframe")
              if self.currentFrame != 0:
                 self.layers[self.currentFrame].set_alpha(0)
              self.currentFrame = self.currentFrame + 1
+             if self.currentFrame == len(self.layers)-1:
+                 self.playing = False
              self.layers[self.currentFrame].set_alpha(255)
              self.blitToSurface()
 
@@ -333,11 +340,10 @@ class Paint(Axon.Component.component):
                         for x in self.layers:
                             x.set_alpha(0)
                         self.layers[0].set_alpha(255)
-                      # self.layers[1].set_alpha(255)
                         self.currentFrame = 0
-                        FPS = 1
-                        clock = Clock(float(1)/FPS).activate()
-                        clock.link((clock, "outbox"), (self, "newframe"))
+                        while self.dataReady("newframe"): # empty if there's anything there
+                            self.recv("newframe")
+                        self.playing = True
                         self.blitToSurface()
                                   
                        
