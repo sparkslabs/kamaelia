@@ -23,16 +23,26 @@
 
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import HTTPProtocol
+from Kamaelia.Protocol.HTTP.Translators import TranslatorFactory
 from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
+from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
 
 from gate.translator import Translator
 
 import socket
 
-def constructHTTPServer():
-    routing = [['/', Translator]]    
+def constructHTTPServer(Config):
+    class StaticServer(Minimal):
+        indexfilename=Config.static.index
+        homedirectory=Config.static.homedirectory
+        def __init__(self, request):
+            super(StaticServer, self).__init__(request)
+    
+    routing = [[Config.static.url, StaticServer],
+               #FIXME:one of the translators will have to change its name
+               ['/', TranslatorFactory(WSGILikeTranslator, Translator)]]
     return ServerCore(
-        protocol=HTTPProtocol(routing, WSGILikeTranslator),
+        protocol=HTTPProtocol(routing),
         port = 8080,
         socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
     )

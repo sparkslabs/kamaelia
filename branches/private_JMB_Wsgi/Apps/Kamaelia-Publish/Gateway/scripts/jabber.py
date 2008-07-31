@@ -443,22 +443,23 @@ class Client(component):
                 "lw-signal" : "Shutdown signal for WsgiLogWritable",
                 "doregistration" : ""}
 
-    def __init__(self, XMPPConfig, options):
+    def __init__(self, Config):
         super(Client, self).__init__() 
+        self.cfg = Config
         self.jid = JID(
-            XMPPConfig.username,
-            XMPPConfig.domain,
-            XMPPConfig.resource)
-        self.username = XMPPConfig.username
-        self.password = XMPPConfig.password
-        self.server = XMPPConfig.server
-        self.port = XMPPConfig.port
+            Config.xmpp.username,
+            Config.xmpp.domain,
+            Config.xmpp.resource)
+        self.username = Config.xmpp.username
+        self.password = Config.xmpp.password
+        self.server = Config.xmpp.server
+        self.port = Config.xmpp.port
         self.client = None
         self.graph = None
-        self.domain = XMPPConfig.domain
-        self.usetls = XMPPConfig.usetls
+        self.domain = Config.xmpp.domain
+        self.usetls = Config.xmpp.usetls
         self.register = False
-        self.use_std_out = options.xmpp_verbose
+        self.use_std_out = Config.options.xmpp_verbose
 
     def passwordLookup(self, jid):
         return self.password
@@ -656,34 +657,8 @@ class Client(component):
         self.stop()
         print "You can hit Ctrl-C to shutdown all processes now." 
 
-class XMPPConfigObject(object):
-    def __init__(self, dictionary):
-        self.username = u''
-        self.domain = u''
-        self.address = u''
-        self.usetls = u''
-        self.password = u''
-        self.resource = u'headstock-client1'
-        #for key in dictionary:
-        #    self.__dict__[key] = unicode(dictionary[key], 'utf-8')
-        self.__dict__.update(dictionary)
-        self.username = unicode(self.username)
-        self.domain = unicode(self.domain)
-        self.resource = unicode(self.resource)
-        self.server, self.port = self.address.split(':')
-        self.port = int(self.port)
-        if self.usetls:
-            self.usetls = True
-        else:
-            self.usetls = False
-            
-    def __str__(self):
-        return str(self.__dict__)
-    def __repr__(self):
-        return repr(self.__dict__)
-
-def constructXMPPClient(XMPPConfig, options):
-    return Client(XMPPConfig, options)
+def constructXMPPClient(Config):
+    return Client(Config)
 
 if __name__ == '__main__':
     main()

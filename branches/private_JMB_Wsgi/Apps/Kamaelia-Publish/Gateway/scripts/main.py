@@ -22,18 +22,21 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.Wsgi.Structs import ConfigObject
 
-from jabber import constructXMPPClient, XMPPConfigObject
+from jabber import constructXMPPClient
 from http import constructHTTPServer
 import optparse
 
 def main():
-    Config = ParseConfigFile('~/kpgate.ini', DictFormatter())
+    ConfigDict = ParseConfigFile('~/kpgate.ini', DictFormatter())
     options = parseCmdOpts()
-    print options
+    #print options
     
-    server = constructHTTPServer()    
-    xmpp = constructXMPPClient(XMPPConfigObject(Config['XMPP']), options)
+    Config = ConfigObject(ConfigDict, options)
+    
+    server = constructHTTPServer(Config)    
+    xmpp = constructXMPPClient(Config)
     
     xmpp.activate()
     server.run()
