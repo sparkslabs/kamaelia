@@ -40,7 +40,7 @@ def constructHTTPServer(Config):
     
     routing = [[Config.static.url, StaticServer],
                #FIXME:one of the translators will have to change its name
-               ['/', TranslatorFactory(WSGILikeTranslator, Translator)]]
+               ['/', TranslatorFactory(Translator, WSGILikeTranslator)]]
     return ServerCore(
         protocol=HTTPProtocol(routing),
         port = 8080,

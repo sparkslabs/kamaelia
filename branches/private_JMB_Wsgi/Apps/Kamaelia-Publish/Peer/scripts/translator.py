@@ -140,6 +140,7 @@ class ResponseSerializer(component):
         #print 'serializer dying!'
         
     def makeMessage(self, serializable):
+        #print serializable
         text = simplejson.dumps(serializable)
         text = zlib.compress(text)
         text = base64.encodestring(text)
