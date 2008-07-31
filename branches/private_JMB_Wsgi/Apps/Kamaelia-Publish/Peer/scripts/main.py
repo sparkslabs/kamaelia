@@ -48,7 +48,7 @@ from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
 from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars
 
 from transactions import TransactionManager
-from config import StaticConfigObject, XMPPConfigObject, ConfigObject
+from Kamaelia.Apps.Wsgi.Structs import StaticConfigObject, XMPPConfigObject, ConfigObject
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher

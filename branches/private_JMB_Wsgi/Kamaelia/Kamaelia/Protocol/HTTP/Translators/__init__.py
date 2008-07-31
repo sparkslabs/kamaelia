@@ -19,3 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+
+def TranslatorFactory(hand, trans):
+    
+    def _getHandler(request):
+        request = trans(request)
+        return hand(request)
+    
+    return _getHandler
