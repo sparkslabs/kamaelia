@@ -391,7 +391,7 @@ class DisplayConfig(Axon.Component.component):
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
-   from ToolBox import ToolBox
+   from Kamaelia.Apps.Paint.ToolBox import ToolBox
    from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline
    from Kamaelia.Chassis.Pipeline import Pipeline

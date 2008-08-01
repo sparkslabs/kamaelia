@@ -1,10 +1,12 @@
+
 import pygame
 import Axon
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Button import Button
-from ColourSelector import ColourSelector
-from Slider import Slider
+from Kamaelia.Apps.Paint.ColourSelector import ColourSelector
+from Kamaelia.Apps.Paint.Slider import Slider
+
 class ToolBox(Axon.Component.component):
     Inboxes = {"inbox"    : "Receive events from Pygame Display",
                "control"  : "For shutdown messages",
@@ -75,8 +77,10 @@ class ToolBox(Axon.Component.component):
             if not self.anyReady():
                 self.pause()
             yield 1
+
     def drawBG(self):
         self.display.fill( (255,255,255) )
+
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
