@@ -20,6 +20,8 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
+import Axon
+import pygame
 from Kamaelia.Chassis.Pipeline import Pipeline
 
 from Kamaelia.Apps.Games4Kids.BasicSprite import BasicSprite
@@ -29,8 +31,6 @@ from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 from Kamaelia.Util.PureTransformer import PureTransformer
 from Kamaelia.Util.Console import ConsoleEchoer
 
-import pygame
-import Axon
 class Quitter(Axon.Component.component):
     def main(self):
         self.pause()
