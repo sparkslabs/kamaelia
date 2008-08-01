@@ -27,8 +27,8 @@ from Kamaelia.Chassis.Seq import Seq
 
 from Kamaelia.Util.ConsoleEcho import consoleEchoer
 from Kamaelia.Apps.Paint.ToolBox import ToolBox
-from Kamaelia.Apps.Paint.Paint import DisplayConfig
-from Kamaelia.Apps.Paint.Paint import Paint
+from Kamaelia.Apps.Paint.Core import DisplayConfig
+from Kamaelia.Apps.Paint.Core import Paint
 
 ProcessGraphline(
      COLOURS = Seq(
