@@ -67,14 +67,27 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                         self.max_layer = 2
                     
                     self.parentNode_id = ""
-                    self.fetch_data(self.rdf_uri)
+                    fetch_data = self.fetch_data(self.rdf_uri)
+                    while True:
+                        try:
+                            fetch_data.next()
+                            yield 1
+                        except StopIteration:
+                            break
                     print self.num_parentNodes, self.num_allNodes
-                
+    
             yield 1
             
         
         self.send(self.shutdown_mess,"signal")
     
+    def g1(self):
+        while True:
+            print 'a'
+            yield 1
+            print 'b'
+            self.g1()
+        
     def make_query(self, rdf, query):
         model = RDF.Model()
         parser = RDF.Parser()
@@ -137,12 +150,21 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                     uri = uri._get_uri()
                     #print result['seeAlso'], uri
                     nodes.append((node_id, uri))
-                    
+                
+            yield 1
             for node in nodes:
                 self.parentNode_id = node[0]
                 uri = node[1]
+                
                 try:
-                    self.fetch_data(uri, current_layer+1)
+                    fetch_data = self.fetch_data(uri, current_layer+1)
+                    while True:
+                        try:
+                            fetch_data.next()
+                        except StopIteration:
+                            break
+                        except:
+                            pass
                 except:
                     pass          
                  
