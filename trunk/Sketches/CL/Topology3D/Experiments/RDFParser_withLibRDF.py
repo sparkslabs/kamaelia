@@ -96,11 +96,15 @@ def fetch_data(rdf_uri, layer=0, MAX_LAYER = 2):
         results = make_query(rdf_uri, query2)
         for result in results:
             uri = result['seeAlso']
-            if uri:
+            if uri and str(uri).endswith('.rdf]'):
                 uri = uri._get_uri()
-                fetch_data(uri, layer+1)
+                print result['seeAlso'], uri
+                try:
+                    fetch_data(uri, layer+1)
+                except:
+                        pass                    
     
-fetch_data("http://fooshed.net/foaf.rdf")
+fetch_data("http://www.w3.org/2007/08/pyRdfa/extract?uri=http://apassant.net/about/#alex")
 print counter, counter2 
 
 #MAX_LAYER = 2
