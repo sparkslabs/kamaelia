@@ -104,7 +104,7 @@ def fetch_data(rdf_uri, layer=0, MAX_LAYER = 2):
                 except:
                         pass                    
     
-fetch_data("http://www.w3.org/2007/08/pyRdfa/extract?uri=http://apassant.net/about/#alex")
+fetch_data("http://fooshed.net/foaf.rdf")
 print counter, counter2 
 
 #MAX_LAYER = 2

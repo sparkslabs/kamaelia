@@ -64,7 +64,6 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                         self.max_layer = int(data_list[1])
                     else:
                         self.max_layer = 2
-                    self.current_layer = 0
                     
                     self.parentNode_id = ""
                     self.fetch_data(self.rdf_uri)
@@ -84,11 +83,10 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
         q = RDF.Query(sparql, query_language="sparql")
         return q.execute(model)
 
-    def fetch_data(self, rdf_uri):
-        if self.current_layer > self.max_layer:
+    def fetch_data(self, rdf_uri, current_layer=0):
+        if current_layer == self.max_layer:
             return
         else:
-            self.current_layer += 1
             #print "--- The ", layer, " layer ---"
             query1 = """
             SELECT DISTINCT ?name ?img
@@ -141,7 +139,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                 self.parentNode_id = node[0]
                 uri = node[1]
                 try:
-                    self.fetch_data(uri)
+                    self.fetch_data(uri, current_layer+1)
                 except:
                         pass          
                  
@@ -157,14 +155,14 @@ if __name__ == "__main__":
         CONSOLEREADER = ConsoleReader('>>>'),
         DATASOURCE = DataSource(["http://fooshed.net/foaf.rdf"]),
         PARSER = RDFParser(),
-        VIEWER = TopologyViewer3D(),
+        #VIEWER = TopologyViewer3D(),
         CONSOLEECHOER = ConsoleEchoer(),
     linkages = {
         ("CONSOLEREADER","outbox") : ("PARSER","inbox"),
         ("DATASOURCE","outbox") : ("PARSER","inbox"),   
-        ("PARSER","outbox")   : ("VIEWER","inbox"),
-        ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
-        #("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
+        #("PARSER","outbox")   : ("VIEWER","inbox"),
+        #("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
+        ("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
         
     }
 ).run()
