@@ -9,7 +9,9 @@ if not, it will extract rdf data first before parsing.
 
 2. The input format is "uri max_layer": 
 uri is the uri of the data file
-max_layer is the maximum layers of the rdf hierachy structure to parse
+max_layer is the maximum layers of the rdf hierarchy structure (how deep) to parse
+
+3. The output is TopologyViewer commands
 """
 
 import Axon
@@ -147,6 +149,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
+    from TopologyViewer3D import TopologyViewer3D
     from Kamaelia.Chassis.Graphline import Graphline
     
     # Data can be from both DataSource and console inputs
@@ -154,11 +157,14 @@ if __name__ == "__main__":
         CONSOLEREADER = ConsoleReader('>>>'),
         DATASOURCE = DataSource(["http://fooshed.net/foaf.rdf"]),
         PARSER = RDFParser(),
+        VIEWER = TopologyViewer3D(),
         CONSOLEECHOER = ConsoleEchoer(),
     linkages = {
         ("CONSOLEREADER","outbox") : ("PARSER","inbox"),
-        ("DATASOURCE","outbox") : ("PARSER","inbox"),        
-        ("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
+        ("DATASOURCE","outbox") : ("PARSER","inbox"),   
+        ("PARSER","outbox")   : ("VIEWER","inbox"),
+        ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
+        #("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
         
     }
 ).run()
