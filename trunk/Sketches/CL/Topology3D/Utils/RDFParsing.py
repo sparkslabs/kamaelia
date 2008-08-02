@@ -32,6 +32,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                            PREFIX owl: <http://www.w3.org/2002/07/owl#>
                            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                           """
+        self.num_allNodes = self.num_parentNodes = 0
         
     def shutdown(self):
         """ shutdown method: define when to shun down"""
@@ -67,6 +68,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                     
                     self.parentNode_id = ""
                     self.fetch_data(self.rdf_uri)
+                    print self.num_parentNodes, self.num_allNodes
                 
             yield 1
             
@@ -87,6 +89,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
         if current_layer == self.max_layer:
             return
         else:
+            self.num_parentNodes += 1
             #print "--- The ", layer, " layer ---"
             query1 = """
             SELECT DISTINCT ?name ?img
@@ -116,7 +119,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
             nodes = []
             results = self.make_query(rdf_uri, query2)
             for result in results:
-                #counter2 += 1
+                self.num_allNodes += 1
                 #print result['name'], ':', result['img']
                 node_name = str(result['name'])
                 if self.parentNode_id == "":
@@ -141,7 +144,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                 try:
                     self.fetch_data(uri, current_layer+1)
                 except:
-                        pass          
+                    pass          
                  
                     
 if __name__ == "__main__":
