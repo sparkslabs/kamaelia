@@ -41,6 +41,9 @@ class Particle3D(BaseParticle):
         self.pixelscaling = argd.get("pixelscaling", 100)
         self.thickness = argd.get("thickness", 0.3)
         
+        # For picture texture
+        self.pic = argd.get("image", None)
+        
         name = argd.get("name","NoName")
         self.set_label(name)
         
@@ -62,6 +65,8 @@ class Particle3D(BaseParticle):
         
         # For drag handling
         self.oldpoint = None
+        
+        
     
     def set_label(self, new_name):
         if self.initSize == Vector():
@@ -81,10 +86,12 @@ class Particle3D(BaseParticle):
     def buildCaption(self):
         """Pre-render the text to go on the label."""
         # Text is rendered to self.image
-        
-        pygame.font.init()
-        font = pygame.font.Font(None, self.fontsize)
-        self.image = font.render(self.name,True, self.foregroundColour, )
+        if self.pic is not None:
+            self.image = pygame.image.load(self.pic).convert()
+        else:
+            pygame.font.init()
+            font = pygame.font.Font(None, self.fontsize)
+            self.image = font.render(self.name,True, self.foregroundColour, )
         
         if self.size != Vector(0,0,0):
             texsize = (self.size.x*self.pixelscaling, self.size.y*self.pixelscaling)
