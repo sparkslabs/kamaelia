@@ -36,7 +36,7 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
             cmd = msg[0].upper(), msg[1].upper()
 
             if cmd == ("ADD", "NODE") and (len(msg) == 6 or len(msg) == 7):
-                if len(msg) == 7:
+                if len(msg) == 7 and msg[6].strip() != "":
                     params = str2dict(msg[6])
                 else:
                     params = {}
