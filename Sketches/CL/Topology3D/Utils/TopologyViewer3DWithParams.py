@@ -118,7 +118,7 @@ if __name__ == "__main__":
         DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos teapot image=../Files/son.gif',
                                  'ADD NODE 2Node 2Node randompos - image=../Files/dad.gif',
                                  'ADD NODE 3Node 3Node randompos sphere image=../Files/mum.gif',
-                                 'ADD NODE 4Node 4Node randompos - image=../Files/mum.jpg',
+                                 'ADD NODE 4Node 4Node randompos - image=http://kamaelia.sourceforge.net/Kamaelia.gif',
                                  'ADD NODE 5Node 5Node randompos sphere image=../Files/dad.gif', 
                                  'ADD NODE 6Node 6Node randompos - image=../Files/son.gif',
                                  'ADD NODE 7Node 7Node randompos sphere image=../Files/son1.gif',
