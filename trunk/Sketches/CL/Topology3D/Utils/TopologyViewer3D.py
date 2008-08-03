@@ -336,8 +336,6 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def handleEvents(self):
         """ Handle events. """
         while self.dataReady("events"):
-            #print self.display.viewerposition
-            self.viewerOldPos = self.display.viewerposition.copy()
             event = self.recv("events")
             if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEMOTION and self.grabbed:
                 if not self.rotationMode:
@@ -626,6 +624,7 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # Scroll if self.display.viewerposition changes
             if self.display.viewerposition.copy() != self.viewerOldPos:
                 self.scroll()
+                self.viewerOldPos = self.display.viewerposition.copy()
 #                for particle in self.currentDisplayedPhysics.particles:
 #                    particle.oldpoint = None
             if event.type == pygame.KEYUP:
