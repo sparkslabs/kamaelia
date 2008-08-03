@@ -474,6 +474,9 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.quit()
                 elif event.key == pygame.K_BACKSPACE:
                     if self.currentLevel > 0:
+                        items = self.currentParentParticleID.split(':')
+                        items.pop()
+                        self.currentParentParticleID = ':'.join(items)
                         self.gotoDisplayLevel(-1)
                     else:
                         print "Warning: The first hierarchy level has reached!"
