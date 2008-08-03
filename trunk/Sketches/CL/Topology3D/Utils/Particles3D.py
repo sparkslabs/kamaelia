@@ -5,8 +5,11 @@ References: 1. Kamaelia.UI.OpenGL.Button
 2. Kamaelia.UI.OpenGL.OpenGLComponent
 """
 
-import math, sys
+import math, sys, os
 
+from urllib import urlopen
+from cStringIO import StringIO
+                
 import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -87,7 +90,13 @@ class Particle3D(BaseParticle):
         """Pre-render the text to go on the label."""
         # Text is rendered to self.image
         if self.pic is not None:
-            self.image = pygame.image.load(self.pic).convert()
+            if self.pic.find('://') != -1 and not os.path.exists(self.pic):
+                fObject = urlopen(self.pic)
+                picData = fObject.read()
+                pic = StringIO(picData)
+            else:
+                pic = self.pic
+            self.image = pygame.image.load(pic).convert()
         else:
             pygame.font.init()
             font = pygame.font.Font(None, self.fontsize)
