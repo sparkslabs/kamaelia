@@ -67,27 +67,14 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                         self.max_layer = 2
                     
                     self.parentNode_id = ""
-                    fetch_data = self.fetch_data(self.rdf_uri)
-                    while True:
-                        try:
-                            fetch_data.next()
-                            yield 1
-                        except StopIteration:
-                            break
+                    self.fetch_data(self.rdf_uri)
                     print self.num_parentNodes, self.num_allNodes
-    
+                
             yield 1
             
         
         self.send(self.shutdown_mess,"signal")
     
-    def g1(self):
-        while True:
-            print 'a'
-            yield 1
-            print 'b'
-            self.g1()
-        
     def make_query(self, rdf, query):
         model = RDF.Model()
         parser = RDF.Parser()
@@ -118,7 +105,12 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                 linkedNode_id =  '_'.join(linkedNode_name.split())
             else:
                 linkedNode_id =  self.parentNode_id + ':' + '_'.join(linkedNode_name.split())
-            cmd = [ "ADD", "NODE", linkedNode_id, linkedNode_name, "randompos", "-" ]
+            if result['img']:
+                linkedNode_img = 'image=' + str(result['img']._get_uri())
+            else:
+                linkedNode_img = ""
+            #print linkedNode_img
+            cmd = [ "ADD", "NODE", linkedNode_id, linkedNode_name, "randompos", "-", linkedNode_img ]
             self.send(cmd, "outbox")
             #print "*Knows*"
             query2 = """
@@ -139,8 +131,11 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                     node_id =  '_'.join(node_name.split())
                 else:
                     node_id =  self.parentNode_id + ':' + '_'.join(node_name.split())
-                
-                cmd_node = [ "ADD", "NODE", node_id, node_name, "randompos", "-" ]
+                if result['img']:
+                    node_img = 'image=' + str(result['img']._get_uri())
+                else:
+                    node_img = ""
+                cmd_node = [ "ADD", "NODE", node_id, node_name, "randompos", "-", node_img ]
                 self.send(cmd_node, "outbox")
                 cmd_link =  [ "ADD", "LINK", linkedNode_id, node_id ]
                 self.send(cmd_link, "outbox")
@@ -150,21 +145,12 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                     uri = uri._get_uri()
                     #print result['seeAlso'], uri
                     nodes.append((node_id, uri))
-                
-            yield 1
+                    
             for node in nodes:
                 self.parentNode_id = node[0]
                 uri = node[1]
-                
                 try:
-                    fetch_data = self.fetch_data(uri, current_layer+1)
-                    while True:
-                        try:
-                            fetch_data.next()
-                        except StopIteration:
-                            break
-                        except:
-                            pass
+                    self.fetch_data(uri, current_layer+1)
                 except:
                     pass          
                  
@@ -172,7 +158,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
-    from TopologyViewer3D import TopologyViewer3D
+    from TopologyViewer3DWithParams import TopologyViewer3DWithParams
     from Kamaelia.Chassis.Graphline import Graphline
     
     # Data can be from both DataSource and console inputs
@@ -180,14 +166,14 @@ if __name__ == "__main__":
         CONSOLEREADER = ConsoleReader('>>>'),
         DATASOURCE = DataSource(["http://fooshed.net/foaf.rdf"]),
         PARSER = RDFParser(),
-        #VIEWER = TopologyViewer3D(),
+        VIEWER = TopologyViewer3DWithParams(),
         CONSOLEECHOER = ConsoleEchoer(),
     linkages = {
         ("CONSOLEREADER","outbox") : ("PARSER","inbox"),
         ("DATASOURCE","outbox") : ("PARSER","inbox"),   
-        #("PARSER","outbox")   : ("VIEWER","inbox"),
-        #("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
-        ("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
+        ("PARSER","outbox")   : ("VIEWER","inbox"),
+        ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
+        #("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
         
     }
 ).run()
