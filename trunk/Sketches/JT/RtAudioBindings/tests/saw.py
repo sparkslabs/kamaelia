@@ -1,12 +1,9 @@
 import RtAudio
 import numpy
-import sys
+import time
 
 # ID of the output device.  You can find this from printIODevices.py
 deviceId = 2
-# Use signed 16 bit ints
-# Constant will eventually be defined in RtAudio
-format = 0x2
 
 sampleRate = 44100
 bufferSize = 1024
@@ -19,33 +16,31 @@ def sawGen(bufferSize):
     while 1:
         sawValues = []
         for i in range(bufferSize):
-            sawValues.append(lastValue * (2**15-1))
+            sawValues.append(lastValue)
             lastValue += rate
             if lastValue > 1:
                 lastValue -= 2
-        arr = numpy.array(sawValues, dtype="int16")
+        arr = numpy.array(sawValues)
         yield arr
 
 makeSaw = sawGen(1024)
 
-def saw(inputBuffer, bufferSize, streamTime, status, sawGen):
+def saw(oops):
     # Blank the output buffer
     sawWave = makeSaw.next()
     return sawWave
 
 if __name__ == "__main__":
-
     io = RtAudio.RtAudio()
-    io.openStream(deviceId, # Output device ID
-                  1,        # Mono
-                  0,        # No channel offset
-                  0,        # Input device
-                  1,        # Number of input channels
-                  0,        # Input offset
-                  format, sampleRate, bufferSize, # Sound options
-                  saw, # The audio callback
-                  None)     # Extra data to the callback
+    io.openStream(deviceId, sampleRate, bufferSize)
     io.startStream()
-    raw_input("Press enter key to stop it!")
+    while 1:
+        try:
+            if io.needWrite() >= bufferSize:
+                io.write(saw())
+            else:
+                time.sleep(float(bufferSize)/sampleRate)
+        except KeyboardInterrupt:
+            break
     io.stopStream()
     io.closeStream()
