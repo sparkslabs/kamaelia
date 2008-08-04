@@ -160,6 +160,15 @@ class DisplayConfig(Axon.Component.component):
         pgd = PygameDisplay( width=self.width, height=self.height).activate()
         PygameDisplay.setDisplayService(pgd)
         yield 1
+
+class DummyComponent(Axon.Component.component):
+    def main(self):
+        while True:
+            if self.dataReady("inbox"):
+                self.recv("inbox")
+            if not self.anyReady():
+                self.pause()
+                yield 1
                     
 def parseOptions():
     parser = OptionParser()
@@ -189,17 +198,26 @@ def parseOptions():
     parser.add_option("-b", "--bpm", dest="bpm", type="int",
                        help="The tempo of the song in beats per minute (default=120)")
     parser.set_defaults(bpm=120)
-
+    
+    # MIDI options
+    parser.add_option("--no-midi", dest="useMidi", action="store_false",
+                       help="Turn MIDI support off")
+    parser.set_defaults(useMidi=True)
     parser.add_option("-m", "--midi-port", dest="midiPort", type="int",
-                      help="The number of the midi port to send data to (default=None)")
-    parser.set_defaults(midiPort=None)
+                      help="The number of the midi port to send data to (default=0)")
+    parser.set_defaults(midiPort=0)
+
+    # Audio options
+    parser.add_option("--no-audio", dest="useAudio", action="store_false",
+                       help="Turn audio support off")
+    parser.set_defaults(useAudio=True)
 
     options, args = parser.parse_args()
     if options.remoteAddress and not options.remotePort:
          parser.error("Must provide --remote-port with --remote-address")
     if options.remotePort and not options.remoteAddress:
         parser.error("Must provide --remote-address with --remote-port")
-    if options.midiPort and not midiAvailable:
+    if options.useMidi and not midiAvailable:
         parser.error("In order to use MIDI you must have the pyrtmidi package installed")
     return options
 
@@ -234,7 +252,7 @@ if __name__ == "__main__":
 
     # Peer select/add
     Graphline(dataSub = SubscribeTo("dataIn"),
-              fanout = Fanout(["addPeer", "peerList"]),
+              fanout = Fanout(("addPeer", "peerList")),
               addPeerFilter = AddPeerFilter(),
               peerListFilter = PeerListFilter(),
               osc = Osc("/Jam", 2),
@@ -254,145 +272,105 @@ if __name__ == "__main__":
 
     # TODO: XY pads need sorting out to either create more, or have more pucks
     # on the one pad
-    if options.midiPort == None:
-        # XY pad 1
-        Graphline(clockSub = SubscribeTo("frameRateClock"),
-                  xyPad = XYPad(messagePrefix = "/XY/1/", position = (20, 20)),
-                  localPub = PublishTo("localDataOut"),
-                  remotePub = PublishTo("remoteDataOut"),
-                  linkages = {("clockSub", "outbox"):("xyPad", "newframe"),
-                              ("xyPad", "outbox"):("localPub", "inbox"),
-                              ("xyPad", "localChanges"):("remotePub", "inbox")
-                    }
-                  ).activate()
-
-        # XY pad 2
-        Graphline(dataSub = SubscribeTo("dataIn"),
-                  clockSub = SubscribeTo("frameRateClock"),
-                  xyFilter = XYFilter(1),
-                  xyPad = XYPad(messagePrefix = "/XY/2/", editable=False,
-                                position=(140, 20)),
-                  localPub = PublishTo("localDataOut"),
-                  linkages = {("dataSub", "outbox"):("xyFilter", "inbox"),
-                              ("xyFilter", "outbox"):("xyPad", "remoteChanges"),
-                              ("clockSub", "outbox"):("xyPad", "newframe"),
-                              ("xyPad", "outbox"):("localPub", "inbox")}
-                  ).activate()
+    # XY pad 1
+    if options.useMidi:
+        midiSection = Pipeline(XYPadMidiConverter(channel=2),
+                               PublishTo("midiOut"))
     else:
-        # XY pad 1
-        Graphline(clockSub = SubscribeTo("frameRateClock"),
-                  xyPad = XYPad(messagePrefix = "/XY/1/", position = (20, 20)),
-                  xyPadToMidi = XYPadMidiConverter(channel=2),
-                  localPub = PublishTo("localDataOut"),
-                  midiPub = PublishTo("midiOut"),
-                  remotePub = PublishTo("remoteDataOut"),
-                  linkages = {("clockSub", "outbox"):("xyPad", "newframe"),
-                              ("xyPad", "outbox"):("localPub", "inbox"),
-                              ("xyPad", "localChanges"):("remotePub", "inbox"),
-                              ("xyPad", "outbox"):("xyPadToMidi", "inbox"),
-                              ("xyPadToMidi", "outbox"):("midiPub", "inbox")
-                    }
-                  ).activate()
+        midiSection = DummyComponent()
+
+    Graphline(clockSub = SubscribeTo("frameRateClock"),
+              xyPad = XYPad(messagePrefix = "/XY/1/", position = (20, 20)),
+              localPub = PublishTo("localDataOut"),
+              remotePub = PublishTo("remoteDataOut"),
+              fanout = Fanout(("osc", "midi", "audio")),
+              midiSection = midiSection,
+              linkages = {("clockSub", "outbox"):("xyPad", "newframe"),
+                          # ---
+                          ("xyPad", "localChanges"):("remotePub", "inbox"),
+                          ("xyPad", "outbox"):("fanout", "inbox"),
+                          ("fanout", "osc"):("localPub", "inbox"),
+                          ("fanout", "midi"):("midiSection", "inbox")}
+              ).activate()
 
         # XY pad 2
-        Graphline(dataSub = SubscribeTo("dataIn"),
-                  clockSub = SubscribeTo("frameRateClock"),
-                  xyFilter = XYFilter(1),
-                  xyPad = XYPad(messagePrefix = "/XY/2/", editable=False,
-                                position=(140, 20)),
-                  xyPadToMidi = XYPadMidiConverter(channel=3),
-                  localPub = PublishTo("localDataOut"),
-                  midiPub = PublishTo("midiOut"),
-                  linkages = {("dataSub", "outbox"):("xyFilter", "inbox"),
-                              ("xyFilter", "outbox"):("xyPad", "remoteChanges"),
-                              ("clockSub", "outbox"):("xyPad", "newframe"),
-                              ("xyPad", "outbox"):("localPub", "inbox"),
-                              ("xyPad", "outbox"):("xyPadToMidi", "inbox"),
-                              ("xyPadToMidi", "outbox"):("midiPub", "inbox")}
-                  ).activate() 
-        
+    if options.useMidi:
+        midiSection = Pipeline(XYPadMidiConverter(channel=3),
+                               PublishTo("midiOut"))
+    else:
+        midiSection = DummyComponent()
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              clockSub = SubscribeTo("frameRateClock"),
+              xyFilter = XYFilter(1),
+              xyPad = XYPad(messagePrefix = "/XY/2/", editable=False,
+                            position=(140, 20)),
+              localPub = PublishTo("localDataOut"),
+              fanout = Fanout(("osc", "midi", "audio")),
+              linkages = {("dataSub", "outbox"):("xyFilter", "inbox"),
+                          ("xyFilter", "outbox"):("xyPad", "remoteChanges"),
+                          ("clockSub", "outbox"):("xyPad", "newframe"),
+                          # ---
+                          ("xyPad", "outbox"):("fanout", "inbox"),
+                          ("fanout", "osc"):("localPub", "inbox"),
+                          ("fanout", "midi"):("midiSection", "inbox")}
+              ).activate() 
+    
 
     # Step sequencer
-    if options.midiPort == None:
-        Graphline(dataSub = SubscribeTo("dataIn"),
-                  syncSub = SubscribeTo("sync"),
-                  ssFilter = StepSequencerFilter(),
-                  ss = StepSequencer(position=(20, 140),
-                                     size=(760, 200),
-                                     messagePrefix="/StepSequencer/",
-                                     sync=True,
-                                     stepsPerBeat=4),
-                  localPub = PublishTo("localDataOut"),
-                  remotePub = PublishTo("remoteDataOut"),
-                  linkages = {("dataSub", "outbox"):("ssFilter", "inbox"),
-                              ("ssFilter", "outbox"):("ss", "remoteChanges"),
-                              ("syncSub", "outbox"):("ss", "sync"),
-                              ("ss", "outbox"):("localPub", "inbox"),
-                              ("ss", "localChanges"):("remotePub", "inbox")}
-                  ).activate()
+    if options.useMidi:
+        midiSection = Pipeline(StepSequencerMidiConverter(),
+                               PublishTo("midiOut"))
     else:
-        Graphline(dataSub = SubscribeTo("dataIn"),
-                  syncSub = SubscribeTo("sync"),
-                  ssFilter = StepSequencerFilter(),
-                  ss = StepSequencer(position=(20, 140),
-                                     size=(760, 200),
-                                     messagePrefix="/StepSequencer/",
-                                     sync=True,
-                                     stepsPerBeat=4),
-                  fanout = Fanout(("midi", "osc")),
-                  ssToMidi = StepSequencerMidiConverter(), 
-                  localPub = PublishTo("localDataOut"),
-                  midiPub = PublishTo("midiOut"),
-                  remotePub = PublishTo("remoteDataOut"),
-                  linkages = {("dataSub", "outbox"):("ssFilter", "inbox"),
-                              ("ssFilter", "outbox"):("ss", "remoteChanges"),
-                              ("syncSub", "outbox"):("ss", "sync"),
-                              ("ss", "outbox"):("fanout", "inbox"),
-                              ("fanout", "osc"):("localPub", "inbox"),
-                              ("fanout", "midi"):("ssToMidi", "inbox"),
-                              ("ssToMidi", "outbox"):("midiPub", "inbox"),
-                              ("ss", "localChanges"):("remotePub", "inbox")}
-                  ).activate() 
+        midiSection = DummyComponent()
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              syncSub = SubscribeTo("sync"),
+              ssFilter = StepSequencerFilter(),
+              ss = StepSequencer(position=(20, 140),
+                                 size=(760, 200),
+                                 messagePrefix="/StepSequencer/",
+                                 sync=True,
+                                 stepsPerBeat=4),
+              fanout = Fanout(("midi", "osc", "audio")),
+              localPub = PublishTo("localDataOut"),
+              remotePub = PublishTo("remoteDataOut"),
+              midiSection = midiSection,
+              linkages = {("dataSub", "outbox"):("ssFilter", "inbox"),
+                          ("ssFilter", "outbox"):("ss", "remoteChanges"),
+                          ("syncSub", "outbox"):("ss", "sync"),
+                          # ---
+                          ("ss", "outbox"):("fanout", "inbox"),
+                          ("fanout", "osc"):("localPub", "inbox"),
+                          ("fanout", "midi"):("midiSection", "inbox"),
+                          ("ss", "localChanges"):("remotePub", "inbox")}
+              ).activate() 
 
     # Piano roll
-    if options.midiPort == None:
-        Graphline(dataSub = SubscribeTo("dataIn"),
-                  syncSub = SubscribeTo("sync"),
-                  prFilter = PianoRollFilter(),
-                  pr = PianoRoll(position=(20, 360),
-                                 size=(760, 200),
-                                 messagePrefix="/PianoRoll/",
-                                 sync=True),
-                  localPub = PublishTo("localDataOut"),
-                  remotePub = PublishTo("remoteDataOut"),
-                  linkages = {("dataSub", "outbox"):("prFilter", "inbox"),
-                              ("prFilter", "outbox"):("pr", "remoteChanges"),
-                              ("syncSub", "outbox"):("pr", "sync"),
-                              ("pr", "outbox"):("localPub", "inbox"),
-                              ("pr", "localChanges"):("remotePub", "inbox")}
-                  ).activate()
+    if options.useMidi:
+        midiSection = Pipeline(PianoRollMidiConverter(channel=1),
+                               ConsoleEchoer(1),
+                               PublishTo("midiOut"))
     else:
-        Graphline(dataSub = SubscribeTo("dataIn"),
-                  syncSub = SubscribeTo("sync"),
-                  prFilter = PianoRollFilter(),
-                  pr = PianoRoll(position=(20, 360),
-                                 size=(760, 200),
-                                 messagePrefix="/PianoRoll/",
-                                 sync=True),
-                  fanout = Fanout(("midi", "osc")),
-                  prToMidi = PianoRollMidiConverter(channel=1),
-                  localPub = PublishTo("localDataOut"),
-                  midiPub = PublishTo("midiOut"),
-                  remotePub = PublishTo("remoteDataOut"),
-                  linkages = {("dataSub", "outbox"):("prFilter", "inbox"),
-                              ("prFilter", "outbox"):("pr", "remoteChanges"),
-                              ("syncSub", "outbox"):("pr", "sync"),
-                              ("pr", "outbox"):("fanout", "inbox"),
-                              ("fanout", "osc"):("localPub", "inbox"),
-                              ("fanout", "midi"):("prToMidi", "inbox"),
-                              ("prToMidi", "outbox"):("midiPub", "inbox"),
-                              ("pr", "localChanges"):("remotePub", "inbox")}
-                  ).activate()
+        midiSection = DummyComponent()
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              syncSub = SubscribeTo("sync"),
+              prFilter = PianoRollFilter(),
+              pr = PianoRoll(position=(20, 360),
+                             size=(760, 200),
+                             messagePrefix="/PianoRoll/",
+                             sync=True),
+              fanout = Fanout(("midi", "osc", "audio")),
+              midiSection = midiSection,
+              localPub = PublishTo("localDataOut"),
+              remotePub = PublishTo("remoteDataOut"),
+              linkages = {("dataSub", "outbox"):("prFilter", "inbox"),
+                          ("prFilter", "outbox"):("pr", "remoteChanges"),
+                          ("syncSub", "outbox"):("pr", "sync"),
+                          # ---
+                          ("pr", "outbox"):("fanout", "inbox"),
+                          ("fanout", "osc"):("localPub", "inbox"),
+                          ("fanout", "midi"):("midiSection", "inbox"),
+                          ("pr", "localChanges"):("remotePub", "inbox")}
+              ).activate()
  
 
     # Local OSC messages
@@ -406,7 +384,7 @@ if __name__ == "__main__":
     # OSC messages out
     Graphline(remoteSub = SubscribeTo("remoteDataOut"),
               dataSub = SubscribeTo("dataIn"),
-              fanout = Fanout(["addPeer", "peerList"]),
+              fanout = Fanout(("addPeer", "peerList")),
               addPeerFilter = AddPeerFilter(),
               osc = Osc("/Jam"),
               dispatcher = UDPDispatcher(),
@@ -425,7 +403,10 @@ if __name__ == "__main__":
     Backplane("frameRateClock").activate()
     Backplane("localDataOut").activate()
     Backplane("remoteDataOut").activate()
-    Backplane("midiOut").activate()
+    if options.useMidi:
+        Backplane("midiOut").activate()
+    if options.useAudio:
+        Backplane("audioOut").activate()
 
     if options.remoteAddress and options.remotePort:
         Pipeline(OneShot(("/Jam/Connect", (options.listenPort))), Osc(),
