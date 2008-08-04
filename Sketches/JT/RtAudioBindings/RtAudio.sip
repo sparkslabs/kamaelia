@@ -3,16 +3,13 @@
 %ModuleHeaderCode
 #include "Python.h"
 #include "RtAudio.h"
-#include "NumpyInterface.h"
 #include <vector>
-%End
-
-%PostInitialisationCode
-importNumpy();
+#include "RingBuffer.h"
 %End
 
 class RtAudio
 {
+
 public:
 
     enum Api {
@@ -25,6 +22,9 @@ public:
         WINDOWS_DS,
         RTAUDIO_DUMMY
     };
+%TypeCode
+    RingBuffer buffer(1024*4);
+%End
 
     RtAudio(RtAudio::Api api=UNSPECIFIED);
 
@@ -116,106 +116,39 @@ public:
 
 %TypeCode
 
-    typedef struct callbackData {
-        PyObject *function;
-        PyObject *param;
-        unsigned long format;
-        unsigned int outputChannels;
-        unsigned int inputChannels;
-    };
-
     int streamCallback(void *outputBuffer, void *inputBuffer,
                        unsigned int nFrames, double streamTime,
                        RtAudioStreamStatus status,
                        void *userData) {
-        
-        // The array dimensions
-        PyObject *outputArray, *inputArray;
-        outputArray = Py_None;
-        inputArray = Py_None;
-        unsigned int outputBufferSize, inputBufferSize;
+        // More copying than needed, but meh
+        double *data;
+        data = new double[nFrames];
+        buffer.readWithPad(data, nFrames);
 
-        callbackData *data = (callbackData *)userData;
-
-        outputBufferSize = nFrames * data->outputChannels;
-        inputBufferSize = nFrames * data->inputChannels;
-        
-        PyGILState_STATE state;
-        state = PyGILState_Ensure();
-
-        if (inputBuffer != NULL) {
-            inputArray = bufferToArray((char *)inputBuffer, inputBufferSize,
-                                        data->format);
-        }
-
-        else {
-            inputArray = NULL;
-        }
-
-        // TODO:Make me send RtAudioStreamStatus properly
-        PyObject *result;
-
-        result = PyEval_CallFunction(data->function, "OidOO", inputArray,
-                            nFrames, streamTime, Py_None,
-                            data->param);
-        PyObject *error = PyErr_Occurred();
-        if (error) {
-            PyErr_Print();
-        }
-
-        char *outBuffer = arrayToBuffer(result);
-
-        memcpy(outputBuffer, outBuffer, 2046);
-        
-        PyGILState_Release(state);
-        
+        memcpy(outputBuffer, data, nFrames * sizeof(double));
+        delete[] data;
+        data = NULL;
         return 0;
     }
     
 %End
     
-    // TODO: Make some way to actually get at the buffer :D
-    void openStream(unsigned int outputDevice,
-                    unsigned int outputChannels,
-                    unsigned int firstOutputChannel,
-                    unsigned int inputDevice,
-                    unsigned int inputChannels,
-                    unsigned int firstInputChannel,
-                    unsigned long format,
-                    unsigned int sampleRate, unsigned int bufferSize,
-                    SIP_PYCALLABLE callback, SIP_PYOBJECT userData);
-
-//                   SIP_PYDICT streamOptions);
+    void openStream(unsigned int device,
+                    unsigned int sampleRate,
+                    unsigned int bufferSize);
 
 %MethodCode
     // Convert parameters to structs
     RtAudio::StreamParameters outputParameters;
-    RtAudio::StreamParameters inputParameters;
 
     outputParameters.deviceId = a0;
-    outputParameters.nChannels = a1;
-    outputParameters.firstChannel = a2;
+    outputParameters.nChannels = 1;
+    outputParameters.firstChannel = 0;
 
-    inputParameters.deviceId = a3;
-    inputParameters.nChannels = a4;
-    inputParameters.firstChannel = a5;
-
-    callbackData *data = (callbackData *) calloc(1, sizeof(callbackData));
-
-    data->function = a9;
-    data->param = a10;
-    data->format = a6;
-    data->outputChannels = outputParameters.nChannels;
-    data->inputChannels = inputParameters.nChannels;
-
-
-    // TODO: Handle stream options dict
     RtAudio::StreamOptions streamOptions;
     
-    Py_BEGIN_ALLOW_THREADS
-    sipCpp->openStream(&outputParameters, &inputParameters, a6, a7,
-                       &a8, streamCallback, (void *)data, &streamOptions);
-    Py_END_ALLOW_THREADS
+    sipCpp->openStream(&outputParameters, NULL, 0x20, a1, &a2,
+                       streamCallback, NULL, &streamOptions);
 %End
 
     void closeStream();
@@ -235,6 +168,24 @@ public:
     long getStreamLatency();
 
     void showWarnings(bool value = true);
+
+    void write(SIP_PYOBJECT array);
+%MethodCode
+        double *data;
+        unsigned int frames;
+        // The data array is initialized (via malloc) when converting from the
+        // numpy array...
+        frames = numpyToC(&data, a0);
+        buffer.write(data, frames);
+        // ...so we need to free it here
+        free(data);
+        data = NULL;
+%End
+
+    unsigned int needWrite();
+%MethodCode
+        return PyInt_FromLong(buffer.vacant());
+%End
 
 };
 
