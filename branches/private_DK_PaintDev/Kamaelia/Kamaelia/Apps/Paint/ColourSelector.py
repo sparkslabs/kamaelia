@@ -83,6 +83,7 @@ from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
+from Slider import Slider
 
 class ColourSelector(Axon.Component.component):
     """\
@@ -116,7 +117,7 @@ class ColourSelector(Axon.Component.component):
               }
               
     Outboxes = {"outbox" : "XY positions emitted here",
-                "localChanges" : "Messages indicating change in the state of the XY pad emitted here",
+                "saturator" :"Messages to be sent to the saturator",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface"
                }
@@ -185,14 +186,15 @@ class ColourSelector(Axon.Component.component):
         self.display = self.recv("callback")
 
         # colour buttons
-        rgbutton = Button(caption="Red/Green",position=(self.position[0],self.position[1]+self.size[1]+5), msg = ("Colour", "RG")).activate()
-        rbbutton = Button(caption="Red/Blue",position=(self.position[0]+70,self.position[1]+self.size[1]+5), msg = ("Colour", "RB")).activate()
-        gbbutton = Button(caption="Green/Blue",position=(self.position[0]+140,self.position[1]+self.size[1]+5), msg = ("Colour", "GB")).activate()
+        rgbutton = Button(caption="Red/Green",position=(self.position[0],self.position[1]+self.size[1]+5), msg = ("ColourCombi", "RG")).activate()
+        rbbutton = Button(caption="Red/Blue",position=(self.position[0]+70,self.position[1]+self.size[1]+5), msg = ("ColourCombi", "RB")).activate()
+        gbbutton = Button(caption="Green/Blue",position=(self.position[0]+140,self.position[1]+self.size[1]+5), msg = ("ColourCombi", "GB")).activate()
         self.link( (rgbutton,"outbox"), (self,"buttons") )
         self.link( (rbbutton,"outbox"), (self,"buttons") )
         self.link( (gbbutton,"outbox"), (self,"buttons") )
-
-        
+        # saturator
+        saturator = Slider(vertical = True, saturator = True, size=(10,255), position=(self.position[0]+self.size[0]+5,self.position[1] )).activate()
+        self.link( (self,"saturator"), (saturator,"colours") )
 
 
       
@@ -221,8 +223,9 @@ class ColourSelector(Axon.Component.component):
             yield 1
             while self.dataReady("buttons"):
                 bmsg = self.recv("buttons")
-                if bmsg[0]=="Colour":
+                if bmsg[0]=="ColourCombi":
                     self.colours = bmsg[1]
+                    self.send(bmsg, "saturator")
                     self.drawBG()
                     
             while self.dataReady("control"):
@@ -283,7 +286,7 @@ class ColourSelector(Axon.Component.component):
         elif (self.colours == "GB"):
             self.selectedColour = (0, self.puckPos[0], self.puckPos[1])
         pygame.draw.rect(self.display, self.selectedColour, self.display.get_rect(), self.borderWidth)
-        self.send(((self.messagePrefix,self.selectedColour),), "outbox")
+        self.send((self.messagePrefix,self.selectedColour), "saturator")
         #refresh the screen
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
         

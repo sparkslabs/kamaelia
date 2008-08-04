@@ -4,7 +4,7 @@ import Axon
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Button import Button
-from Kamaelia.Apps.Paint.ColourSelector import ColourSelector
+from ColourSelector import ColourSelector
 from Kamaelia.Apps.Paint.Slider import Slider
 
 class ToolBox(Axon.Component.component):
@@ -66,11 +66,13 @@ class ToolBox(Axon.Component.component):
         self.link( (nextlayerb,"outbox"), (self,"outbox"), passthrough = 2 )
         self.link( (dellayerb,"outbox"), (self,"outbox"), passthrough = 2 )
         colSel = ColourSelector(position = (10,170), size = (255,255)).activate()
-        self.link( (colSel,"outbox"), (self,"outbox"), passthrough = 2 )
         SizeSlider = Slider(size=(255, 50), messagePrefix = "Size", position = (10, 460), default = 9).activate()
         self.link( (SizeSlider,"outbox"), (self,"outbox"), passthrough = 2 )
         AlphaSlider = Slider(size=(255, 10), messagePrefix = "Alpha", position = (10, 515), default = 255).activate()
         self.link( (AlphaSlider,"outbox"), (self,"outbox"), passthrough = 2 )
+
+        
+        
         self.drawBG()
         done = False
         while not done:

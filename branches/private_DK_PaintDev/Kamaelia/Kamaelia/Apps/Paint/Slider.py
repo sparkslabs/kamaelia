@@ -110,6 +110,7 @@ class Slider(Axon.Component.component):
     Inboxes = {"inbox"    : "Receive events from Pygame Display",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from Pygame Display",
+               "colours": "Recieve messages from colourSelector",
               }
               
     Outboxes = {"outbox" : "XY positions emitted here",
@@ -122,6 +123,8 @@ class Slider(Axon.Component.component):
                  messagePrefix = "",
                  default = 0,
                  positionMsg="Position",
+                 saturator = False,
+                 vertical = False,
                  size=(100, 100)):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
@@ -130,15 +133,18 @@ class Slider(Axon.Component.component):
         super(Slider, self).__init__()
 
         self.size = size
-
-
+        self.vertical = vertical
         self.mouseDown = False
         self.clickTime = None
         self.mousePositions = []
         self.lastMousePos = (0, 0)
         self.sliderPos = 0
         self.messagePrefix = messagePrefix
-        
+        self.position = position
+        self.saturator = saturator
+        if saturator:
+        	self.selectedColour = (0,0,0)
+        	self.colourCombi = 'RG'
         self.default = default
         self.selectedSize = 3
         self.borderWidth = 5
@@ -171,9 +177,7 @@ class Slider(Axon.Component.component):
 
         for _ in self.waitBox("callback"): yield 1
         self.display = self.recv("callback")
-
-        # colour buttons
-
+        
         
 
 
@@ -203,19 +207,39 @@ class Slider(Axon.Component.component):
                 if (isinstance(cmsg, producerFinished)):
                     self.send(cmsg, "signal")
                     done = True
-
+            while self.dataReady("colours"):
+                msg = self.recv("colours")
+                if msg[0] == "ColourCombi":
+                    self.colourCombi = msg[1]
+                else: 
+                    if self.colourCombi == 'RG':
+                    	self.selectedColour = (msg[1][0],msg[1][1],self.sliderPos)
+                    elif self.colourCombi == 'RB':
+                    	self.selectedColour = (msg[1][0],self.sliderPos,msg[1][2])
+                    elif self.colourCombi == 'GB':
+                    	self.selectedColour = (self.sliderPos,msg[1][1],msg[1][2])
+                    self.bgcolour = self.selectedColour
+            #        self.display.fill( self.selectedColour)
+                    self.drawBG()
+                    self.render()
             while self.dataReady("inbox"):
                 for event in self.recv("inbox"):
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if self.display.get_rect().collidepoint(*event.pos):
-                            self.sliderPos = event.pos[0]
+                            if self.vertical:
+                                self.sliderPos = event.pos[1]
+                            else:
+                                self.sliderPos = event.pos[0]
                             self.drawBG()
                             self.render()
                             self.mouseDown = True
 
                     if event.type == pygame.MOUSEBUTTONUP:
                         if self.mouseDown:
-                            self.sliderPos = event.pos[0]
+                            if self.vertical:
+                                self.sliderPos = event.pos[1]
+                            else:
+                                self.sliderPos = event.pos[0]
                             self.drawBG()
                             self.render()
                         self.mouseDown = False
@@ -225,23 +249,46 @@ class Slider(Axon.Component.component):
                             if event.pos[0] > self.size[0] or event.pos[0] < 0:
                                 self.mouseDown = False
                                 break
-                            self.sliderPos = event.pos[0]
+                            if self.vertical:
+                                self.sliderPos = event.pos[1]
+                            else:
+                                self.sliderPos = event.pos[0]
                             self.drawBG()
                             self.render()
 
     
     def drawBG(self):
-        self.display.fill( (255,255,255) )
-        pygame.draw.rect(self.display, (0,0,0),
-                             self.display.get_rect(), 2)
+        if self.saturator:
+            if self.colourCombi == 'RG':
+                for y in range(0, self.size[1], self.size[1]/25):
+                    print self.position,y
+                    box = pygame.Rect(0, y, 10, 10)
+                    print box
+                    pygame.draw.rect(self.display, (self.selectedColour[0],self.selectedColour[1],y), box, 0)
+            elif self.colourCombi == 'RB':
+                for y in range(0, self.size[1], self.size[1]/25):
+                    box = pygame.Rect(0, y, 10, 10)
+                    pygame.draw.rect(self.display, (self.selectedColour[0],y,self.selectedColour[2]), box, 0)
+            elif self.colourCombi == 'GB':
+                for y in range(0, self.size[1], self.size[1]/25):
+                    box = pygame.Rect(0, y, 10, 10)
+                    pygame.draw.rect(self.display, (y,self.selectedColour[1],self.selectedColour[2]), box, 0)
+        		
+        		
+        else: self.display.fill( self.bgcolour )
+      #  pygame.draw.rect(self.display, (0,0,0),
+       #                      self.display.get_rect(), 2)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
         
     def render(self):
         """Draw the border and puck onto the surface"""
         self.send(((self.messagePrefix,self.sliderPos),), "outbox")
-        box = pygame.Rect(self.sliderPos, 0, 5, self.size[1])
-        pygame.draw.rect(self.display, (0,0,0),
-                         box, 0)
+        if self.vertical:
+            box = pygame.Rect(0, self.sliderPos, self.size[0], 5)
+
+        else:
+        	box = pygame.Rect(self.sliderPos, 0, 5, self.size[1])
+        pygame.draw.rect(self.display, (0,0,0), box,0)
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
         
 
@@ -249,7 +296,7 @@ if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import Pipeline
     
-    Pipeline(Slider(size=(255, 255), messagePrefix = "Fred"),
+    Pipeline(Slider(vertical = True, saturator = True, size=(10,255), position=(10,0 )),
             ConsoleEchoer()).run()
 
 

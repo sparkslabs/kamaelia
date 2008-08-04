@@ -74,7 +74,7 @@ class Paint(Axon.Component.component):
                 "clock"  : "Used to stop the clock",
                 "signal" : "For shutdown messages",
                 "display_signal" : "Outbox used for communicating to the display surface" }
-   
+
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (124,124,124), fgcolour = (0,0,0), msg=None,
                 transparent = False, size=(500,500), selectedColour=(0,0,0), activeLayer = None, animator = False):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
@@ -260,8 +260,13 @@ class Paint(Axon.Component.component):
                             yield WaitComplete( self.addLayer() )
                             self.activeLayIn = len(self.layers)-1
                             self.activeLayer = self.layers[self.activeLayIn]
-                         #   self.send( self.activeLayIn, "laynum" )
                             self.drawBG()
+                            if self.animator and len(self.layers)-2 >= 1:
+                                for x in self.layers:
+                                    s.set_alpha = 0
+                                    
+                                
+                                self.activeLayer.blit(self.layers[len(self.layers)-2],(0,0))
                             self.blitToSurface()
                         elif event[1] == "Delete":
                             self.send( producerFinished(message=self.activeLayer),"display_signal")
@@ -331,6 +336,8 @@ class Paint(Axon.Component.component):
                         self.save("tgfdg")
                       #  self.layers.insert(0,temp)
                       #  self.drawBG()
+                    elif event.key == pygame.K_a:
+                        self.animator = True
                     elif event.key == pygame.K_l:
                         self.layers[1].blit( self.layers[1], (100,100) )
                #         temp = self.layers[1]
@@ -399,7 +406,7 @@ if __name__ == "__main__":
 
    ProcessGraphline(
        COLOURS = Seq(
-            DisplayConfig(width=270, height=600),
+            DisplayConfig(width=285, height=600),
             ToolBox(size=(270, 600)),
             ),
 
