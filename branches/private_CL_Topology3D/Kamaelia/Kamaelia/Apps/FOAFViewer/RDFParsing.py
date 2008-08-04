@@ -178,7 +178,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
-    from TopologyViewer3DWithParams import TopologyViewer3DWithParams
+    from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
     from Kamaelia.Chassis.Graphline import Graphline
     
     # Data can be from both DataSource and console inputs

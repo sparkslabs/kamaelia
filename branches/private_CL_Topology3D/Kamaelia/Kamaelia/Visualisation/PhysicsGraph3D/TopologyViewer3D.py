@@ -100,7 +100,7 @@ from Kamaelia.UI.OpenGL.Transform import Transform
 _cat = Axon.CoordinatingAssistantTracker
 
 from Particles3D import CuboidParticle3D, SphereParticle3D, TeapotParticle3D
-from ParticleSystemX import ParticleSystemX
+from Kamaelia.Support.Particles.ParticleSystemX import ParticleSystemX
 
                  
 class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
