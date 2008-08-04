@@ -25,7 +25,7 @@ def sawGen(bufferSize):
 
 makeSaw = sawGen(1024)
 
-def saw(oops):
+def saw():
     # Blank the output buffer
     sawWave = makeSaw.next()
     return sawWave
