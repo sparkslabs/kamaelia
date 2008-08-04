@@ -243,7 +243,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 avoidedList.extend(self.selectedParticles)
                 
                 #self.currentDisplayedPhysics.particleDict[ident].breakAllBonds()
-                if self.currentDisplayedPhysics.particles == [] and self.physics.particles != []:
+                self.currentDisplayedPhysics.particles = []
+                if self.physics.particles != []:
                     for particle in self.physics.particles:
                         if self.currentParentParticleID == '':
                             if ':' not in particle.ID:
@@ -715,6 +716,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 
             elif cmd == ("DEL", "ALL") and len(msg) == 2:
                 self.removeParticle(*self.physics.particleDict.keys())
+                self.currentLevel = 0
+                self.currentParentParticleID = ''
                 
             elif cmd == ("GET", "ALL") and len(msg) == 2:
                 topology = [("DEL","ALL")]
@@ -804,9 +807,13 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 #            if self.selected == self.physics.particleDict[id]:
 #                self.selectParticle(None)
         self.physics.removeByID(*ids)
+        for ident in ids:
+            try:
+                self.currentDisplayedPhysics.removeByID(ident)
+            except KeyError: pass
+        #print self.currentDisplayedPhysics.particles
         #print self.physics.particles
-    
-    
+        
     def selectParticle(self, particle):
         """Select the specified particle."""
         if self.multiSelectMode:
