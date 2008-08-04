@@ -16,7 +16,9 @@ except IOError:
 
 print sources, define_macros, libraries, extra_link_args
 
-sources += ["RtAudio.sip", "NumpyInterface.cpp", path + "RtAudio.cpp"]
+sources += ["RtAudio.sip",
+            "RingBuffer.cpp",
+            path + "RtAudio.cpp"]
 
 setup(
   name = 'RtAudio',
