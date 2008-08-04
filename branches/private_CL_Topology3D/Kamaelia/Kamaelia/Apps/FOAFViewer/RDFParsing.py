@@ -173,7 +173,9 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                     self.fetch_data(uri, current_layer+1)
                 except:
                     pass          
-                 
+
+__kamaelia_components__  = ( RDFParser, )                 
+
                     
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource

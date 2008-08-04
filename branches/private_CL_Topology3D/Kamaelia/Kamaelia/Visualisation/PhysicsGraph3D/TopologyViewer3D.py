@@ -891,7 +891,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             
         return topology
             
-            
+__kamaelia_components__  = ( TopologyViewer3D, )            
+
             
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource

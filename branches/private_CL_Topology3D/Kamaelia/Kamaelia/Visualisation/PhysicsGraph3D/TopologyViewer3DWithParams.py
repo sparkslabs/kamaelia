@@ -102,6 +102,8 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
         else:
             print "Command Error: not enough parameters!"
 
+__kamaelia_components__  = ( TopologyViewer3DWithParams, )
+
 
 if __name__ == "__main__":
     from Kamaelia.Util.DataSource import DataSource
