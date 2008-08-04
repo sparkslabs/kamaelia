@@ -7,12 +7,14 @@ Parse RDF data received from a uri
 1. If the uri is a rdf data file, it will parse it directly;
 if not, it will extract rdf data first before parsing. 
 
-2. The input format is "uri max_layer": 
+2. The input format is "uri max_layer max_nodePerLayer": 
 uri is the uri of the data file
 max_layer is the maximum layers of the rdf hierarchy structure (how deep) to parse
+max_nodePerLayer is the maximum nodes in one layer (how wide) to parse
 
 3. The output is TopologyViewer commands
 """
+import sys
 
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -55,6 +57,8 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 if data.strip(): # Ignore empty data
+                    # Clear the previous graph
+                    self.send(["DEL", "ALL"], "outbox")
                     data_list = data.split()
                     if data_list[0].endswith('.rdf'): # If it's rdf file
                         self.rdf_uri = data_list[0]
@@ -66,6 +70,10 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                     else:
                         self.max_layer = 2
                     
+                    if len(data_list) == 3:
+                        self.max_nodePerLayer = int(data_list[2])
+                    else:
+                        self.max_nodePerLayer = 0
                     self.parentNode_id = ""
                     self.fetch_data(self.rdf_uri)
                     print self.num_parentNodes, self.num_allNodes
@@ -123,28 +131,33 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
             """
             nodes = []
             results = self.make_query(rdf_uri, query2)
+            num_nodePerLayer = 1
             for result in results:
-                self.num_allNodes += 1
-                #print result['name'], ':', result['img']
-                node_name = str(result['name'])
-                if self.parentNode_id == "":
-                    node_id =  '_'.join(node_name.split())
+                if self.max_nodePerLayer > 0 and num_nodePerLayer > self.max_nodePerLayer:
+                    break
                 else:
-                    node_id =  self.parentNode_id + ':' + '_'.join(node_name.split())
-                if result['img']:
-                    node_img = 'image=' + str(result['img']._get_uri())
-                else:
-                    node_img = ""
-                cmd_node = [ "ADD", "NODE", node_id, node_name, "randompos", "-", node_img ]
-                self.send(cmd_node, "outbox")
-                cmd_link =  [ "ADD", "LINK", linkedNode_id, node_id ]
-                self.send(cmd_link, "outbox")
-                
-                uri = result['seeAlso']
-                if uri and str(uri).endswith('.rdf]'):
-                    uri = uri._get_uri()
-                    #print result['seeAlso'], uri
-                    nodes.append((node_id, uri))
+                    num_nodePerLayer += 1
+                    self.num_allNodes += 1
+                    #print result['name'], ':', result['img']
+                    node_name = str(result['name'])
+                    if self.parentNode_id == "":
+                        node_id =  '_'.join(node_name.split())
+                    else:
+                        node_id =  self.parentNode_id + ':' + '_'.join(node_name.split())
+                    if result['img']:
+                        node_img = 'image=' + str(result['img']._get_uri())
+                    else:
+                        node_img = ""
+                    cmd_node = [ "ADD", "NODE", node_id, node_name, "randompos", "-", node_img ]
+                    self.send(cmd_node, "outbox")
+                    cmd_link =  [ "ADD", "LINK", linkedNode_id, node_id ]
+                    self.send(cmd_link, "outbox")
+                    
+                    uri = result['seeAlso']
+                    if uri and str(uri).endswith('.rdf]'):
+                        uri = uri._get_uri()
+                        #print result['seeAlso'], uri
+                        nodes.append((node_id, uri))
                     
             for node in nodes:
                 self.parentNode_id = node[0]
@@ -164,16 +177,16 @@ if __name__ == "__main__":
     # Data can be from both DataSource and console inputs
     Graphline(
         CONSOLEREADER = ConsoleReader('>>>'),
-        DATASOURCE = DataSource(["http://fooshed.net/foaf.rdf"]),
+        DATASOURCE = DataSource(["http://fooshed.net/foaf.rdf 2 10"]),
         PARSER = RDFParser(),
-        VIEWER = TopologyViewer3DWithParams(),
+        #VIEWER = TopologyViewer3DWithParams(),
         CONSOLEECHOER = ConsoleEchoer(),
     linkages = {
         ("CONSOLEREADER","outbox") : ("PARSER","inbox"),
         ("DATASOURCE","outbox") : ("PARSER","inbox"),   
-        ("PARSER","outbox")   : ("VIEWER","inbox"),
-        ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
-        #("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
+        #("PARSER","outbox")   : ("VIEWER","inbox"),
+        #("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
+        ("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
         
     }
 ).run()
