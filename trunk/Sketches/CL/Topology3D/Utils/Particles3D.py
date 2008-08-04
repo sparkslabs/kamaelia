@@ -91,6 +91,8 @@ class Particle3D(BaseParticle):
         # Text is rendered to self.image
         if self.pic is not None:
             if self.pic.find('://') != -1 and not os.path.exists(self.pic):
+                """ FIXME: either use thread to wrap urlopen or kamaelia HTTP components 
+                in case urlopen is blocked """
                 fObject = urlopen(self.pic)
                 picData = fObject.read()
                 pic = StringIO(picData)

@@ -13,8 +13,14 @@ max_layer is the maximum layers of the rdf hierarchy structure (how deep) to par
 max_nodePerLayer is the maximum nodes in one layer (how wide) to parse
 
 3. The output is TopologyViewer commands
+
+4. Typically, it receives inputs from ConsoleReader or ConsoleReader 
+and send output to TopologyViewer3D.
+
+5. You may also need to install librdf, a rdf parsing lib from redland. 
+See http://librdf.org/ for more information and 
+http://librdf.org/bindings/INSTALL.html for installation information.
 """
-import sys
 
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -64,6 +70,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                         self.rdf_uri = data_list[0]
                     else:
                         self.rdf_uri = "http://www.w3.org/2007/08/pyRdfa/extract?uri=" + data_list[0]
+                    #print self.rdf_uri
                     
                     if len(data_list) == 2:
                         self.max_layer = int(data_list[1])
@@ -76,7 +83,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                         self.max_nodePerLayer = 0
                     self.parentNode_id = ""
                     self.fetch_data(self.rdf_uri)
-                    print self.num_parentNodes, self.num_allNodes
+                    print "num_parentNodes:", self.num_parentNodes, "num_allNodes:", self.num_allNodes
                 
             yield 1
             
