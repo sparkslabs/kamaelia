@@ -179,14 +179,14 @@ if __name__ == "__main__":
         CONSOLEREADER = ConsoleReader('>>>'),
         DATASOURCE = DataSource(["http://fooshed.net/foaf.rdf 2 10"]),
         PARSER = RDFParser(),
-        #VIEWER = TopologyViewer3DWithParams(),
+        VIEWER = TopologyViewer3DWithParams(),
         CONSOLEECHOER = ConsoleEchoer(),
     linkages = {
         ("CONSOLEREADER","outbox") : ("PARSER","inbox"),
         ("DATASOURCE","outbox") : ("PARSER","inbox"),   
-        #("PARSER","outbox")   : ("VIEWER","inbox"),
-        #("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
-        ("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
+        ("PARSER","outbox")   : ("VIEWER","inbox"),
+        ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
+        #("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
         
     }
 ).run()
