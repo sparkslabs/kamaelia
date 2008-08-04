@@ -80,6 +80,8 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
                 
             elif cmd == ("DEL", "ALL") and len(msg) == 2:
                 self.removeParticle(*self.physics.particleDict.keys())
+                self.currentLevel = 0
+                self.currentParentParticleID = ''
                 
             elif cmd == ("GET", "ALL") and len(msg) == 2:
                 topology = [("DEL","ALL")]
