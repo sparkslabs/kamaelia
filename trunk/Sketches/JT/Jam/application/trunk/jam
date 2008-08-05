@@ -25,6 +25,7 @@ Flow diagram
    {Music App}      {Other Jam Instances}
 
 """
+import sys
 
 try:
     import rtmidi
@@ -32,6 +33,13 @@ except ImportError:
     midiAvailable = False
 else:
     midiAvailable = True
+
+try:
+    import RtAudio
+except ImportError:
+    audioAvailable = False
+else:
+    audioAvailable = True
 
 from optparse import OptionParser
 
@@ -44,6 +52,12 @@ from Kamaelia.Util.Fanout import Fanout
 from Kamaelia.Util.OneShot import OneShot
 from Kamaelia.Util.Console import ConsoleEchoer
 
+
+if audioAvailable:
+    from Kamaelia.Apps.Jam.Audio.RTOutput import RTOutput
+from Kamaelia.Apps.Jam.Audio.Sampler import Sampler
+from Kamaelia.Apps.Jam.Audio.SineSynth import SineSynth
+from Kamaelia.Apps.Jam.Audio.Mixer import MonoMixer
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
 if midiAvailable:
     from Kamaelia.Apps.Jam.Protocol.Midi import Midi
@@ -212,13 +226,36 @@ def parseOptions():
                        help="Turn audio support off")
     parser.set_defaults(useAudio=True)
 
+    #FIXME: Should maybe default to none and use the default device?
+    parser.add_option("--audio-device", dest="audioDevice", type="int",
+                       help="The number of the audio output device (default=0)")
+    parser.set_defaults(audioDevice=0)
+
+    parser.add_option("--sample-rate", dest="sampleRate", type="int",
+                       help="The audio sample rate to use (default=44100)")
+    parser.set_defaults(sampleRate=44100)
+
+    parser.add_option("--internal-buffer-size", dest="internalBufferSize",
+                      type="int", help="The size in samples of the audio data chunks passed internally within Jam (default=1024)")
+    parser.set_defaults(internalBufferSize=1024)
+
+    parser.add_option("--output-buffer-size", dest="outputBufferSize",
+                      type="int", help="The size in samples of the audio output buffer (default=1024)")
+    parser.set_defaults(outputBufferSize=1024)
+
+    parser.add_option("--ring-buffer-size", dest="ringBufferSize", type="int",
+                      help="The size in samples of the buffer connecting Jam and the audio output (default=2048)")
+    parser.set_defaults(ringBufferSize=2048)
+
     options, args = parser.parse_args()
     if options.remoteAddress and not options.remotePort:
          parser.error("Must provide --remote-port with --remote-address")
     if options.remotePort and not options.remoteAddress:
         parser.error("Must provide --remote-address with --remote-port")
     if options.useMidi and not midiAvailable:
-        parser.error("In order to use MIDI you must have the pyrtmidi package installed")
+        parser.error("In order to use MIDI you must have the pyrtmidi package installed.  To run without midi use the --no-midi option.")
+    if options.useAudio and not audioAvailable:
+        parser.error("In order to use MIDI you must have the python RtAudio package installed.  To run without audio use the --no-audio option.")
     return options
 
 
@@ -322,6 +359,12 @@ if __name__ == "__main__":
                                PublishTo("midiOut"))
     else:
         midiSection = DummyComponent()
+
+    if options.useAudio:
+        audioSection = PublishTo("ssData")
+    else:
+        audioSection = DummyComponent()
+
     Graphline(dataSub = SubscribeTo("dataIn"),
               syncSub = SubscribeTo("sync"),
               ssFilter = StepSequencerFilter(),
@@ -333,6 +376,7 @@ if __name__ == "__main__":
               fanout = Fanout(("midi", "osc", "audio")),
               localPub = PublishTo("localDataOut"),
               remotePub = PublishTo("remoteDataOut"),
+              audioSection = audioSection,
               midiSection = midiSection,
               linkages = {("dataSub", "outbox"):("ssFilter", "inbox"),
                           ("ssFilter", "outbox"):("ss", "remoteChanges"),
@@ -341,6 +385,7 @@ if __name__ == "__main__":
                           ("ss", "outbox"):("fanout", "inbox"),
                           ("fanout", "osc"):("localPub", "inbox"),
                           ("fanout", "midi"):("midiSection", "inbox"),
+                          ("fanout", "audio"):("audioSection", "inbox"),
                           ("ss", "localChanges"):("remotePub", "inbox")}
               ).activate() 
 
@@ -351,6 +396,10 @@ if __name__ == "__main__":
                                PublishTo("midiOut"))
     else:
         midiSection = DummyComponent()
+    if options.useAudio:
+        audioSection = PublishTo("prData")
+    else:
+        audioSection = DummyComponent()
     Graphline(dataSub = SubscribeTo("dataIn"),
               syncSub = SubscribeTo("sync"),
               prFilter = PianoRollFilter(),
@@ -360,6 +409,7 @@ if __name__ == "__main__":
                              sync=True),
               fanout = Fanout(("midi", "osc", "audio")),
               midiSection = midiSection,
+              audioSection = audioSection,
               localPub = PublishTo("localDataOut"),
               remotePub = PublishTo("remoteDataOut"),
               linkages = {("dataSub", "outbox"):("prFilter", "inbox"),
@@ -369,6 +419,7 @@ if __name__ == "__main__":
                           ("pr", "outbox"):("fanout", "inbox"),
                           ("fanout", "osc"):("localPub", "inbox"),
                           ("fanout", "midi"):("midiSection", "inbox"),
+                          ("fanout", "audio"):("audioSection", "inbox"),
                           ("pr", "localChanges"):("remotePub", "inbox")}
               ).activate()
  
@@ -378,6 +429,7 @@ if __name__ == "__main__":
              UDPSender(receiver_addr=options.oscAddress,
                        receiver_port=options.oscPort)).activate()
 
+    # MIDI out
     if options.midiPort != None:
         Pipeline(SubscribeTo("midiOut"), Midi(options.midiPort)).activate()
 
@@ -398,6 +450,35 @@ if __name__ == "__main__":
                           }
               ).activate()
 
+
+    if options.useAudio:
+        samplerFiles = ["Crash.wav", "HH.wav", "Snare.wav", "Kick.wav"]
+        samplerFiles = ["%s/share/kamaelia/jam/%s" % (sys.prefix, fileName)
+                        for fileName in samplerFiles]
+
+        Graphline(ssSub = SubscribeTo("ssData"),
+                  sampler = Sampler(samplerFiles,
+                                    bufferSize=options.internalBufferSize,
+                                    sampleRate=options.sampleRate),
+                  prSub = SubscribeTo("prData"),
+                  sineSynth = SineSynth(bufferSize=options.internalBufferSize,
+                                        sampleRate=options.sampleRate),
+                  mixer = MonoMixer(channels=2,
+                                    bufferSize=options.internalBufferSize,
+                                    sampleRate=options.sampleRate),
+                  output = RTOutput(device=options.outputDevice,
+                                    bufferSize=options.outputBufferSize,
+                                    sampleRate=options.sampleRate),
+                  linkages={("ssSub", "outbox"):("sampler", "inbox"),
+                            ("sampler", "outbox"):("mixer", "in0"),
+                            ("prSub", "outbox"):("sineSynth", "inbox"),
+                            ("sineSynth", "outbox"):("mixer", "in1"),
+                            ("mixer", "outbox"):("output", "inbox")}
+                  ).activate()
+                  
+
+              
+
     Backplane("sync").activate()
     Backplane("dataIn").activate()
     Backplane("frameRateClock").activate()
@@ -406,7 +487,8 @@ if __name__ == "__main__":
     if options.useMidi:
         Backplane("midiOut").activate()
     if options.useAudio:
-        Backplane("audioOut").activate()
+        Backplane("ssData").activate()
+        Backplane("prData").activate()
 
     if options.remoteAddress and options.remotePort:
         Pipeline(OneShot(("/Jam/Connect", (options.listenPort))), Osc(),
