@@ -23,7 +23,7 @@ public:
         RTAUDIO_DUMMY
     };
 %TypeCode
-    RingBuffer buffer(1024*4);
+    RingBuffer buffer(1024);
 %End
 
     RtAudio(RtAudio::Api api=UNSPECIFIED);
@@ -123,7 +123,12 @@ public:
         // More copying than needed, but meh
         double *data;
         data = new double[nFrames];
-        buffer.readWithPad(data, nFrames);
+        //buffer.readWithPad(data, nFrames);
+        while (buffer.occupied() < nFrames) {
+            // TODO: Make me use Sleep on windows
+            usleep(1000);
+        }
+        buffer.read(data, nFrames);
 
         memcpy(outputBuffer, data, nFrames * sizeof(double));
         delete[] data;
