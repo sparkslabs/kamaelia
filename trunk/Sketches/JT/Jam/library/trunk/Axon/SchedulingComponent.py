@@ -1,8 +1,8 @@
-import ThreadedComponent
+from ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
 import heapq
 import time
 
-class SchedulingComponent(ThreadedComponent.threadedcomponent):
+class SchedulingComponentMixin(object):
     """
     SchedulingComponent() -> new SchedulingComponent
 
@@ -16,7 +16,7 @@ class SchedulingComponent(ThreadedComponent.threadedcomponent):
                "event"   : "Scheduled events which are ready to be processed"}
 
     def __init__(self, **argd):
-        super(SchedulingComponent, self).__init__(**argd)
+        super(SchedulingComponentMixin, self).__init__(**argd)
         self.eventQueue = []
         
     def scheduleRel(self, message, delay, priority=1):
@@ -58,11 +58,11 @@ class SchedulingComponent(ThreadedComponent.threadedcomponent):
         else:
             if self.eventQueue:
                 eventTime = self.eventQueue[0][0]
-                super(SchedulingComponent, self).pause(eventTime - time.time())
+                super(SchedulingComponentMixin, self).pause(eventTime - time.time())
                 if self.eventReady():
                     self.signalEvent()
             else:
-                super(SchedulingComponent, self).pause()
+                super(SchedulingComponentMixin, self).pause()
 
     def signalEvent(self):
         """
@@ -73,3 +73,12 @@ class SchedulingComponent(ThreadedComponent.threadedcomponent):
         #print "Signalling, late by:", (time.time() - eventTime)
         if not self.inqueues["event"].full():
             self.inqueues["event"].put(message)
+
+class SchedulingComponent(SchedulingComponentMixin, threadedcomponent):
+    def __init__(self, **argd):
+        super(SchedulingComponent, self).__init__(**argd)
+
+class SchedulingAdaptiveCommsComponent(SchedulingComponentMixin,
+                                       threadedadaptivecommscomponent):
+    def __init__(self, **argd):
+        super(SchedulingAdaptiveCommsComponent, self).__init__(**argd)
