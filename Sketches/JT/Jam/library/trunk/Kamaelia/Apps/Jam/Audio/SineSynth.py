@@ -62,6 +62,7 @@ class SineVoice(SineOsc):
     def __init__(self, **argd):
         super(SineVoice, self).__init__(**argd)
         self.on = False
+
     def main(self):
         while 1:
             if self.dataReady("inbox"):
@@ -91,6 +92,12 @@ class SineVoice(SineOsc):
             if not self.anyReady():
                 self.pause()
 
+def SineSynth(polyphony=8, **argd):
+    def voiceGenerator():
+        for i in range(polyphony):
+            yield SineVoice(**argd)
+    return Synth(voiceGenerator, polyphony=polyphony, **argd)
+
 if __name__ == "__main__":
     from Kamaelia.Apps.Jam.UI.PianoRoll import PianoRoll
     from Kamaelia.Apps.Jam.Audio.Synth import Synth
@@ -98,15 +105,6 @@ if __name__ == "__main__":
     from Kamaelia.Apps.Jam.Audio.RTOutput import RTOutput
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.PureTransformer import PureTransformer
-    polyphony = 8
 
-    def voiceGenerator():
-        for i in range(polyphony):
-            yield SineVoice()
-            
-
-    Pipeline(PianoRoll(), Synth(voiceGenerator, polyphony=8),
-             PureTransformer(lambda x : x*(2**15 - 1)),
-             TypeConverter(type="int16"), RTOutput(channels=1)).run()
-
-
+    Pipeline(PianoRoll(), SineSynth(),
+             RTOutput(outputDevice=0)).run()
