@@ -99,7 +99,7 @@ class Interface(threadedcomponent):
             
             #Add the thread to the jids dict so that we can get back to any associated
             #bundles if the user goes offline
-            self.jids[msg.hMessage.to_jid.nodeid()].append(msg.batch_id)
+            self.jids[msg.hMessage.to_jid].append(msg.batch_id)
             self.send(msg.hMessage, 'xmpp.outbox')
         elif isinstance(msg, Message):
             self.send(msg, 'xmpp.outbox')
@@ -108,7 +108,7 @@ class Interface(threadedcomponent):
         
         jid = pres.from_jid.nodeid()
         self.jids[jid] = []
-        JIDLookup.AddUser(pres.from_jid)
+        JIDLookup.setUserStatus(jid, active=True)
         #print self.jids
     
     def handleUnavailable(self, pres):
@@ -122,4 +122,4 @@ class Interface(threadedcomponent):
             del self.transactions[batch_id]
         
         del self.jids[jid]
-        JIDLookup.RmUser(pres.from_jid)
+        JIDLookup.setUserStatus(pres.from_jid, active=False)

@@ -21,31 +21,27 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
-from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
-from Kamaelia.Apps.Wsgi.Structs import ConfigObject
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, create_engine, Boolean
 
-from jabber import constructXMPPClient
-from http import constructHTTPServer
-from gate.JIDLookup import connectToDB
-import optparse
+class BaseUser(object):
+    def __init__(self, jid, url_prefix, active=False):
+        self.jid = jid
+        self.url_prefix = url_prefix
+        self.active = active
+        
+    def __repr__(self):
+        return '<User jid=%s, url_prefix=%s>' % (self.jid, self.url_prefix)
+    
+class User(BaseUser):
+    pass
 
-def main():
-    ConfigDict = ParseConfigFile('~/kpgate.ini', DictFormatter())
-    options = parseCmdOpts()
-    #print options
-    
-    Config = ConfigObject(ConfigDict, options)
-    
-    server = constructHTTPServer(Config)    
-    xmpp = constructXMPPClient(Config)
-    connectToDB(Config)
-    
-    xmpp.activate()
-    server.run()
-    
-def parseCmdOpts():
-    parser = optparse.OptionParser()
-    parser.add_option('-x', '--xmpp-verbose', dest='xmpp_verbose', action='store_true',
-                      help='Use this option to view each incoming and outgoing XMPP message')
-    (options, args) = parser.parse_args()
-    return options
+class ActiveUser(BaseUser):
+    pass
+
+def getUserTable(meta, tablename='users'):
+    return Table(tablename, meta,
+                Column('id', Integer, primary_key=True),
+                Column('jid', String(50)),
+                Column('url_prefix', String(10)),
+                Column('active', Boolean())
+    )

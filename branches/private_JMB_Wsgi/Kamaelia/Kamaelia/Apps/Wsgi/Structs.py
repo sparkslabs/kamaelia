@@ -55,10 +55,16 @@ class StaticConfigObject(object):
         self.homedirectory = dictionary['homedirectory']
         self.index = dictionary['index']
         
+class ServerConfigObject(object):
+    def __init__(self, dictionary):
+        self.db = dictionary.get('db', None)
+        
 class ConfigObject(object):
     def __init__(self, dictionary, options):
         self.static = StaticConfigObject(dictionary['STATIC'])
         self.xmpp = XMPPConfigObject(dictionary['XMPP'])
         self.wsgi = dictionary['WSGI']  #FIXME:  Adapt the WSGI configuration dictionary
                                         #to be an object
+        self.server = ServerConfigObject(dictionary['SERVER'])
+        
         self.options = options

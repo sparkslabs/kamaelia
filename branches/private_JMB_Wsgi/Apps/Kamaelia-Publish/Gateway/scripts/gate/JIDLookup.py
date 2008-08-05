@@ -21,21 +21,27 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
+from Axon.STM import Store
 from Kamaelia.Protocol.HTTP import PopWsgiURI
-
+from Kamaelia.Apps.Wsgi.db import getUserTable, User
 from headstock.api.jid import JID
 
-_uri_lookup_table = {
-    u'amnorvend@jabber.org' : 'amnorvend'
-}
+import sqlalchemy
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy.orm import mapper, sessionmaker
+from sqlalchemy.exceptions import InvalidRequestError
+
+from atexit import register
+
+UserSession = sessionmaker(autoflush=True, transactional=True)
 
 _uris_active = {}
+_connected = False
 
-def GetURI(user):
-    JIDText = user.nodeid()
-    return _uri_lookup_table[JIDText]
+def GetURI(jid_, session):
+    """A convenience function for GetUser in case we just want the uri."""
+    return GetUser(jid_, session).url_prefix
     
-
 def ExtractJID(request):
     #print request
     raw = request['REQUEST_URI']
@@ -44,16 +50,57 @@ def ExtractJID(request):
     #print split_raw
     PopWsgiURI(request)
     if split_raw:
-        return _uris_active.get(split_raw[0])
+        session = UserSession()
+        user = GetUserByURI(split_raw[0], session)
+        if user:    
+            return user.jid
+        else:
+            return ''
     else:
         return ''
 
-def AddUser(user):
-    assert(isinstance(user, JID))
-    #Add the JID without the resource as the key to the JID instance
-    _uris_active[GetURI(user)] = user
-    #print _uris_active    
+def setUserStatus(jid_, active):
+    """This is used to mark a user as active or inactive."""
+    if isinstance(jid_, JID):
+        jid_ = jid_.nodeid()
+    session = UserSession()
+    user = GetUser(jid_, session)
+    user.active=bool(active)
+    session.update(user)
+    session.commit()
     
-def RmUser(user):
-    assert(isinstance(user, JID))
-    del _uris_active[GetURI(user)]
+def GetUser(jid_, session):
+    """Gets a user out of the database by JID."""
+    return session.query(User).filter_by(jid=jid_).one()
+
+def GetUserByURI(uri, session):
+    try:
+        return session.query(User).filter_by(url_prefix=uri, active=True).one()
+    except InvalidRequestError:
+        return None
+    
+def connectToDB(Config, **argd):
+    global _connected, _user_engine, _meta, _users
+    if not _connected:
+        _connected = True
+        register(cleanup)
+        
+        _user_engine = sqlalchemy.create_engine(Config.server.db, **argd)
+        UserSession.configure(bind=_user_engine)
+        
+        _meta = MetaData(bind=_user_engine)
+        _users = getUserTable(_meta)
+        _meta.create_all()
+        
+        mapper(User, _users)
+        
+        cleanup()   #make sure all users are inactive in the database
+        
+def cleanup():
+    """This function will make sure that all users are inactive in the database."""
+    session = UserSession()
+    
+    for user in session.query(User).filter_by(active=True):
+        user.active=False
+    
+    session.commit()
