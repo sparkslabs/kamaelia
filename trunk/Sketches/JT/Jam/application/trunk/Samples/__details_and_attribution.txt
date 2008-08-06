@@ -1,0 +1,78 @@
+File:
+	Name: "mm_clap mid.wav"
+	Url: http://freesound.iua.upf.edu/samplesViewSingle.php?id=12910
+	Date of upload: 2005-12-13 18:28:48
+	
+Designer / Creator / Uploader:
+	Name: "sweet_trip"
+	Url: http://freesound.iua.upf.edu/usersViewSingle.php?id=199
+	
+Description:
+	By "sweet_trip" : Electronic clap-like sound played on F-2 key.
+Programmed on an Elektron Monomachine SFX-60, using only SID 6581 machines.
+Kit name [b]sidbox.01[/b].
+(Badly) recorded, edited and normalized in Wavelab.
+
+Tags:
+	clap drum electronic lofi percussion 
+======================================================================
+
+File:
+	Name: "mm_hat cl.wav"
+	Url: http://freesound.iua.upf.edu/samplesViewSingle.php?id=12911
+	Date of upload: 2005-12-13 18:29:09
+	
+Designer / Creator / Uploader:
+	Name: "sweet_trip"
+	Url: http://freesound.iua.upf.edu/usersViewSingle.php?id=199
+	
+Description:
+	By "sweet_trip" : Electronic close hat.  Sort of analog, inspired by the tr-606.
+...pretty proud of how this turned out...
+Programmed on an Elektron Monomachine SFX-60, using only SID 6581 machines.
+Kit name [b]sidbox.01[/b].
+(Badly) recorded, edited and normalized in Wavelab.
+
+Tags:
+	analog drum electronic hat hi-hat lofi percussion 
+======================================================================
+
+File:
+	Name: "mm_hat op.wav"
+	Url: http://freesound.iua.upf.edu/samplesViewSingle.php?id=12912
+	Date of upload: 2005-12-13 18:29:11
+	
+Designer / Creator / Uploader:
+	Name: "sweet_trip"
+	Url: http://freesound.iua.upf.edu/usersViewSingle.php?id=199
+	
+Description:
+	By "sweet_trip" : Electronic open hat.  Sort of analog, inspired by the tr-606.
+...pretty proud of how this turned out...
+Programmed on an Elektron Monomachine SFX-60, using only SID 6581 machines.
+Kit name [b]sidbox.01[/b].
+(Badly) recorded, edited and normalized in Wavelab.
+
+Tags:
+	analog drum electronic hat hi-hat lofi percussion 
+======================================================================
+
+File:
+	Name: "mm_kick lo.wav"
+	Url: http://freesound.iua.upf.edu/samplesViewSingle.php?id=12914
+	Date of upload: 2005-12-13 18:29:20
+	
+Designer / Creator / Uploader:
+	Name: "sweet_trip"
+	Url: http://freesound.iua.upf.edu/usersViewSingle.php?id=199
+	
+Description:
+	By "sweet_trip" : Electronic kick drum.  Lo-pitched.
+Programmed on an Elektron Monomachine SFX-60, using only SID 6581 machines.
+Kit name [b]sidbox.01[/b].
+(Badly) recorded, edited and normalized in Wavelab.
+
+Tags:
+	analog bass-drum drum electronic kick lofi percussion 
+======================================================================
+
