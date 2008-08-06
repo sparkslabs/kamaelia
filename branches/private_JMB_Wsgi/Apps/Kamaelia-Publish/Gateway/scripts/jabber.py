@@ -43,6 +43,7 @@ from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory
 from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
 from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
 from Kamaelia.Apps.Wsgi.Log import LogWriter
+from Kamaelia.Util.NullSink import nullSinkComponent
 from gate.interface import Interface
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
@@ -502,7 +503,10 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        log = Logger(path=None, stdout=self.use_std_out, name='XmppLogger')  
+        if self.use_std_out:
+            log = Logger(stdout=True, name='XmppLogger')
+        else:
+            log = nullSinkComponent()
         
         # We pipe everything typed into the console
         # directly to the console backplane so that
@@ -659,6 +663,8 @@ class Client(component):
 
 def constructXMPPClient(Config):
     return Client(Config)
+
+print __name__
 
 if __name__ == '__main__':
     main()
