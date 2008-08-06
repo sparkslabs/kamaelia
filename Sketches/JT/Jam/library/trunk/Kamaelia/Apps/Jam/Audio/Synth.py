@@ -8,8 +8,8 @@ class Synth(Axon.Component.component):
 
     def __init__(self, voiceGenerator, **argd):
         super(Synth, self).__init__(**argd)
-        polyphoniser = self.polyphoniser(polyphony=self.polyphony).activate()
-        mixer = MonoMixer(channels=self.polyphony).activate()
+        polyphoniser = self.polyphoniser(**argd).activate()
+        mixer = MonoMixer(channels=self.polyphony, **argd).activate()
         self.link((self, "inbox"), (polyphoniser, "inbox"), passthrough=1)
         self.link((mixer, "outbox"), (self, "outbox"), passthrough=2)
 
