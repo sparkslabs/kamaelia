@@ -73,9 +73,9 @@ class WavVoice(SchedulingComponent):
                         # Scale to -1 - 1
                         sample /= 2**(8 * self.sampleWidth - 1)
                     else:
-                        sample = numpy.zeros(self.bufferSize)
+                        sample = None
                 else:
-                    sample = numpy.zeros(self.bufferSize)
+                    sample = None
                 self.send(sample, "outbox")
                 self.lastSendTime += self.period
                 self.scheduleAbs("Send", self.lastSendTime + self.period)
@@ -83,12 +83,12 @@ class WavVoice(SchedulingComponent):
             if not self.anyReady():
                 self.pause()
 
-def Sampler(fileList):
+def Sampler(fileList, **argd):
     def voiceGenerator():
         for fileName in fileList:
-            yield WavVoice(fileName)
+            yield WavVoice(fileName, **argd)
     return Synth(voiceGenerator, polyphoniser=Targetter,
-                 polyphony=len(fileList))
+                 polyphony=len(fileList), **argd)
     
 
 if __name__ == "__main__":
@@ -103,5 +103,5 @@ if __name__ == "__main__":
     files = ["Ride", "HH", "Snare", "Kick"]
     files = ["/home/joe/Desktop/%s.wav"%fileName for fileName in files]
 
-    Pipeline(StepSequencer(stepsPerBeat=4, bufferSize=256), Sampler(files),
-             RTOutput(outputDevice=2, bufferSize=1024)).run()
+    Pipeline(StepSequencer(stepsPerBeat=4), Sampler(files),
+             RTOutput(outputDevice=0)).run()
