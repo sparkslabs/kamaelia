@@ -41,11 +41,10 @@ from Axon.Ipc import shutdownMicroprocess, producerFinished
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory, WsgiFactory
 from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
-from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
-from Kamaelia.Apps.Wsgi.Log import LogWriter
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
-from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars
+from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars,\
+    initializeLoggers
 
 from transactions import TransactionManager
 from Kamaelia.Apps.Wsgi.Structs import StaticConfigObject, XMPPConfigObject, ConfigObject
@@ -418,7 +417,6 @@ class Client(component):
         self.domain = Config.xmpp.domain
         self.usetls = Config.xmpp.usetls
         self.register = False
-        self.log_location = Config.wsgi['log']
         
         self.url_list = url_list
         
@@ -466,11 +464,8 @@ class Client(component):
         sub.activate()
         
         log = Logger(path=None, stdout=self.use_stdout, name='XmppLogger')
-        Backplane('LOG_' + self.log_location).activate()
-        Pipeline(SubscribeTo('LOG_' + self.log_location), log).activate()
-        log_writable = WsgiLogWritable(self.log_location)
-        log.activate()
-        log_writable.activate()   
+        Backplane('LOG_' + self.cfg.server.log).activate()
+        Pipeline(SubscribeTo('LOG_' + self.cfg.server.log), log).activate()
         
         # We pipe everything typed into the console
         # directly to the console backplane so that
@@ -487,12 +482,12 @@ class Client(component):
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
         
         trans = TransactionManager(
-            HandlerFactory = WsgiFactory(log_writable, self.cfg.wsgi, self.url_list)
+            HandlerFactory = WsgiFactory(self.cfg.wsgi, self.url_list)
         )
 
         self.graph = Graphline(client = self,
                                console = SubscribeTo('CONSOLE'),
-                               logger = PublishTo('LOG_' + self.log_location),
+                               logger = PublishTo('LOG_' + self.cfg.server.log),
                                tcp = TCPClient(self.cfg.xmpp.server, self.cfg.xmpp.port),
                                xmlparser = XMLIncrParser(),
                                xmpp = self.client,
@@ -635,6 +630,7 @@ def main():
     
     Config = ConfigObject(ConfigDict, options)
     processPyPath(ConfigDict['SERVER'])
+    initializeLoggers(Config.server.log)
     
     url_list = ParseUrlFile(Config.wsgi['url_list'])
     normalizeUrlList(url_list)
