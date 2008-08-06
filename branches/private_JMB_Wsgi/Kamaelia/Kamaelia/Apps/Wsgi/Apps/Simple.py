@@ -34,17 +34,17 @@ def simple_app(environ, start_response):
     response_headers = [('Content-type','text/html'),('Pragma','no-cache'),]
     write = start_response(status, response_headers)
     writable = environ['wsgi.errors']
-    writable.write('Writing to log!\n')
-
-    yield '<P> My Own Hello World!\n'
+    #writable.write('(fake) super major huge error!\n')
+    writable.flush()
+    
+    response_buffer = ['<html>']
+    
+    response_buffer.append('<h1>WSGI variable test</h1>\n')
     write('<p>Hello from the write callable!</p>')
     for i in sorted(environ.keys()):
-        yield "<li>%s: %s\n" % (i, environ[i])
-    yield "<li> wsgi.input:<br/><br/><kbd>"
+        response_buffer.append("<li>%s: %s\n" % (i, environ[i]))
+    response_buffer.append("<li> wsgi.input:<br/><br/><kbd>")
     for line in environ['wsgi.input'].readlines():
-        yield "%s<br/>" % (line)
-    yield "</kbd>"
-    writable = environ['wsgi.errors']
-    writable.writelines(['Writing to log!'])
-    writable.flush()
-    yield 'done!'
+        response_buffer.append("%s<br/>" % (line))
+    response_buffer.append("</kbd></html>")
+    return [''.join(response_buffer)]
