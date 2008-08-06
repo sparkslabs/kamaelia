@@ -43,27 +43,20 @@ def normalizeWsgiVars(WsgiConfig):
     """Put WSGI config data in a state that the server expects."""
     WsgiConfig['wsgi_ver'] = tuple(WsgiConfig['wsgi_ver'].split('.'))
     
-def initializeLoggers(filename, consolename='kamaelia.wsgi'):
-    consoleformatter = logging.Formatter('%(levelname)s/%(name)s: %(message)s')
-    debugformatter = logging.Formatter('%(levelname)s/%(name) %(asctime)s : %(message)s\n%(module)s:%(lineno)s')
-    fileformatter = logging.Formatter('%(asctime)s: %(message)s')
+def initializeLoggers(filename, consolename='kamaelia'):
+    formatter = logging.Formatter('%(levelname)s/%(name)s: %(message)s')
     
     filename = os.path.expanduser(filename)
     file_handler = logging.FileHandler(filename)
-    file_handler.setFormatter(debugformatter)
+    file_handler.setFormatter(formatter)
     filelogger = logging.getLogger('kamaelia.wsgi.application')
     filelogger.addHandler(file_handler)
     filelogger.setLevel(logging.ERROR)
-
-    debugger = logging.StreamHandler(sys.stdout)
-    debugger.setFormatter(debugformatter)
-    debuglogger = logging.getLogger('debug')
-    debuglogger.setLevel(logging.DEBUG)
-    debuglogger.addHandler(debugger)
     
     console = logging.StreamHandler(sys.stdout)
-    console.setFormatter(consoleformatter)
+    console.setFormatter(formatter)
     consolelogger = logging.getLogger(consolename)
-    consolelogger.setLevel(logging.INFO)
+    consolelogger.setLevel(logging.DEBUG)
+    consolelogger.addHandler(console)
     from Kamaelia.Apps.Wsgi.Console import setConsoleName
     setConsoleName(consolename)

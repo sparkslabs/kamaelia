@@ -22,6 +22,7 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 """This is a collection of configuration objects that will allow for object-oriented
 access of configuration data rather than having to use a dictionary."""
+import os
 
 class XMPPConfigObject(object):
     def __init__(self, dictionary):
@@ -58,7 +59,7 @@ class StaticConfigObject(object):
 class ServerConfigObject(object):
     def __init__(self, dictionary):
         self.db = dictionary.get('db', None)
-        self.log = dictionary['log']
+        self.log = os.path.expanduser(dictionary['log'])
         self.port = dictionary['port']
         
 class ConfigObject(object):

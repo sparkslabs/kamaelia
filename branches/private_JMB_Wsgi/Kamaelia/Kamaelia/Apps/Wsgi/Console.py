@@ -22,7 +22,7 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 """This is just a source file for miscellaneous console IO functions."""
 import logging
-_console_name = 'kamaelia.wsgi'
+_console_name = 'kamaelia'
 
 def setConsoleName(name):
     _console_name = name
@@ -50,17 +50,17 @@ def prompt_corrupt(corrupt):
         print "Halting!"
         sys.exit(1)
         
-def debug(msg, *args, **argd):
-    logging.getLogger(_console_name).debug(msg, *args, **argd)
+def debug(msg, suffix='', *args, **argd):
+    logging.getLogger(_console_name + suffix).debug(msg, *args, **argd)
     
-def info(msg, *args, **argd):
-    logging.getLogger(_console_name).info(msg, *args, **argd)
+def info(msg, suffix='', *args, **argd):
+    logging.getLogger(_console_name+suffix).info(msg, *args, **argd)
     
-def warning(msg, *args, **argd):
-    logging.getLogger(_console_name).warning(msg, *args, **argd)
+def warning(msg, suffix='', *args, **argd):
+    logging.getLogger(_console_name+suffix).warning(msg, *args, **argd)
     
-def error(msg, *args, **argd):
-    logging.getLogger(_console_name).error(msg, *args, **argd)
+def error(msg, suffix='', *args, **argd):
+    logging.getLogger(_console_name+suffix).error(msg, *args, **argd)
     
-def critical(msg, *args, **argd):
-    logging.getLogger(_console_name).critical(msg, *args, **argd)
+def critical(msg, suffix='', *args, **argd):
+    logging.getLogger(_console_name+suffix).critical(msg, *args, **argd)

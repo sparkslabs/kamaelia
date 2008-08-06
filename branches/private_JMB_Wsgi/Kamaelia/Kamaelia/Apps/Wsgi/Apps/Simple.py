@@ -37,7 +37,7 @@ def simple_app(environ, start_response):
     #writable.write('(fake) super major huge error!\n')
     writable.flush()
     
-    response_buffer = ['<html>']
+    response_buffer = ['<html><head><title>WSGI Variable Test</title></head>']
     
     response_buffer.append('<h1>WSGI variable test</h1>\n')
     write('<p>Hello from the write callable!</p>')
