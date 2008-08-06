@@ -23,19 +23,21 @@
 
 from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import Backplane, SubscribeTo
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.IPC import userLoggedOut
 from Kamaelia.Apps.Wsgi.BoxManager import BoxManager
 
 from headstock.api.im import Message
 
-from gate import InitialMessage, BPLANE_NAME
+from gate import InitialMessage, BPLANE_NAME, BPLANE_SIGNAL
 import JIDLookup
 
-class Interface(threadedcomponentadaptivecommscomponent):
+class Interface(threadedadaptivecommscomponent):
     ThisJID = None
     Inboxes = {
         'inbox' : 'Receive messages from a translator.'\
                 'Connected to the service named by BPLANE_NAME',
+        'control' : 'Receive shutdown messages from a translator',
         'translator_inbox' : 'Receive messages from a translator',
         'translator_control' : 'Receive signals from the translator',
         'xmpp.inbox' : 'Receive messages from the XMPPHandler',
@@ -46,26 +48,35 @@ class Interface(threadedcomponentadaptivecommscomponent):
     Outboxes = {
         'xmpp.signal' : 'Send signals to the XMPPHandler',
         'xmpp.outbox' : 'Send messages to the XMPPHandler to be sent out',
-        '_bplane_signal' : 'Send shutdown messages to the backplane',
-        '_subscriber_signal' : 'Send shutdown messages to the subscriber',
+        '_bplane_signal_in' : 'Send shutdown messages to the in backplane',
+        '_bplane_signal_control' : 'Send shutdown messages to the control backplane',
+        '_subscriber_signal_in' : 'Send shutdown messages to the in subscriber',
+        '_subscriber_signal_control' : 'Send shutdown messages to the control subscriber'
     }
     def __init__(self, **argd):
         super(Interface, self).__init__(**argd)
         self.transactions = {}
         self.jids = {}
+        self.not_done = True
     
     def createSubcomponents(self):
-        self.bplane = Backplane(BPLANE_NAME)
-        self.bplane.activate()
+        self.bplane_in = Backplane(BPLANE_NAME).activate()
+        self.bplane_control = Backplane(BPLANE_SIGNAL).activate()
         
-        self.subscriber = SubscribeTo(BPLANE_NAME)
-        self.subscriber.activate()
-        self.link((self.subscriber, 'outbox'), (self, 'inbox'))
+        self.subscriber_in = SubscribeTo(BPLANE_NAME).activate()
+        self.subscriber_control = SubscribeTo(BPLANE_SIGNAL).activate()
+        
+        self.link((self.subscriber_in, 'outbox'), (self, 'inbox'))
+        self.link((self.subscriber_control, 'signal'), (self, 'control'))
+        
+        self.link((self, '_bplane_signal_in'), (self.bplane_in, 'control'))
+        self.link((self, '_bplane_signal_control'), (self.bplane_control, 'control'))
+        self.link((self, '_subscriber_signal_in'), (self.subscriber_in, 'control'))
+        self.link((self, '_subscriber_signal_control'), (self.subscriber_control, 'control'))
     
     def main(self):        
         self.createSubcomponents()
         
-        self.not_done = True
         while self.not_done:
             for msg in self.Inbox('inbox'):
                 self.handleMainInbox(msg)
@@ -97,8 +108,11 @@ class Interface(threadedcomponentadaptivecommscomponent):
             #Add the bundle to the transaction list so that we can look it up when
             #we receive a response
             bman = BoxManager(self, msg.bundle, msg.batch_id)
+            bundle = msg.bundle
             self.transactions[msg.batch_id] = bman
             bman.createBoxes(inboxes=None, outboxes=['outbox', 'signal'])
+            self.link((self, bman.outboxes['outbox']), (bundle, 'xmpp_in'))
+            self.link((self, bman.outboxes['signal']), (bundle, 'xmpp_control'))
             
             #Add the thread to the jids dict so that we can get back to any associated
             #bundles if the user goes offline

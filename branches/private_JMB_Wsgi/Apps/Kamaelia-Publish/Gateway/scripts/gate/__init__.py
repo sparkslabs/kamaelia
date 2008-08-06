@@ -30,3 +30,4 @@ class InitialMessage(object):
         self.__dict__.update(**argd)
         
 BPLANE_NAME = 'XMPP_INTERFACE'
+BPLANE_SIGNAL = 'XMPP_SIGNAL'

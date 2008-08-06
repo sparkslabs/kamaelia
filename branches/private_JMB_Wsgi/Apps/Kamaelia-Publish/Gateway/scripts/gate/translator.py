@@ -41,7 +41,7 @@ from pprint import pformat
 
 import simplejson
 
-from gate import OutboxBundle, BPLANE_NAME, InitialMessage
+from gate import BPLANE_NAME, BPLANE_SIGNAL, InitialMessage
 from gate.JIDLookup import ExtractJID
 
 _logger_suffix='.publish.gateway.translator'
@@ -169,6 +169,7 @@ class ResponseDeserializer(component):
     def __init__(self, **argd):
         super(ResponseDeserializer, self).__init__(**argd)
         self.signal = None
+        self.PublisherSignal=PublishTo(BPLANE_SIGNAL)
         
     def main(self):
         self.not_done = True
