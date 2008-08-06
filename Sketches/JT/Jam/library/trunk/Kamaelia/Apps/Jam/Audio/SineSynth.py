@@ -3,6 +3,7 @@ import Axon
 from Axon.SchedulingComponent import SchedulingComponent
 import numpy
 import time
+from Kamaelia.Apps.Jam.Audio.Synth import Synth
 
 class SineOsc(Axon.SchedulingComponent.SchedulingComponent):
     sampleRate = 44100
@@ -84,7 +85,7 @@ class SineVoice(SineOsc):
                                                         self.phase)
                     self.phase = phase
                 else:
-                    sample = numpy.zeros(self.bufferSize)
+                    sample = None
                 self.send(sample, "outbox")
 
                 self.lastSendTime += self.period
