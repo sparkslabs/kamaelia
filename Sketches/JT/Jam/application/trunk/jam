@@ -227,9 +227,9 @@ def parseOptions():
     parser.set_defaults(useAudio=True)
 
     #FIXME: Should maybe default to none and use the default device?
-    parser.add_option("--audio-device", dest="audioDevice", type="int",
+    parser.add_option("--audio-device", dest="outputDevice", type="int",
                        help="The number of the audio output device (default=0)")
-    parser.set_defaults(audioDevice=0)
+    parser.set_defaults(outputDevice=0)
 
     parser.add_option("--sample-rate", dest="sampleRate", type="int",
                        help="The audio sample rate to use (default=44100)")
@@ -452,10 +452,14 @@ if __name__ == "__main__":
 
 
     if options.useAudio:
-        samplerFiles = ["Crash.wav", "HH.wav", "Snare.wav", "Kick.wav"]
-        samplerFiles = ["%s/share/kamaelia/jam/%s" % (sys.prefix, fileName)
+        samplerFiles = ["12912_sweet_trip_mm_hat_op.wav",
+                        "12911_sweet_trip_mm_hat_cl.wav",
+                        "12910_sweet_trip_mm_clap_mid.wav",
+                        "12914_sweet_trip_mm_kick_lo.wav"]
+        samplerFiles = ["%s/share/kamaelia/jam/samples/%s" % (sys.prefix,
+                                                              fileName)
                         for fileName in samplerFiles]
-
+        
         Graphline(ssSub = SubscribeTo("ssData"),
                   sampler = Sampler(samplerFiles,
                                     bufferSize=options.internalBufferSize,
@@ -476,7 +480,7 @@ if __name__ == "__main__":
                             ("mixer", "outbox"):("output", "inbox")}
                   ).activate()
                   
-
+        
               
 
     Backplane("sync").activate()
