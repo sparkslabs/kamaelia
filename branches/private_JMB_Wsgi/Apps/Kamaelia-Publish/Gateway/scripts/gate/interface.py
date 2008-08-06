@@ -100,6 +100,8 @@ class Interface(threadedadaptivecommscomponent):
                 
             if not self.anyReady() and self.not_done:
                 self.pause()
+        
+        self.sendSignals()
     
     def handleMainInbox(self, msg):
         if isinstance(msg, InitialMessage):
@@ -140,3 +142,9 @@ class Interface(threadedadaptivecommscomponent):
         
         del self.jids[jid]
         JIDLookup.setUserStatus(pres.from_jid, active=False)
+        
+    def sendSignals(self):
+        self.send(self.signal, '_bplane_signal_in')
+        self.send(self.signal, '_bplane_signal_control')
+        self.send(self.signal, '_subscriber_signal_in')
+        self.send(self.signal, '_subscriber_signal_control')
