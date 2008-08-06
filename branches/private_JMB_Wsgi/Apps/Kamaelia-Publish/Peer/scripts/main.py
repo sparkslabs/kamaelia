@@ -45,6 +45,7 @@ from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
 from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars,\
     initializeLoggers
+from Kamaelia.Util.Filter import Filter
 
 from transactions import TransactionManager
 from Kamaelia.Apps.Wsgi.Structs import StaticConfigObject, XMPPConfigObject, ConfigObject
@@ -463,9 +464,11 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        log = Logger(path=None, stdout=self.use_stdout, name='XmppLogger')
+        print 'Using stdout? %s' % (bool(self.use_stdout))
         Backplane('LOG_' + self.cfg.server.log).activate()
-        Pipeline(SubscribeTo('LOG_' + self.cfg.server.log), log).activate()
+        if self.use_stdout:
+            log = Logger(stdout=True, name='XmppLogger')
+            Pipeline(SubscribeTo('LOG_' + self.cfg.server.log), log).activate()
         
         # We pipe everything typed into the console
         # directly to the console backplane so that
@@ -623,6 +626,15 @@ class Client(component):
         yield 1
         self.stop()
         print "You can hit Ctrl-C to shutdown all processes now." 
+
+class FilterObject(object):
+    def __init__(self, use_stdout):
+        self.use_stdout=use_stdout
+    def filter(self, input):
+        if self.use_stdout:
+            return input
+        else:
+            return None
 
 def main():   
     ConfigDict = ParseConfigFile('~/kp.ini', DictFormatter())

@@ -22,6 +22,7 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 from Axon.Component import component
 from Kamaelia.IPC import LookupByText, ToText
+from Kamaelia.Apps.Wsgi.Console import info
 
 from xml.sax.saxutils import unescape, escape
 
@@ -77,6 +78,7 @@ class RequestDeserializer(component):
         #print 'deserializer dying!'
     
     def processInitialMessage(self):
+        
         request = self.decodeMessage(self.message)
         self.batch_id = request['batch']
         self.send(self.batch_id, 'batch')
@@ -291,6 +293,8 @@ class SimpleHandler(component):
         
         self.send(self.signal, 'signal')
         
+_log_suffix='.publish.translator'
+
 if __name__ == '__main__':
     from headstock.api.im import Message, Body
     from Kamaelia.Chassis.Pipeline import Pipeline
