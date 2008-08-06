@@ -20,21 +20,19 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
-import sys, socket, os, zipfile
+import sys, socket, os, zipfile, logging
 import cProfile as profile
 from pprint import pprint
 
 from autoinstall import autoinstall
-import console_io
 
 from Kamaelia.Apps.Wsgi.Factory import WsgiFactory
-import Kamaelia.Apps.Wsgi.LogWritable as LogWritable
+import Kamaelia.Apps.Wsgi.Console as Console
 from Kamaelia.Chassis.ConnectedServer import ServerCore
-import Kamaelia.Apps.Wsgi.Log as Log
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
-from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars
+from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars, initializeLoggers
 from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
 
 sys.path.insert(0, sys.argv[0] + '/data')
@@ -43,15 +41,12 @@ _profile_ = False
 
 def run_program():
     """The main entry point for the application."""
-    #console_out = sys.stdout
-    #log_out = open('out.log', 'w')
-    #sys.stdout = log_out
     try:
         zip = zipfile.ZipFile(sys.argv[0], 'r')
         
         corrupt = zip.testzip()
         if corrupt:
-            console_io.prompt_corrupt(corrupt)
+            Console.prompt_corrupt(corrupt)
                     
         home_path = os.environ['HOME']
         
@@ -71,18 +66,11 @@ def run_program():
         #pprint(WsgiConfig)
         normalizeWsgiVars(WsgiConfig)
     
-        sys.path.append(WsgiConfig['log'])
-    
         url_list = ParseUrlFile(WsgiConfig['url_list'])
         normalizeUrlList(url_list)
     
-        log = Log.LogWriter(WsgiConfig['log'], wrapper=Log.nullWrapper)
-    
-        log_writable = LogWritable.WsgiLogWritable(WsgiConfig['log'])
-        log_writable.activate()
-    
         routing = [
-                      ["/", WsgiFactory(log_writable, WsgiConfig, url_list)],
+                      ["/", WsgiFactory(WsgiConfig, url_list)],
                   ]
         
         if ServerConfig.get('use_hrouting'):
@@ -91,18 +79,17 @@ def run_program():
             custom_routing.reverse()
             for item in custom_routing:
                 routing.insert(0, item)
-            
-            
-        #print routing
     
-        log.activate()
-    
+        initializeLoggers(ServerConfig.get('log', home_path + '/kp.ini'))
+        
         kp = ServerCore(
             protocol=HTTPProtocol(routing, WSGILikeTranslator),
             port=int(ServerConfig['port']),
             socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
     
-        print "Serving on port %s" % (ServerConfig['port'])
+        Console.info('Serving on port %s', ServerConfig['port'])
+        
+        #print "Serving on port %s" % (ServerConfig['port'])
     except:
         import traceback
         print 'There was an error!  Info is in error.log'
@@ -114,14 +101,15 @@ def run_program():
         kp.run()
     except KeyboardInterrupt:
         print "Halting server!"
-        kp.stop()
     except:
         #Something's gone horribly wrong and the program doesn't know what to do
         #about it.
         import traceback
         traceback.print_exc()
         print "===========FATAL ERROR==========="
+    finally:
         kp.stop()
+        logging.shutdown()
 
 def profile_main():
     """This is what you want to use if you intend on profiling the application."""

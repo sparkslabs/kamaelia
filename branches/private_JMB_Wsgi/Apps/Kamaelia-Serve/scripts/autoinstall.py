@@ -32,7 +32,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-from console_io import prompt_yesno
+from Kamaelia.Apps.Wsgi.Console import prompt_yesno
 
 def autoinstall(zip, dir):
     prompt_text = 'It does not appear that Kamaelia Publish has been installed.  Would you like to do so now? [y/n]'    
