@@ -21,16 +21,17 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
-from Axon.ThreadedComponent import threadedcomponent
+from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import Backplane, SubscribeTo
 from Kamaelia.IPC import userLoggedOut
+from Kamaelia.Apps.Wsgi.BoxManager import BoxManager
 
 from headstock.api.im import Message
 
 from gate import InitialMessage, BPLANE_NAME
 import JIDLookup
 
-class Interface(threadedcomponent):
+class Interface(threadedcomponentadaptivecommscomponent):
     ThisJID = None
     Inboxes = {
         'inbox' : 'Receive messages from a translator.'\
@@ -95,7 +96,9 @@ class Interface(threadedcomponent):
             
             #Add the bundle to the transaction list so that we can look it up when
             #we receive a response
-            self.transactions[msg.batch_id] = msg.bundle
+            bman = BoxManager(self, msg.bundle, msg.batch_id)
+            self.transactions[msg.batch_id] = bman
+            bman.createBoxes(inboxes=None, outboxes=['outbox', 'signal'])
             
             #Add the thread to the jids dict so that we can get back to any associated
             #bundles if the user goes offline

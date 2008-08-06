@@ -28,12 +28,13 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
 from Kamaelia.IPC import LookupByText, userLoggedOut
+from Kamaelia.Apps.Wsgi.Console import info, debug
 
 from headstock.api.im import Message, Body, Event, Thread
 from headstock.api.jid import JID
 from headstock.lib.utils import generate_unique
 
-import base64
+import base64, weakref
 from xml.sax.saxutils import escape, unescape
 import zlib
 from pprint import pformat
@@ -42,6 +43,8 @@ import simplejson
 
 from gate import OutboxBundle, BPLANE_NAME, InitialMessage
 from gate.JIDLookup import ExtractJID
+
+_logger_suffix='.publish.gateway.translator'
 
 class RequestSerializer(component):
     """Note that sending messages via XMPP is considered outbound.  This converts
@@ -66,7 +69,7 @@ class RequestSerializer(component):
         if not isinstance(self.ThisJID, unicode):
             self.ThisJID = unicode(self.ThisJID)
         
-        self.bundle = OutboxBundle()
+        self.bundle = None
         
         #The following is used to indicate that we should send a signal to the serving
         #client. Sometimes we want to disable this, like if a serving client isn't
@@ -76,11 +79,14 @@ class RequestSerializer(component):
     def main(self):
         self.Publisher.activate()
         self.ToJID = ExtractJID(self.request)
+        info('request for [%s], batch %s', _logger_suffix, self.request['REQUEST_URI'], self.batch_id)
+        
         if self.ToJID:
             self.sendInitialMessage(self.request)
-            #print 'Creating translator for request:\n%s' % (pformat(self.request))
+            debug('User found.  Initial message sent for batch %s.', _logger_suffix, self.batch_id)
         else:
             self.JIDNotFound()
+            debug('User not found for batch %s.', _logger_suffix, self.batch_id)
         
         #Note that self.signal is set in the methods 'JIDNotFound' and 'handleControlBox'
         #if JIDNotFound is run, this loop will not run.
@@ -121,12 +127,11 @@ class RequestSerializer(component):
         request['batch'] = self.batch_id
         
         hMessage = self.makeMessage(request)
-        out = InitialMessage(hMessage=hMessage,
-                             bundle=self.bundle, batch_id=self.batch_id)
-        
-        self.send(out, 'outbox')
-        #print '='*6, 'REQUEST', '='*6, '\n'
-        #print request
+        self.send(InitialMessage(
+                             hMessage=hMessage,
+                             bundle=self.bundle(), #dereference the weakref
+                             batch_id=self.batch_id),
+                  'outbox')
         
     def JIDNotFound(self):
         resource = getErrorPage(404, 'Could not find %s' % (self.request['REQUEST_URI']))
@@ -236,16 +241,10 @@ def Translator(request, mtr=None, rtm=None):
             ('self', 'xmpp_control') : ('mtr', 'response_control'),
             ('mtr', 'signal') : ('self', 'signal'),
             ('rtm', 'response_signal') : ('mtr', 'response_control'),
-                
-            #bundle linkages
-            #('bundle', 'outbox') : ('mtr', 'inbox'),
-            #('bundle', 'signal') : ('mtr', 'control'),
         }
     )
     
-    #prepare the outbox bundle so that it may be sent to the interface
-    rtm.bundle.link((rtm.bundle, 'outbox'), (trans, 'xmpp_in'))
-    rtm.bundle.link((rtm.bundle, 'signal'), (trans, 'xmpp_control'))
+    rtm.bundle = weakref.ref(trans) #use a weakref to prevent circular references
     
     return trans
 

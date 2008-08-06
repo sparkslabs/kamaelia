@@ -21,35 +21,12 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 from Axon.Component import component
-
-class OutboxBundle(component):
-    Inboxes = {}
-    Outboxes = {'outbox' : 'send messages',
-                'signal' : 'send signals',}
-    def __init__(self, **argd):
-        super(OutboxBundle, self).__init__(**argd)
-        self.stopped = False
-    def activate(self, *args, **argd):
-        """Dummy method"""
-        pass
-    def run(self, *args, **argd):
-        """Dummy method"""
-        pass
-    def kill(self):
-        """
-        This method must be called if this bundle is running as part of a chassis
-        that waits until all its children are dead before stopping (such as a Pipeline
-        or Graphline).  Once this method is called, _isStopped will return True.
-        """
-        self.stopped = True
-    def _isStopped(self):
-        return self.stopped
     
 class InitialMessage(object):
     hMessage = None
-    bundle = None
+    bundle=None
     batch_id = None
     def __init__(self, **argd):
         self.__dict__.update(**argd)
         
-BPLANE_NAME = 'XMPP-INTERFACE'
+BPLANE_NAME = 'XMPP_INTERFACE'
