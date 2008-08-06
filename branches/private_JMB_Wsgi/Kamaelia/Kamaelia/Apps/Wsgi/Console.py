@@ -20,8 +20,12 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
-"""This is just a source file for miscellaneous console IO functions (in case you
-weren't able to guess by the title :) )."""
+"""This is just a source file for miscellaneous console IO functions."""
+import logging
+_console_name = 'kamaelia.wsgi'
+
+def setConsoleName(name):
+    _console_name = name
 
 def prompt_yesno(text):
     """
@@ -45,3 +49,18 @@ def prompt_corrupt(corrupt):
     if not prompt_yesno('Would you like to continue anyway? [y/n]'):
         print "Halting!"
         sys.exit(1)
+        
+def debug(msg, *args, **argd):
+    logging.getLogger(_console_name).debug(msg, *args, **argd)
+    
+def info(msg, *args, **argd):
+    logging.getLogger(_console_name).info(msg, *args, **argd)
+    
+def warning(msg, *args, **argd):
+    logging.getLogger(_console_name).warning(msg, *args, **argd)
+    
+def error(msg, *args, **argd):
+    logging.getLogger(_console_name).error(msg, *args, **argd)
+    
+def critical(msg, *args, **argd):
+    logging.getLogger(_console_name).critical(msg, *args, **argd)

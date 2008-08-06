@@ -20,10 +20,9 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
-import sys
+import sys, logging, os
 def processPyPath(ServerConfig):
     """Use the Server configuration data to actually configure the server."""
-    print ServerConfig
     if ServerConfig.get('pypath_append'):
         path_append = ServerConfig['pypath_append'].split(':')
         sys.path.extend(path_append)
@@ -43,3 +42,28 @@ def normalizeUrlList(url_list):
 def normalizeWsgiVars(WsgiConfig):
     """Put WSGI config data in a state that the server expects."""
     WsgiConfig['wsgi_ver'] = tuple(WsgiConfig['wsgi_ver'].split('.'))
+    
+def initializeLoggers(filename, consolename='kamaelia.wsgi'):
+    consoleformatter = logging.Formatter('%(levelname)s/%(name)s: %(message)s')
+    debugformatter = logging.Formatter('%(levelname)s/%(name) %(asctime)s : %(message)s\n%(module)s:%(lineno)s')
+    fileformatter = logging.Formatter('%(asctime)s: %(message)s')
+    
+    filename = os.path.expanduser(filename)
+    file_handler = logging.FileHandler(filename)
+    file_handler.setFormatter(debugformatter)
+    filelogger = logging.getLogger('kamaelia.wsgi.application')
+    filelogger.addHandler(file_handler)
+    filelogger.setLevel(logging.ERROR)
+
+    debugger = logging.StreamHandler(sys.stdout)
+    debugger.setFormatter(debugformatter)
+    debuglogger = logging.getLogger('debug')
+    debuglogger.setLevel(logging.DEBUG)
+    debuglogger.addHandler(debugger)
+    
+    console = logging.StreamHandler(sys.stdout)
+    console.setFormatter(consoleformatter)
+    consolelogger = logging.getLogger(consolename)
+    consolelogger.setLevel(logging.INFO)
+    from Kamaelia.Apps.Wsgi.Console import setConsoleName
+    setConsoleName(consolename)

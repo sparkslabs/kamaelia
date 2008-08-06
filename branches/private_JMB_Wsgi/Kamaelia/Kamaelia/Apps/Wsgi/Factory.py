@@ -26,20 +26,18 @@ import re
 from WsgiHandler import _WsgiHandler
 from Kamaelia.Protocol.HTTP import PopWsgiURI
 
-def WsgiFactory(log_writable, WsgiConfig, url_list):
+def WsgiFactory(WsgiConfig, url_list):
     """
     This method checks the URI against a series of regexes from urls.py to determine which
     application object to route the request to, imports the file that contains the app object,
     and then extracts it to be passed to the newly created WSGI Handler.
     """
     class _getWsgiHandler(object):
-        def __init__(self, log_writable, WsgiConfig, url_list):
-            self.log_writable = log_writable
+        def __init__(self,WsgiConfig, url_list):
             self.WsgiConfig = WsgiConfig
             self.url_list = url_list
             self.app_objs = {}
             self.compiled_regexes = {}
-            print url_list
             for dictionary in url_list:
                 self.compiled_regexes[dictionary['kp.regex']] = re.compile(dictionary['kp.regex'])
         def __call__(self, request):
@@ -84,8 +82,8 @@ def WsgiFactory(log_writable, WsgiConfig, url_list):
                 #Convert all elements in the request to strings
                 request = dict([(str(k), str(v)) for k, v in request.iteritems()])
             #dump_garbage()
-            return _WsgiHandler(app, request, log_writable, WsgiConfig, Debug=True)
-    return _getWsgiHandler(log_writable, WsgiConfig, url_list)
+            return _WsgiHandler(app, request, WsgiConfig, Debug=True)
+    return _getWsgiHandler(WsgiConfig, url_list)
 
 def _importWsgiModule(name):
     """
@@ -98,7 +96,7 @@ def _importWsgiModule(name):
         mod = getattr(mod, comp)
     return mod
 
-def SimpleWsgiFactory(log_writable, WsgiConfig, app_object, script_name='/'):
+def SimpleWsgiFactory(WsgiConfig, app_object, script_name='/'):
     """
     This is a simple factory function that is useful if you know at compile time
     that you will only support one application.
@@ -121,7 +119,7 @@ def SimpleWsgiFactory(log_writable, WsgiConfig, app_object, script_name='/'):
 
         else:
             raise WsgiImportError("You must specify script_name to use SimpleWsgiFactory!")
-        return _WsgiHandler(app_object, request, log_writable, WsgiConfig)
+        return _WsgiHandler(app_object, request, WsgiConfig)
     
     return _getWsgiHandler
 

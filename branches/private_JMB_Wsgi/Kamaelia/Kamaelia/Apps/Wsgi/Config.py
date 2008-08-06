@@ -108,7 +108,6 @@ class UrlListFormatter(FormatterBase):
 
             while self.dataReady('inbox'):
                 section, data = self.recv('inbox')
-                print section, '\n', data
                 if section == 'error_404':
                     if data.has_key('regex'):
                         raise ParseException('error_404 cannot contain a regex')

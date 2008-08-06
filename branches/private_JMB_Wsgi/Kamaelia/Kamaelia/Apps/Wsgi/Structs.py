@@ -58,6 +58,8 @@ class StaticConfigObject(object):
 class ServerConfigObject(object):
     def __init__(self, dictionary):
         self.db = dictionary.get('db', None)
+        self.log = dictionary['log']
+        self.port = dictionary['port']
         
 class ConfigObject(object):
     def __init__(self, dictionary, options):
