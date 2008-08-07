@@ -135,3 +135,28 @@ if 1:
         Pipeline( RateControlledFileReader("Writing.py"),
                   SimpleFileWriter("/tmp/tmp_Writing.py")
                 ).run()
+
+
+
+class SimpleFileWriterWithOutput(SimpleFileWriter):
+    def __init__(self, filename, mode = "wb"):
+        super(SimpleFileWriterWithOutput, self).__init__(filename)
+    
+    def main(self):
+        """Main loop"""
+        self.file = open(self.filename, self.mode, 0)
+        done = False
+        while not done:
+            yield 1
+            
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                self.writeData(data)
+                self.send(self.filename, "outbox")
+            
+            if self.shutdown():
+                done = True
+            else:
+                self.pause()
+    
+    

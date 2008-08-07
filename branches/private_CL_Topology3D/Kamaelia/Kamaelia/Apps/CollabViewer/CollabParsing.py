@@ -104,6 +104,8 @@ if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Codec.JSON import JSONEncoder, JSONDecoder
+    from Kamaelia.File.Writing import SimpleFileWriterWithOutput
+    from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
     from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
     from Kamaelia.Support.Particles.SimpleLaws import SimpleLaws
     
@@ -125,6 +127,8 @@ if __name__ == "__main__":
            'Visualisation' : ['Leo', 'Lorri', 'Susan', 'Britney']} }
            ]),
         JSONENCODER = JSONEncoder(),
+        WRITER = SimpleFileWriterWithOutput('Data/collab.json'),
+        READER = TriggeredFileReader(),
         JSONDECODER = JSONDecoder(),
         CONSOLEECHOER = ConsoleEchoer(),
         COLLABPARSER = CollabParser(),
@@ -132,8 +136,11 @@ if __name__ == "__main__":
     linkages = {
         ("CONSOLEREADER","outbox") : ("JSONENCODER","inbox"),
         ("DATASOURCE","outbox") : ("JSONENCODER","inbox"),
-        ("JSONENCODER","outbox")  : ("JSONDECODER","inbox"), 
+        #("JSONENCODER","outbox")  : ("JSONDECODER","inbox"),
+        ("JSONENCODER","outbox")  : ("WRITER","inbox"),  
         #("JSONDECODER","outbox")  : ("CONSOLEECHOER","inbox"),
+        ("WRITER","outbox") : ("READER","inbox"),
+        ("READER","outbox") : ("JSONDECODER","inbox"),
         ("JSONDECODER","outbox")  : ("COLLABPARSER","inbox"),     
         #("COLLABPARSER","outbox")  : ("CONSOLEECHOER","inbox"),
         ("COLLABPARSER","outbox")  : ("VIEWER","inbox"),
