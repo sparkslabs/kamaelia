@@ -193,8 +193,9 @@ class ColourSelector(Axon.Component.component):
         self.link( (rbbutton,"outbox"), (self,"buttons") )
         self.link( (gbbutton,"outbox"), (self,"buttons") )
         # saturator
-        saturator = Slider(vertical = True, saturator = True, size=(10,255), position=(self.position[0]+self.size[0]+5,self.position[1] )).activate()
+        saturator = Slider(vertical = True, saturator = True, messagePrefix= "Colour", size=(10,255), position=(self.position[0]+self.size[0]+5,self.position[1] )).activate()
         self.link( (self,"saturator"), (saturator,"colours") )
+        self.link( (saturator,"outbox"), (self,"outbox"), passthrough = 2 )
 
 
       
@@ -244,7 +245,7 @@ class ColourSelector(Axon.Component.component):
                             self.render()
                                     
 
-                    if event.type == pygame.MOUSEBUTTONUP:
+                    if event.type == pygame.MOUSEBUTTONUP and self.mouseDown:
                         if self.mouseDown:
                             self.puckPos = event.pos
                             self.render()
@@ -254,6 +255,7 @@ class ColourSelector(Axon.Component.component):
                         if self.display.get_rect().collidepoint(*event.pos):
                             self.puckPos = event.pos
                             self.render()
+                        else: self.mouseDown = False
 
 
     

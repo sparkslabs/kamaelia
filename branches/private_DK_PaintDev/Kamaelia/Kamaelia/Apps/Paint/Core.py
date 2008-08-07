@@ -332,10 +332,7 @@ class Paint(Axon.Component.component):
                         self.blitToSurface()
                         self.send( self.activeLayIn, "laynum" )
                     elif event.key == pygame.K_s:
-                      #  temp = self.layers[0]
-                        self.save("tgfdg")
-                      #  self.layers.insert(0,temp)
-                      #  self.drawBG()
+                        done = True
                     elif event.key == pygame.K_a:
                         self.animator = True
                     elif event.key == pygame.K_l:
