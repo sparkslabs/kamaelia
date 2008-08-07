@@ -82,7 +82,7 @@ class CollabParser(component):
                                 links.append( (collabKey, orgKey) )
                     
                     for node in collabNodes:
-                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-" ]
+                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-", "fgcolour= ( 200 ,0, 0);fgcolourselected=(0 , 200 , 0 ) " ]
                         self.send(cmd, "outbox")
                     for node in orgNodes:
                         cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-" ]
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Codec.JSON import JSONEncoder, JSONDecoder
-    from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D import TopologyViewer3D
+    from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
     from Kamaelia.Support.Particles.SimpleLaws import SimpleLaws
     
     laws = SimpleLaws(bondLength=2.2)
@@ -128,7 +128,7 @@ if __name__ == "__main__":
         JSONDECODER = JSONDecoder(),
         CONSOLEECHOER = ConsoleEchoer(),
         COLLABPARSER = CollabParser(),
-        VIEWER = TopologyViewer3D(laws=laws),
+        VIEWER = TopologyViewer3DWithParams(laws=laws),
     linkages = {
         ("CONSOLEREADER","outbox") : ("JSONENCODER","inbox"),
         ("DATASOURCE","outbox") : ("JSONENCODER","inbox"),

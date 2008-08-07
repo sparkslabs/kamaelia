@@ -3,13 +3,22 @@ Extend TopologyViewer3D by support additional parameters of commands.
 [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type>, <parameters> ] 
 The format of parameters: pa=pa_value,pb=pb_value
 """
+
+import re
+
 def str2dict(string):
     """Transform a string to a dictionary"""
+    colourRegex = re.compile("^\( *(\d{1,3}) *, *(\d{1,3}) *, *(\d{1,3}) *\)$")
     dictionary = {}
-    string_list = string.split(',')
+    string_list = string.split(';')
     for item in string_list:
         result = item.split('=')
-        dictionary.update({result[0]: result[1]})
+        param = result[0].strip()
+        value = result[1].strip()
+        m = colourRegex.match(value)
+        if m:
+            value = map(int, m.groups())
+        dictionary.update({param : value})
     return dictionary
 
 
