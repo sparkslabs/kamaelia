@@ -27,7 +27,7 @@ from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
-from Kamaelia.IPC import LookupByText, userLoggedOut
+from Kamaelia.IPC import LookupByText, userLoggedOut, threadDone
 from Kamaelia.Apps.Wsgi.Console import info, debug
 
 from headstock.api.im import Message, Body, Event, Thread
@@ -57,11 +57,11 @@ class RequestSerializer(component):
                 'response_signal' : 'send internal signals to the response deserializer'}
     
     ThisJID = u'amnorvend_gateway@jabber.org'    
-    def __init__(self, request, **argd):
+    def __init__(self, request, batch_id, **argd):
         super(RequestSerializer, self).__init__(**argd)
         self.request = request
         self.signal = None
-        self.batch_id = unicode(numId())
+        self.batch_id = batch_id
         self.Publisher = PublishTo(BPLANE_NAME)
         self.link((self, 'outbox'), (self.Publisher, 'inbox'))
         self.link((self, 'signal'), (self.Publisher, 'control'))
@@ -160,18 +160,24 @@ class RequestSerializer(component):
 class ResponseDeserializer(component):
     Inboxes = {'inbox' : 'Receive responses to deserialize',
                'control' : 'Receive shutdown signals',
-               'response_control' : 'Receive signals indicating an error of some kind'}
+               'response_control' : 'Receive signals from the request serializer'}
     Outboxes = {'outbox' : 'Send deserialized responses',
-                'signal' : 'Forward shutdown signals'}
+                'signal' : 'Forward shutdown signals to the HTTPServer',
+                'interface.signal' : 'Forward signals to the interface',
+                '_publisher_signal' : 'Send shutdown signals to the publisher',}
     
     ThisJID = 'amnorvend_gateway@jabber.org'
     ToJID = 'amnorvend@jabber.org/gateway'
-    def __init__(self, **argd):
+    def __init__(self, batch_id, **argd):
         super(ResponseDeserializer, self).__init__(**argd)
         self.signal = None
+        self.batch_id = batch_id
         self.PublisherSignal=PublishTo(BPLANE_SIGNAL)
+        self.link((self, 'interface.signal'), (self.PublisherSignal, 'inbox'))
+        self.link((self, '_publisher_signal'), (self.PublisherSignal, 'control'))
         
     def main(self):
+        self.PublisherSignal.activate()
         self.not_done = True
         while not self.signal:
             [self.handleControlBox(msg) for msg in self.Inbox('control')]
@@ -185,6 +191,9 @@ class ResponseDeserializer(component):
             
         
         self.send(self.signal, 'signal')
+        self.send(threadDone(self.batch_id), 'interface.signal')
+        yield 1
+        self.send(self.signal, '_publisher_signal')
         
     def handleInbox(self, msg):
         deserialize = ''.join([str(body) for body in msg.bodies])
@@ -218,13 +227,14 @@ class ResponseDeserializer(component):
             #print '='*6, 'RESOURCE', '='*6
             #print resource
             self.send(resource, 'outbox')
-            self.signal = producerFinished(self)            
+            self.signal = producerFinished(self)
             
 def Translator(request, mtr=None, rtm=None):
+    batch = unicode(numId())
     if not mtr:
-        mtr = ResponseDeserializer()
+        mtr = ResponseDeserializer(batch)
     if not rtm:
-        rtm = RequestSerializer(request=request)
+        rtm = RequestSerializer(request, batch)
         
     trans = Graphline(
         mtr=mtr,
