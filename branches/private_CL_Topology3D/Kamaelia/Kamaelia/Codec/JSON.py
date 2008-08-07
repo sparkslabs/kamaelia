@@ -37,7 +37,7 @@ class JSONEncoder(component):
                 yield 1
     
             while self.dataReady("inbox"):
-                data = self.recv("inbox").strip()
+                data = self.recv("inbox")
                 if data: # Ignore empty data
                     serialisedData = cjson.encode(data)
                     self.send(serialisedData, "outbox")
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # Data can be from both DataSource and console inputs
     Graphline(
         CONSOLEREADER = ConsoleReader('>>>'),
-        DATASOURCE = DataSource(["['foo', {'bar': ('baz', None, 1.0, 2)}]"]),
+        DATASOURCE = DataSource([['foo', {'bar': ('baz', None, 1.0, 2)}]]),
         JSONENCODER = JSONEncoder(),
         JSONDECODER = JSONDecoder(),
         CONSOLEECHOER = ConsoleEchoer(),
