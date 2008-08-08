@@ -31,6 +31,7 @@ setup(name = "Kamaelia",
       packages = [\
                   "Kamaelia", # START
                   "Kamaelia.Apps",
+                  "Kamaelia.Apps.CollabViewer",
                   "Kamaelia.Apps.Compose",
                   "Kamaelia.Apps.Compose.GUI",
                   "Kamaelia.Apps.FOAFViewer",

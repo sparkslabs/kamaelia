@@ -125,7 +125,6 @@ class SimpleFileWriter(component):
         """Closes the file handle"""
         self.file.close()
 
-__kamaelia_components__  = ( SimpleFileWriter, )
       
 if 1:
     if __name__ == "__main__":
@@ -158,5 +157,7 @@ class SimpleFileWriterWithOutput(SimpleFileWriter):
                 done = True
             else:
                 self.pause()
-    
+
+
+__kamaelia_components__  = ( SimpleFileWriter, SimpleFileWriterWithOutput, )    
     

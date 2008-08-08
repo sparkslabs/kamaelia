@@ -95,8 +95,6 @@ class CollabParser(component):
             yield 1
             
         self.send(self.shutdown_mess,"signal")
-        
-__kamaelia_components__  = ( CollabParser, )         
 
 
 #===============================================================================
@@ -236,7 +234,7 @@ class CollabWithViewParser(CollabParser):
             
         self.send(self.shutdown_mess,"signal")
 
-__kamaelia_components__  = ( CollabWithViewParser, )
+__kamaelia_components__  = ( CollabParser, CollabWithViewParser, )
 
 if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer

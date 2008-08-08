@@ -59,3 +59,6 @@ class DictChooser(Axon.Component.component):
                         self.send(item, "outbox")
 
             done = self.shutdown()
+
+
+__kamaelia_components__  = ( DictChooser, )
