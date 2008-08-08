@@ -146,10 +146,14 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glutInit(sys.argv)
         
         tracker = _cat.coordinatingassistanttracker.getcat()
-        self.display = OpenGLDisplay(width=screensize[0], height=screensize[1],fullscreen=fullscreen,
-                                title=caption)
-        self.display.activate()
-        OpenGLDisplay.setDisplayService(self.display, tracker)                
+        try:
+            self.display = tracker.retrieveService("ogl_display")[0]
+        except KeyError:
+            self.display = OpenGLDisplay(width=screensize[0], height=screensize[1],fullscreen=fullscreen,
+                                    title=caption)
+            self.display.activate()
+            OpenGLDisplay.setDisplayService(self.display, tracker)
+        self.display = OpenGLDisplay.getDisplayService()[0]                
         self.link((self,"display_signal"), (self.display,"notify"))
         self.link((self.display,"signal"), (self,"control"))
         
