@@ -221,7 +221,7 @@ class CollabWithViewParser(CollabParser):
                         viewDict['orgView'].append(cmd)
                     
                     for node in staffViewNodes:
-                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-", "fgcolour= ( 200 ,0, 0);fgcolourselected=(0 , 200 , 0 ) " ]
+                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-" ]
                         viewDict['staffView'].append(cmd)
                     for link in staffViewLinks:
                         cmd = [ "ADD", "LINK", link[0], link[1] ]
