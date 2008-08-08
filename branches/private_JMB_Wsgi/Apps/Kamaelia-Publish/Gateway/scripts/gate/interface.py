@@ -38,13 +38,14 @@ until it receives a response.
 from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import Backplane, SubscribeTo
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.IPC import userLoggedOut, threadDone
+from Kamaelia.IPC import userLoggedOut, batchDone, newBatch
 from Kamaelia.Apps.Wsgi.BoxManager import BoxManager
-from Kamaelia.Apps.Wsgi.Console import debug
+from Kamaelia.Apps.Wsgi.Console import debug, info, warning
 
 from headstock.api.im import Message
+from headstock.api.jid import JID
 
-from gate import InitialMessage, BPLANE_NAME, BPLANE_SIGNAL
+from gate import BPLANE_NAME, BPLANE_SIGNAL
 import JIDLookup
 
 _logger_suffix = '.publish.gateway.interface'
@@ -55,9 +56,7 @@ class Interface(threadedadaptivecommscomponent):
         'inbox' : 'Receive messages from a translator.'\
                 'Connected to the service named by BPLANE_NAME',
         'control' : 'Receive shutdown messages from a translator',
-        'translator_inbox' : 'Receive messages from a translator',
-        'translator_control' : 'Receive signals from the translator',
-        'xmpp.inbox' : 'Receive messages from the XMPPHandler',
+        'xmpp.inbox' : 'Receive messages from the XMPP message dispatcher',
         'xmpp.control' : 'Receive signals from the XMPPHandler',
         'xmpp.available' : 'Receive notification when a user becomes available',
         'xmpp.unavailable' : 'Receive notification when a user becomes unavailable',
@@ -98,18 +97,21 @@ class Interface(threadedadaptivecommscomponent):
         self.createSubcomponents()
         
         while self.not_done:
-            for msg in self.Inbox('inbox'):
-                self.handleMainInbox(msg)
-                
             for msg in self.Inbox('control'):
                 self.handleMainControlBox(msg)
+                
+            for msg in self.Inbox('inbox'):
+                self.handleMainInbox(msg)
                 
             for msg in self.Inbox('xmpp.inbox'):
                 #The interface has a new message from a serving peer.  Get the bundle
                 #associated with the thread's translator and forward the message.
-                bundle = self.transactions.get(unicode(msg.thread))
-                if bundle:
-                    bundle.send(msg, 'outbox')
+                box_manager = self.transactions.get(unicode(msg.thread))
+                if box_manager:
+                    box_manager.send(msg, 'outbox')
+                else:
+                    warning('%s received with no box manager.' % (msg),
+                            _logger_suffix)
                     
             for msg in self.Inbox('xmpp.available'):
                 if msg.from_jid.nodeid() != self.ThisJID.nodeid():
@@ -119,7 +121,7 @@ class Interface(threadedadaptivecommscomponent):
                     debug('%s available.  No action taken.' % (msg.from_jid), _logger_suffix)
             for msg in self.Inbox('xmpp.unavailable'):
                 self.handleUnavailable(msg)
-                #print 'Received unavailable:  %s' % (repr(msg))
+                info('User %s logged out.' % (msg.from_jid.nodeid()), _logger_suffix)
                 
             if not self.anyReady() and self.not_done:
                 self.pause()
@@ -131,40 +133,42 @@ class Interface(threadedadaptivecommscomponent):
         message is an instance of InitialMessage, it will create a BoxManager that
         will create the necessary outboxes and track the translator.  If it is a
         headstock message, it will be forwarded out to be sent via XMPP."""
-        if isinstance(msg, InitialMessage):
-            #This is the first message in the transaction.
-            
-            #Add the bundle to the transaction list so that we can look it up when
-            #we receive a response
-            bman = BoxManager(self, msg.bundle, msg.batch_id)
-            bundle = msg.bundle
-            self.transactions[msg.batch_id] = bman
-            bman.createBoxes(inboxes=None, outboxes=['outbox', 'signal'])
-            self.link((self, bman.outboxes['outbox']), (bundle, 'xmpp_in'))
-            self.link((self, bman.outboxes['signal']), (bundle, 'xmpp_control'))
-            
-            #Add the thread to the jids dict so that we can get back to any associated
-            #bundles if the user goes offline
-            self.jids[msg.hMessage.to_jid].append(msg.batch_id)
-            self.send(msg.hMessage, 'xmpp.outbox')
-        elif isinstance(msg, Message):
+        if isinstance(msg, Message):
             #Forward the message on to headstock
             self.send(msg, 'xmpp.outbox')
+        else:
+            warning('Unknown message %s received at interface.  Ignoring'
+                    % (msg), _logger_suffix)
             
     def handleMainControlBox(self, msg):
         """This will handle incoming messages from various translators to signal that
         they are done.  This will unlink this component from them and destroy all
         associated boxes."""
-        if isinstance(msg, threadDone):
-            bman = self.transactions[msg.thread]
+        if isinstance(msg, batchDone) and self.transactions.get(msg.batch_id):
             bman.kill()
             del self.transactions[msg.thread]
             debug('Batch %s done.' % (msg.thread), _logger_suffix)
+        elif isinstance(msg, newBatch):
+            bman=BoxManager(self, msg.bundle, msg.batch_id)
+            self.transactions[msg.batch_id] = bman
+            bman.createBoxes(inboxes=None, outboxes=['outbox', 'signal'])
+            self.link((self, bman.outboxes['outbox']), (msg.bundle, 'xmpp_in'))
+            self.link((self, bman.outboxes['signal']), (msg.bundle, 'xmpp_control'))
+            
+            to_jid = msg.to_jid
+            if isinstance(to_jid, JID):
+                to_jid = to_jid.node_id()
+            elif not isinstance(to_jid, unicode):
+                to_jid = unicode(to_jid)
+            
+            self.jids[to_jid].append(msg.batch_id)
+        else:
+            warning('Unknown signal %s received at interface.  Ignoring'
+                    % (msg), _logger_suffix)
             
     def handleAvailable(self, pres):
         """This function is called when a user comes online.  It will create an
         entry in the JIDs dict that will associate threads with their JID."""
-        
         jid = pres.from_jid.nodeid()
         self.jids[jid] = []
         JIDLookup.setUserStatus(jid, active=True)
@@ -174,13 +178,17 @@ class Interface(threadedadaptivecommscomponent):
         all tracked resources associated with that user and set the user's status
         in the database."""
         jid = pres.from_jid.nodeid()
-        for batch_id in self.jids[jid]:
-            bundle = self.transactions[batch_id]
-            bundle.send(userLoggedOut(batch_id), 'signal')
-            bundle.kill()
-            del self.transactions[batch_id]
-        
-        del self.jids[jid]
+        batches = self.jids.get(jid, None)
+        if not (batches is None):
+            for batch_id in batches:
+                bundle = self.transactions[batch_id]
+                bundle.send(userLoggedOut(batch_id), 'signal')
+                bundle.kill()
+                del self.transactions[batch_id]
+            del self.jids[jid]
+        else:
+            warning('JID %s went unavailable but is not logged in' \
+                    % (unicode(jid)), _logger_suffix)
         JIDLookup.setUserStatus(pres.from_jid, active=False)
         
     def sendSignals(self):

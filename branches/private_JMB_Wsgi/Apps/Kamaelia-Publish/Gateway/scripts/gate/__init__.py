@@ -20,14 +20,6 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
-from Axon.Component import component
-    
-class InitialMessage(object):
-    hMessage = None
-    bundle=None
-    batch_id = None
-    def __init__(self, **argd):
-        self.__dict__.update(**argd)
-        
+
 BPLANE_NAME = 'XMPP_INTERFACE'
 BPLANE_SIGNAL = 'XMPP_SIGNAL'

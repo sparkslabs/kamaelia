@@ -38,8 +38,6 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
 from sqlalchemy.orm import mapper, sessionmaker
 from sqlalchemy.exceptions import InvalidRequestError
 
-from atexit import register
-
 _logger_suffix = '.publish.gateway.JIDLookup'
 
 #Generate a class type for sessions.
@@ -48,9 +46,9 @@ UserSession = sessionmaker(autoflush=True, transactional=True)
 #A boolean value just to check and see if we've already connected to the db.
 _connected = False
 
-def _getURI(jid_, session):
+def _getURI(jid_text, session):
     """A convenience function for GetUser in case we just want the uri."""
-    return GetUser(jid_, session).url_prefix
+    return GetUser(jid_text, session).url_prefix
     
 def ExtractJID(request):
     """
@@ -79,28 +77,28 @@ def ExtractJID(request):
         debug('JID not found for %s' % (request['REQUEST_URI']), _logger_suffix)    
         return ''
 
-def setUserStatus(jid_, active):
+def setUserStatus(jid_text, active):
     """This is used to mark a user as active or inactive.  If active is True, the
     JID specified will be marked as active.  If active is False, the JID will be
     marked inactive."""
-    if isinstance(jid_, JID):
-        jid_ = jid_.nodeid()
+    if isinstance(jid_text, JID):
+        jid_text = jid_text.nodeid()
     session = UserSession()
-    user = _getUser(jid_, session)
+    user = _getUser(jid_text, session)
     user.active=bool(active)
     session.update(user)
     session.commit()
     
-def _getUser(jid_, session):
+def _getUser(jid_text, session):
     """Gets a user out of the database by JID."""
-    return session.query(User).filter_by(jid=jid_).one()
+    return session.query(User).filter_by(jid=jid_text).one()
 
 def _getUserByURI(uri, session):
     """Gets a user out of the database by URI."""
     try:
         return session.query(User).filter_by(url_prefix=uri, active=True).one()
     except InvalidRequestError:
-        return None
+        return ''
     
 def connectToDB(Config, **argd):
     """
@@ -118,7 +116,6 @@ def connectToDB(Config, **argd):
     global _connected, _user_engine, _meta, _users
     if not _connected:
         _connected = True
-        register(_cleanup)
         
         _user_engine = sqlalchemy.create_engine(Config.server.db, **argd)
         UserSession.configure(bind=_user_engine)
@@ -129,6 +126,8 @@ def connectToDB(Config, **argd):
         
         mapper(User, _users)
         
+        from atexit import register
+        register(_cleanup)
         _cleanup()
         
 def _cleanup():

@@ -20,6 +20,30 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
+"""
+Translators are designed to take a request from the HTTP server (using the
+WSGILikeTranslator) and turn it into a message that can be sent out via headstock.
+It also takes a message from headstock and turns it into a response that can be
+sent out by the HTTPServer.
+
+There are two components to a translator:  a RequestSerializer and a
+ResponseDeserializer.  The RequestSerializer takes the incoming HTTP request and
+turns it into a form that can be sent to the peer.  The ResponseDeserializer takes
+a message from the Peer and turns it into a form that can be sent to the page
+requester by the HTTPServer.
+
+The system is also made to connect to a pair of backplanes (via a PublishTo component
+of course).  The first backplane that it connects to will connect to the interface's
+inbox.  This is used for a translator to register itself with the interface (so
+it can receive notifications when the peer has sent a message back) as well as to
+send the interface messages to be sent out to the peer.  The second backplane is
+used to connect to the interface's control inbox.  This is used to notify the interface
+that the translator is no longer active.
+
+You probably don't need to instantiate either the RequestSerializer or
+ResponseDeserializer directly.  However, you may also swap them out for other
+components with the same interface if you so desire.
+"""
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess, internalNotify
@@ -27,8 +51,8 @@ from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
-from Kamaelia.IPC import LookupByText, userLoggedOut, threadDone
-from Kamaelia.Apps.Wsgi.Console import info, debug
+from Kamaelia.IPC import LookupByText, userLoggedOut, batchDone, newBatch
+from Kamaelia.Apps.Wsgi.Console import info, debug, warning
 
 from headstock.api.im import Message, Body, Event, Thread
 from headstock.api.jid import JID
@@ -41,7 +65,7 @@ from pprint import pformat
 
 import simplejson
 
-from gate import BPLANE_NAME, BPLANE_SIGNAL, InitialMessage
+from gate import BPLANE_NAME, BPLANE_SIGNAL
 from gate.JIDLookup import ExtractJID
 
 _logger_suffix='.publish.gateway.translator'
@@ -52,9 +76,7 @@ class RequestSerializer(component):
     Inboxes = {'inbox' : 'Receive messages from the HTTPServer',
                'control' : 'Receive signals from the HTTPServer'}
     Outboxes = {'outbox' : 'Send messages to the Interface',
-                'signal' : 'Send signals',
-                'publisher_signal' : 'send signals to the publisher',
-                'response_signal' : 'send internal signals to the response deserializer'}
+                'signal' : 'Send signals',}
     
     ThisJID = u'amnorvend_gateway@jabber.org'    
     def __init__(self, request, batch_id, **argd):
@@ -62,38 +84,36 @@ class RequestSerializer(component):
         self.request = request
         self.signal = None
         self.batch_id = batch_id
-        self.Publisher = PublishTo(BPLANE_NAME)
-        self.link((self, 'outbox'), (self.Publisher, 'inbox'))
-        self.link((self, 'signal'), (self.Publisher, 'control'))
+        self.request['batch'] = self.batch_id
         
         if not isinstance(self.ThisJID, unicode):
             self.ThisJID = unicode(self.ThisJID)
         
         self.bundle = None
         
-        #The following is used to indicate that we should send a signal to the serving
-        #client. Sometimes we want to disable this, like if a serving client isn't
-        #found or is unavailable.
-        self._send_xmpp_signal = True
-        
     def main(self):
-        self.Publisher.activate()
         self.ToJID = ExtractJID(self.request)
         info('request for [%s], batch %s', _logger_suffix, self.request['REQUEST_URI'], self.batch_id)
         
         if self.ToJID:
-            self.sendInitialMessage(self.request)
+            self.sendRegisterSignal()
+            yield 1 # give the register signal time to get to the interface
+            self.sendMessage(self.request)
             debug('User found.  Initial message sent for batch %s.', _logger_suffix, self.batch_id)
         else:
+            #FIXME:  Note that sometimes the gateway won't receive a message when
+            #it first logs in that a user is available.  It's really better to double
+            #check with the server to get the user's status before assuming that
+            #they are offline.
             self.JIDNotFound()
             debug('User not found for batch %s.', _logger_suffix, self.batch_id)
+            return
         
-        #Note that self.signal is set in the methods 'JIDNotFound' and 'handleControlBox'
-        #if JIDNotFound is run, this loop will not run.
+        #Note that self.signal is set in handleControlBox
         while not self.signal:
             for msg in self.Inbox('control'):
                 self.handleControlBox(msg)
-            
+
             for msg in self.Inbox('inbox'):
                 self.handleInbox(msg)
                 
@@ -101,13 +121,10 @@ class RequestSerializer(component):
                 self.pause()
                 
             yield 1
-            
-        self.send(self.signal, 'signal')
-        
-        if self._send_xmpp_signal:
-            signal_msg = {'signal' : type(self.signal).__name__,
-                          'batch' : self.batch_id}
-            self.sendMessage(signal_msg)
+    
+        signal_msg = {'signal' : type(self.signal).__name__,
+                      'batch' : self.batch_id}
+        self.sendMessage(signal_msg)
     
     def handleInbox(self, msg):
         chunk = {
@@ -119,26 +136,17 @@ class RequestSerializer(component):
     def handleControlBox(self, msg):
         if isinstance(msg, (shutdownMicroprocess, producerFinished)):
             self.signal = msg
-            
-    def sendInitialMessage(self, request):
-        #print '='*6, 'REQUEST', '='*6, '\n'
-        #print request
         
-        request['batch'] = self.batch_id
-        
-        hMessage = self.makeMessage(request)
-        self.send(InitialMessage(
-                             hMessage=hMessage,
-                             bundle=self.bundle(), #dereference the weakref
-                             batch_id=self.batch_id),
-                  'outbox')
+    def sendRegisterSignal(self):
+        signal = newBatch(self.batch_id,
+                          self.bundle(), #dereference the weakref
+                          self.ToJID)
+        self.send(signal, 'signal')
         
     def JIDNotFound(self):
         resource = getErrorPage(404, 'Could not find %s' % (self.request['REQUEST_URI']))
         out = internalNotify(message=resource)    #Prevents the loop from running.
-        self.send(out, 'response_signal')
-        self.signal = shutdownMicroprocess()
-        self._send_xmpp_signal = False
+        self.send(out, 'signal')
         
     def makeMessage(self, serializable):
         hMessage = Message(self.ThisJID, self.ToJID,
@@ -159,45 +167,30 @@ class RequestSerializer(component):
         
 class ResponseDeserializer(component):
     Inboxes = {'inbox' : 'Receive responses to deserialize',
-               'control' : 'Receive shutdown signals',
-               'response_control' : 'Receive signals from the request serializer'}
+               'control' : 'Receive shutdown signals',}
     Outboxes = {'outbox' : 'Send deserialized responses',
-                'signal' : 'Forward shutdown signals to the HTTPServer',
-                'interface.signal' : 'Forward signals to the interface',
-                '_publisher_signal' : 'Send shutdown signals to the publisher',}
-    
-    ThisJID = 'amnorvend_gateway@jabber.org'
-    ToJID = 'amnorvend@jabber.org/gateway'
+                'signal' : 'Forward shutdown signals to the HTTPServer',}
     def __init__(self, batch_id, **argd):
         super(ResponseDeserializer, self).__init__(**argd)
         self.signal = None
         self.batch_id = batch_id
-        self.PublisherSignal=PublishTo(BPLANE_SIGNAL)
-        self.link((self, 'interface.signal'), (self.PublisherSignal, 'inbox'))
-        self.link((self, '_publisher_signal'), (self.PublisherSignal, 'control'))
         
     def main(self):
-        self.PublisherSignal.activate()
         self.not_done = True
         while not self.signal:
             [self.handleControlBox(msg) for msg in self.Inbox('control')]
-            [self.handleResponseControl(msg) for msg in self.Inbox('response_control')]
             [self.handleInbox(msg) for msg in self.Inbox('inbox')]
             
             if not self.anyReady() and not self.signal:
                 self.pause()
                 
             yield 1
-            
-        
-        self.send(self.signal, 'signal')
-        self.send(threadDone(self.batch_id), 'interface.signal')
-        yield 1
-        self.send(self.signal, '_publisher_signal')
+        if not isinstance(self.signal, internalNotify):
+            self.send(self.signal, 'signal')
+            self.send(batchDone(self.batch_id), 'signal')
         
     def handleInbox(self, msg):
         deserialize = ''.join([str(body) for body in msg.bodies])
-        
         #Sometimes an emty message comes through to reset the event status.  This
         #will cause errors if we process it.
         if deserialize:
@@ -205,29 +198,110 @@ class ResponseDeserializer(component):
             deserialize = zlib.decompress(deserialize)
             resource = simplejson.loads(deserialize)
             
+            debug('Translator %s received:\n%s' % (self.batch_id, resource),
+                  _logger_suffix)
+            
             signal = resource.get('signal')
             if signal:
+                debug('Signal %s caught in batch %s.' % (signal, self.batch_id))
                 self.signal = LookupByText(signal)(self)
-            
-            assert(isinstance(resource, dict))
-            self.send(resource, 'outbox')
-        
+                del resource['signal']
+            if resource:
+                self.send(resource, 'outbox')
+        else:
+            warning('deserialize empty', _logger_suffix)
     def handleControlBox(self, msg):
         if isinstance(msg, (producerFinished, shutdownMicroprocess)):
             self.signal = msg
-            
-    def handleResponseControl(self, msg):
-        #print 'Received %s.' % (msg)
-        if isinstance(msg, internalNotify):
+        elif isinstance(msg, internalNotify):
+            #The user was not found.
             resource = msg.message
             self.send(resource, 'outbox')
-            self.signal = producerFinished(self)
+            self.send(producerFinished(self), 'signal')
+            self.signal = msg
         elif isinstance(msg, userLoggedOut):
-            resource = getErrorPage(502, 'Thread %s terminated unexpectedly.' % (msg.thread))
-            #print '='*6, 'RESOURCE', '='*6
-            #print resource
+            #The user logged out mid-batch
+            resource = getErrorPage(502, 'Batch %s terminated unexpectedly.' % (msg.thread))
             self.send(resource, 'outbox')
             self.signal = producerFinished(self)
+            
+class TranslatorController(component):
+    Inboxes = {'inbox' : 'NOT USED',
+               'control' : 'Receive signals from internal components',
+               'interface_control' : 'Receive signals from the interface',}
+    Outboxes = {'outbox' : 'NOT USED',
+                'signal' : 'NOT USED',
+                'interface_signal' : 'Send messages to the interface',
+                'signal_publisher_in' : """Send shutdown messages to the
+                                           in publisher""",
+                'signal_publisher_signal' : """Send shutdown messages to
+                                               the signal publisher""",
+                'signal_serializer' : 'Send signals to the serializer',
+                'signal_deserializer' : 'Send signals to the deserializer',
+                'http_signal' : 'Send shutdown signals to the HTTPServer',}
+    def main(self):
+        self.signal = None
+        while not self.signal:
+            for msg in self.Inbox('control'):
+                if isinstance(msg, internalNotify):
+                    #Notify internal components that we're done.
+                    #Note that no signal is sent out to the HTTP server or interface
+                    #by this component.  The signal to the HTTP server will be sent
+                    #by the deserializer and no message is necessary to the interface
+                    #since it won't have started tracking the component yet.
+                    self.sendSignals(msg)
+                    self.signal = msg
+                elif isinstance(msg, batchDone):
+                    #This signals normal shutdown when everything is fine.  The
+                    #interface and HTTP Server will both be notified.
+                    self.sendSignals(signal=msg,
+                                     interface_signal=msg,
+                                     http_signal=producerFinished())
+                    self.signal = msg
+                elif isinstance(msg, shutdownMicroprocess):
+                    #Not currently sent to this component by anything in Kamaelia
+                    #Publish, but we do want to shut down when we receive this
+                    #message.
+                    self.sendSignals(msg, msg, msg)
+                    self.signal = msg
+                elif isinstance(msg, newBatch):
+                    #This will go to the interface signaling that it should track
+                    #a new batch.
+                    self.send(msg, 'interface_signal')
+                else:
+                    warning('Unknown message %s received.  Ignoring' % (msg),
+                            _logger_suffix)
+            for msg in self.Inbox('interface_control'):
+                if isinstance(msg, userLoggedOut):
+                    #This message is from the interface notifying us that the user
+                    #has logged out mid-batch.  No notification is necessary for
+                    #the interface, since there the one that notified us.  The
+                    #deserializer will send the message to the HTTP Server.
+                    self.sendSignals(msg)
+                    self.signal=msg
+                else:
+                    warning('Unknown message %s received.  Ignoring.' % (msg),
+                            _logger_signal)
+            for msg in self.Inbox('inbox'):
+                pass #pop the messages so they won't keep unpausing this component
+            
+            if not self.signal and not self.anyReady():
+                self.pause()
+                
+            yield 1
+            
+                
+    def sendSignals(self, signal, interface_signal=None, http_signal=None):
+        """This will send the specified signal to the signal serializer and deserializer
+        and a producerFinished to the publishers."""
+        self.send(signal, 'signal_serializer')
+        self.send(signal, 'signal_deserializer')
+        self.send(producerFinished(), 'signal_publisher_in')
+        self.send(producerFinished(), 'signal_publisher_signal')
+        if interface_signal:
+            self.send(interface_signal, 'interface_signal')
+        if http_signal:
+            self.send(http_signal, 'http_signal')
             
 def Translator(request, mtr=None, rtm=None):
     batch = unicode(numId())
@@ -239,6 +313,9 @@ def Translator(request, mtr=None, rtm=None):
     trans = Graphline(
         mtr=mtr,
         rtm=rtm,
+        interface_in=PublishTo(BPLANE_NAME),
+        interface_signal=PublishTo(BPLANE_SIGNAL),
+        controller=TranslatorController(),
         linkages={
             #These are the boxes that the HTTPServer will use
             ('self', 'inbox') : ('rtm', 'inbox'),
@@ -246,12 +323,22 @@ def Translator(request, mtr=None, rtm=None):
                 
             #These are the boxes that the XMPP Handler will use.
             ('self', 'xmpp_in') : ('mtr', 'inbox'),
+            ('rtm', 'outbox') : ('interface_in', 'inbox'),
                 
             #This is the shutdown handling
-            ('self', 'control') : ('rtm', 'control'),
-            ('self', 'xmpp_control') : ('mtr', 'response_control'),
-            ('mtr', 'signal') : ('self', 'signal'),
-            ('rtm', 'response_signal') : ('mtr', 'response_control'),
+            #('self', 'control') : ('rtm', 'control'),
+            #('self', 'xmpp_control') : ('mtr', 'response_control'),
+            #('mtr', 'signal') : ('self', 'signal'),
+            #('rtm', 'response_signal') : ('mtr', 'response_control'),
+            ('rtm', 'signal') : ('controller', 'control'),
+            ('mtr', 'signal') : ('self', 'signal'), #Will go to the HTTPServer
+            ('controller', 'signal_serializer') : ('rtm', 'control'),
+            ('controller', 'signal_deserializer') : ('mtr', 'control'),
+            ('controller', 'http_signal') : ('self', 'signal'),
+            ('controller', 'interface_signal') : ('interface_signal', 'inbox'),
+            ('controller', 'signal_publisher_in') : ('interface_in', 'control'),
+            ('controller', 'signal_publisher_signal') : ('interface_signal', 'control'),
+            ('self', 'xmpp_control') : ('controller', 'interface_control')
         }
     )
     

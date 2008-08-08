@@ -115,10 +115,20 @@ class removeExceptional(notify):
 class userLoggedOut(notify):
    def __init__(self, thread):
       self.thread = thread
+      
+class batchDone(notify):
+   def __init__(self, thread):
+      self.thread=thread
+      
+class newBatch(notify):
+   def __init__(self, batch, bundle, to_jid):
+      self.batch_id = batch
+      self.bundle = bundle
+      self.to_jid = to_jid
 
 __ipc_msgs = [removeExceptional, removeWriter, removeReader, newExceptional, newReader,
               newWriter, newServer, shutdownCSA, newCSA, serverShutdown, socketShutdown,
-              userLoggedOut]
+              userLoggedOut, batchDone, newBatch]
 from Axon.Ipc import GetIPCs
 __ipc_msgs.extend(GetIPCs())
 

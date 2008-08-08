@@ -60,3 +60,9 @@ def initializeLoggers(filename, consolename='kamaelia'):
     consolelogger.addHandler(console)
     from Kamaelia.Apps.Wsgi.Console import setConsoleName
     setConsoleName(consolename)
+    
+    from atexit import register
+    register(killLoggers)
+
+def killLoggers():
+    logging.shutdown()

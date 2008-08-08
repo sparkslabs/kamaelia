@@ -22,7 +22,7 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 import UserDict
 
-class _BoxManager(object, UserDict.DictMixin):
+class _BoxManager(object):
     """
     This object is used to represent a set of boxes in an adaptive comms component.
     It may also store metadata about the transaction.
@@ -48,14 +48,15 @@ class _BoxManager(object, UserDict.DictMixin):
         """Create a set of inboxes and outboxes.  You will be responsible for linking
         them."""
         thread = self.thread
-        for box in inboxes:
-            self.inboxes[box] = self.InboxAddMethod('THREAD_%s_%s', thread, box)
-        for box in outboxes:
-            outbox_dict[box] = self.OutboxAddMethod('THREAD_%s_%s', thread, box)
+        BOX_TEMPLATE='THREAD_%s_%s'
+        for box in inboxes or []:
+            self.inboxes[box] = self.InboxAddMethod(BOX_TEMPLATE % (thread, box))
+        for box in outboxes or []:
+            self.outboxes[box] = self.OutboxAddMethod(BOX_TEMPLATE % (thread, box))
     def kill(self):
         """Destroy and unlink all boxes that are managed by this box manager."""
         self.UnlinkMethod(self.Translator)
-        destroyBoxes()
+        self._destroy_boxes()
     def recv(self, boxname):
         """Receive a message from an inbox.  Maps a human-friendly boxname
         to an AdaptiveCommsComponent boxname."""
@@ -71,7 +72,7 @@ class _BoxManager(object, UserDict.DictMixin):
     def send(self, msg, boxname):
         """Maps send a message using a human-friendly boxname that translates to
         an AdaptiveCommsComponent boxname."""
-        self.SendMethod(msg, self.__dict__[boxname])
+        self.SendMethod(msg, self.outboxes[boxname])
     def __repr__(self):
         return '<BoxManager for thread %s>' % (self.thread)        
     def _get_done(self):
@@ -82,12 +83,12 @@ class _BoxManager(object, UserDict.DictMixin):
     def _destroy_boxes(self):
         """Destroys all managed boxes without unlinking them."""
         for box in self.inboxes:
-            self.InboxRmMethod(box)
-        for box in self.outbox_dict:
-            self.OutboxRmMethod(box)
+            self.InboxRmMethod(self.inboxes[box])
+        for box in self.outboxes:
+            self.OutboxRmMethod(self.outboxes[box])
         #Recreate the box dictionaries in case we need to reuse this object
         self.inboxes={}
-        self.outbox_dict={}
+        self.outboxes={}
 
 def BoxManager(adap, translator=None, thread=None):
     """This factory function will create a new box bundle with all the necessary
