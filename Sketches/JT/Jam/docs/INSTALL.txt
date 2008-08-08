@@ -1,0 +1,44 @@
+=================================
+Kamaelia Jam Install Instructions
+=================================
+
+Dependencies
+============
+Hard dependencies
+-----------------
+Jam only has two hard dependencies, on pygame and pyOSC
+
+pygame
+~~~~~~
+Packages for pygame, along with install instructions are available from http://www.pygame.org/download.shtml.
+
+pyOSC
+~~~~~
+The latest version of pyOSC is availble from http://trac.v2.nl/wiki/pyOSC.  To install extract the archive, and move into the newly extracted directory.  From there run the following command as root::
+
+    python setup.py install
+
+Soft dependencies
+-----------------
+If you want audio or midi support in Jam you also need extra packages.
+
+Audio support
+~~~~~~~~~~~~~
+For audio you need the python bindings for RtAudio, which are available in a subversion repository.  Download the latest version by running::
+
+    svn co http://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/JT/RtAudioBinding
+
+Follow the instructions for installation in the INSTALL.txt file
+
+MIDI support
+~~~~~~~~~~~~
+For midi support you need the pyrtmidi bindings.  Again this is available in a subversion repository.  Download and install the latest version by running::
+
+    svn co http://svn2.assembla.com/svn/pkaudio/pyrtmidi
+    cd pyrtmidi
+    python setup.py install (as root)
+
+Installing Jam
+==============
+When you have the dependencies installed you can install jam by extracting the archive, and running the following code as root from within the extracted directory::
+    sudo python setup.py install
