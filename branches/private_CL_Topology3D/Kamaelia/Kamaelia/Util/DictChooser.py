@@ -16,6 +16,7 @@ class DictChooser(Axon.Component.component):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(DictChooser, self).__init__()
         self.options = dict(options)
+        self.currentOption = None
       
     def shutdown(self):
         """
@@ -38,11 +39,20 @@ class DictChooser(Axon.Component.component):
                 option = self.recv("option")
                 if option:
                     self.options.update(option)
+                    # Choose a default one initially
+                    if self.currentOption is None:
+                        self.currentOption = option.keys()[0]
+                        data = option[self.currentOption]
+                        for item in data:
+                            self.send(item, "outbox")
+                    
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
-                if msg:
+                # If new selection is the same with current one, ignore it
+                if msg and msg!=self.currentOption:
                     try:
                         data = self.options[msg]
+                        self.currentOption = msg
                     except KeyError:
                         continue
                     for item in data:
