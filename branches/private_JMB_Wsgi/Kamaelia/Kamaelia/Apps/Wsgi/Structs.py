@@ -21,7 +21,10 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 """This is a collection of configuration objects that will allow for object-oriented
-access of configuration data rather than having to use a dictionary."""
+access of configuration data rather than having to use a dictionary.  This data is
+intended to come from an ini file, but may come from anywhere.
+"""
+
 import os
 
 class XMPPConfigObject(object):
@@ -32,8 +35,6 @@ class XMPPConfigObject(object):
         self.usetls = u''
         self.password = u''
         self.resource = u'headstock-client1'
-        #for key in dictionary:
-        #    self.__dict__[key] = unicode(dictionary[key], 'utf-8')
         self.__dict__.update(dictionary)
         self.username = unicode(self.username)
         self.domain = unicode(self.domain)

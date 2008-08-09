@@ -69,8 +69,6 @@ an example of how to create a simple WSGI server:
 
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Experimental.Wsgi.Factory import WsgiFactory
-import Kamaelia.Experimental.Wsgi.Log as Log
-import Kamaelia.Experimental.Wsgi.LogWritable as LogWritable
 
 WsgiConfig = {
     'wsgi_ver' : (1, 0),
@@ -81,17 +79,17 @@ WsgiConfig = {
 url_list = [ #Note that this is a list of dictionaries.  Order is important.
     {
         'kp.regex' : 'simple',
-        'kp.import_path' : 'Kamaelia.Support.WsgiApps.SimpleApp',
+        'kp.import_path' : 'Kamaelia.Apps.Wsgi.Apps.Simple',
         'kp.app_obj' : 'simple_app',
     }
     {
         'kp.regex' : '.*',  #The .* means that this is a 404 handler
-        'kp.import_path' : 'Kamaelia.Support.WsgiApps.ErrorHandler',
+        'kp.import_path' : 'Kamaelia.Apps.Wsgi.Apps.ErrorHandler',
         'kp.app_obj' : 'application',
     }
 ]
 
-routing = [['/', WsgiFactory(log_writable, WsgiConfig, url_list)]]
+routing = [['/', WsgiFactory(WsgiConfig, url_list)]]
 
 ServerCore(
     protocol=HTTPProtocol(routing),
@@ -105,18 +103,13 @@ Internal overview
 request object
 ~~~~~~~~~~~~~~~
 
-This component expects to be passed a request object in the same format as is created
-by the HTTPParser.  The request object may contain a 'custom' dictionary entry whose values
-will be passed to the application in the environ object.  For example, the request
-object may look as follows:
+Note that certain WSGI applications will require configuration
+data from the urls file.  If you use the WsgiFactory to run this
+handler, all options specified in the urls file will be put into
+the environment variable with a kp. in front of them.  
 
-{
-    ...
-    'custom' : {'kp.regex' : 'simple'},
-    ...
-}
-
-This will translate into a WSGI environ dictionary as follows:
+For example, the 'regex' entry in a urls file would go into the
+environ dictionary like this if it was set to 'simple':
 
 {
     ...
@@ -158,7 +151,6 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
 from Kamaelia.Protocol.HTTP import HTTPProtocol
-from wsgiref.validate import validator
 from xml.sax.saxutils import unescape
         
 class NullFileLike (object):
@@ -177,6 +169,7 @@ class NullFileLike (object):
         raise StopIteration()
     
 class ErrorLogger(object):
+    """This is the file-like object intended to be used for wsgi.errors."""
     def __init__(self, logger):
         self.logger = logger
     def write(self, data):
@@ -202,6 +195,9 @@ class _WsgiHandler(threadedcomponent):
      body has been transmitted.  This will not shut down this component, and in
      fact will make it BEGIN processing the request.  If the request is not a
      POST or PUT request, the Handler will ignore this signal.
+     
+    Any other signals that this component may receive may result in undefined
+    behavior, but this component will most likely ignore them.
     """
     Inboxes = {
         'inbox' : 'Used to receive the body of requests from the HTTPParser',
@@ -276,14 +272,14 @@ class _WsgiHandler(threadedcomponent):
             self._error(503, sys.exc_info())
 
         self.memfile.close()
-        #print "Waiting..."
-        #self.pause(5)
-        #print 'unpausing'
+        
+        #The Kamaelia Publish Peer depends on the producerFinished signal being sent
+        #AFTER this handler has received a producerFinished signal.  Thus, we wait
+        #until we get a signal before finishing up.
         if not self.pf_received:
             while not self.dataReady('control'):
                 self.pause()
         self.send(Axon.Ipc.producerFinished(self), "signal")
-        #print 'WsgiHandler dead'
 
     def start_response(self, status, response_headers, exc_info=None):
         """
@@ -297,8 +293,9 @@ class _WsgiHandler(threadedcomponent):
         elif self.response_dict:
             raise WsgiAppError('start_response called a second time without exc_info!  See PEP 333.')
 
-        #pprint(response_headers)
-
+        #PEP 333 requires that an application NOT send any hop-by-hop headers.
+        #Therefore, we check for any of them in the headers the application
+        #returns.
         for key,value in response_headers:
             if is_hop_by_hop(key):
                 raise WsgiAppError('Hop by hop header specified')
@@ -316,8 +313,6 @@ class _WsgiHandler(threadedcomponent):
         """
         if self.response_dict and not self.write_called:
             self.response_dict['data'] = body_data
-            #print '==RESPONSE DICTIONARY=='
-            #pprint(self.response_dict)
             self.send(self.response_dict, 'outbox')
             self.write_called = True
         elif self.write_called:
