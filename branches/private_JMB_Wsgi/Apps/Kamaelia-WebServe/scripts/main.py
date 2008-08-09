@@ -31,6 +31,7 @@ from Kamaelia.Apps.Wsgi.Console import info
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Protocol.HTTP import HTTPProtocol
+from Kamaelia.Protocol.HTTP.Handlers.Minimal import MinimalFactory
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
 from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars, initializeLoggers
 from Kamaelia.Support.Protocol.HTTP import WSGILikeTranslator
@@ -59,32 +60,27 @@ def run_program():
         configs = ParseConfigFile('~/kp.ini', DictFormatter())
         ServerConfig = configs['SERVER']
         WsgiConfig = configs['WSGI']
+        StaticConfig = configs['STATIC']
         
         processPyPath(ServerConfig)
-        
-        #uncomment this if you wish to debug what is happening to WsgiConfig
-        #from pprint import pprint
-        #pprint(WsgiConfig)
         normalizeWsgiVars(WsgiConfig)
     
         url_list = ParseUrlFile(WsgiConfig['url_list'])
         normalizeUrlList(url_list)
-    
+        
+        StaticConfig['homedirectory'] = os.path.expanduser(StaticConfig['homedirectory'])
         routing = [
+                      [StaticConfig['url'], MinimalFactory(
+                                                           StaticConfig['index'], 
+                                                           StaticConfig['homedirectory']
+                                                           )],
                       ["/", WsgiFactory(WsgiConfig, url_list)],
                   ]
-        
-        if ServerConfig.get('use_hrouting'):
-            #this assumes of course that hrouting.py is on the python path
-            from hrouting import custom_routing
-            custom_routing.reverse()
-            for item in custom_routing:
-                routing.insert(0, item)
     
         initializeLoggers(ServerConfig.get('log', home_path + '/kpuser/ks.log'))
         
         kp = ServerCore(
-            protocol=HTTPProtocol(routing, WSGILikeTranslator),
+            protocol=HTTPProtocol(routing),
             port=int(ServerConfig['port']),
             socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
     

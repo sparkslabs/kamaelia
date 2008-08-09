@@ -143,6 +143,9 @@ following items are required to be defined:
 * wsgi_ver: the WSGI version as a Tuple.  You want to use (1, 0)
 * server_admin: the name and/or email address of the server's administrator
 * server_software: The software and/or software version that runs the server
+
+FIXME:  It would be nice if the WsgiConfig were made into an object rather than a
+dictionary.
 """
 
 from pprint import pprint, pformat
@@ -192,6 +195,13 @@ class _WsgiHandler(threadedcomponent):
     URL routing is to be done in the factory method that creates this.  Thus,
     the handler must be passed the application object.  You probably don't need
     to instantiate this class directly.
+    
+    It will respond to the following signals:
+    
+     producerFinished - This is used by the HTTPServer to indicate that the full
+     body has been transmitted.  This will not shut down this component, and in
+     fact will make it BEGIN processing the request.  If the request is not a
+     POST or PUT request, the Handler will ignore this signal.
     """
     Inboxes = {
         'inbox' : 'Used to receive the body of requests from the HTTPParser',

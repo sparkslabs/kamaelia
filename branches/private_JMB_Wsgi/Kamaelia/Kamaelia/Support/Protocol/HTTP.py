@@ -21,6 +21,15 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
+def TranslatorFactory(hand, trans):
+    
+    def _getHandler(request):
+        request = trans(request)
+        return hand(request)
+    
+    return _getHandler
+
+
 def WSGILikeTranslator(request):
     """
     This function will translate the HTTPParser's syntax into a more WSGI-like syntax.

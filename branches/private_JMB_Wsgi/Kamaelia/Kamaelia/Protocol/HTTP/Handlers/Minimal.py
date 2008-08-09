@@ -116,9 +116,11 @@ class Minimal(component):
 
     indexfilename=None
     homedirectory=None
-    def __init__(self, request, **argd):
+    def __init__(self, request, indexfilename='index.html', homedirectory='htdocs/', **argd):
         super(Minimal, self).__init__(**argd)
         self.request = request
+        self.indexfilename = indexfilename
+        self.homedirectory = homedirectory
 
     def main(self):
         """Produce the appropriate response then terminate."""
