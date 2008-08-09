@@ -21,28 +21,100 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 """
+========================
+Translator
+========================
+
 Translators are designed to take a request from the HTTP server (using the
 WSGILikeTranslator) and turn it into a message that can be sent out via headstock.
 It also takes a message from headstock and turns it into a response that can be
 sent out by the HTTPServer.
 
-There are two components to a translator:  a RequestSerializer and a
-ResponseDeserializer.  The RequestSerializer takes the incoming HTTP request and
-turns it into a form that can be sent to the peer.  The ResponseDeserializer takes
-a message from the Peer and turns it into a form that can be sent to the page
-requester by the HTTPServer.
+There are three subcomponents in a Translator: A RequestSerializer, a
+ResponseDeserializer, and a Controller.  The RequestSerializer takes the incoming
+HTTP request and turns it into a form that can be sent to the peer.  The
+ResponseDeserializer takes a message from the Peer and turns it into a form that
+can be sent to the page requester by the HTTPServer.  The Controller does most of
+the signal handling and is responsible for receiving signals and forwarding them
+to the appropriate components.
 
-The system is also made to connect to a pair of backplanes (via a PublishTo component
-of course).  The first backplane that it connects to will connect to the interface's
-inbox.  This is used for a translator to register itself with the interface (so
-it can receive notifications when the peer has sent a message back) as well as to
-send the interface messages to be sent out to the peer.  The second backplane is
-used to connect to the interface's control inbox.  This is used to notify the interface
-that the translator is no longer active.
+Example usage
+--------------
+
+How to create a simple HTTP Translating system using ServerCore that will echo
+HTTP Requests on the command line:
+
+    from Kamaelia.Protocol.HTTP.Translators import Translator
+    from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
+    from Kamaelia.Chassis.ConnectedServer import ServerCore
+    from Kamaelia.Util.Backplane import Backplane, SubscribeTo
+    from Kamaelia.Util.Console import ConsoleEchoer
+    
+    bp = Backplane('XMPP_INTERFACE').activate()
+    pipe = Pipeline(SubscribeTo('XMPP_INTERFACE), ConsoleEchoer)
+    routing = [['/', TranslatorFactory(Translator, WSGILikeTranslator)]]
+    ServerCore(
+        protocol=HTTPProtocol(routing),
+        port = 8080,
+        socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
+    ).run()
+
+How does it work?
+------------------
+
+The system is made to connect to a pair of backplanes (via a PublishTo component
+of course).  The first service that it subscribes to will connect to the interface's
+inbox.  This is used to send the interface messages to be sent out to the peer.
+The second backplane is used to connect to the interface's control inbox.  This service
+is used by the Translator to register itself with the interface and to notify the
+interface that it's done.
 
 You probably don't need to instantiate either the RequestSerializer or
-ResponseDeserializer directly.  However, you may also swap them out for other
-components with the same interface if you so desire.
+ResponseDeserializer directly.  You should instead call the factory function
+Translator, which will automatically create the components and link them.  Note
+that it is possible to change the RequestSerializer or ResponseDeserializer in
+the Translator funcion, but be aware that they must use the same interface as the
+components they replace.
+
+What is crosstalk?
+--------------------
+
+Cross talk is a way of passing data back and forth between the gateway and the peer
+It is basically a dictionary that roughly maps to a CGI environment-like dictionary
+that has been serialized into JSON (using simplejson).  There are a few other fields
+that may be in a crosstalk message.
+
+- 'batch' is the "series" of messages a message is a part of.  Each HTTP request
+and its associated response (together referred to as a "transaction") are assigned
+a batch id.  This ID will be used to determine which "conversation" a message belongs
+to.  This is the id that the interface will use to determine which translator to
+send a message to.  The batch id also corresponds to the XMPP thread ID.
+
+- 'signal' will be present to signal certain things.  Presently, it is used to
+notify the peer when the gateway has transmitted the entire HTTP request (formatted
+into crosstalk) and by the Peer to signal when the entire HTTP response has been
+transmitted.
+
+- 'body' will contain a chunk of the body or the body in its entirety.
+
+The batch ID must be in all crosstalk messages while the signal and body fields may
+be in the initial message, a separate message, or may not even be in the same message
+(the Translator will currently send signal in a message by itself.)
+
+For more info on CGI environment variables that may be present, see the following
+webpage:  http://hoohoo.ncsa.uiuc.edu/cgi/env.html
+
+In additon to the standard CGI variables, the following variable may also be present:
+
+- 'NON_QUERY_URI' represents the URI without the query string.  For example, the
+URI /a/b/c?d=e would give a NON_QUERY_URI of /a/b/c
+
+What else will be done to the message?
+--------------------------------------
+
+The message will be gzipped to be smaller, and will then be base64 encoded to
+prevent any text in the message from invalidating the XML that will be used by
+XMPP.
 """
 
 from Axon.Component import component
@@ -71,8 +143,23 @@ from gate.JIDLookup import ExtractJID
 _logger_suffix='.publish.gateway.translator'
 
 class RequestSerializer(component):
-    """Note that sending messages via XMPP is considered outbound.  This converts
-    an HTTP request object into a headstock message.""" 
+    """
+    This component will take a request from the HTTPServer and translate it into
+    a form that can be sent over XMPP via headstock.  It will turn the request it
+    receives in __init__ into the initial message to be sent to the interface (where
+    it will be then be sent to the Peer via XMPP).
+    
+    For each body chunk that this component receives from the HTTPServer, it will
+    generate a separate XMPP message.
+    
+    Signals the RequestSerializer accepts:
+      -producerFinished - used by the HTTPServer to notify that the entire HTTP
+       message has been sent.
+      -shutdownMicroprocess - used to notify this component that needs to shutdown
+       (usually used during program shutdown or during an error).
+       
+    The signals will be sent out to the peer in the Crosstalk signal field.
+    """
     Inboxes = {'inbox' : 'Receive messages from the HTTPServer',
                'control' : 'Receive signals from the HTTPServer'}
     Outboxes = {'outbox' : 'Send messages to the Interface',
@@ -80,6 +167,11 @@ class RequestSerializer(component):
     
     ThisJID = u'amnorvend_gateway@jabber.org'    
     def __init__(self, request, batch_id, **argd):
+        """
+        request - The request that was sent by the HTTPServer.
+        batch_id - The "series" of messages this translator is associated with.
+           Comparable to the thread in an XMPP message.
+        """
         super(RequestSerializer, self).__init__(**argd)
         self.request = request
         self.signal = None
@@ -127,6 +219,11 @@ class RequestSerializer(component):
         self.sendMessage(signal_msg)
     
     def handleInbox(self, msg):
+        """
+        msg - the message from the HTTPServer.
+        
+        This method simply forwards a body chunk from the HTTPServer to the Peer.
+        """
         chunk = {
             'body' : escape(msg),
             'batch' : self.batch_id,
@@ -134,21 +231,44 @@ class RequestSerializer(component):
         self.sendMessage(chunk)
     
     def handleControlBox(self, msg):
+        """
+        This method will shut the component down if a shutdownMicroprocess or
+        producerFinished message is received.
+        """
         if isinstance(msg, (shutdownMicroprocess, producerFinished)):
             self.signal = msg
         
     def sendRegisterSignal(self):
+        """
+        This message will be called so that the translator will register itself
+        with the interface.  A translator must be registered to receive notifications
+        when it receives a message.  Thus, this must be called before the translator
+        can receive any messages from the interface.
+        """
         signal = newBatch(self.batch_id,
                           self.bundle(), #dereference the weakref
                           self.ToJID)
         self.send(signal, 'signal')
         
     def JIDNotFound(self):
+        """
+        This function is used to return a 404 error page if no user matches the
+        requested URI.  This will send out an internalNotify signal (which is internal
+        to the Translator).
+        """
         resource = getErrorPage(404, 'Could not find %s' % (self.request['REQUEST_URI']))
-        out = internalNotify(message=resource)    #Prevents the loop from running.
+        out = internalNotify(message=resource)
         self.send(out, 'signal')
         
     def makeMessage(self, serializable):
+        """
+        This function actually does the work of translating a message to a form
+        that can be sent out over XMPP.  It will make a Message (a headstock
+        entity that will translate into XML) and encode the body in JSON, gzip it,
+        and then base64 encode it.
+        
+        The message will be sent out to the interface to be sent to the peer.
+        """
         hMessage = Message(self.ThisJID, self.ToJID,
                            type=u'chat', stanza_id=generate_unique())
             
@@ -163,9 +283,35 @@ class RequestSerializer(component):
         return hMessage
     
     def sendMessage(self, serializable):
+        """This convenience function will make a message and then send it out via
+        the outbox."""
         self.send(self.makeMessage(serializable), 'outbox')
         
 class ResponseDeserializer(component):
+    """
+    This component will take a response from a Peer and translate it into a form
+    that can be turned into an HTTP response by the HTTPServer.
+    
+    Signals the ResponseDeserializer will accept:
+      -producerFinished - Used to signal normal shut down.  Note that this will
+       be sent to this translator by the peer using XMPP, so such a signal will
+       more than likely come in on the inbox rather than the control box (the name
+       of the signal directly corresponds to its type, ie a signal of 'producerFinished'
+       will represent an instance of Axon.Ipc.producerFinished).  This will be
+       forwarded to the signal outbox.
+      -shutdownMicroprocess - this signal is used to indicate that the component
+       should shut down immediately.  This will be forwarded to the signal box.
+      -internalNotify - this is a signal that is to be used internally by the Translator.
+       The ResponseSerializer will send the text inside this message's message attribute
+       to the HTTP server as the text of the webpage.  Presently, this signal is
+       only sent when the RequestSerializer is unable to locate a user based on the
+       requested URI.  This message will not be forwarded to the signal outbox as
+       it is meant for internal use.
+       
+    Any other signals may result in undefined behavior, but will most likely shut
+    the component down and forward the signal to the signal outbox (going to the
+    HTTP server) much like the producerFinished and shutdownMicroprocess.
+    """
     Inboxes = {'inbox' : 'Receive responses to deserialize',
                'control' : 'Receive shutdown signals',}
     Outboxes = {'outbox' : 'Send deserialized responses',
@@ -186,6 +332,8 @@ class ResponseDeserializer(component):
                 
             yield 1
         if not isinstance(self.signal, internalNotify):
+            debug('Translator %s sending signal %s' %(self.batch_id, self.signal),
+                  _logger_suffix)
             self.send(self.signal, 'signal')
             self.send(batchDone(self.batch_id), 'signal')
         
@@ -198,12 +346,8 @@ class ResponseDeserializer(component):
             deserialize = zlib.decompress(deserialize)
             resource = simplejson.loads(deserialize)
             
-            debug('Translator %s received:\n%s' % (self.batch_id, resource),
-                  _logger_suffix)
-            
             signal = resource.get('signal')
             if signal:
-                debug('Signal %s caught in batch %s.' % (signal, self.batch_id))
                 self.signal = LookupByText(signal)(self)
                 del resource['signal']
             if resource:
@@ -325,11 +469,8 @@ def Translator(request, mtr=None, rtm=None):
             ('self', 'xmpp_in') : ('mtr', 'inbox'),
             ('rtm', 'outbox') : ('interface_in', 'inbox'),
                 
-            #This is the shutdown handling
-            #('self', 'control') : ('rtm', 'control'),
-            #('self', 'xmpp_control') : ('mtr', 'response_control'),
-            #('mtr', 'signal') : ('self', 'signal'),
-            #('rtm', 'response_signal') : ('mtr', 'response_control'),
+            #This is the signal handling
+            ('self', 'control') : ('rtm', 'control'),
             ('rtm', 'signal') : ('controller', 'control'),
             ('mtr', 'signal') : ('self', 'signal'), #Will go to the HTTPServer
             ('controller', 'signal_serializer') : ('rtm', 'control'),

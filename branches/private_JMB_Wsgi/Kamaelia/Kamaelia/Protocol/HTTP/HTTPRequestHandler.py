@@ -417,8 +417,8 @@ class HTTPRequestHandler(component):
                 if isinstance(ctrl, producerFinished):
                     break
             else:
-                yield 1
                 self.pause()
+                yield 1
                 
     def forwardBodyChunks(self):
         while self.dataReady("inbox") and not self.requestEndReached:
