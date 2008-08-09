@@ -42,60 +42,53 @@ import time
 from Axon.SchedulingComponent import SchedulingAdaptiveCommsComponent
 
 class MonoMixer(SchedulingAdaptiveCommsComponent):
-    Inboxes = ["inbox", "control", "event", "sync"]
     channels = 8
     bufferSize = 1024
     sampleRate = 44100
-    sync = False
 
     def __init__(self, **argd):
         super(MonoMixer, self).__init__(**argd)
         for i in range(self.channels):
             self.addInbox("in%i" % i)
         self.period = float(self.bufferSize)/self.sampleRate
+        self.lastSendTime = time.time()
+        self.scheduleAbs("Send", self.lastSendTime + self.period)
 
 
     def main(self):
-        if self.sync:
-            while not self.dataReady("sync"):
-                self.pause()
-            self.lastSendTime = self.recv("sync")
-        else:
-            self.lastSendTime = time.time()
-        self.scheduleAbs("Send", self.lastSendTime + self.period)
-        output = numpy.zeros(self.bufferSize)
+        output = None
         while 1:
             if self.dataReady("event"):
                 self.recv("event")
-                output /= self.channels
-                self.send(output, "outbox")
-                output = numpy.zeros(self.bufferSize)
+                if output != None:
+                    output /= self.channels
+                    self.send(output, "outbox")
+                    output = None
                 self.lastSendTime += self.period
                 self.scheduleAbs("Send", self.lastSendTime + self.period)
             elif self.dataReady("control"):
                 # TODO: Do stuff here
                 self.recv("control")
-            elif self.dataReady("sync"):
-                # Ignore any further messages once we're synced
-                self.recv("sync")
             else:
                 # Message came from one of the inboxes
                 for i in range(self.channels):
                     if self.dataReady("in%i" % i):
                         data = self.recv("in%i" % i)
-                        if data != None:
+                        if output != None:
                             output += data
+                        else:
+                            output = data
             if not self.anyReady():
                 self.pause()
 
 if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Apps.Jam.Audio.SineSynth import SineOsc
-    from Kamaelia.Apps.Jam.Audio.RTOutput import SchedulingRTOutput, RTOutput
+    from Kamaelia.Apps.Jam.Audio.PyGameOutput import PyGameOutput
     Graphline(s1=SineOsc(frequency=440),
               s2=SineOsc(frequency=880),
               mixer=MonoMixer(channels=2),
-              output=SchedulingRTOutput(outputDevice=2),
+              output=PyGameOutput(),
               linkages={("s1", "outbox"):("mixer", "in0"),
                         ("s2", "outbox"):("mixer", "in1"),
                         ("mixer", "outbox"):("output", "inbox")}).run()
