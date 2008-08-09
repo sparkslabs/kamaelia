@@ -1,11 +1,10 @@
 import pygame
-import Axon
-from Axon.SchedulingComponent import SchedulingComponent
 import numpy
 import time
+from Axon.SchedulingComponent import SchedulingComponent
 from Kamaelia.Apps.Jam.Audio.Synth import Synth
 
-class SineOsc(Axon.SchedulingComponent.SchedulingComponent):
+class SineOsc(SchedulingComponent):
     sampleRate = 44100
     bufferSize = 1024
     frequency = 440
@@ -84,10 +83,7 @@ class SineVoice(SineOsc):
                                                         self.amplitude,
                                                         self.phase)
                     self.phase = phase
-                else:
-                    sample = None
-                self.send(sample, "outbox")
-
+                    self.send(sample, "outbox")
                 self.lastSendTime += self.period
                 self.scheduleAbs("Send", self.lastSendTime + self.period)
             if not self.anyReady():
@@ -103,9 +99,9 @@ if __name__ == "__main__":
     from Kamaelia.Apps.Jam.UI.PianoRoll import PianoRoll
     from Kamaelia.Apps.Jam.Audio.Synth import Synth
     from Kamaelia.Apps.Jam.Util.Numpy import TypeConverter
-    from Kamaelia.Apps.Jam.Audio.RTOutput import RTOutput
+    from Kamaelia.Apps.Jam.Audio.PyGameOutput import PyGameOutput
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.PureTransformer import PureTransformer
 
     Pipeline(PianoRoll(), SineSynth(),
-             RTOutput(outputDevice=0)).run()
+             PyGameOutput()).run()
