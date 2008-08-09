@@ -53,16 +53,16 @@ class Paint(Axon.Component.component):
    (this component and its documentation is heaviliy based on Kamaelia.UI.Pygame.Button)
 
    Keyword arguments:
-   
+
    - position     -- (x,y) position of top left corner in pixels
    - margin       -- pixels margin between caption and button edge (default=8)
    - bgcolour     -- (r,g,b) fill colour (default=(224,224,224))
    - fgcolour     -- (r,g,b) text colour (default=(0,0,0))
    - transparent  -- draw background transparent if True (default=False)
    - size         -- None or (w,h) in pixels (default=None)
-   
+
    """
-   
+
    Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
                "callback" : "Receive callbacks from PygameDisplay",
@@ -92,11 +92,14 @@ class Paint(Axon.Component.component):
       self.tool = "Line"
       self.toolSize = 3
       self.layers = []
+      self.brushes = [] # TEST PURPOSES
+      self.activeBrush = None # TEST PURPOSES
       self.size = size
       self.selectedColour = selectedColour
       self.innerRect = pygame.Rect(10, 10, self.size[0]-20, self.size[1]-20)
       self.playing = False
-
+      
+      self.testingBrush = False
       if msg is None:
          msg = ("CLICK", self.id)
       self.eventMsg = msg
@@ -114,6 +117,11 @@ class Paint(Axon.Component.component):
                            "events" : (self, "inbox"),
                            "size": self.size,
                            "transparency" : self.backgroundColour }
+      self.brush = { "DISPLAYREQUEST" : True,
+                           "callback" : (self,"callback"),
+                           "events" : (self, "inbox"),
+                           "size": (self.toolSize,self.toolSize),
+                           "transparency" : self.backgroundColour }
 
 
       if not position is None:
@@ -126,7 +134,7 @@ class Paint(Axon.Component.component):
       while waiting:
         if self.dataReady(boxname): return
         else: yield 1
-        
+
 
    def animate(self):
        FPS = 2
@@ -137,13 +145,14 @@ class Paint(Axon.Component.component):
                self.pause()
            self.recv("newframe")
            print "now"
-       
+
    def drawBG(self, bg = False):
+      """Fills the currentlayer with a background, if it's the bg layer it also gives a border."""
       if bg == True:
          self.activeLayer.fill( (255,0,0) )
          self.activeLayer.fill( self.backgroundColour, self.innerRect )
       else: self.activeLayer.fill( self.backgroundColour )
-      
+
    def floodFill(self, x, y, newColour, oldColour):
        """Flood fill on a region of non-BORDER_COLOR pixels."""
        #print "colour here = ",self.activeLayer.get_at((x,y))[0]
@@ -161,17 +170,28 @@ class Paint(Axon.Component.component):
                        newedge.append((s, t))
            edge = newedge
        self.blitToSurface()
-       
+
    def addLayer(self):
-   #   print "adding layer"
-      self.send( self.layer, "display_signal")
-      if not self.dataReady('callback'): 
-          self.pause()
-          yield 1
-      x = self.recv("callback")
-      self.layers.append(x)
-      
+       """Sends a request for a new surface, using the layer details. ie. returns transparent surface of the bg size"""
+       self.send( self.layer, "display_signal")
+       if not self.dataReady('callback'):
+           self.pause()
+           yield 1
+       x = self.recv("callback")
+       self.layers.append(x)
+       
+   def addBrush(self):
+       """Sends a request for a new surface, using the brush details. ie. returns transparent surface, of the toolSize"""
+       self.send( self.brush, "display_signal")
+       if not self.dataReady('callback'):
+           self.pause()
+           yield 1
+       x = self.recv("callback")
+       self.brushes.append(x)
+       
    def save(self, filename):
+       """Merges all the layers (by bliting them all to the background) and
+        saves as a jpg, note this requires pygame 1.8 otherwise will save a bmp."""
        self.activeLayIn = 0
        self.activeLayer = self.layers[self.activeLayIn]
        self.send( self.activeLayIn, "laynum" )
@@ -180,9 +200,9 @@ class Paint(Axon.Component.component):
        filename = filename+'.JPG'
        pygame.image.save(self.activeLayer, filename)
 
-           
+
    def main(self):
-      """Main loop."""
+      """Main event loop, also handles input from other components"""
       displayservice = PygameDisplay.getDisplayService()
       self.link((self,"display_signal"), displayservice)
 
@@ -191,7 +211,7 @@ class Paint(Axon.Component.component):
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
       self.layers.append(self.display)
-      
+
   #    f = os.path.join('', "pennyarcade.gif")
   #    x = pygame.image.load(f)
   #    colorkey = x.get_at((0, 0))
@@ -203,7 +223,7 @@ class Paint(Axon.Component.component):
   #    self.activeLayer = self.layers[self.activeLayIn]
   #    self.display.blit( x, (0,0) )
 
-      
+
       layerDisp = TextDisplayer(size = (20, 20),position = (520,10)).activate()
       self.link( (self,"laynum"), (layerDisp,"inbox") )
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
@@ -230,7 +250,7 @@ class Paint(Axon.Component.component):
       FPS = 1
       clock = Clock(float(1)/FPS).activate()
       clock.link((clock, "outbox"), (self, "newframe"))
-      
+
 
       done = False
       while not done:
@@ -264,8 +284,6 @@ class Paint(Axon.Component.component):
                             if self.animator and len(self.layers)-2 >= 1:
                                 for x in self.layers:
                                     s.set_alpha = 0
-                                    
-                                
                                 self.activeLayer.blit(self.layers[len(self.layers)-2],(0,0))
                             self.blitToSurface()
                         elif event[1] == "Delete":
@@ -275,19 +293,27 @@ class Paint(Axon.Component.component):
                             self.activeLayer = self.layers[self.activeLayIn]
                           #  print self.layers
                         if event[1] == "Next":
+                            if self.animator and self.activeLayIn != 0:
+                            	self.activeLayer.set_alpha(0)
                             if self.activeLayIn == len(self.layers)-1:
                                 self.activeLayIn = 0
                                 self.activeLayer = self.layers[self.activeLayIn]
                             else:
                                 self.activeLayIn += 1
                                 self.activeLayer = self.layers[self.activeLayIn]
+                            if self.animator:
+                            	self.activeLayer.set_alpha(255)
                         elif event[1] == "Prev":
+                            if self.animator and self.activeLayIn != 0:
+                            	self.activeLayer.set_alpha(0)
                             if self.activeLayIn == 0:
                                 self.activeLayIn = len(self.layers)-1
                                 self.activeLayer = self.layers[self.activeLayIn]
                             else:
                                 self.activeLayIn -= 1
                                 self.activeLayer = self.layers[self.activeLayIn]
+                            if self.animator:
+                            	self.activeLayer.set_alpha(255)
                         self.send( self.activeLayIn, "laynum" )
                     elif event[0] == "Tool":
                         self.tool = event[1]
@@ -332,7 +358,12 @@ class Paint(Axon.Component.component):
                         self.blitToSurface()
                         self.send( self.activeLayIn, "laynum" )
                     elif event.key == pygame.K_s:
-                        done = True
+                        """Testing a different brushing technique, bliting a brush"""
+                        print self.size, self.toolSize
+                        yield WaitComplete( self.addBrush() )
+                        self.activeBrush = self.brushes[len(self.brushes)-1]
+                        self.activeBrush.fill( self.backgroundColour )
+                        pygame.draw.circle(self.activeBrush, self.selectedColour, (self.toolSize/2,self.toolSize/2), self.toolSize, 0)
                     elif event.key == pygame.K_a:
                         self.animator = True
                     elif event.key == pygame.K_l:
@@ -349,8 +380,8 @@ class Paint(Axon.Component.component):
                             self.recv("newframe")
                         self.playing = True
                         self.blitToSurface()
-                                  
-                       
+
+
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     if self.tool == "Circle":
@@ -368,7 +399,8 @@ class Paint(Axon.Component.component):
                                  self.oldpos = event.pos
                               else:
                                 # pygame.draw.circle(self.activeLayer, self.selectedColour, self.oldpos, self.toolSize, 0)
-                                 pygame.draw.line(self.activeLayer, self.selectedColour, self.oldpos, event.pos, self.toolSize)
+                                # pygame.draw.line(self.activeLayer, self.selectedColour, self.oldpos, event.pos, self.toolSize)
+                                 self.activeLayer.blit(self.activeBrush, event.pos)
                                  line = ("line", self.oldpos, event.pos)
                                  self.send((line,), "outbox")
                                  self.oldpos = event.pos
@@ -377,6 +409,7 @@ class Paint(Axon.Component.component):
          yield 1
 
    def blitToSurface(self):
+       """Refreshes the activelayer"""
        self.send({"REDRAW":True, "surface":self.activeLayer}, "display_signal")
 
 __kamaelia_components__  = ( Paint, )
@@ -389,9 +422,9 @@ class DisplayConfig(Axon.Component.component):
         pgd = PygameDisplay( width=self.width, height=self.height ).activate()
         PygameDisplay.setDisplayService(pgd)
         yield 1
-    
 
-                  
+
+
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
