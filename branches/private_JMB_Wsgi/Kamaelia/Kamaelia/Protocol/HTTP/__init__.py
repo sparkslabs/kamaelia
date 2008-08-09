@@ -26,7 +26,7 @@ import types
 from itertools import izip
 from HTTPServer import HTTPServer, MapStatusCodeToText
 
-def requestHandlers(URLHandlers, requestTranslator, errorpages=None):
+def requestHandlers(URLHandlers, errorpages=None):
     """
     This is a commonly used function used to find a request handler.
     """
@@ -41,60 +41,20 @@ def requestHandlers(URLHandlers, requestTranslator, errorpages=None):
                 if request["non-query-uri"][:len(prefix)] == prefix:
                     request['uri-prefix-trigger'] = prefix
                     request['uri-suffix'] = request["non-query-uri"][len(prefix):]
-                    if requestTranslator:
-                        request = requestTranslator(request)
                     return handler(request)
 
         return errorpages.getErrorPage(404, "No resource handlers could be found for the requested URL")
 
     return createRequestHandler
 
-def HTTPProtocol(routing, requestTranslator=None):
+def HTTPProtocol(routing):
     """
     This is a convenience method that you should probably use when creating a
     server rather than creating an HTTPServer directly.
     """
     def _getHttpServer(**argd):
-        return HTTPServer(requestHandlers(routing, requestTranslator), requestTranslator, **argd)
+        return HTTPServer(requestHandlers(routing), **argd)
     return _getHttpServer
-
-
-def PopURI(request, sn_key, pi_key, ru_key):
-    if not request.get(sn_key):
-        #print '%s not found' % (sn_key)
-        split_uri = request[ru_key].split('/')
-        split_uri = [x for x in split_uri if x]
-        if split_uri:
-            request[sn_key] = '/' + split_uri.pop(0)
-            request[pi_key] = '/'.join(split_uri)
-            if request[pi_key]:
-                request[pi_key] = '/' + request[pi_key]
-        else:   #The request must have been for root
-            request[sn_key] = '/'
-            request[pi_key] = ''
-    else:
-        sn_split = request[sn_key].split('/')
-        pi_split = request[pi_key].split('/')
-        pi_split = [x for x in pi_split if x]
-        sn_split.append(pi_split.pop(0))
-        request[sn_key] = '/'.join(sn_split)
-        request[sn_key] = checkSlashes(request[sn_key])
-        if request[pi_key]:
-            request[pi_key] = '/'+('/'.join(pi_split))
-        else:
-            request[pi_key] = ''
-        request[pi_key] = checkSlashes(request[pi_key])
-            
-def checkSlashes(item='', sl_char='/'):
-    if not item.startswith(sl_char):
-        item = sl_char + item
-    return item.rstrip('/')
-            
-def PopWsgiURI(request):
-    return PopURI(request, 'SCRIPT_NAME', 'PATH_INFO', 'NON_QUERY_URI')
-
-def PopKamaeliaURI(request):
-    return PopURI(request, 'uri-prefix-trigger', 'uri-suffix', 'raw-uri')
     
 
 MapTextToStatusCode = dict(izip(MapStatusCodeToText.itervalues(), MapStatusCodeToText.iterkeys()))

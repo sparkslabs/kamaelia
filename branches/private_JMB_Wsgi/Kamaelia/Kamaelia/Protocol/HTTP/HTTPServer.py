@@ -229,7 +229,7 @@ class HTTPShutdownLogicHandling(component):
         self.send(producerFinished(), "signal")        # We're done, close the connection.
         yield 1                                        # And quit
 
-def HTTPServer(createRequestHandler, requestTranslator=None, **argd):
+def HTTPServer(createRequestHandler, **argd):
     """\
     HTTPServer() -> new HTTPServer component capable of handling a single connection
 

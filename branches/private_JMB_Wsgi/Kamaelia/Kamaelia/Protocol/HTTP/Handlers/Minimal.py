@@ -141,9 +141,8 @@ class Minimal(component):
                     filepath += self.indexfilename
                     
                 resource = {
-                    "content-type"           : filetype,
-                    "statuscode"     : "200",
-                    #"length" : os.path.getsize(homedirectory + filename)
+                    "content-type"   : filetype,
+                    "statuscode"     : 200,
                 }
                 self.send(resource, "outbox")                    
             else:

@@ -27,8 +27,8 @@ This module is what you use to create a WSGI Handler.
 import re
 
 from WsgiHandler import _WsgiHandler
-from Kamaelia.Protocol.HTTP import PopWsgiURI
-from Kamaelia.Support.Protocol.HTTP import TranslatorFactory, WSGILikeTranslator
+from Kamaelia.Support.Protocol.HTTP import TranslatorFactory, WSGILikeTranslator, \
+    PopWsgiURI
 
 def WsgiFactory(WsgiConfig, url_list):
     """
@@ -100,14 +100,14 @@ def _importWsgiModule(name):
         mod = getattr(mod, comp)
     return mod
 
-def SimpleWsgiFactory(WsgiConfig, app_object, script_name='/'):
+def SimpleWsgiFactory(WsgiConfig, app_object, script_name='/', translator=WSGILikeTranslator):
     """
     This is a simple factory function that is useful if you know at compile time
     that you will only support one application.
     """
     
     def _getWsgiHandler(request):
-        #print request
+        request = translator(request)
         split_uri = request['PATH_INFO'].split('/')
         split_uri = [x for x in split_uri if x] #remove any empty strings
         
