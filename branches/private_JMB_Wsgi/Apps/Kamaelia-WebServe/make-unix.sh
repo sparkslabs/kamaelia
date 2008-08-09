@@ -35,8 +35,6 @@ find . -name "*.py"|zip -@ kwserve.zip
 find . -name "*.cfg"|zip -@g9 kwserve.zip
 find . -name "*.ini"|zip -@g9 kwserve.zip
 find . -name "*.tar" | zip -@g9 kwserve.zip
-#find . -name "*.pyc"|zip -@g kpublish.zip
-#find . -name "*.pyo"|zip -@g kpublish.zip
 cat zipheader.unix kwserve.zip > kwserve
 
 if [ ! -d ../dist ]
