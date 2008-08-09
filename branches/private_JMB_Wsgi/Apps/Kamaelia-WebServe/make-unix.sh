@@ -31,21 +31,21 @@ cd assembly
 echo ">Removing any previously compiled modules"
 rm -rfv assembly/*.pyc
 echo ">Creating executable"
-find . -name "*.py"|zip -@ kserve.zip
-find . -name "*.cfg"|zip -@g9 kserve.zip
-find . -name "*.ini"|zip -@g9 kserve.zip
-find . -name "*.tar" | zip -@g9 kserve.zip
+find . -name "*.py"|zip -@ kwserve.zip
+find . -name "*.cfg"|zip -@g9 kwserve.zip
+find . -name "*.ini"|zip -@g9 kwserve.zip
+find . -name "*.tar" | zip -@g9 kwserve.zip
 #find . -name "*.pyc"|zip -@g kpublish.zip
 #find . -name "*.pyo"|zip -@g kpublish.zip
-cat zipheader.unix kserve.zip > kserve
+cat zipheader.unix kwserve.zip > kwserve
 
 if [ ! -d ../dist ]
 then
     mkdir ../dist
 fi
 
-mv kserve ../dist
-chmod a+x ../dist/kserve
+mv kwserve ../dist
+chmod a+x ../dist/kwserve
 )
 
 if [ "$CLEANUP" = "clean" ]
