@@ -27,17 +27,18 @@ from pprint import pprint
 from autoinstall import autoinstall
 
 from Kamaelia.Apps.Wsgi.Factory import WsgiFactory
-import Kamaelia.Apps.Wsgi.Console as Console
+from Kamaelia.Apps.Wsgi.Console import info
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
 from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars, initializeLoggers
-from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
+from Kamaelia.Support.Protocol.HTTP import WSGILikeTranslator
 
 sys.path.insert(0, sys.argv[0] + '/data')
 
 _profile_ = False
+_logger_suffix = '.WebServe.main'
 
 def run_program():
     """The main entry point for the application."""
@@ -80,16 +81,14 @@ def run_program():
             for item in custom_routing:
                 routing.insert(0, item)
     
-        initializeLoggers(ServerConfig.get('log', home_path + '/kp.ini'))
+        initializeLoggers(ServerConfig.get('log', home_path + '/kpuser/ks.log'))
         
         kp = ServerCore(
             protocol=HTTPProtocol(routing, WSGILikeTranslator),
             port=int(ServerConfig['port']),
             socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
     
-        Console.info('Serving on port %s', ServerConfig['port'])
-        
-        #print "Serving on port %s" % (ServerConfig['port'])
+        info('Serving on port %s' % (ServerConfig['port']), _logger_suffix)
     except:
         import traceback
         print 'There was an error!  Info is in error.log'
@@ -113,22 +112,8 @@ def run_program():
 
 def profile_main():
     """This is what you want to use if you intend on profiling the application."""
-    #uncomment this if you're using profile and want to calibrate.  If you're still
-    #using cProfile, leave it commented out.
-    #print "==CALIBRATING=="
-    #pr = profile.Profile()
-    #for i in range(5):
-    #    print pr.calibrate(10000)
-
     pr = profile.Profile()  #Note that we've imported cProfile as profile.
     pr.run('main.run_program()')
-    
-    #Put the data into a format that KCacheGrind can understand.
-    import lsprofcalltree
-    k = lsprofcalltree.KCacheGrind(pr)
-    data = open('prof.kgrind', 'w+')
-    k.output(data)
-    data.close()
 
 if _profile_:
     main = profile_main
