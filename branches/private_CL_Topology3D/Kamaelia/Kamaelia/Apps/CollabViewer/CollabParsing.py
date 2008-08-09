@@ -170,65 +170,78 @@ class CollabWithViewParser(CollabParser):
                     orgData = data['orgData']
                     collabData = data['collabData']
                     #print collabData
-                    links = []
-                    staffViewLinks = []
+
                     orgNodes = []
+                    orgStaffNodes = []
+                    collabStaffNodes = []
+                    collabNodes = []
+                    staffNodes = []
+                    
+                    collabOrgLinks = []
+                    orgStaffSecondLevelLinks = []
+                    collabStaffSecondLevelLinks = []
+                    collabStaffLinks = []
+                    
                     for orgKey in orgData:
                         orgValues = orgData[orgKey]
                         orgNodes.append((orgKey, orgKey) )
                         orgNodes.append((orgKey+':'+orgKey, orgKey) )
                         for value in orgValues:
-                            orgNodes.append( (orgKey+':'+value, value) )
-                            links.append( (orgKey+':'+orgKey, orgKey+':'+value) )
+                            orgStaffNodes.append( (orgKey+':'+value, value) )
+                            orgStaffSecondLevelLinks.append( (orgKey+':'+orgKey, orgKey+':'+value) )
                             
-                        #orgNodes.extend( zip([orgKey+':'+value for value in orgValues], orgValues) )
-                            
-                    collabNodes = []
-                    staffViewNodes = []
                     for collabKey in collabData:
                         collabValues = collabData[collabKey]
                         collabNodes.append( (collabKey, collabKey) )
-                        #collabNodes.extend( zip([collabKey+':'+value for value in collabValues], collabValues) )
                         collabNodes.append((collabKey+':'+collabKey, collabKey) )
                         for value in collabValues:
-                            collabNodes.append( (collabKey+':'+value, value) )
-                            links.append( (collabKey+':'+collabKey, collabKey+':'+value) )
-                            if (value, value) not in staffViewNodes: # Ignore repeated nodes
-                                staffViewNodes.append( (value, value) )
-                            staffViewLinks.append( (collabKey, value) )
-                            staffViewLinks.append( (collabKey+':'+collabKey, collabKey+':'+value) )
+                            collabStaffNodes.append( (collabKey+':'+value, value) )
+                            collabStaffSecondLevelLinks.append( (collabKey+':'+collabKey, collabKey+':'+value) )
+                            if (value, value) not in staffNodes: # Ignore repeated nodes
+                                staffNodes.append( (value, value) )
+                            collabStaffLinks.append( (collabKey, value) )
                         
                         staffSet = frozenset(collabValues)
                         for orgKey in orgData:
                             orgValues = orgData[orgKey]
                             if staffSet.intersection(orgValues):
                                 #print collabValues, orgValues
-                                links.append( (collabKey, orgKey) )
+                                collabOrgLinks.append( (collabKey, orgKey) )
                     
                     viewDict = {}
                     viewDict['orgView'] = [["DEL", "ALL"]]
                     viewDict['staffView'] = [["DEL", "ALL"]]
-                    for node in collabNodes:
-                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-", "fgcolour= ( 200 ,0, 0);fgcolourselected=(0 , 200 , 0 ) " ]
-                        viewDict['orgView'].append(cmd)
-                        viewDict['staffView'].append(cmd)
+                    
                     for node in orgNodes:
+                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-", "fgcolour=(0,0,200);fgcolourselected=(200,0,200)" ]
+                        viewDict['orgView'].append(cmd)
+                    for node in orgStaffNodes:
                         cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-" ]
                         viewDict['orgView'].append(cmd)
-                    for link in links:
+                    for node in collabNodes:
+                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-", "fgcolour= ( 0 ,200, 0);fgcolourselected=(200 , 200 , 0 ) " ]
+                        viewDict['orgView'].append(cmd)
+                        viewDict['staffView'].append(cmd)
+                    for node in collabStaffNodes:
+                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-" ]
+                        viewDict['orgView'].append(cmd)
+                        viewDict['staffView'].append(cmd)
+                    for node in staffNodes:
+                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-" ]
+                        viewDict['staffView'].append(cmd)
+                    
+                    for link in collabOrgLinks + orgStaffSecondLevelLinks:
                         cmd = [ "ADD", "LINK", link[0], link[1] ]
                         viewDict['orgView'].append(cmd)
-                    
-                    for node in staffViewNodes:
-                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-" ]
-                        viewDict['staffView'].append(cmd)
-                    for link in staffViewLinks:
+                    for link in collabStaffSecondLevelLinks:
+                        cmd = [ "ADD", "LINK", link[0], link[1] ]
+                        viewDict['orgView'].append(cmd)
+                        viewDict['staffView'].append(cmd)    
+                    for link in collabStaffLinks:
                         cmd = [ "ADD", "LINK", link[0], link[1] ]
                         viewDict['staffView'].append(cmd)
 
                     self.send(viewDict, "outbox")
-                    
-
                     yield 1
             
             yield 1
