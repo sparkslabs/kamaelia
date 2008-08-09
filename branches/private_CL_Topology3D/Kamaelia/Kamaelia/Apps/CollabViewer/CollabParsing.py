@@ -193,7 +193,8 @@ class CollabWithViewParser(CollabParser):
                         for value in collabValues:
                             collabNodes.append( (collabKey+':'+value, value) )
                             links.append( (collabKey+':'+collabKey, collabKey+':'+value) )
-                            staffViewNodes.append( (value, value) )
+                            if (value, value) not in staffViewNodes: # Ignore repeated nodes
+                                staffViewNodes.append( (value, value) )
                             staffViewLinks.append( (collabKey, value) )
                             staffViewLinks.append( (collabKey+':'+collabKey, collabKey+':'+value) )
                         
