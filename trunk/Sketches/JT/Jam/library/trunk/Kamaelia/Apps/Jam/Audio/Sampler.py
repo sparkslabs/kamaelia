@@ -11,6 +11,7 @@ from Kamaelia.Apps.Jam.Audio.Polyphony import Targetter
 class WavVoice(SchedulingComponent):
     bufferSize = 1024
     sampleRate = None
+
     def __init__(self, fileName, **argd):
         super(WavVoice, self).__init__(**argd)
 
@@ -76,7 +77,8 @@ class WavVoice(SchedulingComponent):
                         sample = None
                 else:
                     sample = None
-                self.send(sample, "outbox")
+                if sample != None:
+                    self.send(sample, "outbox")
                 self.lastSendTime += self.period
                 self.scheduleAbs("Send", self.lastSendTime + self.period)
 
@@ -98,10 +100,10 @@ if __name__ == "__main__":
     from Kamaelia.Apps.Jam.UI.StepSequencer import StepSequencer
     from Kamaelia.Apps.Jam.Audio.Synth import Synth
     from Kamaelia.Apps.Jam.Audio.Polyphony import Targetter
-    from Kamaelia.Apps.Jam.Audio.RTOutput import RTOutput
+    from Kamaelia.Apps.Jam.Audio.PyGameOutput import PyGameOutput
 
     files = ["Ride", "HH", "Snare", "Kick"]
     files = ["/home/joe/Desktop/%s.wav"%fileName for fileName in files]
 
     Pipeline(StepSequencer(stepsPerBeat=4), Sampler(files),
-             RTOutput(outputDevice=0)).run()
+             PyGameOutput()).run()
