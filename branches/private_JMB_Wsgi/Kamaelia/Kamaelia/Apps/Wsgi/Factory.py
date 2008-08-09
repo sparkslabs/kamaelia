@@ -20,11 +20,15 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
+"""
+This module is what you use to create a WSGI Handler.  
+"""
 
 import re
 
 from WsgiHandler import _WsgiHandler
 from Kamaelia.Protocol.HTTP import PopWsgiURI
+from Kamaelia.Support.Protocol.HTTP import TranslatorFactory, WSGILikeTranslator
 
 def WsgiFactory(WsgiConfig, url_list):
     """
@@ -33,18 +37,21 @@ def WsgiFactory(WsgiConfig, url_list):
     and then extracts it to be passed to the newly created WSGI Handler.
     """
     class _getWsgiHandler(object):
-        def __init__(self,WsgiConfig, url_list):
+        def __init__(self,WsgiConfig, url_list, translator=WSGILikeTranslator):
             self.WsgiConfig = WsgiConfig
             self.url_list = url_list
             self.app_objs = {}
             self.compiled_regexes = {}
+            self.translator = translator
             for dictionary in url_list:
                 self.compiled_regexes[dictionary['kp.regex']] = re.compile(dictionary['kp.regex'])
         def __call__(self, request):
-            #print request
             matched_dict = False
             regexes = self.compiled_regexes
             urls = self.url_list
+            
+            request = self.translator(request)
+            
             split_uri = request['PATH_INFO'].split('/', 2)
             split_uri = [x for x in split_uri if x]  #remove any empty strings
             
@@ -56,10 +63,7 @@ def WsgiFactory(WsgiConfig, url_list):
             
             for url_item in urls:
                 if regexes[url_item['kp.regex']].search(split_uri[0]):
-                    #from pprint import pprint
-                    #pprint(request)
                     PopWsgiURI(request)
-                    #pprint(request)
                     matched_dict = url_item
                     break
     
@@ -74,14 +78,14 @@ def WsgiFactory(WsgiConfig, url_list):
                     app = getattr(module, matched_dict['kp.app_object'])
                     self.app_objs[matched_dict['kp.regex']] = app
                 except ImportError: #FIXME:  We should probably display some kind of error page rather than dying
-                    raise WsgiImportError("WSGI application file not found.  Please check your urls file.")
+                    raise WsgiImportError("WSGI application file not found %s.  Please check your urls file." 
+                                          % (matched_dict['kp.import_path']))
                 except AttributeError:
                     raise WsgiImportError("Your WSGI application file was found, but the application object was not. Please check your urls file.")
             request.update(matched_dict)
             if matched_dict.get('kp.nounicode'):
                 #Convert all elements in the request to strings
                 request = dict([(str(k), str(v)) for k, v in request.iteritems()])
-            #dump_garbage()
             return _WsgiHandler(app, request, WsgiConfig, Debug=True)
     return _getWsgiHandler(WsgiConfig, url_list)
 
