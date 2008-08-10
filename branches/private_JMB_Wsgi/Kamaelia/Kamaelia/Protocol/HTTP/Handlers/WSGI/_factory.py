@@ -19,42 +19,45 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 """
 This module is what you use to create a WSGI Handler.  
 """
 
 import re
 
-from WsgiHandler import _WsgiHandler
+from _WSGIHandler import _WsgiHandler
 from Kamaelia.Support.Protocol.HTTP import ReqTranslatorFactory, WSGILikeTranslator, \
     PopWsgiURI
+from Kamaelia.Apps.Wsgi.Apps.ErrorHandler import application as error_app
 import logging
 
-def WsgiFactory(WsgiConfig, url_list, errorlog='error.log', 
+_loggerInitialized = False
+
+def WSGIFactory(WSGIConfig, url_list, errorlog='error.log', 
                     logger_name='kamaelia.wsgi.application'):
     """
-    This method checks the URI against a series of regexes from urls.py to determine which
-    application object to route the request to, imports the file that contains the app object,
-    and then extracts it to be passed to the newly created WSGI Handler.
+    Creates a WSGI Handler using url routing.
+
+      WSGIConfig - A WSGIConfig object
+      url_list - A URL list to look up App objects.  It must contain three keys:
+          kp.regex - the regex to match the uri against (will only match the first
+            section)
+          kp.import_path - The path to import the WSGI application object from
+          kp.app_object - the attribute of the module named in kp.import_path that
+            names the WSGI application object
+      error_log - The file to store errors in
+      logger_name - The name of the python logger to log errors to
     """
     class _getWsgiHandler(object):
-        def __init__(self,WsgiConfig, url_list, translator=WSGILikeTranslator):
-            self.WsgiConfig = WsgiConfig
+        def __init__(self,WSGIConfig, url_list, translator=WSGILikeTranslator):
+            self.WsgiConfig = WSGIConfig
             self.url_list = url_list
             self.app_objs = {}
             self.compiled_regexes = {}
             self.translator = translator
             for dictionary in url_list:
                 self.compiled_regexes[dictionary['kp.regex']] = re.compile(dictionary['kp.regex'])
-            self._initializeLoggers()
-
-        def _initializeLoggers(self):
-            logger = logging.getLogger(logger_name)
-            handler = logging.FileHandler(errorlog)
-            handler.setLevel(logging.ERROR)
-            logger.addHandler(handler)
-            
+            _initializeLoggers(errorlog, logger_name)            
         def __call__(self, request):
             matched_dict = False
             regexes = self.compiled_regexes
@@ -78,7 +81,7 @@ def WsgiFactory(WsgiConfig, url_list, errorlog='error.log',
                     break
     
             if not matched_dict:
-                raise WsgiError('Page not found and no 404 pages enabled! Check your urls file.')
+                raise WSGIImportError('Page not found and no 404 pages enabled! Check your urls file.')
     
             if self.app_objs.get(matched_dict['kp.regex']):  #Have we found this app object before?
                 app = self.app_objs[matched_dict['kp.regex']]    #If so, pull it out of app_objs
@@ -88,16 +91,16 @@ def WsgiFactory(WsgiConfig, url_list, errorlog='error.log',
                     app = getattr(module, matched_dict['kp.app_object'])
                     self.app_objs[matched_dict['kp.regex']] = app
                 except ImportError: #FIXME:  We should probably display some kind of error page rather than dying
-                    raise WsgiImportError("WSGI application file not found %s.  Please check your urls file." 
+                    raise WSGIImportError("WSGI application file not found %s.  Please check your urls file." 
                                           % (matched_dict['kp.import_path']))
                 except AttributeError:
-                    raise WsgiImportError("Your WSGI application file was found, but the application object was not. Please check your urls file.")
+                    raise WSGIImportError("Your WSGI application file was found, but the application object was not. Please check your urls file.")
             request.update(matched_dict)
             if matched_dict.get('kp.nounicode'):
                 #Convert all elements in the request to strings
                 request = dict([(str(k), str(v)) for k, v in request.iteritems()])
-            return _WsgiHandler(app, request, WsgiConfig, Debug=True)
-    return _getWsgiHandler(WsgiConfig, url_list)
+            return _WsgiHandler(app, request, WSGIConfig, Debug=True)
+    return _getWsgiHandler(WSGIConfig, url_list)
 
 def _importWsgiModule(name):
     """
@@ -110,34 +113,34 @@ def _importWsgiModule(name):
         mod = getattr(mod, comp)
     return mod
 
-def SimpleWsgiFactory(WsgiConfig, app_object, script_name='/', translator=WSGILikeTranslator):
+def SimpleWSGIFactory(WSGIConfig, app_object, errorlog='error.log',
+                        logger_name='kamaelia.wsgi.apps'):
     """
-    This is a simple factory function that is useful if you know at compile time
-    that you will only support one application.
-    """
-    
-    def _getWsgiHandler(request):
-        request = translator(request)
-        split_uri = request['PATH_INFO'].split('/')
-        split_uri = [x for x in split_uri if x] #remove any empty strings
-        
-        script_name_trim = script_name.strip('/')
-        if script_name:
-            if script_name_trim == split_uri[0] and script_name != '/':
-                PopWsgiURI(request)
-            elif script_name == '/':
-                request['SCRIPT_NAME'] = ''
-                request['PATH_INFO'] = '/'.join(split_uri)
-            else:
-                raise WsgiImportError('Script name error!')
+    Creates a WSGI Handler that can handle only one WSGI Application.
 
-        else:
-            raise WsgiImportError("You must specify script_name to use SimpleWsgiFactory!")
-        return _WsgiHandler(app_object, request, WsgiConfig)
+      WSGIConfig - A WSGIConfig object
+      app_object - The WSGI application object to run
+      error_log - The file to store errors in
+      logger_name - The name of the python logger to log errors to
+    """
+    _initializeLoggers(errorlog, logger_name)
+    def _getWsgiHandler(request):
+        request = WSGILikeTranslator(request)
+
+        return _WsgiHandler(app_object, request, WSGIConfig)
     
     return _getWsgiHandler
+    
+def _initializeLoggers(errorlog, logger_name):
+    global _loggerInitialized
+    if not _loggerInitialized:
+        _loggerInitialized = True
+        logger = logging.getLogger(logger_name)
+        handler = logging.FileHandler(errorlog)
+        handler.setLevel(logging.ERROR)
+        logger.addHandler(handler)
 
-class WsgiImportError(Exception):
+class WSGIImportError(Exception):
     """
     This exception is to indicate that there was an error in importing a WSGI app.
     """

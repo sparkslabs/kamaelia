@@ -26,7 +26,7 @@ from pprint import pprint
 
 from autoinstall import autoinstall
 
-from Kamaelia.Apps.Wsgi.Factory import WsgiFactory
+from Kamaelia.Protocol.HTTP.Handlers.WSGI import WSGIFactory
 from Kamaelia.Apps.Wsgi.Console import info
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
@@ -76,7 +76,7 @@ def run_program():
                                                            StaticConfig['index'], 
                                                            StaticConfig['homedirectory']
                                                            )],
-                      ["/", WsgiFactory(WsgiConfig, url_list, log)],
+                      ["/", WSGIFactory(WsgiConfig, url_list, log)],
                   ]
     
         initializeLogger()
@@ -92,6 +92,7 @@ def run_program():
         print 'There was an error!  Info is in error.log'
         file = open('error.log', 'a')
         traceback.print_exc(file=file)
+        file.write('\n')
         file.close()
         sys.exit(1)
     try:

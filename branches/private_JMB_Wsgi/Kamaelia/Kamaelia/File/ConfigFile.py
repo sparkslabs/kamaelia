@@ -183,8 +183,9 @@ def ParseConfigFile(filename, formatters, defaults=None, vars=None):
             components = [ConfigFileReader(filename)] + formatters
         except TypeError:
             raise ParseException('Unknown argument passed to ParseConfigFile')
-        [x.activate() for x in formatters]
-        RecursiveLink(iter(components)).run()
+        Pipeline(
+            *components
+        ).run()
     return formatters[-1].getResults()
 
 def RecursiveLink(iterable, current=None):
