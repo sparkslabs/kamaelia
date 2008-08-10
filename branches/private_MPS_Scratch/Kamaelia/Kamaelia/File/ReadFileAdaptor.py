@@ -102,6 +102,10 @@ from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished
 
 import time
+
+class EOF(Exception):
+    pass
+
 class ReadFileAdaptor(component):
    """\
    An instance of this class is a read file adaptor component. It's
@@ -198,7 +202,7 @@ class ReadFileAdaptor(component):
       data = ""
       data = self.f.read(self.readsize)
       if not data:
-         raise "End of Data"
+         raise EOF("End of Data")
       return data
 
    def getDataReadline(self):
@@ -209,7 +213,7 @@ class ReadFileAdaptor(component):
       Same reason for indirection as above."""
       data = self.f.readline()
       if not data:
-         raise "End of Data"
+         raise EOF("End of Data")
       return data
 
    def mainBody(self):
