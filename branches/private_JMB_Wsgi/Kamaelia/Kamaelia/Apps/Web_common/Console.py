@@ -25,6 +25,9 @@ import logging
 _console_name = 'kamaelia'
 
 def setConsoleName(name):
+    """
+    This sets the name of the python logger that represents the console.
+    """
     _console_name = name
 
 def prompt_yesno(text):
@@ -51,16 +54,21 @@ def prompt_corrupt(corrupt):
         sys.exit(1)
         
 def debug(msg, suffix='', *args, **argd):
+    """Print a debug message to the screen"""
     logging.getLogger(_console_name + suffix).debug(msg, *args, **argd)
     
 def info(msg, suffix='', *args, **argd):
+    """Print info to the screen"""
     logging.getLogger(_console_name+suffix).info(msg, *args, **argd)
     
 def warning(msg, suffix='', *args, **argd):
+    """Print a warning to the screen"""
     logging.getLogger(_console_name+suffix).warning(msg, *args, **argd)
     
 def error(msg, suffix='', *args, **argd):
+    """Print an error to the screen"""
     logging.getLogger(_console_name+suffix).error(msg, *args, **argd)
     
 def critical(msg, suffix='', *args, **argd):
+    """Print a critical message to the screen."""
     logging.getLogger(_console_name+suffix).critical(msg, *args, **argd)

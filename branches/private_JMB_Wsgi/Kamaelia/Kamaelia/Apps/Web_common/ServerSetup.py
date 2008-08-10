@@ -20,9 +20,11 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
+"""This module includes various useful functions for setting a webserver up."""
+
 import sys, logging, os
 def processPyPath(ServerConfig):
-    """Use the Server configuration data to actually configure the server."""
+    """Use ServerConfig to add to the python path."""
     if ServerConfig.get('pypath_append'):
         path_append = ServerConfig['pypath_append'].split(':')
         sys.path.extend(path_append)
@@ -44,6 +46,7 @@ def normalizeWsgiVars(WsgiConfig):
     WsgiConfig['wsgi_ver'] = tuple(WsgiConfig['wsgi_ver'].split('.'))
     
 def initializeLogger(consolename='kamaelia'):
+    """This sets up the logging system."""
     formatter = logging.Formatter('%(levelname)s/%(name)s: %(message)s')
     
     console = logging.StreamHandler(sys.stdout)
@@ -51,11 +54,12 @@ def initializeLogger(consolename='kamaelia'):
     consolelogger = logging.getLogger(consolename)
     consolelogger.setLevel(logging.DEBUG)
     consolelogger.addHandler(console)
-    from Kamaelia.Apps.Wsgi.Console import setConsoleName
+    from Kamaelia.Apps.Web_common.Console import setConsoleName
     setConsoleName(consolename)
     
     from atexit import register
     register(killLoggers)
 
 def killLoggers():
+    """Shuts down the logging system and flushes input."""
     logging.shutdown()

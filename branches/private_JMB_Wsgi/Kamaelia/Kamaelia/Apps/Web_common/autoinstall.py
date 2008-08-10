@@ -19,7 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 """
 This module contains the functionality for autoinstall of necessary config files.
 At this point, it installs everything to a predefined location, but that should hopefully

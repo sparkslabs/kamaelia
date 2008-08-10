@@ -19,8 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 """
+NOTE:  This module may be useful outside of the context it's currently being used.
+However, there are a few caveats that may not make it unsuitable for general usage,
+thus it is in Kamaelia.Apps.
+
 This module is used for reading config files.  A config file is a standard .ini file
 that looks something like this:
 
@@ -84,6 +87,21 @@ However, if you were to read the DictFormatter's outbox, you would get:
 })
 
 This is done in case any listening formatters depend upon the order of the sections.
+
+================
+ParseConfigFile
+================
+NOTE:  This function was made to be used before any other components have been
+activated.  Using this function when other components are activated will result
+in undefined behavior.
+
+This function is the main way to read a config file and format it.  You pass it
+a filename to read and a set of formatters.
+
+As an example, this will read a file named by the string filename and print the
+resulting dict out:
+
+    print ParseConfigFile(filename, [DictFormatter()])
 """
 
 from Axon.Component import component
@@ -136,7 +154,7 @@ class FormatterBase(component):
     def __init__(self, **argd):
         super(FormatterBase, self).__init__(argd)
         self.results = None
-    def getResults(self):
+    def _getResults(self):
         """
         This method is used to pull results once processing is finished.
         """
@@ -177,7 +195,7 @@ def ParseConfigFile(filename, formatters, defaults=None, vars=None):
             ConfigFileReader(filename),
             formatters
         ).run()
-        return formatters.getResults()
+        return formatters._getResults()
     else:
         try:
             components = [ConfigFileReader(filename)] + formatters
@@ -186,34 +204,8 @@ def ParseConfigFile(filename, formatters, defaults=None, vars=None):
         Pipeline(
             *components
         ).run()
-    return formatters[-1].getResults()
+    return formatters[-1]._getResults()
 
-def RecursiveLink(iterable, current=None):
-    """
-    This will link up components just as a pipeline does but in a recursive
-    fashion and over an iterator.  You should always leave out current when
-    calling this function.
-
-    This function will return the first component in the iterable
-    """
-    if current is None:
-        try:
-            comp1 = iterable.next()
-            comp2 = iterable.next()
-        except StopIteration:
-            return comp1
-    else:
-        try:
-            comp1 = current
-            comp2 = iterable.next()
-        except StopIteration:
-            return comp1
-
-    comp1.link((comp1, 'outbox'), (comp2, 'inbox'))
-    comp1.link((comp1, 'signal'), (comp2, 'control'))
-
-    RecursiveLink(iterable, comp2)
-    return comp1
 ##################################
 #Exceptions
 ##################################
@@ -234,4 +226,4 @@ if __name__ == '__main__':
     except:
         filename = '~/urls'
 
-    pprint(ParseConfigFile(filename, [DictFormatter(), UrlListFormatter()]))
+    pprint(ParseConfigFile(filename, [DictFormatter()]))
