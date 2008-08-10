@@ -34,13 +34,6 @@ except ImportError:
 else:
     midiAvailable = True
 
-try:
-    import RtAudio
-except ImportError:
-    audioAvailable = False
-else:
-    audioAvailable = True
-
 from optparse import OptionParser
 
 from Kamaelia.Chassis.Graphline import Graphline
@@ -53,8 +46,6 @@ from Kamaelia.Util.OneShot import OneShot
 from Kamaelia.Util.Console import ConsoleEchoer
 
 
-if audioAvailable:
-    from Kamaelia.Apps.Jam.Audio.RTOutput import RTOutput
 from Kamaelia.Apps.Jam.Audio.Sampler import Sampler
 from Kamaelia.Apps.Jam.Audio.SineSynth import SineSynth
 from Kamaelia.Apps.Jam.Audio.Mixer import MonoMixer
@@ -235,17 +226,9 @@ def parseOptions():
                        help="The audio sample rate to use (default=44100)")
     parser.set_defaults(sampleRate=44100)
 
-    parser.add_option("--internal-buffer-size", dest="internalBufferSize",
-                      type="int", help="The size in samples of the audio data chunks passed internally within Jam (default=1024)")
-    parser.set_defaults(internalBufferSize=1024)
-
-    parser.add_option("--output-buffer-size", dest="outputBufferSize",
-                      type="int", help="The size in samples of the audio output buffer (default=1024)")
-    parser.set_defaults(outputBufferSize=1024)
-
-    parser.add_option("--ring-buffer-size", dest="ringBufferSize", type="int",
-                      help="The size in samples of the buffer connecting Jam and the audio output (default=2048)")
-    parser.set_defaults(ringBufferSize=2048)
+    parser.add_option("--buffer-size", dest="bufferSize",
+                      type="int", help="The size in samples of the audio buffers used in jam (default=4096)")
+    parser.set_defaults(bufferSize=4096)
 
     options, args = parser.parse_args()
     if options.remoteAddress and not options.remotePort:
@@ -392,7 +375,6 @@ if __name__ == "__main__":
     # Piano roll
     if options.useMidi:
         midiSection = Pipeline(PianoRollMidiConverter(channel=1),
-                               ConsoleEchoer(1),
                                PublishTo("midiOut"))
     else:
         midiSection = DummyComponent()
@@ -459,29 +441,18 @@ if __name__ == "__main__":
         samplerFiles = ["%s/share/kamaelia/jam/samples/%s" % (sys.prefix,
                                                               fileName)
                         for fileName in samplerFiles]
-        
+
         Graphline(ssSub = SubscribeTo("ssData"),
                   sampler = Sampler(samplerFiles,
-                                    bufferSize=options.internalBufferSize,
+                                    bufferSize=options.bufferSize,
                                     sampleRate=options.sampleRate),
                   prSub = SubscribeTo("prData"),
-                  sineSynth = SineSynth(bufferSize=options.internalBufferSize,
+                  sineSynth = SineSynth(bufferSize=options.bufferSize,
                                         sampleRate=options.sampleRate),
-                  mixer = MonoMixer(channels=2,
-                                    bufferSize=options.internalBufferSize,
-                                    sampleRate=options.sampleRate),
-                  output = RTOutput(device=options.outputDevice,
-                                    bufferSize=options.outputBufferSize,
-                                    sampleRate=options.sampleRate),
                   linkages={("ssSub", "outbox"):("sampler", "inbox"),
-                            ("sampler", "outbox"):("mixer", "in0"),
                             ("prSub", "outbox"):("sineSynth", "inbox"),
-                            ("sineSynth", "outbox"):("mixer", "in1"),
-                            ("mixer", "outbox"):("output", "inbox")}
+                           }
                   ).activate()
-                  
-        
-              
 
     Backplane("sync").activate()
     Backplane("dataIn").activate()
