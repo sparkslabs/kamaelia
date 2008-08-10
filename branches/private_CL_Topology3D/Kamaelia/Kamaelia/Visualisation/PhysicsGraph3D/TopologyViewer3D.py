@@ -650,6 +650,8 @@ class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     def gotoDisplayLevel( self, dlevel):
         # Save current level's viewer position
         self.levelViewerPos[self.currentLevel] = self.display.viewerposition.copy()
+        # Deselect all
+        self.deselectAll()
         # Display next level
         self.currentLevel += dlevel
         # Reset viewer position to previous
