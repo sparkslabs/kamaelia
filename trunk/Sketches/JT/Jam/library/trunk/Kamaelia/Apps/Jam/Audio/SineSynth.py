@@ -13,7 +13,9 @@ class SineOsc(SchedulingComponent):
 
     def __init__(self, **argd):
         super(SineOsc, self).__init__(**argd)
-        self.period = float(self.bufferSize)/self.sampleRate
+        ### HACK - Quick test to see whether decreasing the period will
+        ### make playback smoother in SineVoice.
+        self.period = float(self.bufferSize)/self.sampleRate/2
         self.phase = 0
         self.lastSendTime = time.time()
         self.scheduleAbs("Send", self.lastSendTime + self.period)
