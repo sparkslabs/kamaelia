@@ -1,0 +1,12 @@
+This is a simple modification of an earlier incarnation of Example 2's
+SimpleStreamingSystem.py.
+
+It expects you to have the AxonVisualiser already running, and then allows
+you to look inside the running simple streamer. 
+
+Due to the AxonVisualiser being CPU intensive, this can result in the audio
+sounding choppy. However this does allow you see what's going on inside the
+system.
+
+
+Michael, October 2005
