@@ -237,8 +237,6 @@ def parseOptions():
         parser.error("Must provide --remote-address with --remote-port")
     if options.useMidi and not midiAvailable:
         parser.error("In order to use MIDI you must have the pyrtmidi package installed.  To run without midi use the --no-midi option.")
-    if options.useAudio and not audioAvailable:
-        parser.error("In order to use MIDI you must have the python RtAudio package installed.  To run without audio use the --no-audio option.")
     return options
 
 
