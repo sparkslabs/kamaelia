@@ -410,7 +410,7 @@ if __name__ == "__main__":
                        receiver_port=options.oscPort)).activate()
 
     # MIDI out
-    if options.midiPort != None:
+    if options.useMidi:
         Pipeline(SubscribeTo("midiOut"), Midi(options.midiPort)).activate()
 
     # OSC messages out
