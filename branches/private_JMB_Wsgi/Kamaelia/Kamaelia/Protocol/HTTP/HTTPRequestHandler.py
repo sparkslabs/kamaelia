@@ -228,8 +228,7 @@ class HTTPRequestHandler(component):
             statustext = MapStatusCodeToText[resource["statuscode"]]
         except KeyError:
             statustext = resource["statuscode"]
-
-        #print '='*6, 'HEADERS', '='*6, '\n', resource['headers']
+            
         hl = []
         if (protocolversion != "0.9"):
             status_line = "HTTP/1.0 " + statustext + "\r\n"
@@ -407,7 +406,7 @@ class HTTPRequestHandler(component):
             self.updateShouldShutdown()
             if self.ShouldShutdownCode & 2 > 0:
                 break # immediate shutdown
-
+        
             self.forwardBodyChunks()
             if self.dataReady("_handlerinbox"):
                 msg = self.recv("_handlerinbox")
@@ -416,9 +415,10 @@ class HTTPRequestHandler(component):
                 self.debug("_handlercontrol received " + str(ctrl))
                 if isinstance(ctrl, producerFinished):
                     break
-            else:
+            elif not self.anyReady() and not msg:
                 self.pause()
-                yield 1
+            
+            yield 1
                 
     def forwardBodyChunks(self):
         while self.dataReady("inbox") and not self.requestEndReached:

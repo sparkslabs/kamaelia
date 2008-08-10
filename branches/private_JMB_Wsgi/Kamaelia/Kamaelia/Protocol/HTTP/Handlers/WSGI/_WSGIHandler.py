@@ -23,8 +23,7 @@
 WSGI Handler
 =============
 
-NOTE:  This is experimental software.  It has not been fully tested and will
-probably break or behave in unexpected ways.
+NOTE:  This is experimental software.
 
 This is the WSGI handler for ServerCore.  It will wait on the
 HTTPParser to transmit the body in full before proceeding.  Thus, it is probably
