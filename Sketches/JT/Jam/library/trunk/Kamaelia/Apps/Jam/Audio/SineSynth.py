@@ -1,5 +1,6 @@
 import pygame
 import numpy
+import Numeric
 import time
 from Axon.SchedulingComponent import SchedulingComponent
 from Kamaelia.Apps.Jam.Audio.Synth import Synth
@@ -62,6 +63,12 @@ class SineVoice(SineOsc):
     def __init__(self, **argd):
         super(SineVoice, self).__init__(**argd)
         self.on = False
+        if not pygame.mixer.get_init():
+            pygame.mixer.init(self.sampleRate, -16, 1, self.bufferSize)
+            pygame.mixer.set_num_channels(0)
+        numChannels = pygame.mixer.get_num_channels() + 1
+        pygame.mixer.set_num_channels(numChannels)
+        self.channel = pygame.mixer.Channel(numChannels - 1)
 
     def main(self):
         while 1:
@@ -79,11 +86,15 @@ class SineVoice(SineOsc):
             if self.dataReady("event"):
                 self.recv("event")
                 if self.on:
-                    sample, phase = self.generateSample(self.frequency,
-                                                        self.amplitude,
-                                                        self.phase)
-                    self.phase = phase
-                    self.send(sample, "outbox")
+                    while self.channel.get_queue() == None:
+                        sample, phase = self.generateSample(self.frequency,
+                                                            self.amplitude,
+                                                            self.phase)
+                        self.phase = phase
+                        sample *= 2**15-1
+                        sample = sample.astype("int16")
+                        sample = Numeric.asarray(sample)
+                        self.channel.queue(pygame.sndarray.make_sound(sample))
                 self.lastSendTime += self.period
                 self.scheduleAbs("Send", self.lastSendTime + self.period)
             if not self.anyReady():
@@ -97,11 +108,6 @@ def SineSynth(polyphony=8, **argd):
 
 if __name__ == "__main__":
     from Kamaelia.Apps.Jam.UI.PianoRoll import PianoRoll
-    from Kamaelia.Apps.Jam.Audio.Synth import Synth
-    from Kamaelia.Apps.Jam.Util.Numpy import TypeConverter
-    from Kamaelia.Apps.Jam.Audio.PyGameOutput import PyGameOutput
     from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Util.PureTransformer import PureTransformer
 
-    Pipeline(PianoRoll(), SineSynth(),
-             PyGameOutput()).run()
+    Pipeline(PianoRoll(), SineSynth()).run()
