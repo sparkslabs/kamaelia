@@ -105,47 +105,39 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
             return
         else:
             self.num_parentNodes += 1
-            #print "--- The ", layer, " layer ---"
-            query1 = """
-            SELECT DISTINCT ?name ?img
-            WHERE { ?x foaf:name ?name .
-            OPTIONAL { ?x foaf:img ?img }
-            }
-            """
-            results = self.make_query(rdf_uri, query1)
-            result = results.next()
-            #print result['name'], ':', result['img']
-            linkedNode_name = str(result['name'])
-            if self.parentNode_id == "":
-                linkedNode_id =  '_'.join(linkedNode_name.split())
-            else:
-                linkedNode_id =  self.parentNode_id + ':' + '_'.join(linkedNode_name.split())
-            if result['img']:
-                linkedNode_img = 'image=' + str(result['img']._get_uri())
-            else:
-                linkedNode_img = ""
-            #print linkedNode_img
-            cmd = [ "ADD", "NODE", linkedNode_id, linkedNode_name, "randompos", "-", linkedNode_img ]
-            self.send(cmd, "outbox")
-            #print "*Knows*"
-            query2 = """
-            SELECT DISTINCT ?name ?img ?seeAlso
+            query = """
+            SELECT DISTINCT ?aname ?aimg ?name ?img ?seeAlso
             WHERE {
-            ?a foaf:knows ?b . ?b foaf:name ?name .
+            ?a foaf:knows ?b . ?a foaf:name ?aname . ?b foaf:name ?name .
+            OPTIONAL { ?a foaf:img ?aimg } .
             OPTIONAL { ?b foaf:img ?img } .
             OPTIONAL { ?b rdfs:seeAlso ?seeAlso }
             }
             """
             nodes = []
-            results = self.make_query(rdf_uri, query2)
+            results = self.make_query(rdf_uri, query)
             num_nodePerLayer = 1
+            count = 0
             for result in results:
+                if count == 0:
+                    count += 1
+                    linkedNode_name = str(result['aname'])
+                    if self.parentNode_id == "":
+                        linkedNode_id =  '_'.join(linkedNode_name.split())
+                    else:
+                        linkedNode_id =  self.parentNode_id + ':' + '_'.join(linkedNode_name.split())
+                    if result['aimg']:
+                        linkedNode_img = 'image=' + str(result['aimg']._get_uri())
+                    else:
+                        linkedNode_img = ""
+                    cmd = [ "ADD", "NODE", linkedNode_id, linkedNode_name, "randompos", "-", linkedNode_img ]
+                    self.send(cmd, "outbox")
+                    
                 if self.max_nodePerLayer > 0 and num_nodePerLayer > self.max_nodePerLayer:
                     break
                 else:
                     num_nodePerLayer += 1
                     self.num_allNodes += 1
-                    #print result['name'], ':', result['img']
                     node_name = str(result['name'])
                     if self.parentNode_id == "":
                         node_id =  '_'.join(node_name.split())
