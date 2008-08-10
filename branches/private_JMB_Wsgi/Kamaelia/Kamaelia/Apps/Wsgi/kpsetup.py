@@ -43,15 +43,8 @@ def normalizeWsgiVars(WsgiConfig):
     """Put WSGI config data in a state that the server expects."""
     WsgiConfig['wsgi_ver'] = tuple(WsgiConfig['wsgi_ver'].split('.'))
     
-def initializeLoggers(filename, consolename='kamaelia'):
+def initializeLogger(consolename='kamaelia'):
     formatter = logging.Formatter('%(levelname)s/%(name)s: %(message)s')
-    
-    filename = os.path.expanduser(filename)
-    file_handler = logging.FileHandler(filename)
-    file_handler.setFormatter(formatter)
-    filelogger = logging.getLogger('kamaelia.wsgi.application')
-    filelogger.addHandler(file_handler)
-    filelogger.setLevel(logging.ERROR)
     
     console = logging.StreamHandler(sys.stdout)
     console.setFormatter(formatter)

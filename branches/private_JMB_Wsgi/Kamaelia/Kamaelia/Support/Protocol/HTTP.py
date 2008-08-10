@@ -20,12 +20,154 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
+"""
+This is a module of utility functions to be used with the HTTP server.
+
+Request Translators
+--------------------
+Sometimes it is helpful to have the parsed HTTP request come in a different format.
+With a request translator, you may have the format of a parsed HTTP request changed
+before it gets to your handler.  You may use the function ReqTranslatorFactory to
+create a factory function that will create your handler using the request translator
+you specify automatically.
+
+ReqTranslatorFactory
+~~~~~~~~~~~~~~~~~~~~~~
+
+This function will make a factory that can create handlers for the HTTP Server
+If this is used, the requests coming in to that handler will be formatted using
+the given translator.
+  
+  hand - a factory function that returns a handler to be used by the HTTP
+  Server
+  trans - a function that takes a request and returns a translated dictionary
+  to be used by the handler.
+  
+WSGILikeTranslator
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This function will translate the HTTPParser's syntax into a more WSGI-like syntax.
+Pass it to the HTTPProtocol factory function and requests will be sent to your
+resource handler with a subset of a WSGI environ dictionary.  You just need to
+supply more of the wsgi variables (like wsgi.input).
+
+  request - the request to be translated
+  
+This function will return the translated dictionary.
+
+ConvertHeaders
+~~~~~~~~~~~~~~~~
+
+Converts environ variables to strings for wsgi compliance.  Also puts the 
+request headers into CGI variables.
+
+  request - The request as formatted by the HTTP Server
+  environ - the WSGI environ dict to contain the converted headers
+  
+Popping request dictionaries
+-----------------------------
+
+A fairly common practice in dealing with HTTP dictionaries is to "pop" a URI.
+That is to say, to move one level down in the webserver's "Filesystem."  The main
+function for doing this is PopURI, which requires you to manually specify the keys
+to use from the dictionary.  Also provided are PopKamaeliaURI and PopWsgiURI.
+
+PopKamaeliaURI
+~~~~~~~~~~~~~~~
+This is a function to pop a level from the PATH_INFO key into the SCRIPT_NAME
+key of a WSGI-like dictionary.
+
+  request - a WSGI-like dictionary
+  
+PopWsgiURI
+~~~~~~~~~~~~
+This is a function to pop a level from the uri-suffix into the uri-prefix-trigger
+key of a request dictionary.
+
+  request - a request dictionary
+
+HTTP Protocol
+--------------
+These functions are included to simplify using the HTTPServer.  Instead of instantiating
+an HTTPServer directly, you may wish to use the included HTTPProtocol factory function
+if you are using the HTTPServer with ServerCore.  You may also use the requestHandlers
+function to generate a createRequestHandler function to pass to the HTTPServer.
+
+To use HTTPProtocol with ServerCore, use the following:
+
+from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
+from Kamaelia.Chassis.ConnectedServer import ServerCore
+from Kamaelia.Protocol.Handlers.Minimal import MinimalFactory
+
+routing = [['/', MinimalFactory('index.html', 'htdocs')]]
+ServerCore(
+    protocol=HTTPProtocol(routing),
+    port = 8080,
+    socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)).run()
+    
+HTTPProtocol
+~~~~~~~~~~~~~
+This function will generate an HTTP Server that may be used with ServerCore.
+
+  routing - An iterable of iterables.  Each item in the main iterabe may be thought
+    of as an entry in the HTTPServer's "routing table."  An entry's syntax is roughly
+    as follows:
+      [
+          ...
+          [<URI prefix>, <Handler factory>]
+          ...
+      ]
+      
+    See above for example syntax.
+    
+requestHandlers
+~~~~~~~~~~~~~~~~~
+This function will generate a createRequestHandlers function for use with HTTPServer
+
+  routing - An iterable of iterables formatted the same as HTTPProtocol.
+  errorPages - A module or object with a getErrorPage function that will return
+    a resource representing an error page.  You may pass a new object if you wish
+    to override the built-in error pages.  For example, you may do the following:
+    
+    class ErrorHandlerGenerator(object)
+      def getErrorPage(self, statuscode, msg):
+          return {
+            'statuscode' : statuscode,
+            'data' : msg,
+          }
+    ...if you wish to make the error page just be a simple text file with an
+    error message.
+
+Misc
+-------
+These are various other functions:
+
+CheckSlashes
+~~~~~~~~~~~~~
+This function will make sure that a URI begins with a slash and does not end
+with a slash.
+
+  item - the uri to be checked
+  sl_char - the character to be considered a 'slash' for the purposes of this
+            function
+"""
+from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
 
 ####################################
 #Translator stuff
 ####################################
-def TranslatorFactory(hand, trans):    
+def ReqTranslatorFactory(hand, trans):
+    """
+    This function will make a factory that can create handlers for the HTTP Server
+    If this is used, the requests coming in to that handler will be formatted using
+    the given translator.
+      
+      hand - a factory function that returns a handler to be used by the HTTP
+      Server
+      trans - a function that takes a request and returns a translated dictionary
+      to be used by the handler.
+    """
     def _getHandler(request):
         request = trans(request)
         return hand(request)
@@ -39,6 +181,10 @@ def WSGILikeTranslator(request):
     Pass it to the HTTPProtocol factory function and requests will be sent to your
     resource handler with a subset of a WSGI environ dictionary.  You just need to
     supply more of the wsgi variables (like wsgi.input).
+    
+      request - the request to be translated
+      
+    This function will return the translated dictionary.
     """
     environ = {}
     #print request
@@ -92,8 +238,11 @@ def WSGILikeTranslator(request):
     
 def ConvertHeaders(request, environ):
     """
-    Converts environ variables to strings for wsgi compliance and deletes extraneous
-    fields.  Also puts the request headers into CGI variables.
+    Converts environ variables to strings for wsgi compliance.  Also puts the 
+    request headers into CGI variables.
+    
+      request - The request as formatted by the HTTP Server
+      environ - the WSGI environ dict to contain the converted headers
     """
     for header in request["headers"]:
         cgi_varname = "HTTP_"+header.replace("-","_").upper()
@@ -105,8 +254,21 @@ def ConvertHeaders(request, environ):
         del environ['HTTP_CONTENT_LENGTH']
 
 def PopURI(request, sn_key, pi_key, ru_key):
+    """
+    This function is used to pop a directory from the PATH_INFO key to the SCRIPT_NAME
+    key (named by pi_key and sn_key respectively).  This is logically equivalent
+    to moving down a level in the webserver's 'file system.'
+    
+    You may also use the convenience functions PopWsgiURI (if the dictionary is
+    formatted as a WSGI environ dict) and PopKamaeliaURI (if the dictionary is
+    formatted as created by the HTTP Server)
+    
+      request - the dictionary containing the keys to be manipulated
+      sn_key - the key that the SCRIPT_NAME is referenced by in request
+      pi_key - the key that the PATH_INFO is referenced by in request
+      ru_key - the key that represents the full URI (without a query string)
+    """
     if not request.get(sn_key):
-        #print '%s not found' % (sn_key)
         split_uri = request[ru_key].split('/')
         split_uri = [x for x in split_uri if x]
         if split_uri:
@@ -130,13 +292,88 @@ def PopURI(request, sn_key, pi_key, ru_key):
             request[pi_key] = ''
         request[pi_key] = checkSlashes(request[pi_key])
 
-def checkSlashes(item='', sl_char='/'):
-    if not item.startswith(sl_char):
-        item = sl_char + item
-    return item.rstrip('/')
-
 def PopWsgiURI(request):
+    """
+    This is a function to pop a level from the PATH_INFO key into the SCRIPT_NAME
+    key of a WSGI-like dictionary.
+    
+      request - a WSGI-like dictionary
+    """
     return PopURI(request, 'SCRIPT_NAME', 'PATH_INFO', 'NON_QUERY_URI')
 
 def PopKamaeliaURI(request):
-    return PopURI(request, 'uri-prefix-trigger', 'uri-suffix', 'raw-uri')
+    """
+    This is a function to pop a level from the uri-suffix into the uri-prefix-trigger
+    key of a request dictionary.
+    
+      request - a request dictionary
+    """
+    return PopURI(request, 'uri-prefix-trigger', 'uri-suffix', 'non-query-uri')
+
+def HTTPProtocol(routing):
+    """
+    This function will generate an HTTP Server that may be used with ServerCore.
+
+      routing - An iterable of iterables.  Each item in the main iterabe may be thought
+        of as an entry in the HTTPServer's "routing table."  An entry's syntax is roughly
+        as follows:
+          [
+              ...
+              [<URI prefix>, <Handler factory>]
+              ...
+          ]
+
+        See above for example syntax.
+    """
+    def _getHttpServer(**argd):
+        return HTTPServer(requestHandlers(routing), **argd)
+    return _getHttpServer
+    
+def requestHandlers(routing, errorpages=None):
+    """
+    This function will generate a createRequestHandlers function for use with HTTPServer
+
+      routing - An iterable of iterables formatted the same as HTTPProtocol.
+      errorPages - A module or object with a getErrorPage function that will return
+        a resource representing an error page.  You may pass a new object if you wish
+        to override the built-in error pages.  For example, you may do the following:
+
+        class ErrorHandlerGenerator(object)
+          def getErrorPage(self, statuscode, msg):
+              return {
+                'statuscode' : statuscode,
+                'data' : msg,
+              }
+        ...if you wish to make the error page just be a simple text file with an
+        error message.
+    """
+    if errorpages is None:
+        import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+        errorpages = ErrorPages
+    def createRequestHandler(request):
+        if request.get("bad"):
+            return errorpages.getErrorPage(400, request.get("errormsg",""))
+        else:
+            for (prefix, handler) in routing:
+                if request["non-query-uri"][:len(prefix)] == prefix:
+                    request['uri-prefix-trigger'] = prefix
+                    request['uri-suffix'] = request["non-query-uri"][len(prefix):]
+                    return handler(request)
+
+        return errorpages.getErrorPage(404, "No resource handlers could be found for the requested URL")
+
+    return createRequestHandler
+
+
+def checkSlashes(item='', sl_char='/'):
+    """
+    This function will make sure that a URI begins with a slash and does not end
+    with a slash.
+
+      item - the uri to be checked
+      sl_char - the character to be considered a 'slash' for the purposes of this
+                function
+    """
+    if not item.startswith(sl_char):
+        item = sl_char + item
+    return item.rstrip('/')

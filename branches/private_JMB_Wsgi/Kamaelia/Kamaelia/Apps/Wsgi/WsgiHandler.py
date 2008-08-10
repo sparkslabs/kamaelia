@@ -142,15 +142,13 @@ dictionary.
 """
 
 from pprint import pprint, pformat
-import sys, os, cStringIO, cgitb, copy, traceback, xml, logging
+import sys, os, cStringIO, cgitb, traceback, logging, copy
 from datetime import datetime
 from wsgiref.util import is_hop_by_hop
 import Axon
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.Component import component
 from Axon.Ipc import producerFinished
 import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
-from Kamaelia.Protocol.HTTP import HTTPProtocol
 from xml.sax.saxutils import unescape
         
 class NullFileLike (object):
@@ -221,8 +219,8 @@ class _WsgiHandler(threadedcomponent):
         batch_str = self.environ.get('batch', '')
         if batch_str:
             batch_str = 'batch ' + batch_str
-        logging.info(
-            'request received for [%s] %s', self.environ['REQUEST_URI'], batch_str)
+            print 'request received for [%s] %s' % \
+               (self.environ['REQUEST_URI'], batch_str)
 
         self.app = app
         self.response_dict = {}
@@ -348,7 +346,7 @@ class _WsgiHandler(threadedcomponent):
         FIXME:  We should really begin executing the Application and pull the
         body as needed rather than pulling it all up front.
         """
-        buffer = []     #Wait on the body to be sent to us
+        buffer = []
         not_done = True
         while not_done:
             for msg in self.Inbox('control'):

@@ -19,3 +19,27 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""
+This module contains a factory function for 
+"""
+import types
+from itertools import izip
+from HTTPServer import HTTPServer, MapStatusCodeToText
+
+def HTTPProtocol(routing):
+    """
+    This is a convenience method that you should probably use when creating a
+    server rather than creating an HTTPServer directly.
+    """
+    def _getHttpServer(**argd):
+        return HTTPServer(requestHandlers(routing), **argd)
+    return _getHttpServer
+
+if __name__ == '__main__':
+   request = {
+       'raw-uri' : '/foo/bar/foobar',
+       'SCRIPT_NAME' : 'foo',
+       'PATH_INFO' : 'bar/foobar'
+   }
+   PopUri(request)
+   print request

@@ -27,10 +27,12 @@ This module is what you use to create a WSGI Handler.
 import re
 
 from WsgiHandler import _WsgiHandler
-from Kamaelia.Support.Protocol.HTTP import TranslatorFactory, WSGILikeTranslator, \
+from Kamaelia.Support.Protocol.HTTP import ReqTranslatorFactory, WSGILikeTranslator, \
     PopWsgiURI
+import logging
 
-def WsgiFactory(WsgiConfig, url_list):
+def WsgiFactory(WsgiConfig, url_list, errorlog='error.log', 
+                    logger_name='kamaelia.wsgi.application'):
     """
     This method checks the URI against a series of regexes from urls.py to determine which
     application object to route the request to, imports the file that contains the app object,
@@ -45,6 +47,14 @@ def WsgiFactory(WsgiConfig, url_list):
             self.translator = translator
             for dictionary in url_list:
                 self.compiled_regexes[dictionary['kp.regex']] = re.compile(dictionary['kp.regex'])
+            self._initializeLoggers()
+
+        def _initializeLoggers(self):
+            logger = logging.getLogger(logger_name)
+            handler = logging.FileHandler(errorlog)
+            handler.setLevel(logging.ERROR)
+            logger.addHandler(handler)
+            
         def __call__(self, request):
             matched_dict = False
             regexes = self.compiled_regexes

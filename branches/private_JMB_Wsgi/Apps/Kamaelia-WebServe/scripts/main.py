@@ -30,10 +30,11 @@ from Kamaelia.Apps.Wsgi.Factory import WsgiFactory
 from Kamaelia.Apps.Wsgi.Console import info
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
-from Kamaelia.Protocol.HTTP import HTTPProtocol
+from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Protocol.HTTP.Handlers.Minimal import MinimalFactory
 from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
-from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars, initializeLoggers
+from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, \
+    normalizeWsgiVars, initializeLogger
 from Kamaelia.Support.Protocol.HTTP import WSGILikeTranslator
 
 sys.path.insert(0, sys.argv[0] + '/data')
@@ -69,16 +70,17 @@ def run_program():
         normalizeUrlList(url_list)
         
         StaticConfig['homedirectory'] = os.path.expanduser(StaticConfig['homedirectory'])
+        log = os.path.expanduser(ServerConfig['log'])
         routing = [
                       [StaticConfig['url'], MinimalFactory(
                                                            StaticConfig['index'], 
                                                            StaticConfig['homedirectory']
                                                            )],
-                      ["/", WsgiFactory(WsgiConfig, url_list)],
+                      ["/", WsgiFactory(WsgiConfig, url_list, log)],
                   ]
     
-        initializeLoggers(ServerConfig.get('log', home_path + '/kpuser/ks.log'))
-        
+        initializeLogger()
+
         kp = ServerCore(
             protocol=HTTPProtocol(routing),
             port=int(ServerConfig['port']),

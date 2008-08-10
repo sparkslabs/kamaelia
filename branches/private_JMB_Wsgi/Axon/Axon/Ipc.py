@@ -334,7 +334,7 @@ class errorInformation(ipc):
       
 __ipc_msgs = [errorInformation, producerFinished, wouldblock, status, shutdown,
               shutdownMicroprocess, notify, newComponent, reactivate, WaitComplete,
-              ipc]
+              ipc, internalNotify]
 
 def GetIPCs():
    return __ipc_msgs
