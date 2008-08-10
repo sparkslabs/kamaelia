@@ -97,7 +97,7 @@ from Kamaelia.Protocol.HTTP.Handlers.WSGI import SimpleWSGIFactory
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import ErrorPages
 from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
+from Kamaelia.Apps.WSGI.Simple import simple_app
 
 port = 8080
 
@@ -140,12 +140,12 @@ WsgiConfig = {
 url_list = [ #Note that this is a list of dictionaries.  Order is important.
     {
         'kp.regex' : 'simple',
-        'kp.import_path' : 'Kamaelia.Apps.Wsgi.Apps.Simple',
+        'kp.import_path' : 'Kamaelia.Apps.WSGI.Simple',
         'kp.app_obj' : 'simple_app',
     }
     {
         'kp.regex' : '.*',  #The .* means that this is a 404 handler
-        'kp.import_path' : 'Kamaelia.Apps.Wsgi.Apps.ErrorHandler',
+        'kp.import_path' : 'Kamaelia.Apps.WSGI.ErrorHandler',
         'kp.app_obj' : 'application',
     }
 ]

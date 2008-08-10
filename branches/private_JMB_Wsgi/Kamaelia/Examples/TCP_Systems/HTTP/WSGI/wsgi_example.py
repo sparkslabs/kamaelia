@@ -23,29 +23,43 @@
 import socket
 
 import Axon
-from Kamaelia.Protocol.HTTP.Handlers.WSGI import SimpleWSGIFactory
+from Kamaelia.Protocol.HTTP.Handlers.WSGI import WSGIFactory
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import ErrorPages
 from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
 
-port = 8080
+port=8080
 
 #This is just a configuration dictionary for general WSGI stuff.  This needs to be passed to the handler
 #to run
 WsgiConfig ={
-'server_software' : "Simple Example WSGI Web Server",
+'server_software' : "Example WSGI Web Server",
 'server_admin' : "Jason Baker",
 'wsgi_ver' : (1,0),
 }
 
+#Now we need to tell the server how to find the applications.  We do this by creating a URL routing list.
+#What this essentially does is tell the WsgiHandler where to find the modules containing the WSGI Applications.
+
+url_list = [
+    {
+    'kp.regex' : 'simple',
+    'kp.import_path' : 'Kamaelia.Apps.WSGI.Simple',
+    'kp.app_object' : 'simple_foop',
+    },
+    {
+    'kp.regex' : '.*',  #This is the entry for the 404 error handler.  This basically says "match everything else."
+    'kp.import_path' : 'Kamaelia.Apps.WSGI.ErrorHandler',
+    'kp.app_object' : 'application'
+    }
+]
+
 def main():
     #This line is so that the HTTPRequestHandler knows what component to route requests to.
-    routing = [ ['/simple', SimpleWSGIFactory(WsgiConfig, simple_app)] ]
+    routing = [ ['/', WSGIFactory(WsgiConfig, url_list)] ]
     server = ServerCore(protocol=HTTPProtocol(routing),
                         port=port,
                         socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
-
     print 'Serving on port %s' % (port)
     server.run()
 

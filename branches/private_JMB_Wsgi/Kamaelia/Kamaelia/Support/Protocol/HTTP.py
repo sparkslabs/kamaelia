@@ -119,24 +119,18 @@ This function will generate an HTTP Server that may be used with ServerCore.
       ]
       
     See above for example syntax.
+  errorPages - A component to create in the event of an error.  That component's
+    __init__ function must accept two arguments:  the error code (as an integer)
+    and a message to be displayed (although it can ignore these if it so chooses)
     
 requestHandlers
 ~~~~~~~~~~~~~~~~~
 This function will generate a createRequestHandlers function for use with HTTPServer
 
   routing - An iterable of iterables formatted the same as HTTPProtocol.
-  errorPages - A module or object with a getErrorPage function that will return
-    a resource representing an error page.  You may pass a new object if you wish
-    to override the built-in error pages.  For example, you may do the following:
-    
-    class ErrorHandlerGenerator(object)
-      def getErrorPage(self, statuscode, msg):
-          return {
-            'statuscode' : statuscode,
-            'data' : msg,
-          }
-    ...if you wish to make the error page just be a simple text file with an
-    error message.
+  errorPages - A component to create in the event of an error.  That component's
+    __init__ function must accept two arguments:  the error code (as an integer)
+    and a message to be displayed (although it can ignore these if it so chooses)
 
 Misc
 -------
@@ -152,7 +146,6 @@ with a slash.
             function
 """
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
-
 
 ####################################
 #Translator stuff
@@ -310,7 +303,7 @@ def PopKamaeliaURI(request):
     """
     return PopURI(request, 'uri-prefix-trigger', 'uri-suffix', 'non-query-uri')
 
-def HTTPProtocol(routing):
+def HTTPProtocol(routing, errorhandler=None):
     """
     This function will generate an HTTP Server that may be used with ServerCore.
 
@@ -324,35 +317,29 @@ def HTTPProtocol(routing):
           ]
 
         See above for example syntax.
+      errorPages - A component to create in the event of an error.  That component's
+        __init__ function must accept two arguments:  the error code (as an integer)
+        and a message to be displayed (although it can ignore these if it so chooses)
     """
     def _getHttpServer(**argd):
-        return HTTPServer(requestHandlers(routing), **argd)
+        return HTTPServer(requestHandlers(routing, errorhandler), **argd)
     return _getHttpServer
     
-def requestHandlers(routing, errorpages=None):
+def requestHandlers(routing, errorhandler=None):
     """
     This function will generate a createRequestHandlers function for use with HTTPServer
 
       routing - An iterable of iterables formatted the same as HTTPProtocol.
-      errorPages - A module or object with a getErrorPage function that will return
-        a resource representing an error page.  You may pass a new object if you wish
-        to override the built-in error pages.  For example, you may do the following:
-
-        class ErrorHandlerGenerator(object)
-          def getErrorPage(self, statuscode, msg):
-              return {
-                'statuscode' : statuscode,
-                'data' : msg,
-              }
-        ...if you wish to make the error page just be a simple text file with an
-        error message.
+      errorPages - A component to create in the event of an error.  That component's
+        __init__ function must accept two arguments:  the error code (as an integer)
+        and a message to be displayed (although it can ignore these if it so chooses)
     """
-    if errorpages is None:
-        import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
-        errorpages = ErrorPages
+    if errorhandler is None:
+        from Kamaelia.Protocol.HTTP.ErrorPages import ErrorPageHandler
+        errorhandler = ErrorPageHandler
     def createRequestHandler(request):
         if request.get("bad"):
-            return errorpages.getErrorPage(400, request.get("errormsg",""))
+            return errorhandler(400, request.get("errormsg",""))
         else:
             for (prefix, handler) in routing:
                 if request["non-query-uri"][:len(prefix)] == prefix:
@@ -360,7 +347,8 @@ def requestHandlers(routing, errorpages=None):
                     request['uri-suffix'] = request["non-query-uri"][len(prefix):]
                     return handler(request)
 
-        return errorpages.getErrorPage(404, "No resource handlers could be found for the requested URL")
+        return errorhandler(404, 'No resource handler found for URI %s' 
+                            % (request['raw-uri']))
 
     return createRequestHandler
 

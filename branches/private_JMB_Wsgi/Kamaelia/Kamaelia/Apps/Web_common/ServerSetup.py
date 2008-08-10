@@ -19,7 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 """This module includes various useful functions for setting a webserver up."""
 
 import sys, logging, os

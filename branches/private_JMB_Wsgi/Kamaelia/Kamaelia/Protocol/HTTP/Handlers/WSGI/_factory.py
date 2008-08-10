@@ -28,13 +28,12 @@ import re
 from _WSGIHandler import _WsgiHandler
 from Kamaelia.Support.Protocol.HTTP import ReqTranslatorFactory, WSGILikeTranslator, \
     PopWsgiURI
-from Kamaelia.Apps.Wsgi.Apps.ErrorHandler import application as error_app
 import logging
 
 _loggerInitialized = False
 
 def WSGIFactory(WSGIConfig, url_list, errorlog='error.log', 
-                    logger_name='kamaelia.wsgi.application'):
+                    logger_name='kamaelia.wsgi.application', errorhandler=None):
     """
     Creates a WSGI Handler using url routing.
 
@@ -55,6 +54,10 @@ def WSGIFactory(WSGIConfig, url_list, errorlog='error.log',
             self.app_objs = {}
             self.compiled_regexes = {}
             self.translator = translator
+            self.errorhandler = errorhandler
+            if not self.errorhandler:
+                from Kamaelia.Protocol.HTTP.ErrorPages import ErrorPageHandler
+                self.errorhandler = ErrorPageHandler
             for dictionary in url_list:
                 self.compiled_regexes[dictionary['kp.regex']] = re.compile(dictionary['kp.regex'])
             _initializeLoggers(errorlog, logger_name)            
@@ -81,7 +84,7 @@ def WSGIFactory(WSGIConfig, url_list, errorlog='error.log',
                     break
     
             if not matched_dict:
-                raise WSGIImportError('Page not found and no 404 pages enabled! Check your urls file.')
+                return self.errorhandler(500, 'Page not found and no 404 handler configured')
     
             if self.app_objs.get(matched_dict['kp.regex']):  #Have we found this app object before?
                 app = self.app_objs[matched_dict['kp.regex']]    #If so, pull it out of app_objs
@@ -91,10 +94,9 @@ def WSGIFactory(WSGIConfig, url_list, errorlog='error.log',
                     app = getattr(module, matched_dict['kp.app_object'])
                     self.app_objs[matched_dict['kp.regex']] = app
                 except ImportError: #FIXME:  We should probably display some kind of error page rather than dying
-                    raise WSGIImportError("WSGI application file not found %s.  Please check your urls file." 
-                                          % (matched_dict['kp.import_path']))
+                    return self.errorhandler(404, 'Module not found.')
                 except AttributeError:
-                    raise WSGIImportError("Your WSGI application file was found, but the application object was not. Please check your urls file.")
+                    return self.errorhandler(404, 'Page found, but app object missing.')
             request.update(matched_dict)
             if matched_dict.get('kp.nounicode'):
                 #Convert all elements in the request to strings
@@ -114,7 +116,7 @@ def _importWsgiModule(name):
     return mod
 
 def SimpleWSGIFactory(WSGIConfig, app_object, errorlog='error.log',
-                        logger_name='kamaelia.wsgi.apps'):
+                        logger_name='kamaelia.wsgi.apps', errorhandler=None):
     """
     Creates a WSGI Handler that can handle only one WSGI Application.
 
@@ -126,7 +128,6 @@ def SimpleWSGIFactory(WSGIConfig, app_object, errorlog='error.log',
     _initializeLoggers(errorlog, logger_name)
     def _getWsgiHandler(request):
         request = WSGILikeTranslator(request)
-
         return _WsgiHandler(app_object, request, WSGIConfig)
     
     return _getWsgiHandler

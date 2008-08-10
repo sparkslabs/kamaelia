@@ -20,6 +20,13 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: RJL
+"""
+This page contains the default HTTP Error handling.  There are two ways to call
+this code:  either use getErrorPage to get the dictionary containing the error
+directly or by using an ErrorPageHandler to send the page out.
+"""
+from Axon.Ipc import producerFinished
+from Axon.Component import component
 
 def getErrorPage(errorcode, msg = ""):
     """\
@@ -68,4 +75,18 @@ def getErrorPage(errorcode, msg = ""):
             "data"       : u"",
             "content-type"       : "text/html"
         }
+        
+class ErrorPageHandler(component):
+    """
+    This is the default error page handler.  It is essentially the above function
+    getErrorPage mapped to a resource handler for the HTTPServer.
+    """
+    def __init__(self, statuscode, message):
+        self.statuscode = statuscode
+        self.message = message
+        super(ErrorPageHandler, self).__init__()
+    def main(self):
+        self.send(getErrorPage(self.statuscode, self.message))
+        yield 1
+        self.send(producerFinished(self), 'signal')
 

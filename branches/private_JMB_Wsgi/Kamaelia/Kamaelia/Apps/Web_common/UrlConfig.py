@@ -19,7 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 """
 This module contains the necessary parts to adapt the Kamaelia Config file reader
 to read a Wsgi Config file as used in Kamaelia Publish.  A UrlListFormatter is included,

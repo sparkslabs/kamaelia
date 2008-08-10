@@ -341,7 +341,7 @@ class HTTPRequestHandler(component):
         self.handler = self.requestHandlerFactory(request)
         #print 'requestHandlerFactory=', self.requestHandlerFactory
         #print 'handler=', self.handler
-
+        
         # XXXX Do we *really* want to crash?
         assert(self.handler != None) # if no URL handlers match our request then requestHandlerFactory
                                      # should produce a 404 handler. Generally even that will not happen
