@@ -24,5 +24,11 @@
 
 
 def BlockingApp(environ, start_response):
+    """
+    This application will run an infinite loop and produce no output.  This can be
+    useful to test how blocking applications can affect the server and to give you
+    time to test what will happen if an event happens before a WSGI app has begun
+    transmitting its output.
+    """
     while 1:
         pass

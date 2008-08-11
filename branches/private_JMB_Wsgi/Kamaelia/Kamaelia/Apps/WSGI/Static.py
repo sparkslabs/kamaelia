@@ -34,6 +34,10 @@ This application requires the following custom environ entries:
 would pull the file ~/www/index.html if kp.static_path is ~/www
 * kp.index_file:  The file to open if no file is specified.  For example, http://foo.com/static
 would translate into http://foo.com/static/index.html if kp.index_file is 'index.html'.
+
+Dependencies
+---------------
+This source file requires Static by Luke Arno.
 """
 
 from support.la_static import Cling

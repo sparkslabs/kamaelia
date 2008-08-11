@@ -19,8 +19,11 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""This is just a source file for miscellaneous console IO functions."""
+"""This is just a source file for miscellaneous console IO functions.  There is also
+an interface for using python's logging system for console IO."""
+
 import logging
+
 _console_name = 'kamaelia'
 
 def setConsoleName(name):

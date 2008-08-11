@@ -34,6 +34,7 @@ def simple_app(environ, start_response):
     response_headers = [('Content-type','text/html'),('Pragma','no-cache'),]
     write = start_response(status, response_headers)
     writable = environ['wsgi.errors']
+    #Uncomment this if you want to test writing to the log
     #writable.write('(fake) super major huge error!\n')
     writable.flush()
     
