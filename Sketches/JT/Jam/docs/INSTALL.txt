@@ -24,11 +24,9 @@ If you want audio or midi support in Jam you also need extra packages.
 
 Audio support
 ~~~~~~~~~~~~~
-For audio you need the python bindings for RtAudio, which are available in a subversion repository.  Download the latest version by running::
+For audio you need the numeric python module.  This comes packaged for most major linux distributions and so should be installed via your package manager if possible.
 
-    svn co http://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/JT/RtAudioBinding
-
-Follow the instructions for installation in the INSTALL.txt file
+If it is not packaged for your distribution it can be installed from source from http://sourceforge.net/project/showfiles.php?group_id=1369&abmode=1.  A winodws installer is available from the pygame download page at http://www.pygame.org/download.shtml.
 
 MIDI support
 ~~~~~~~~~~~~
