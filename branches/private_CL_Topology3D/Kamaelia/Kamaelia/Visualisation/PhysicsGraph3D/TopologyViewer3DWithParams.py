@@ -25,7 +25,7 @@
 Generic 3D Topology Viewer With more Parameters supports
 ===========================================================
 
-Extend TopologyViewer3D by support additional parameters of "ADD" commands.
+Extend TopologyViewer3D by supporting additional parameters of "ADD" commands.
 
 The format of commands:
 [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type>, <parameters> ] 
@@ -43,6 +43,8 @@ Available parameters:
     - fontsize     -- Font size for label text (default=50)
     - pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
     - thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
+
+See Kamaelia.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D for more information.
 """
 
 import re
