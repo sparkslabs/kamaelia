@@ -109,6 +109,27 @@ In additon to the standard CGI variables, the following variable may also be pre
 - 'NON_QUERY_URI' represents the URI without the query string.  For example, the
 URI /a/b/c?d=e would give a NON_QUERY_URI of /a/b/c
 
+What is JSON?
+--------------
+If JSON sounds intimidating, don't worry about it.  It's a data serialization format
+sort of like XML, only less verbose and simpler.  In fact, if you're reading this,
+you're probably already familiar with a significant amount of its syntax.  For example,
+you can do this at the python command line (assuming you have simplejson installed):
+
+>>> import simplejson
+>>> x = {'a' : 'b', 'c' : 'd', 'e' : 'f'}
+>>> simplejson.dumps(x)
+'{"a": "b", "c": "d", "e": "f"}'
+>>> simplejson.dumps(y)
+'["a", "b", "c", "d", "e", "f"]'
+>>> z = {'a' : ['b', 'c', 'd', 'e'], 'f' : ['g', 'h', 'i', 'j']}
+>>> simplejson.dumps(z)
+'{"a": ["b", "c", "d", "e"], "f": ["g", "h", "i", "j"]}'
+
+
+You'll notice that the formatting is almost identical to the way that Python prints
+out string representation of basic objects.
+
 What else will be done to the message?
 --------------------------------------
 

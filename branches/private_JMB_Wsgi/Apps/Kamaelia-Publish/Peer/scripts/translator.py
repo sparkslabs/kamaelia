@@ -19,7 +19,9 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
+"""
+
+"""
 from Axon.Component import component
 from Kamaelia.IPC import LookupByText, ToText
 from Kamaelia.Apps.Web_common.Console import info

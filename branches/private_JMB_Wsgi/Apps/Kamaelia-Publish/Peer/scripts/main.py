@@ -391,15 +391,13 @@ class Client(component):
     Inboxes = {"inbox"      : "",
                "jid"        : "",
                "streamfeat" : "",
-               "control"    : "Shutdown the client stream",
-               "http-inbox" : "Receive messages to an HTTP Server",}
+               "control"    : "Shutdown the client stream",}
     
     Outboxes = {"outbox"  : "",
                 "forward" : "",
                 "log"     : "",
                 "doauth"  : "",
                 "signal"  : "Shutdown signal",
-                "lw-signal" : "Shutdown signal for WsgiLogWritable",
                 "doregistration" : ""}
 
     def __init__(self, Config, url_list):
@@ -464,7 +462,6 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        print 'Using stdout? %s' % (bool(self.use_stdout))
         Backplane('LOG_' + self.cfg.server.log).activate()
         if self.use_stdout:
             log = Logger(stdout=True, name='XmppLogger')
