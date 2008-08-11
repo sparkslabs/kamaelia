@@ -168,7 +168,7 @@ from Particles3D import CuboidParticle3D, SphereParticle3D, TeapotParticle3D
 from Kamaelia.Support.Particles.ParticleSystemX import ParticleSystemX
 
                  
-class TopologyViewer3D(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class TopologyViewer3D(Axon.Component.component):
     """\
     TopologyViewer3D(...) -> new TopologyViewer3D component.
     
