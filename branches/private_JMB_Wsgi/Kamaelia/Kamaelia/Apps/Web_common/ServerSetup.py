@@ -26,12 +26,15 @@ def processPyPath(ServerConfig):
     """Use ServerConfig to add to the python path."""
     if ServerConfig.get('pypath_append'):
         path_append = ServerConfig['pypath_append'].split(':')
+        #expand all ~'s in the list
+        path_append = [os.path.expanduser(path) for path in path_append]
         sys.path.extend(path_append)
     
     if ServerConfig.get('pypath_prepend'):
         path_prepend = ServerConfig['pypath_prepend'].split(':')
         path_prepend.reverse()
         for path in path_prepend:
+            path = os.path.expanduser(path)
             sys.path.insert(0, path)
             
 def normalizeUrlList(url_list):

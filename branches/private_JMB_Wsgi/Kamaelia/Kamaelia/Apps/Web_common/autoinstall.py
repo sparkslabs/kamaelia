@@ -21,8 +21,8 @@
 # -------------------------------------------------------------------------
 """
 This module contains the functionality for autoinstall of necessary config files.
-At this point, it installs everything to a predefined location, but that should hopefully
-change at some point.
+
+FIXME:  Allow user to override the default install location.
 """
 import sys, zipfile, os, tarfile, cStringIO
 
@@ -31,12 +31,19 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-from Kamaelia.Apps.Web_common.Console import prompt_yesno
+from Kamaelia.Apps.Web_common.Console import prompt_yesno, info
 
-def autoinstall(zip, dir):
-    prompt_text = 'It does not appear that Kamaelia Publish has been installed.  Would you like to do so now? [y/n]'    
+_logger_suffix = '.web_common.autoinstall'
+
+def autoinstall(zip, dir, app_name):
+    """
+    This function essentially just takes a tar file from the data file within a
+    zip executable and expands it into the users home directory.
+    """
+    prompt_text = 'It does not appear that %s has been installed.  Would you like to do so now? [y/n]' % \
+                  (app_name)
     if not prompt_yesno(prompt_text):
-        print 'Kamaelia Publish must be installed to continue.  Halting.'
+        print '%s must be installed to continue.  Halting.' % (app_name)
         sys.exit(1)
     
     tar_mem = cStringIO.StringIO( zip.read('data/kpuser.tar') )
@@ -45,3 +52,5 @@ def autoinstall(zip, dir):
     
     kpuser_file.close()
     tar_mem.close()
+    
+    info('%s is now done installing.' % (app_name), _logger_name)
