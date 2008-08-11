@@ -49,13 +49,15 @@ def run_program():
         corrupt = zip.testzip()
         if corrupt:
             Console.prompt_corrupt(corrupt)
-                    
+                   
+        
+        initializeLogger()
         home_path = os.environ['HOME']
         
         #prompt the user to install the necessary software if this is the first
         #time to run Kamaelia WebServe
         if not os.path.exists(home_path + '/kp.ini'):
-            autoinstall(zip, home_path)
+            autoinstall(zip, home_path, 'Kamaelia WebServe')
             
         zip.close()
         
@@ -80,8 +82,6 @@ def run_program():
                                                            )],
                       ["/", WSGIFactory(WsgiConfig, url_list, log)],
                   ]
-    
-        initializeLogger()
 
         kp = ServerCore(
             protocol=HTTPProtocol(routing),
