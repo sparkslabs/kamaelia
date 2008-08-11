@@ -53,6 +53,13 @@ class Polyphoniser(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     - polyphony -- The number of simultaneous voices which can be played using
                    the polyphoniser
     """
+
+    Inboxes = {"inbox" : "Note-on and note-off messages to route to the voices",
+               "control": "NOT USED", #FIXME
+              }
+    Outboxes = {"outbox" : "NOT USED",
+                "signal" : "NOT USED", #FIXME
+               }
     polyphony = 8
     def __init__(self, **argd):
         """
@@ -101,6 +108,13 @@ class Targetter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     - polyphony -- The number of voices which can be targetted
     """
+
+    Inboxes = {"inbox" : "Note-on and note-off messages to route to the voices",
+               "control": "NOT USED", #FIXME
+              }
+    Outboxes = {"outbox" : "NOT USED",
+                "signal" : "NOT USED", #FIXME
+               }
     polyphony = 8
     def __init__(self, **argd):
         """
