@@ -50,43 +50,6 @@ Then at runtime try typing these commands to change the topology in real time::
     >>> DEL NODE 1
 
 
-Commands supported:
-1.) ADD NODE
-        Command format: ADD NODE    
-        - id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.
-        - name          -- string name label for the particle
-        - posSpec       -- string describing initial x,y (see _generateXY)
-        - particleType  -- particle type (currently supported: "-" same as cuboid, cuboid, sphere and teapot)
-
-2.) DEL NODE
-        Command format: DEL NODE
-        Remove a node (also removes all links to and from it)
-
-3.) ADD LINK
-        Command format: ADD LINK  
-        Add a link, directional from fromID to toID
-
-4.)  DEL LINK
-        Command format: DEL LINK  
-        Remove a link, directional from fromID to toID
-
-5.) DEL ALL
-        Command format: DEL ALL
-        Clears all nodes and links
-
-6.) GET ALL
-        Command format: GET ALL
-        Outputs the current topology as a list of commands, just like
-        those used to build it. The list begins with a 'DEL ALL'.
-
-7.) UPDATE_NAME
-        Command format: UPDATE_NAME NODE  
-        If the node does not already exist, this does NOT cause it to be created.
-
-8.) GET_NAME
-        Command format: GET_NAME NODE
-        Returns UPDATE_NAME NODE message for the specified node 
-
 
 User Interface
 --------------
@@ -156,6 +119,7 @@ Commands recognised are:
         - name          -- string name label for the particle
         - posSpec       -- string describing initial x,y (see _generateXY)
         - particleType  -- particle type (default provided is "-", unless custom types are provided - see below)
+                           currently supported: "-" same as cuboid, cuboid, sphere and teapot
       
     [ "DEL", "NODE", <id> ]
         Remove a node (also removes all links to and from it)
@@ -224,6 +188,45 @@ as it will be changed to provide cleaner termination at some point.
 
 
 
+Customising the 3D topology viewer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can customise:
+
+- the 'types' of particles (nodes)
+- visual appearance of particles (nodes) and the links between them;
+- the physics laws used to assist with layout
+
+Use the particleTypes argument of the initialiser to specify classes that
+should be instantiated to render each type of particle (nodes). particleTypes 
+should be a dictionary mapping names for particle types to the respective 
+classes, for example::
+
+    { "major" : BigParticle,  "minor"  : SmallParticle  }
+
+See below for information on how to write your own particle classes.
+
+Layout of the nodes on the surface is assisted by a physics model, provided
+by an instance of the Kamaelia.Support.Particles.ParticleSystem class. Use 
+Kamaelia.Support.Particles.ParticleSystemX if you want to make some particles
+not subject to the law.
+
+Customise the laws used for each particle type by providing a
+Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.
+
+
+
+Writing your own particle class
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+should inherit from Kamaelia.PhysicsGraph3D.Particle3D.Particle3D 
+and implement the following method (for rendering purposes):
+
+    draw()
+        draw OpenGL particles and links in this method.
+
+
+
 References: 1. Kamaelia.Visualisation.PhysicsGraph.TopologyViewer
 2. Kamaelia.UI.OpenGL.OpenGLComponent
 3. Kamaelia.UI.OpenGL.MatchedTranslationInteractor
@@ -266,35 +269,41 @@ class TopologyViewer3D(Axon.Component.component):
     A component that takes incoming topology (change) data and displays it live
     using pygame OpenGL. A simple physics model assists with visual layout. Particle
     types, appearance and physics interactions can be customised.
-   
+    
+    Keyword arguments (in order):
+    
+    - screensize          -- (width,height) of the display area (default = (800,600))
+    - fullscreen          -- True to start up in fullscreen mode (default = False)
+    - caption             -- Caption for the pygame window (default = "Topology Viewer")
+    - particleTypes       -- dict("type" -> klass) mapping types of particle to classes used to render them (default = {"-":RenderingParticle})
+    - initialTopology     -- (nodes,bonds) where bonds=list((src,dst)) starting state for the topology  (default=([],[]))
+    - laws                -- Physics laws to apply between particles (default = SimpleLaws(bondlength=100))
+    - simCyclesPerRedraw  -- number of physics sim cycles to run between each redraw (default=1)
+    - border              -- Minimum distance from edge of display area that new particles appear (default=100)
     """
     
     Inboxes = { "inbox"          : "Topology (change) data describing an Axon system",
                 "control"        : "Shutdown signalling",
                 "alphacontrol"   : "Alpha (transparency) of the image (value 0..255)",
-                "callback": "for the response after a displayrequest",
+                "callback"       : "for the response after a displayrequest",
                 "events"         : "Place where we recieve events from the outside world",
-                "displaycontrol" : "Replies from Pygame Display service",
+                "displaycontrol" : "Replies from OpenGL Display service",
               }
               
-    Outboxes = { "signal"        : "NOT USED",
-                 "outbox"        : "Notification and topology output",
+    Outboxes = { "signal"         : "NOT USED",
+                 "outbox"         : "Notification and topology output",
                  "display_signal" : "Requests to Pygame Display service",
                }
                                                      
     
     def __init__(self, screensize         = (800,600),
                        fullscreen         = False, 
-                       caption            = "Topology Viewer", 
+                       caption            = "3D Topology Viewer", 
                        particleTypes      = None,
                        initialTopology    = None,
                        laws               = None,
                        simCyclesPerRedraw = 1,
-                       border             = 0,
-                       extraDrawing       = None,
-                       showGrid           = True,
-                       transparency       = None,
-                       position           = None):
+                       border             = 0):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         
         super(TopologyViewer3D, self).__init__()
@@ -453,6 +462,7 @@ class TopologyViewer3D(Axon.Component.component):
             
         
     def quit(self,msg=Axon.Ipc.shutdownMicroprocess()):
+        """Cause termination."""
         print 'Shut down...'
         self.send(msg, "signal")
         self.scheduler.stop()
@@ -809,12 +819,13 @@ class TopologyViewer3D(Axon.Component.component):
                     self.rotationMode = False                 
     
     def scroll( self ):
-        # Scroll the surface by resetting gluLookAt
+        """Scroll the surface by resetting gluLookAt."""
         glMatrixMode(GL_PROJECTION)                 
         glLoadIdentity()
         self.display.setProjection()
         
     def gotoDisplayLevel( self, dlevel):
+        """Switch to another display level."""
         # Save current level's viewer position
         self.levelViewerPos[self.currentLevel] = self.display.viewerposition.copy()
         # Deselect all
