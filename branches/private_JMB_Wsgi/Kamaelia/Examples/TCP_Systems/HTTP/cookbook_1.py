@@ -4,54 +4,25 @@
 
 import socket
 
-# Import the server framework, the HTTP protocol handling, the minimal request handler, and error handlers
+# Import the server framework, the HTTP protocol handling and the minimal request handler
 
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
-from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
-from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
-import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+from Kamaelia.Chassis.ConnectedServer import ServerCore
+from Kamaelia.Protocol.HTTP.Handlers.Minimal import MinimalFactory
+from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
 
 # Our configuration
 
 homedirectory = "/srv/www/htdocs/"
 indexfilename = "index.html"
 
-# This allows for configuring the request handlers in a nicer way. This is candidate
-# for merging into the mainline code. Effectively this is a factory that creates functions
-# capable of choosing which request handler to use.
-
-def requestHandlers(URLHandlers):
-    def createRequestHandler(request):
-        if request.get("bad"):
-            return ErrorPages.websiteErrorPage(400, request.get("errormsg",""))
-        else:
-            for (prefix, handler) in URLHandlers:
-                if request["raw-uri"][:len(prefix)] == prefix:
-                    request["uri-prefix-trigger"] = prefix
-                    request["uri-suffix"] = request["raw-uri"][len(prefix):]
-                    return handler(request)
-
-        return ErrorPages.websiteErrorPage(404, "No resource handlers could be found for the requested URL")
-
-    return createRequestHandler
-
-# This factory allows us to configure the minimal request handler.
-
-def servePage(request):
-    return Minimal(request=request,
-                   homedirectory=homedirectory,
-                   indexfilename=indexfilename)
-
-
-# A factory to create configured HTTPServer components - ie HTTP Protocol handling components
-
-def HTTPProtocol():
-    return HTTPServer(requestHandlers([
-                          ["/", servePage ],
-                      ]))
+#Here we define our routing.  This tells us that the root of the server will run
+#the minimal request handler, a static file server.
+routing = [
+    ['/', MinimalFactory(indexfilename, homedirectory)]
+    ]
 
 # Finally we create the actual server and run it.
 
-SimpleServer(protocol=HTTPProtocol,
+ServerCore(protocol=HTTPProtocol(routing),
              port=8082,
              socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()

@@ -3,30 +3,14 @@
 import socket
 import Axon
 
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
-from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
-from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
-import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+from Kamaelia.Chassis.ConnectedServer import ServerCore
+from Kamaelia.Protocol.HTTP.Handlers.Minimal import MinimalFactory
+from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 
 homedirectory = "/srv/www/htdocs/"
 indexfilename = "index.html"
-
-def requestHandlers(URLHandlers):
-    def createRequestHandler(request):
-        if request.get("bad"):
-            return ErrorPages.websiteErrorPage(400, request.get("errormsg",""))
-        else:
-            for (prefix, handler) in URLHandlers:
-                if request["raw-uri"][:len(prefix)] == prefix:
-                    request["uri-prefix-trigger"] = prefix
-                    request["uri-suffix"] = request["raw-uri"][len(prefix):]
-                    return handler(request)
-
-        return ErrorPages.websiteErrorPage(404, "No resource handlers could be found for the requested URL.")
-
-    return createRequestHandler
 
 class HelloHandler(Axon.Component.component):
     def __init__(self, request):
@@ -102,13 +86,12 @@ def servePage(request):
                    homedirectory=homedirectory, 
                    indexfilename=indexfilename)
 
-def HTTPProtocol():
-    return HTTPServer(requestHandlers([
-                         ["/echo", EchoHandler ],
-                         ["/hello", HelloHandler ],
-                         ["/", servePage ],
-                      ]))
+routing = [
+            ["/echo", EchoHandler ],
+            ["/hello", HelloHandler ],
+            ["/", MinimalFactory(indexfilename, homedirectory) ],
+          ]
 
-SimpleServer(protocol=HTTPProtocol,
+ServerCore(protocol=HTTPProtocol(routing),
              port=8082,
              socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()
