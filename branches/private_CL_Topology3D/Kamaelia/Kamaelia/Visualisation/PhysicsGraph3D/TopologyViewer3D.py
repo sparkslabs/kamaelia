@@ -321,6 +321,10 @@ class TopologyViewer3D(Axon.Component.component):
         else:
             self.particleTypes = particleTypes
             
+        if initialTopology == None:
+            initialTopology = ([],[])
+        self.initialNodes   = list(initialTopology[0])
+        self.initialBonds   = list(initialTopology[1])
         
         self.hitParticles = []
         self.multiSelectMode = False
@@ -359,6 +363,17 @@ class TopologyViewer3D(Axon.Component.component):
     
     def initialiseComponent(self):
         """Initialises."""
+        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION, pygame.KEYDOWN, pygame.KEYUP ])
+        pygame.key.set_repeat(100,100)
+        
+        for node in self.initialNodes:
+            self.addParticle(*node)
+
+        for source,dest in self.initialBonds:
+            self.makeBond(source, dest)
+    
+    def main(self):
+        """Main loop."""
         # create display request for itself
         self.size = Vector(0,0,0)
         disprequest = { "OGL_DISPLAYREQUEST" : True,
@@ -373,12 +388,8 @@ class TopologyViewer3D(Axon.Component.component):
         while not self.dataReady("callback"):  yield 1
         self.identifier = self.recv("callback")
         
-        self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION, pygame.KEYDOWN, pygame.KEYUP ])
-        pygame.key.set_repeat(100,100)
-    
-    def main(self):
-        """Main loop."""
         self.initialiseComponent()
+        
         while True:
             # process incoming messages
             if self.dataReady("inbox"):
