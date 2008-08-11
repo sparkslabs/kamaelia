@@ -59,6 +59,7 @@ class _BoxBundle(object):
         self.signal = self.OutboxAddMethod('THREAD_' + self.thread + '_SIGNAL')
         self.outbox = self.OutboxAddMethod('THREAD_' + self.thread + '_OUTBOX')
     def destroyBoxes(self):
+        self.UnlinkMethod(self.translator)
         self.InboxRmMethod(self.inbox)
         self.InboxRmMethod(self.control)
         self.OutboxRmMethod(self.signal)
@@ -100,6 +101,7 @@ def BoxBundle(adap, translator=None, thread=None):
         OutboxAddMethod = adap.addOutbox,
         OutboxRmMethod = adap.deleteOutbox,
         LinkMethod = adap.link,
+        UnlinkMethod = adap.unlink,
         thread = thread,
         Translator=translator,
     )
@@ -148,9 +150,6 @@ class TransactionManager(threadedadaptivecommscomponent):
         while not self.signal:
             for msg in self.Inbox('jid'):
                 self.ThisJID = msg
-                file = open('/home/jason/foo.bar', 'a')
-                file.write(str(self.ThisJID))
-                file.close()
                 
             for msg in self.Inbox('control'):
                 self.signal = msg

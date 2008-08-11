@@ -38,17 +38,16 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleReader
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
-from Kamaelia.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory, WsgiFactory
-from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
-from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
-from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
-from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, normalizeWsgiVars,\
-    initializeLoggers
-from Kamaelia.Util.Filter import Filter
+from Kamaelia.Protocol.HTTP.Handlers.WSGI import SimpleWSGIFactory, WSGIFactory
+from Kamaelia.Apps.WSGI.Simple import simple_app
+from Kamaelia.Apps.Web_common.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.Web_common.UrlConfig import ParseUrlFile
+from Kamaelia.Apps.Web_common.ServerSetup import processPyPath, normalizeUrlList,\
+ normalizeWsgiVars, initializeLogger
 
 from transactions import TransactionManager
-from Kamaelia.Apps.Wsgi.Structs import StaticConfigObject, XMPPConfigObject, ConfigObject
+from Kamaelia.Apps.Web_common.Structs import StaticConfigObject, XMPPConfigObject,\
+ ConfigObject
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -457,6 +456,7 @@ class Client(component):
         Backplane("BOUND").activate()
         # Used to inform components of the supported features
         Backplane("DISCO_FEAT").activate()
+        Backplane("MESSAGING").activate()
         
 
         sub = SubscribeTo("JID")
@@ -485,7 +485,7 @@ class Client(component):
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
         
         trans = TransactionManager(
-            HandlerFactory = WsgiFactory(self.cfg.wsgi, self.url_list)
+            HandlerFactory = WSGIFactory(self.cfg.wsgi, self.url_list)
         )
 
         self.graph = Graphline(client = self,
@@ -510,6 +510,7 @@ class Client(component):
                                registerdisp = RegisterDispatcher(),
                                pjid = PublishTo("JID"),
                                pbound = PublishTo("BOUND"),
+                               smsg = SubscribeTo("MESSAGING"),
 
                                linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
                                            ('console', 'outbox'): ('client', 'control'),
@@ -569,6 +570,7 @@ class Client(component):
                                            ("msgdisp", "log"): ('logger', "inbox"),
                                            ("msgdisp", "xmpp.chat"): ('msghandler', 'inbox'),
                                            ("msghandler", "outbox"): ('msgdisp', 'forward'),
+                                           ("smsg", "outbox") : ("msgdisp", "forward"),
                                            ("msgdisp", "outbox"): ("xmpp", "forward"),
 
                                            # Activity
@@ -627,22 +629,13 @@ class Client(component):
         self.stop()
         print "You can hit Ctrl-C to shutdown all processes now." 
 
-class FilterObject(object):
-    def __init__(self, use_stdout):
-        self.use_stdout=use_stdout
-    def filter(self, input):
-        if self.use_stdout:
-            return input
-        else:
-            return None
-
 def main():   
     ConfigDict = ParseConfigFile('~/kp.ini', DictFormatter())
     options = parseCmdOpts()
     
     Config = ConfigObject(ConfigDict, options)
     processPyPath(ConfigDict['SERVER'])
-    initializeLoggers(Config.server.log)
+    initializeLogger(Config.server.log)
     
     url_list = ParseUrlFile(Config.wsgi['url_list'])
     normalizeUrlList(url_list)

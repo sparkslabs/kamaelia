@@ -22,7 +22,7 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 from Axon.Component import component
 from Kamaelia.IPC import LookupByText, ToText
-from Kamaelia.Apps.Wsgi.Console import info
+from Kamaelia.Apps.Web_common.Console import info
 
 from xml.sax.saxutils import unescape, escape
 
@@ -61,7 +61,8 @@ class RequestDeserializer(component):
                     #to be sent right back to here after the request handler is
                     #created.  This is done to prevent things from shutting down
                     #too quickly.
-                    signal_instance = LookupByText(sig)(self)  #FIXME:  This is just plain ugly.
+                    signal_type = LookupByText(sig)
+                    signal_instance = signal_type(self)
                     self.send(signal_instance, 'chassis_signal')
 
                 self.send(msg, 'outbox')
@@ -75,7 +76,6 @@ class RequestDeserializer(component):
             yield 1
 
         self.send(self.signal, 'signal')
-        #print 'deserializer dying!'
     
     def processInitialMessage(self):
         
@@ -84,7 +84,8 @@ class RequestDeserializer(component):
         self.send(self.batch_id, 'batch')
         sig = request.get('signal')
         if sig:
-            signal_instance = LookupByText(sig)(self)  #FIXME:  This is just plain ugly.
+            signal_type = LookupByText(sig)
+            signal_instance = signal_type(self)
             self.send(signal_instance, 'chassis_signal')
         
         assert(isinstance(request, dict))
