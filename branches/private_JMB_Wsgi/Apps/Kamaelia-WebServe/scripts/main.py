@@ -24,20 +24,18 @@ import sys, socket, os, zipfile, logging
 import cProfile as profile
 from pprint import pprint
 
-from autoinstall import autoinstall
-
 from Kamaelia.Protocol.HTTP.Handlers.WSGI import WSGIFactory
-from Kamaelia.Apps.Wsgi.Console import info
 from Kamaelia.Chassis.ConnectedServer import ServerCore
-from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Protocol.HTTP.Handlers.Minimal import MinimalFactory
-from Kamaelia.Apps.Wsgi.Config import ParseUrlFile
-from Kamaelia.Apps.Wsgi.kpsetup import processPyPath, normalizeUrlList, \
-    normalizeWsgiVars, initializeLogger
-from Kamaelia.Support.Protocol.HTTP import WSGILikeTranslator
 
-sys.path.insert(0, sys.argv[0] + '/data')
+#Stuff that's shared between some of the webservers
+from Kamaelia.Apps.Web_common.Console import info
+from Kamaelia.Apps.Web_common.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.Web_common.autoinstall import autoinstall
+from Kamaelia.Apps.Web_common.UrlConfig import ParseUrlFile
+from Kamaelia.Apps.Web_common.ServerSetup import processPyPath, normalizeUrlList, \
+    normalizeWsgiVars, initializeLogger
 
 _profile_ = False
 _logger_suffix = '.WebServe.main'
@@ -47,17 +45,21 @@ def run_program():
     try:
         zip = zipfile.ZipFile(sys.argv[0], 'r')
         
+        #prompt the user if this executable is corrupt
         corrupt = zip.testzip()
         if corrupt:
             Console.prompt_corrupt(corrupt)
                     
         home_path = os.environ['HOME']
         
+        #prompt the user to install the necessary software if this is the first
+        #time to run Kamaelia WebServe
         if not os.path.exists(home_path + '/kp.ini'):
             autoinstall(zip, home_path)
             
         zip.close()
         
+        #Extract data from Config Files and organize it into dictionaries
         configs = ParseConfigFile('~/kp.ini', DictFormatter())
         ServerConfig = configs['SERVER']
         WsgiConfig = configs['WSGI']
@@ -89,7 +91,7 @@ def run_program():
         info('Serving on port %s' % (ServerConfig['port']), _logger_suffix)
     except:
         import traceback
-        print 'There was an error!  Info is in error.log'
+        print 'There was an error!  Info is in %s/error.log' % (os.getcwd())
         file = open('error.log', 'a')
         traceback.print_exc(file=file)
         file.write('\n')
