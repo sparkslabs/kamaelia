@@ -65,7 +65,7 @@ Example Usage
 A 3D topology viewer where particles of type "-" are rendered by CuboidParticle3D
 instances::
 
-    TopologyViewer( particleTypes = {"-":CuboidParticle3D},
+    TopologyViewer3D( particleTypes = {"-":CuboidParticle3D},
                     laws = Kamaelia.Support.Particles.SimpleLaws(),
                   ).run()
 
@@ -95,7 +95,37 @@ Example Usage
 A 3D topology viewer where particles of type "sphere" are rendered by CuboidParticle3D
 instances::
 
-    TopologyViewer( particleTypes = {"sphere":SphereParticle3D},
+    TopologyViewer3D( particleTypes = {"sphere":SphereParticle3D},
+                    laws = Kamaelia.Support.Particles.SimpleLaws(),
+                  ).run()
+
+SimpleLaws are used that apply the same simple physics laws for all particle
+types.
+
+
+How does it work?
+-----------------
+
+This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particle3D and adds methods to
+support rendering (draw).
+
+
+
+===========================================================================
+TeapotParticle3D: teapot rendering particle for 3D Topology visualisation
+===========================================================================
+
+This is an implementation of a simple teapot particle for 3D topology
+visualisation.
+
+
+
+Example Usage
+-------------
+A 3D topology viewer where particles of type "sphere" are rendered by CuboidParticle3D
+instances::
+
+    TopologyViewer3D( particleTypes = {"teapot":SphereParticle3D},
                     laws = Kamaelia.Support.Particles.SimpleLaws(),
                   ).run()
 
@@ -155,6 +185,7 @@ class Particle3D(BaseParticle):
     """
     
     def __init__(self, position = (-1,0,-10), ID='', **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Particle3D, self).__init__(position=position, ID = ID)
         
         self.pos = position
@@ -197,10 +228,9 @@ class Particle3D(BaseParticle):
         
         # For drag handling
         self.oldpoint = None
-        
-        
     
     def set_label(self, new_name):
+        """Set text label."""
         if self.initSize == Vector():
             self.size = Vector()
         self.name = new_name
@@ -210,8 +240,7 @@ class Particle3D(BaseParticle):
     
     def draw(self):
         """\Stub method
-        
-        Override this method to draw particles and links.
+        Override this method to draw concrete particles and links.
         """
         pass
         
@@ -271,7 +300,7 @@ class Particle3D(BaseParticle):
         
         
     def applyTransforms(self):
-        """ Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened. """
+        """Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened."""
         # generate new transformation matrix if needed
         if self.oldscaling != self.scaling or self.drotation != Vector() or self.oldpos != Vector(*self.pos):
             self.transform = Transform()
@@ -328,10 +357,11 @@ class CuboidParticle3D(Particle3D):
     """
     
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(CuboidParticle3D, self).__init__(**argd)
 
     def draw(self):
-        """ DRAW CUBOID Particle."""
+        """Draw CUBOID Particle."""
         hs = self.size/2
         
         # draw faces
@@ -409,11 +439,12 @@ class SphereParticle3D(Particle3D):
     """
     
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SphereParticle3D, self).__init__(**argd)
         self.drotation = Vector(0,0,90)
 
     def draw(self):
-        """ DRAW sphere particle."""
+        """Draw sphere particle."""
         hs = self.radius
         
         # Create a quadratic object for sphere rendering
@@ -450,10 +481,11 @@ class TeapotParticle3D(Particle3D):
     """
     
     def __init__(self, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(TeapotParticle3D, self).__init__(**argd)
 
     def draw(self):
-        """ DRAW teapot particle."""
+        """Draw teapot particle."""
         hs = self.radius
         
         # Add texture
@@ -466,8 +498,6 @@ class TeapotParticle3D(Particle3D):
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, self.texID)
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
-        
-        
         
         # Draw teapot
         glFrontFace(GL_CW)
@@ -490,12 +520,3 @@ class TeapotParticle3D(Particle3D):
             glVertex3f(*(Vector(*p.pos)-Vector(*self.pos)).toTuple())
             glEnd()
         glPopMatrix()
-
-
-from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent        
-class OpenGLComponentParticle3D(OpenGLComponent):
-    pass
-    
-    
-class RenderingParticle3D(object):
-    pass
