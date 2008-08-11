@@ -43,8 +43,21 @@ of None in a list of voices, and replaces this with the note number.  It then se
 import Axon
 
 class Polyphoniser(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+    """
+    Polyphoniser([polyphony]) -> new Polyphoniser component.
+
+    Routes note-on and off messages based upon their note-number.
+
+    Keyword Arguments:
+
+    - polyphony -- The number of simultaneous voices which can be played using
+                   the polyphoniser
+    """
     polyphony = 8
     def __init__(self, **argd):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
         super(Polyphoniser, self).__init__(**argd)
         self.voices = []
         for i in range(self.polyphony):
@@ -52,6 +65,7 @@ class Polyphoniser(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.voices.append(None)
 
     def main(self):
+        """ Main loop """
         while 1:
             if self.dataReady("inbox"):
                 address, arguments = self.recv("inbox")
@@ -78,13 +92,26 @@ class Polyphoniser(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             yield 1
 
 class Targetter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+    """
+    Targetter([polyphony]) -> new Targetter component.
+
+    Routes note-on and off messages to a specific voice.
+
+    Keyword Arguments:
+
+    - polyphony -- The number of voices which can be targetted
+    """
     polyphony = 8
     def __init__(self, **argd):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
         super(Targetter, self).__init__(**argd)
         for i in range(self.polyphony):
             self.addOutbox("voice%i" % i)
 
     def main(self):
+        """ Main loop """
         while 1:
             if self.dataReady("inbox"):
                 address, arguments = self.recv("inbox")
