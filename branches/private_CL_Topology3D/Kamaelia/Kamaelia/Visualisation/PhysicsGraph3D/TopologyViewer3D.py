@@ -1,33 +1,53 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
 
-"""
+"""\
+===========================
+Generic 3D Topology Viewer
+===========================
+
 TopologyViewer3D is a 3D version of TopologyViewer, which shows Topology in PyGame surface.
-Operation supported:
-* esc --- quit
 
-* a --- viewer position move left
-* d --- viewer position move right
-* w --- viewer position move up
-* s --- viewer position move down
-* pgup --- viewer position move forward (zoom in)
-* pgdn --- viewer position move backward (zoom out)
 
-* left --- rotate selected particles to left around y axis  (all particles if none of them is selected)
-* right --- rotate selected particles to right around y axis  (all particles if none of them is selected)
-* up --- rotate selected  particles to up around x axis  (all particles if none of them is selected)
-* down --- rotate selected particles to down around x axis  (all particles if none of them is selected)
-* < --- rotate selected particles anticlock-wise around z axis  (all particles if none of them is selected)
-*> --- rotate selected particles clock-wise around z axis  (all particles if none of them is selected)
-return --- show next level's topology
-backspace --- show last level's topology
 
-* Mouse click --- click node to select one, click empty area to deselect all
-* Mouse drag: move particles
-* Mouse double-click --- show next level's topology
-* Mouse right-click --- show last level's topology
+Example Usage
+-------------
+A simple console driven topology viewer::
 
-* shift --- multi Select Mode; shift+click for multiple selection/deselection
-* ctrl ---  rotation Mode; when ctrl is pressed, mouse dragging will rotate the selected particle (all particles if none of them is selected) rather than move it
+    Pipeline( ConsoleReader(),
+              lines_to_tokenlists(),
+              TopologyViewer(),
+            ).run()
+
+Then at runtime try typing these commands to change the topology in real time::
+
+    >>> DEL ALL
+    >>> ADD NODE 1 "1st node" randompos -
+    >>> ADD NODE 2 "2nd node" randompos -
+    >>> ADD NODE 3 "3rd node" randompos -
+    >>> ADD LINK 1 2
+    >>> ADD LINK 3 2
+    >>> DEL LINK 1 2
+    >>> DEL NODE 1
 
 
 Commands supported:
@@ -66,6 +86,51 @@ Commands supported:
 8.) GET_NAME
         Command format: GET_NAME NODE
         Returns UPDATE_NAME NODE message for the specified node 
+
+
+User Interface
+--------------
+
+TopologyViewer3D manifests as a pygame OpenGL display surface. As it is sent
+topology information nodes and links between them will appear.
+
+You can click a node with the mouse to select it. Depending on the application,
+this may display additional data or, if integrated into another app,  have some
+other effect.
+
+Click and drag with the left mouse button to move nodes around. Note that a
+simple physics model or repulsion and attraction forces is always active. This
+causes nodes to move around to help make it visually clearer, however you may
+still need to drag nodes about to tidy it up.
+
+
+Operation supported:
+* esc --- quit
+
+* a --- viewer position move left
+* d --- viewer position move right
+* w --- viewer position move up
+* s --- viewer position move down
+* pgup --- viewer position move forward (zoom in)
+* pgdn --- viewer position move backward (zoom out)
+
+* left --- rotate selected particles to left around y axis  (all particles if none of them is selected)
+* right --- rotate selected particles to right around y axis  (all particles if none of them is selected)
+* up --- rotate selected  particles to up around x axis  (all particles if none of them is selected)
+* down --- rotate selected particles to down around x axis  (all particles if none of them is selected)
+* < --- rotate selected particles anticlock-wise around z axis  (all particles if none of them is selected)
+*> --- rotate selected particles clock-wise around z axis  (all particles if none of them is selected)
+return --- show next level's topology
+backspace --- show last level's topology
+
+* Mouse click --- click node to select one, click empty area to deselect all
+* Mouse drag: move particles
+* Mouse double-click --- show next level's topology
+* Mouse right-click --- show last level's topology
+
+* shift --- multi Select Mode; shift+click for multiple selection/deselection
+* ctrl ---  rotation Mode; when ctrl is pressed, mouse dragging will rotate the selected particle (all particles if none of them is selected) rather than move it
+
 
 
 References: 1. Kamaelia.Visualisation.PhysicsGraph.TopologyViewer

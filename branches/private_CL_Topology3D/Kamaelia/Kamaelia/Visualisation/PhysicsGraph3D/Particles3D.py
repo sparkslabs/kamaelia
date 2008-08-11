@@ -1,11 +1,121 @@
-"""
-3D particles
+#!/usr/bin/env python
+#
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+
+"""\
+===============================================================================
+Particle3D: Simple generic/ supertype particle for 3D Topology visualisation
+===============================================================================
+
+This is an implementation of a simple supertype particle for 3D topology
+visualisation.
+
+
+
+Example Usage
+-------------
+Subclass it and extend it by adding draw() method to render any shape you want the particle to be.
+
+
+How does it work?
+-----------------
+
+This object subclasses Kamaelia.Support.Particles.Particle and adds 3D elements.
+
+At initialisation, provide a unique ID, a starting (x,y,z) position tuple, and
+a name. The name is displayed as a label on top of the particle.
+
+If the particle becomes selected it changes its visual appearance to reflect
+this.
+
+It only serves as a superclass of 3D particle and has no rendering (draw) method,
+so it leaves the shape rendering to subclasses.
+
+
+
+===========================================================================
+CuboidParticle3D: cuboid rendering particle for 3D Topology visualisation
+===========================================================================
+
+This is an implementation of a simple cuboid particle for 3D topology
+visualisation.
+
+
+
+Example Usage
+-------------
+A 3D topology viewer where particles of type "-" are rendered by CuboidParticle3D
+instances::
+
+    TopologyViewer( particleTypes = {"-":CuboidParticle3D},
+                    laws = Kamaelia.Support.Particles.SimpleLaws(),
+                  ).run()
+
+SimpleLaws are used that apply the same simple physics laws for all particle
+types.
+
+
+How does it work?
+-----------------
+
+This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particle3D and adds methods to
+support rendering (draw).
+
+
+
+===========================================================================
+SphereParticle3D: sphere rendering particle for 3D Topology visualisation
+===========================================================================
+
+This is an implementation of a simple cuboid particle for 3D topology
+visualisation.
+
+
+
+Example Usage
+-------------
+A 3D topology viewer where particles of type "sphere" are rendered by CuboidParticle3D
+instances::
+
+    TopologyViewer( particleTypes = {"sphere":SphereParticle3D},
+                    laws = Kamaelia.Support.Particles.SimpleLaws(),
+                  ).run()
+
+SimpleLaws are used that apply the same simple physics laws for all particle
+types.
+
+
+How does it work?
+-----------------
+
+This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particle3D and adds methods to
+support rendering (draw).
+
+
 
 References: 1. Kamaelia.UI.OpenGL.Button
 2. Kamaelia.UI.OpenGL.OpenGLComponent
 """
 
-import math, sys, os
+import math, os
 
 from urllib import urlopen
 from cStringIO import StringIO
@@ -23,6 +133,25 @@ from Kamaelia.Support.Particles import Particle as BaseParticle
 class Particle3D(BaseParticle):
     """\
     A super class for 3D particles
+    super(RenderingParticle3D, self).__init__(**argd)
+    
+    Simple 3D generic superclass particle for topology visualisation.
+    
+    Keyword arguments:
+    
+    - ID        -- a unique ID for this particle
+    - position  -- (x,y,z) tuple of particle coordinates
+    - name      -- A name this particle will be labelled with
+    - bgcolour  -- Colour of surfaces behind text label (default=(230,230,230)), only apply to label texture 
+    - fgcolour  -- Colour of the text label (default=(0,0,0), only apply to label texture 
+    - sidecolour -- Colour of side planes (default=(200,200,244)), only apply to CuboidParticle3D
+    - bgcolourselected  -- Background colour when the particle is selected (default=(0,0,0)
+    - bgcolourselected  -- Frontground colour when the particle is selected (default=(244,244,244))
+    - sidecolourselected -- Side colour when the particle is selected (default=(0,0,100))
+    - margin       -- Margin size in pixels (default=8)
+    - fontsize     -- Font size for label text (default=50)
+    - pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
+    - thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
     """
     
     def __init__(self, position = (-1,0,-10), ID='', **argd):
@@ -31,13 +160,13 @@ class Particle3D(BaseParticle):
         self.pos = position
         self.initSize = Vector(*argd.get("size", (0,0,0)))
 
-        self.backgroundColourWhenUnselected = self.backgroundColour = argd.get("bgcolour", (230,230,230))
-        self.foregroundColourWhenUnselected = self.foregroundColour = argd.get("fgcolour", (0,0,0))
+        self.bgColourWhenUnselected = self.bgColour = argd.get("bgcolour", (230,230,230))
+        self.fgColourWhenUnselected = self.fgColour = argd.get("fgcolour", (0,0,0))
         self.sideColourWhenUnselected = self.sideColour = argd.get("sidecolour", (200,200,244))
         
-        self.backgroundColourWhenSelected = argd.get("bgcolourselected", (0,0,0))
-        self.foregroundColourWhenSelected = argd.get("fgcolourselected", (244,244,244))
-        self.sideColourWhenSelected = argd.get("sidecolourselected", (200,200,244))
+        self.bgColourWhenSelected = argd.get("bgcolourselected", (0,0,0))
+        self.fgColourWhenSelected = argd.get("fgcolourselected", (244,244,244))
+        self.sideColourWhenSelected = argd.get("sidecolourselected", (0,0,100))
         
         self.margin = argd.get("margin", 8)
         self.fontsize = argd.get("fontsize", 50)
@@ -102,7 +231,7 @@ class Particle3D(BaseParticle):
         else:
             pygame.font.init()
             font = pygame.font.Font(None, self.fontsize)
-            self.image = font.render(self.name,True, self.foregroundColour, )
+            self.image = font.render(self.name,True, self.fgColour, )
         
         if self.size != Vector(0,0,0):
             texsize = (self.size.x*self.pixelscaling, self.size.y*self.pixelscaling)
@@ -113,7 +242,7 @@ class Particle3D(BaseParticle):
         # create power of 2 dimensioned surface
         pow2size = (int(2**(math.ceil(math.log(texsize[0]+2*self.margin, 2)))), int(2**(math.ceil(math.log(texsize[1]+2*self.margin, 2)))))
         textureSurface = pygame.Surface(pow2size)
-        textureSurface.fill( self.backgroundColour )
+        textureSurface.fill( self.bgColour )
         # determine texture coordinates
         self.tex_w = float(texsize[0])/pow2size[0]
         self.tex_h = float(texsize[1])/pow2size[1]
@@ -181,21 +310,21 @@ class Particle3D(BaseParticle):
         """Tell this particle it is selected"""
         #self.selected = True
         self.sideColour = self.sideColourWhenSelected
-        self.backgroundColour = self.backgroundColourWhenSelected
-        self.foregroundColour = self.foregroundColourWhenSelected
+        self.bgColour = self.bgColourWhenSelected
+        self.fgColour = self.fgColourWhenSelected
         self.buildCaption()
 
     def deselect( self ):
         """Tell this particle it is deselected"""
         #self.selected = False
         self.sideColour = self.sideColourWhenUnselected
-        self.backgroundColour = self.backgroundColourWhenUnselected
-        self.foregroundColour = self.foregroundColourWhenUnselected
+        self.bgColour = self.bgColourWhenUnselected
+        self.fgColour = self.fgColourWhenUnselected
         self.buildCaption()
 
 class CuboidParticle3D(Particle3D):
     """\
-    Cuboid particle
+    Cuboid rendering particle
     """
     
     def __init__(self, **argd):
@@ -276,7 +405,7 @@ class CuboidParticle3D(Particle3D):
 
 class SphereParticle3D(Particle3D):
     """\
-    Sphere particle
+    Sphere rendering particle
     """
     
     def __init__(self, **argd):
@@ -317,7 +446,7 @@ class SphereParticle3D(Particle3D):
 
 class TeapotParticle3D(Particle3D):
     """\
-    Teapot particle
+    Teapot rendering particle
     """
     
     def __init__(self, **argd):
