@@ -133,6 +133,97 @@ backspace --- show last level's topology
 
 
 
+How does it work?
+-----------------
+
+TopologyViewer is a Kamaeila component. a OpenGL pygame display surface.
+
+A 3D topology (graph) of nodes and links between them is rendered to the surface.
+
+You can specify an initial topology by providing a list of instantiated
+particles and another list of pairs of those particles to show how they are 
+linked.
+
+TopologyViewer reponds to commands arriving at its "inbox" inbox
+instructing it on how to change the topology. A command is a list/tuple.
+
+Commands recognised are:
+
+    [ "ADD", "NODE", <id>, <name>, <posSpec>, <particle type> ]
+        Add a node, using:
+          
+        - id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.
+        - name          -- string name label for the particle
+        - posSpec       -- string describing initial x,y (see _generateXY)
+        - particleType  -- particle type (default provided is "-", unless custom types are provided - see below)
+      
+    [ "DEL", "NODE", <id> ]
+        Remove a node (also removes all links to and from it)
+        
+    [ "ADD", "LINK", <id from>, <id to> ]
+        Add a link, directional from fromID to toID
+           
+    [ "DEL", "LINK", <id from>, <id to> ]
+        Remove a link, directional from fromID to toID
+               
+    [ "DEL", "ALL" ]
+        Clears all nodes and links
+
+    [ "GET", "ALL" ]
+        Outputs the current topology as a list of commands, just like
+        those used to build it. The list begins with a 'DEL ALL'.
+
+    [ "UPDATE_NAME", "NODE", <id>, <new name> ]
+        If the node does not already exist, this does NOT cause it to be created.
+
+    [ "GET_NAME", "NODE", <id> ]
+        Returns UPDATE_NAME NODE message for the specified node
+
+Commands are processed immediately, in the order in which they arrive. You
+therefore cannot refer to a node or linkage that has not yet been created, or
+that has already been destroyed.
+
+If a stream of commands arrives in quick succession, rendering and physics will
+be temporarily stopped, so commands can be processed more quickly. This is
+necessary because when there is a large number of particles, physics and
+rendering starts to take a long time, and will therefore bottleneck the
+handling of commands.
+
+However, there is a 1 second timeout, so at least one update of the visual
+output is guaranteed per second.
+
+TopologyViewer sends any output to its "outbox" outbox in the same
+list/tuple format as used for commands sent to its "inbox" inbox. The following
+may be output:
+
+    [ "SELECT", "NODE", <id> ]
+        Notification that a given node has been selected.
+    
+    [ "SELECT", "NODE", None ]
+       Notificaion that *no node* is now selected. 
+        
+    [ "TOPOLOGY", <topology command list> ]
+        List of commands needed to build the topology, as it currently stands.
+        The list will start with a ("DEL","ALL") command.
+        This is sent in response to receiving a ("GET","ALL") command.
+
+Error and tip information is printed out directly when encountered.
+
+
+
+Termination
+-----------
+
+If a shutdownMicroprocess message is received on this component's "control"
+inbox this it will pass it on out of its "signal" outbox and immediately
+terminate.
+
+NOTE: Termination is currently rather cludgy - it raises an exception which
+will cause the rest of a kamaelia system to halt. Do not rely on this behaviour
+as it will be changed to provide cleaner termination at some point.
+
+
+
 References: 1. Kamaelia.Visualisation.PhysicsGraph.TopologyViewer
 2. Kamaelia.UI.OpenGL.OpenGLComponent
 3. Kamaelia.UI.OpenGL.MatchedTranslationInteractor
@@ -265,12 +356,9 @@ class TopologyViewer3D(Axon.Component.component):
         self.lastClickPos = (0,0)
         self.lastClickTime = time.time()
         self.dClickRes = 0.3
-        
-    def main(self):
-        """\
- 
-        
-        """
+    
+    def initialiseComponent(self):
+        """Initialises."""
         # create display request for itself
         self.size = Vector(0,0,0)
         disprequest = { "OGL_DISPLAYREQUEST" : True,
@@ -287,7 +375,10 @@ class TopologyViewer3D(Axon.Component.component):
         
         self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION, pygame.KEYDOWN, pygame.KEYUP ])
         pygame.key.set_repeat(100,100)
-        
+    
+    def main(self):
+        """Main loop."""
+        self.initialiseComponent()
         while True:
             # process incoming messages
             if self.dataReady("inbox"):
