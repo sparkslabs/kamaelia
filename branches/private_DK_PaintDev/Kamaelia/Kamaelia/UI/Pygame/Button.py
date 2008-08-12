@@ -233,12 +233,11 @@ class ImageButton( Button ):
     def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None,
                 key = None,
                 transparent = False, size=None):
-        super(ImageButton,self).__init__()
-        Button.__init__(self, position, margin, bgcolour, fgcolour, msg, key, transparent, size)
-        self.caption = caption
+        super(ImageButton,self).__init__(caption, position, margin, bgcolour, fgcolour, msg, key, transparent, size)
+       # Button.__init__(self, caption, position, margin, bgcolour, fgcolour, msg, key, transparent, size)
+ #       self.caption = caption
         
     def buildCaption(self, text):
-       print "here"
        """Pre-render the image to go on the button label."""
        #TODO: render an image to the button instead of the caption
        self.image = pygame.image.load(text)
@@ -259,6 +258,7 @@ if __name__ == "__main__":
    button3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
    
    ce = ConsoleEchoer().activate()
+   button0.link( (button0,"outbox"), (ce,"inbox") )
    button1.link( (button1,"outbox"), (ce,"inbox") )
    button2.link( (button2,"outbox"), (ce,"inbox") )
    button3.link( (button3,"outbox"), (ce,"inbox") )
