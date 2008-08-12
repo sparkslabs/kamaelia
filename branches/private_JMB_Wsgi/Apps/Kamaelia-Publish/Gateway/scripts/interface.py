@@ -19,17 +19,19 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 """
 This component is the interface between the HTTP code and the XMPP code in the
 Kamaelia Publish Gateway.  All messages it receives from the HTTP code will come
-in on the backplanes named in gate.__init__ (BPLANE_NAME and BPLANE_SIGNAL).
+in on the backplanes named in gate.__init__ (BPLANE_INBOX and BPLANE_CONTROL).
 
-A translator will register itself by sending an InitialMessage (also in gate) that
-contains itself, the initial XMPP message to be sent out via headstock, and the
-batch id (sometimes referred to as the "thread" id).  Once a translator has been
-registered, it will receive notifications when an incoming message is in the same
-batch.
+A translator will register itself by sending a newBatch signal to the interface.
+Once the translator has registered, it will receive incoming messages from the
+peer it is communicating with.  The interface will continue to listen for incoming
+messages from that peer until the translator sends it a batchDone signal.
+
+The interface also serves to forward messages from translators to headstock
+to be sent to peers.  Since it currently just passes the messages on, BPLANE_INBOX
+may eventually be set up to forward messages to headstock directly.
 
 FIXME:  This component needs a timeout mechanism.  It will currently wait indefinitely
 until it receives a response.
