@@ -33,7 +33,7 @@ setup(name = "Kamaelia-Jam",
 # REPLACE
                 ""],
       scripts =  ["App/jam"],
-      data_files=(("share/kamaelia/jam/pd", ["PD/PureJam.pd"]),
+      data_files=(("share/kamaelia/jam/pd", ["Pd/PureJam.pd"]),
                   ("share/kamaelia/jam/samples",
                    ["Samples/12910_sweet_trip_mm_clap_mid.wav",
                     "Samples/12911_sweet_trip_mm_hat_cl.wav",
