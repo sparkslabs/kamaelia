@@ -518,6 +518,7 @@ class TopologyViewer3D(Axon.Component.component):
                     clickPos = event.pos
                     currentTime = time.time()
                     elapsedTime = currentTime - self.lastClickTime
+                    # If it's a double-click
                     if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
                         if self.currentLevel < self.maxLevel and len(self.selectedParticles) == 1:
                             hasChildParticles = False
@@ -536,8 +537,8 @@ class TopologyViewer3D(Axon.Component.component):
                                 print "Warning: max hierarchy level has reached!"
                             if len(self.selectedParticles) != 1:
                                 print "Tips: To extend a node, please double-click the node you want to extend"
-                    else:
-                        if not self.rotationMode:
+                    else: # Single click
+                        if not self.rotationMode: # Select particle
                             for particle in self.currentDisplayedPhysics.particles:
                                 if particle.identifier in event.hitobjects:
                                     #particle.oldpos = particle.oldpos - self.display.viewerposition
@@ -552,7 +553,7 @@ class TopologyViewer3D(Axon.Component.component):
                                 self.deselectAll()
                     self.lastClickPos = clickPos
                     self.lastClickTime = currentTime
-                if event.button == 3:
+                if event.button == 3: # Right-clicked
                     if self.currentLevel > 0:
                         items = self.currentParentParticleID.split(':')
                         items.pop()
@@ -560,7 +561,7 @@ class TopologyViewer3D(Axon.Component.component):
                         self.gotoDisplayLevel(-1)
                     else:
                         print "Warning: The first hierarchy level has reached!"
-                if event.button == 4:
+                if event.button == 4: # Scrolled-up: zoom out
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
@@ -569,7 +570,7 @@ class TopologyViewer3D(Axon.Component.component):
                         posVector = Vector(*particle.pos)
                         posVector.z -= 1
                         particle.pos = posVector.toTuple()
-                if event.button == 5:
+                if event.button == 5: # Scrolled-down: zoom in
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
@@ -587,7 +588,7 @@ class TopologyViewer3D(Axon.Component.component):
                         self.hitParticles.pop(self.hitParticles.index(particle))
                         #print self.hitParticles
             if event.type == pygame.MOUSEMOTION: 
-                if not self.rotationMode and self.grabbed: 
+                if not self.rotationMode and self.grabbed: # Drag particles
                     for particle in self.hitParticles:
                         try:
                             if particle.oldpoint is not None:
@@ -600,7 +601,7 @@ class TopologyViewer3D(Axon.Component.component):
                         # Redraw the link so that the link can move with the particle
                         for p in particle.bondedFrom:
                             p.needRedraw = True
-                elif self.rotationMode:
+                elif self.rotationMode: # Rotate particles
                     if self.selectedParticles:
                         particles = self.selectedParticles
                     else:
@@ -667,6 +668,7 @@ class TopologyViewer3D(Axon.Component.component):
                     self.multiSelectMode = True
                 elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
                     self.rotationMode = True
+                # Change viewer position
                 elif event.key == pygame.K_PAGEUP:
                     self.display.viewerposition.z -= 0.5
                 elif event.key == pygame.K_PAGEDOWN:
@@ -679,6 +681,7 @@ class TopologyViewer3D(Axon.Component.component):
                     self.display.viewerposition.x -= 0.5
                 elif event.key == pygame.K_d:
                     self.display.viewerposition.x += 0.5
+                # Rotate particles
                 elif event.key == pygame.K_UP:
                     if self.selectedParticles:
                         particles = self.selectedParticles
@@ -787,8 +790,7 @@ class TopologyViewer3D(Axon.Component.component):
                         newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
                         particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
                         particle.drotation = Vector(0,0,dAngle*180/math.pi)
-                
-            #print self.display.viewerposition
+            
             # Scroll if self.display.viewerposition changes
             if self.display.viewerposition.copy() != self.viewerOldPos:
                 self.scroll()
@@ -797,8 +799,10 @@ class TopologyViewer3D(Axon.Component.component):
 #                    particle.oldpoint = None
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                    # Return to normal mode from multiSelectMode
                     self.multiSelectMode = False
                 elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                    # Return to normal mode from rotationMode
                     self.rotationMode = False                 
     
     def scroll( self ):

@@ -256,6 +256,7 @@ class Particle3D(BaseParticle):
         """Pre-render the text to go on the label."""
         # Text is rendered to self.image
         if self.pic is not None:
+            # Image texture is used instead of label texture if 'image' argument is specified
             if self.pic.find('://') != -1 and not os.path.exists(self.pic):
                 """ FIXME: either use thread to wrap urlopen or kamaelia HTTP components 
                 in case urlopen is blocked """
@@ -266,6 +267,7 @@ class Particle3D(BaseParticle):
                 pic = self.pic
             self.image = pygame.image.load(pic).convert()
         else:
+            # Label texture is used if 'image' argument is not specified
             pygame.font.init()
             font = pygame.font.Font(None, self.fontsize)
             self.image = font.render(self.name,True, self.fgColour, )
@@ -305,8 +307,6 @@ class Particle3D(BaseParticle):
                         GL_RGBA, GL_UNSIGNED_BYTE, textureData );
         glDisable(GL_TEXTURE_2D)
         
-        
-        
     def applyTransforms(self):
         """Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened."""
         # generate new transformation matrix if needed
@@ -342,7 +342,6 @@ class Particle3D(BaseParticle):
         else:
             return None
 
-    
     def select( self ):
         """Tell this particle it is selected"""
         #self.selected = True
@@ -358,6 +357,7 @@ class Particle3D(BaseParticle):
         self.bgColour = self.bgColourWhenUnselected
         self.fgColour = self.fgColourWhenUnselected
         self.buildCaption()
+
 
 class CuboidParticle3D(Particle3D):
     """\
