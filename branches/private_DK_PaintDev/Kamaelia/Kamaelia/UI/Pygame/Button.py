@@ -229,11 +229,31 @@ class Button(Axon.Component.component):
 
 __kamaelia_components__  = ( Button, )
 
-                  
+class ImageButton( Button ):
+    def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), msg=None,
+                key = None,
+                transparent = False, size=None):
+        super(ImageButton,self).__init__()
+        Button.__init__(self, position, margin, bgcolour, fgcolour, msg, key, transparent, size)
+        self.caption = caption
+        
+    def buildCaption(self, text):
+       print "here"
+       """Pre-render the image to go on the button label."""
+       #TODO: render an image to the button instead of the caption
+       self.image = pygame.image.load(text)
+      
+       (w,h) = self.image.get_size()
+       if not self.size:
+           self.size = (w + 2*self.margin, h + 2*self.margin)
+           self.imagePosition = (self.margin, self.margin)
+       else:
+           self.imagePosition = ( (self.size[0]-w)/2, (self.size[1]-h)/2 )
 if __name__ == "__main__":
    from Kamaelia.Util.Console import ConsoleEchoer
    from pygame.locals import *
-   
+   import os
+   button0 = ImageButton(caption=(os.path.join('', 'test.png')),key=K_SPACE).activate()
    button1 = Button(caption="Press SPACE or click",key=K_SPACE).activate()
    button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
    button3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
