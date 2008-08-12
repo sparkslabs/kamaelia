@@ -596,10 +596,10 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    def main(self):
       """Main loop."""
       pygame.init()
-      try:
-          pygame.mixer.quit()
-      except NotImplementedError:
-          pass # If it's not implemented, it not closing isn't a problem because it doesn't need/can't be
+#      try:
+#          pygame.mixer.quit()
+#      except NotImplementedError:
+#          pass # If it's not implemented, it not closing isn't a problem because it doesn't need/can't be
       display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF)
       eventsource = _PygameEventSource().activate()
       self.addChildren(eventsource)
