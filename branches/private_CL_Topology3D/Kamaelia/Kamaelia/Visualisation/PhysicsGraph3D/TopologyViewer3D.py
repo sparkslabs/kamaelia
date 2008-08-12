@@ -244,17 +244,10 @@ from OpenGL.GLUT import *
 
 import Axon
 import Kamaelia.Support.Particles
-import Kamaelia.UI
 
-from Kamaelia.Visualisation.PhysicsGraph.GridRenderer import GridRenderer
-from Kamaelia.Visualisation.PhysicsGraph.ParticleDragger import ParticleDragger
-from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParticle
-
-from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 from Kamaelia.UI.OpenGL.Vector import Vector
 from Kamaelia.UI.OpenGL.Intersect import Intersect
-from Kamaelia.UI.OpenGL.Transform import Transform
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -341,7 +334,6 @@ class TopologyViewer3D(Axon.Component.component):
         self.grabbed = False
         self.rotationMode = False  
         
-        
         if laws==None:
             self.laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=2)
         else:
@@ -404,7 +396,6 @@ class TopologyViewer3D(Axon.Component.component):
             if self.dataReady("inbox"):
                 message = self.recv("inbox")
                 self.doCommand(message)
-                #print message
 
                 # wait for response on displayrequest and get identifier of the particle
                 if self.isNewNode:
@@ -460,7 +451,6 @@ class TopologyViewer3D(Axon.Component.component):
                 if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
                     self.quit(msg)
             
-        
     def quit(self,msg=Axon.Ipc.shutdownMicroprocess()):
         """Cause termination."""
         print 'Shut down...'
@@ -491,12 +481,6 @@ class TopologyViewer3D(Axon.Component.component):
                           "displaylist": displaylist
                         }
             self.send(dl_update, "display_signal")
-            
-            
-            
-            #print particle
-    
-    
     
     def addListenEvents(self, events):
         """\
@@ -514,7 +498,6 @@ class TopologyViewer3D(Axon.Component.component):
         for event in events:
             self.send({"REMOVELISTENEVENT":event, "objectid":id(self)}, "display_signal")        
                        
-                            
     def handleEvents(self):
         """ Handle events. """
         while self.dataReady("events"):
@@ -852,9 +835,7 @@ class TopologyViewer3D(Axon.Component.component):
             [ "DEL", "LINK", <id from>, <id to> ]
             [ "DEL", "ALL" ]
             [ "GET", "ALL" ]
-        """
-        #print 'doCommand'        
-
+        """  
         if len(msg) >= 2:
             cmd = msg[0].upper(), msg[1].upper()
 
@@ -879,11 +860,7 @@ class TopologyViewer3D(Axon.Component.component):
                         #print self.particles[0]
                         self.addParticle(particle)
                         self.isNewNode = True
-                        #print id(particle)
-                        
-                        #print 'ADD NODE end'
-                
-                
+
             elif cmd == ("DEL", "NODE") and len(msg) == 3:
                     ident = msg[2]
                     self.removeParticle(ident)        
@@ -921,9 +898,6 @@ class TopologyViewer3D(Axon.Component.component):
                 print "Command Error: please check your command format!"
         else:
             print "Command Error: not enough parameters!"
-
-  
-  
   
     def _generatePos(self, posSpec):
         """\
@@ -953,7 +927,6 @@ class TopologyViewer3D(Axon.Component.component):
                 return x,y,z            
         
         raise ValueError("Unrecognised position specification")
-
 
     def addParticle(self, *particles):
         """Add particles to the system"""
