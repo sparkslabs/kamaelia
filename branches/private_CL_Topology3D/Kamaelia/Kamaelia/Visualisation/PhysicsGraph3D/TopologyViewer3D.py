@@ -99,7 +99,7 @@ backspace --- show last level's topology
 How does it work?
 -----------------
 
-TopologyViewer is a Kamaeila component. a OpenGL pygame display surface.
+TopologyViewer3D is a Kamaeila component which renders Topology on an OpenGL pygame display surface.
 
 A 3D topology (graph) of nodes and links between them is rendered to the surface.
 

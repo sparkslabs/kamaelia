@@ -1,23 +1,69 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
 
 """\
-===============================================================
+=====================================
 Parse RDF data received from a uri
-===============================================================
-1. If the uri is a rdf data file, it will parse it directly;
-if not, it will extract rdf data first before parsing. 
+=====================================
+Fetch and parse RDF data, and then send out TopologyViewer commands
 
-2. The input format is "uri max_layer max_nodePerLayer": 
-uri is the uri of the data file
-max_layer is the maximum layers of the rdf hierarchy structure (how deep) to parse
-max_nodePerLayer is the maximum nodes in one layer (how wide) to parse
 
-3. The output is TopologyViewer commands
 
-4. Typically, it receives inputs from ConsoleReader or ConsoleReader 
+Example Usage
+-------------
+A simple console driven RDF parser and draw them with 3D topology viewer::
+
+    Pipeline( ConsoleReader(),
+              RDFParser(),
+              TopologyViewer3DWithParams(),
+              ConsoleEchoer(),
+            ).run()
+
+Then at runtime try typing these commands to change RDF data in real time::
+
+    >>> http://fooshed.net/foaf.rdf 2 10
+    >>> http://bigasterisk.com/foaf.rdf 
+    >>> http://apassant.net/about/#alex 
+
+
+
+How does it work?
+-----------------
+RDFParser is a Kamaeila component which fetch data from a uri which is a RDF data file 
+or a web page which embeds RDF data.
+
+The input format:
+    "uri max_layer max_nodePerLayer": 
+        - uri              -- is the uri of the data file. If the uri is a rdf data file, it will parse it directly;
+                              if not, it will extract rdf data first before parsing. 
+        - max_layer        -- the maximum layers of the rdf hierarchy structure (how deep) to parse
+        - max_nodePerLayer -- the maximum nodes in one layer (how wide) to parse
+
+The output is TopologyViewer commands.
+
+Typically, it receives inputs from ConsoleReader or ConsoleReader 
 and send output to TopologyViewer3D.
 
-5. You may also need to install librdf, a rdf parsing lib from redland. 
+You may also need to install librdf, a rdf parsing lib from redland. 
 See http://librdf.org/ for more information and 
 http://librdf.org/bindings/INSTALL.html for installation information.
 """
@@ -29,11 +75,14 @@ import RDF
 
 class RDFParser(Axon.Component.component):
     """\
-======================================================================
-A component to parse RDF data received from a uri to TopologyViewer3D command
-======================================================================
-"""
+    RDFParser(...) -> new RDFParser component.
+    
+    A component to parse RDF data received from a uri to TopologyViewer3D command.
+    
+    Arguments are got from inbox rather than the initialisation of the class.
+    """
     def __init__(self):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(RDFParser, self).__init__()
         self.rdf_prefix = """
                            PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -43,7 +92,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
         self.num_allNodes = self.num_parentNodes = 0
         
     def shutdown(self):
-        """ shutdown method: define when to shun down"""
+        """Shutdown method: define when to shun down."""
         while self.dataReady("control"):
             data = self.recv("control")
             if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
@@ -52,8 +101,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
         return False
       
     def main(self):
-        """ main method: do stuff """
-        
+        """Main method: do stuff."""
         # Put all codes within the loop, so that others can be run even it doesn't shut down
         while not self.shutdown():
             while not self.anyReady():
@@ -87,10 +135,10 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
                 
             yield 1
             
-        
         self.send(self.shutdown_mess,"signal")
     
     def make_query(self, rdf, query):
+        """Make sparql query."""
         model = RDF.Model()
         parser = RDF.Parser()
         parser.parse_into_model(model, rdf)
@@ -101,6 +149,7 @@ A component to parse RDF data received from a uri to TopologyViewer3D command
         return q.execute(model)
 
     def fetch_data(self, rdf_uri, current_layer=0):
+        """Fetch data from an uri recursively."""
         if current_layer == self.max_layer:
             return
         else:
