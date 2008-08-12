@@ -19,7 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 """
 ========================
 Translator (Gateway)
@@ -137,7 +136,7 @@ from pprint import pformat
 
 import simplejson
 
-from gate import BPLANE_NAME, BPLANE_SIGNAL
+from Kamaelia.Apps.Publish.Gateway.consts import BPLANE_CONTROL, BPLANE_INBOX
 from gate.JIDLookup import ExtractJID
 
 _logger_suffix='.publish.gateway.translator'
@@ -457,8 +456,8 @@ def Translator(request, mtr=None, rtm=None):
     trans = Graphline(
         mtr=mtr,
         rtm=rtm,
-        interface_in=PublishTo(BPLANE_NAME),
-        interface_signal=PublishTo(BPLANE_SIGNAL),
+        interface_in=PublishTo(BPLANE_INBOX),
+        interface_signal=PublishTo(BPLANE_CONTROL),
         controller=TranslatorController(),
         linkages={
             #These are the boxes that the HTTPServer will use
