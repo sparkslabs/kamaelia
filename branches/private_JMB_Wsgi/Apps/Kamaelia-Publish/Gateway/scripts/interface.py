@@ -189,7 +189,7 @@ class Interface(threadedadaptivecommscomponent):
         else:
             warning('JID %s went unavailable but is not logged in' \
                     % (unicode(jid)), _logger_suffix)
-        JIDLookup.setUserStatus(pres.from_jid, active=False)
+        setUserStatus(pres.from_jid, active=False)
         
     def sendSignals(self):
         """Send out the signals to various components to indicate that this component
