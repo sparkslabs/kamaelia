@@ -19,9 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
-
-
 
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, create_engine, Boolean
 

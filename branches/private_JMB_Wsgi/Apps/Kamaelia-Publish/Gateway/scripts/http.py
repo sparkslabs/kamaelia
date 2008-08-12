@@ -27,7 +27,7 @@ from Kamaelia.Support.Protocol.HTTP import ReqTranslatorFactory
 from Kamaelia.Support.Protocol.HTTP import WSGILikeTranslator
 from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
 
-from gate.translator import Translator
+from Kamaelia.Apps.Publish.Gateway.translator import Translator
 
 import socket
 

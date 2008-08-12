@@ -23,7 +23,8 @@
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import SubscribeTo
 
-from translator import TranslatorChassis, RequestDeserializer, ResponseSerializer, SimpleHandler
+from Kamaelia.Apps.Publish.Peer.translator import TranslatorChassis, \
+    RequestDeserializer, ResponseSerializer, SimpleHandler
 
 from headstock.api.im import Message, Thread, Body
 

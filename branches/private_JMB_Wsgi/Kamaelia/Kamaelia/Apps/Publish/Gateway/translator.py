@@ -137,7 +137,7 @@ from pprint import pformat
 import simplejson
 
 from Kamaelia.Apps.Publish.Gateway.consts import BPLANE_CONTROL, BPLANE_INBOX
-from gate.JIDLookup import ExtractJID
+from Kamaelia.Apps.Publish.Gateway.JIDLookup import ExtractJID
 
 _logger_suffix='.publish.gateway.translator'
 

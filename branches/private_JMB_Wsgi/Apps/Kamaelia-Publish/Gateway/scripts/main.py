@@ -27,7 +27,7 @@ from Kamaelia.Apps.Web_common.ServerSetup import initializeLogger
 
 from jabber import constructXMPPClient
 from http import constructHTTPServer
-from gate.JIDLookup import connectToDB
+from Kamaelia.Apps.Publish.Gateway.JIDLookup import connectToDB
 import optparse
 
 def main():

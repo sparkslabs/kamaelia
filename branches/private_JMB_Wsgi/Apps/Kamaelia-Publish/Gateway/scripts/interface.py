@@ -39,14 +39,14 @@ from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscompo
 from Kamaelia.Util.Backplane import Backplane, SubscribeTo
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.IPC import userLoggedOut, batchDone, newBatch
-from Kamaelia.Apps.Publish.BoxManager import BoxManager
 from Kamaelia.Apps.Web_common.Console import debug, info, warning
+from Kamaelia.Apps.Publish.Gateway.consts import BPLANE_INBOX, BPLANE_CONTROL
+from Kamaelia.Apps.Publish.Gateway.JIDLookup import setUserStatus
 
 from headstock.api.im import Message
 from headstock.api.jid import JID
 
-from gate import BPLANE_NAME, BPLANE_SIGNAL
-import JIDLookup
+from BoxManager import BoxManager
 
 _logger_suffix = '.publish.gateway.interface'
 
@@ -80,10 +80,10 @@ class Interface(threadedadaptivecommscomponent):
         This creates the necessary subcomponents to have messages sent to this component's
         inbox and control box via a backplane.
         """
-        self.bplane_in = Backplane(BPLANE_NAME).activate()
-        self.bplane_control = Backplane(BPLANE_SIGNAL).activate()
-        self.subscriber_in = SubscribeTo(BPLANE_NAME).activate()
-        self.subscriber_control = SubscribeTo(BPLANE_SIGNAL).activate()
+        self.bplane_in = Backplane(BPLANE_INBOX).activate()
+        self.bplane_control = Backplane(BPLANE_CONTROL).activate()
+        self.subscriber_in = SubscribeTo(BPLANE_INBOX).activate()
+        self.subscriber_control = SubscribeTo(BPLANE_CONTROL).activate()
         
         self.link((self.subscriber_in, 'outbox'), (self, 'inbox'))
         self.link((self.subscriber_control, 'outbox'), (self, 'control'))
@@ -171,7 +171,7 @@ class Interface(threadedadaptivecommscomponent):
         entry in the JIDs dict that will associate threads with their JID."""
         jid = pres.from_jid.nodeid()
         self.jids[jid] = []
-        JIDLookup.setUserStatus(jid, active=True)
+        setUserStatus(jid, active=True)
     
     def handleUnavailable(self, pres):
         """This function will be called when a user goes offline.  It will remove

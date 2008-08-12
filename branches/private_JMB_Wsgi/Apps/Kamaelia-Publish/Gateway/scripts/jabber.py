@@ -39,7 +39,7 @@ from Kamaelia.Util.Console import ConsoleReader
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 from Kamaelia.Util.NullSink import nullSinkComponent
-from gate.interface import Interface
+from interface import Interface
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher

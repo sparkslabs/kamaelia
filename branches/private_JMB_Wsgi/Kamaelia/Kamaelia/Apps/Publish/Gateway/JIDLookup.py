@@ -19,7 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 """
 This module will track users in a database.  You must first call connectToDB to
 connect to the database.  This will bind the class UserSession to an engine.
@@ -29,7 +28,7 @@ or not.  You may also call ExtractJID to tetermine a user's JID based on the URI
 that was passed to the server.
 """
 from Kamaelia.Support.Protocol.HTTP import PopWsgiURI
-from Kamaelia.Apps.Publish.UserDatabase import getUserTable, User
+from Kamaelia.Apps.Publish.Gateway.UserDatabase import getUserTable, User
 from Kamaelia.Apps.Web_common.Console import debug
 from headstock.api.jid import JID
 
