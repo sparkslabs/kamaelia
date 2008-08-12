@@ -8,7 +8,7 @@ setup(name="Kamaelia Jam Library",
                   "Kamaelia",
                   "Kamaelia.Apps",
                   "Kamaelia.Apps.Jam",
-                  "Kamaelia.Apps.Jam.Audio", #TARTPACKAGES
+                  "Kamaelia.Apps.Jam.Audio", #STARTPACKAGES
                   "Kamaelia.Apps.Jam.Internet",
                   "Kamaelia.Apps.Jam.Protocol",
                   "Kamaelia.Apps.Jam.Support",
