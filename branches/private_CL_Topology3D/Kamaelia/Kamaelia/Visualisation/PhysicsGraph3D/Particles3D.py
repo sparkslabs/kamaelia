@@ -118,6 +118,12 @@ TeapotParticle3D: teapot rendering particle for 3D Topology visualisation
 This is an implementation of a simple teapot particle for 3D topology
 visualisation.
 
+There are two kinds of textures, i.e. text label and image textures. 
+When the 'image' argument is provided, it uses image textures; otherwise, it uses
+text label textures in which particle name is used as the caption of the label.
+Note, the value of the 'image' argument is the uri of the image; it could be a
+path in local drive, a network address or an internet address.
+
 
 
 Example Usage
@@ -178,10 +184,12 @@ class Particle3D(BaseParticle):
     - bgcolourselected  -- Background colour when the particle is selected (default=(0,0,0)
     - bgcolourselected  -- Frontground colour when the particle is selected (default=(244,244,244))
     - sidecolourselected -- Side colour when the particle is selected (default=(0,0,100))
+    - size         -- Size of particle (length, width, depth), it depends on texture size if unspecified
     - margin       -- Margin size in pixels (default=8)
     - fontsize     -- Font size for label text (default=50)
     - pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
     - thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
+    - image        -- The uri of image, image texture instead of label texture is used if specified
     """
     
     def __init__(self, position = (-1,0,-10), ID='', **argd):

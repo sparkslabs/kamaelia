@@ -43,6 +43,7 @@ Available parameters:
     - fontsize     -- Font size for label text (default=50)
     - pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
     - thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
+    - image        -- The uri of image, image texture instead of label texture is used if specified
 
 See Kamaelia.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D for more information.
 """
@@ -50,7 +51,7 @@ See Kamaelia.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D for more informati
 import re
 
 def str2dict(string):
-    """Transform a string to a dictionary"""
+    """Transform a string to a dictionary."""
     colourRegex = re.compile("^\( *(\d{1,3}) *, *(\d{1,3}) *, *(\d{1,3}) *\)$")
     dictionary = {}
     string_list = string.split(';')
