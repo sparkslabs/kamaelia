@@ -138,24 +138,25 @@ class CollabParser(component):
                     #print collabData
                     links = []
                     orgNodes = []
+                    orgStaffNodes = []
+                    collabNodes = []
+                    collabStaffNodes = []
                     for orgKey in orgData:
                         orgValues = orgData[orgKey]
                         orgNodes.append((orgKey, orgKey) )
                         orgNodes.append((orgKey+':'+orgKey, orgKey) )
                         for value in orgValues:
-                            orgNodes.append( (orgKey+':'+value, value) )
+                            orgStaffNodes.append( (orgKey+':'+value, value) )
                             links.append( (orgKey+':'+orgKey, orgKey+':'+value) )
                         #orgNodes.extend( zip([orgKey+':'+value for value in orgValues], orgValues) )
-                            
-                    collabNodes = []
-                    
+                                         
                     for collabKey in collabData:
                         collabValues = collabData[collabKey]
                         collabNodes.append( (collabKey, collabKey) )
                         #collabNodes.extend( zip([collabKey+':'+value for value in collabValues], collabValues) )
                         collabNodes.append((collabKey+':'+collabKey, collabKey) )
                         for value in collabValues:
-                            collabNodes.append( (collabKey+':'+value, value) )
+                            collabStaffNodes.append( (collabKey+':'+value, value) )
                             links.append( (collabKey+':'+collabKey, collabKey+':'+value) )
                         
                         staffSet = frozenset(collabValues)
@@ -165,10 +166,13 @@ class CollabParser(component):
                                 #print collabValues, orgValues
                                 links.append( (collabKey, orgKey) )
                     
-                    for node in collabNodes:
-                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-", "fgcolour= ( 200 ,0, 0);fgcolourselected=(0 , 200 , 0 ) " ]
-                        self.send(cmd, "outbox")
                     for node in orgNodes:
+                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-", "fgcolour=(0,0,200);fgcolourselected=(200,0,200)" ]
+                        self.send(cmd, "outbox")
+                    for node in collabNodes:
+                        cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-", "fgcolour= ( 0 ,200, 0);fgcolourselected=(200 , 200 , 0 ) " ]
+                        self.send(cmd, "outbox")
+                    for node in orgStaffNodes+collabStaffNodes:
                         cmd = [ "ADD", "NODE", node[0], node[1], "randompos", "-" ]
                         self.send(cmd, "outbox")
                     for link in links:
@@ -338,6 +342,7 @@ class CollabWithViewParser(CollabParser):
         self.send(self.shutdown_mess,"signal")
 
 __kamaelia_components__  = ( CollabParser, CollabWithViewParser, )
+
 
 if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
