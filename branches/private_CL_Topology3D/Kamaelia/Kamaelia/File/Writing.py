@@ -138,7 +138,15 @@ if 1:
 
 
 class SimpleFileWriterWithOutput(SimpleFileWriter):
+    """\
+    SimpleFileWriter(filename) -> component that writes data to the file
+
+    Writes any data sent to its inbox to the specified file.
+    
+    Send the filename to its outbox.
+    """
     def __init__(self, filename, mode = "wb"):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SimpleFileWriterWithOutput, self).__init__(filename)
     
     def main(self):
