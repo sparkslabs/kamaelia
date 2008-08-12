@@ -2,7 +2,8 @@ import pygame
 import numpy
 import Numeric
 import time
-from Axon.SchedulingComponent import SchedulingComponent
+
+from Axon.Apps.Jam.SchedulingComponent import SchedulingComponent
 from Kamaelia.Apps.Jam.Audio.Synth import Synth
 
 class SineOsc(SchedulingComponent):
