@@ -33,7 +33,8 @@ import logging
 _loggerInitialized = False
 
 def WSGIFactory(WSGIConfig, url_list, errorlog='error.log', 
-                    logger_name='kamaelia.wsgi.application', errorhandler=None):
+                    logger_name='kamaelia.wsgi.application', errorhandler=None,
+                    translator=WSGILikeTranslator):
     """
     Creates a WSGI Handler using url routing.
 
@@ -48,7 +49,7 @@ def WSGIFactory(WSGIConfig, url_list, errorlog='error.log',
       logger_name - The name of the python logger to log errors to
     """
     class _getWsgiHandler(object):
-        def __init__(self,WSGIConfig, url_list, translator=WSGILikeTranslator):
+        def __init__(self,WSGIConfig, url_list):
             self.WsgiConfig = WSGIConfig
             self.url_list = url_list
             self.app_objs = {}
@@ -66,7 +67,8 @@ def WSGIFactory(WSGIConfig, url_list, errorlog='error.log',
             regexes = self.compiled_regexes
             urls = self.url_list
             
-            request = self.translator(request)
+            if self.translator:
+                request = self.translator(request)
             
             split_uri = request['PATH_INFO'].split('/', 2)
             split_uri = [x for x in split_uri if x]  #remove any empty strings
@@ -137,7 +139,7 @@ def _initializeLoggers(errorlog, logger_name):
     if not _loggerInitialized:
         _loggerInitialized = True
         logger = logging.getLogger(logger_name)
-        handler = logging.FileHandler(errorlog)
+        handler = logging.FileHandler(str(errorlog))
         handler.setLevel(logging.ERROR)
         logger.addHandler(handler)
 
