@@ -29,10 +29,18 @@ setup(name = "Kamaelia-Jam",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/KamaeliaJam",
       license = "Copyright (c)2008 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
-      packages = [$packages],
-      scripts =  [$scripts],
-      data_files=[('share/kamaelia/jam',
-                   [$data_files],
+      packages = [\
+# REPLACE
+                ""],
+      scripts =  ["App/jam"],
+      data_files=(("share/kamaelia/jam/pd", ["PD/PureJam.pd"]),
+                  ("share/kamaelia/jam/samples",
+                   ["Samples/12910_sweet_trip_mm_clap_mid.wav",
+                    "Samples/12911_sweet_trip_mm_hat_cl.wav",
+                    "Samples/12912_sweet_trip_mm_hat_op.wav",
+                    "Samples/12914_sweet_trip_mm_kick_lo.wav",
+                    "Samples/__details_and_attribution.txt"
+                   ]
                   )
-                 ]
+                 )
      )

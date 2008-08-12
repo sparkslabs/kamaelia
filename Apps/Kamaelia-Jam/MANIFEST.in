@@ -1,2 +1,3 @@
+include Doc/*
 include PD/PureJam.pd
 include Samples/*
