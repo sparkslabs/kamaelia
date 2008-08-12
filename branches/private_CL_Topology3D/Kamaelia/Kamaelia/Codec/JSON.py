@@ -1,10 +1,63 @@
 """\
 =========================
-JSON serialisation coder
+JSON serialisation codec
 =========================
 
 This component encode data to serialisable JSON format and 
 decode serialised JSON data.
+
+
+
+
+=========================================
+JSONEncoder: JSON serialisation encoder
+=========================================
+Encode data to serialisable JSON format
+
+
+
+Example Usage
+-------------
+A simple DataSource driven JSON serialisation encoder::
+
+    Pipeline( DataSource([['foo', {'bar': ('baz', None, 1.0, 2)}]]),
+              JSONEncoder(),
+              SimpleFileWriterWithOutput('Data/collab.json'),
+              ConsoleEchoer(),
+            ).run()
+
+
+
+How does it work?
+-----------------
+Whenever it receives data from its inbox, it encode the data using cjson
+and then send the serialised data to its outbox.
+
+
+
+
+=========================================
+JSONEncoder: JSON serialisation decoder
+=========================================
+Decode serialised JSON data to its original format
+
+
+
+Example Usage
+-------------
+A simple DataSource driven JSON serialisation encoder::
+
+    Pipeline( ReadFileAdaptor('Data/collab.json'),
+              JSONDecoder(),
+              ConsoleEchoer(),
+            ).run()
+
+
+
+How does it work?
+-----------------
+Whenever it receives data from its inbox, it decode the data using cjson
+to its original format and then send the decoded data to its outbox.
 """
 
 import cjson
@@ -13,13 +66,17 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class JSONEncoder(component):
-    """ Kamaelia component to encode data using JSON coding """
+    """\
+    JSONEncoder(...) -> new JSONEncoder component.
+    
+    Kamaelia component to encode data using JSON coding.
+    """
     def __init__(self):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(JSONEncoder, self).__init__()
         
     def shutdown(self):
-        """ shutdown method: define when to shun down"""
+        """Shutdown method: define when to shun down."""
         while self.dataReady("control"):
             message = self.recv("control")
             if isinstance(message, producerFinished) or isinstance(message, shutdownMicroprocess):
@@ -28,8 +85,7 @@ class JSONEncoder(component):
         return False
       
     def main(self):
-        """ main method: do stuff """
-        
+        """Main method: do stuff."""
         # Put all codes within the loop, so that others can be run even it doesn't shut down
         while not self.shutdown():
             while not self.anyReady():
@@ -70,13 +126,18 @@ class JSONEncoder(component):
 
 
 class JSONDecoder(component):
-    """ Kamaelia component to decode data encoded by JSON coding """
+    """\
+    JSONDecoder(...) -> new JSONDecoder component.
+     
+    Kamaelia component to decode data encoded by JSON coding.
+    """
+    
     def __init__(self):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(JSONDecoder, self).__init__()
         
     def shutdown(self):
-        """ shutdown method: define when to shun down"""
+        """Shutdown method: define when to shun down."""
         while self.dataReady("control"):
             message = self.recv("control")
             if isinstance(message, producerFinished) or isinstance(message, shutdownMicroprocess):
@@ -85,8 +146,7 @@ class JSONDecoder(component):
         return False
       
     def main(self):
-        """ main method: do stuff """
-        
+        """Main method: do stuff."""
         # Put all codes within the loop, so that others can be run even it doesn't shut down
         while not self.shutdown():
             while not self.anyReady():

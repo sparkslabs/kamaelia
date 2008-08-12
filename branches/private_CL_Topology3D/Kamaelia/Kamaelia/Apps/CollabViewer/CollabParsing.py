@@ -106,6 +106,7 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 class CollabParser(component):
     """\
     CollabParser(...) -> new CollabParser component.
+    
     Kamaelia component to parse collaboration data between organizations received as dictionary.
     """
     def __init__(self):
@@ -236,6 +237,7 @@ class CollabParser(component):
 class CollabWithViewParser(CollabParser):
     """\
     CollabWithViewParser(...) -> new CollabWithViewParser component.
+    
     Kamaelia component to parse collaboration data between organizations received as dictionary
     into different views' TopologyViewer commands.
     """
