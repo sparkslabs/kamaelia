@@ -48,11 +48,10 @@ from Kamaelia.Util.Console import ConsoleEchoer
 
 from Kamaelia.Apps.Jam.Audio.Sampler import Sampler
 from Kamaelia.Apps.Jam.Audio.SineSynth import SineSynth
-from Kamaelia.Apps.Jam.Audio.Mixer import MonoMixer
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
 if midiAvailable:
     from Kamaelia.Apps.Jam.Protocol.Midi import Midi
-from Kamaelia.Apps.Jam.Internet.UDP_ng import UDPReceiver, UDPSender, PostboxPeer
+from Kamaelia.Internet.UDP_ng import UDPReceiver, UDPSender, PostboxPeer
 from Kamaelia.Apps.Jam.Internet.UDPDispatcher import UDPDispatcher
 from Kamaelia.Apps.Jam.UI.XYPad import XYPad, XYPadMidiConverter
 from Kamaelia.Apps.Jam.UI.StepSequencer import StepSequencer

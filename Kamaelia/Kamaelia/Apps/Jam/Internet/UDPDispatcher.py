@@ -5,7 +5,7 @@ import OSC
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.OneShot import OneShot
 from Kamaelia.Apps.Jam.Protocol.Osc import Osc
-from Kamaelia.Apps.Jam.Internet.UDP_ng import UDPSender
+from Kamaelia.Internet.UDP_ng import UDPSender
 
 class UDPDispatcher(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Inboxes = {"inbox" : "",
