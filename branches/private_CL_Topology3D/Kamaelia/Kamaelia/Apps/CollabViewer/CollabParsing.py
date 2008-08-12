@@ -1,36 +1,119 @@
 """\
-=====================================================================
-Parse collaboration data between organizations received as dictionary
-=====================================================================
-1. The input is a dictionary, e.g.
-{'orgData' : {'BBC' : ['Beckham', 'Bell', 'Betty', 
+=====================================================================================
+CollabParser: Parse collaboration data between organizations received as dictionary
+=====================================================================================
+Parse collaboration data between organizations received as dictionary, 
+and then send out TopologyViewer commands
+
+
+
+Example Usage
+-------------
+A simple file driven collaboration parser and draw them with 3D topology viewer::
+
+    Pipeline( ReadFileAdaptor('Data/collab.json'),
+              JSONDecoder(),
+              CollabParser(),
+              TopologyViewer3DWithParams(),
+              ConsoleEchoer(),
+            ).run()
+
+
+
+How does it work?
+-----------------
+
+The input format:
+    The input is a dictionary,
+    {'orgData' : {'org1' : ['staff1',...],...},
+    'collabData' : {'collab1' : ['staff1',...],...}}
+    e.g.,
+    {'orgData' : {'BBC' : ['Beckham', 'Bell', 'Betty', 
         'Bill', 'Brad', 'Britney'],
         'Google' : ['Geoff', 'Gerard', 'Gordon', 'George', 'Georgia', 'Grant'],
         'Manchester' : ['Michael', 'Matt', 'Madonna', 'Mark', 'Morgon', 'Mandela'],
         'Leeds' : ['Leo', 'Lorri', 'Louis', 'Lampard', 'Lily', 'Linda'],
         'Sheffield' : ['Sylvain', 'Sugar', 'Sophie', 'Susan', 'Scarlet', 'Scot']},
-'collabData' : {'Audio' : ['Beckham', 'Bell', 'Geoff', 'Gerard', 'Gordon', 'Leo'],
+    'collabData' : {'Audio' : ['Beckham', 'Bell', 'Geoff', 'Gerard', 'Gordon', 'Leo'],
            'Video' : ['Michael', 'Matt', 'Sophie', 'Susan'],
            'Internet' : ['Sylvain', 'Sugar', 'Beckham', 'Mandela'],
            'XML' : ['Lampard', 'Lily', 'Linda', 'Geoff', 'Scot'],
            'Visualisation' : ['Leo', 'Lorri', 'Susan', 'Britney']}
-2. The output is TopologyViewer commands
-3. Typically, it receives inputs from JSONDecoder and send output to TopologyViewer3D.
-4. After the data are drawn by TopologyViewer3D, double-click nodes to show all people involved in the collaboration
-or belonging to the organization.
+    }
+
+The output is TopologyViewer commands.
+
+Typically, it receives inputs from JSONDecoder and send output to TopologyViewer3D. 
+After the data are drawn by TopologyViewer3D, double-click nodes to show all people involved 
+in the collaboration or belonging to the organization.
+
+
+
+
+==============================================================================================================
+CollabWithViewParser: Parse collaboration data between organizations received as dictionary with view support
+==============================================================================================================
+Parse collaboration data between organizations received as dictionary, 
+and then send out a dictionary of TopologyViewer commands
+
+
+
+Example Usage
+-------------
+A simple file driven collaboration parser, and then send output to DictChooser 
+and at last draw them with 3D topology viewer::
+
+    Graphline(
+        READER = ReadFileAdaptor('Data/collab.json'),
+        JSONDECODER = JSONDecoder(),
+        CONSOLEECHOER = ConsoleEchoer(),
+        COLLABPARSER = CollabWithViewParser(),
+        BUTTONORG = Button(caption="orgView", msg="orgView", position=(-10,8,-20)),
+        BUTTONSTAFF = Button(caption="staffView", msg="staffView", position=(-8,8,-20)),
+        DICTCHOOSER = DictChooser(),
+        VIEWER = TopologyViewer3DWithParams(laws=laws),
+    linkages = {
+        ("READER","outbox") : ("JSONDECODER","inbox"),
+        ("JSONDECODER","outbox")  : ("COLLABPARSER","inbox"),     
+        ("COLLABPARSER","outbox")  : ("DICTCHOOSER","option"),
+        ("BUTTONORG","outbox")  : ("DICTCHOOSER","inbox"),
+        ("BUTTONSTAFF","outbox")  : ("DICTCHOOSER","inbox"),
+        ("DICTCHOOSER","outbox")  : ("VIEWER","inbox"),
+        ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),
+    }
+).run()
+
+
+
+How does it work?
+-----------------
+The input format:
+Same as CollabParser.
+
+The output is a dictionary of TopologyViewer commands. The format is
+{'orgView' : [...], 'staffView' : [...]}
+
+Typically, it receives inputs from JSONDecoder and sends output to the option box of DictChooser first,
+and then DictChooser sends data to TopologyViewer3D.
+
+After the data are drawn by TopologyViewer3D, double-click nodes to show all people involved 
+in the collaboration or belonging to the organization. Click button to swith between different views. 
 """
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class CollabParser(component):
-    """ Kamaelia component to encode data using JSON coding """
+    """\
+    CollabParser(...) -> new CollabParser component.
+    Kamaelia component to parse collaboration data between organizations received as dictionary.
+    """
     def __init__(self):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(CollabParser, self).__init__()
         
     def shutdown(self):
-        """ shutdown method: define when to shun down"""
+        """Shutdown method: define when to shun down."""
         while self.dataReady("control"):
             message = self.recv("control")
             if isinstance(message, producerFinished) or isinstance(message, shutdownMicroprocess):
@@ -39,7 +122,7 @@ class CollabParser(component):
         return False
       
     def main(self):
-        """ main method: do stuff """
+        """Main method: do stuff."""
         # Put all codes within the loop, so that others can be run even it doesn't shut down
         while not self.shutdown():
             while not self.anyReady():
@@ -151,13 +234,17 @@ class CollabParser(component):
 
 
 class CollabWithViewParser(CollabParser):
-    """ Kamaelia component to encode data using JSON coding """
+    """\
+    CollabWithViewParser(...) -> new CollabWithViewParser component.
+    Kamaelia component to parse collaboration data between organizations received as dictionary
+    into different views' TopologyViewer commands.
+    """
     def __init__(self):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(CollabWithViewParser, self).__init__()
         
     def main(self):
-        """ main method: do stuff """
+        """Main method: do stuff."""
         # Put all codes within the loop, so that others can be run even it doesn't shut down
         while not self.shutdown():
             while not self.anyReady():
