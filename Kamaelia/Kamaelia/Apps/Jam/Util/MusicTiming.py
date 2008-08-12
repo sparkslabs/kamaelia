@@ -53,7 +53,7 @@ scheduler.
 import time
 import sched
 
-from Axon.SchedulingComponent import SchedulingComponent
+from Axon.Apps.Jam.SchedulingComponent import SchedulingComponent
 
 class MusicTimingComponent(SchedulingComponent):
     """

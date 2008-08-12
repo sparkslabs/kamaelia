@@ -13,7 +13,6 @@ import operator
 import uuid
 
 from Axon.Component import component
-from Axon.SchedulingComponent import SchedulingComponent
 from Axon.Ipc import producerFinished
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
