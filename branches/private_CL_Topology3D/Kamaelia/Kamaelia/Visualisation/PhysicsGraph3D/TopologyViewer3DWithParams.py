@@ -69,6 +69,27 @@ def str2dict(string):
 from TopologyViewer3D import TopologyViewer3D
 
 class TopologyViewer3DWithParams(TopologyViewer3D):
+    """\
+    TopologyViewer3DWithParams(...) -> new TopologyViewer3DWithParams component.
+    
+    A component that takes incoming topology (change) data and displays it live
+    using pygame OpenGL. A simple physics model assists with visual layout. Particle
+    types, appearance and physics interactions can be customised.
+    
+    It extends TopologyViewer3D by supporting additional parameters of "ADD" commands.
+    
+    Keyword arguments (in order):
+    
+    - screensize          -- (width,height) of the display area (default = (800,600))
+    - fullscreen          -- True to start up in fullscreen mode (default = False)
+    - caption             -- Caption for the pygame window (default = "Topology Viewer")
+    - particleTypes       -- dict("type" -> klass) mapping types of particle to classes used to render them (default = {"-":RenderingParticle})
+    - initialTopology     -- (nodes,bonds) where bonds=list((src,dst)) starting state for the topology  (default=([],[]))
+    - laws                -- Physics laws to apply between particles (default = SimpleLaws(bondlength=100))
+    - simCyclesPerRedraw  -- number of physics sim cycles to run between each redraw (default=1)
+    - border              -- Minimum distance from edge of display area that new particles appear (default=100)
+    """
+    
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(TopologyViewer3DWithParams, self).__init__(**argd)
