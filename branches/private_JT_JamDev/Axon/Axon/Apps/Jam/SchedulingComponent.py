@@ -1,4 +1,4 @@
-from ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
+from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
 import heapq
 import time
 
