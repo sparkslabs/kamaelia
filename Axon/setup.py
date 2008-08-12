@@ -31,6 +31,8 @@ setup(name = "Axon",
       license = "Copyright (c)2004 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
       packages = [
                   "Axon", ### START
+                  "Axon.Apps",
+                  "Axon.Apps.Jam",
                   "Axon.experimental", ### LAST
                   ],
       long_description = """
