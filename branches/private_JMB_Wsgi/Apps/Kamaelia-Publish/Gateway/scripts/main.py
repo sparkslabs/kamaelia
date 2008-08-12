@@ -21,9 +21,9 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
-from Kamaelia.File.ConfigFile import DictFormatter, ParseConfigFile
-from Kamaelia.Apps.Wsgi.Structs import ConfigObject
-from Kamaelia.Apps.Wsgi.kpsetup import initializeLoggers
+from Kamaelia.Apps.Web_common.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.Web_common.Structs import ConfigObject
+from Kamaelia.Apps.Web_common.ServerSetup import initializeLogger
 
 from jabber import constructXMPPClient
 from http import constructHTTPServer
@@ -36,7 +36,7 @@ def main():
     #print options
     
     Config = ConfigObject(ConfigDict, options)
-    initializeLoggers(Config.server.log)
+    initializeLogger()
     
     server = constructHTTPServer(Config)    
     xmpp = constructXMPPClient(Config)

@@ -22,7 +22,7 @@
 # Licensed to the BBC under a Contributor Agreement: JMB
 """
 ========================
-Translator
+Translator (Gateway)
 ========================
 
 Translators are designed to take a request from the HTTP server (using the
@@ -37,27 +37,6 @@ ResponseDeserializer takes a message from the Peer and turns it into a form that
 can be sent to the page requester by the HTTPServer.  The Controller does most of
 the signal handling and is responsible for receiving signals and forwarding them
 to the appropriate components.
-
-Example usage
---------------
-
-How to create a simple HTTP Translating system using ServerCore that will echo
-HTTP Requests on the command line:
-
-    from Kamaelia.Protocol.HTTP.Translators import Translator
-    from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
-    from Kamaelia.Chassis.ConnectedServer import ServerCore
-    from Kamaelia.Util.Backplane import Backplane, SubscribeTo
-    from Kamaelia.Util.Console import ConsoleEchoer
-    
-    bp = Backplane('XMPP_INTERFACE').activate()
-    pipe = Pipeline(SubscribeTo('XMPP_INTERFACE), ConsoleEchoer)
-    routing = [['/', TranslatorFactory(Translator, WSGILikeTranslator)]]
-    ServerCore(
-        protocol=HTTPProtocol(routing),
-        port = 8080,
-        socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
-    ).run()
 
 How does it work?
 ------------------
@@ -111,7 +90,7 @@ URI /a/b/c?d=e would give a NON_QUERY_URI of /a/b/c
 
 What is JSON?
 --------------
-If JSON sounds intimidating, don't worry about it.  It's a data serialization format
+JSON may sound like an intimidating thing, but it's not.  It's a data serialization format
 sort of like XML, only less verbose and simpler.  In fact, if you're reading this,
 you're probably already familiar with a significant amount of its syntax.  For example,
 you can do this at the python command line (assuming you have simplejson installed):
@@ -145,7 +124,7 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
 from Kamaelia.IPC import LookupByText, userLoggedOut, batchDone, newBatch
-from Kamaelia.Apps.Wsgi.Console import info, debug, warning
+from Kamaelia.Apps.Web_common.Console import info, debug, warning
 
 from headstock.api.im import Message, Body, Event, Thread
 from headstock.api.jid import JID

@@ -21,28 +21,29 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
-from Kamaelia.Chassis.ConnectedServer import ServerCore
-from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Support.Protocol.HTTP import ReqTranslatorFactory
-from Kamaelia.Support.Protocol.HTTP import WSGILikeTranslator
-from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
 
-from gate.translator import Translator
 
-import socket
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, create_engine, Boolean
 
-def constructHTTPServer(Config):
-    class StaticServer(Minimal):
-        indexfilename=Config.static.index
-        homedirectory=Config.static.homedirectory
-        def __init__(self, request):
-            super(StaticServer, self).__init__(request)
+class BaseUser(object):
+    def __init__(self, jid, url_prefix, active=False):
+        self.jid = jid
+        self.url_prefix = url_prefix
+        self.active = active
+        
+    def __repr__(self):
+        return '<User jid=%s, url_prefix=%s>' % (self.jid, self.url_prefix)
     
-    routing = [[Config.static.url, StaticServer],
-               #FIXME:one of the translators will have to change its name
-               ['/', ReqTranslatorFactory(Translator, WSGILikeTranslator)]]
-    return ServerCore(
-        protocol=HTTPProtocol(routing),
-        port = 8080,
-        socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
+class User(BaseUser):
+    pass
+
+class ActiveUser(BaseUser):
+    pass
+
+def getUserTable(meta, tablename='users'):
+    return Table(tablename, meta,
+                Column('id', Integer, primary_key=True),
+                Column('jid', String(50)),
+                Column('url_prefix', String(10)),
+                Column('active', Boolean())
     )

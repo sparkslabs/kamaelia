@@ -19,7 +19,6 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-# Licensed to the BBC under a Contributor Agreement: JMB
 
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import SubscribeTo
@@ -59,7 +58,7 @@ class _BoxBundle(object):
         self.signal = self.OutboxAddMethod('THREAD_' + self.thread + '_SIGNAL')
         self.outbox = self.OutboxAddMethod('THREAD_' + self.thread + '_OUTBOX')
     def destroyBoxes(self):
-        self.UnlinkMethod(self.translator)
+        self.UnlinkMethod(self.Translator)
         self.InboxRmMethod(self.inbox)
         self.InboxRmMethod(self.control)
         self.OutboxRmMethod(self.signal)

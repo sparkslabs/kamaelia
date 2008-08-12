@@ -482,7 +482,7 @@ class Client(component):
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
         
         trans = TransactionManager(
-            HandlerFactory = WSGIFactory(self.cfg.wsgi, self.url_list)
+            HandlerFactory = WSGIFactory(self.cfg.wsgi, self.url_list, translator=None)
         )
 
         self.graph = Graphline(client = self,

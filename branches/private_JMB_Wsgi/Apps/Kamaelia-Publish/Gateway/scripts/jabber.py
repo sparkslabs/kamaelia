@@ -38,11 +38,6 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleReader
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
-from Kamaelia.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Apps.Wsgi.Factory import SimpleWsgiFactory
-from Kamaelia.Apps.Wsgi.Apps.Simple import simple_app
-from Kamaelia.Apps.Wsgi.LogWritable import WsgiLogWritable
-from Kamaelia.Apps.Wsgi.Log import LogWriter
 from Kamaelia.Util.NullSink import nullSinkComponent
 from gate.interface import Interface
     

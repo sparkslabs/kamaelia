@@ -39,8 +39,8 @@ from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscompo
 from Kamaelia.Util.Backplane import Backplane, SubscribeTo
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.IPC import userLoggedOut, batchDone, newBatch
-from Kamaelia.Apps.Wsgi.BoxManager import BoxManager
-from Kamaelia.Apps.Wsgi.Console import debug, info, warning
+from Kamaelia.Apps.Publish.BoxManager import BoxManager
+from Kamaelia.Apps.Web_common.Console import debug, info, warning
 
 from headstock.api.im import Message
 from headstock.api.jid import JID

@@ -20,7 +20,101 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
+========================
+Translator (Peer)
+========================
 
+Translators are designed to take a request from the HTTP server (using the
+WSGILikeTranslator) and turn it into a message that can be sent out via headstock.
+It also takes a message from headstock and turns it into a response that can be
+sent out by the HTTPServer.
+
+There are three subcomponents in a Translator: A RequestDeserializer, a
+ResponseSerializer, and a TranslatorChassis.  The RequestDeserializer takes the incoming
+HTTP request and turns it into a form that can be used by the handler.  The
+ResponseSerializer takes a response by the Handler and turns it into a form that
+can be sent to the Gateway.  The TranslatorChassis managesthe components and forwards
+their messages to the TransactionManager.
+
+These components will also create a handler, which will be responsible for generating
+a Webpage that will be viewed by the person that sent the HTTP request to the Gateway.
+
+How does it work?
+------------------
+The TransactionManager will create a new TranslatorChassis when it receives a new
+incoming request.  The TranslatorChassis will create a new RequestDeserializer and
+a ResponseSerializer, passing the initial request along to the RequestDeserializer.
+Once the request has been translated, the TranslatorChassis will create the handler.
+The RequestDeserializer will continue to forward body chunks on to the handler until
+the Gateway signals that the body is done (using a producerFinished signal).  The
+handler will forward its response to the ResponseSerializer, which will translate
+the request to a form that may be sent over a network and then send the request out
+to headstock.
+
+You probably don't need to instantiate either the RequestDeserializer or
+ResponseSerializer directly.  You should instead call the factory function
+Translator, which will automatically create the components and link them.
+
+What is crosstalk?
+--------------------
+
+Cross talk is a way of passing data back and forth between the gateway and the peer
+It is basically a dictionary that roughly maps to a CGI environment-like dictionary
+that has been serialized into JSON (using simplejson).  There are a few other fields
+that may be in a crosstalk message.
+
+- 'batch' is the "series" of messages a message is a part of.  Each HTTP request
+and its associated response (together referred to as a "transaction") are assigned
+a batch id.  This ID will be used to determine which "conversation" a message belongs
+to.  This is the id that the interface will use to determine which translator to
+send a message to.  The batch id also corresponds to the XMPP thread ID.
+
+- 'signal' will be present to signal certain things.  Presently, it is used to
+notify the peer when the gateway has transmitted the entire HTTP request (formatted
+into crosstalk) and by the Peer to signal when the entire HTTP response has been
+transmitted.
+
+- 'body' will contain a chunk of the body or the body in its entirety.
+
+The batch ID must be in all crosstalk messages while the signal and body fields may
+be in the initial message, a separate message, or may not even be in the same message
+(the Translator will currently send signal in a message by itself.)
+
+For more info on CGI environment variables that may be present, see the following
+webpage:  http://hoohoo.ncsa.uiuc.edu/cgi/env.html
+
+In additon to the standard CGI variables, the following variable may also be present:
+
+- 'NON_QUERY_URI' represents the URI without the query string.  For example, the
+URI /a/b/c?d=e would give a NON_QUERY_URI of /a/b/c
+
+What is JSON?
+--------------
+JSON may sound like an intimidating thing, but it's not.  It's a data serialization format
+sort of like XML, only less verbose and simpler.  In fact, if you're reading this,
+you're probably already familiar with a significant amount of its syntax.  For example,
+you can do this at the python command line (assuming you have simplejson installed):
+
+>>> import simplejson
+>>> x = {'a' : 'b', 'c' : 'd', 'e' : 'f'}
+>>> simplejson.dumps(x)
+'{"a": "b", "c": "d", "e": "f"}'
+>>> simplejson.dumps(y)
+'["a", "b", "c", "d", "e", "f"]'
+>>> z = {'a' : ['b', 'c', 'd', 'e'], 'f' : ['g', 'h', 'i', 'j']}
+>>> simplejson.dumps(z)
+'{"a": ["b", "c", "d", "e"], "f": ["g", "h", "i", "j"]}'
+
+
+You'll notice that the formatting is almost identical to the way that Python prints
+out string representation of basic objects.
+
+What else will be done to the message?
+--------------------------------------
+
+The message will be gzipped to be smaller, and will then be base64 encoded to
+prevent any text in the message from invalidating the XML that will be used by
+XMPP.
 """
 from Axon.Component import component
 from Kamaelia.IPC import LookupByText, ToText

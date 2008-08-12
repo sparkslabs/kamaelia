@@ -28,9 +28,9 @@ Once this is done, you can call setUserStatus to control whether a user is onlin
 or not.  You may also call ExtractJID to tetermine a user's JID based on the URI
 that was passed to the server.
 """
-from Kamaelia.Protocol.HTTP import PopWsgiURI
-from Kamaelia.Apps.Wsgi.db import getUserTable, User
-from Kamaelia.Apps.Wsgi.Console import debug
+from Kamaelia.Support.Protocol.HTTP import PopWsgiURI
+from Kamaelia.Apps.Publish.UserDatabase import getUserTable, User
+from Kamaelia.Apps.Web_common.Console import debug
 from headstock.api.jid import JID
 
 import sqlalchemy
@@ -91,6 +91,7 @@ def setUserStatus(jid_text, active):
     
 def _getUser(jid_text, session):
     """Gets a user out of the database by JID."""
+    print jid_text
     return session.query(User).filter_by(jid=jid_text).one()
 
 def _getUserByURI(uri, session):
