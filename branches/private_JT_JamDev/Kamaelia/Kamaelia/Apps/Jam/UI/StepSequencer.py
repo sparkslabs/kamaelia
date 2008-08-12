@@ -12,7 +12,6 @@ import time
 import pygame
 import Axon
 
-from Axon.SchedulingComponent import SchedulingComponent
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 from Kamaelia.Apps.Jam.Util.MusicTiming import MusicTimingComponent
