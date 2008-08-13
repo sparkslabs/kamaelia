@@ -4,6 +4,9 @@ This is an adapted version of Sylvain Hellegouarch's simplechat example.  It is 
 as the basis for Kamaelia Publish's XMPP code.  The original documentation is reproduced
 below.
 
+The majority of the code that needs to be read to understand this is in the Client
+component.
+
 Original documentation
 ------------------------
 
