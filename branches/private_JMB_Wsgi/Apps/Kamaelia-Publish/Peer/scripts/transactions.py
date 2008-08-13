@@ -19,7 +19,27 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+"""
+==========================
+TransactionManager
+==========================
 
+This component will manage all the various transactions going on at any given
+point in time.  A transaction represents an HTTP request and response transaction.
+Note that of course the actual HTTP request and response don't actually happen
+here in this program.  They happen at the gateway.
+
+Upon receiving a message that is a part of a thread the TransactionManager has
+not encountered yet, a new BoxBundle is created to represent the transaction.
+In addition, a translator is created to translate data passed back and forth
+between the TransactionManager and the resource handler (that will be created
+by the translator).
+
+FIXME
+------------
+This should really be made to look more like the gateway's interface in a lot of
+respects.
+"""
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import SubscribeTo
 

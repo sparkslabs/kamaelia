@@ -90,7 +90,6 @@ def setUserStatus(jid_text, active):
     
 def _getUser(jid_text, session):
     """Gets a user out of the database by JID."""
-    print jid_text
     return session.query(User).filter_by(jid=jid_text).one()
 
 def _getUserByURI(uri, session):
