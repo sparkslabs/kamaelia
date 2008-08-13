@@ -352,7 +352,7 @@ class TopologyViewer3D(Axon.Component.component):
         # For hierarchy structure
         self.maxLevel = 0
         self.currentLevel = 0
-        self.currentParentParticleID = ''
+        self.previousParentParticleID = self.currentParentParticleID = ''
         self.viewerOldPos = Vector()
         self.levelViewerPos = {}
         # The Physics particle system of current display level for display
@@ -519,6 +519,7 @@ class TopologyViewer3D(Axon.Component.component):
                                     hasChildParticles = True
                                     break
                             if hasChildParticles:
+                                self.previousParentParticleID = self.currentParentParticleID
                                 self.currentParentParticleID = self.selectedParticles[0].ID
                                 self.gotoDisplayLevel(1)
                             else:
@@ -547,6 +548,7 @@ class TopologyViewer3D(Axon.Component.component):
                     self.lastClickTime = currentTime
                 if event.button == 3: # Right-clicked
                     if self.currentLevel > 0:
+                        self.previousParentParticleID = self.currentParentParticleID
                         items = self.currentParentParticleID.split(':')
                         items.pop()
                         self.currentParentParticleID = ':'.join(items)
@@ -632,6 +634,7 @@ class TopologyViewer3D(Axon.Component.component):
                     self.quit()
                 elif event.key == pygame.K_BACKSPACE:
                     if self.currentLevel > 0:
+                        self.previousParentParticleID = self.currentParentParticleID
                         items = self.currentParentParticleID.split(':')
                         items.pop()
                         self.currentParentParticleID = ':'.join(items)
@@ -646,6 +649,7 @@ class TopologyViewer3D(Axon.Component.component):
                                 hasChildParticles = True
                                 break
                         if hasChildParticles:
+                            self.previousParentParticleID = self.currentParentParticleID
                             self.currentParentParticleID = self.selectedParticles[0].ID
                             self.gotoDisplayLevel(1)
                         else:
@@ -806,16 +810,16 @@ class TopologyViewer3D(Axon.Component.component):
     def gotoDisplayLevel( self, dlevel):
         """Switch to another display level."""
         # Save current level's viewer position
-        self.levelViewerPos[self.currentLevel] = self.display.viewerposition.copy()
+        self.levelViewerPos[self.currentLevel, self.previousParentParticleID] = self.display.viewerposition.copy()
         # Deselect all
         self.deselectAll()
         # Display next level
         self.currentLevel += dlevel
         # Reset viewer position to previous
         try:
-            self.display.viewerposition = self.levelViewerPos[self.currentLevel].copy()
+            self.display.viewerposition = self.levelViewerPos[self.currentLevel, self.currentParentParticleID].copy()
         except KeyError:
-            self.display.viewerposition = self.levelViewerPos[self.currentLevel] = Vector()
+            self.display.viewerposition = self.levelViewerPos[self.currentLevel, self.currentParentParticleID] = Vector()
         # Remove current displayed particles
         for particle in self.currentDisplayedPhysics.particles:
             self.display.ogl_displaylists.pop(id(particle))
@@ -965,7 +969,7 @@ class TopologyViewer3D(Axon.Component.component):
             # The child particles of self.currentParentParticleID
             elif particle.ID.find(self.currentParentParticleID) == 0 and particle.ID.count(':') == self.currentLevel:
                 self.currentDisplayedPhysics.add( particle )
-                #particle.oldpos = particle.initialpos
+                particle.oldpos = particle.initialpos
         
     def removeParticle(self, *ids):
         """\
