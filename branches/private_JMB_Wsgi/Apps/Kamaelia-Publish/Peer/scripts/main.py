@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+This is an adapted version of Sylvain Hellegouarch's simplechat example.  It is used
+as the basis for Kamaelia Publish's XMPP code.  The original documentation is reproduced
+below.
+
+Original documentation
+------------------------
+
 This module is a simple XMPP chat client demonstrating the use of headstock.
 Many Kamaelia components are created to manage different XMPP kind of stanzas.
 
@@ -25,6 +32,10 @@ The actual XMPP client is the Client component that sets up the different
 dispatchers and handlers involved by liking each inbox to the expected outbox and
 vcie versa.
 
+FIXME
+---------
+This code desperately needs to be refactored and needs to have uneccessary functionality
+removed.  The code is good for an example, but not a production system.
 """
 import re
 
