@@ -37,7 +37,7 @@ and then send the serialised data to its outbox.
 
 
 =========================================
-JSONEncoder: JSON serialisation decoder
+JSONDecoder: JSON serialisation decoder
 =========================================
 Decode serialised JSON data to its original format
 
