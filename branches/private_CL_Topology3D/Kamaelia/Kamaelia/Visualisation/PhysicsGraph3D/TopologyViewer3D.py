@@ -451,6 +451,8 @@ class TopologyViewer3D(Axon.Component.component):
     
     def draw(self):
         """\
+        Dummy method reserved for future use
+        
         Invoke draw() and save its commands to a newly generated displaylist.
         
         The displaylist name is then sent to the display service via a
