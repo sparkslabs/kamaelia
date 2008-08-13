@@ -454,6 +454,7 @@ class SphereParticle3D(Particle3D):
     def draw(self):
         """Draw sphere particle."""
         hs = self.radius
+        glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
         
         # Create a quadratic object for sphere rendering
         quadratic = gluNewQuadric()
@@ -495,6 +496,7 @@ class TeapotParticle3D(Particle3D):
     def draw(self):
         """Draw teapot particle."""
         hs = self.radius
+        glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
         
         # Add texture
         glMatrixMode(GL_TEXTURE)
