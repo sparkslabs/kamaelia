@@ -45,7 +45,7 @@ url_list = [
     {
     'kp.regex' : 'simple',
     'kp.import_path' : 'Kamaelia.Apps.WSGI.Simple',
-    'kp.app_object' : 'simple_foop',
+    'kp.app_object' : 'simple_app',
     },
     {
     'kp.regex' : '.*',  #This is the entry for the 404 error handler.  This basically says "match everything else."
