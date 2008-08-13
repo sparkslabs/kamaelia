@@ -12,6 +12,8 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 homedirectory = "/srv/www/htdocs/"
 indexfilename = "index.html"
 
+#This is the hello handler.  It will respond to every request with a Hello world
+#message (with some HTML formatting)
 class HelloHandler(Axon.Component.component):
     def __init__(self, request):
         super(HelloHandler, self).__init__()
@@ -31,15 +33,20 @@ class HelloHandler(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
-class Cat(Axon.Component.component):
+#This is the request echoer.  It will simply forward a request on to the next component.
+class RequestEchoer(Axon.Component.component):
     def __init__(self, *args):
-        super(Cat, self).__init__()
+        super(RequestEchoer, self).__init__()
         self.args = args
     def main(self):
         self.send(self.args, "outbox")
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
+#This component will simply wrap any input it receives into a dictionary that the
+#HTTP Server can use to form a response.  Note that this code works this way for
+#example purposes.  In most instances, it's better to buffer your output and send
+#everything at once.
 class ExampleWrapper(Axon.Component.component):
  
     def main(self):
@@ -78,8 +85,12 @@ class ExampleWrapper(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
+#This handler will join the RequestEchoer and ExampleWrapper together such that
+#the RequestEchoer will forward the request dictionary on to the ExampleWrapper,
+#which will wrap the data in a response dictionary and forward the data on to the
+#HTTP Server.
 def EchoHandler(request):
-    return Pipeline ( Cat(request), ExampleWrapper() )
+    return Pipeline ( RequestEchoer(request), ExampleWrapper() )
 
 def servePage(request):
     return Minimal(request=request, 
