@@ -414,18 +414,7 @@ class TopologyViewer3D(Axon.Component.component):
                 avoidedList.extend(self.hitParticles)
                 avoidedList.extend(self.selectedParticles)
                 
-                # Add current level's particles to self.currentDisplayedPhysics.particles for display
-                self.currentDisplayedPhysics.particles = []
-                if self.physics.particles != []:
-                    for particle in self.physics.particles:
-                        if self.currentParentParticleID == '': # If no parent, it's the top level 
-                            if ':' not in particle.ID:
-                                self.currentDisplayedPhysics.add( particle )
-                                particle.oldpos = particle.initialpos
-                        # The child particles of self.currentParentParticleID
-                        elif particle.ID.find(self.currentParentParticleID) == 0 and particle.ID.count(':') == self.currentLevel:
-                            self.currentDisplayedPhysics.add( particle )
-                            particle.oldpos = particle.initialpos
+                
                 # Do interaction between particles
                 self.currentDisplayedPhysics.run(self.simCyclesPerRedraw, avoidedList=avoidedList)
                 #print [particle.pos for particle in self.physics.particles]
@@ -833,6 +822,19 @@ class TopologyViewer3D(Axon.Component.component):
             self.display.ogl_transforms.pop(id(particle))
         self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
         
+        # Add current level's particles to self.currentDisplayedPhysics.particles for display
+        self.currentDisplayedPhysics.particles = []
+        if self.physics.particles != []:
+            for particle in self.physics.particles:
+                if self.currentParentParticleID == '': # If no parent, it's the top level 
+                    if ':' not in particle.ID:
+                        self.currentDisplayedPhysics.add( particle )
+                        particle.oldpos = particle.initialpos
+                # The child particles of self.currentParentParticleID
+                elif particle.ID.find(self.currentParentParticleID) == 0 and particle.ID.count(':') == self.currentLevel:
+                    self.currentDisplayedPhysics.add( particle )
+                    particle.oldpos = particle.initialpos
+                            
     def doCommand(self, msg):
         """\
         Proceses a topology command tuple:
@@ -953,6 +955,17 @@ class TopologyViewer3D(Axon.Component.component):
             # send display request
             self.send(disprequest, "display_signal")
         self.physics.add( *particles )
+        
+        # Add new particles to self.currentDisplayedPhysics
+        for particle in particles:
+            if self.currentParentParticleID == '': # If no parent, it's the top level 
+                if ':' not in particle.ID:
+                    self.currentDisplayedPhysics.add( particle )
+                    particle.oldpos = particle.initialpos
+            # The child particles of self.currentParentParticleID
+            elif particle.ID.find(self.currentParentParticleID) == 0 and particle.ID.count(':') == self.currentLevel:
+                self.currentDisplayedPhysics.add( particle )
+                #particle.oldpos = particle.initialpos
         
     def removeParticle(self, *ids):
         """\
