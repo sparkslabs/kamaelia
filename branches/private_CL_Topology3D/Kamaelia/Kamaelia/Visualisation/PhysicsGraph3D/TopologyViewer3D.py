@@ -493,157 +493,41 @@ class TopologyViewer3D(Axon.Component.component):
             self.send({"REMOVELISTENEVENT":event, "objectid":id(self)}, "display_signal")        
                        
     def handleEvents(self):
-        """ Handle events. """
+        """Handle events."""
         while self.dataReady("events"):
             event = self.recv("events")
-            if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEMOTION and self.grabbed:
-                if not self.rotationMode:
-                    for particle in self.hitParticles:
-                        p1 = Vector(*particle.pos).copy()
-                        p1.x += 10
-                        p2 = Vector(*particle.pos).copy()
-                        p2.y += 10
-                        #z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-self.display.viewerposition, p1, p2])
-                        z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-Vector(0,0,self.display.viewerposition.z), p1-Vector(0,0,self.display.viewerposition.z), p2-Vector(0,0,self.display.viewerposition.z)])
-                        newpoint = event.direction * z
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    # Handle double click
-                    clickPos = event.pos
-                    currentTime = time.time()
-                    elapsedTime = currentTime - self.lastClickTime
-                    # If it's a double-click
-                    if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
-                        if self.currentLevel < self.maxLevel and len(self.selectedParticles) == 1:
-                            hasChildParticles = False
-                            for particle in self.physics.particles:
-                                if particle.ID.find(self.selectedParticles[0].ID) == 0 and particle.ID != self.selectedParticles[0].ID:
-                                    hasChildParticles = True
-                                    break
-                            if hasChildParticles:
-                                self.previousParentParticleID = self.currentParentParticleID
-                                self.currentParentParticleID = self.selectedParticles[0].ID
-                                self.gotoDisplayLevel(1)
-                            else:
-                                print 'Warning: The particle you double-clicked has no children!'
-                            
-                        else:
-                            if self.currentLevel == self.maxLevel:
-                                print "Warning: max hierarchy level has reached!"
-                            if len(self.selectedParticles) != 1:
-                                print "Tips: To extend a node, please double-click the node you want to extend"
-                    else: # Single click
-                        if not self.rotationMode: # Select particle
-                            for particle in self.currentDisplayedPhysics.particles:
-                                if particle.identifier in event.hitobjects:
-                                    #particle.oldpos = particle.oldpos - self.display.viewerposition
-                                    self.grabbed = True
-                                    #particle.scaling = Vector(0.9,0.9,0.9)
-                                    self.hitParticles.append(particle)
-                                    self.selectParticle(particle)
-                                    #print str(id(particle))+'hit'
-                                    #print self.hitParticles
-                            # If click places other than particles in non multiSelectMode, deselect all
-                            if not self.hitParticles and not self.multiSelectMode:
-                                self.deselectAll()
-                    self.lastClickPos = clickPos
-                    self.lastClickTime = currentTime
-                if event.button == 3: # Right-clicked
-                    if self.currentLevel > 0:
-                        self.previousParentParticleID = self.currentParentParticleID
-                        items = self.currentParentParticleID.split(':')
-                        items.pop()
-                        self.currentParentParticleID = ':'.join(items)
-                        self.gotoDisplayLevel(-1)
-                    else:
-                        print "Warning: The first hierarchy level has reached!"
-                if event.button == 4: # Scrolled-up: zoom out
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
-                    else:
-                        particles = self.currentDisplayedPhysics.particles
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        posVector.z -= 1
-                        particle.pos = posVector.toTuple()
-                if event.button == 5: # Scrolled-down: zoom in
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
-                    else:
-                        particles = self.currentDisplayedPhysics.particles
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        posVector.z += 1
-                        particle.pos = posVector.toTuple()
-            if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:  
-                    for particle in self.hitParticles:
-                        self.grabbed = False
-                        particle.oldpoint = None
-                        #particle.scaling = Vector(1,1,1)
-                        self.hitParticles.pop(self.hitParticles.index(particle))
-                        #print self.hitParticles
-            if event.type == pygame.MOUSEMOTION: 
-                if not self.rotationMode and self.grabbed: # Drag particles
-                    for particle in self.hitParticles:
-                        try:
-                            if particle.oldpoint is not None:
-                                #print particle.pos
-                                diff = newpoint-particle.oldpoint
-                                amount = (diff.x, diff.y)
-                                particle.pos = (Vector(*particle.pos)+Vector(*amount)).toTuple()
-                        except NameError: pass
-                        
-                        # Redraw the link so that the link can move with the particle
-                        for p in particle.bondedFrom:
-                            p.needRedraw = True
-                elif self.rotationMode: # Rotate particles
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
-                    else:
-                        particles = self.currentDisplayedPhysics.particles
-                    
-                    centrePoint = Vector() 
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        centrePoint += posVector
-                    centrePoint /= len(particles)
-                    dAnglex = float(event.rel[1])*math.pi/180
-                    dAngley = -float(event.rel[0])*math.pi/180
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        relativePosVector = posVector - centrePoint
-                        radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
-                        newAnglex = (math.atan2(relativePosVector.z,relativePosVector.y)+dAnglex)
-                        particle.pos = (posVector.x, radius*math.cos(newAnglex)+centrePoint.y, radius*math.sin(newAnglex)+centrePoint.z)
-                        posVector = Vector(*particle.pos)
-                        relativePosVector = posVector - centrePoint
-                        radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
-                        newAngley = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngley)
-                        particle.pos = (radius*math.cos(newAngley)+centrePoint.x, posVector.y, radius*math.sin(newAngley)+centrePoint.z)      
-                        particle.drotation.y = float(event.rel[0])
-                        particle.drotation.x = float(event.rel[1])
-                        particle.drotation %= 360
-            
-            try:
+            if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONUP:
+                self.handleMouseEvents(event)
+            elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                self.handleKeyEvents(event)
+                
+            # Scroll if self.display.viewerposition changes
+            if self.display.viewerposition.copy() != self.viewerOldPos:
+                self.scroll()
+                self.viewerOldPos = self.display.viewerposition.copy()
+    #                for particle in self.currentDisplayedPhysics.particles:
+    #                    particle.oldpoint = None
+    
+    def handleMouseEvents(self, event):
+        """Handle mouse events."""
+        if event.type == pygame.MOUSEBUTTONDOWN or pygame.MOUSEMOTION and self.grabbed:
+            if not self.rotationMode:
                 for particle in self.hitParticles:
-                    particle.oldpoint = newpoint                    
-            except NameError: pass    
-                    
-            # Keyboard events handling
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.quit()
-                elif event.key == pygame.K_BACKSPACE:
-                    if self.currentLevel > 0:
-                        self.previousParentParticleID = self.currentParentParticleID
-                        items = self.currentParentParticleID.split(':')
-                        items.pop()
-                        self.currentParentParticleID = ':'.join(items)
-                        self.gotoDisplayLevel(-1)
-                    else:
-                        print "Warning: The first hierarchy level has reached!"
-                elif event.key == pygame.K_RETURN:
+                    p1 = Vector(*particle.pos).copy()
+                    p1.x += 10
+                    p2 = Vector(*particle.pos).copy()
+                    p2.y += 10
+                    #z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-self.display.viewerposition, p1, p2])
+                    z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-Vector(0,0,self.display.viewerposition.z), p1-Vector(0,0,self.display.viewerposition.z), p2-Vector(0,0,self.display.viewerposition.z)])
+                    newpoint = event.direction * z
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                # Handle double click
+                clickPos = event.pos
+                currentTime = time.time()
+                elapsedTime = currentTime - self.lastClickTime
+                # If it's a double-click
+                if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
                     if self.currentLevel < self.maxLevel and len(self.selectedParticles) == 1:
                         hasChildParticles = False
                         for particle in self.physics.particles:
@@ -656,152 +540,278 @@ class TopologyViewer3D(Axon.Component.component):
                             self.gotoDisplayLevel(1)
                         else:
                             print 'Warning: The particle you double-clicked has no children!'
+                        
                     else:
                         if self.currentLevel == self.maxLevel:
                             print "Warning: max hierarchy level has reached!"
                         if len(self.selectedParticles) != 1:
-                            print "Tips: To extend a node, please click to select the node (only one) you want to extend first."
-                        
-                elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
-                    self.multiSelectMode = True
-                elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
-                    self.rotationMode = True
-                # Change viewer position
-                elif event.key == pygame.K_PAGEUP:
-                    self.display.viewerposition.z -= 0.5
-                elif event.key == pygame.K_PAGEDOWN:
-                    self.display.viewerposition.z += 0.5
-                elif event.key == pygame.K_w:
-                    self.display.viewerposition.y += 0.5
-                elif event.key == pygame.K_s:
-                    self.display.viewerposition.y -= 0.5
-                elif event.key == pygame.K_a:
-                    self.display.viewerposition.x -= 0.5
-                elif event.key == pygame.K_d:
-                    self.display.viewerposition.x += 0.5
-                # Rotate particles
-                elif event.key == pygame.K_UP:
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
+                            print "Tips: To extend a node, please double-click the node you want to extend"
+                else: # Single click
+                    if not self.rotationMode: # Select particle
+                        for particle in self.currentDisplayedPhysics.particles:
+                            if particle.identifier in event.hitobjects:
+                                #particle.oldpos = particle.oldpos - self.display.viewerposition
+                                self.grabbed = True
+                                #particle.scaling = Vector(0.9,0.9,0.9)
+                                self.hitParticles.append(particle)
+                                self.selectParticle(particle)
+                                #print str(id(particle))+'hit'
+                                #print self.hitParticles
+                        # If click places other than particles in non multiSelectMode, deselect all
+                        if not self.hitParticles and not self.multiSelectMode:
+                            self.deselectAll()
+                self.lastClickPos = clickPos
+                self.lastClickTime = currentTime
+            if event.button == 3: # Right-clicked
+                if self.currentLevel > 0:
+                    self.previousParentParticleID = self.currentParentParticleID
+                    items = self.currentParentParticleID.split(':')
+                    items.pop()
+                    self.currentParentParticleID = ':'.join(items)
+                    self.gotoDisplayLevel(-1)
+                else:
+                    print "Warning: The first hierarchy level has reached!"
+            if event.button == 4: # Scrolled-up: zoom out
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    posVector.z -= 1
+                    particle.pos = posVector.toTuple()
+            if event.button == 5: # Scrolled-down: zoom in
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    posVector.z += 1
+                    particle.pos = posVector.toTuple()
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:  
+                for particle in self.hitParticles:
+                    self.grabbed = False
+                    particle.oldpoint = None
+                    #particle.scaling = Vector(1,1,1)
+                    self.hitParticles.pop(self.hitParticles.index(particle))
+                    #print self.hitParticles
+        if event.type == pygame.MOUSEMOTION: 
+            if not self.rotationMode and self.grabbed: # Drag particles
+                for particle in self.hitParticles:
+                    try:
+                        if particle.oldpoint is not None:
+                            #print particle.pos
+                            diff = newpoint-particle.oldpoint
+                            amount = (diff.x, diff.y)
+                            particle.pos = (Vector(*particle.pos)+Vector(*amount)).toTuple()
+                    except NameError: pass
+                    
+                    # Redraw the link so that the link can move with the particle
+                    for p in particle.bondedFrom:
+                        p.needRedraw = True
+            elif self.rotationMode: # Rotate particles
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                
+                centrePoint = Vector() 
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    centrePoint += posVector
+                centrePoint /= len(particles)
+                dAnglex = float(event.rel[1])*math.pi/180
+                dAngley = -float(event.rel[0])*math.pi/180
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    relativePosVector = posVector - centrePoint
+                    radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
+                    newAnglex = (math.atan2(relativePosVector.z,relativePosVector.y)+dAnglex)
+                    particle.pos = (posVector.x, radius*math.cos(newAnglex)+centrePoint.y, radius*math.sin(newAnglex)+centrePoint.z)
+                    posVector = Vector(*particle.pos)
+                    relativePosVector = posVector - centrePoint
+                    radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
+                    newAngley = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngley)
+                    particle.pos = (radius*math.cos(newAngley)+centrePoint.x, posVector.y, radius*math.sin(newAngley)+centrePoint.z)      
+                    particle.drotation.y = float(event.rel[0])
+                    particle.drotation.x = float(event.rel[1])
+                    particle.drotation %= 360
+        
+        try:
+            for particle in self.hitParticles:
+                particle.oldpoint = newpoint                    
+        except NameError: pass    
+    
+    def handleKeyEvents(self, event):
+        """Handle keyboard events."""            
+        # Keyboard events handling
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                self.quit()
+            elif event.key == pygame.K_BACKSPACE:
+                if self.currentLevel > 0:
+                    self.previousParentParticleID = self.currentParentParticleID
+                    items = self.currentParentParticleID.split(':')
+                    items.pop()
+                    self.currentParentParticleID = ':'.join(items)
+                    self.gotoDisplayLevel(-1)
+                else:
+                    print "Warning: The first hierarchy level has reached!"
+            elif event.key == pygame.K_RETURN:
+                if self.currentLevel < self.maxLevel and len(self.selectedParticles) == 1:
+                    hasChildParticles = False
+                    for particle in self.physics.particles:
+                        if particle.ID.find(self.selectedParticles[0].ID) == 0 and particle.ID != self.selectedParticles[0].ID:
+                            hasChildParticles = True
+                            break
+                    if hasChildParticles:
+                        self.previousParentParticleID = self.currentParentParticleID
+                        self.currentParentParticleID = self.selectedParticles[0].ID
+                        self.gotoDisplayLevel(1)
                     else:
-                        particles = self.currentDisplayedPhysics.particles
-                    centrePoint = Vector() 
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        centrePoint += posVector
-                    centrePoint /= len(particles)
-                    dAngle = -20*math.pi/180
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        relativePosVector = posVector - centrePoint
-                        radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
-                        newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle)
-                        particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
-                        particle.drotation = Vector(dAngle*180/math.pi,0,0)      
-                elif event.key == pygame.K_DOWN:
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
-                    else:
-                        particles = self.currentDisplayedPhysics.particles
-                    centrePoint = Vector() 
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        centrePoint += posVector
-                    centrePoint /= len(particles)
-                    dAngle = 20*math.pi/180
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        relativePosVector = posVector - centrePoint
-                        radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
-                        newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle)
-                        particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
-                        particle.drotation = Vector(dAngle*180/math.pi,0,0) 
-                elif event.key == pygame.K_LEFT:
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
-                    else:
-                        particles = self.currentDisplayedPhysics.particles
-                    centrePoint = Vector() 
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        centrePoint += posVector
-                    centrePoint /= len(particles)
-                    dAngle = 20*math.pi/180
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        relativePosVector = posVector - centrePoint
-                        radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
-                        newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle)
-                        particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
-                        particle.drotation = Vector(0,-dAngle*180/math.pi,0)
-                elif event.key == pygame.K_RIGHT:
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
-                    else:
-                        particles = self.currentDisplayedPhysics.particles
-                    centrePoint = Vector() 
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        centrePoint += posVector
-                    centrePoint /= len(particles)
-                    dAngle = -20*math.pi/180
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        relativePosVector = posVector - centrePoint
-                        radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
-                        newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle)
-                        particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
-                        particle.drotation = Vector(0,-dAngle*180/math.pi,0)
-                elif event.key == pygame.K_COMMA:
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
-                    else:
-                        particles = self.currentDisplayedPhysics.particles
-                    centrePoint = Vector() 
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        centrePoint += posVector
-                    centrePoint /= len(particles)
-                    dAngle = 20*math.pi/180
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        relativePosVector = posVector - centrePoint
-                        radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
-                        newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
-                        particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
-                        particle.drotation = Vector(0,0,dAngle*180/math.pi)
-                elif event.key == pygame.K_PERIOD:
-                    if self.selectedParticles:
-                        particles = self.selectedParticles
-                    else:
-                        particles = self.currentDisplayedPhysics.particles
-                    centrePoint = Vector() 
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        centrePoint += posVector
-                    centrePoint /= len(particles)
-                    dAngle = -20*math.pi/180
-                    for particle in particles:
-                        posVector = Vector(*particle.pos)
-                        relativePosVector = posVector - centrePoint
-                        radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
-                        newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
-                        particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
-                        particle.drotation = Vector(0,0,dAngle*180/math.pi)
-            
-            # Scroll if self.display.viewerposition changes
-            if self.display.viewerposition.copy() != self.viewerOldPos:
-                self.scroll()
-                self.viewerOldPos = self.display.viewerposition.copy()
-#                for particle in self.currentDisplayedPhysics.particles:
-#                    particle.oldpoint = None
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
-                    # Return to normal mode from multiSelectMode
-                    self.multiSelectMode = False
-                elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
-                    # Return to normal mode from rotationMode
-                    self.rotationMode = False                 
+                        print 'Warning: The particle you double-clicked has no children!'
+                else:
+                    if self.currentLevel == self.maxLevel:
+                        print "Warning: max hierarchy level has reached!"
+                    if len(self.selectedParticles) != 1:
+                        print "Tips: To extend a node, please click to select the node (only one) you want to extend first."
+                    
+            elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                self.multiSelectMode = True
+            elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                self.rotationMode = True
+            # Change viewer position
+            elif event.key == pygame.K_PAGEUP:
+                self.display.viewerposition.z -= 0.5
+            elif event.key == pygame.K_PAGEDOWN:
+                self.display.viewerposition.z += 0.5
+            elif event.key == pygame.K_w:
+                self.display.viewerposition.y += 0.5
+            elif event.key == pygame.K_s:
+                self.display.viewerposition.y -= 0.5
+            elif event.key == pygame.K_a:
+                self.display.viewerposition.x -= 0.5
+            elif event.key == pygame.K_d:
+                self.display.viewerposition.x += 0.5
+            # Rotate particles
+            elif event.key == pygame.K_UP:
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                centrePoint = Vector() 
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    centrePoint += posVector
+                centrePoint /= len(particles)
+                dAngle = -20*math.pi/180
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    relativePosVector = posVector - centrePoint
+                    radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
+                    newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle)
+                    particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
+                    particle.drotation = Vector(dAngle*180/math.pi,0,0)      
+            elif event.key == pygame.K_DOWN:
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                centrePoint = Vector() 
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    centrePoint += posVector
+                centrePoint /= len(particles)
+                dAngle = 20*math.pi/180
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    relativePosVector = posVector - centrePoint
+                    radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
+                    newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle)
+                    particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
+                    particle.drotation = Vector(dAngle*180/math.pi,0,0) 
+            elif event.key == pygame.K_LEFT:
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                centrePoint = Vector() 
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    centrePoint += posVector
+                centrePoint /= len(particles)
+                dAngle = 20*math.pi/180
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    relativePosVector = posVector - centrePoint
+                    radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
+                    newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle)
+                    particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
+                    particle.drotation = Vector(0,-dAngle*180/math.pi,0)
+            elif event.key == pygame.K_RIGHT:
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                centrePoint = Vector() 
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    centrePoint += posVector
+                centrePoint /= len(particles)
+                dAngle = -20*math.pi/180
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    relativePosVector = posVector - centrePoint
+                    radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
+                    newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle)
+                    particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
+                    particle.drotation = Vector(0,-dAngle*180/math.pi,0)
+            elif event.key == pygame.K_COMMA:
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                centrePoint = Vector() 
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    centrePoint += posVector
+                centrePoint /= len(particles)
+                dAngle = 20*math.pi/180
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    relativePosVector = posVector - centrePoint
+                    radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
+                    newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
+                    particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
+                    particle.drotation = Vector(0,0,dAngle*180/math.pi)
+            elif event.key == pygame.K_PERIOD:
+                if self.selectedParticles:
+                    particles = self.selectedParticles
+                else:
+                    particles = self.currentDisplayedPhysics.particles
+                centrePoint = Vector() 
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    centrePoint += posVector
+                centrePoint /= len(particles)
+                dAngle = -20*math.pi/180
+                for particle in particles:
+                    posVector = Vector(*particle.pos)
+                    relativePosVector = posVector - centrePoint
+                    radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
+                    newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle)
+                    particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
+                    particle.drotation = Vector(0,0,dAngle*180/math.pi)
+        
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                # Return to normal mode from multiSelectMode
+                self.multiSelectMode = False
+            elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                # Return to normal mode from rotationMode
+                self.rotationMode = False                 
     
     def scroll( self ):
         """Scroll the surface by resetting gluLookAt."""
