@@ -99,8 +99,10 @@ class XYFilter(Axon.Component.component):
     def main(self):
         while 1:
             if self.dataReady("inbox"):
+                # Data is ((oscAddr, oscArgs, timeTag), (address, port)) tuple
                 data = self.recv("inbox")
                 if data[0][0].find("/XY/%i/" % self.padNumber) >= 0:
+                    # Only send the OSC Message part
                     self.send(data[0])
             if not self.anyReady():
                 self.pause()
@@ -111,6 +113,7 @@ class PeerListFilter(Axon.Component.component):
         while 1:
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
+                # Data is ((oscAddr, oscArgs, timeTag), (address, port)) tuple
                 if data[0][0].split("/")[-1] == "PeerList":
                     # OSC message flattens the peer list, so we need to group
                     # them into (address, port) tuples again
@@ -128,6 +131,7 @@ class StepSequencerFilter(Axon.Component.component):
     def main(self):
         while 1:
             if self.dataReady("inbox"):
+                # Data is ((oscAddr, oscArgs, timeTag), (address, port)) tuple
                 data = self.recv("inbox")
                 if data[0][0].find("/StepSequencer/") >= 0:
                     self.send(data[0], "outbox")
@@ -139,6 +143,7 @@ class PianoRollFilter(Axon.Component.component):
     def main(self):
         while 1:    
             if self.dataReady("inbox"):
+                # Data is ((oscAddr, oscArgs, timeTag), (address, port)) tuple
                 data = self.recv("inbox")
                 if data[0][0].find("/PianoRoll/") >= 0:
                     self.send(data[0], "outbox")
@@ -147,6 +152,7 @@ class PianoRollFilter(Axon.Component.component):
             yield 1
 
 class TimingFilter(Axon.Component.component):
+    # This is not used, and is untested currently
     def main(self):
         while 1:
             if self.dataReady("inbox"):
