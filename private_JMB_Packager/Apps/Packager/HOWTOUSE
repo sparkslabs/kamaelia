@@ -1,0 +1,40 @@
+How to use the Kamaelia Packager:
+
+To compile an script, the first thing you will need is a main script with a
+function main in it.  This main function must be the function that executes your
+program.  Be careful not to execute any code upon import of the main module (and
+preferably not any other module if you can avoid it) otherwise you may end up
+with some strange threading issues.
+
+The packager will compile all your scripts into a zip file and append it to the
+end of zipheader.unix, a script that will run python, import the main module,
+and call the main function within it.  Editing zipheader.unix probably won't be
+necessary, but if you do, remember that it must end with END_OF_PYTHON_CODE
+followed by ONE AND ONLY ONE newline or you will get some strange errors.
+
+TO BUILD THE SCRIPT:
+
+1.  You must first copy the Packager Directory to a new directory.  For example,
+if your application is named Kamaelia Application, you would use the following
+command (assuming you're in the directory this how-to resides in):
+
+    cd ..
+    svn cp Packager Kamaelia-Application
+
+2.  You must move all source code and data into their respective directories.
+You should put all top level scripts into the scripts directory (including your
+main script).  You may place any data files you wish to distribute into the data
+directory.  These data files may be extracted using python's zipfile module.
+
+3.  Run make-unix.sh and pass the name of the executable to be output to the
+dist directory as the first argument.  For example, if you want to make an
+executable called kapp, you would issue the following command:
+
+    ./make-unix.sh kapp
+
+Note that you may also pass the clean command line parameter after the app name
+as well.  This will delete the assembly directory which contains all the files
+in the structure they went in the zip file.
+
+AUTHOR
+Jason Baker

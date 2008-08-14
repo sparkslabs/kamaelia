@@ -1,0 +1,31 @@
+#!/bin/sh
+# The majority of this code comes from:
+# Python Cookbook, 2nd ed., by Alex Martelli, Anna Martelli Ravenscroft, and David Asher
+# (O'Relly Media, 2005) 0-596-00797-3
+# Section 16.12 credited to Joerg Raedler
+#
+
+PYTHON=$(which python 2>/dev/null)
+
+if [ -x "x$PYTHON" ] ; then
+    echo "python executable not found - cannot continue!"
+    exit 1
+fi
+
+exec $PYTHON - $0 $@ << END_OF_PYTHON_CODE
+
+import sys
+version = sys.version_info[:2]
+if version < (2,3):
+    print 'Sorry, need python 2.3 or better; %s%s is too old' % version
+sys.path.insert(0, sys.argv[1])
+sys.argv[0] = sys.argv[1]
+del sys.argv[1:2]
+
+import main
+
+main.main()
+
+#NOTE: Future code may rely on this tag being here, so it's best to make sure this is at the
+#end of the script unchanged.
+END_OF_PYTHON_CODE
