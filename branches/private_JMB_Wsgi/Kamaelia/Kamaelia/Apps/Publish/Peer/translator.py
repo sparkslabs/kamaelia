@@ -118,7 +118,7 @@ XMPP.
 """
 from Axon.Component import component
 from Kamaelia.IPC import LookupByText, ToText
-from Kamaelia.Apps.Web_common.Console import info
+from Kamaelia.Apps.Web_common.Console import info, debug
 
 from xml.sax.saxutils import unescape, escape
 
@@ -127,6 +127,8 @@ from headstock.lib.utils import generate_unique
 
 import simplejson
 import zlib, base64
+
+_logger_suffix = '.publish.peer.translator'
 
 class RequestDeserializer(component):
     Inboxes = {'inbox' : '',
@@ -214,7 +216,6 @@ class ResponseSerializer(component):
             yield 1
             
         self.batch_id = self.recv('batch')
-        #print '> BATCH ID: ', self.batch_id
         
         self.signal = None
         while not self.signal:
@@ -240,7 +241,11 @@ class ResponseSerializer(component):
         
     def makeMessage(self, serializable):
         #print serializable
+        if serializable.get('batch') != self.batch_id:
+            serializable['batch'] = self.batch_id
         text = simplejson.dumps(serializable)
+        debug_out = simplejson.dumps(serializable, indent=2, sort_keys=True)
+        debug('Outgoing CrossTalk message: %s' % (debug_out), _logger_suffix)
         text = zlib.compress(text)
         text = base64.encodestring(text)
         text = unicode(text)

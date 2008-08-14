@@ -272,6 +272,8 @@ class RequestSerializer(component):
                            type=u'chat', stanza_id=generate_unique())
             
         body = simplejson.dumps(serializable)
+        debug_out = simplejson.dumps(serializable, indent=2, sort_keys=True)
+        debug('Outgoing CrossTalk message: %s' % debug_out, _logger_suffix)
         body = zlib.compress(body)
         body = base64.encodestring(body)
         body = unicode(body)

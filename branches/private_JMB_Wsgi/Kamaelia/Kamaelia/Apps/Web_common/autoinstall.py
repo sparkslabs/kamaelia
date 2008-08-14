@@ -53,4 +53,4 @@ def autoinstall(zip, dir, app_name):
     kpuser_file.close()
     tar_mem.close()
     
-    info('%s is now done installing.' % (app_name), _logger_name)
+    info('%s is now done installing.' % (app_name), _logger_suffix)

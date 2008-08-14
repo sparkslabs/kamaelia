@@ -40,7 +40,7 @@ FIXME
 This code desperately needs to be refactored and needs to have uneccessary functionality
 removed.  The code is good for an example, but not a production system.
 """
-import re
+import re, os, sys, zipfile
 
 from Axon.Component import component
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
@@ -62,6 +62,8 @@ from Kamaelia.Apps.Web_common.ServerSetup import processPyPath, normalizeUrlList
 from transactions import TransactionManager
 from Kamaelia.Apps.Web_common.Structs import StaticConfigObject, XMPPConfigObject,\
  ConfigObject
+from Kamaelia.Apps.Web_common.autoinstall import autoinstall
+from Kamaelia.Apps.Web_common.Console import prompt_corrupt
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
@@ -641,12 +643,23 @@ class Client(component):
         print "You can hit Ctrl-C to shutdown all processes now." 
 
 def main():   
+    home_path = os.environ['HOME']
+    zip = zipfile.ZipFile(sys.argv[0], 'r')
+    
+    #prompt the user if this executable is corrupt
+    corrupt = zip.testzip()
+    if corrupt:
+        prompt_corrupt(corrupt)
+    
+    if not os.path.exists(home_path + '/kp.ini'):
+        autoinstall(zip, home_path, 'Kamaelia Publish')
+    
     ConfigDict = ParseConfigFile('~/kp.ini', DictFormatter())
     options = parseCmdOpts()
     
     Config = ConfigObject(ConfigDict, options)
     processPyPath(ConfigDict['SERVER'])
-    initializeLogger(Config.server.log)
+    initializeLogger()
     
     url_list = ParseUrlFile(Config.wsgi['url_list'])
     normalizeUrlList(url_list)
