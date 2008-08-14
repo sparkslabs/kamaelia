@@ -227,6 +227,10 @@ and implement the following method (for rendering purposes):
 
 
 
+TODO: Reduce CPU usage, improve responsive speed
+
+
+
 References: 1. Kamaelia.Visualisation.PhysicsGraph.TopologyViewer
 2. Kamaelia.UI.OpenGL.OpenGLComponent
 3. Kamaelia.UI.OpenGL.MatchedTranslationInteractor
