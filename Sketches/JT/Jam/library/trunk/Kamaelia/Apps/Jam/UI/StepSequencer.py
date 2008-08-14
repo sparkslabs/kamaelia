@@ -69,6 +69,7 @@ class StepSequencer(MusicTimingComponent):
         for i in range(self.numChannels):
             self.channels.append([])
             for j in range(self.numSteps):
+                # Steps stored as [velocity, eventId] pairs
                 self.channels[i].append([0, None])
 
         # UI Init
@@ -202,10 +203,13 @@ class StepSequencer(MusicTimingComponent):
                              (self.size[0], self.positionSize[1] + i * self.stepSize[1]))
         for i in range(self.numSteps + 1):
             if i % (self.stepsPerBeat * self.loopBars) == 0:
+                # Dark lines
                 colour = (0, 0, 0)
             elif i % (self.stepsPerBeat) == 0:
+                # Lighter lines
                 colour = (127, 127, 127)
             else:
+                # Even lighter lines
                 colour = (190, 190, 190)
             pygame.draw.line(self.display, colour,
                              (i * self.stepSize[0], 0),
@@ -219,6 +223,7 @@ class StepSequencer(MusicTimingComponent):
         position = (step * self.stepSize[0]+1, channel * self.stepSize[1] + self.positionSize[1] + 1)
         size = (self.stepSize[0] - 1, self.stepSize[1]-1)
         velocity = self.channels[channel][step][0]
+        # Rectangle with different brightness reds
         pygame.draw.rect(self.display, (255, 255*(1-velocity),
                                         255*(1-velocity)),
                          pygame.Rect(position, size))
@@ -231,6 +236,7 @@ class StepSequencer(MusicTimingComponent):
         position = (step * self.stepSize[0]+1, 1)
         size = (self.positionSize[0] - 1, self.positionSize[1] - 1)
         if active:
+            # Yellow
             colour = (255, 255, 0)
         else:
             colour = (255, 255, 255)
@@ -352,6 +358,7 @@ class StepSequencer(MusicTimingComponent):
 
 class StepSequencerMidiConverter(Axon.Component.component):
     channel = 0
+    # GM midi drum mapping for note numbers
     mapping = {3:36, # Bass drum
                2:38, # Snare
                1:42, # Closed HH
@@ -360,8 +367,10 @@ class StepSequencerMidiConverter(Axon.Component.component):
         while 1:
             if self.dataReady("inbox"):
                 note, velocity = self.recv("inbox")[1]
-                self.send((0x90 + self.channel, self.mapping[note],
-                           int(velocity*127)), "outbox")
+                self.send((0x90 + self.channel, # Note on message with channel
+                           self.mapping[note], # Note number
+                           int(velocity*127)), # 7 bit velocity
+                          "outbox")
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if (isinstance(msg, producerFinished) or
