@@ -50,8 +50,8 @@ See Kamaelia.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D for more informati
 
 import re
 
-def str2dict(string):
-    """Transform a string to a dictionary."""
+def paramStr2paramDict(string):
+    """Transform a parameters string to a parameters dictionary."""
     colourRegex = re.compile("^\( *(\d{1,3}) *, *(\d{1,3}) *, *(\d{1,3}) *\)$")
     decimalRegex = re.compile('^\d*\.?\d*$')
     dictionary = {}
@@ -121,7 +121,7 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
 
             if cmd == ("ADD", "NODE") and (len(msg) == 6 or len(msg) == 7):
                 if len(msg) == 7 and msg[6].strip() != "":
-                    params = str2dict(msg[6])
+                    params = paramStr2paramDict(msg[6])
                 else:
                     params = {}
                 if msg[2] in [p.ID for p in self.physics.particles]:
@@ -135,7 +135,6 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
                         
                         posSpec = msg[4]
                         pos     = self._generatePos(posSpec)
-                        #print pos
 
                         particle = ptype(position = pos, ID=ident, name=name, **params)
                         
