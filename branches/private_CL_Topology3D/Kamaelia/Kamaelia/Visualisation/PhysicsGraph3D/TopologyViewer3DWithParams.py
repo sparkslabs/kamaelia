@@ -54,6 +54,7 @@ def str2dict(string):
     """Transform a string to a dictionary."""
     colourRegex = re.compile("^\( *(\d{1,3}) *, *(\d{1,3}) *, *(\d{1,3}) *\)$")
     dictionary = {}
+    string = string.strip().strip(';')
     string_list = string.split(';')
     for item in string_list:
         result = item.split('=')
