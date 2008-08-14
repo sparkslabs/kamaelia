@@ -29,7 +29,10 @@ Extend TopologyViewer3D by supporting additional parameters of "ADD" commands.
 
 The format of commands:
 [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type>, <parameters> ] 
+
 The format of parameters: pa=pa_value;pb=pb_value
+
+Add quotation if there are spaces within parameters.
 
 Available parameters:
     
