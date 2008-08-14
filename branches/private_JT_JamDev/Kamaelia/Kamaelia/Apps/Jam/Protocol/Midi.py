@@ -15,7 +15,10 @@ class Midi(Axon.Component.component):
             if self.dataReady("control"):
                 msg = self.recv("control")
                 if (isinstance(msg, producerFinished) or                    
-                   isinstance(msg, shutdownMicroprocess)):
+                    isinstance(msg, shutdownMicroprocess)):
+                    if isinstance(msg, producerFinished):
+                        for item in self.Inbox('inbox'):
+                            self.output.sendMessage(*item)
                     self.output.closePort()
                     self.send(msg, "signal")
                     break
