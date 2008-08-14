@@ -53,6 +53,7 @@ import re
 def str2dict(string):
     """Transform a string to a dictionary."""
     colourRegex = re.compile("^\( *(\d{1,3}) *, *(\d{1,3}) *, *(\d{1,3}) *\)$")
+    decimalRegex = re.compile('^\d*\.?\d*$')
     dictionary = {}
     string = string.strip().strip(';')
     string_list = string.split(';')
@@ -60,9 +61,17 @@ def str2dict(string):
         result = item.split('=')
         param = result[0].strip()
         value = result[1].strip()
-        m = colourRegex.match(value)
-        if m:
-            value = map(int, m.groups())
+        mColour = colourRegex.match(value)
+        if mColour: # If colour triple tuple
+            value = map(int, mColour.groups())
+        else:
+            mDecimal = decimalRegex.match(value)
+            if mDecimal: # If Decimal
+                if '.' in value:
+                    value = float(value)
+                else:
+                    value = int(value)
+
         dictionary.update({param : value})
     return dictionary
 
