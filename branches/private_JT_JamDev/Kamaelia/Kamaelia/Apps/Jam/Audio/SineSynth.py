@@ -1,5 +1,45 @@
+"""
+================
+Sine Synthesizer
+================
+
+Components for playing sine waves.  SineOsc produces a continuous sine 
+tone, whereas SineVoice can be turned on and off and change its frequency by
+sending messages to its "inbox" inbox.  Turn the voice on by sending a
+("On", (noteNumber, frequency, velocity)) tuple.  The noteNumber argument
+is used for linking with a polyphoniser, and is ignored in the component. Turn
+the voice off by sending a tuple with "Off" as its first item.
+
+SineSynth is a prefab which creates a number of Sine Voices connected in a
+synth
+
+Example Usage
+-------------
+
+Play a continuous sine tone at 1kHz
+
+SineOsc(frequency=1000).run()
+
+A playable monophonic synth
+
+Pipeline(PianoRoll(), SineVoice()).run()
+
+A playable polyphonic synth
+
+Pipeline(PianoRoll(), SineSynth()).run()
+
+How it works
+------------
+
+The oscillator and voice components initialise the pygame mixer, then set up a
+regular event which calls every time more data is needed (i.e. every
+bufferSize/sampleRate).  They fill the pygame buffer and queue, then whenever
+there is a message on their "event" inbox they make an array of samples, and
+queue them in the mixer channel.  The SineVoice component only plays if it is
+turned on, storing the frequency and velocity which are provided in the
+note-on message.
+"""
 import pygame
-import numpy
 import Numeric
 import time
 
@@ -7,6 +47,13 @@ from Axon.Apps.Jam.SchedulingComponent import SchedulingComponent
 from Kamaelia.Apps.Jam.Audio.Synth import Synth
 
 class SineOsc(SchedulingComponent):
+    Inboxes = {"inbox" : "NOT USED",
+               "control" : "NOT USED", # FIXME
+               "event" : "Messages indicating data is needed",
+              }
+    Outboxes = {"outbox" : "NOT USED",
+                "signal" : "NOT USED", # FIXME
+               }
     sampleRate = 44100
     bufferSize = 1024
     frequency = 440
@@ -16,6 +63,14 @@ class SineOsc(SchedulingComponent):
         super(SineOsc, self).__init__(**argd)
         self.period = float(self.bufferSize)/self.sampleRate
         self.phase = 0
+
+        if not pygame.mixer.get_init():
+            pygame.mixer.init(self.sampleRate, -16, 1, self.bufferSize)
+            pygame.mixer.set_num_channels(0)
+        numChannels = pygame.mixer.get_num_channels() + 1
+        pygame.mixer.set_num_channels(numChannels)
+        self.channel = pygame.mixer.Channel(numChannels - 1)
+
         self.lastSendTime = time.time()
         self.scheduleAbs("Send", self.lastSendTime + self.period)
 
@@ -26,22 +81,22 @@ class SineOsc(SchedulingComponent):
         """ 
         # Working from the formula y(t) = Asin(wt + c)
         # w
-        angularFreq = 2 * numpy.pi * frequency
+        angularFreq = 2 * Numeric.pi * frequency
         # t
         sampleLength = 1.0/self.sampleRate
         # wt for each sample
-        sample = numpy.arange(self.bufferSize) * angularFreq * sampleLength
+        sample = Numeric.arange(self.bufferSize) * angularFreq * sampleLength
         # c for each sample
-        phaseArray = numpy.ones(self.bufferSize) * phase
+        phaseArray = Numeric.ones(self.bufferSize) * phase
         # wt + c for each sample
         sample += phaseArray
         # sin(wt + c) for each sample
-        sample = numpy.sin(sample)
+        sample = Numeric.sin(sample)
         # Asin(wt + c) for each sample
         sample *= self.amplitude
         # Update the phase
         phase += angularFreq * sampleLength * self.bufferSize
-        phase %= (2 * numpy.pi)
+        phase %= (2 * Numeric.pi)
         return sample, phase
 
     def main(self):
@@ -52,7 +107,10 @@ class SineOsc(SchedulingComponent):
                                                     self.amplitude,
                                                     self.phase)
                 self.phase = phase
-                self.send(sample, "outbox")
+                sample *= 2**15-1
+                sample = sample.astype("i")
+                sample = Numeric.asarray(sample)
+                self.channel.queue(pygame.sndarray.make_sound(sample))
 
                 self.lastSendTime += self.period
                 self.scheduleAbs("Send", self.lastSendTime + self.period)
@@ -61,6 +119,14 @@ class SineOsc(SchedulingComponent):
                 self.pause()
 
 class SineVoice(SineOsc):
+    Inboxes = {"inbox" : "Note-on and note-off messages",
+               "control" : "NOT USED", # FIXME
+               "event" : "Messages indicating data is needed",
+              }
+    Outboxes = {"outbox" : "NOT USED",
+                "signal" : "NOT USED", # FIXME
+               }
+
     def __init__(self, **argd):
         super(SineVoice, self).__init__(**argd)
         self.on = False
@@ -93,8 +159,7 @@ class SineVoice(SineOsc):
                                                             self.phase)
                         self.phase = phase
                         sample *= 2**15-1
-                        sample = sample.astype("int16")
-                        sample = Numeric.asarray(sample)
+                        sample = sample.astype("i")
                         self.channel.queue(pygame.sndarray.make_sound(sample))
                 self.lastSendTime += self.period
                 self.scheduleAbs("Send", self.lastSendTime + self.period)
@@ -110,5 +175,8 @@ def SineSynth(polyphony=8, **argd):
 if __name__ == "__main__":
     from Kamaelia.Apps.Jam.UI.PianoRoll import PianoRoll
     from Kamaelia.Chassis.Pipeline import Pipeline
+    
+    if 0:
+        SineOsc().run()
 
     Pipeline(PianoRoll(), SineSynth()).run()
