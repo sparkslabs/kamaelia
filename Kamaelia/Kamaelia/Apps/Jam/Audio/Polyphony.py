@@ -3,9 +3,16 @@
 Polyphony Components
 ====================
 
-Two components for distributing note-on and note-off messages to individual voices.  The polyphoniser is designed for use with synthesized voices, routing messages received on its "inbox" inbox to the first available "voice" outbox (numbered voice0, voice1 ... voiceN-2, voiceN-1).  If no voices are available and the Polyphoniser receives a note-on message it is discarded.
+Two components for distributing note-on and note-off messages to individual voices.
+The polyphoniser is designed for use with synthesized voices, routing messages received
+on its "inbox" inbox to the first available "voice" outbox
+(numbered voice0, voice1 ... voiceN-2, voiceN-1).  If no voices are available and
+the Polyphoniser receives a note-on message it is discarded.
 
-The Targetter is designed for use with samples, routing messages received on its "inbox" inbox to "voice" outboxes based upon the first argument in an (address, (arguments)) tuple.  This is designed so it works simply with the OSC message format used throughout Kamaelia Jam.
+The Targetter is designed for use with samples, routing messages received on its
+"inbox" inbox to "voice" outboxes based upon the first argument in an (address, (arguments))
+tuple.  This is designed so it works simply with the OSC message format used throughout
+Kamaelia Jam.
 
 Example usage
 -------------
@@ -38,7 +45,12 @@ Graphline(stepSequncer = StepSequencer(),
 How the Polphoniser works
 -------------------------
 When the Polyphoniser receives a note-on message it finds the first instance
-of None in a list of voices, and replaces this with the note number.  It then sends the messages through the "voice" outbox corresponding to the list index.  When a note-off message is received it finds the note in the list, send the message through the corresponding "voice" outbox, and replaces the note number with None.  If there is no instance of None in the voices list when a note-on message is received the message is ignored.
+of None in a list of voices, and replaces this with the note number.  It then sends
+the messages through the "voice" outbox corresponding to the list index.  When a
+note-off message is received it finds the note in the list, send the message through
+the corresponding "voice" outbox, and replaces the note number with None.  If there
+is no instance of None in the voices list when a note-on message is received the
+message is ignored.
 """
 import Axon
 
