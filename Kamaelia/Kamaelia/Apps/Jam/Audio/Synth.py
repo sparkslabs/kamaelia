@@ -3,7 +3,11 @@
 Synth Builder
 =============
 
-A simple component for connecting a polyphony component to a number of voices.  This means less typing is needed, and provides a simple way to encapsulate a synth system in a single component.  The component takes a generator as an argument which provides the Synth with its voices, allowing more flexibility in how which voices are used, and how they are created.
+A simple component for connecting a polyphony component to a number of voices.  This
+means less typing is needed, and provides a simple way to encapsulate a synth system
+in a single component.  The component takes a generator as an argument which provides
+the Synth with its voices, allowing more flexibility in how which voices are used,
+and how they are created.
 
 Example Usage
 -------------
@@ -18,7 +22,9 @@ Pipeline(PianoRoll(),
 
 How it works
 ------------
-The component creates the polyphoniser, and links up its "inbox" inbox to the polyphoniser's "inbox" inbox.  It then loops over the voice generator, linking the voice outputs from the polyphoniser to the voices which are created.
+The component creates the polyphoniser, and links up its "inbox" inbox to the polyphoniser's
+"inbox" inbox.  It then loops over the voice generator, linking the voice outputs
+from the polyphoniser to the voices which are created.
 
 """
 import Axon
