@@ -46,6 +46,8 @@ Available parameters:
     - image        -- The uri of image, image texture instead of label texture is used if specified
 
 See Kamaelia.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D for more information.
+
+TODO: make update support more parameters
 """
 
 import re
@@ -118,6 +120,12 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
 
         if len(msg) >= 2:
             cmd = msg[0].upper(), msg[1].upper()
+            
+            if cmd == ("ADD", "NODE"):
+                if len(msg) == 4:
+                    msg += ['randompos', '-']
+                elif len(msg) == 5:
+                    msg += ['-']
 
             if cmd == ("ADD", "NODE") and (len(msg) == 6 or len(msg) == 7):
                 if len(msg) == 7 and msg[6].strip() != "":
