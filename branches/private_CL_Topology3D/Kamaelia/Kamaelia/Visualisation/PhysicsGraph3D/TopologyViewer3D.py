@@ -517,6 +517,7 @@ class TopologyViewer3D(Axon.Component.component):
                     p1.x += 10
                     p2 = Vector(*particle.pos).copy()
                     p2.y += 10
+                    # Get the position of mouse
                     #z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-self.display.viewerposition, p1, p2])
                     z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-Vector(0,0,self.display.viewerposition.z), p1-Vector(0,0,self.display.viewerposition.z), p2-Vector(0,0,self.display.viewerposition.z)])
                     newpoint = event.direction * z
@@ -803,6 +804,12 @@ class TopologyViewer3D(Axon.Component.component):
         """  
         if len(msg) >= 2:
             cmd = msg[0].upper(), msg[1].upper()
+            
+            if cmd == ("ADD", "NODE"):
+                if len(msg) == 4:
+                    msg += ['randompos', '-']
+                elif len(msg) == 5:
+                    msg += ['-']
 
             if cmd == ("ADD", "NODE") and len(msg) == 6:
                 if msg[2] in [p.ID for p in self.physics.particles]:
