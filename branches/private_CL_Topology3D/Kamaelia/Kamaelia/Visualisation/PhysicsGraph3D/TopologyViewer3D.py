@@ -256,7 +256,7 @@ from Kamaelia.UI.OpenGL.Intersect import Intersect
 _cat = Axon.CoordinatingAssistantTracker
 
 from Particles3D import CuboidParticle3D, SphereParticle3D, TeapotParticle3D
-from Kamaelia.Support.Particles.ParticleSystemX import ParticleSystemX
+from Kamaelia.Support.Particles.ParticleSystemX import ParticleSystemWithAvoidedList as ParticleSystemX
 
                  
 class TopologyViewer3D(Axon.Component.component):
