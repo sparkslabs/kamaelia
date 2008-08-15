@@ -66,6 +66,9 @@ and send output to TopologyViewer3D.
 You may also need to install librdf, a rdf parsing lib from redland. 
 See http://librdf.org/ for more information and 
 http://librdf.org/bindings/INSTALL.html for installation information.
+
+See http://www.w3.org/TR/rdf-sparql-query/ for more information about SPARQL query, 
+http://www.w3.org/RDF/ about for more information about RDF.
 """
 
 import Axon
@@ -164,11 +167,13 @@ class RDFParser(Axon.Component.component):
             }
             """
             nodes = []
+            # Make query on RDF file and fetch name, image and friends info
             results = self.make_query(rdf_uri, query)
             num_nodePerLayer = 1
             count = 0
             for result in results:
                 if count == 0:
+                    # Get the person's name and image, then send as TopologyViewer command 
                     count += 1
                     linkedNode_name = str(result['aname'])
                     if self.parentNode_id == "":
@@ -185,6 +190,7 @@ class RDFParser(Axon.Component.component):
                 if self.max_nodePerLayer > 0 and num_nodePerLayer > self.max_nodePerLayer:
                     break
                 else:
+                    # Get the person's friends' name and image, then send as TopologyViewer command
                     num_nodePerLayer += 1
                     self.num_allNodes += 1
                     node_name = str(result['name'])
@@ -206,7 +212,8 @@ class RDFParser(Axon.Component.component):
                         uri = uri._get_uri()
                         #print result['seeAlso'], uri
                         nodes.append((node_id, uri))
-                    
+            
+            # Recursively fetch the person's friends' friends' info        
             for node in nodes:
                 self.parentNode_id = node[0]
                 uri = node[1]
