@@ -3,7 +3,7 @@
 JSON serialisation codec
 =========================
 
-This component encode data to serialisable JSON format and 
+This component encode data (python object) to serialisable JSON format and 
 decode serialised JSON data.
 
 
@@ -12,7 +12,7 @@ decode serialised JSON data.
 =========================================
 JSONEncoder: JSON serialisation encoder
 =========================================
-Encode data to serialisable JSON format
+Encode data (python object) to serialisable JSON format
 
 
 
@@ -30,8 +30,8 @@ A simple DataSource driven JSON serialisation encoder::
 
 How does it work?
 -----------------
-Whenever it receives data from its inbox, it encode the data using cjson
-and then send the serialised data to its outbox.
+Whenever it receives data (python object) from its inbox, it encode the data using cjson
+and then send the serialised data (JSON string) to its outbox.
 
 
 
@@ -56,7 +56,7 @@ A simple DataSource driven JSON serialisation encoder::
 
 How does it work?
 -----------------
-Whenever it receives data from its inbox, it decode the data using cjson
+Whenever it receives data (JSON string) from its inbox, it decodes the data using cjson
 to its original format and then send the decoded data to its outbox.
 """
 
