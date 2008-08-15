@@ -1,3 +1,85 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
+
+"""\
+================================
+Dictionary Chooser
+================================
+
+The DictChooser component chooses option from its dictionary options according to 
+what received in its 'inbox' and sends the result to its 'oubox'. Dictionary options 
+can either be created in the component's initialisation or created/ extended from 
+its 'option' box at real time. 
+
+
+
+Example Usage
+-------------
+
+A simple picture show::
+  
+    imageOptions = { "image1" : "image1.png", "image2" : "image2.png", "image3" : "image3.png" }
+    
+    Graphline( CHOOSER  = DictChooser(options=imageOptions),
+               image1  = Button(position=(300,16), msg="image1", caption="image1"),
+               image2 = Button(position=(16,16),  msg="image2", caption="image2"),
+               image3 = Button(position=(16,16),  msg="image3", caption="image3"),
+               DISPLAY  = Image(position=(16,64), size=(640,480)),
+               linkages = { ("image1" ,"outbox") : ("CHOOSER","inbox"),
+                            ("image2","outbox") : ("CHOOSER","inbox"),
+                            ("image3","outbox") : ("CHOOSER","inbox"),
+                            ("CHOOSER" ,"outbox") : ("DISPLAY","inbox"),
+                          }
+             ).run()
+
+The chooser is driven by the 'image1', 'image2' and 'image3' Button components. Chooser
+then sends filenames to an Image component to display them.
+
+
+
+How does it work?
+-----------------
+
+When creating it, optionally pass the component a dictionary of options to choose from.
+
+DictChooser will only accept finite length data dictionary.
+
+If 'allowDefault' is enabled, it will send a arbitrary option chosen from its existing options
+to its "outbox" outbox before receiving anything from its 'inbox'. Otherwise, it does nothing.
+If no existing options, it sends nothing.
+
+Send the index of dictionary options to DictChooser's "inbox" inbox to choose the option.
+If the index is one index of DictChooser's dictionary options, then it sends the corresponding option
+to its 'outbox'. 
+
+Dictionary options can either be created in the component's initialisation or 
+created/ extended from its 'option' box at real time. If the index is the same, 
+new option will replace old one.
+
+If Chooser or InfiniteChooser receive a shutdownMicroprocess message on the
+"control" inbox, they will pass it on out of the "signal" outbox. The component
+will then terminate.
+"""
+
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
