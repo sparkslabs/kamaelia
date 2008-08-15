@@ -111,7 +111,7 @@ if __name__ == "__main__" and 0:
    # Data can be from both DataSource and console inputs
    Graphline(
        CONSOLEREADER = ConsoleReader('>>>'),
-       DATASOURCE = DataSource(["['foo', {'bar': ('baz', None, 1.0, 2)}]"]),
+       DATASOURCE = DataSource([['foo', {'bar': ('baz', None, 1.0, 2)}]]),
        JSONENCODER = JSONEncoder(),
        CONSOLEECHOER = ConsoleEchoer(),
    linkages = {
@@ -164,7 +164,7 @@ class JSONDecoder(component):
 __kamaelia_components__ = ( JSONEncoder, JSONDecoder )        
 
         
-if __name__ == "__main__":
+if __name__ == "__main__" and 1:
     from Kamaelia.Util.DataSource import DataSource
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
     from Kamaelia.Chassis.Graphline import Graphline
