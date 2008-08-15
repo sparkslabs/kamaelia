@@ -105,17 +105,15 @@ class JSONEncoder(component):
         
 if __name__ == "__main__" and 0:
    from Kamaelia.Util.DataSource import DataSource
-   from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
+   from Kamaelia.Util.Console import ConsoleEchoer
    from Kamaelia.Chassis.Graphline import Graphline
    
    # Data can be from both DataSource and console inputs
    Graphline(
-       CONSOLEREADER = ConsoleReader('>>>'),
        DATASOURCE = DataSource([['foo', {'bar': ('baz', None, 1.0, 2)}]]),
        JSONENCODER = JSONEncoder(),
        CONSOLEECHOER = ConsoleEchoer(),
    linkages = {
-       ("CONSOLEREADER","outbox") : ("JSONENCODER","inbox"),
        ("DATASOURCE","outbox") : ("JSONENCODER","inbox"),   
        ("JSONENCODER","outbox")  : ("CONSOLEECHOER","inbox"),     
    }
@@ -166,18 +164,16 @@ __kamaelia_components__ = ( JSONEncoder, JSONDecoder )
         
 if __name__ == "__main__" and 1:
     from Kamaelia.Util.DataSource import DataSource
-    from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
+    from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Graphline import Graphline
     
     # Data can be from both DataSource and console inputs
     Graphline(
-        CONSOLEREADER = ConsoleReader('>>>'),
         DATASOURCE = DataSource([['foo', {'bar': ('baz', None, 1.0, 2)}]]),
         JSONENCODER = JSONEncoder(),
         JSONDECODER = JSONDecoder(),
         CONSOLEECHOER = ConsoleEchoer(),
     linkages = {
-        ("CONSOLEREADER","outbox") : ("JSONENCODER","inbox"),
         ("DATASOURCE","outbox") : ("JSONENCODER","inbox"),
         ("JSONENCODER","outbox")  : ("JSONDECODER","inbox"), 
         ("JSONDECODER","outbox")  : ("CONSOLEECHOER","inbox"),     
