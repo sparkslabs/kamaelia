@@ -79,6 +79,7 @@ def WSGIFactory(WSGIConfig, url_list, errorlog='error.log',
             if not split_uri:
                 split_uri = ['||||']
             
+            #Here, we figure out which item in the url list we want to access.
             for url_item in urls:
                 if regexes[url_item['kp.regex']].search(split_uri[0]):
                     PopWsgiURI(request)
