@@ -69,11 +69,15 @@ If no existing options, it sends nothing.
 
 Send the index of dictionary options to DictChooser's "inbox" inbox to choose the option.
 If the index is one index of DictChooser's dictionary options, then it sends the corresponding option
-to its 'outbox'. 
+(a list of data) to its 'outbox' one by one. 
 
 Dictionary options can either be created in the component's initialisation or 
 created/ extended from its 'option' box at real time. If the index is the same, 
 new option will replace old one.
+
+Format of dictionary options:
+---------------------------------
+{index1 : data list1, index2 : data list2, ...}
 
 If Chooser or InfiniteChooser receive a shutdownMicroprocess message on the
 "control" inbox, they will pass it on out of the "signal" outbox. The component
@@ -94,11 +98,12 @@ class DictChooser(Axon.Component.component):
                 "signal" : "shutdown messages"
               }
    
-    def __init__(self, options = {}):
+    def __init__(self, options = {}, allowDefault = False):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(DictChooser, self).__init__()
         self.options = dict(options)
         self.currentOption = None
+        self.allowDefault = allowDefault
       
     def shutdown(self):
         """
@@ -121,24 +126,27 @@ class DictChooser(Axon.Component.component):
                 option = self.recv("option")
                 if option:
                     self.options.update(option)
-                    # Choose a default one initially
-                    if self.currentOption is None:
-                        self.currentOption = option.keys()[0]
-                        data = option[self.currentOption]
-                        for item in data:
-                            self.send(item, "outbox")
                     
             while self.dataReady("inbox"):
                 msg = self.recv("inbox")
                 # If new selection is the same with current one, ignore it
                 if msg and msg!=self.currentOption:
-                    try:
+                    try: 
                         data = self.options[msg]
                         self.currentOption = msg
-                    except KeyError:
+                    except KeyError: # If the index is not one index of its dictionary options
                         continue
+                    # Send datum one by one
                     for item in data:
                         self.send(item, "outbox")
+            
+            # Choose a default one initially
+            if self.allowDefault and (self.options != {}) and (self.currentOption is None):
+                self.currentOption = self.options.keys()[0]
+                data = option[self.currentOption]
+                # Send datum one by one
+                for item in data:
+                    self.send(item, "outbox")
 
             done = self.shutdown()
 

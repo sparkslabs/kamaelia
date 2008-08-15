@@ -365,7 +365,7 @@ if __name__ == "__main__":
         COLLABPARSER = CollabWithViewParser(),
         BUTTONORG = Button(caption="orgView", msg="orgView", position=(-10,8,-20)),
         BUTTONSTAFF = Button(caption="staffView", msg="staffView", position=(-8,8,-20)),
-        DICTCHOOSER = DictChooser(),
+        DICTCHOOSER = DictChooser(allowDefault = True),
         VIEWER = TopologyViewer3DWithParams(laws=laws),
     linkages = {
         ("CONSOLEREADER","outbox") : ("JSONDECODER","inbox"),
