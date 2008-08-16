@@ -619,7 +619,7 @@ class TopologyViewer3D(Axon.Component.component):
             elif self.rotationMode: # Rotate particles
                 dAnglex = float(event.rel[1])*math.pi/180
                 dAngley = -float(event.rel[0])*math.pi/180
-                self.rotateParticles((dAnglex,dAngley,0))
+                self.rotateParticles(self.selectedParticles, (dAnglex,dAngley,0))
         
         try:
             for particle in self.hitParticles:
@@ -679,17 +679,17 @@ class TopologyViewer3D(Axon.Component.component):
                 self.display.viewerposition.x += 0.5
             # Rotate particles
             elif event.key == pygame.K_UP:
-                self.rotateParticles((-20*math.pi/180,0,0))      
+                self.rotateParticles(self.selectedParticles, (-20*math.pi/180,0,0))      
             elif event.key == pygame.K_DOWN:
-                self.rotateParticles((20*math.pi/180,0,0))      
+                self.rotateParticles(self.selectedParticles, (20*math.pi/180,0,0))      
             elif event.key == pygame.K_LEFT:
-                self.rotateParticles((0,20*math.pi/180,0))    
+                self.rotateParticles(self.selectedParticles, (0,20*math.pi/180,0))    
             elif event.key == pygame.K_RIGHT:
-                self.rotateParticles((0,-20*math.pi/180,0))
+                self.rotateParticles(self.selectedParticles, (0,-20*math.pi/180,0))
             elif event.key == pygame.K_COMMA:
-                self.rotateParticles((0,0,20*math.pi/180))    
+                self.rotateParticles(self.selectedParticles, (0,0,20*math.pi/180))    
             elif event.key == pygame.K_PERIOD:
-                self.rotateParticles((0,0,-20*math.pi/180))
+                self.rotateParticles(self.selectedParticles, (0,0,-20*math.pi/180))
         
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
@@ -705,11 +705,9 @@ class TopologyViewer3D(Axon.Component.component):
         glLoadIdentity()
         self.display.setProjection()
         
-    def rotateParticles( self, dAngle ):
+    def rotateParticles( self, particles, dAngle ):
         """Rotate the particles."""
-        if self.selectedParticles:
-            particles = self.selectedParticles
-        else:
+        if particles == []:
             particles = self.currentDisplayedPhysics.particles
         centrePoint = Vector() 
         for particle in particles:
