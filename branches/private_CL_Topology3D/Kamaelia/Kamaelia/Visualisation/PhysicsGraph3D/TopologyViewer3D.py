@@ -617,32 +617,9 @@ class TopologyViewer3D(Axon.Component.component):
                     for p in particle.bondedFrom:
                         p.needRedraw = True
             elif self.rotationMode: # Rotate particles
-                if self.selectedParticles:
-                    particles = self.selectedParticles
-                else:
-                    particles = self.currentDisplayedPhysics.particles
-                
-                centrePoint = Vector() 
-                for particle in particles:
-                    posVector = Vector(*particle.pos)
-                    centrePoint += posVector
-                centrePoint /= len(particles)
                 dAnglex = float(event.rel[1])*math.pi/180
                 dAngley = -float(event.rel[0])*math.pi/180
-                for particle in particles:
-                    posVector = Vector(*particle.pos)
-                    relativePosVector = posVector - centrePoint
-                    radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
-                    newAnglex = (math.atan2(relativePosVector.z,relativePosVector.y)+dAnglex)
-                    particle.pos = (posVector.x, radius*math.cos(newAnglex)+centrePoint.y, radius*math.sin(newAnglex)+centrePoint.z)
-                    posVector = Vector(*particle.pos)
-                    relativePosVector = posVector - centrePoint
-                    radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
-                    newAngley = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngley)
-                    particle.pos = (radius*math.cos(newAngley)+centrePoint.x, posVector.y, radius*math.sin(newAngley)+centrePoint.z)      
-                    particle.drotation.y = float(event.rel[0])
-                    particle.drotation.x = float(event.rel[1])
-                    particle.drotation %= 360
+                self.rotateParticles((dAnglex,dAngley,0))
         
         try:
             for particle in self.hitParticles:
@@ -747,7 +724,7 @@ class TopologyViewer3D(Axon.Component.component):
                 newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle[0])
                 particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
                 particle.drotation = Vector(dAngle[0]*180/math.pi,0,0)
-        elif dAngle[1] != 0:     
+        if dAngle[1] != 0:     
             for particle in particles:
                     posVector = Vector(*particle.pos)
                     relativePosVector = posVector - centrePoint
@@ -755,7 +732,7 @@ class TopologyViewer3D(Axon.Component.component):
                     newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle[1])
                     particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
                     particle.drotation = Vector(0,-dAngle[1]*180/math.pi,0)
-        elif dAngle[2] != 0:
+        if dAngle[2] != 0:
             for particle in particles:
                 posVector = Vector(*particle.pos)
                 relativePosVector = posVector - centrePoint
@@ -763,7 +740,9 @@ class TopologyViewer3D(Axon.Component.component):
                 newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle[2])
                 particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
                 particle.drotation = Vector(0,0,dAngle[2]*180/math.pi)
-    
+        
+        particle.drotation %= 360
+        
     def gotoDisplayLevel( self, dlevel):
         """Switch to another display level."""
         # Save current level's viewer position
@@ -1052,13 +1031,13 @@ if __name__ == "__main__":
 #                                 'ADD NODE 3Node 3Node randompos -', 'ADD NODE 4Node 4Node randompos -',
 #                                 'ADD LINK 1Node 2Node','ADD LINK 2Node 3Node', 'ADD LINK 3Node 4Node',
 #                                 'ADD LINK 4Node 1Node']),
-        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos teapot'
-                                 , 'ADD NODE 2Node 2Node randompos -',
+        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos teapot',
+                                 'ADD NODE 2Node 2Node randompos -',
                                  'ADD NODE 3Node 3Node randompos sphere', 'ADD NODE 4Node 4Node randompos -',
                                  'ADD NODE 5Node 5Node randompos sphere', 'ADD NODE 6Node 6Node randompos -',
                                  'ADD NODE 7Node 7Node randompos sphere',
-                                 'ADD LINK 1Node 2Node'
-                                 ,'ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',
+                                 'ADD LINK 1Node 2Node',
+                                 'ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',
                                  'ADD LINK 1Node 5Node','ADD LINK 1Node 6Node', 'ADD LINK 1Node 7Node',
                                  'ADD NODE 1Node:1Node 1Node:1Node randompos -', 'ADD NODE 1Node:2Node 1Node:2Node randompos -',
                                  'ADD NODE 1Node:3Node 1Node:3Node randompos -', 'ADD NODE 1Node:4Node 1Node:4Node randompos -',
