@@ -4,75 +4,31 @@
 
 """
 =============
-XY Pad Widget
+Slider Widget
 =============
 
-An XY pad widget with a draggable, bouncing puck.  Pick up  data on the
-"outbox" outbox to receive the position of the puck and messages indicating
-when it has touched one of the sides.
+An interface widget to give a visual bar where the user can drag
+a line up and down to represent a value they're selecting for example
+a "Volume" bar.
 
 
 
 Example Usage
 -------------
 
-Create an XY pad which redraws 60 times per second:
+Create a slider bar at 10, 460 with the messagePrefix as "Size" and a default value of 9.
 
-    from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
+    from Kamaelia.Apps.Paint.Slider import Slider
 
-    clock = Clock(float(1)/60).activate()
-    xyPad = XYPad().activate()
-    clock.link((clock, "outbox"), (xyPad, "newframe"))
+    SizeSlider = Slider(size=(255, 50), messagePrefix = "Size", position = (10, 460), default = 9).activate()
+    self.link( (SizeSlider,"outbox"), (self,"outbox"), passthrough = 2 )
 
 
 
 How Does it Work?
 -----------------
 
-The component requests a display surface from the Pygame Display service
-component. This is used as the surface of the XY pad.  It binds listeners for
-mouse click and motion to the service.
-
-The component works in one of two different modes, bouncing and non-bouncing.
-This is specified upon initialization by the bouncingPuck argument.
-
-In the bouncing mode the puck will continue to move once it has been set into
-motion by a mouse drag.  If the mouse button remains down for longer than 0.1
-seconds it is deemed to be a drag.  In the bouncing mode the component sends a
-(message, 1) tuple to the "outbox" outbox each time the puck collides with one
-of the sides.  The messages can be changed using the collisionMsg argument.
-They default to "top", "right", "bottom", "left".
-
-In the non-bouncing mode the puck remains stationary after it has been dragged.
-
-Both modes send a (positionMsg, (x, y)) tuple to the "outbox" outbox if the
-puck moves.
-
-If the editable argument to the constructor is set to be false the pad will not
-respond to mouse presses.
-
-As well as being controlled by the mouse an XY pad can be controlled externally,
-for example by a second XY pad.  Position and velocity messages received on the
-"remoteChanges" inbox are used to change the motion of the puck.  Position
-messages are of the form ("Position", (xPos, yPos)), and velocity messages are
-of the form ("Velocity", (xVel, yVel)).
-
-In order to allow communication between two XY pads the component outputs
-position and velocity messages to the "localChanges" outbox.  By connecting the
-"localChanges" outbox of one XY pad to the "remoteChanges" inbox of another,
-the second pad can duplicate the motion of the first.
-
-The XY pad only redraws the surface and updates the puck position when it
-receives a message on its "newframe" inbox.  Note that although providing
-messages more frequently here will lead to more frequent updates, it will also
-lead to higher CPU usage.
-
-The visual appearance of the pad can be specified by arguments to the
-constructor.  The size, position and colours are all adjustable.
-
-If a producerFinished or shutdownMicroprocess message is received on its
-"control" inbox, it is passed on out of its "signal" outbox and the component
-terminates.
+The slider returns a tuple that looks like this (messagePrefix, value)
 """
 
 import time
@@ -256,6 +212,10 @@ class Slider(Axon.Component.component):
 
     
     def drawBG(self):
+        """
+            Draws the background colour, for a saturator this means drawing the "missing" RGB colour as a gradient.
+        """
+        
         if self.saturator:
             if self.colourCombi == 'RG':
                 for y in range(0, self.size[1], self.size[1]/25):

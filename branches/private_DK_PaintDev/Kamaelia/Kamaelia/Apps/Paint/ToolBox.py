@@ -1,10 +1,21 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+"""
+=============
+Paint ToolBox.
+=============
 
+This is the "Tool box" window for Kamaelia: Paint, it brings together
+all the widgets used by the paint app and places them on a surface.
+Much like the one in Gimp or Photoshop (but less complex and more fun :))
+
+"""
 import pygame
 import Axon
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Button import Button
-from ColourSelector import ColourSelector
+from Kamaelia.Apps.Paint.ColourSelector import ColourSelector
 from Kamaelia.Apps.Paint.Slider import Slider
 
 class ToolBox(Axon.Component.component):

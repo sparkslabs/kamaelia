@@ -4,75 +4,41 @@
 
 """
 =============
-XY Pad Widget
+Colour Selector Widget
 =============
 
-An XY pad widget with a draggable, bouncing puck.  Pick up  data on the
-"outbox" outbox to receive the position of the puck and messages indicating
-when it has touched one of the sides.
-
-
+A Colour Selector tool, which represents all colours in the RGB spectrum.
+One surface is used to plot the colours for selection and a slider used to
+manipulate the other colour, buttons used to change with colours are plotted.
 
 Example Usage
 -------------
 
-Create an XY pad which redraws 60 times per second:
+Create a ColourSelector at 10,170 (from top-left corner) of size 255,255
+this provides best colour display.
 
-    from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
+    from Kamaelia.Apps.Paint.ColourSelector import ColourSelector
 
-    clock = Clock(float(1)/60).activate()
-    xyPad = XYPad().activate()
-    clock.link((clock, "outbox"), (xyPad, "newframe"))
+    colSel = ColourSelector(position = (10,170), size = (255,255)).activate()
+    self.link( (colSel,"outbox"), (self,"outbox"), passthrough = 2 )
 
 
 
 How Does it Work?
 -----------------
 
-The component requests a display surface from the Pygame Display service
-component. This is used as the surface of the XY pad.  It binds listeners for
-mouse click and motion to the service.
+The Component requests a surface and by default plots the red colours 
+against green. The border is also drawn, this is here to represent what colour
+is currently selected. As the user moves around on the surface selecting various
+colours, the border updates to represent this.
 
-The component works in one of two different modes, bouncing and non-bouncing.
-This is specified upon initialization by the bouncingPuck argument.
+The colours are plotted only once to reduce CPU usage, if I were to have a marker
+at the point of the selected colour a "crosshair" perhaps I would need to have the 
+background constantly redrawing increasing CPU usgae greatly.
 
-In the bouncing mode the puck will continue to move once it has been set into
-motion by a mouse drag.  If the mouse button remains down for longer than 0.1
-seconds it is deemed to be a drag.  In the bouncing mode the component sends a
-(message, 1) tuple to the "outbox" outbox each time the puck collides with one
-of the sides.  The messages can be changed using the collisionMsg argument.
-They default to "top", "right", "bottom", "left".
+The pygame slider code is used to control the colour which isn't being plotted.
+(Try it out, you'll see what I mean) 
 
-In the non-bouncing mode the puck remains stationary after it has been dragged.
-
-Both modes send a (positionMsg, (x, y)) tuple to the "outbox" outbox if the
-puck moves.
-
-If the editable argument to the constructor is set to be false the pad will not
-respond to mouse presses.
-
-As well as being controlled by the mouse an XY pad can be controlled externally,
-for example by a second XY pad.  Position and velocity messages received on the
-"remoteChanges" inbox are used to change the motion of the puck.  Position
-messages are of the form ("Position", (xPos, yPos)), and velocity messages are
-of the form ("Velocity", (xVel, yVel)).
-
-In order to allow communication between two XY pads the component outputs
-position and velocity messages to the "localChanges" outbox.  By connecting the
-"localChanges" outbox of one XY pad to the "remoteChanges" inbox of another,
-the second pad can duplicate the motion of the first.
-
-The XY pad only redraws the surface and updates the puck position when it
-receives a message on its "newframe" inbox.  Note that although providing
-messages more frequently here will lead to more frequent updates, it will also
-lead to higher CPU usage.
-
-The visual appearance of the pad can be specified by arguments to the
-constructor.  The size, position and colours are all adjustable.
-
-If a producerFinished or shutdownMicroprocess message is received on its
-"control" inbox, it is passed on out of its "signal" outbox and the component
-terminates.
 """
 
 import time
