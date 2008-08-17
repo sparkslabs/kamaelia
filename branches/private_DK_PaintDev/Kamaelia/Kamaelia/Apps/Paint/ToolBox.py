@@ -12,9 +12,10 @@ Much like the one in Gimp or Photoshop (but less complex and more fun :))
 """
 import pygame
 import Axon
+import os
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
-from Kamaelia.UI.Pygame.Button import Button
+from Kamaelia.UI.Pygame.Button import ImageButton
 from Kamaelia.Apps.Paint.ColourSelector import ColourSelector
 from Kamaelia.Apps.Paint.Slider import Slider
 
@@ -58,15 +59,15 @@ class ToolBox(Axon.Component.component):
         self.display = self.recv("callback")
         
         # tool buttons
-        circleb = Button(caption="Circle",position=(10,10), msg = (("Tool", "Circle"),)).activate()
-        eraseb = Button(caption="Eraser",position=(100,10), msg = (("Tool", "Eraser"),)).activate()
-        lineb = Button(caption="Line",position=(10,50), msg = (("Tool", "Line"),)).activate()
-        bucketb = Button(caption="Bucket",position=(10,90), msg = (("Tool", "Bucket"),)).activate()
-        eyeb = Button(caption="Eyedropper",position=(10,130), msg = (("Tool", "Eyedropper"),)).activate()
-        addlayerb = Button(caption="Add Layer",position=(10,540), msg = (("Layer", "Add"),)).activate()
-        prevlayerb = Button(caption="<-",position=(80,540), msg = (("Layer", "Prev"),)).activate()
-        nextlayerb = Button(caption="->",position=(110,540), msg = (("Layer", "Next"),)).activate()
-        dellayerb = Button(caption="Delete",position=(140,540), msg = (("Layer", "Delete"),)).activate()
+        circleb = ImageButton(caption=(os.path.join('icons', 'EllipseToolIcon.png')),position=(10,10), bgcolour = (235,235,235), msg = (("Tool", "Circle"),)).activate()
+        eraseb = ImageButton(caption=(os.path.join('icons', 'EraserToolIcon.png')),position=(100,10), bgcolour = (235,235,235), msg = (("Tool", "Eraser"),)).activate()
+        lineb = ImageButton(caption=(os.path.join('icons', 'PaintBrushToolIcon.png')),position=(10,50), bgcolour = (235,235,235), msg = (("Tool", "Line"),)).activate()
+        bucketb = ImageButton(caption=(os.path.join('icons', 'PaintBucketIcon.png')),position=(10,90), bgcolour = (235,235,235), msg = (("Tool", "Bucket"),)).activate()
+        eyeb = ImageButton(caption=(os.path.join('icons', 'ColorPickerToolIcon.png')),position=(10,130), bgcolour = (235,235,235), msg = (("Tool", "Eyedropper"),)).activate()
+        addlayerb = ImageButton(caption=(os.path.join('icons', 'PlusButtonIcon.png')),position=(10,540), bgcolour = (235,235,235), msg = (("Layer", "Add"),)).activate()
+        prevlayerb = ImageButton(caption=(os.path.join('icons', 'EllipseToolIcon.png')),position=(80,540), bgcolour = (235,235,235), msg = (("Layer", "Prev"),)).activate()
+        nextlayerb = ImageButton(caption=(os.path.join('icons', 'EllipseToolIcon.png')),position=(110,540), bgcolour = (235,235,235), msg = (("Layer", "Next"),)).activate()
+        dellayerb = ImageButton(caption=(os.path.join('icons', 'MinusButtonIcon.png')),position=(35,540), bgcolour = (235,235,235), msg = (("Layer", "Delete"),)).activate()
         self.link( (circleb,"outbox"), (self,"outbox"), passthrough = 2 )
         self.link( (eraseb,"outbox"), (self,"outbox"), passthrough = 2 )
         self.link( (lineb,"outbox"), (self,"outbox"), passthrough = 2 )
