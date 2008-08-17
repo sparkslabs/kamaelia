@@ -1,4 +1,11 @@
 #! /usr/bin/env python
+"""
+=========
+Note List
+=========
+
+A list mapping the midi note-number to a dict containing the note frequency, name (using # for sharps), and octave.  Mapping is between C0 and G10.
+"""
 noteList = [{'freq': 8.1757989200000001, 'name': 'C', 'octave': 0},
             {'freq': 8.6619572199999997, 'name': 'C#', 'octave': 0},
             {'freq': 9.1770239999999994, 'name': 'D', 'octave': 0},
