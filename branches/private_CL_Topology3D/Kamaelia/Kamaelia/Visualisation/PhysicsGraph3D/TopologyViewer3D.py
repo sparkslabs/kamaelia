@@ -617,8 +617,8 @@ class TopologyViewer3D(Axon.Component.component):
                     for p in particle.bondedFrom:
                         p.needRedraw = True
             elif self.rotationMode: # Rotate particles
-                dAnglex = float(event.rel[1])*math.pi/180
-                dAngley = -float(event.rel[0])*math.pi/180
+                dAnglex = float(event.rel[1])
+                dAngley = -float(event.rel[0])
                 self.rotateParticles(self.selectedParticles, (dAnglex,dAngley,0))
         
         try:
@@ -679,17 +679,17 @@ class TopologyViewer3D(Axon.Component.component):
                 self.display.viewerposition.x += 0.5
             # Rotate particles
             elif event.key == pygame.K_UP:
-                self.rotateParticles(self.selectedParticles, (-20*math.pi/180,0,0))      
+                self.rotateParticles(self.selectedParticles, (-20,0,0))      
             elif event.key == pygame.K_DOWN:
-                self.rotateParticles(self.selectedParticles, (20*math.pi/180,0,0))      
+                self.rotateParticles(self.selectedParticles, (20,0,0))      
             elif event.key == pygame.K_LEFT:
-                self.rotateParticles(self.selectedParticles, (0,20*math.pi/180,0))    
+                self.rotateParticles(self.selectedParticles, (0,20,0))    
             elif event.key == pygame.K_RIGHT:
-                self.rotateParticles(self.selectedParticles, (0,-20*math.pi/180,0))
+                self.rotateParticles(self.selectedParticles, (0,-20,0))
             elif event.key == pygame.K_COMMA:
-                self.rotateParticles(self.selectedParticles, (0,0,20*math.pi/180))    
+                self.rotateParticles(self.selectedParticles, (0,0,20))    
             elif event.key == pygame.K_PERIOD:
-                self.rotateParticles(self.selectedParticles, (0,0,-20*math.pi/180))
+                self.rotateParticles(self.selectedParticles, (0,0,-20))
         
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
@@ -706,7 +706,11 @@ class TopologyViewer3D(Axon.Component.component):
         self.display.setProjection()
         
     def rotateParticles( self, particles, dAngle ):
-        """Rotate the particles."""
+        """\
+        Rotate the particles around their common centre dAngle degree.
+        Particles is a list; dAngle is a triple tuple of degree.
+        If particles are given an empty list, rotate all particles instead.
+        """
         if particles == []:
             particles = self.currentDisplayedPhysics.particles
         centrePoint = Vector() 
@@ -714,30 +718,30 @@ class TopologyViewer3D(Axon.Component.component):
             posVector = Vector(*particle.pos)
             centrePoint += posVector
         centrePoint /= len(particles)
-        if dAngle[0] != 0: 
+        if dAngle[0] != 0:
             for particle in particles:
                 posVector = Vector(*particle.pos)
                 relativePosVector = posVector - centrePoint
                 radius = (relativePosVector.z*relativePosVector.z+relativePosVector.y*relativePosVector.y)**0.5
-                newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle[0])
+                newAngle = (math.atan2(relativePosVector.z,relativePosVector.y)+dAngle[0]*math.pi/180)
                 particle.pos = (posVector.x, radius*math.cos(newAngle)+centrePoint.y, radius*math.sin(newAngle)+centrePoint.z)
-                particle.drotation = Vector(dAngle[0]*180/math.pi,0,0)
-        if dAngle[1] != 0:     
+                particle.drotation += Vector(dAngle[0],0,0)
+        if dAngle[1] != 0:
             for particle in particles:
                     posVector = Vector(*particle.pos)
                     relativePosVector = posVector - centrePoint
                     radius = (relativePosVector.z*relativePosVector.z+relativePosVector.x*relativePosVector.x)**0.5
-                    newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle[1])
+                    newAngle = (math.atan2(relativePosVector.z,relativePosVector.x)+dAngle[1]*math.pi/180)
                     particle.pos = (radius*math.cos(newAngle)+centrePoint.x, posVector.y, radius*math.sin(newAngle)+centrePoint.z)
-                    particle.drotation = Vector(0,-dAngle[1]*180/math.pi,0)
+                    particle.drotation += Vector(0,-dAngle[1],0)
         if dAngle[2] != 0:
             for particle in particles:
                 posVector = Vector(*particle.pos)
                 relativePosVector = posVector - centrePoint
                 radius = (relativePosVector.x*relativePosVector.x+relativePosVector.y*relativePosVector.y)**0.5
-                newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle[2])
+                newAngle = (math.atan2(relativePosVector.y,relativePosVector.x)+dAngle[2]*math.pi/180)
                 particle.pos = (radius*math.cos(newAngle)+centrePoint.x, radius*math.sin(newAngle)+centrePoint.y, posVector.z)
-                particle.drotation = Vector(0,0,dAngle[2]*180/math.pi)
+                particle.drotation += Vector(0,0,dAngle[2])
         
         particle.drotation %= 360
         
