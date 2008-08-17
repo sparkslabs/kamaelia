@@ -547,24 +547,7 @@ class TopologyViewer3D(Axon.Component.component):
                 elapsedTime = currentTime - self.lastClickTime
                 # If it's a double-click
                 if clickPos == self.lastClickPos and elapsedTime<self.dClickRes:
-                    if self.currentLevel < self.maxLevel and len(self.selectedParticles) == 1:
-                        hasChildParticles = False
-                        for particle in self.physics.particles:
-                            if particle.ID.find(self.selectedParticles[0].ID) == 0 and particle.ID != self.selectedParticles[0].ID:
-                                hasChildParticles = True
-                                break
-                        if hasChildParticles:
-                            self.previousParentParticleID = self.currentParentParticleID
-                            self.currentParentParticleID = self.selectedParticles[0].ID
-                            self.gotoDisplayLevel(1)
-                        else:
-                            print 'Warning: The particle you double-clicked has no children!'
-                        
-                    else:
-                        if self.currentLevel == self.maxLevel:
-                            print "Warning: max hierarchy level has reached!"
-                        if len(self.selectedParticles) != 1:
-                            print "Tips: To extend a node, please double-click the node you want to extend"
+                    self.gotoDisplayLevel(1)
                 else: # Single click
                     if not self.rotationMode: # Select particle
                         for particle in self.currentDisplayedPhysics.particles:
@@ -582,14 +565,7 @@ class TopologyViewer3D(Axon.Component.component):
                 self.lastClickPos = clickPos
                 self.lastClickTime = currentTime
             elif event.button == 3: # Right-clicked
-                if self.currentLevel > 0:
-                    self.previousParentParticleID = self.currentParentParticleID
-                    items = self.currentParentParticleID.split(':')
-                    items.pop()
-                    self.currentParentParticleID = ':'.join(items)
-                    self.gotoDisplayLevel(-1)
-                else:
-                    print "Warning: The first hierarchy level has reached!"
+                self.gotoDisplayLevel(-1)
             elif event.button == 4: # Scrolled-up: zoom out
                 if self.selectedParticles:
                     particles = self.selectedParticles
@@ -647,33 +623,9 @@ class TopologyViewer3D(Axon.Component.component):
             if event.key == pygame.K_ESCAPE:
                 self.quit()
             elif event.key == pygame.K_BACKSPACE:
-                if self.currentLevel > 0:
-                    self.previousParentParticleID = self.currentParentParticleID
-                    items = self.currentParentParticleID.split(':')
-                    items.pop()
-                    self.currentParentParticleID = ':'.join(items)
-                    self.gotoDisplayLevel(-1)
-                else:
-                    print "Warning: The first hierarchy level has reached!"
+                self.gotoDisplayLevel(-1)
             elif event.key == pygame.K_RETURN:
-                if self.currentLevel < self.maxLevel and len(self.selectedParticles) == 1:
-                    hasChildParticles = False
-                    for particle in self.physics.particles:
-                        if particle.ID.find(self.selectedParticles[0].ID) == 0 and particle.ID != self.selectedParticles[0].ID:
-                            hasChildParticles = True
-                            break
-                    if hasChildParticles:
-                        self.previousParentParticleID = self.currentParentParticleID
-                        self.currentParentParticleID = self.selectedParticles[0].ID
-                        self.gotoDisplayLevel(1)
-                    else:
-                        print 'Warning: The particle you double-clicked has no children!'
-                else:
-                    if self.currentLevel == self.maxLevel:
-                        print "Warning: max hierarchy level has reached!"
-                    if len(self.selectedParticles) != 1:
-                        print "Tips: To extend a node, please click to select the node (only one) you want to extend first."
-                    
+                self.gotoDisplayLevel(1)
             elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                 self.multiSelectMode = True
             elif event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
@@ -761,35 +713,65 @@ class TopologyViewer3D(Axon.Component.component):
         
     def gotoDisplayLevel( self, dlevel):
         """Switch to another display level."""
-        # Save current level's viewer position
-        self.levelViewerPos[self.currentLevel, self.previousParentParticleID] = self.display.viewerposition.copy()
-        # Deselect all
-        self.deselectAll()
-        # Display next level
-        self.currentLevel += dlevel
-        # Reset viewer position to previous
-        try:
-            self.display.viewerposition = self.levelViewerPos[self.currentLevel, self.currentParentParticleID].copy()
-        except KeyError:
-            self.display.viewerposition = self.levelViewerPos[self.currentLevel, self.currentParentParticleID] = Vector()
-        # Remove current displayed particles
-        for particle in self.currentDisplayedPhysics.particles:
-            self.display.ogl_displaylists.pop(id(particle))
-            self.display.ogl_transforms.pop(id(particle))
-        self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
-        
-        # Add current level's particles to self.currentDisplayedPhysics.particles for display
-        self.currentDisplayedPhysics.particles = []
-        if self.physics.particles != []:
-            for particle in self.physics.particles:
-                if self.currentParentParticleID == '': # If no parent, it's the top level 
-                    if ':' not in particle.ID:
+        isValid = False
+        if self.currentLevel + dlevel > self.maxLevel:
+            print "Warning: max hierarchy level has reached!"
+        elif self.currentLevel + dlevel < 0:
+            print "Warning: The first hierarchy level has reached!"
+        else:
+            if dlevel < 0:
+                self.previousParentParticleID = self.currentParentParticleID
+                items = self.currentParentParticleID.split(':')
+                for _ in xrange(-dlevel):
+                    items.pop()
+                self.currentParentParticleID = ':'.join(items)
+                isValid = True
+            if dlevel == 1: # It only makes sense if dlevel == 1 when go to next dlevel level
+                if len(self.selectedParticles) == 1:
+                    hasChildParticles = False
+                    for particle in self.physics.particles:
+                        if particle.ID.find(self.selectedParticles[0].ID) == 0 and particle.ID != self.selectedParticles[0].ID:
+                            hasChildParticles = True
+                            break
+                    if hasChildParticles:
+                        self.previousParentParticleID = self.currentParentParticleID
+                        self.currentParentParticleID = self.selectedParticles[0].ID
+                        isValid = True
+                    else:
+                        print 'Warning: The particle you double-clicked has no children!'
+                else:
+                    print "Tips: To extend a node, please double-click the node you want to extend"
+        # Show the specified display level
+        if isValid:                    
+            # Save current level's viewer position
+            self.levelViewerPos[self.currentLevel, self.previousParentParticleID] = self.display.viewerposition.copy()
+            # Deselect all
+            self.deselectAll()
+            # Display next level
+            self.currentLevel += dlevel
+            # Reset viewer position to previous
+            try:
+                self.display.viewerposition = self.levelViewerPos[self.currentLevel, self.currentParentParticleID].copy()
+            except KeyError:
+                self.display.viewerposition = self.levelViewerPos[self.currentLevel, self.currentParentParticleID] = Vector()
+            # Remove current displayed particles
+            for particle in self.currentDisplayedPhysics.particles:
+                self.display.ogl_displaylists.pop(id(particle))
+                self.display.ogl_transforms.pop(id(particle))
+            self.currentDisplayedPhysics.removeByID(*self.currentDisplayedPhysics.particleDict.keys())
+            
+            # Add current level's particles to self.currentDisplayedPhysics.particles for display
+            self.currentDisplayedPhysics.particles = []
+            if self.physics.particles != []:
+                for particle in self.physics.particles:
+                    if self.currentParentParticleID == '': # If no parent, it's the top level 
+                        if ':' not in particle.ID:
+                            self.currentDisplayedPhysics.add( particle )
+                            particle.oldpos = particle.initialpos
+                    # The child particles of self.currentParentParticleID
+                    elif particle.ID.find(self.currentParentParticleID) == 0 and particle.ID.count(':') == self.currentLevel:
                         self.currentDisplayedPhysics.add( particle )
                         particle.oldpos = particle.initialpos
-                # The child particles of self.currentParentParticleID
-                elif particle.ID.find(self.currentParentParticleID) == 0 and particle.ID.count(':') == self.currentLevel:
-                    self.currentDisplayedPhysics.add( particle )
-                    particle.oldpos = particle.initialpos
                             
     def doCommand(self, msg):
         """\
