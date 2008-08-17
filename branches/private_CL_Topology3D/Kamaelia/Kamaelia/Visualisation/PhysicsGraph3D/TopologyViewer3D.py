@@ -25,7 +25,8 @@
 Generic 3D Topology Viewer
 ===========================
 
-TopologyViewer3D is a 3D version of TopologyViewer, which shows Topology in PyGame surface.
+TopologyViewer3D is a 3D version of TopologyViewer plus hierarchy topology support,
+which shows Topology in PyGame surface.
 
 
 
@@ -44,9 +45,12 @@ Then at runtime try typing these commands to change the topology in real time::
     >>> ADD NODE 1 "1st node" randompos -
     >>> ADD NODE 2 "2nd node" randompos -
     >>> ADD NODE 3 "3rd node" randompos -
+    >>> ADD NODE 1:1 "1st child node of the 1st node" randompos -
+    >>> ADD NODE 1:2 "2nd child node of the 1st node" randompos -
     >>> ADD LINK 1 2
     >>> ADD LINK 3 2
     >>> DEL LINK 1 2
+    >>> ADD LINK 1:1 1:2
     >>> DEL NODE 1
 
 
@@ -82,7 +86,7 @@ Operation supported:
 * up --- rotate selected  particles to up around x axis  (all particles if none of them is selected)
 * down --- rotate selected particles to down around x axis  (all particles if none of them is selected)
 * < --- rotate selected particles anticlock-wise around z axis  (all particles if none of them is selected)
-*> --- rotate selected particles clock-wise around z axis  (all particles if none of them is selected)
+* > --- rotate selected particles clock-wise around z axis  (all particles if none of them is selected)
 return --- show next level's topology
 backspace --- show last level's topology
 
@@ -116,6 +120,14 @@ Commands recognised are:
         Add a node, using:
           
         - id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.
+                           For hierarchy topology, the id is joined by its parent id with ":" to represent the 
+                           hierarchy structure.
+                           E.g., suppose the topology has 3 levels. The id of a particle in the 1st level is 1Node;
+                           it has a child particle whose id is 2Node; 2Node also has a child particle whose id is 3Node;
+                           then their ids are represented as
+                           1Node
+                           1Node:2Node
+                           1Node:2Node:3Node 
         - name          -- string name label for the particle
         - posSpec       -- string describing initial x,y (see _generateXY)
         - particleType  -- particle type (default provided is "-", unless custom types are provided - see below)
@@ -172,6 +184,9 @@ may be output:
         This is sent in response to receiving a ("GET","ALL") command.
 
 Error and tip information is printed out directly when encountered.
+
+For hierarchy topology, the id of particles should be joined by its parent id with ":" 
+to represent the hierarchy structure.
 
 
 
