@@ -1,17 +1,53 @@
+"""
+=========
+Wav Voice
+=========
+
+A simple wave file player using the pygame mixer.  It can be controlled by
+sending an ("On",) tuple to the "inbox" inbox, which starts the file playing
+from the beginning.
+
+Also contains a sampler component which links a number of wav voices, and
+responds to ("On", channel) messages, where channel is the index of the voice.
+
+Example Usage
+-------------
+
+Play the file Snare.wav once
+
+Pipeline(DataSource(("On",)),
+         WavVoice("Snare.wav")).run()
+
+A playable four channel sampler
+
+files = ["Ride.wav", "HH.wav", "Snare.wav", "Kick.wav"]
+
+Pipeline(StepSequencer(),
+         Sampler(files)).run()
+
+"""
+
 import time
-import wave
 import pygame
-import numpy
 import Axon
 
 from Kamaelia.Apps.Jam.Audio.Synth import Synth
 from Kamaelia.Apps.Jam.Audio.Polyphony import Targetter
 
+# FIXME: I probably play more than just Wavs now - rename me :)
 class WavVoice(Axon.Component.component):
+    """
+    WavVoice(bufferSize, sampleRate) -> new WavVoice component
+
+    A simple wave file player using the pygame mixer
+    """
     bufferSize = 1024
     sampleRate = 44100
 
     def __init__(self, fileName, **argd):
+        """
+        x.__init__(...) initializes x; see x.__class__.__doc__ for signature
+        """
         super(WavVoice, self).__init__(**argd)
         if not pygame.mixer.get_init():
             pygame.mixer.init(self.sampleRate, -16, 1, self.bufferSize)
@@ -23,6 +59,7 @@ class WavVoice(Axon.Component.component):
         self.sound = pygame.mixer.Sound(fileName)
 
     def main(self):
+        """ Main loop """
         while 1:
             if self.dataReady("inbox"):
                 address, arguments = self.recv("inbox")
