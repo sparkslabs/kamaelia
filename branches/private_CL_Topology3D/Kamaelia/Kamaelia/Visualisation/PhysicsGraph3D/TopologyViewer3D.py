@@ -433,7 +433,6 @@ class TopologyViewer3D(Axon.Component.component):
                 avoidedList.extend(self.hitParticles)
                 avoidedList.extend(self.selectedParticles)
                 
-                
                 # Do interaction between particles
                 self.currentDisplayedPhysics.run(self.simCyclesPerRedraw, avoidedList=avoidedList)
                 #print [particle.pos for particle in self.physics.particles]
@@ -582,7 +581,7 @@ class TopologyViewer3D(Axon.Component.component):
                             self.deselectAll()
                 self.lastClickPos = clickPos
                 self.lastClickTime = currentTime
-            if event.button == 3: # Right-clicked
+            elif event.button == 3: # Right-clicked
                 if self.currentLevel > 0:
                     self.previousParentParticleID = self.currentParentParticleID
                     items = self.currentParentParticleID.split(':')
@@ -591,7 +590,7 @@ class TopologyViewer3D(Axon.Component.component):
                     self.gotoDisplayLevel(-1)
                 else:
                     print "Warning: The first hierarchy level has reached!"
-            if event.button == 4: # Scrolled-up: zoom out
+            elif event.button == 4: # Scrolled-up: zoom out
                 if self.selectedParticles:
                     particles = self.selectedParticles
                 else:
@@ -600,7 +599,7 @@ class TopologyViewer3D(Axon.Component.component):
                     posVector = Vector(*particle.pos)
                     posVector.z -= 1
                     particle.pos = posVector.toTuple()
-            if event.button == 5: # Scrolled-down: zoom in
+            elif event.button == 5: # Scrolled-down: zoom in
                 if self.selectedParticles:
                     particles = self.selectedParticles
                 else:
