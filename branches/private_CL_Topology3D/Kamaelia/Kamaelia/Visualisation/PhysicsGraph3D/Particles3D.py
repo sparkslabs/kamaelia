@@ -46,8 +46,15 @@ a name. The name is displayed as a label on top of the particle.
 If the particle becomes selected it changes its visual appearance to reflect
 this.
 
+There are two kinds of textures, i.e. text label and image textures. 
+When the 'image' argument is provided, it uses image textures; otherwise, it uses
+text label textures in which particle name is used as the caption of the label.
+Note, the value of the 'image' argument is the uri of the image; it could be a
+path in local drive, a network address or an internet address.
+
 It only serves as a superclass of 3D particle and has no rendering (draw) method,
 so it leaves the shape rendering to subclasses.
+
 
 
 
@@ -57,6 +64,12 @@ CuboidParticle3D: cuboid rendering particle for 3D Topology visualisation
 
 This is an implementation of a simple cuboid particle for 3D topology
 visualisation.
+
+There are two kinds of textures, i.e. text label and image textures. 
+When the 'image' argument is provided, it uses image textures; otherwise, it uses
+text label textures in which particle name is used as the caption of the label.
+Note, the value of the 'image' argument is the uri of the image; it could be a
+path in local drive, a network address or an internet address.
 
 
 
@@ -71,6 +84,7 @@ instances::
 
 SimpleLaws are used that apply the same simple physics laws for all particle
 types.
+
 
 
 How does it work?
@@ -88,6 +102,14 @@ SphereParticle3D: sphere rendering particle for 3D Topology visualisation
 This is an implementation of a simple cuboid particle for 3D topology
 visualisation.
 
+There are two kinds of textures, i.e. text label and image textures. 
+When the 'image' argument is provided, it uses image textures; otherwise, it uses
+text label textures in which particle name is used as the caption of the label.
+Note, the value of the 'image' argument is the uri of the image; it could be a
+path in local drive, a network address or an internet address.
+
+Note: it would be much slower than CuboidParticle3D because it uses GLU library.
+
 
 
 Example Usage
@@ -103,11 +125,13 @@ SimpleLaws are used that apply the same simple physics laws for all particle
 types.
 
 
+
 How does it work?
 -----------------
 
 This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particle3D and adds methods to
 support rendering (draw).
+
 
 
 
@@ -124,6 +148,8 @@ text label textures in which particle name is used as the caption of the label.
 Note, the value of the 'image' argument is the uri of the image; it could be a
 path in local drive, a network address or an internet address.
 
+Note: it would be much slower than CuboidParticle3D and SphereParticle3D because it uses GLUT library.
+
 
 
 Example Usage
@@ -137,6 +163,7 @@ instances::
 
 SimpleLaws are used that apply the same simple physics laws for all particle
 types.
+
 
 
 How does it work?
@@ -227,8 +254,11 @@ class Particle3D(BaseParticle):
         self.oldscaling = Vector()
         
         # For transformation matrix multiplication
+        # Store all transformations
         self.transform = Transform()
+        # Specially store link transformations because link doesn't do rotation and scaling
         self.linkTransform = Transform()
+        # Store all previous transformations to be multiplied with the current one
         self.oldrotTransform = Transform()
         
         # For redraw detection
