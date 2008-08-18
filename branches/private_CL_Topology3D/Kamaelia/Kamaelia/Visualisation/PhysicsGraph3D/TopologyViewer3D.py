@@ -42,8 +42,8 @@ A simple console driven topology viewer::
 Then at runtime try typing these commands to change the topology in real time::
 
     >>> DEL ALL
-    >>> ADD NODE 1 "1st node" randompos -
-    >>> ADD NODE 2 "2nd node" randompos -
+    >>> ADD NODE 1 "1st node" randompos teapot
+    >>> ADD NODE 2 "2nd node" randompos sphere
     >>> ADD NODE 3 "3rd node" randompos -
     >>> ADD NODE 1:1 "1st child node of the 1st node" randompos -
     >>> ADD NODE 1:2 "2nd child node of the 1st node" randompos -
@@ -132,6 +132,7 @@ Commands recognised are:
         - posSpec       -- string describing initial x,y (see _generateXY)
         - particleType  -- particle type (default provided is "-", unless custom types are provided - see below)
                            currently supported: "-" same as cuboid, cuboid, sphere and teapot
+                           Note: it would be much slower than cuboid if either sphere or teapot is used.
       
     [ "DEL", "NODE", <id> ]
         Remove a node (also removes all links to and from it)
@@ -861,14 +862,16 @@ class TopologyViewer3D(Axon.Component.component):
         """
         posSpec = posSpec.lower()
         if posSpec == "randompos" or posSpec == "auto" :
-            # FIXME: need to consider camera/ viewer setting            
             zLim = self.display.nearPlaneDist, self.display.farPlaneDist                        
             z = -1*random.randrange(int((zLim[1]-zLim[0])/20)+self.border,int((zLim[1]-zLim[0])/8)-self.border,1)
             yLim = z*math.tan(self.display.perspectiveAngle*math.pi/360.0), -z*math.tan(self.display.perspectiveAngle*math.pi/360.0)            
             xLim = yLim[0]*self.display.aspectRatio, yLim[1]*self.display.aspectRatio
             y = random.randrange(int(yLim[0])+self.border,int(yLim[1])-self.border,1)
             x = random.randrange(int(xLim[0])+self.border,int(xLim[1])-self.border,1)
-            #print x,y,z
+            # Apply camera/ viewer transformation
+            x += self.display.viewerposition.x
+            y += self.display.viewerposition.y
+            z += self.display.viewerposition.z
             return x,y,z            
 
         else:
