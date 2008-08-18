@@ -41,7 +41,8 @@ How does it work?
 This object subclasses Kamaelia.Support.Particles.Particle and adds 3D elements.
 
 At initialisation, provide a unique ID, a starting (x,y,z) position tuple, and
-a name. The name is displayed as a label on top of the particle.
+a name. The name is displayed as a label on top of the particle. For other parameters,
+such as bgcolour and fgcolour, see its doc string below.
 
 If the particle becomes selected it changes its visual appearance to reflect
 this.
@@ -65,12 +66,6 @@ CuboidParticle3D: cuboid rendering particle for 3D Topology visualisation
 This is an implementation of a simple cuboid particle for 3D topology
 visualisation.
 
-There are two kinds of textures, i.e. text label and image textures. 
-When the 'image' argument is provided, it uses image textures; otherwise, it uses
-text label textures in which particle name is used as the caption of the label.
-Note, the value of the 'image' argument is the uri of the image; it could be a
-path in local drive, a network address or an internet address.
-
 
 
 Example Usage
@@ -79,7 +74,7 @@ A 3D topology viewer where particles of type "-" are rendered by CuboidParticle3
 instances::
 
     TopologyViewer3D( particleTypes = {"-":CuboidParticle3D},
-                    laws = Kamaelia.Support.Particles.SimpleLaws(),
+                    laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=2),
                   ).run()
 
 SimpleLaws are used that apply the same simple physics laws for all particle
@@ -99,14 +94,8 @@ support rendering (draw).
 SphereParticle3D: sphere rendering particle for 3D Topology visualisation
 ===========================================================================
 
-This is an implementation of a simple cuboid particle for 3D topology
+This is an implementation of a simple sphere particle for 3D topology
 visualisation.
-
-There are two kinds of textures, i.e. text label and image textures. 
-When the 'image' argument is provided, it uses image textures; otherwise, it uses
-text label textures in which particle name is used as the caption of the label.
-Note, the value of the 'image' argument is the uri of the image; it could be a
-path in local drive, a network address or an internet address.
 
 Note: it would be much slower than CuboidParticle3D because it uses GLU library.
 
@@ -114,11 +103,11 @@ Note: it would be much slower than CuboidParticle3D because it uses GLU library.
 
 Example Usage
 -------------
-A 3D topology viewer where particles of type "sphere" are rendered by CuboidParticle3D
+A 3D topology viewer where particles of type "sphere" are rendered by SphereParticle3D
 instances::
 
     TopologyViewer3D( particleTypes = {"sphere":SphereParticle3D},
-                    laws = Kamaelia.Support.Particles.SimpleLaws(),
+                    laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=2),
                   ).run()
 
 SimpleLaws are used that apply the same simple physics laws for all particle
@@ -142,23 +131,17 @@ TeapotParticle3D: teapot rendering particle for 3D Topology visualisation
 This is an implementation of a simple teapot particle for 3D topology
 visualisation.
 
-There are two kinds of textures, i.e. text label and image textures. 
-When the 'image' argument is provided, it uses image textures; otherwise, it uses
-text label textures in which particle name is used as the caption of the label.
-Note, the value of the 'image' argument is the uri of the image; it could be a
-path in local drive, a network address or an internet address.
-
 Note: it would be much slower than CuboidParticle3D and SphereParticle3D because it uses GLUT library.
 
 
 
 Example Usage
 -------------
-A 3D topology viewer where particles of type "sphere" are rendered by CuboidParticle3D
+A 3D topology viewer where particles of type "teapot" are rendered by CuboidParticle3D
 instances::
 
-    TopologyViewer3D( particleTypes = {"teapot":SphereParticle3D},
-                    laws = Kamaelia.Support.Particles.SimpleLaws(),
+    TopologyViewer3D( particleTypes = {"teapot":TeapotParticle3D},
+                    laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=2),
                   ).run()
 
 SimpleLaws are used that apply the same simple physics laws for all particle
