@@ -275,6 +275,7 @@ class Paint(Axon.Component.component):
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if isinstance(event, tuple):
+                    self.send((event,),"outbox")
                     if event[0] == "Layer":
                         if event[1] == "Add":
                             yield WaitComplete( self.addLayer() )
@@ -325,6 +326,8 @@ class Paint(Axon.Component.component):
                       #  print self.activeLayer.get_alpha()
                     elif event[0] == 'Colour':
                         self.selectedColour = event[1]
+                    elif event[0] == 'Save':
+                        self.save(event[1])
                     break
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.tool == "Circle":
@@ -388,7 +391,7 @@ class Paint(Axon.Component.component):
                         rad = math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2))
                         pygame.draw.circle(self.activeLayer, self.selectedColour, self.oldpos, rad, 0)
                         circle = ("circle", self.oldpos, rad)
-                        self.send((circle,), "outbox")
+                     #   self.send((circle,), "outbox")
                         self.blitToSurface()
                     self.drawing = False
                     self.oldpos = None
@@ -399,9 +402,9 @@ class Paint(Axon.Component.component):
                                  self.oldpos = event.pos
                               else:
                                 # pygame.draw.circle(self.activeLayer, self.selectedColour, self.oldpos, self.toolSize, 0)
-                                # pygame.draw.line(self.activeLayer, self.selectedColour, self.oldpos, event.pos, self.toolSize)
-                                 self.activeLayer.blit(self.activeBrush, event.pos)
-                                 line = ("line", self.oldpos, event.pos)
+                                 pygame.draw.line(self.activeLayer, self.selectedColour, self.oldpos, event.pos, self.toolSize)
+                               #  self.activeLayer.blit(self.activeBrush, event.pos) FAILED TECHNIQUE
+                                 line = ("line", self.oldpos, event.pos) 
                                  self.send((line,), "outbox")
                                  self.oldpos = event.pos
                               self.blitToSurface()
@@ -444,8 +447,13 @@ if __name__ == "__main__":
                  DisplayConfig(width=555, height=520),
                  Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = False),
                   ),
+       WINDOW2 = Seq(
+                 DisplayConfig(width=555, height=520),
+                 Paint(bgcolour=(100,100,172),position=(10,10), size = (500,500), transparent = False),
+                  ),
         linkages = {
             ("COLOURS", "outbox") : ("WINDOW1", "inbox"),
+            ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),
         }
    ).run()
 # Licensed to the BBC under a Contributor Agreement: THF/DK
