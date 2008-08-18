@@ -1,16 +1,12 @@
-====================================
-Getting started with Jam and PureJam
-====================================
+======================================
+Getting started with Jam and Pure Data
+======================================
 
-So, you've downloaded Jam, navigated the (slightly skimpy) install
-instructions.  You've started up it up, marvelled at the beautiful UI, clicked
-a few buttons.  But now you'd really quite like to hear some sound out of it.
-Well, you've come to the right place.  Or rather you haven't, because by itself
-Jam doesn't actually make any sound.  Instead it outputs OSC messages which are
-understood by a number of other programs which will make sound out of them.
-For a (incomplete) list of programs which support OSC messages see
-http://opensoundcontrol.org/implementations.  This brief guide will take you
-through making your first music using Jam and PureData.
+As well as the very simple audio output provided by jam it also outputs OSC
+messages which are understood by a number of other programs which will make
+sound out of them.  For a (incomplete) list of programs which support OSC
+messages see http://opensoundcontrol.org/implementations.  This brief guide
+will take you through making your first music using Jam and Pure Data.
 
 PureJam
 -------
@@ -29,12 +25,12 @@ sound.  At the top you will also see four drum samples which are loaded into the
 patch for you to play with.
 
 To get started, first ensure audio is turned on (from the Media menu), then
-start up Jam.  Try turning on some of the steps in Jam's step sequencer.  You
-should hear the samples being played when the position marker (at the top of the
-sequencer) is above the step.  Next try moving the first XY pad around.  This
-controls the delay time and feedback of a simple delay line which all of the
-drums are routed through.  Congratulations!  You are now up and running
-programming drums with Jam.
+start up Jam with the --no-audio option.  Try turning on some of the steps in
+Jam's step sequencer.  You should hear the samples being played when the
+position marker (at the top of the sequencer) is above the step.  Next try
+moving the first XY pad around.  This controls the delay time and feedback of a
+simple delay line which all of the drums are routed through.  Congratulations!
+You are now up and running programming drums with Jam.
 
 There are a number of comments in the PureJam patch describing how it works.
 Using them, and the documentation at http://crca.ucsd.edu/~msp/Pd_documentation/
