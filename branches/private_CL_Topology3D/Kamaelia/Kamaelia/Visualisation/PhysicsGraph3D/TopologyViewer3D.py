@@ -42,10 +42,10 @@ A simple console driven topology viewer::
 Then at runtime try typing these commands to change the topology in real time::
 
     >>> DEL ALL
-    >>> ADD NODE 1 "1st node" randompos teapot
+    >>> ADD NODE 1 "1st node" (0,0,-10) teapot
     >>> ADD NODE 2 "2nd node" randompos sphere
     >>> ADD NODE 3 "3rd node" randompos -
-    >>> ADD NODE 1:1 "1st child node of the 1st node" randompos -
+    >>> ADD NODE 1:1 "1st child node of the 1st node" " ( 0 , 0 , -10 ) " -
     >>> ADD NODE 1:2 "2nd child node of the 1st node" randompos -
     >>> ADD LINK 1 2
     >>> ADD LINK 3 2
@@ -129,7 +129,9 @@ Commands recognised are:
                            1Node:2Node
                            1Node:2Node:3Node 
         - name          -- string name label for the particle
-        - posSpec       -- string describing initial x,y (see _generateXY)
+        - posSpec       -- string describing initial (x,y,z) (see _generateXY); spaces are allowed
+                           within the tuple, but quotation is needed in this case.
+                           E.g., " ( 0 , 0 , -10 ) "
         - particleType  -- particle type (default provided is "-", unless custom types are provided - see below)
                            currently supported: "-" same as cuboid, cuboid, sphere and teapot
                            Note: it would be much slower than cuboid if either sphere or teapot is used.
@@ -859,6 +861,8 @@ class TopologyViewer3D(Axon.Component.component):
         
         posSpec == "randompos" or "auto" -> random (x,y,z) within the surface (specified border distance in from the edege)
         posSpec == "(XXX,YYY,ZZZ)" -> specified x,y,z (positive or negative integers)
+        spaces are allowed within the tuple, but quotation is needed in this case.
+        E.g., " ( 0 , 0 , -10 ) "
         """
         posSpec = posSpec.lower()
         if posSpec == "randompos" or posSpec == "auto" :
@@ -873,9 +877,10 @@ class TopologyViewer3D(Axon.Component.component):
             y += self.display.viewerposition.y
             z += self.display.viewerposition.z
             return x,y,z            
-
-        else:
-            match = re.match("^([+-]?\d+),([+-]?\d+),([+-]?\d+)$", posSpec)
+        else: # given specified position
+            posSpec = posSpec.strip()
+            # Use triple tuple format for position
+            match = re.match("^\( *([+-]?\d+) *, *([+-]?\d+) *, *([+-]?\d+) *\)$", posSpec)
             if match:
                 x = int(match.group(1))
                 y = int(match.group(2))
