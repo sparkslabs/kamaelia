@@ -31,14 +31,12 @@ How Does it Work?
 The slider returns a tuple that looks like this (messagePrefix, value)
 """
 
-import time
 import pygame
 import Axon
 
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
-from Kamaelia.UI.Pygame.Button import Button
-from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
+
 
 class Slider(Axon.Component.component):
     """\
@@ -76,11 +74,11 @@ class Slider(Axon.Component.component):
 
     def __init__(self, position=None,
                 bgcolour=(255, 255, 255), fgcolour=(0, 0, 0),
-                messagePrefix = "",
+                messagePrefix = "Slider",
                 default = 0,
                 positionMsg="Position",
                 saturator = False,
-                vertical = False,
+                vertical = None,
                 size=(100, 100)):
         """
         x.__init__(...) initializes x; see x.__class__.__doc__ for signature
@@ -90,6 +88,10 @@ class Slider(Axon.Component.component):
 
         self.size = size
         self.vertical = vertical
+        if vertical == None:
+            if self.size[0] >= self.size[1]:
+                self.vertical = False
+            else: self.vertical = True
         self.mouseDown = False
         self.clickTime = None
         self.mousePositions = []
@@ -176,8 +178,8 @@ class Slider(Axon.Component.component):
                         self.selectedColour = (self.sliderPos,msg[1][1],msg[1][2])
                     self.bgcolour = self.selectedColour
             #        self.display.fill( self.selectedColour)
-                    self.drawBG()
-                    self.render()
+                self.drawBG()
+                self.render()
             while self.dataReady("inbox"):
                 for event in self.recv("inbox"):
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -261,7 +263,7 @@ if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import Pipeline
     
-    Pipeline(Slider(vertical = True, saturator = True, size=(10,255), position=(10,0 )),
+    Pipeline(Slider(size=(100,255), position=(10,0 )),
             ConsoleEchoer()).run()
 
 

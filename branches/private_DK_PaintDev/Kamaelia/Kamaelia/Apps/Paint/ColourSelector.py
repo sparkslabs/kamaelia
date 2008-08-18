@@ -41,15 +41,14 @@ The pygame slider code is used to control the colour which isn't being plotted.
 
 """
 
-import time
 import pygame
 import Axon
+import os
 
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
-from Kamaelia.UI.Pygame.Button import Button
-from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
-from Slider import Slider
+from Kamaelia.UI.Pygame.Button import ImageButton
+from Kamaelia.Apps.Paint.Slider import Slider
 
 class ColourSelector(Axon.Component.component):
     """\
@@ -152,9 +151,9 @@ class ColourSelector(Axon.Component.component):
         self.display = self.recv("callback")
 
         # colour buttons
-        rgbutton = Button(caption="Red/Green",position=(self.position[0],self.position[1]+self.size[1]+5), msg = ("ColourCombi", "RG")).activate()
-        rbbutton = Button(caption="Red/Blue",position=(self.position[0]+70,self.position[1]+self.size[1]+5), msg = ("ColourCombi", "RB")).activate()
-        gbbutton = Button(caption="Green/Blue",position=(self.position[0]+140,self.position[1]+self.size[1]+5), msg = ("ColourCombi", "GB")).activate()
+        rgbutton = ImageButton(caption=(os.path.join('icons', 'RedGreenIcon.png')),position=(self.position[0],self.position[1]+self.size[1]+5), msg = ("ColourCombi", "RG"), size = (20,20)).activate()
+        rbbutton = ImageButton(caption=(os.path.join('icons', 'RedBlueIcon.png')),position=(self.position[0]+35,self.position[1]+self.size[1]+5), msg = ("ColourCombi", "RB"), size = (20,20)).activate()
+        gbbutton = ImageButton(caption=(os.path.join('icons', 'GreenBlueIcon.png')),position=(self.position[0]+70,self.position[1]+self.size[1]+5), msg = ("ColourCombi", "GB"), size = (20,20)).activate()
         self.link( (rgbutton,"outbox"), (self,"buttons") )
         self.link( (rbbutton,"outbox"), (self,"buttons") )
         self.link( (gbbutton,"outbox"), (self,"buttons") )
