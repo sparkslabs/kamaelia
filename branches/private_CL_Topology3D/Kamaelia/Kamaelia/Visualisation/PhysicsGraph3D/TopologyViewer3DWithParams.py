@@ -27,7 +27,39 @@ Generic 3D Topology Viewer With more Parameters supports
 
 Extend TopologyViewer3D by supporting additional parameters of "ADD" commands.
 
-The format of commands:
+
+
+Example Usage
+-------------
+A simple console driven topology viewer::
+
+    Pipeline( ConsoleReader(),
+              lines_to_tokenlists(),
+              TopologyViewer3DWithParams(),
+            ).run()
+
+Then at runtime try typing these commands to change the topology in real time::
+
+    >>> DEL ALL
+    >>> ADD NODE 1 "1st node" (0,0,-10) teapot
+    >>> ADD NODE 2 "2nd node" randompos sphere image=../../../Docs/cat.gif
+    >>> ADD NODE 3 "3rd node" randompos - bgcolour=(255,255,0);bgcolour=(0,255,255)
+    >>> ADD NODE 1:1 "1st child node of the 1st node" " ( 0 , 0 , -10 ) " -
+    >>> ADD NODE 1:2 "2nd child node of the 1st node" randompos - "fontsize = 20"
+    >>> ADD LINK 1 2
+    >>> ADD LINK 3 2
+    >>> DEL LINK 1 2
+    >>> ADD LINK 1:1 1:2
+    >>> DEL NODE 1
+    
+    
+    
+How does it work?
+-----------------
+
+Extend TopologyViewer3D by supporting additional parameters of "ADD" commands.
+
+The format of "ADD" commands:
 [ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type>, <parameters> ] 
 
 The format of parameters: pa=pa_value;pb=pb_value
@@ -47,7 +79,9 @@ Available parameters:
     - pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)
     - thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
     - image        -- The uri of image, image texture instead of label texture is used if specified
-
+    
+    
+    
 See Kamaelia.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D for more information.
 
 TODO: make update support more parameters
@@ -124,6 +158,7 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
         if len(msg) >= 2:
             cmd = msg[0].upper(), msg[1].upper()
             
+            # Add default arguments when they are not provided
             if cmd == ("ADD", "NODE"):
                 if len(msg) == 4:
                     msg += ['randompos', '-']
