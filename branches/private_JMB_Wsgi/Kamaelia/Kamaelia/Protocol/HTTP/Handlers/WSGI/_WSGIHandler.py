@@ -265,7 +265,9 @@ class _WsgiHandler(threadedcomponent):
                 if hasattr(app_iter, 'close'):
                     app_iter.close()
         except:
-            self._error(503, sys.exc_info())
+            self._error(503, sys.exc_info()) #Catch any errors and log them and print
+                                             #either an error message or a stack
+                                             #trace (depending if debug is set)
 
         self.memfile.close()
         
@@ -287,11 +289,12 @@ class _WsgiHandler(threadedcomponent):
             finally:
                 exc_info = None
         elif self.response_dict:
+        #Will be caught by _error    
             raise WsgiAppError('start_response called a second time without exc_info!  See PEP 333.')
 
         #PEP 333 requires that an application NOT send any hop-by-hop headers.
         #Therefore, we check for any of them in the headers the application
-        #returns.
+        #returns.  If so, an exception is raised to be caught by _error.
         for key,value in response_headers:
             if is_hop_by_hop(key):
                 raise WsgiAppError('Hop by hop header specified')
@@ -313,6 +316,7 @@ class _WsgiHandler(threadedcomponent):
             self.write_called = True
         elif self.write_called:
             self.sendFragment(body_data)
+        #the following errors will be caught and sent to _error
         elif not self.response_dict and not self.write_called:
             raise WsgiError("write() called before start_response()!")
         else:
