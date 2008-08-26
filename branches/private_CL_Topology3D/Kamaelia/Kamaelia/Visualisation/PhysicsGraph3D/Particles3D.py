@@ -224,6 +224,8 @@ class Particle3D(BaseParticle):
         
         # For picture texture
         self.pic = argd.get("image", None)
+        # For remote picture
+        self.picIO = None
         
         name = argd.get("name","NoName")
         self.set_label(name)
@@ -265,20 +267,32 @@ class Particle3D(BaseParticle):
         """
         pass
         
+    def readURLFile(self):
+        """Read a string buffer of an object denoted by a URL."""
+        fObject = urlopen(self.pic)
+        picData = fObject.read()
+        self.picIO = StringIO(picData)
+        # Text label is not needed for picture texture
+        self.set_label("Dummy")
+            
     def buildCaption(self):
         """Pre-render the text to go on the label."""
         # Text is rendered to self.image
         if self.pic is not None:
+            if self.picIO is not None:
+                self.image = pygame.image.load(self.picIO).convert()
+                self.picIO = None
+            elif os.path.exists(self.pic):
+                self.image = pygame.image.load(self.pic).convert()
             # Image texture is used instead of label texture if 'image' argument is specified
-            if self.pic.find('://') != -1 and not os.path.exists(self.pic):
-                """ FIXME: either use thread to wrap urlopen or kamaelia HTTP components 
-                in case urlopen is blocked """
-                fObject = urlopen(self.pic)
-                picData = fObject.read()
-                pic = StringIO(picData)
-            else:
-                pic = self.pic
-            self.image = pygame.image.load(pic).convert()
+            elif self.pic.find('://') != -1:
+                # Use text label for notification of waiting before the picture is available
+                pygame.font.init()
+                font = pygame.font.Font(None, self.fontsize)
+                self.image = font.render("Loading image...",True, self.fgColour, )
+                # Use thread to wrap urlopen in case urlopen is blocked
+                import thread
+                thread.start_new(self.readURLFile, ())
         else:
             # Label texture is used if 'image' argument is not specified
             pygame.font.init()
