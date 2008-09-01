@@ -106,8 +106,6 @@ def connectToDB(Config, **argd):
     to.
     
     **argd represents keyword arguments that will be passed to sqlalchemy.create_engine.
-    
-    FIXME:  Currently, this will only connect to a sqlite database.
     """
     #Note:  this module is to be treated as an "object".  Thus, while these variables
     #may be marked global, they aren't necessarily intended to be used globally
@@ -115,6 +113,8 @@ def connectToDB(Config, **argd):
     global _connected, _user_engine, _meta, _users
     if not _connected:
         _connected = True
+        
+        print Config.server.db
         
         _user_engine = sqlalchemy.create_engine(Config.server.db, **argd)
         UserSession.configure(bind=_user_engine)
