@@ -40,7 +40,7 @@ class ActiveUser(BaseUser):
 def getUserTable(meta, tablename='users'):
     return Table(tablename, meta,
                 Column('id', Integer, primary_key=True),
-                Column('jid', String(50)),
-                Column('url_prefix', String(10)),
+                Column('jid', Unicode(50)),
+                Column('url_prefix', Unicode(10)),
                 Column('active', Boolean())
     )
