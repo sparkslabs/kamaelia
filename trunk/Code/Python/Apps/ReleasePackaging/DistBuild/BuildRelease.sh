@@ -43,3 +43,4 @@ cp Release.MANIFEST.in ../MANIFEST.in
 
 cd ..
 python setup.py sdist
+python setup.py bdist_egg

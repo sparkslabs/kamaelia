@@ -20,7 +20,8 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from distutils.core import setup
+#from distutils.core import setup
+from setuptools import setup
 
 setup(name = "Kamaelia",
       version = "0.6.0-rc7",
