@@ -33,8 +33,7 @@ Example Usage
 See HTTPResourceGlue.py for how to use request handlers.
 """
 
-import string, time, dircache, os
-#from cgi import escape
+import string, time, os
 
 from Axon.Ipc import producerFinished, shutdown
 from Axon.Component import component
@@ -68,23 +67,6 @@ def sanitizePath(uri): #needs work
             outputpath.append(directory)
     outputpath = string.join(outputpath, "/")
     return outputpath
-
-# old setup used functions - this needs to be converted to work with
-# the new component-based handler system
-#def websiteListFilesPage(directory):
-#    files = dircache.listdir(homedirectory + directory)
-#    data = u"<html>\n<title>" + directory + u"</title>\n<body style='background-color: black; color: white;'>\n<h2>" + #directory + u"</h2>\n<p>Files</p><ul>"
-#
-#
-#    for entry in files:
-#        data += u"<li><a href=\"" + directory + entry + u"\">" + entry + u"</a></li>\n"
-#    data += u"</ul></body>\n</html>\n\n"
-#
-#    return {
-#        "statuscode" : "200",
-#        "data"       : data,
-#        "content-type"       : "text/html"
-#    }
 
 # a one shot request handler
 class Minimal(component):
