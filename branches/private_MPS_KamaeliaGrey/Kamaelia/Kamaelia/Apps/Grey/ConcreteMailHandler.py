@@ -1,9 +1,100 @@
-#
-# This code enforces the basic statemachine that SMTP expects, switching
-# between the various commands and finally results in forwarding on the SMTP
-# command to the appropriate SMTP server. By itself, this can be used as a
-# simple SMTP Proxy server.
-#
+"""\
+==================
+Concrete Mail Core
+==================
+
+This code enforces the basic statemachine that SMTP expects, switching
+between the various commands and finally results in forwarding on the SMTP
+command to the appropriate SMTP server. By itself, this can be used as a
+simple SMTP Proxy server.
+
+This class is a subclass of MailHandler, and as such largely consists of
+methods overriding methods from MailHandler which are designed to be
+overridden.
+
+Furthermore, it expects to forward any mail it accepts to another SMTP mail
+server, as transparently as possible. Thus this concrete mail core
+effectively forms the core of an SMTP proxy.
+
+Note
+----
+
+As it stands however, by default this mail proxy will *not* forward any mails
+to the internal server. In order to change this, you would need to subclass
+this server and replace the method "shouldWeAcceptMail" since that defaults
+to returning False
+
+Example Usage
+-------------
+
+As noted, you are not expected to use this ConcreteMailHandler directly, but
+if you did, you would use it like this::
+    
+    ServerCore(protocol=ConcreteMailHandler, port=1025)
+
+At minimum, you would need to do this::
+    class SpamMeHandler(ConcreteMailHandler):
+        def shouldWeAcceptMail(self):
+            return True
+                    
+    ServerCore(protocol=SpamMeHandler, port=1025)
+
+You could alternatively do this::
+    class SpamMeMailServer(ServerCore):
+        class protcol(ConcreteMailHandler):
+            def shouldWeAcceptMail(self):
+                 return True
+                 
+    ServerCore(port=1025)
+
+How does it work?
+-----------------
+
+As noted this overrides all the methods relating to handling SMTP commands,
+and enforces the state machine that SMTP requires. It's particularly strict
+about this, in breach of Postel's law for two reasons - 
+
+ - It helps eradicate spam
+ - because most spam systems are generally lax these days and most non-spam systems are generally strict
+
+It was also primarily written in the context of a greylisting server.
+
+Some core values it tracks with regard to a mail - 
+ - a list of recipients
+ - the (claimed) sender
+ - the (claimed) remote/client name
+ - the actual client & local port/ip addresses
+
+Once the client has finished sending the data for an email, the proxy
+forwards the mail to the local real SMTP server. Fundamentally this happens
+by making a connection to the real server using the TCPClient component, and
+then replaying all the lines the original server sent us to the local
+server.
+
+(ie an inbox_log is built up with all data recieved from inbox "inbox" and
+then the contents of this are replayed when being sent to the local (real)
+SMTP mail server)
+
+Configuration
+-------------
+
+This class provides a large number of configuration options. You can either
+change this through subclassing or by providing as named arguments to the
+__init__ function. The options you have -
+
+ - servername - The name this server will choose to use to identify itself
+ - serverid - The string this server will use to identify itself (in terms of software in use)
+ - smtp_ip - the ip address of the server you're proxying for/to
+ - smtp_port - this is the port the server you're proxying for/to is listening on
+
+The following attributes get set when a client connects -
+
+ - peer - the IP address of the client
+ - peerport - the port which the peer is connected from
+ - local - the IP address the client has connected to
+ - localport - the port which they're connected to
+
+"""
 
 import time
 from Axon.Ipc import producerFinished, WaitComplete
