@@ -26,8 +26,10 @@ General utility functions & common includes
 
 """
 
+import sys
 from AxonExceptions import invalidComponentInterface
-import sets
+if sys.version_info[1] <= 4:
+    from sets import set
 
 #"""This sets the system into production moe which means that many exception could be suppressed to allow the system to keep running.  Test all code with this set to false so that you are alerted to errors"""
 production=False
@@ -61,7 +63,7 @@ def removeAll(xs, y):
 
 def listSubset(requiredList, suppliedList):
    """Returns true if the requiredList is a subset of the suppliedList."""
-   return sets.Set(requiredList).issubset(sets.Set(suppliedList))
+   return set(requiredList).issubset(set(suppliedList))
 
 def testInterface(theComponent, interface):
    """Look for a minimal match interface for the component.
@@ -84,3 +86,6 @@ class Finality(Exception):
    """Used for implementing try...finally... inside a generator."""
    pass
    
+if __name__ == '__main__':
+    print 'listSubset([1,2,3,4], [2,3,4,5]) = %s' % (listSubset([1,2,3,4], [2,3,4,5]))
+    print 'listSubset([1,2,3,4], [2,3]) = %s' % (listSubset([2,3], [1,2,3,4]))
