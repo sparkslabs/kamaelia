@@ -289,3 +289,6 @@ class ConcreteMailHandler(MailHandler):
                 sentDataLine = (line == "DATA\r\n")
         yield 1
         self.send(producerFinished(), "tcp_signal")
+
+__kamaelia_components__  = ( ConcreteMailHandler, )
+
