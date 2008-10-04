@@ -228,3 +228,5 @@ class MailHandler(Axon.Component.component):
         if not brokenClient:
             yield WaitComplete(self.handleDisconnect(),tag="_handleDisconnect")
         self.logResult()
+
+__kamaelia_components__  = ( MailHandler, )
