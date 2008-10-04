@@ -3,6 +3,97 @@
 # This is primarily used by Kamaelia.Apps.ConcreteMailHandler
 # It does form the basis of most things that need to handle basic SMTP type things
 #
+"""\
+=========================
+Abstract SMTP Mailer Core
+=========================
+
+This component effectively forms the skeleton of an SMTP server. It expects
+an SMTP client to connect and send various SMTP requests to it. This basic
+SMTP Mailer Core however, does not actually do anything in response to any
+of the SMTP commands it expects.
+
+Each SMTP command is actually given a dummy callback which more customised
+SMTP protocol handlers are expected to override. Beyond this, this component
+is expected to be used as a protocol handler for ServerCore.
+
+Fundamentally, this component handles the command/response structure of SMTP
+fairly directly, but expects the brains of the protocol to be implemented by
+a more intelligent subclass.
+
+Example Usage
+-------------
+
+Whilst this will work to a minimal extent::
+
+    ServerCore(protocol=MailHandler, port=1025)
+
+This will not actually form a very interesting SMTP, nor SMTP compliant,
+server since whilst it will tell you commands it doesn't understand, it will
+not do anything interesting.
+
+You are as noted expected to subclass MailHandler. For a better example
+of how to subclass MailHandler you are suggested to look at
+Kamaelia.Apps.ConcreteMailHandler.ConcreteMailHandler
+
+Note
+----
+
+This component is not complete - you are expected to subclass it to finish
+it off as you need. Specifically it does not implement the following -
+ - It does not enforce "this command followed by that command"
+ - It does not actually do anything with any DATA a client sends you
+ - It neither performs local mail delivery nor proxying - you'd need to implement this yourself.
+
+
+How does it work?
+-----------------
+
+The component is expected to be connected to a client TCP connection by
+ServerCore, such that messages from the network arrive on inbox "inbox", and
+outgoing messages get sent to outbox "outbox"
+
+The component will terminate if any of these is true:
+ - The client breaks the connection
+ - One of the methods sets self.breakConnection to True.
+ - If a "socketShutdown" message arrives on inbox "control"
+
+The main() method divides the connection into effectively two main states:
+ - accepting random commands prior to getting a DATA command
+ - accepting the email during a DATA command
+
+SMTP commands are specifically dispatched to a particular handler for that
+command. In this component none of the handlers do anything interesting.
+
+Configuration
+-------------
+
+The abstract mailer supports some basic config settings:
+ - logfile - path/filename where requests should get logged
+ - debuglogfile - path/filename to where the debug log file should do.
+
+Methods you are expected to override
+------------------------------------
+
+Whilst you are probably better off subclassing ConcreteMailHandler, you will
+probably need to override the following methods in a subclass if you
+subclass MailHandler directly.
+
+ - handleConnect(self)
+ - handleHelo(self,command)
+ - handleEhlo(self,command)
+ - handleMail(self,command)
+ - handleRcpt(self,command)
+ - handleData(self,command)
+ - handleQuit(self,command)
+ - handleRset(self,command)
+ - handleNoop(self,command)
+ - handleVrfy(self,command)
+ - handleHelp(self,command)
+ - logResult(self)
+ - handleDisconnect(self)
+
+"""
 
 import Axon
 from Axon.Ipc import producerFinished, WaitComplete
