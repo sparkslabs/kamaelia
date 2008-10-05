@@ -1,0 +1,8 @@
+This shows how the visualisation subsystem can be extended
+to work in different ways. What this does by default when run is
+randomly create new nodes and new linkages quite quickly, allowing you
+to see how the system works.
+
+
+
+Michael, October 2005
