@@ -1,6 +1,0 @@
-include COPYING
-include AUTHORS
-include CHANGELOG
-include Doc/*
-include App/*
-include Dependencies/*

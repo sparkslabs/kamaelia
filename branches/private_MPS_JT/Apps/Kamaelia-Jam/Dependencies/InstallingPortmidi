@@ -1,3 +1,0 @@
-
-You'll need to do this in /usr/lib, even using this RPM:
-    ln -s libporttime.so.0 libporttime.so
