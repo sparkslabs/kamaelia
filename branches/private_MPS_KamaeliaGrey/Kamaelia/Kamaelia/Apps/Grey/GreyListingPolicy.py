@@ -1,8 +1,76 @@
+"""\
+========================================================
+Greylisting Policy For/Subclass Of Concrete Mail Handler
+========================================================
 
-#
-# This component focuses on the core Greylisting semantics. This is intended
-# to be used as a protocol handler in a ServerCore instance.
-#
+This component implements a greylisting SMTP proxy protocol, by subclassing
+ConcreteMailHandler and overriding the appropriate methods (primarily the
+shouldWeAcceptMail method).
+
+For more detail, please see http://www.kamaelia.org/KamaeliaGrey
+
+
+Example Usage
+-------------
+
+You use this as follows (at minimum)::
+
+What this shows followed by double colon::
+    
+    ServerCore(protocol=GreyListingPolicy, port=25)
+
+If you want to have a hardcoded/configured greylisting server you could do this:
+
+    class GreyLister(ServerCore):
+        class protocol(GreyListingPolicy):
+            allowed_senders = []
+            allowed_sender_nets = []
+            allowed_domains = [ ]
+
+    GreyLister(port=25)
+
+
+How does it work?
+-----------------
+
+Primarily it override the method shouldWeAcceptMail, and implements the
+following logic::
+
+        if self.sentFromAllowedIPAddress():  return True # Allowed hosts can always send to anywhere through us
+        if self.sentFromAllowedNetwork():    return True # People on truste networks can always do the same
+        if self.sentToADomainWeForwardFor():
+            try:
+                for recipient in self.recipients:
+                    if self.whiteListed(recipient):
+                        return True
+                    if not self.isGreylisted(recipient):
+                        return False
+            except Exception, e:
+                pass
+            return True # Anyone can always send to hosts we own
+
+Clearly AllowedIPAddress, AllowedNetwork, whiteListed, and
+DomainWeForwardFor are fairly clear concepts, so for more details on those
+please look at the implementation. 
+
+isGreylisted by comparison is slightly more complex. Fundamentally this
+works on the basis of saying this -
+
+ - have we seen the triple (ip, sender, recipient) before ?
+ - if we have, then allow the message through
+ - otherwise, defer the message
+
+Now there is a little more subtlty here, based on the following conditins -
+
+ - If greylisted, and not been there too long, allow through
+ - If grey too long, refuse (restarting the greylisting for that combo)
+ - If not seen this triplet before, defer and note triplet
+ - If triplet retrying waaay too soon, reset their timer & defer
+ - If triplet retrying too soon generally speaking just defer
+ - If triplet hasn't been seen in aaaages, defer
+ - Otherwise, allow through & greylist them
+"""
+
 
 import anydbm
 import math
@@ -144,14 +212,5 @@ class GreyListingPolicy(ConcreteMailHandler):
         self.noteToLog(logline)
         # print logline
 
-
-
-
-
-
-
-
-
-
-
+__kamaelia_components__  = ( GreyListingPolicy, )
 
