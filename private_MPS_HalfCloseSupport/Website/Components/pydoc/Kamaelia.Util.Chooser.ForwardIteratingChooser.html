@@ -1,0 +1,42 @@
+<html><body>
+<h1>Kamaelia.Util.Chooser.ForwardIteratingChooser</h1>
+<h2>class ForwardIteratingChooser(Axon.Component.component)</h2>
+
+<p>Chooser([items]) -&gt; new Chooser component.</p>
+<p>Iterates through an iterable set of items. Step by sending &quot;NEXT&quot; messages to
+its &quot;inbox&quot; inbox.</p>
+<p>Keyword arguments:
+- items  -- iterable source of items to be chosen from (default=[])</p>
+<h4>Inboxes</h4>
+<ul><li>   control : shutdown messages
+<li>   inbox : receive commands
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : emits chosen items
+<li>   signal : shutdown messages
+</ul>
+<h2>Methods defined here</h2>
+
+[[boxright][[include][file=Components/MethodNote.html][croptop=1][crop
+bottom=1] ] ]
+<h3>__init__(self, items)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h3>getCurrentChoice(self)</h3>
+<p>Return the current choice</p>
+<h3>gotoNext(self)</h3>
+<p>Advance the choice forwards one.</p>
+<p>Returns True if successful or False if unable to (eg. already at end).</p>
+<h3>main(self)</h3>
+<p>Main loop.</p>
+<h3>shutdown(self)</h3>
+<p>Returns True if a shutdownMicroprocess message was received.</p>
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+</body></html>
