@@ -21,6 +21,8 @@ Fundamentally, this component handles the command/response structure of SMTP
 fairly directly, but expects the brains of the protocol to be implemented by
 a more intelligent subclass.
 
+
+
 Example Usage
 -------------
 
@@ -36,14 +38,18 @@ You are as noted expected to subclass MailHandler. For a better example
 of how to subclass MailHandler you are suggested to look at
 Kamaelia.Apps.ConcreteMailHandler.ConcreteMailHandler
 
+
+
 Note
 ----
 
 This component is not complete - you are expected to subclass it to finish
-it off as you need. Specifically it does not implement the following -
+it off as you need. Specifically it does not implement the following:
+
  - It does not enforce "this command followed by that command"
  - It does not actually do anything with any DATA a client sends you
  - It neither performs local mail delivery nor proxying - you'd need to implement this yourself.
+
 
 
 How does it work?
@@ -54,23 +60,30 @@ ServerCore, such that messages from the network arrive on inbox "inbox", and
 outgoing messages get sent to outbox "outbox"
 
 The component will terminate if any of these is true:
+
  - The client breaks the connection
  - One of the methods sets self.breakConnection to True.
  - If a "socketShutdown" message arrives on inbox "control"
 
 The main() method divides the connection into effectively two main states:
+
  - accepting random commands prior to getting a DATA command
  - accepting the email during a DATA command
 
 SMTP commands are specifically dispatched to a particular handler for that
 command. In this component none of the handlers do anything interesting.
 
+
+
 Configuration
 -------------
 
 The abstract mailer supports some basic config settings:
+
  - logfile - path/filename where requests should get logged
  - debuglogfile - path/filename to where the debug log file should do.
+
+
 
 Methods you are expected to override
 ------------------------------------

@@ -9,14 +9,18 @@ receives a message on its inbox "inbox". This list is then sorted, and
 noted to a logfile.
 
 
+
 Example Usage
 -------------
 
 This component is intended to be used with PeriodicWakeup, as follows::
+
     Pipeline(
          PeriodicWakeup(interval=20),
          WakeableIntrospector(logfile="/tmp/trace"),
     )
+
+
 
 How does it work?
 -----------------
@@ -27,11 +31,15 @@ logfile.
 
 It then sits quietly waking for a message (any message) on the inbox "inbox".
 
+
+
 Termination
 -----------
 
 This component is not well behaved regarding termination, in that it does
 not have any shutdown conditions.
+
+
 
 TODO
 ----
