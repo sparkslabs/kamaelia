@@ -15,11 +15,9 @@ Example Usage
 
 You use this as follows (at minimum)::
 
-What this shows followed by double colon::
-    
     ServerCore(protocol=GreyListingPolicy, port=25)
 
-If you want to have a hardcoded/configured greylisting server you could do this:
+If you want to have a hardcoded/configured greylisting server you could do this::
 
     class GreyLister(ServerCore):
         class protocol(GreyListingPolicy):
@@ -54,13 +52,13 @@ DomainWeForwardFor are fairly clear concepts, so for more details on those
 please look at the implementation. 
 
 isGreylisted by comparison is slightly more complex. Fundamentally this
-works on the basis of saying this -
+works on the basis of saying this:
 
  - have we seen the triple (ip, sender, recipient) before ?
  - if we have, then allow the message through
  - otherwise, defer the message
 
-Now there is a little more subtlty here, based on the following conditins -
+Now there is a little more subtlty here, based on the following conditions:
 
  - If greylisted, and not been there too long, allow through
  - If grey too long, refuse (restarting the greylisting for that combo)
