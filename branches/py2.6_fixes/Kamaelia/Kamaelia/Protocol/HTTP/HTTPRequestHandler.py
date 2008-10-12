@@ -179,6 +179,11 @@ def currentTimeHTTP():
     "Get the current date and time in the format specified by HTTP/1.1"
     curtime = time.gmtime()
     return time.strftime("%a, %d %b %Y %H:%M:%S GMT", curtime)
+    
+class BreakOut(Exception):
+"""Used to break out of a loop when the HTTPRequestHandler receives a shutdown
+   message."""
+    pass
 
 
 class HTTPRequestHandler(component):
@@ -439,7 +444,7 @@ class HTTPRequestHandler(component):
             yield 1
             self.updateShouldShutdown()
             if self.ShouldShutdownCode & 2 > 0: # if we've received a shutdown request
-                raise "BreakOut"
+                raise BreakOut()
             self.forwardBodyChunks()
             if not self.anyReady():
                 self.pause()
@@ -464,7 +469,7 @@ class HTTPRequestHandler(component):
                 try:
                     for i in self.handleRequest(request):
                         yield i
-                except "BreakOut":
+                except BreakOut:
                     break
             self.updateShouldShutdown()
 #            self.updateShutdownStatus()
@@ -486,6 +491,7 @@ if __name__ == '__main__':
     import socket
 
     from Kamaelia.Chassis.ConnectedServer import SimpleServer
+    from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
     # this works out what the correct response to a request is
     from Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
