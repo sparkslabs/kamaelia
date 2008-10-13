@@ -27,13 +27,13 @@ from Kamaelia.Apps.Games4Kids.SpriteScheduler import SpriteScheduler
 from Kamaelia.Apps.Games4Kids.MyGamesEventsComponent import MyGamesEventsComponent
 
 Pipeline(
-    MyGamesEventsComponent(up="p", down="l", left="a", right="s"),
+    MyGamesEventsComponent(up="e", down="d", left="a", right="s"),
     BasicSprite("cat.png", name = "cat", border=40),
 ).activate()
 
 Pipeline(
     MyGamesEventsComponent(up="up", down="down", left="left", right="right"),
-    BasicSprite("mouse.png", name = "player", border=40),
+    BasicSprite("Princess.png", name = "player", border=40),
 ).activate()
 
 SpriteScheduler(BasicSprite.allSprites()).run()

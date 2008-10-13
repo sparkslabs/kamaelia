@@ -83,6 +83,12 @@ class Distancer(Axon.Component.component):
             yield 1
                             
 
+#Pipeline(
+#    SubscribeTo("PLAYERS"),
+#    PureTransformer(lambda x: repr(x)+"\n"),
+#    ConsoleEchoer(),
+#).activate()
+
 from Kamaelia.Util.Backplane import *
 Backplane("PLAYERS").activate()
 
@@ -95,16 +101,11 @@ Pipeline(
 
 Pipeline(
     MyGamesEventsComponent(up="up", down="down", left="left", right="right"),
-    BasicSprite("mouse.png", name = "mouse", border=40),
+    BasicSprite("/home/zathras/Incoming/Princess.png", name = "mouse", border=40),
     PureTransformer(lambda x: ("Mouse", x)),
     PublishTo("PLAYERS"),
 ).activate()
 
-#Pipeline(
-#    SubscribeTo("PLAYERS"),
-#    PureTransformer(lambda x: repr(x)+"\n"),
-#    ConsoleEchoer(),
-#).activate()
 
 Pipeline(
     SubscribeTo("PLAYERS"),
