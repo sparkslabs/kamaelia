@@ -1,0 +1,230 @@
+
+   * Added support for *basic* software transactional memory
+    * Software transactional memory is a fancy phrase for something
+      that boils down to something similar to version control for
+      variables. You can checkout the current state, make modifications
+      and try to commit them back. If the commit succeeds, you
+      successfully updated it. If it doesn't, you didn't.
+
+      This implements it, and provides a mechanism for making the CAT
+      safe for threads to use as well as standard components. 
+
+    Added in LikeFile
+    Added in support for monkey patching the internals of a component
+    system.
+
+1.5.1 -> 1.x.x
+    An exception is now raised if you try to create a linkage going
+    from an inbox/outbox that already has a linkage going from it.
+
+    Waking up of producer components re-introduced (bugfix)
+
+    * When a component collects a message from an inbox; all producer
+      components with outboxes linked to that inbox will be woken.
+
+    Additions to the Axon Test Suite providing test coverage of this
+    facility.
+
+1.5.0 -> 1.5.1
+    Minor improvements to bring threaded component capabilities closer
+    to those of ordinary components.
+
+    * Size limited inboxes now supported by threaded components
+    * Pausing now supported by threaded components
+
+
+    ThreadedComponent.py
+    * Synchronous box support: now supports making inboxes size limited
+      and delivery to a size limited inbox on another component - namely
+      the threaded component will correctly receive a NoSpaceInBox
+      exception.
+
+    * Internal queues between the inboxes/outboxes, and the thread are
+      now size limited (default size of 10). This is a dependency of the
+      synchronous box support.
+
+    * self.pause() now implemented. A threaded component will sleep until
+      an (optional) timeout expires, or a message arrives.
+
+
+1.1.2 -> 1.5.0
+    Major subsystem changes aimed at performance enhancements
+
+    MESSAGE PASSING AND DELIVERY OPTIMISATION CHANGES
+ 
+    * Boxes are now discrete objects. This change has occured to enable the
+      use of direct (effectively "zero copy" delivery).
+
+    * This has meant the postman has been deleted - components no longer
+      have a postman associated with them. This also dramatically frees
+      up CPU cycles for components rather than the communications system.
+
+    * To replace the structural tracking, a "postoffice" class has been
+      created instead. This, however, is passive rather than active.
+
+    * Because the death of a component no longer also means the death of a
+      postman, microprocess has been simplified to remove the concept of
+      activity creator. This removes the knock on complexity in both the
+      scheduler and inside Component.
+
+    * Despite these changes components running on top of Axon (ie existing
+      Kamaelia components) operate largely unchanged. (A few that assumed
+      the existance of a postman etc have changed)
+
+    THREADING SUPPORT
+
+    * The threaded component has had its API fixed to match the rest of
+      Axon (with the obvious exception of removing the yields).
+
+    Bug fix to make Wait* work cleaner
+
+    Axon.Component.Component
+    * Default documentation for Component class in/out- boxes added
+    * anyReady() added. Returns true if any has data in it.
+
+
+    Axon.Microprocess.Microprocess
+    * Can activate an arbitrary thread of control from a generator
+      (The thing you normally call .next() on)
+    * Can pass on a closeDownValue
+    * Can be set as an activity creator
+    * Now conditionally starts the thread. Actually helps with re-entrant
+      calls inside a single active microprocess.
+
+    Axon.Scheduler.Scheduler
+    * Now handles shutdown knockons more gracefully
+    * Removal of lots of debugging code no longer needed (hasn't been needed
+      in a long while)
+    * Code cleanup
+
+    Axon.Ipc
+    * Added the shutdown message. This can be used to request that an Axon
+      component should simply shutdown. This does not force the component
+      to shutdown, merely requests it.
+
+    Synchronous Links & Link Tracing API
+    * As part of the changes to box optimisations, there has been a change
+      to the API for synchronous links. This is currently our best guess as
+      to what we think makes sense, but should be considered experimental
+      until Axon 2.0 (We'll endevour to keep the current API however for as
+      long as it makes sense).
+
+      L = link( (source, box), (dest, box), pipewidth=5)
+      # L is a synchronous link of width 5
+
+      L = link( (source, box), (dest, box))
+      L.setSynchronous(4)
+      # L is a synchronous link of width 4
+
+      L = link( (source, box), (dest, box), pipewidth=5)
+      # L is a synchronous link of width 5
+      L.setSynchronous()
+      # L no longer has a maximum pipewidth.
+      L.setSynchronous(4)
+      # L is a now synchronous link of width 4
+      L.setSynchronous(10)
+      # L is a now synchronous link of width 10
+
+      When a synchronous link reaches maximum capacity, attempting to send
+      data to the synchronous link results in an exception being thrown.
+      This includes the current size of the pipe, and it's maximum capacity.
+      The exception thrown is as follows:
+
+      L.setSynchronous(0)
+      # L now has a pipewidth of zero. (ie zero capacity)
+      try:
+         self.send("data", "outbox")
+      except noSpaceInBox, e:
+         print "Failed to deliver"
+         size, capacity = e.args
+         print "Box Capacity", capacity
+         print "Current size", size
+
+     
+1.1.1 -> 1.1.2
+     Instated use of ctypes to use posix.sched_yield during the main loop.
+     This makes the system a *little* bit more other-system friendly.
+
+     Added in the ability to do, effectively, blocking calls to other
+     components. The best example using this at present in
+         Kamaelia.UI.Pygame.Ticker
+
+     Specifically you can ask the system to run a different microprocess in
+     the place of the running one, and wait until it ends.
+
+      yield WaitComplete(
+          self.requestDisplay(DISPLAYREQUEST=True,
+                              callback = (self,"control"),
+                              size = (self.render_area.width, self.render_area.height),
+                              position = self.position
+                              )
+      )
+
+     Where self.requestDisplay is a generator with the following behaviour:
+
+         def requestDisplay(self, **argd):
+            displayservice = PygameDisplay.getDisplayService()
+            self.link((self,"signal"), displayservice)
+            self.send(argd, "signal")
+            for _ in self.waitBox("control"): yield 1 ## This could also be rewritten in this form :-)
+            display = self.recv("control")
+            self.display = display
+
+     This is experimental support that is likely to evolve with time. This
+     does however allow effectively for a far more co-routine type behaviour
+     than we had in place before - rather than generator type behaviour.
+
+1.1.0 -> 1.1.1
+     Change made to Microprocess that massively simplifies Kamaelia scripts
+     that are just pipeline systems. For example, the following is now all
+     that's needed for a pipeline system:
+
+     pipeline(TCPClient(tickerIP,tickerPort)
+              Ticker()
+             ).run()
+
+
+
+1.0.3 -> 1.1.0 - Debugging reactivated, Microprocess enhanced
+
+     Added the facility to allow components to be wrapped threads rather
+     than wrapped generators. Since this is a major addition, that's why
+     the version has been bumped to 1.1.0
+
+     All usage of __super removed. It will disappear completely in 1.2.0
+
+     Microprocess has gained a "run" method, which allows a microprocess to
+     be run standalone. (This should assist with testing)
+
+     self.link now returns the linkage created. This allows the user to do
+     the following when debugging a system:
+       l = self.link( ... )
+       l.setShowTransit(True)
+
+     Debugging subsystem re-activated for actual use. Still needs a bit
+     of work. (Ideally we should *merge* the debugging selected in the
+     debug.conf file with the defaults, rather than have them replace
+     the defaults) (Decent docs for debug subsystem still to come)
+
+
+
+1.0.2 -> 1.0.3 - Performance Improvements
+   * Split debug.debug.debug/debug.debug.note into two halves:
+      * areDebugging(self,section,level)
+        This performs the check to see if we're debugging at a specific
+        level
+      * debugmessage(self, section, *message)
+        This outputs the specific message with associated debug formatting.
+
+   * All functions in Axon (more or less - couple of exceptions) changed
+     over to use the new style debugging approach. Means that in order to
+     have sensible runtime speed you no longer have to run with python -OO
+     flags.
+
+1.0.1 -> 1.0.2
+   * Fixes for example in README, pulled out into an Examples directory.
+     (Thanks to: "Gangadhar NPK" <npk.gangadhar at gmail dot com>)
+
+1.0 -> 1.0.1
+   * Distribution now included initial version of combined docs. This needs
+     santisation.
