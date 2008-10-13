@@ -97,7 +97,7 @@ class KeyEvent(Axon.Component.component):
    - key_events  -- dict mapping pygame keycodes to (msg,"outboxname") pairs (default=None)
    - outboxes    -- dict of "outboxname":"description" key:value pairs (default={})
    """
-   
+
    Inboxes = { "inbox"    : "Receive events from Pygame Display",
                "control"  : "Shutdown messages: shutdownMicroprocess or producerFinished",
                "callback" : "Receive callbacks from Pygame Display"
@@ -106,8 +106,8 @@ class KeyEvent(Axon.Component.component):
                 "allkeys"        : "Outbox that receives *every* keystroke if enabled",
                 "signal"         : "Shutdown signalling: shutdownMicroprocess or producerFinished",
                 "display_signal" : "Outbox used for communicating to the display surface" }
-   
-   def __init__(self, allkeys=False, key_events=None, outboxes = {}):
+
+   def __init__(self, allkeys=False, key_events=None, key_up_events=None, outboxes = {}):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       self.Outboxes = self.__class__.Outboxes
       self.Outboxes.update(outboxes)
@@ -115,16 +115,15 @@ class KeyEvent(Axon.Component.component):
 
       self.allkeys = allkeys
       self.key_events = key_events
+      self.key_up_events = key_up_events
       if self.key_events is None: self.key_events = {}
-      
+      if self.key_up_events is None: self.key_up_events = {}
+
       self.disprequest = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
                            "events" : (self, "inbox"),
                            "size": (0,0) }
-      
 
-      
-       
    def waitBox(self,boxname):
       """Generator. yields 1 until data is ready on the named inbox."""
       waiting = True
@@ -132,7 +131,6 @@ class KeyEvent(Axon.Component.component):
         if self.dataReady(boxname): return
         else: yield 1
 
-   
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
@@ -140,20 +138,20 @@ class KeyEvent(Axon.Component.component):
 
       self.send( self.disprequest,
                   "display_signal")
-             
+
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
-      
+
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
                   "display_signal")
-      if (self.key_events is not None) or self.allkeys:
+      if (self.key_events is not None) or self.allkeys or (self.key_up_events is not None):
          message = { "ADDLISTENEVENT" : pygame.KEYDOWN,
                      "surface" : self.display,
                      "TRACE" : "ME"}
          self.send(message, "display_signal")
 
-      if self.allkeys:
+      if self.allkeys or (self.key_up_events is not None):
          message = { "ADDLISTENEVENT" : pygame.KEYUP,
                      "surface" : self.display,
                      "TRACE" : "METO"}
@@ -165,7 +163,7 @@ class KeyEvent(Axon.Component.component):
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                done = True
-         
+
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
                 if event.type == pygame.KEYDOWN:
@@ -174,9 +172,10 @@ class KeyEvent(Axon.Component.component):
                    if self.allkeys:
                       self.send(("DOWN", event.key), "allkeys")
                 if event.type == pygame.KEYUP:
+                   if event.key in self.key_up_events:
+                      self.send( self.key_up_events[event.key][0] , self.key_up_events[event.key][1] )
                    if self.allkeys:
                       self.send(("UP", event.key), "allkeys")
          yield 1
-            
-__kamaelia_components__  = ( KeyEvent, )
 
+__kamaelia_components__  = ( KeyEvent, )
