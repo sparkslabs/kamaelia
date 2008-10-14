@@ -15,7 +15,7 @@ import Axon
 # Import the server framework, the HTTP protocol handling, the minimal request handler, and error handlers
 
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
-from Kamaelia.Chassis.ConnectedServer import MoreComplexServer
+from Kamaelia.Chassis.ConnectedServer import ServerCore
 
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
@@ -180,7 +180,7 @@ def HTTPProtocol():
 
 # Finally we create the actual server and run it.
 
-class WebServer(MoreComplexServer):
+class WebServer(ServerCore):
     routing = [
                ["/wsgi", WSGIHandler("/wsgi", HTML_WRAP(simple_app)) ],
               ]
@@ -191,7 +191,7 @@ class WebServer(MoreComplexServer):
 WebServer().run()
 
 """
-Changed Webserver to use the newer MoreComplexServer:
+Changed Webserver to use the newer ServerCore
    * Requried change to HTTPServer
    * HTTPParser
 
