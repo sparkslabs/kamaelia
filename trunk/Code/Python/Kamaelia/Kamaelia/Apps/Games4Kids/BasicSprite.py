@@ -43,9 +43,9 @@ class BasicSprite(pygame.sprite.Sprite, component):
         self.border = border
         self.__class__.allsprites.append(self)
 
-    @classmethod
     def allSprites(klass):
         return klass.allsprites
+    allSprites = classmethod(allSprites)
 
     def sprite_logic(self):
         while 1:
