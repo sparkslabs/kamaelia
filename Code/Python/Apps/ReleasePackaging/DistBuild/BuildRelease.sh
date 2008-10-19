@@ -27,7 +27,13 @@ cp -R ../../../Kamaelia/Tools ../Tools
 
 echo "Zapping & Copying Documentation"
 rm -rf ../Docs
-cp -R ../../../Kamaelia/Docs ../Docs
+
+curl -O http://www.kamaelia.org/release/Docs.tar.gz 
+tar zxvf Docs.tar.gz
+mv Docs ..
+rm Docs.tar.gz
+
+# cp -R ../../../Kamaelia/Docs ../Docs
 
 cp ../../../../../AUTHORS ../AUTHORS
 cp ../../../../../COPYING ../COPYING
@@ -40,6 +46,7 @@ egrep -A 1000 START ../../../Kamaelia/setup.py|egrep -B1000 LAST >> ../setup.py
 egrep -A1000 "# REPLACE" setup.py.src |grep -v "# REPLACE" >> ../setup.py
 
 cp Release.MANIFEST.in ../MANIFEST.in
+lynx -dump "http://www.kamaelia.org/ReleaseNotes?template=print" > ../DetailedReleaseNotes.txt
 
 cd ..
 python setup.py sdist
