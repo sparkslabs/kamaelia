@@ -5,6 +5,7 @@ include Axon.README
 include Kamaelia.README
 include Axon.CHANGELOG
 include Kamaelia.CHANGELOG
+include DetailedReleaseNotes.txt
 include Kamaelia/debug.conf
 include Kamaelia/afortune.pl
 recursive-include Kamaelia *
