@@ -1,0 +1,85 @@
+<html><head><meta name="qrichtext" content="1" />
+<style>
+.subsection { }
+.sectionheader {
+                 text-align: center;
+                 font-weight: bold;
+                 padding-bottom: 1em;
+               }
+.sectioncontent { font-size: 0.9em;
+                  margin-left: 2em;
+                  line-height: 1.8;
+                  text-align: left;
+                }
+.verticaldivider { float: bottom;
+                   width: 100%;
+                 }
+.none { width: 100%;
+        clear: both;
+      }
+
+ .rbroundbox_green { background: url(/t/green.corners-top.png) repeat-x; 
+               width: 50%;
+               float: right;
+               }
+ .rbtop_green div { background: url(/t/green.corners-topleft.png) no-repeat top left; }
+ .rbtop_green { background: url(/t/green.corners-topright.png) no-repeat top right; }
+
+ .rbcontent_green div { background: url(/t/green.corners-right.png) repeat-y right; 
+                }
+ .rbcontent_green { background: url(/t/green.corners-left.png) repeat-y left; 
+              padding-left: 1.5em;
+            }
+
+ .rbbot_green div { background: url(/t/green.corners-bottomleft.png) no-repeat bottom left; }
+ .rbbot_green { background: url(/t/green.corners-bottomright.png) no-repeat bottom right; }
+ .rbbottom_green { background: url(/t/green.corners-bottom.png) repeat-x; }
+ .rbtop_green div, .rbtop_green, .rbbot_green div, .rbbot_green {
+ width: 100%;
+ height: 23px;
+ font-size: 1px;
+ }
+body {
+   text-align: justify;
+}
+.boxright {
+    float: right;
+    width: 20em;
+    padding: 0.5em;
+    margin: 1em;
+
+    border: 1px solid;
+}
+.sidebar {
+    width: 10em;
+    float: left;
+    padding: 1em;
+
+}
+.bodytext {
+
+    margin: 0 5em 0em 12em;
+    float: auto;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+</style>
+</head><body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
+<p align="right"><span style="font-size:18pt">How can I...?</span></p>
+<p>Example 2: A Simple TCP Based Server that allows multiple connections at once, but sends a random ogg vorbis file to the client. Includes a simple TCP based client for this server, that connects to the server, decodes the ogg vorbis audio and plays it back. <span style="font-weight:600">Components used: </span><a href="/Components/pydoc/Kamaelia.Util.PipelineComponent.pipeline.html">pipeline</a>, <a href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.SimpleServer.html">SimpleServer</a>, <a href="/Components/pydoc/Kamaelia.ReadFileAdaptor.ReadFileAdaptor.html">ReadFileAdaptor</a>, <a href="/Components/pydoc/Kamaelia.Internet.TCPClient.TCPClient.html">TCPClient</a>, <a href="/Components/pydoc/Kamaelia.vorbisDecodeComponent.VorbisDecode.html">VorbisDecode</a>, <a href="/Components/pydoc/Kamaelia.vorbisDecodeComponent.AOAudioPlaybackAdaptor.html">AOAudioPlaybackAdaptor</a></p>
+<ul type="disc"><div><pre><span style="font-style:italic">#!/usr/bin/python</span><br /><br /><span style="font-weight:600">from</span> Kamaelia.Util.PipelineComponent <span style="font-weight:600">import</span> pipeline<br /><span style="font-weight:600">from</span> Kamaelia.SimpleServerComponent <span style="font-weight:600">import</span> SimpleServer<br /><span style="font-weight:600">from</span> Kamaelia.Internet.TCPClient <span style="font-weight:600">import</span> TCPClient<br /><span style="font-weight:600">from</span> Kamaelia.vorbisDecodeComponent <span style="font-weight:600">import</span> VorbisDecode, AOAudioPlaybackAdaptor<br /><span style="font-weight:600">import</span> Kamaelia.ReadFileAdaptor<br /><br />file_to_stream = &quot;/usr/share/wesnoth/music/wesnoth-1.ogg&quot;<br />clientServerTestPort=1500<br /><br /><span style="font-weight:600">def</span> AdHocFileProtocolHandler(filename):<br />    <span style="font-weight:600">class</span> klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):<br />        <span style="font-weight:600">def</span> __init__(self,*argv,**argd):<br />            <span style="font-weight:600">super</span>(klass,self).__init__(filename, readmode=&quot;bitrate&quot;, bitrate=400000)<br />    <span style="font-weight:600">return</span> klass<br /><br />server=SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream),<br />                    port=clientServerTestPort).activate()<br /><br />pipeline(<br />   TCPClient(&quot;127.0.0.1&quot;,clientServerTestPort),<br />   VorbisDecode(),<br />   AOAudioPlaybackAdaptor()<br />).run()<br /></pre><br /><span style="font-weight:600">Source: </span>Examples/example2/SimpleStreamingSystem.py</div></ul>
+<p></p>
+
+<div class="none"></div>
+<P><hr width='100%%'>
+<p>
+(C) 2006 Kamaelia Contributors, including the British Broadcasting
+Corporation, All Rights Reserved,
+This is an ongoing community based development site. As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved. Specificially, this page may
+contain personal views which are not the views of the BBC. 
+
+</body></html>
+
