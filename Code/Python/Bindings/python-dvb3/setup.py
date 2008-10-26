@@ -7,7 +7,7 @@ kernel = "/lib/modules/" + os.uname()[2] + "/build/include"
 incs = [kernel]
 
 setup(
-    name="python-dvb3", version="0.0.4",
+    name="python-dvb3", version="0.0.5",
     author="Paul Clifford", author_email="paul@clifford.cx",
     license="BSD",
     description="Python bindings for the Linux DVB v3 API",
