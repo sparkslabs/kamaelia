@@ -25,8 +25,9 @@
 Generic 3D Topology Viewer
 ===========================
 
-TopologyViewer3D is a 3D version of TopologyViewer plus hierarchy topology support,
-which shows Topology on PyGame surface.
+A 3D version of TopologyViewer plus hierarchy topology support, pygame based 
+display of graph topologies.. Rendering and physics laws can be customised 
+for specific applications.
 
 
 
@@ -71,19 +72,21 @@ causes nodes to move around to help make it visually clearer, however you may
 still need to drag nodes about to tidy it up.
 
 For hierarchy topology, double-click a particle (or select one then press return key)
-to show next level's topology; right-click (or press backspace key) to show last level's topology
+to show its child topology; right-click (or press backspace key) to show last level's 
+topology.
+
 
 
 Operations supported:
 
     * esc --- quit
     
-    * a --- viewer position move left
-    * d --- viewer position move right
-    * w --- viewer position move up
-    * s --- viewer position move down
-    * pgup --- viewer position move forward (zoom in)
-    * pgdn --- viewer position move backward (zoom out)
+    * a --- viewer position moves left
+    * d --- viewer position moves right
+    * w --- viewer position moves up
+    * s --- viewer position moves down
+    * pgup --- viewer position moves forward (zoom in)
+    * pgdn --- viewer position moves backward (zoom out)
     
     * left --- rotate selected particles to left around y axis  (all particles if none of them is selected)
     * right --- rotate selected particles to right around y axis  (all particles if none of them is selected)
@@ -91,12 +94,12 @@ Operations supported:
     * down --- rotate selected particles to down around x axis  (all particles if none of them is selected)
     * < --- rotate selected particles anticlock-wise around z axis  (all particles if none of them is selected)
     * > --- rotate selected particles clock-wise around z axis  (all particles if none of them is selected)
-    * return --- show next level's topology
+    * return --- show next level's topology of the selected particle when only one particle is selected
     * backspace --- show last level's topology
     
-    * Mouse click --- click node to select one, click empty area to deselect all
+    * Mouse click --- click particle to select one, click empty area to deselect all
     * Mouse drag --- move particles
-    * Mouse double-click --- show next level's topology
+    * Mouse double-click --- show next level's topology of the particle clicked
     * Mouse right-click --- show last level's topology
     
     * shift --- multi Select Mode; shift+click for multiple selection/ deselection
@@ -202,7 +205,7 @@ Termination
 -----------
 
 If a shutdownMicroprocess message is received on this component's "control"
-inbox this it will pass it on out of its "signal" outbox and immediately
+inbox, it will pass it on out of its "signal" outbox and immediately
 terminate.
 
 NOTE: Termination is currently rather cludgy - it raises an exception which
@@ -242,7 +245,7 @@ Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.
 Writing your own particle class
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-should inherit from Kamaelia.PhysicsGraph3D.Particle3D.Particle3D 
+should inherit from Kamaelia.PhysicsGraph3D.Particles3D.Particle3D 
 and implement the following method (for rendering purposes):
 
     draw()
@@ -304,10 +307,8 @@ class TopologyViewer3D(Axon.Component.component):
     
     Inboxes = { "inbox"          : "Topology (change) data describing an Axon system",
                 "control"        : "Shutdown signalling",
-                "alphacontrol"   : "Alpha (transparency) of the image (value 0..255)",
                 "callback"       : "for the response after a displayrequest",
                 "events"         : "Place where we recieve events from the outside world",
-                "displaycontrol" : "Replies from OpenGL Display service",
               }
               
     Outboxes = { "signal"         : "Control signalling",
@@ -390,6 +391,7 @@ class TopologyViewer3D(Axon.Component.component):
         self.lastClickTime = time.time()
         self.dClickRes = 0.3
     
+    
     def initialiseComponent(self):
         """Initialises."""
         self.addListenEvents( [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION, pygame.KEYDOWN, pygame.KEYUP ])
@@ -401,6 +403,7 @@ class TopologyViewer3D(Axon.Component.component):
 
         for source,dest in self.initialBonds:
             self.makeBond(source, dest)
+    
     
     def main(self):
         """Main loop."""
@@ -437,20 +440,16 @@ class TopologyViewer3D(Axon.Component.component):
             yield 1        
             
             if self.lastIdleTime + 1.0 < time.time():
-                #print [particle.pos for particle in self.physics.particles]
                 avoidedList = []
-                #avoidedList.extend(self.hitParticles)
                 avoidedList.extend(self.selectedParticles)
                 
                 # Do interaction between particles
                 self.currentDisplayedPhysics.run(self.simCyclesPerRedraw, avoidedList=avoidedList)
-                #print [particle.pos for particle in self.physics.particles]
                 
                 # Draw particles if new or updated
                 for particle in self.currentDisplayedPhysics.particles:
                     if particle.needRedraw:
                         self.drawParticles(particle)
-                        #particle.needRedraw = False                        
                 
                 self.handleEvents()
                 
@@ -459,8 +458,6 @@ class TopologyViewer3D(Axon.Component.component):
                     transform_update = particle.applyTransforms()
                     if transform_update is not None:
                         self.send(transform_update, "display_signal")
-                        #print transform_update
-                        #print [particle.pos for particle in self.physics.particles]
                 
                 self.lastIdleTime = time.time()
             else:
@@ -470,11 +467,13 @@ class TopologyViewer3D(Axon.Component.component):
                 if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
                     self.quit(msg)
             
+            
     def quit(self,msg=Axon.Ipc.shutdownMicroprocess()):
         """Cause termination."""
         print 'Shut down...'
         self.send(msg, "signal")
         self.scheduler.stop()
+    
     
     def draw(self):
         """\
@@ -487,7 +486,11 @@ class TopologyViewer3D(Axon.Component.component):
         """
         pass
     
+    
     def drawParticles(self, *particles):
+        """\
+            Sends particles drawing opengl command to the display service.
+        """
         for particle in particles:
             # Display list id
             displaylist = glGenLists(1)
@@ -503,6 +506,7 @@ class TopologyViewer3D(Axon.Component.component):
                         }
             self.send(dl_update, "display_signal")
     
+    
     def addListenEvents(self, events):
         """\
             Sends listening request for pygame events to the display service.
@@ -510,6 +514,7 @@ class TopologyViewer3D(Axon.Component.component):
         """
         for event in events:
             self.send({"ADDLISTENEVENT":event, "objectid":id(self)}, "display_signal")
+    
     
     def removeListenEvents(self, events):
         """\
@@ -519,6 +524,7 @@ class TopologyViewer3D(Axon.Component.component):
         for event in events:
             self.send({"REMOVELISTENEVENT":event, "objectid":id(self)}, "display_signal")        
                        
+    
     def handleEvents(self):
         """Handle events."""
         while self.dataReady("events"):
@@ -532,8 +538,7 @@ class TopologyViewer3D(Axon.Component.component):
             if self.display.viewerposition.copy() != self.viewerOldPos:
                 self.scroll()
                 self.viewerOldPos = self.display.viewerposition.copy()
-    #                for particle in self.currentDisplayedPhysics.particles:
-    #                    particle.oldpoint = None
+
     
     def handleMouseEvents(self, event):
         """Handle mouse events."""
@@ -545,7 +550,6 @@ class TopologyViewer3D(Axon.Component.component):
                     p2 = Vector(*particle.pos).copy()
                     p2.y += 10
                     # Get the position of mouse
-                    #z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-self.display.viewerposition, p1, p2])
                     z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [Vector(*particle.pos)-Vector(0,0,self.display.viewerposition.z), p1-Vector(0,0,self.display.viewerposition.z), p2-Vector(0,0,self.display.viewerposition.z)])
                     newpoint = event.direction * z
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -561,13 +565,9 @@ class TopologyViewer3D(Axon.Component.component):
                     if not self.rotationMode: # Select particle
                         for particle in self.currentDisplayedPhysics.particles:
                             if particle.identifier in event.hitobjects:
-                                #particle.oldpos = particle.oldpos - self.display.viewerposition
                                 self.grabbed = True
-                                #particle.scaling = Vector(0.9,0.9,0.9)
                                 self.hitParticles.append(particle)
                                 self.selectParticle(particle)
-                                #print str(id(particle))+'hit'
-                                #print self.hitParticles
                         # If click places other than particles in non multiSelectMode, deselect all
                         if not self.hitParticles and not self.multiSelectMode:
                             self.deselectAll()
@@ -598,15 +598,12 @@ class TopologyViewer3D(Axon.Component.component):
                 for particle in self.hitParticles:
                     self.grabbed = False
                     particle.oldpoint = None
-                    #particle.scaling = Vector(1,1,1)
                     self.hitParticles.pop(self.hitParticles.index(particle))
-                    #print self.hitParticles
         if event.type == pygame.MOUSEMOTION: 
             if not self.rotationMode and self.grabbed: # Drag particles
                 for particle in self.hitParticles:
                     try:
                         if particle.oldpoint is not None:
-                            #print particle.pos
                             diff = newpoint-particle.oldpoint
                             amount = (diff.x, diff.y)
                             particle.pos = (Vector(*particle.pos)+Vector(*amount)).toTuple()
@@ -624,6 +621,7 @@ class TopologyViewer3D(Axon.Component.component):
             for particle in self.hitParticles:
                 particle.oldpoint = newpoint                    
         except NameError: pass    
+    
     
     def handleKeyEvents(self, event):
         """Handle keyboard events."""            
@@ -673,12 +671,14 @@ class TopologyViewer3D(Axon.Component.component):
                 # Return to normal mode from rotationMode
                 self.rotationMode = False                 
     
+    
     def scroll( self ):
         """Scroll the surface by resetting gluLookAt."""
         glMatrixMode(GL_PROJECTION)                 
         glLoadIdentity()
         self.display.setProjection()
         
+    
     def rotateParticles( self, particles, dAngle ):
         """\
         Rotate the particles around their common centre dAngle degree.
@@ -719,6 +719,7 @@ class TopologyViewer3D(Axon.Component.component):
         # An angle keeps the same with when it minus muptiple 360 
         particle.drotation %= 360
         
+    
     def gotoDisplayLevel( self, dlevel):
         """Switch to another display level."""
         isValid = False
@@ -781,6 +782,7 @@ class TopologyViewer3D(Axon.Component.component):
                         self.currentDisplayedPhysics.add( particle )
                         particle.oldpos = particle.initialpos
                             
+    
     def doCommand(self, msg):
         """\
         Proceses a topology command tuple:
@@ -806,20 +808,16 @@ class TopologyViewer3D(Axon.Component.component):
                     print "Node exists, please use a new node ID!"
                 else:
                     if self.particleTypes.has_key(msg[5]):
-                        #print 'ADD NODE begin'
                         ptype = self.particleTypes[msg[5]]
                         ident    = msg[2]
                         name  = msg[3]
                         
                         posSpec = msg[4]
                         pos     = self._generatePos(posSpec)
-                        #print pos
     
                         particle = ptype(position = pos, ID=ident, name=name)
-                        
                         particle.originaltype = msg[5]
-                        #self.particles.append(particle)
-                        #print self.particles[0]
+                      
                         self.addParticle(particle)
                         self.isNewNode = True
 
@@ -861,6 +859,7 @@ class TopologyViewer3D(Axon.Component.component):
         else:
             print "Command Error: not enough parameters!"
   
+    
     def _generatePos(self, posSpec):
         """\
         generateXY(posSpec) -> (x,y,z) or raises ValueError
@@ -895,6 +894,7 @@ class TopologyViewer3D(Axon.Component.component):
         
         raise ValueError("Unrecognised position specification")
 
+    
     def addParticle(self, *particles):
         """Add particles to the system"""
         for p in particles:
@@ -924,6 +924,7 @@ class TopologyViewer3D(Axon.Component.component):
             elif particle.ID.find(self.currentParentParticleID) == 0 and particle.ID.count(':') == self.currentLevel:
                 self.currentDisplayedPhysics.add( particle )
                 particle.oldpos = particle.initialpos
+    
         
     def removeParticle(self, *ids):
         """\
@@ -939,15 +940,12 @@ class TopologyViewer3D(Axon.Component.component):
                 self.display.ogl_displaylists.pop(id(self.physics.particleDict[ident]))
                 self.display.ogl_transforms.pop(id(self.physics.particleDict[ident]))
             except KeyError: pass
-#            if self.selected == self.physics.particleDict[id]:
-#                self.selectParticle(None)
         self.physics.removeByID(*ids)
         for ident in ids:
             try:
                 self.currentDisplayedPhysics.removeByID(ident)
             except KeyError: pass
-        #print self.currentDisplayedPhysics.particles
-        #print self.physics.particles
+    
         
     def selectParticle(self, particle):
         """Select the specified particle."""
@@ -967,21 +965,25 @@ class TopologyViewer3D(Axon.Component.component):
             self.selectedParticles.append(particle)
             self.send( "('SELECT', 'NODE', '"+particle.name+"')", "outbox" )
 
+
     def deselectAll(self):
         """Deselect all particles."""
         for particle in self.selectedParticles:
             particle.deselect()
         self.selectedParticles = []
     
+    
     def makeBond(self, source, dest):
         """Make a bond from source to destination particle, specified by IDs"""
         self.physics.particleDict[source].makeBond(self.physics.particleDict, dest)
         self.physics.particleDict[source].needRedraw = True
 
+
     def breakBond(self, source, dest):
         """Break a bond from source to destination particle, specified by IDs"""
         self.physics.particleDict[source].breakBond(self.physics.particleDict, dest)
         self.physics.particleDict[source].needRedraw = True
+    
         
     def updateParticleLabel(self, node_id, new_name):
         """\
@@ -996,6 +998,7 @@ class TopologyViewer3D(Axon.Component.component):
                 p.needRedraw = True
                 return
 
+
     def getParticleLabel(self, node_id):
         """\
         getParticleLabel(node_id) -> particle's name
@@ -1005,6 +1008,7 @@ class TopologyViewer3D(Axon.Component.component):
         for p in self.physics.particles:
             if p.ID == node_id:
                 return p.name
+    
     
     def getTopology(self):
         """getTopology() -> list of command tuples that would build the current topology"""
@@ -1026,7 +1030,10 @@ class TopologyViewer3D(Axon.Component.component):
             
         return topology
             
+
+
 __kamaelia_components__  = ( TopologyViewer3D, )            
+
 
             
 if __name__ == "__main__":
