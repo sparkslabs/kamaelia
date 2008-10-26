@@ -105,10 +105,13 @@ class ConsoleReader(threadedcomponent):
    def main(self):
       """Main thread loop."""
       while 1:
-         line = raw_input(self.prompt)
+         try:
+             line = raw_input(self.prompt)
+         except:
+             break
          line = line + self.eol
          self.send(line, "outbox")
-
+      self.send(producerFinished(), "signal")                          
 
 
 class ConsoleEchoer(component):
