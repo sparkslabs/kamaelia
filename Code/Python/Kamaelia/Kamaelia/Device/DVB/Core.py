@@ -210,6 +210,20 @@ def tune_DVBT(fe, frequency, feparams={}):
 
     # Start the tuning
     fe.set_frontend(params)
+
+def tune_DVB(fe, frequency, feparams={}):
+    # Build the tuning parameters (DVB-T)
+    if fe.t == dvb3.frontend.OFDMParameters:
+        params = dvb3.frontend.OFDMParameters(
+            frequency = frequency * 1000 * 1000,
+            **feparams
+            )
+    else:
+        build_params = fe.t
+        params = build_params( **feparams )
+
+    # Start the tuning
+    fe.set_frontend(params)
     
 
 def notLocked(fe):
@@ -254,7 +268,7 @@ class DVB_Multiplex(threadedcomponent):
     this system should be relatively simple - we run this code once and
     dump to disk. 
     """
-    def __init__(self, freq, pids, feparams={}),card=0:
+    def __init__(self, freq, pids, feparams={},card=0):
         self.freq = freq
         self.feparams = feparams
         self.pids = pids
@@ -272,7 +286,8 @@ class DVB_Multiplex(threadedcomponent):
     def main(self):
         # Open the frontend of card 0 (/dev/dvb/adaptor0/frontend0)
         fe = dvb3.frontend.Frontend(self.card, blocking=0)
-        tune_DVBT(fe, self.freq, self.feparams)
+#        tune_DVBT(fe, self.freq, self.feparams)
+        tune_DVB(fe, self.freq, self.feparams)
         while notLocked(fe): time.sleep(0.1) #yield 1  # could sleep for, say, 0.1 seconds.
         demuxers = addPIDS(self.pids)        
 
