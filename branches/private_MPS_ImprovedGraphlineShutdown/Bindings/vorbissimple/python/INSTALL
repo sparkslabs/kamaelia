@@ -1,0 +1,14 @@
+In order to install the vorbissimple extension, you need to install
+libvorbissimple first:
+   * cd libvorbissimple-0.0.1
+   * ./configure
+   * make 
+   * make install
+   * ldconfig
+
+Then you build and install install the python bindings:
+   * cd python
+   * python setup.py install
+
+
+Michael, July 2004
