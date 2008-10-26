@@ -85,8 +85,8 @@ types.
 How does it work?
 -----------------
 
-This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particle3D and adds methods to
-support rendering (draw).
+This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particles3D.Particle3D 
+and adds methods to support rendering (draw).
 
 
 
@@ -118,8 +118,8 @@ types.
 How does it work?
 -----------------
 
-This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particle3D and adds methods to
-support rendering (draw).
+This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particles3D.Particle3D 
+and adds methods to support rendering (draw).
 
 
 
@@ -152,8 +152,8 @@ types.
 How does it work?
 -----------------
 
-This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particle3D and adds methods to
-support rendering (draw).
+This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particles3D.Particle3D 
+and adds methods to support rendering (draw).
 
 
 
@@ -201,6 +201,7 @@ class Particle3D(BaseParticle):
     - thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)
     - image        -- The uri of image, image texture instead of label texture is used if specified
     """
+    
     
     def __init__(self, position = (-1,0,-10), ID='', **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
@@ -252,6 +253,7 @@ class Particle3D(BaseParticle):
         # For drag handling
         self.oldpoint = None
     
+    
     def set_label(self, new_name):
         """Set text label."""
         if self.initSize == Vector():
@@ -261,11 +263,13 @@ class Particle3D(BaseParticle):
         #  It's after buildCaption() because self.size is decided only after buildCaption() if size=(0,0,0)
         self.radius = self.size.length()/2
     
+    
     def draw(self):
         """\Stub method
         Override this method to draw concrete particles and links.
         """
         pass
+    
         
     def readURLFile(self):
         """Read a string buffer of an object denoted by a URL."""
@@ -274,6 +278,7 @@ class Particle3D(BaseParticle):
         self.picIO = StringIO(picData)
         # Text label is not needed for picture texture
         self.set_label("Dummy")
+    
             
     def buildCaption(self):
         """Pre-render the text to go on the label."""
@@ -315,14 +320,10 @@ class Particle3D(BaseParticle):
         # copy image data to pow2surface
         dest = ( max((texsize[0]-self.image.get_width())/2, 0), max((texsize[1]-self.image.get_height())/2, 0) )
         textureSurface.blit(self.image, dest)
-#        textureSurface.set_alpha(128)
         textureSurface = textureSurface.convert_alpha()
 
         # read pixel data
         textureData = pygame.image.tostring(textureSurface, "RGBX", 1)
-        #print self.image.get_width(), self.image.get_height()
-        #print textureSurface.get_width(), textureSurface.get_height()
-        #print textureData
 
         self.texID = glGenTextures(1)
         # create texture
@@ -333,6 +334,7 @@ class Particle3D(BaseParticle):
         glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureSurface.get_width(), textureSurface.get_height(), 0,
                         GL_RGBA, GL_UNSIGNED_BYTE, textureData );
         glDisable(GL_TEXTURE_2D)
+    
         
     def applyTransforms(self):
         """Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened."""
@@ -369,21 +371,22 @@ class Particle3D(BaseParticle):
         else:
             return None
 
+
     def select( self ):
         """Tell this particle it is selected"""
-        #self.selected = True
         self.sideColour = self.sideColourWhenSelected
         self.bgColour = self.bgColourWhenSelected
         self.fgColour = self.fgColourWhenSelected
         self.buildCaption()
 
+
     def deselect( self ):
         """Tell this particle it is deselected"""
-        #self.selected = False
         self.sideColour = self.sideColourWhenUnselected
         self.bgColour = self.bgColourWhenUnselected
         self.fgColour = self.fgColourWhenUnselected
         self.buildCaption()
+
 
 
 class CuboidParticle3D(Particle3D):
@@ -391,9 +394,11 @@ class CuboidParticle3D(Particle3D):
     Cuboid rendering particle
     """
     
+    
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(CuboidParticle3D, self).__init__(**argd)
+
 
     def draw(self):
         """Draw CUBOID Particle."""
@@ -441,16 +446,12 @@ class CuboidParticle3D(Particle3D):
         # front plane
         glTexCoord2f(0.0, 1.0-self.tex_h)
         glVertex3f(-hs.x,-hs.y,hs.z)
-        #glVertex3f(-2.0, -1.0,  1.0)
         glTexCoord2f(self.tex_w, 1.0-self.tex_h)
         glVertex3f(hs.x,-hs.y,hs.z)
-        #glVertex3f( 2.0, -1.0,  1.0)
         glTexCoord2f(self.tex_w, 1.0)
         glVertex3f(hs.x,hs.y,hs.z)
-        #glVertex3f( 2.0,  5.0,  1.0) 
         glTexCoord2f(0.0, 1.0)
         glVertex3f(-hs.x,hs.y,hs.z)
-        #glVertex3f(-2.0,  5.0,  1.0)
                 
         glEnd()
         
@@ -468,15 +469,18 @@ class CuboidParticle3D(Particle3D):
         glPopMatrix()
 
 
+
 class SphereParticle3D(Particle3D):
     """\
     Sphere rendering particle
     """
     
+    
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(SphereParticle3D, self).__init__(**argd)
         self.drotation = Vector(0,0,90)
+
 
     def draw(self):
         """Draw sphere particle."""
@@ -511,14 +515,17 @@ class SphereParticle3D(Particle3D):
         glPopMatrix()
 
 
+
 class TeapotParticle3D(Particle3D):
     """\
     Teapot rendering particle
     """
     
+    
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(TeapotParticle3D, self).__init__(**argd)
+
 
     def draw(self):
         """Draw teapot particle."""
