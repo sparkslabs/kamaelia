@@ -43,6 +43,7 @@ References: Kamaelia.Support.Particles.ParticleSystem.ParticleSystem
 
 from Kamaelia.Support.Particles.ParticleSystem import ParticleSystem
 
+
 class ParticleSystemWithAvoidedList(ParticleSystem):
     """\
     ParticleSystemX(laws[,initialParticles][,initialTick]) -> new ParticleSystem object
@@ -53,11 +54,12 @@ class ParticleSystemWithAvoidedList(ParticleSystem):
     
     - initialParticles  -- list of particles (default=[])
     - initialTick       -- start value of the time 'tick' count (default=0)
-    """
+    """    
     
     def __init__(self, laws, initialParticles = [], initialTick = 0):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ParticleSystemWithAvoidedList, self).__init__(laws=laws, initialParticles = [], initialTick = 0)
+    
     
     def run(self, cycles = 1, avoidedList=[]):
         """\
@@ -82,6 +84,7 @@ class ParticleSystemWithAvoidedList(ParticleSystem):
                 else:
                     p.update(_laws)
         _indexer.updateAll()
+
 
 
 __kamaelia_components__  = ( ParticleSystemWithAvoidedList, )
