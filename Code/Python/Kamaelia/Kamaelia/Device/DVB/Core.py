@@ -216,13 +216,15 @@ def tune_DVB(fe, frequency, feparams={}):
     print dir(fe)
     print fe.__class__
     print type(fe)
-    if fe.t == dvb3.frontend.OFDMParameters:
+    fet = fe.get_dvbtype()
+    
+    if fet == dvb3.frontend.OFDMParameters:
         params = dvb3.frontend.OFDMParameters(
             frequency = frequency * 1000 * 1000,
             **feparams
             )
     else:
-        build_params = fe.t
+        build_params = fet
         params = build_params( **feparams )
 
     # Start the tuning
