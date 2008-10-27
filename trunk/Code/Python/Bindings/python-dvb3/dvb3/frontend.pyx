@@ -452,6 +452,9 @@ cdef class Frontend:
             raise_ioerror()
         return unpack_parameters(&p, self.t)
 
+    def get_dvbtype(self):
+        return self.t
+
     def get_event(self):
         global cfrontend
         cdef cfrontend.dvb_frontend_event e
