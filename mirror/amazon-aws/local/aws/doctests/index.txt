@@ -1,0 +1,77 @@
+.. module:: aws
+
+######################################
+Module :mod:`aws`
+######################################
+
+The aws package contains Kamaelia components for interfacing with AWS. It contains the following:
+
+.. toctree::
+    
+    sqs
+    s3
+    logger
+    settings
+    
+What's in :mod:`aws.__init__`
+-------------------------------
+
+
+.. autoclass:: DebugMethodMixin
+    
+    This class is to simplify logging and to use the :meth:`shutdown` to simplify the :meth:`~Axon.Component.component.main` method. Use it like this:
+        
+    .. code-block:: python
+            
+        def main():
+            while not self.shutdown():
+                # do stuff
+                yield 1
+
+    .. automethod:: debug
+    
+    .. automethod:: info
+    
+    .. automethod:: error
+    
+    .. automethod:: shutdown
+   
+    
+High Level Components
+-------------------------- 
+
+.. autofunction:: aws.components.KeyActor
+
+.. autofunction:: aws.components.Keyfetcher
+
+    Uses the following components internally
+    
+    * :class:`aws.s3.S3KeyFetcher`
+    * :class:`aws.sqs.SQSJSONReciever`
+    * :class:`aws.logger.Logger`
+    
+    Kamaelia Components:
+    
+    One Backplane for logging messages to:
+    
+    * :class:`~Kamaelia.Util.Backplane.Backplane`
+    * :class:`~Kamaelia.Util.Backplane.PublishTo`
+    * :class:`~Kamaelia.Util.Backplane.SubscribeTo`
+    
+    The transformer takes all of the messages from the :class:`~aws.sqs.SQSJSONReciever` (which are python dictionaries) and sends on the ['path'] key to the inbox of the :class:`~aws.s3.S3KeyFetcher`
+    
+    * :class:`~Kamaelia.Util.SequentialTransformer.SequentialTransformer`
+    
+.. autofunction:: aws.components.Filedownloader
+    
+    Uses the following components internally
+    
+    * :class:`aws.s3.S3KeyToFile`
+    * :class:`aws.logger.Logger`
+    
+    It has the same Logging set up as :func:`~aws.components.Keyfetcher` above.
+    
+    .. note:: The :class:`~aws.s3.S3KeyToFile` is currently sending it's completion updates to a :class:`~Kamaelia.Util.Console.ConsoleEchoer`, which isn't really great.
+    
+
+                    

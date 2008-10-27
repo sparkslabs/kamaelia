@@ -1,0 +1,13 @@
+###############################################
+The boto AWS library
+###############################################
+
+Boto is the library we use to interact with AWS with python. Its docs are linked in with ours (see contents).
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+    
+    ec2/module-ec2
+    sqs/module-sqs
+    s3/module-s3

@@ -1,0 +1,34 @@
+Index: boto/sqs/jsonmessage.py
+===================================================================
+--- boto/sqs/jsonmessage.py	(revision 920)
++++ boto/sqs/jsonmessage.py	(working copy)
+@@ -23,6 +23,16 @@
+ import base64
+ import simplejson
+ 
++class JSONEncodingExeption(Exception):
++    
++    def __init__(self, message, value, exception):
++        self.message = message
++        self.value = value
++        self.exception = exception
++        
++    def __str__(self):
++        return u"Message can't be decoded. Message body: %s" % self.value
++
+ class JSONMessage(MHMessage):
+     """
+     Acts like a dictionary but encodes it's data as a Base64 encoded JSON payload.
+@@ -30,7 +40,11 @@
+ 
+     def decode(self, value):
+         value = base64.b64decode(value)
+-        return simplejson.loads(value)
++        try:
++            return simplejson.loads(value)
++        except ValueError, e:
++            raise JSONEncodingExeption(self, value, e)
++        
+ 
+     def encode(self, value):
+         value = simplejson.dumps(value)

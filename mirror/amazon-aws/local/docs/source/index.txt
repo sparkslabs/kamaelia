@@ -1,0 +1,31 @@
+.. 2degrees Search documentation master file, created by sphinx-quickstart on Tue Sep 30 10:53:06 2008.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to 2degrees Search's documentation!
+===========================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2 
+
+   aws/index
+   xapian2d/index
+
+   
+We're also using the following libraries:
+
+.. toctree::
+    :maxdepth: 2
+
+    boto/index
+    kamaelia/index
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

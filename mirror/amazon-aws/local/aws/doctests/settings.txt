@@ -1,0 +1,15 @@
+.. module:: aws.settings
+
+###########################################
+Module :mod:`aws.settings`
+###########################################
+
+This is where configuration lives, much like django's settings module. There are also a few equivalent environmental variables you can set:
+
+.. envvar:: AWS_ACCESS_KEY_ID
+
+    Your AWS Access Key ID
+    
+.. envvar:: AWS_SECRET_ACCESS_KEY
+
+    Your AWS Secret Key ID
