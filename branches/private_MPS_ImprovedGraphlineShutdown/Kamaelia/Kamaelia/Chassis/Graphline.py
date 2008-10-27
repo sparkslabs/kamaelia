@@ -127,6 +127,7 @@ as you specified.
 
 from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
+from Axon.Ipc import shutdownMicroprocess
 
 component = _Axon.Component.component
 
@@ -145,7 +146,7 @@ class Graphline(component):
    """
    
    Inboxes = {"inbox":"", "control":""}
-   Outboxes = {"outbox":"", "signal":""}
+   Outboxes = {"outbox":"", "signal":"", "_cs": "For signaling to subcomponents shutdown"}
     
    def __init__(self, linkages = None, **components):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
@@ -187,8 +188,29 @@ class Graphline(component):
    def main(self):
       """Main loop."""
 #      components = []
+      link_to_component_control = {}
+      
+      """
+            ("SEMANTIC_EVENTS","outbox"):("CENTRAL_CONTROL","from_panel"),
+            ("SELECTION_EVENTS","outbox"):("CENTRAL_CONTROL","from_topology"),
+            ("MAKELINK", "outbox") : ("CENTRAL_CONTROL", "makelink"),
+            ("CENTRAL_CONTROL","to_topology"):("TOPOLOGY_VISUALISER","inbox"),
+            ("CENTRAL_CONTROL","to_serialiser"):("CODE_GENERATOR","inbox"),
+            ("CODE_GENERATOR","outbox"): ("CODE_DISPLAY","inbox"),    
+"""      
+      
       for componentRef,sourceBox in self.layout:
          toRef, toBox = self.layout[(componentRef,sourceBox)]
+
+         if link_to_component_control.get(componentRef, None) == None:
+             link_to_component_control[componentRef] = True
+
+         if link_to_component_control.get(toRef, None) == None:
+             link_to_component_control[toRef] = True
+         
+         if toBox == "control":
+             link_to_component_control[toRef] = False
+
          fromComponent = self.components.get(componentRef, self)
          toComponent = self.components.get(toRef, self)
 
@@ -203,8 +225,21 @@ class Graphline(component):
             print "WARNING, assuming linking outbox to inbox on the graph. This is a poor assumption"
          
          self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)
+#         print "self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)"
+#         print "self.link", ((fromComponent,sourceBox), (toComponent,toBox), passthrough)
+
+      for ref in self.components:
+          if link_to_component_control.get(ref, None) == None:
+              link_to_component_control[ref] = True
 
       self.addChildren(*self.components.values())
+      self.components_to_get_control_messages = []
+      for ref in link_to_component_control:
+          if link_to_component_control[ref]:
+#              print "We will need to pass on shutdown to", ref
+#              print "So, that maps to this", self.components[ref]
+#              "_cs"
+              self.components_to_get_control_messages.append( self.components[ref] )
 
       for child in self.children:
           child.activate()
@@ -215,9 +250,25 @@ class Graphline(component):
 
       # becuase they are children, if they terminate, we'll be woken up
       while not self.childrenDone():
-          self.pause()
-          yield 1
+          if not self.anyReady():
+              self.pause()
+#          print "I'm awake!"
+          if self.dataReady("control"):
+              msg = self.recv("control")
+              for toComponent in self.components_to_get_control_messages:
+                  L = self.link( (self, "_cs"), (toComponent, "control"))
+                  self.send( msg, "_cs")
+                  yield 1
+                  self.unlink(thelinkage=L)
+#                  print "passing on shutdown", toComponent.name
 
+              if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):
+#                  print "oooh, we got a you must shutdown message, okeydokey, doing so"
+                  break
+#              else:
+#                  print msg, shutdownMicroprocess
+          yield 1
+#      print "Graphline is exitting"
    
    
    def childrenDone(self):
