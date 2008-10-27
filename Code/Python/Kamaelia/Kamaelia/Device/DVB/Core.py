@@ -272,7 +272,7 @@ class DVB_Multiplex(threadedcomponent):
         self.freq = freq
         self.feparams = feparams
         self.pids = pids
-        sefl.card = card
+        self.card = card
         super(DVB_Multiplex, self).__init__()
         
     def shutdown(self):
