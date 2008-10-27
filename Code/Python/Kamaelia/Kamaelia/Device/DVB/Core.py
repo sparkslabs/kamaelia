@@ -213,6 +213,7 @@ def tune_DVBT(fe, frequency, feparams={}):
 
 def tune_DVB(fe, frequency, feparams={}):
     # Build the tuning parameters (DVB-T)
+    print dir(fe)
     if fe.t == dvb3.frontend.OFDMParameters:
         params = dvb3.frontend.OFDMParameters(
             frequency = frequency * 1000 * 1000,
