@@ -26,7 +26,7 @@ Generic 3D Topology Viewer
 ===========================
 
 A 3D version of TopologyViewer plus hierarchy topology support, pygame based 
-display of graph topologies.. Rendering and physics laws can be customised 
+display of graph topologies. Rendering and physics laws can be customised 
 for specific applications.
 
 
@@ -1079,4 +1079,5 @@ if __name__ == "__main__":
         ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),
     }
 ).run()
-                
+                         
+# Licensed to the BBC under a Contributor Agreement: CL

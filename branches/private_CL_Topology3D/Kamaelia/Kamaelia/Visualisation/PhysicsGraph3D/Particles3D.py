@@ -564,3 +564,5 @@ class TeapotParticle3D(Particle3D):
             glVertex3f(*(Vector(*p.pos)-Vector(*self.pos)).toTuple())
             glEnd()
         glPopMatrix()
+
+# Licensed to the BBC under a Contributor Agreement: CL        

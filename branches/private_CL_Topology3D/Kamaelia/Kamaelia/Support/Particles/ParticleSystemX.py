@@ -88,3 +88,5 @@ class ParticleSystemWithAvoidedList(ParticleSystem):
 
 
 __kamaelia_components__  = ( ParticleSystemWithAvoidedList, )
+
+# Licensed to the BBC under a Contributor Agreement: CL

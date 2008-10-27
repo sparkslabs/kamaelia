@@ -62,3 +62,5 @@ linkages = {
     ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),
     }
 ).run()
+
+# Licensed to the BBC under a Contributor Agreement: CL
