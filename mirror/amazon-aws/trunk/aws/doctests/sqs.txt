@@ -1,0 +1,25 @@
+.. module:: aws.sqs
+
+########################################
+Module :mod:`aws.sqs`
+########################################
+
+
+.. inheritance-diagram:: aws.sqs.SQSJSONComponent aws.sqs.SQSJSONReciever aws.sqs.SQSJSONSender
+
+Base Classes
+----------------
+
+.. autoclass:: SQSJSONComponent
+    :members:
+    
+    The superclass takes care of setting up the connection to SQS using :class:`boto.sqs.connection.Connection`.
+
+Kamaelia Components
+----------------------
+
+.. autoclass:: SQSJSONReciever
+    :members:
+    
+.. autoclass:: SQSJSONSender
+    :members:

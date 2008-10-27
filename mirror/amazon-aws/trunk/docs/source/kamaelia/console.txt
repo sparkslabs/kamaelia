@@ -1,0 +1,10 @@
+##############################################
+:mod:`~Kamaelia.Util.Console`
+##############################################
+
+.. automodule:: Kamaelia.Util.Console
+
+ConsoleEchoer
+-------------------
+
+.. autoclass:: ConsoleEchoer

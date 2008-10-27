@@ -1,0 +1,10 @@
+.. module:: aws.logger
+
+########################################
+Module :mod:`aws.logger`
+########################################
+
+
+.. autoclass:: Logger
+    :show-inheritance:
+    :members:

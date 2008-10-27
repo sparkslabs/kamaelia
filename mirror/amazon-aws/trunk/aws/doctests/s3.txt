@@ -1,0 +1,75 @@
+.. module:: aws.s3
+
+########################################
+Module :mod:`aws.s3`
+########################################
+
+The :mod:`~aws.s3` module had components for getting :class:`boto.s3.key.Key` objects from an :class:`boto.s3.bucket.Bucket` and vice versa. All of the base classes are located in :mod:`aws.s3.base` and all of the actual components are in :mod:`aws.s3.components`. All of the components are also available in the :mod:`aws.s3` namespace
+
+
+Base classes :mod:`~aws.s3.base`
+--------------------------------------
+
+This module contains all of the superclasses for the components in the :mod:`~aws.s3.components` module
+
+.. module:: aws.s3.base
+
+.. autoclass:: S3UploadRequest
+    :members:
+
+.. autoclass:: S3Completion
+    :members:
+
+.. autoclass:: S3Component
+    :members:
+    
+    .. inheritance-diagram:: aws.s3.base.S3Component
+    
+.. autoclass:: UploadDownloadMixin
+    
+    .. automethod:: _update_progress
+    
+Kamaeila Components :mod:`~aws.s3.components`
+-------------------------------------------------
+
+All of the components in this module are also available in the :mod:`aws.s3` namespace
+
+.. module:: aws.s3.components
+
+These are the working :class:`Axon.Component.component` subclasses that will be the building blocks of functionality
+    
+.. autoclass:: S3KeyFetcher
+    :members:
+    
+    .. inheritance-diagram:: aws.s3.S3KeyFetcher
+    
+    Takes paths on it's inbox and attempts to fetch a :class:`boto.s3.key.Key` from its :class:`boto.s3.bucket.Bucket`. Like other :mod:`aws` Kamaelia components it logs to its :attr:`log` box and sends the keys it fetches to its outbox
+    
+.. autoclass:: S3FilePathUploader
+    :members:
+    
+    .. inheritance-diagram:: aws.s3.S3FilePathUploader
+
+
+.. autoclass:: S3KeyHandler
+
+    .. automethod:: process_key
+
+
+.. autoclass:: S3KeyToFile
+
+    .. inheritance-diagram:: aws.s3.S3KeyToFile
+
+    .. automethod:: process_key
+    
+.. autoclass:: S3KeyToText
+
+    .. inheritance-diagram:: aws.s3.S3KeyToText
+
+    .. automethod:: process_key
+    
+.. autoclass:: S3KeyDeleter
+
+    .. inheritance-diagram:: aws.s3.S3KeyDeleter
+
+    .. automethod:: process_key

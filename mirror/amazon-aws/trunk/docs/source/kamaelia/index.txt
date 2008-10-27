@@ -1,0 +1,29 @@
+.. module:: Kamaelia
+
+#####################################
+Kamealia
+#####################################
+
+Kamaelia is a python library implementing concurrency using components connected together communicating with small messages
+
+Building Blocks
+-------------------
+
+..  toctree::
+    :maxdepth: 2
+    
+    backplane
+    console
+    sequential-transformer
+
+Core Components
+--------------------
+
+.. autoclass:: Axon.Component.component
+    :members:
+    
+    
+    The :class:`component` is the basic building block of all concurrent systems in :mod:`Kamaelia`
+    
+.. autoclass:: Axon.ThreadedComponent.threadedcomponent
+    :members:

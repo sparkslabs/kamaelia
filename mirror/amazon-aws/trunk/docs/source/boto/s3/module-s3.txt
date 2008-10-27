@@ -1,0 +1,30 @@
+##################################################
+The s3 module :mod:`boto.s3`
+##################################################
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+    
+    s3_tut
+    
+Classes
+===============
+
+.. inheritance-diagram:: boto.s3.connection.S3Connection boto.s3.bucket.Bucket boto.s3.key.Key
+
+:epydoc:`epydocs <boto.s3.connection.S3Connection>`
+
+.. module:: boto.s3.connection
+
+.. autoclass:: S3Connection
+
+    :epydoc:`epydocs <boto.s3.connection.S3Connection>`
+
+.. autoclass:: boto.s3.key.Key
+
+    :epydoc:`epydocs <boto.s3.key.Key>`
+
+.. autoclass:: boto.s3.bucket.Bucket
+
+    :epydoc:`epydocs <boto.s3.bucket.Bucket>`

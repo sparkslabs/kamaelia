@@ -1,0 +1,20 @@
+##############################################
+:mod:`~Kamaelia.Util.Backplane`
+##############################################
+
+.. automodule:: Kamaelia.Util.Backplane
+
+Backplane
+-------------------
+
+.. autoclass:: Backplane
+
+PublishTo
+---------------
+
+.. autoclass:: PublishTo
+
+SubscribeTo
+---------------
+
+.. autoclass:: SubscribeTo

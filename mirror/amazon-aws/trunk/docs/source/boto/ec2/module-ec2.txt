@@ -1,0 +1,20 @@
+##################################################
+The ec2 module :mod:`boto.ec2`
+##################################################
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+    
+    ec2_tut
+    
+Classes
+===============
+
+.. inheritance-diagram:: boto.ec2.connection.EC2Connection
+
+:epydoc:`epydocs <boto.ec2.connection.EC2Connection>`
+
+.. module:: boto.ec2.connection
+
+.. autoclass:: EC2Connection

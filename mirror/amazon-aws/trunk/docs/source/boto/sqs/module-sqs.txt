@@ -1,0 +1,25 @@
+##################################################
+The sqs module :mod:`boto.sqs`
+##################################################
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+    
+    sqs_tut
+    
+Classes
+===============
+
+.. inheritance-diagram:: boto.sqs.connection.SQSConnection boto.sqs.jsonmessage.JSONMessage
+
+
+.. autoclass:: boto.sqs.connection.SQSConnection
+    
+    :epydoc:`epydocs <boto.sqs.connection.SQSConnection>`
+    
+    :test:`Doctests <SQSConnection>`
+
+.. autoclass:: boto.sqs.jsonmessage.JSONMessage
+    
+    :epydoc:`epydocs <boto.sqs.jsonmessage.JSONMessage>`

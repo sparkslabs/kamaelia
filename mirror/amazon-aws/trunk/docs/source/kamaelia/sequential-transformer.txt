@@ -1,0 +1,8 @@
+###########################################################
+:mod:`~Kamaelia.Util.SequentialTransformer`
+###########################################################
+
+.. automodule:: Kamaelia.Util.SequentialTransformer
+
+    .. autoclass:: SequentialTransformer
+    
