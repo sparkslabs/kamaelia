@@ -202,17 +202,11 @@ class Graphline(component):
       for componentRef,sourceBox in self.layout:
          toRef, toBox = self.layout[(componentRef,sourceBox)]
 
-         if link_to_component_control.get(componentRef, None) == None:
-             link_to_component_control[componentRef] = True
-
-         if link_to_component_control.get(toRef, None) == None:
-             link_to_component_control[toRef] = True
-         
-         if toBox == "control":
-             link_to_component_control[toRef] = False
-
          fromComponent = self.components.get(componentRef, self)
          toComponent = self.components.get(toRef, self)
+
+         if toBox == "control":
+             link_to_component_control[toComponent] = False
 
 #         if fromComponent != self and fromComponent not in components: components.append(fromComponent)
 #         if toComponent   != self and toComponent   not in components: components.append(toComponent)
@@ -228,7 +222,7 @@ class Graphline(component):
 #         print "self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)"
 #         print "self.link", ((fromComponent,sourceBox), (toComponent,toBox), passthrough)
 
-      for ref in self.components:
+      for ref in self.components.values():
           if link_to_component_control.get(ref, None) == None:
               link_to_component_control[ref] = True
 
@@ -239,7 +233,7 @@ class Graphline(component):
 #              print "We will need to pass on shutdown to", ref
 #              print "So, that maps to this", self.components[ref]
 #              "_cs"
-              self.components_to_get_control_messages.append( self.components[ref] )
+              self.components_to_get_control_messages.append( ref )
 
       for child in self.children:
           child.activate()
