@@ -138,7 +138,13 @@ Types of services (channel) that can be found in a DVB multiplex::
     "RCS Map",
     "RCS FLS",
     "DVB MHP service",
-
+    "MPEG-2 HD digital television service",
+    "advanced codec SD digital television service",
+    "advanced codec SD NVOD time-shifted service",
+    "advanced codec SD NVOD reference service",
+    "advanced codec HD digital television service",
+    "advanced codec HD NVOD time-shifted service",
+    "advanced codec HD NVOD reference service",
 
 
 
@@ -1947,6 +1953,13 @@ _service_types = {
        0x0E : "RCS Map",
        0x0F : "RCS FLS",
        0x10 : "DVB MHP service",
+       0x11 : "MPEG-2 HD digital television service",
+       0x16 : "advanced codec SD digital television service",
+       0x17 : "advanced codec SD NVOD time-shifted service",
+       0x18 : "advanced codec SD NVOD reference service",
+       0x19 : "advanced codec HD digital television service",
+       0x1a : "advanced codec HD NVOD time-shifted service",
+       0x1b : "advanced codec HD NVOD reference service",
     }
 
 # table for iso_639_descriptor
