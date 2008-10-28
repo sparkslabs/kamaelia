@@ -744,8 +744,31 @@ def parser_cable_delivery_system_Descriptor(data,i,length,end):
     
     (Defined in ETSI EN 300 468 specification)
     """
-    return { "type" : "satellite_delivery_system", "contents" : data[i+2:end] }
+    d = { "type" : "cable_delivery_system",
+        }
+    e = [ord(data[x]) for x in range(i+2,i+13)]
+    params = {}
+    params['frequency'] = 100000000*unBCD(e[0]) + \
+                            1000000*unBCD(e[1]) + \
+                              10000*unBCD(e[2]) + \
+                                100*unBCD(e[3])
+    v=e[5] & 0x0f
+    params['fec_outer'] = _dvbc_fec_outer.get(v,v)
+    v=e[6]
+    params['modulation'] = _dvbc_modulation.get(v,v)
+    params['symbol_rate'] = 10000000*unBCD(e[7]) + \
+                              100000*unBCD(e[8]) + \
+                                1000*unBCD(e[9]) + \
+                                  10*unBCD(e[10] & 0xf0) # only 7 digits
+    v=e[10] & 0x0f
+    params['fec_inner'] = _dvbc_fec_inner.get(v,v)
 
+    # other desirable params
+    params['inversion'] = dvb3f.INVERSION_AUTO
+
+    d['params'] = params
+    
+    return d
 
 def parser_VBI_data_Descriptor(data,i,length,end):
     """\
@@ -1878,7 +1901,35 @@ _dvbt_transmission_mode = {
         0 : dvb3f.TRANSMISSION_MODE_2K,
         1 : dvb3f.TRANSMISSION_MODE_8K,
      }
-    
+
+
+_dvbc_fec_outer = {
+        1 : "None",
+        2 : "RS(204/188)",
+     }
+
+_dvbc_modulation = {
+        1 : dvb3f.QAM_16,
+        2 : dvb3f.QAM_32,
+        3 : dvb3f.QAM_64,
+        4 : dvb3f.QAM_128,
+        5 : dvb3f.QAM_256,
+     }
+
+_dvbc_fec_inner = {
+        0 : dvb3f.FEC_NONE,
+        1 : dvb3f.FEC_1_2,
+        2 : dvb3f.FEC_2_3,
+        3 : dvb3f.FEC_3_4,
+        4 : dvb3f.FEC_5_6,
+        5 : dvb3f.FEC_7_8,
+        6 : dvb3f.FEC_8_9,
+        7 : "3/5",           # no value defined in dvb3 bindings
+        8 : dvb3f.FEC_4_5,
+        9 : "9/10",          # no value defined in dvb3 bindings
+        15 : dvb3f.FEC_NONE,
+     }
+
 # service descriptor, service types
 _service_types = {
        0x01 : "digital television service",
