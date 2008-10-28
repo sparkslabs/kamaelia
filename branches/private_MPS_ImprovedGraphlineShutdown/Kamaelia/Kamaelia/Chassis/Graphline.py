@@ -128,6 +128,7 @@ as you specified.
 from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
 from Axon.Ipc import shutdownMicroprocess
+from Axon.Ipc import producerFinished
 
 component = _Axon.Component.component
 
@@ -199,6 +200,9 @@ class Graphline(component):
             ("CODE_GENERATOR","outbox"): ("CODE_DISPLAY","inbox"),    
 """      
       
+      noControlPassthru=True
+      noSignalPassthru=True
+
       for componentRef,sourceBox in self.layout:
          toRef, toBox = self.layout[(componentRef,sourceBox)]
 
@@ -222,6 +226,12 @@ class Graphline(component):
 #         print "self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)"
 #         print "self.link", ((fromComponent,sourceBox), (toComponent,toBox), passthrough)
 
+         if fromComponent==self and sourceBox=="control":
+             noControlPassthru=False
+
+         if toComponent == self and toBox == "signal":
+             noSignalPassthru=False
+
       for ref in self.components.values():
           if link_to_component_control.get(ref, None) == None:
               link_to_component_control[ref] = True
@@ -239,6 +249,8 @@ class Graphline(component):
           child.activate()
 
 
+      shutdownMprocMsg=None
+
       # run until all child components have terminated
       # at which point this component can implode
 
@@ -247,7 +259,7 @@ class Graphline(component):
           if not self.anyReady():
               self.pause()
 #          print "I'm awake!"
-          if self.dataReady("control"):
+          if noControlPassthru and self.dataReady("control"):
               msg = self.recv("control")
               for toComponent in self.components_to_get_control_messages:
                   L = self.link( (self, "_cs"), (toComponent, "control"))
@@ -258,12 +270,17 @@ class Graphline(component):
 
               if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):
 #                  print "oooh, we got a you must shutdown message, okeydokey, doing so"
-                  break
+                  shutdownMprocMsg=msg
 #              else:
 #                  print msg, shutdownMicroprocess
           yield 1
 #      print "Graphline is exitting"
    
+      if noSignalPassthru:
+          if shutdownMprocMsg!=None:
+              self.send(shutdownMprocMsg, "signal")
+          else:
+              self.send(producerFinished(), "signal")
    
    def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
