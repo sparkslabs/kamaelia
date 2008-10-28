@@ -174,15 +174,17 @@ class Tuner(threadedcomponent):
                 self.sync()
 
 
-    def tune_DVBT(self, frequency, feparams={}):
-        # Build the tuning parameters (DVB-T)
-        params = dvb3.frontend.OFDMParameters(
+    def tune_DVB(self, frequency, feparams={}):
+        # Build the tuning parameters - no longer assumes DVB-T
+        build_params_type = fe.get_dvbtype()
+
+        params = build_params_type(
             frequency = frequency * 1000 * 1000,
             **feparams
-        )
-    
+            )
         # Start the tuning
         self.fe.set_frontend(params)
+
         
     
     def notLocked(self):
