@@ -233,9 +233,8 @@ classes, for example::
 See below for information on how to write your own particle classes.
 
 Layout of the nodes on the surface is assisted by a physics model, provided
-by an instance of the Kamaelia.Support.Particles.ParticleSystem class. Use 
-Kamaelia.Support.Particles.ParticleSystemX if you want to make some particles
-not subject to the law.
+by an instance of the Kamaelia.Support.Particles.ParticleSystem class. Freeze them
+if you want to make some particles not subject to the law (particle.freeze()).
 
 Customise the laws used for each particle type by providing a
 Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.
@@ -282,7 +281,7 @@ from Kamaelia.UI.OpenGL.Intersect import Intersect
 _cat = Axon.CoordinatingAssistantTracker
 
 from Particles3D import CuboidParticle3D, SphereParticle3D, TeapotParticle3D
-from Kamaelia.Support.Particles.ParticleSystemX import ParticleSystemWithAvoidedList as ParticleSystemX
+from Kamaelia.Support.Particles.ParticleSystem import ParticleSystem
 
                  
 class TopologyViewer3D(Axon.Component.component):
@@ -367,7 +366,7 @@ class TopologyViewer3D(Axon.Component.component):
         else:
             self.laws = laws
             
-        self.physics = ParticleSystemX(self.laws, [], 0)
+        self.physics = ParticleSystem(self.laws, [], 0)
         self.biggestRadius = 0
         
         # Do interaction
@@ -384,7 +383,7 @@ class TopologyViewer3D(Axon.Component.component):
         self.viewerOldPos = Vector()
         self.levelViewerPos = {}
         # The Physics particle system of current display level for display
-        self.currentDisplayedPhysics = ParticleSystemX(self.laws, [], 0)
+        self.currentDisplayedPhysics = ParticleSystem(self.laws, [], 0)
         
         # For double click
         self.lastClickPos = (0,0)
@@ -440,11 +439,14 @@ class TopologyViewer3D(Axon.Component.component):
             yield 1        
             
             if self.lastIdleTime + 1.0 < time.time():
-                avoidedList = []
-                avoidedList.extend(self.selectedParticles)
-                
+                #Freeze selected particles so that they are not subject to the physics law
+                for particle in self.selectedParticles:
+                    particle.freeze()
                 # Do interaction between particles
-                self.currentDisplayedPhysics.run(self.simCyclesPerRedraw, avoidedList=avoidedList)
+                self.currentDisplayedPhysics.run(self.simCyclesPerRedraw)
+                # Unfreeze selected particles
+                for particle in self.selectedParticles:
+                    particle.unFreeze()
                 
                 # Draw particles if new or updated
                 for particle in self.currentDisplayedPhysics.particles:
