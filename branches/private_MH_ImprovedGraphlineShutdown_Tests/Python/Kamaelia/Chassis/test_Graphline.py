@@ -31,6 +31,22 @@ from Axon.Scheduler import scheduler
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 
+class MockChild(component):
+
+    def __init__(self):
+        super(MockChild,self).__init__()
+        self._stopNow = False
+        self.wasActivated=False
+
+    def stopNow(self):
+        self._stopNow = True
+        
+    def main(self):
+        self.wasActivated=True
+        while not self._stopNow:
+            yield 1
+
+
 class Test_Graphline(unittest.TestCase):
 
     def setup_initialise(self,*listargs,**dictargs):
@@ -71,6 +87,11 @@ class Test_Graphline(unittest.TestCase):
         Graphline(A=component(), B=component(), linkages={})
 
 
+    def test_graphlineNoComponentsEmptyLinkagesArg(self):
+        """Instantiating with no components as named arguments, and specifying an empty linkages argument succeeds"""
+        Graphline(linkages={})
+
+
     def test_graphlineHasChildren(self):
         """Instantiating a graphline, components specified as named arguments, eg. A=component() and B=component() become children of the graphline once activated and run."""
         self.setup_initialise(A=component(), B=component(), linkages={})
@@ -82,6 +103,7 @@ class Test_Graphline(unittest.TestCase):
         for c in self.children.values():
             self.assertTrue(c in gChildren)
         
+        
     def test_unactivatedGraphlineHasNoChildren(self):
         """Instantiating a graphline, components specified as named arguments, eg. A=component() and B=component() will not be children of the graphline before it is activated and run"""
         self.setup_initialise(A=component(), B=component(), linkages={})
@@ -90,6 +112,37 @@ class Test_Graphline(unittest.TestCase):
         for c in self.children.values():
             self.assertFalse(c in gChildren)
         
+
+    def test_activatesChildrenOnlyWhenActivated(self):
+        """Children are activated as soon as the Graphline itself is activated, but no sooner."""
+        self.setup_initialise(A=MockChild(), B=MockChild(), C=MockChild(), linkages={})
+
+        for child in self.children.values():
+            self.assertFalse(child.wasActivated)
+
+        self.setup_activate()
+        self.runFor(cycles=1)
+        self.runFor(cycles=3)
+        
+        for child in self.children.values():
+            self.assertTrue(child.wasActivated)
+        
+        
+    def test_linkagesBetweenComponents(self):
+        """A linkage from "outbox" to "inbox" between two named child components "A" and "B" can be specified by specifying a "linkages" argument containing a dictionary with an entry: ("A","outbox"):("B","inbox"). Data sent to A's "outbox"  will reach B's "inbox"."""
+        A=MockChild()
+        B=MockChild()
+        self.setup_initialise(A=A, B=B, linkages={("A","outbox"):("B","inbox")})
+
+        self.setup_activate()
+        self.runFor(cycles=1)
+
+        DATA=object()
+        A.send(DATA,"outbox")        
+        self.runFor(cycles=1)
+        
+        self.assertTrue(B.dataReady("inbox"))
+        self.assertEquals(DATA, B.recv("inbox"))
         
         
 if __name__ == "__main__":
