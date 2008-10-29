@@ -69,6 +69,20 @@ class Test_Graphline(unittest.TestCase):
         numcycles=cycles*(3+len(self.children))    # approx this many components in the system
         for i in range(0,numcycles): self.run.next()
 
+    def checkDataFlows(self, source, target):
+        (fromComponent, fromBox) = source
+        (toComponent, toBox) = target
+    
+        DATA=object()
+        fromComponent.send(DATA,fromBox)        
+        self.runFor(cycles=1)
+        
+        self.assertTrue(toComponent.dataReady(toBox))
+        self.assertEquals(DATA, toComponent.recv(toBox))
+    
+        for child in self.children.values():
+            if child != toComponent:
+               self.assertFalse(child.anyReady())
 
 
 
@@ -129,7 +143,7 @@ class Test_Graphline(unittest.TestCase):
         
         
     def test_linkagesBetweenComponents(self):
-        """A linkage from "outbox" to "inbox" between two named child components "A" and "B" can be specified by specifying a "linkages" argument containing a dictionary with an entry: ("A","outbox"):("B","inbox"). Data sent to A's "outbox"  will reach B's "inbox"."""
+        """A linkage from "outbox" to "inbox" between two named child components "A" and "B" can be specified by specifying a "linkages" argument containing a dictionary with an entry: ("A","outbox"):("B","inbox"). Data sent to A's "outbox"  will reach B's "inbox" and nowhere else."""
         A=MockChild()
         B=MockChild()
         self.setup_initialise(A=A, B=B, linkages={("A","outbox"):("B","inbox")})
@@ -137,14 +151,34 @@ class Test_Graphline(unittest.TestCase):
         self.setup_activate()
         self.runFor(cycles=1)
 
-        DATA=object()
-        A.send(DATA,"outbox")        
+        self.checkDataFlows((A,"outbox"),(B,"inbox"))
+        
+        
+    def test_severalLinkagesBetweenComponents(self):
+        """Several linkages can be specified between components. They will all be created, and messages will be able to flow along them once the graphline is activated and run. Data will only flow along the specified linkages and will not leak anywhere else!"""
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        D=MockChild()
+        self.setup_initialise(
+            A=A, B=B, C=C, D=D,
+            linkages={
+                ("A","outbox"):("B","inbox"),
+                ("C","outbox"):("D","control"),
+                ("C","signal"):("A","inbox"),
+                ("B","signal"):("A","control"),
+                }
+            )
+
+        self.setup_activate()
         self.runFor(cycles=1)
+
+        self.checkDataFlows((A,"outbox"),(B,"inbox"))
+        self.checkDataFlows((C,"outbox"),(D,"control"))
+        self.checkDataFlows((C,"signal"),(A,"inbox"))
+        self.checkDataFlows((B,"signal"),(A,"control"))
         
-        self.assertTrue(B.dataReady("inbox"))
-        self.assertEquals(DATA, B.recv("inbox"))
-        
-        
+
 if __name__ == "__main__":
     unittest.main()
     
