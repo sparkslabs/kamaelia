@@ -47,6 +47,12 @@ class MockChild(component):
             yield 1
 
 
+class Dummy(component):
+    def main(self):
+        while 1:
+            yield 1
+
+
 class Test_Graphline(unittest.TestCase):
 
     def setup_initialise(self,*listargs,**dictargs):
@@ -60,13 +66,53 @@ class Test_Graphline(unittest.TestCase):
 
         self.graphline = Graphline(*listargs, **dictargs)
         
+        self.inSrc = Dummy()
+        self.inSrc.link((self.inSrc,"outbox"), (self.graphline,"inbox"))
+        self.inSrc.link((self.inSrc,"signal"), (self.graphline,"control"))
+        
+        self.outDest = Dummy()
+        self.outDest.link((self.graphline,"outbox"), (self.outDest,"inbox"))
+        self.outDest.link((self.graphline,"signal"), (self.outDest,"control"))
+        
         self.run = self.scheduler.main()
 
     def setup_activate(self):
         self.graphline.activate(Scheduler=self.scheduler)
+        self.inSrc.activate(Scheduler=self.scheduler)
+        self.outDest.activate(Scheduler=self.scheduler)
         
+    def sendToInbox(self,data):
+        self.inSrc.send(data,"outbox")
+
+    def sendToControl(self,data):
+        self.inSrc.send(data,"signal")
+
+    def dataReadyOutbox(self):
+        return self.outDest.dataReady("inbox")
+
+    def dataReadySignal(self):
+        return self.outDest.dataReady("control")
+
+    def recvOutbox(self):
+        return self.outDest.recv("inbox")
+
+    def recvSignal(self):
+        return self.outDest.recv("control")
+
+    def collectOutbox(self):
+        out=[]
+        while self.dataReadyOutbox():
+            out.append(self.recvOutbox())
+        return out
+
+    def collectSignal(self):
+        out=[]
+        while self.dataReadySignal():
+            out.append(self.recvSignal())
+        return out
+    
     def runFor(self, cycles):
-        numcycles=cycles*(3+len(self.children))    # approx this many components in the system
+        numcycles=cycles*(4+len(self.children))    # approx this many components in the system
         for i in range(0,numcycles): self.run.next()
 
     def checkDataFlows(self, source, target):
@@ -177,6 +223,77 @@ class Test_Graphline(unittest.TestCase):
         self.checkDataFlows((C,"outbox"),(D,"control"))
         self.checkDataFlows((C,"signal"),(A,"inbox"))
         self.checkDataFlows((B,"signal"),(A,"control"))
+        
+    def test_terminateWhenAllChildrenHaveTerminated(self):
+        """Graphline will terminate when all of its children have terminated, but not before."""
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(A=A, B=B, C=C, linkages={ ("A","outbox"):("B","inbox"), } )
+
+        self.setup_activate()
+        
+        for i in range(0,2):
+            self.runFor(cycles=100)
+            self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+            
+        for child in self.children.values():
+            child.stopNow()
+            
+        self.runFor(cycles=2)
+        self.assertFalse(self.graphline in self.scheduler.listAllThreads())
+
+    def test_emissionOfShutdownSignal_1(self):
+        """When all children have terminated. If no child is wired to the Graphline's "signal" outbox, the Graphline will send out its own message. The message sent will be a producerFinished message if a child is wired to the Graphline's "control" inbox, or if no shutdownMicroprocess message has been previously received on that inbox."""
+        
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(A=A, B=B, C=C, linkages={ ("A","outbox"):("B","inbox"), } )
+
+        self.setup_activate()
+        self.runFor(cycles=100)
+        
+        # check nothing has been emitted yet!
+        self.assertFalse(self.dataReadySignal())
+        
+        for child in self.children.values():
+            child.stopNow()
+            
+        self.runFor(cycles=2)
+        self.assertTrue(self.dataReadySignal())
+        self.assertTrue(isinstance(self.recvSignal(), producerFinished))
+        
+
+
+    def test_emissionOfShutdownSignal_2(self):
+        """When all children have terminated. If no child is wired to the Graphline's "signal" outbox, the Graphline will send out its own message. If no child is wired to the Graphline's "control" inbox and a shutdownMicroprocess message has been previously received on that inbox, then the message sent out will be that shutdownMicroprocess message."""
+        
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(A=A, B=B, C=C, linkages={ ("A","outbox"):("B","inbox"), } )
+
+        self.setup_activate()
+        self.runFor(cycles=100)
+        
+        # check nothing has been emitted yet!
+        self.assertFalse(self.dataReadySignal())
+        
+        shutdownMsg = shutdownMicroprocess();
+        self.sendToControl(shutdownMsg)
+        
+        self.runFor(cycles=1)
+        
+        for child in self.children.values():
+            child.stopNow()
+            
+        self.runFor(cycles=5)
+        self.assertTrue(self.dataReadySignal())
+#        self.assertFalse(isinstance(self.recvSignal(), producerFinished))
+        recvd=self.recvSignal()
+        
+        self.assertTrue(recvd == shutdownMsg)
         
 
 if __name__ == "__main__":
