@@ -118,7 +118,17 @@ class Test_Graphline(unittest.TestCase):
     def checkDataFlows(self, source, target):
         (fromComponent, fromBox) = source
         (toComponent, toBox) = target
+        
+        # if 'from' is the graphline, then use the inSrc component linked to it to do the sending
+        if fromComponent==self.graphline:
+            fromComponent=self.inSrc
+            fromBox = {"inbox":"outbox", "control":"signal"}[fromBox]
     
+        # if 'to' is the graphline, then use the outDest component linked to it to do the receiving
+        if toComponent==self.graphline:
+            toComponent=self.outDest
+            toBox = {"outbox":"inbox", "signal":"control"}[toBox]
+        
         DATA=object()
         fromComponent.send(DATA,fromBox)        
         self.runFor(cycles=1)
@@ -242,7 +252,70 @@ class Test_Graphline(unittest.TestCase):
             
         self.runFor(cycles=2)
         self.assertFalse(self.graphline in self.scheduler.listAllThreads())
+        
+        
+    def test_specifyingPassthruInLinkage(self):
+        """If a linkage is specified whose source is (X, "inbox") or (X, "control") where X is not the name given to one of the child components in the graphline, then the linkage created is a passthrough from that named inbox of the graphline to the specified destination child component in the graphline."""
+        
+        selectionOfUnusedNames = ["", "self", "flurble", "a", "component", "pig"]
+        
+        for name in selectionOfUnusedNames:
+            
+            A=MockChild()
+            B=MockChild()
+            C=MockChild()
+        
+            self.setup_initialise(
+                A=A, B=B, C=C,
+                linkages={
+                    (name,"inbox"):("A","control"),
+                    (name,"control"):("B","inbox"),
+                    ("C","outbox"):("A","inbox"),
+                })
 
+        self.setup_activate()
+        self.runFor(cycles=10)
+
+        self.checkDataFlows((self.graphline,"inbox"),(A,"control"))
+        self.checkDataFlows((self.graphline,"control"),(B,"inbox"))
+    
+    
+    def test_specifyingPassthruInLinkageNewBox(self):
+        """If a linkage is specified whose source is (X, Y) where X is not the name given to one of the child components in the graphline and Y is neither "inbox" nor "control", then an inbox with name Y is created and the linkage created is a passthrough from that named inbox of the graphline to the specified destination child component in the graphline."""
+        raise NotImplementedError()
+    
+
+    def test_specifyingPassthruOutLinkage(self):
+        """If a linkage is specified whose destination is (X, "outbox") or (X, "signal") where X is not the name given to one of the child components in the graphline, then the linkage created is a passthrough from the specified source child component in the graphline to that named outbox of the graphline."""
+    
+        selectionOfUnusedNames = ["", "self", "flurble", "a", "component", "pig"]
+        
+        for name in selectionOfUnusedNames:
+            
+            A=MockChild()
+            B=MockChild()
+            C=MockChild()
+        
+            self.setup_initialise(
+                A=A, B=B, C=C,
+                linkages={
+                    ("A","outbox"):(name,"signal"),
+                    ("B","signal"):(name,"outbox"),
+                    ("C","outbox"):("A","inbox"),
+                })
+
+        self.setup_activate()
+        self.runFor(cycles=10)
+
+        self.checkDataFlows((A,"outbox"),(self.graphline,"signal"))
+        self.checkDataFlows((B,"signal"),(self.graphline,"outbox"))
+    
+    
+    def test_specifyingPassthruOutLinkageNewBox(self):
+        """If a linkage is specified whose destination is (X, Y) where X is not the name given to one of the child components in the graphline and Y is neither "outbox" nor "signal", then  an outbox with name Y is created and the linkage created is a passthrough from the specified source child component in the graphline to that named outbox of the graphline."""
+        raise NotImplementedError()
+    
+    
     def test_emissionOfShutdownSignal_1(self):
         """When all children have terminated. If no child is wired to the Graphline's "signal" outbox, the Graphline will send out its own message. The message sent will be a producerFinished message if a child is wired to the Graphline's "control" inbox, or if no shutdownMicroprocess message has been previously received on that inbox."""
         
@@ -295,6 +368,11 @@ class Test_Graphline(unittest.TestCase):
         
         self.assertTrue(recvd == shutdownMsg)
         
+        
+    def test_receivesShutdownPassesThru(self):
+        """If a graphline's "control" inbox is specified to be wired to a child component in the graphline, then any message (including shutdown messages) flow along that linkage only. (The graphline does not try to intercept and forward those messages to anywhere else; nor does it try to terminate)"""
+
+        raise NotImplementedError()
 
 if __name__ == "__main__":
     unittest.main()
