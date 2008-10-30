@@ -272,7 +272,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             return
         resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
 
-        self.connectedSockets = [ x for x in self.connectedSockets if x != self.connectedSockets ]
+        self.connectedSockets = [ x for x in self.connectedSockets if x != connectedSocket ]
 
         self.unlink(thelinkage=controllink)
 
