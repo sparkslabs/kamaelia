@@ -88,6 +88,7 @@ class Test_Graphline(unittest.TestCase):
             c.activate(Scheduler=self.scheduler)
         
     def sendTo(self,data,boxname):
+        self.ensureHandlerForInbox(boxname)
         self.inSrc[boxname].send(data,"outbox")
         
     def recvFrom(self,boxname):
@@ -96,7 +97,26 @@ class Test_Graphline(unittest.TestCase):
     def dataReadyAt(self,boxname):
         return self.outDest[boxname].dataReady("inbox")
         
+    def ensureHandlerForInbox(self,boxname):
+        if not boxname in self.inSrc:
+            try:
+                c=Dummy()
+                c.link((c,"outbox"), (self.graphline,boxname))
+                c.activate(Scheduler=self.scheduler)
+                self.inSrc[boxname]=c
+            except KeyError:
+                self.fail("Expected inbox '"+boxname+"' on graphline does not exist")
 
+    def ensureHandlerForOutbox(self,boxname):
+        if not boxname in self.outDest:
+            try:
+                c=Dummy()
+                c.link((self.graphline,boxname), (c,"inbox"))
+                c.activate(Scheduler=self.scheduler)
+                self.outDest[boxname]=c
+            except KeyError:
+                self.fail("Expected inbox '"+boxname+"' on graphline does not exist")
+    
     
     def runFor(self, cycles):
         numcycles=cycles*(len(self.inSrc)+len(self.outDest)+1+len(self.children))    # approx this many components in the system
@@ -106,22 +126,24 @@ class Test_Graphline(unittest.TestCase):
         (fromComponent, fromBox) = source
         (toComponent, toBox) = target
         
-        # if 'from' is the graphline, then use the inSrc component linked to it to do the sending
-        if fromComponent==self.graphline:
-            fromComponent=self.inSrc[fromBox]
-            fromBox = "outbox"
-    
-        # if 'to' is the graphline, then use the outDest component linked to it to do the receiving
-        if toComponent==self.graphline:
-            toComponent=self.outDest[toBox]
-            toBox = "inbox"
-        
         DATA=object()
-        fromComponent.send(DATA,fromBox)        
+        
+        if toComponent==self.graphline:
+            self.ensureHandlerForOutbox(toBox)
+
+        if fromComponent==self.graphline:
+            self.sendTo(DATA,fromBox)
+        else:
+            fromComponent.send(DATA,fromBox)        
+          
         self.runFor(cycles=1)
         
-        self.assertTrue(toComponent.dataReady(toBox))
-        self.assertEquals(DATA, toComponent.recv(toBox))
+        if toComponent==self.graphline:
+            self.assertTrue(self.dataReadyAt(toBox))
+            self.assertEquals(DATA, self.recvFrom(toBox))
+        else:
+            self.assertTrue(toComponent.dataReady(toBox))
+            self.assertEquals(DATA, toComponent.recv(toBox))
     
         for child in self.children.values():
             if child != toComponent:
@@ -269,8 +291,29 @@ class Test_Graphline(unittest.TestCase):
     
     def test_specifyingPassthruInLinkageNewBox(self):
         """If a linkage is specified whose source is (X, Y) where X is not the name given to one of the child components in the graphline and Y is neither "inbox" nor "control", then an inbox with name Y is created and the linkage created is a passthrough from that named inbox of the graphline to the specified destination child component in the graphline."""
-        raise NotImplementedError()
-    
+
+        selectionOfUnusedNames = ["", "self", "flurble", "a", "component", "pig"]
+        
+        for name in selectionOfUnusedNames:
+            
+            A=MockChild()
+            B=MockChild()
+            C=MockChild()
+        
+            self.setup_initialise(
+                A=A, B=B, C=C,
+                linkages={
+                    (name,"novel-inbox"):("A","control"),
+                    (name,"another-novel-inbox"):("B","inbox"),
+                    ("C","outbox"):("A","inbox"),
+                })
+
+        self.setup_activate()
+        self.runFor(cycles=10)
+
+        self.checkDataFlows((self.graphline,"novel-inbox"),(A,"control"))
+        self.checkDataFlows((self.graphline,"another-novel-inbox"),(B,"inbox"))
+
 
     def test_specifyingPassthruOutLinkage(self):
         """If a linkage is specified whose destination is (X, "outbox") or (X, "signal") where X is not the name given to one of the child components in the graphline, then the linkage created is a passthrough from the specified source child component in the graphline to that named outbox of the graphline."""
@@ -300,7 +343,28 @@ class Test_Graphline(unittest.TestCase):
     
     def test_specifyingPassthruOutLinkageNewBox(self):
         """If a linkage is specified whose destination is (X, Y) where X is not the name given to one of the child components in the graphline and Y is neither "outbox" nor "signal", then  an outbox with name Y is created and the linkage created is a passthrough from the specified source child component in the graphline to that named outbox of the graphline."""
-        raise NotImplementedError()
+        
+        selectionOfUnusedNames = ["", "self", "flurble", "a", "component", "pig"]
+        
+        for name in selectionOfUnusedNames:
+            
+            A=MockChild()
+            B=MockChild()
+            C=MockChild()
+        
+            self.setup_initialise(
+                A=A, B=B, C=C,
+                linkages={
+                    ("A","outbox"):(name,"novel-boxname"),
+                    ("B","signal"):(name,"another-novel-boxname"),
+                    ("C","outbox"):("A","inbox"),
+                })
+
+        self.setup_activate()
+        self.runFor(cycles=10)
+
+        self.checkDataFlows((A,"outbox"),(self.graphline,"novel-boxname"))
+        self.checkDataFlows((B,"signal"),(self.graphline,"another-novel-boxname"))
     
     
     def test_emissionOfShutdownSignal_1(self):
