@@ -66,53 +66,40 @@ class Test_Graphline(unittest.TestCase):
 
         self.graphline = Graphline(*listargs, **dictargs)
         
-        self.inSrc = Dummy()
-        self.inSrc.link((self.inSrc,"outbox"), (self.graphline,"inbox"))
-        self.inSrc.link((self.inSrc,"signal"), (self.graphline,"control"))
+        self.inSrc = {}
+        for box in ["inbox","control"]:
+            c = Dummy()
+            c.link((c,"outbox"), (self.graphline,box))
+            self.inSrc[box]=c
         
-        self.outDest = Dummy()
-        self.outDest.link((self.graphline,"outbox"), (self.outDest,"inbox"))
-        self.outDest.link((self.graphline,"signal"), (self.outDest,"control"))
+        self.outDest = {}
+        for box in ["outbox","signal"]:
+            c = Dummy()
+            c.link((self.graphline,box), (c,"inbox"))
+            self.outDest[box]=c
         
         self.run = self.scheduler.main()
 
     def setup_activate(self):
         self.graphline.activate(Scheduler=self.scheduler)
-        self.inSrc.activate(Scheduler=self.scheduler)
-        self.outDest.activate(Scheduler=self.scheduler)
+        for c in self.inSrc.values():
+            c.activate(Scheduler=self.scheduler)
+        for c in self.outDest.values():
+            c.activate(Scheduler=self.scheduler)
         
-    def sendToInbox(self,data):
-        self.inSrc.send(data,"outbox")
+    def sendTo(self,data,boxname):
+        self.inSrc[boxname].send(data,"outbox")
+        
+    def recvFrom(self,boxname):
+        return self.outDest[boxname].recv("inbox")
+    
+    def dataReadyAt(self,boxname):
+        return self.outDest[boxname].dataReady("inbox")
+        
 
-    def sendToControl(self,data):
-        self.inSrc.send(data,"signal")
-
-    def dataReadyOutbox(self):
-        return self.outDest.dataReady("inbox")
-
-    def dataReadySignal(self):
-        return self.outDest.dataReady("control")
-
-    def recvOutbox(self):
-        return self.outDest.recv("inbox")
-
-    def recvSignal(self):
-        return self.outDest.recv("control")
-
-    def collectOutbox(self):
-        out=[]
-        while self.dataReadyOutbox():
-            out.append(self.recvOutbox())
-        return out
-
-    def collectSignal(self):
-        out=[]
-        while self.dataReadySignal():
-            out.append(self.recvSignal())
-        return out
     
     def runFor(self, cycles):
-        numcycles=cycles*(4+len(self.children))    # approx this many components in the system
+        numcycles=cycles*(len(self.inSrc)+len(self.outDest)+1+len(self.children))    # approx this many components in the system
         for i in range(0,numcycles): self.run.next()
 
     def checkDataFlows(self, source, target):
@@ -121,13 +108,13 @@ class Test_Graphline(unittest.TestCase):
         
         # if 'from' is the graphline, then use the inSrc component linked to it to do the sending
         if fromComponent==self.graphline:
-            fromComponent=self.inSrc
-            fromBox = {"inbox":"outbox", "control":"signal"}[fromBox]
+            fromComponent=self.inSrc[fromBox]
+            fromBox = "outbox"
     
         # if 'to' is the graphline, then use the outDest component linked to it to do the receiving
         if toComponent==self.graphline:
-            toComponent=self.outDest
-            toBox = {"outbox":"inbox", "signal":"control"}[toBox]
+            toComponent=self.outDest[toBox]
+            toBox = "inbox"
         
         DATA=object()
         fromComponent.send(DATA,fromBox)        
@@ -328,14 +315,14 @@ class Test_Graphline(unittest.TestCase):
         self.runFor(cycles=100)
         
         # check nothing has been emitted yet!
-        self.assertFalse(self.dataReadySignal())
+        self.assertFalse(self.dataReadyAt("signal"))
         
         for child in self.children.values():
             child.stopNow()
             
         self.runFor(cycles=2)
-        self.assertTrue(self.dataReadySignal())
-        self.assertTrue(isinstance(self.recvSignal(), producerFinished))
+        self.assertTrue(self.dataReadyAt("signal"))
+        self.assertTrue(isinstance(self.recvFrom("signal"), producerFinished))
         
 
 
@@ -351,10 +338,10 @@ class Test_Graphline(unittest.TestCase):
         self.runFor(cycles=100)
         
         # check nothing has been emitted yet!
-        self.assertFalse(self.dataReadySignal())
+        self.assertFalse(self.dataReadyAt("signal"))
         
         shutdownMsg = shutdownMicroprocess();
-        self.sendToControl(shutdownMsg)
+        self.sendTo(shutdownMsg,"control")
         
         self.runFor(cycles=1)
         
@@ -363,8 +350,8 @@ class Test_Graphline(unittest.TestCase):
             
         self.runFor(cycles=3)
         
-        self.assertTrue(self.dataReadySignal())
-        recvd=self.recvSignal()
+        self.assertTrue(self.dataReadyAt("signal"))
+        recvd=self.recvFrom("signal")
         
         self.assertTrue(recvd == shutdownMsg)
         
