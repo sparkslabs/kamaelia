@@ -188,17 +188,9 @@ class Graphline(component):
       
    def main(self):
       """Main loop."""
-#      components = []
+      
       link_to_component_control = {}
       
-      """
-            ("SEMANTIC_EVENTS","outbox"):("CENTRAL_CONTROL","from_panel"),
-            ("SELECTION_EVENTS","outbox"):("CENTRAL_CONTROL","from_topology"),
-            ("MAKELINK", "outbox") : ("CENTRAL_CONTROL", "makelink"),
-            ("CENTRAL_CONTROL","to_topology"):("TOPOLOGY_VISUALISER","inbox"),
-            ("CENTRAL_CONTROL","to_serialiser"):("CODE_GENERATOR","inbox"),
-            ("CODE_GENERATOR","outbox"): ("CODE_DISPLAY","inbox"),    
-"""      
       
       noControlPassthru=True
       noSignalPassthru=True
@@ -212,9 +204,6 @@ class Graphline(component):
          if toBox == "control":
              link_to_component_control[toComponent] = False
 
-#         if fromComponent != self and fromComponent not in components: components.append(fromComponent)
-#         if toComponent   != self and toComponent   not in components: components.append(toComponent)
-
          passthrough = 0
          if fromComponent == self: passthrough = 1
          if toComponent == self: passthrough = 2
@@ -223,8 +212,6 @@ class Graphline(component):
             print "WARNING, assuming linking outbox to inbox on the graph. This is a poor assumption"
          
          self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)
-#         print "self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)"
-#         print "self.link", ((fromComponent,sourceBox), (toComponent,toBox), passthrough)
 
          if fromComponent==self and sourceBox=="control":
              noControlPassthru=False
@@ -240,9 +227,6 @@ class Graphline(component):
       self.components_to_get_control_messages = []
       for ref in link_to_component_control:
           if link_to_component_control[ref]:
-#              print "We will need to pass on shutdown to", ref
-#              print "So, that maps to this", self.components[ref]
-#              "_cs"
               self.components_to_get_control_messages.append( ref )
 
       for child in self.children:
@@ -258,7 +242,7 @@ class Graphline(component):
       while not self.childrenDone():
           if not self.anyReady():
               self.pause()
-#          print "I'm awake!"
+          
           if noControlPassthru and self.dataReady("control"):
               msg = self.recv("control")
               for toComponent in self.components_to_get_control_messages:
@@ -266,15 +250,11 @@ class Graphline(component):
                   self.send( msg, "_cs")
                   yield 1
                   self.unlink(thelinkage=L)
-#                  print "passing on shutdown", toComponent.name
 
               if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):
-#                  print "oooh, we got a you must shutdown message, okeydokey, doing so"
                   shutdownMprocMsg=msg
-#              else:
-#                  print msg, shutdownMicroprocess
+          
           yield 1
-#      print "Graphline is exitting"
    
       if noSignalPassthru:
           if shutdownMprocMsg!=None:
