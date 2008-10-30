@@ -288,9 +288,9 @@ class Test_Graphline(unittest.TestCase):
         for child in self.children.values():
             child.stopNow()
             
-        self.runFor(cycles=5)
+        self.runFor(cycles=3)
+        
         self.assertTrue(self.dataReadySignal())
-#        self.assertFalse(isinstance(self.recvSignal(), producerFinished))
         recvd=self.recvSignal()
         
         self.assertTrue(recvd == shutdownMsg)
