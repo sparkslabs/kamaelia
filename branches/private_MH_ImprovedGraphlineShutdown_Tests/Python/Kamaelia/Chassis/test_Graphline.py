@@ -122,14 +122,14 @@ class Test_Graphline(unittest.TestCase):
         numcycles=cycles*(len(self.inSrc)+len(self.outDest)+1+len(self.children))    # approx this many components in the system
         for i in range(0,numcycles): self.run.next()
 
-    def checkDataFlows(self, source, target):
+    def checkDataFlows(self, source, *targets):
         (fromComponent, fromBox) = source
-        (toComponent, toBox) = target
         
         DATA=object()
         
-        if toComponent==self.graphline:
-            self.ensureHandlerForOutbox(toBox)
+        for (toComponent,toBox) in targets:
+            if toComponent==self.graphline:
+                self.ensureHandlerForOutbox(toBox)
 
         if fromComponent==self.graphline:
             self.sendTo(DATA,fromBox)
@@ -138,15 +138,16 @@ class Test_Graphline(unittest.TestCase):
           
         self.runFor(cycles=1)
         
-        if toComponent==self.graphline:
-            self.assertTrue(self.dataReadyAt(toBox))
-            self.assertEquals(DATA, self.recvFrom(toBox))
-        else:
-            self.assertTrue(toComponent.dataReady(toBox))
-            self.assertEquals(DATA, toComponent.recv(toBox))
+        for (toComponent,toBox) in targets:
+            if toComponent==self.graphline:
+                self.assertTrue(self.dataReadyAt(toBox))
+                self.assertEquals(DATA, self.recvFrom(toBox))
+            else:
+                self.assertTrue(toComponent.dataReady(toBox))
+                self.assertEquals(DATA, toComponent.recv(toBox))
     
         for child in self.children.values():
-            if child != toComponent:
+            if child not in [toComponent for (toComponent,toBox) in targets]:
                self.assertFalse(child.anyReady())
 
 
@@ -421,9 +422,172 @@ class Test_Graphline(unittest.TestCase):
         
         
     def test_receivesShutdownPassesThru(self):
-        """If a graphline's "control" inbox is specified to be wired to a child component in the graphline, then any message (including shutdown messages) flow along that linkage only. (The graphline does not try to intercept and forward those messages to anywhere else; nor does it try to terminate)"""
+        """If a graphline's "control" inbox is specified to be wired to a child component in the graphline, then any message (including shutdown messages) flow along that linkage only."""
 
-        raise NotImplementedError()
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(A=A, B=B, C=C, linkages={ ("","control"):("A","control"), } )
+
+        self.setup_activate()
+        self.runFor(cycles=100)
+        
+        self.checkDataFlows((self.graphline,"control"),(A,"control"))
+
+    def test_receivesShutdownDisseminated(self):
+        """If a graphline's "control" inbox is not specified to be wired to a child component in the graphline, then any message (including shutdown messages) flows to the "control" inbox of all children without linkages going to their "control" inbox only."""
+
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(
+            A=A, B=B, C=C,
+            linkages={ ("A","outbox"):("B","control"), # should block msg getting to B
+            })
+
+        self.setup_activate()
+        self.runFor(cycles=100)
+        
+        msg=shutdownMicroprocess()
+        self.sendTo(msg,"control")
+        self.runFor(cycles=2)
+        
+        self.assertTrue(A.dataReady("control"))
+        self.assertEquals(msg, A.recv("control"))
+        
+        self.assertFalse(B.dataReady("control"))
+        
+        self.assertTrue(C.dataReady("control"))
+        self.assertEquals(msg, C.recv("control"))
+
+    def test_receivesShutdownAndPropagates(self):
+        """If a graphline's "control" inbox and "signal" outbox are not specified to be wired to a child component in the graphline then, if a shutdownMicroprocess message is sent to the "control" inbox, it will be sent on out of the "signal" outbox once all children have terminated."""
+
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(
+            A=A, B=B, C=C,
+            linkages={ ("A","outbox"):("B","control"), 
+            })
+
+        self.setup_activate()
+        self.runFor(cycles=100)
+        
+        msg=shutdownMicroprocess()
+        self.sendTo(msg,"control")
+        
+        self.runFor(cycles=100)
+        self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+        
+        for child in self.children.values():
+            child.stopNow()
+
+        self.runFor(cycles=10)
+        self.assertTrue(self.graphline not in self.scheduler.listAllThreads())
+        
+        self.assertTrue(self.dataReadyAt("signal"))
+        self.assertEquals(msg, self.recvFrom("signal"))
+
+
+    def test_receivesShutdownAndPropagates2(self):
+        """If a graphline's "control" inbox and "signal" outbox are not specified to be wired to a child component in the graphline then, if a any non shutdownMicroprocess message is sent to the "control" inbox, a producerFinished message will be sent on out of the "signal" outbox once all children have terminated."""
+
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(
+            A=A, B=B, C=C,
+            linkages={ ("A","outbox"):("B","control"), 
+            })
+
+        self.setup_activate()
+        self.runFor(cycles=100)
+        
+        msg=producerFinished()
+        self.sendTo(msg,"control")
+        
+        self.runFor(cycles=100)
+        self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+        
+        for child in self.children.values():
+            child.stopNow()
+
+        self.runFor(cycles=10)
+        self.assertTrue(self.graphline not in self.scheduler.listAllThreads())
+        
+        self.assertTrue(self.dataReadyAt("signal"))
+        recvd=self.recvFrom("signal")
+        self.assertTrue(recvd != msg)
+        self.assertTrue(isinstance(recvd,producerFinished))
+
+
+    def test_receivesShutdownAndPropagates23(self):
+        """If a graphline's "control" inbox is specified to be wired to a child component, but its "signal" outbox is not then, irrespective of what message (eg. shutdownMicroprocess) is sent to the "control" inbox, a producerFinished message will be sent on out of the "signal" outbox once all children have terminated."""
+
+        possibleMessages = [ producerFinished(), shutdownMicroprocess(), "flurble" ]
+        
+        for msg in possibleMessages:
+            A=MockChild()
+            B=MockChild()
+            C=MockChild()
+            self.setup_initialise(
+                A=A, B=B, C=C,
+                linkages={
+                    ("","control"):("A","control"),
+                    ("A","outbox"):("B","control"), 
+                })
+
+            self.setup_activate()
+            self.runFor(cycles=100)
+            
+            self.sendTo(msg,"control")
+            
+            self.runFor(cycles=100)
+            self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+            
+            for child in self.children.values():
+                child.stopNow()
+
+            self.runFor(cycles=10)
+            self.assertTrue(self.graphline not in self.scheduler.listAllThreads())
+            
+            self.assertTrue(self.dataReadyAt("signal"))
+            recvd=self.recvFrom("signal")
+            self.assertTrue(recvd != msg)
+            self.assertTrue(isinstance(recvd,producerFinished))
+
+
+    def test_doesNotPropagateShutdownMsg(self):
+        """If a graphline's "signal" outbox is specified to be wired to a child component, the graphline will send any messages itself out of its "signal" outbox, before or after all children have terminated, even if a shutdownMicroprocess or producerFinished message was sent to its "control" inbox."""
+        
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(
+            A=A, B=B, C=C,
+            linkages={ 
+                ("A","signal"):("","signal"),
+                ("A","outbox"):("B","control"), 
+            })
+
+        self.setup_activate()
+        self.runFor(cycles=100)
+        
+        self.sendTo(producerFinished(), "control")
+        self.sendTo(shutdownMicroprocess(), "control")
+        
+        self.runFor(cycles=100)
+        self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+        
+        self.assertFalse(self.dataReadyAt("signal"))
+        
+        for child in self.children.values():
+            child.stopNow()
+
+        self.runFor(cycles=100)
+        
+        self.assertFalse(self.dataReadyAt("signal"))
 
 if __name__ == "__main__":
     unittest.main()
