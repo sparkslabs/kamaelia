@@ -589,6 +589,46 @@ class Test_Graphline(unittest.TestCase):
         
         self.assertFalse(self.dataReadyAt("signal"))
 
+
+    def test_manuallyImplementedShutdownOverrides(self):
+        """If a graphline's "control" inbox and "signal" outbox are both specified to be wired to child components in the graphline, then graphline will not emit its own messages out of its "signal" outbox when it terminates (or at any other time)"""
+        A=MockChild()
+        B=MockChild()
+        C=MockChild()
+        self.setup_initialise(
+            A=A, B=B, C=C,
+            linkages={ 
+                ("","control"):("A","control"),
+                ("A","signal"):("","signal"), 
+                ("B","outbox"):("C","inbox"),
+            })
+
+        self.setup_activate()
+        self.runFor(cycles=100)
+        
+        self.assertFalse(self.dataReadyAt("outbox"))
+        self.assertFalse(self.dataReadyAt("signal"))
+
+        self.checkDataFlows((self.graphline,"control"),(A,"control"))
+        self.checkDataFlows((A,"signal"),(self.graphline,"signal"))
+        self.checkDataFlows((B,"outbox"),(C,"inbox"))
+        
+        self.runFor(cycles=100)
+
+        self.assertFalse(self.dataReadyAt("outbox"))
+        self.assertFalse(self.dataReadyAt("signal"))
+        
+        for child in self.children.values():
+            child.stopNow()
+        
+        self.runFor(cycles=100)
+
+        self.assertTrue(self.graphline not in self.scheduler.listAllThreads())
+        
+        self.assertFalse(self.dataReadyAt("outbox"))
+        self.assertFalse(self.dataReadyAt("signal"))
+
+
 if __name__ == "__main__":
     unittest.main()
     
