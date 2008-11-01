@@ -48,6 +48,7 @@ The references to 'self' create linkages that passes through a named inbox on
 the graphline to a named inbox of one of the child components. Similarly a
 child's outbox is pass-through to a named outbox on the graphline.
 
+## XXXX FIXME: Will be sensible to include a more complex example here including the shutdown behaviour
 
 
 How does it work?
@@ -120,6 +121,9 @@ Graphline does not intercept any of its inboxes or outboxes. It ignores whatever
 traffic flows through them. If you have specified linkages from them to
 components inside the graphline, then the data automatically flows to/from them
 as you specified.
+
+## XXXX FIXME: This needs updating to discuss the shutdown behaviour.
+
 """
 
 # component that creates and encapsulates a pipeline of components, connecting
@@ -191,7 +195,6 @@ class Graphline(component):
       
       link_to_component_control = {}
       
-      
       noControlPassthru=True
       noSignalPassthru=True
 
@@ -232,7 +235,7 @@ class Graphline(component):
       for child in self.children:
           child.activate()
 
-
+## XXXX FIXME: Would be nice to have a clearer name for this
       shutdownMprocMsg=None
 
       # run until all child components have terminated
@@ -246,7 +249,13 @@ class Graphline(component):
           if noControlPassthru and self.dataReady("control"):
               msg = self.recv("control")
               for toComponent in self.components_to_get_control_messages:
+## XXXX FIXME: Worth noting that self.link here may fail if the subcomponent
+## XXXX FIXME: is linked to whilst the graphline is running. If that
+## XXXX FIXME: happens, we should catch it, and allow the link to continue
+## XXXX FIXME: elsewhere
+
                   L = self.link( (self, "_cs"), (toComponent, "control"))
+
                   self.send( msg, "_cs")
                   yield 1
                   self.unlink(thelinkage=L)
@@ -277,3 +286,4 @@ __kamaelia_components__  = ( Graphline, )
 
 if __name__=="__main__":
    pass    
+
