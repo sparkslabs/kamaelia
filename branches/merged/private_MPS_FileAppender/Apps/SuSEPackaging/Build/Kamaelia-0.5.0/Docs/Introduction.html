@@ -1,0 +1,125 @@
+<html><head><meta name="qrichtext" content="1" />
+<style>
+.subsection { }
+.sectionheader {
+                 text-align: center;
+                 font-weight: bold;
+                 padding-bottom: 1em;
+               }
+.sectioncontent { font-size: 0.9em;
+                  margin-left: 2em;
+                  line-height: 1.8;
+                  text-align: left;
+                }
+.verticaldivider { float: bottom;
+                   width: 100%;
+                 }
+.none { width: 100%;
+        clear: both;
+      }
+
+ .rbroundbox_green { background: url(/t/green.corners-top.png) repeat-x; 
+               width: 50%;
+               float: right;
+               }
+ .rbtop_green div { background: url(/t/green.corners-topleft.png) no-repeat top left; }
+ .rbtop_green { background: url(/t/green.corners-topright.png) no-repeat top right; }
+
+ .rbcontent_green div { background: url(/t/green.corners-right.png) repeat-y right; 
+                }
+ .rbcontent_green { background: url(/t/green.corners-left.png) repeat-y left; 
+              padding-left: 1.5em;
+            }
+
+ .rbbot_green div { background: url(/t/green.corners-bottomleft.png) no-repeat bottom left; }
+ .rbbot_green { background: url(/t/green.corners-bottomright.png) no-repeat bottom right; }
+ .rbbottom_green { background: url(/t/green.corners-bottom.png) repeat-x; }
+ .rbtop_green div, .rbtop_green, .rbbot_green div, .rbbot_green {
+ width: 100%;
+ height: 23px;
+ font-size: 1px;
+ }
+body {
+   text-align: justify;
+}
+.boxright {
+    float: right;
+    width: 20em;
+    padding: 0.5em;
+    margin: 1em;
+
+    border: 1px solid;
+}
+.sidebar {
+    width: 10em;
+    float: left;
+    padding: 1em;
+
+}
+.bodytext {
+
+    margin: 0 5em 0em 12em;
+    float: auto;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+</style>
+</head><body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+<p><span style="font-size:23pt;font-weight:600">Kamaelia</span></p>
+<p align="right"><span style="font-size:15pt">An Introduction</span></p>
+<p><span style="font-size:15pt;font-weight:600">OK, what is Kamaelia?</span></p>
+<p dir="ltr"><table width='40%' border='2' align='right'><tr><td> <span style="font-style:italic;font-weight:600">A key aim of Kamaelia is to enable even novice programmers to create scalable and safe concurrent systems, quickly and easily</span></td></tr></table>Lego/K'nex for programmers. For people. For building things. It's about making concurrency on systems easier to use, so easy you forget that you're using it. It's been done once before, spectacularly well, so well many people forget it's there, a key example - unix pipelines. However it's been done in hardware since day 1, since that's how hardware works.</p>
+<p dir="ltr">One day, I sat back and realised that network systems looked almost identical in nature to the asynchronous hardware systems, conceptually,  with one major exception. In hardware, you don't know who your buffers are connected to via wires. You have a protocol for getting that information over (be it a clock, or handshake circuits) but no other knowledge.</p>
+<p dir="ltr">Kamaelia was borne, technology wise, from the idea &quot;what if we developed software like hardware&quot; - each component with no direct knowledge of any other. Similar to programs in a unix pipeline. This is proving to be a very useful approach.</p>
+<p>Kamaelia is the result. Kamaelia is divided into 2 sections:</p>
+<ul type="disc"><li dir="ltr"><span style="font-weight:600">Axon</span> - this is a framework, developed by application spikes, for wrapping active objects. Specifically these are generators (mainly) and threads. The resulting library at it's core is pretty simple - a novice programmer can learn python one week and implement <a href="/MiniAxon/">their own version</a> in about a week. <br /></li>
+<li dir="ltr"><span style="font-weight:600">Kamaelia</span> - this is the toy box - a library of components you can take and bolt together, and customise. This includes components for TCP/multicast clients and servers, backplanes, chassis, Dirac video encoding &amp; decoding, Vorbis decoding, pygame &amp; Tk based user interfaces and Tk, visualisation tools, presentation tools, games tools... </li></ul>
+<p dir="ltr">The reason for concurrency here isn't because we're after performance, but due to the problems we're facing are <span style="font-style:italic">naturally</span> concurrent - millions of people watching content. Therefore, the aim is to make dealing with this concurrency simple/easy, or natural/fun. Hence the lego/K'nex analogy.</p>
+<p></p>
+<p><span style="font-size:15pt;font-weight:600">What's the underlying metaphor we use?</span></p>
+<p>In hardware you have pins which the hardware &quot;talks&quot; to. In unix shells, you have stdin and stdout. For Kamaelia we decided to use something a little more concrete.</p>
+<p>Take a person sitting at a desk in a world pre-desktop-computing. She could have a bunch of inboxes &amp; outboxes on her desk. Suppose that the inboxes are labelled &quot;timesheets&quot;, &quot;newhires&quot;, &quot;fires&quot;, and that the outtrays are &quot;accounts&quot;, &quot;security&quot;, &quot;HR&quot;. </p>
+<p>She can work on messages she gets on inboxes, and generate messages on outboxes. A postman then performs deliveries between the people - the active objects. The postman knows where things are going, and therefore if you need to add ing (say) auditing you can do that without modifying the way the person/active object works.</p>
+<p>This is precisely how Kamaelia works. It models itself on a real world system to encourage behaviours that simplify concurrency. </p>
+<p></p>
+<p><span style="font-size:15pt;font-weight:600">Example</span></p>
+<p>Suppose I want to create a simple presentation tool - where I type some text, it goes to a server. People connect to that server and can &quot;listen&quot; to what I'm typing in a nice display, the three main sections of that system could look like this: </p>
+<ul type="disc"><div><span style="font-family:Courier New"><pre>--------------------<br /># Source console program<br /><br />pipeline(<br />    ConsoleReader(&quot;&gt;&gt;&gt; &quot;),<br />    TCPClient(&quot;talk.kamaelia.org&quot;, 1601),<br />).run()<br />-------------------<br /># Client program<br />#<br /># Ticker with some decoration <br />#<br />Image(&quot;/home/zathras/Album/KamaeliaSpotting.png&quot;, position=(608,160) ).activate()<br />pipeline(<br />    TCPClient(&quot;talk.kamaelia.org&quot;, 1602),<br />    Ticker()<br />).activate()<br />Image(&quot;/home/zathras/Album/ChooseConcurrency.png&quot;, position=(115,475) ).run()<br />-------------------<br /># Server Program<br /><br />Backplane(&quot;RandomTalk&quot;).activate()x<br />pipeline(<br />    SingleServer( 1601 ),<br />    publishTo(&quot;RandomTalk&quot;),<br />).activate()<br /><br /></span><span style="font-family:Courier;font-weight:600">def</span><span style="font-family:Courier"> ServeTalk(): # Protocol handler created to handle each connected client<br />     </span><span style="font-family:Courier;font-weight:600">return</span><span style="font-family:Courier"> subscribeTo(&quot;RandomTalk&quot;)<br /><br />SimpleServer( ServeTalk, 1602).run()<br /></span><span style="font-family:Courier New"></pre></span></div></ul>
+<p dir="ltr">You write new components in the same way as writing a small script. Start off reading/writing from stdin/stdout, until you're happy with it. You then replace inputs/outputs with inboxes/outboxes. That component can then be used with any other as long as they accept that form of python object. For example, consider exchanging ConsoleReader() &amp; Ticker() with AlsaReader() and AlsaPlayer() to create a simple radio style system.</p>
+<p>That's the idea in a nutshell. (did I mention all the components above run in parallel?)</p>
+<p dir="ltr"></p>
+<p><span style="font-size:15pt;font-weight:600">Things people have done with it</span></p>
+<p dir="ltr">At R&amp;D we've used it for sending subtitles to mobiles, building a networked audio mixer matrix, previewing PVR content on mobiles, joining multicast islands together using application layer tunneling and also a game for small children :-)</p>
+<p>I also use Kamaelia for all my presentations these days.</p>
+<p dir="ltr">Kamaelia has been used by BBC Radio &amp; Music to produce a record of transmission (for 8 BBC channels 24x7). This is a development box for internally monitoring what is actually broadcast vs what the EPG data says.  This enables prototyping of new services (subject to all sorts of restrictions). Examples include podcasts of all of BBC radio, particular tastes or genres. That then allows people to decide if they want these things and decide how to move forward with the industry.</p>
+<p dir="ltr">Kamaelia's role was to be used to build a proof of concept prototype. It did prove the concept, so they worked on a traditional style, production quality replacement. We're now working with them to work towards a second generation architecture.</p>
+<p dir="ltr"><span style="font-size:15pt;font-weight:600">Getting Started</span></p>
+<p><a href="/GettingStarted.html">We've got a page on this</a>, but the short instructions are:</p>
+<ul type="disc"><li>Grab a Kamaelia Bundle (<a href="http://prdownloads.sourceforge.net/kamaelia/KamaeliaMegaBundle-1.0.1.tar.gz?download">with lib(ogg, vorbis,ao)</a>, <a href="http://prdownloads.sourceforge.net/kamaelia/KamaeliaBundle-1.0.1.tar.gz?download">without</a>)</li>
+<li dir="ltr">Install the files (all installed in the standard ways)</li>
+<li>Start working through the examples in the <a href="/Cookbook.html">cookbook</a></li>
+<li>Look through <a href="/Components.html">the components</a> for more information</li>
+<li dir="ltr"><a href="/MiniAxon/">Find out how axon works</a> in detail!</li></ul>
+<p dir="ltr"><span style="font-size:15pt;font-weight:600">Summary </span></p>
+<p>And that is Kamaelia. A framework for components, a library of components, and a way of making systems quickly and easily.</p>
+<p>So, the reason I'm talking about it at Euro OSCON, is because we're Kamaelia itself to be useful &amp; fun, and also it's seems to make concurrency easy to work with. Hopefully this should come over in my talk! </p>
+<p>More information: </p>
+<ul type="disc"><li>Project Website: <a href="http://kamaelia.sourceforge.net/">http://kamaelia.sourceforge.net/</a></li>
+<li>Axon Tutorial: <a href="http://kamaelia.sourceforge.net/MiniAxon/">http://kamaelia.sourceforge.net/MiniAxon/</a></li>
+<li>Motivations (non-technical): <a href="http://kamaelia.sourceforge.net/Challenges/">http://kamaelia.sourceforge.net/Challenges/</a></li>
+<li>White paper (technical) : <a href="http://www.bbc.co.uk/rd/pubs/whp/whp113.shtml">http://www.bbc.co.uk/rd/pubs/whp/whp113.shtml</a></li>
+<li>Euro OSCON, Python Track, Wednesday 19th October 2005</li></ul>
+<p></p>
+
+<div class="none"></div>
+<P><hr width='100%%'>
+<p>
+(C) 2006 Kamaelia Contributors, including the British Broadcasting
+Corporation, All Rights Reserved,
+This is an ongoing community based development site. As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved. Specificially, this page may
+contain personal views which are not the views of the BBC. 
+
+</body></html>
+

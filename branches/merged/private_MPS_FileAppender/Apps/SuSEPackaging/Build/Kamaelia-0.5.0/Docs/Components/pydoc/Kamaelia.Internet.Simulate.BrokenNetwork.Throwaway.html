@@ -1,0 +1,110 @@
+<html><head><meta name="qrichtext" content="1" />
+<style>
+.subsection { }
+.sectionheader {
+                 text-align: center;
+                 font-weight: bold;
+                 padding-bottom: 1em;
+               }
+.sectioncontent { font-size: 0.9em;
+                  margin-left: 2em;
+                  line-height: 1.8;
+                  text-align: left;
+                }
+.verticaldivider { float: bottom;
+                   width: 100%;
+                 }
+.none { width: 100%;
+        clear: both;
+      }
+
+ .rbroundbox_green { background: url(/t/green.corners-top.png) repeat-x; 
+               width: 50%;
+               float: right;
+               }
+ .rbtop_green div { background: url(/t/green.corners-topleft.png) no-repeat top left; }
+ .rbtop_green { background: url(/t/green.corners-topright.png) no-repeat top right; }
+
+ .rbcontent_green div { background: url(/t/green.corners-right.png) repeat-y right; 
+                }
+ .rbcontent_green { background: url(/t/green.corners-left.png) repeat-y left; 
+              padding-left: 1.5em;
+            }
+
+ .rbbot_green div { background: url(/t/green.corners-bottomleft.png) no-repeat bottom left; }
+ .rbbot_green { background: url(/t/green.corners-bottomright.png) no-repeat bottom right; }
+ .rbbottom_green { background: url(/t/green.corners-bottom.png) repeat-x; }
+ .rbtop_green div, .rbtop_green, .rbbot_green div, .rbbot_green {
+ width: 100%;
+ height: 23px;
+ font-size: 1px;
+ }
+body {
+   text-align: justify;
+}
+.boxright {
+    float: right;
+    width: 20em;
+    padding: 0.5em;
+    margin: 1em;
+
+    border: 1px solid;
+}
+.sidebar {
+    width: 10em;
+    float: left;
+    padding: 1em;
+
+}
+.bodytext {
+
+    margin: 0 5em 0em 12em;
+    float: auto;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+</style>
+</head><body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+<h1>Kamaelia.Internet.Simulate.BrokenNetwork.Throwaway</h1>
+<h2>class Throwaway(Axon.Component.component)</h2>
+
+<p>Throwaway() -&gt; new component.</p>
+<p>This component passes on data it receives, but sometimes it doesn't!</p>
+<h4>Inboxes</h4>
+<ul><li>   control : Secondary inbox often used for signals. The closest analogy is unix signals
+<li>   inbox : Default inbox for bulk data. Used in a pipeline much like stdin
+</ul>
+<h4>Outboxes</h4>
+<ul><li>   outbox : Default data out outbox, used in a pipeline much like stdout
+<li>   signal : The default signal based outbox - kinda like stderr, but more for sending singal type signals
+</ul>
+<h2>Methods defined here</h2>
+
+<table width='40%' border='2' align='right'><tr><td><p dir="ltr"><span style="font-weight:600">Warning!</span> </p>
+<ul type="disc"><div dir="ltr">You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers. </div></ul>
+</body></html>
+  </td></tr></table>
+<h3>main(self)</h3>
+
+<HR>
+<h2> Feedback </h2>
+<P>Got a problem with the documentation? Something unclear, could
+be clearer? Want to help with improving? Constructive criticism,
+preferably in the form of suggested rewording is very welcome.
+
+<P>Please leave the feedback 
+<a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&postid=1131454685"> 
+here, in reply to the documentation thread in the Kamaelia blog</a>. 
+
+<div class="none"></div>
+<P><hr width='100%%'>
+<p>
+(C) 2006 Kamaelia Contributors, including the British Broadcasting
+Corporation, All Rights Reserved,
+This is an ongoing community based development site. As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved. Specificially, this page may
+contain personal views which are not the views of the BBC. 
+
+</body></html>
+

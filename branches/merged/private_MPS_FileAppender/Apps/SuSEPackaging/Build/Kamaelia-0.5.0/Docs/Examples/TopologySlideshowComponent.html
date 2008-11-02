@@ -1,0 +1,85 @@
+<html><head><meta name="qrichtext" content="1" />
+<style>
+.subsection { }
+.sectionheader {
+                 text-align: center;
+                 font-weight: bold;
+                 padding-bottom: 1em;
+               }
+.sectioncontent { font-size: 0.9em;
+                  margin-left: 2em;
+                  line-height: 1.8;
+                  text-align: left;
+                }
+.verticaldivider { float: bottom;
+                   width: 100%;
+                 }
+.none { width: 100%;
+        clear: both;
+      }
+
+ .rbroundbox_green { background: url(/t/green.corners-top.png) repeat-x; 
+               width: 50%;
+               float: right;
+               }
+ .rbtop_green div { background: url(/t/green.corners-topleft.png) no-repeat top left; }
+ .rbtop_green { background: url(/t/green.corners-topright.png) no-repeat top right; }
+
+ .rbcontent_green div { background: url(/t/green.corners-right.png) repeat-y right; 
+                }
+ .rbcontent_green { background: url(/t/green.corners-left.png) repeat-y left; 
+              padding-left: 1.5em;
+            }
+
+ .rbbot_green div { background: url(/t/green.corners-bottomleft.png) no-repeat bottom left; }
+ .rbbot_green { background: url(/t/green.corners-bottomright.png) no-repeat bottom right; }
+ .rbbottom_green { background: url(/t/green.corners-bottom.png) repeat-x; }
+ .rbtop_green div, .rbtop_green, .rbbot_green div, .rbbot_green {
+ width: 100%;
+ height: 23px;
+ font-size: 1px;
+ }
+body {
+   text-align: justify;
+}
+.boxright {
+    float: right;
+    width: 20em;
+    padding: 0.5em;
+    margin: 1em;
+
+    border: 1px solid;
+}
+.sidebar {
+    width: 10em;
+    float: left;
+    padding: 1em;
+
+}
+.bodytext {
+
+    margin: 0 5em 0em 12em;
+    float: auto;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+</style>
+</head><body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
+<p align="right"><span style="font-size:18pt">How can I...?</span></p>
+<p>Example 8: Simple topology slideshow tool. <span style="font-weight:600">Components used: </span><a href="/Components/pydoc/Kamaelia.Util.PipelineComponent.pipeline.html">pipeline</a>, <a href="/Components/pydoc/Kamaelia.UI.Pygame.Button.Button.html">Button</a>, <a href="/Components/pydoc/Kamaelia.Util.Chooser.Chooser.html">Chooser</a>, <a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists.lines_to_tokenlists.html">lines_to_tokenlists</a>, <a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent.TopologyViewerComponent.html">TopologyViewerComponent</a></p>
+<ul type="disc"><div><pre><span style="font-style:italic">#!/usr/bin/python</span><br /><br /><span style="font-weight:600">from</span> Kamaelia.UI.Pygame.Button <span style="font-weight:600">import</span> Button<br /><span style="font-weight:600">from</span> Kamaelia.Util.Chooser <span style="font-weight:600">import</span> Chooser<br /><span style="font-weight:600">from</span> Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists <span style="font-weight:600">import</span> lines_to_tokenlists<br /><span style="font-weight:600">from</span> Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent <span style="font-weight:600">import</span> TopologyViewerComponent<br /><span style="font-weight:600">from</span> Kamaelia.Util.PipelineComponent <span style="font-weight:600">import</span> pipeline<br /><br />graph = &quot;&quot;&quot;\<br /><br />ADD NODE TCPClient TCPClient auto -<br />ADD NODE VorbisDecode VorbisDecode auto -<br />ADD NODE AOPlayer AOPlayer auto -<br />ADD LINK TCPClient VorbisDecode<br />ADD LINK VorbisDecode AOPlayer<br />ADD NODE Multicast_Transceiver Multicast_Transceiver auto -<br />ADD NODE detuple detuple auto -<br />ADD LINK Multicast_Transceiver detuple<br />DEL NODE TCPClient<br />ADD LINK detuple VorbisDecode<br />DEL ALL<br />&quot;&quot;&quot;.split(&quot;\n&quot;)<br /><br />pipeline(<br />     Button(caption=&quot;Next&quot;, msg=&quot;NEXT&quot;, position=(72,8)),<br />     Chooser(items = graph),<br />     lines_to_tokenlists(),<br />     TopologyViewerComponent(transparency = (255,255,255), showGrid = False),<br />).run()<br /></pre><br /><span style="font-weight:600">Source:</span> Examples/example8/topology.py</div></ul>
+<p></p>
+
+<div class="none"></div>
+<P><hr width='100%%'>
+<p>
+(C) 2006 Kamaelia Contributors, including the British Broadcasting
+Corporation, All Rights Reserved,
+This is an ongoing community based development site. As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved. Specificially, this page may
+contain personal views which are not the views of the BBC. 
+
+</body></html>
+
