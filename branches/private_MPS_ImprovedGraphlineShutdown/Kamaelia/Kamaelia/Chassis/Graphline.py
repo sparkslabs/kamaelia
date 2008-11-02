@@ -320,7 +320,7 @@ class Graphline(component):
               for toComponent in self.components_to_get_control_messages:
                   L = self.link( (self, "_cs"), (toComponent, "control"))
                   self.send( msg, "_cs")
-                  yield 1
+#                  yield 1
                   self.unlink(thelinkage=L)
 
               if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):
