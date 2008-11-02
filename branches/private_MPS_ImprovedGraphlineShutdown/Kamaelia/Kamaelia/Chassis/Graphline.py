@@ -48,8 +48,59 @@ The references to 'self' create linkages that passes through a named inbox on
 the graphline to a named inbox of one of the child components. Similarly a
 child's outbox is pass-through to a named outbox on the graphline.
 
-## XXXX FIXME: Will be sensible to include a more complex example here including the shutdown behaviour
 
+Shutdown Examples
+-----------------
+
+In this example:
+
+* Pinger is a component that sends the messages from "tosend" after with a
+  brief delay between messages. It sends the messages out of the stated outbox.
+
+* Waiter is a component that starts up, and then waits for any message sent
+  to its inbox "control"
+
+* Whinger is a component that complains that it is running periodically, but
+  will shutdown if it receives any message on its inbox "control"
+
+As a result, this example creates 3 components inside a graphline that wait
+for shutdown. The Pinger sends a message, which is duplicated to all the
+subcomponents, at which point in time, they shutdown, causing the system to
+shutdown.
+
+      Pipeline(
+          Pinger(tosend=[Axon.Ipc.producerFinished()],box="signal"),
+          Graphline(
+              TO_SHUTDOWN1 = Waiter(),
+              TO_SHUTDOWN2 = Waiter(),
+              TO_SHUTDOWN3 = Waiter(),
+              linkages = {}
+          ),
+          Whinger(),
+      ).run()
+
+Note: the shutdown message propogates all the way through the system to the
+whinger, which then also shuts down.
+
+Full code for this is in ./Examples/UsingChassis/Graphline/DemoShutdown.py
+
+You can also still have shutdown links between components. If you do, then
+the Graphline doesn't interfere with them:
+      Pipeline(
+          Pinger(tosend=[Axon.Ipc.producerFinished()],box="signal"),
+          Graphline(
+              TO_SHUTDOWN1 = Waiter(),
+              TO_SHUTDOWN2 = Waiter(),
+              TO_SHUTDOWN3 = Waiter(),
+              linkages = {
+                  ("TO_SHUTDOWN1","signal"):("TO_SHUTDOWN2","control"),
+                  ("TO_SHUTDOWN2","signal"):("TO_SHUTDOWN3","control"),
+              }
+          ),
+          Whinger(),
+      ).run()
+
+Full code for this is in ./Examples/UsingChassis/Graphline/LinkedShutdown.py
 
 How does it work?
 -----------------
@@ -117,13 +168,32 @@ NOTE that if your child components create additional components themselves, the
 Graphline component will not know about them. It only monitors the components it
 was originally told about.
 
-Graphline does not intercept any of its inboxes or outboxes. It ignores whatever
-traffic flows through them. If you have specified linkages from them to
-components inside the graphline, then the data automatically flows to/from them
-as you specified.
+Graphline does not GENERALLY intercept any of its inboxes or outboxes. It
+ignores whatever traffic flows through them. If you have specified linkages
+from them to components inside the graphline, then the data automatically
+flows to/from them as you specified.
 
-## XXXX FIXME: This needs updating to discuss the shutdown behaviour.
+Shutdown Handling
+-----------------
 
+There is however an exception: shutdown handling, where the difference is
+light touch, which is this::
+
+    while not self.childrenDone():
+         always pass on messages from our control to appropriate sub-component's control
+         if message is shutdown, set shutdown flag
+
+    # then after loop
+
+    if no component-has-linkage-to-graphline's signal
+         if shutdown flag set:
+             pass on shutdownMicroprocess
+         else:
+             pass on producerFinished
+
+If the user has wired up the graphline's control box to pass through to one
+of their components, then that request is honoured, and the user then
+becomes wholly responsible for shutdown.
 """
 
 # component that creates and encapsulates a pipeline of components, connecting
