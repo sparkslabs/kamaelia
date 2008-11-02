@@ -330,7 +330,7 @@ class Graphline(component):
    
       if noSignalPassthru:
           if shutdownMessage:
-              self.send(shutdownMprocMsg, "signal")
+              self.send(shutdownMessage, "signal")
           else:
               self.send(producerFinished(), "signal")
    
