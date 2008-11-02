@@ -390,7 +390,8 @@ class Test_Graphline(unittest.TestCase):
         self.assertTrue(isinstance(self.recvFrom("signal"), producerFinished))
         
 
-
+## FIXME: This test is definitely broken since an example 
+## Doing this exists in Examples, and works :-)
     def test_emissionOfShutdownSignal_2(self):
         """When all children have terminated. If no child is wired to the Graphline's "signal" outbox, the Graphline will send out its own message. If no child is wired to the Graphline's "control" inbox and a shutdownMicroprocess message has been previously received on that inbox, then the message sent out will be that shutdownMicroprocess message."""
         
@@ -434,6 +435,9 @@ class Test_Graphline(unittest.TestCase):
         
         self.checkDataFlows((self.graphline,"control"),(A,"control"))
 
+
+## FIXME: This test is definitely broken since an example 
+## Doing this exists in Examples, and works :-)
     def test_receivesShutdownDisseminated(self):
         """If a graphline's "control" inbox is not specified to be wired to a child component in the graphline, then any message (including shutdown messages) flows to the "control" inbox of all children without linkages going to their "control" inbox only."""
 
