@@ -49,6 +49,58 @@ the graphline to a named inbox of one of the child components. Similarly a
 child's outbox is pass-through to a named outbox on the graphline.
 
 
+Shutdown Examples
+-----------------
+
+In this example:
+
+* Pinger is a component that sends the messages from "tosend" after with a
+  brief delay between messages. It sends the messages out of the stated outbox.
+
+* Waiter is a component that starts up, and then waits for any message sent
+  to its inbox "control"
+
+* Whinger is a component that complains that it is running periodically, but
+  will shutdown if it receives any message on its inbox "control"
+
+As a result, this example creates 3 components inside a graphline that wait
+for shutdown. The Pinger sends a message, which is duplicated to all the
+subcomponents, at which point in time, they shutdown, causing the system to
+shutdown.
+
+      Pipeline(
+          Pinger(tosend=[Axon.Ipc.producerFinished()],box="signal"),
+          Graphline(
+              TO_SHUTDOWN1 = Waiter(),
+              TO_SHUTDOWN2 = Waiter(),
+              TO_SHUTDOWN3 = Waiter(),
+              linkages = {}
+          ),
+          Whinger(),
+      ).run()
+
+Note: the shutdown message propogates all the way through the system to the
+whinger, which then also shuts down.
+
+Full code for this is in ./Examples/UsingChassis/Graphline/DemoShutdown.py
+
+You can also still have shutdown links between components. If you do, then
+the Graphline doesn't interfere with them:
+      Pipeline(
+          Pinger(tosend=[Axon.Ipc.producerFinished()],box="signal"),
+          Graphline(
+              TO_SHUTDOWN1 = Waiter(),
+              TO_SHUTDOWN2 = Waiter(),
+              TO_SHUTDOWN3 = Waiter(),
+              linkages = {
+                  ("TO_SHUTDOWN1","signal"):("TO_SHUTDOWN2","control"),
+                  ("TO_SHUTDOWN2","signal"):("TO_SHUTDOWN3","control"),
+              }
+          ),
+          Whinger(),
+      ).run()
+
+Full code for this is in ./Examples/UsingChassis/Graphline/LinkedShutdown.py
 
 How does it work?
 -----------------
@@ -116,10 +168,32 @@ NOTE that if your child components create additional components themselves, the
 Graphline component will not know about them. It only monitors the components it
 was originally told about.
 
-Graphline does not intercept any of its inboxes or outboxes. It ignores whatever
-traffic flows through them. If you have specified linkages from them to
-components inside the graphline, then the data automatically flows to/from them
-as you specified.
+Graphline does not GENERALLY intercept any of its inboxes or outboxes. It
+ignores whatever traffic flows through them. If you have specified linkages
+from them to components inside the graphline, then the data automatically
+flows to/from them as you specified.
+
+Shutdown Handling
+-----------------
+
+There is however an exception: shutdown handling, where the difference is
+light touch, which is this::
+
+    while not self.childrenDone():
+         always pass on messages from our control to appropriate sub-component's control
+         if message is shutdown, set shutdown flag
+
+    # then after loop
+
+    if no component-has-linkage-to-graphline's signal
+         if shutdown flag set:
+             pass on shutdownMicroprocess
+         else:
+             pass on producerFinished
+
+If the user has wired up the graphline's control box to pass through to one
+of their components, then that request is honoured, and the user then
+becomes wholly responsible for shutdown.
 """
 
 # component that creates and encapsulates a pipeline of components, connecting
@@ -127,6 +201,8 @@ as you specified.
 
 from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
+from Axon.Ipc import shutdownMicroprocess
+from Axon.Ipc import producerFinished
 
 component = _Axon.Component.component
 
@@ -145,7 +221,7 @@ class Graphline(component):
    """
    
    Inboxes = {"inbox":"", "control":""}
-   Outboxes = {"outbox":"", "signal":""}
+   Outboxes = {"outbox":"", "signal":"", "_cs": "For signaling to subcomponents shutdown"}
     
    def __init__(self, linkages = None, **components):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
@@ -186,14 +262,20 @@ class Graphline(component):
       
    def main(self):
       """Main loop."""
-#      components = []
+      
+      link_to_component_control = {}
+      
+      noControlPassthru=True
+      noSignalPassthru=True
+
       for componentRef,sourceBox in self.layout:
          toRef, toBox = self.layout[(componentRef,sourceBox)]
+
          fromComponent = self.components.get(componentRef, self)
          toComponent = self.components.get(toRef, self)
 
-#         if fromComponent != self and fromComponent not in components: components.append(fromComponent)
-#         if toComponent   != self and toComponent   not in components: components.append(toComponent)
+         if toBox == "control":
+             link_to_component_control[toComponent] = False
 
          passthrough = 0
          if fromComponent == self: passthrough = 1
@@ -204,21 +286,52 @@ class Graphline(component):
          
          self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)
 
+         if fromComponent==self and sourceBox=="control":
+             noControlPassthru=False
+
+         if toComponent == self and toBox == "signal":
+             noSignalPassthru=False
+
+      for ref in self.components.values():
+          if link_to_component_control.get(ref, None) == None:
+              link_to_component_control[ref] = True
+
       self.addChildren(*self.components.values())
+      self.components_to_get_control_messages = []
+      for ref in link_to_component_control:
+          if link_to_component_control[ref]:
+              self.components_to_get_control_messages.append( ref )
 
       for child in self.children:
           child.activate()
 
+      shutdownMessage = None # We use this to capture the shutdown message sent to this graphline
 
       # run until all child components have terminated
       # at which point this component can implode
 
       # becuase they are children, if they terminate, we'll be woken up
       while not self.childrenDone():
-          self.pause()
-          yield 1
+          if not self.anyReady():
+              self.pause()
+          
+          if noControlPassthru and self.dataReady("control"):
+              msg = self.recv("control")
+              for toComponent in self.components_to_get_control_messages:
+                  L = self.link( (self, "_cs"), (toComponent, "control"))
+                  self.send( msg, "_cs")
+                  self.unlink(thelinkage=L)
 
+              if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):
+                  shutdownMessage = msg
+          
+          yield 1
    
+      if noSignalPassthru:
+          if shutdownMessage:
+              self.send(shutdownMessage, "signal")
+          else:
+              self.send(producerFinished(), "signal")
    
    def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
@@ -235,3 +348,4 @@ __kamaelia_components__  = ( Graphline, )
 
 if __name__=="__main__":
    pass    
+
