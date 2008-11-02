@@ -28,6 +28,13 @@ class Waiter(Axon.Component.component):
         self.send(msg, "signal")
         yield 1
 
+class Whinger(Axon.ThreadedComponent.threadedcomponent):
+    def main(self):
+        while not self.dataReady("control"):
+            print "WHINGER: waiting for shutdown"
+            time.sleep(1)
+        print "WHINGER: shutdown"
+
 print """
 Basic Acceptance Test
 
@@ -54,4 +61,5 @@ Pipeline(
         TO_SHUTDOWN3 = Waiter(),
         linkages = {}
     ),
+    Whinger(),
 ).run()
