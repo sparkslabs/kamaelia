@@ -235,8 +235,7 @@ class Graphline(component):
       for child in self.children:
           child.activate()
 
-## XXXX FIXME: Would be nice to have a clearer name for this
-      shutdownMprocMsg=None
+      shutdownMessage = None # We use this to capture the shutdown message sent to this graphline
 
       # run until all child components have terminated
       # at which point this component can implode
@@ -261,12 +260,12 @@ class Graphline(component):
                   self.unlink(thelinkage=L)
 
               if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):
-                  shutdownMprocMsg=msg
+                  shutdownMessage = msg
           
           yield 1
    
       if noSignalPassthru:
-          if shutdownMprocMsg!=None:
+          if shutdownMessage:
               self.send(shutdownMprocMsg, "signal")
           else:
               self.send(producerFinished(), "signal")
