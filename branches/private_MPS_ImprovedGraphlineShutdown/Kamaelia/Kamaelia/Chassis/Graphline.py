@@ -248,13 +248,7 @@ class Graphline(component):
           if noControlPassthru and self.dataReady("control"):
               msg = self.recv("control")
               for toComponent in self.components_to_get_control_messages:
-## XXXX FIXME: Worth noting that self.link here may fail if the subcomponent
-## XXXX FIXME: is linked to whilst the graphline is running. If that
-## XXXX FIXME: happens, we should catch it, and allow the link to continue
-## XXXX FIXME: elsewhere
-
                   L = self.link( (self, "_cs"), (toComponent, "control"))
-
                   self.send( msg, "_cs")
                   yield 1
                   self.unlink(thelinkage=L)
