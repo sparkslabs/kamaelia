@@ -193,9 +193,28 @@ class Test_Graphline(unittest.TestCase):
             self.assertFalse(c in gChildren)
         
 
-    def test_activatesChildrenOnlyWhenActivated(self):
-        """Children are activated as soon as the Graphline itself is activated, but no sooner."""
+    def test_activatesChildrenOnlyWhenActivatedNotLinked(self):
+        """Children are activated as soon as the Graphline itself is activated, but no sooner. They get activated even if they have no linkages specified to them."""
         self.setup_initialise(A=MockChild(), B=MockChild(), C=MockChild(), linkages={})
+
+        for child in self.children.values():
+            self.assertFalse(child.wasActivated)
+
+        self.setup_activate()
+        self.runFor(cycles=1)
+        self.runFor(cycles=3)
+        
+        for child in self.children.values():
+            self.assertTrue(child.wasActivated)
+        
+        
+    def test_activatesChildrenOnlyWhenActivatedLinked(self):
+        """Children are activated as soon as the Graphline itself is activated, but no sooner. They get activated even if they have no linkages specified to them."""
+        self.setup_initialise(A=MockChild(), B=MockChild(), C=MockChild(), linkages={
+            ("A","outbox"):("B","inbox"),
+            ("B","outbox"):("C","inbox"),
+            ("C","outbox"):("A","inbox"),
+            })
 
         for child in self.children.values():
             self.assertFalse(child.wasActivated)
