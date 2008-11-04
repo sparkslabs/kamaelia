@@ -32,6 +32,7 @@ that you specify.
 
 Example Usage
 -------------
+
 Joining a PromtedFileReader and a rate control component to make a file reader
 that reads at a given rate::
 
@@ -47,6 +48,7 @@ that reads at a given rate::
 The references to 'self' create linkages that passes through a named inbox on
 the graphline to a named inbox of one of the child components. Similarly a
 child's outbox is pass-through to a named outbox on the graphline.
+
 
 
 Shutdown Examples
@@ -66,7 +68,7 @@ In this example:
 As a result, this example creates 3 components inside a graphline that wait
 for shutdown. The Pinger sends a message, which is duplicated to all the
 subcomponents, at which point in time, they shutdown, causing the system to
-shutdown.
+shutdown::
 
       Pipeline(
           Pinger(tosend=[Axon.Ipc.producerFinished()],box="signal"),
@@ -85,7 +87,8 @@ whinger, which then also shuts down.
 Full code for this is in ./Examples/UsingChassis/Graphline/DemoShutdown.py
 
 You can also still have shutdown links between components. If you do, then
-the Graphline doesn't interfere with them:
+the Graphline doesn't interfere with them::
+
       Pipeline(
           Pinger(tosend=[Axon.Ipc.producerFinished()],box="signal"),
           Graphline(
@@ -101,6 +104,8 @@ the Graphline doesn't interfere with them:
       ).run()
 
 Full code for this is in ./Examples/UsingChassis/Graphline/LinkedShutdown.py
+
+
 
 How does it work?
 -----------------
@@ -172,6 +177,8 @@ Graphline does not GENERALLY intercept any of its inboxes or outboxes. It
 ignores whatever traffic flows through them. If you have specified linkages
 from them to components inside the graphline, then the data automatically
 flows to/from them as you specified.
+
+
 
 Shutdown Handling
 -----------------
