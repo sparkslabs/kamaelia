@@ -25,12 +25,9 @@ import time
 import Axon
 from Kamaelia.Protocol.AIM.AIMHarness import AIMHarness
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.File.UnixProcess import UnixProcess
 
-def sendTo(recipient, text):
-    return ("message", recipient, text)
 
 def outformat(data, buddyname):
     buddyname = buddyname.lower()
@@ -41,10 +38,9 @@ def outformat(data, buddyname):
     elif data[0] == "error":
         return ": ".join(data)
 
-from Kamaelia.File.UnixProcess import UnixProcess
 
-def ConsoleUser():
-    return UnixProcess("/home/zathras/tmp/rules_test.py")
+# def ConsoleUser():
+#     return UnixProcess("/home/zathras/tmp/rules_test.py")
 
 class AIMUserTalkAdapter(Axon.ThreadedComponent.threadedcomponent):
     Inboxes = {
@@ -73,7 +69,7 @@ class AIMUserTalkAdapter(Axon.ThreadedComponent.threadedcomponent):
                      if c > 0:
                          time.sleep(self.ratelimit)
                      c += 1
-                     message = sendTo(self.user, line ) # FIXME: Crap name
+                     message = ("message", self.user, line )
                      self.send(message, "to_aim")
 
             for message in self.Inbox("from_aim"):
@@ -93,35 +89,14 @@ class AIMUserTalkAdapter(Axon.ThreadedComponent.threadedcomponent):
             print "SOME OTHER REASON"
             self.send(Axon.Ipc.ProducerFinished(), "signal")
 
-def UserHandler(user="zathmadscientist"):
-    """
-       AIM HANDLER (external)
-   inbox|   ^outbox
-        |   |
-        V   |
-       ADAPTER
-        |   ^
-        |   |
-        V   |
-       CONSOLE APP
-    """
-    return Graphline(
-               ADAPTER = AIMUserTalkAdapter(user=user),
-               CONSOLEAPP = ConsoleUser(),
-               linkages = {
-                   ("self", "inbox"): ("ADAPTER","from_aim"),
-                   ("ADAPTER","to_aim"):  ("self", "outbox"),
-
-                   ("CONSOLEAPP","outbox"): ("ADAPTER","from_user"),
-                   ("ADAPTER","to_user"): ("CONSOLEAPP","inbox"),
-               }
-           )
 
 class MessageDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     ignore_first = True
+    command = "cat /etc/motd"
     def main(self):
         bundles = {}
         print "INITIALISING DEMUXER"
+        print self.ignore_first, self.command
         while not self.dataReady("control"):
             yield 1
             for message in self.Inbox():
@@ -140,19 +115,16 @@ class MessageDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                             bundle = {
                                 "outbox" : self.addOutbox("outbox_tohandler"),
                                 "signal" : self.addOutbox("signal_tohandler"),
-                                "inbox"  : self.addOutbox("inbox_fromhandler"),
-                                "contol" : self.addOutbox("control_fromhandler"),
-                                "handler" : UserHandler(user=fromuser),
+                                "handler" : UserHandler(user=fromuser, command=self.command),
                             }
 
                             # Brings up all sorts of issues, thinking about it...
                             l1 = self.link( (self,bundle["outbox"]), (bundle["handler"], "inbox") )
                             l2 = self.link( (self,bundle["signal"]), (bundle["handler"], "control") )
 
-#                            self.link( (bundle["handler"], "to_aim"), (self, bundle["inbox"]) )
-#                            self.link( (bundle["handler"], "signal"), (self, bundle["control"]) )
                             l3 = self.link( (bundle["handler"], "outbox"), (self, "outbox"), passthrough=2 )
                             l4 = self.link( (bundle["handler"], "signal"), (self, "signal"), passthrough=2 ) # probably wrong...
+                            print "ACTIVATING", bundle["handler"]
                             bundle["handler"].activate()
                             bundle["links"] = [l1, l2, l3, l4]
                             bundles[fromuser] = bundle
@@ -170,6 +142,29 @@ class MessageDemuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         else:
            self.send(Axon.Ipc.ProducerFinished(), "signal")
 
+def UserHandler(user="zathmadscientist", command="cat /etc/motd"):
+    """
+       AIM HANDLER (external)
+   inbox|   ^outbox
+        |   |
+        V   |
+       ADAPTER
+        |   ^
+        |   |
+        V   |
+       CONSOLE APP
+    """
+    return Graphline(
+               ADAPTER = AIMUserTalkAdapter(user=user),
+               CONSOLEAPP = UnixProcess(command), # Actually, ought to abstract this tbh
+               linkages = {
+                   ("self", "inbox"): ("ADAPTER","from_aim"),
+                   ("ADAPTER","to_aim"):  ("self", "outbox"),
+
+                   ("CONSOLEAPP","outbox"): ("ADAPTER","from_user"),
+                   ("ADAPTER","to_user"): ("CONSOLEAPP","inbox"),
+               }
+           )
 
 def UltraBot(screenname, password):
     print "ULTRABOT STARTING UP"
@@ -178,7 +173,9 @@ def UltraBot(screenname, password):
     return Graphline(
                AIM = AIMHarness(screenname, password),
 
-               ADAPTER = MessageDemuxer(),
+               ADAPTER = MessageDemuxer(ignore_first=True,
+                                        handler=UserHandler,
+                                        command="/home/zathras/tmp/rules_test.py"),
 
                linkages = {               
                    ("AIM", "outbox"): ("ADAPTER","inbox"),
@@ -188,7 +185,5 @@ def UltraBot(screenname, password):
 
 if __name__ == '__main__':
 
-    bot_id = "kamaelian"
-    bot_password = "iamgrey"
 
     UltraBot(bot_id, bot_password).run()
