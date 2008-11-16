@@ -185,7 +185,7 @@ def UltraBot(screenname, password):
 
 if __name__ == '__main__':
     import sys
-    if len(sys.arv)<3:
+    if len(sys.argv)<3:
         print "Usage:"
         print "     ",
         print sys.argv[0], "username", "password"
