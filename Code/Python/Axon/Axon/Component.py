@@ -215,7 +215,8 @@ Whether another component is your child or not, you can tell if it has
 terminated yet by calling its _isStopped() method.
 
 For example, a component might want to create a child component, make a linkage
-to it then wait until that child terminates before cleaning it up::
+to it then wait until that child terminates before cleaning it up. Achieve this
+by writing code like this in the main() body of the component::
 
     src = RateControlledFileReader("myTextFile",readmode="lines")
     dst = ConsoleEchoer()
