@@ -28,9 +28,13 @@ from Kamaelia.Chassis.Graphline import Graphline
 
 from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D import TopologyViewer3D
 
+#
+# This example needs more documentation really, but works. (The latter is the most important point)
+#
+# # Data can be from both DataSource and console inputs
+# print "Please type the command you want to draw"
+#
 
-# Data can be from both DataSource and console inputs
-print "Please type the command you want to draw"
 Graphline(
     CONSOLEREADER = ConsoleReader(">>> "),
     DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos teapot',
