@@ -1,8 +1,0 @@
-ADD NODE TCPClient TCPClient auto -
-ADD NODE VorbisDecode VorbisDecode auto -
-ADD NODE AOPlayer AOPlayer auto -
-ADD LINK TCPClient VorbisDecode
-ADD LINK VorbisDecode AOPlayer
-ADD NODE Multicast_Transceiver Multicast_Transceiver auto -
-ADD NODE detuple detuple auto -
-ADD LINK Multicast_Transceiver detuple
