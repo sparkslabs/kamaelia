@@ -1,5 +1,6 @@
-#!/usr/bin/python
-# (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
+#!/usr/bin/env python
+
+# Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -17,12 +18,4 @@
 #
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
-
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.UI.Pygame.Text import Textbox, TextDisplayer
-
-Pipeline(
-         Textbox(size = (800, 300), position = (100,380)),
-         TextDisplayer(size = (800, 300), position = (100,40))
-).run()
+# -------------------------------------------------------------------------

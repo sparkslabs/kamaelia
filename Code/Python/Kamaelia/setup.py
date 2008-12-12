@@ -78,6 +78,7 @@ setup(name = "Kamaelia",
                   "Kamaelia.Visualisation.Axon",
                   "Kamaelia.Visualisation.ER",
                   "Kamaelia.Visualisation.PhysicsGraph",
+                  "Kamaelia.Visualisation.PhysicsGraph3D",
                   "Kamaelia.XML", # LAST
                   ""],
 #      scripts = ['Tools/KamaeliaPresent.py'],
