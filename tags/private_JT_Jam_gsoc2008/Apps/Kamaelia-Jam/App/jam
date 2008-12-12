@@ -1,0 +1,501 @@
+#! /usr/bin/env python
+"""
+
+Flow diagram
+------------
+
+          {Other Jam Instances}
+                    |
+              [UDP Receiver]
+                    |
+                 [DeOsc]
+                    |
+                [Splitter] => Send the right OSC messages to the right UI
+                 |      |     elements, either throught a seperate component or
+                 |      |     clever linkages
+                 |      |
+             [GUI Components]
+              |            | 
+ [Osc (Music Data)]    [Osc (Change Data)] => For example "Play a note now" is
+        |                     |               music data, whereas "Joe User
+        |                     |               inserted a note" is change data
+        |                     |
+   [UDP Sender]          [UDP Sender]
+        |                     |
+   {Music App}      {Other Jam Instances}
+
+"""
+import sys
+import pygame
+
+try:
+    import rtmidi
+except ImportError:
+    midiAvailable = False
+else:
+    midiAvailable = True
+
+from optparse import OptionParser
+
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.Util.Clock import CheapAndCheerfulClock as Clock
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
+from Kamaelia.Util.Fanout import Fanout
+from Kamaelia.Util.OneShot import OneShot
+from Kamaelia.Util.Console import ConsoleEchoer
+
+
+from Kamaelia.Apps.Jam.Audio.Sampler import Sampler
+from Kamaelia.Apps.Jam.Audio.SineSynth import SineSynth
+from Kamaelia.Apps.Jam.Protocol.Osc import Osc, DeOsc
+if midiAvailable:
+    from Kamaelia.Apps.Jam.Protocol.Midi import Midi
+from Kamaelia.Internet.UDP_ng import UDPReceiver, UDPSender, PostboxPeer
+from Kamaelia.Apps.Jam.Internet.UDPDispatcher import UDPDispatcher
+from Kamaelia.Apps.Jam.UI.XYPad import XYPad, XYPadMidiConverter
+from Kamaelia.Apps.Jam.UI.StepSequencer import StepSequencer
+from Kamaelia.Apps.Jam.UI.StepSequencer import StepSequencerMidiConverter
+from Kamaelia.Apps.Jam.UI.PianoRoll import PianoRoll, PianoRollMidiConverter
+from Kamaelia.Apps.Jam.Util.PeerSelector import PeerSelector
+from Kamaelia.Apps.Jam.Util.MusicTiming import SyncMaster
+
+FPS = 60
+
+#TODO: Move filters
+#TODO: Filters should exit
+
+import Axon
+import sets
+
+class AddPeerFilter(Axon.Component.component):
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                # Data is of the form ((oscAddr, oscArgs, timeTag),
+                #                      (address, port))
+                # oscArgs is either [port], or [address, port]
+                if data[0][0].split("/")[-1] == "Connect":
+                    oscArgs = data[0][1]
+                    if len(oscArgs) == 1:
+                        # oscArgs == [port]
+                        address = data[1][0]
+                        port = oscArgs[0]
+                    else:
+                        # oscArgs == [address, port]
+                        address = oscArgs[0]
+                        port = oscArgs[1]
+                self.send((address, port), "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class XYFilter(Axon.Component.component):
+    def __init__(self, padNumber=1):
+        super(XYFilter, self).__init__()
+        self.padNumber = padNumber
+
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                # Data is ((oscAddr, oscArgs, timeTag), (address, port)) tuple
+                data = self.recv("inbox")
+                if data[0][0].find("/XY/%i/" % self.padNumber) >= 0:
+                    # Only send the OSC Message part
+                    self.send(data[0])
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class PeerListFilter(Axon.Component.component):
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                # Data is ((oscAddr, oscArgs, timeTag), (address, port)) tuple
+                if data[0][0].split("/")[-1] == "PeerList":
+                    # OSC message flattens the peer list, so we need to group
+                    # them into (address, port) tuples again
+                    peerList = sets.Set()
+                    for i in enumerate(data[0][1]):
+                        # FIXME: Boy is this ugly...
+                        if not i[0] % 2:
+                            peerList.add((i[1], data[0][1][i[0]+1]))
+                    self.send(peerList, "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
+            
+class StepSequencerFilter(Axon.Component.component):
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                # Data is ((oscAddr, oscArgs, timeTag), (address, port)) tuple
+                data = self.recv("inbox")
+                if data[0][0].find("/StepSequencer/") >= 0:
+                    self.send(data[0], "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class PianoRollFilter(Axon.Component.component):
+    def main(self):
+        while 1:    
+            if self.dataReady("inbox"):
+                # Data is ((oscAddr, oscArgs, timeTag), (address, port)) tuple
+                data = self.recv("inbox")
+                if data[0][0].find("/PianoRoll/") >= 0:
+                    self.send(data[0], "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class TimingFilter(Axon.Component.component):
+    # This is not used, and is untested currently
+    def main(self):
+        while 1:
+            if self.dataReady("inbox"):
+                data = self.recv("inbox")
+                if data[0].split("/")[-1] == "Timing":
+                    self.send(data[1], "outbox")
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class DisplayConfig(Axon.Component.component):
+    Inboxes = ["inbox", "outbox", "callback"]
+    width = 800
+    height = 600
+    def main(self):
+        pgd = PygameDisplay( width=self.width, height=self.height).activate()
+        PygameDisplay.setDisplayService(pgd)
+        self.link((self, "outbox"), (pgd, "notify"))
+        displayRequest = {"DISPLAYREQUEST" : True,
+                          "callback" : (self,"callback"),
+                          "events" : (self, "inbox"),
+                          "size": (self.width, self.height),
+                         }
+        self.send(displayRequest, "outbox")
+        while not self.dataReady("callback"):
+            self.pause()
+            yield 1
+        surface = self.recv("callback")
+        surface.fill((255, 255, 255))
+        self.send({"ADDLISTENEVENT" : pygame.QUIT,
+                   "surface" : surface},
+                   "outbox")
+        while 1:
+            if self.dataReady("inbox"):
+                # VOMIT - Should shut everything down properly
+                sys.exit()
+            if not self.anyReady():
+                self.pause()
+                yield 1
+
+class DummyComponent(Axon.Component.component):
+    def main(self):
+        while True:
+            if self.dataReady("inbox"):
+                self.recv("inbox")
+            if not self.anyReady():
+                self.pause()
+                yield 1
+                    
+def parseOptions():
+    parser = OptionParser()
+    # Address and port to send music data
+    parser.add_option("-a", "--osc-address", dest="oscAddress",
+                help="The IP address to send OSC data to (default=127.0.0.1)")
+    parser.add_option("-p", "--osc-port", dest="oscPort", type="int",
+            help="The UDP port number to send OSC data to (default=2000)")
+    parser.set_defaults(oscAddress="127.0.0.1", oscPort=2000)
+
+    # Address and port to listen for change data on
+    parser.add_option("--listen-address", dest="listenAddress",
+                      help="The IP address to listen for other connecting Jam clients on (default=127.0.0.1)")
+    parser.add_option("--listen-port", dest="listenPort", type="int",
+                      help="The UDP port number to listen for other connecting Jam clients on (default=2001)")
+    parser.set_defaults(listenAddress="127.0.0.1", listenPort=2001)
+
+    # Address and port of a second Jam instance to connect to
+    parser.add_option("--remote-address", dest="remoteAddress",
+                      help="The IP address of another Jam client to connect to (default=None)")
+    parser.add_option("--remote-port", dest="remotePort", type="int",
+                      help="The UDP port number of another Jam client to connect to (default=None)")
+    parser.set_defaults(remoteAddress=None, remotePort=None)
+
+    # Timing options - this is half-baked at best
+    # TODO: Add all the options in and make them work, not conflict etc.
+    parser.add_option("-b", "--bpm", dest="bpm", type="int",
+                       help="The tempo of the song in beats per minute (default=120)")
+    parser.set_defaults(bpm=120)
+    
+    # MIDI options
+    parser.add_option("--no-midi", dest="useMidi", action="store_false",
+                       help="Turn MIDI support off")
+    parser.set_defaults(useMidi=True)
+    parser.add_option("-m", "--midi-port", dest="midiPort", type="int",
+                      help="The number of the midi port to send data to (default=0)")
+    parser.set_defaults(midiPort=0)
+
+    # Audio options
+    parser.add_option("--no-audio", dest="useAudio", action="store_false",
+                       help="Turn audio support off")
+    parser.set_defaults(useAudio=True)
+
+    #FIXME: Should maybe default to none and use the default device?
+    parser.add_option("--audio-device", dest="outputDevice", type="int",
+                       help="The number of the audio output device (default=0)")
+    parser.set_defaults(outputDevice=0)
+
+    parser.add_option("--sample-rate", dest="sampleRate", type="int",
+                       help="The audio sample rate to use (default=44100)")
+    parser.set_defaults(sampleRate=44100)
+
+    parser.add_option("--buffer-size", dest="bufferSize",
+                      type="int", help="The size in samples of the audio buffers used in jam (default=4096)")
+    parser.set_defaults(bufferSize=4096)
+
+    options, args = parser.parse_args()
+    if options.remoteAddress and not options.remotePort:
+         parser.error("Must provide --remote-port with --remote-address")
+    if options.remotePort and not options.remoteAddress:
+        parser.error("Must provide --remote-address with --remote-port")
+    if options.useMidi and not midiAvailable:
+        parser.error("In order to use MIDI you must have the pyrtmidi package installed.  To run without midi use the --no-midi option.")
+    return options
+
+
+if __name__ == "__main__":
+    options = parseOptions()
+
+    # Component time sync
+#    if not (options.remoteAddress and options.remotePort):
+    if 1:
+        # We are the first Jam instance in a network, so we get to set the bpm,
+        # loop length etc.
+        Pipeline(SyncMaster(externalSync=False),
+                 PublishTo("sync")).activate()
+    else:
+        # TODO: The external syncing code doesn't exist yet.  Not cool
+        if 0:
+            Pipeline(SubscribeTo("dataIn"),
+                     TimingFilter(),
+                     SyncMaster(externalSync=True),
+                     PublishTo("sync")).activate()
+
+    # OSC messages in
+    Pipeline(UDPReceiver(localaddr=options.listenAddress,
+                         localport=options.listenPort),
+             DeOsc(index=0),
+             PublishTo("dataIn")).activate()
+
+    # Frame rate control
+    Pipeline(Clock(float(1)/FPS),
+             PublishTo("frameRateClock")).activate()
+
+    # Peer select/add
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              fanout = Fanout(("addPeer", "peerList")),
+              addPeerFilter = AddPeerFilter(),
+              peerListFilter = PeerListFilter(),
+              osc = Osc("/Jam", 2),
+              peerSelector = PeerSelector(options.listenPort),
+              sender = PostboxPeer(),
+              linkages = {("dataSub", "outbox"):("fanout", "inbox"),
+                          ("fanout", "addPeer"):("addPeerFilter", "inbox"),
+                          ("addPeerFilter","outbox"):("peerSelector", "addPeer"),
+                          ("fanout", "peerList"):("peerListFilter", "inbox"),
+                          ("peerListFilter", "outbox"):("peerSelector", "peerSet"),
+                          ("peerSelector", "outbox"):("osc", "inbox"),
+                          ("osc", "outbox"):("sender", "inbox")
+                          }
+              ).activate()
+
+    DisplayConfig().activate()
+
+    # TODO: XY pads need sorting out to either create more, or have more pucks
+    # on the one pad
+    # XY pad 1
+    if options.useMidi:
+        midiSection = Pipeline(XYPadMidiConverter(channel=2),
+                               PublishTo("midiOut"))
+    else:
+        midiSection = DummyComponent()
+
+    Graphline(clockSub = SubscribeTo("frameRateClock"),
+              xyPad = XYPad(messagePrefix = "/XY/1/", position = (20, 20)),
+              localPub = PublishTo("localDataOut"),
+              remotePub = PublishTo("remoteDataOut"),
+              fanout = Fanout(("osc", "midi", "audio")),
+              midiSection = midiSection,
+              linkages = {("clockSub", "outbox"):("xyPad", "newframe"),
+                          # ---
+                          ("xyPad", "localChanges"):("remotePub", "inbox"),
+                          ("xyPad", "outbox"):("fanout", "inbox"),
+                          ("fanout", "osc"):("localPub", "inbox"),
+                          ("fanout", "midi"):("midiSection", "inbox")}
+              ).activate()
+
+        # XY pad 2
+    if options.useMidi:
+        midiSection = Pipeline(XYPadMidiConverter(channel=3),
+                               PublishTo("midiOut"))
+    else:
+        midiSection = DummyComponent()
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              clockSub = SubscribeTo("frameRateClock"),
+              xyFilter = XYFilter(1),
+              xyPad = XYPad(messagePrefix = "/XY/2/", editable=False,
+                            position=(140, 20)),
+              localPub = PublishTo("localDataOut"),
+              fanout = Fanout(("osc", "midi", "audio")),
+              linkages = {("dataSub", "outbox"):("xyFilter", "inbox"),
+                          ("xyFilter", "outbox"):("xyPad", "remoteChanges"),
+                          ("clockSub", "outbox"):("xyPad", "newframe"),
+                          # ---
+                          ("xyPad", "outbox"):("fanout", "inbox"),
+                          ("fanout", "osc"):("localPub", "inbox"),
+                          ("fanout", "midi"):("midiSection", "inbox")}
+              ).activate() 
+    
+
+    # Step sequencer
+    if options.useMidi:
+        midiSection = Pipeline(StepSequencerMidiConverter(),
+                               PublishTo("midiOut"))
+    else:
+        midiSection = DummyComponent()
+
+    if options.useAudio:
+        audioSection = PublishTo("ssData")
+    else:
+        audioSection = DummyComponent()
+
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              syncSub = SubscribeTo("sync"),
+              ssFilter = StepSequencerFilter(),
+              ss = StepSequencer(position=(20, 140),
+                                 size=(760, 200),
+                                 messagePrefix="/StepSequencer/",
+                                 sync=True,
+                                 stepsPerBeat=4),
+              fanout = Fanout(("midi", "osc", "audio")),
+              localPub = PublishTo("localDataOut"),
+              remotePub = PublishTo("remoteDataOut"),
+              audioSection = audioSection,
+              midiSection = midiSection,
+              linkages = {("dataSub", "outbox"):("ssFilter", "inbox"),
+                          ("ssFilter", "outbox"):("ss", "remoteChanges"),
+                          ("syncSub", "outbox"):("ss", "sync"),
+                          # ---
+                          ("ss", "outbox"):("fanout", "inbox"),
+                          ("fanout", "osc"):("localPub", "inbox"),
+                          ("fanout", "midi"):("midiSection", "inbox"),
+                          ("fanout", "audio"):("audioSection", "inbox"),
+                          ("ss", "localChanges"):("remotePub", "inbox")}
+              ).activate() 
+
+    # Piano roll
+    if options.useMidi:
+        midiSection = Pipeline(PianoRollMidiConverter(channel=1),
+                               PublishTo("midiOut"))
+    else:
+        midiSection = DummyComponent()
+    if options.useAudio:
+        audioSection = PublishTo("prData")
+    else:
+        audioSection = DummyComponent()
+    Graphline(dataSub = SubscribeTo("dataIn"),
+              syncSub = SubscribeTo("sync"),
+              prFilter = PianoRollFilter(),
+              pr = PianoRoll(position=(20, 360),
+                             size=(760, 200),
+                             messagePrefix="/PianoRoll/",
+                             sync=True),
+              fanout = Fanout(("midi", "osc", "audio")),
+              midiSection = midiSection,
+              audioSection = audioSection,
+              localPub = PublishTo("localDataOut"),
+              remotePub = PublishTo("remoteDataOut"),
+              linkages = {("dataSub", "outbox"):("prFilter", "inbox"),
+                          ("prFilter", "outbox"):("pr", "remoteChanges"),
+                          ("syncSub", "outbox"):("pr", "sync"),
+                          # ---
+                          ("pr", "outbox"):("fanout", "inbox"),
+                          ("fanout", "osc"):("localPub", "inbox"),
+                          ("fanout", "midi"):("midiSection", "inbox"),
+                          ("fanout", "audio"):("audioSection", "inbox"),
+                          ("pr", "localChanges"):("remotePub", "inbox")}
+              ).activate()
+ 
+
+    # Local OSC messages
+    Pipeline(SubscribeTo("localDataOut"), Osc("/Jam"),
+             UDPSender(receiver_addr=options.oscAddress,
+                       receiver_port=options.oscPort)).activate()
+
+    # MIDI out
+    if options.useMidi:
+        Pipeline(SubscribeTo("midiOut"), Midi(options.midiPort)).activate()
+
+    # OSC messages out
+    Graphline(remoteSub = SubscribeTo("remoteDataOut"),
+              dataSub = SubscribeTo("dataIn"),
+              fanout = Fanout(("addPeer", "peerList")),
+              addPeerFilter = AddPeerFilter(),
+              osc = Osc("/Jam"),
+              dispatcher = UDPDispatcher(),
+              linkages = {("remoteSub", "outbox"):("osc", "inbox"),
+                          ("osc", "outbox"):("dispatcher", "inbox"),
+                          ("dataSub", "outbox"):("fanout", "inbox"),
+                          ("fanout", "addPeer"):("addPeerFilter", "inbox"),
+                          ("addPeerFilter","outbox"):("dispatcher", "addPeer"),
+                          ("fanout", "peerList"):("peerListFilter", "inbox"),
+                          ("peerListFilter", "outbox"):("dispatcher", "peerSet")
+                          }
+              ).activate()
+
+
+    if options.useAudio:
+        samplerFiles = ["12912_sweet_trip_mm_hat_op.wav",
+                        "12911_sweet_trip_mm_hat_cl.wav",
+                        "12910_sweet_trip_mm_clap_mid.wav",
+                        "12914_sweet_trip_mm_kick_lo.wav"]
+        samplerFiles = ["%s/share/kamaelia/jam/samples/%s" % (sys.prefix,
+                                                              fileName)
+                        for fileName in samplerFiles]
+
+        Graphline(ssSub = SubscribeTo("ssData"),
+                  sampler = Sampler(samplerFiles,
+                                    bufferSize=options.bufferSize,
+                                    sampleRate=options.sampleRate),
+                  prSub = SubscribeTo("prData"),
+                  sineSynth = SineSynth(bufferSize=options.bufferSize,
+                                        sampleRate=options.sampleRate),
+                  linkages={("ssSub", "outbox"):("sampler", "inbox"),
+                            ("prSub", "outbox"):("sineSynth", "inbox"),
+                           }
+                  ).activate()
+
+    Backplane("sync").activate()
+    Backplane("dataIn").activate()
+    Backplane("frameRateClock").activate()
+    Backplane("localDataOut").activate()
+    Backplane("remoteDataOut").activate()
+    if options.useMidi:
+        Backplane("midiOut").activate()
+    if options.useAudio:
+        Backplane("ssData").activate()
+        Backplane("prData").activate()
+
+    if options.remoteAddress and options.remotePort:
+        Pipeline(OneShot(("/Jam/Connect", (options.listenPort))), Osc(),
+                 UDPSender(receiver_addr=options.remoteAddress,
+                           receiver_port=options.remotePort)
+                ).activate()
+
+    Axon.Scheduler.scheduler.run.runThreads()
+
