@@ -7,14 +7,14 @@ from Kamaelia.Apps.Whiteboard.Canvas import Canvas
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Apps.SpeakNLearn.Gestures.StrokeRecogniser import StrokeRecogniser
+from Kamaelia.Apps.SpeakNWrite.Gestures.StrokeRecogniser import StrokeRecogniser
 from Kamaelia.UI.Pygame.Text import TextDisplayer, Textbox
 from Kamaelia.Apps.Whiteboard.Routers import TwoWaySplitter
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.UnixProcess import UnixProcess
 
 
-from Kamaelia.Apps.SpeakNLearn.Gestures.Pen import Pen
+from Kamaelia.Apps.SpeakNWrite.Gestures.Pen import Pen
 from Axon.STM import Store
 
 SpokenStore = Store()
