@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -60,7 +60,7 @@ simple grey lines.
 
 Rendering is performed by a generator, returned when the render() method is 
 called. Its behaviour is that needed for the framework for multi-pass rendering 
-that is used by TopologyViewer.
+that is used by TopologyViewerComponent.
 
 The generator yields the number of the rendering pass it wishes to be next on
 next. Each time it is subsequently called, it performs the rendering required
@@ -71,7 +71,7 @@ An setOffset() method is also implemented to allow the particles coordinates
 to be offset. This therefore makes it possible to scroll the particles around
 the display surface.
 
-See TopologyViewer for more details.
+See TopologyViewerComponent for more details.
 
 """
 
@@ -83,25 +83,7 @@ def abbreviate(string):
     """Abbreviates dot-delimited string to the final (RHS) term"""
     return string.split(".")[-1]
 
-def acronym(string):
-    """Abbreviates strings to capitals, word starts and numerics and underscores"""
-    out = ""
-    prev = ""
-    for c in string:
-        if c.isupper() or c == "_" or c == "." or (c.isalpha() and not prev.isalpha()):
-            out += c.upper()
-        prev = c
-    return out
 
-
-colours = [ (255,128,128),
-            (255,192,128),
-            (224,224,128),
-            (128,255,128),
-            (128,255,192),
-            (128,224,224),
-            (128,128,255),
-          ]
 
 class PComponent(BaseParticle):
     """\
@@ -110,7 +92,6 @@ class PComponent(BaseParticle):
     Particle representing an Axon/Kamaelia Component for topology visualisation.
     
     Keyword arguments:
-    
     - ID        -- a unique ID for this particle
     - position  -- (x,y) tuple of particle coordinates
     - name      -- The full dot-delimited pathname of the component being represented
@@ -125,30 +106,13 @@ class PComponent(BaseParticle):
         self.left = 0
         self.top = 0
         self.selected = False
+        
         self.radius = _COMPONENT_RADIUS
         
         
     def set_label(self, newname):
         self.name = newname
         self.shortname = abbreviate(newname)
-        acro = acronym(newname)
-        oldhue = []
-        for i in xrange(len(acro)):
-            factor = acro[:i+1]
-            print factor
-            hue = list(colours [ factor.__hash__() % len(colours)])
-            if oldhue == []:
-               oldhue = hue
-            else:
-               hue[0] = (hue[0] + oldhue[0])/2
-               hue[1] = (hue[1] + oldhue[1])/2
-               hue[2] = (hue[2] + oldhue[2])/2
-
-#        print "HUE", hue
-#        self.colour = colours [ acronym(newname).__hash__() % len(colours)]
-        self.colour = hue
-        self.bordercolour = [x*.75 for x in hue]
-
         pygame.font.init()
         font = pygame.font.Font(None, 20)
         self.slabel   = font.render(self.shortname, True, (0,0,0))
@@ -175,27 +139,10 @@ class PComponent(BaseParticle):
             pygame.draw.line(surface, (192,192,192), (x,y), (px,py))
         
         yield 2
-#        colour = (192,192,192)
-        colour = self.colour
-        bordercolour = self.bordercolour
+        colour = (192,192,192)
         if self.selected:
             colour = (160,160,255)
-            bordercolour = (224,0,0)
-#        pygame.draw.circle(surface, colour, (x,y), self.radius)
-
-        points = [
-                (x-self.radius,y),
-                (x-(self.radius/2),y-(int(self.radius*0.86)) ),
-                (x+(self.radius/2),y-(int(self.radius*0.86))),
-                (x+self.radius,y),
-                (x+(self.radius/2),y+(int(self.radius*0.86))),
-                (x-(self.radius/2),y+(int(self.radius*0.86))),
-        ]
-        pygame.draw.polygon(surface, colour, points)
-        pygame.draw.polygon(surface, bordercolour, points,3)
-#        if self.selected:
-#            colour = (160,160,255)
-
+        pygame.draw.circle(surface, colour, (x,y), self.radius)
         yield 3
         surface.blit(self.slabel, ( x+self.slabelxo, y+self.slabelyo ) )
         if self.selected:

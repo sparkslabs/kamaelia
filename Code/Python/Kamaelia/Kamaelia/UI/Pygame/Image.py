@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,7 +24,7 @@
 Pygame image display
 ====================
 
-Component for displaying an image on a pygame display. Uses the Pygame Display
+Component for displaying an image on a pygame display. Uses the PygameDisplay
 service component.
 
 The image can be changed at any time.
@@ -35,7 +35,6 @@ Example Usage
 -------------
 
 Display that rotates rapidly through a set of images::
-
     imagefiles = [ "imagefile1", "imagefile2", ... ]
     
     class ChangeImage(Axon.Component.component):
@@ -54,14 +53,14 @@ Display that rotates rapidly through a set of images::
     image = Image(image=None, bgcolour=(0,192,0))
     ic    = ChangeImage(imagefiles)
     
-    Pipeline(ic, image).run()
+    pipeline(ic, image).run()
 
 
 
 How does it work?
 -----------------
 
-This component requests a display surface from the Pygame Display service
+This component requests a display surface from the PygameDisplay service
 component and renders the specified image to it.
 
 The image, and other properties can be changed later by sending messages to its
@@ -81,11 +80,10 @@ its "control" inbox, then this will be forwarded out of its "signal" outbox and
 the component will then terminate.
 """
 
-import StringIO
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class Image(Axon.Component.component):
    """\
@@ -94,18 +92,17 @@ class Image(Axon.Component.component):
    Pygame image display component. Image, and other properties can be changed at runtime.
 
    Keyword arguments:
-   
    - image         -- Filename of image (default=None) 
    - position      -- (x,y) pixels position of top left corner (default=(0,0))
    - bgcolour      -- (r,g,b) background colour (behind the image if size>image size)
    - size          -- (width,height) pixels size of the area to render the iamge in (default=image size or (240,192) if no image specified)
-   - displayExtra  -- dictionary of any additional args to pass in request to Pygame Display service
+   - displayExtra  -- dictionary of any additional args to pass in request to PygameDisplay service
    - maxpect       -- (xscale,yscale) scaling to apply to image (default=no scaling)
    """
    
    Inboxes = { "inbox"    : "Filename of (new) image",
                "control"  : "Shutdown messages: shutdownMicroprocess or producerFinished",
-               "callback" : "Receive callbacks from Pygame Display",
+               "callback" : "Receive callbacks from PygameDisplay",
                "bgcolour" : "Set the background colour",
                "events"   : "Place where we recieve events from the outside world",
                "alphacontrol" : "Alpha (transparency) of the image (value 0..255)",
@@ -121,8 +118,7 @@ class Image(Axon.Component.component):
                       bgcolour = (128,128,128), 
                       size = None, 
                       displayExtra = None,
-                      maxpect = 0,
-                      expect_file_strings = 0):
+                      maxpect = 0):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Image, self).__init__()
       self.display = None
@@ -131,14 +127,13 @@ class Image(Axon.Component.component):
       self.size             = size
       self.imagePosition    = (0,0)
       self.maxpect = maxpect
-      self.expect_file_strings = expect_file_strings
       
       self.fetchImage(image)
       
       if self.size is None:
          self.size = (240,192)
 
-      # build the initial request to send to Pygame Display to obtain a surface
+      # build the initial request to send to PygameDisplay to obtain a surface
       # but store it away until main() main loop is activated.
       self.disprequest = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
@@ -197,10 +192,7 @@ class Image(Axon.Component.component):
 
          if self.dataReady("inbox"):
             newImg = self.recv("inbox")
-            if not self.expect_file_strings:
-                self.fetchImage(newImg)
-            else:
-                self.imageFromString(newImg)
+            self.fetchImage(newImg)
             change = True
             
          if self.dataReady("bgcolour"):
@@ -219,15 +211,6 @@ class Image(Axon.Component.component):
       self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal") 
       yield 1
       print "NOT HERE"
-
-   def imageFromString(self, newImage):
-       Y = StringIO.StringIO(newImage)
-       self.image = pygame.image.load(Y)
-       if self.maxpect:
-            self.image = pygame.transform.scale(self.image, (self.maxpect[0], self.maxpect[1]))
-       if self.size is None:
-           self.size = self.image.get_size()
-
         
    def fetchImage(self, newImage):
       """\
@@ -262,9 +245,8 @@ __kamaelia_components__  = ( Image, )
              
 if __name__ == "__main__":
    
-   filebase = "../../../Examples/SupportingMediaFiles/"
-   testImageFile0 = filebase + "cat.gif"
-   testImageFile1 = filebase + "thumb.10063680.jpg.gif"
+   testImageFile0 = "../../../../../../Sketches/OptimisationTest/pictures/cat.gif"
+   testImageFile1 = "../../../../../../Sketches/OptimisationTest/pictures/thumb.10063680.jpg.gif"
 
    class IChange(Axon.Component.component):
       Outboxes = [ "outcolour", "outimage" ]

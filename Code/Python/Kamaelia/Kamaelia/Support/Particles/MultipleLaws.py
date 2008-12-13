@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -100,7 +100,6 @@ class MultipleLaws(object):
     bonded or unbonded and depending on the types of particle interacting.
 
     Keyword arguments:
-    
     - typesToLaws  -- dictionary mapping pairs of particle type names (A,B) to object that will compute the laws acting between them
     - defaultLaw   -- law object applied to pairings missing from the mapping
     """

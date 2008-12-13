@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -25,17 +25,17 @@
 #
 
 from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
+from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PipelineComponent import pipeline
 import random
 
 clientServerTestPort=random.randint(1500,1599)
 
 SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()
 
-Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+pipeline(TCPClient("127.0.0.1",clientServerTestPort),
          ConsoleEchoer()
         ).run()
 

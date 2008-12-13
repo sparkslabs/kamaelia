@@ -4,7 +4,7 @@
 #        selector service that its services are no longer required.
 #        This needs resolving.
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -39,30 +39,11 @@ Example Usage
 
 Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
 
-    Pipeline( RateControlledFileReader("myfile", rate=100000),
+    pipeline( RateControlledFileReader("myfile", rate=100000),
               TCPClient("1.2.3.4", 1000),
             ).activate()
 
 
-Example Usage - SSL
--------------------
-
-It is also possible to cause the TCPClient to switch into SSL mode. To do this
-you send it a message on its "makessl" inbox. It is necessary for a number of
-protocols to be able to switch between non-ssl and ssl, hence this approach
-rather than simply saying "ssl client" or "non-ssl client"::
-
-    Graphline(
-           MAKESSL = OneShot(" make ssl "),
-           CONSOLE = ConsoleReader(),
-           ECHO = ConsoleEchoer(),
-           CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),
-           linkages = {
-               ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
-               ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),
-               ("CONNECTION", "outbox"): ("ECHO", "inbox"),
-           }
-    )
 
 How does it work?
 -----------------
@@ -91,10 +72,8 @@ sent to the "signal" outbox.
 This component will terminate if the CSA sends a socketShutdown message to its
 "CreatorFeedback" outbox.
 
-This component will terminate if a shutdownMicroprocess or producerFinished
-message is sent to its "control" inbox. This message is forwarded onto the CSA.
-TCPClient will then wait for the CSA to terminate. It then sends its own
-shutdownMicroprocess message out of the "signal" outbox.
+Messages sent to the "control" inbox are ignored - users of this component
+cannot ask it to close the connection.
 """
 
 import socket
@@ -103,12 +82,11 @@ import errno
 import Axon
 from Axon.util import Finality
 
-from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.Ipc import newComponent, status
-from Kamaelia.IPC import socketShutdown, newCSA
+from Kamaelia.KamaeliaIPC import socketShutdown, newCSA
 
-from Kamaelia.IPC import newReader, newWriter
-from Kamaelia.IPC import removeReader, removeWriter
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
 
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
@@ -121,20 +99,17 @@ class TCPClient(Axon.Component.component):
    Establishes a TCP connection to the specified server.
    
    Keyword arguments:
-   
    - host     -- address of the server to connect to (string)
    - port     -- port number to connect on
    - delay    -- delay (seconds) after activation before connecting (default=0)
    """
    Inboxes  = { "inbox"           : "data to send to the socket",
                 "_socketFeedback" : "notifications from the ConnectedSocketAdapter",
-                "control"         : "Shutdown signalling",
-                "makessl"         : "Notifications to the ConnectedSocketAdapter that we want to negotiate SSL",
+                "control"         : "NOT USED"
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
                 "_selectorSignal"       : "For registering and deregistering ConnectedSocketAdapter components with a selector service",
-                "sslready"       : "SSL negotiated successfully",
 
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
@@ -147,7 +122,6 @@ class TCPClient(Axon.Component.component):
       self.delay=delay
       self.CSA = None
       self.sock = None
-      self.howDied = None
 
    def main(self):
       """Main loop."""
@@ -183,11 +157,7 @@ class TCPClient(Axon.Component.component):
  
       self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
-      self.link((CSA, "sslready"), (self, "sslready"), passthrough=2)
       self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
-      self.link((self, "makessl"), (CSA, "makessl"), passthrough=1)
-
-      self.link((self, "control"), (CSA, "control"), passthrough=1)  # propagate shutdown msgs
 
       self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
       self.send(newWriter(CSA, ((CSA, "SendReady"), sock)), "_selectorSignal")            
@@ -200,11 +170,6 @@ class TCPClient(Axon.Component.component):
       if self.dataReady("_socketFeedback"):
          message = self.recv("_socketFeedback")
          if isinstance(message, socketShutdown):
-            try:
-               socket, howdied = message
-               self.howDied = howdied
-            except TypeError:
-               self.howDied = None 
             return False
       return True
 
@@ -230,25 +195,18 @@ class TCPClient(Axon.Component.component):
             # connecting. This is a valid, if brute force approach.
             assert(self.connecting==1)
             return False
-         elif errorno==errno.EINPROGRESS or errorno==errno.EWOULDBLOCK:
+         if errorno==errno.EINPROGRESS or errorno==errno.EWOULDBLOCK:
             #The socket is non-blocking and the connection cannot be completed immediately.
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. Rather brute force.
             self.connecting=1
             return False # Not connected should retry until no error
-         elif errorno == errno.EISCONN:
+         if errorno == errno.EISCONN:
              # This is a windows error indicating the connection has already been made.
              self.connecting = 0 # as with the no exception case.
              return True
-         elif hasattr(errno, "WSAEINVAL"):
-            if errorno == errno.WSAEINVAL:
-                # If we are on windows, this will be the error instead of EALREADY
-                # above.
-                assert(self.connecting==1)
-                return False
          # Anything else is an error we don't handle
-         else:
-            raise socket.msg
+         raise socket.msg
 
    def runClient(self,sock=None):
       # The various numbers yielded here indicate progress through the function, and
@@ -260,8 +218,6 @@ class TCPClient(Axon.Component.component):
             sock.setblocking(0); yield 0.6
             try:
                while not self.safeConnect(sock,(self.host, self.port)):
-                  if self.shutdown():
-                      return
                   yield 1
                yield newComponent(*self.setupCSA(sock))
                while self.waitCSAClose():
@@ -283,29 +239,19 @@ class TCPClient(Axon.Component.component):
          # bad. However either way, it's gone, let's let the person using this
          # component know, shutdown everything, and get outta here.
          #
-         # FIXME: Set self.howDied here as well
-         #
          pass
-      self.send(producerFinished(self,self.howDied), "signal")
 #          self.send(e, "signal")
         # "TCPC: Exitting run client"
 
-   def shutdown(self):
-       while self.dataReady("control"):
-           msg = self.recv("control")
-           self.send(msg,"signal")
-           if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-               return True
-       return False
 
 __kamaelia_components__  = ( TCPClient, )
 
 
 if __name__ =="__main__":
    from Axon.Scheduler import scheduler
-   from Kamaelia.Chassis.ConnectedServer import SimpleServer
+   from Kamaelia.SimpleServerComponent import SimpleServer
    from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
-   from Kamaelia.Util.Console import ConsoleEchoer
+   from Kamaelia.Util.ConsoleEcho import  consoleEchoer
    from Axon.Component import component
 
 
@@ -316,7 +262,7 @@ if __name__ =="__main__":
          self.serverport = random.randint(4000,8000)
          self.server = SimpleServer(protocol=FortuneCookieProtocol, port=self.serverport)
          self.client = None
-         self.display = ConsoleEchoer()
+         self.display = consoleEchoer()
 
       def initialiseComponent(self):
          self.client = TCPClient("127.0.0.1",self.serverport, delay=1)

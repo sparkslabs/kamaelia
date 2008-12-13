@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -27,7 +27,7 @@ Pygame Multi-click Button Widget
 A button widget for pygame display surfaces. Sends a message when clicked. The
 message can be different for each mouse button.
 
-Uses the Pygame Display service.
+Uses the PygameDisplay service.
 
 
 
@@ -38,7 +38,7 @@ Three buttons that output messages to the console::
     msgs = [ "button 1", "button 2", "button 3", "button 4", "button 5" ]
     button1 = Button(caption="Click different mouse buttons!",msgs=msgs).activate()
     
-    ce = ConsoleEchoer().activate()
+    ce = consoleEchoer().activate()
     button1.link( (button1,"outbox"), (ce,"inbox") )
     
 
@@ -46,7 +46,7 @@ Three buttons that output messages to the console::
 How does it work?
 -----------------
 
-The component requests a display surface from the Pygame Display service
+The component requests a display surface from the PygameDisplay service
 component. This is used as the surface of the button. It also binds event
 listeners to the service, as appropriate.
 
@@ -72,7 +72,7 @@ If a producerFinished or shutdownMicroprocess message is received on its
 "control" inbox. It is passed on out of its "signal" outbox and the component
 terminates.
 
-Upon termination, this component does *not* unbind itself from the Pygame Display
+Upon termination, this component does *not* unbind itself from the PygameDisplay
 service. It does not deregister event handlers and does not relinquish the
 display surface it requested.
 """
@@ -81,17 +81,16 @@ display surface it requested.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class Multiclick(Axon.Component.component):
    """\
    Multiclick(...) -> new Multiclick component.
 
-   Create a button widget in pygame, using the Pygame Display service. Sends a
+   Create a button widget in pygame, using the PygameDisplay service. Sends a
    message out of its outbox when clicked.
 
    Keyword arguments (all optional):
-   
    - caption      -- text (default="Button <component id>")
    - position     -- (x,y) position of top left corner in pixels
    - margin       -- pixels margin between caption and button edge (default=8)
@@ -103,14 +102,12 @@ class Multiclick(Axon.Component.component):
    - size         -- (width,height) pixels size of the button (default=scaled to fit caption)
    """
    
-   Inboxes = { "inbox"    : "Receive events from Pygame Display",
+   Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "Shutdown messages: shutdownMicroprocess or producerFinished",
-               "callback" : "Receive callbacks from Pygame Display"
+               "callback" : "Receive callbacks from PygameDisplay"
              }
    Outboxes = { "outbox" : "button click events emitted here",
-                "signal" : "Shutdown signalling: shutdownMicroprocess or producerFinished",
-                "display_signal" : "For sending signals to the Pygame Display",
-              }
+                "signal" : "Shutdown signalling: shutdownMicroprocess or producerFinished" }
    
    def __init__(self, caption=None, position=None, margin=8, bgcolour = (224,224,224), fgcolour = (0,0,0), 
                 msg=None,
@@ -171,10 +168,10 @@ class Multiclick(Axon.Component.component):
    def main(self):
       """Main loop."""
       displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"display_signal"), displayservice)
+      self.link((self,"signal"), displayservice)
 
       self.send( self.disprequest,
-                  "display_signal")
+                  "signal")
              
       for _ in self.waitBox("callback"): yield 1
       self.display = self.recv("callback")
@@ -182,7 +179,8 @@ class Multiclick(Axon.Component.component):
       
       self.send({ "ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN,
                   "surface" : self.display},
-                  "display_signal")
+                  "signal")
+                  
 
       done = False
       while not done:
@@ -212,7 +210,7 @@ class Multiclick(Axon.Component.component):
    def blitToSurface(self):
        """Clears the background and renders the text label onto the button surface."""
        try:
-           self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+           self.send({"REDRAW":True, "surface":self.display}, "signal")
            self.display.fill( self.backgroundColour )
            self.display.blit( self.image, self.imagePosition )
        except:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -30,11 +30,9 @@ A simple component that takes data items and converts them to strings.
 
 Example Usage
 -------------
-
-A simple pipeline::
-
-    Pipeline( sourceOfNonStrings(),
-              Stringify(),
+::
+    pipeline( sourceOfNonStrings(),
+              ToStringComponent(),
               consumerThatWantsStrings(),
             ).activate()
             
@@ -53,9 +51,9 @@ This component does not terminate.
 
 from Axon.Component import component, scheduler
 
-class Stringify(component):
+class ToStringComponent(component):
    """\
-   Stringify() -> new Stringify.
+   ToStringComponent() -> new ToStringComponent.
    
    A component that converts data items received on its "inbox" inbox to
    strings and sends them on out of its "outbox" outbox.
@@ -70,7 +68,7 @@ class Stringify(component):
               
    def __init__(self):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(Stringify, self).__init__() # !!!! Must happen, if this method exists
+      super(ToStringComponent, self).__init__() # !!!! Must happen, if this method exists
       self.activate()
 
 
@@ -81,5 +79,10 @@ class Stringify(component):
          self.send(str(theData), "outbox")
       return 1
 
-__kamaelia_components__  = ( Stringify, )
+__kamaelia_components__  = ( ToStringComponent, )
 
+
+if __name__ =="__main__":
+   myComponent("A",3,1)
+   myComponent("B",2).activate()
+   scheduler.run.runThreads()

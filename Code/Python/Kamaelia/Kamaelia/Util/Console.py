@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -33,10 +33,8 @@ a time.
 
 Example Usage
 -------------
-
 Whatever it typed is echoed back, a line at a time::
-
-    Pipeline( ConsoleReader(),
+    pipeline( ConsoleReader(),
               ConsoleEchoer()
             ).run()
 
@@ -84,7 +82,6 @@ class ConsoleReader(threadedcomponent):
    from the "outbox" outbox one at a time.
    
    Keyword arguments:
-   
    - prompt  -- Command prompt (default=">>> ")
    - eol     -- End of line character(s) to put on end of every line outputted (default is newline)
    """
@@ -105,13 +102,10 @@ class ConsoleReader(threadedcomponent):
    def main(self):
       """Main thread loop."""
       while 1:
-         try:
-             line = raw_input(self.prompt)
-         except:
-             break
+         line = raw_input(self.prompt)
          line = line + self.eol
          self.send(line, "outbox")
-      self.send(producerFinished(), "signal")                          
+
 
 
 class ConsoleEchoer(component):
@@ -122,7 +116,6 @@ class ConsoleEchoer(component):
    console).
 
    Keyword arguments:
-   
    - forwarder  -- incoming data is also forwarded to "outbox" outbox if True (default=False)
    - use_repr   -- use repr() instead of str() if True (default=False)
    """

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -34,9 +34,7 @@ handle more than just lists - for example: infinite sequences.
 
 Example Usage
 -------------
-
 A simple slideshow::
-  
     items=[ "image1.png", "image2.png", "image3.png", ... ]
     
     Graphline( CHOOSER  = Chooser(items=imagefiles),
@@ -53,7 +51,6 @@ The chooser is driven by the 'next' and 'previous' Button components. Chooser
 then sends filenames to an Image component to display them.
 
 Another example: a forever looping carousel of files, read at 1MBit/s::
-
     def filenames():
         while 1:
             yield "file 1"
@@ -123,7 +120,6 @@ class Chooser(Axon.Component.component):
    "FIRST" or "LAST" messages to its "inbox" inbox.
    
    Keyword arguments:
-   
    - items  -- list of items to be chosen from, must be type 'list' (default=[])
    """
    
@@ -190,9 +186,6 @@ class Chooser(Axon.Component.component):
                   pass
 
          done = self.shutdown()
-         
-         if not done:
-             self.pause()
 
    
    def getCurrentChoice(self):
@@ -307,9 +300,6 @@ class ForwardIteratingChooser(Axon.Component.component):
                   pass
 
          done = done or self.shutdown()
-         
-         if not done:
-             self.pause()
 
    def getCurrentChoice(self):
       """Return the current choice"""

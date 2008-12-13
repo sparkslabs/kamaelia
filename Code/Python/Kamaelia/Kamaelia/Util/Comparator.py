@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,7 +24,7 @@
 Comparing two data sources
 ==========================
 
-The Comparator component tests two incoming streams to see if the items they
+The comparator component tests two incoming streams to see if the items they
 contain match (pass an equality test).
 
 
@@ -32,7 +32,6 @@ contain match (pass an equality test).
 Example Usage
 -------------
 Compares contents of two files and prints "MISMATCH!" whenever one is found::
-
     class DetectFalse(component):
         def main(self):
             while 1:
@@ -43,9 +42,9 @@ Compares contents of two files and prints "MISMATCH!" whenever one is found::
 
     Graphline( file1   = RateControlledFileReader(filename="file 1", ...),
                file2   = RateControlledFileReader(filename="file 2", ...),
-               compare = Comparator(),
+               compare = comparator(),
                fdetect = DetectFalse(),
-               output  = ConsoleEchoer(),
+               output  = consoleEchoer(),
                linkages = {
                    ("file1","outbox") : ("compare","inA"),
                    ("file2","outbox") : ("compare","inB"),
@@ -81,9 +80,9 @@ perform different functions (for example, an 'adder').
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class Comparator(component):
+class comparator(component):
     """\
-    Comparator() -> new Comparator component.
+    comparator() -> new comparator component.
 
     Compares items received on "inA" inbox with items received on "inB" inbox.
     For each pair, outputs True if items compare equal, otherwise False.
@@ -118,12 +117,5 @@ class Comparator(component):
                 return 0
         return 1
 
-import Kamaelia.Support.Deprecate as Deprecate
-
-comparator = Deprecate.makeClassStub(
-    Comparator,
-    "Use Kamaelia.Util.Comparator:Comparator instead of Kamaelia.Util.Comparator:comparator",
-    "WARN"
-    )
-
-__kamaelia_components__  = ( Comparator, )
+__kamaelia_components__  = ( comparator, )
+            

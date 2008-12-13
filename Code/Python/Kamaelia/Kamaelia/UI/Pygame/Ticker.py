@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -33,10 +33,9 @@ is likely to change substantially in the near future.
 
 Example Usage
 -------------
-
+::
 Ticker displaying text from a file::
-
-    Pipeline( RateControlledFileReader("textfile","lines",rate=1000),
+    pipeline( RateControlledFileReader("textfile","lines",rate=1000),
               Ticker(position=(100,100))
             ).run()
 
@@ -45,7 +44,7 @@ Ticker displaying text from a file::
 How does it work?
 -----------------
 
-The component requests a display surface from the Pygame Display service
+The component requests a display surface from the PygameDisplay service
 component. This is used as the ticker.
 
 Send strings containing *lines of text* to the Ticker component. Do not send
@@ -58,7 +57,7 @@ The text is normalised by the ticker. Multiple spaces between words are
 collapsed to a single space. Linefeeds are ignored.
 
 NOTE: 2 consecutive linefeeds currently results in a special message being
-sent out of the "_displaysignal" outbox. This is work-in-progress aimed at new features.
+sent out of the "signal" outbox. This is work-in-progress aimed at new features.
 It is only documented here for completeness and should not be relied upon.
 
 You can set the text size, colour and line spacing. You can also set the
@@ -95,12 +94,12 @@ sending a message to its "unpausebox" inbox.
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #
-# XXX VOMIT : "control" inbox used for communication with Pygame Display service.
+# XXX VOMIT : "control" inbox used for communication with PygameDisplay service.
 #             This should be changed, so "control" can be used for shutdown
 #             signalling.
 #
 #             similarly the "signal" outbox is used to send stuff to the
-#             Pygame Display service. Also must be changed (for the same reasons)
+#             PygameDisplay service. Also must be changed (for the same reasons)
 #
 #         __init__ args:
 #             render_left, render_right, render_top, render_bottom are a bit
@@ -121,7 +120,7 @@ sending a message to its "unpausebox" inbox.
 
 import pygame
 import Axon
-from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 from Axon.Ipc import WaitComplete
 import time
 
@@ -132,7 +131,6 @@ class Ticker(Axon.Component.component):
    A pygame based component that displays incoming text as a ticker.
 
    Keyword arguments (all optional):
-   
    - text_height        -- Font size in points (default=39)
    - line_spacing       -- (default=text_height/7)
    - background_colour  -- (r,g,b) background colour of the ticker (default=(128,48,128))
@@ -149,16 +147,13 @@ class Ticker(Axon.Component.component):
    """
     
    Inboxes = { "inbox"        : "Specify (new) filename",
-               "control"      : "NOT USED (yet)",
+               "control"      : "Shutdown messages & feedback from PygameDisplay service",
                "alphacontrol" : "Transparency of the ticker (0=fully transparent, 255=fully opaque)",
                "pausebox"     : "Any message pauses the ticker",
                "unpausebox"   : "Any message unpauses the ticker",
-
-               "_displaycontrol" : "Shutdown messages & feedback from Pygame Display service",
              }
    Outboxes = { "outbox" : "NOT USED",
-                "signal" : "NOT USED (yet)",
-                "_displaysignal" : "Shutdown signalling & sending requests to Pygame Display service",
+                "signal" : "Shutdown signalling & sending requests to PygameDisplay service",
               }
 
    def __init__(self, **argd):
@@ -193,7 +188,7 @@ class Ticker(Axon.Component.component):
        """Clears the ticker of any existing text."""
        self.display.fill(self.background_colour)
        self.renderBorder(self.display)
-       self.send({"REDRAW":True, "surface":self.display}, "_displaysignal")
+       self.send({"REDRAW":True, "surface":self.display}, "signal")
             
    def renderBorder(self, display):
       """Draws a rectangle to form the 'border' of the ticker"""
@@ -208,15 +203,15 @@ class Ticker(Axon.Component.component):
 
    def requestDisplay(self, **argd):
       """\
-      Generator. Gets a display surface from the Pygame Display service.
+      Generator. Gets a display surface from the PygameDisplay service.
 
       Makes the request, then yields 1 until a display surface is returned.
       """
       displayservice = PygameDisplay.getDisplayService()
-      self.link((self,"_displaysignal"), displayservice)
-      self.send(argd, "_displaysignal")
-      for _ in self.waitBox("_displaycontrol"): yield 1
-      display = self.recv("_displaycontrol")
+      self.link((self,"signal"), displayservice)
+      self.send(argd, "signal")
+      for _ in self.waitBox("control"): yield 1
+      display = self.recv("control")
       self.display = display
 
 
@@ -229,7 +224,7 @@ class Ticker(Axon.Component.component):
     """Main loop."""
     yield WaitComplete(
           self.requestDisplay(DISPLAYREQUEST=True,
-                              callback = (self,"_displaycontrol"),
+                              callback = (self,"control"),
 # SMELL                              transparency = (128,48,128),
                             size = (self.render_area.width, self.render_area.height),
                             position = self.position
@@ -249,6 +244,10 @@ class Ticker(Axon.Component.component):
     alpha = -1
     while 1:
        self.handleAlpha()
+#       if self.dataReady("alphacontrol"):
+#            alpha = self.recv("alphacontrol")
+#            print "BOING", alpha
+#            self.display.set_alpha(alpha)
        if self.dataReady("control"):
           if self.dataReady("control"):
               data = self.recv("control")
@@ -268,19 +267,16 @@ class Ticker(Axon.Component.component):
           for line in lines:
               word = line
               words = line.split()
-#              if len(words) == 0:
-#
-# Purpose of this code is lost in time.
-#
-#                  if blankcount:
-#                      blankcount = 0
-#                      self.send( {"CHANGEDISPLAYGEO": True,
-#                                  "surface" : self.display,
-#                                  "position":(108,60)
-#                                 },
-#                                "signal")
-#                  else:
-#                      blankcount = 1
+              if len(words) == 0:
+                  if blankcount:
+                      blankcount = 0
+                      self.send( {"CHANGEDISPLAYGEO": True,
+                                  "surface" : self.display,
+                                  "position":(108,60)
+                                 },
+                                "signal")
+                  else:
+                      blankcount = 1
               for word in words:
                   while time.time() - last < self.delay:
                      self.handleAlpha()                     
@@ -326,7 +322,7 @@ class Ticker(Axon.Component.component):
                         position[1] += maxheight + self.line_spacing
 
                   display.blit(word_render, position)
-                  self.send({"REDRAW":True, "surface":self.display}, "_displaysignal")
+                  self.send({"REDRAW":True, "surface":self.display}, "signal")
                   position[0] += wordsize[0]
                   if wordsize[1] > maxheight:
                      maxheight = wordsize[1]
@@ -337,7 +333,7 @@ __kamaelia_components__  = ( Ticker, )
 
 
 if __name__ == "__main__":
-   from Kamaelia.Chassis.Pipeline import Pipeline
+   from Kamaelia.Util.PipelineComponent import pipeline
    # Excerpt from Tennyson's Ulysses
    text = """\
 The lights begin to twinkle from the rocks;
@@ -364,7 +360,7 @@ To strive, to seek, to find, and not to yield.
             yield 1
 
    for _ in range(6):
-      Pipeline(datasource(),
+      pipeline(datasource(),
                Ticker()
               ).activate()
    Axon.Scheduler.scheduler.run.runThreads()

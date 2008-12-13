@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -23,16 +23,14 @@
 from distutils.core import setup
 
 setup(name = "Axon",
-      version = "1.5.1",
+      version = "1.1.1",
       description = "Axon - Asynchronous Isolated Generator Component System",
       author = "Michael",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/",
-      license = "Copyright (c)2004 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
-      packages = [
-                  "Axon", ### START
-                  "Axon.experimental", ### LAST
-                  ],
+      license = "(c)2004 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
+      packages = ["Axon",
+                  ""],
       long_description = """
 Axon is a software component system. In Axon, components are active and
 reactive, independent processing nodes responding to a CSP-like environment.
@@ -40,3 +38,6 @@ Systems are composed by creating communications channels (linkages) between
 components.
 """
       )
+      
+
+

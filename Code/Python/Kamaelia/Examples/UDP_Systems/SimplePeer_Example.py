@@ -9,19 +9,19 @@ or form, and they're fixed who they're sending to, etc, which is why
 it's a simple peer.
 """
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Chargen import Chargen
 from Kamaelia.Internet.UDP import SimplePeer
 
 server_addr = "127.0.0.1"
 server_port = 1600
 
-Pipeline(
+pipeline(
     Chargen(),
     SimplePeer(receiver_addr=server_addr, receiver_port=server_port),
 ).activate()
 
-Pipeline(
+pipeline(
     SimplePeer(localaddr=server_addr, localport=server_port),
     ConsoleEchoer()
 ).run()

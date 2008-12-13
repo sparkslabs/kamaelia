@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -35,9 +35,7 @@ socket to transform the data to and from a form suitable for transport.
 
 Example usage
 -------------
-
-Marshalling and demarshalling a stream of integers::
-
+::
     class SerialiseInt:
 
         def marshall(int):
@@ -48,12 +46,12 @@ Marshalling and demarshalling a stream of integers::
             return int(string)
         demarshall = staticmethod(demarshall)
 
-    Pipeline( producer(...),
+    pipeline( producer(...),
               Marshaller(SerialiseInt),
               sender(...)
             ).activate()
 
-    Pipeline( receiver(...),
+    pipeline( receiver(...),
               DeMarshaller(SerialiseInt),
               consumer(...)
             ).activate()
@@ -65,9 +63,8 @@ How does it work?
 
 When instantiating the Marshaller or DeMarshaller components, you provide an
 object (eg. class) containing these static methods:
-
-* marshall(item)    - returns the item serialised for transmission
-* demarshall(item)  - returns the original item, deserialised
+   * marshall(item) - returns the item serialised for transmission
+   * demarshall(item) - returns the original item, deserialised
 
 Marshaller requires only the marshall(...) static method, and DeMarshaller
 requires only demarshall(...).
@@ -112,7 +109,6 @@ class Marshaller(component):
     A component for marshalling data (serialising it to a string).
 
     Keyword arguments:
-    
     - klass  -- a class with static method: marshall(data) that returns the data, marshalled.
     """
     Inboxes  = { "inbox"   : "data to be marshalled",
@@ -186,7 +182,7 @@ class DeMarshaller(component):
                     self.send(msg, "signal")
                     done=True
 
-__kamaelia_components__  = ( Marshaller, DeMarshaller, )
+__kamaelia_components__  = ( Marshaller, DeMarshaller)
 
 
 

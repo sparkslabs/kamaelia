@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -34,9 +34,8 @@ TCPServer.
 
 import Axon as _Axon
 from Kamaelia.Internet.TCPServer import TCPServer
-import Kamaelia.IPC as _ki
+import Kamaelia.KamaeliaIPC as _ki
 from Axon.Ipc import producerFinished
-from Kamaelia.IPC import serverShutdown
 
 class echo(_Axon.Component.component):
    def main(self):
@@ -59,13 +58,12 @@ class SingleServer(_Axon.Component.component):
       self.listenport = port
       self.CSA = None
       self.rejectedCSAs = []
-      self.myPLS = None
 
    def main(self):
-      self.myPLS = TCPServer(listenport=self.listenport)
-      self.link((self.myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
-      self.addChildren(self.myPLS)
-      yield _Axon.Ipc.newComponent(self.myPLS)
+      myPLS = TCPServer(listenport=self.listenport)
+      self.link((myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
+      self.addChildren(myPLS)
+      yield _Axon.Ipc.newComponent(myPLS)
       while 1:
          self.pause()
          if self.dataReady("_oobinfo"):
@@ -84,12 +82,6 @@ class SingleServer(_Axon.Component.component):
                self.removeChild(theCSA)
                yield 1
          yield 1
-
-   def stop(self):
-       self.send(producerFinished(self), "signal")
-       self.CSA._deliver(producerFinished(self),"control")
-       self.myPLS._deliver(serverShutdown(self),"control")
-       super(SingleServer,self).stop()
 
    def handleNewCSA(self, data):
       newCSA = data.object

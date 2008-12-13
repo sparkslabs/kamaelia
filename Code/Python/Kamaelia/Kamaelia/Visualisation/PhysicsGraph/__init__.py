@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -31,16 +31,18 @@ import random, time, re, sys
 from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
 
-# import Kamaelia.Physics
-from Kamaelia.Support.Particles import Particle as BaseParticle
+import Kamaelia.Physics
+from Kamaelia.Physics.Simple import Particle as BaseParticle
 from Kamaelia.UI.MH import PyGameApp, DragHandler
 
 component = _Axon.Component.component
 
+from Kamaelia.Util.PipelineComponent import pipeline
+
 # from GridRenderer import GridRenderer
 # from RenderingParticle import RenderingParticle
 # from ParticleDragger import ParticleDragger
-# from TopologyViewer import TopologyViewer
+# from TopologyViewerComponent import TopologyViewerComponent
 # from lines_to_tokenlists import lines_to_tokenlists
 # from chunks_to_lines import chunks_to_lines
 from TopologyViewerServer import TopologyViewerServer

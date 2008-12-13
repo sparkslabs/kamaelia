@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -40,7 +40,7 @@ Example Usage
 
 Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
 
-    Pipeline( RateControlledFileReader("myfile", rate=100000),
+    pipeline( RateControlledFileReader("myfile", rate=100000),
               ThreadedTCPClient("1.2.3.4", 1000),
             ).activate()
 
@@ -69,7 +69,7 @@ The compnent is based on Axon.ThreadedComponent.threadedcomponent
 """
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-# XXX FIXME
+# XXX VOMIT
 #
 # - needs reworking somewhat - bit messy, plus lacks error handling
 # - and spits all kinds of crud out of its "signal" outbox
@@ -80,7 +80,7 @@ import socket
 import errno
 import Axon
 from Axon.Component import component
-from Kamaelia.IPC import socketShutdown
+from Kamaelia.KamaeliaIPC import socketShutdown
 from Queue import Empty
 import Axon.ThreadedComponent
 
@@ -94,7 +94,6 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
    Establishes a TCP connection to the specified server.
    
    Keyword arguments:
-   
    - host     -- address of the server to connect to (string)
    - port     -- port number to connect on
    - initialsendmessage  -- to be send immediately after connection is established (default=None)

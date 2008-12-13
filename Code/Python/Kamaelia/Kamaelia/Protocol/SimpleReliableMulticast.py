@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,7 +24,7 @@
 Simple Reliable Multicast
 =========================
 
-A pair of Pipelines for encoding (and decoding again) a stream of data such that
+A pair of pipelines for encoding (and decoding again) a stream of data such that
 is can be transported over an unreliable connection that may lose, duplicate or
 reorder data.
 
@@ -35,14 +35,12 @@ duplicates are removed. However it cannot recover lost data.
 Example Usage
 -------------
 Reliably transporting a file over multicast (assuming no packets are lost)::
-
-    Pipeline(RateControlledFileReader("myfile"),
+    pipeline(RateControlledFileReader("myfile"),
              SRM_Sender(),
              Multicast_transceiver("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
 
 On the client::
-
     class discardSeqnum(component):
         def main(self):
             while 1:
@@ -50,10 +48,10 @@ On the client::
                     (_, data) = self.recv("inbox")
                     self.send(data,"outbox")
     
-    Pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
+    pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
               SRM_Receiver(),
               discardSeqnum(),
-              ConsoleEchoer()
+              consoleEchoer()
             ).activate()
 
 
@@ -61,14 +59,12 @@ On the client::
 How does it work?
 -----------------
 
-SRM_Sender is a Pipeline of three components:
-
+SRM_Sender is a pipeline of three components:
 - Annotator    -- annotates a data stream with sequence numbers
 - Framer       -- frames the data
 - DataChunker  -- inserts markers between frames
 
-SRM_Receiver is a Pipeline of three components:
-
+SRM_Receiver is a pipeline of three components:
 - DataDeChunker  -- recovers chunks based on markers
 - DeFramer       -- removes framing
 - RecoverOrder   -- sorts data by sequence numbers
@@ -90,7 +86,7 @@ behaviour.
 """
 
 import Axon
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PipelineComponent import pipeline
 
 from Kamaelia.Protocol.Framing import Framer as _Framer
 from Kamaelia.Protocol.Framing import DeFramer as _DeFramer
@@ -130,8 +126,6 @@ class RecoverOrder(Axon.Component.component):
       bufsize = 30
       datasource = []
       while 1:
-         if not self.anyReady():
-             self.pause()
          yield 1
          while self.dataReady("inbox"):
             item = self.recv("inbox")
@@ -166,9 +160,9 @@ def SRM_Sender():
     sending over an unreliable connection that may lose, reorder or duplicate
     data. Can be decoded by SRM_Receiver.
 
-    This is a Pipeline of components.
+    This is a pipeline of components.
     """
-    return Pipeline(
+    return pipeline(
         Annotator(),
         _Framer(),
         _DataChunker()
@@ -183,19 +177,19 @@ def SRM_Receiver():
 
     Final emitted data is (seqnum, data) pairs.
 
-    This is a Pipeline of components.
+    This is a pipeline of components.
     """
-    return Pipeline(
+    return pipeline(
         _DataDeChunker(),
         _DeFramer(),
         RecoverOrder()
     )
 
 __kamaelia_components__  = ( Annotator, RecoverOrder, )
-__kamaelia_prefabs__ = ( SRM_Sender, SRM_Receiver)
+__kamaelia_prefab__ = ( SRM_Sender, SRM_Receiver)
     
 if __name__ == "__main__":
-    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.ConsoleEcho import consoleEchoer
     from Kamaelia.Internet.Simulate.BrokenNetwork import Duplicate, Throwaway, Reorder
     
     import time
@@ -215,11 +209,11 @@ if __name__ == "__main__":
                 self.send(str(i), "outbox")
                 t = time.time()
 
-    Pipeline(Source(),
+    pipeline(Source(),
              SRM_Sender(),
              Duplicate(),
              Throwaway(),
              Reorder(),
              SRM_Receiver(),
-             ConsoleEchoer()
+             consoleEchoer()
     ).run()

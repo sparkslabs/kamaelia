@@ -7,20 +7,20 @@
 #
 
 from Axon.Component import component
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
-from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
 from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Protocol.SimpleReliableMulticast import SRM_Sender, SRM_Receiver
 from Kamaelia.Protocol.Packetise import MaxSizePacketiser
 from Kamaelia.Util.Detuple import SimpleDetupler
 
-file_to_stream = "../../SupportingMediaFiles/KDE_Startup_2.ogg"
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 #
 # Server with simple added reliabilty protocol
 # 
-Pipeline(
+pipeline(
     ReadFileAdaptor(file_to_stream, readmode="bitrate", bitrate=400000, chunkrate=50),
     SRM_Sender(),
     MaxSizePacketiser(), # Ensure chunks small enough for multicasting!
@@ -30,7 +30,7 @@ Pipeline(
 #
 # Client with simple added reliability protocol
 #
-Pipeline(
+pipeline(
     Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
     SimpleDetupler(1),
     SRM_Receiver(),

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -73,7 +73,6 @@ class EventHandler(object):
    events. Pass in events to be handled by calling the dispatch(...) method.
 
    Keyword arguments:
-   
    - trace  -- Cause existing stub handlers to print messages to standard output.
    """
             

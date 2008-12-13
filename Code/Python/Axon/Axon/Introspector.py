@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,8 +24,8 @@
 Detecting the topology of a running Axon system
 ===============================================
 
-The Introspector is a component that introspects the current local topology of
-an Axon system - that is what components there are and how they are wired up.
+The Introspector component introspects the current local topology of an Axon
+system - that is what components there are and how they are wired up.
 
 It continually outputs any changes that occur to the topology.
 
@@ -33,9 +33,7 @@ It continually outputs any changes that occur to the topology.
 
 Example Usage
 -------------
-
 Introspect and display whats going on inside the system::
-    
     MyComplexSystem().activate()
     
     pipeline( Introspector(),
@@ -44,8 +42,8 @@ Introspect and display whats going on inside the system::
 
 
 
-More detail
------------
+How does it work?
+-----------------
 
 Once activated, this component introspects the current local topology of an Axon
 system.
@@ -70,32 +68,27 @@ to that component. A linkage between two postboxes represents a linkage in the
 Axon system, from one component to another.
 
 This topology change data is output as string containing one or more lines. It
-is output through the "outbox" outbox. Each line may be one of the following:
+is output through the "outbox" outbox. Each line may be one of the following::
 
-* `"DEL ALL"`
-
+* "DEL ALL\n"
   - the first thing sent immediately after activation - to ensure that
     the receiver of this data understand that we are starting from nothing
 
-* `"ADD NODE <id> <name> randompos component"`
-* `"ADD NODE <id> <name> randompos inbox"`
-* `"ADD NODE <id> <name> randompos outbox"`
-
+* "ADD NODE <id> <name> randompos component\n"
+  "ADD NODE <id> <name> randompos inbox\n"
+  "ADD NODE <id> <name> randompos outbox\n"
   - an instruction to add a node to the topology, representing a component,
     inbox or outbox. <id> is a unique identifier. <name> is a 'friendly'
     textual label for the node.
 
-* `"DEL NODE <id>"`
-
+* "DEL NODE <id>"
   - an instruction to delete a node, specified by its unique id
     
-* `"ADD LINK <id1> <id2>"`
-
+* "ADD LINK <id1> <id2>"
   - an instruction to add a link between the two identified nodes. The link is
     deemed to be directional, from <id1> to <id2>
 
-* `"DEL LINK <id1> <id2>"`
-
+* "DEL LINK <id1> <id2>"
   - an instruction to delete any link between the two identified nodes. Again,
     the directionality is from <id1> to <id2>.
 
@@ -108,33 +101,12 @@ This component ignores anything arriving at its "inbox" inbox.
 
 If a shutdownMicroprocess message is received on the "control" inbox, it is sent
 on to the "signal" outbox and the component will terminate.
-
-
-
-How does it work?
------------------
-
-Every execution timeslice, Introspector queries its scheduler to obtain a list
-of all components. It then queries the postoffice in each component to build a
-picture of all linkages between components. It also builds a list of all inboxes
-and outboxes on each component.
-
-This is mapped to a list of nodes and linkages. Nodes being components and
-postboxes; and linkages being what postboxes belong to what components, and what
-postboxes are linked to what postboxes.
-
-This is compared against the nodes and linkages from the previous cycle of
-processing to determine what has changed. The changes are then output as a 
-sequence of "ADD NODE", "DEL NODE", "ADD LINK" and "DEL LINK" commands.
-
 """
 
 
-import Component
-import Scheduler
-import Ipc
+import Axon
 
-class Introspector(Component.component):
+class Introspector(Axon.Component.component):
     """\
     Introspector() -> new Introspector component.
 
@@ -168,11 +140,11 @@ class Introspector(Component.component):
             # shutdown if requested
             if self.dataReady("control"):
                 data = self.recv("control")
-                if isinstance(data, Ipc.shutdownMicroprocess):
+                if isinstance(data, Axon.Ipc.shutdownMicroprocess):
                     self.send(data, "signal")
                     return
         
-            if isinstance(self.scheduler, Scheduler.scheduler):
+            if isinstance(self.scheduler, Axon.Scheduler.scheduler):
                 oldNodes    = nodes
                 oldLinkages = linkages
                 
@@ -262,7 +234,7 @@ class Introspector(Component.component):
         # (note that this is not necessarily all components - as they may have only just been 
         #  activated, in which case they may not register yet)
         threads = self.scheduler.listAllThreads()
-        components = dict([ (p,(p.id,p.name)) for p in threads if isinstance(p, Component.component) ])
+        components = dict([ (p,(p.id,p.name)) for p in threads if isinstance(p, Axon.Component.component) ])
         
         # go through all components' postoffices and find all linkages
         linkages = {}
@@ -312,4 +284,4 @@ if __name__ == '__main__':
    print "We both have inbox, control, signal and outbox postboxes"
    print "The Introspector's outbox is linked to the consoleEchoer's inbox"
    print
-   Scheduler.scheduler.run.runThreads(slowmo=0)
+   Axon.Scheduler.scheduler.run.runThreads(slowmo=0)

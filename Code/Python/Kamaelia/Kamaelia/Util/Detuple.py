@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -21,7 +21,6 @@
 # -------------------------------------------------------------------------
 
 import Axon
-from Axon.Ipc import shutdownMicroprocess, producerFinished
 
 class SimpleDetupler(Axon.Component.component):
     """
@@ -36,40 +35,34 @@ This component was originally created for use with the
 multicast component. (It could however be used for
 extracting a single field from a dictionary like object).
 
-Example usage::
+Example usage:
 
-    Pipeline(
-        Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
-        detuple(1), # Extract data, through away sender
-        SRM_Receiver(),
-        detuple(1),
-        VorbisDecode(),
-        AOAudioPlaybackAdaptor(),
-    ).run()
+pipeline(
+    Multicast_transceiver("0.0.0.0", 1600, "224.168.2.9", 0),
+    detuple(1), # Extract data, through away sender
+    SRM_Receiver(),
+    detuple(1),
+    VorbisDecode(),
+    AOAudioPlaybackAdaptor(),
+).run()
 
 """
     def __init__(self, index):
         super(SimpleDetupler, self).__init__()
         self.index = index
     def main(self):
-        shutdown=False
-        while self.anyReady() or not shutdown:
+        while 1:
             while self.dataReady("inbox"):
                 tuple=self.recv("inbox")
                 self.send(tuple[self.index], "outbox")
             if not self.anyReady():
                 self.pause()
-            while self.dataReady("control"):
-                msg=self.recv("control")
-                self.send(msg,"signal")
-                if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                    shutdown=True
             yield 1
 
 __kamaelia_components__  = ( SimpleDetupler, )
 
 if __name__ == "__main__":
-    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.PipelineComponent import pipeline
     class TupleSauce(Axon.Component.component):
         def main(self):
             while 1:
@@ -85,7 +78,7 @@ if __name__ == "__main__":
                         print "WARNING: expected", "hello", "received", data
                 yield 1
 
-    Pipeline(
+    pipeline(
         TupleSauce(),
         SimpleDetupler(1),
         CheckResultIsHello(),

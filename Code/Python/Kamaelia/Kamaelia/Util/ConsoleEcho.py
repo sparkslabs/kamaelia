@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -20,16 +20,11 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-This is a deprecation stub for later removal.
+Legacy stub for consoleEchoer component.
+
+The component now resides in Kamaelia.Util.Console
+... please use this in preference
 """
 
-import Kamaelia.Support.Deprecate as Deprecate
-from Kamaelia.Util.Console import ConsoleEchoer as __ConsoleEchoer
+from Kamaelia.Util.Console import ConsoleEchoer as consoleEchoer
 
-Deprecate.deprecationWarning("Use Kamaelia.Util.Console instead of Kamaelia.Util.ConsoleEcho")
-
-consoleEchoer = Deprecate.makeClassStub(
-    __ConsoleEchoer,
-    "Use Kamaelia.Util.Console:ConsoleEchoer instead of Kamaelia.Util.ConsoleEcho:consoleEchoer",
-    "WARN"
-    )

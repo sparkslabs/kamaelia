@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -26,7 +26,7 @@ Pygame Button Widget
 
 A button widget for pygame display surfaces. Sends a message when clicked.
 
-Uses the Pygame Display service.
+Uses the PygameDisplay service.
 
 
 
@@ -38,7 +38,7 @@ Three buttons that output messages to the console::
     button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
     button3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
     
-    ce = ConsoleEchoer().activate()
+    ce = consoleEchoer().activate()
     button1.link( (button1,"outbox"), (ce,"inbox") )
     button2.link( (button2,"outbox"), (ce,"inbox") )
     button3.link( (button3,"outbox"), (ce,"inbox") )
@@ -48,7 +48,7 @@ Three buttons that output messages to the console::
 How does it work?
 -----------------
 
-The component requests a display surface from the Pygame Display service
+The component requests a display surface from the PygameDisplay service
 component. This is used as the surface of the button. It also binds event
 listeners to the service, as appropriate.
 
@@ -56,10 +56,10 @@ Arguments to the constructor configure the appearance and behaviour of the
 button component:
 
 - If an output "msg" is not specified, the default is a tuple ("CLICK", id) where
-  id is the self.id attribute of the component.
+id is the self.id attribute of the component.
 
 - A pygame keycode can be specified that will also trigger the button as if it
-  had been clicked
+had been clicked
 
 - you can set the text label, colour, margin size and position of the button
 
@@ -72,7 +72,7 @@ If a producerFinished or shutdownMicroprocess message is received on its
 "control" inbox. It is passed on out of its "signal" outbox and the component
 terminates.
 
-Upon termination, this component does *not* unbind itself from the Pygame Display
+Upon termination, this component does *not* unbind itself from the PygameDisplay
 service. It does not deregister event handlers and does not relinquish the
 display surface it requested.
 """
@@ -80,17 +80,16 @@ display surface it requested.
 import pygame
 import Axon
 from Axon.Ipc import producerFinished
-from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class Button(Axon.Component.component):
    """\
    Button(...) -> new Button component.
 
-   Create a button widget in pygame, using the Pygame Display service. Sends a
+   Create a button widget in pygame, using the PygameDisplay service. Sends a
    message out of its outbox when clicked.
 
    Keyword arguments (all optional):
-   
    - caption      -- text (default="Button <component id>")
    - position     -- (x,y) position of top left corner in pixels
    - margin       -- pixels margin between caption and button edge (default=8)
@@ -102,9 +101,9 @@ class Button(Axon.Component.component):
    - size         -- None or (w,h) in pixels (default=None)
    """
    
-   Inboxes = { "inbox"    : "Receive events from Pygame Display",
+   Inboxes = { "inbox"    : "Receive events from PygameDisplay",
                "control"  : "For shutdown messages",
-               "callback" : "Receive callbacks from Pygame Display"
+               "callback" : "Receive callbacks from PygameDisplay"
              }
    Outboxes = { "outbox" : "button click events emitted here",
                 "signal" : "For shutdown messages",
@@ -231,14 +230,14 @@ __kamaelia_components__  = ( Button, )
 
                   
 if __name__ == "__main__":
-   from Kamaelia.Util.Console import ConsoleEchoer
+   from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
    
    button1 = Button(caption="Press SPACE or click",key=K_SPACE).activate()
    button2 = Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0)).activate()
    button3 = Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)).activate()
    
-   ce = ConsoleEchoer().activate()
+   ce = consoleEchoer().activate()
    button1.link( (button1,"outbox"), (ce,"inbox") )
    button2.link( (button2,"outbox"), (ce,"inbox") )
    button3.link( (button3,"outbox"), (ce,"inbox") )

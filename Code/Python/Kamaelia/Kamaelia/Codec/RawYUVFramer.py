@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -40,7 +40,7 @@ Reading and encoding raw video::
 
     imagesize = (352, 288)        # "CIF" size video
     
-    Pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
              RawYUVFramer(imagesize),
              DiracEncoder(preset="CIF"),
             ).activate()
@@ -53,7 +53,6 @@ More Detail
 Receives raw yuv video data, as strings on its "inbox" inbox.
 
 Sends out individual frames packaged in a dictionary::
-
     {
       "yuv" : (y_data, u_data, v_data),  # a tuple of strings
       "size" : (width, height),          # in pixels
@@ -78,9 +77,8 @@ class RawYUVFramer(component):
     Creates a component that frames a raw stream of YUV video data into frames.
 
     Keyword arguments:
-    
-    - size       -- (width,height) size of a video frame in pixels
-    - pixformat  -- raw video data format (default="YUV420_Planar")
+    size = (width,height)        -- size of a video frame in pixels
+    pixformat = "YUV420_Planar"  -- raw video data format
     """
        
     def __init__(self, size, pixformat = "YUV420_planar"):

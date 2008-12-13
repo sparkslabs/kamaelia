@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -33,7 +33,7 @@ Example Usage
 -------------
 Using a lossy connector to drop excess data::
     src = fastProducer().activate()
-    lsy = LossyConnector().activate()
+    lsy = lossyConnector().activate()
     dst = slowConsumer().activate()
 
     src.link( (src,"outbox"), (lsy,"inbox") )
@@ -62,9 +62,9 @@ from Axon.Component import component
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class LossyConnector(component):
+class lossyConnector(component):
     """\
-    LossyConnector() -> new LossyConnector component
+    lossyConnector() -> new lossyConnector component
 
     Component that forwards data from inbox to outbox, but discards data if
     destination is full.
@@ -90,4 +90,4 @@ class LossyConnector(component):
                 return 0
         return 1
 
-__kamaelia_components__  = ( LossyConnector, )
+__kamaelia_components__  = ( lossyConnector, )

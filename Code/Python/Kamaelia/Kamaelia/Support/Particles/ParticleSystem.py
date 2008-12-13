@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -113,7 +113,6 @@ class ParticleSystem(object):
     Discrete time simulator for a system of particles.
 
     Keyword arguments:
-    
     - initialParticles  -- list of particles (default=[])
     - initialTick       -- start value of the time 'tick' count (default=0)
     """

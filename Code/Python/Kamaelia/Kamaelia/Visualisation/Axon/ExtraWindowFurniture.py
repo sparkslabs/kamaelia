@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -34,10 +34,9 @@ Example Usage
 -------------
 Create a topology viewer component that also renders 'ExtraWindowFurniture' to the
 display surface::
-
-   TopologyViewer( extraDrawing = ExtraWindowFurniture(),
-                   ...
-                 ).activate()
+   TopologyViewerComponent( extraDrawing = ExtraWindowFurniture(),
+                            ...
+                          ).activate()
 
                           
 How does it work?
@@ -48,7 +47,7 @@ so its longest dimension (width or height) is 64 pixels.
 
 Rendering is performed by the generator, returned when the render() method is
 called. Its behaviour is that needed for the framework for multi-pass rendering
-that is used by TopologyViewer.
+that is used by TopologyViewerComponent.
 
 The generator yields the number of the rendering pass it wishes to be next on
 next. Each time it is subsequently called, it performs the rendering required
@@ -59,7 +58,7 @@ An setOffset() method is also implemented to allow the particles coordinates
 to be offset. This therefore makes it possible to scroll the particles around
 the display surface.
 
-See TopologyViewer for more details.
+See TopologyViewerComponent for more details.
 """
 
 import pygame
@@ -76,19 +75,12 @@ class ExtraWindowFurniture(object):
     def __init__(self):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ExtraWindowFurniture,self).__init__()
-        self.logo = None
-        try:
-            self.logo = pygame.image.load("kamaelia_logo.png")
-        except pygame.error:
-            try:
-                self.logo = pygame.image.load("/usr/local/share/kamaelia/kamaelia_logo.png")
-            except pygame.error:
-                pass # Give up for now. FIXME: Could do something new
-    
-        if self.logo:
-            biggest = max( self.logo.get_width(), self.logo.get_height() )
-            from pygame.transform import rotozoom
-            self.logo = rotozoom(self.logo, 0.0, 64.0 / biggest)
+        
+        self.logo = pygame.image.load("kamaelia_logo.png")
+        
+        biggest = max( self.logo.get_width(), self.logo.get_height() )
+        from pygame.transform import rotozoom
+        self.logo = rotozoom(self.logo, 0.0, 64.0 / biggest)
         
     def render(self, surface):
         """\
@@ -96,8 +88,7 @@ class ExtraWindowFurniture(object):
         specified pygame surface at coordinates (8,8)
         """
         yield 10
-        if self.logo:
-            surface.blit(self.logo, (8,8))
+        surface.blit(self.logo, (8,8))
         
     def setOffset( self, (x,y) ):
         """Dummy method."""

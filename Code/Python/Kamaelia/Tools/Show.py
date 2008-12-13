@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -31,21 +31,21 @@ from Kamaelia.UI.Pygame.Multiclick import Multiclick
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 from Kamaelia.Util.Chooser import Chooser
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 
 # We should start thinking about how we handle the lines below better:
 
-from Kamaelia.Apps.Show.GraphSlides import onDemandGraphFileParser_Prefab
+from Show.GraphSlides import onDemandGraphFileParser_Prefab
 
 if len(sys.argv) > 1:
     basepath = sys.argv[1]
 else:
-    basepath = "WhatIsShow.show"
+    basepath = "ShowExample"
 
 GraphsFile = os.path.join(basepath, "Graphs.xml")
 path = os.path.join(basepath, "Slides")
@@ -147,13 +147,13 @@ Graphline(
                      displayExtra={ "transparency" : (255,255,255) },
                     ),
 
-     GRAPHSLIDES = Pipeline(
+     GRAPHSLIDES = pipeline(
          onDemandGraphFileParser_Prefab(GraphsFile),
          chunks_to_lines(),
          lines_to_tokenlists(),
      ),
      GRAPHFADER = BounceRange(255,0, -10), # Initially we want to fade
-     GRAPHVIEWER = TopologyViewer(transparency = (255,255,255), showGrid = False, position=(0,0)),
+     GRAPHVIEWER = TopologyViewerComponent(transparency = (255,255,255), showGrid = False, position=(0,0)),
 
      linkages = {
          ("MOUSECLICKS","outbox"): ("PRIMARYSLIDES","inbox"),

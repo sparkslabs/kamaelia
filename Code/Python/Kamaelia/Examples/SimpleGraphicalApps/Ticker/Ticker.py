@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
 from Kamaelia.UI.Pygame.Ticker import Ticker
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 
-Pipeline( ReadFileAdaptor("Ulysses",readmode="line",steptime=0.5),
+pipeline( ReadFileAdaptor("Ulysses",readmode="line",steptime=0.5),
           Ticker(background_colour=(128,48,128),
                  render_left = 1,
                  render_top = 1,

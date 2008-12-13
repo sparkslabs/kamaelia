@@ -1,6 +1,6 @@
-#!/usr/bin/env python
-
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+#!/usr/bin/env python2.3
+#
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -20,16 +20,69 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-This is a deprecation stub, due for later removal.
+=======================
+Convert Data to Strings
+=======================
+
+A simple component that takes data items and converts them to strings.
+
+
+
+Example Usage
+-------------
+::
+    pipeline( sourceOfNonStrings(),
+              ToStringComponent(),
+              consumerThatWantsStrings(),
+            ).activate()
+            
+
+
+How does it work?
+-----------------
+
+Send data items to this component's "inbox" inbox. They are converted to
+strings using the str(...) function, and sent on out of the "outbox" outbox.
+
+Anything sent to this component's "control" inbox is ignored.
+
+This component does not terminate.
 """
 
-import Kamaelia.Support.Deprecate as Deprecate
-from Kamaelia.Util.Stringify import Stringify as __Stringify
+from Axon.Component import component, scheduler
 
-Deprecate.deprecationWarning("Use Kamaelia.Util.Stringify instead of Kamaelia.Util.ToStringComponent")
+class ToStringComponent(component):
+   """\
+   ToStringComponent() -> new ToStringComponent.
+   
+   A component that converts data items received on its "inbox" inbox to
+   strings and sends them on out of its "outbox" outbox.
+   """
+   
+   Inboxes = { "inbox"   : "Data items to convert to string",
+               "control" : "NOT USED",
+             }
+   Outboxes = { "outbox" : "Data items converted to strings",
+                "signal" : "NOT USED",
+              }
+              
+   def __init__(self):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+      super(ToStringComponent, self).__init__() # !!!! Must happen, if this method exists
+      self.activate()
 
-ToStringComponent = Deprecate.makeClassStub(
-    __Stringify,
-    "Use Kamaelia.Util.Stringify:Stringify instead of Kamaelia.Util.ToStringComponent:ToStringComponent",
-    "WARN"
-    )
+
+   def mainBody(self):
+      """Main loop body."""
+      if self.dataReady("inbox"):
+         theData = self.recv("inbox")
+         self.send(str(theData), "outbox")
+      return 1
+
+__kamaelia_components__  = ( ToStringComponent, )
+
+
+if __name__ =="__main__":
+   myComponent("A",3,1)
+   myComponent("B",2).activate()
+   scheduler.run.runThreads()

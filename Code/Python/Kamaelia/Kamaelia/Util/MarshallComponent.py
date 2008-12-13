@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -36,7 +36,7 @@ a thin wrapper combining a Marshalling and DeMarshalling component.
 Example Usage
 -------------
 
-None at present.
+None. Please use Kamaelia.Util.Marshalling in preference.
 
 
 
@@ -54,7 +54,7 @@ sent to the "demarshalled" outbox.
 
 """
 
-from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.Marshalling import Marshaller, DeMarshaller
 
 def BasicMarshallComponent(klass):
@@ -73,7 +73,7 @@ def BasicMarshallComponent(klass):
                      }
                     )
 
-__kamaelia_prefabs__ = ( BasicMarshallComponent, )
+__kamaelia_prefab__ = ( BasicMarshallComponent, )
 
 #from Axon.Component import component, scheduler
 #
@@ -108,7 +108,7 @@ if __name__ == '__main__':
    print """
 Probable usage:
 
-from Kamaelia.Support.Data.MimeDict import MimeDict
+from Kamaelia.Data.MimeDict import MimeDict
 
 class MimeDictMarshaller(Kamaelia.Util.MarshallComponent.MarshallComponent):
     def __init__(self,*argv,**argd):

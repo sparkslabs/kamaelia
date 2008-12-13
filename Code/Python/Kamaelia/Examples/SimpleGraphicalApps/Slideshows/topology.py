@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,8 +24,8 @@
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.Util.Chooser import Chooser
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.Util.PipelineComponent import pipeline
 
 graph = """\
 
@@ -42,9 +42,9 @@ ADD LINK detuple VorbisDecode
 DEL ALL
 """.split("\n")
 
-Pipeline(
+pipeline(
      Button(caption="Next", msg="NEXT", position=(72,8)),
      Chooser(items = graph),
      lines_to_tokenlists(),
-     TopologyViewer(transparency = (255,255,255), showGrid = False),
+     TopologyViewerComponent(transparency = (255,255,255), showGrid = False),
 ).run()

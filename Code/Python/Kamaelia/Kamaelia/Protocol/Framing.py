@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -38,15 +38,13 @@ The DeChunker and DeFramer reverse the process.
 Example Usage
 -------------
 Framing messages for transport over a stream based connection (eg, TCP)::
-  
-    Pipeline(MessageSource(...),   # emits message
+    pipeline(MessageSource(...),   # emits message
              DataChunker(),
              TCPClient("<server ip>", 1500),
             ).activate()
 
 And on the server::
-  
-    Pipeline(SingleServer(1500),
+    pipeline(SingleServer(1500),
              DataDeChunker(),
              MessageReceiver(...)
             ).activate()
@@ -54,16 +52,14 @@ And on the server::
              
 
 Packing data for transport over a link that may loose packets::
-  
-    Pipeline(DataSource(...),     # emits (sequence_number, data) pairs
+    pipeline(DataSource(...),     # emits (sequence_number, data) pairs
              Framer(),
              Chunker(),
              UnreliableTransportMechanismSender(),
             ).activate()
 
 At the receiver::
-  
-    Pipeline(UnreliableTransportMechanismReceiver(),
+    pipeline(UnreliableTransportMechanismReceiver(),
              DeChunker(),
              DeFramer(),
              DataHandler()        # receives (sequence_number, data) pairs
@@ -78,7 +74,6 @@ How does it work?
 
 Framer / DeFramer
 ^^^^^^^^^^^^^^^^^
-
 Framer/DeFramer frame and deframe data pairs of the form (tag,data). 'data'
 should be the main payload, and 'tag' is suitable for something like a frame
 sequence number.
@@ -99,7 +94,6 @@ terminating.
 
 DataChunker / DataDeChunker
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 The DataChunker/DataDeChunker components chunk and dechunk the data by inserting
 'sync' sequences of characters to delimit chunks of data. Each message received
 by DataChunker on its "inbox" inbox is considered a chunk.
@@ -128,8 +122,8 @@ terminating.
 """
 import Axon
 
-from Kamaelia.Support.Data.Escape import escape as _escape
-from Kamaelia.Support.Data.Escape import unescape as _unescape
+from Kamaelia.Data.Escape import escape as _escape
+from Kamaelia.Data.Escape import unescape as _unescape
 
 class CorruptFrame(Exception):
    """Data frame is corrupt."""
@@ -274,8 +268,7 @@ class DataChunker(Axon.Component.component):
     misinterpretation.
 
     Keyword arguments:
-    
-    - syncmessage  -- string to use as 'sync' sequence (default="XXXXXXXXXXXXXXXXXXXXXXXX")
+    - syncmessage  - string to use as 'sync' sequence (default="XXXXXXXXXXXXXXXXXXXXXXXX")
     """
     
     Inboxes  = { "inbox"   : "message strings to be chunked",
@@ -332,8 +325,7 @@ class DataDeChunker(Axon.Component.component):
     are then passed on.
 
     Keyword arguments:
-    
-    - syncmessage  -- string to use as 'sync' sequence (default="XXXXXXXXXXXXXXXXXXXXXXXX")
+    - syncmessage  - string to use as 'sync' sequence (default="XXXXXXXXXXXXXXXXXXXXXXXX")
     """
     
     Inboxes  = { "inbox"   : "partial message chunk strings",

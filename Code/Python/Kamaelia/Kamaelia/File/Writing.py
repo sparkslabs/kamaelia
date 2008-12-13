@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -35,7 +35,7 @@ Copying a file::
 
     from Kamaelia.File.Writing import SimpleFileWriter
 
-    Pipeline(RateControlledFileReader("sourcefile",rate=1000000),
+    pipeline(RateControlledFileReader("sourcefile",rate=1000000),
              SimpleFileWriter("destinationfile")
             ).activate()
 
@@ -127,11 +127,12 @@ class SimpleFileWriter(component):
 
 __kamaelia_components__  = ( SimpleFileWriter, )
       
-if 1:
+if 0:
+    print "Temporarily disabled tests since they rely on code in /Sketches"
     if __name__ == "__main__":
-        from Kamaelia.Chassis.Pipeline import Pipeline
-        from Kamaelia.File.Reading import RateControlledFileReader
+        from Kamaelia.Util.PipelineComponent import pipeline
+        from ReadMultiFileAdapter import RateControlledReadFileAdapter
 
-        Pipeline( RateControlledFileReader("Writing.py"),
-                  SimpleFileWriter("/tmp/tmp_Writing.py")
+        pipeline( RateControlledReadFileAdapter("WriteFileAdapter.py"),
+                  SimpleWriter("/tmp/tmp_WriteFileAdapter.py")
                 ).run()

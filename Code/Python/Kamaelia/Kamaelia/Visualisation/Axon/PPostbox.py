@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -69,7 +69,7 @@ then behaviour is undefined.
 
 Rendering is performed by a generator, returned when the render() method is
 called. Its behaviour is that needed for the framework for multi-pass rendering
-that is used by TopologyViewer.
+that is used by TopologyViewerComponent.
 
 The generator yields the number of the rendering pass it wishes to be next on
 next. Each time it is subsequently called, it performs the rendering required
@@ -80,7 +80,7 @@ An setOffset() method is also implemented to allow the particles coordinates
 to be offset. This therefore makes it possible to scroll the particles around
 the display surface.
 
-See TopologyViewer for more details.
+See TopologyViewerComponent for more details.
 
 """
 
@@ -94,8 +94,7 @@ def abbreviate(string):
         if c.isupper() or c.isdigit() or c == "_" or c == "." or (c.isalpha() and not prev.isalpha()):
             out += c.upper()
         prev = c
-    return string
-#    return out
+    return out
 
 _COMPONENT_RADIUS = 32    
 
@@ -139,7 +138,6 @@ class PPostbox(BaseParticle):
     visualisation.
     
     Keyword arguments:
-    
     - position  -- (x,y) tuple of particle coordinates
     - name      -- Name for the inbox/outbox being represented
     - boxtype   -- "inbox" or "outbox"

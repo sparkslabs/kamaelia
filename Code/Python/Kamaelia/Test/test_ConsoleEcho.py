@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -26,26 +26,26 @@
 # Test the module loads
 import unittest
 import sys ; sys.path.append("..")
-import Kamaelia.Util.Console
+import Kamaelia.Util.ConsoleEcho
 
 class ConsoleEcho_Test(unittest.TestCase):
    def test_init_minArgs(self):
        """Smoke test with minimal arguments"""
-       P = Kamaelia.Util.Console.ConsoleEchoer()
-       self.assertEqual(P.__class__, Kamaelia.Util.Console.ConsoleEchoer, "Correctly initialised value created")
+       P = Kamaelia.Util.ConsoleEcho.consoleEchoer()
+       self.assertEqual(P.__class__, Kamaelia.Util.ConsoleEcho.consoleEchoer, "Correctly initialised value created")
        self.assert_(not P.forwarder, "This is not a forwarder")
        self.assert_(P.init)
 
    def test_init_forwarder(self):
        """Smoke test creating a forwarder"""
-       P = Kamaelia.Util.Console.ConsoleEchoer(forwarder=True)
-       self.assertEqual(P.__class__, Kamaelia.Util.Console.ConsoleEchoer, "Correctly initialised value created")
+       P = Kamaelia.Util.ConsoleEcho.consoleEchoer(forwarder=True)
+       self.assertEqual(P.__class__, Kamaelia.Util.ConsoleEcho.consoleEchoer, "Correctly initialised value created")
        self.assert_(P.forwarder, "This is a forwarder")
        self.assert_(P.init)
 
    def test_mainBody_NonForwarder(self):
        """Basic test of a mainBody on a non-forwarder"""
-       P = Kamaelia.Util.Console.ConsoleEchoer()
+       P = Kamaelia.Util.ConsoleEcho.consoleEchoer()
        self.assertEqual(P.mainBody(), 3, "With no data waiting the system should just loop")
 
        P._deliver("junk", "inbox")
@@ -68,7 +68,7 @@ class ConsoleEcho_Test(unittest.TestCase):
 
    def test_mainBody_Forwarder(self):
        """Test of the mainbody of a forwarder console echoer component."""
-       P = Kamaelia.Util.Console.ConsoleEchoer(forwarder=True)
+       P = Kamaelia.Util.ConsoleEcho.consoleEchoer(forwarder=True)
        self.assertEqual(P.mainBody(), 3, "With no data waiting the system should just loop")
 
        P._deliver("junk", "inbox")

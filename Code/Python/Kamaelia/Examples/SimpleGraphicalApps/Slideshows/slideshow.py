@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,7 +24,7 @@
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Util.Chooser import Chooser
-from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Graphline import Graphline
 
 import os
 

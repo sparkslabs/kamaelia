@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -31,14 +31,10 @@ characters/second) then disconnects.
 
 Example Usage
 -------------
-
-A simple server that accepts connections on port 1500, sending a fortune cookie to
-any client that connects::
-
+::
     >>> SimpleServer(protocol=FortuneCookieProtocol, port=1500).run()
 
-On a unix/linux client::
-
+On a *nix client::
     > telnet <server ip> 1500
     Trying <server ip>...
     Connected to <server ip>...
@@ -69,7 +65,7 @@ import sys
 
 from Axon.Component import component
 from Axon.Ipc import newComponent
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 
 class FortuneCookieProtocol(component):
    """\
@@ -78,7 +74,6 @@ class FortuneCookieProtocol(component):
    A protocol that spits out a random fortune cookie, then terminates.
 
    Keyword arguments:
-   
    - debug  -- Debugging output control (default=0)
    """
    
@@ -125,6 +120,6 @@ __kamaelia_components__  = ( FortuneCookieProtocol, )
 
    
 if __name__ == '__main__':
-   from Kamaelia.Chassis.ConnectedServer import SimpleServer
+   from Kamaelia.SimpleServerComponent import SimpleServer
    
    SimpleServer(protocol=FortuneCookieProtocol, port=1500).run()

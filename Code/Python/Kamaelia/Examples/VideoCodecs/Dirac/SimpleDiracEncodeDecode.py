@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
 from Kamaelia.Codec.Dirac import DiracEncoder, DiracDecoder
 from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
@@ -27,7 +27,7 @@ DIRACPRESET = "CIF"         # dirac resolution and encoder settings preset
 # (overrides preset)
 ENCPARAMS = {"num_L1":0}
 
-Pipeline( ReadFileAdaptor(FILENAME, readmode="bitrate", bitrate= 1000000),
+pipeline( ReadFileAdaptor(FILENAME, readmode="bitrate", bitrate= 1000000),
           RawYUVFramer( size=SIZE ),
           DiracEncoder(preset=DIRACPRESET, encParams=ENCPARAMS ),
           DiracDecoder(),

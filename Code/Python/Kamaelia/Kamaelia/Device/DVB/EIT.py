@@ -2,7 +2,7 @@
 
 # parse EIT now & next information from DVB-T streams
 
-from Kamaelia.Device.DVB.Core import DVB_Multiplex, DVB_Demuxer
+from Kamaelia.Device.DVB.Core import DVB_Multiplex
 from Axon.Component import component
 import struct
 from Axon.Ipc import shutdownMicroprocess,producerFinished
@@ -196,7 +196,7 @@ class EITPacketParser(component):
                    
 def crc32(data):
     poly = 0x4c11db7
-    crc = 0xffffffffL
+    crc = 0xffffffff
     for byte in data:
         byte = ord(byte)
         for bit in range(7,-1,-1):  # MSB to LSB
@@ -204,7 +204,7 @@ def crc32(data):
             crc = crc << 1
             if ((byte>>bit)&1) ^ z32:
                 crc = crc ^ poly
-            crc = crc & 0xffffffffL
+            crc = crc & 0xffffffff
     return crc
 
 
@@ -339,33 +339,31 @@ class TimeAndDatePacketParser(component):
             yield 1
 
 
-__kamaelia_components__ = ( PSIPacketReconstructor, EITPacketParser, NowNextChanges, NowNextServiceFilter, TimeAndDatePacketParser, )
-
 if __name__ == "__main__":
-    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.PipelineComponent import pipeline
     from Kamaelia.File.Writing import SimpleFileWriter
-    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
-    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.Util.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
 
     import dvb3.frontend
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "code_rate_HP" : dvb3.frontend.FEC_3_4,
-        "code_rate_LP" : dvb3.frontend.FEC_3_4,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 
     Graphline(
         SOURCE=DVB_Multiplex(505833330.0/1000000.0, [18,20,600,601], feparams),
         DEMUX=DVB_Demuxer({ 18: ["_EIT_"], 20:["_DATETIME_"] }),
-        EIT = Pipeline( PSIPacketReconstructor(),
+        EIT = pipeline( PSIPacketReconstructor(),
                         EITPacketParser(),
                         NowNextServiceFilter(4164, 4228),   # BBC ONE & BBC TWO
                         NowNextChanges(),
                         ConsoleEchoer(),
                       ),
-        DATETIME = Pipeline( PSIPacketReconstructor(),
+        DATETIME = pipeline( PSIPacketReconstructor(),
                              TimeAndDatePacketParser(),
                              ConsoleEchoer(),
                            ),

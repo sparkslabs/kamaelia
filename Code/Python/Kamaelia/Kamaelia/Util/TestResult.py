@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -33,7 +33,7 @@ only.
 Example Usage
 -------------
 ::
-    Pipeline( source(), TestResult() ).activate()
+    pipeline( source(), testResultComponent() ).activate()
     
 Raises an assertion error if source() generates a value that doesn't test
 true.
@@ -72,9 +72,9 @@ class StopSystemException(AxonException):
     pass
 
 
-class TestResult(component):
+class testResultComponent(component):
     """\
-    TestResult() -> new TestResult.
+    testResultComponent() -> new testResultComponent.
     
     Component that raises an AssertionError if it receives data on its "inbox"
     inbox that does not test true. Or raises a StopSystemException if a
@@ -95,7 +95,7 @@ class TestResult(component):
         if self.dataReady("control"):
             mes = self.recv("control")
             if isinstance(mes, StopSystem):
-                raise StopSystemException("StopSystem request raised from TestResult")
+                raise StopSystemException("StopSystem request raised from TestResultComponent")
         return 1
     
-__kamaelia_components__  = ( TestResult, )
+__kamaelia_components__  = ( testResultComponent, )

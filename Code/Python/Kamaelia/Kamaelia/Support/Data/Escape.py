@@ -7,8 +7,6 @@ def escape(message,substring = None):
     if substring is not None:
         for x in substring:
            escaped_x = "%"+hex(ord(x))[2:]
-           if x in '.^$*+?{}\[]|()':
-               x = '\\'+x
            result = _re.sub(x, escaped_x, result)
     return result
 
@@ -17,8 +15,6 @@ def unescape(message,substring = None):
     if substring is not None:
         for x in substring:
            escaped_x = "%"+hex(ord(x))[2:]
-           if x == "\\":
-               x="\\\\"
            result = _re.sub(escaped_x, x, result)
     result = _re.sub("%25", "%", result)
     return result

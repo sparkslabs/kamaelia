@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -33,9 +33,8 @@ destinations.
 Example Usage
 -------------
 Output data source both to a file and to the console::
-
     Graphline( source  = MyDataSource(...),
-               split   = Fanout(["toConsole","toFile"]),
+               split   = fanout(["toConsole","toFile"]),
                file    = SimpleFileWriter(filename="outfile"),
                console = ConsoleEchoer(),
                linkages = {
@@ -63,21 +62,20 @@ If a shutdownMicroprocess or producerFinished message is received on the
 "control" inbox, then it is sent on to the "signal" outbox and the component
 terminates.
 
-There is no corresponding 'Fanout' of data flowing into the "control" inbox.
+There is no corresponding 'fanout' of data flowing into the "control" inbox.
 """
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-class Fanout(component):
+class fanout(component):
    """\
-   Fanout(boxnames) -> new Fanout component.
+   fanout(boxnames) -> new fanout component.
 
    A component that copies anything received on its "inbox" inbox to the named
    list of outboxes.
    
    Keyword arguments:
-   
    - boxnames  -- list of names for the outboxes any input will be fanned out to.
    """
 
@@ -93,60 +91,20 @@ class Fanout(component):
       self.Outboxes = dict(self.__class__.Outboxes) # Copy the class outboxes into the instance outboxes
       for boxname in boxnames:
           self.Outboxes[boxname] = "Copy of data received at 'inbox' inbox"
-      super(Fanout, self).__init__()
+      super(fanout, self).__init__()
       
    def main(self):
       """Main loop."""
       while 1:
-         while self.dataReady("inbox"):
+         if self.dataReady("inbox"):
             data = self.recv("inbox")
             for boxname in self.Outboxes:
                self.send(data, boxname)
-         while self.dataReady("control"):
+         if self.dataReady("control"):
             data = self.recv("control")
             if isinstance(data, shutdownMicroprocess) or isinstance(data,producerFinished):
                self.send(data, "signal")
                return
-         if not self.anyReady(): # This should be the case here.
-             self.pause()
          yield 1
 
-__kamaelia_components__  = ( Fanout, )
-
-import Kamaelia.Support.Deprecate as Deprecate
-
-fanout = Deprecate.makeClassStub(
-    Fanout,
-    "Use Kamaelia.Util.Fanout:Fanout instead of Kamaelia.Util.Fanout:fanout",
-    "WARN"
-    )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
+__kamaelia_components__  = ( fanout, )

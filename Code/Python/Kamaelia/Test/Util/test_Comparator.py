@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -22,7 +22,7 @@
 
 import unittest
 from Axon.Component import component
-from Kamaelia.Util.Comparator import Comparator
+from Kamaelia.Util.Comparator import comparator
 from Axon.util import testInterface
 from Axon.Postman import postman
 from Axon.Linkage import linkage
@@ -31,30 +31,30 @@ from Axon.Ipc import shutdownMicroprocess, producerFinished
 class Comparator_test1(unittest.TestCase):
     def test_smoketest1(self):
         """__init__ - Basic creation test."""
-        self.failUnless(Comparator())
+        self.failUnless(comparator())
         
     def test_smoketest2(self):
         """__init__ - Checks the created component has the correct inboxes and outboxes ("inA", "inB", "control", "outbox" and "signal")."""
-        self.failUnless(testInterface(Comparator(),(["inA","inB","control"],["outbox", "signal"])))
+        self.failUnless(testInterface(comparator(),(["inA","inB","control"],["outbox", "signal"])))
 
 class Comparator_test2(unittest.TestCase):
     def setUp(self):
         self.testerA = component()
         self.testerB = component()
-        self.Comparator = Comparator()
-        self.Comparator.activate()
+        self.comparator = comparator()
+        self.comparator.activate()
         self.pm = postman()
         #pipewidth = 1 implies 2 items in the linkage.  One in outbox and one in sourcebox.  Need to change this code if these semantics change.
-        self.pm.registerlinkage(linkage(source = self.testerA, sink = self.Comparator, sourcebox = "outbox", sinkbox = "inA"))
-        self.pm.registerlinkage(linkage(source = self.testerB, sink = self.Comparator, sourcebox = "outbox", sinkbox = "inB"))
-        self.pm.registerlinkage(linkage(source = self.testerA, sink = self.Comparator, sourcebox = "signal", sinkbox = "control"))
-        self.pm.registerlinkage(linkage(source = self.Comparator, sink = self.testerA, sourcebox = "outbox", sinkbox = "inbox"))
-        self.pm.registerlinkage(linkage(source = self.Comparator, sink = self.testerA, sourcebox = "signal", sinkbox = "control"))
+        self.pm.registerlinkage(linkage(source = self.testerA, sink = self.comparator, sourcebox = "outbox", sinkbox = "inA"))
+        self.pm.registerlinkage(linkage(source = self.testerB, sink = self.comparator, sourcebox = "outbox", sinkbox = "inB"))
+        self.pm.registerlinkage(linkage(source = self.testerA, sink = self.comparator, sourcebox = "signal", sinkbox = "control"))
+        self.pm.registerlinkage(linkage(source = self.comparator, sink = self.testerA, sourcebox = "outbox", sinkbox = "inbox"))
+        self.pm.registerlinkage(linkage(source = self.comparator, sink = self.testerA, sourcebox = "signal", sinkbox = "control"))
     
 
     def runtestsystem(self):
         for i in xrange(5):
-            self.Comparator.next()
+            self.comparator.next()
             self.pm.domessagedelivery()
             
     def test_equality1(self):
@@ -110,12 +110,12 @@ class Comparator_test2(unittest.TestCase):
             self.failIf(self.testerA.recv())
             
     def test_shutdownMicroprocess1(self):
-        """mainBody - Checks that the Comparator shutsdown when sent a shutdownMicroprocess message on its control box"""
+        """mainBody - Checks that the comparator shutsdown when sent a shutdownMicroprocess message on its control box"""
         self.testerA.send(shutdownMicroprocess(), "signal")
         self.failUnlessRaises(StopIteration, self.runtestsystem)
         
     def test_shutdownMicroprocess2(self):
-        """mainBody - Checks that the Comparator sends a producerFinished when sent a shutdownMicroprocess message on its control box"""
+        """mainBody - Checks that the comparator sends a producerFinished when sent a shutdownMicroprocess message on its control box"""
         self.testerA.send(shutdownMicroprocess(), "signal")
         try:
             self.runtestsystem()
@@ -124,12 +124,12 @@ class Comparator_test2(unittest.TestCase):
         self.failUnless(isinstance(self.testerA.recv("control"), producerFinished))
         
     def test_producerFinished1(self):
-        """mainBody - Checks that the Comparator shutsdown when sent a producerFinished message on its control box"""
+        """mainBody - Checks that the comparator shutsdown when sent a producerFinished message on its control box"""
         self.testerA.send(producerFinished(), "signal")
         self.failUnlessRaises(StopIteration, self.runtestsystem)
         
     def test_producerFinished2(self):
-        """mainBody - Checks that the Comparator sends a producerFinished when sent a producerFinished message on its control box"""
+        """mainBody - Checks that the comparator sends a producerFinished when sent a producerFinished message on its control box"""
         self.testerA.send(producerFinished(), "signal")
         try:
             self.runtestsystem()

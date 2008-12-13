@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -32,14 +32,10 @@ It simply copies its input to its output.
 
 Example Usage
 -------------
-
-A simple server that accepts connections on port 1501, echoing back anything sent
-to it::
-
+::
     >>> SimpleServer(protocol=EchoProtocol, port=1501).run()
 
-On a unix/linux client::
-
+On a *nix client::
     > telnet <server ip> 1501
     Trying <server ip>...
     Connected to <server ip>...
@@ -103,6 +99,6 @@ __kamaelia_components__  = ( EchoProtocol, )
 
 
 if __name__ == '__main__':
-   from Kamaelia.Chassis.ConnectedServer import SimpleServer
+   from Kamaelia.SimpleServerComponent import SimpleServer
 
    SimpleServer(protocol=EchoProtocol, port=1501).run()

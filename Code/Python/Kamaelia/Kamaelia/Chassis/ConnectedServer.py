@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -20,21 +20,25 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-=====================
-Simple Server Chassis
-=====================
+Simple Server Chassis.
 
-A simple TCP server, bound to a specified port. For each client that connects, a
-protocol handler component, of your choosing, is created to send and receive
-data to and from that client.
+Provides a framework for creating generic protocol handlers to deal with
+information coming in on a single port (and a single port only). This however
+covers a large array of server types.
+
+A protocol handler is simply a component that can receive and send data (as
+byte strings) in a particular format and with a particular behaviour - ie.
+conforming to a particular protocol. 
+
+Provide this chassis with a factory function to create a component to
+handle the protocol. Whenever a client connects a handler component will then be
+created to handle communications with that client.
 
 
 
-Example Usage
--------------
+EXAMPLE USAGE : Simple echo protocol
 
-A server using a simple echo protocol, that just echoes back anything sent by
-the client::
+Using a simple echo protocol, that just echoes back anything sent by the client:
 
     class EchoProtocol(Axon.Component.component):
     
@@ -58,25 +62,7 @@ the client::
 
 
 
-Why is this useful?
--------------------
-
-Provides a framework for creating generic protocol handlers to deal with
-information coming in on a single port (and a single port only). This however
-covers a large array of server types.
-
-A protocol handler is simply a component that can receive and send data (as
-byte strings) in a particular format and with a particular behaviour - ie.
-conforming to a particular protocol. 
-
-Provide this chassis with a factory function to create a component to
-handle the protocol. Whenever a client connects a handler component will then be
-created to handle communications with that client.
-
-
-
-How does it work?
------------------
+HOW DOES IT WORK?
 
 At initialisation the component registers a TCPServer component to listen for
 new connections on the specified port.
@@ -84,229 +70,163 @@ new connections on the specified port.
 You supply a factory function that takes no arguments and returns a new
 protocol handler component.
 
-When it receives a 'newCSA' message from the TCPServer (via the "_socketactivity"
+When it receives a 'newCSA' message from the TCPServer (via the "_oobinfo"
 inbox), the factory function is called to create a new protocol handler. The
 protocol handler's "inbox" inbox and "outbox" outbox are wired to the
 ConnectedSocketAdapter (CSA) component handling that socket connection, so it can
 receive and send data.
 
-If SingleServer receives a 'shutdownCSA' message (via "_socketactivity") then a
+If SingleServer receives a 'shutdownCSA' message (via "_oobinfo") then a
 Kamaelia.KamaeliaIpc.socketShutdown message is sent to the protocol handler's
 "control" inbox, and both it and the CSA are unwired.
-
-This component does not terminate. It ignores any messages sent to its "control"
-inbox.
 
 In practice, this component provides no external connectors for your use.
 
 
 
-History
--------
+HISTORY
 
 This code is based on the code used for testing the Internet Connection
 abstraction layer.
 
 
 
-To do
------
+TODO
 
 This component currently lacks an inbox and corresponding code to allow it to
 be shut down (in a controlled fashion). Needs a "control" inbox that responds to
 shutdownMicroprocess messages.
 """
-import sys
-import socket
-import Axon
-from Kamaelia.Internet.TCPServer import TCPServer
-from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown, serverShutdown
-from Axon.Ipc import newComponent, shutdownMicroprocess
 
+import Axon as _Axon
+from Axon import AxonObject as _AxonObject
+import Kamaelia.Internet.TCPServer as _ic
+import Kamaelia.KamaeliaIPC as _ki
+import time as _time
 
-class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
+class simpleServerProtocol(_Axon.Component.component):
+    pass
+
+class SimpleServer(_Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """
-    ServerCore(protocol[,port]) -> new Simple protocol server component
+    SimpleServer(protocol[,port]) -> new Simple protocol server component
 
     A simple single port, multiple connection server, that instantiates a
     protocol handler component to handle each connection.
 
     Keyword arguments:
-
-    - protocol  -- function that returns a protocol handler component
-    - port      -- Port number to listen on for connections (default=1601)
+    protocol -- function that returns a protocol handler component
+    port -- Port number to listen on for connections (default=1601)
     """
-
-    Inboxes = { "_socketactivity" : "Messages about new and closing connections here",
-                "control" : "We expect to get serverShutdown messages here" }
-    Outboxes = { "_serversignal" : "we send shutdown messages to the TCP server here",
-               }
-    port = 1601
-    protocol = None
-    socketOptions=None
-    TCPS=TCPServer
-    def __init__(self, **argd):
+                    
+    Inboxes = { "_oobinfo" : "internal use: Out Of Bounds Info - for receiving signalling of new and closing connections" }
+    Outboxes = {}
+    
+    def __init__(self, protocol=None, port=1601, socketOptions=None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        super(ServerCore, self).__init__(**argd) 
-        self.connectedSockets = []
-        self.server = None
-        if not self.protocol:
-            print self.__class__, self.__class__.protocol, self.protocol
+        super(SimpleServer, self).__init__()
+        if not protocol:
             raise "Need a protocol to handle!"
-
-    def initialiseServerSocket(self):
+        self.protocolhandlers = None
+        self.protocolClass = protocol
+        self.iter = 0
+        self.time = _time.time()
+        self.listenport = port
+        self.socketOptions = socketOptions
+    
+    def initialiseComponent(self):
+        """Sets up socket binding to listen for incoming connections"""
         if self.socketOptions is None:
-            self.server = (self.TCPS)(listenport=self.port)
+            myPLS = _ic.TCPServer(listenport=self.listenport)
         else:
-            self.server = (self.TCPS)(listenport=self.port, socketOptions=self.socketOptions)
-
-        self.link((self.server,"protocolHandlerSignal"),(self,"_socketactivity"))
-        self.link((self,"_serversignal"), (self.server,"control"))
-        self.addChildren(self.server)
-        self.server.activate()
-
-    def main(self):
-        self.initialiseServerSocket()
-        while 1:
-            while not self.anyReady():
-                self.pause()
-                yield 1
-            # Check and handle Out Of Bounds info
-            # notifications of new and closed sockets
-            while self.dataReady("_socketactivity"):
-                data = self.recv("_socketactivity")
-                if isinstance(data, newCSA):
-                    self.handleNewConnection(data)
-                if isinstance(data, shutdownCSA):
-                    self.handleClosedCSA(data)
-            if self.dataReady("control"):
-                data = self.recv("control")
-                if isinstance(data, serverShutdown):
-                    break
-            yield 1
-
-        self.stop() # Ensures everything shuts down as far as we can manage it
-
-    def stop(self):
-        for CSA in self.connectedSockets:
-            self.handleClosedCSA(shutdownCSA(self,CSA))
-
-        self.send(serverShutdown(), "_serversignal")
-        super(ServerCore, self).stop()
-
-    def mkProtocolHandler(self, **sock_info):
-
-        return (self.protocol)(peer = sock_info["peer"],
-                               peerport = sock_info["peerport"],
-                               localip = sock_info["localip"],
-                               localport = sock_info["localport"])
-
-    def handleNewConnection(self, newCSAMessage):
+            myPLS = _ic.TCPServer(listenport=self.listenport,socketOptions=self.socketOptions)
+        self.link((myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
+        self.addChildren(myPLS)
+        return _Axon.Ipc.newComponent(myPLS)
+    
+    def mainBody(self):
+        """Main loop"""
+        self.pause()
+        result = self.checkOOBInfo()
+        if ((_time.time() - self.time) > 1):
+            self.time = _time.time()
+    
+        self.iter = self.iter +1
+        return 1
+    
+    def handleNewCSA(self, data):
         """
-        handleNewConnection(newCSAMessage) -> Axon.Ipc.newComponent(protocol handler)
-
+        handleNewCSA(data) -> Axon.Ipc.newComponent(protocol handler)
+         
         Creates and returns a protocol handler for new connection.
 
         Keyword arguments:
-
-        - newCSAMessage  -- newCSAMessage.object is the ConnectedSocketAdapter component for the connection
+        data -- data.object is the ConnectedSocketAdapter component for the connection
         """
-        connectedSocket = newCSAMessage.object
+        CSA = data.object
 
-        sock = newCSAMessage.sock
-        try:
-            peer, peerport = sock.getpeername()
-            localip, localport = sock.getsockname()
-        except socket.error, e:
-            peer, peerport = "0.0.0.0", 0
-            localip, localport = "127.0.0.1", self.port
-        protocolHandler = self.mkProtocolHandler(peer=peer, peerport=peerport,localip=localip,localport=localport)
+        pHandler = self.protocolClass()
+    
+        pHandlerShutdownOutbox= self.addOutbox("protocolHandlerShutdownSignal")
+        assert self.debugger.note("SimpleServer.handleNewCSA",5,"Allocated shutdown signal box", pHandlerShutdownOutbox)
+    
+        self.trackResourceInformation(CSA, [], [pHandlerShutdownOutbox], pHandler)
+        assert self.debugger.note("SimpleServer.handleNewCSA",5, "tracking resource")
+    
+        self.addChildren(CSA,pHandler)
+    
+        self.link((CSA,"outbox"),(pHandler,"inbox"))
+        self.link((pHandler,"outbox"),(CSA,"inbox"))
+        self.link((self,pHandlerShutdownOutbox), (pHandler, "control"))
+    
+        if "signal" in pHandler.Outboxes:
+            self.link((pHandler,"signal"),(CSA, "control"))
 
-        self.connectedSockets.append(connectedSocket)
+        CSA.activate()
+        pHandler.activate()
 
-        outboxToShutdownProtocolHandler= self.addOutbox("protocolHandlerShutdownSignal")
-        outboxToShutdownConnectedSocket= self.addOutbox("connectedSocketShutdownSignal")
-
-        # sys.stderr.write("Wooo!\n"); sys.stderr.flush()
-
-        self.trackResourceInformation(connectedSocket, 
-                                      [], 
-                                      [outboxToShutdownProtocolHandler], 
-                                      protocolHandler)
-        # sys.stderr.write("Um, that should've tracked something...!\n"); sys.stderr.flush()
-
-        self.link((connectedSocket,"outbox"),(protocolHandler,"inbox"))
-        self.link((protocolHandler,"outbox"),(connectedSocket,"inbox"))
-        self.link((self,outboxToShutdownProtocolHandler), (protocolHandler, "control"))
-        self.link((self,outboxToShutdownConnectedSocket), (connectedSocket, "control"))
-        self.link((protocolHandler,"signal"),(connectedSocket, "control"))
-
-        if "serversignal" in protocolHandler.Outboxes:
-            controllink = self.link((protocolHandler, "serversignal"), (self, "control"))
-        else:
-            controllink = None
-
-        self.trackResourceInformation(connectedSocket, 
-                                      [], 
-                                      [outboxToShutdownProtocolHandler, outboxToShutdownConnectedSocket], 
-                                      ( protocolHandler, controllink ) )
-
-        self.addChildren(connectedSocket,protocolHandler)
-        connectedSocket.activate()
-        protocolHandler.activate()
-
-    def handleClosedCSA(self,shutdownCSAMessage):
+    def handleClosedCSA(self,data):
         """
-        handleClosedCSA(shutdownCSAMessage) -> None
-
+        handleClosedCSA(data) -> None
+        
         Terminates and unwires the protocol handler for the closing socket.
 
         Keyword arguments:
-        shutdownCSAMessage -- shutdownCSAMessage.object is the ConnectedSocketAdapter for socket that is closing.
+        data -- data.object is the ConnectedSocketAdapter for socket that is closing.
         """
-        connectedSocket = shutdownCSAMessage.object
-        try:
-            bundle=self.retrieveTrackedResourceInformation(connectedSocket)
-        except KeyError:
-            # This means we've actually already done this...
-            return
-        resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
+        assert self.debugger.note("SimpleServer.handleClosedCSA",1,"handling Closed CSA", data)
+        CSA = data.object
+        bundle=self.retrieveTrackedResourceInformation(CSA)
+        inboxes,outboxes,pHandler = bundle
+        self.send(_ki.socketShutdown(),outboxes[0])
+        assert self.debugger.note("SimpleServer.handleClosedCSA",1,"Removing ", CSA.name, pHandler.name, outboxes[0])
+        self.removeChild(CSA)
+        self.removeChild(pHandler)
+        self.deleteOutbox(outboxes[0])
+        self.ceaseTrackingResource(CSA)
+        assert self.debugger.note("SimpleServer.handleClosedCSA",5, "GRRR... ARRRGG")
 
-        self.connectedSockets = [ x for x in self.connectedSockets if x != connectedSocket ]
+    def checkOOBInfo(self):
+        """Check and handle Out Of Bounds info - notifications of new and closed sockets."""
+        while self.dataReady("_oobinfo"):
+            data = self.recv("_oobinfo")
+            if isinstance(data,_ki.newCSA):
+                self.handleNewCSA(data)
+            if isinstance(data,_ki.shutdownCSA):
+                assert self.debugger.note("SimpleServer.checkOOBInfo", 1, "SimpleServer : Client closed itself down")
+                self.handleClosedCSA(data)
 
-        self.unlink(thelinkage=controllink)
+__kamaelia_components__ = ( SimpleServer, )
 
-        self.send(socketShutdown(),resourceOutboxes[0]) # This is now instantly delivered
-        self.send(shutdownMicroprocess(),resourceOutboxes[1]) # This is now instantly delivered
-
-        self.removeChild(connectedSocket)
-        self.removeChild(protocolHandler)
-        self.deleteOutbox(resourceOutboxes[0]) # So this is now safe
-                                               # This did not used to be the case.
-        self.deleteOutbox(resourceOutboxes[1]) # So this is now safe
-                                               # This did not used to be the case.
-        self.ceaseTrackingResource(connectedSocket)
-
-class SimpleServer(ServerCore):
-    def __init__(self, **argd):
-        super(SimpleServer, self).__init__(**argd)
-    def mkProtocolHandler(self, **sock_info):
-        return  (self.protocol)()
-
-# To act as a crutch during getting ready for merge.
-MoreComplexServer = ServerCore
-
-__kamaelia_components__ = ( ServerCore, SimpleServer, )
-
-
+                
 if __name__ == '__main__':
-
+    
     from Axon.Scheduler import scheduler
-    class SimpleServerTestProtocol(Axon.Component.component):
+    class SimpleServerTestProtocol(simpleServerProtocol):
         def __init__(self):
             super(SimpleServerTestProtocol, self).__init__()
             assert self.debugger.note("SimpleServerTestProtocol.__init__",1, "Starting test protocol")
-
+    
         def mainBody(self):
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
@@ -319,9 +239,9 @@ if __name__ == '__main__':
                 data = self.recv("control")
                 return 0
             return 1
-
+    
         def closeDownComponent(self):
             assert self.debugger.note("SimpleServerTestProtocol.closeDownComponent",1, "Closing down test protcol")
-
+    
     SimpleServer(protocol=SimpleServerTestProtocol).activate()
     scheduler.run.runThreads(slowmo=0)

@@ -5,9 +5,9 @@
 #
 
 from Kamaelia.Device.DVB.Core import DVB_Demuxer,DVB_Multiplex
-from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.File.Writing import SimpleFileWriter
-from Kamaelia.File.UnixProcess import UnixProcess
+from Kamaelia.File.UnixPipe import Pipethrough
 import Axon
 import struct
 import dvb3
@@ -15,7 +15,7 @@ import dvb3
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 from Kamaelia.Device.DVB.EIT import PSIPacketReconstructor, EITPacketParser, NowNextServiceFilter, NowNextChanges, TimeAndDatePacketParser
 from Kamaelia.Chassis.Carousel import Carousel
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PipelineComponent import pipeline
 import time, os
 
 class EITDemux(Axon.Component.component):
@@ -62,7 +62,7 @@ class ProgrammeTranscoder(Axon.Component.component):
         finishedEIT  = "/data/finished"+self.dir_prefix+"/"+uid+".eit"
         
         print uid,"Starting transcoding into: "+encodingfile
-        transcoder = UnixProcess("mencoder -o "+encodingfile+" "+self.mencoder_options)
+        transcoder = Pipethrough("mencoder -o "+encodingfile+" "+self.mencoder_options)
         print uid,"Transcoder pipethough =",transcoder.name
         
         data_linkage = self.link( (self,"inbox"), (transcoder,"inbox"), passthrough=1 )
@@ -124,12 +124,12 @@ class ProgrammeTranscoder(Axon.Component.component):
 
 
 def EITParsing(*service_ids):
-    return Pipeline(
+    return pipeline(
         PSIPacketReconstructor(),
         EITPacketParser(),
         NowNextServiceFilter(*service_ids),
         NowNextChanges(),
-    )
+    )        
 
 
 def ChannelTranscoder(service_id, mencoder_options, dir_prefix): # BBC ONE
@@ -156,19 +156,19 @@ if location == "london": # Crystal Palace
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "code_rate_HP" : dvb3.frontend.FEC_3_4,
-        "code_rate_LP" : dvb3.frontend.FEC_3_4,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 elif location == "manchester": # WinterHill
     freq = 754.166670
     feparams = {
         "inversion" : dvb3.frontend.INVERSION_AUTO,
         "constellation" : dvb3.frontend.QAM_16,
-        "code_rate_HP" : dvb3.frontend.FEC_3_4,
-        "code_rate_LP" : dvb3.frontend.FEC_3_4,
+        "coderate_HP" : dvb3.frontend.FEC_3_4,
+        "coderate_LP" : dvb3.frontend.FEC_3_4,
     }
 
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.File.Reading import RateControlledFileReader
 from Kamaelia.Util.Console import ConsoleEchoer
 

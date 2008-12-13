@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -28,7 +28,7 @@ This component provides a pygame window. Other components can request to be
 notified of events, or ask for a pygame surface or video overlay that will be
 rendered onto the display.
 
-Pygame Display is a service that registers with the Coordinating Assistant
+PygameDisplay is a service that registers with the Coordinating Assistant
 Tracker (CAT).
 
 
@@ -37,27 +37,27 @@ Example Usage
 -------------
 
 See the Button component or VideoOverlay component for examples of how
-Pygame Display can be used.
+PygameDisplay can be used.
 
     
 
 How does it work?
 -----------------
 
-Pygame Display is a service. obtain it by calling the
+PygameDisplay is a service. obtain it by calling the
 PygameDisplay.getDisplayService(...) static method. Any existing instance
 will be returned, otherwise a new one is automatically created.
 
-Alternatively, if you wish to configure Pygame Display with options other than
+Alternatively, if you wish to configure PygameDisplay with options other than
 the defaults, create your own instance, then register it as a service by
 calling the PygameDisplay.setDisplayService(...) static method. NOTE that it
 is only advisable to do this at the top level of your system, as other
-components may have already requested and created a Pygame Display component!
+components may have already requested and created a PygameDisplay component!
 
 pygame only supports one display window at a time, you must not make more than
-one Pygame Display component.
+one PygameDisplay component.
 
-Pygame Display listens for requests arriving at its "notify" inbox. A request can
+PygameDisplay listens for requests arriving at its "notify" inbox. A request can
 be to:
 - create or destroy a surface,
 - listen or stop listening to events (you must have already requested a surface)
@@ -69,21 +69,21 @@ The requests are described in more detail below.
 
 Once your component has been given the requested surface, it is free to render
 onto it whenever it wishes. It should then immediately send a "REDRAW" request
-to notify Pygame Display that the window needs redrawing.
+to notify PygameDisplay that the window needs redrawing.
 
 
 NOTE that you must set the alpha value of the surface before rendering and
-restore its previous value before yielding. This is because Pygame Display uses
+restore its previous value before yielding. This is because PygameDisplay uses
 the alpha value to control the transparency with which it renders the surface.
 
 Overlays work differently: instead of being given something to render to, you
 must provide, in your initial request, an outbox to which you will send raw
 yuv (video) data, whenever you want to change the image on the overlay.
 
-Pygame Display instantiates a private, threaded component to listen for pygame
-events. These are then forwarded onto Pygame Display.
+PygameDisplay instantiates a private, threaded component to listen for pygame
+events. These are then forwarded onto PygameDisplay.
 
-Pygame Display's main loop continuously renders the surfaces and video overlays
+PygameDisplay's main loop continuously renders the surfaces and video overlays
 onto the display, and dispatches any pygame events to listeners. The rendering
 order is as follows:
 - background fill (default=white)
@@ -91,12 +91,12 @@ order is as follows:
 - video overlays (in the order they were requested and created)
 
 In summary, to use a surface, your component should:
-1. Obtain and wire up to the "notify" inbox of the Pygame Display service
+1. Obtain and wire up to the "notify" inbox of the PygameDisplay service
 2. Request a surface
 3. Render onto that surface in its main loop
 
 And to use overlays, your component should:
-1. Obtain and wire up to the "notify" inbox of the Pygame Display service
+1. Obtain and wire up to the "notify" inbox of the PygameDisplay service
 2. Request an overlay, providing an outbox
 3. Send yuv data to the outbox 
 
@@ -109,7 +109,6 @@ Surfaces
 ^^^^^^^^
 To request a surface, send a dictionary to the "notify" inbox. The following
 keys are mandatory::
-
     {
         "DISPLAYREQUEST" : True,               # this is a 'new surface' request
         "size" : (width,height),               # pixels size for the new surface
@@ -117,7 +116,6 @@ keys are mandatory::
     }
 
 These keys are optional::
-
     {
         "position" : (left,top)                # location of the new surface in the window (default=arbitrary)
         "alpha" : 0 to 255,                    # alpha of the surface (255=opaque) (default=255)
@@ -131,7 +129,6 @@ and deregister any events you were listening to.
 
 To change the position your surface is rendered at, send a dictionary to the
 "notify" inbox containing the folling keys::
-
     {
         "CHANGEDISPLAYGEO" : True,             # this is a 'change geometry' request
         "surface" : surface,                   # the surface to affect
@@ -149,14 +146,12 @@ of specific pygame events.
 
 To request to listen to a given event, send a dictionary to the "notify" inbox,
 containing the following::
-
     {
         "ADDLISTENEVENT" : pygame_eventtype,     # example: pygame.KEYDOWN
         "surface" : your_surface,
     }
 
 To unsubscribe from a given event, send a dictionary containing::
-
     {
         "REMOVELISTENEVENT" : pygame_eventtype,
         "surface" : your_surface,
@@ -176,7 +171,6 @@ Video Overlays
 
 To request an overlay, send a dictionary to the "notify" inbox. The following
 keys are mandatory::
-
     {
         "OVERLAYREQUEST" : True,                      # this is a 'new overlay' request
         "size" : (width,height),                      # pixels size of the overlay
@@ -184,7 +178,6 @@ keys are mandatory::
     }
 
 These keys are optional::
-
     {
         "position" : (left,top),                      # location of the overlay (default=(0,0))
         "yuv" : (ydata,udata,vdata),                  # first frame of yuv data
@@ -207,27 +200,12 @@ There is currently no mechanism to destroy an overlay.
 Redraw requests
 ^^^^^^^^^^^^^^^
 
-To notify Pygame Display that it needs to redraw the display, send a dictionary
+To notify PygameDisplay that it needs to redraw the display, send a dictionary
 containing the following keys to the "notify" inbox::
-
     {
         "REDRAW" : True,             # this is a redraw request
         "surface" : surface          # surface that has been changed
     }
-
-
-
-Implementation Details
-----------------------
-
-You may notice that this module also contains a _PygameEventSource component.
-PygameDisplay uses this separate threaded component to notify it when pygame
-events occur - so that it can sleep quiescently when it has nothing to do.
-
-Unfortunately event handling itself cannot be done in the thread since pygame
-on many platforms (particularly win32) does not work properly if event handling
-and display creation is not done in the main thread of the program.
-
 """
 
 import pygame
@@ -240,35 +218,25 @@ _cat = Axon.CoordinatingAssistantTracker
 class Bunch: pass
 
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.AxonExceptions import noSpaceInBox
 import time
  
 class _PygameEventSource(threadedcomponent):
     """\
-    Event source for Pygame Display
+    Event source for PygameDisplay
     """
     Inboxes = { "inbox" : "NOT USED",
                 "control" : "NOT USED",
               }
-    Outboxes = { "outbox" : "Wake up notifications - that there are pygame events waiting",
+    Outboxes = { "outbox" : "Pygame event objects, bundled into lists",
                  "signal" : "Not used",
                }
-
-    def __init__(self):
-        super(_PygameEventSource,self).__init__(queuelengths=1)
-        
-
     def main(self):
-        
         while 1:
             time.sleep(0.01)
-            eventswaiting = pygame.event.peek()  # and get any others waiting
+            eventlist = pygame.event.get()  # and get any others waiting
             
-            if eventswaiting:
-                try:
-                    self.send(True,"outbox")
-                except noSpaceInBox:
-                    pass # a notification is already queued - so no need to send another
+            if eventlist:
+                self.send(eventlist,"outbox")
             
 
 class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
@@ -281,7 +249,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    Or create your own and register it with setDisplayService(...)
 
    Keyword arguments (all optional):
-   
    - width              -- pixels width (default=800)
    - height             -- pixels height (default=600)
    - background_colour  -- (r,g,b) background colour (default=(255,255,255))
@@ -337,7 +304,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.background_colour = argd.get("background_colour", (255,255,255))
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (0,0)
-      self.surfaces = []  ##HERE
+      self.surfaces = []
       self.overlays = []
       self.visibility = {}
       self.events_wanted = {}
@@ -365,7 +332,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                message.message = None
                message = None
 #               print "BEFORE", [id(x[0]) for x in self.surfaces]
-               self.surfaces = [ x for x in self.surfaces if x[0] is not surface ] ##H ERE
+               self.surfaces = [ x for x in self.surfaces if x[0] is not surface ]
 #               print "AFTER", self.surfaces
 #               print "Hmm...", self.surface_to_eventcomms.keys()
                try:
@@ -403,16 +370,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                   self.surface_to_eventcomms[str(id(surface))] = eventcomms
                self.link((self, callbackcomms), callbackservice)
                self.send(surface, callbackcomms)
-               onlymouseinside = message.get("onlymouseinside", False)
-               self.surfaces.append( (surface, position, callbackcomms, eventcomms, onlymouseinside) )
-#               if message.get("onlymouseinside", False):
-#                   print "ONLYMOUSEINSIDE: TRUE"
-#               else:
-#                   print "ONLYMOUSEINSIDE: FALSE"
-               if message.get("fullscreen", False):
-                   if not self.fullscreen:
-                       self.fullscreen = 1
-                       pygame.display.toggle_fullscreen()
+               self.surfaces.append( (surface, position, callbackcomms, eventcomms) )
 
             elif message.get("ADDLISTENEVENT", None) is not None:
                eventcomms = self.surface_to_eventcomms[str(id(message["surface"]))]
@@ -435,9 +393,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                 break
                             c += 1
                         if found:
-                            (surface, position, callbackcomms, eventcomms, onlymouseinside) = self.surfaces[c]  ## HERE
+                            (surface, position, callbackcomms, eventcomms) = self.surfaces[c]
                             new_position = message.get("position", position)
-                            self.surfaces[c] = (surface, new_position, callbackcomms, eventcomms, onlymouseinside) ## HERE
+                            self.surfaces[c] = (surface, new_position, callbackcomms, eventcomms)
                 except Exception, e:
                     print "It all went horribly wrong", e   
             
@@ -493,7 +451,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       """
       display.fill(self.background_colour)
       
-      for surface, position, callbackcomms, eventcomms, onlymouseinside in self.surfaces:   ## HERE
+      for surface, position, callbackcomms, eventcomms in self.surfaces:
          display.blit(surface, position)
          
       for theoverlay in self.overlays:
@@ -531,24 +489,14 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    
    def handleEvents(self):
       # pre-fetch all waiting events in one go
-      events = []
-      if self.dataReady("events"):
-          while 1:
-              event = pygame.event.poll()
-              if event.type is pygame.NOEVENT:
-                  break
-              else:
-                  events.append(event)
-                
-          while self.dataReady("events"):
-                self.recv("events")
-
-      if len(events):
+      while self.dataReady("events"):
+            events = self.recv("events")
+       
             for event in events:
                 if event.type in [ pygame.VIDEORESIZE, pygame.VIDEOEXPOSE ]:
                     self.needsRedrawing = True
        
-            for surface, position, callbackcomms, eventcomms, onlymouseinside in self.surfaces: ### HERE
+            for surface, position, callbackcomms, eventcomms in self.surfaces:
                 # see if this component is interested in events
                 if eventcomms is not None:
                     listener = eventcomms
@@ -562,15 +510,6 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                             # if event contains positional information, remap it
                             # for the surface's coordiate origin
                             if event.type in [ pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN ]:
-                                if onlymouseinside:
-                                    r = surface.get_rect()
-                                    if r.x+position[0] <= event.pos[0] <= r.width+position[0]:
-                                        if r.y+position[1] <= event.pos[1] <= r.height+position[1]:
-                                            pass # Clearer logic
-                                        else:
-                                            continue # Don't forward event
-                                    else:
-                                        continue # Don't forward event
                                 e = Bunch()
                                 e.type = event.type
                                 pos = event.pos[0],event.pos[1]
@@ -596,16 +535,12 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    def main(self):
       """Main loop."""
       pygame.init()
-      try:
-          pygame.mixer.quit()
-      except NotImplementedError:
-          pass # If it's not implemented, it not closing isn't a problem because it doesn't need/can't be
-      display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF)
+      pygame.mixer.quit()
+      display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF )
+      
       eventsource = _PygameEventSource().activate()
       self.addChildren(eventsource)
-      self.inboxes["events"].setSize(1)   # prevent wakeup notifications from backlogging too much :)
       self.link( (eventsource,"outbox"), (self,"events") )
-
       
       while 1:
          self.needsRedrawing = False
@@ -624,7 +559,7 @@ __kamaelia_components__  = ( PygameDisplay, )
 
 if __name__ == "__main__":
    component = Axon.Component.component
-   from Kamaelia.Chassis.Pipeline import Pipeline
+   from Kamaelia.Util.PipelineComponent import pipeline
    # Excerpt from Tennyson's Ulysses
    text = """\
 The lights begin to twinkle from the rocks;
@@ -730,7 +665,7 @@ To strive, to seek, to find, and not to yield.
             yield 1
 
    for _ in range(6):
-      Pipeline(datasource(),
+      pipeline(datasource(),
                       TickTock()
               ).activate()
 

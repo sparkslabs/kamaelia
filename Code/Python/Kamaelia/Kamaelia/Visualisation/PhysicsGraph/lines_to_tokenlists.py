@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -33,11 +33,8 @@ allowing spaces to appear within a token.
 
 Example Usage
 -------------
-
-A simple pieline that takes each line you type and splits it into a list of tokens,
-showing you the result::
-    
-    Pipeline( ConsoleReader(),
+::
+    pipeline( ConsoleReader(),
               lines_to_tokenlists(),
               ConsoleEchoer()
             ).run()
@@ -80,7 +77,6 @@ still be buffered.
 import re
 
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 
 class lines_to_tokenlists(component):
@@ -164,3 +160,4 @@ class lines_to_tokenlists(component):
         return False
 
 __kamaelia_components__  = ( lines_to_tokenlists, )
+                                                                     

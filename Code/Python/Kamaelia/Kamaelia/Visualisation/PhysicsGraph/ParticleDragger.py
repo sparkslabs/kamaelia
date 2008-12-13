@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -26,13 +26,13 @@ Drag handler for Topology Viewer
 ================================
 
 A subclass of Kamaelia.UI.MH.DragHandler that implements "click and hold"
-dragging of particles for the TopologyViewer.
+dragging of particles for the TopologyViewerComponent.
 
 
 
 Example Usage
 -------------
-See source for TopologyViewer.
+See source for TopologyViewerComponent.
 
 
 
@@ -65,7 +65,6 @@ class ParticleDragger(DragHandler):
     a lambda function or equivalent)
                     
     Keyword Arguments:
-    
     - event  -- pygame event object cuasing this
     - app    -- PyGameApp component this is happening in
     """

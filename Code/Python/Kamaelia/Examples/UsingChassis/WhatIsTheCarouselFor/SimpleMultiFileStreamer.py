@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -29,8 +29,8 @@
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Chassis.Prefab import JoinChooserToCarousel
 from Kamaelia.File.Reading import FixedRateControlledReusableFileReader
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.PipelineComponent import pipeline
+from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.Util.Chooser import ForwardIteratingChooser # InfiniteChooser import InfiniteChooser
 
 #shortfile = "/opt/kde3/share/apps/khangman/sounds/new_game.ogg"
@@ -63,7 +63,7 @@ if __name__ == '__main__':
    if 0:
         from Kamaelia.Internet.TCPClient import TCPClient
         from Kamaelia.Util.Introspector import Introspector
-        Pipeline(Introspector(), TCPClient("127.0.0.1",1501)).activate()
+        pipeline(Introspector(), TCPClient("127.0.0.1",1501)).activate()
    
    server     = SimpleServer( protocol = filereader, port = SERVERPORT ).run()
 

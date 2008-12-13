@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -30,9 +30,9 @@
 #
 # Left mouse button - Add an image
 # Right mouse button - Remove an image (if over an image, that image)
-# Middle mouse button - freeze/unfreeze a moving image if over an image
-# Key "P" - Freeze (Pause) all images. (Can still add new moving images)
-# Key "U" - Unfreeze (Unpause) all images.
+# Middle mouse button - pause/unpause a moving image if over an image
+# Key "P" - Pause all images. (Can still add new moving images)
+# Key "U" - Unpause all images.
 # Key "T" - Pause all moving things, unpause all not moving things (toggle)
 # Key "Q" - Quit
 #
@@ -41,13 +41,13 @@ import pygame
 import random
 import os
 
-from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Graphline import Graphline
 
-from Kamaelia.Automata.Behaviours import bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne
+from Kamaelia.UI.Pygame.BasicSprite import BasicSprite
+from Kamaelia.Physics.Behaviours import bouncingFloat, cartesianPingPong, loopingCounter, continuousIdentity, continuousZero, continuousOne
 from Kamaelia.UI.Pygame.EventHandler import EventHandler
-from Kamaelia.Util.Fanout import Fanout
-from Sprites.BasicSprite import BasicSprite
-from Sprites.SpriteScheduler import SpriteScheduler
+from Kamaelia.Util.Fanout import fanout
+from Kamaelia.UI.Pygame.SpriteScheduler import SpriteScheduler
 
 banner_location = "banner.gif"
 cat_location    = "cat.gif"
@@ -107,7 +107,7 @@ def make_cat(cat_location, screensize, border ):
     # Get the cat again!
     files = list()
     for x in os.listdir("pictures"):
-        if x not in ("README","CVS",".svn"):
+        if x not in ("README","CVS"):
             files.append(x)
 
     image_location = files[random.randint(0,len(files)-1)]
@@ -129,7 +129,7 @@ def make_cat(cat_location, screensize, border ):
        translation = cartesianPingPong(position,screensize[0],screensize[1],border),
        scaler = bouncingFloat(scale_speed),
        imaging = continuousIdentity(cat),
-       shutdown_fanout = Fanout(["rotator","translation","scaler", "imaging","self_shutdown"]),
+       shutdown_fanout = fanout(["rotator","translation","scaler", "imaging","self_shutdown"]),
        linkages = {
            ("rotator","outbox" ) : ("newCat", "rotator"),
            ("translation","outbox" ) : ("newCat", "translation"),
@@ -168,7 +168,7 @@ class MyGamesEvents(EventHandler):
             sprites = where.allsprites.sprites()
             for sprite in sprites:
                 if sprite.rect.collidepoint(*pos):
-                    sprite.toggleFreeze()
+                    sprite.togglePause()
         if button == 3:
            # Make a sprite disappear
            channel = cat_pop_wav.play()
@@ -191,17 +191,17 @@ class MyGamesEvents(EventHandler):
         if key == 112: # "P"
             # PAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
-                sprite.freeze()
+                sprite.pause()
         if key == 113: # "Q"
             raise "QUIT"
         if key == 117: # "U"
             # UNPAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
-                sprite.unfreeze()
+                sprite.unpause()
         if key == 116: # "T"
             # Toggle PAUSE ALL MOVEMENT
             for sprite in where.allsprites.sprites():
-                sprite.toggleFreeze()
+                sprite.togglePause()
 
 # screen_surface = pygame.display.set_mode(screensize, DOUBLEBUF|FULLSCREEN)
 screen_surface = pygame.display.set_mode(screensize, flags)

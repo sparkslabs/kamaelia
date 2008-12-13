@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -29,9 +29,9 @@ from Axon.Linkage import linkage
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-testedclass = Kamaelia.Util.LossyConnector.LossyConnector
+testedclass = Kamaelia.Util.LossyConnector.lossyConnector
 
-class LossyConnector_test1(unittest.TestCase):
+class lossyConnector_test1(unittest.TestCase):
     def test_smoketest1(self):
         "__init__ - Object creation no arguments."
         self.failUnless(testedclass())
@@ -40,7 +40,7 @@ class LossyConnector_test1(unittest.TestCase):
         """__init__ - Checks the created component has the correct inboxes and outboxes ("inbox", "control", "outbox","signal")."""
         self.failUnless(testInterface(testedclass(),(["inbox","control"],["outbox","signal"])))
     
-class LossyConnector_test2(unittest.TestCase):
+class lossyConnector_test2(unittest.TestCase):
     def deliver(self):
         self.pm.domessagedelivery()
     def runtestedcomponent(self):
@@ -59,7 +59,7 @@ class LossyConnector_test2(unittest.TestCase):
     def test_linkagetest(self):
         """This test confirms behaviour required for other tests.  It is
         expected that linkages have a capacity of 2.  This test confirms that.
-        *** FIX THIS FIRST (in the LossyConnector_test2.setUp() ) ***"""
+        *** FIX THIS FIRST (in the lossyConnector_test2.setUp() ) ***"""
         self.connector.send(1)
         self.deliver()
         self.connector.send(2)
@@ -135,8 +135,8 @@ class LossyConnector_test2(unittest.TestCase):
         
 def suite():
    #This returns a TestSuite made from the tests in the linkage_Test class.  It is required for eric3's unittest tool.
-   suite = unittest.makeSuite(LossyConnector_test1)
-   suite.addTest(LossyConnector_test2)
+   suite = unittest.makeSuite(lossyConnector_test1)
+   suite.addTest(lossyConnector_test2)
    return suite
       
 if __name__=='__main__':

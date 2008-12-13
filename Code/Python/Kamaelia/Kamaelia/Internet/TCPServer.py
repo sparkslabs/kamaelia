@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -32,14 +32,14 @@ This component does not handle the instantiation of components to handle an
 accepted connection request. Another component is needed that responds to this
 component and actually does something with the newly established connection.
 If you require a more complete implementation that does this, see
-Kamaelia.Internet.SingleServer or Kamaelia.Chassis.ConnectedServer.
+Kamaelia.SingleServer or Kamaelia.Chassis.ConnectedServer.
 
 
 
 Example Usage
 -------------
 
-See Kamaelia.Internet.SingleServer or Kamaelia.Chassis.ConnectedServer for examples of how
+See Kamaelia.SingleServer or Kamaelia.Chassis.ConnectedServer for examples of how
 this component can be used.
 
 The process of using a TCPServer component can be summarised as:
@@ -82,16 +82,15 @@ This component does not terminate.
 """
 
 import socket, errno, random, Axon
-import Kamaelia.IPC as _ki
+import Kamaelia.KamaeliaIPC as _ki
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
 import time
 from Kamaelia.Internet.Selector import Selector
 
-from Kamaelia.IPC import newReader, newWriter
-from Kamaelia.IPC import removeReader, removeWriter
-from Kamaelia.IPC import serverShutdown
-from Axon.Ipc import shutdown
+from Kamaelia.KamaeliaIPC import newReader, newWriter
+from Kamaelia.KamaeliaIPC import removeReader, removeWriter
+
 
 class TCPServer(Axon.Component.component):
    """\
@@ -101,25 +100,21 @@ class TCPServer(Axon.Component.component):
    specified port.
    """
    
-   Inboxes  = {  "_feedbackFromCSA" : "for feedback from ConnectedSocketAdapter (shutdown messages)",
-                # "DataReady"     : "status('data ready') messages indicating new connection waiting to be accepted",
+   Inboxes  = { "DataReady"     : "status('data ready') messages indicating new connection waiting to be accepted",
+                "_feedbackFromCSA" : "for feedback from ConnectedSocketAdapter (shutdown messages)",
                 "newconnection" : "We expected to recieve a message here when a new connection is ready",
-                "control" : "we expect to recieve serverShutdown messages here",
               }
    Outboxes = { "protocolHandlerSignal" : "For passing on newly created ConnectedSocketAdapter components",
                 "signal"                : "NOT USED",
                 "_selectorSignal"       : "For registering newly created ConnectedSocketAdapter components with a selector service",
-                "_selectorShutdownSignal" : "To deregister our interest with the selector",
               }
 
-   CSA = ConnectedSocketAdapter
-   def __init__(self,listenport, socketOptions=None,**argd):
+   def __init__(self,listenport, socketOptions=None):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(TCPServer, self).__init__(**argd)
+      super(TCPServer, self).__init__()
       self.listenport = listenport
       self.socketOptions = socketOptions
       self.listener,junk = self.makeTCPServerPort(listenport, maxlisten=5)
-      self.socket_handlers = {}
 
    def makeTCPServerPort(self, suppliedport=None, HOST=None, minrange=2000,maxrange=50000, maxlisten=5):
       """\
@@ -159,7 +154,7 @@ class TCPServer(Axon.Component.component):
       gotsock = True
       newsock.setblocking(0)
 ###      
-      CSA = (self.CSA)(newsock,self.selectorService)
+      CSA = ConnectedSocketAdapter(newsock,self.selectorService)
       return newsock, CSA
 
    def closeSocket(self, shutdownMessage):
@@ -169,17 +164,13 @@ class TCPServer(Axon.Component.component):
       Sends a removeReader and removeWriter message to the selectorComponent.
       Sends a shutdownCSA(self, theCSA) message to "protocolHandlerSignal" outbox.
       """
-      theComponent,(sock,howdied) = shutdownMessage.caller, shutdownMessage.message
-      ### FIXME: Pass on how died as well in TCPServer!
-      theComponent = self.socket_handlers[sock]
+      theComponent,sock = shutdownMessage.caller, shutdownMessage.message
       sock.close()
       
       # tell the selector about it shutting down
       
-      self.send(removeReader(theComponent, sock), "_selectorSignal")            
-      self.send(removeWriter(theComponent, sock), "_selectorSignal")
-#      self.send(removeReader(theComponent, theComponent.socket), "_selectorSignal")            
-#      self.send(removeWriter(theComponent, theComponent.socket), "_selectorSignal")
+      self.send(removeReader(theComponent, theComponent.socket), "_selectorSignal")            
+      self.send(removeWriter(theComponent, theComponent.socket), "_selectorSignal")
 
       # tell protocol handlers
       self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
@@ -217,9 +208,7 @@ class TCPServer(Axon.Component.component):
          else:
              pass
 
-             self.socket_handlers[newsock] = CSA
-
-             self.send(_ki.newCSA(self, CSA, newsock), "protocolHandlerSignal")
+             self.send(_ki.newCSA(self, CSA), "protocolHandlerSignal")
              self.send(newReader(CSA, ((CSA, "ReadReady"), newsock)), "_selectorSignal")            
              self.send(newWriter(CSA, ((CSA, "SendReady"), newsock)), "_selectorSignal")            
              self.addChildren(CSA)
@@ -231,35 +220,16 @@ class TCPServer(Axon.Component.component):
        if newSelector:
            newSelector.activate()
        self.link((self, "_selectorSignal"),selectorService)
-       self.link((self, "_selectorShutdownSignal"),selectorShutdownService)
        self.selectorService = selectorService
-       self.selectorShutdownService = selectorShutdownService
        self.send(newReader(self, ((self, "newconnection"), self.listener)), "_selectorSignal")
        yield 1
        while 1:
-           if not self.anyReady():
-               self.pause()
+           self.pause()
            if self.anyClosedSockets():
                for i in xrange(10):
                   yield 1
            self.handleNewConnection() # Data ready means that we have a connection waiting.
-           if self.dataReady("control"):
-               data = self.recv("control")
-               if isinstance(data, serverShutdown):
-                   break
            yield 1
-       self.send(removeReader(self, self.listener), "_selectorSignal") 
-#       for i in xrange(100): yield 1
-       self.send(shutdown(), "_selectorShutdownSignal")
-
-   def stop(self):
-       self.send(removeReader(self, self.listener), "_selectorSignal") 
-#       for i in xrange(100): yield 1
-       self.send(shutdown(), "_selectorShutdownSignal")
-       self.listener.close() # Ensure we close the server socket. Only really likely to
-                             # be called from the scheduler shutting down due to a stop.
-       super(TCPServer,self).stop()
-
 
 __kamaelia_components__  = ( TCPServer, )
 

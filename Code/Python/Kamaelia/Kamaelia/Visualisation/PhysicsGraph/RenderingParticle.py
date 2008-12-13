@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -32,13 +32,11 @@ visualisation.
 
 Example Usage
 -------------
-
 A topology viewer where particles of type "-" are rendered by RenderingParticle
 instances::
-
-    TopologyViewer( particleTypes = {"-":RenderingParticle},
-                    laws = Kamaelia.Support.Particles.SimpleLaws(),
-                  ).run()
+    TopologyViewerComponent( particleTypes = {"-":RenderingParticle},
+                             laws = Kamaelia.Physics.Simple.SimpleLaws(),
+                           ).run()
 
 SimpleLaws are used that apply the same simple physics laws for all particle
 types.
@@ -47,8 +45,7 @@ types.
 
 How does it work?
 -----------------
-
-This object subclasses Kamaelia.Support.Particles.Particle and adds methods to
+This object subclasses Kamaelia.Physics.Simple.Particle and adds methods to
 support rendering.
 
 At initialisation, provide a unique ID, a starting (x,y) position tuple, and
@@ -62,7 +59,7 @@ simple lines.
 
 Rendering is performed by a generator, returned when the render() method is
 called. Its behaviour is that needed for the framework for multi-pass rendering
-that is used by TopologyViewer.
+that is used by TopologyViewerComponent.
 
 The generator yields the number of the rendering pass it wishes to be next on
 next. Each time it is subsequently called, it performs the rendering required
@@ -73,12 +70,12 @@ An setOffset() method is also implemented to allow the particles coordinates
 to be offset. This therefore makes it possible to scroll the particles around
 the display surface.
 
-See TopologyViewer for more details.
+See TopologyViewerComponent for more details.
 
 """
 
 import pygame
-from Kamaelia.Support.Particles import Particle as BaseParticle
+from Kamaelia.Physics.Simple import Particle as BaseParticle
 
 class RenderingParticle(BaseParticle):
     """\
@@ -87,7 +84,6 @@ class RenderingParticle(BaseParticle):
     Simple generic particle for topology visualisation.
     
     Keyword arguments:
-    
     - ID        -- a unique ID for this particle
     - position  -- (x,y) tuple of particle coordinates
     - name      -- A name this particle will be labelled with

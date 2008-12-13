@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -25,21 +25,21 @@ from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent import TopologyViewerComponent
 from Kamaelia.Util.Chooser import Chooser
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Graphline import Graphline
+from Kamaelia.Util.PipelineComponent import pipeline
 import os
 
 graph = ["\n","""DEL ALL
 ADD NODE This This auto -
 ADD NODE is is auto -
 ADD NODE a a auto -
-ADD NODE Pipeline Pipeline auto -
+ADD NODE pipeline pipeline auto -
 ADD LINK This is
 ADD LINK is a
-ADD LINK a Pipeline
-""","""DEL NODE Pipeline
+ADD LINK a pipeline
+""","""DEL NODE pipeline
 ADD NODE graphline graphline auto -
 ADD NODE because because auto -
 ADD NODE it it auto -
@@ -168,11 +168,11 @@ Graphline(
      }
 ).activate()
 
-Pipeline(
+pipeline(
      Button(caption="dink", msg="NEXT", position=(136,0), transparent=True),
      Chooser(items = graph),
      chunks_to_lines(),
      lines_to_tokenlists(),
-     TopologyViewer(transparency = (255,255,255), showGrid = False, position=(0,0)),
+     TopologyViewerComponent(transparency = (255,255,255), showGrid = False, position=(0,0)),
 ).run()
 

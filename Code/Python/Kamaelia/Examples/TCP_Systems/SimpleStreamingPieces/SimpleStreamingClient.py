@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,11 +24,11 @@
 #
 
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.Util.PipelineComponent import pipeline
 
 clientServerTestPort=1500
-Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+pipeline(TCPClient("127.0.0.1",clientServerTestPort),
          VorbisDecode(),
          AOAudioPlaybackAdaptor()
         ).run()

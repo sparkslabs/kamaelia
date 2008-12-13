@@ -6,8 +6,8 @@
 #
 
 from Kamaelia.Device.DVB.Core import DVB_Demuxer
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
-from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Util.Graphline import Graphline
 from Kamaelia.File.Writing import SimpleFileWriter
 
 Graphline(

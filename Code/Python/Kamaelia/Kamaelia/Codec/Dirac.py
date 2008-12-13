@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -35,7 +35,7 @@ Example Usage
 -------------
 A simple video player::
 
-    Pipeline(ReadFileAdapter("diracvideofile.drc", ...other args...),
+    pipeline(ReadFileAdapter("diracvideofile.drc", ...other args...),
              DiracDecoder(),
              RateLimit(framerate),
              VideoOverlay()
@@ -81,7 +81,7 @@ Raw video file encoder::
 
     imagesize = (352, 288)      # "CIF" size video
     
-    Pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
              RawYUVFramer(imagesize),
              DiracEncoder(preset="CIF"),
              WriteFileAdapter("diracvideo.drc")
@@ -120,7 +120,6 @@ UNCOMPRESSED FRAME FORMAT
 
 Uncompresed video frames are output by the decoder, as dictionaries. Each
 contains the following entries::
-
     {
       "yuv" : (y_data, u_data, v_data)  # a tuple of strings
       "size" : (width, height)          # in pixels
@@ -143,17 +142,7 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 from dirac_parser import DiracParser
 from dirac_encoder import DiracEncoder as EncoderWrapper
 
-try:
-    from dirac_parser import dirac_version as _parser_version
-except ImportError:
-    _parser_version = (0,5,4)
-try:
-    from dirac_encoder import dirac_version as _encoder_version
-except ImportError:
-    _encoder_version = (0,5,4)
-
-
-from Kamaelia.Support.Data.Rationals import rational
+from Kamaelia.Data.Rationals import rational
 
 def map_chroma_type(chromatype):
     """Maps string names for chrominance data formats to those understood by the Dirac Python bindings."""
@@ -235,37 +224,26 @@ class DiracDecoder(component):
 
 class DiracEncoder(component):
     """
-    DiracEncoder([preset][,verbose][,encParams][,seqParams][,allParams]) -> new Dirac encoder component
+    DiracEncoder([preset][,verbose][,encParams][,seqParams]) -> new Dirac encoder component
 
     Creates a component to encode video using the Dirac codec. Configuration based on
     optional preset, optionally overriden by individual encoder and sequence parameters.
-    All three 'params' arguments are munged together, so do what you like :)
 
     Keyword arguments:
-    
-    - preset     -- "CIF" or "SD576" or "HD720" or "HD1080" (presets for common video formats)
-    - verbose    -- NOT YET IMPLEMENTED (IGNORED)
-    - encParams  -- dict of encoder setup parameters only
-    - seqParams  -- dict of video sequence parameters only
-    - allParams  -- dict of encoder setup parameters, sequence parameters, and source parameters, all munged together
+    preset     -- "CIF" or "SD576" or "HD720" or "HD1080" (presets for common video formats)
+    verbose    -- NOT YET IMPLEMENTED (IGNORED)
+    encParams  -- dict of encoder setup parameters
+    seqParams  -- dict of video sequence info parameters
     """
 
-    def __init__(self, preset=None, verbose=False, encParams={}, seqParams={}, allParams={}):
+    def __init__(self, preset=None, verbose=False, encParams={}, seqParams={}):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(DiracEncoder, self).__init__()
 
-        allParams.update(encParams)
-        allParams.update(seqParams)
-        
-        if 'frame_rate' in allParams:
-            allParams['frame_rate'] = rational(allParams['frame_rate'])
-        if "pix_asr" in allParams:
-            allParams['pix_asr'] = rational(allParams['pix_asr'])
+        if 'frame_rate' in seqParams:
+            seqParams['frame_rate'] = rational(seqParams['frame_rate'])
             
-        if _encoder_version == (0,5,4):
-            self.encoder = EncoderWrapper(preset=preset, bufsize=1024*1024, verbose=verbose, encParams=allParams, seqParams=allParams)
-        else: # _encoder_version == (0,6,0):
-            self.encoder = EncoderWrapper(preset=preset, bufsize=1024*1024, verbose=verbose, allParams=allParams)
+        self.encoder = EncoderWrapper(preset=preset, bufsize=1024*1024, verbose=verbose, encParams=encParams, seqParams=seqParams)
 
         
     def main(self):

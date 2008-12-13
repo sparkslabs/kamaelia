@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -50,7 +50,7 @@ Example Usage
 
 Reading 1000 bytes per second in 10 byte chunks from 'myfile'::
 
-    Pipeline(ByteRate_RequestControl(rate=1000,chunksize=10)
+    pipeline(ByteRate_RequestControl(rate=1000,chunksize=10)
              PromptedFileReader("myfile", readmode="bytes")
             ).activate()
 
@@ -89,8 +89,8 @@ Example Usage
 
 Read 10 lines per second, in 2 chunks of 5 lines, and output them to the console::
 
-    Pipeline(RateControlledFileReader("myfile", "lines", rate=10, chunksize=5),
-             ConsoleEchoer()
+    pipeline(RateControlledFileReader("myfile", "lines", rate=10, chunksize=5),
+             consoleEchoer()
             ).activate()
 
 
@@ -134,7 +134,7 @@ Read data from a sequence of files, at 1024 bytes/second in 16 byte chunks::
     playlist.link( (reader, "requestNext"), (playlist,"inbox") )
     playlist.link( (playlist,"outbox"), (reader, "next") )
     
-    Pipeline(ratecontrol, reader).activate()
+    pipeline(ratecontrol, reader).activate()
 
     
 Or, with the Control-Signal path linked up properly, using the
@@ -146,7 +146,7 @@ JoinChooserToCarousel prefab::
 
     playlistreader = JoinChooserToCarousel(playlist, reader)
     
-    Pipeline(ratecontrol, playlistreader).activate()
+    pipeline(ratecontrol, playlistreader).activate()
 
     
 
@@ -282,7 +282,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Util.RateFilter import ByteRate_RequestControl
 from Kamaelia.Chassis.Carousel import Carousel
-from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Util.Graphline import Graphline
 
 class PromptedFileReader(component):
     """\
@@ -292,8 +292,7 @@ class PromptedFileReader(component):
     N is sent to its inbox.
 
     Keyword arguments:
-    
-    - readmode  -- "bytes" or "lines"
+    - readmode = "bytes" or "lines"
     """
     Inboxes = { "inbox" : "requests to 'n' read bytes/lines",
                 "control" : "for shutdown signalling"
@@ -393,9 +392,8 @@ def RateControlledFileReader(filename, readmode = "bytes", **rateargs):
     control the rate of file reading.
     
     Keyword arguments:
-    
-    - readmode    -- "bytes" or "lines"
-    - rateargs  -- arguments for ByteRate_RequestControl component constructor
+    - readmode = "bytes" or "lines"
+    - **rateargs = arguments for ByteRate_RequestControl component constructor
     """
     return Graphline(RC  = ByteRate_RequestControl(**rateargs),
                     RFA = PromptedFileReader(filename, readmode),
@@ -462,7 +460,7 @@ def FixedRateControlledReusableFileReader(readmode = "bytes", **rateargs):
     
     Keyword arguments:
     - readmode = "bytes" or "lines"
-    - rateargs = arguments for ByteRate_RequestControl component constructor
+    - **rateargs = arguments for ByteRate_RequestControl component constructor
     """
     return Graphline(RC       = ByteRate_RequestControl(**rateargs),
                      CAR      = ReusableFileReader(readmode),
@@ -479,7 +477,7 @@ def FixedRateControlledReusableFileReader(readmode = "bytes", **rateargs):
         )
 
 __kamaelia_components__ = ( PromptedFileReader, )
-__kamaelia_prefabs__ = ( RateControlledFileReader, ReusableFileReader, RateControlledReusableFileReader, FixedRateControlledReusableFileReader, )
+__kamaelia_prefab__ = ( RateControlledFileReader, ReusableFileReader, RateControlledReusableFileReader, FixedRateControlledReusableFileReader, )
 
 if __name__ == "__main__":
     pass

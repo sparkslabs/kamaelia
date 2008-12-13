@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -28,13 +28,13 @@
 #
 
 from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
 outputfile = "/tmp/received.raw"
 clientServerTestPort=1500
 
-Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+pipeline(TCPClient("127.0.0.1",clientServerTestPort),
          SimpleFileWriter(outputfile)
         ).run()
 

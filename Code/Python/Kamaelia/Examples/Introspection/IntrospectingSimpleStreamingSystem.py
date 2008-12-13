@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -23,18 +23,18 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
+from Kamaelia.SimpleServerComponent import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
-import Kamaelia.File.ReadFileAdaptor
-from Kamaelia.Codec.Vorbis import VorbisDecode, AOAudioPlaybackAdaptor
-from Kamaelia.Chassis.Pipeline import Pipeline
+import Kamaelia.ReadFileAdaptor
+from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor
+from Kamaelia.Util.PipelineComponent import pipeline
 from Kamaelia.Util.Introspector import Introspector
 
-file_to_stream = "../SupportingMediaFiles/KDE_Startup_2.ogg"
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 clientServerTestPort = 1501
 
 def AdHocFileProtocolHandler(filename):
-    class klass(Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor):
+    class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
             super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass
@@ -44,14 +44,14 @@ SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream),
              port=clientServerTestPort).activate()
 
 # Start the client
-Pipeline(
+pipeline(
       TCPClient("127.0.0.1",clientServerTestPort),
       VorbisDecode(),
       AOAudioPlaybackAdaptor(),
 ).activate()
 
 # Start the introspector and connect to a local visualiser
-Pipeline(
+pipeline(
     Introspector(),
     TCPClient("127.0.0.1", 1500),
 ).run()

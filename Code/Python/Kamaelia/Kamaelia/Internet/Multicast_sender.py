@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -37,7 +37,7 @@ Example Usage
 Multicasting a file to group address 1.2.3.4 on port 1000 (local address 0.0.0.0
 port 0)::
 
-    Pipeline( RateControlledFileReader("myfile", rate=100000),
+    pipeline( RateControlledFileReader("myfile", rate=100000),
               Multicast_sender("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
 
@@ -65,7 +65,6 @@ class Multicast_sender(Axon.Component.component):
    specified multicast group.
    
    Keyword arguments:
-   
    - local_addr   -- local address (interface) to send from (string)
    - local_port   -- local port number
    - remote_addr  -- address of multicast group to send to (string)

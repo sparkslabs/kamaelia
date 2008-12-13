@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -32,11 +32,9 @@ gridlines on pass -1.
 
 Example Usage
 -------------
-
-Already used by Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.
+Already used by Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent.
 
 Rendering a grid in light grey with grid cell size of 100x100::
-    
     grid = GridRenderer(size=100, colour=(200,200,200))
     renderer = grid.render( <pygame surface> )
     for rendering_pass in renderer:
@@ -46,14 +44,13 @@ Rendering a grid in light grey with grid cell size of 100x100::
 
 How does it work?
 -----------------
-
 Instances of this class provide a render() generator that renders horizontal
 and vertical grid lines to conver the specified pygame surface. The colour and
 spacing of the grid lines are specified at initialisation.
 
 Rendering is performed by the generator, returned when the render() method is
 called. Its behaviour is that needed for the framework for multi-pass rendering
-that is used by TopologyViewer.
+that is used by TopologyViewerComponent.
 
 The generator yields the number of the rendering pass it wishes to be next on
 next. Each time it is subsequently called, it performs the rendering required
@@ -64,7 +61,7 @@ A setOffset() method is also implemented to allow the rendering position to be
 offset. This therefore makes it possible to scroll the grid around the display
 surface.
 
-See TopologyViewer for more details.
+See TopologyViewerComponent for more details.
 
 """
 

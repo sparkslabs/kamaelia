@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -21,20 +21,18 @@
 # -------------------------------------------------------------------------
 """\
 ==================================
-Wiring up components in a Pipeline
+Wiring up components in a pipeline
 ==================================
 
-The Pipeline component wires up a set of components in a linear chain (a
-Pipeline) and encapsulates them as a single component.
+The pipeline component wires up a set of components in a linear chain (a
+pipeline) and encapsulates them as a single component.
 
 
 
 Example Usage
 -------------
-
-A simple pipeline of 4 components::
-
-    Pipeline(MyDataSource(...),
+::
+    pipeline(MyDataSource(...),
              MyFirstStageOfProcessing(...),
              MySecondStageOfProcessing(...),
              MyDestination(...),
@@ -43,41 +41,41 @@ A simple pipeline of 4 components::
 
 How does it work?
 -----------------
-A Pipeline component gives you a way of wiring up a system of components in a
+A pipeline component gives you a way of wiring up a system of components in a
 chain and then encapsulating the whole as a single component. The inboxes of
 this component pass through to the inboxes of the first component in the
-Pipeline, and the outboxes of the last component pass through to the outboxes
-of the Pipeline component.
+pipeline, and the outboxes of the last component pass through to the outboxes
+of the pipeline component.
 
-The components you specify are registered as children of the Pipeline
-component. When Pipeline is activate, all children are wired up and activated.
+The components you specify are registered as children of the pipeline
+component. When pipeline is activate, all children are wired up and activated.
 
-For the components in the Pipeline, "outbox" outboxes are wired to "inbox"
+For the components in the pipeline, "outbox" outboxes are wired to "inbox"
 inboxes, and "signal" outboxes are wired to "control" inboxes. They are wired
 up in the order in which you specify them - data will flow through the chain
 from first component to last.
 
-The "inbox" and "control" inboxes of the Pipeline component are wired to
+The "inbox" and "control" inboxes of the pipeline component are wired to
 pass-through to the "inbox" and "control" inboxes (respectively) of the first
-component in the Pipeline chain.
+component in the pipeline chain.
 
-The "outbox" and "signal" outboxes of the last component in the Pipeline chain
+The "outbox" and "signal" outboxes of the last component in the pipeline chain
 are wired to pass-through to the "outbox" and "signal" outboxes (respectively)
-of the Pipeline component.
+of the pipeline component.
 
-During runtime, the Pipeline component monitors the child components. It will
+During runtime, the pipeline component monitors the child components. It will
 terminate if, and only if, *all* the child components have also terminated.
 
 NOTE that if your child components create additional components themselves, the
-Pipeline component will not know about them. It only monitors the components it
+pipeline component will not know about them. It only monitors the components it
 was originally told about.
 
-Pipeline does not intercept any of its inboxes or outboxes. It ignores whatever
+pipeline does not intercept any of its inboxes or outboxes. It ignores whatever
 traffic flows through them.
 """
 
-# component that creates and encapsulates a Pipeline of components, connecting
-# their outbox to inbox, and signal to control to form the Pipeline chain.
+# component that creates and encapsulates a pipeline of components, connecting
+# their outbox to inbox, and signal to control to form the pipeline chain.
 
 from Axon.Scheduler import scheduler as _scheduler
 import Axon as _Axon
@@ -85,31 +83,30 @@ import Axon as _Axon
 component = _Axon.Component.component
 
 
-class Pipeline(component):
+class pipeline(component):
    """\
-   Pipeline(\*components) -> new Pipeline component.
+   pipeline(*components) -> new pipeline component.
 
    Encapsulates the specified set of components and wires them up in a chain
-   (a Pipeline) in the order you provided them.
+   (a pipeline) in the order you provided them.
    
-   Keyword arguments:
-   
-   - components  -- the components you want, in the order you want them wired up
+   Arguments:
+   - components - the components you want, in the order you want them wired up
    """
    def __init__(self, *components):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(Pipeline,self).__init__()
+      super(pipeline,self).__init__()
       self.components = list(components)
 
    def main(self):
       """Main loop."""
       self.addChildren(*self.components)
-      Pipeline = self.components[:]
-      source = Pipeline[0]
-      del Pipeline[0]
-      while len(Pipeline)>0:
-         dest = Pipeline[0]
-         del Pipeline[0]
+      pipeline = self.components[:]
+      source = pipeline[0]
+      del pipeline[0]
+      while len(pipeline)>0:
+         dest = pipeline[0]
+         del pipeline[0]
          self.link((source,"outbox"), (dest,"inbox"))
          self.link((source,"signal"), (dest,"control"))
          source = dest
@@ -140,20 +137,13 @@ class Pipeline(component):
 
        return 0==len(self.childComponents())
 
-import Kamaelia.Support.Deprecate as Deprecate
 
-pipeline = Deprecate.makeClassStub(
-    Pipeline,
-    "Use Kamaelia.Chassis.Pipeline:Pipeline instead of Kamaelia.Chassis.Pipeline:pipeline",
-    "WARN"
-    )
-
-__kamaelia_components__  = ( Pipeline, )
+__kamaelia_components__  = ( pipeline, )
                   
 if __name__=="__main__":
     from Axon.Component import scheduler
-    from Kamaelia.Util.Console import ConsoleEchoer
-    from Kamaelia.Util.PassThrough import PassThrough
+    from ConsoleEcho import consoleEchoer
+    from passThrough import passThrough
     
     from Axon.Ipc import producerFinished, shutdownMicroprocess
     
@@ -178,8 +168,8 @@ if __name__=="__main__":
             self.__super.__init__()
             
             self.source = fruitSource()
-            self.pipe   = Pipeline(PassThrough([]))
-            self.dest   = ConsoleEchoer()
+            self.pipe   = pipeline(passThrough([]))
+            self.dest   = consoleEchoer()
             self.addChildren(self.source, self.pipe, self.dest)
             
             self.link((self.source, "outbox"),  (self.pipe, "inbox"))

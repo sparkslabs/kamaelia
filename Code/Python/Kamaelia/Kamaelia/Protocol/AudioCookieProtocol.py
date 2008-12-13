@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -59,7 +59,7 @@ No EOF/termination indication is given once the end of the file is reached.
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #
-# XXX FIXME
+# XXX VOMIT
 #
 # - Relies on afortune.pl, and finding that will depend on what the current
 #   working directory is
@@ -77,7 +77,7 @@ import sys
 
 from Axon.Component import component
 from Axon.Ipc import newComponent
-from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
 
 class AudioCookieProtocol(component):
    """\
@@ -86,7 +86,6 @@ class AudioCookieProtocol(component):
    A protocol that spits out raw audio data from a randomly selected audio file.
 
    Keyword arguments:
-   
    - debug  -- Debugging output control (default=0)
    """
    Inboxes  = { "inbox"   : "NOT USED",

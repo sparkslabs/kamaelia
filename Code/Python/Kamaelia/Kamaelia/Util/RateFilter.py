@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -36,8 +36,7 @@ Example Usage
 -------------
 Regulating video to a constant framerate, buffering 2 seconds of data before
 starting to emit frames::
-
-    Pipeline( RateControlledFileReader(...),
+    pipeline( RateControlledFileReader(...),
               DiracDecoder(),
               MessageRateLimit(messages_per_second=framerate, buffer=2*framerate),
               VideoOverlay(),
@@ -61,9 +60,8 @@ faster than that rate, though they may be emitted slower.
 Make sure you choose a sufficient buffer size to handle any expected
 jitter/temporary shortages of data.
 
-If a producerFinished or shutdownMicroprocess message is received on the
-components' "control" inbox, it is sent on out of the "signal" outbox. The
-component will then immediately terminate.
+This component does not terminate. It ignores any messages received on its
+"control" inbox.
 
 
 
@@ -80,8 +78,7 @@ Example Usage
 -------------
             
 Reading from a file at a fixed rate::
-
-    Graphline( ctrl   = ByteRate_RequestControl(rate=1000, chunksize=32),
+    graphline( ctrl   = ByteRate_RequestControl(rate=1000, chunksize=32),
                reader = PromptedFileReader(filename="myfile", readmode="bytes"),
                linkages = {
                     ("ctrl", "outbox") : ("reader","inbox"),
@@ -98,8 +95,7 @@ receives a shutdown message.
 
 
 Reading from a file at a varying rate (send new rates to the "inbox" inbox)::
-
-    Graphline( ctrl   = VariableByteRate_RequestControl(rate=1000, chunksize=32),
+    graphline( ctrl   = VariableByteRate_RequestControl(rate=1000, chunksize=32),
                reader = PromptedFileReader(filename="myfile", readmode="bytes"),
                linkages = {
                       ("self", "inbox") : ("ctrl", "inbox"),
@@ -178,8 +174,7 @@ Example Usage
 
 An app that reads data items from a file, then does something with then one at a
 time when the user clicks a visual button in pygame::
-
-    Graphline( source   = RateControlledFileReader(..., readmode="lines"),
+    graphline( source   = RateControlledFileReader(..., readmode="lines"),
                limiter  = OnDemandLimit(),
                trigger  = Button(caption="Click for next",msg="NEXT"),
                dest     = consumer(...),
@@ -231,7 +226,6 @@ class MessageRateLimit(component):
     once the buffer is full.
 
     Keyword arguments:
-    
     - messages_per_second  -- maximum output rate
     - buffer               -- size of buffer (0 or greater) (default=60)
     """
@@ -254,11 +248,6 @@ class MessageRateLimit(component):
     def main(self):
         """Main loop."""
         while self.dataReady("inbox") <self.buffer:
-            while self.dataReady("control"):
-                msg = self.recv("control")
-                self.send(msg,"signal")
-                if isinstance(msg,(producerFinished,shutdownMicroprocess)):
-                    return
             self.pause()
             yield 1
         c = 0
@@ -269,12 +258,7 @@ class MessageRateLimit(component):
         while 1:
             try:
                 while not( self.scheduler.time - last > interval):
-                    while self.dataReady("control"):
-                        msg = self.recv("control")
-                        self.send(msg,"signal")
-                        if isinstance(msg,(producerFinished,shutdownMicroprocess)):
-                            return
-                    yield 1
+                   yield 1
                 c = c+1
                 last = self.scheduler.time
                 if last - start > 1:
@@ -297,7 +281,6 @@ class ByteRate_RequestControl(component):
     integers saying how much data to emit.
 
     Keyword arguments:
-    
     - rate                   -- qty of data items per second (default=100000)
     - chunksize              -- None or qty of items per 'chunk' (default=None)
     - chunkrate              -- None or number of chunks per second (default=10)
@@ -313,14 +296,11 @@ class ByteRate_RequestControl(component):
                  "signal" : "Shutdown signalling"
                }
    
-    def __init__(self, rate=100000, chunksize=None, chunkrate=None, allowchunkaggregation = False):
+    def __init__(self, rate=100000, chunksize=None, chunkrate=10, allowchunkaggregation = False):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(ByteRate_RequestControl, self).__init__()
     
         self.rate = rate
-        
-        if chunksize is None and chunkrate is None:
-            chunksize=max(1,rate/1000)               # a sensible-ish default
     
         if not chunksize is None:
             self.chunksize = chunksize
@@ -331,9 +311,6 @@ class ByteRate_RequestControl(component):
     
         else:
             raise ValueError("chunksize or chunkrate must be specified, but not both or neither")
-            
-        if self.chunksize < 1.0:
-            raise ValueError("chunksize cannot be less than 1, specify a sensible chunkrate or chunksize")
     
         self.timestep = 1.0 / float(chunkrate)
     

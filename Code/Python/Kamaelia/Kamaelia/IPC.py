@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -26,16 +26,11 @@ class socketShutdown(producerFinished):
    """Message to indicate that the network connection has been closed."""
    pass
 
-class serverShutdown(producerFinished):
-   """Message to indicate that the server should shutdown"""
-   pass
-
 class newCSA(notify):
    """Helper class to notify of new CSAs as they are created.  newCSA.object
    will return the CSA."""
-   def __init__(self, caller, CSA, sock=None):
+   def __init__(self, caller, CSA):
       super(newCSA, self).__init__(caller, CSA)
-      self.sock = sock
    def handlesWriting(self):
       return True
 

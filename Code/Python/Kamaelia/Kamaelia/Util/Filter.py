@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -25,7 +25,7 @@ Simple framework for filtering data
 ===================================
 
 A framework for filtering a stream of data. Write an object providing a
-filter(...) method and plug it into a Filter component.
+filter(...) method and plug it into a FilterComponent component.
 
 
 
@@ -40,14 +40,14 @@ Filters any non-strings from a stream of data::
             else:
                 return None            # indicates nothing to be output
 
-    myfilter = Filter(filter = StringFilter).activate()
+    myfilter = FilterComponent(filter = StringFilter).activate()
     
 
 
 How does it work?
 -----------------
 
-Initialize a Filter component, providing an object with a filter(...)
+Initialize a FilterComponent component, providing an object with a filter(...)
 method.
 
 The method should take a single argument - the data to be filtered. It should
@@ -74,22 +74,19 @@ will result in None being returned.
 
 
 from Axon.Component import component
-from Axon.Ipc import producerFinished,shutdownMicroprocess
-
 class NullFilter(object):
-   """A filter class that filters nothing.  This is the null default for the Filter."""
+   """A filter class that filters nothing.  This is the null default for the FilterComponent."""
    def filter(self, newtext):
       return newtext
       
-class Filter(component):
+class FilterComponent(component):
    """\
-   Filter([filter]) -> new Filter component.
+   FilterComponent([filter]) -> new FilterComponent component.
 
    Component that can modify and filter data passing through it. Plug your own
    'filter' into it.
    
    Keyword arguments:
-   
    - filter  -- an object implementing a filter(data) method (default=NullFilter instance)
    """
 
@@ -102,7 +99,7 @@ class Filter(component):
        
    def __init__(self, filter = NullFilter()):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(Filter, self).__init__()
+      super(FilterComponent, self).__init__()
       self.filter = filter
       
    def mainBody(self):
@@ -122,18 +119,9 @@ class Filter(component):
    def closeDownComponent(self):
       """Flush any data remaining in the filter before shutting down."""
       while 1:
-        outmes = self.filter.filter("")
+        outmes = self.filt.filter("")
         if outmes is None:
             break
         self.send(outmes)
 
-import Kamaelia.Support.Deprecate as Deprecate
-
-FilterComponent = Deprecate.makeClassStub(
-    Filter,
-    "Use Kamaelia.Util.Filter:Filter instead of Kamaelia.Util.Filter:FilterComponent",
-    "WARN"
-    )
-
-__kamaelia_components__  = ( Filter, )
-
+__kamaelia_components__  = ( FilterComponent, )

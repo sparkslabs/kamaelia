@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -39,7 +39,6 @@ Example Usage
 Creating and index and registering two entities with it at (1,2) and (12,34).
 We also tell the SpatialIndexer that the 'usual' radius we'll be searching over
 is 5 units::
-
     >>> class Entity:
     ...   def __init__(self, coords):
     ...     self.coords = coords
@@ -52,36 +51,30 @@ is 5 units::
     >>> index.add(a,b)
     
 Only 'a' is within 10 units of (0,0)::
-    
     >>> index.withinRadius((0,0), 10.0) == [(a,5.0)]
     True
 
 The returned tuples are of the form: (entity, distance-squared)
 
 Neither point is within 1 unit of (0,0)::
-
     >>> index.withinRadius((0,0), 1.0)
     []
 
 Both 'a' and 'b' are within 50 units of (0,0)::
-    
     >>> index.withinRadius((0,0), 50.0) == [(a,5.0), (b,1300)]
     True
 
 We can ask the same, but request that 'a' be excluded::
-    
     >>> filter = lambda particle : particle != a
     >>> index.withinRadius((0,0), 50.0, filter) == [(b,1300)]
     True
 
 If we remove 'a' then only 'b' will be found::
-    
     >>> index.remove(a)
     >>> index.withinRadius((0,0), 50.0) == [(b, 1300.0)]
     True
 
 If we change the position of b we must *notify* the SpatialIndexer::
-    
     >>> index.withinRadius((0,0), 10.0) == []
     True
     >>> b.coords=(5.0,6.0)

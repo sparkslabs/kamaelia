@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -34,7 +34,7 @@ indefinitely out of its "outbox" outbox.
 Example Usage
 -------------
 ::
-    >>> Pipeline( Chargen(), ConsoleEchoer() ).run()
+    >>> pipeline( Chargen(), consoleEchoer() ).run()
     Hello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHel
     lo WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello
     WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello WorldHello Wor
@@ -83,12 +83,12 @@ class Chargen(Axon.Component.component):
 
 def tests():
    from Axon.Scheduler import scheduler
-   from Kamaelia.Util.Console import ConsoleEchoer
+   from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
    class testComponent(Axon.Component.component):
       def main(self):
         chargen= Chargen()
-        display = ConsoleEchoer()
+        display = consoleEchoer()
 
         self.link((chargen,"outbox"), (display,"inbox"))
         self.addChildren(chargen, display)

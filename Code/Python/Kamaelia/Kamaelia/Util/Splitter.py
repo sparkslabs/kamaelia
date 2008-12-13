@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 """\
 =========================
-Simple Fanout of messages
+Simple fanout of messages
 =========================
 
 A component that splits a data source, fanning it out to multiple destinations.
@@ -42,7 +42,7 @@ Component connecting to a Splitter::
              ... do stuff when data is received on "inbox" inbox
 
     mysplitter = Splitter()
-    Pipeline( producer(), mysplitter ).activate()
+    pipeline( producer(), mysplitter ).activate()
     
     myconsumer = Consumer().activate()
     myconsumer.link( (myconsumer, "splitter_config"), ("mysplitter", "configuration") )
@@ -87,7 +87,7 @@ This component does not terminate.
 
 
 ============================
-Pluggable Fanout of messages
+Pluggable fanout of messages
 ============================
 
 The PlugSplitter component splits a data source, fanning it out to multiple
@@ -101,19 +101,17 @@ Example Usage
 
 Two consumers receiving the same data from a single consumer. Producer and
 consumers are encapsulated by PlugSplitter and Plug components respectively::
-
     mysplitter = PlugSplitter( producer() ).activate()
     
     Plug(mysplitter, consumer() ).activate()
     Plug(mysplitter, consumer() ).activate()
     
 The same, but the producer and consumers are not encapsulated::
-
     mysplitter = PlugSplitter()
-    Pipeline( producer, mysplitter ).activate()
+    pipeline( producer, mysplitter ).activate()
     
-    Pipeline( Plug(mysplitter), consumer() ).activate()
-    Pipeline( Plug(mysplitter), consumer() ).activate()
+    pipeline( Plug(mysplitter), consumer() ).activate()
+    pipeline( Plug(mysplitter), consumer() ).activate()
     
     
     
@@ -138,20 +136,16 @@ Add a destination by making a Plug component, specifying the PlugSplitter
 component to 'plug into'. See documentation for the Plug component for more
 information.
 
-Alternatively, you can add and remove destinations manually:
+Alternatively, you can add and remove destinations manually::
 
-* Add a destination by sending an addsink(...) message to the "configuration"
-  inbox of the component.
-  
-  If a 'sinkbox' inbox is specified in the message, then
+- Add a destination by sending an addsink(...) message to the "configuration"
+  inbox of the component. If a 'sinkbox' inbox is specified in the message, then
   PlugSplitter will wire up to it and forward to it any 'inbox'/'outbox' data.
   If a 'sinkcontrol' inbox is specified, then Plugsplitter will wire up to it
   and forward to it any 'control'/'signal' data.
   
-* Stop data being sent to a destination by sending a removesink(...) message to
-  the "configuration" inbox of the Splitter component.
-  
-  Splitter will then cease
+- Stop data being sent to a destination by sending a removesink(...) message to
+  the "configuration" inbox of the Splitter component. Splitter will then cease
   sending messages to the 'sinkbox' inbox specified in the message and will
   unwire from it.
 
@@ -238,7 +232,6 @@ class addsink(ipc):
     wired to receive a data source (to be the data sink).
     
     Keywork arguments:
-    
     - sink         -- target component
     - sinkbox      -- target component's inbox name (default="inbox")
     - sinkcontrol  -- None, or target component's 'control' inbox name (default=None)
@@ -366,7 +359,6 @@ class PlugSplitter(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     destinations.
     
     Keyword arguments:
-    
     - sourceComponent  -- None, or component to act as data source
     """
 
@@ -533,7 +525,6 @@ class Plug(Axon.Component.component):
     splitter as a destination for data.
     
     Keyword arguments:
-    
     - splitter   -- splitter component to plug into (any component that accepts addsink(...) and removesink(...) messages on a 'configuration' inbox
     - component  -- component to receive data from the splitter
     """

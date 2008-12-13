@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -23,13 +23,13 @@
 # Simple Ogg Vorbis audio streaming system
 #
 
-import Kamaelia.File.ReadFileAdaptor
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
+import Kamaelia.ReadFileAdaptor
+from Kamaelia.SimpleServerComponent import SimpleServer
 
-file_to_stream = "../../SupportingMediaFiles/KDE_Startup_2.ogg"
+file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"
 
 def AdHocFileProtocolHandler(filename):
-    class klass(Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor):
+    class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):
         def __init__(self,*argv,**argd):
             super(klass,self).__init__(filename, readmode="bitrate", bitrate=400000)
     return klass

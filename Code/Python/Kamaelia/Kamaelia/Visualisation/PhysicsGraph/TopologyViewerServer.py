@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -34,17 +34,14 @@ Example Usage
 -------------
 Visualiser that listens on port 1500 for a TCP connection through which
 it receives topology change data to render::
-    
     TopologyViewerServer( serverPort = 1500 ).run()
     
 A simple client to drive the visualiser::
-    
-    Pipeline( ConsoleReader(),
+    pipeline( ConsoleReader(),
               TCPClient( server=<address>, port=1500 ),
             ).run()
     
 Run the server, then run the client::
-    
     >>> DEL ALL
     >>> ADD NODE 1 "1st node" randompos -
     >>> ADD NODE 2 "2nd node" randompos -
@@ -62,64 +59,65 @@ specialisation of this component.
 How does it work?
 -----------------
 
-TopologyViewerServer is a Pipeline of the following components:
-    
-- Kamaelia.Internet.SingleServer
+TopologyViewerServer is a pipeline of the following components:
+- Kamaelia.SingleServer
 - chunks_to_lines
 - lines_to_tokenlists
-- TopologyViewer
-- ConsoleEchoer
+- TopologyViewerComponent
+- consoleEchoer
 
-This Pipeline serves to listen on the specified port (defaults to 1500) for
+This pipeline serves to listen on the specified port (defaults to 1500) for
 clients. One client is allowed to connect at a time.
 
 That client can then send topology change commands formatted as lines of text.
-The lines are parsed and tokenised for the TopologyViewer.
+The lines are parsed and tokenised for the TopologyViewerComponent.
 
-Any output from the TopologyViewer is sent to the console.
+Any output from the TopologyViewerComponent is sent to the console.
 
-If the noServer option is used at initialisation, then the Pipeline is built
+If the noServer option is used at initialisation, then the pipeline is built
 without the SingleServer component. It then becomes a TopologyViewer
 capable of processing non-tokenised input and with diagnostic console output.
 
-See TopologyViewer for more detail on topology change data and
+See TopologyViewerComponent for more detail on topology change data and
 its behaviour.
 """
 
-from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PipelineComponent import pipeline
 
-from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
-from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
-from Kamaelia.Internet.SingleServer import SingleServer
-from Kamaelia.Util.Console import ConsoleEchoer
+from chunks_to_lines import chunks_to_lines
+from lines_to_tokenlists import lines_to_tokenlists
+from TopologyViewerComponent import TopologyViewerComponent
+from Kamaelia.SingleServer import SingleServer
+from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
-def TopologyViewerServer(serverPort = 1500, **dictArgs):
+
+class TopologyViewerServer(pipeline):
     """\
     TopologyViewerServer([noServer][,serverPort],**args) -> new TopologyViewerServer component.
 
     One-client-at-a-time TCP socket Topology viewer server. Connect on the
     specified port and send topology change data for display by a
-    TopologyViewer.
-
-    Keyword arguments:
+    TopologyViewerComponent.
     
+    Keywork arguments:
+    - noServer    -- False, or True to not include the server component (default=False)
     - serverPort  -- None, or port number to listen on (default=1500)
-    - args        -- all remaining keyword arguments passed onto TopologyViewer
+    - args        -- all remaining keyword arguments passed onto TopologyViewerComponent
     """
-    return Pipeline( SingleServer(port=serverPort),
-                     chunks_to_lines(),
-                     lines_to_tokenlists(),
-                     TopologyViewer(**dictArgs),
-                     ConsoleEchoer()
-               )
 
-def TextControlledTopologyViewer(**dictArgs):
-    return Pipeline( chunks_to_lines(),
-                     lines_to_tokenlists(),
-                     TopologyViewer(**dictArgs),
-                     ConsoleEchoer()
-            )
+    def __init__(self, noServer = False, serverPort = None, **dictArgs):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
+        
+        pipe = [chunks_to_lines(),
+                lines_to_tokenlists(),
+                TopologyViewerComponent(**dictArgs),
+                consoleEchoer() ]
+                
+        if not noServer:
+            if serverPort == None:
+                serverPort = 1500
+            pipe.insert(0, SingleServer(port=serverPort))
 
-__kamaelia_prefabs__ = ( TopologyViewerServer, TextControlledTopologyViewer)
-
+        super(TopologyViewerServer, self).__init__(*pipe)
+         
+__kamaelia_prefab__ = ( TopologyViewerServer, )

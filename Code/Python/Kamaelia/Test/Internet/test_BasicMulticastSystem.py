@@ -9,7 +9,7 @@ import Axon
 
 def tests():
    from Axon.Scheduler import scheduler
-   from Kamaelia.Util.Console import ConsoleEchoer
+   from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from Kamaelia.Util.Chargen import Chargen
 
    from Kamaelia.Internet.Multicast_sender import Multicast_sender
@@ -20,7 +20,7 @@ def tests():
         chargen= Chargen()
         sender = Multicast_sender("0.0.0.0", 0, "224.168.2.9", 1600)
         receiver = Multicast_receiver("224.168.2.9", 1600)
-        display = ConsoleEchoer()
+        display = consoleEchoer()
 
         self.link((chargen,"outbox"), (sender,"inbox"))
         self.link((receiver,"outbox"), (display,"inbox"))

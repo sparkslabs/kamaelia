@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -20,42 +20,19 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
-=========================
 ReadFileAdaptor Component
-=========================
 
-A simple component that reads data from a file, line by line, or in chunks of
-bytes, at a constant rate that you specify.
+EXTERNAL CONNECTORS
+      * inboxes : none examined
+      * outboxes=["outbox"]) - When data is read, it is made available here.
 
-
-
-Example Usage
--------------
-
-Read one line at a time from a text file every 0.2 seconds, outputting to
-standard output::
-
-    Pipeline( ReadFileAdaptor("myfile.text", readmode='line', readsize=1, steptime=0.2),
-              ConsoleEchoer(),
-            ).run()
-
-Read from a file at 1 Kilobits per second, in chunks of 256 bytes and send it
-to a server over a TCP network socket::
-
-    Pipeline( ReadFileAdaptor("myfile.data", readmode='bitrate', readsize=1, bitrate=1024*10),
-              TCPClient("remoteServer.provider.com", port=1500),
-            ).run()
-
-
-
-How to use it
--------------
+COMPONENT BEHAVIOUR
 
 This component takes input from the outside world, and makes
-it available on it's outbox. It can take input from the following data sources:
-
+it available on it's outbox. It can take input from the following
+data sources:
    * A specific file
-   * The output of a command
+   * The output of a command.
    * stdin
 
 In all cases, it can make the data available in the following modes:
@@ -63,39 +40,28 @@ In all cases, it can make the data available in the following modes:
    * On a "block by block" basis.
    * At an attempted (not guaranteed) bit rate.
    * If at a bit rate, also a "frame rate". (eg if you want 1Mbit/s, do you
-     want that as 1x1Mbit block, 4x250Kbit blocks, 25x 40Kbit blocks, or
-     what, each second?
+   want that as 1x1Mbit block, 4x250Kbit blocks, 25x 40Kbit blocks, or
+   what, each second?
    * A "step time" to define how often to read  0 == as often/fast as
-     possible 0.1 == every 0.1 seconds, 0.5 = every 0.5 seconds, 2 = every
-     2 seconds etc.
+   possible 0.1 == every 0.1 seconds, 0.5 = every 0.5 seconds, 2 = every
+   2 seconds etc.
 
 Clearly some of these modes are mutually exclusive!
 
-Once ReadFileAdaptor has finished reading from the file, it finishes by sending
-a producerFinished() message out of its "signal" outbox, then immediately
-terminates.
+XXX TODO: Signal EOF on an external output to allow clients to destroy us.
+XXX Implement the closeDown method - ideally add to the component
+XXX framework.
 
-There is no way to tell ReadFileAdaptor to prematurely stop. It ignores all
-messages sent to its "control" inbox.
-
-
-
-To do
------
+STANDALONE BEHAVIOUR
 
 The default standalone behaviour is to read in from stdin, and dump to stdout
 in a teletype fashion the data it recieves. It _may_ gain command line parsing
 at some point, which would be wacky. (And probably a good way of initialising
 components - useful standalone & externally)
 
-XXX TODO: Signal EOF on an external output to allow clients to destroy us.
-XXX Implement the closeDown method - ideally add to the component
-XXX framework.
 """
 # !!!! Important comments (stuff to pay attention to!) are indicated like this, with
 # !!!! 4 preceding exclamation marks!
-
-
 
 import sys,os
 from Axon.Component import component, scheduler
@@ -118,9 +84,9 @@ class ReadFileAdaptor(component):
       * command="command" - the name of the command you want the
         output from. Leave the filename blank if you use this!
       * readmode - possible values:
-         - "bitrate" - read at a specified bitrate.
-         - "line"    - read on a line by line basis
-         - "block"   - read the file on a block by block basis.
+         "bitrate" - read at a specified bitrate.
+         "line" - read on a line by line basis
+         "block" - read the file on a block by block basis.
       * If bitrate mode is set, you should set bitrate= to your
         desired bitrate (unless you want 64Kbit/s), and chunkrate=
         to your desired chunkrate (unless you want 24 fps). You are
@@ -132,14 +98,12 @@ class ReadFileAdaptor(component):
    
    After setting the ReadFileAdaptor in motion, you can then hook it into
    your linkages like any other component.
+
+   Its interfaces are:
+      * inboxes=["inbox"] - not actually read at present
+      * outboxes=["outbox"]) - When data is read, it is made available here.
+
    """
-   Inboxes = { "inbox" : "NOT USED",
-               "control" : "NOT USED",
-             }
-   Outboxes = { "outbox" : "When data is read, it is made available here.",
-                "signal" : "Shutdown signalling",
-              }
-   
    def __init__(self, filename="",
                   command="",
                   readmode="",

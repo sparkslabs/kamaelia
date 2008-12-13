@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -32,32 +32,25 @@ Example Usage
 -------------
 
 Generate values that bounce up and down between 0 and 1 in steps of 0.05::
-
     bouncingFloat(scale_speed=0.05*10)
 
 Generate (x,y) coordinates, starting at (50,50) that bounce within a 200x100 box
 with a 10 unit inside margin::
-
     cartesianPingPong(point=(50,50), width=200, height=100, border=10)
 
 Generate the angles for the seconds hand on an analog watch::
-
     loopingCounter(increment=360/60, modulo=360)
 
 Constantly generate the number 7::
-
     continuousIdentity(original=7)
 
 Constantly generate the string "hello"::
-
     continuousIdentity(original="hello")
 
 Constantly generate the value 0::
-
     continuousZero()
     
 Constantly generate the value 1::
-
     continuousOne()
 
 
@@ -82,7 +75,7 @@ send_one_component = component
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #
-# XXX FIXME
+# XXX VOMIT
 #
 # - no true rate control in these components - they basically free run
 #   perhaps this is desirable behaviour, but I'm not sure at the mo (Matt)
@@ -141,7 +134,6 @@ class cartesianPingPong(send_one_component):
    bounds.
 
    Keyword arguments:
-   
    - point          -- starting (x,y) coordinates
    - width, height  -- bounds of the area
    - border         -- distance in from bounds at which bouncing happens

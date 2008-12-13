@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -36,22 +36,22 @@ Example Usage
 
 Send a file to, and receive data from multicast group address 1.2.3.4 port 1000::
 
-    Pipeline( RateControlledFileReader("myfile", rate=100000),
+    pipeline( RateControlledFileReader("myfile", rate=100000),
               Multicast_transceiver("0.0.0.0", 0, "1.2.3.4", 1000),
             ).activate()
 
-    Pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
-              ConsoleEchoer()
+    pipeline( Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 0)
+              consoleEchoer()
             ).activate()
 
 Or::
     
-    Pipeline( RateControlledFileReader("myfile", rate=100000),
+    pipeline( RateControlledFileReader("myfile", rate=100000),
               Multicast_transceiver("0.0.0.0", 1000, "1.2.3.4", 1000),
-              ConsoleEchoer()
+              consoleEchoer()
             ).activate()
 
-The data emitted by Multicast_transciever (and displayed by ConsoleEchoer) is of
+The data emitted by Multicast_transciever (and displayed by consoleEchoer) is of
 the form (source_address, data).
 
 
@@ -93,7 +93,6 @@ class Multicast_transceiver(Axon.Component.component):
    form (src_addr, data) containing data received.
    
    Keyword arguments:
-   
    - local_addr   -- local address (interface) to send from (string)
    - local_port   -- port number
    - remote_addr  -- address of multicast group (string)

@@ -6,4 +6,3 @@ include Docs/*/*
 include Docs/*
 include Examples/*
 include Examples/*/*
-exclude *CVS*

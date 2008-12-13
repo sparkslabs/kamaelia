@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -26,7 +26,7 @@ Simple Pygame application framework
 A component that sets up a pygame display surface and provides a main loop and
 simple event dispatch framework.
 
-The rendering surface is requested from the Pygame Display service component, so
+The rendering surface is requested from the PygameDisplay service component, so
 this component can coexist with other components using pygame.
 
 
@@ -85,7 +85,7 @@ is no specific 'quit' event handler.
 import pygame
 from pygame.locals import *
 import Axon as _Axon
-from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class PyGameApp(_Axon.Component.component):
     """\
@@ -97,7 +97,6 @@ class PyGameApp(_Axon.Component.component):
     Subclass to implement your own pygame "app".
     
     Keyword arguments:
-    
     - screensize    -- (width,height) of the display area (default = (800,600))
     - caption       -- Caption for the pygame window (default = "Topology Viewer")
     - fullscreen    -- True to start up in fullscreen mode (default = False)
@@ -107,12 +106,12 @@ class PyGameApp(_Axon.Component.component):
     
     Inboxes  = { "inbox"          : "NOT USED",
                  "control"        : "NOT USED",
-                 "events"         : "Event notifications from Pygame Display service",
-                 "displaycontrol" : "Replies from Pygame Display service",
+                 "events"         : "Event notifications from PygameDisplay service",
+                 "displaycontrol" : "Replies from PygameDisplay service",
                }
     Outboxes = { "signal"        : "NOT USED",
                  "outbox"        : "NOT USED",
-                 "displaysignal" : "Requests to Pygame Display service",
+                 "displaysignal" : "Requests to PygameDisplay service",
                }
 
     def __init__(self, screensize, 
@@ -123,8 +122,7 @@ class PyGameApp(_Axon.Component.component):
                  position = None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(PyGameApp, self).__init__()
-        pygame.init() # FIXME: This should NEVER be called inside a component unless it is the
-                      #        PygameDisplay or GraphicDisplay or similar.
+        pygame.init()
         
 #        flags = DOUBLEBUF
 #        if fullscreen:
@@ -179,9 +177,6 @@ class PyGameApp(_Axon.Component.component):
                 self.mainLoop()
             self.send({"REDRAW":True, "surface":self.screen}, "displaysignal")
             if not self.quitting and self.flip:
-                # FIXME: This does not play nicely at all with the standard pygame display
-                #        handling, despite requesting it's display from the standard
-                #        location.
                 pygame.display.flip()
                 yield 1
             else:
@@ -200,9 +195,7 @@ class PyGameApp(_Axon.Component.component):
            pass
 
     def mainLoop(self):
-        """Implement your runtime loop in this method here.
-           FIXME: This is less than ideal.
-        """
+        """Implement your runtime loop in this method here."""
         return 1
 
 

@@ -5,7 +5,7 @@
 #        causes is that the selector has no simple means of shutting
 #        down when no one is using it.
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -73,19 +73,17 @@ a registered descriptor that has closed.
 
 Register for a notification by sending an one of the following messages to the
 "notify" inbox, as returned by Selector.getSelectorService():
-
-* Kamaelia.KamaeliaIpc.newReader( (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.newWriter( (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.newExceptional( (component,inboxname), descriptor)
+   * Kamaelia.KamaeliaIpc.newReader( (component,inboxname), descriptor)
+   * Kamaelia.KamaeliaIpc.newWriter( (component,inboxname), descriptor)
+   * Kamaelia.KamaeliaIpc.newExceptional( (component,inboxname), descriptor)
    
 Choose which as appropriate:
-
-* a newReader() request will notify when there is data ready to be read on
-  the descriptor
-* a newWriter() request will notify when writing to the descriptor will not
-  block.
-* a newExceptional() request will notify when an exceptional event occurs on
-  the specified descriptor.
+   * a newReader() request will notify when there is data ready to be read on
+     the descriptor
+   * a newWriter() request will notify when writing to the descriptor will not
+     block.
+   * a newExceptional() request will notify when an exceptional event occurs on
+     the specified descriptor.
      
 Selector will notify the taret component by sending the file/socket descriptor
 object to the target inbox the component provided. It then automatically
@@ -101,10 +99,9 @@ descriptor be deregistered, then someone can register for it once again.
 
 Deregister by sending on of the following messages to the "notify" inbox of
 Selector:
-
-* Kamaelia.KamaeliaIpc.removeReader( (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.removeWriter( (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.removeExceptional( (component,inboxname), descriptor)
+   * Kamaelia.KamaeliaIpc.removeReader( (component,inboxname), descriptor)
+   * Kamaelia.KamaeliaIpc.removeWriter( (component,inboxname), descriptor)
+   * Kamaelia.KamaeliaIpc.removeExceptional( (component,inboxname), descriptor)
 
 It is advisable to send a deregister message when the corresponding file
 descriptor closes, in case you registered for a notification, but it has not
@@ -115,7 +112,7 @@ occurred.
 import Axon
 from Axon.Ipc import shutdown
 import select, socket
-from Kamaelia.IPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
+from Kamaelia.KamaeliaIPC import newReader, removeReader, newWriter, removeWriter, newExceptional, removeExceptional
 import Axon.CoordinatingAssistantTracker as cat
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 import time
@@ -123,8 +120,6 @@ import time
 
 READERS,WRITERS, EXCEPTIONALS = 0, 1, 2
 FAILHARD = False
-timeout = 5
-
 class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.AdaptiveCommsComponent): # SmokeTests_Selector.test_SmokeTest
     """\
     Selector() -> new Selector component
@@ -137,11 +132,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
          "inbox" : "Not used at present",
          "notify" : "Used to be notified about things to select"
     }
-
-    def __init__(self):
-        super(Selector, self).__init__()
-        self.trackedby = None
-            
+    
     def removeLinks(self, selectable, meta, selectables):
         """\
         Removes a file descriptor (selectable).
@@ -161,22 +152,10 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         except:
             pass
 
-    def stop(self):
-        if self.trackedby is not None:
-            try:
-                self.trackedby.deRegisterService("selector")
-            except Axon.AxonExceptions.MultipleServiceDeletion:
-                pass
-            try:
-                self.trackedby.deRegisterService("selectorshutdown")
-            except Axon.AxonExceptions.MultipleServiceDeletion:
-                pass  
-        super(Selector, self).stop()
-
     def addLinks(self, replyService, selectable, meta, selectables, boxBase):
         """\
         Adds a file descriptor (selectable).
-
+        
         Creates a corresponding outbox, with name based on boxBase; links it to
         the component that wants to be notified; adds the file descriptor to the
         set of selectables; and records the box and linkage info in meta.
@@ -199,6 +178,20 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             message = self.recv("notify")
 #            \
 #print type(message)
+            if isinstance(message, newReader):
+                replyService, selectable = message.object
+                L = self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
+                L.showtransit = 0
+
+            if isinstance(message, newWriter):
+                replyService, selectable = message.object
+                L = self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
+                L.showtransit = 0
+
+            if isinstance(message, newExceptional):
+                replyService, selectable = message.object
+                self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
+
             if isinstance(message, removeReader):
                 selectable = message.object
                 self.removeLinks(selectable, meta[READERS], readers)
@@ -211,27 +204,8 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                 selectable = message.object
                 self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
 
-            if isinstance(message, newReader):
-                replyService, selectable = message.object
-                L = self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
-#                print "new reader",selectable
-                L.showtransit = 0
-
-            if isinstance(message, newWriter):
-                replyService, selectable = message.object
-                L = self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
-                L.showtransit = 0
-
-            if isinstance(message, newExceptional):
-                replyService, selectable = message.object
-                self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
-
-    def trackedBy(self, tracker):
-        self.trackedby = tracker
-
     def main(self):
         """Main loop"""
-        global timeout
         readers,writers, exceptionals = [],[], []
         selections = [readers,writers, exceptionals]
         meta = [ {}, {}, {} ]
@@ -239,50 +213,15 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             self.sync()        # momentary pause-ish thing
         last = 0
         numberOfFailedSelectsDueToBadFileDescriptor = 0
-        shuttingDown = False
-        timewithNone = 0
         while 1: # SmokeTests_Selector.test_RunsForever
             if self.dataReady("control"):
-#                print "recieved control message"
                 message = self.recv("control")
                 if isinstance(message,shutdown):
-#                   print "recieved shutdown message"
-                   shutdownStart = time.time()
-                   timeWithNooneUsing = 0
-                   shuttingDown = True
-                   if self.trackedby is not None:
-#                       print "we are indeed tracked"
-                       try:
-                           self.trackedby.deRegisterService("selector")
-                       except Axon.AxonExceptions.MultipleServiceDeletion:
-                           pass
-                            
-                       try:
-                           self.trackedby.deRegisterService("selectorshutdown")
-                       except Axon.AxonExceptions.MultipleServiceDeletion:
-                           pass
-                       self.trackedby = None
-            if shuttingDown:
-#               print "we're shutting down"
-               if len(readers) + len(writers) + len(exceptionals) == 0:
-                   if timeWithNooneUsing == 0:
-#                       print "starting timeout"
-                       timeWithNooneUsing = time.time()
-                   else:
-                       if time.time() - timeWithNooneUsing > timeout:
-#                           print "Yay, timed out!"
-                           break # exit the loop
-               else:
-                   timeWithNooneUsing == 0 # reset this to zero if readers/writers/excepts goes up again...
-#               else:
-#                   print "But someone is still using us...."
-#                   print readers, writers, exceptionals
-                   
+                   return
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
-                timewithNone = 0
                 try:
-                    read_write_except = select.select(readers, writers, exceptionals,0.05) #0.05
+                    read_write_except = select.select(readers, writers, exceptionals,5) #0.05
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
                     
                     for i in xrange(3):
@@ -290,7 +229,6 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 #                            try:
                                 replyService, outbox, linkage = meta[i][selectable]
                                 self.send(selectable, outbox)
-#                                print "sent",selectable,"to",outbox
                                 replyService, outbox, linkage = None, None, None
                                 # Note we remove the selectable until we know the reason for it being here has cleared.
                                 self.removeLinks(selectable, meta[i], selections[i]) 
@@ -307,56 +245,13 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             # For the moment, we simply raise an exception.
                             # We could brute force our way through the list of descriptors
                             # to find the broken ones, and remove
-#                            print "We're failing here for some reason"
-#                            print "readers, writers, exceptionals", readers, writers, exceptionals
-                            raise e
-
-                except select.error, e:
-                    if e[0] == 9:
-                        numberOfFailedSelectsDueToBadFileDescriptor +=1
-                        if numberOfFailedSelectsDueToBadFileDescriptor > 1000:
-                            # For the moment, we simply raise an exception.
-                            # We could brute force our way through the list of descriptors
-                            # to find the broken ones, and remove
-#                            print "We're failing here for some reason"
-#                            print "readers, writers, exceptionals", readers, writers, exceptionals
                             raise e
 
                 self.sync()
-
             elif not self.anyReady():
-                #  no readers, writers, or anything - wait a few moments just in case
-                timewithNone += 1
-                self.pause(0.5)        # pause - we're not selecting on anything, timeout becuase of shutdown timeout needs
+                self.sync()        # momentary pause-ish thing
             else:
-                timewithNone += 1
-#                print "HMM"
-
-            if timewithNone > 6: # XXXX replace with STM code
-                break	
-
-        if self.trackedby is not None:
-               try:
-                   self.trackedby.deRegisterService("selector")
-               except Axon.AxonExceptions.MultipleServiceDeletion:
-                   pass
-               try:
-                   self.trackedby.deRegisterService("selectorshutdown")
-               except Axon.AxonExceptions.MultipleServiceDeletion:
-                   pass
-
-        if self.trackedby is not None:
-           try:
-                self.trackedby.deRegisterService("selector")
-           except Axon.AxonExceptions.MultipleServiceDeletion:
-               pass
-           try:
-                self.trackedby.deRegisterService("selectorshutdown")
-           except Axon.AxonExceptions.MultipleServiceDeletion:
-               pass
-           self.trackedby = None
-#        print "SELECTOR HAS EXITTED"
-
+                print "HMM"
 
 
     def setSelectorServices(selector, tracker = None):
@@ -370,7 +265,6 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             tracker = cat.coordinatingassistanttracker.getcat()
         tracker.registerService("selector", selector, "notify")
         tracker.registerService("selectorshutdown", selector, "control")
-        selector.trackedBy(tracker)
     setSelectorServices = staticmethod(setSelectorServices)
 
     def getSelectorServices(tracker=None): # STATIC METHOD

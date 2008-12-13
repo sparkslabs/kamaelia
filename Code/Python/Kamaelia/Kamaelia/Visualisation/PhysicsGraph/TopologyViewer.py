@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -34,14 +34,12 @@ applications.
 Example Usage
 -------------
 A simple console driven topology viewer::
-
-    Pipeline( ConsoleReader(),
+    pipeline( ConsoleReader(),
               lines_to_tokenlists(),
-              TopologyViewer(),
+              TopologyViewerComponent(),
             ).run()
 
 Then at runtime try typing these commands to change the topology in real time::
-
     >>> DEL ALL
     >>> ADD NODE 1 "1st node" randompos -
     >>> ADD NODE 2 "2nd node" randompos -
@@ -57,7 +55,7 @@ Then at runtime try typing these commands to change the topology in real time::
 User Interface
 --------------
 
-TopologyViewer manifests as a pygame display surface. As it is sent
+TopologyViewerComponent manifests as a pygame display surface. As it is sent
 topology information nodes and links between them will appear.
 
 You can click a node with the mouse to select it. Depending on the application,
@@ -80,7 +78,7 @@ Press the 'f' key to toggle between windowed and fullscreen modes.
 How does it work?
 -----------------
 
-TopologyViewer is a specialisation of the Kamaeila.UI.MH.PyGameApp
+TopologyViewerComponent is a specialisation of the Kamaeila.UI.MH.PyGameApp
 component. See documentation for that component to understand how it obtains
 and handles events for a pygame display surface.
 
@@ -90,14 +88,13 @@ You can specify an initial topology by providing a list of instantiated
 particles and another list of pairs of those particles to show how they are 
 linked.
 
-TopologyViewer reponds to commands arriving at its "inbox" inbox
+TopologyViewerComponent reponds to commands arriving at its "inbox" inbox
 instructing it on how to change the topology. A command is a list/tuple.
 
 Commands recognised are:
 
     [ "ADD", "NODE", <id>, <name>, <posSpec>, <particle type> ]
         Add a node, using:
-          
         - id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.
         - name          -- string name label for the particle
         - posSpec       -- string describing initial x,y (see _generateXY)
@@ -138,7 +135,7 @@ handling of commands.
 However, there is a 1 second timeout, so at least one update of the visual
 output is guaranteed per second.
 
-TopologyViewer sends any output to its "outbox" outbox in the same
+TopologyViewerComponent sends any output to its "outbox" outbox in the same
 list/tuple format as used for commands sent to its "inbox" inbox. The following
 may be output:
 
@@ -157,29 +154,19 @@ may be output:
         The list will start with a ("DEL","ALL") command.
         This is sent in response to receiving a ("GET","ALL") command.
 
-Termination
------------
-
-If a shutdownMicroprocess message is received on this component's "control"
-inbox this it will pass it on out of its "signal" outbox and immediately
-terminate.
-
-Historical note for short term: this has changed as of May 2008. In the past,
-this component would also shutdown when it recieved a producerFinished message.
-This has transpired to be a mistake for a number of different systems, hence
-the change to only shutting down when it recieves a  shutdownMicroprocess
-message.
+If a shutdownMicroprocess or producerFinished message is received on this
+component's "control" inbox this it will pass it on out of its "signal" outbox
+and immediately terminate.
 
 NOTE: Termination is currently rather cludgy - it raises an exception which
 will cause the rest of a kamaelia system to halt. Do not rely on this behaviour
-as it will be changed to provide cleaner termination at some point.
+ as it will be changed to provide cleaner termination at some point.
 
 
 Customising the topology viewer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can customise:
-
 - the 'types' of particles (nodes)
 - visual appearance of particles (nodes) and the links between them;
 - the physics laws used to assist with layout
@@ -195,13 +182,12 @@ Use the particleTypes argument of the initialiser to specify classes that
 should be instantiated to render each type of particle (nodes). particleTypes 
 should be a dictionary mapping names for particle types to the respective 
 classes, for example::
-
     { "major" : BigParticle,  "minor"  : SmallParticle  }
 
 See below for information on how to write your own particle classes.
 
 Layout of the nodes on the surface is assisted by a physics model, provided
-by an instance of the Kamaelia.Support.Particles.ParticleSystem class.
+by an instance of the Kamaelia.Physics.Simple.ParticleSystem class.
 
 Customise the laws used for each particle type by providing a
 Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.
@@ -210,7 +196,7 @@ Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.
 Writing your own particle class
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-should inherit from Kamaelia.Support.Particles.Particle and implement the following
+should inherit from Kamaelia.Physics.Simple.Particle and implement the following
 methods (for rendering purposes):
 
     setOffset( (left,top) )
@@ -230,13 +216,13 @@ methods (for rendering purposes):
         below)
     
 The coordinates of the particle are updated automatically both due to mouse 
-dragging and due to the physics model. See Kamaelia.Support.Particles.Particle for
+dragging and due to the physics model. See Kamaelia.Physics.Simple.Particle for
 more information.
 
 The render(...) method should return a generator that will render the particle
 itself and its links/bonds to other particles.
 
-Rendering by the TopologyViewer is multi-pass. This is done so that
+Rendering by the TopologyViewerComponent is multi-pass. This is done so that
 irrespective of the order in which particles are chosen to be rendered,
 things that need to be rendered before (underneath) other things can be done
 consistently.
@@ -249,7 +235,6 @@ ascending numerical order.
 
 For example, Kamaelia.Visualisation.PhysicsGraph.RenderingParticle renders in
 two passes::
-
     def render(self, surface):
         yield 1
         # render lines for bonds *from* this particle *to* others
@@ -277,23 +262,22 @@ import sys
 import pygame
 
 import Axon
-import Kamaelia.Support.Particles
+import Kamaelia.Physics.Simple
 import Kamaelia.UI
 
-from Kamaelia.Visualisation.PhysicsGraph.GridRenderer import GridRenderer
-from Kamaelia.Visualisation.PhysicsGraph.ParticleDragger import ParticleDragger
-from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParticle
+from GridRenderer import GridRenderer
+from ParticleDragger import ParticleDragger
+from RenderingParticle import RenderingParticle
                   
-class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
+class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     """\
-    TopologyViewer(...) -> new TopologyViewer component.
+    TopologyViewerComponent(...) -> new TopologyViewerComponent component.
     
     A component that takes incoming topology (change) data and displays it live
     using pygame. A simple physics model assists with visual layout. Particle
     types, appearance and physics interactions can be customised.
     
     Keyword arguments (in order):
-    
     - screensize          -- (width,height) of the display area (default = (800,600))
     - fullscreen          -- True to start up in fullscreen mode (default = False)
     - caption             -- Caption for the pygame window (default = "Topology Viewer")
@@ -312,12 +296,12 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                 "control"        : "Shutdown signalling",
                 "alphacontrol"   : "Alpha (transparency) of the image (value 0..255)",
                 "events"         : "Place where we recieve events from the outside world",
-                "displaycontrol" : "Replies from Pygame Display service",
+                "displaycontrol" : "Replies from PygameDisplay service",
               }
               
     Outboxes = { "signal"        : "NOT USED",
                  "outbox"        : "Notification and topology output",
-                 "displaysignal" : "Requests to Pygame Display service",
+                 "displaysignal" : "Requests to PygameDisplay service",
                }
                                                      
     
@@ -335,8 +319,9 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                        position           = None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
 
-        super(TopologyViewer, self).__init__(screensize, caption, fullscreen, transparency=transparency, position=position)
+        super(TopologyViewerComponent, self).__init__(screensize, caption, fullscreen, transparency=transparency, position=position)
         self.border = border
+        pygame.mixer.quit()
         
         if particleTypes == None:
             self.particleTypes = {"-":RenderingParticle}
@@ -349,7 +334,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
         self.initialBonds   = list(initialTopology[1])
         
         if laws==None:
-            self.laws = Kamaelia.Support.Particles.SimpleLaws(bondLength=100)
+            self.laws = Kamaelia.Physics.Simple.SimpleLaws(bondLength=100)
         else:
             self.laws = laws
             
@@ -383,7 +368,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
         self.addHandler(pygame.KEYDOWN, self.keyDownHandler)
         self.addHandler(pygame.KEYUP,   self.keyUpHandler)
         
-        self.physics = Kamaelia.Support.Particles.ParticleSystem(self.laws, [], 0)
+        self.physics = Kamaelia.Physics.Simple.ParticleSystem(self.laws, [], 0)
         
         for node in self.initialNodes:
            self.addParticle(*node)
@@ -398,10 +383,6 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
         Main loop.
         
         Proceses commands from "inbox" inbox, runs physics simulation, then renders display
-        
-        FIXME: This is massively broken, this component overrides initialiseComponent,
-        and also has a main *AND* has a mainLoop. 
-        
         """
         # process incoming messages
         if self.dataReady("inbox"):
@@ -436,7 +417,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
 
         if self.dataReady("control"):
             msg = self.recv("control")
-            if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
+            if isinstance(msg, Axon.Ipc.producerFinished) or isinstance(msg, Axon.Ipc.shutdownMicroprocess):
                 self.send(msg, "signal")
                 self.quit()
             
@@ -675,8 +656,8 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     
     def quit(self, event=None):
         """Cause termination."""
-        super(TopologyViewer,self).quit(event)
-        raise "QUITTING"           ### XXX FIXME : need better shutdown than this!
+        super(TopologyViewerComponent,self).quit(event)
+        raise "QUITTING"           ### XXX VOMIT : need better shutdown than this!
         
     def scroll( self, (dx, dy) ):
         """Scroll the contents being displayed on the surface by (dx,dy) left and up."""
@@ -688,10 +669,10 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     def selectParticle(self, particle):
         """Select the specified particle."""
         if self.selected != particle:
-
+            
             if self.selected != None:
                 self.selected.deselect()
-
+                
             self.selected = particle
             nodeid = None
             if self.selected != None:
@@ -699,4 +680,5 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                 nodeid = self.selected.ID
             self.send( ("SELECT","NODE", nodeid), "outbox" )
 
-__kamaelia_components__  = ( TopologyViewer, )
+__kamaelia_components__  = ( TopologyViewerComponent, )
+        

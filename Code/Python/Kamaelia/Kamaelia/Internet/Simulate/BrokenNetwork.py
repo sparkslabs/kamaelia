@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2006 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -36,7 +36,7 @@ Example Usage
 
 Testing a forward-error correction scheme to cope with an unreliable network::
     
-    Pipeline( RateControlledFileReader("sourcefile",rate=1000000),
+    pipeline( RateControlledFileReader("sourcefile",rate=1000000),
               MyForwardErrorCorrector(),
               Duplicate(),
               Throwaway(),
@@ -137,8 +137,8 @@ __kamaelia_components__  = ( Duplicate, Throwaway, Reorder)
 
 if __name__ == "__main__":
     import time
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.Util.ConsoleEcho import consoleEchoer
 
     class Source(component):
        def __init__(self,  size=100):
@@ -194,11 +194,11 @@ if __name__ == "__main__":
                 del datasource[0]
 
 
-    Pipeline(Source(),
+    pipeline(Source(),
              Annotator(),
              Duplicate(),
              Throwaway(),
              Reorder(),
              RecoverOrder(),
-             ConsoleEchoer()
+             consoleEchoer()
     ).run()

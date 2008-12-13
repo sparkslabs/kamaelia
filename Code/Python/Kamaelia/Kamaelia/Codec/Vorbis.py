@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -48,7 +48,7 @@ class AOAudioPlaybackAdaptor(component):
 
    A simple player::
 
-       Pipeline(
+       pipeline(
            ReadFileAdaptor("somefile.ogg"),
            VorbisDecode(),
            AOAudioPlaybackAdaptor(),
@@ -98,7 +98,7 @@ class VorbisDecode(component):
 
    A simple player::
 
-       Pipeline(
+       pipeline(
            ReadFileAdaptor("somefile.ogg"),
            VorbisDecode(),
            AOAudioPlaybackAdaptor(),
@@ -161,7 +161,7 @@ if __name__ =="__main__":
    #
    # Simple Testing Spike
    #
-   from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+   from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
    class testHarness(component):
       def __init__(self):
          super(testHarness, self).__init__()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -24,20 +24,18 @@
 Pygame Video Overlay
 ====================
 
-Displays uncompressed video data on a pygame 'overlay' using the Pygame Display
+Displays uncompressed video data on a pygame 'overlay' using the PygameDisplay
 service.
 
 
 
 Example Usage
 -------------
-
-Read raw YUV data from a file and display it using VideoOverlay::
-
+::
     imagesize = (352, 288)        # "CIF" size video
     fps = 15                      # framerate of video
     
-    Pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
+    pipeline(ReadFileAdapter("raw352x288video.yuv", ...other args...),
              RawYUVFramer(imagesize),
              MessageRateLimit(messages_per_second=fps, buffer=fps*2)
              VideoOverlay()
@@ -56,7 +54,7 @@ The frames must be encoded as dictionary objects in the format described below.
 
 When the first frame is received, the component notes the size and pixel format
 of the video data and requests an appropriate 'overlay' surface from the
-Pygame Display service component, to which video can be rendered.
+PygameDisplay service component, to which video can be rendered.
 
 NOTE: Currently the only supported pixelformat is "YUV420_planar".
 
@@ -64,13 +62,13 @@ NOTE: A fudge factor is currently applied to the video size (see below)
 
 Included in the request is a reference to an outbox through which the component
 will send the yuv video data for future frames of video. For video overlays,
-the video data must be sent direct to the Pygame Display component rather than
+the video data must be sent direct to the PygameDisplay component rather than
 be rendered onto an intermediate surface.
 
 Also included in the request is the data for the first frame of video.
 
 When subsequent frames of video are received the yuv data is sent to the
-"yuvdata" outbox, which by now is linked to the Pygame Display component.
+"yuvdata" outbox, which by now is linked to the PygameDisplay component.
 
 If the frame of video is of a different pixel format or size then VideoOverlay
 will re-request a new overlay.
@@ -83,7 +81,6 @@ pygame display.
 
 Fudge factor
 ^^^^^^^^^^^^
-
 The size of overlay requested by the VideoOverlay component is adjusted by a
 fudge factor.
 
@@ -93,7 +90,6 @@ displayed right. The value must be even, and preferably small. Odd values result
 in the picture being sheared/slanted.
 
 This problem rears itself when the following version numbers are aligned:
-  
 - SDL : 1.2.8
 - pygame : Anything up to/including 1.7.1prerelease
 - xorg : 6.8.2
@@ -110,7 +106,6 @@ UNCOMPRESSED FRAME FORMAT
 
 Uncompresed video frames must be encoded as dictionaries. VidoeOverlay requires
 the following entries::
-
     {
       "yuv" : (y_data, u_data, v_data)  # a tuple of strings
       "size" : (width, height)          # in pixels
@@ -123,7 +118,7 @@ the following entries::
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-from Kamaelia.UI.GraphicDisplay import PygameDisplay
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 import pygame
 
 
@@ -156,11 +151,11 @@ OVERLAY_FUDGE_OFFSET_FACTOR = 2
 #
 # XXX VOMIT : does not get rid of an old overlay if a new one is requested
 #             (due to a change in video size/pixel format)
-#             resulting in overlays accumulating in Pygame Display
+#             resulting in overlays accumulating in PygameDisplay
 #
 #             Either the request for a new overlay must be suppressed, or the
 #             old overlay should be destroyed. The latter will require support
-#             for deallocating surfaces/overlays to be added to Pygame Display
+#             for deallocating surfaces/overlays to be added to PygameDisplay
 #             component
 #
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -171,7 +166,7 @@ class VideoOverlay(component):
     """\
     VideoOverlay() -> new VideoOverlay component
 
-    Displays a pygame video overlay using the Pygame Display service component.
+    Displays a pygame video overlay using the PygameDisplay service component.
     The overlay is sized and configured by the first frame of
     (uncompressed) video data is receives.
     
@@ -183,7 +178,7 @@ class VideoOverlay(component):
                }
     Outboxes = { "outbox"      : "NOT USED",
                  "signal"      : "Shutdown signalling",
-                 "displayctrl" : "Sending requests to the Pygame Display service",
+                 "displayctrl" : "Sending requests to the PygameDisplay service",
                  "yuvdata"     : "Sending yuv video data to overlay display service"
                }
 
@@ -260,14 +255,14 @@ __kamaelia_components__  = ( VideoOverlay, )
             
         
 if __name__ == "__main__":
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.Util.PipelineComponent import pipeline
+    from Kamaelia.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
     
-    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
-#    Pipeline( ReadFileAdaptor("test.yuv", readmode="bitrate", bitrate = 2280960*8),
-              RawYUVFramer(size=(352,288), pixformat = "YUV420_planar" ),
-#    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-720x576x50.yuv", readmode="bitrate", bitrate = 2280960*8*4),
+    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
+#    pipeline( ReadFileAdaptor("test.yuv", readmode="bitrate", bitrate = 2280960*8),
+              RawYUVFramer(size=(352,288), pixformat = pygame.IYUV_OVERLAY),
+#    pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-720x576x50.yuv", readmode="bitrate", bitrate = 2280960*8*4),
 #              RawYUVFramer(size=(720,576), pixformat = pygame.IYUV_OVERLAY),
               VideoOverlay(),
             ).run()
