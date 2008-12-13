@@ -15,8 +15,8 @@ from Kamaelia.UI.Pygame.Text import TextDisplayer, Textbox
 from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
 
 from Kamaelia.Apps.Whiteboard.Canvas import Canvas
-from Kamaelia.Apps.SpeakNLearn.Gestures.StrokeRecogniser import StrokeRecogniser
-from Kamaelia.Apps.SpeakNLearn.Gestures.Pen import Pen
+from Kamaelia.Apps.SpeakNWrite.Gestures.StrokeRecogniser import StrokeRecogniser
+from Kamaelia.Apps.SpeakNWrite.Gestures.Pen import Pen
 
 from Kamaelia.Visualisation.Axon.AxonVisualiserServer import AxonVisualiser, text_to_token_lists
 
