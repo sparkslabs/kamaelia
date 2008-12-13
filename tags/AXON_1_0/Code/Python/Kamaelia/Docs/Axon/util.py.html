@@ -1,0 +1,59 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:Sans Serif">
+<p><img align=right src=cat.gif ></p>
+<p><span style="font-size:21pt">Axon.</span><span style="font-size:21pt;font-weight:600">util.py</span></p>
+<p>Version: Axon 1.0</p>
+<p>Selection of utility functions and classes. (All highly trivial)</p>
+<p><span style="font-weight:600">TODO:</span> Fix test suite doc strings for auto testdocs</p>
+<p></p>
+<p><span style="font-size:14pt;font-weight:600">Pydoc Style Documentation</span></p>
+<p><span style="font-weight:600">CLASSES</span></p>
+<p>class Finality(exceptions.Exception)</p>
+<ul type="disc"><li>Used for implementing try...finally... inside a generator</li></ul>
+<p><span style="font-weight:600">FUNCTIONS</span></p>
+<p><span style="font-weight:600">axonRaise(someException, *args)</span></p>
+<p></p>
+<p><span style="font-weight:600">listSubset(requiredList, suppliedList)</span></p>
+<p></p>
+<p><span style="font-weight:600">logError(someException, *args)</span></p>
+<ul type="disc"><li>Currently does nothing but can be rewritten to log ignored errors if the production value is true.</li></ul>
+<p></p>
+<p><span style="font-weight:600">removeAll(xs, y)</span></p>
+<ul type="disc"><li>Very simplistic method of removing all occurances of y in list xs.</li></ul>
+<p></p>
+<p><span style="font-weight:600">safeList(arg=None)</span></p>
+<p></p>
+<p><span style="font-weight:600">testInterface(theComponent, interface)</span></p>
+<p>        Look for a minimal match interface for the component</p>
+<p></p>
+<p><span style="font-weight:600">DATA</span></p>
+<p>    production = False</p>
+<p></p>
+<p><span style="font-size:14pt;font-weight:600">Testdoc Documentation</span></p>
+<p><span style="font-weight:600">Finality</span></p>
+<ul type="disc"><li>dummy class deriving from Exception - used for implementing try...finally in a generator</li></ul>
+<p></p>
+<p><span style="font-weight:600">axonRaise</span></p>
+<ul type="disc"><li>behaviour depends on the value of production.  If true it will simply return False.  Otherwise it will throw an exception of the type passed to it with the other arguments passed to the constructor.</li></ul>
+<p><span style="font-weight:600">listSubset</span></p>
+<ul type="disc"><li>returns true if the first list argument is a subset of the second list argument</li></ul>
+<p><span style="font-weight:600">logError</span></p>
+<ul type="disc"><li>At the moment this function does nothing but can be rewritten to log ignored exception data.  Equally the test does nothing.</li></ul>
+<p><span style="font-weight:600">production</span></p>
+<ul type="disc"><li>Is a module value that turns off some exception to make the system tolerant of failure when running in production. For development and testing it should be False to allow uncaught exceptions to bring down the system.</li></ul>
+<p><span style="font-weight:600">removeAll - (xs:list,y)</span></p>
+<ul type="disc"><li>removes all occurances of y from the list xs.</li></ul>
+<p><span style="font-weight:600">safeList</span></p>
+<ul type="disc"><li>always returns a list even if the arg for constructing the list would normally cause a typeerror.</li></ul>
+<p><span style="font-weight:600">safeList</span></p>
+<ul type="disc"><li>Like list it returns an empty list when called without an argument.</li></ul>
+<p><span style="font-weight:600">safeList</span></p>
+<ul type="disc"><li>Returns an empty list if the argument would cause a TypeError if passed to list().  That is anything without an iterator method.</li></ul>
+<p><span style="font-weight:600">testInterface</span></p>
+<ul type="disc"><li>returns true for a _minimal match_ on the interface of the component</li>
+<li>In production mode failed tests will return false.  Otherwise they will throw an exception that is likely to stop the system.</li></ul>
+<p></p>
+<p>Michael, December 2004</p>
+<p></p>
+<p><hr></p>
+<p><a href="http://www.opensource.org/docs/definition.php"> <img align=right border=0 height=31 src=http://opensource.org/trademarks/open_source_button.png width=88 ></a><a href="http://sourceforge.net"> <img align=right alt="SourceForge.net Logo" border=0 height=31 src=http://sourceforge.net/sflogo.php?group_id ></a></p>
+</body></html>
