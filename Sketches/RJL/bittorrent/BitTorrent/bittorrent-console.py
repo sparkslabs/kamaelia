@@ -12,8 +12,6 @@
 
 # Written by Bram Cohen, Uoti Urpala and John Hoffman
 
-# Converted to a kamaelia threadedcomponent by Ryan Lothian
-
 from __future__ import division
 
 from BitTorrent.platform import install_translation
@@ -22,12 +20,8 @@ install_translation()
 import sys
 import os
 import threading
-
-from time import time, strftime, sleep
+from time import time, strftime
 from cStringIO import StringIO
-
-from Axon.ThreadedComponent import threadedcomponent
-from Axon.Component import component
 
 from BitTorrent.download import Feedback, Multitorrent
 from BitTorrent.defaultargs import get_defaults
@@ -41,103 +35,195 @@ from BitTorrent import BTFailure
 from BitTorrent import version
 from BitTorrent import GetTorrent
 
-class Lagger(component):
-	def main(self):
-		while 1:
-			yield 1
-			sleep(0.05)
+
+def fmttime(n):
+    if n == 0:
+        return _("download complete!")
+    try:
+        n = int(n)
+        assert n >= 0 and n < 5184000  # 60 days
+    except:
+        return _("<unknown>")
+    m, s = divmod(n, 60)
+    h, m = divmod(m, 60)
+    return _("finishing in %d:%02d:%02d") % (h, m, s)
+
+def fmtsize(n):
+    s = str(n)
+    size = s[-3:]
+    while len(s) > 3:
+        s = s[:-3]
+        size = '%s,%s' % (s[-3:], size)
+    if n > 999:
+        unit = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+        i = 1
+        while i + 1 < len(unit) and (n >> 10) >= 999:
+            i += 1
+            n >>= 10
+        n /= (1 << 10)
+        size = '%s (%.0f %s)' % (size, n, unit[i])
+    return size
 
 
-class TorrentClient(threadedcomponent):
-    """Using threadedcomponent so we don't have to worry about blocking IO or making
-    mainline yield periodically"""
-    
-    Inboxes  = { "inbox"   : "Commands, e.g. shutdown",
-                "control" : "NOT USED",
-              }
-    Outboxes = { "outbox" : "State change information, e.g. finished",
-                "signal" : "NOT USED",
-              }
+class HeadlessDisplayer(object):
 
-    def __init__(self, torrentfilename):
-        super(TorrentClient, self).__init__()
-        self.torrentfilename = torrentfilename
+    def __init__(self, doneflag):
+        self.doneflag = doneflag
+
         self.done = False
-        
-    def main(self):
-        print "TorrentClient.run"
-        """Main loop"""
-        uiname = 'bittorrent-console'
-        defaults = get_defaults(uiname)
-        defaults.append(('twisted', 0,
-     _("Use Twisted network libraries for network connections. 1 means use twisted, 0 means do not use twisted, -1 means autodetect, and prefer twisted")))
-        
-        metainfo = None
-        config, args = configfile.parse_configuration_and_args(defaults, uiname)
+        self.percentDone = ''
+        self.timeEst = ''
+        self.downRate = '---'
+        self.upRate = '---'
+        self.shareRating = ''
+        self.seedStatus = ''
+        self.peerStatus = ''
+        self.errors = []
+        self.file = ''
+        self.downloadTo = ''
+        self.fileSize = ''
+        self.numpieces = 0
 
-        try:
-            metainfo, errors = GetTorrent.get( self.torrentfilename )
-            if errors:
-                raise BTFailure(_("Error reading .torrent file: ") + '\n'.join(errors))
-            else:
-                self.dl = DLKamaelia(metainfo, config, self)
-                self.dl.run()
-        except BTFailure, e:
-            print str(e)
-            sys.exit(1)
-        self.outqueues["outbox"].put("exited")
-        
-    def checkInboxes(self):
-        while not self.inqueues["inbox"].empty():
-            command = self.inqueues["inbox"].get()
-            if command == "shutdown":
-                self.dl.multitorrent.rawserver.doneflag.set()
-
-    def finished(self):
-        """Called by DL class when the download has completed successfully"""
-        self.done = True
-        self.send("complete", "outbox")
-        print "BitTorrent debug: finished"
-
-    def error(self, errormsg):
-        """Called by DL if an error occurs"""
-        print strftime('[%H:%M:%S] ') + errormsg
-        self.send("failed", "outbox")
-
-    def display(self, statistics):
-        """Called by DL to display status updates"""
-        # Forward on to next component
-        self.send(statistics, "outbox")
-        
     def set_torrent_values(self, name, path, size, numpieces):
         self.file = name
         self.downloadTo = path
-        self.fileSize = size
+        self.fileSize = fmtsize(size)
         self.numpieces = numpieces
 
-class DLKamaelia(Feedback):
-    """This class accepts feedback from the multitorrent downloader class
-    which it can then pass back to the inboxes of TorrentClient"""
-    def __init__(self, metainfo, config, interface):
+    def finished(self):
+        self.done = True
+        self.downRate = '---'
+        self.display({'activity':_("download succeeded"), 'fractionDone':1})
+
+    def error(self, errormsg):
+        newerrmsg = strftime('[%H:%M:%S] ') + errormsg
+        self.errors.append(newerrmsg)
+        self.display({})
+
+    def display(self, statistics):
+        fractionDone = statistics.get('fractionDone')
+        activity = statistics.get('activity')
+        timeEst = statistics.get('timeEst')
+        downRate = statistics.get('downRate')
+        upRate = statistics.get('upRate')
+        spew = statistics.get('spew')
+
+        print '\n\n\n\n'
+        if spew is not None:
+            self.print_spew(spew)
+
+        if timeEst is not None:
+            self.timeEst = fmttime(timeEst)
+        elif activity is not None:
+            self.timeEst = activity
+
+        if fractionDone is not None:
+            self.percentDone = str(int(fractionDone * 1000) / 10)
+        if downRate is not None:
+            self.downRate = '%.1f KB/s' % (downRate / (1 << 10))
+        if upRate is not None:
+            self.upRate = '%.1f KB/s' % (upRate / (1 << 10))
+        downTotal = statistics.get('downTotal')
+        if downTotal is not None:
+            upTotal = statistics['upTotal']
+            if downTotal <= upTotal / 100:
+                self.shareRating = _("oo  (%.1f MB up / %.1f MB down)") % (
+                    upTotal / (1<<20), downTotal / (1<<20))
+            else:
+                self.shareRating = _("%.3f  (%.1f MB up / %.1f MB down)") % (
+                   upTotal / downTotal, upTotal / (1<<20), downTotal / (1<<20))
+            numCopies = statistics['numCopies']
+            nextCopies = ', '.join(["%d:%.1f%%" % (a,int(b*1000)/10) for a,b in
+                    zip(xrange(numCopies+1, 1000), statistics['numCopyList'])])
+            if not self.done:
+                self.seedStatus = _("%d seen now, plus %d distributed copies "
+                                    "(%s)") % (statistics['numSeeds' ],
+                                               statistics['numCopies'],
+                                               nextCopies)
+            else:
+                self.seedStatus = _("%d distributed copies (next: %s)") % (
+                    statistics['numCopies'], nextCopies)
+            self.peerStatus = _("%d seen now") % statistics['numPeers']
+
+        for err in self.errors[-4:]:
+            print _("ERROR:\n") + err + '\n'
+        print _("saving:        "), self.file
+        print _("file size:     "), self.fileSize
+        print _("percent done:  "), self.percentDone
+        print _("time left:     "), self.timeEst
+        print _("download to:   "), self.downloadTo
+        print _("download rate: "), self.downRate
+        print _("upload rate:   "), self.upRate
+        print _("share rating:  "), self.shareRating
+        print _("seed status:   "), self.seedStatus
+        print _("peer status:   "), self.peerStatus
+
+    def print_spew(self, spew):
+        s = StringIO()
+        s.write('\n\n\n')
+        for c in spew:
+            s.write('%20s ' % c['ip'])
+            if c['initiation'] == 'L':
+                s.write('l')
+            else:
+                s.write('r')
+            total, rate, interested, choked = c['upload']
+            s.write(' %10s %10s ' % (str(int(total/10485.76)/100),
+                                     str(int(rate))))
+            if c['is_optimistic_unchoke']:
+                s.write('*')
+            else:
+                s.write(' ')
+            if interested:
+                s.write('i')
+            else:
+                s.write(' ')
+            if choked:
+                s.write('c')
+            else:
+                s.write(' ')
+
+            total, rate, interested, choked, snubbed = c['download']
+            s.write(' %10s %10s ' % (str(int(total/10485.76)/100),
+                                     str(int(rate))))
+            if interested:
+                s.write('i')
+            else:
+                s.write(' ')
+            if choked:
+                s.write('c')
+            else:
+                s.write(' ')
+            if snubbed:
+                s.write('s')
+            else:
+                s.write(' ')
+            s.write('\n')
+        print s.getvalue()
+
+
+class DL(Feedback):
+
+    def __init__(self, metainfo, config):
         self.doneflag = threading.Event()
         self.metainfo = metainfo
         self.config = Preferences().initWithDict(config)
-        self.d = interface
-        
+
     def run(self):
+        self.d = HeadlessDisplayer(self.doneflag)
         try:
             self.multitorrent = Multitorrent(self.config, self.doneflag,
                                              self.global_error)
             # raises BTFailure if bad
             metainfo = ConvertedMetainfo(bdecode(self.metainfo))
             torrent_name = metainfo.name_fs
-            if self.config['save_as']:
-                if self.config['save_in']:
+            if config['save_as']:
+                if config['save_in']:
                     raise BTFailure(_("You cannot specify both --save_as and "
                                       "--save_in"))
-                saveas = self.config['save_as']
-            elif self.config['save_in']:
-                saveas = os.path.join(self.config['save_in'], torrent_name)
+                saveas = config['save_as']
+            elif config['save_in']:
+                saveas = os.path.join(config['save_in'], torrent_name)
             else:
                 saveas = torrent_name
 
@@ -149,11 +235,10 @@ class DLKamaelia(Feedback):
             print str(e)
             return
         self.get_status()
-        #self.multitorrent.rawserver.install_sigint_handler() - can only be done on the main thread so does not work with Kamaelia
-        self.multitorrent.rawserver.listen_forever( self.d )
+        self.multitorrent.rawserver.install_sigint_handler()
+        self.multitorrent.rawserver.listen_forever()
         self.d.display({'activity':_("shutting down"), 'fractionDone':0})
         self.torrent.shutdown()
-        print "BitTorrent Debug: shutting down"
 
     def reread_config(self):
         try:
@@ -189,13 +274,35 @@ class DLKamaelia(Feedback):
     def finished(self, torrent):
         self.d.finished()
 
+
 if __name__ == '__main__':
-    from Kamaelia.Util.PipelineComponent import pipeline
-    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-    
-    # download a linux distro
-    pipeline(
-        ConsoleReader(">>> ", ""),
-        TorrentClient("http://www.tlm-project.org/public/distributions/damnsmall/current/dsl-2.4.iso.torrent"),
-        ConsoleEchoer(),
-    ).run()
+    uiname = 'bittorrent-console'
+    defaults = get_defaults(uiname)
+
+    metainfo = None
+    if len(sys.argv) <= 1:
+        printHelp(uiname, defaults)
+        sys.exit(1)
+    try:
+        config, args = configfile.parse_configuration_and_args(defaults,
+                                       uiname, sys.argv[1:], 0, 1)
+
+        torrentfile = None
+        if len(args):
+            torrentfile = args[0]
+        for opt in ('responsefile', 'url'):
+            if config[opt]:
+                print '"--%s"' % opt, _("deprecated, do not use")
+                torrentfile = config[opt]
+        if torrentfile is not None:
+            metainfo, errors = GetTorrent.get(torrentfile)
+            if errors:
+                raise BTFailure(_("Error reading .torrent file: ") + '\n'.join(errors))
+        else:
+            raise BTFailure(_("you must specify a .torrent file"))
+    except BTFailure, e:
+        print str(e)
+        sys.exit(1)
+
+    dl = DL(metainfo, config)
+    dl.run()

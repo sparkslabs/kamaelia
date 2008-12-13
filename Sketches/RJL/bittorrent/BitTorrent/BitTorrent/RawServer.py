@@ -327,10 +327,7 @@ class RawServer(object):
 
     # must be called from the main thread
     def install_sigint_handler(self):
-        try:
-            signal.signal(signal.SIGINT, self._handler)
-        except ValueError: #if we weren't the main thread...
-            pass
+        signal.signal(signal.SIGINT, self._handler)
 
     def _handler(self, signum, frame):
         self.external_add_task(self.doneflag.set, 0)
@@ -408,16 +405,11 @@ class RawServer(object):
             task = self.externally_added_tasks.pop(0)
             self.add_task(*task)
 
-	"""Modified for Kamaelia compatiblity - basically allowing the wrapper component to get a 'time-slice' for signal processing"""
-    def listen_forever(self, wrappercomponent = None):
+    def listen_forever(self):
         ret = 0
         self.ident = thread.get_ident()
-        """The main loop in all its glory"""
         while not self.doneflag.isSet() and not ret:
             ret = self.listen_once()
-            if wrappercomponent:
-                wrappercomponent.checkInboxes()
-			
             
     def listen_once(self, period=1e9):
         try:
