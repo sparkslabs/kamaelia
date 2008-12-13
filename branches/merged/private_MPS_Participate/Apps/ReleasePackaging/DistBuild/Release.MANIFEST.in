@@ -1,0 +1,15 @@
+include COPYING
+include AUTHORS
+include CHANGELOG
+include Axon.README
+include Kamaelia.README
+include Axon.CHANGELOG
+include Kamaelia.CHANGELOG
+include Kamaelia/debug.conf
+include Kamaelia/afortune.pl
+recursive-include Kamaelia *
+recursive-include App *
+recursive-include Axon *
+recursive-include Examples *
+recursive-include Docs *
+recursive-include Tools *
