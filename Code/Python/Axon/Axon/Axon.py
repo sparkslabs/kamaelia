@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.3
 #
-# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+# (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -19,50 +19,20 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
-"""\
-=================
-Axon base classes
-=================
-
-What is defined here is a metaclass that is used as a base class for some key
-classes in Axon.
-
-It was originally created to allow super class calling in a slightly nicer
-manner in terms of syntactic sugar easier to get right that still
-has the good effects of "super" in a multiple inheritance scenario. **Use of
-this particular feature has been deprecated** because of more subtle issues in
-inheritance situations.
-
-However this metaclass has been retained (and is still used) for possible future
-uses.
-
-* AxonObject is the base class for Axon.Microprocess.microprocess and
-  Axon.Linkage.linkage
-
-"""
+#
+#
+# Define a metaclass that allows super class calling in a slightly nicer
+# manner in terms of syntactic sugar/easier to get right that still has
+# the good effects of "super" in a multiple inheritance scenario.
+#
+#
 
 class AxonType(type):
-   """\
-   Metaclass for Axon objects.
-   """
-    
    def __init__(cls, name, bases, dict):
-      """\
-      Override creation of class to set a 'super' attribute to what you get
-      when you call super().
-
-      **Note** that this 'super' attribute is deprecated - there are some subtle
-      issues with it and it should therefore be avoided.
-      """
       super(AxonType, cls).__init__(name, bases, dict)
       setattr(cls, "_%s__super" % name, super(cls))
 
 class AxonObject(object):
-   """\
-   Base class for axon objects.
-
-   Uses AxonType as its metaclass.
-   """
    __metaclass__ = AxonType
    pass
 

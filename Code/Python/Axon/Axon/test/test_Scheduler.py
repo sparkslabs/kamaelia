@@ -19,19 +19,33 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+#
+# Aim: Full coverage testing of the
+#
 
-class AxonException(Exception):
-   def __init__(self, *args):
-      self.args = args
+# Test the module loads
+import unittest
+import sys ; sys.path.append("..")
 
-class normalShutdown(AxonException): pass
-class invalidComponentInterface(AxonException): pass
-class noSpaceInBox(AxonException): pass
-class BadParentTracker(AxonException): pass
-class ServiceAlreadyExists(AxonException): pass
-class BadComponent(AxonException): pass
-class BadInbox(AxonException): pass
-class MultipleServiceDeletion(AxonException): pass
-class NamespaceClash(AxonException): pass
-class AccessToUndeclaredTrackedVariable(AxonException): pass
-class ArgumentsClash(AxonException): pass
+# import preconditions record values
+from Scheduler import *
+
+class scheduler_Test(unittest.TestCase):
+   def setUp(self):
+      pass
+   def test_importsuccess(self):
+      self.failUnless(microprocess.schedulerClass is scheduler)
+      self.failUnless(scheduler.run)
+   def test_SmokeTest_NoArguments(self):
+      "__init__ - Called with no arguments ... "
+      scheduler.run = None
+      s=scheduler()
+      self.failUnless(scheduler.run is s)
+      
+   def test_sensiblestructure(self):
+      "Conceptual issue to discuss"
+      self.fail("Rip out the slowmo stuff from the the scheduler.  Instead make a component that blocks the right amount of time to slow down the system.  This would leave a far simpler system and make dynamic control easier.")
+      
+
+if __name__=='__main__':
+   unittest.main()

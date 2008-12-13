@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.3
 #
 # (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -19,25 +19,19 @@
 # Please contact us via: kamaelia-list-owner@lists.sourceforge.net
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
+#
+# Tests __str__ for different classes
+#
 
-from distutils.core import setup
+import unittest
 
-setup(name = "Axon",
-      version = "1.0.4",
-      description = "Axon - Asynchronous Isolated Generator Component System",
-      author = "Michael",
-      author_email = "ms_@users.sourceforge.net",
-      url = "http://kamaelia.sourceforge.net/",
-      license = "(c)2004 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
-      packages = ["Axon",
-                  ""],
-      long_description = """
-Axon is a software component system. In Axon, components are active and
-reactive, independent processing nodes responding to a CSP-like environment.
-Systems are composed by creating communications channels (linkages) between
-components.
-"""
-      )
-      
+class str_Test(unittest.TestCase):
+   classtotest=None
 
+   def test___str__(self):
+      if not self.__class__ is str_Test:
+         a = self.__class__.classtotest()
+         b = self.__class__.classtotest()
+         self.failIf(str(a)==str(b), "str does not produce a result unique to" + self.__class__.classtotest.__name__ +" instance.")
+         self.failUnless(str(a)==str(a),"str does not produce a consistent result")
 
