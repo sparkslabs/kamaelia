@@ -143,6 +143,21 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(TopologyViewer3DWithParams, self).__init__(**argd)
     
+    
+    def updateParticle(self, node_id, **params):
+        """\
+        updateParticle(node_id, **params) -> updates the given node's parameters/attributes if it exists
+        
+        node_id - an id for an already existing node
+        **params - the updated parameters/attributes dictionary of the particle, e.g. name, texture, colour and size
+        """
+        for p in self.physics.particles:
+            if p.ID == node_id:
+                p.updateAttrs(**params)
+                p.needRedraw = True
+                return
+            
+    
     def doCommand(self, msg):
         """\
         Proceses a topology command tuple:
@@ -225,13 +240,20 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
             elif cmd == ("GET_NAME", "NODE") and len(msg) == 3:
                 node_id = msg[2]
                 name = self.getParticleLabel(node_id)
-                self.send( ("GET_NAME", "NODE", node_id, name), "outbox" )        
+                self.send( ("GET_NAME", "NODE", node_id, name), "outbox" )
+                
+            elif cmd == ("UPDATE", "NODE") and len(msg) == 4:
+                node_id = msg[2]
+                params = paramStr2paramDict(msg[3])
+                self.updateParticle(node_id, **params)
+                self.send( ("UPDATE", "NODE", node_id, msg[3]), "outbox" )        
             else:
                 print "Command Error: please check your command format!"
         else:
             print "Command Error: not enough parameters!"
 
 __kamaelia_components__  = ( TopologyViewer3DWithParams, )
+
 
 
 if __name__ == "__main__":

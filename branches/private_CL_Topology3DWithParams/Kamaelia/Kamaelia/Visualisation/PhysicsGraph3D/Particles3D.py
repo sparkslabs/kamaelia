@@ -264,6 +264,13 @@ class Particle3D(BaseParticle):
         self.radius = self.size.length()/2
     
     
+    def updateAttrs(self, **params):
+        """Update attributes."""
+        for key, value in params.iteritems():
+            setattr(self, key, value)
+        self.buildCaption()
+        
+                
     def draw(self):
         """\Stub method
         Override this method to draw concrete particles and links.
