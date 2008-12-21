@@ -25,7 +25,7 @@
 Generic 3D Topology Viewer With more Parameters supports
 ===========================================================
 
-Extend TopologyViewer3D by supporting additional parameters of "ADD" commands.
+Extend TopologyViewer3D by supporting additional parameters of "ADD" and "UPDATE" commands.
 
 
 
@@ -44,6 +44,8 @@ Then at runtime try typing these commands to change the topology in real time::
     >>> ADD NODE 1 "1st node" (0,0,-10) teapot
     >>> ADD NODE 2 "2nd node" randompos sphere image=../../../Docs/cat.gif
     >>> ADD NODE 3 "3rd node" randompos - bgcolour=(255,255,0);bgcolour=(0,255,255)
+    >>> UPDATE NODE 1 name=1st;bgcolour=(0,255,0)
+    >>> UPDATE NODE 3 name=3rd;bgcolour=(255,0,0);fgcolour=(0,0,255);fontsize=100
     >>> ADD NODE 1:1 "1st child node of the 1st node" " ( 0 , 0 , -10 ) " -
     >>> ADD NODE 1:2 "2nd child node of the 1st node" randompos - "fontsize = 20"
     >>> ADD LINK 1 2
@@ -57,10 +59,13 @@ Then at runtime try typing these commands to change the topology in real time::
 How does it work?
 -----------------
 
-Extend TopologyViewer3D by supporting additional parameters of "ADD" commands.
+Extend TopologyViewer3D by supporting additional parameters of "ADD" and "UPDATE" commands.
 
 The format of "ADD" commands:
-[ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type>, <parameters> ] 
+[ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type>, <parameters> ]
+
+The format of "UPDATE" commands:
+[ "UPDATE", "NODE", <id>, <parameters> ] 
 
 The format of parameters: pa=pa_value;pb=pb_value
 
