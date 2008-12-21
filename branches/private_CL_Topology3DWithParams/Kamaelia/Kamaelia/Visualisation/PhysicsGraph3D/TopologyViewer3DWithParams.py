@@ -88,8 +88,6 @@ Available parameters:
     
     
 See Kamaelia.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D for more information.
-
-TODO: make update support more parameters
 """
 
 import re
