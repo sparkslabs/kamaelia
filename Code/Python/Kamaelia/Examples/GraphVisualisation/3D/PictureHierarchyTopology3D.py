@@ -21,25 +21,29 @@
 # -------------------------------------------------------------------------
 
 
-from Kamaelia.Util.DataSource import DataSource
-from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
-from Kamaelia.Util.Console import ConsoleEchoer,ConsoleReader
-from Kamaelia.Chassis.Graphline import Graphline
-
-from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D import TopologyViewer3D
-
-
-# Example usage of TopologyViewer3D
+# Example usage of TopologyViewer3DWithParams
 """
-TopologyViewer3D manifests as a pygame OpenGL display surface  plus hierarchy topology support. 
-As it is sent topology information, nodes and links between them will appear.
+TopologyViewer3DWithParams extends TopologyViewer3D by supporting additional parameters 
+of "ADD" and "UPDATE" commands.
+
+The format of "ADD" commands:
+[ "ADD", "NODE", <id>, <name>, <positionSpec>, <particle type>, <parameters> ]
+
+The format of "UPDATE" commands:
+[ "UPDATE", "NODE", <id>, <parameters> ] 
+
+The format of parameters: pa=pa_value;pb=pb_value
+
+Add quotation if there are spaces within parameters.
+
+Available parameters: see the documentation of TopologyViewer3DWithParams.
 
 
-It accepts commands from both precoded DataSource and real-time console inputs.
+It accepts commands from both precoded DataSource and real-time console inputs.  
 
 Commands recognised are:
 
-    [ "ADD", "NODE", <id>, <name>, <posSpec>, <particle type> ]
+    [ "ADD", "NODE", <id>, <name>, <posSpec>, <particle type>, <parameters>  ]
         Add a node, using:
           
         - id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.
@@ -58,7 +62,9 @@ Commands recognised are:
         - particleType  -- particle type (default provided is "-", unless custom types are provided - see below)
                            currently supported: "-" same as cuboid, cuboid, sphere and teapot
                            Note: it would be much slower than cuboid if either sphere or teapot is used.
-      
+        - <parameters>  -- the attributes of the particle, such as the texture, colour and size; the format of parameters is 
+                           pa=pa_value;pb=pb_value.
+    
     [ "DEL", "NODE", <id> ]
         Remove a node (also removes all links to and from it)
         
@@ -76,6 +82,10 @@ Commands recognised are:
         those used to build it. The list begins with a 'DEL ALL'.
 
     [ "UPDATE_NAME", "NODE", <id>, <new name> ]
+        If the node does not already exist, this does NOT cause it to be created.
+    
+    [ "UPDATE", "NODE", <id>, <parameters> ] 
+        Update the attributes of the particle, such as the texture, colour and size.
         If the node does not already exist, this does NOT cause it to be created.
 
     [ "GET_NAME", "NODE", <id> ]
@@ -111,40 +121,49 @@ Operations supported:
     * ctrl ---  rotation Mode; when ctrl is pressed, mouse motion will rotate the selected particle 
                 (all particles if none of them is selected)
 """
-#
-# This example needs more documentation really, but works. (The latter is the most important point)
-#
-# Data can be from both DataSource and console inputs, and print any output to the console 
-# print "Please type the command you want to draw"
-#
 
+from Kamaelia.Util.DataSource import DataSource
+from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
+from Kamaelia.Util.Console import ConsoleEchoer,ConsoleReader
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Support.Particles.SimpleLaws import SimpleLaws
+
+from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
+
+# Data can be from both DataSource and console inputs, and print any output to the console 
+#print "Please type the command you want to draw"
+
+laws = SimpleLaws(bondLength=2.8)
 Graphline(
     CONSOLEREADER = ConsoleReader(">>> "),
     DATASOURCE = DataSource([# The first level
-                             'ADD NODE 1Node 1Node randompos teapot',
-                             'ADD NODE 2Node 2Node randompos -',
-                             'ADD NODE 3Node 3Node randompos sphere', 'ADD NODE 4Node 4Node randompos -',
-                             'ADD NODE 5Node 5Node randompos sphere', 'ADD NODE 6Node 6Node randompos -',
+                             'ADD NODE 1Node 1Node randompos teapot image=../../../Docs/cat.gif',
+                             'ADD NODE 2Node 2Node randompos - image=../../../Docs/cat.gif',
+                             'ADD NODE 3Node 3Node randompos sphere image=../../../Docs/cat.gif',
+                             'ADD NODE 4Node 4Node randompos - image=http://kamaelia.sourceforge.net/Kamaelia.gif',
+                             'ADD NODE 5Node 5Node randompos sphere image=http://edit.kamaelia.org/Kamaelia.gif', 
+                             'ADD NODE 6Node 6Node randompos -',
                              'ADD NODE 7Node 7Node randompos sphere',
                              'ADD LINK 1Node 2Node',
                              'ADD LINK 1Node 3Node', 'ADD LINK 1Node 4Node',
                              'ADD LINK 1Node 5Node','ADD LINK 1Node 6Node', 'ADD LINK 1Node 7Node',
                              # The second level, children of 1Node
-                             'ADD NODE 1Node:1Node 1Node:1Node randompos -', 'ADD NODE 1Node:2Node 1Node:2Node randompos -',
-                             'ADD NODE 1Node:3Node 1Node:3Node randompos -', 'ADD NODE 1Node:4Node 1Node:4Node randompos -',
+                             'ADD NODE 1Node:1Node 1Node:1Node randompos - image=../../../Docs/cat.gif', 
+                             'ADD NODE 1Node:2Node 1Node:2Node randompos -',
+                             'ADD NODE 1Node:3Node 1Node:3Node randompos -', 
+                             'ADD NODE 1Node:4Node 1Node:4Node randompos -',
                              'ADD LINK 1Node:1Node 1Node:2Node', 'ADD LINK 1Node:2Node 1Node:3Node',
                              'ADD LINK 1Node:3Node 1Node:4Node', 'ADD LINK 1Node:4Node 1Node:1Node',
-                             # The third level, children of 1Node:1Node
-                             'ADD NODE 1Node:1Node:1Node 1Node:1Node:1Node randompos -',
+                             'ADD NODE 1Node:1Node:1Node 1Node:1Node:1Node randompos - image=../../../Docs/cat.gif',
                              'ADD NODE 1Node:1Node:2Node 1Node:1Node:2Node randompos -',
                              'ADD LINK 1Node:1Node:1Node 1Node:1Node:2Node',
                              # The second level, children of 5Node
-                             'ADD NODE 5Node:1Node 5Node:1Node randompos sphere',
+                             'ADD NODE 5Node:1Node 5Node:1Node randompos sphere image=../../../Docs/cat.gif',
                              'ADD NODE 5Node:2Node 5Node:2Node randompos sphere',
                              'ADD LINK 5Node:1Node 5Node:2Node'
                              ]),
     TOKENS = lines_to_tokenlists(),
-    VIEWER = TopologyViewer3D(),
+    VIEWER = TopologyViewer3DWithParams(laws=laws),
     CONSOLEECHOER = ConsoleEchoer(),
 linkages = {
     ("CONSOLEREADER","outbox") : ("TOKENS","inbox"),

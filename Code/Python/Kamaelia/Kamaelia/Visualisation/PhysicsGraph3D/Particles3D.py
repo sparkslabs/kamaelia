@@ -209,14 +209,16 @@ class Particle3D(BaseParticle):
         
         self.pos = position
         self.initSize = Vector(*argd.get("size", (0,0,0)))
-
-        self.bgColourWhenUnselected = self.bgColour = argd.get("bgcolour", (230,230,230))
-        self.fgColourWhenUnselected = self.fgColour = argd.get("fgcolour", (0,0,0))
-        self.sideColourWhenUnselected = self.sideColour = argd.get("sidecolour", (200,200,244))
         
-        self.bgColourWhenSelected = argd.get("bgcolourselected", (0,0,0))
-        self.fgColourWhenSelected = argd.get("fgcolourselected", (244,244,244))
-        self.sideColourWhenSelected = argd.get("sidecolourselected", (0,0,100))
+        self.selected = False
+
+        self.bgcolour = argd.get("bgcolour", (230,230,230))
+        self.fgcolour = argd.get("fgcolour", (0,0,0))
+        self.sidecolour = argd.get("sidecolour", (200,200,244))
+        
+        self.bgcolourselected = argd.get("bgcolourselected", (0,0,0))
+        self.fgcolourselected = argd.get("fgcolourselected", (244,244,244))
+        self.sidecolourselected = argd.get("sidecolourselected", (0,0,100))
         
         self.margin = argd.get("margin", 8)
         self.fontsize = argd.get("fontsize", 50)
@@ -224,9 +226,9 @@ class Particle3D(BaseParticle):
         self.thickness = argd.get("thickness", 0.3)
         
         # For picture texture
-        self.pic = argd.get("image", None)
+        self.image = argd.get("image", None)
         # For remote picture
-        self.picIO = None
+        self.imageIO = None
         
         name = argd.get("name","NoName")
         self.set_label(name)
@@ -254,6 +256,78 @@ class Particle3D(BaseParticle):
         self.oldpoint = None
     
     
+    def get_bgcolour(self):
+        """Get bgcolour."""
+        return self._bgcolour
+        
+    def set_bgcolour(self, value):
+        """Set bgcolour and bgcurcolour as well if it is not selected."""
+        self._bgcolour = value
+        if not self.selected:
+            self.bgcurcolour = value
+    bgcolour=property(get_bgcolour, set_bgcolour, None, None)
+    
+    
+    def get_fgcolour(self):
+        """Get fgcolour."""
+        return self._fgcolour
+    
+    def set_fgcolour(self, value):
+        """Set fgcolour and fgcurcolour as well if it is not selected."""
+        self._fgcolour = value
+        if not self.selected:
+            self.fgcurcolour = value
+    fgcolour=property(get_fgcolour, set_fgcolour, None, None)
+    
+    
+    def get_sidecolour(self):
+        """Get sidecolour."""
+        return self._sidecolour
+    
+    def set_sidecolour(self, value):
+        """Set sidecolour and sidecurcolour as well if it is not selected."""
+        self._sidecolour = value
+        if not self.selected:
+            self.sidecurcolour = value
+    sidecolour=property(get_sidecolour, set_sidecolour, None, None)
+    
+    
+    def get_bgcolourselected(self):
+        """Get bgcolourselected."""
+        return self._bgcolourselected
+    
+    def set_bgcolourselected(self, value):
+        """Set bgcolourselected and bgcurcolour as well if it is selected."""
+        self._bgcolourselected = value
+        if self.selected:
+            self.bgcurcolour = value
+    bgcolourselected=property(get_bgcolourselected, set_bgcolourselected, None, None)
+    
+    
+    def get_fgcolourselected(self):
+        """Get fgcolourselected."""
+        return self._fgcolourselected
+    
+    def set_fgcolourselected(self, value):
+        """Set fgcolourselected and fgcurcolour as well if it is selected."""
+        self._fgcolourselected = value
+        if self.selected:
+            self.fgcurcolour = value
+    fgcolourselected=property(get_fgcolourselected, set_fgcolourselected, None, None)
+    
+    
+    def get_sidecolourselected(self):
+        """Get sidecolourselected."""
+        return self._sidecolourselected
+    
+    def set_sidecolourselected(self, value):
+        """Set sidecolourselected and sidecurcolour as well if it is selected."""
+        self._sidecolourselected = value
+        if self.selected:
+            self.sidecurcolour = value
+    sidecolourselected=property(get_sidecolourselected, set_sidecolourselected, None, None)
+    
+            
     def set_label(self, new_name):
         """Set text label."""
         if self.initSize == Vector():
@@ -264,6 +338,13 @@ class Particle3D(BaseParticle):
         self.radius = self.size.length()/2
     
     
+    def updateAttrs(self, **params):
+        """Update attributes."""
+        for key, value in params.iteritems():
+            setattr(self, key, value)
+        self.buildCaption()
+        
+                
     def draw(self):
         """\Stub method
         Override this method to draw concrete particles and links.
@@ -273,9 +354,9 @@ class Particle3D(BaseParticle):
         
     def readURLFile(self):
         """Read a string buffer of an object denoted by a URL."""
-        fObject = urlopen(self.pic)
-        picData = fObject.read()
-        self.picIO = StringIO(picData)
+        fObject = urlopen(self.image)
+        imageData = fObject.read()
+        self.imageIO = StringIO(imageData)
         # Text label is not needed for picture texture
         self.set_label("Dummy")
     
@@ -283,18 +364,18 @@ class Particle3D(BaseParticle):
     def buildCaption(self):
         """Pre-render the text to go on the label."""
         # Text is rendered to self.image
-        if self.pic is not None:
-            if self.picIO is not None:
-                self.image = pygame.image.load(self.picIO).convert()
-                self.picIO = None
-            elif os.path.exists(self.pic):
-                self.image = pygame.image.load(self.pic).convert()
+        if self.image is not None:
+            if self.imageIO is not None:
+                self.imageSurface = pygame.image.load(self.imageIO).convert()
+                self.imageIO = None
+            elif os.path.exists(self.image):
+                self.imageSurface = pygame.image.load(self.image).convert()
             # Image texture is used instead of label texture if 'image' argument is specified
-            elif self.pic.find('://') != -1:
+            elif self.image.find('://') != -1:
                 # Use text label for notification of waiting before the picture is available
                 pygame.font.init()
                 font = pygame.font.Font(None, self.fontsize)
-                self.image = font.render("Loading image...",True, self.fgColour, )
+                self.imageSurface = font.render("Loading image...",True, self.fgcurcolour, )
                 # Use thread to wrap urlopen in case urlopen is blocked
                 import thread
                 thread.start_new(self.readURLFile, ())
@@ -302,24 +383,24 @@ class Particle3D(BaseParticle):
             # Label texture is used if 'image' argument is not specified
             pygame.font.init()
             font = pygame.font.Font(None, self.fontsize)
-            self.image = font.render(self.name,True, self.fgColour, )
+            self.imageSurface = font.render(self.name,True, self.fgcurcolour, )
         
         if self.size != Vector(0,0,0):
             texsize = (self.size.x*self.pixelscaling, self.size.y*self.pixelscaling)
         else:
-            texsize = ( self.image.get_width()+2*self.margin, self.image.get_height()+2*self.margin )
+            texsize = ( self.imageSurface.get_width()+2*self.margin, self.imageSurface.get_height()+2*self.margin )
             self.size=Vector(texsize[0]/float(self.pixelscaling), texsize[1]/float(self.pixelscaling), self.thickness)
 
         # create power of 2 dimensioned surface
         pow2size = (int(2**(math.ceil(math.log(texsize[0]+2*self.margin, 2)))), int(2**(math.ceil(math.log(texsize[1]+2*self.margin, 2)))))
         textureSurface = pygame.Surface(pow2size)
-        textureSurface.fill( self.bgColour )
+        textureSurface.fill( self.bgcurcolour )
         # determine texture coordinates
         self.tex_w = float(texsize[0])/pow2size[0]
         self.tex_h = float(texsize[1])/pow2size[1]
         # copy image data to pow2surface
-        dest = ( max((texsize[0]-self.image.get_width())/2, 0), max((texsize[1]-self.image.get_height())/2, 0) )
-        textureSurface.blit(self.image, dest)
+        dest = ( max((texsize[0]-self.imageSurface.get_width())/2, 0), max((texsize[1]-self.imageSurface.get_height())/2, 0) )
+        textureSurface.blit(self.imageSurface, dest)
         textureSurface = textureSurface.convert_alpha()
 
         # read pixel data
@@ -374,17 +455,19 @@ class Particle3D(BaseParticle):
 
     def select( self ):
         """Tell this particle it is selected"""
-        self.sideColour = self.sideColourWhenSelected
-        self.bgColour = self.bgColourWhenSelected
-        self.fgColour = self.fgColourWhenSelected
+        self.selected = True
+        self.sidecurcolour = self.sidecolourselected
+        self.bgcurcolour = self.bgcolourselected
+        self.fgcurcolour = self.fgcolourselected
         self.buildCaption()
 
 
     def deselect( self ):
         """Tell this particle it is deselected"""
-        self.sideColour = self.sideColourWhenUnselected
-        self.bgColour = self.bgColourWhenUnselected
-        self.fgColour = self.fgColourWhenUnselected
+        self.selected = False
+        self.sidecurcolour = self.sidecolour
+        self.bgcurcolour = self.bgcolour
+        self.fgcurcolour = self.fgcolour
         self.buildCaption()
 
 
@@ -406,7 +489,7 @@ class CuboidParticle3D(Particle3D):
         
         # draw faces
         glBegin(GL_QUADS)
-        glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
+        glColor4f(self.sidecurcolour[0]/256.0, self.sidecurcolour[1]/256.0, self.sidecurcolour[2]/256.0, 0.5)
 
         glVertex3f(hs.x,hs.y,hs.z)
         glVertex3f(hs.x,-hs.y,hs.z)
@@ -485,7 +568,7 @@ class SphereParticle3D(Particle3D):
     def draw(self):
         """Draw sphere particle."""
         hs = self.radius
-        glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
+        glColor4f(self.sidecurcolour[0]/256.0, self.sidecurcolour[1]/256.0, self.sidecurcolour[2]/256.0, 0.5)
         
         # Create a quadratic object for sphere rendering
         quadratic = gluNewQuadric()
@@ -530,7 +613,7 @@ class TeapotParticle3D(Particle3D):
     def draw(self):
         """Draw teapot particle."""
         hs = self.radius
-        glColor4f(self.sideColour[0]/256.0, self.sideColour[1]/256.0, self.sideColour[2]/256.0, 0.5)
+        glColor4f(self.sidecurcolour[0]/256.0, self.sidecurcolour[1]/256.0, self.sidecurcolour[2]/256.0, 0.5)
         
         # Add texture
         glMatrixMode(GL_TEXTURE)
