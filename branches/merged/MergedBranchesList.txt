@@ -40,3 +40,28 @@ Branches in revision 4274:
         private_PT_WindowsTCPClientFix/
         private_SH_SSLCSA/
         private_MH_20070425_dirac0.6.0bindings/
+
+Branches in revision 5500:
+        private_CL_Topology3DCore/
+        private_CL_Topology3DWithParams/
+        private_JL_SOC2007/
+        private_JMB_HTTPFixes/
+        private_JT_SelectorUDP_mashed/
+        private_MH_20080523_dvbNewStuff/
+        private_MH_EnhancementsForDVB-C/
+        private_MH_ImprovedGraphlineShutdown_Tests/
+        private_MPS_AxonCoreImprovements_mashed/
+        private_MPS_FileAppender/
+        private_MPS_Games4Kids/
+        private_MPS_HTTPImprovements/
+        private_MPS_ImprovedGraphlineShutdown/
+        private_MPS_KamaeliaGrey/
+        private_MPS_KamaeliaLogger/
+        private_MPS_LikeFileRewrite/
+        private_MPS_Participate/
+        private_MPS_PygameImprovements/
+        private_MPS_SpeakNLearn/
+        private_MPS_STM/
+        private_MPS_TCPServerImprovments/
+        private_MPS_TickerFix_mashed/
+        private_MPS_Tools2AppsConsolidation/
