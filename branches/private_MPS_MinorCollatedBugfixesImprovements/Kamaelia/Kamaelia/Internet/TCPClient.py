@@ -44,6 +44,25 @@ Sending the contents of a file to a server at address 1.2.3.4 on port 1000::
             ).activate()
 
 
+Example Usage - SSL
+-------------------
+
+It is also possible to cause the TCPClient to switch into SSL mode. To do this
+you send it a message on its "makessl" inbox. It is necessary for a number of
+protocols to be able to switch between non-ssl and ssl, hence this approach
+rather than simply saying "ssl client" or "non-ssl client"::
+
+    Graphline(
+           MAKESSL = OneShot(" make ssl "),
+           CONSOLE = ConsoleReader(),
+           ECHO = ConsoleEchoer(),
+           CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),
+           linkages = {
+               ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
+               ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),
+               ("CONNECTION", "outbox"): ("ECHO", "inbox"),
+           }
+    )
 
 How does it work?
 -----------------
@@ -109,11 +128,13 @@ class TCPClient(Axon.Component.component):
    """
    Inboxes  = { "inbox"           : "data to send to the socket",
                 "_socketFeedback" : "notifications from the ConnectedSocketAdapter",
-                "control"         : "Shutdown signalling"
+                "control"         : "Shutdown signalling",
+                "makessl"         : "Notifications to the ConnectedSocketAdapter that we want to negotiate SSL",
               }
    Outboxes = { "outbox"         :  "data received from the socket",
                 "signal"         :  "socket errors",
                 "_selectorSignal"       : "For registering and deregistering ConnectedSocketAdapter components with a selector service",
+                "sslready"       : "SSL negotiated successfully",
 
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
@@ -162,8 +183,10 @@ class TCPClient(Axon.Component.component):
  
       self.link((CSA, "CreatorFeedback"),(self,"_socketFeedback"))
       self.link((CSA, "outbox"), (self, "outbox"), passthrough=2)
+      self.link((CSA, "sslready"), (self, "sslready"), passthrough=2)
       self.link((self, "inbox"), (CSA, "inbox"), passthrough=1)
-      
+      self.link((self, "makessl"), (CSA, "makessl"), passthrough=1)
+
       self.link((self, "control"), (CSA, "control"), passthrough=1)  # propagate shutdown msgs
 
       self.send(newReader(CSA, ((CSA, "ReadReady"), sock)), "_selectorSignal")            
@@ -207,18 +230,25 @@ class TCPClient(Axon.Component.component):
             # connecting. This is a valid, if brute force approach.
             assert(self.connecting==1)
             return False
-         if errorno==errno.EINPROGRESS or errorno==errno.EWOULDBLOCK:
+         elif errorno==errno.EINPROGRESS or errorno==errno.EWOULDBLOCK:
             #The socket is non-blocking and the connection cannot be completed immediately.
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. Rather brute force.
             self.connecting=1
             return False # Not connected should retry until no error
-         if errorno == errno.EISCONN:
+         elif errorno == errno.EISCONN:
              # This is a windows error indicating the connection has already been made.
              self.connecting = 0 # as with the no exception case.
              return True
+         elif hasattr(errno, "WSAEINVAL"):
+            if errorno == errno.WSAEINVAL:
+                # If we are on windows, this will be the error instead of EALREADY
+                # above.
+                assert(self.connecting==1)
+                return False
          # Anything else is an error we don't handle
-         raise socket.msg
+         else:
+            raise socket.msg
 
    def runClient(self,sock=None):
       # The various numbers yielded here indicate progress through the function, and
@@ -243,7 +273,6 @@ class TCPClient(Axon.Component.component):
                raise x  # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
                # The logical place to send the error is to the signal outbox
          except Exception, x:
-#            print "I ALSO AM CALLED"
             sock.close() ;  yield 4,x # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
             raise x
       except Finality:
@@ -260,8 +289,10 @@ class TCPClient(Axon.Component.component):
       self.send(producerFinished(self,self.howDied), "signal")
 #          self.send(e, "signal")
         # "TCPC: Exitting run client"
-   
+
    def stop(self):
+       """Stop method provided to allow the scheduler to kill TCPClient connections cleanly if necessary.
+       (Only rarely, if ever, needed - you are not expected to call this yourself)"""
        try:
            self.sock.shutdown(2)
            self.sock.close()
@@ -278,7 +309,6 @@ class TCPClient(Axon.Component.component):
        while self.dataReady("control"):
            msg = self.recv("control")
            self.send(msg,"signal")
-#           print "woo?"
            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
                return True
        return False
