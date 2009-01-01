@@ -157,18 +157,9 @@ may be output:
         The list will start with a ("DEL","ALL") command.
         This is sent in response to receiving a ("GET","ALL") command.
 
-Termination
------------
-
-If a shutdownMicroprocess message is received on this component's "control"
-inbox this it will pass it on out of its "signal" outbox and immediately
-terminate.
-
-Historical note for short term: this has changed as of May 2008. In the past,
-this component would also shutdown when it recieved a producerFinished message.
-This has transpired to be a mistake for a number of different systems, hence
-the change to only shutting down when it recieves a  shutdownMicroprocess
-message.
+If a shutdownMicroprocess or producerFinished message is received on this
+component's "control" inbox this it will pass it on out of its "signal" outbox
+and immediately terminate.
 
 NOTE: Termination is currently rather cludgy - it raises an exception which
 will cause the rest of a kamaelia system to halt. Do not rely on this behaviour
@@ -436,7 +427,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
 
         if self.dataReady("control"):
             msg = self.recv("control")
-            if isinstance(msg, Axon.Ipc.shutdownMicroprocess):
+            if isinstance(msg, Axon.Ipc.producerFinished) or isinstance(msg, Axon.Ipc.shutdownMicroprocess):
                 self.send(msg, "signal")
                 self.quit()
             
@@ -557,6 +548,12 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                 elif cmd == ("DEL", "ALL") and len(msg) == 2:
                     self.removeParticle(*self.physics.particleDict.keys())
 
+                elif cmd == ("FREEZE", "ALL") and len(msg) == 2:
+                    self.freezeAll()
+
+                elif cmd == ("UNFREEZE", "ALL") and len(msg) == 2:
+                    self.freezeAll()
+
                 elif cmd == ("GET", "ALL") and len(msg) == 2:
                     topology = [("DEL","ALL")]
                     topology.extend(self.getTopology())
@@ -589,6 +586,14 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
             if p.ID == node_id:
                 p.set_label(new_name)
                 return
+
+    def freezeAll(self):
+        for p in self.physics.particles:
+            p.freeze()
+    
+    def unFreezeAll(self):
+        for p in self.physics.particles:
+            p.unfreeze()
 
     def getParticleLabel(self, node_id):
         """\
