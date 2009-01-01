@@ -532,7 +532,7 @@ class SimpleReader(component):
     buffering = 1
 
     def __init__(self, filename, **argd):
-         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature""" 
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature""" 
         super(SimpleReader, self).__init__(**argd)
         self.filename = filename
         self.fh = None
