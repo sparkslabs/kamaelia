@@ -1,0 +1,13 @@
+Please look at the following pages on the website:
+
+http://www.kamaelia.org/Developers/Branches
+
+Please do update that page when you do any of the following:
+
+   * Create a branch
+   * Merge a branch
+   * Delete a branch (rare - normally done after merge or rejection)
+   * Reject a branch
+
+
+Michael.
