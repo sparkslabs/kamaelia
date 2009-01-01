@@ -1,0 +1,20 @@
+#
+# You should copy this to /etc/batch_converter.conf and uncomment and change
+# the settings below you want to change!
+#
+
+# This is where uploads get sent
+#
+# main_incoming_queue /tmp/uploads
+
+#
+# This is where they're filtered to
+#
+# image_queue /tmp/uploads/images
+# video_queue /tmp/uploads/videos
+
+#
+# This is where they're then transcoded to
+#
+# image_moderation_queue /tmp/moderate/images
+# video_moderation_queue /tmp/moderate/videos
