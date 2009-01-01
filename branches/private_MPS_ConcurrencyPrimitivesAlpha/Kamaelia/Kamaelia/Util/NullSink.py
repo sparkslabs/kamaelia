@@ -27,9 +27,6 @@ necessary with syncronized linkages.
 from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 class nullSinkComponent(component):
-   Inboxes=["inbox","control"]
-   Outboxes=["outbox", "signal"] # Pipeline expects these to exist
-
    def mainBody(self):
       while self.dataReady("inbox"):
          data = self.recv("inbox")

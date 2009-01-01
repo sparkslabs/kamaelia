@@ -45,19 +45,24 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished,shutdownMicroprocess,shutdown
 
 class PureTransformer(component):
-    def __init__(self, function=None):
-        super(PureTransformer, self).__init__()
+    catch_excepts = False
+    def __init__(self, function=None, **argd):
+        super(PureTransformer, self).__init__(**argd)
         if function:
             self.processMessage = function
-        
+
     def processMessage(self, msg):
         pass
-        
+
     def main(self):
         while 1:
             yield 1
             while self.dataReady("inbox"):
-                returnval = self.processMessage(self.recv("inbox"))
+                try:
+                    returnval = self.processMessage(self.recv("inbox"))
+                except:
+                    if not self.catch_excepts:
+                        raise
                 if returnval != None:
                     self.send(returnval, "outbox")
             while self.dataReady("control"):
