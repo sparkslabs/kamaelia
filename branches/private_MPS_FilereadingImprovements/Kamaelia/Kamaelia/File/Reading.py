@@ -277,7 +277,7 @@ PromptedFileReader
 
 """
 
-
+import Axon
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Util.RateFilter import ByteRate_RequestControl
@@ -478,7 +478,49 @@ def FixedRateControlledReusableFileReader(readmode = "bytes", **rateargs):
                     }
         )
 
-__kamaelia_components__ = ( PromptedFileReader, )
+class SimpleReader(component):
+    def __init__(self, filename, mode="r", buffering=1, **argd):
+        super(SimpleReader, self).__init__(**argd)
+        self.filename = filename
+        self.mode = mode
+        self.buffering = buffering
+        self.fh = None
+    def main(self):
+        self.fh = open(self.filename, self.mode,self.buffering)
+        shutdown = False
+        sent_ok = False
+        for i in self.fh:
+            sent_ok = False
+            while not sent_ok:
+                yield 1
+                if self.shutdown():
+                    shutdown = True
+                    break
+                try:
+                    self.send(i, "outbox")
+                    sent_ok = True
+                except Axon.AxonExceptions.noSpaceInBox:
+                    self.pause() # wait for data to be taken from the outbox
+        self.fh.close()
+        if not shutdown:
+            self.send(producerFinished(), "signal")
+
+    def shutdown(self):
+        """\
+        Returns True if a shutdownMicroprocess message is received.
+
+        Also passes the message on out of the "signal" outbox.
+        """
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+        
+
+
+__kamaelia_components__ = ( PromptedFileReader, SimpleReader )
 __kamaelia_prefabs__ = ( RateControlledFileReader, ReusableFileReader, RateControlledReusableFileReader, FixedRateControlledReusableFileReader, )
 
 if __name__ == "__main__":
