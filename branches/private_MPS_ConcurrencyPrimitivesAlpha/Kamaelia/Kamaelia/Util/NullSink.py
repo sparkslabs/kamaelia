@@ -41,11 +41,14 @@ class nullSinkComponent(component):
         while not self.shutdown():
             for _ in self.Inbox("inbox"):
                 pass # Throw away
+            while not self.anyReady():
+                self.pause()
+                yield 1
+            yield 1
       
 NullSinkComponent = nullSinkComponent # FIXME, in future deprecate the badly named class
 
 __kamaelia_components__  = ( nullSinkComponent, NullSinkComponent)
-
 
 if __name__ =="__main__":
    print "This module has no system test"
