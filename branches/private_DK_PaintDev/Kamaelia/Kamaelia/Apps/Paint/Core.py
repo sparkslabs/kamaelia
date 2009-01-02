@@ -39,6 +39,7 @@ import time
 import os
 import Axon
 import math
+from gfxcursor import GfxCursor
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Text import TextDisplayer
@@ -222,7 +223,7 @@ class Paint(Axon.Component.component):
   #    self.activeLayIn = len(self.layers)-1
   #    self.activeLayer = self.layers[self.activeLayIn]
   #    self.display.blit( x, (0,0) )
-
+      
 
       layerDisp = TextDisplayer(size = (20, 20),position = (520,10)).activate()
       self.link( (self,"laynum"), (layerDisp,"inbox") )
@@ -243,7 +244,12 @@ class Paint(Axon.Component.component):
 		  "display_signal")
       self.activeLayer = self.layers[self.activeLayIn]
       self.send( self.activeLayIn, "laynum" )
-
+      image = pygame.Surface((20, 20))
+      pygame.draw.circle(image, (1, 1, 1), (10, 10), self.toolSize, 0)
+     # pygame.draw.circle(image, self.selectedColour, (10, 10), 8, 2)
+      image.set_at((9, 9), (255,255,255))
+      image.set_colorkey(0, pygame.RLEACCEL)
+      cursor = GfxCursor(self.display, image, (10, 10))
 
       self.drawBG(True)
       self.blitToSurface()
@@ -254,6 +260,8 @@ class Paint(Axon.Component.component):
 
       done = False
       while not done:
+         dirtyrects = []
+         dirtyrects.extend([cursor.hide()])
          if not self.anyReady():
              self.pause()
          yield 1
@@ -320,16 +328,25 @@ class Paint(Axon.Component.component):
                         self.tool = event[1]
                     elif event[0] == "Size":
                         self.toolSize = event[1]/3
+                        pygame.draw.circle(image, self.selectedColour, (10, 10), self.toolSize/3, 0)
+                        image.set_at((9, 9), (255,255,255))
+                        image.set_colorkey(0, pygame.RLEACCEL)
+                        cursor = GfxCursor(self.display, image, (10, 10))
                     elif event[0] == "Alpha":
                         self.layers[self.activeLayIn].set_alpha(event[1])
                         self.blitToSurface()
                       #  print self.activeLayer.get_alpha()
                     elif event[0] == 'Colour':
                         self.selectedColour = event[1]
+                        pygame.draw.circle(image, self.selectedColour, (10, 10), self.toolSize/3, 0)
+                        image.set_at((9, 9), (255,255,255))
+                        image.set_colorkey(0, pygame.RLEACCEL)
+                        cursor = GfxCursor(self.display, image, (10, 10))
                     elif event[0] == 'Save':
                         self.save(event[1])
                     break
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    cursor.disable()
                     if self.tool == "Circle":
                         if event.button == 1:
                             self.oldpos = event.pos
@@ -387,6 +404,7 @@ class Paint(Axon.Component.component):
 
 
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    cursor.enable()
                     if self.tool == "Circle":
                         rad = math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2))
                         pygame.draw.circle(self.activeLayer, self.selectedColour, self.oldpos, rad, 0)
@@ -396,19 +414,24 @@ class Paint(Axon.Component.component):
                     self.drawing = False
                     self.oldpos = None
                 elif event.type == pygame.MOUSEMOTION:
+                    cursor.update(event)
                     if self.tool == "Line":
                         if self.drawing and self.innerRect.collidepoint(*event.pos):
                               if self.oldpos == None:
                                  self.oldpos = event.pos
                               else:
                                 # pygame.draw.circle(self.activeLayer, self.selectedColour, self.oldpos, self.toolSize, 0)
-                                 pygame.draw.line(self.activeLayer, self.selectedColour, self.oldpos, event.pos, self.toolSize)
+                                 r = pygame.draw.line(self.activeLayer, self.selectedColour, self.oldpos, event.pos, self.toolSize)
+                                 dirtyrects.append(r)
                                #  self.activeLayer.blit(self.activeBrush, event.pos) FAILED TECHNIQUE
-                                 line = ("line", self.oldpos, event.pos) 
+                                 line = ("line", self.oldpos, event.pos)
                                  self.send((line,), "outbox")
-                                 self.oldpos = event.pos
-                              self.blitToSurface()
+                    self.oldpos = event.pos
+                    self.blitToSurface()
          self.pause()
+         pygame.time.delay(5)
+         dirtyrects.extend([cursor.show()])
+         pygame.display.update(dirtyrects)
          yield 1
 
    def blitToSurface(self):
