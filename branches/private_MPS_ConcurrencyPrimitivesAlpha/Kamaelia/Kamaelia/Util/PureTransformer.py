@@ -55,32 +55,37 @@ class PureTransformer(component):
         pass
 
     def main(self):
-        while 1:
+        while not self.shutdown():
             yield 1
-            while self.dataReady("inbox"):
+            for message in self.Inbox("inbox"):
                 try:
-                    returnval = self.processMessage(self.recv("inbox"))
+                    returnval = self.processMessage(message)
                 except:
                     if not self.catch_excepts:
                         raise
                 if returnval != None:
                     self.send(returnval, "outbox")
-            while self.dataReady("control"):
-                msg = self.recv("control")
-                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
-                    self.send(producerFinished(self), "signal")
-                    return
+
             if not self.anyReady():
                 self.pause()
+
+    def shutdown(self):
+        if self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdown) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
 
 __kamaelia_components__  = ( PureTransformer, )
 
 if __name__ == "__main__":
-    from Kamaelia.Chassis.Pipeline import pipeline
+    from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 
     # Example - prepend "foo" and append "bar" to lines entered.
-    pipeline(
+    Pipeline(
         ConsoleReader(eol=""),
         PureTransformer(lambda x : "foo" + x + "bar!\n"),
         ConsoleEchoer()
