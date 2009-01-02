@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 #
 # Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -26,17 +26,25 @@ necessary with syncronized linkages.
 """
 from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-class nullSinkComponent(component):
-   def mainBody(self):
-      while self.dataReady("inbox"):
-         data = self.recv("inbox")
-      if self.dataReady("control"):
-         data = self.recv("control")
-         if isinstance(data,producerFinished) or isinstance(data, shutdownMicroprocess):
-            return 0
-      return 1
 
-__kamaelia_components__  = ( nullSinkComponent, )
+class nullSinkComponent(component):
+    def shutdown(self):
+        if self.dataReady("control"):
+            data = self.recv("control")
+            if isinstance(data,producerFinished) or isinstance(data, shutdownMicroprocess):
+                self.send(data, "signal")
+                return True
+        return False
+       
+    def main(self):
+        # FIXME: This component is best changed to have NullSink inboxes, whether linked to or not.
+        while not self.shutdown():
+            for _ in self.Inbox("inbox"):
+                pass # Throw away
+      
+NullSinkComponent = nullSinkComponent # FIXME, in future deprecate the badly named class
+
+__kamaelia_components__  = ( nullSinkComponent, NullSinkComponent)
 
 
 if __name__ =="__main__":
