@@ -75,11 +75,6 @@ class ParticleDragger(DragHandler):
         
         # find particles under the mouse pos
         pos = int(pos[0] + self.app.left), int(pos[1] + self.app.top)
-        if pos[0]> self.app.screensize[0]: return False
-        if pos[1]> self.app.screensize[1]: return False
-        if pos[0]<0: return False
-        if pos[1]<0: return False
-
         inRange = self.app.physics.withinRadius( pos, self.app.biggestRadius )
         inRange = filter(lambda (p, rsquared) : p.radius*p.radius >= rsquared, inRange)
         
