@@ -48,7 +48,7 @@ import os
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Button import ImageButton
-from Kamaelia.Apps.Paint.Slider import Slider
+from Slider import Slider
 
 class ColourSelector(Axon.Component.component):
     """\

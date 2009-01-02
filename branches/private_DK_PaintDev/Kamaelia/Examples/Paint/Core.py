@@ -406,7 +406,7 @@ class Paint(Axon.Component.component):
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     cursor.enable()
                     if self.tool == "Circle":
-                        rad = math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2))
+                        rad = int(math.sqrt(((event.pos[0]-self.oldpos[0])**2)+((event.pos[1]-self.oldpos[1])**2)))
                         pygame.draw.circle(self.activeLayer, self.selectedColour, self.oldpos, rad, 0)
                         circle = ("circle", self.oldpos, rad)
                      #   self.send((circle,), "outbox")
@@ -426,7 +426,7 @@ class Paint(Axon.Component.component):
                                #  self.activeLayer.blit(self.activeBrush, event.pos) FAILED TECHNIQUE
                                  line = ("line", self.oldpos, event.pos)
                                  self.send((line,), "outbox")
-                    self.oldpos = event.pos
+                                 self.oldpos = event.pos
                     self.blitToSurface()
          self.pause()
          pygame.time.delay(5)

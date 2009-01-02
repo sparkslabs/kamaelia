@@ -16,8 +16,8 @@ import os
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Button import ImageButton
-from Kamaelia.Apps.Paint.ColourSelector import ColourSelector
-from Kamaelia.Apps.Paint.Slider import Slider
+from ColourSelector import ColourSelector
+from Slider import Slider
 
 class ToolBox(Axon.Component.component):
     Inboxes = {"inbox"    : "Receive events from Pygame Display",
