@@ -70,7 +70,8 @@ class PureTransformer(component):
                 if isinstance(msg, producerFinished) or isinstance(msg, shutdown):
                     self.send(producerFinished(self), "signal")
                     return
-            self.pause()
+            if not self.anyReady():
+                self.pause()
 
 __kamaelia_components__  = ( PureTransformer, )
 
