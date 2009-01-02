@@ -20,9 +20,30 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """
-Null sink component.  To ignore a component's outbox connect it to this
-component and the box will be emptied but not used in any way.  This will be
-necessary with syncronized linkages.
+===================
+Null Sink Component
+===================
+
+NullSinkComponent has the same role in a Kamaelia system as /dev/null. The
+older nullSinkComponent has the same role, but that capitalisation is
+deprecated. It is relatively rarely needed, but really useful when needed.
+
+Example Usage
+-------------
+
+To ignore everything read from a file::
+
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.Util.Console import ConsoleEchoer
+
+    Pipeline(
+        ReadFileAdaptor("/etc/fstab"),
+        NullSinkComponent(),
+        ConsoleEchoer()
+    ).run()
+
+
 """
 from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -51,4 +72,12 @@ NullSinkComponent = nullSinkComponent # FIXME, in future deprecate the badly nam
 __kamaelia_components__  = ( nullSinkComponent, NullSinkComponent)
 
 if __name__ =="__main__":
-   print "This module has no system test"
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+    from Kamaelia.Util.Console import ConsoleEchoer
+
+    Pipeline(
+        ReadFileAdaptor("/etc/fstab"),
+        NullSinkComponent(),
+        ConsoleEchoer()
+    ).run()
