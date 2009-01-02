@@ -101,12 +101,10 @@ class Input(threadedcomponent):
         self.format = format
         
     def main(self):
-        # Pymedia is not the most reliabe piece of code in the world
-        # As a result I'm wrapping this entire code with a try..except
-        # designed to catch any & all pymedia errors regarding input.
-        #
-        # This allows the component to (relatively) gracefully shutdown
-        # whilst still bleat about how Pymedia is bust...
+        # Pymedia can occasionally throw sound.SoundError exceptions
+        # when there is an internal failure. Wrapping this whole component
+        # in try/except like this is a bit OTT, but does mean we can catch
+        # such problems and inform the user of the issue.
         #
         try:
             self.snd.start()
@@ -143,6 +141,7 @@ class Input(threadedcomponent):
             print "**************************************************************"
             print "WARNING: Due to a bug in PYMEDIA, Audio input is shutting down"
             print "ERROR: ",e
+            print "Sorry :-("
             print "**************************************************************"
             shutdown = True
 
