@@ -105,7 +105,7 @@ def TopologyViewerServer(serverPort = 1500, **dictArgs):
     """\
     TopologyViewerServer([noServer][,serverPort],**args) -> new TopologyViewerServer component.
 
-    One-client-at-a-time TCP socket Topology viewer server. Connect on the
+    Multiple-clients-at-a-time TCP socket Topology viewer server. Connect on the
     specified port and send topology change data for display by a
     TopologyViewer.
 
