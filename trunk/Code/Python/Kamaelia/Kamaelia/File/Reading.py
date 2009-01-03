@@ -73,6 +73,43 @@ The file is opened only when the component is activated (enters its main loop).
 The file is closed when the component shuts down.
 
 
+SimpleReader
+------------
+
+This is a simplified file reader that simply reads the given file and spits
+it out "outbox". It also handles maximum pipewidths, enabling rate limiting
+to be handled by a piped component.
+
+Example Usage
+^^^^^^^^^^^^^
+
+Usage is the obvious::
+
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.File.Reading import SimpleReader
+    from Kamaelia.Util.Console import ConsoleEchoer
+    
+    Pipeline(
+        SimpleReader("/etc/fstab"),
+        ConsoleEchoer(),
+    ).run()
+
+
+More detail
+^^^^^^^^^^^
+
+This component will terminate if it receives a shutdownMicroprocess message on
+its "control" inbox. It will pass the message on out of its "signal" outbox.
+
+If unable to send the message to the recipient (due to the recipient enforcing
+pipewidths) then the reader pauses until the recipient is ready and resends (or
+a shutdown message is recieved).
+
+The file is opened only when the component is activated (enters its main loop).
+
+The file is closed when the component shuts down.
+
+
 
 RateControlledFileReader
 ------------------------
@@ -277,7 +314,7 @@ PromptedFileReader
 
 """
 
-
+import Axon
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Util.RateFilter import ByteRate_RequestControl
@@ -478,15 +515,72 @@ def FixedRateControlledReusableFileReader(readmode = "bytes", **rateargs):
                     }
         )
 
-__kamaelia_components__ = ( PromptedFileReader, )
+class SimpleReader(component):
+    """\
+    SimpleReader(filename[,mode][,buffering]) -> simple file reader
+
+    Creates a "SimpleReader" component.
+
+    Arguments:
+    
+    - filename  -- Name of the file to read
+    - mode -- This is the python readmode. Defaults to "r". (you may way "rb" occasionally)
+    - buffering -- The python buffer size. Defaults to 1. (see http://www.python.org/doc/2.5.2/lib/built-in-funcs.html)
+    """
+
+    mode = "r"
+    buffering = 1
+
+    def __init__(self, filename, **argd):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature""" 
+        super(SimpleReader, self).__init__(**argd)
+        self.filename = filename
+        self.fh = None
+
+    def main(self):
+        """Main loop
+        Simply opens the file, loops through it (using "for"), sending data to "outbox".
+        If the recipient has a maximum pipewidth it handles that eventuallity resending
+        by pausing and waiting for the recipient to be able to recieve.
+        
+        Shutsdown on shutdownMicroprocess.
+        """
+        self.fh = open(self.filename, self.mode,self.buffering)
+        shutdown = False
+        sent_ok = False
+        for i in self.fh:
+            sent_ok = False
+            while not sent_ok:
+                yield 1
+                if self.shutdown():
+                    shutdown = True
+                    break
+                try:
+                    self.send(i, "outbox")
+                    sent_ok = True
+                except Axon.AxonExceptions.noSpaceInBox:
+                    self.pause() # wait for data to be taken from the outbox
+        self.fh.close()
+        if not shutdown:
+            self.send(producerFinished(), "signal")
+
+    def shutdown(self):
+        """\
+        Returns True if a shutdownMicroprocess message is received.
+
+        Also passes the message on out of the "signal" outbox.
+        """
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+        
+
+
+__kamaelia_components__ = ( PromptedFileReader, SimpleReader )
 __kamaelia_prefabs__ = ( RateControlledFileReader, ReusableFileReader, RateControlledReusableFileReader, FixedRateControlledReusableFileReader, )
 
 if __name__ == "__main__":
     pass
-    
-    
-
-
-
-
-
