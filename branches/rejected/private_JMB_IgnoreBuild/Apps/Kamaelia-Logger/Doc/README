@@ -1,0 +1,50 @@
+KamaeliaLogger
+
+What is KamaeliaLogger?
+It's an IRC Logging bot! You stick it in your channel and it records all messages unless they're marked [off] in which case they're "off the record".
+
+How do I install it?
+This app is accompanied with some dependencies - Kamaelia and Axon. You don't need to know what these are, just that you'll need them for your bot. If you'd like to know more though check out http://kamaelia.sourceforge.net
+
+1) Unpack the folder! 
+	tar zxvf <file you downloaded>
+2) Now, run these commands *as root* to install Axon and Kamaelia, this will install your bot.
+	cd Axon
+	python setup.py install
+	(cd ..)
+	cd Kamaelia
+	python setup.py install
+
+
+Cool now we're all installed just configuration now.
+
+How do I configure my bot?
+Copy the default config file - installed to /etc/kamaelia_logger.conf.dist to a localised version - ie /etc/kamaelia_logger.conf
+You then edit the freshly copied config file. The options are documented in the comments of the configuration file.
+
+How does it work then?
+Alright, like most configuration files lines marked with # are commented out (not parsed). 
+Here you can set the channel, host (IRC Server), name, password (if you need one), and directory to store your logs.
+The default directory for storing logs is '.' (Current working directory) So you might want to put them in a more convenient location.
+So fill in your respective fields for your requirements. The defaults will let you connect to #kamaelia-test on freenode. 
+
+How do I run my bot?
+So you're all configured up? Now just run one of the simple scripts we've attached or alternately start your bot manually with
+	cd Apps/Kamaelia-Logger/App
+	python KamaeliaLogger.py
+
+When you run your bot it will echo some information for you out to the console, for example the defaults should give you this:
+
+	[]
+	['channel', '=', '#kamaelia-test']
+	[]
+	['name', '=', 'kamlogbot']
+	[]
+	['host', '=', 'irc.freenode.org']
+	[]
+	[]
+	Logging #kamaelia-test as kamlogbot
+
+This is just to let you know that the bot is working :)
+Remember, this is all open source so you can easily add cool new features to your bot. Let us know in #kamaelia on Freenode :-)
+Have fun with your bot!
