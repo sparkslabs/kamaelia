@@ -120,10 +120,20 @@ Commands recognised are:
         those used to build it. The list begins with a 'DEL ALL'.
 
     [ "UPDATE_NAME", "NODE", <id>, <new name> ]
-        If the node does not already exist, this does NOT cause it to be created.
+        If the node does not already exist, this does NOT cause it
+        to be created.
 
     [ "GET_NAME", "NODE", <id> ]
         Returns UPDATE_NAME NODE message for the specified node
+        
+    [ "FREEZE", "ALL" ]
+        Freezes all particles in the system, essentially halting the
+        simulation
+        
+    [ "UNFREEZE", "ALL" ]
+        Unfreezes all particles in the system, essentially restarting
+        the simulation
+    
 
 Commands are processed immediately, in the order in which they arrive. You
 therefore cannot refer to a node or linkage that has not yet been created, or
@@ -157,6 +167,7 @@ may be output:
         The list will start with a ("DEL","ALL") command.
         This is sent in response to receiving a ("GET","ALL") command.
 
+
 Termination
 -----------
 
@@ -169,6 +180,7 @@ this component would also shutdown when it recieved a producerFinished message.
 This has transpired to be a mistake for a number of different systems, hence
 the change to only shutting down when it recieves a  shutdownMicroprocess
 message.
+
 
 NOTE: Termination is currently rather cludgy - it raises an exception which
 will cause the rest of a kamaelia system to halt. Do not rely on this behaviour
@@ -557,6 +569,12 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                 elif cmd == ("DEL", "ALL") and len(msg) == 2:
                     self.removeParticle(*self.physics.particleDict.keys())
 
+                elif cmd == ("FREEZE", "ALL") and len(msg) == 2:
+                    self.freezeAll()
+
+                elif cmd == ("UNFREEZE", "ALL") and len(msg) == 2:
+                    self.freezeAll()
+
                 elif cmd == ("GET", "ALL") and len(msg) == 2:
                     topology = [("DEL","ALL")]
                     topology.extend(self.getTopology())
@@ -589,6 +607,14 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
             if p.ID == node_id:
                 p.set_label(new_name)
                 return
+
+    def freezeAll(self):
+        for p in self.physics.particles:
+            p.freeze()
+    
+    def unFreezeAll(self):
+        for p in self.physics.particles:
+            p.unfreeze()
 
     def getParticleLabel(self, node_id):
         """\
