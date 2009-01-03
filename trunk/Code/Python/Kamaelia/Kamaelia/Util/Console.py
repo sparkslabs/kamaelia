@@ -59,7 +59,8 @@ receives this way is displayed on standard output. All items are passed through
 the str() builtin function to convert them to strings suitable for display.
 
 However, if the 'use_repr' argument is set to True during initialization, then
-repr() will be used instead of str().
+repr() will be used instead of str(). Similarly if a "tag" is provided it's
+prepended before the data.
 
 If the 'forwarder' argument is set to True during initialisation, then whatever
 is received is not only displayed, but also set on to the "outbox" outbox
@@ -104,19 +105,23 @@ class ConsoleReader(threadedcomponent):
 
    def main(self):
       """Main thread loop."""
-      while 1:
-         try:
-             line = raw_input(self.prompt)
-         except:
-             break
-         line = line + self.eol
-         self.send(line, "outbox")
-      self.send(producerFinished(), "signal")                          
+      while not self.shutdown():       # XXXX: NOTE We check self.shutdown *AFTER* waiting for input, meaning
+         line = raw_input(self.prompt) # XXXX: NOTE the last line *will* be read. This is probably good
+         line = line + self.eol        # XXXX: NOTE  motivation at some point for moving away from using
+         self.send(line, "outbox")     # XXXX: NOTE  raw_input.
+
+   def shutdown(self):
+       while self.dataReady("control"):
+           data = self.recv("control")
+           if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
+               self.send(data,"signal")
+               return True
+       return 0
 
 
 class ConsoleEchoer(component):
    """\
-   ConsoleEchoer([forwarder][,use_repr]) -> new ConsoleEchoer component.
+   ConsoleEchoer([forwarder][,use_repr][,tag]) -> new ConsoleEchoer component.
 
    A component that outputs anything it is sent to standard output (the
    console).
@@ -125,6 +130,7 @@ class ConsoleEchoer(component):
    
    - forwarder  -- incoming data is also forwarded to "outbox" outbox if True (default=False)
    - use_repr   -- use repr() instead of str() if True (default=False)
+   - tag -- Pre-pend this text tag before the data to emit
    """
    Inboxes  = { "inbox"   : "Stuff that will be echoed to standard output",
                 "control" : "Shutdown signalling",
@@ -133,7 +139,7 @@ class ConsoleEchoer(component):
                 "signal" : "Shutdown signalling",
               }
 
-   def __init__(self, forwarder=False, use_repr=False):
+   def __init__(self, forwarder=False, use_repr=False, tag=""):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(ConsoleEchoer, self).__init__()
       self.forwarder=forwarder
@@ -141,13 +147,14 @@ class ConsoleEchoer(component):
           self.serialise = repr
       else:
           self.serialise = str
+      self.tag = tag
 
    def main(self):
       """Main loop body."""
       while not self.shutdown():
           while self.dataReady("inbox"):
               data = self.recv("inbox")
-              _sys.stdout.write(self.serialise(data))
+              _sys.stdout.write(self.tag + self.serialise(data))
               _sys.stdout.flush()
               if self.forwarder:
                   self.send(data, "outbox")

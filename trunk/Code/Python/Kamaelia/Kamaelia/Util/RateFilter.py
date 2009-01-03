@@ -242,10 +242,10 @@ class MessageRateLimit(component):
     Outboxes = { "outbox" : "Items/messages limited to specified maximum output rate",
                  "signal" : "NOT USED",
                }
-    
-    def __init__(self, messages_per_second, buffer=60):
+    hardlimit = 0
+    def __init__(self, messages_per_second, buffer=60, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        super(MessageRateLimit, self).__init__()
+        super(MessageRateLimit, self).__init__(**argd)
         self.mps = messages_per_second
         self.interval = 1.0/(messages_per_second*1.1)
         self.buffer = buffer
@@ -266,6 +266,8 @@ class MessageRateLimit(component):
         last = start
         interval = self.interval # approximate rate interval
         mps = self.mps
+        if self.hardlimit:
+            self.setInboxSize("inbox", self.hardlimit)
         while 1:
             try:
                 while not( self.scheduler.time - last > interval):

@@ -290,6 +290,21 @@ class TCPClient(Axon.Component.component):
 #          self.send(e, "signal")
         # "TCPC: Exitting run client"
 
+   def stop(self):
+       """Stop method provided to allow the scheduler to kill TCPClient connections cleanly if necessary.
+       (Only rarely, if ever, needed - you are not expected to call this yourself)"""
+       try:
+           self.sock.shutdown(2)
+           self.sock.close()
+       except:
+           pass # Well, we tried.
+       self.send(producerFinished(self,self.howDied), "signal")
+       if (self.sock is not None) and (self.CSA is not None):
+           self.send(removeReader(self.CSA, self.sock), "_selectorSignal")
+           self.send(removeWriter(self.CSA, self.sock), "_selectorSignal")
+           self.send(producerFinished(),"signal")
+       super(TCPClient, self).stop()
+
    def shutdown(self):
        while self.dataReady("control"):
            msg = self.recv("control")
