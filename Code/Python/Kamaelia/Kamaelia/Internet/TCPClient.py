@@ -295,6 +295,9 @@ class TCPClient(Axon.Component.component):
        (Only rarely, if ever, needed - you are not expected to call this yourself)"""
        try:
            self.sock.shutdown(2)
+       except:
+           pass # Well, we tried.
+       try:
            self.sock.close()
        except:
            pass # Well, we tried.
