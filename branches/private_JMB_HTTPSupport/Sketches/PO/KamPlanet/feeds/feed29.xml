@@ -1,0 +1,386 @@
+<?xml version="1.0"?>
+<!-- name="generator" content="pyblosxom/0.8rc1" -->
+
+<rss version="0.91">
+  <channel>
+    <title>Feet up! : dev/python   </title>
+    <link>http://feetup.org/blog/dev/python</link>
+    <description>Feet up! Jim Hughes' weblog</description>
+    <language>en</language>
+<item>
+    <title>Cookies with httplib</title>
+    <link>http://feetup.org/blog/dev/python/cookies.html</link>
+    <description>&lt;p&gt;I needed to do a simple http get in the other day, the only catch was that I had to send a cookie. My first thoughts were that this might be tricky, but in practise it&apos;s a doddle. Below is a simplistic example passing a cookie (called &quot;Fish&quot;, with a value of &quot;Cod&quot;) using Python&apos;s &lt;a href=&quot;http://docs.python.org/lib/module-httplib.html&quot;&gt;httplib&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;
+import httplib
+conn = httplib.HTTPConnection( &quot;www.example.com&quot; )
+Headers = {&quot;Cookie&quot; : &quot;Fish=Cod&quot;}
+conn.request(&quot;GET&quot;, &quot;/fishfinder.html&quot;, None, Headers )
+response = conn.getresponse()
+data = response.read()
+&lt;/pre&gt;
+
+&lt;p&gt;How hard can it be?&lt;/p&gt;
+
+
+</description>
+  </item>
+<item>
+    <title>Easy security blanket</title>
+    <link>http://feetup.org/blog/dev/python/Easy-security-blanket.html</link>
+    <description>&lt;p&gt;Back in May del.icio.us announced some changes to their api, in a post curiously titled &lt;a href=&quot;http://blog.del.icio.us/blog/2006/05/feel_secure.html&quot;&gt;Security blanket&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;It took all of two minutes to update my &lt;a href=&quot;http://feetup.org/blog/dev/projects.html&quot;&gt;linkblogging script&lt;/a&gt; (a different url, and https rather than http), source code for which can be found in the usual location: &lt;a href=&quot;http://feetup.org/code/py/pydelicious.py.txt&quot;&gt;pydelicious.py&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;One gotcha for Pythonistas is that the default win32 build of older versions of Python doesn&amp;#8217;t have any ssl support, I&amp;#8217;ve tried &lt;a href=&quot;http://alldunn.com/python/&quot;&gt;Robin Dunn&amp;#8217;s drop-in replacement for _socket.pyd&lt;/a&gt; and it seems to work fine.&lt;/p&gt;
+
+
+</description>
+  </item>
+<item>
+    <title>More Delicious tinkering</title>
+    <link>http://feetup.org/blog/dev/python/Delicious-update.html</link>
+    <description>&lt;p&gt;You may have noticed that I&amp;#8217;ve given my &lt;a href=&quot;http://feetup.org/blog/dev/python/Delicious-Tinker-One.html&quot;&gt;linkblog entry generator&lt;/a&gt; a slight revision, the output should be a little more informative with links to the tags used, and a link to the other people linking to each item.&lt;/p&gt;
+
+&lt;p&gt;As before, it&amp;#8217;s &lt;a href=&quot;http://www.gnu.org/copyleft/gpl.html&quot; title=&quot;GNU Public License&quot;&gt;&lt;span class=&quot;caps&quot;&gt;GPL&lt;/span&gt;&lt;/a&gt; licensed and the source code is available as: &lt;a href=&quot;http://feetup.org/code/py/pydelicious.py.txt&quot;&gt;pydelicious.py&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;One odd thing I encountered with &lt;a href=&quot;http://dealmeida.net/en/Projects/PyTextile/&quot;&gt;pytextile&lt;/a&gt; was when I tried being too clever and used a definition list instead of nested unordered lists; definition list are pretty easy to do use in pytextile, but they appear to having a flaw in implementation. Their syntax is simple enough, for example&lt;/p&gt;
+
+&lt;p&gt;.bc dl. Monty Python:A British tv comedy series which first aired in 1969&lt;/p&gt;
+
+&lt;p&gt;would generate:&lt;/p&gt;
+
+&lt;dl&gt;
+&lt;dt&gt;Monty Python&lt;/dt&gt;
+&lt;dd&gt;A British tv comedy series which first aired in 1969&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;p&gt;It uses the colon character to split the items up, however if you try to use a link in a definition list things start getting strange. The format for a link is &quot;link text&quot;:http://example.com and the definition list code spots the colon and split the link over two items! There&amp;#8217;s probably a simple way around this but it&amp;#8217;s not in my textile skillset yet.&lt;/p&gt;</description>
+  </item>
+<item>
+    <title>Python Quickies...</title>
+    <link>http://feetup.org/blog/dev/python/Py-Quickies.html</link>
+    <description>&lt;p&gt;Here&apos;s a few nice Python quickies, I know I could have used del.icio.us to
+tag them and dump them here, but I wanted to add some more comments than 
+del.icio.us really allows, so they&apos;re here instead.&lt;/p&gt;
+
+&lt;p&gt;First off, the invaluable &lt;a href=&quot;http://the.taoofmac.com/space/Python/Grimoire&quot;&gt;Python Grimoire&lt;/a&gt;
+a vital resource for someone like me, someone who writes Python too 
+infrequently and sporadically and hence forgets some of the syntax and the 
+best &lt;em&gt;Pythonic&lt;/em&gt; ways to do routine tasks. Rui&apos;s been maintaining it 
+for a while, but he&apos;s now relaunched it in &lt;a href=&quot;http://the.taoofmac.com/space/TiddlyWiki&quot;&gt;TiddlyWiki&lt;/a&gt;
+format, this is a great way to read and browse the grimoire, I love it!&lt;/p&gt;
+
+&lt;p&gt;Also a couple of nice things from Matt&apos;s &lt;a href=&quot;http://www.postneo.com/postwiki/moin.cgi/PythonForSeries60&quot;&gt;PyS60 wiki page&lt;/a&gt;,
+the &lt;a href=&quot;http://www.bigbold.com/snippets/tags/series60&quot;&gt;Series60&lt;/a&gt; 
+tagged items from &lt;a href=&quot;http://www.bigbold.com/snippets/&quot;&gt;Code Snippets&lt;/a&gt; and 
+&lt;a href=&quot;http://simonjudge.com/&quot;&gt;Simon Judge&apos;s&lt;/a&gt; &lt;a href=&quot;http://simonjudge.com/pythonfreeware.html&quot;&gt;Python freeware&lt;/a&gt;,
+three handy little PyS60 apps - where&apos;s the source Simon? :-)&lt;/p&gt;
+
+&lt;p&gt;I&apos;ve really got to sit down and tinker with PyS60 again, roll on the 
+26 hour day and the 9 day week...&lt;/p&gt;
+
+</description>
+  </item>
+<item>
+    <title>Del.icio.us tickering, step one</title>
+    <link>http://feetup.org/blog/dev/python/Delicious-Tinker-One.html</link>
+    <description>&lt;p&gt;More
+&lt;a href=&quot;http://feetup.org/blog/linkblog/delicious-tinkering.html&quot;&gt;del.icio.us tinkering&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;As you&apos;ve probably seen I&apos;ve got stage one working successfully, 
+which creates a daily post of my previous day&apos;s del.icio.us items.&lt;/p&gt;
+
+&lt;p&gt;I&apos;ve achieved this using a lightly modified version of 
+&lt;a href=&quot;http://dealmeida.net/&quot;&gt;Roberto De Almeida&apos;s&lt;/a&gt;
+python script 
+&lt;a href=&quot;http://dealmeida.net/blosxom/en/Programming/Python/delicious.html&quot;&gt;pydelicious&lt;/a&gt; 
+- lightly modified because I don&apos;t have the libxml2 module to hand, so
+I&apos;ve substituted Aaron Schwartz&apos;s
+&lt;a href=&quot;http://www.aaronsw.com/2002/xmltramp/&quot;&gt;xmltramp&lt;/a&gt; instead.&lt;/p&gt;
+
+&lt;p&gt;I run this script with cron every morning - the 
+&lt;a href=&quot;http://del.icio.us/doc/api&quot;&gt;del.icio.us api&lt;/a&gt;
+is UTC/GMT based so that suits me quite nicely. The script creates a
+new text file containing my links (marked up with textile), which pyblosxom
+renders as a new blog post.&lt;/p&gt;
+
+&lt;p&gt;My code is available here:
+&lt;a href=&quot;http://feetup.org/code/py/pydelicious.py.txt&quot;&gt;pydelicious.py&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;As per xmltramp and Roberto&apos;s original my code is GPL licensed. I 
+like to think of my contribution as standing on the toes of giants...&lt;/p&gt;
+
+&lt;p&gt;Progress reports will follow
+&lt;a href=&quot;http://www.feetup.org/wiki/DeliciousTinkering&quot;&gt;on the wiki&lt;/a&gt;.&lt;/p&gt;
+</description>
+  </item>
+<item>
+    <title>Traffic Cams on Your Phone</title>
+    <link>http://feetup.org/blog/dev/python/Phone-Traffic-Cams.html</link>
+    <description>&lt;p&gt;&lt;img src=&quot;http://feetup.org/images/cam1.jpg&quot; border=&quot;1&quot; align=&quot;left&quot; width=&quot;176&quot; height=&quot;208&quot; vspace=&quot;3&quot; hspace=&quot;3&quot; alt=&quot;Traffic cam app: choosing a location&quot;/&gt;Russ &lt;a href=&quot;http://russellbeattie.com/notebook/1008314.html&quot;&gt;posted&lt;/a&gt; about a Flash Lite application for &lt;a href=&quot;http://feetup.org/wiki/Series60&quot;&gt;Series 60&lt;/a&gt; that displays recent images from New York City traffic cameras on your phone. Not to be outdone &lt;a href=&quot;http://crschmidt.net/&quot;&gt;Christopher Schmidt&lt;/a&gt; had a quick play at writing a similar app in &lt;a title=&quot;Python for Series 60 wiki&quot; href=&quot;http://www.postneo.com/postwiki/moin.cgi/PythonForSeries60&quot;&gt;Nokia&apos;s Series 60 Python&lt;/a&gt;, the result is this &lt;a href=&quot;http://crschmidt.net/blog/archives/30/development-time/&quot;&gt;Traffic Cam Proof Of Concept&lt;/a&gt; written in about 1 hour 20 minutes!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://feetup.org/images/cam2.jpg&quot; border=&quot;1&quot; align=&quot;right&quot; width=&quot;176&quot; height=&quot;208&quot; vspace=&quot;3&quot; hspace=&quot;3&quot; alt=&quot;Traffic cam app: Piccadilly Circus&quot;/&gt;It&apos;s a nice app, but not being in New York it&apos;s of little use to me, fortunately the &lt;a href=&quot;http://www.bbc.co.uk/travelnews/&quot;&gt;BBC&apos;s Travel News page&lt;/a&gt; has a load of traffic cams, so I grabbed the BBC&apos;s list of &lt;a href=&quot;http://www.bbc.co.uk/london/travel/jamcams/camloco/camlist.shtml&quot;&gt;London traffic cams&lt;/a&gt; and hacked up a London variant of &lt;a href=&quot;http://crschmidt.net/symbian/traffic/&quot;&gt;Chris&apos;s app&lt;/a&gt;. You can find my version here - &lt;a href=&quot;http://feetup.org/code/py/traffic.lon.py.txt&quot;&gt;http://feetup.org/code/py/traffic.lon.py.txt&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In keeping with the RAD theme, I timed how long it took me to create, 30 minutes to find the url&apos;s of the cameras and put them into a text file, 20 minutes to hack these urls into the code, and I&apos;d got a functional app. Now it&apos;s not that pretty; the location names are all in uppercase, and the image sizes from the BBC site (320x240 and around 40k bytes) mean that you need to wait around 10 seconds for the picture to load (at a cost of about 10p for the average UK GPRS user), and zoom in to get the best view, but as a proof of concept it&apos;s great.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; I&apos;ve been pointed at &lt;a href=&quot;http://www.frixo.com/wireless.asp&quot;&gt;Frixo&lt;/a&gt; an interesting site that seems to cover the UK&apos;s traffic with live updates every 3 minutes. No traffic cams that I can see yet, but lots of useful info (traffic, weather etc), with maps of jams etc. Good stuff, highly recommended.&lt;/p&gt;
+
+
+
+</description>
+  </item>
+<item>
+    <title>Are you blacklisted?</title>
+    <link>http://feetup.org/blog/dev/python/Blacklist-checking.html</link>
+    <description>&lt;p&gt;How do you check if an ip address is blacklisted by one of the various
+&lt;a href=&quot;http://en.wikipedia.org/wiki/DNSBL&quot;&gt;DNS Blackhole Lists&lt;/a&gt;?&lt;/p&gt;
+
+&lt;p&gt;It&apos;s sort of easy, you reverse the address (say it was 1.2.3.4), and 
+append the blacklist&apos;s address (say blacklist.example.net), and then 
+do a dns lookup (of 4.3.2.1.blacklist.example.net). If the address is not 
+found, chances are the blacklist hasn&apos;t heard of them, otherwise they&apos;re 
+probably scum.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://feetup.org/blog/blogging/blocking.html&quot;&gt;I&apos;ve talked&lt;/a&gt;
+about blocking these parasites before, so here&apos;s a chunk of code I use in 
+a few places to spot them. It&apos;s called
+&lt;a href=&quot;http://feetup.org/code/py/blacklist.py.txt&quot;&gt;blacklist.py&lt;/a&gt; 
+and I think it&apos;s simple enough to use:
+&lt;code&gt;&lt;pre&gt;
+import blacklist
+if blacklist.blacklisted(&quot;1.2.3.4&quot;) == 1:
+  print(&quot;scum&quot;)
+else:
+  print(&quot;ok&quot;)
+&lt;/pre&gt;&lt;/code&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Update:&lt;/strong&gt; Thanks to 
+&lt;a href=&quot;http://www.schwarzvogel.de/blog/&quot;&gt;Blackie&lt;/a&gt;
+for 
+&lt;a href=&quot;http://pro.enetation.co.uk/comments.php?user=jimh&amp;amp;commentid=dev/python/Blacklist-checking&amp;amp;usersite=http://feetup.org/blog#4119620&quot;&gt;spotting the typo&lt;/a&gt;
+in the above example (5 lines of code and I still make a mistake).
+Now fixed.&lt;/p&gt;
+</description>
+  </item>
+<item>
+    <title>More Nokia Python</title>
+    <link>http://feetup.org/blog/dev/python/more_nokia_python.html</link>
+    <description>&lt;p&gt;It looks like people haven&amp;#8217;t been slow to get using Nokia&amp;#8217;s Python project, and &lt;a href=&quot;http://postneo.com/&quot;&gt;Matt Croydon&lt;/a&gt; has been collating projects and news on his &lt;a href=&quot;http://www.postneo.com/postwiki/moin.cgi/PythonForSeries60&quot;&gt;Python for Series 60&lt;/a&gt; wiki page.&lt;/p&gt;
+
+&lt;p&gt;Seeing as there&amp;#8217;s no central clearing house(other than Forum Nokia) for Nokia Python projects right now, I reckon this is as good a focal point as any.&lt;/p&gt;</description>
+  </item>
+<item>
+    <title>Christmas comes early..</title>
+    <link>http://feetup.org/blog/dev/python/early_Xmas.html</link>
+    <description>&lt;p&gt;for us mobile Pythonista&apos;s anyway!&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.nokia.com/&quot;&gt;Nokia&lt;/a&gt; have today publicly released 
+their long awaited
+&lt;a href=&quot;http://www.forum.nokia.com/main/0,,034-821,00.html&quot;&gt;Python for Series 60&lt;/a&gt;
+Symbian smart phones. It&apos;d be nice to see it released on Series 80 and 
+Series 90 phones as well as the mass market
+&lt;a href=&quot;http://feetup.org/wiki/Series60&quot;&gt;Series 60&lt;/a&gt; devices, I guess 
+that&apos;s Nokia&apos;s next step.&lt;/p&gt;
+
+&lt;p&gt;It&apos;s certainly something to keep me busy over Christmas. I need to 
+catch up with the product since I haven&apos;t touched it for a little while, 
+and the release candidate has many more features than the last version of
+the beta I used. And with Ewan chasing me for a few 
+&lt;a href=&quot;http://www.allaboutsymbian.com/&quot;&gt;All About Symbian&lt;/a&gt;
+articles on Python, I&apos;ll certainly be busy.&lt;/p&gt;
+
+&lt;p&gt;First step is porting
+&lt;a href=&quot;http://feetup.org/blog/dev/python/WikiLite.html&quot;&gt;WikiLite&lt;/a&gt;
+to my phone :-)&lt;/p&gt;
+
+
+</description>
+  </item>
+<item>
+    <title>Are All Almonds Bitter?</title>
+    <link>http://feetup.org/blog/dev/python/almonds.html</link>
+    <description>&lt;p&gt;
+&lt;a href=&quot;http://postneo.com/2004/07/01.html#a3478&quot;&gt;Matt&lt;/a&gt;
+and
+&lt;a href=&quot;http://www.russellbeattie.com/notebook/1007908.html&quot;&gt;Russ&lt;/a&gt;
+have posted some of their thoughts about
+&lt;a title=&quot;Amaretto the drink&quot; 
+href=&quot;http://www.webtender.com/db/ingred/375&quot;&gt;Amaretto&lt;/a&gt;,
+Nokia&apos;s port of Python for the Series 60 platform.
+&lt;/p&gt;
+
+&lt;p&gt;
+I agree whole-heartedly with their views, it&apos;s a great looking
+product, but it&apos;s currently a little incomplete (in a non-major 
+but frustrating way), and we&apos;re all pretty much tied with NDAs
+to stop us engaging in our usual discussions and batting around
+of code.
+&lt;/p&gt;
+
+&lt;p&gt;
+It&apos;s no secret that I&apos;m on the eval programme, I&apos;ve
+&lt;a href=&quot;http://feetup.org/blog/dev/python/symbianPython.html&quot;&gt;mentioned 
+it before&lt;/a&gt;
+a
+&lt;a href=&quot;http://feetup.org/blog/mobile/pyLust.html&quot;&gt;few&lt;/a&gt;
+&lt;a href=&quot;http://feetup.org/blog/mobile/pyJoy.html&quot;&gt;times&lt;/a&gt;,
+and I was impressed by the helpful emails I received from a couple
+of Nokia folks earlier this week after
+&lt;a href=&quot;http://www.planetpython.org/&quot;&gt;Planet Python&lt;/a&gt;
+bizarrely grabbed my old mentions of the programme.
+&lt;/p&gt;
+
+&lt;p&gt;
+I still really hope that Nokia will release their Python source
+once they&apos;re happy with it as a basic product, to
+allow it to flourish as an open source project.
+This would make it far easier for the series 60 port
+to keep track with mainstream Python releases and fixes,
+and would also avoid the risk Amaretto becoming an oddball
+faux-Python that couldn&apos;t run the vast range of publicly
+available Python software.
+&lt;/p&gt;
+
+
+</description>
+  </item>
+<item>
+    <title>Soup Kitchen</title>
+    <link>http://feetup.org/blog/dev/python/tagSoup.html</link>
+    <description>&lt;p&gt;
+Ever had to parse some tag soup HTML? An unpleasant
+job at the best of times.
+&lt;a href=&quot;http://www.crummy.com/software/BeautifulSoup/&quot;&gt;Beautiful Soup&lt;/a&gt;
+claims to have solved the problem (mostly),
+and leaves you free to spend your time doing
+useful stuff with the extracted data rather than
+reinventing the wheel continuously. Beautiful Soup
+is written in Python, and works with Python 1.5.2
+or later. It&apos;s all in one file, and Python licensed.
+&lt;/p&gt;
+
+
+&lt;p&gt;
+Nice looking stuff, I&apos;ve got to do some more parsing
+and scraping, so I&apos;m going to give this a try.
+&lt;/p&gt;
+
+</description>
+  </item>
+<item>
+    <title>Symbian Python</title>
+    <link>http://feetup.org/blog/dev/python/symbianPython.html</link>
+    <description>&lt;p align=&quot;center&quot;&gt;
+&lt;img src=&quot;http://www.symbian.com/images/symblogos/top-logo.gif&quot;
+alt=&quot;small Symbian logo&quot; border=&quot;0&quot; width=&quot;120&quot; height=&quot;45&quot;/&gt;
+&lt;img src=&quot;http://www.python.org/pics/PyBanner059.gif&quot;
+alt=&quot;small Python logo&quot; border=&quot;0&quot; width=&quot;150&quot; height=&quot;35&quot;/&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+&lt;a href=&quot;http://feetup.org/blog/mobile/pyJoy.html&quot;&gt;I&apos;m evaluating 
+Amaretto&lt;/a&gt; 
+the Nokia port of
+&lt;a href=&quot;http://python.org/&quot;&gt;Python&lt;/a&gt; for
+the Series 60 Symbian platform, my initial impressions are mixed.
+Partially great joy and partially frustration, now I&apos;m not allowed to
+say exactly what functionality is provided, but being as it&apos;s a technology 
+preview you can assume that it&apos;s currently a little incomplete. There&apos;s
+a basic core to the product that looks good and sane, but the bits around
+that are currently a little sketchy.
+&lt;/p&gt;
+
+&lt;p&gt;
+This incompleteness is rather frustrating, but not as annoying as the
+current release only running on series 60 V2, of which the 6600 is the
+only target phone released. Out of the handful of Symbian phones I&apos;ve
+easy access to, none are 6600s, so I&apos;m stuck with using Amaretto
+in the emulator on the PC, which is handier for writing code, but
+rather limiting.
+&lt;/p&gt;
+
+&lt;p&gt;
+Anyway, given all the hype of Amaretto, a Python port for UIQ
+(SonyEricsson P800, P900, Motorola A920, A925, A1000, Benq P30,
+P31 et al) has sneaked out from sometime 
+&lt;a href=&quot;irc://irc.freenode.net/mobitopia&quot;&gt;#mobitopian&lt;/a&gt;
+&lt;a href=&quot;http://xenian.net/~enki/&quot;&gt;Enki Boehm&lt;/a&gt;.
+Classic stuff and very much in the tradition of Python on
+Symbian/Epoc, where there have been a number of ports in the past
+from lone hackers scratching their itches. A trend started by
+Duncan Booth, and continued by 
+&lt;a href=&quot;http://traumwind.de/computer/epoc/psionScripting.html&quot;&gt;a few others&lt;/a&gt;
+The most recent port being 
+&lt;a href=&quot;http://www.oflebbe.de/oflebbe/python/&quot;&gt;2.2.1&lt;/a&gt;
+by Olaf Flebbe.
+&lt;/p&gt;
+
+</description>
+  </item>
+<item>
+    <title>WikiLite</title>
+    <link>http://feetup.org/blog/dev/python/WikiLite.html</link>
+    <description>&lt;p&gt;I needed a lightweight standalone Wiki for tinkering around and
+writing a few project notes, unfortunately most of the 
+&lt;a href=&quot;http://c2.com/cgi/wiki?WikiWikiClones&quot;&gt;WikiWikiClones&lt;/a&gt;
+needed &lt;a href=&quot;http://httpd.apache.org/&quot;&gt;Apache&lt;/a&gt; or IIS, and
+I wanted something self contained and lite.&lt;/p&gt;
+
+&lt;p&gt;So, exactly &lt;em&gt;how&lt;/em&gt; lite? 25 lines of Python,
+I guess that&apos;s probably &lt;em&gt;lite&lt;/em&gt; enough!
+&lt;/p&gt;
+
+&lt;p&gt;
+How did I do that? Pretty easily actually, Python&apos;s
+&lt;a 
+href=&quot;http://www.python.org/doc/2.2.3/lib/module-CGIHTTPServer.html&quot;&gt;CGIHTTPServer&lt;/a&gt;
+module did all the heavy lifting,
+&lt;a href=&quot;http://purl.org/net/sbp/&quot;&gt;Sean Palmer&apos;s&lt;/a&gt;
+minimal Wiki
+&lt;a href=&quot;http://infomesh.net/2003/wypy/&quot;&gt;WyPy&lt;/a&gt;
+did the WikiMagic, and a minor tweak of the example
+code for the
+&lt;a 
+href=&quot;http://www.python.org/doc/2.2.3/lib/module-BaseHTTPServer.html&quot;&gt;BaseHTTPServer&lt;/a&gt;
+module (shown below) glues it together:
+
+&lt;pre&gt;
+import BaseHTTPServer
+import CGIHTTPServer
+
+def run(server_class=BaseHTTPServer.HTTPServer,
+        handler_class=CGIHTTPServer.CGIHTTPRequestHandler):
+    server_address = (&apos;&apos;, 8000)
+    handler_class.cgi_directories = [&apos;&apos;]
+    httpd = server_class(server_address, handler_class)
+    httpd.serve_forever()
+
+run()
+&lt;/pre&gt;
+Install instructions: Put the above code (I called my copy MyCgi.py)
+and wypy.py in a directory, create a subdirectory named w, run
+MyCgi.py and point your browser at http://localhost:8000/wypy.py
+&lt;/p&gt;
+
+&lt;p&gt;
+Minor niggles so far are that I can&apos;t get the 11 line version of
+WyPy to work so I&apos;ve had to resort to using the (not very) bloated
+18 line version, and that WyPy isn&apos;t as fully featured as say
+&lt;a href=&quot;http://c2.com/cgi/wiki?MoinMoin&quot;&gt;MoinMoin&lt;/a&gt;. I&apos;ve
+also had to change two places in wypy.py that use &amp;quot;wypy&amp;quot;
+as an href to &amp;quot;wypy.py&amp;quot; as Windows isn&apos;t smart enough
+to autorun Python scripts without a bit of a nudge.
+I&apos;m looking at the 11 line version, and that should be fixable,
+plus as I&apos;m considering using this same Wiki setup on various
+devices including my Psion 5mx and hopefully my N-Gage (when
+Nokia finally release their Python port), featherweight code
+is a good thing!
+&lt;/p&gt;
+
+</description>
+  </item>
+   </channel>
+</rss>

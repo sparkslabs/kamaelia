@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generator="wordpress/2.2.3" -->
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	>
+
+<channel>
+	<title>wxForty-Two</title>
+	<link>http://wxPython.org/blog</link>
+	<description>Life, the Universe and Everything  wxPython</description>
+	<pubDate>Fri, 04 Apr 2008 00:25:41 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.2.3</generator>
+	<language>en</language>
+			<item>
+		<title>&#8220;Tranquility base here, the Robin has landed&#8230;&#8221;</title>
+		<link>http://wxPython.org/blog/2008/04/03/tranquility-base-here-the-robin-has-landed/</link>
+		<comments>http://wxPython.org/blog/2008/04/03/tranquility-base-here-the-robin-has-landed/#comments</comments>
+		<pubDate>Fri, 04 Apr 2008 00:25:41 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Work]]></category>
+
+		<category><![CDATA[Life]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2008/04/03/tranquility-base-here-the-robin-has-landed/</guid>
+		<description><![CDATA[Since a number of folks have expressed interest and concern I thought I would give a quick update on my working situation.  This week I've started a full-time consulting job with a small software group at the University of Nebraska Medical Center.  If you attended PyCon a couple years ago then you may [...]]]></description>
+			<content:encoded><![CDATA[<p>Since a number of folks have expressed interest and concern I thought I would give a quick update on my working situation.  This week I've started a full-time consulting job with a small software group at the <a href="http://unmc.edu">University of Nebraska Medical Center</a>.  If you attended <a href="http://pycon.org/">PyCon</a> a couple years ago then you may have seen their <a href="http://us.pycon.org/zope/talks/2006/sun/track1/37/talkDetails">talk</a> about IntúaCare and IntúaDesign.  That is the project that I'll be working with.  I'll be working <em>with</em> wxPython a lot, and probably also working <em>on</em> wxWidgets and wxPython to some extent as well, although not as much as I did with OSAF.</p>
+<p>I'm excited to be working on this project.  Not just because of wxPython, but also because I have previous experience with the subject matter.  My first major job out of college  was working on software products that had a lot of the same goals as the IntúaSolutions products: essentially to be a highly dynamic and flexible solution for collecting and reporting medical patient care data in hospitals.  The key here is the "highly dynamic and flexible" part, the intent is to have a set of domain-specific tools where unskilled (a.k.a non-programmers) but knowledgeable people can easily tailor the application to the needs of each hospital, or even each department within the hospital.  My former experience with this was back in the dark days of DOS so the products had only a textual user interface, but I think we managed to accomplish a lot with it and it was a very successful product line, and at least as of a few years ago it was still going strong, although they've modernized a bunch of things since I worked there.</p>
+<p> Obviously a few things have changed in the computer world since then.  I discovered Python a year or so after I left that job and I've always wondered what it would have been like if we had used Python as the internal macro/calculation/filtering/query language instead of our home-grown RDL (for anyone outside of the marketing group and the customers that acronym stands for Robin Dunn's Language, otherwise it is Rule Definition Language.)  Since that time we've also gone through the rise of the graphical user interface, the explosion of the World Wide Web, and my current notebook computer has 7.5 times the number of pixels on screen and 8 times more RAM than the hard drive space in  the brand new top of the line desktop computer I had when we started that project!  It should be fun to be able to apply modern technology and my new skills to similar features and issues that I dealt with 14-18 years ago.</p>
+<p>I've linked to this video as a way to let you know how big of an effort this job search seemed to be at times, and also how good it felt when it was finally complete.</p>
+<p> <img src='http://wxPython.org/blog/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<center><object height="355" width="425">
+<param name="movie" value="http://www.youtube.com/v/xLu0Ak9Blog&amp;hl=en"></param>
+<param name="wmode" value="transparent"></param><embed src="http://www.youtube.com/v/xLu0Ak9Blog&amp;hl=en" type="application/x-shockwave-flash" wmode="transparent" height="355" width="425"></embed></object></center>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2008/04/03/tranquility-base-here-the-robin-has-landed/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Where&#8217;s my dictionary?</title>
+		<link>http://wxPython.org/blog/2008/01/24/wheres-my-dictionary/</link>
+		<comments>http://wxPython.org/blog/2008/01/24/wheres-my-dictionary/#comments</comments>
+		<pubDate>Thu, 24 Jan 2008 19:52:02 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Quotes]]></category>
+
+		<category><![CDATA[General]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2008/01/24/wheres-my-dictionary/</guid>
+		<description><![CDATA[I saw this sentence today on ArsTechnica:
+
+ "...Autotools, an intractably arcane and grotesquely anachronistic cesspool of ineffable complexity that makes even seasoned programmers nauseous."
+ I think that sentence could win an award if there was a most-big-words-used-where-small-words-would-do-fine contest.  Good thing that my dictionary is only a  Spotlight search away...  [type][type][type]...  Ah [...]]]></description>
+			<content:encoded><![CDATA[<p>I saw this sentence today on <a href="http://arstechnica.com/news.ars/post/20080123-kde-goes-cross-platform-with-windows-mac-os-x-support.html">ArsTechnica</a>:</p>
+<blockquote>
+<p> "...Autotools, an intractably arcane and grotesquely anachronistic cesspool of ineffable complexity that makes even seasoned programmers nauseous."</p></blockquote>
+<p> I think that sentence could win an award if there was a most-big-words-used-where-small-words-would-do-fine contest.  Good thing that my dictionary is only a  <a href="http://www.apple.com/macosx/features/300.html#spotlight">Spotlight</a> search away...  [type][type][type]...  Ah so that's what it means.  Yes, I agree. &lt;wink!&gt;</p>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2008/01/24/wheres-my-dictionary/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>All good things&#8230;</title>
+		<link>http://wxPython.org/blog/2008/01/10/all-good-things/</link>
+		<comments>http://wxPython.org/blog/2008/01/10/all-good-things/#comments</comments>
+		<pubDate>Thu, 10 Jan 2008 18:42:13 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Work]]></category>
+
+		<category><![CDATA[Life]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2008/01/10/all-good-things/</guid>
+		<description><![CDATA[As they say, all good things must come to an end.  However no matter how much you expect the inevitable, it's still a bit of a downer when it does happen.
+The Open Source Applications Foundation has been sponsoring my work on wxPython for about 5 years now.  I spend about half of my [...]]]></description>
+			<content:encoded><![CDATA[<p>As they say, all good things must come to an end.  However no matter how much you expect the inevitable, it's still a bit of a downer when it does happen.</p>
+<p>The <a href="http://osafoundation.org">Open Source Applications Foundation</a> has been sponsoring my work on wxPython for about 5 years now.  I spend about half of my time working on <a href="http://chandlerproject.org">Chandler</a>, supporting the other OSAF engineers with wxPython questions or problems, or in working on specific needs that OSAF has in wxWidgets or wxPython itself.  I'm free to spend the other half of my time working on wxWidgets or wxPython in whatever way I want.  Typically I use a big chunk of this time supporting the wxPython community, answering questions on the mail lists, tracking down bugs that people report, etc. but I also work on other features or long-term goals for wxPython that may not necessarily line up with some immediate need that Chandler has.  It's been a real good deal for everybody involved.  I've been able to get paid for working on my favorite hobby, the Chandler project has gotten the support and expertise that they needed, the wxPython community has also had a large block of my time and attention, and wxPython itself has had many improvements and enhancements that I likely would not have had time for otherwise.</p>
+<p>This week OSAF <a href="http://blog.chandlerproject.org/2008/01/08/osaf-transitions/">announced</a> a restructuring and downsizing of the Chandler team.  They want to shift the focus more towards gaining more users and, since it is an Open Source project, the building up of a volunteer developer community.  The other goal behind the transition is a desire to stretch out the remaining funding until the project can find a way to become self-sustaining.  As you've probably guessed by now, I was not one of the worker bees kept in the hive.  I've got a few weeks left on my contract and then I'll be making my own transition to something else.  Although I've known this was coming, I didn't expect it until the end of this year, so it's still a bit of a disappointment.</p>
+<p>So what does this mean for wxPython?  Hopefully nothing, other than some reduction in the time I am able to spend focused on wxPython.  It would be great to be able to find someone willing to support my working <strong>on</strong> wxPython part time like OSAF did, but it's probably pretty unlikely that that particular lightning will strike in the same place twice.    On the other hand, I expect that my next gig will be something that at least <strong>uses</strong> wxPython so there will be some opportunities for some of that work to roll down to wxPython and the community.  Of course, on the <a href="http://en.wikipedia.org/wiki/Gripping_hand">gripping hand</a>, if you or somebody you know would be interested in sponsoring at least part-time work on wxPython, please do contact me.</p>
+<p style="text-align: center"><img src="http://wxPython.org/blog/wp-content/uploads/2008/01/naturalfireworks.jpg" alt="naturalfireworks.jpg" /></p>
+<p style="text-align: center" align="left">&nbsp;</p>
+<p><strong>Update</strong>:  This news was noticed by the <a href="http://www.nytimes.com/idg/IDG_002570DE00740E18002573CC004F945F.html?ref=technology">New York Times</a>.</p>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2008/01/10/all-good-things/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>wxPython 2.8.7.1</title>
+		<link>http://wxPython.org/blog/2007/11/30/wxpython-2871/</link>
+		<comments>http://wxPython.org/blog/2007/11/30/wxpython-2871/#comments</comments>
+		<pubDate>Fri, 30 Nov 2007 23:27:46 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Software]]></category>
+
+		<category><![CDATA[Release]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2007/11/30/wxpython-2871/</guid>
+		<description><![CDATA[I've just released the new 2.8.7.1 build of wxPython.  This release has had some bugs fixed, some minor patches applied, and also incorporates the Google Summer of Code 2007 version of XRCed, and adds the Editra source code editor.  More details can be found in the changes list.  wxPython source and binaries [...]]]></description>
+			<content:encoded><![CDATA[<p>I've just released the new <strong>2.8.7.1</strong> build of <strong>wxPython</strong>.  This release has had some bugs fixed, some minor patches applied, and also incorporates the Google Summer of Code 2007 version of XRCed, and adds the Editra source code editor.  More details can be found in the <a href="http://wxpython.org/recentchanges.php">changes list</a>.  wxPython source and binaries for Windows, Mac OS X and Fedora can be downloaded from the <a href="http://wxpython.org/download.php">download page</a>.   Binaries for Debian and Ubuntu i386 and amd64 architectures are available in the <a href="http://apt.wxwidgets.org/dists/">wxWidgets APT repository</a>, see this <a href="http://wiki.wxpython.org/InstallingOnUbuntuOrDebian">wiki page</a> for details.</p>
+<p><strong>NOTE</strong>: On Mac OS X 10.5 (Leopard) the Python 2.5 binaries of wxPython expect to be used with the user-installed version of  <a href="http://python.org/download/">MacPython</a>, <em><strong>not</strong></em> the Apple installed version.  A fix for this issue is being worked on for the next release.  In the meantime you can either install MacPython 2.5.1 and adjust your paths so that that Python is used, or you can stick with Apple's Python and the wxPython 2.8.4.0 that comes with Leopard.</p>
+<p>Happy Hacking!</p>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2007/11/30/wxpython-2871/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Po-tay-toe, Po-tah-toe</title>
+		<link>http://wxPython.org/blog/2007/11/20/po-tay-toe-po-tah-toe/</link>
+		<comments>http://wxPython.org/blog/2007/11/20/po-tay-toe-po-tah-toe/#comments</comments>
+		<pubDate>Wed, 21 Nov 2007 02:35:11 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Quotes]]></category>
+
+		<category><![CDATA[General]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2007/11/20/po-tay-toe-po-tah-toe/</guid>
+		<description><![CDATA[Last week on wxPython-users a user wrote about a particular GUI class and said that, "it looks really awful."  Trying to get more details from the person about what is so bad about it only resulted in some confusion because he seems to really like the class and listed some nice features when asked, [...]]]></description>
+			<content:encoded><![CDATA[<p>Last week on <a href="http://news.gmane.org/gmane.comp.python.wxpython">wxPython-users</a> a user wrote about a particular GUI class and said that, "it looks really awful."  Trying to get more details from the person about what is so bad about it only resulted in some confusion because he seems to really like the class and listed some nice features when asked, "in what way is it awful?"  Well, as you can probably guess, it turns out that English is not his native language and  he intended to say that the  GUI class in question <em>filled</em> him with <em>awe</em>, or in other words, that it is "really awesome."</p>
+<p>This got me to thinking about something that has probably crossed every computer scientist's mind at one time or another:  It's too bad that our spoken and written word can't be passed through something like a syntax check, preprocessor, lint, or a compiler.  Just think how many problems could be caught before the communications arrived at the listener's auditory or visual interface!  If we could communicate person to person using something that is as clean and as structured as a programming language like <a href="http://python.org/">Python</a> then I think that there would be a lot less confusion in the world.  If our spoken word would fail to compile if it is incorrectly spoken, and if it failed to run if the assumptions it was built upon were incorrect, or were not fully specified then when what is spoken does successfully execute then there would be a much hight level of comprehension at the receiving end, and a high level of trust that what was received was exactly what was intended to be said.  Using a structured communication mechanism like a programming language would also allow for clear and unambiguous responses or acknowledgments that what was said was received by the listener, and understood.</p>
+<p>There would still be bugs of course, since nobody is perfect.  But I expect that if you look at the number of times that what you speak or write is misunderstood or misinterpreted, or even just ignored, and compare that to the number of bugs in your software that have made it out to the customers, then I think that for almost all of us there would be a huge difference in those numbers.  So what do you think, can Python 4000 be a spoken language?</p>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2007/11/20/po-tay-toe-po-tah-toe/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>My Mac Gripes</title>
+		<link>http://wxPython.org/blog/2007/11/20/my-mac-gripes/</link>
+		<comments>http://wxPython.org/blog/2007/11/20/my-mac-gripes/#comments</comments>
+		<pubDate>Wed, 21 Nov 2007 01:58:21 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Hardware]]></category>
+
+		<category><![CDATA[Mac]]></category>
+
+		<category><![CDATA[General]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2007/11/20/my-mac-gripes/</guid>
+		<description><![CDATA[As mentioned before, my experiences with the new Mac haven't all been roses.  There have been a few things that haven't worked out real great, and I've even had a few Grey Screens of Death (kernel panics.)  I suppose that things like this happen on any computer system, but based on my prior [...]]]></description>
+			<content:encoded><![CDATA[<p>As <a href="http://wxpython.org/blog/2007/09/17/one-month-with-mac/">mentioned</a> before, my experiences with the new Mac haven't all been roses.  There have been a few things that haven't worked out real great, and I've even had a few Grey Screens of Death (kernel panics.)  I suppose that things like this happen on any computer system, but based on my prior experiences with Mac it kinda surprised me that there isn't a higher level of stability than what I've experienced.  After all, this isn't Windows! I shouldn't need to have the "reboot" tool in my arsenal of troubleshooting aids.  I have to admit though that if this had been a Windows box I probably would have needed to reboot at least a hundred times as much in the past few weeks than I actually have.  But if it had been Linux it probably would have been about a tenth as many times.</p>
+<p>However, stability issues aside, there are a few things that really bug me about the Mac and OS X experience, and that is what this article is about.  I've been working off and on on this article for several weeks now.  During that time I've added some things to the list, and also have removed several as I got used to them and was no longer able to gripe about them.</p>
+<p> <a href="http://wxPython.org/blog/2007/11/20/my-mac-gripes/#more-13" class="more-link">(more...)</a>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2007/11/20/my-mac-gripes/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Because I can&#8230;</title>
+		<link>http://wxPython.org/blog/2007/09/28/because-i-can/</link>
+		<comments>http://wxPython.org/blog/2007/09/28/because-i-can/#comments</comments>
+		<pubDate>Fri, 28 Sep 2007 22:30:54 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Software]]></category>
+
+		<category><![CDATA[Development]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2007/09/28/because-i-can/</guid>
+		<description><![CDATA[For most of the time that I was actively using CVS (about a decade or so) if I wasn't using the command line interface then I most likely was using the pcl-cvs module for Emacs.  It has a very good integration with emacs, with a dired-like listing of the files in the workspace that [...]]]></description>
+			<content:encoded><![CDATA[<p>For most of the time that I was actively using CVS (about a decade or so) if I wasn't using the command line interface then I most likely was using the pcl-cvs module for Emacs.  It has a very good integration with emacs, with a dired-like listing of the files in the workspace that need some sort of attention.  (They're modified,  need updated, or etc.)  It also apparently had very little overhead as the response time was always about as snappy as you could get with CVS, and when you're dealing with a source code repository with over 11,000 files in it every little bit counts.  I tried a few other CVS-front ends over the years, but none of them seemed to suit me and my work habits very well.  They either assumed too much or were too restrictive, in other words they got in my way more than they helped me to do my job.</p>
+<p>A couple years ago OSAF switched from CVS to Subversion, and although I had played around with it a bit before this was my first real effort at using it. I love the advancements that SVN gives over and above what CVS can do, but I was very disappointed to find that the Emacs module for SVN (psvn.el) basically sucks.  Although it provides an interface similar to pcl-cvs, it is very slow, often taking much longer to do something than it would take doing it from the command line, and it can sometimes block normal Emacs usage for a few seconds at a time while it churns at 100% CPU.  So I looked at some other Free alternatives and didn't find anything that I liked.  They were all either as slow or slower than the Emacs module, or they had the same problems that the CVS GUIs I had looked at had.  So I gave up and used subversion from the command-line most of the time.</p>
+<p>Now that wxWidgets has also switched to Subversion I started looking around for other solutions again...  To my surprise I found that <a href="http://pysvn.tigris.org/">PySVN's WorkBench</a> tool was a good fit for me.  It's very fast at doing SVN operations, and it doesn't get in the way of how I work.  I think I had dismissed it before mainly because it seems to be primarily intended as a test case and proof of concept for the PySVN Python extension module.  So I started using WorkBench more and more and liked it more and more, but I also started noticing things that I didn't like as much, and some things that I thought could be done better, mostly UI and usability types of things.  This brings me to the point of this article:  WorkBench is Open Source so I could tweak it to my heart's content.  And since it is written in Python and uses wxPython for the UI it is very easy for me to do so.  And so that's what I've been doing off and on for the past couple months, and I have to say that it has turned out very well.  Yesterday I submitted a <a href="http://pysvn.tigris.org/issues/show_bug.cgi?id=69">big patch</a> to the PySVN project, and although there are a few more things I would like to do to it, I am very happy with what I have done so far.  And all of this is due to the Open Source nature of the project.  Open Source allows me to make the tool be what I need it to be, and so I did it because I can.</p>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2007/09/28/because-i-can/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>wxPython 2.8.6.0</title>
+		<link>http://wxPython.org/blog/2007/09/27/wxpython-2860/</link>
+		<comments>http://wxPython.org/blog/2007/09/27/wxpython-2860/#comments</comments>
+		<pubDate>Fri, 28 Sep 2007 05:18:55 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Release]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2007/09/27/wxpython-2860/</guid>
+		<description><![CDATA[wxPython 2.8.6.0 has been released.  Details are found here, and the download page is here.
+An interesting thing about this release is that I made the build, uploaded about a gig's worth of installers and packages, and everything else that goes into making a release, all while being out of town and away from the [...]]]></description>
+			<content:encoded><![CDATA[<p>wxPython 2.8.6.0 has been released.  Details are found <a href="http://wxpython.org/recentchanges.php">here</a>, and the download page is <a href="http://wxpython.org/download.php">here</a>.</p>
+<p>An interesting thing about this release is that I made the build, uploaded about a gig's worth of installers and packages, and everything else that goes into making a release, all while being out of town and away from the machines doing all the work.  I was able to make all the final tests and adjustments on my new Mac, using <a href="http://www.vmware.com/products/fusion/">VMware Fusion</a> for the Windows and Linux specific work, and then used <a href="http://www.selenic.com/mercurial/wiki/">Mercurial</a> over an ssh tunnel to push my changes back home to my master build and release machine.  The next part was easy, since I have been doing mostly automated builds for a few years now.  I just start it going via a ssh login and then checked on it a few hours later from the hotel to see if it's done.  At that point things started to get a little tricky, mainly because I usually do the rest of the release process by hand and in person.  Since the full build is about a gigabyte of binaries I transfered just a few of them to my local machine for testing, and then I had to deal with uploading remotely from the build machine to <a href="https://sourceforge.net/projects/wxpython/">SourceForge</a> and our <a href="http://apt.wxwidgets.org/dists/">APT repository</a>, all while I had a flaky wireless connection here and while attending various meetings.  Then I realized that the software I usually use for editing the website is only installed on a machine at home.  Well anyway, I muddled through and managed to get it done, and now I know where my release process could use a bit more streamlining and automation...</p>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2007/09/27/wxpython-2860/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Your mission, should you choose to accept it&#8230;</title>
+		<link>http://wxPython.org/blog/2007/09/25/your-mission-should-you-choose-to-accept-it/</link>
+		<comments>http://wxPython.org/blog/2007/09/25/your-mission-should-you-choose-to-accept-it/#comments</comments>
+		<pubDate>Wed, 26 Sep 2007 00:13:24 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Software]]></category>
+
+		<category><![CDATA[Development]]></category>
+
+		<category><![CDATA[General]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2007/09/25/your-mission-should-you-choose-to-accept-it/</guid>
+		<description><![CDATA[A few weeks ago I sent the following challenge to the PYxIDEs list, and I thought it might be a good idea to republish it here to give it a little more exposure.  ]]></description>
+			<content:encoded><![CDATA[<p>A few weeks ago I sent the following challenge to the <a href="http://pyxides.stani.be/">PYxIDEs</a> list, and I thought it might be a good idea to republish it here to give it a little more exposure.   <a href="http://wxPython.org/blog/2007/09/25/your-mission-should-you-choose-to-accept-it/#more-18" class="more-link">(more...)</a>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2007/09/25/your-mission-should-you-choose-to-accept-it/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>2.8.6.0 Preview</title>
+		<link>http://wxPython.org/blog/2007/09/21/2860-preview/</link>
+		<comments>http://wxPython.org/blog/2007/09/21/2860-preview/#comments</comments>
+		<pubDate>Fri, 21 Sep 2007 22:28:27 +0000</pubDate>
+		<dc:creator>Robin</dc:creator>
+		
+		<category><![CDATA[Development]]></category>
+
+		<category><![CDATA[Release]]></category>
+
+		<guid isPermaLink="false">http://wxPython.org/blog/2007/09/21/2860-preview/</guid>
+		<description><![CDATA[The wxWidgets project is shooting for a quick turn-around on the 2.8.5 release and wants to get the 2.8.6 release out next week.  So I am going to skip the wxPython 2.8.5.0 release entirely, and will go straight to a wxPython 2.8.6.0 release.
+The upside is that some of the things fixed and polished in [...]]]></description>
+			<content:encoded><![CDATA[<p>The wxWidgets project is shooting for a quick turn-around on the 2.8.5 release and wants to get the 2.8.6 release out next week.  So I am going to skip the wxPython 2.8.5.0 release entirely, and will go straight to a wxPython 2.8.6.0 release.</p>
+<p>The upside is that some of the things fixed and polished in wxWidgets would have been problematic for some wxPython users, and so we'll skip those problems and not have to deal with them at all.  (Some were bugs introduced by the fixes for other bugs, so you may not notice any changes at all compared to 2.8.4.2, other than the original fix.)  The other upside of this skip is that all of the usual last-minute distribution related problems have already been worked out while I was working on doing a 2.8.5.0 build, and that should allow me to have the 2.8.6.0 build ready fairly soon after the wxWidgets release (or maybe even before if they wait a few days for the announcement like they've been doing lately.)</p>
+<p>The downside is that I'm going to be on-site at <a href="http://www.osafoundation.org/">OSAF</a> all of next week celebrating the release of <a href="http://chandlerproject.org/">Chandler</a> and planning Chandler's next steps, so I will likely be running this release build remotely.  I guess I'll get a chance to see exactly where all of the holes in my automated build system really are!  <img src='http://wxPython.org/blog/wp-includes/images/smilies/icon_smile.gif' alt=':-)' class='wp-smiley' /> </p>
+<p>Anyway, the preview build is in progress right now.  If you're interested in testing or in having the bleeding-edge version of the binaries then keep an eye on the <a href="http://news.gmane.org/gmane.comp.python.wxpython.devel">wxPython-dev</a> <a href="http://wxpython.org/maillist.php">mail list</a> for an announcement from R'bot when he is done with the build and upload.</p>]]></content:encoded>
+			<wfw:commentRss>http://wxPython.org/blog/2007/09/21/2860-preview/feed/</wfw:commentRss>
+		</item>
+	</channel>
+</rss>

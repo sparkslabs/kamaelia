@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:media="http://search.yahoo.com/mrss/"
+	>
+
+<channel>
+	<title>Carbon Monoxide Wallpaper</title>
+	<atom:link href="http://cowallpaper.wordpress.com/feed/" rel="self" type="application/rss+xml" />
+	<link>http://cowallpaper.wordpress.com</link>
+	<description>An artless nerd scribbling about nerdy art</description>
+	<pubDate>Fri, 23 May 2008 10:36:28 +0000</pubDate>
+	<generator>http://wordpress.org/?v=MU</generator>
+	<language>en</language>
+			<item>
+		<title>Gold Soundz</title>
+		<link>http://cowallpaper.wordpress.com/2008/05/23/gold-soundz/</link>
+		<comments>http://cowallpaper.wordpress.com/2008/05/23/gold-soundz/#comments</comments>
+		<pubDate>Fri, 23 May 2008 10:36:28 +0000</pubDate>
+		<dc:creator>orphansandoligarchs</dc:creator>
+		
+		<category><![CDATA[GSoC]]></category>
+
+		<category><![CDATA[circle]]></category>
+
+		<category><![CDATA[future audio workshop]]></category>
+
+		<category><![CDATA[osc]]></category>
+
+		<category><![CDATA[pd]]></category>
+
+		<guid isPermaLink="false">http://cowallpaper.wordpress.com/?p=13</guid>
+		<description><![CDATA[It&#8217;s been far too long since the last post (exams looming large over my otherwise peaceful existence), and given that my fellow SoCers have managed it I think it must be time for a status update.  Firstly (and perhaps most importantly) we have sound!  The screenshot below shows pygame drawing a bouncy XY [...]]]></description>
+			<content:encoded><![CDATA[<div class='snap_preview'><br /><p style="text-align:left;">It&#8217;s been far too long since the last post (exams looming large over my otherwise peaceful existence), and given that my fellow SoCers have managed it I think it must be time for a status update.  Firstly (and perhaps most importantly) we have sound!  The screenshot below shows <a href="http://www.pygame.org/">pygame</a> drawing a bouncy XY pad, all created as a <a href="http://kamaelia.sourceforge.net/Home">Kamaelia</a> component.  This is then outputting OSC messages which are read by <a href="http://puredata.info/">PD</a> and used to trigger and modulate percussive noise.</p>
+<p style="text-align:center;"><a href="http://cowallpaper.files.wordpress.com/2008/05/pd_osc_1.png"><img class="size-medium wp-image-14 aligncenter" src="http://cowallpaper.files.wordpress.com/2008/05/pd_osc_1.png?w=300&h=211" alt="" width="300" height="211" /></a></p>
+<p style="text-align:left;">If you look closely at the PD patch you can begin to get an idea of how easy it is to work with OSC messages - the OSCroute objects make it simple to split up the different messages, giving you complete control over what is received and where it is used.  So what does it sound like?  Well, kinda chaotic and noisy and full of goodness - <a href="http://www.box.net/shared/8wz0hx3www">listen here</a>.</p>
+<p style="text-align:left;">Changing tack slightly, over at Create Digital Music there is an <a href="http://createdigitalmusic.com/2008/05/22/interview-new-virtual-instrument-maker-faw-talks-usability-and-design/">interesting interview</a> with the guys from <a href="http://futureaudioworkshop.com/">Future Audio Workshop</a> talking about their rather lovely looking new synth Circle.  There&#8217;s a lot of interesting stuff about interface design, and also a bit about its use of OSC.  I think Gavin Burke, FAW&#8217;s co-founder, sums up the difference between OSC and MIDI nicely:</p>
+<blockquote><p>You’re not trying to think about MIDI and what MIDI channels you’re on and all that kind of stuff; it just keeps it nice and simple. [OSC] is where it’s heading. It’s where most people want to be; most people don’t want to [have to do MIDI mappings].</p></blockquote>
+<p style="text-align:left;">Read the whole thing though - it&#8217;s interesting stuff.</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/cowallpaper.wordpress.com/13/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/cowallpaper.wordpress.com/13/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/cowallpaper.wordpress.com/13/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/cowallpaper.wordpress.com/13/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/cowallpaper.wordpress.com/13/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/cowallpaper.wordpress.com/13/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/cowallpaper.wordpress.com/13/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/cowallpaper.wordpress.com/13/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/cowallpaper.wordpress.com/13/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/cowallpaper.wordpress.com/13/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/cowallpaper.wordpress.com/13/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/cowallpaper.wordpress.com/13/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=cowallpaper.wordpress.com&blog=3561968&post=13&subd=cowallpaper&ref=&feed=1" /></div>]]></content:encoded>
+			<wfw:commentRss>http://cowallpaper.wordpress.com/2008/05/23/gold-soundz/feed/</wfw:commentRss>
+	
+		<media:content url="http://a.wordpress.com/avatar/orphansandoligarchs-128.jpg" medium="image">
+			<media:title type="html">orphansandoligarchs</media:title>
+		</media:content>
+
+		<media:content url="http://cowallpaper.files.wordpress.com/2008/05/pd_osc_1.png?w=300" medium="image" />
+	</item>
+		<item>
+		<title>Python and multitouch awesomeness</title>
+		<link>http://cowallpaper.wordpress.com/2008/04/30/python-and-multitouch-awesomeness/</link>
+		<comments>http://cowallpaper.wordpress.com/2008/04/30/python-and-multitouch-awesomeness/#comments</comments>
+		<pubDate>Wed, 30 Apr 2008 12:37:38 +0000</pubDate>
+		<dc:creator>orphansandoligarchs</dc:creator>
+		
+		<category><![CDATA[Control Interfaces]]></category>
+
+		<category><![CDATA[GSoC]]></category>
+
+		<category><![CDATA[kamaelia]]></category>
+
+		<category><![CDATA[multitouch]]></category>
+
+		<category><![CDATA[osc]]></category>
+
+		<category><![CDATA[python]]></category>
+
+		<category><![CDATA[tuio]]></category>
+
+		<guid isPermaLink="false">http://cowallpaper.wordpress.com/?p=12</guid>
+		<description><![CDATA[Whilst idly procrastinating over the last couple of days I&#8217;ve come across two thing which are seperately very cool, and together even cooler.  I&#8217;ve been keeping track of the developments in homemade multitouch stuff for a while (fueled by the shocking awesomeness that is reactable), but always though it all looked like a bit of [...]]]></description>
+			<content:encoded><![CDATA[<div class='snap_preview'><br /><p>Whilst idly procrastinating over the last couple of days I&#8217;ve come across two thing which are seperately very cool, and together even cooler.  I&#8217;ve been keeping track of the developments in homemade multitouch stuff for a while (fueled by the shocking awesomeness that is <a href="http://reactable.iua.upf.edu/">reactable</a>), but always though it all looked like a bit of a hassle - uni work is restricting me to five minute hacks at a time currently.  That was all until I saw this video on <a href="http://www.instructables.com/">instructables</a> - literally a five minute ~£15 multitouch box.</p>
+<p><span style="text-align:center; display: block;"><a href="http://cowallpaper.wordpress.com/2008/04/30/python-and-multitouch-awesomeness/"><img src="http://img.youtube.com/vi/pQpr3W-YmcQ/2.jpg" alt="" /></a></span></p>
+<p>Looks great huh?  It gets better - the box uses <a href="http://nuigroup.com/touchlib/">Touchlib</a>, a c++ library for doing multitouch detection.  Touchlib does all manner of clever things (which I vaguely understand), but most interestingly it will now output TUIO messages.  <a href="http://tuio.lfsaw.de/">TUIO</a> is a subset of everyone&#8217;s favourite control protocol <a href="http://opensoundcontrol.org/">OSC</a> (that post saying how awesome OSC is will come very soon).  It is literally a matter of running an executable and you have a webcam-&gt;TUIO  system up and running.  This lets you get x,y positions of each object, orientation data, and other fancy stuff with no hassle.</p>
+<p>So why, as a very bad c++ programmer, am I so excited about this?  Well the second thing I found was <a href="http://jannisleidel.com/2008/03/python-library-for-reactables-tuio-protocol/">this</a>, a python library for interpreting the super-simple to create TUIO messages.  Now I&#8217;m no expert, but the sample code for pyTUIO looks very much to me like a <a href="http://kamaelia.sourceforge.net/">Kamaelia</a> component waiting to happen.  Stick in in a class, put in a yield statement and there you have it.  This is Webcam-&gt;Multitouch Interface-&gt;TUIO-&gt;Python-&gt;Kamaelia in very simple steps.  So simple I&#8217;m off to ebay to buy a webcam!  Hopefully you will see this working as a small aside from my <a href="http://cowallpaper.wordpress.com/2008/04/27/gsoc-2008-a-multi-user-networked-music-sequencer/">Kamaelia Jam</a> work, and see a multitouch box being used to make music with Jam!</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/cowallpaper.wordpress.com/12/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/cowallpaper.wordpress.com/12/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/cowallpaper.wordpress.com/12/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/cowallpaper.wordpress.com/12/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/cowallpaper.wordpress.com/12/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/cowallpaper.wordpress.com/12/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/cowallpaper.wordpress.com/12/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/cowallpaper.wordpress.com/12/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/cowallpaper.wordpress.com/12/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/cowallpaper.wordpress.com/12/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/cowallpaper.wordpress.com/12/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/cowallpaper.wordpress.com/12/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=cowallpaper.wordpress.com&blog=3561968&post=12&subd=cowallpaper&ref=&feed=1" /></div>]]></content:encoded>
+			<wfw:commentRss>http://cowallpaper.wordpress.com/2008/04/30/python-and-multitouch-awesomeness/feed/</wfw:commentRss>
+	
+		<media:content url="http://a.wordpress.com/avatar/orphansandoligarchs-128.jpg" medium="image">
+			<media:title type="html">orphansandoligarchs</media:title>
+		</media:content>
+
+		<media:content url="http://img.youtube.com/vi/pQpr3W-YmcQ/2.jpg" medium="image" />
+	</item>
+		<item>
+		<title>Naming</title>
+		<link>http://cowallpaper.wordpress.com/2008/04/28/naming/</link>
+		<comments>http://cowallpaper.wordpress.com/2008/04/28/naming/#comments</comments>
+		<pubDate>Mon, 28 Apr 2008 10:24:33 +0000</pubDate>
+		<dc:creator>orphansandoligarchs</dc:creator>
+		
+		<category><![CDATA[GSoC]]></category>
+
+		<category><![CDATA[jam]]></category>
+
+		<category><![CDATA[naming]]></category>
+
+		<category><![CDATA[the smiths]]></category>
+
+		<guid isPermaLink="false">http://cowallpaper.wordpress.com/?p=11</guid>
+		<description><![CDATA[Following much debate (the majority of which was significantly silly - I&#8217;m sure one day I&#8217;ll name an app Suffer Little Children, but that day is not today!) I&#8217;m pleased to announce that my SoC project has gone from having a lot of works in it&#8217;s name to just two.
+And the winner is&#8230; Kamaelia Jam
+
+Just [...]]]></description>
+			<content:encoded><![CDATA[<div class='snap_preview'><br /><p>Following much debate (the majority of which was significantly silly - I&#8217;m sure one day I&#8217;ll name an app <a href="http://en.wikipedia.org/wiki/Suffer_Little_Children">Suffer Little Children</a>, but that day is not today!) I&#8217;m pleased to announce that my SoC project has gone from having a lot of works in it&#8217;s name to just two.</p>
+<p>And the winner is&#8230; <strong>Kamaelia Jam</strong></p>
+<p style="text-align:center;"><img class="alignnone" src="http://farm3.static.flickr.com/2042/2445140058_8bcc791a29_m.jpg" alt="" /></p>
+<p>Just to give the whole naming scheme a whole new level of irritating quirkyness please prepare yourselves for the first release sometime over the summer: codename Apricot.</p>
+<p>Jam image from <a href="http://www.flickr.com/photos/dvortygirl/">Dvortygirl</a> released under a <a href="http://creativecommons.org/licenses/by-sa/2.0/deed.en_GB">CC Attribution-Share Alike 2.0 Generic</a> license</p>
+<p>Edit: Oops - stuck the wrong link in up there&#8230;  Sorry!</p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/cowallpaper.wordpress.com/11/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/cowallpaper.wordpress.com/11/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/cowallpaper.wordpress.com/11/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/cowallpaper.wordpress.com/11/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/cowallpaper.wordpress.com/11/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/cowallpaper.wordpress.com/11/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/cowallpaper.wordpress.com/11/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/cowallpaper.wordpress.com/11/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/cowallpaper.wordpress.com/11/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/cowallpaper.wordpress.com/11/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/cowallpaper.wordpress.com/11/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/cowallpaper.wordpress.com/11/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=cowallpaper.wordpress.com&blog=3561968&post=11&subd=cowallpaper&ref=&feed=1" /></div>]]></content:encoded>
+			<wfw:commentRss>http://cowallpaper.wordpress.com/2008/04/28/naming/feed/</wfw:commentRss>
+	
+		<media:content url="http://a.wordpress.com/avatar/orphansandoligarchs-128.jpg" medium="image">
+			<media:title type="html">orphansandoligarchs</media:title>
+		</media:content>
+
+		<media:content url="http://farm3.static.flickr.com/2042/2445140058_8bcc791a29_m.jpg" medium="image" />
+	</item>
+		<item>
+		<title>GSoC 2008 - A multi-user networked music sequencer</title>
+		<link>http://cowallpaper.wordpress.com/2008/04/27/gsoc-2008-a-multi-user-networked-music-sequencer/</link>
+		<comments>http://cowallpaper.wordpress.com/2008/04/27/gsoc-2008-a-multi-user-networked-music-sequencer/#comments</comments>
+		<pubDate>Sun, 27 Apr 2008 10:26:01 +0000</pubDate>
+		<dc:creator>orphansandoligarchs</dc:creator>
+		
+		<category><![CDATA[GSoC]]></category>
+
+		<category><![CDATA[bidule]]></category>
+
+		<category><![CDATA[collaborative music]]></category>
+
+		<category><![CDATA[kamaelia]]></category>
+
+		<category><![CDATA[osc]]></category>
+
+		<guid isPermaLink="false">http://cowallpaper.wordpress.com/?p=6</guid>
+		<description><![CDATA[OK, this has been promised for a while now  - here&#8217;s the official &#8220;this is my GSoC project&#8221; post.
+I&#8217;ve been accepted by the lovely folks at BBC R&#38;D, and more specifically Kamaelia, to work on making a sequencer of sorts which can be edited in real time by lots of people in lots of [...]]]></description>
+			<content:encoded><![CDATA[<div class='snap_preview'><br /><p>OK, this has been promised for a while now  - here&#8217;s the official &#8220;this is my GSoC project&#8221; post.</p>
+<p>I&#8217;ve been accepted by the lovely folks at <a href="http://www.bbc.co.uk/rd/index.shtml">BBC R&amp;D</a>, and more specifically <a href="http://kamaelia.sourceforge.net/Home">Kamaelia</a>, to work on making a sequencer of sorts which can be edited in real time by lots of people in lots of different places.  I say of sorts because I&#8217;m not currently sure quite how much sequencer capability it will have - in my mind it&#8217;s more of a hybrid sequencer/live performance tool, but this may well change over the course of the summer.  Anyway, they say a picture is worth 1000 words, so here&#8217;s the UI mockup which I included with my proposal:</p>
+<p style="text-align:center;"><a href="http://cowallpaper.files.wordpress.com/2008/04/mockup_minimal.png"><img class="alignnone size-medium wp-image-9 aligncenter" src="http://cowallpaper.files.wordpress.com/2008/04/mockup_minimal.png?w=300&h=258" alt="" width="300" height="258" /></a></p>
+<p>A couple of things you might notice from this:</p>
+<ol>
+<li>All those forward slashes everywhere - They are (or will be) <a href="http://opensoundcontrol.org/">Open Sound Control</a> (OSC) messages.  OSC is officially awesome, and is looking likely to become the future of audio messaging, being both more powerful, more flexible and less insane (0&#215;90 anyone?) than MIDI.  And <a href="http://monome.org/">monome</a> uses it so it&#8217;s gotta be good right?  That said I&#8217;ll also be providing MIDI output too so don&#8217;t ditch that host/hardware just yet&#8230;</li>
+<li>All those dots everywhere - These indicate where abouts in Kamaelia&#8217;s rather extensive jumble of components some of my bits will fit.  Starting to work with Kamaelia has reminded me a lot of working in <a href="http://www.plogue.com/index.php?option=content&amp;task=view&amp;id=21&amp;Itemid=35">Bidule</a> - you make the components and connect them up any way you see fit.  This makes it awesome (or so I hope - it looks it) for prototyping stuff.  Want your new brilliant piano roll to fling data via OSC, whilst telling you what it&#8217;s up to?  Hook it up with the OSC component and a ConsoleEchoer and you&#8217;re away.  This is good!</li>
+<li>In the mockup every user can control the step sequencer and piano roll in the middle, but only single users have control over each of the X-Y pads.  This is to add a nice bit of chaos to proceedings - music would be dull if you knew what was going to happen all the time.  Also hopefully this will be a simple matter of switching a public/private boolean - fancy!</li>
+</ol>
+<p>So why is all this generally awesome?  Lots of reasons.  Firstly almost all electronic music you see is made by one person standing at a laptop (Kraftwork excepted - but I reckon they could get by without three of them&#8230;).   Whilst this is all well and good part of the fun of  making music is  the group activity, and playing off of each others ideas.  This is one of the things which hasn&#8217;t translated so well to electronic music.  Hopefully by creating new tools to make music collaboratively it will bring a new dimension to the fine art of standing in front of a PC twiddling knobs.  Also hopefully Kraftwerk will use it - Bug #1 methinks?</p>
+<p style="text-align:center;"><a href="http://cowallpaper.files.wordpress.com/2008/04/kwp2.jpg"><img class="alignnone size-medium wp-image-10" src="http://cowallpaper.files.wordpress.com/2008/04/kwp2.jpg?w=214&h=173" alt="" width="214" height="173" /></a></p>
+<p>Other awesome stuff?  Well, there&#8217;s not much point having a great tool for collaboration if the results aren&#8217;t interesting.  For me the really cool thing about this is that because everything works via MIDI or OSC then every user will potentially hear something different, depending on how they have their instruments and effects set up.  Ever better than that, eventually it will all be peer-based.  Each user will be able to select which of their peers to connect to, resulting in different music being played depending on who the user has been connected to at what times.  With enough users in the network everyone will be listening to their own unique performance of what is effectively the same piece.  Cool huh?</p>
+<p>So finally I should probably give a few shouts (in true <a href="http://en.wikipedia.org/wiki/Tim_Westwood">Westwood</a> style) to my lovely fellow SoCers, the Kamaelia crew, and especially <a href="http://www.defuze.org/">Sylvain</a> for being foolhardy enough to put his name down as my mentor.  Oh, and here&#8217;s a video of some of my inspiration for this project, because videos at the end is how I roll&#8230;</p>
+<p><span style="text-align:center; display: block;"><a href="http://cowallpaper.wordpress.com/2008/04/27/gsoc-2008-a-multi-user-networked-music-sequencer/"><img src="http://img.youtube.com/vi/ziIdjrR_MRs/2.jpg" alt="" /></a></span></p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/cowallpaper.wordpress.com/6/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/cowallpaper.wordpress.com/6/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/cowallpaper.wordpress.com/6/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/cowallpaper.wordpress.com/6/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/cowallpaper.wordpress.com/6/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/cowallpaper.wordpress.com/6/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/cowallpaper.wordpress.com/6/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/cowallpaper.wordpress.com/6/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/cowallpaper.wordpress.com/6/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/cowallpaper.wordpress.com/6/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/cowallpaper.wordpress.com/6/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/cowallpaper.wordpress.com/6/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=cowallpaper.wordpress.com&blog=3561968&post=6&subd=cowallpaper&ref=&feed=1" /></div>]]></content:encoded>
+			<wfw:commentRss>http://cowallpaper.wordpress.com/2008/04/27/gsoc-2008-a-multi-user-networked-music-sequencer/feed/</wfw:commentRss>
+	
+		<media:content url="http://a.wordpress.com/avatar/orphansandoligarchs-128.jpg" medium="image">
+			<media:title type="html">orphansandoligarchs</media:title>
+		</media:content>
+
+		<media:content url="http://cowallpaper.files.wordpress.com/2008/04/mockup_minimal.png?w=300" medium="image" />
+
+		<media:content url="http://cowallpaper.files.wordpress.com/2008/04/kwp2.jpg?w=214" medium="image" />
+
+		<media:content url="http://img.youtube.com/vi/ziIdjrR_MRs/2.jpg" medium="image" />
+	</item>
+		<item>
+		<title>Frist</title>
+		<link>http://cowallpaper.wordpress.com/2008/04/23/frist/</link>
+		<comments>http://cowallpaper.wordpress.com/2008/04/23/frist/#comments</comments>
+		<pubDate>Wed, 23 Apr 2008 17:20:54 +0000</pubDate>
+		<dc:creator>orphansandoligarchs</dc:creator>
+		
+		<category><![CDATA[General]]></category>
+
+		<category><![CDATA[absolut quartet]]></category>
+
+		<category><![CDATA[GSoC]]></category>
+
+		<category><![CDATA[hello world]]></category>
+
+		<guid isPermaLink="false">http://cowallpaper.wordpress.com/?p=4</guid>
+		<description><![CDATA[Hello, and welcome to the first post of my lovely spangley new blog.  This has been mainly set up to track my progress on the Google Summer of Code (more on that when I have time).  Also hopefully it&#8217;ll become a bit of a braindump for cool stuff which I&#8217;m up to, and [...]]]></description>
+			<content:encoded><![CDATA[<div class='snap_preview'><br /><p>Hello, and welcome to the first post of my lovely spangley new blog.  This has been mainly set up to track my progress on the Google Summer of Code (more on that when I have time).  Also hopefully it&#8217;ll become a bit of a braindump for cool stuff which I&#8217;m up to, and incompetent musings on things which have been taking up much needed space in my head.</p>
+<p>For now I&#8217;m going to get something to eat, and will leave you with this video of the rather incredible Absolut Quartet.  A nice start to some new scribblings methinks. <span style="text-align:center; display: block;"><a href="http://cowallpaper.wordpress.com/2008/04/23/frist/"><img src="http://img.youtube.com/vi/1e9AJVtuCKc/2.jpg" alt="" /></a></span></p>
+<img alt="" border="0" src="http://feeds.wordpress.com/1.0/categories/cowallpaper.wordpress.com/4/" /> <img alt="" border="0" src="http://feeds.wordpress.com/1.0/tags/cowallpaper.wordpress.com/4/" /> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gocomments/cowallpaper.wordpress.com/4/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/comments/cowallpaper.wordpress.com/4/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godelicious/cowallpaper.wordpress.com/4/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/delicious/cowallpaper.wordpress.com/4/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/gostumble/cowallpaper.wordpress.com/4/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/stumble/cowallpaper.wordpress.com/4/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/godigg/cowallpaper.wordpress.com/4/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/digg/cowallpaper.wordpress.com/4/" /></a> <a rel="nofollow" href="http://feeds.wordpress.com/1.0/goreddit/cowallpaper.wordpress.com/4/"><img alt="" border="0" src="http://feeds.wordpress.com/1.0/reddit/cowallpaper.wordpress.com/4/" /></a> <img alt="" border="0" src="http://stats.wordpress.com/b.gif?host=cowallpaper.wordpress.com&blog=3561968&post=4&subd=cowallpaper&ref=&feed=1" /></div>]]></content:encoded>
+			<wfw:commentRss>http://cowallpaper.wordpress.com/2008/04/23/frist/feed/</wfw:commentRss>
+	
+		<media:content url="http://a.wordpress.com/avatar/orphansandoligarchs-128.jpg" medium="image">
+			<media:title type="html">orphansandoligarchs</media:title>
+		</media:content>
+
+		<media:content url="http://img.youtube.com/vi/1e9AJVtuCKc/2.jpg" medium="image" />
+	</item>
+	</channel>
+</rss>

@@ -1,0 +1,209 @@
+<html>
+<head>
+  <title>New Kamaelia Home Page</title>
+    <style>
+    a { text-decoration:none; color:#260; }
+    body {
+        font-size:16px;
+        font-family:undotum,verdana,arial,helvetica,sans-serif;
+        line-height:1.2;
+        color:#000;
+/*         color:#fff; */
+/*         background-color:#cdff9d; */
+        background-color:#c0f080;
+/*         background-color:#A7E66C; */
+/*         background-color:#80FF55; */
+
+    }
+    #toolbar {
+        clear:both;
+        background-color:#bddd8d;
+        text-align:center;
+        padding:3px 5px 3px 0px;
+        font-size:12px;
+        margin:0;
+        font-family:undotum,verdana,arial,helvetica,sans-serif;
+    }
+    #toolbar p {padding:0; margin:0; }
+    #homelink { float:right; }
+    #bannerlogo { float:left; padding-left: 50px;padding-top: 20px;padding-right: 10px; }
+   .panel {font-size:22px;}
+   .panels { padding-left: 100px; margin-right: 30px;padding-top:20px;}
+   .blockpanel { width:30%; float: left;margin: 5px;padding: 5px; }
+
+.minidesc {
+   margin: 0;
+   padding: 0 0 0 5;
+}
+
+</style>
+
+<script type="text/javascript">
+
+  function kickoff() {
+      var t=setTimeout("switchNext(0)",2000);
+  }
+
+  function switchNext(elem) {
+      var myps = document.getElementsByTagName("div");
+      var mypanels = new Array();
+
+      for (i = 0;i < myps.length;i++) {
+          if (myps[i].className == "panel") {
+              mypanels.push( myps[i] );
+          }
+      }
+      var X = mypanels[elem].style.display;
+      var elem_next = (elem + 1) % mypanels.length;
+      mypanels[elem].style.display = mypanels[elem_next].style.display;
+      mypanels[elem_next].style.display = X;
+      var t=setTimeout("switchNext("+elem_next.toString()+")",2000);
+  };
+  var t=setTimeout("kickoff()",50);
+</script>
+
+</head>
+
+<body class="overview">
+
+<div id="toolbar">
+    <P><a id="homelink" href="Home.html">Home</a>
+    <p><a href="">Axon</a> &nbsp;
+       <a href="">Components</a> &nbsp;
+       <a href="">Cookbook</a> &nbsp;
+       <a href="">Systems</a>
+       <a href="">Community</a>
+</div>
+
+<img id="bannerlogo" src="cat-trans-medium.png">
+<div id="panel-show">
+
+  <div class="panel" id="panel1">
+    <h1> Kamaelia: Sociable Software </h1>
+    <P> Dump something here... 
+  </div>
+
+  <div class="panel" id="panel2" style="display:none">
+    <h1> Kamaelia: Concurrency Made Easy and Fun</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel3" style="display:none">
+    <h1> Kamaelia: Component Based Software</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel4" style="display:none">
+    <h1> Kamaelia: Lego/K'Nex for Software!</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel5" style="display:none">
+    <h1> Kamaelia: Opening the Toybox</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel6" style="display:none">
+    <h1> Kamaelia: More Hype</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel7" style="display:none">
+    <h1> Kamaelia: Better Hype</h1>
+    <P> Dump something here...
+  </div>
+
+  <div class="panel" id="panel8" style="display:none">
+    <h1> Kamaelia: Hype? Who wants it?</h1>
+    <P> Dump something here...
+  </div>
+  <div> <b>Download the Kamaelia SDK Now. Current version: 0.6.0 </b></div>
+
+</div>
+<p style="clear: both" />
+
+<div class="panels">
+    <div class="blockpanel">
+        <P style="text-align:center;font-size: 22px;"> <b> Use Apps</b> </p>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Whiteboard</a></h3>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec fermentum cursus turpis. Sed semper pharetra purus. Integer id metus. Vivamus ipsum. 
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Kamaelia Grey</a></h3>
+                <p>Curabitur sit amet tellus nec diam sagittis egestas. Sed lectus. Ut aliquam, tellus id vehicula commodo, metus lacus imperdiet ipsum, nec euismod sem leo ut erat.
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Logger</a></h3>
+                <p> Aliquam hendrerit. Donec lorem. Vestibulum a nisl. Suspendisse imperdiet velit et leo. Fusce volutpat ullamcorper sapien. Duis lectus leo, auctor eget, tristique vel, viverra a, turpis.
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Macro</a></h3>
+                <p>  Quisque vitae lorem. Sed interdum augue vehicula lacus. Praesent nisi diam, gravida quis, congue ac, facilisis non, mi.
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Compose</a></h3>
+                <p>  Quisque vitae lorem. Sed interdum augue vehicula lacus. Praesent nisi diam, gravida quis, congue ac, facilisis non, mi.
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Introspector</a></h3>
+                <p>  Quisque vitae lorem. Sed interdum augue vehicula lacus. Praesent nisi diam, gravida quis, congue ac, facilisis non, mi.
+        </div>
+    </div>
+
+    <div class="blockpanel">
+        <P style="text-align:center;font-size: 22px;"> <b> Build Apps</b> </p>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Tutorials</a></h3>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec fermentum cursus turpis. Sed semper pharetra purus. Integer id metus. Vivamus ipsum. 
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Cookbook</a></h3>
+                <p>Curabitur sit amet tellus nec diam sagittis egestas. Sed lectus. Ut aliquam, tellus id vehicula commodo, metus lacus imperdiet ipsum, nec euismod sem leo ut erat.
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Component Reference</a></h3>
+                <p> Aliquam hendrerit. Donec lorem. Vestibulum a nisl. Suspendisse imperdiet velit et leo. Fusce volutpat ullamcorper sapien. Duis lectus leo, auctor eget, tristique vel, viverra a, turpis.
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Documentation</a></h3>
+                <p>  Quisque vitae lorem. Sed interdum augue vehicula lacus. Praesent nisi diam, gravida quis, congue ac, facilisis non, mi.
+        </div>
+    </div>
+
+    <div class="blockpanel">
+        <P style="text-align:center;font-size: 22px;"> <b> Help!</b> </p>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Get Help (contact)</a></h3>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec fermentum cursus turpis. Sed semper pharetra purus. Integer id metus. Vivamus ipsum. 
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Developers Corner</a></h3>
+                <p>Curabitur sit amet tellus nec diam sagittis egestas. Sed lectus. Ut aliquam, tellus id vehicula commodo, metus lacus imperdiet ipsum, nec euismod sem leo ut erat.
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Subversion</a></h3>
+                <p> Aliquam hendrerit. Donec lorem. Vestibulum a nisl. Suspendisse imperdiet velit et leo. Fusce volutpat ullamcorper sapien. Duis lectus leo, auctor eget, tristique vel, viverra a, turpis.
+        </div>
+        <div class="minidesc">
+                <h3><a href="/GetKamaelia">Wiki</a></h3>
+                <p>  Quisque vitae lorem. Sed interdum augue vehicula lacus. Praesent nisi diam, gravida quis, congue ac, facilisis non, mi.
+        </div>
+    </div>
+
+</div>
+
+<p style="clear: both" />
+
+<div id="toolbar">
+    <P><a id="homelink" href="Home.html">Home</a>
+    <p><a href="">Axon</a> &nbsp;
+       <a href="">Components</a> &nbsp;
+       <a href="">Cookbook</a> &nbsp;
+       <a href="">Systems</a>
+       <a href="">Community</a>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0">
+<channel>
+<title>Blue Sky On Mars (Python)</title>
+<link>http://www.blueskyonmars.com/</link>
+<description>Kevin Dangoor&apos;s Weblog of Technology, Entertainment and Life</description>
+<copyright>Copyright 2005</copyright>
+<pubDate>May 25, 2005 10:03 PM</pubDate>
+<generator>http://www.movabletype.org/?v=2.65</generator>
+<docs>http://blogs.law.harvard.edu/tech/rss</docs> 
+
+<item>
+<title>Performance improvements in unreleased products</title>
+<description><![CDATA[<p>There's the old question "if a tree falls and no one hears it, did it make a noise?" Just as goofy: "if you improve the performance of an unreleased application, did it actually get faster?"</p>
+
+<p>I'm definitely in the "premature optimization is the root of all evil" camp, but the time has come for some performance work on Zesty News. I currently have well over 1,000 unread items, and it takes a few seconds to bring up the main view. Fixing this does make the code more complex, which is why I'm glad I didn't do it prematurely But, now is the time. So, <em>I'll</em> see the performance difference. Zesty's alpha testers won't even be aware that it used to take a few seconds. (And that's the way it should be.)</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001752.html</link>
+<guid>http://www.blueskyonmars.com/archives/001752.html</guid>
+<category>Software Development</category>
+<pubDate>May 20, 2005 08:56 AM</pubDate>
+</item>
+<item>
+<title>SIFR: Great looking typography on the web</title>
+<description><![CDATA[<p>Wow. No, I mean <em>wow</em>. <a href="http://www.mikeindustries.com/sifr/">SIFR</a>, an LGPLed combination of JavaScript, CSS and Flash, let's you  easily use <em>any font</em> for text on your pages, regardless of whether the user has the font. It leaves your pages fully accessible and searchable, and it drops and and removes very easily. Look at the <a href="http://www.mikeindustries.com/blog/files/sifr/2.0/">example page</a> to see the kind of coolness I'm talking about. (Link via <a href="http://www.userscape.com/blog/2005/05/12/sifr/">Ian Landsman</a>.)</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001741.html</link>
+<guid>http://www.blueskyonmars.com/archives/001741.html</guid>
+<category>Software Development</category>
+<pubDate>May 12, 2005 10:36 PM</pubDate>
+</item>
+<item>
+<title>Mouseover DOM inspector</title>
+<description><![CDATA[<p>Do you have a spiffy new AJAX page that you're trying to troubleshoot under IE? Check out the <a href="http://slayeroffice.com/tools/modi/v2.0/modi_help.html">Mouseover DOM Inspector</a> for a way to analyze what objects are sitting on your page at that moment. (Via <a href="http://www.nedbatchelder.com/blog/200505.html#e20050509T131943">Ned Batchelder</a>.)</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001738.html</link>
+<guid>http://www.blueskyonmars.com/archives/001738.html</guid>
+<category>Software Development</category>
+<pubDate>May 12, 2005 07:27 AM</pubDate>
+</item>
+<item>
+<title>Joel explains Hungarian notation</title>
+<description><![CDATA[<p>Joel Spolsky, as always, is entertaining and takes a bit of exposition to get to the point in his latest article: <a href="http://www.joelonsoftware.com/articles/Wrong.html">Making Wrong Code Look Wrong</a>. In the article, he makes a differentiation between "Apps Hungarian" notation and "Systems Hungarian" notation, and now it makes sense to me. Whenever I saw people talking about Hungarian Notation, I always saw the Systems version which seemed completely nonsensical: why would someone have a variable name that just duplicates information that you've already got? Conveying more useful information, as in the unsafe string example Joel gives, is a good thing.</p>
+
+<p>I don't buy the exceptions argument that Joel makes. When you're writing the code, if you're calling some outside function you need to know whether that function throws exceptions or if it returns an error code. Either way, when you're calling something that can fail, you need to decide how you're going to handle that failure. If you use error codes, you're forced to do bookkeeping all the way up the chain until the error hits a point where it can be properly dealt with (sometimes requiring action from the user). With exceptions, you can just say "this method is not in a position to do something about this problem, pass it along".</p>
+
+<p>CompSci is all about tradeoffs: Joel's preference is for more explicit code that requires more bookkeeping. My preference is for something that requires a bit less bookkeeping, and saves a bit of time by leaning on the tools a bit more. People writing macros in LISP are all the way at the extreme of hiding much of the bookkeepnig behind the tools provided by the language.</p>
+
+<p>There's no proveably correct answer to this, so pick your poision as they say.</p>
+
+<p>Regardless of how you feel about exceptions, though, Joel's article is worth the read because of his Hungarian Notation explanation. If you've been turned off by Hungarian Notation in the past, it's worth taking a look at Joel's view on it.</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001737.html</link>
+<guid>http://www.blueskyonmars.com/archives/001737.html</guid>
+<category>Software Development</category>
+<pubDate>May 11, 2005 01:30 PM</pubDate>
+</item>
+<item>
+<title>The tale of making Zesty News cross-platform</title>
+<description><![CDATA[<p>As I <a href="http://www.blueskyonmars.com/archives/2005/05/06/feed_reading_belongs_in_the_browser.html">mentioned earlier</a>, <a href="http://www.zestynews.com">Zesty News</a> has a browser-based interface. But, Zesty News is not a web-based program: it&#8217;s a desktop application. You install it on your computer and access the program through your web browser.</p>
+
+<p>So, I get to deal with the intracacies of cross-browser compatibility <em>and</em> the deployment aspects of a desktop application. Joy!</p>
+
+<p>But, it goes beyond that. While I can imagine telling a geek friend, &#8220;yeah, you just point your browser at http://localhost:xxxx and there you go!&#8221;, I can&#8217;t imagine telling a normal person that. I certainly can&#8217;t imagine selling a product like that. That would just be irresponsible product management. My goal was to have <em>just enough</em> native GUI to give people easy access to Zesty News, and do everything else in the browser. I also decided early in the process that I am only targeting modern and mainstream systems, at least to start with. Here&#8217;s my supported platforms matrix:</p>
+
+<table><tr><th>&nbsp;</th><th>Windows XP<sup>1</sup></th><th>Mac OS X<sup>2</sup></th></tr>
+<tr><th>Firefox</th><td>Yes</td><td>Yes</td></tr>
+<tr><th>Safari</th><td>Waiting for Apple on this one</td><td>Yes<sup>3</sup></td></tr>
+<tr><th>Internet Explorer</th><td>Yes<sup>4</sup></td><td>Blech</td></tr>
+</table>
+
+<p><sup>1</sup> In all likelihood, Zesty News will run on any 32-bit Windows. That&#8217;s not part of my initial test plan, though, so I don&#8217;t want to guarantee that.</p>
+
+<p><sup>2</sup> OS 10.3 and 10.4</p>
+
+<p><sup>3</sup> My testing will be with the latest version of Safari that comes via Software Update. This means 1.3 on Panther and 2.0 on Tiger.</p>
+
+<p><sup>4</sup> My testing is with IE6. It is quite possible that IE5.5 will work as well.</p>
+
+<p>Limiting things like this certainly reduces the cross-browser issues. There are some tricky bits, but Firefox, Safari and IE6 are close enough that I don&#8217;t spend all of my time just dealing with browser inconsistencies.</p>
+
+<p>The question then becomes: what is &#8220;just enough native GUI&#8221;? It turns out that there&#8217;s not a lot of native GUI necessary, but that work does extend to providing something for every browser in addition to each platform.</p>
+
+<p>Remember how I said that I couldn&#8217;t imagine telling all of the non-techies to go to http://localhost:xxxx? I have a couple of solutions for this. On both Windows and Mac, firing up Zesty News automatically opens the browser to Zesty News. But, that&#8217;s not a complete solution: people leave news aggregators running all the time. On Windows, as you&#8217;d expect, you get a taskbar icon <img src="http://www.blazingthings.com/files/zestytask1.png" alt="taskbar image" title="" /> that you can just double-click to get Zesty News to popup in your default browser. Whew! Something that &#8220;just works&#8221; with multiple browsers. The right-click menu  also includes the ability to quit Zesty News (but why would you want to do that?):</p>
+
+<p><img src="http://www.blazingthings.com/files/zestytask2.png" alt="menu image" title="" /></p>
+
+<p>As of this writing, the Mac interface isn&#8217;t quite as slick. That will change somewhere along the way. On the Mac, you can use cmd-Tab to hop over to Zesty News:</p>
+
+<p><img src="http://www.blazingthings.com/files/zestymac1.png" alt="cmd-tab view" title="" /></p>
+
+<p>Once there, you can use the menu to launch your default browser to the right place:</p>
+
+<p><img src="http://www.blazingthings.com/files/zestymac2.png" alt="Zesty Mac menu" title="" /></p>
+
+<p>Of course, you can also add a bookmark to Zesty News in your browser, given that the Zesty News software is just sitting at a URL you can point to.</p>
+
+<p>Just opening Zesty News isn&#8217;t all that&#8217;s needed, though. The other key feature that&#8217;s needed when not looking at the Zesty News interface itself is the ability to subscribe to new feeds. Firefox 1.0 added a nifty feature to handle this, and the open source <a href="http://projects.koziarski.net/fyr/">Feed Your Reader</a> tool by Michael Koziarski made it easy to subscribe to feeds in Zesty News from Firefox.</p>
+
+<p><img src="http://www.blazingthings.com/files/zestyff.png" alt="zesty firefox" title="" /></p>
+
+<p>That&#8217;s dandy for the 10-20% of web surfers who are using Firefox. But, what about the 80% who run IE? Zesty News includes an IE toolbar that scans for feeds and makes it as easy to subscribe as it is in Firefox:</p>
+
+<p><img src="http://www.blazingthings.com/files/zestytool1.png" alt="zesty ie" title="" /></p>
+
+<p>With Mac OS 10.3.9, things aren&#8217;t so pleasant. Registering Zesty News as a reader for the &#8220;feed://&#8221; protocol is easy enough (just add it to the info.plist file). But, with 10.3.9 (and Safari 1.3), Apple took over so that Safari would display a message saying that you need to upgrade to Tiger/Safari 2.0 to do RSS. Ugh.</p>
+
+<p>Zesty News has a &#8220;Browser Setup&#8221; screen that includes an option to make Zesty News your default feed reader. Unfortunately, there&#8217;s no documented way to do this under Mac OS 10.3! Under Windows, you just set a couple of registry entries and you&#8217;re done. Carl Lindberg, author of the excellent <a href="http://www.rubicode.com/Software/RCDefaultApp/">RCDefaultApp</a>, gave me some tips on the undocumented, private APIs to do this. I haven&#8217;t had a chance to do it yet, though.</p>
+
+<p>So, the net of all of this is that Safari 1.x doesn&#8217;t have a fancy way to detect and subscribe to feeds right now. However, Zesty News has a Feed Finder bookmarklet that should work in most modern browsers, and that makes it pretty easy to subscribe to feeds.</p>
+
+<p>Of course, Mac OS X Tiger makes this all better. Safari 2.0 detects feeds along the way and provides an easy subscription mechanism that will work with Zesty News. (I haven&#8217;t installed Tiger yet, so I haven&#8217;t tested this. From what I&#8217;ve read, this should work fine, though.) Safari 2.0 also lets you change your default feed reader in much the same way that Safari 1.x lets you set your default web browser.</p>
+
+<p>That seems a little backward to me, though. You really should be able to tell an application &#8220;I want you to be my default&#8221;, rather than having to run some other application which happens to do the same thing. Carl Lindberg reports that Tiger provides public APIs for setting defaults for file types, but not for URLs. And, of course, the private APIs have changed between Tiger and Panther.</p>
+
+<p>Before Zesty News 1.0 final is released, I&#8217;m going to straighten out the Mac support to fix all of this. It&#8217;s ironic, because I use the Mac for all of my work except for Windows-specific development and testing.</p>
+
+<p>Overall, making Zesty News cross-platform and cross-browser has not been <em>too</em> painful. There have been some days where I&#8217;ve been pulling my hair out over one little thing that works on one platform but not the other, or weird APIs or strange compilation problems. But, I feel much better about having a cross-platform Zesty News so that I can support the increasing number of folks running Mac OS X and the masses running Windows.</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001735.html</link>
+<guid>http://www.blueskyonmars.com/archives/001735.html</guid>
+<category>Software Development</category>
+<pubDate>May 11, 2005 10:00 AM</pubDate>
+</item>
+<item>
+<title>Why another RSS reader?</title>
+<description><![CDATA[<p>Over the next couple of weeks, I'm going to write an article or two about design choices that I've made in <a href="http://www.zestynews.com">Zesty News</a>. The ideas for Zesty News started forming in late-2002, and were fairly concrete by mid-2003. I remember talking to Nigel, my boss at the time, about some of the ideas. At that point, with a baby coming in July, I was not in a good position to make a run for it.</p>
+
+<p>Late last year, I surveyed the scene and decided that I'd give it a go. None of the feed readers out there did what I wanted. Despite new RSS readers popping up all the time, they nearly all seemed to be clones of one another.</p>
+
+<p>In short, and I'm sure that everyone will agree with me on this, there is plenty of room in the RSS reader space for new development and new ideas. Feed readers haven't entered the mainstream yet, but the increasing number of mainstream articles about blogs and RSS is changing that. Millions of people are using Firefox now, which raises the awareness of RSS through its little orange icon in the lower right hand corner. Safari 2.0, shipping today as part of Mac OS X Tiger, adds a blue RSS emblem. And IE7, going into beta this summer, will also reportedly have RSS support.</p>
+
+<p>2005 is probably the year that news aggregation <a href="http://www.amazon.com/exec/obidos/ASIN/0060517123/blueskyonmars-20">crosses the chasm</a>. While I'm sure that there will be a small handful of dominant players, as with any business, the size of the ecosystem will be so much larger that even small players like Blazing Things can have a role.</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001718.html</link>
+<guid>http://www.blueskyonmars.com/archives/001718.html</guid>
+<category>Software Business</category>
+<pubDate>April 29, 2005 10:33 AM</pubDate>
+</item>
+<item>
+<title>Announcing Zesty News</title>
+<description><![CDATA[<img style="float:left;" src="http://www.blazingthings.com/static/ZestyNews.png" width="140" height="210">
+<p>People everywhere are discovering new ways to gather and use the information available on the internet. Zesty News will provide a <em>new</em> new way to gather up and read the information on the net.</p>
+<p>The focus of Zesty News is simple: keep you informed about everything that matters <em>to you</em>, and use up as little of your time in the process as possible.</p>
+<p>Zesty News runs on Windows PCs or Macs and works within the browser you're already familiar with: Internet Explorer on the PC, Firefox on the PC or Mac and Safari on the Mac. More details, screenshots and the like will be coming a little later on.</p>
+<p>As of this writing, Zesty News has one minor feature and some cleanup and documentation to go before the initial alpha test release. That first release will not be a general public release. Only people with accounts on the blazingthings.com website will have access. Feel free to <a href="http://www.blazingthings.com/contact">send me an email message</a> if you're interested in being a tester for Zesty News.</p>
+<p>The beta release of Zesty News will be open to the public, and this first release of Zesty News will be completely free. My plan is that there will always be a free version of Zesty News.</p>
+<p>"Official" Zesty News information and tips will be posted at <a href="http://www.blazingthings.com">Blazing Things</a>. As always, more technical discussion, and my general talk, will be here on my personal blog.</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001717.html</link>
+<guid>http://www.blueskyonmars.com/archives/001717.html</guid>
+<category>Software Business</category>
+<pubDate>April 29, 2005 09:34 AM</pubDate>
+</item>
+<item>
+<title>JavaScript Shell</title>
+<description><![CDATA[The <a title="JavaScript Shell" href="http://www.squarefree.com/shell/">JavaScript Shell</a> lets you interactively run JavaScript commands, even against a particular window. This allows you to easily test out DOM manipulations you're considering or, as the authors suggest, GreaseMonkey scripts.
+
+Very nice, but it does not appear to be Safari compatible at all. Just goes to show that Firefox is far and away the best browser for development. I have found that Firefox's tools are the easiest for getting things working, and then I deal with making things cross-browser.
+
+]]></description>
+<link>http://www.blueskyonmars.com/archives/001712.html</link>
+<guid>http://www.blueskyonmars.com/archives/001712.html</guid>
+<category>Software Development</category>
+<pubDate>April 26, 2005 10:43 AM</pubDate>
+</item>
+<item>
+<title>Ian Bicking on Ruby On rails</title>
+<description><![CDATA[<p>Ian Bicking has posted <a title="More thoughts on Ruby on Rails" href="http://blog.ianbicking.org/more-thoughts-on-ruby-on-rails.html">more thoughts on Ruby on Rails</a>. For those of you not familiar with Ian, he&#8217;s had his hands in <a href="http://sqlobject.org/">object-relational mapping</a>, <a href="http://www.webwareforpython.org/">web</a> <a href="http://pythonpaste.org/">frameworks</a> and even <a href="http://www.cheetahtemplate.org/">template tools</a>.</p>
+
+<p>Ian&#8217;s perspective in this latest article is from short experimentation with Rails, but I agree with the things that he has said that he likes and dislikes. Ian has <a href="http://blog.ianbicking.org/what-is-wsgikit.html">described Paste</a> in terms that make it sound like a piece of middleware for web framework developers to use in sharing code. While that&#8217;s all fine and dandy, I do hope that we&#8217;ll start to see some fully-fleshed out packages that provide a good quick start for apps.</p>
+
+<p>If nothing else, Rails has brought to light the fact that starting each new project with a completely blank slate is a real drag.</p>
+
+
+]]></description>
+<link>http://www.blueskyonmars.com/archives/001709.html</link>
+<guid>http://www.blueskyonmars.com/archives/001709.html</guid>
+<category>Software Development</category>
+<pubDate>April 23, 2005 09:39 AM</pubDate>
+</item>
+<item>
+<title>Why specs matter</title>
+<description><![CDATA[<p>Being an XP type, I don't go in for specs for everything. Where interoperability counts, specs are key... and Mark Pilgrim nails the personalities in <a title="Why specs matter [dive into mark]" href="http://diveintomark.org/archives/2004/08/16/specs">Why specs matter</a>.<br />
+<blockquote>“Angels” read specs closely, write code, and then thoroughly test it against the accompanying test suite before shipping their product. Angels do not actually exist, but they are a useful fiction to make spec writers to feel better about themselves.</blockquote></p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001708.html</link>
+<guid>http://www.blueskyonmars.com/archives/001708.html</guid>
+<category>Software Development</category>
+<pubDate>April 23, 2005 07:51 AM</pubDate>
+</item>
+<item>
+<title>HTTP abuse and painful frameworks</title>
+<description><![CDATA[<p>Ryan Tomayko had commented on <a href="http://www.blueskyonmars.com/archives/2005/04/21/get_post_put_and_delete_in_rest.html">my post from yesterday</a> regarding using HTTP correctly (not abusing HTTP GET, etc.). My posting was following the pragmatic perspective of getting things done without worrying about absolute correctness. I agree with Ryan&#8217;s new posting <a href="http://naeblis.cx/rtomayko/2005/04/22/on-http-abuse">&#8220;On HTTP Abuse&#8221;</a>. Favoring &#8220;getting things done&#8221; doesn&#8217;t also mean that I <em>don&#8217;t</em> want to do things correctly. His post is correct that the frameworks that we use to get real work done just don&#8217;t lend themselves to using HTTP fully and correctly.</p>
+
+<p>My guess is that many of the frameworks were created in the process of trying to get some job done. Especially given the nature of what&#8217;s easily testable with the browsers we have today, I can imagine how the frameworks we use came to be the way they are. It&#8217;s a non-trivial task to make a framework that encourages proper use of HTTP and exposes its full power while still being as easy as what we have today.</p>
+
+<p>But, we do today have browsers that do a reasonable job of HTML/CSS/DOM, so it&#8217;s not inconceivable that we could have server side frameworks and browsers that let us really exploit all that HTTP can offer.</p>
+]]></description>
+<link>http://www.blueskyonmars.com/archives/001707.html</link>
+<guid>http://www.blueskyonmars.com/archives/001707.html</guid>
+<category>Software Business</category>
+<pubDate>April 22, 2005 11:02 PM</pubDate>
+</item>
+<item>
+<title>GET, POST, PUT and DELETE in REST</title>
+<description><![CDATA[<p>No, I'm not yelling in the title. I'm just following up on Dare Obasanjo's post about <a title="Dare Obasanjo aka Carnage4Life - Misunderstanding REST: A look at the Bloglines, del.icio.us and Flickr APIs" href="http://www.25hoursaday.com/weblog/CommentView.aspx?guid=7a2f3df2-83f7-471b-bbe6-2d8462060263">misunderstanding REST: A look at the Bloglines, del.icio.us and Flickr APIs</a>. Dare's complaint is that these services all have URLs that have side effects via HTTP GET. This is an interesting distinction to make.</p>
+
+<p>I just set up a new Drupal installation, and I'm reminded of Drupal's cron.php. cron.php runs whatever periodic maintenance tasks are needed. In other words, it changes data. But, you really want to use GET in that case, because it makes it trivial to add a wget crontab entry to ping it periodically.</p>
+
+<p>My own app keeps does housekeeping as links are clicked, which is far easier via a GET than to rig up a POST via JavaScript. Maybe the difference here is whether or not one is making a claim of a RESTful interface. Or maybe the difference is how caught up in the semantics of it one is. Josh Alen has a good comment on this:<br />
+<blockquote>people chose between GET and POST based on other critera than suggested in the Fielding paper</blockquote><br />
+I think this is on target. If you're conciously providing an API for the public to use, following the RESTful standards that Dare mentions is worthwhile, because it helps with the principle of least surprise. But, you also need to look at the overall convenience of what you're doing... if you have a good reason to bend the rules, do so and make sure you document it. If it's truly a good reason for rule-bending, it shouldn't really take people by surprise or throw them off.</p>
+
+<p>This makes me think of the general notion that APIs are a user interface for developers. In Swing programming, to add a widget to a window you had to do this:</p>
+
+<p>frame.getContentPane().add(somewidget)</p>
+
+<p>This is the "correct" thing to do, because the JFrame object itself is not actually a container for UI widgets. But, it <em>has</em> a container: the content pane. Correct or not, it was annoying. Java 1.5 now allows you to do this:</p>
+
+<p>frame.add(somewidget)</p>
+
+<p>Though it is less "correct" for the architecture, I think this is more inline with what programmers expect and want to do with the API.</p>
+
+<p>I don't know if this is the case with the Bloglines, Flickr and De.licio.us APIs, but my main point is that there are times when user experience is worth more than "following the spec".<br />
+</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001705.html</link>
+<guid>http://www.blueskyonmars.com/archives/001705.html</guid>
+<category>Software Business</category>
+<pubDate>April 21, 2005 12:41 PM</pubDate>
+</item>
+<item>
+<title>F-Script Anywhere (and Mac OS X) are very cool</title>
+<description><![CDATA[<p><a href="http://www.fscript.org/">F-Script</a> is a Smalltalk dialect for Mac OS X. Clearly, many in the Mac community are already aware of F-Script, since it won an Innovators Award in 2003. I&#8217;d imagine many are always aware of  <a href="http://homepage.mac.com/kenferry/software.html">F-Script Anywhere</a>, which allows you to attach F-Script to any Mac OS X program. I wasn&#8217;t aware of this until yesterday, so I just had to say &#8220;wow! that&#8217;s cool!&#8221;.</p>
+
+<p>Using F-Script Anywhere, you&#8217;ve got an object browser that you can use to poke around at the various objects in a running program, sending messages and getting responses back. Within a couple minutes of download F-Script Anywhere, I was able to send JavaScript commands to my running Safari window. Mac OS X has the coolest software architecture around.</p>
+
+<p>Speaking of the Mac OS X software architecture, Apple has an open source package called <a href="http://developer.apple.com/darwin/cflite.html">Core Foundation Lite</a>, which provides a number of the base classes used in Cocoa development. I knew that Mac OS X&#8217;s kernel was open source, but I didn&#8217;t realize that some of the framework code was also open source. CFLite is still quite low-level, but it is a way to move some code between platforms.</p>
+]]></description>
+<link>http://www.blueskyonmars.com/archives/001704.html</link>
+<guid>http://www.blueskyonmars.com/archives/001704.html</guid>
+<category>Software Development</category>
+<pubDate>April 21, 2005 07:29 AM</pubDate>
+</item>
+<item>
+<title>So much for a small Flash download</title>
+<description><![CDATA[<p><a title="Mac Rumors: Adobe Acquires Macromedia" href="http://www.macrumors.com/pages/2005/04/20050418073233.shtml">Adobe Acquires Macromedia</a> hopefully <em>won't</em> mean that you need Adobe Reader to view Flash in the future.</p>]]></description>
+<link>http://www.blueskyonmars.com/archives/001702.html</link>
+<guid>http://www.blueskyonmars.com/archives/001702.html</guid>
+<category>Software Business</category>
+<pubDate>April 18, 2005 08:51 AM</pubDate>
+</item>
+<item>
+<title>Tufte boiled down to bulletpoints</title>
+<description><![CDATA[<p>A link showed up on <a href="http://blogdex.net">Blogdex</a> for <a title="Graphics and Web Design Based on Edward Tufte's Principles" href="http://www.washington.edu/computing/training/560/zz-tufte.html">Graphics and Web Design Based on Edward Tufte&#8217;s Principles</a>. For those not familiar with Tufte, he is the author of three very fine books: <a href="http://www.amazon.com/exec/obidos/ASIN/0961392142/blueskyonmars-20">The Visual Display of Quantitative Information</a>, <a href="http://www.amazon.com/exec/obidos/ASIN/0961392118/blueskyonmars-20">Envisioning Information</a> and <a href="http://www.amazon.com/exec/obidos/ASIN/0961392126/blueskyonmars-20">Visual Explanations</a>. These books, which Tufte beautifully self-published, are filled with great examples (and counter-examples) of good ways to communicate information.</p>
+
+<p>Tufte also wrote <a href="http://www.amazon.com/exec/obidos/ASIN/0961392150/blueskyonmars-20">a paper</a> on the woes of PowerPoint presentations. This makes it somewhat ironic that the &#8220;Graphics and Web Design Based On Edward Tufte&#8217;s Principles&#8221; boils down Tufte&#8217;s books into a bullet list outline. Sure, there&#8217;s more content there than in a typical PowerPoint presentation, but it still struck me as mildly amusing.</p>
+
+<p>For those not familiar with Tufte, though, you might check out that outline for a taste of what's in the books. The books are certainly a lot more visual, and I'd highly recommend them if the content in that outline sounds appealing. Tufte is also <a href="http://www.blueskyonmars.com/archives/2004/04/15/tufte_rocks.html">a good speaker</a>, if you happen to find him coming to your area.</p>
+]]></description>
+<link>http://www.blueskyonmars.com/archives/001698.html</link>
+<guid>http://www.blueskyonmars.com/archives/001698.html</guid>
+<category>Software Development</category>
+<pubDate>April 16, 2005 08:23 AM</pubDate>
+</item>
+
+
+</channel>
+</rss>

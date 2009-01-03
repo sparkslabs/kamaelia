@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://purl.org/rss/1.0/"
+  >
+
+  <channel rdf:about="http://www.artima.com/weblogs/feeds/bloggers/goodger.rss">
+    <title>David Goodger's Weblog</title>
+    <link>http://www.artima.com/weblogs/index.jsp?blogger=goodger</link>
+    <description>
+Artima Weblogs is a community of bloggers posting on a wide range of topics of interest to software developers.
+    </description>
+    <image rdf:resource="http://www.artima.com/images/artima88x33.gif"/>
+    <items>
+      <rdf:Seq>
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=231723" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=230157" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=228707" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=223886" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=211062" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=190263" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=182095" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=181253" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=177911" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=177220" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=177168" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=153621" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=46346" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=42401" />
+        <rdf:li resource="http://www.artima.com/weblogs/viewpost.jsp?thread=42395" />
+      </rdf:Seq>
+    </items>
+  </channel>
+
+  <image rdf:about="http://www.artima.com/images/artima88x33.gif">
+    <title>Artima.com</title>
+    <url>http://www.artima.com/images/artima88x33.gif</url>
+    <link>http://www.artima.com/</link>
+  </image>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=231723">
+    <title>Go see &quot;Speed Racer&quot; -- what a blast!</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=231723</link>
+    <description>
+A couple weeks ago I saw Speed Racer with my wife and kids.  Lots of fun was had by all in this action-packed animé brought to hyper-real life.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=230157">
+    <title>Unicode misinformation</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=230157</link>
+    <description>
+It's great that Google is moving to Unicode 5.1 and that UTF-8 is so popular, but I wish they'd get their terms straight!
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=228707">
+    <title>Polyform Puzzler Talk Video (Montreal Python)</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=228707</link>
+    <description>
+Video of my February 7 talk at the Montreal Python users group meeting is now up on the web.  It was a lot of fun, and the group seemed to enjoy it too.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=223886">
+    <title>Python 3000 podcast interview with DDJ</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=223886</link>
+    <description>
+An interview I did recently with Mike Riley of Dr. Dobb's Journal has been released: http://www.ddj.com/architect/205918857 (click through for a live hyperlink).
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=211062">
+    <title>Slides/Handout for &quot;Code Like A Pythonista: Idiomatic Python&quot; Available</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=211062</link>
+    <description>
+The materials for the tutorial I presented at PyCon 2007 and OSCON 2007 are now available on my website (with links).
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=190263">
+    <title>PyCon Update</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=190263</link>
+    <description>
+What I'll be doing at PyCon 2007 (&amp;quot;Idiomatic Python&amp;quot; tutorial, Docutils sprint), and a reminder of the early-bird registration deadline.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=182095">
+    <title>PyCon 2007: Call for Topics and Session Idea Feedback</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=182095</link>
+    <description>
+In which your humble narrator ponders what to speak about and asks for community input.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=181253">
+    <title>Crippled By DRM &amp;#38; An 800-Pound Gorilla</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=181253</link>
+    <description>
+How a new digital audio player required the application of techno-geek skills to obtain full as-advertised functionality.  A notorious monopoly seems to be the culprit. Gee thanks, Bill!
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=177911">
+    <title>Mickey’s Infinite Copyright</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=177911</link>
+    <description>
+One of my graphics was recently featured in a BoingBoing story and is now available as a sticker.  This is the story behind that graphic.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=177220">
+    <title>A Puzzling Divertimento</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=177220</link>
+    <description>
+The Polyform Puzzler project was begun to scratch an old itch.  After a long delay, the project was finally launched and is now maturing nicely.  Interested parties are welcome to join in!
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=177168">
+    <title>Python For Dummies</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=177168</link>
+    <description>
+The latest book to be published in the &amp;quot;For Dummies&amp;quot; series covers Python.  I'm proud to have played a small part in its production.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=153621">
+    <title>PyCon TX 2006 (Part 1) &amp;#38; A Return to the Blogosphere</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=153621</link>
+    <description>
+The first in a series of articles about PyCon TX 2006, which marks my first blog entry in quite a while.
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=46346">
+    <title>Refactoring reminiscent of high school algebra</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=46346</link>
+    <description>
+A refactoring exercise tickles an old memory and triggers a new connection
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=42401">
+    <title>A Week at PyCon DC 2004</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=42401</link>
+    <description>
+A narrative account of my week at PyCon in Washington DC
+    </description>
+  </item>
+
+  <item rdf:about="http://www.artima.com/weblogs/viewpost.jsp?thread=42395">
+    <title>How I Became The Perverted Singularity</title>
+    <link>http://www.artima.com/weblogs/viewpost.jsp?thread=42395</link>
+    <description>
+And how you can become one, too... or discover that you already are
+    </description>
+  </item>
+
+</rdf:RDF>

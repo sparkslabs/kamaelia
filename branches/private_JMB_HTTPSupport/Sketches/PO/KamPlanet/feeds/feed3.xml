@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="us-ascii" ?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns="http://purl.org/rss/1.0/">
+<channel rdf:about="http://www.dlevel.com/blogs/alex">
+  <title>Alex vs Ware</title>
+  <link>http://www.dlevel.com/blogs/alex</link>
+  <description></description>
+
+  <dc:date>2008-04-05T00:18:45Z</dc:date>
+
+  <dc:creator />
+<items>
+ <rdf:Seq>
+  
+  <rdf:li rdf:resource="http://www.dlevel.com/blogs/alex/29" />
+  
+  <rdf:li rdf:resource="http://www.dlevel.com/blogs/alex/28" />
+  
+  <rdf:li rdf:resource="http://www.dlevel.com/blogs/alex/27" />
+  
+  <rdf:li rdf:resource="http://www.dlevel.com/blogs/alex/26" />
+  
+  <rdf:li rdf:resource="http://www.dlevel.com/blogs/alex/25" />
+  
+  <rdf:li rdf:resource="http://www.dlevel.com/blogs/alex/24" />
+  
+  <rdf:li rdf:resource="http://www.dlevel.com/blogs/alex/23" />
+  
+  <rdf:li rdf:resource="http://www.dlevel.com/blogs/alex/22" />
+  
+ </rdf:Seq>
+</items>
+</channel>
+
+<item rdf:about="http://www.dlevel.com/blogs/alex/29">
+  <title>A reminder on how NOT to do software development.</title>
+  <link>http://www.dlevel.com/blogs/alex/29</link>
+  <description>Sometimes (or a lot of times) we developers loose the way to the green hills of the finished and
+polished products...</description>
+  <dc:subject />
+  <dc:creator>alex</dc:creator>
+  <dc:date>2008-04-05T00:18:45Z</dc:date>
+</item>
+
+<item rdf:about="http://www.dlevel.com/blogs/alex/28">
+  <title>Some answers to the Devil Framework, the Universe and Everything.</title>
+  <link>http://www.dlevel.com/blogs/alex/28</link>
+  <description>Last week I've received an email with an interesting set of questions about the Devil
+Framework and I've learned that all email posted by our mail server is considered spam by
+Yahoo!. If you want to know if 42 is one of the answers, continue reading....</description>
+  <dc:subject />
+  <dc:creator>alex</dc:creator>
+  <dc:date>2008-03-14T13:38:25Z</dc:date>
+</item>
+
+<item rdf:about="http://www.dlevel.com/blogs/alex/27">
+  <title>Atomic Batteries Included</title>
+  <link>http://www.dlevel.com/blogs/alex/27</link>
+  <description>Yes, we will deliver the Devil Framework with a full set of atomic batteries included...</description>
+  <dc:subject />
+  <dc:creator>alex</dc:creator>
+  <dc:date>2008-03-06T11:36:54Z</dc:date>
+</item>
+
+<item rdf:about="http://www.dlevel.com/blogs/alex/26">
+  <title>HyperCard, Python, Views and a little sip of Pan Galactic Gargle Blaster (be careful...)</title>
+  <link>http://www.dlevel.com/blogs/alex/26</link>
+  <description>Been a big fan of HyperCard, it's not so strange I ended up implementing my own
+reinterpretation of it for the Devil Framework. Lets take a look....</description>
+  <dc:subject />
+  <dc:creator>alex</dc:creator>
+  <dc:date>2008-03-06T00:44:24Z</dc:date>
+</item>
+
+<item rdf:about="http://www.dlevel.com/blogs/alex/25">
+  <title>What
+happens when Python remembers me that programming is fun?</title>
+  <link>http://www.dlevel.com/blogs/alex/25</link>
+  <description>During last month I've been having fun developing two new plugins for the Devil Framework: an
+extensible IDE and a web application server/front-end. Here come some thoughts about the IDE
+stuff....</description>
+  <dc:subject />
+  <dc:creator>alex</dc:creator>
+  <dc:date>2008-02-25T19:19:55Z</dc:date>
+</item>
+
+<item rdf:about="http://www.dlevel.com/blogs/alex/24">
+  <title>DLNetSNMP added to Pypi</title>
+  <link>http://www.dlevel.com/blogs/alex/24</link>
+  <description>Just a note to say that I've added version 0.4 of DLNetSNMP to the Python Index. If interested
+you can find more information and the dowloadable files at the new DLNetSNMP home page. In this
+release a lot of serious bugs were fixed and a simple installation script added so you'll not
+need to perform manual changes in the code anymore.</description>
+  <dc:subject />
+  <dc:creator>root</dc:creator>
+  <dc:date>2007-12-11T19:10:41Z</dc:date>
+</item>
+
+<item rdf:about="http://www.dlevel.com/blogs/alex/23">
+  <title>A new version of the DLNetSNMP (Python ctypes wrapper for NetSNMP)</title>
+  <link>http://www.dlevel.com/blogs/alex/23</link>
+  <description>Just a small bug-fix update. Now it seems to work correctly. Be carefull in using it with
+threads, as the underling NetSNMP library is not thread-safe. The code:
+DLNetSNMP-0.2.tar.gz</description>
+  <dc:subject />
+  <dc:creator>alex</dc:creator>
+  <dc:date>2007-08-30T10:24:14Z</dc:date>
+</item>
+
+<item rdf:about="http://www.dlevel.com/blogs/alex/22">
+  <title>A small (but complete) Python ctypes-based Net-SNMP wrapper module.</title>
+  <link>http://www.dlevel.com/blogs/alex/22</link>
+  <description>Being fed up with the Net-SNMP wrapper we were using in the Devil Framework, I've written my own
+version, and learned something on the way (code included).</description>
+  <dc:subject />
+  <dc:creator>alex</dc:creator>
+  <dc:date>2007-08-15T22:58:33Z</dc:date>
+</item>
+
+</rdf:RDF>

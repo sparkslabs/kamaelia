@@ -1,0 +1,35 @@
+
+
+# ---------------------------------------- This will always block ----------------------------------------
+
+# Server
+import socket
+s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(("0.0.0.0", 1600))
+s.listen(5)
+
+x = s.accept()
+sock,pair = x
+sock.recv("1")
+
+# client
+import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.connect(("127.0.0.1", 1600))
+sock.send("."* 196606)
+
+# ------------------------------- This will always fail if used right :-) -------------------------------
+
+# Server
+import socket
+s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setblocking(0)
+s.bind(("0.0.0.0", 1600))
+s.listen(5)
+
+# client
+import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.setblocking(0)
+sock.connect(("127.0.0.1", 1601))
+sock.send("."* 196606)

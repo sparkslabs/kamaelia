@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<rdf:RDF
+ xmlns="http://purl.org/rss/1.0/"
+ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns:dc="http://purl.org/dc/elements/1.1/"
+ xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+>
+
+<channel rdf:about="http://www.peterbe.com/rss.xml">
+  <title>Peterbe.com</title>
+  <link>http://www.peterbe.com</link>
+  <description>Peter Bengtssons's personal homepage about little things that concern him.</description>
+  <dc:language>en-uk</dc:language>
+  <dc:publisher>mail@peterbe.com</dc:publisher>
+<items>
+  <rdf:Seq>
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/split_search" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/issuetrackerproduct-0.9" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/pycon-2008" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/CommandLineApp" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/string-comparison-function-in-python-alpha" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/calculator-in-python-for-dummies" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/wsse-authentication-and-apache" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/geopy-distance-calculation-pitfall" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/spellcorrector-0.2" />
+  <rdf:li rdf:resource="http://www.peterbe.com/plog/html2plaintext" />
+ </rdf:Seq>
+</items>
+<image>
+  <title>Peterbe.com (Peter Bengtsson on Python, Zope, Kung Fu, London and photos)</title>
+  <url>http://www.peterbe.com/misc_/Peterbecom/peterbe_logo_white_small.gif</url>
+  <link>http://www.peterbe.com</link>
+  <width>140</width>
+  <height>37</height>
+  <description>Peterbe.com (Peter Bengtsson on Python, Zope, Kung Fu, London and photos)</description>
+</image>
+</channel>
+
+<item rdf:about="http://www.peterbe.com/plog/split_search">
+  <title><![CDATA[split_search() - A Python functional for advanced search applications]]></title>
+  <description><![CDATA[<p>Inspired by Google's way of working I today put together a little script in Python for splitting a search. The idea is that you can search by entering certain keywords followed by a colon like this:
+<br /><div class="my_code_default">&nbsp;<span class="p_36">Free</span>&nbsp;<span class="p_36">Text</span>&nbsp;<span class="p_36">name</span><span class="p_38">:</span><span class="p_36">Peter</span>&nbsp;<span class="p_36">age</span><span class="p_38">:</span>&nbsp;<span class="p_37">28</span><br /></div>
+</p>
+<p>And this will be converted into two parts:
+<br /><div class="my_code_default">&nbsp;<span class="p_30">'Free&nbsp;Text'</span><br />&nbsp;<span class="p_38">{</span><span class="p_30">'name'</span><span class="p_38">:</span>&nbsp;<span class="p_30">'Peter'</span><span class="p_38">,</span>&nbsp;<span class="p_30">'age'</span><span class="p_38">:</span><span class="p_40">'28}<br /></span></div>
+</p>
+<p>You can configure which keywords should be recognized and to make things simple, you can basically set this to be the columns you have to do advanced search on in your application. For example (<code>from_date</code>,<code>to_date</code>)</p>
+<p>Feel free to download and use it as much as you like. You might not agree completely with it's purpose and design so you're allowed to change it as you please. </p>
+<p>Here's how to use it:
+<br /><div class="my_code_default">&nbsp;$&nbsp;<span class="p_36">wget</span>&nbsp;<span class="p_36">http</span><span class="p_38">://</span><span class="p_36">www</span><span class="p_38">.</span><span class="p_36">peterbe</span><span class="p_38">.</span><span class="p_36">com</span><span class="p_38">/</span><span class="p_36">plog</span><span class="p_38">/</span><span class="p_36">split_search</span><span class="p_38">/</span><span class="p_36">split_search</span><span class="p_38">.</span><span class="p_36">py</span><br />&nbsp;$&nbsp;<span class="p_36">python</span><br />&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_43">from</span>&nbsp;<span class="p_36">split_search</span>&nbsp;<span class="p_43">import</span>&nbsp;<span class="p_36">split_search</span><br />&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_36">free_text</span><span class="p_38">,</span>&nbsp;<span class="p_36">parameters</span>&nbsp;<span class="p_38">=</span>&nbsp;<span class="p_36">split_search</span><span class="p_38">(</span><span class="p_30">'Foo&nbsp;key1:bar'</span><span class="p_38">,</span>&nbsp;<span class="p_38">(</span><span class="p_30">'key1'</span><span class="p_38">,))</span><br />&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_36">free_text</span><br />&nbsp;<span class="p_30">'Foo'</span><br />&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_36">parameters</span><br />&nbsp;<span class="p_38">{</span><span class="p_30">'key1'</span><span class="p_38">:</span>&nbsp;<span class="p_30">'bar'</span><span class="p_38">}</span><br /></div>
+</p>]]></description>
+  <link>http://www.peterbe.com/plog/split_search</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2008-05-15T13:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/issuetrackerproduct-0.9">
+  <title><![CDATA[Releasing IssueTrackerProduct 0.9]]></title>
+  <description><![CDATA[<p>Tonight I released an experimental version of <a href="http://www.issuetrackerproduct.com">the IssueTrackerProduct</a> that is packed with new cool stuff. I call this an experimental release (but I run it on my production systems) because it's got so many new features. </p>
+<p>During the course of preparing for this release and writing the news item I deployed the latest version to real.issuetrackerproduct.com and immediately noticed two bugs I to do with user names. So I immediately fixed those and prepared a new release minutes after. I expect to release another more stable version within a few weeks. </p>]]></description>
+  <link>http://www.peterbe.com/plog/issuetrackerproduct-0.9</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2008-04-29T02:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/pycon-2008">
+  <title><![CDATA[See you at PyCon 2008]]></title>
+  <description><![CDATA[<p>I'm going to Chicago on Wednesday for the <a href="http://us.pycon.org/2008/about/">PyCon 2008 conference</a>. I'm going to stay at the Crowne Plaza (or whatever it was called) like many of the other people at the conference. </p>
+<p>This is what I look like:</p>
+<p><img src="http://www.peterbe.com/plog/pycon-2008/display-thumbnail/Picture 2.png" alt="See you at PyCon 2008" class="xfloatright" border="1" /></p>
+<p>If you see this mug, go up to it and say Hi. It speaks British, Swedish and some American and loves food, beer and tea which might be helpful to know if you would feel like to talk more to it. Its interests for this conference are: Grok, Zope, Django, Plone, buildout, automated testing, agile development and Javascript. Its main claim-to-fame is an Open Source bug/issue tracker program called <a href="http://www.issuetrackerproduct.com">IssueTrackerProduct</a> which it is more than delighted to talk about. </p>
+<p>I've never been to Chicago before and I'm really excited about Tuesday night as I've bought tickets to a Chicago Bulls NBA game (basketball). All other nights I'm hoping to socialise, get drunk, get full and get down and dirty nerdy all week. See you there!</p>]]></description>
+  <link>http://www.peterbe.com/plog/pycon-2008</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2008-03-10T19:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/CommandLineApp">
+  <title><![CDATA[CommandLineApp by Doug Hellmann]]></title>
+  <description><![CDATA[<p>I just read the feature article "Command line programs are classes, too!" by <a href="http://www.doughellmann.com/">Doug Hellmann</a> in the <a href="http://pymag.phparch.com/c/issue/view/68">January 2008 issue</a> of <a href="http://pymag.phparch.com/">Python Magazine</a> about his program CommandLineApp and I've tried it out on one of my old Python programs where I do the opt parsing manually with <code>getopt</code>. The results are beautiful and quick. It's sprinkled with Doug specific magic but I quickly got over that when I saw out easy it was to work with. There are still a few questions of things I didn't manage to work out but that will unfortunately have to wait.</p>
+<p>If anything, the worst thing about this library is that it's not part of the standard library so either you have to tell people to <code>sudo easy_install CommandLineApp</code> in the instructions or include it yourself in your packages if you prefer to ship things with a kitchen sink included. </p>
+<p>If you want to check it out in action, either subscribe to the magazine (and support the effort) or just download <a href="http://www.doughellmann.com/projects/csvcat/">csvcat</a></p>]]></description>
+  <link>http://www.peterbe.com/plog/CommandLineApp</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2008-02-21T19:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/string-comparison-function-in-python-alpha">
+  <title><![CDATA[String comparison function in Python (alpha)]]></title>
+  <description><![CDATA[<p>I was working on a unittest which when it failed would say "this string != that string" and because some of these strings were very long (output of a HTML lib I wrote which spits out snippets of HTML code) it became hard to spot how they were different. So I decided to override the usual <code>self.assertEqual(str1, str2)</code> in Python's unittest class instance with this little baby:
+<br /><div class="my_code_default">&nbsp;<span class="p_43">def</span>&nbsp;<span class="p_35">assertEqualLongString</span><span class="p_38">(</span><span class="p_36">a</span><span class="p_38">,</span>&nbsp;<span class="p_36">b</span><span class="p_38">):</span><br />&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_36">NOT</span><span class="p_38">,</span>&nbsp;<span class="p_36">POINT</span>&nbsp;<span class="p_38">=</span>&nbsp;<span class="p_30">'-'</span><span class="p_38">,</span>&nbsp;<span class="p_30">'*'</span><br />&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">if</span>&nbsp;<span class="p_36">a</span>&nbsp;<span class="p_38">!=</span>&nbsp;<span class="p_36">b</span><span class="p_38">:</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">print</span>&nbsp;<span class="p_36">a</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_36">o</span>&nbsp;<span class="p_38">=</span>&nbsp;<span class="p_30">''</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">for</span>&nbsp;<span class="p_36">i</span><span class="p_38">,</span>&nbsp;<span class="p_36">e</span>&nbsp;<span class="p_43">in</span>&nbsp;<span class="p_36">enumerate</span><span class="p_38">(</span><span class="p_36">a</span><span class="p_38">):</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">try</span><span class="p_38">:</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">if</span>&nbsp;<span class="p_36">e</span>&nbsp;<span class="p_38">!=</span>&nbsp;<span class="p_36">b</span><span class="p_38">[</span><span class="p_36">i</span><span class="p_38">]:</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_36">o</span>&nbsp;<span class="p_38">+=</span>&nbsp;<span class="p_36">POINT</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">else</span><span class="p_38">:</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_36">o</span>&nbsp;<span class="p_38">+=</span>&nbsp;<span class="p_36">NOT</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">except</span>&nbsp;<span class="p_36">IndexError</span><span class="p_38">:</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_36">o</span>&nbsp;<span class="p_38">+=</span>&nbsp;<span class="p_30">'*'</span><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_36">o</span>&nbsp;<span class="p_38">+=</span>&nbsp;<span class="p_36">NOT</span>&nbsp;<span class="p_38">*</span>&nbsp;<span class="p_38">(</span><span class="p_36">len</span><span class="p_38">(</span><span class="p_36">a</span><span class="p_38">)-</span><span class="p_36">len</span><span class="p_38">(</span><span class="p_36">o</span><span class="p_38">))</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">if</span>&nbsp;<span class="p_36">len</span><span class="p_38">(</span><span class="p_36">b</span><span class="p_38">)</span>&nbsp;<span class="p_38">&gt;</span>&nbsp;<span class="p_36">len</span><span class="p_38">(</span><span class="p_36">a</span><span class="p_38">):</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_36">o</span>&nbsp;<span class="p_38">+=</span>&nbsp;<span class="p_36">POINT</span><span class="p_38">*</span>&nbsp;<span class="p_38">(</span><span class="p_36">len</span><span class="p_38">(</span><span class="p_36">b</span><span class="p_38">)-</span><span class="p_36">len</span><span class="p_38">(</span><span class="p_36">a</span><span class="p_38">))</span><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">print</span>&nbsp;<span class="p_36">o</span><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">print</span>&nbsp;<span class="p_36">b</span><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">raise</span>&nbsp;<span class="p_36">AssertionError</span><span class="p_38">,</span>&nbsp;<span class="p_30">'(see&nbsp;string&nbsp;comparison&nbsp;above)'</span><br /></div>
+</p>
+<p>It's far from perfect and doesn't really work when you've got Unicode characters that the terminal you use can't print properly. It might not look great on strings that are really really long but I'm sure that's something that can be solved too. After all, this is just a quick hack that helped me spot that the difference between one snippet and another was that one produced <code>&lt;br/&gt;</code> and the other produced <code>&lt;br /&gt;</code>. Below are some examples of this utility function in action.</p><br/>[<a href="http://www.peterbe.com/plog/string-comparison-function-in-python-alpha" style="font-size:80%">145 more words</a>]]]></description>
+  <link>http://www.peterbe.com/plog/string-comparison-function-in-python-alpha</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2007-12-22T11:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/calculator-in-python-for-dummies">
+  <title><![CDATA[Calculator in Python for dummies]]></title>
+  <description><![CDATA[<p>I need a mini calculator in my web app so that people can enter basic mathematical expressions instead of having to work it out themselfs and then enter the result in the input box. I want them to be able to enter "3*2" or "110/3" without having to do the math first. I want this to work like a pocket calculator such that <code>110/3</code> returns a <code>36.6666666667</code> and not <code>36</code> like pure Python arithmetic would. Here's the solution which works but works like Python:
+<br /><div class="my_code_default">&nbsp;<span class="p_43">def</span>&nbsp;<span class="p_35">safe_eval</span><span class="p_38">(</span><span class="p_36">expr</span><span class="p_38">,</span>&nbsp;<span class="p_36">symbols</span><span class="p_38">={}):</span><br />&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">return</span>&nbsp;<span class="p_36">eval</span><span class="p_38">(</span><span class="p_36">expr</span><span class="p_38">,</span>&nbsp;<span class="p_36">dict</span><span class="p_38">(</span><span class="p_36">__builtins__</span><span class="p_38">=</span><span class="p_43">None</span><span class="p_38">),</span>&nbsp;<span class="p_36">symbols</span><span class="p_38">)</span><br /><br />&nbsp;<span class="p_43">def</span>&nbsp;<span class="p_35">calc</span><span class="p_38">(</span><span class="p_36">expr</span><span class="p_38">):</span><br />&nbsp;&nbsp;&nbsp;&nbsp;<span class="p_43">return</span>&nbsp;<span class="p_36">safe_eval</span><span class="p_38">(</span><span class="p_36">expr</span><span class="p_38">,</span>&nbsp;<span class="p_36">vars</span><span class="p_38">(</span><span class="p_36">math</span><span class="p_38">))</span><br /><br />&nbsp;<span class="p_43">assert</span>&nbsp;<span class="p_36">calc</span><span class="p_38">(</span><span class="p_30">'3*2'</span><span class="p_38">)==</span><span class="p_37">6</span><br />&nbsp;<span class="p_43">assert</span>&nbsp;<span class="p_36">calc</span><span class="p_38">(</span><span class="p_30">'12.12&nbsp;+&nbsp;3.75&nbsp;-&nbsp;10*0.5'</span><span class="p_38">)==</span><span class="p_37">10.87</span><br />&nbsp;<span class="p_43">assert</span>&nbsp;<span class="p_36">calc</span><span class="p_38">(</span><span class="p_30">'110/3'</span><span class="p_38">)==</span><span class="p_37">36</span><br /></div>
+</p><br/>[<a href="http://www.peterbe.com/plog/calculator-in-python-for-dummies" style="font-size:80%">361 more words</a>]]]></description>
+  <link>http://www.peterbe.com/plog/calculator-in-python-for-dummies</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2007-12-17T10:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/wsse-authentication-and-apache">
+  <title><![CDATA[WSSE Authentication and Apache]]></title>
+  <description><![CDATA[<p>I recently wrote a <a href="http://grok.zope.org">Grok</a> application that implements a REST API for <a href="http://www.atomenabled.org/">Atom Publishing</a> so that I can connect a website I have via my new Nokia phone has LifeBlog which uses the Atom API to talk to the server.</p>
+<p>Anyway, the authentication on Atom is WSSE (<a href="http://www.xml.com/pub/a/2003/12/17/dive.html">good introduction article</a>) which basically works like this:
+<br /><div class="my_code_default">&nbsp;<span class="p_36">PasswordDigest</span>&nbsp;<span class="p_38">=</span>&nbsp;<span class="p_36">Base64</span>&nbsp;\&nbsp;<span class="p_38">(</span><span class="p_36">SHA1</span>&nbsp;<span class="p_38">(</span><span class="p_36">Nonce</span>&nbsp;<span class="p_38">+</span>&nbsp;<span class="p_36">CreationTimestamp</span>&nbsp;<span class="p_38">+</span>&nbsp;<span class="p_36">Password</span><span class="p_38">))</span><br /></div>
+</p>
+<p>This is one of the pieces in a request header called <code>Authorization</code> which can look something like this:
+<br /><div class="my_code_default">&nbsp;<span class="p_36">Authorization</span><span class="p_38">:</span>&nbsp;<span class="p_36">WSSE</span>&nbsp;<span class="p_36">profile</span><span class="p_38">=</span><span class="p_39">"UsernameToken"</span><br /><span class="p_36">X</span><span class="p_38">-</span><span class="p_36">WSSE</span><span class="p_38">:</span>&nbsp;<span class="p_36">UsernameToken</span>&nbsp;<span class="p_36">Username</span><span class="p_38">=</span><span class="p_39">"bob"</span><span class="p_38">,</span>&nbsp;<span class="p_36">PasswordDigest</span><span class="p_38">=</span><span class="p_39">"quR/EWLAV4xLf9Zqyw4pDmfV9OY="</span><span class="p_38">,</span>&nbsp;<br />&nbsp;<span class="p_36">Nonce</span><span class="p_38">=</span><span class="p_39">"d36e316282959a9ed4c89851497a717f"</span><span class="p_38">,</span>&nbsp;<span class="p_36">Created</span><span class="p_38">=</span><span class="p_39">"2003-12-15T14:43:07Z"</span><br /></div>
+</p>
+<p>What I did was I wrote a simple Python script to mimic what the Nokia does but from a script. The script creates a password digest using these python modules: <code>sha</code>, <code>binascii</code> and <code>base64</code> and then fires off a POST request. Here's thing, if you generate this header with <code>base64.encodestring(ascii_string)</code> you get something like this:
+<br /><div class="my_code_default">&nbsp;<span class="p_36">quR</span><span class="p_38">/</span><span class="p_36">EWLAV4xLf9Zqyw4pDmfV9OY</span><span class="p_38">=</span>\<span class="p_36">n</span><br /></div>
+</p>
+<p>Notice the extra newline character at the end of the base64 encoded string. This is perfectly valid and is decoded easily with <code>base64.decodestring(base64_string)</code> by the Grok app. Everything was working fine when I tried posting to <code>http://localhost:8080/++rest++atompub/snapatom</code> and my application successfully authenticated the dummy user. I was happy.</p>
+<p>Then I set this up properly on <code>atom.someotherdomain.com</code> which was managed by Apache who internally rewrote the URL to a Grok on localhost:8080. The problem now was that the <code>Authentication</code> header value was broken into two lines because of the newline character and then the whole request was rejected by Apache because some header values came without a <code>:</code> semi-colon. </p>
+<p>The solution was to not use <code>base64.encodestring()</code> and <code>base64.decodestring()</code> but to instead use <code>base64.urlsafe_b64encode()</code> and <code>base64.urlsafe_b64decode()</code>. Let me show you:
+<br /><div class="my_code_default">&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_43">import</span>&nbsp;<span class="p_36">base64</span><br />&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_36">x</span>&nbsp;<span class="p_38">=</span>&nbsp;<span class="p_30">'Peter'</span><br />&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_36">base64</span><span class="p_38">.</span><span class="p_36">encodestring</span><span class="p_38">(</span><span class="p_36">x</span><span class="p_38">)</span><br />&nbsp;<span class="p_30">'UGV0ZXI=\n'</span><br />&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_36">base64</span><span class="p_38">.</span><span class="p_36">urlsafe_b64encode</span><span class="p_38">(</span><span class="p_36">x</span><span class="p_38">)</span><br />&nbsp;<span class="p_30">'UGV0ZXI='</span><br />&nbsp;<span class="p_38">&gt;&gt;&gt;</span>&nbsp;<span class="p_36">base64</span><span class="p_38">.</span><span class="p_36">decodestring</span><span class="p_38">(</span><span class="p_36">base64</span><span class="p_38">.</span><span class="p_36">urlsafe_b64encode</span><span class="p_38">(</span><span class="p_36">x</span><span class="p_38">))</span><br />&nbsp;<span class="p_30">'Peter'</span><br /></div>
+</p>
+<p>If you're still reading, then hopefully you won't make the same mistake as I did and wasting time on trying to debug Apache. The lesson learned from this is to use the URL safe base64 header values and not the usual ones. </p>]]></description>
+  <link>http://www.peterbe.com/plog/wsse-authentication-and-apache</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2007-12-13T16:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/geopy-distance-calculation-pitfall">
+  <title><![CDATA[geopy distance calculation pitfall]]></title>
+  <description><![CDATA[<p><a href="http://exogen.case.edu/projects/geopy/">Geopy</a> is a great little Python library for working with geocoding and distances using various online services such as <a href="http://code.google.com/apis/maps/documentation/services.html">Google's geocoder API</a>.</p>
+<p>Today I spent nearly half an hour trying to debug what was going on with my web application since I was getting this strange error:
+<br /><div class="my_code_default">&nbsp;<span class="p_36">AttributeError</span><span class="p_38">:</span>&nbsp;<span class="p_30">'VincentyDistance'</span>&nbsp;<span class="p_36">object</span>&nbsp;<span class="p_36">has</span>&nbsp;<span class="p_36">no</span>&nbsp;<span class="p_36">attribute</span>&nbsp;<span class="p_30">'_kilometers'</span><br /></div>
+</p>
+<p></p><br/>[<a href="http://www.peterbe.com/plog/geopy-distance-calculation-pitfall" style="font-size:80%">156 more words</a>]]]></description>
+  <link>http://www.peterbe.com/plog/geopy-distance-calculation-pitfall</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2007-12-10T15:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/spellcorrector-0.2">
+  <title><![CDATA[Spellcorrector 0.2]]></title>
+  <description><![CDATA[<p>Unlike previous incarnations of <code>Spellcorrector</code> not it does not by default load the two huge language files for English and Swedish. Alternatively/additionally you can load your own language file. The difference between loading a language file and training on your own words is that trained words are always assumed to be correct. </p>
+<p>Another major change with this release is that a pickle file is created once the language file or own training file has been parsed once. This works like a cache, if the original text file changes, the pickle file is recreated. The outcome of this is that the first time you create a <code>Spellcorrector</code> instance it takes a few seconds if the language files is large but on the second time it takes virtually no time at all. </p>
+<p></p><br/>[<a href="http://www.peterbe.com/plog/spellcorrector-0.2" style="font-size:80%">189 more words</a>]]]></description>
+  <link>http://www.peterbe.com/plog/spellcorrector-0.2</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2007-09-24T16:00:00+00:00</dc:date>
+</item>
+
+<item rdf:about="http://www.peterbe.com/plog/html2plaintext">
+  <title><![CDATA[html2plaintext Python script to convert HTML emails to plain text]]></title>
+  <description><![CDATA[<p>From the doc string:
+<pre>
+ A very spartan attempt of a script that converts HTML to
+ plaintext.
+
+ The original use for this little script was when I send HTML emails out I also
+ wanted to send a plaintext version of the HTML email as multipart. Instead of 
+ having two methods for generating the text I decided to focus on the HTML part
+ first and foremost (considering that a large majority of people don't have a 
+ problem with HTML emails) and make the fallback (plaintext) created on the fly.
+
+ This little script takes a chunk of HTML and strips out everything except the
+ &lt;body&gt; (or an elemeny ID) and inside that chunk it makes certain conversions 
+ such as replacing all hyperlinks with footnotes where the URL is shown at the
+ bottom of the text instead. &lt;strong&gt;words&lt;/strong&gt; are converted to *words* 
+ and it does a fair attempt of getting the linebreaks right.
+
+ As a last resort, it strips away all other tags left that couldn't be gracefully
+ replaced with a plaintext equivalent.
+ Thanks for Fredrik Lundh's unescape() function things like:
+    'Terms &amp;amp; Conditions' is converted to
+    'Termss &amp; Conditions'
+
+ It's far from perfect but a good start. It works for me for now.
+</pre>
+</p>
+<p>Version at the time of writing this: <strong>0.1</strong>.</p>
+<p>I wouldn't be surprised if I've reinvented the wheel here but I did plenty of searches and couldn't really find anything like this.</p>
+<p>Let's run this for a while until I stumble across some bugs or other inconsistencies which I haven't quite done yet. The one thing I'm really unhappy about is the way I extract the body from the BeautifulSoup parse object. I really couldn't find another better way in the few minutes I had to spare on this.</p>
+<p>Feel free to comment on things you think are pressing bugs. </p>
+<p>You can download the script here <a href="http://www.peterbe.com/plog/html2plaintext/html2plaintext.py">html2plaintext.py version 0.1</a></p>
+<p><strong>UPDATE</strong></p>
+<p>I should take a second look at Aaron Swartz's <a href="http://www.aaronsw.com/2002/html2text/">html2text.py</a> script the next time I work on this. His script seems a lot more mature and Aaron is brilliant Python developer.</p>]]></description>
+  <link>http://www.peterbe.com/plog/html2plaintext</link>
+  <dc:subject>Python</dc:subject>
+  <dc:date>2007-08-10T17:00:00+00:00</dc:date>
+</item>
+
+</rdf:RDF>

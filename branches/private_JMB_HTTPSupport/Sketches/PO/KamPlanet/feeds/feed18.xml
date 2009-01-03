@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generator="wordpress/2.1" -->
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	>
+
+<channel>
+	<title>Lonely Lion</title>
+	<link>http://weblog.lonelylion.com</link>
+	<description>Chris McAvoy's Blog</description>
+	<pubDate>Mon, 02 Jun 2008 16:38:40 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.1</generator>
+	<language>en</language>
+			<item>
+		<title>Django on AppEngine</title>
+		<link>http://weblog.lonelylion.com/2008/04/08/django-on-appengine/</link>
+		<comments>http://weblog.lonelylion.com/2008/04/08/django-on-appengine/#comments</comments>
+		<pubDate>Wed, 09 Apr 2008 02:51:44 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Projects]]></category>
+
+		<category><![CDATA[appengine]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/04/08/django-on-appengine/</guid>
+		<description><![CDATA[I started my first AppEngine project this evening.  I was lucky enough to get into the Beta.  I don&#8217;t want to be too gushy or hyperbolic, but this is the future folks.
+I&#8217;m not going to cover the bits about what appengine is, I&#8217;m assuming you&#8217;ve heard.  If not, head over to the [...]]]></description>
+			<content:encoded><![CDATA[<p>I started my first AppEngine project this evening.  I was lucky enough to get into the Beta.  I don&#8217;t want to be too gushy or hyperbolic, but this is the future folks.</p>
+<p>I&#8217;m not going to cover the bits about <em>what appengine is</em>, I&#8217;m assuming you&#8217;ve heard.  If not, head over to <a href="http://code.google.com/appengine">the appengine site</a> and do some reading.  If you&#8217;re a little bit confused about WSGI, I encourage you to read anything Ian Bicking has written over the past few years, or my humble article on <a href="http://www.developer.com/lang/other/article.php/3734416">building a wsgi app</a>.</p>
+<p>So&#8230;my plan is to build a tomato tracking application on top of THE CLOUD (cue the music).  The wife and I are planting a bunch of tomatoes this year, so I&#8217;m sort of hopped up on them.  The app will let folks to report on the life, well being, and eventual yields of their backyard tomatoes.  It&#8217;s going to be the world&#8217;s greatest web application.  I&#8217;m going to develop it before a live studio audience via the <a href="http://code.google.com/p/tomatobase/">TomatoBase Google Code Project</a>.  The app will live at <a href="http://tomatobase.appspot.com">http://tomatobase.appspot.com</a>.</p>
+<p>So far, there&#8217;s not much there.  Just a landing page that says something pithy, that&#8217;s protected by a Google user login.  I initially thought I&#8217;d jump feet first into the Google themed stack, using their very fancy webapp api, but after reading <a href="http://code.google.com/appengine/articles/django.html">how easy it is to just go for Django</a>, I decided to go with what I know.  There&#8217;s a few gotchas, it&#8217;s really more like Django-Lite, but it&#8217;s still pretty darn good.  You lose the ORM and Admin, but still get the url mapper, controllers, middleware, templates&#8230;oh, and BigTable.  Pretty good trade as far as I&#8217;m concerned.  </p>
+<p>Developing with the toolkit is pretty slick, everything runs locally until you&#8217;re ready to push, and then it&#8217;s a quick &#8220;appcfg.py update django-mater&#8221; and it goes live.  So simple.  I love it.  </p>
+<p>I haven&#8217;t really ventured beyond exploration into actual TomatoBase development just yet.  I started exploring the user system a bit, it&#8217;s pretty straight-forward.  So straight-forward that I contributed a decorator to Django Snippets that lets you use the user system in a @loginrequired sort of way.  It&#8217;s here: <a href="http://www.djangosnippets.org/snippets/691/">Google AppEngine Login Decorator</a>.</p>
+<p>I&#8217;m moving much quicker on this than I anticipated.  I thought I wouldn&#8217;t have time to explore until this weekend, but it&#8217;s a really compelling product.  I&#8217;m excited for them to open it up to a wider audience.  At some point I&#8217;ll write a bit about what I think this all means (this <em>means something</em>), but for now I&#8217;m too busy playing.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/04/08/django-on-appengine/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>More!  More!  Django Jython &#038; Jetty (IronPython too, sure)</title>
+		<link>http://weblog.lonelylion.com/2008/03/19/more-more-django-jython-jetty-ironpython-too-sure/</link>
+		<comments>http://weblog.lonelylion.com/2008/03/19/more-more-django-jython-jetty-ironpython-too-sure/#comments</comments>
+		<pubDate>Wed, 19 Mar 2008 14:30:46 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/03/19/more-more-django-jython-jetty-ironpython-too-sure/</guid>
+		<description><![CDATA[It was only a matter of time.  Great great great!
+At the state of Django talk on Saturday at Pycon, I asked what the status of Django on Jython was, as I think for guys like me (trying to explain Python and Django to traditional JVM-happy shops) that stack is going to get some traction. [...]]]></description>
+			<content:encoded><![CDATA[<p><a href="http://tristanking.blogspot.com/2008/03/djangojythonjetty.html">It was only a matter of time.</a>  Great great great!</p>
+<p>At the state of Django talk on Saturday at Pycon, I asked what the status of Django on Jython was, as I think for guys like me (trying to explain Python and Django to traditional JVM-happy shops) that stack is going to get some traction.  If I can tell someone that my <a href="http://www.psclistens.com">crack team of consultants</a> can build a full featured web application in record time, <em>and deploy it in their existing JVM heavy infrastructure</em>, I&#8217;ll turn some heads.</p>
+<p>If I can turnaround and say, <em>the exact same app</em> will also run in <a href="http://blogs.msdn.com/dinoviehland/archive/2008/03/17/ironpython-ms-sql-and-pep-249.aspx">your .NET infrastructure</a>, now the heads are spinning off into the cosmos.</p>
+<p>Python for the win!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/03/19/more-more-django-jython-jetty-ironpython-too-sure/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Yes Simon, We Need a Queue</title>
+		<link>http://weblog.lonelylion.com/2008/03/19/yes-simon-we-need-a-queue/</link>
+		<comments>http://weblog.lonelylion.com/2008/03/19/yes-simon-we-need-a-queue/#comments</comments>
+		<pubDate>Wed, 19 Mar 2008 11:47:47 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Agile]]></category>
+
+		<category><![CDATA[Ruby]]></category>
+
+		<category><![CDATA[Erlang]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/03/19/yes-simon-we-need-a-queue/</guid>
+		<description><![CDATA[Simon Wistow asks whether or not we need a better open source queuing system.  My answer is yes.  I&#8217;ve built two one-off hackish queuing systems for $work in the past three years, both of which used database tables as queues, both of which were only accessible by a language-locked api, neither of which [...]]]></description>
+			<content:encoded><![CDATA[<p><a href="http://deflatermouse.livejournal.com/145533.html">Simon Wistow asks whether or not we need a better open source queuing system.</a>  My answer is yes.  I&#8217;ve built two one-off hackish queuing systems for $work in the past three years, both of which used database tables as queues, both of which were only accessible by a language-locked api, neither of which was accessible by any sort of neutral service.  Both had very specific tasks, hold tasks in a queue for offline (read: outside of a web transaction) processing.</p>
+<p>Both jobs could have been fulfilled by a nice message queue service, but it didn&#8217;t seem like the effort was worth the payoff.  That said, now that I&#8217;ve built two of <i>exactly the same thing</i>, I&#8217;m 100% of the belief that I&#8217;d love to have a easy to install web service-y queue (that isn&#8217;t owned by Amazon).</p>
+<p>So, why the need?  It&#8217;s sort of like the evolution of <a href="http://weblog.lonelylion.com/2007/12/14/amazon-simpledb-couchdb-dbslayer-is-this-the-future/">CouchDB &#038; friends</a> I wrote about back in December, all web programmers eventually are expected to be programmers, then they start examining the tools the traditionalists have built, and they question, &#8220;why can&#8217;t this be better?&#8221;  Relational databases <i>might</i> not be best for web apps (I&#8217;m still not convinced, but for the sake of argument, go for it.)  Full featured queue services <i>might</i> not be best for web apps.  If for no other reason than they introduce a complicated system into your ecosphere for what is actually a very simple problem.  I like Simon&#8217;s pointing at memcache and saying, &#8220;make a queue that works like that.&#8221;  That would be pretty cool.  I&#8217;m voting +1.</p>
+<p>That said, like a good American I&#8217;m making this vote without fully examining all the candidates.  Maybe the existing queues are simple enough&#8230;educate me lazy-web.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/03/19/yes-simon-we-need-a-queue/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>PyCon Wrap Up</title>
+		<link>http://weblog.lonelylion.com/2008/03/17/pycon-wrap-up/</link>
+		<comments>http://weblog.lonelylion.com/2008/03/17/pycon-wrap-up/#comments</comments>
+		<pubDate>Mon, 17 Mar 2008 21:39:07 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[pycon2008]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/03/17/pycon-wrap-up/</guid>
+		<description><![CDATA[So, PyCon is over (for me).  I wasn&#8217;t able to participate in the sprinting this year, probably a good thing as too many late nights make me cranky.  All in all, I had a great PyCon, met a lot of interesting folks, learned some new stuff, and had a lot of fun.  [...]]]></description>
+			<content:encoded><![CDATA[<p>So, PyCon is over (for me).  I wasn&#8217;t able to participate in the sprinting this year, probably a good thing as too many late nights make me cranky.  All in all, I had a great PyCon, met a lot of interesting folks, learned some new stuff, and had a lot of fun.  The sessions I attended were good, but the BoF&#8217;s really stand out for me this year.  Especially the <a href="http://wiki.python.org/moin/NetflixPrizeBOF">Netflix BoF</a> and the follow-up data-visualization BoF.  Both were small (+!  Small BoF&#8217;s FTW!) and really got me thinking.</p>
+<p>The conference itself was really well managed.  Things ran smoothly, people mingled, sandwiches were eaten, and talks were given.  Friday and Saturday night were both pretty late and beery, yet again proving that I&#8217;m 31 and have baby.  My rockstar genes have seriously been damaged by fatherhood.  As an aside, I&#8217;ve been giving a after-several-beers rant about how MySpace is the greatest thing since representative democracy for so long now that <a href="http://toolness.com">Atul Varma</a> finally cut off further discussion until I blog the speech.  It&#8217;s a pretty good speech, I&#8217;m not sure it&#8217;ll survive the light of day, but I&#8217;ll work on it soon.</p>
+<p>The best part of PyCon, in my esteemed opinion, is the people you meet.  I finally got to talk to <a href="http://techspot.zzzeek.org/">Mike Bayer</a>, whom I&#8217;ve often pointed out as &#8220;the most prolific Python library writer ever.&#8221;  I&#8217;ve been a fan of <a href="http://www.datawrangling.com/">Data Wrangling</a> for a while, and had the chance to talk to its steward  Pete Skomoroch.  He led the Netflix BoF, and his colleague <a href="http://www.juiceanalytics.com/people/chris/">Chris Gemignani</a> led the data visualization BoF.  They work for <a href="http://www.juiceanalytics.com">Juice Analytics</a>, which seems to be doing some really interesting work.  </p>
+<p><a href="http://www.psclistens.com">PSC</a> (whom I work for), was a sponsor this year.  We had some good conversations with people at our booth, and sponsored a dinner Friday night.  It was sort of our coming out party, as we&#8217;ve been working pretty hard (though quietly) for the past year to establish a solid Python based consultancy within a 100 person IT firm.  PSC has been around for 17 years, has a great group of traditional manufacturing clients, and has <i>never been unprofitable</i>.  They saw opportunities in the Python world, and hired me last year to help build a team.  We&#8217;re 7 developers strong as of this morning.  That, coupled with 1040 attendees at PyCon this year (up from 600 in 2007) says to me that Python is really building a market here in Chicago and elsewhere.  It&#8217;s an exciting time to be a Python developer.</p>
+<p>Anywho, great PyCon this year folks&#8230;looking forward to next year already.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/03/17/pycon-wrap-up/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Pycon!</title>
+		<link>http://weblog.lonelylion.com/2008/03/12/pycon/</link>
+		<comments>http://weblog.lonelylion.com/2008/03/12/pycon/#comments</comments>
+		<pubDate>Thu, 13 Mar 2008 03:25:48 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[pycon2008]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/03/12/pycon/</guid>
+		<description><![CDATA[It&#8217;s started.  We stuffed a thousand bags with thirty volunteers and seven pizzas.  (Yes, it sounds like the volunteers and pizzas were stuffed into the bags, I realize this after having already written in.  It&#8217;s a shame my backspace key is totally broken, so I can&#8217;t fix it.  Also, it&#8217;s funny [...]]]></description>
+			<content:encoded><![CDATA[<p>It&#8217;s started.  We stuffed a thousand bags with thirty volunteers and seven pizzas.  (Yes, it sounds like the volunteers and pizzas were stuffed into the bags, I realize this after having already written in.  It&#8217;s a shame my backspace key is totally broken, so I can&#8217;t fix it.  Also, it&#8217;s funny sounding.)</p>
+<p>Anywho, Pycon is on!  Hurray for Pycon!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/03/12/pycon/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>First Article on Developer.com</title>
+		<link>http://weblog.lonelylion.com/2008/02/14/first-article-on-developercom/</link>
+		<comments>http://weblog.lonelylion.com/2008/02/14/first-article-on-developercom/#comments</comments>
+		<pubDate>Thu, 14 Feb 2008 16:26:40 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[writing]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/02/14/first-article-on-developercom/</guid>
+		<description><![CDATA[I wrote a short article on writing Excel files with Python and exporting them with Django on developer.com.  The site caters to a (mostly) Java and .NET crowd, but they&#8217;re expanding into Python and Ruby.  I&#8217;m going to try and write an article or two a month for them.  I&#8217;ll link to [...]]]></description>
+			<content:encoded><![CDATA[<p>I wrote a short article on writing Excel files with Python and exporting them with Django on <a href="http://www.developer.com/lang/other/article.php/3727616">developer.com</a>.  The site caters to a (mostly) Java and .NET crowd, but they&#8217;re expanding into Python and Ruby.  I&#8217;m going to try and write an article or two a month for them.  I&#8217;ll link to them here.  The topics will probably be a little bit basic for the regular Python crowd, the goal is to bring some new folks into the fold.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/02/14/first-article-on-developercom/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Everyblock</title>
+		<link>http://weblog.lonelylion.com/2008/01/29/everyblock/</link>
+		<comments>http://weblog.lonelylion.com/2008/01/29/everyblock/#comments</comments>
+		<pubDate>Tue, 29 Jan 2008 19:23:06 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Blog]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/01/29/everyblock/</guid>
+		<description><![CDATA[I&#8217;ve been treading water this week, and haven&#8217;t been keeping up with the blogosphere.
+So, I&#8217;m behind, but wanted to link to Everyblock&#8230;you know&#8230;so it&#8217;s linked.
+Really great stuff, congrats Blockheads.
+]]></description>
+			<content:encoded><![CDATA[<p>I&#8217;ve been treading water this week, and haven&#8217;t been keeping up with the blogosphere.</p>
+<p>So, I&#8217;m behind, but wanted to link to <a href="http://chicago.everyblock.com">Everyblock</a>&#8230;you know&#8230;so it&#8217;s linked.</p>
+<p>Really great stuff, congrats Blockheads.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/01/29/everyblock/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Pycon Registration is Open!</title>
+		<link>http://weblog.lonelylion.com/2008/01/21/pycon-registration-is-open/</link>
+		<comments>http://weblog.lonelylion.com/2008/01/21/pycon-registration-is-open/#comments</comments>
+		<pubDate>Mon, 21 Jan 2008 15:35:03 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[pycon2008]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/01/21/pycon-registration-is-open/</guid>
+		<description><![CDATA[Register now for early bird prices.
+Chicago!  Hurray!
+]]></description>
+			<content:encoded><![CDATA[<p><a href="http://us.pycon.org/2008/registration/">Register now for early bird prices.</a></p>
+<p>Chicago!  Hurray!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/01/21/pycon-registration-is-open/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>January ChiPy Meeting Online</title>
+		<link>http://weblog.lonelylion.com/2008/01/14/january-chipy-meeting-online/</link>
+		<comments>http://weblog.lonelylion.com/2008/01/14/january-chipy-meeting-online/#comments</comments>
+		<pubDate>Mon, 14 Jan 2008 13:09:27 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2008/01/14/january-chipy-meeting-online/</guid>
+		<description><![CDATA[ 
+Thanks to Brian Ray for making it happen.
+]]></description>
+			<content:encoded><![CDATA[<p><embed style="width:400px; height:326px;" id="VideoPlayback" type="application/x-shockwave-flash" src="http://video.google.com/googleplayer.swf?docId=-906354546937878632&#038;hl=en" flashvars=""> </embed></p>
+<p>Thanks to <a href="http://kazavoo.com/blog/">Brian Ray</a> for making it happen.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2008/01/14/january-chipy-meeting-online/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>The Gomaa Django Vote</title>
+		<link>http://weblog.lonelylion.com/2007/12/18/the-gomaa-django-vote/</link>
+		<comments>http://weblog.lonelylion.com/2007/12/18/the-gomaa-django-vote/#comments</comments>
+		<pubDate>Tue, 18 Dec 2007 19:02:00 +0000</pubDate>
+		<dc:creator>Chris McAvoy</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Django]]></category>
+
+		<category><![CDATA[cranky]]></category>
+
+		<guid isPermaLink="false">http://weblog.lonelylion.com/2007/12/18/the-gomaa-django-vote/</guid>
+		<description><![CDATA[Quite a well thought out rant about why Django, not Pylons.  Although I agree with most of his points, I get frustrated with these posts as they end up pulling a lot of nutbags from the nutbag store, who usually act like big nutbags in the comments.
+Competition and opinions are good.  Comment-baiting perfectly [...]]]></description>
+			<content:encoded><![CDATA[<p>Quite a well thought out rant about <a href="http://adam.gomaa.us/blog/frameworks-exist-for-conceptual-integrity/">why Django, not Pylons</a>.  Although I agree with most of his points, I get frustrated with these posts as they end up pulling a lot of nutbags from the nutbag store, who usually act like big nutbags in the comments.</p>
+<p>Competition and opinions are good.  Comment-baiting perfectly valid projects (just because I like Django&#8217;s oomph more than Pylon&#8217;s doesn&#8217;t mean that Pylons is bad (far from it), it&#8217;s just not for me) is a fast track to not-dating-ville.</p>
+<p>I&#8217;d like to put forward the following bit of Franklin-like common sense wisdom, &#8220;no one ever got laid by arguing about web frameworks.&#8221;  Thanks Adam for putting on paper why a lot of us prefer Django to PylonTurboZopeGears, but screw you dummy blog trolls that really believe there&#8217;s some sort of conflict worth taking sides on.</p>
+<p>Save your energy for things that matter, like football.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://weblog.lonelylion.com/2007/12/18/the-gomaa-django-vote/feed/</wfw:commentRss>
+		</item>
+	</channel>
+</rss>

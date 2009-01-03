@@ -1,0 +1,120 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Protocol: Simple Reliable Multicast</span></p>
+<p>This page describes a simple protocol overlaid on top of multicast to give a thin layer of reliability. It is <span style="font-weight:600">not </span>intended to replace existing reliable multicast protocols, but to show how they can be developed and integrated into a Kamaelia based system.  For the basis of this discussion it is referred to here generally as SRM - simply short for &quot;Simple Reliable Multicast&quot;.</p>
+<p><span style="font-weight:600">Background</span></p>
+<p>Multicast is an unreliable protocol. It is also rarely implemented over the wide area internet, despite its age and only slightly more often inside company networks. However where it is available - such as the BBC's trial multicast peering system used for the 2004 Olympics and others - it provides the benefit that broadcast television can be made available over the internet. (Note: multicast is <span style="font-style:italic">not</span> broadcast - the &quot;multi&quot; part denotes that <span style="font-style:italic">anyone</span> may send and receive, not just one source)</p>
+<p>As well as a lack of deployment multicast has a number of specific characteristics that cause problems for any protocol you wish to send over multicast:</p>
+<ul type="disc"><li>It does not guarantee delivery. Indeed due to it's nature it <span style="font-style:italic">may</span> be considered to have a lesser likelihood of delivery than plain UDP. Why? Because if I send you a UDP packet there is a good chance, unless you're behind a NAT'ing firewall, and possibly even then, that you will receive it. If however I send you a multicast packet, there are many more obstacles along the way to stop a packet reaching you.</li>
+<li>It does not guarantee order of delivery.</li>
+<li>We do not generally speaking have the ability to say &quot;please resend&quot; (which we can manually do with plain UDP, and TCP does automatically). If we try, we risk something called a &quot;NAK implosion&quot;. That is a very large number of &quot;<span style="font-weight:600">N</span>egative <span style="font-weight:600">A</span>c<span style="font-weight:600">K</span>nowldgements&quot;  coming in at once. It's essentially like broadcasting BBC1, having a momentary power glitch and the entire audience of 10 million people phoning in to say &quot;there was a glitch&quot; - it's an approach that simply doesn't scale.</li></ul>
+<p>As a result we need a system that can essentially perform a &quot;as good as it can&quot; attempt at cleaning up the resulting &quot;mess&quot; we are left with. This might seem strong words, but even over a wireless link inside the home sending multicast data from one room to another can result in all 3 of these issues interfering heavily with any higher level protocol.</p>
+<p><span style="font-weight:600">Example Setup</span></p>
+<p>Take Example 4 - a simple multicast system for example. This contains a system version with the following two pipelines:</p>
+<ul type="disc"><li>Server:</li>
+<ul type="disc"><div><span style="font-family:Courier">pipeline(</span></div>
+<ul type="disc"><div><span style="font-family:Courier">ReadFileAdaptor(file_to_stream, readmode=&quot;bitrate&quot;, bitrate=400000, chunkrate=50),<br />Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),</span></div></ul>
+<div><span style="font-family:Courier">)</span></div></ul>
+<li>Client:</li>
+<ul type="disc"><div><span style="font-family:Courier">pipeline(</span></div>
+<ul type="disc"><div><span style="font-family:Courier">Multicast_transceiver(&quot;0.0.0.0&quot;, 1600, &quot;224.168.2.9&quot;, 0),</span></div>
+<div><span style="font-family:Courier">detuple(1),</span></div>
+<div><span style="font-family:Courier">VorbisDecode(),</span></div>
+<div><span style="font-family:Courier">AOAudioPlaybackAdaptor(),</span></div></ul>
+<div><span style="font-family:Courier">)</span></div></ul></ul>
+<p>(I've removed the calls to these pipelines' .activate() and .run() methods)</p>
+<p>Running these together on a single host (eg via the <span style="font-style:italic">MulticastStreamingSystem.py</span> script provided) results in the single file being transmitted, and recieved and played back. However if we split this across two scripts, run one on a server machine, one on a client and place an unreliable network in between (such as an 802.11b network), then we instantly hit audio problems due to out of order delivery and data loss.</p>
+<p><span style="font-weight:600">Protocol Design</span></p>
+<p>The protocol does the following:</p>
+<ul type="disc"><li>Attempt to detect and skip data loss.</li>
+<li>Be able to inform of data loss</li>
+<li>Aim to be able to resync to any framing the application chooses.</li>
+<li>Aim to be able to perform out of order delivery correction within a limited window of correction</li>
+<li>Assume that the data it is sending is non-terminating</li></ul>
+<p>The protocol will <span style="font-weight:600">not do </span>the following:</p>
+<ul type="disc"><li>Aim to correct data</li>
+<li>Aim to fill in missing data</li>
+<li>Provide a mechanism for indicating &quot;end of stream&quot;. This is up to a higher layer to decide.</li></ul>
+<p><span style="font-weight:600">Usage</span></p>
+<p>The directory containing Example 4 now also contains an SRM based version called <span style="font-style:italic">MulticastStreamingSystem_SRM.py </span>. The client and server pipelines now looks like this: (additions in <span style="font-family:Courier;font-weight:600;color:#0000cc">bold blue</span>)</p>
+<ul type="disc"><li>Client:</li>
+<ul type="disc"><div><span style="font-family:Courier">pipeline(</span></div>
+<ul type="disc"><div><span style="font-family:Courier">ReadFileAdaptor(file_to_stream, readmode=&quot;bitrate&quot;, bitrate=400000, chunkrate=50),<br /></span><span style="font-family:Courier;font-weight:600;color:#0000cc">SRM_Sender(),<br />blockise(), # Ensure chunks small enough for multicasting!</span><span style="font-family:Courier"><br />Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),</span></div></ul>
+<div><span style="font-family:Courier">)</span></div></ul>
+<li>Server:</li>
+<ul type="disc"><div><span style="font-family:Courier">pipeline(</span></div>
+<ul type="disc"><div><span style="font-family:Courier">Multicast_transceiver(&quot;0.0.0.0&quot;, 1600, &quot;224.168.2.9&quot;, 0),</span></div>
+<div><span style="font-family:Courier">detuple(1),</span></div>
+<div><span style="font-family:Courier;font-weight:600;color:#0000cc">SRM_Receiver(),</span></div>
+<div><span style="font-family:Courier;font-weight:600;color:#0000cc">detuple(1),</span></div>
+<div><span style="font-family:Courier">VorbisDecode(),</span></div>
+<div><span style="font-family:Courier">AOAudioPlaybackAdaptor(),</span></div></ul>
+<div><span style="font-family:Courier">)</span></div></ul></ul>
+<p><span style="font-weight:600">Underlying Approach</span></p>
+<p>The underlying appraoch is as follows:</p>
+<ul type="disc"><li>On the way out from the server:</li>
+<ul type="disc"><li dir="ltr">Annotate the chunks of data to send with a sequence number</li>
+<li>Create frames containing the data, sequence numbers and lengths</li>
+<li>Provide a means of resynchronising<span style="font-weight:600"> </span>the data stream by adding in restart markers. The data between these markers generally form chunks.</li>
+<ul type="disc"><li>For this to work, the data inside the chunks is escaped such that joining chunks cannot create spurious markers, and to preserve the existance of the marker in the original transferred data</li></ul>
+<li dir="ltr">Limit the resulting data's size<span style="font-weight:600"> </span>in terms of actual data blocks sent, to reduce the likelihood that they will get thrown away by the multicast layer <span style="font-style:italic">(this is done outside the actual SRM components because the SRM components don't know where the data they create is being sent).</span></li></ul>
+<li dir="ltr">On the way into the client:</li>
+<ul type="disc"><li dir="ltr">Join the recieved blocks of data forming chunks detected based on restart markers.</li>
+<li dir="ltr">Decode these chunks to frames.</li>
+<li dir="ltr">Parse the frames to a tuple containing sequence numbers and data</li>
+<li dir="ltr">Append the tuple onto the end of a buffer</li>
+<li dir="ltr">When the buffer is full have a one-in, one-out basis for retrieving tuples - always choosing the tuple with the lowest sequence number.</li></ul></ul>
+<p dir="ltr"><span style="font-weight:600">Details</span></p>
+<p dir="ltr">Unsuprisingly this all maps to a collection of components, and it's simplest to show the 2 pipelines from the code:</p>
+<p dir="ltr">Sending:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">def SRM_Sender():</span></div>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">return pipeline(</span></div>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">Annotator(),<br />_Framer(),<br />_DataChunker()</span></div></ul>
+<div dir="ltr"><span style="font-family:Courier">)</span></div></ul></ul>
+<p dir="ltr">Receiving:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">def SRM_Receiver():</span></div>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">return pipeline(</span></div>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">_DataDeChunker(),<br />_DeFramer(),<br />RecoverOrder()</span></div></ul>
+<div dir="ltr"><span style="font-family:Courier">)</span></div></ul></ul>
+<p dir="ltr">For those interested a full test suite for framing and data chunking can be found in <span style="font-style:italic">Kamaelia.Protocol.test</span> , and also Kamaelia.Data.Escape (along with tests). A frame is created as follows:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier">frame = &quot;%s %s\n%s&quot; % (sequence_number, length, data)</span></div></ul>
+<p dir="ltr">Note that this allows for a variable length header terminated by a carriage return, with the header consisting of two numbers - one is a sequence number, the other is a length. Both are expressed as strings and are expected to be parsed. The data is passed through unchanged by the Framer.</p>
+<p dir="ltr"></p>
+<p dir="ltr">Chunking is essentially the same process. The chunker simply takes data (usually frames, but it doesn't not require frames), does the following:</p>
+<ul type="disc"><li dir="ltr">Inserts a restart marker - defaulting to &quot;XXXXXXXXXXXXXXXXXXXXXXXX&quot; (24 'X' characters) into the data stream. The marker is considered to precede a data chunk, hence for a specific data stream it will start with this marker, but not terminate with it.</li>
+<li dir="ltr">The contents of chunks (ie the original data stream) is escaped such that the restart marker cannot exist accidentally. The approach taken is as follows:</li>
+<ul type="disc"><li dir="ltr">Escape any % charcter as %25 before performing any other escaping</li>
+<li dir="ltr">For every character in the restart marker</li>
+<ul type="disc"><li dir="ltr">Ensure that every occurance of that character is replaced by a hexademical representation of the ordinal value of that character, preceded by a % character. For example, &quot;hello&quot; would be represent as %68%65%6c%6c%6f </li></ul></ul>
+<li dir="ltr">Unescaping follows the same approach, but in reverse order.</li></ul>
+<p dir="ltr"></p>
+<p><span style="font-weight:600">Implementation</span></p>
+<p>Initial implementation was by <a href="mailto:apexmerridian@users.sourceforge.net">Tom Gibson</a>, a vacation trainee at BBC R&amp;D during the Summer of 2005. The robustness of the algorithm was subsequently increased by <a href="mailto:ms_@users.sourceforge.net">Michael</a>, up to the limits described above.</p>
+<p>The implementation can be found in the following files &amp; components:</p>
+<ul type="disc"><li>Kamaelia.Protocol.SimpleReliableMulticast:</li>
+<ul type="disc"><li>Annotator</li>
+<li>RecoverOrder</li>
+<li>Two component factories:</li>
+<ul type="disc"><li>SRM_Sender</li>
+<li>SRM_Receiver</li></ul></ul></ul>
+<p></p>
+<ul type="disc"><li>Kamaelia.Protocol.Framing:</li>
+<ul type="disc"><li>Framer</li>
+<li>DeFramer</li>
+<li>DataChunker</li>
+<li>DataDeChunker</li>
+<li>Also : SimpleFrame, though this will probably move to Kamaelia.Data due to being data used in the system, but not being a component</li></ul></ul>
+<p></p>
+<ul type="disc"><li>Kamaelia.Data.Escape - contains two functions used by DataChunker&amp; DataDeChunker:</li>
+<ul type="disc"><li>escape(message,substring = None) (substring is the restart message from the DataChunker's perspective)</li>
+<li>unescape(message,substring = None)</li></ul></ul>
+<p><span style="font-weight:600">Boundary Issues</span></p>
+<ul type="disc"><li>Do not try and make the restart marker or sync message include a % symbol. This is untested, and will probably break, eventually if not immediately</li>
+<li>The DeChunker maintains a buffer, which can be flushed</li>
+<li>The Re-Ordering code maintains a buffer which can be flushed</li>
+<li>Since the SRM_Reciever wrapper does not provide access to these, you will need to build your own version of the SRM Reciever pipeline if you need this functionality. (But as can be seen from above this should be simple to do)</li></ul>
+<p><span style="font-weight:600">Relationship to Other Reliable Multicast Work</span></p>
+<p>Making multicast reliable is not a new idea. This protocol is simply designed to be &quot;the simplest thing that can possibly work&quot;, and that's it. Essentially it's provided to allow a basis for testing other reliable multicast delivery systems, and to show how they can be layered into existing pipelines with relative ease. It is of course immediately useful in it's own right.</p>
+<p></p>
+<p></p>
+<p></p>
+</body></html>

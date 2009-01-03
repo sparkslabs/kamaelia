@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generator="wordpress/2.2.3" -->
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	>
+
+<channel>
+	<title>Ian Bicking: a blog</title>
+	<link>http://blog.ianbicking.org</link>
+	<description></description>
+	<pubDate>Mon, 09 Jun 2008 05:58:01 +0000</pubDate>
+	<generator>http://wordpress.org/?v=2.2.3</generator>
+	<language>en</language>
+			<item>
+		<title>Which way?</title>
+		<link>http://blog.ianbicking.org/2008/06/08/which-way/</link>
+		<comments>http://blog.ianbicking.org/2008/06/08/which-way/#comments</comments>
+		<pubDate>Mon, 09 Jun 2008 01:26:04 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Non-technical]]></category>
+
+		<category><![CDATA[Politics]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/06/08/which-way/</guid>
+		<description><![CDATA[
+Do you believe the world is (a) getting better, or (b) getting worse?
+Please explain.  Please, no more &#34;both/neither&#34; answers: choose just one
+
+]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>Do you believe the world is (a) getting better, or (b) getting worse?</p>
+<p>Please explain.  <strong>Please, no more &quot;both/neither&quot; answers: choose just one</strong></p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/06/08/which-way/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>pdb in the browser</title>
+		<link>http://blog.ianbicking.org/2008/05/16/pdb-in-the-browser/</link>
+		<comments>http://blog.ianbicking.org/2008/05/16/pdb-in-the-browser/#comments</comments>
+		<pubDate>Fri, 16 May 2008 07:36:22 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Web]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/05/16/pdb-in-the-browser/</guid>
+		<description><![CDATA[
+People have asked me a few times about evalexception and pdb &#8212; they&#8217;d like to be able to use something like pdb through the browser, stepping through code.
+The technique I used for tracebacks wouldn&#8217;t really work for pdb.  For a traceback I saved all the information from the frames &#8212; mostly just the local [...]]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>People have asked me a few times about <a class="reference external" href="http://blog.ianbicking.org/ajaxy-exception-catching.html">evalexception</a> and <a class="reference external" href="http://python.org/doc/current/lib/module-pdb.html">pdb</a> &#8212; they&#8217;d like to be able to use something like pdb through the browser, stepping through code.</p>
+<p>The technique I used for tracebacks wouldn&#8217;t really work for pdb.  For a traceback I saved all the information from the frames &#8212; mostly just the local variables &#8212; and then let the user interact with that through the browser.  But with pdb you pause the application part way through waiting for user input, and the routine only completes much later.</p>
+<p>While writing <a class="reference external" href="http://pythonpaste.org/waitforit/">WaitForIt</a> I played around with techniques to deal with very slow WSGI applications.  Not that hard, really &#8212; you launch every request in a new thread, and you manage those requests in an application of its own.  So I started thinking about pdb again, and it started seeming feasible.  Whenever the app reads from stdin it goes into an interactive mode, showing you what comes out on stdout and letting you add input to stdin.  It&#8217;s nothing specific to pdb really.</p>
+<p>So, with a bit of hacking, I added it into <a class="reference external" href="http://pypi.python.org/pypi/WebError/">WebError</a> (which is an extraction of the exception handling in <a class="reference external" href="http://pythonpaste.org">Paste</a>).  To give the demo a try, do:</p>
+<pre class="literal-block">
+hg clone http://knowledgetap.com/hg/weberror/
+cd weberror
+python setup.py develop
+# You need Paste trunk:
+easy_install Paste==dev
+python weberror/pdbcapture.py
+</pre>
+<p>What you&#8217;ll see is not polished, it&#8217;s just working, but since I mostly did it to see if I could do it, that&#8217;s good enough for me.</p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/05/16/pdb-in-the-browser/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>The GPL and Principles</title>
+		<link>http://blog.ianbicking.org/2008/05/06/the-gpl-and-principles/</link>
+		<comments>http://blog.ianbicking.org/2008/05/06/the-gpl-and-principles/#comments</comments>
+		<pubDate>Tue, 06 May 2008 18:08:14 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Politics]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/05/06/the-gpl-and-principles/</guid>
+		<description><![CDATA[
+For the most part by the time I finished writing my last article on licensing I had mostly convinced myself that the GPL isn&#8217;t a practical license for most projects.  That is, outcomes when using the GPL aren&#8217;t likely to be any better than outcomes using a permissive license, except for certain kinds of [...]]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>For the most part by the time I finished writing my <a class="reference external" href="http://blog.ianbicking.org/2008/05/05/choosing-a-license/">last article on licensing</a> I had mostly convinced myself that the GPL isn&#8217;t a practical license for most projects.  That is, outcomes when using the GPL aren&#8217;t likely to be any better than outcomes using a permissive license, except for certain kinds of projects, mostly projects involving big faceless companies, and I&#8217;d just as soon avoid such projects anyway.</p>
+<p>My own thinking on this has changed over the years in part because of a greater sense of humility about what I produce.  I&#8217;m really not that worried about people stealing my work because I don&#8217;t think that theft would be of much value.  But also because I realize that the value in software is not so much in the code as in the process.  The process is what is valuable, particularly for open source, and licensing doesn&#8217;t really address issues of process.</p>
+<p>As an example, if I&#8217;m uncomfortable with how some member of an open source community is using the code, or the community, I will be much more effective by dealing with that head-on, talking with that member, or even confronting them if it&#8217;s really necessary.  If you give someone an unwelcoming attitude, they&#8217;ll probably go away.  The license doesn&#8217;t need to be your gatekeeper.  It&#8217;s not a particularly effective gatekeeper anyway.</p>
+<p>Another change is perhaps a more reasonable valuation of code.  There was a time when people wanted to protect their intellectual property.  Even some non-software company might have gotten the idea that it should own the code it contracts someone else to write, under a proprietary license, so they could sell that software later.  That anyone would care to buy it was always an illusion, but the illusion is a little more obvious these days.</p>
+<p>One value of the <a class="reference external" href="http://www.gnu.org/licenses/gpl.html">GPL</a> that I do want to acknowledge is its expression of <em>values</em>.  It makes this explicit:</p>
+<blockquote>
+<p>When we speak of free software, we are referring to freedom, not price. Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free software (and charge for them if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs, and that you know you can do these things.</p>
+<p>To protect your rights, we need to prevent others from denying you these rights or asking you to surrender the rights. Therefore, you have certain responsibilities if you distribute copies of the software, or if you modify it: responsibilities to respect the freedom of others.</p>
+</blockquote>
+<p>But the GPL does more than just its text: adopting the GPL is a statement of principle on the part of the original authors, of the people who adopt the project, and of the people who later help maintain the project.  It is a statement that freedom is valued and that it is valued in a universal sense, not just in a personal or isolated sense.</p>
+<p>This is implicit, not explicit, in the choice of license, but despite that I see this pattern in projects.  Projects that choose the GPL are more likely to engender a spirit of openness and sharing.  Not of the core project itself &#8212; both GPL and permissively licensed projects accomplish this just fine so long as they are properly maintained, and their success is far more related to how the project is managed than the licensing.  But I see the difference in the sofware that grows up around the project: extensions, complementary projects, documentation.</p>
+<p>Maybe this is because of licensing.  The license filters the community, and the people who are left in a GPL project are all at least open to sharing.  But more than that, I think it puts people in the right state of mind to share.  The project feels more principled, the participation is based less on pragmatism and more on optimism.  And there&#8217;s always people coming into open source who haven&#8217;t really figured out why or what they want to get out of it.  Presenting them with the principles of Free Software influences their decision.  (This issue has <a class="reference external" href="http://www.gnu.org/philosophy/open-source-misses-the-point.html">caused some debate about terminology</a>.)</p>
+<p>With all that said, you don&#8217;t need the GPL to present the principles of a project.  It&#8217;s certainly the easiest way to do so.  The GPL is shorthand for a rich set of principles and ideals.  But it&#8217;s shorthand for people who are already in the know.  The ideas need to be reiterated and explained and reconsidered to stay relevant.  I think a project might do more good with an explicit statement of principles.  With that in place the licensing might not matter so much.</p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/05/06/the-gpl-and-principles/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Governance</title>
+		<link>http://blog.ianbicking.org/2008/05/05/governance/</link>
+		<comments>http://blog.ianbicking.org/2008/05/05/governance/#comments</comments>
+		<pubDate>Tue, 06 May 2008 04:08:30 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Politics]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/05/05/governance/</guid>
+		<description><![CDATA[
+It occurred to me&#8230; Django is something like a dictatorship&#8230; or maybe an oligarchy.  At first it seems like Pylons is the same&#8230; but no.  Pylons is clearly feudal.  I lord over Paste, WebOb, FormEncode.  Mike Bayer lords over Mako and SQLAlchemy.  Ben lords over Routes, Beaker, and Pylons.
+I suppose [...]]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>It occurred to me&#8230; Django is something like a dictatorship&#8230; or maybe an <a class="reference external" href="http://en.wikipedia.org/wiki/Oligarchy">oligarchy</a>.  At first it seems like Pylons is the same&#8230; but no.  Pylons is clearly <a class="reference external" href="http://en.wikipedia.org/wiki/Feudalism">feudal</a>.  I lord over Paste, WebOb, FormEncode.  Mike Bayer lords over Mako and SQLAlchemy.  Ben lords over Routes, Beaker, and Pylons.</p>
+<p>I suppose in all cases there is a certain amount of democracy, because there are no <a class="reference external" href="http://en.wikipedia.org/wiki/Serf">serfs</a>, and any individual is free to travel to any kingdom they like.  Well, at least among the open source kingdoms.  Without citizenship, and with no exclusiveness of ownership, with even property having largely disappeared, I suppose it&#8217;s inevitable that traditional metaphors of control and governance don&#8217;t really make sense.</p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/05/05/governance/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>Choosing a License</title>
+		<link>http://blog.ianbicking.org/2008/05/05/choosing-a-license/</link>
+		<comments>http://blog.ianbicking.org/2008/05/05/choosing-a-license/#comments</comments>
+		<pubDate>Mon, 05 May 2008 23:48:48 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Programming]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/05/05/choosing-a-license/</guid>
+		<description><![CDATA[
+I thought I&#8217;d take some time to talk about licensing.
+Licensing is something that F/OSS programmers talk about a lot.  There&#8217;s two major categories of licenses:
+
+The GPL, aka Copyleft.  You must distribute source with your application, and users get full rights to the source code, including any additions you may make.
+Permissive licenses, X/MIT, BSD, [...]]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>I thought I&#8217;d take some time to talk about licensing.</p>
+<p>Licensing is something that <a class="reference external" href="http://en.wikipedia.org/wiki/FOSS">F/OSS</a> programmers talk about a lot.  There&#8217;s two major categories of licenses:</p>
+<ul class="simple">
+<li>The <a class="reference external" href="http://en.wikipedia.org/wiki/GNU_General_Public_License">GPL</a>, aka Copyleft.  You must distribute source with your application, and users get full rights to the source code, including any additions you may make.</li>
+<li>Permissive licenses, X/MIT, BSD, etc.  These let you do pretty much everything.</li>
+</ul>
+<p>There&#8217;s also the <a class="reference external" href="http://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License">LGPL</a>, which vaguely applies GPL-like terms to the original code, but is not &quot;viral&quot;.  LGPL originally meant &quot;Library GPL&quot; but was renamed to &quot;Lesser GPL&quot; because people automatically used it for libraries without considering what the license actually enforced.</p>
+<p>How much do these licenses matter?  How should a person choose between these options?</p>
+<p>First, the LGPL.  It has specific phrasing that makes some sense for C code, to distinguish between extending the library itself and using the library.  It doesn&#8217;t make much sense for other runtime environments.  Some people have tried to <a class="reference external" href="http://opensource.franz.com/preamble.html">clarify its meaning in other environments</a>, but I&#8217;m not sure if a clarification like that means much.  The ambiguity seems like the worst of all worlds.  People who are afraid of the GPL won&#8217;t use the software anyway.  People who act in bad faith can satisfy the terms of the license through trickery.  You don&#8217;t get any practical protection over a permissive license, and you get most of the stigma of the GPL.  The GPL has some success stories, places where source was actually released due to the terms of the license.  I don&#8217;t know of any similar success stories for the LGPL.  If you don&#8217;t want to use the GPL, just use a permissive license.</p>
+<p>Then the question: GPL or permissive licensing?</p>
+<p>For some time I&#8217;ve chosen a permissive license for my code.  But I&#8217;m not really advocating that, and every so often I throw out a little GPL code.  Underneath this is something of a disinterest in licensing.  I don&#8217;t think it means much.  If specifics of your license matters then something has gone wrong.  People are leeching code, and/or the community isn&#8217;t providing enough benefit to encourage participation.  I don&#8217;t believe that software has much intrinsic worth, and treating it like property doesn&#8217;t make that much sense to me.  Licensing treats software as property, which is why I see the relevance of licensing as a kind of disfunction.  But there is the outside chance that it&#8217;s really just a big project, or that the project is being participated in by rivals.  But nothing I work with is like this, and it&#8217;s pretty uncommon generally, and anyway those projects all have their licensing pretty much figured out.</p>
+<p>The GPL does seem to serve a constructive purpose when rivals have to cooperate in some fashion.  It makes a kind of demilitarized zone where everyone has to work for the collective good.  But even this is a sign that you can&#8217;t trust the participants.  This is somewhat reasonable, because you can&#8217;t actually trust large corporations with faceless programmers working on the code.  But even that&#8217;s a kind of disfunction, because you can at least kind of trust large corporations with programmer employees who have a public face.  The individual programmers are going to be very uncomfortable participating in any kind of Machiavellian conspiracy.  Good open source projects are a coming together of individuals.  Institutions are not effective participants.  There are however scaling issues with individual participation: particularly that only a minority of developers are actually inclined to participate in this way.  An institution can pay someone to work on something they don&#8217;t care very deeply about, and that person can still do useful work.  But they won&#8217;t be part of the community.</p>
+<p>Outside of this mediation of rivalries I&#8217;m not really sure what the GPL provides.  It protects users, because the terms of the GPL ensure that users get code.  It doesn&#8217;t actually ensure that code is made public, though it does give developer employees leverage to make their work public.  There&#8217;s some urban legends about the viral aspect of the GPL, but that&#8217;s really just bullshit.  Code doesn&#8217;t magically get relicensed just because there&#8217;s a little GPL in the mix.  The GPL police won&#8217;t show up at your door and confiscate your computers.  The only people who make those claims are GPL-haters like Microsoft.  Who should you trust: the FSF or Microsoft?  If you answered &quot;Microsoft&quot; then you need to get your head screwed on straight.</p>
+<p>Unfortunately there is a stigma about the GPL, and there are competent developers that avoid all GPL software.  I find this frustrating, especially since I don&#8217;t actually care about licensing, and so this adds a point of contention that I don&#8217;t really care to pay attention to.  Some people in this situation then become GPL haters, because they feel like it&#8217;s all GPL&#8217;s fault.  But the GPL didn&#8217;t create the licensing situation &#8212; proprietary software started this.  Direct your hate where it belongs.  The GPL ain&#8217;t it.</p>
+<p>If my libraries were GPL I doubt I could leverage that to make other people open source their code.  But I know I would alienate some people, and as a result I choose a permissive license because it&#8217;s just strategically advantageous.</p>
+<p>Applications I think are different strategically.  You don&#8217;t just swap an application in and out like you might a library.  If you choose to use an application, then often the licensing is a secondary choice.  The licensing ultimately only really applies to extensions.  Libraries also have a different pattern of acceptance.  Stubborn GPL haters can in effect veto a library in many projects (this is because stubborn GPL haters are viral).  But in an application their influence is much smaller.  Developers concerns like architecture and choice of libraries are not what drives an application.  An application is driven by its functionality.  If you have a useful application then licensing tends to be a secondary concern.  The licensing tends to define the community in some sense as well, and as a result there&#8217;s a kind of opt-in consensus.  And I think the GPL in these cases really does create an environment of collaboration around extensions.  It has a real benefit.</p>
+<p>This seems to be true empirically as well.  GPL&#8217;d libraries don&#8217;t tend to get very popular.  People will do <a class="reference external" href="http://harmony.apache.org/">crazy-big projects</a> just because of licensing issues.  GPL&#8217;d Applications seem to do quite well, with examples like WordPress, Plone, The Gimp, and even the Linux kernel, which is closer in structure to an application than a library.</p>
+<p>I haven&#8217;t studied the GPL v3 very closely, but it seems useful to me.  Software-as-a-service has the potential to make the GPL irrelevant (especially for the kind of code I write), and could put the GPL in the same category as the LGPL where it retains its stigma without offering any practical advantages.  Version 3 makes the permission/GPL choice seem useful, but so far I&#8217;ve never made any truly conscious choice between version 2 and 3.</p>
+<p>If you are thinking about choosing a license, or thinking about choosing software based on the licensing, maybe these thoughts will be helpful in your own thinking.  And please don&#8217;t GPL-hate in the comments, I&#8217;m not interested and if you feel the need then go write your own post.</p>
+<p><strong>Update:</strong> I wrote a second article to expand on some thoughts: <a class="reference external" href="http://blog.ianbicking.org/2008/05/06/the-gpl-and-principles/">The GPL and Principles</a></p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/05/05/choosing-a-license/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>&#8220;Something Must Be Done&#8221;</title>
+		<link>http://blog.ianbicking.org/2008/05/04/something-must-be-done/</link>
+		<comments>http://blog.ianbicking.org/2008/05/04/something-must-be-done/#comments</comments>
+		<pubDate>Mon, 05 May 2008 05:50:49 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Non-technical]]></category>
+
+		<category><![CDATA[Politics]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/05/04/something-must-be-done/</guid>
+		<description><![CDATA[
+Listening to Tavis Smiley&#8217;s show tonight, and the segment My America where they talked about gun violence.  At one point they quote a man who lost his brother to gun violence:
+
+You can be in a club and bump into somebody on accident, a little of your liquor, a little of your water spill on [...]]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>Listening to <a class="reference external" href="http://www.tavistalks.com/">Tavis Smiley&#8217;s show</a> tonight, and the segment <a class="reference external" href="http://www.myamerica2008.org/">My America</a> where they talked about gun violence.  At one point they quote a man who lost his brother to gun violence:</p>
+<blockquote>
+<p>You can be in a club and bump into somebody on accident, a little of your liquor, a little of your water spill on their coat, now, you go outside, he got five or six people out their because you spilled your damn drink.  Which, a person should be able to say, &quot;man, my fault dog, I apologize, you know how it is.&quot;  You got people that just ain&#8217;t gonna be right, man.</p>
+<p><strong>Tavis Smiley:</strong> So you take that, you put guns into the equation, that changes mediation efforts dramatically.</p>
+</blockquote>
+<p>Several times they talk about how small matters of respect lead to violence.  The conclusion is that guns are the problem.</p>
+<p>I don&#8217;t really know what to do with this.  In <em>my</em> life (and I suspect all of your lives) issues of respect do not lead to violence.  As a result I have a hard time thinking of this as a gun problem.</p>
+<p>OK, so it&#8217;s a violence problem.  The other thing that gets me is there&#8217;s this strong undertone to this conversation that &quot;we aren&#8217;t doing enough.&quot;  This attitude is of course the norm for an NPR show.  But it&#8217;s <em>not</em> <strong>we</strong> &#8212; I, and everyone I know is not part of this <strong>we</strong>.  My &quot;we&quot; does not resort to violence.  My &quot;we&quot; does not project respect into minor social interactions.  When I say it&#8217;s not &quot;we&quot;, I don&#8217;t think it&#8217;s just that I tuned into the wrong radio show &#8212; am I being recruited into this &quot;we&quot;?  Do they really think listeners are part of this &quot;we&quot;?</p>
+<p>There is no reflection in these shows about why <em>this</em> (whatever the issue of the show) is a general problem.  Of course most talk shows tend to generalize wildly, to turn every anecdote into a sign of some change in culture, some disease of our society, something more than just an anecdote.  (Though <a class="reference external" href="http://www.thislife.org/">some</a> <a class="reference external" href="http://thestory.org/">good</a> NPR shows do <em>not</em> attempt to generalize anecdotes at all.)</p>
+<p>There&#8217;s a strong attitude, in this show and others, that this is a problem for us all to solve.  Why exactly is this a problem for me to solve?  Why is this a problem for government to solve?  (I&#8217;m not a conservative, but I feel it&#8217;s unfair that only conservatives seem to be able to ask that question: why should government solve this?)</p>
+<p>I don&#8217;t ask these questions rhetorically (and maybe that makes me different from the conservatives, who tend to only ask questions rhetorically).  There may be a good answer to these questions.  But it&#8217;s far too easy to say &quot;we must do something about this&quot; without saying <em>who</em> and <em>why</em>.  We (especially those of us who listen to NPR) are all far too fatigued with the constant admonitions that not enough is being done, and something has to change.  This kind of approach is not an effective call to action.</p>
+<p>And it&#8217;s yet another thing <a class="reference external" href="http://blog.ianbicking.org/2008/03/31/environmental-guilt/">trying to make me feel bad for something that&#8217;s not my fault</a>.  And dammit, it really isn&#8217;t my fault!</p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/05/04/something-must-be-done/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>WebOb Do-It-Yourself Framework</title>
+		<link>http://blog.ianbicking.org/2008/04/17/webob-do-it-yourself-framework/</link>
+		<comments>http://blog.ianbicking.org/2008/04/17/webob-do-it-yourself-framework/#comments</comments>
+		<pubDate>Thu, 17 Apr 2008 06:21:03 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Web]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/04/17/webob-do-it-yourself-framework/</guid>
+		<description><![CDATA[
+My old do-it-yourself framework tutorial was getting a bit long in the tooth, so I rewrote it to use WebOb.  Now: the new do-it-yourself framework.
+
+]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>My old <a class="reference external" href="http://pythonpaste.org/do-it-yourself-framework.html">do-it-yourself framework</a> tutorial was getting a bit long in the tooth, so I rewrote it to use <a class="reference external" href="http://pythonpaste.org/webob/">WebOb</a>.  Now: <a class="reference external" href="http://pythonpaste.org/webob/do-it-yourself.html">the new do-it-yourself framework</a>.</p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/04/17/webob-do-it-yourself-framework/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>App Engine and Pylons</title>
+		<link>http://blog.ianbicking.org/2008/04/13/app-engine-and-pylons/</link>
+		<comments>http://blog.ianbicking.org/2008/04/13/app-engine-and-pylons/#comments</comments>
+		<pubDate>Sun, 13 Apr 2008 17:32:06 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Web]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/04/13/app-engine-and-pylons/</guid>
+		<description><![CDATA[
+So I promised some more technical discussion of App Engine than my last two posts.  Here it is:
+Google App Engine uses a somewhat CGI-like model.  That is, a script is run, and it uses stdin/stdout/environ to handle the requests.  To avoid the overhead of CGI a process can be reused by defining [...]]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>So I promised some more technical discussion of App Engine than my <a class="reference external" href="http://blog.ianbicking.org/2008/04/09/app-engine-commodity-vs-proprietary/">last</a> <a class="reference external" href="http://blog.ianbicking.org/2008/04/09/app-engine-and-open-source/">two</a> posts.  Here it is:</p>
+<p>Google App Engine uses a somewhat CGI-like model.  That is, a script is run, and it uses stdin/stdout/environ to handle the requests.  To avoid the overhead of CGI a process can be reused by defining <tt class="docutils literal"><span class="pre">__main__.main()</span></tt>.  But while a process <em>can</em> be reused, it might not be, and of course it might get run on an entirely separate server.  So in many ways it&#8217;s like the CGI model, with a small optimization so that, particularly under load, your requests can run with less latency.</p>
+<p>This part is all well and good.  I&#8217;ve already come to terms with servers going up and down without warning.  But the environment itself has a number of other restrictions.  It seems that App Engine is providing security in the language itself.  The interpreter has been modified so that code is sandboxed, with no ability to write to the disk, open sockets, import C extensions, and see quite a few things in its environment.  It&#8217;s these things that are a bit harder to come to terms with.</p>
+<p>While they claim it supports any Python framework, these restrictions don&#8217;t actually make it easy.  So for the last few days quite a few of us have been hacking various things to get stuff working.</p>
+<p>The first thing people noticed is that <a class="reference external" href="http://www.makotemplates.org/">Mako</a> and <a class="reference external" href="http://genshi.edgewall.org/">Genshi</a> didn&#8217;t work, because they use the <a class="reference external" href="http://docs.python.org/lib/module-compiler.ast.html">ast</a> (via the <a class="reference external" href="http://python.org/doc/current/lib/module-parser.html">parser module</a>) to handle the templating, and that module has been restricted.  Apparently arbitrary bytecode is not safe in this environment, and so anything that can produce bytecode is considered dangerous.  From what I understand Philip Jenvy has been working on Mako and the trunk is currently working.  He&#8217;d already been doing work to get Mako working on Jython, which had similar issues.  Genshi is <a class="reference external" href="http://genshi.edgewall.org/wiki/AppEngine">also in progress</a> and fairly close to working, though with some missing features.  Genshi has the harder task as Mako was primarily reading the ast, while Genshi was writing it.</p>
+<p>The first thing <em>I</em> noticed is that Setuptools doesn&#8217;t work.  I&#8217;m flattered that one of the only 3 libraries included with App Engine is <a class="reference external" href="http://pythonpaste.org/webob/">WebOb</a>, but of course I am more enamored of a rich set of reusable libraries.  Setuptools didn&#8217;t work because several modules and functions have been removed &#8212; this like <tt class="docutils literal"><span class="pre">os.open</span></tt>, <tt class="docutils literal"><span class="pre">os.uname</span></tt>, <tt class="docutils literal"><span class="pre">imp.acquire_lock</span></tt>, etc.  Some of these are kind of reasonable, while others are not.  The removal of many functions from <a class="reference external" href="http://python.org/doc/current/lib/module-imp.html">imp</a> doesn&#8217;t really make sense, for instance (I think the motivation was the difficulty of auditing the <em>implementation</em> of those functions, not that the functionality itself is dangerous).  And while some functions can&#8217;t be used in the environment, the fact you can&#8217;t <em>import</em> those functions is more problematic.  For instance, The Setuptools&#8217; <tt class="docutils literal"><span class="pre">pkg_resources</span></tt> module has support to unzip eggs when they are imported.  App Engine doesn&#8217;t support importing from zip files at all, and you certainly can&#8217;t unzip to a temporary location.  But withoutthe necessary modules and objects pkg_resources won&#8217;t even import.</p>
+<p>To work around this I started a new project: <a class="reference external" href="http://code.google.com/p/appengine-monkey/">appengine-monkey</a>, which adds several monkeypatches and replacement dummy modules to the environment to simulate a more typical environment.  It&#8217;s just a small list so far (mostly in <a class="reference external" href="http://appengine-monkey.googlecode.com/svn/trunk/appengine_monkey.py">this module</a>), but I expect as people experiment with other libraries the list will increase.  For example, I would welcome implementations of things like <a class="reference external" href="http://python.org/doc/current/lib/module-httplib.html">httplib</a> on top of <a class="reference external" href="http://code.google.com/appengine/docs/urlfetch/">urlfetch</a> in this library.  (Implementing httplib and stubbing out parts of socket would probably make <a class="reference external" href="http://code.google.com/p/googleappengine/issues/detail?id=61">urllib run</a>.)</p>
+<p>But the good news is that Pylons is pretty much working on App Engine, as is Setuptools and you can manage your libraries using <a class="reference external" href="http://pypi.python.org/pypi/virtualenv">virtualenv</a>.</p>
+<p>The instructions are all located in the <a class="reference external" href="http://code.google.com/p/appengine-monkey/wiki/Pylons">appengine-monkey Pylons wiki page</a>.  Please leave comments if you have improvements or problems with that process.  I also welcome contributors and developers to the project itself &#8212; this is a project for expediting App Engine development, it is not a project I care to champion or control.  Or support to any large degree.</p>
+<p>One ticket which is rather important is the apparent <a class="reference external" href="http://code.google.com/p/googleappengine/issues/detail?id=161">maximum number of files and blobs: 1000</a>.  Libraries involve lots of files, and the base Pylons install is only barely under this limit.  Now I just wish I could <a class="reference external" href="http://code.google.com/p/googleappengine/issues/detail?id=18">use lxml</a>, but that&#8217;s probably going to be a long time coming.</p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/04/13/app-engine-and-pylons/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>The Mundane Nature Of Programming</title>
+		<link>http://blog.ianbicking.org/2008/04/11/the-mundane-nature-of-programming/</link>
+		<comments>http://blog.ianbicking.org/2008/04/11/the-mundane-nature-of-programming/#comments</comments>
+		<pubDate>Fri, 11 Apr 2008 06:01:34 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Non-technical]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/04/11/the-mundane-nature-of-programming/</guid>
+		<description><![CDATA[
+So, I was at a university the other day, talking with some people about a sprint project, and there was a student there.  He was somewhat eager to write &#34;algorithms&#34;.  I&#8217;m not sure what that means exactly, but I was reminded of him because I was just about to write a function to [...]]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>So, I was at a university the other day, talking with some people about a sprint project, and there was a student there.  He was somewhat eager to write &quot;algorithms&quot;.  I&#8217;m not sure what that means exactly, but I was reminded of him because I was just about to write a function to make an absolute path relative and this somehow felt like an &quot;algorithm&quot;.  That&#8217;s not how I&#8217;d describe most of the coding I do.</p>
+<p>But I digress&#8230; this student seemed to be excited about his ability.  Well, okay, young programmers tend to be very eager, and often overestimate their ability (or the difficulty of the task).  For students in this position I think it&#8217;s good to let them take on large projects, so they can get a better concept of their ability.  This student seemed to take to heart the idea that a typical programmer produces 10 lines of working code a day.  People who hear this are inclined to think &quot;damn, I can write way more than 10 lines of code a day!&quot;</p>
+<p>I suspect a more fair way of thinking about this is that on average a programmer gets 50 lines of code into production a week, or 200 lines a month.  Sure, lots of people are more productive than this, but the actual lines of code that go into production are usually way smaller than it feels like during the process that goes into getting that code there.  That student had probably never gotten a single line of code into production.  I&#8217;m pretty sure he wouldn&#8217;t have appreciated what that getting code into production is different than just hacking out some code.</p>
+<p>The kid didn&#8217;t end up hanging around.  I don&#8217;t think we had any algorithms for him.  That&#8217;s too bad, maybe he could have seen what programming really looks like.</p>
+<p>Another what-is-programming-really-like story&#8230; Emily was working on <a class="reference external" href="http://potteryblog.com">her blog</a> and editing some templates to change the feed URL.  It didn&#8217;t work, and I took a look at it and showed her that somehow a space had gotten into the URL, so she had to go back and correct them all.  She found this frustrating.  I pointed out to her that this is exactly what I spend my days doing.</p>
+<p>Some people seem angered when people call writing HTML &quot;programming&quot;.  Personally I do not.  Most programming is a lot more like writing HTML than it&#8217;s like writing a compiler.  I bet writing a compiler is a lot more like writing HTML than what most programmers think it&#8217;s like to write a compiler.</p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/04/11/the-mundane-nature-of-programming/feed/</wfw:commentRss>
+		</item>
+		<item>
+		<title>App Engine: Commodity vs. Proprietary</title>
+		<link>http://blog.ianbicking.org/2008/04/09/app-engine-commodity-vs-proprietary/</link>
+		<comments>http://blog.ianbicking.org/2008/04/09/app-engine-commodity-vs-proprietary/#comments</comments>
+		<pubDate>Wed, 09 Apr 2008 23:34:56 +0000</pubDate>
+		<dc:creator>Ian Bicking</dc:creator>
+		
+		<category><![CDATA[Web]]></category>
+
+		<category><![CDATA[Python]]></category>
+
+		<category><![CDATA[Programming]]></category>
+
+		<guid isPermaLink="false">http://blog.ianbicking.org/2008/04/09/app-engine-commodity-vs-proprietary/</guid>
+		<description><![CDATA[
+I like this phrasing of the debate about App Engine&#8217;s role, from Doug Cutting: Cloud: commodity or proprietary? (via).  (Well, I like it more than the sharecropping phrasing referenced in my last post.)  I guess I&#8217;m excited about this because like Doug I do want a &#34;cloud&#34; of sorts, and this is a [...]]]></description>
+			<content:encoded><![CDATA[<div class="document">
+<p>I like this phrasing of the debate about App Engine&#8217;s role, from Doug Cutting: <a class="reference external" href="http://blog.lucene.com/2008/04/09/cloud-commodity-or-proprietary/">Cloud: commodity or proprietary?</a> (<a class="reference external" href="http://www.tbray.org/ongoing/When/200x/2008/04/09/Google-Users-API#c1207762074.3850">via</a>).  (Well, I like it more than the sharecropping phrasing referenced in <a class="reference external" href="http://blog.ianbicking.org/2008/04/09/app-engine-and-open-source/">my last post</a>.)  I guess I&#8217;m excited about this because like Doug I do want a &quot;cloud&quot; of sorts, and this is a move towards that in a way that makes sense to me.  Maybe to state my motivations more clearly: I hate computers.  I really hate them a lot.  I dream of some world of Platonic ideals where software just <em>exists</em>, and existence  that state it works.  App Engine feels like a strong move in the direction of computers-not-mattering.  What does App Engine run on?  I don&#8217;t care!  Where is the server located?  I don&#8217;t care!  What is BigTable?  I am comfortable thinking of it only in its abstract sense, an API that works, and I don&#8217;t know how, nor do I need to know how.  I don&#8217;t need to know these things if they just work.  Always.  Totally reliably.  I&#8217;m not shy about digging into code.  I tend to be light on my reading of documentation, because I&#8217;d much rather open up source code and poke around.  But when something <em>can</em> work so reliably that I can treat it as completely opaque then it&#8217;s a blessing, because I can start to forget about it and think about bigger goals.</p>
+<p>There was a time when people were concerned about Big <a class="reference external" href="http://en.wikipedia.org/wiki/Endianness">Endian</a> vs. Little Endian in computers.  You had to think about this sort of little detail when programming.  People formed actual <em>opinions</em> on which way was best.  To think!  Similarly XML has removed a large number of fairly pointless format decisions people might make.  There is progress.  Commodity hosting (reliable, consistent hosting, better than what we have now) feels like similar progress.</p>
+<p>Unlike Doug I&#8217;m optimistic that App Engine is a move in the direction of a commodity cloud.  The APIs seem to lack the stench of proprietary APIs.  They are based on Google services, but they reasonably abstract and reasonably minimal.  This does not seem like some kind of &quot;play&quot; (and the <a class="reference external" href="http://www.tbray.org/ongoing/When/200x/2008/04/09/Google-Users-API#c1207763078.459405">developers&#8217; seem to be reassuring about their intentions</a>).  There&#8217;s a tendency to be cynical about any company&#8217;s work, that it has underlying intentions that are at odds with any competitor (present or future), that anything good is just a loss leader meant to hook you in so they can squeeze you later.  Some companies deserve such cynicism.  I don&#8217;t know that this company, or this team, deserves that.</p>
+<p>Mind you, I don&#8217;t say this from a Best-Tool-For-The-Job perspective.  I believe in the <a class="reference external" href="http://www.gnu.org/gnu/manifesto.html">moral foundations</a> of Free Software, not just the technical advantages of its development process.  But I&#8217;m a <a class="reference external" href="http://en.wikipedia.org/wiki/Utilitarianism">Utilitarian</a>, and it doesn&#8217;t make me uncomfortable that not everything is Free if I think it&#8217;s a step forward for overall freedom.  I think App Engine has the potential to be a very powerful tool for enabling people to create and use web applications.  If it was great, but still a dead end, then maybe that wouldn&#8217;t be good enough.  But I don&#8217;t think this is a dead end.</p>
+<p><strong>Update:</strong> Indeed people are reimplementing the interface: see the <a class="reference external" href="http://appdrop.com/">appdrop.com</a> <a class="reference external" href="http://jchris.mfdz.com/code/2008/4/announcing_appdrop_com__host_go">announcement</a></p>
+</div>
+]]></content:encoded>
+			<wfw:commentRss>http://blog.ianbicking.org/2008/04/09/app-engine-commodity-vs-proprietary/feed/</wfw:commentRss>
+		</item>
+	</channel>
+</rss>

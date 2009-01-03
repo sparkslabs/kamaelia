@@ -1,0 +1,1024 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet href="http://blogs.nuxeo.com/rss.css" type="text/css"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns="http://purl.org/rss/1.0/"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <channel rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/exportrss">
+    <title>Julien Anguenot</title>
+    <description>RSS 1.0 export from the folder 'Julien Anguenot'.</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/exportrss</link>
+
+    <items>
+      <rdf:Seq>
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_12_05_icssea-2006-nuxeo-5-talk-thursday" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_10_28_java-soon-to-be-opened" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_10_25_nuxeo-core-1-0-released" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_09_15_switching-from-emacs-to-pydev" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_07_05_europython-2006-lucene-based-cataloging-solution-for-zope-3-cps-3-4" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_06_europython-2006-timetable-conference-partially-annonced" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_05_stefane-just-switched-to-mac" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_02_lucene-based-cataloging-solution-for-zope-3-cps-3-4" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_05_31_www2006-slides-from-my-zope3-talk" />
+        <rdf:li rdf:resource="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_04_21_dump-load-svn-repositories-using-svnadmin-svndumpfilter" />
+
+      </rdf:Seq>
+    </items>
+
+  </channel>
+
+
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_12_05_icssea-2006-nuxeo-5-talk-thursday">
+    <title>ICSSEA 2006 : Nuxeo 5 talk this thursday</title>
+    <description>&lt;p&gt;I will be giving a talk at the &lt;a
+  href="http://deptinfo.cnam.fr/CMSL/icssea/icssea2006/icssea2006_US/"&gt;19&lt;sup&gt;th&lt;/sup&gt;
+  International Conference "Software &amp;amp; Systems Engineering and their
+  Applications"&lt;/a&gt;, about &lt;a
+  href="http://en.wikipedia.org/wiki/Enterprise_content_management"&gt;ECM&lt;/a&gt;
+  and &lt;a href="http://www.nuxeo.org"&gt;Nuxeo 5,&lt;/a&gt; this thursday in
+  Paris.&lt;br /&gt;
+  &lt;/p&gt;
+  You can find the detailed program of the conference &lt;a
+  href="http://deptinfo.cnam.fr/CMSL/icssea/icssea2006/icssea2006_US/"&gt;here&lt;/a&gt;.&amp;nbsp;
+  The conference will be held by the CNAM. You can find information about the
+  location over &lt;a
+  href="http://deptinfo.cnam.fr/CMSL/icssea/icssea2006/icssea2006_US/"&gt;there&lt;/a&gt;.&lt;br /&gt;
+
+  &lt;br /&gt;
+  See you there&lt;br /&gt;
+   &lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_12_05_icssea-2006-nuxeo-5-talk-thursday</link>
+    <dc:date>2006-12-05</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>ecm</dc:subject>
+    <dc:subject>nuxeo5</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_10_28_java-soon-to-be-opened">
+    <title>Java soon to be opened !</title>
+    <description>Here is a good news for &lt;a href="http://www.nuxeo.org"&gt;Nuxeo 5&lt;/a&gt; : &lt;a
+  href="http://news.yahoo.com/s/infoworld/20061025/tc_infoworld/83138"&gt;Sun CEO
+  sets open source Java time frame&lt;/a&gt;&lt;br /&gt;
+   &lt;br /&gt;
+   As we read in a few discussion threads after the release of&amp;nbsp; &lt;a
+  href="http://www.nuxeo.org/sections/projects/runtime/"&gt;NXRuntime&lt;/a&gt; and &lt;a
+  href="http://www.nuxeo.org/sections/projects/core/"&gt;Nuxeo Core&lt;/a&gt;, some
+  people were pointing out that, with our &lt;a
+  href="http://www.nuxeo.org/sections/about/java-switch/"&gt;Java switch,&lt;/a&gt; we
+  weren't using a full open source stack anymore. These discussions will be
+  over soon.&lt;br /&gt;
+   &lt;br /&gt;
+   As well, some people asked us if we considered making Nuxeo 5 running using
+  gcj. Well, ... we have been trying to leverage &lt;a
+  href="http://gcc.gnu.org/java/"&gt;gcj&lt;/a&gt; with the &lt;a
+  href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+  project where we were using &lt;a href="http://lucene.apache.org/"&gt;Lucene&lt;/a&gt;
+  through gcj. This is working ok but what a pain... It appeared to be
+  extremely complicated to find the right version of gcj depending on the
+  target platform on production and that caused us lots of worries... So
+  definitely not a viable option. Ask the hosting companies if you are not
+  convinced ... As well, a lot of work is required at application level while
+  trying to port gcj-based application on upper versions of gcj because of
+  bugs in the compiler itself. So much frustration...&lt;br /&gt;
+   &lt;br /&gt;
+   Furthermore, we can expect Java enabled Linux distributions out of the box
+  in the future with Java applications pre-installed and shipped with the
+  distribution itself : for instance &lt;a href="http://www.jboss.org"&gt;JBoss
+  AS&lt;/a&gt;.&lt;br /&gt;
+   &lt;br /&gt;
+   Because of the fact that Nuxeo bas been caring about open source for more
+  than 6 years, playing the open source game and choosing a core business
+  fully based on a transparent open source model, we are more than happy that
+  this time frame set announcement comes up almost at the same time as the
+  release of Nuxeo 5.&lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_10_28_java-soon-to-be-opened</link>
+    <dc:date>2006-10-28</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>java</dc:subject>
+    <dc:subject>nuxeo5</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_10_25_nuxeo-core-1-0-released">
+    <title>Nuxeo Core 1.0 released !</title>
+    <description>I'm proud to let you know that we released&amp;nbsp; &lt;a
+  href="http://www.nuxeo.org/sections/projects/core"&gt;Nuxeo Core 1.0&lt;/a&gt;
+  !&amp;nbsp; This is the first release of the new &lt;i&gt;embeddable document
+  management core&lt;/i&gt; that is the foundation of the upcoming &lt;a
+  href="http://www.nuxeo.org"&gt;Nuxeo 5 ECM platform.&lt;/a&gt;&lt;br /&gt;
+   &lt;br /&gt;
+   Nuxeo Core is an embeddable document management core, based on Nuxeo
+  Runtime. It provides all necessary low-level services to define, store,
+  manage, audit, request and search content. It is the kernel of &lt;a
+  href="http://www.nuxeo.org/sections/projects/"&gt;Nuxeo 5&lt;/a&gt; and can also be
+  embedded in third-party applications to provide advanced content management
+  features. It can run on any Java platform, can be easily extended using
+  plug-ins (thanks to &lt;a
+  href="http://www.nuxeo.org/sections/projects/runtime/"&gt;Nuxeo Runtime&lt;/a&gt;)
+  and implements JCA (Java EE Connector Architecture) to be easily plugged
+  into existing applications or information systems.&lt;br /&gt;
+   &lt;br /&gt;
+   Nuxeo core key features&amp;nbsp; :&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;ul&gt;
+   &lt;li&gt;Model: content management concepts definition&lt;/li&gt;
+
+   &lt;li&gt;Storage Manager: low-level content storage and retrieval
+   (JCR-based)&lt;/li&gt;
+
+   &lt;li&gt;Schema Manager: XMLSchema based content schema definition and
+   management&lt;/li&gt;
+
+   &lt;li&gt;Version Manager: versioning management&lt;/li&gt;
+
+   &lt;li&gt;Content Type Manager: content types management (a content type is a set
+   of schemas)&lt;/li&gt;
+
+   &lt;li&gt;Query Engine: SQL-like unified query engine&lt;/li&gt;
+
+   &lt;li&gt;Security Manager: access rights manager and controller&lt;/li&gt;
+
+   &lt;li&gt;Life cycle management: define, deploy and applies life cycle on
+   document types (JCR storage)&lt;/li&gt;
+
+   &lt;li&gt;Event Service: abstract event service to broadcast and receive
+   events&lt;/li&gt;
+
+   &lt;li&gt;Local (POJO) and Remote (JavaEE) access using dedicated client
+   sessions.&lt;/li&gt;
+
+   &lt;li&gt;Set of extension points allowing third party code to extend and
+   customize the Nuxeo Core services&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;br /&gt;
+   You will find detailed information &lt;a
+  href="http://www.nuxeo.org/sections/projects/core/nuxeo-core-reference/downloadFile/file/NXCore-Documentation.pdf"&gt;
+  here.&lt;/a&gt; This is a detailed technical overview of Nuxeo Core 1.0. &lt;br /&gt;
+   &lt;br /&gt;
+   A JBoss binary &lt;a
+  href="http://www.nuxeo.org/static/NuxeoCore/NuxeoCore-Full-JBoss-1.0.zip"&gt;release&lt;/a&gt;
+  is available along with a simple &lt;a
+  href="http://www.eclipse.org"&gt;Eclipse&lt;/a&gt; RCP &lt;a
+  href="http://www.nuxeo.org/static/demos/"&gt;demo application&lt;/a&gt; that
+  leverages the Nuxeo Core. (The demo application is available for Linux, OSX
+  and Win32). You will find in &lt;a
+  href="http://www.nuxeo.org/sections/projects/core/nuxeo-core-demo-howto/downloadFile/file/NXCoreDemo-Howto.pdf"&gt;
+  this document&lt;/a&gt; all the needed information related the Eclipse demo
+  application.&lt;br /&gt;
+   &lt;br /&gt;
+   Check the &lt;a href="http://www.nuxeo.org/sections/projects/core/"&gt;project
+  homepage&lt;/a&gt; for more information and especially if you want to check the
+  source code.&lt;br /&gt;
+   &lt;br /&gt;
+   This is an important step toward the release of &lt;a
+  href="http://www.nuxeo.org"&gt;Nuxeo 5&lt;/a&gt; &lt;a
+  href="http://www.nuxeo.org/sections/about/roadmap"&gt;planned&lt;/a&gt; in the middle
+  of next month. We are all more than happy and proud of this new platform and
+  we hope you'll enjoy it as well !&lt;br /&gt;
+  &lt;br /&gt;
+  Stay tuned there is a lot in the pipe ! :)&lt;br /&gt;
+   &lt;br /&gt;
+   &lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_10_25_nuxeo-core-1-0-released</link>
+    <dc:date>2006-10-25</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>eclipse</dc:subject>
+    <dc:subject>ecm</dc:subject>
+    <dc:subject>java</dc:subject>
+    <dc:subject>jboss</dc:subject>
+    <dc:subject>nuxeo</dc:subject>
+    <dc:subject>nuxeo5</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_09_15_switching-from-emacs-to-pydev">
+    <title>Switching from Emacs to PyDev...</title>
+    <description>I gotta admit I was wrong...&lt;br /&gt;
+   &lt;br /&gt;
+   I recently tried out &lt;a href="http://www.fabioz.com/pydev/"&gt;Pydev&lt;/a&gt; and
+  &lt;a href="http://www.fabioz.com/pydev/"&gt;Pydev extensions&lt;/a&gt; on &lt;a
+  href="http://www.eclipse.org"&gt;Eclipse&lt;/a&gt; 3.2 for my&lt;br /&gt;
+   Python and &lt;a id="http://www.zope.org" name="http://www.zope.org"
+  title="http://www.zope.org"&gt;&lt;/a&gt;&lt;a href="http://www.zope.org"&gt;Zope&lt;/a&gt;
+  developments. Wouah ! &lt;br /&gt;
+   &lt;br /&gt;
+   I've been using these plugins for couple of weeks and I already can't&lt;br /&gt;
+   switch to emacs anymore. I wouldn't have believed It could have ever&lt;br /&gt;
+   happened. I've been using emacs for years and somehow refused to try&lt;br /&gt;
+   out any IDE for Python because I thought it wasn't as crucial for&lt;br /&gt;
+   Python development as for other languages such as Java, C#, C++&lt;br /&gt;
+   etc....&lt;br /&gt;
+   &lt;br /&gt;
+   I love this feeling. I mean when you find out a tool and are
+  wondering&lt;br /&gt;
+   how you've been living without it for so long that you can't go back
+  to&lt;br /&gt;
+   the old one :) I'm in this case with emacs. I simply can't&lt;br /&gt;
+   anymore. (Well, I could but you see what I mean)&lt;br /&gt;
+   &lt;br /&gt;
+   Pydev really brings a lot.&amp;nbsp; I was surprised by the progresses made
+  by&lt;br /&gt;
+   Fabio on the Pydev front and especially what Pydev extensions bring&lt;br /&gt;
+   related to code completion.&lt;br /&gt;
+   &lt;br /&gt;
+   I let you check out the &lt;a
+  href="http://showmedo.com/videos/series?name=PyDevEclipseList"&gt;screencasts&lt;/a&gt;
+  to get a quick overview if you&lt;br /&gt;
+   don't have time to install and play with it (or you are not
+  convinced)&lt;br /&gt;
+   &lt;br /&gt;
+   For Zope development there are some things I'm missing that require&lt;br /&gt;
+   some command lines beside Pydev. (Or these are maybe some things I&lt;br /&gt;
+   didn't find since I'm relatively new in Pydev development)&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;ul&gt;
+   &lt;li&gt;&amp;nbsp;Support for zope.interface&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; This is a bit annoying since pydev doesn't
+  recognize&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; zope.interface and thus shows errors on
+  those classes. I might&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; even dream about a full integration checking
+  the Python classes&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; implementing interfaces such as in Java. And
+  yeah, I'm still&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; dreaming about builtin Python interfaces but
+  eh wait ... Python&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; guys don't want that...I need to stop
+  dreaming...&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;ul&gt;
+   &lt;li&gt;Support for doctests&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Pydev doesn't support doctests. Although,
+  you can run external&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; commands from Eclipse. I'm using them to
+  specify a zope.testing&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; based tests.py as external command and I get
+  back the result in&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; the eclipse console. It would be a plus if
+  it could directly run&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; them from the Eclipse as doctests as the
+  other Pyunit tests.&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;ul&gt;
+   &lt;li&gt;&amp;nbsp;Python specific package browser&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Here, I'm especially talking about the
+  refactoring. Move and&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; rename you can find in the Java package
+  manager. So that you can&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; rename module names and don't worry about
+  changing the references&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; in other Python projects in the workspace.
+  Or still move modules&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; with the same behavior. It really does ease
+  the refactoring in&lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Java.&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;ul&gt;
+   &lt;li&gt;Zope server plugin&lt;br /&gt;
+   &lt;br /&gt;
+   &lt;/li&gt;
+
+   &lt;li&gt;Debugger integrated with Zope&lt;br /&gt;
+   &lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;br /&gt;
+   &lt;br /&gt;
+   To sump up, Pydev and Pydev extensions rock. It's really promising
+  and&lt;br /&gt;
+   it addresses a huge lack related to Python development.&lt;br /&gt;
+   &lt;br /&gt;
+   Please don't tell me about other Python specific IDEs since this is&lt;br /&gt;
+   not what integrators are expecting. They already do have Eclipse on&lt;br /&gt;
+   theirs boxes all over the place so they just want a new Eclipse&lt;br /&gt;
+   plugin. (and they are right) Another industry reality. I guess IDE&lt;br /&gt;
+   war is over ... as well.&lt;br /&gt;
+   &lt;br /&gt;
+   I guess Éric is going to like this post ;)&lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_09_15_switching-from-emacs-to-pydev</link>
+    <dc:date>2006-09-15</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>eclipse</dc:subject>
+    <dc:subject>python</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_07_05_europython-2006-lucene-based-cataloging-solution-for-zope-3-cps-3-4">
+    <title>EuroPython 2006 slides  : A Lucene-based cataloging solution for Zope-3 and CPS-3.4</title>
+    <description>I am just back from &lt;a href="http://www.europython.org"&gt;EuroPython&lt;/a&gt; where
+  I did a presentation about &lt;a
+  href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+  and the &lt;a href="http://www.zope.org"&gt;Zope&lt;/a&gt; / &lt;a
+  href="http://www.cps-project.org"&gt;CPS&lt;/a&gt; Platform integration, yesterday
+  the &lt;a
+  href="http://indico.cern.ch/contributionDisplay.py?contribId=24&amp;amp;sessionId=9&amp;amp;confId=44"&gt;
+  4th&lt;/a&gt;. You can grab the slides &lt;a
+  id="http://www.cps-project.org/sections/projects/nxlucene/europython-2006-lucene"
+   name="http://www.cps-project.org/sections/projects/nxlucene/europython-2006-lucene"
+   title="http://www.cps-project.org/sections/projects/nxlucene/europython-2006-lucene"&gt;
+  &lt;/a&gt;&lt;a
+  href="http://www.cps-project.org/sections/projects/nxlucene/europython-2006-lucene"&gt;
+  here&lt;/a&gt;.&lt;br /&gt;
+  &lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_07_05_europython-2006-lucene-based-cataloging-solution-for-zope-3-cps-3-4</link>
+    <dc:date>2006-07-05</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>ZODB</dc:subject>
+    <dc:subject>cps</dc:subject>
+    <dc:subject>ecm</dc:subject>
+    <dc:subject>java</dc:subject>
+    <dc:subject>linux</dc:subject>
+    <dc:subject>nuxeo</dc:subject>
+    <dc:subject>python</dc:subject>
+    <dc:subject>slides</dc:subject>
+    <dc:subject>zope</dc:subject>
+    <dc:subject>zope3</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_06_europython-2006-timetable-conference-partially-annonced">
+    <title>EuroPython 2006 : timetable of the conference partially announced</title>
+    <description>&lt;br /&gt;
+   The timetable of &lt;a href="http://www.europython.org"&gt;EuroPython 2006&lt;/a&gt;
+  has been partially published yesterday night. You can check it out over t &lt;a
+  href="http://indico.cern.ch/conferenceTimeTable.py?confId=44&amp;amp;showDate=all&amp;amp;showSession=all&amp;amp;detailLevel=contribution&amp;amp;viewMode=parallel"&gt;
+  here&lt;/a&gt;. &lt;br /&gt;
+   &lt;br /&gt;
+   &lt;a href="http://www.nuxeo.com/"&gt;Nuxeo&lt;/a&gt; will be there : &lt;br /&gt;
+   &lt;br /&gt;
+   I will be talking about &lt;a
+  href="http://indico.cern.ch/contributionDisplay.py?contribId=24&amp;amp;sessionId=9&amp;amp;confId=44"
+   style=""&gt;Lucene-based cataloging solution for Zope-3 and CPS-3.4.&lt;/a&gt; on
+  thuesday the 4th.&amp;nbsp; See my recent &lt;a
+  href="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_02_lucene-based-cataloging-solution-for-zope-3-cps-3-4"&gt;
+  post&lt;/a&gt; related to this. I am really excited to present these pieces of
+  software to the Python / Zope community ! &lt;br /&gt;
+   &lt;a href="http://blogs.nuxeo.com/sections/blogs/tarek_ziade"&gt;Tarek&lt;/a&gt; will
+  be talking about &lt;a
+  href="http://indico.cern.ch/contributionDisplay.py?contribId=28&amp;amp;sessionId=9&amp;amp;confId=44"
+   style=""&gt;CPSBayes :&amp;nbsp; a multipurpose naive bayesian classifier for
+  Zope&lt;/a&gt; the same day in the morning.&lt;br /&gt;
+   &lt;br /&gt;
+   Because of a really busy schedule nowadays at &lt;a
+  href="http://www.nuxeo.com"&gt;Nuxeo&lt;/a&gt;, I won't be able to attend the whole
+  conference and will be in Switzerland on thuesday only. I will certainly
+  attend the &lt;a
+  href="http://www.europython.org/sections/events/conference_dinner"&gt;conference
+  dinner&lt;/a&gt; in the evening. I will be pleased to meet anyone interested about
+  discussing anything related to &lt;a
+  href="http://www.python.org"&gt;Python&lt;/a&gt;,&amp;nbsp; &lt;a
+  href="http://www.zope.org"&gt;Zope&lt;/a&gt; or &lt;a
+  href="http://www.nuxeo.com"&gt;Nuxeo&lt;/a&gt;.&lt;br /&gt;
+   &lt;br /&gt;
+   See you there !&lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_06_europython-2006-timetable-conference-partially-annonced</link>
+    <dc:date>2006-06-06</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>nuxeo</dc:subject>
+    <dc:subject>python</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_05_stefane-just-switched-to-mac">
+    <title>Stéfane just switched to Mac !</title>
+    <description>Huge happening today at Nuxeo : Stefane just switched to Mac !&lt;br /&gt;
+  &lt;br /&gt;
+  Here is one picture taken in the wild with my phone ;)&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;div align="center"&gt;
+   &lt;img style="width: 309px; height: 355px;"
+   src="http://www.cps-project.org/workspaces/members/janguenot/sf-with-mac/downloadFile/file/sf_with_mac?nocache=1149515052.83%27%0Awidth=" /&gt;
+   &lt;br /&gt;
+  &lt;/div&gt;
+  &lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_05_stefane-just-switched-to-mac</link>
+    <dc:date>2006-06-05</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>nuxeo</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_02_lucene-based-cataloging-solution-for-zope-3-cps-3-4">
+    <title>Lucene-based cataloging solution for Zope-3 and CPS-3.4</title>
+    <description>&lt;br /&gt;
+   I think it's time to drop a note to the outside world about what I've been
+  working on for a little while at &lt;a
+  href="http://www.nuxeo.com/en/"&gt;Nuxeo&lt;/a&gt;. I am pretty confident that this
+  project is nowadays at the end of its first iteration. &lt;br /&gt;
+   &lt;br /&gt;
+   This post will give you a short overview of the solution we chose to tackle
+  which is the indexing and searching stack in a &lt;a
+  href="http://www.zope.org"&gt;Zope&lt;/a&gt; and &lt;a
+  href="http://www.cps-project.org"&gt;CPS&lt;/a&gt; architecture. I submitted an &lt;a
+  href="http://www.cps-project.org/sections/projects/nxlucene/europython-2006-proposal"&gt;
+  abstract&lt;/a&gt; to &lt;a href="http://www.europython.org"&gt;EuroPython&lt;/a&gt; this
+  year. Hopefuly, I'll have the chance to give you more technical details at
+  the conference in July.&lt;br /&gt;
+   
+
+  &lt;h2&gt;Motivations&lt;/h2&gt;
+  &lt;br /&gt;
+   &lt;a href="http://www.cps-project.org"&gt;CPS&lt;/a&gt; is based on &lt;a
+  href="http://www.zope.org"&gt;Zope&lt;/a&gt; and the standard cataloging solution of
+  &lt;a href="http://www.zope.org"&gt;Zope&lt;/a&gt;, nowadays, is the &lt;a
+  href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;.
+  The &lt;a
+  href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;
+  works really well until a certain amount of indexed documents : that's a
+  fact. As well, &lt;a
+  href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;
+  extensions, such as &lt;a
+  href="http://opensource.zopyx.biz/OpenSource/TextIndexNG3"&gt;TextIndexNG&lt;/a&gt;,
+  are of a great interest. &lt;br /&gt;
+   &lt;br /&gt;
+   But, because there is a &lt;i&gt;but&lt;/i&gt;,&amp;nbsp; the main problem is that &lt;a
+  href="http://www.zope.org"&gt;Zope&lt;/a&gt; is dealing with a task it shouldn't have
+  to deal with. As a result, it decreases the overall performances of the &lt;a
+  href="http://www.zope.org"&gt;Zope&lt;/a&gt; platform itself. If you are not
+  convinced just try out to inject 200k documents within a &lt;a
+  href="http://www.zope.org"&gt;Zope&lt;/a&gt; instance (or a &lt;a
+  href="http://www.plone.org"&gt;Plone&lt;/a&gt; one if you wish :)) with documents
+  having 50 fields to be indexed and check how your response time is evolving
+  when your instance is as much used by people working and writing within the
+  database and by others consulting it and thus searching all along. In &lt;a
+  href="http://www.nuxeo.com/"&gt;Nuxeo&lt;/a&gt;, we tried on large scale projects. It
+  simply doesn't work well/fast enough for serious deployments. &lt;a
+  href="http://www.zope.org"&gt;Zope&lt;/a&gt; gets really slow...&lt;br /&gt;
+   &lt;br /&gt;
+   Anyways, you should consider the &lt;a
+  href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;
+  as what it is : a hack on top of the &lt;a
+  href="http://dev.zope.org/ZODB"&gt;ZODB&lt;/a&gt; because the &lt;a
+  href="http://dev.zope.org/ZODB"&gt;ZODB&lt;/a&gt; doesn't provide any native query
+  language nor full indexing suppport. &lt;br /&gt;
+   &lt;br /&gt;
+   For those reasons, we needed such a solution for our &lt;a
+  href="http://www.nuxeo.com/en/customers/"&gt;customer&lt;/a&gt; projects.&lt;br /&gt;
+   &lt;br /&gt;
+   As well, this is following our vision of &lt;a
+  href="http://dev.zope.org/Zope3/"&gt;Zope3&lt;/a&gt; being an integration platform
+  for &lt;a href="http://www.nuxeo.com/en/ecm/"&gt;ECM&lt;/a&gt; applications where
+  external services could be plugged in thanks to the &lt;a
+  href="http://www.zope.org/Wikis/DevSite/Projects/ComponentArchitecture/ComponentArchitectureSimplification"&gt;
+  Zope3 component architecture&lt;/a&gt; flexibility and the agility of the &lt;a
+  href="http://www.python.org"&gt;Python&lt;/a&gt; language.&lt;br /&gt;
+   
+
+  &lt;h2&gt;What is Lucene ?&lt;br /&gt;
+  &lt;/h2&gt;
+
+  &lt;div align="left"&gt;
+   &lt;br /&gt;
+    &lt;a href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; is an open source
+   project from the &lt;a href="http://apache.org/"&gt;Apache Software
+   Foundation&lt;/a&gt; written in &lt;a href="http://java.sun.com/"&gt;Java&lt;/a&gt;. This is
+   a high-performance, full-featured text search engine library.&lt;br /&gt;
+   &lt;br /&gt;
+    I would suggest that you check the &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;website&lt;/a&gt; that contains a lot
+   of useful information and documentation. As well, I would really recommand
+   &lt;a href="http://lucenebook.com/"&gt;this book&lt;/a&gt; to anyone interested in
+   working with &lt;a href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; and /
+   or in understanding more deeply how it works and how to use it in a proper
+   way. As well, some projects such as &lt;a
+   href="http://lucene.apache.org/nutch/"&gt;nutch&lt;/a&gt; are described as case
+   studies which is more than interesting for anyone who wants to build a
+   system on top of &lt;a href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt;
+   since the best practices are described within those case studies.&lt;br /&gt;
+   &lt;br /&gt;
+    &amp;nbsp;In &lt;a href="http://www.nuxeo.com"&gt;Nuxeo&lt;/a&gt;, we first integrated &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; for a customer within
+   the &lt;a href="http://apogee.nuxeo.org"&gt;Apogee project scope&lt;/a&gt;. (&lt;a
+   href="http://apogee.nuxeo.org"&gt;Apogee&lt;/a&gt; is a framework based on &lt;a
+   href="http://www.eclipse.org/rcp/"&gt;Eclipse RCP&lt;/a&gt; for &lt;a
+   href="http://www.nuxeo.com/en/ecm/"&gt;ECM&lt;/a&gt; rich client applications). Its
+   use had been a real success so we decided to go further and see how we
+   could leverage the use of &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; server side.&lt;br /&gt;
+    
+
+   &lt;h2&gt;What is PyLucene ?&lt;br /&gt;
+   &lt;/h2&gt;
+   &lt;br /&gt;
+    The first time we've seriously considered using &lt;a
+   href="http://pylucene.osafoundation.org/"&gt;PyLucene&lt;/a&gt; was at last year's
+   &lt;a href="http://www.europython.org"&gt;EuroPython&lt;/a&gt; conference after &lt;a
+   href="http://wp.osafoundation.org/author/vajda/"&gt;Andi Vajda&lt;/a&gt;'s really
+   great presentation of &lt;a
+   href="http://pylucene.osafoundation.org/"&gt;PyLucene&lt;/a&gt;. &lt;a
+   href="http://wp.osafoundation.org/author/vajda/"&gt;Andi&lt;/a&gt; is the actual
+   main &lt;a href="http://pylucene.osafoundation.org/"&gt;PyLucene&lt;/a&gt; developer.
+   &lt;a href="http://pylucene.osafoundation.org/"&gt;PyLucene&lt;/a&gt; is maintained by
+   the &lt;a href="http://www.osafoundation.org"&gt;Open Source Applications
+   Foundation.&lt;/a&gt;&lt;br /&gt;
+   &lt;br /&gt;
+    &lt;a href="http://pylucene.osafoundation.org/"&gt;PyLucene&lt;/a&gt; is a &lt;a
+   href="http://gcc.gnu.org/java/"&gt;GCJ&lt;/a&gt;-compiled version of &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Java&lt;/a&gt; &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; integrated with &lt;a
+   href="http://www.python.org"&gt;Python&lt;/a&gt;. Its goal is to allow the use of &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt;'s text indexing and
+   searching capabilities from &lt;a href="http://www.python.org"&gt;Python&lt;/a&gt;. It
+   is designed to be API compatible with the latest version of &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Java&lt;/a&gt; &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt;.&lt;br /&gt;
+   &lt;br /&gt;
+    &lt;a href="http://pylucene.osafoundation.org/"&gt;PyLucene&lt;/a&gt; is freaking fast
+   ! Even faster than the &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Java&lt;/a&gt; &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; version according to
+   the authors of the &lt;i&gt;&lt;a href="http://lucenebook.com/"&gt;Lucene In
+   Action&lt;/a&gt;&lt;/i&gt; &lt;a href="http://lucenebook.com/"&gt;book&lt;/a&gt;. Furthermore, It
+   will be easily synchronized with the latest &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Java&lt;/a&gt; &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; releases since this
+   is not a &lt;i&gt;from scratch&lt;/i&gt; port but a &lt;a
+   href="http://gcc.gnu.org/java/"&gt;GCJ&lt;/a&gt;-compiled version of &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Java&lt;/a&gt; &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; itself.&lt;br /&gt;
+  &lt;/div&gt;
+
+  &lt;h2&gt;NXLucene : standalone Lucene indexation server&lt;br /&gt;
+  &lt;/h2&gt;
+
+  &lt;div align="left"&gt;
+   &lt;br /&gt;
+    &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   is a standalone multi-threaded remote server handling &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; stores. It takes
+   advantage of the freaking fast &lt;a
+   href="http://pylucene.osafoundation.org/"&gt;PyLucene&lt;/a&gt; &lt;a
+   href="http://www.python.org"&gt;Python&lt;/a&gt; bindings and uses &lt;a
+   href="http://twistedmatrix.com/trac/"&gt;Twisted&lt;/a&gt; for its server
+   implementation. It uses some part of the &lt;a
+   href="http://dev.zope.org/Zope3"&gt;Zope3 component architecture&lt;/a&gt; as well.
+   &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   currently supports the &lt;a href="http://www.xmlrpc.com/"&gt;XML-RPC&lt;/a&gt;
+   protocol. (Its roadmap includes an &lt;a
+   href="http://www.zeroc.com/ice.html"&gt;ICE&lt;/a&gt; connector for the 1.x branch.)
+   As well, &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   might be seen as a good example of what could be achieved using the best
+   parts of different worlds (Java &lt;a
+   href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; , &lt;a
+   href="http://pylucene.osafoundation.org/"&gt;PyLucene&lt;/a&gt;, &lt;a
+   href="http://dev.zope.org/Zope3"&gt;Zope3&lt;/a&gt;, &lt;a
+   href="http://twistedmatrix.com/trac/"&gt;Twisted&lt;/a&gt;,...). Bear in mind, that
+   &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   is not running on top of the &lt;a href="http://www.zope.org"&gt;Zope AS&lt;/a&gt;. It
+   is &lt;b&gt;standlone.&lt;/b&gt;&lt;br /&gt;
+   &lt;br /&gt;
+    &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   exposes an XML query language for indexing and searching operations. Note
+   the &lt;a href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; native search
+   query is of course still supported. Check the &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene/nxlucene-api/viewZip/file/NXLucene-0.7.0-1.zip/api/private/index.html"&gt;
+   interfaces&lt;/a&gt;&lt;br /&gt;
+   &lt;br /&gt;
+    While installing &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;,
+   you will install as well the core libs that might be used by third party &lt;a
+   href="http://www.python.org"&gt;Python&lt;/a&gt; programs. For instance, the query
+   lib might be useful to help you format your &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   XML queries or still the testing library might be really helpful to write
+   tests for your &lt;a href="http://www.python.org"&gt;Python&lt;/a&gt; components that
+   need to communicate with an &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   server.&lt;br /&gt;
+   &lt;br /&gt;
+    This is important to note here that you can request &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   using any language. You will only need an &lt;a
+   href="http://www.xmlrpc.com/"&gt;XML-RPC&lt;/a&gt; client library to do so.&lt;br /&gt;
+   &lt;br /&gt;
+    &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   is an open source project under the &lt;a
+   href="http://www.gnu.org/licenses/lgpl.html"&gt;LGPL&lt;/a&gt; part of the &lt;a
+   href="http://www.cps-project.org/"&gt;CPS platform&lt;/a&gt; project.&lt;br /&gt;
+   &lt;br /&gt;
+    For more information about &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   and its installation you may check the &lt;a
+   href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+   website.&lt;br /&gt;
+  &lt;/div&gt;
+
+  &lt;h2&gt;nuxeo.lucene : Zope 3 cataloging component&lt;br /&gt;
+  &lt;/h2&gt;
+  &lt;br /&gt;
+   &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/Zope3/nuxeo.lucene/trunk"&gt;nuxeo.lucene&lt;/a&gt;
+  is a cataloging component written on top of to th&lt;a
+  href="http://dev.zope.org/Zope3"&gt;e Zope3 application server&lt;/a&gt; currently
+  offering an &lt;a href="http://www.xmlrpc.com/"&gt;XML-RPC&lt;/a&gt; proxy to a &lt;a
+  href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;
+  remote server. As well, It offers an abstraction for &lt;a
+  href="http://www.python.org"&gt;Python&lt;/a&gt; objects cataloging strategy
+  providing the ability to specify how &lt;a
+  href="http://www.python.org"&gt;Python&lt;/a&gt; objects should be indexed and
+  retrieved from a &lt;a href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt;
+  store through &lt;a
+  href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;.
+  (This is important to note here, that whatever remote server providing an &lt;a
+  href="http://www.xmlrpc.com/"&gt;XML-RPC&lt;/a&gt; remote interface on a &lt;a
+  href="http://lucene.apache.org/java/docs/"&gt;Lucene&lt;/a&gt; server could be
+  theoretically used.)&lt;br /&gt;
+   &lt;br /&gt;
+   Currently, this component is used through &lt;a
+  href="http://codespeak.net/z3/five/"&gt;Five&lt;/a&gt; from &lt;a
+  href="http://www.cps-project.org"&gt;CPS&lt;/a&gt;. Its integration on top of the &lt;a
+  href="http://dev.zope.org/Zope3"&gt;Zope3 AS&lt;/a&gt; is not finished since we
+  didn't need &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/Zope3/nuxeo.lucene/trunk"&gt;nuxeo.lucene&lt;/a&gt;
+  outside of &lt;a href="http://www.cps-project.org/"&gt;CPS&lt;/a&gt; yet. Feel free to
+  &lt;a href="http://lists.nuxeo.com"&gt;participate&lt;/a&gt; to its development if you
+  are interested about having &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/Zope3/nuxeo.lucene/trunk"&gt;nuxeo.lucene&lt;/a&gt;
+  fully integrated on top of a stock &lt;a href="http://dev.zope.org/Zope3"&gt;Zope3
+  AS&lt;/a&gt;.&lt;br /&gt;
+   &lt;br /&gt;
+   &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/Zope3/nuxeo.lucene/trunk"&gt;nuxeo.lucene&lt;/a&gt;
+  is an open source project available under the &lt;a
+  href="http://www.zope.org/Resources/License/"&gt;ZPL part of the&lt;/a&gt; &lt;a
+  href="http://www.cps-project.org/"&gt;CPS platform&lt;/a&gt; project.&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;h2&gt;CPSLuceneCatalog : CMF Catalog replacement for CPS-3. &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/CPS3/products/CPSLuceneCatalog/trunk"&gt;
+  4&lt;br /&gt;
+  &lt;/a&gt;&lt;/h2&gt;
+  &lt;br /&gt;
+   &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/CPS3/products/CPSLuceneCatalog/trunk"&gt;
+  CPSLuceneCatalog&lt;/a&gt; is a &lt;a
+  href="http://www.cps-project.org/sections/about"&gt;CPS-3.4.x&lt;/a&gt; specific
+  product adding the &lt;a href="http://www.cps-project.org"&gt;CPS&lt;/a&gt; specific
+  business rules to &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/Zope3/nuxeo.lucene/trunk"&gt;nuxeo.lucene&lt;/a&gt;.
+  For example, it takes care of the way different versions of &lt;a
+  href="http://www.cps-project.org/"&gt;CPS&lt;/a&gt; documents should be indexed. &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/CPS3/products/CPSLuceneCatalog/trunk"&gt;
+  CPSLuceneCatalog&lt;/a&gt; is a complete substitute for the &lt;a
+  href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;
+  that is showing its limits while dealing with millions of objects. &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/CPS3/products/CPSLuceneCatalog/trunk"&gt;
+  CPSLuceneCatalog&lt;/a&gt; will be shipped along with the next major release of &lt;a
+  href="http://www.cps-project.org/"&gt;CPS&lt;/a&gt;, version 4, along with the &lt;a
+  href="http://jackrabbit.apache.org/"&gt;JackRabbit JCR repository&lt;/a&gt;.&lt;br /&gt;
+   &lt;br /&gt;
+   &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/CPS3/products/CPSLuceneCatalog/trunk"&gt;
+  CPSLuceneCatalog&lt;/a&gt; is almost fully backward compatible with the &lt;a
+  href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;
+  query syntax so be sure you code won't break if you want to migrate. I don't
+  currently support 100% compatibility but I do support at least the subset of
+  &lt;a
+  href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;
+  query syntax we have been using in &lt;a
+  href="http://www.cps-project.org"&gt;CPS&lt;/a&gt; internals.&lt;br /&gt;
+   &lt;br /&gt;
+   An upgrade step is already available on &lt;a
+  href="http://www.cps-project.org"&gt;CPS&lt;/a&gt; 3.4.x instances.&lt;br /&gt;
+   &lt;br /&gt;
+   &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/CPS3/products/CPSLuceneCatalog/trunk"&gt;
+  CPSLuceneCatalog&lt;/a&gt; is an open source project available under the &lt;a
+  href="http://www.gnu.org/copyleft/gpl.html"&gt;GPL&lt;/a&gt; &lt;span
+  style="text-decoration: underline;"&gt;part of the&lt;/span&gt; &lt;a
+  href="http://www.cps-project.org/"&gt;CPS platform&lt;/a&gt; project.&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;h2&gt;Already significant results !&lt;br /&gt;
+  &lt;/h2&gt;
+  &lt;br /&gt;
+   The result is a big win on large scale deployments :&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;ul&gt;
+   &lt;li&gt;Indexing and searching are much faster and scalable compared to &lt;a
+   href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;.&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;ul&gt;
+   &lt;li&gt;Indexing and searching are much more powerful compared to &lt;a
+   href="http://www.zope.org/Documentation/How-To/ZCatalogTutorial"&gt;ZCatalog&lt;/a&gt;
+   (Analysis, ranking, etc...)&lt;br /&gt;
+   &lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;ul&gt;
+   &lt;li&gt;&lt;a href="http://www.zope.org"&gt;Zope&lt;/a&gt; global performances are
+   increased because &lt;a href="http://www.zope.org"&gt;Zope&lt;/a&gt; no longer deals
+   with the indexing and searching business.&lt;/li&gt;
+
+   &lt;li
+   style="list-style-type: none; list-style-image: none; list-style-position: outside;"&gt;
+   &lt;br /&gt;
+   &lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;h2&gt;Looking for support ?&lt;/h2&gt;
+  If you are looking for any technical information or help regarding these
+  products please subscribe to the &lt;a
+  href="http://lists.nuxeo.com/mailman/listinfo/cps-devel"&gt;CPS devel mailing
+  list&lt;/a&gt;&lt;a href="http://lists.nuxeo.com/mailman/listinfo/cps-devel"&gt;.&lt;/a&gt;
+  &lt;br /&gt;
+   &lt;br /&gt;
+   If you are looking for commercial support, &lt;a
+  href="http://www.nuxeo.com"&gt;Nuxeo&lt;/a&gt; &lt;a
+  href="http://www.nuxeo.com/en/services/"&gt;provides professional services&lt;/a&gt;
+  whatever your needs are.&lt;br /&gt;
+   &lt;br /&gt;
+   &lt;a href="http://www.nuxeo.com"&gt;Nuxeo&lt;/a&gt; is currently maintaining &lt;a
+  href="http://www.cps-project.org/sections/projects/nxlucene"&gt;NXLucene&lt;/a&gt;,
+  &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/Zope3/nuxeo.lucene/trunk"&gt;nuxeo.lucene&lt;/a&gt;
+  and&amp;nbsp; &lt;a
+  href="http://svn.nuxeo.org/trac/pub/browser/CPS3/products/CPSLuceneCatalog/trunk"&gt;
+  CPSLuceneCatalog&lt;/a&gt; and we are always welcoming third-party contributors.
+  As a developer, if you are interested about contributing to these projects,
+  we will grant you access to our &lt;a href="http://svn.nuxeo.org"&gt;svn
+  repositories&lt;/a&gt; and provide you all the information you need in order to
+  get started. Just subscribe to the &lt;a
+  href="http://lists.nuxeo.com/mailman/listinfo/cps-devel"&gt;CPS devel mailing
+  list&lt;/a&gt;.&lt;br /&gt;
+   &lt;br /&gt;
+   
+
+  &lt;h2&gt;Thanks&lt;br /&gt;
+  &lt;/h2&gt;
+  &lt;br /&gt;
+   A big thanks to our &lt;a
+  href="http://www.nuxeo.com/en/customers/"&gt;customers&lt;/a&gt; at Nuxeo for
+  trusting us, being patient and for always bringing along with, their
+  projects, bleeding edge use cases.&lt;br /&gt;
+   &lt;br /&gt;
+   And don't forget, at &lt;a href="http://www.nuxeo.com"&gt;Nuxeo&lt;/a&gt; we love
+  challenge and innovation !&lt;br /&gt;
+   &lt;br /&gt;
+   Hope you'll enjoy those components as much as I enjoyed writing them for
+  our &lt;a href="http://www.nuxeo.com/en/customers/"&gt;customers&lt;/a&gt;. Looking
+  forward to hearing from you.&lt;br /&gt;
+   &lt;br /&gt;
+   &amp;nbsp;&amp;nbsp;&amp;nbsp; J.&lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_06_02_lucene-based-cataloging-solution-for-zope-3-cps-3-4</link>
+    <dc:date>2006-06-04</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot, Florent Guillaume</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>ZODB</dc:subject>
+    <dc:subject>cps</dc:subject>
+    <dc:subject>ecm</dc:subject>
+    <dc:subject>java</dc:subject>
+    <dc:subject>nuxeo</dc:subject>
+    <dc:subject>python</dc:subject>
+    <dc:subject>zope</dc:subject>
+    <dc:subject>zope3</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_05_31_www2006-slides-from-my-zope3-talk">
+    <title>Slides of my Zope3 talk at the www2006 in Edinburgh</title>
+    <description>You can find &lt;a
+  href="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/www2006_zope3.pdf"&gt;
+  here&lt;/a&gt; the slides of the &lt;a
+  href="http://www2006.org/programme/item.php?id=d27"&gt;Zope 3 talk&lt;/a&gt; I gave
+  last friday at the &lt;a href="http://www2006.org/"&gt;www2006.&lt;/a&gt;&lt;br /&gt;
+   &lt;br /&gt;
+   The talk went well. (The time they gave me was a little shorter than I
+  would have expected though). This was the last day of the conference thus,
+  as always during conferences, lots of people had already left the place.&lt;br /&gt;
+   &lt;br /&gt;
+   I was surprised to find a room with lots of people knowing &lt;a
+  href="http://www.zope.org"&gt;Zope2&lt;/a&gt; (or at least people who had tried &lt;a
+  href="http://www.zope.org"&gt;Zope2&lt;/a&gt; couple of years ago). The bad news was that they seemed &lt;b&gt;not&lt;/b&gt; to like &lt;a
+  href="http://www.zope.org"&gt;it&lt;/a&gt;... (Actually, like a lot of people
+  outside of the &lt;a href="http://www.zope.org"&gt;Zope&lt;/a&gt; world). Arguments are
+  always the same, too monolitic, too complex , not enough following standards
+  etc... &lt;br /&gt;
+   &lt;br /&gt;
+   I guess I succeeded to excite their curiosity with &lt;a
+  href="http://dev.zope.org/Zope3"&gt;Zope3&lt;/a&gt; and the way it's been designed to
+  especially tackle the issues they had previously with &lt;a
+  href="http://www.zope.org"&gt;Zope2&lt;/a&gt;. They really loved the doctests
+  :)&lt;br /&gt;
+   &lt;br /&gt;
+   The &lt;a href="http://www2006.org"&gt;www2006&lt;/a&gt; conference is about the Web in
+  general right :). So basically, I found there lots of people excited about
+  Web 2.0, AJAX and all browser related technologies. Of course, I can see the
+  advantages of those technologies but I have to say I don't think I'm
+  a  Web guy at heart. I would always rather work server side or with
+  real desktop applications myself :)&lt;br /&gt;
+   &lt;br /&gt;
+   Edinburgh is a nice big village. People were really nice (and they do have
+  a really cool English accent ;)).  The only problem with small cities
+  is for instance when you would like to eat after 10 P.M... Kudos to the
+  Indian restaurant next to the hotel for serving me food when I arrived from
+  the airport even if they were about to close when I came in...&lt;br /&gt;
+   &lt;br /&gt;
+   I didn't spend a lot of time in Edinburgh since I went to London on Friday
+  evening.&lt;br /&gt;
+   &lt;br /&gt;
+  Here it is for this small report about the conference.&lt;br /&gt;
+   &lt;br /&gt;
+   &lt;br /&gt;
+   &lt;br /&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_05_31_www2006-slides-from-my-zope3-talk</link>
+    <dc:date>2006-05-31</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>ZODB</dc:subject>
+    <dc:subject>cps</dc:subject>
+    <dc:subject>ecm</dc:subject>
+    <dc:subject>erp5</dc:subject>
+    <dc:subject>nuxeo</dc:subject>
+    <dc:subject>python</dc:subject>
+    <dc:subject>slides</dc:subject>
+    <dc:subject>web</dc:subject>
+    <dc:subject>zope</dc:subject>
+    <dc:subject>zope3</dc:subject>
+
+  </item>
+  <item rdf:about="http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_04_21_dump-load-svn-repositories-using-svnadmin-svndumpfilter">
+    <title>Dump and load foreign subversion repositories using svnadmin and svndumpfilter</title>
+    <description>&lt;h3&gt;What for ?&lt;/h3&gt;
+  &lt;br /&gt;
+   This is mostly a reminder for mysef about the way of dumping and loading &lt;a
+  href="http://subversion.tigris.org/"&gt;subversion&lt;/a&gt; repositories.&lt;br /&gt;
+   &lt;br /&gt;
+   Let's say I have two &lt;a href="http://subversion.tigris.org/"&gt;subversion&lt;/a&gt;
+  repositories. &lt;i&gt;repoA&lt;/i&gt; and &lt;i&gt;repoB&lt;/i&gt;. I got a component called
+  &lt;i&gt;P&lt;/i&gt; at the root of &lt;i&gt;repoA&lt;/i&gt; as below :&lt;br /&gt;
+&lt;pre&gt;
+repoA /&lt;br /&gt;
+          P /&lt;br /&gt;
+             trunk /&lt;br /&gt;
+             branches /&lt;br /&gt;
+             tags /
+&lt;/pre&gt;
+  What I'd like todo is to copy &lt;i&gt;P&lt;/i&gt; from &lt;i&gt;repoA&lt;/i&gt; to &lt;i&gt;repoB&lt;/i&gt;
+  preserving all the history logs for &lt;i&gt;P&lt;/i&gt;.&lt;br /&gt;
+   
+
+  &lt;h3&gt;Dumping the repository&lt;/h3&gt;
+  &lt;br /&gt;
+   Let's say I started the developement of &lt;i&gt;P&lt;/i&gt; with revision 28000 and my
+  last checkin related to &lt;i&gt;P&lt;/i&gt; is at revision 38000. The revision numbers
+  are important because it will decrease the needed time to dump the actual
+  svn repository. Less revisions to dump means less time needed :)&lt;br /&gt;
+   &lt;br /&gt;
+  We will use &lt;a
+  href="http://svnbook.red-bean.com/en/1.0/ch09s02.html"&gt;svnadmin&lt;/a&gt; to do
+  that.&lt;br /&gt;
+  &lt;br /&gt;
+   Go on the server hosting the &lt;a
+  href="http://subversion.tigris.org/"&gt;subversion&lt;/a&gt; repository and dump it
+  this way&amp;nbsp; :&lt;br /&gt;
+&lt;pre&gt;
+$ svnadmin dump --quiet --revision 28000:38000 /home/svn/repoA &amp;gt; repoA.dump&lt;br /&gt;
+&lt;/pre&gt;
+  This operation can last a while depending on the size of your
+  repository.&lt;br /&gt;
+   &lt;br /&gt;
+   &lt;i&gt;&lt;a href="http://svnbook.red-bean.com/en/1.0/ch09s02.html"&gt;svnadmin&lt;/a&gt;
+  dump options :&lt;/i&gt;&lt;br /&gt;
+   &lt;br /&gt;
+&lt;pre&gt;
+$ svnadmin dump --help&lt;br /&gt;
+dump: usage: svnadmin dump REPOS_PATH [-r LOWER[:UPPER] ] [--incremental]&lt;br /&gt;
+&lt;br /&gt;
+Dump the contents of filesystem to stdout in a 'dumpfile'&lt;br /&gt;
+portable format, sending feedback to stderr.  Dump revisions&lt;br /&gt;
+LOWER rev through UPPER rev.  If no revisions are given, dump all&lt;br /&gt;
+revision trees.  If only LOWER is given, dump that one revision tree.&lt;br /&gt;
+If --incremental is passed, then the first revision dumped will be&lt;br /&gt;
+a diff against the previous revision, instead of the usual fulltext.&lt;br /&gt;
+&lt;br /&gt;
+Valid options:&lt;br /&gt;
+  -r [--revision] arg      : specify revision number ARG (or X:Y range)&lt;br /&gt;
+  --incremental            : dump incrementally&lt;br /&gt;
+  --deltas                 : use deltas in dump output&lt;br /&gt;
+  -q [--quiet]             : no progress (only errors) to stderr
+&lt;/pre&gt;
+  &lt;br /&gt;
+   
+
+  &lt;h3&gt;Filtering P component from repoA's dump&lt;/h3&gt;
+  &lt;br /&gt;
+   What we are interested in here is only component &lt;i&gt;P&lt;/i&gt;. We need to
+  filter out for &lt;i&gt;P&lt;/i&gt; component. We will use &lt;a
+  href="http://svnbook.red-bean.com/en/1.0/ch05s03.html"&gt;svndumpfilter&lt;/a&gt; to
+  do that.&lt;br /&gt;
+&lt;pre&gt;
+$ cat repoA.dump | svndumpfilter include P &amp;gt; P.dump&lt;br /&gt;
+&lt;/pre&gt;
+  &lt;i&gt;&lt;a
+  href="http://svnbook.red-bean.com/en/1.0/ch05s03.html"&gt;svndumpfilter&lt;/a&gt;
+  options&amp;nbsp; :&lt;/i&gt;&lt;br /&gt;
+&lt;pre&gt;
+$ svndumpfilter --help&lt;br /&gt;
+general usage: svndumpfilter SUBCOMMAND [ARGS &amp;amp; OPTIONS ...]&lt;br /&gt;
+Type 'svndumpfilter help &amp;lt;subcommand&amp;gt;' for help on a specific subcommand.&lt;br /&gt;
+&lt;br /&gt;
+Available subcommands:&lt;br /&gt;
+   exclude&lt;br /&gt;
+   include&lt;br /&gt;
+   help (?, h)
+&lt;/pre&gt;
+
+  &lt;h3&gt;Loading back P dump to repoB&lt;/h3&gt;
+  &lt;br /&gt;
+   Now go on the server hosting &lt;i&gt;repoB.&lt;/i&gt; Before that, transfer you&lt;i&gt;r
+  P.dump&lt;/i&gt; to this server. We will use &lt;a
+  href="http://svnbook.red-bean.com/en/1.0/ch09s02.html"&gt;svnadmin&lt;/a&gt; to load
+  it back&lt;br /&gt;
+   &lt;br /&gt;
+&lt;pre&gt;
+$ svnadmin load --quiet /home/svn/repoB &amp;lt; P.dump&lt;br /&gt;
+&lt;/pre&gt;
+  &lt;i&gt;&lt;a href="http://svnbook.red-bean.com/en/1.0/ch09s02.html"&gt;svnadmin&lt;/a&gt;
+  load options :&lt;br /&gt;
+  &lt;/i&gt; 
+&lt;pre&gt;
+$ svnadmin load --help&lt;br /&gt;
+load: usage: svnadmin load REPOS_PATH&lt;br /&gt;
+Read a 'dumpfile'-formatted stream from stdin, committing&lt;br /&gt;
+new revisions into the repository's filesystem.  If the repository&lt;br /&gt;
+was previously empty, its UUID will, by default, be changed to the&lt;br /&gt;
+one specified in the stream.  Progress feedback is sent to stdout.&lt;br /&gt;
+Valid options:&lt;br /&gt;
+  -q [--quiet]             : no progress (only errors) to stderr&lt;br /&gt;
+  --ignore-uuid            : ignore any repos UUID found in the stream&lt;br /&gt;
+  --force-uuid             : set repos UUID to that found in stream, if any&lt;br /&gt;
+  --use-pre-commit-hook    : call pre-commit hook before committing revisions&lt;br /&gt;
+  --use-post-commit-hook   : call post-commit hook after committing revisions&lt;br /&gt;
+  --parent-dir arg         : load at specified directory in repository
+&lt;/pre&gt;
+  Here we are. You just need to remove &lt;i&gt;P&lt;/i&gt; from &lt;i&gt;repoA&lt;/i&gt; &lt;br /&gt;
+&lt;pre&gt;
+$ svn remove http://svn.foo.com/repoA/P&lt;br /&gt;
+&lt;/pre&gt;
+  Of course, what would be really cool, instead of the dump/load&lt;br /&gt;
+   operations, would be something like that being possible in between foreign
+  repositories&lt;br /&gt;
+&lt;pre&gt;
+$ svn move https://svn.foo.com/repoA/P https://svn.foo.com/repoB/&lt;br /&gt;
+&lt;/pre&gt;
+
+  &lt;p&gt;Thanks &lt;a
+  href="http://blogs.nuxeo.com/sections/blogs/florent_guillaume"&gt;Florent&lt;/a&gt;
+  for the pointers.&lt;br /&gt;
+  &lt;/p&gt;</description>
+    <link>http://blogs.nuxeo.com/sections/blogs/julien_anguenot/2006_04_21_dump-load-svn-repositories-using-svnadmin-svndumpfilter</link>
+    <dc:date>2006-04-21</dc:date>
+    <dc:creator>janguenot</dc:creator>
+    <dc:contributor>Julien Anguenot</dc:contributor>
+    <dc:language>en</dc:language>
+    <dc:subject>coding</dc:subject>
+    <dc:subject>linux</dc:subject>
+
+  </item>
+
+
+  <xhtml:script id="js" type="text/javascript" src="http://blogs.nuxeo.com/rss.js" />
+
+</rdf:RDF>
