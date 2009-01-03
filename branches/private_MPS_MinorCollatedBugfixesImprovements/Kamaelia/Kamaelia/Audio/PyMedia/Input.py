@@ -88,6 +88,7 @@ class Input(threadedcomponent):
                  "format" : "dictionary detailing sample_rate, sample_format and channels",
                  "signal" : "Shutdown signalling",
                }
+    PAUSE_INTERVAL = 0.01
     
     def __init__(self, sample_rate=44100, channels=2, format="S16_LE"):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
@@ -134,7 +135,7 @@ class Input(threadedcomponent):
                         except noSpaceInBox:
                             self.pause()
                 else:
-                    self.pause(0.01)
+                    self.pause(self.PAUSE_INTERVAL)
                         
             self.snd.stop()
         except sound.SoundError, e:
