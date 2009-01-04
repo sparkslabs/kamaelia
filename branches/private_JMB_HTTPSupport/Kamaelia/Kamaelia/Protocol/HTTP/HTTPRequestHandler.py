@@ -228,7 +228,7 @@ class HTTPRequestHandler(component):
             statustext = MapStatusCodeToText[resource["statuscode"]]
         except KeyError:
             statustext = resource["statuscode"]
-
+            
         hl = []
         if (protocolversion != "0.9"):
             status_line = "HTTP/1.0 " + statustext + "\r\n"
@@ -246,12 +246,13 @@ class HTTPRequestHandler(component):
                 hl.append( ("Connection", "close" ))
 
             for header in resource.get("headers",[]):
-                if header[0] == "Content-Type":
+                if header[0].lower() == "content-type":
                     if resource.has_key("charset"): # Maintain charset support for now
                         header = header[0], header[1] + "; " + resource["charset"]
                 hl.append(header)
 
-            hl = [ x+": "+y for x,y in hl ]
+            #print hl
+            hl = [ str(x+": "+y) for x,y in hl ]
 
             header = "\r\n".join(hl) + "\r\n\r\n"
         else:
@@ -337,7 +338,9 @@ class HTTPRequestHandler(component):
 
     def createHandler(self, request):
         self.handler = self.requestHandlerFactory(request)
-
+        #print 'requestHandlerFactory=', self.requestHandlerFactory
+        #print 'handler=', self.handler
+        
         # XXXX Do we *really* want to crash?
         assert(self.handler != None) # if no URL handlers match our request then requestHandlerFactory
                                      # should produce a 404 handler. Generally even that will not happen
@@ -403,7 +406,7 @@ class HTTPRequestHandler(component):
             self.updateShouldShutdown()
             if self.ShouldShutdownCode & 2 > 0:
                 break # immediate shutdown
-
+        
             self.forwardBodyChunks()
             if self.dataReady("_handlerinbox"):
                 msg = self.recv("_handlerinbox")
@@ -412,9 +415,10 @@ class HTTPRequestHandler(component):
                 self.debug("_handlercontrol received " + str(ctrl))
                 if isinstance(ctrl, producerFinished):
                     break
-            else:
-                yield 1
+            elif not self.anyReady() and not msg:
                 self.pause()
+            
+            yield 1
                 
     def forwardBodyChunks(self):
         while self.dataReady("inbox") and not self.requestEndReached:
