@@ -1,7 +1,15 @@
 #!/usr/bin/python
+"""
+This example demonstrates using the Minimal file handler for
+serving static web content.
+
+System Requirements
+-------------------
+This example requires a UNIX operating system.
+"""
+
 
 # Import socket to get at constants for socketOptions
-
 import socket
 
 # Import the server framework, the HTTP protocol handling and the minimal request handler

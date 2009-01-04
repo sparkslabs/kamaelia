@@ -1,4 +1,12 @@
 #!/usr/bin/python
+"""
+This module demonstrates the Minimal HTTP Handler along
+with some custom-written components.
+
+System Requirements
+-------------------
+This example requires a UNIX operating system to run.
+"""
 
 import socket
 import Axon
