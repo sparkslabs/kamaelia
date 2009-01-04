@@ -31,6 +31,10 @@ MIME-type from their file extension.
 Example Usage
 -------------
 See HTTPResourceGlue.py for how to use request handlers.
+
+System Requirements
+-------------------
+This component requires a UNIX system to be run currently.
 """
 
 import string, time, dircache, os

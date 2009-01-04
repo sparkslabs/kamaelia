@@ -33,6 +33,10 @@ To wake it, ideally Axon should unpause it when the outbox has less than
 a certain number of messages (i.e. when some are delivered) but for now
 you can send it an arbitrary message (to "inbox") which will wake the
 component.
+
+System Requirements
+-------------------
+This module requires a UNIX system to run currently.
 """
 
 import os, time, fcntl
