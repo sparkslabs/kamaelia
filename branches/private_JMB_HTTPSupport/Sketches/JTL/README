@@ -1,7 +1,0 @@
-Staging point for old code by JL.
-
-Moved into here since it's nowhere near stable enough or likely to get in a
-distribution. Yet.
-
-HTTPServer.py - Moved from Kamaelia.Protocol.HTTPServer.py
-

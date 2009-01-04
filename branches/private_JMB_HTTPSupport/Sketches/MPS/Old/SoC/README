@@ -1,9 +1,0 @@
-This directory will contain little snippets of code which are intended as
-helper hints as to how code can evolve/be used or ad hoc tutorials for SoC
-people. (It struck me that a piece of code was *almost* a component already,
-so I componentised it to show how this can be done, and realised that this
-would probably be a useful idea in general)
-
-
-
-Michael.
