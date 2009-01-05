@@ -663,7 +663,7 @@ class Test_Graphline(unittest.TestCase):
     try:
         unittest.TestCase.assertFalse
     except AttributeError:
-        def assertTrue(self,X):
+        def assertFalse(self,X):
             return self.assert_(not X)
 
 
