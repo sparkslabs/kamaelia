@@ -652,6 +652,22 @@ class Test_Graphline(unittest.TestCase):
         self.assertFalse(self.dataReadyAt("signal"))
 
 
+    # hack to make this work in python 2.3
+    # where assertTrue and assertFalse are not defined
+    try:
+        unittest.TestCase.assertTrue
+    except AttributeError:
+        def assertTrue(self,X):
+            return self.assert_(X)
+
+    try:
+        unittest.TestCase.assertFalse
+    except AttributeError:
+        def assertTrue(self,X):
+            return self.assert_(not X)
+
+
+
 if __name__ == "__main__":
     unittest.main()
     
