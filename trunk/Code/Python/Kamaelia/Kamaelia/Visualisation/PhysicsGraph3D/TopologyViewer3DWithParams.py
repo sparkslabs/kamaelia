@@ -149,7 +149,7 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
     
     def updateParticle(self, node_id, **params):
         """\
-        updateParticle(node_id, **params) -> updates the given node's parameters/attributes if it exists
+        updateParticle(node_id, \*\*params) -> updates the given node's parameters/attributes if it exists
         
         - node_id  -- an id for an already existing node
         - params   -- the updated parameters/attributes dictionary of the particle, e.g. name, texture, colour and size
