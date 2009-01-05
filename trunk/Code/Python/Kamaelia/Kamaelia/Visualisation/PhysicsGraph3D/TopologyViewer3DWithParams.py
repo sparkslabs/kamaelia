@@ -151,8 +151,8 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
         """\
         updateParticle(node_id, **params) -> updates the given node's parameters/attributes if it exists
         
-        node_id - an id for an already existing node
-        **params - the updated parameters/attributes dictionary of the particle, e.g. name, texture, colour and size
+        - node_id  -- an id for an already existing node
+        - params   -- the updated parameters/attributes dictionary of the particle, e.g. name, texture, colour and size
         """
         for p in self.physics.particles:
             if p.ID == node_id:
