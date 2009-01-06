@@ -51,7 +51,7 @@ out commands, suitable for a topology visualiser, to the console::
         ReadFileAdaptor(entity_relationship_data_file),
         ERParser(),
         ERModel2Visualiser(),
-        PureTransformer(lambda x: pprint.pformat(x)+"\n"),
+        PureTransformer(lambda x: pprint.pformat(x)+"\\n"),
         ConsoleEchoer(),
     ).run()
 
