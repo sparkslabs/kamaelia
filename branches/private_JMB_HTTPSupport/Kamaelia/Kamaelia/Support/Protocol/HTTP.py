@@ -245,6 +245,9 @@ def ConvertHeaders(request, environ):
     if environ.get('HTTP_CONTENT_LENGTH'):
         del environ['HTTP_CONTENT_LENGTH']
 
+####################################
+#URI manipulations
+####################################
 def PopURI(request, sn_key, pi_key, ru_key):
     """
     This function is used to pop a directory from the PATH_INFO key to the SCRIPT_NAME
@@ -302,6 +305,22 @@ def PopKamaeliaURI(request):
     """
     return PopURI(request, 'uri-prefix-trigger', 'uri-suffix', 'non-query-uri')
 
+def checkSlashes(item='', sl_char='/'):
+    """
+    This function will make sure that a URI begins with a slash and does not end
+    with a slash.
+
+      item - the uri to be checked
+      sl_char - the character to be considered a 'slash' for the purposes of this
+                function
+    """
+    if not item.startswith(sl_char):
+        item = sl_char + item
+    return item.rstrip('/')
+
+####################################
+#Factory functions
+####################################
 def HTTPProtocol(routing, errorhandler=None):
     """
     This function will generate an HTTP Server that may be used with ServerCore.
@@ -352,15 +371,3 @@ def requestHandlers(routing, errorhandler=None):
     return createRequestHandler
 
 
-def checkSlashes(item='', sl_char='/'):
-    """
-    This function will make sure that a URI begins with a slash and does not end
-    with a slash.
-
-      item - the uri to be checked
-      sl_char - the character to be considered a 'slash' for the purposes of this
-                function
-    """
-    if not item.startswith(sl_char):
-        item = sl_char + item
-    return item.rstrip('/')
