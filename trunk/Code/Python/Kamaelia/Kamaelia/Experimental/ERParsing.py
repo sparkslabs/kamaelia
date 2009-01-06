@@ -43,7 +43,7 @@ Example Usage:
 A simple pipeline that reads in entity-relationship data from a file and writes
 out commands, suitable for a topology visualiser, to the console::
 
-    from Kamaelia.File.ReadFilerAdaptor import ReadFileAdaptor
+    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Util.PureTransformer import PureTransformer
     from Kamaelia.Util.Console import ConsoleEchoer
 
