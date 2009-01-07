@@ -1,11 +1,39 @@
 #!/usr/bin/python
+__doc__ = \
 """
+Synopsis
+--------
 This module demonstrates the Minimal HTTP Handler along
 with some custom-written components.
 
 System Requirements
 -------------------
 This example requires a UNIX operating system to run.
+
+What it does
+------------
+
+It runs a basic webserver on http://127.0.0.1:8082/ . It dispatches HTTP
+requests to different handlers based on the request path. There are 3
+different handlers in this example:
+
+Requests prefixed
+    * /echo are handled by the EchoHandler
+    * /hello are handled by the HelloHandler
+
+All other requests prefixed by / are handled by a default "Minimal" handler.
+
+The two custom handlers ...
+    * EchoHandler returns a dictionary to the user with the details of the
+      request.
+    * HelloHandler simply responds with Hello World.
+
+... are provided as simple example custom handlers.
+
+Example URLs:
+    http://127.0.0.1:8082/echo
+    http://127.0.0.1:8082/hello
+    http://127.0.0.1/
 """
 
 import socket
@@ -110,6 +138,8 @@ routing = [
             ["/hello", HelloHandler ],
             ["/", MinimalFactory(indexfilename, homedirectory) ],
           ]
+
+print __doc__
 
 ServerCore(protocol=HTTPProtocol(routing),
              port=8082,
