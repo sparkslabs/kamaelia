@@ -122,10 +122,10 @@ Exceptions, Messages and Misc
 Integration with other systems
 ------------------------------
 
-* **Axon.LikeFile**
+* **Axon.background**
 
   - use Axon components within other python programs by wrapping them in
-    a file-like interface you and read from and write to.
+    a scheduler running in a separate thread
   
 
 
