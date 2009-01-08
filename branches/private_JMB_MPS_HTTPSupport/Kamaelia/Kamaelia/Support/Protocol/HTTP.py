@@ -23,15 +23,37 @@
 This is a module of utility functions to be used with the HTTP server.
 
 Request Translators
---------------------
+-------------------
 Sometimes it is helpful to have the parsed HTTP request come in a different format.
 With a request translator, you may have the format of a parsed HTTP request changed
 before it gets to your handler.  You may use the function ReqTranslatorFactory to
 create a factory function that will create your handler using the request translator
 you specify automatically.
 
+FIXME: This makes sense if the user has a conceptual model of a translation
+FIXME: happening. However, they don't. If they're expecting to get "the
+FIXME: parsed HTTP request" in "a different format" then actually they just
+FIXME: expect you to use a different *formatter* rather than translator. If
+FIXME: indeed "format" even makes sense as a word in this context.
+FIXME: 
+FIXME: As a result, the very naming here needs reviewing and rethinking.
+FIXME: 
+
 ReqTranslatorFactory
 ~~~~~~~~~~~~~~~~~~~~~~
+
+FIXME: See the reservations about this below. However, it's worth noting:
+FIXME: It isn't used by the HTTP Server. It's used by the HTTP Server
+FIXME: Protocol component. It also says "requests will be formatted". If
+FIXME: that's the case, then it's not a translator, it's a formatter
+FIXME: (matching verbs makes the docs clearer)
+FIXME: 
+FIXME: The argument names are bad as well. An API is used over and over
+FIXME: again, and should be designed to be *read*. Using short variable
+FIXME: names like this is problematic since it favours the function writer
+FIXME: rather than the function user. (There are exceptions - recv is easier
+FIXME: for people that receive vs recieve for example, but I read this and
+FIXME: thought "hand ?")
 
 This function will make a factory that can create handlers for the HTTP Server
 If this is used, the requests coming in to that handler will be formatted using
@@ -45,6 +67,8 @@ the given translator.
 WSGILikeTranslator
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+FIXME: Similar comments to above hold
+
 This function will translate the HTTPParser's syntax into a more WSGI-like syntax.
 Pass it to the HTTPProtocol factory function and requests will be sent to your
 resource handler with a subset of a WSGI environ dictionary.  You just need to
@@ -57,6 +81,8 @@ This function will return the translated dictionary.
 ConvertHeaders
 ~~~~~~~~~~~~~~~~
 
+FIXME: See comments in the code. Basically the name here makes little sense.
+
 Converts environ variables to strings for wsgi compliance.  Also puts the 
 request headers into CGI variables.
 
@@ -66,6 +92,12 @@ request headers into CGI variables.
 Popping request dictionaries
 -----------------------------
 
+FIXME: This comment has a falacy - it states that "popping a URI" is a
+FIXME: common task. It isn't. It's rather peculiar to this codebase, and
+FIXME: needs description clearer as to what specifically this means - I can
+FIXME: think of several meanings. It doesn't state either what changes or is
+FIXME: returned based on what.
+
 A fairly common practice in dealing with HTTP dictionaries is to "pop" a URI.
 That is to say, to move one level down in the webserver's "Filesystem."  The main
 function for doing this is PopURI, which requires you to manually specify the keys
@@ -73,6 +105,8 @@ to use from the dictionary.  Also provided are PopKamaeliaURI and PopWsgiURI.
 
 PopKamaeliaURI
 ~~~~~~~~~~~~~~~
+FIXME:  Similar issues
+
 This is a function to pop a level from the PATH_INFO key into the SCRIPT_NAME
 key of a WSGI-like dictionary.
 
@@ -80,6 +114,8 @@ key of a WSGI-like dictionary.
   
 PopWsgiURI
 ~~~~~~~~~~~~
+FIXME:  Similar issues
+
 This is a function to pop a level from the uri-suffix into the uri-prefix-trigger
 key of a request dictionary.
 
@@ -87,6 +123,15 @@ key of a request dictionary.
 
 HTTP Protocol
 --------------
+
+FIXME: This is very badly named, as noted elsewhere. Docs need rewriting to
+FIXME: actually reflect what's happening. This may involve changing
+FIXME: component names.
+
+FIXME: (and putting in compatibility names whilst merging code which has
+FIXME:  already been written to allow this code not to break the existing
+FIXME:  code that uses these names)
+
 These functions are included to simplify using the HTTPServer.  Instead of instantiating
 an HTTPServer directly, you may wish to use the included HTTPProtocol factory function
 if you are using the HTTPServer with ServerCore.  You may also use the requestHandlers
@@ -106,6 +151,10 @@ ServerCore(
     
 HTTPProtocol
 ~~~~~~~~~~~~~
+
+FIXME: Same problem as the inline doc string. It doesn't do what is said
+FIXME: here - not even slightly.
+
 This function will generate an HTTP Server that may be used with ServerCore.
 
   routing - An iterable of iterables.  Each item in the main iterabe may be thought
@@ -124,6 +173,7 @@ This function will generate an HTTP Server that may be used with ServerCore.
     
 requestHandlers
 ~~~~~~~~~~~~~~~~~
+FIXME: See the inline problems raised with this below.
 This function will generate a createRequestHandlers function for use with HTTPServer
 
   routing - An iterable of iterables formatted the same as HTTPProtocol.
@@ -137,18 +187,22 @@ These are various other functions:
 
 CheckSlashes
 ~~~~~~~~~~~~~
+FIXME: See the inline problems raised with this below.
 This function will make sure that a URI begins with a slash and does not end
 with a slash.
 
   item - the uri to be checked
   sl_char - the character to be considered a 'slash' for the purposes of this
-            function
+            function # FIXME: why is this even configurable? 
 """
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
 ####################################
 #Translator stuff
 ####################################
+#
+# FIXME: Needs better name. At minimum, it should use the full words. 
+#
 def ReqTranslatorFactory(hand, trans):
     """
     This function will make a factory that can create handlers for the HTTP Server
@@ -167,6 +221,7 @@ def ReqTranslatorFactory(hand, trans):
     return _getHandler
 
 
+# FIXME: Needs better name
 def WSGILikeTranslator(request):
     """
     This function will translate the HTTPParser's syntax into a more WSGI-like syntax.
@@ -228,6 +283,7 @@ def WSGILikeTranslator(request):
     return environ
     
     
+# FIXME: Needs better name
 def ConvertHeaders(request, environ):
     """
     Converts environ variables to strings for wsgi compliance.  Also puts the 
@@ -248,6 +304,26 @@ def ConvertHeaders(request, environ):
 ####################################
 #URI manipulations
 ####################################
+
+# FIXME: Whilst to the writer it must be very clear
+# FIXME: 
+# FIXME:    what sn_key means
+# FIXME:    what pi_key means
+# FIXME:    what ru_key means
+# FIXME: 
+# FIXME: The reality is, it isn't.
+# FIXME: 
+# FIXME: Similarly what is meant by "pop" a directory, is very unclear. This
+# FIXME: can mean at least 3 things in this context, even matching this doc
+# FIXME: string
+#
+# FIXME: Needs better name really. My *guess* from this (based on reading
+# FIXME: the code) is that this is transforming something in order to mutate
+# FIXME: the reuest object passed in. However without actually throwing in
+# FIXME: print statements, or manually tracing the code, I couldn't
+# FIXME: guarantee that this code is doing that.
+#
+
 def PopURI(request, sn_key, pi_key, ru_key):
     """
     This function is used to pop a directory from the PATH_INFO key to the SCRIPT_NAME
@@ -287,7 +363,12 @@ def PopURI(request, sn_key, pi_key, ru_key):
             request[pi_key] = ''
         request[pi_key] = checkSlashes(request[pi_key])
 
-def PopWsgiURI(request):
+# FIXME: I don't really like either of these names. They will be clear to
+# FIXME: someone understands the internals, but they're unclear to a user.
+# FIXME: For example, does it *really* pop (as in the meaning of pop) or
+# FIXME: does it strip. (not review)
+
+def PopWsgiURI(request):  # FIXME: see note above
     """
     This is a function to pop a level from the PATH_INFO key into the SCRIPT_NAME
     key of a WSGI-like dictionary.
@@ -296,7 +377,7 @@ def PopWsgiURI(request):
     """
     return PopURI(request, 'SCRIPT_NAME', 'PATH_INFO', 'NON_QUERY_URI')
 
-def PopKamaeliaURI(request):
+def PopKamaeliaURI(request): # FIXME: see note above
     """
     This is a function to pop a level from the uri-suffix into the uri-prefix-trigger
     key of a request dictionary.
@@ -305,8 +386,17 @@ def PopKamaeliaURI(request):
     """
     return PopURI(request, 'uri-prefix-trigger', 'uri-suffix', 'non-query-uri')
 
-def checkSlashes(item='', sl_char='/'):
-    """
+
+# FIXME: Bad name. The name should be meaningful. Also, on the Kamaelia
+# FIXME: website itself, these two are NOT the same ... 
+# FIXME:
+# FIXME:    http://www.kamaelia.org/Components 
+# FIXME: vs
+# FIXME:    http://www.kamaelia.org/Components/
+# FIXME:
+# FIXME: ... meaning that there is a hidden, false, assumption here.
+
+def checkSlashes(item='', sl_char='/'):     """
     This function will make sure that a URI begins with a slash and does not end
     with a slash.
 
@@ -321,6 +411,20 @@ def checkSlashes(item='', sl_char='/'):
 ####################################
 #Factory functions
 ####################################
+#
+# FIXME: Badly named - it's an HTTP Server Protocol prefab.
+# FIXME: You also logically have HTTP Client Protocol
+#
+# FIXME: Namings are also used inconsistently - some factories are named
+# FIXME: that others aren't. The reality is that factory functions are also
+# FIXME: just alternate custom constructors, and labelling a bad name a factory,
+# FIXME: doesn't improve the name.
+#
+# FIXME: The doc string here is also *wrong*. It does not return an HTTP
+# FIXME: Server. It returns a protocol handler factory which can be used by
+# FIXME: ServerCore to create HTTP server protocol handlers to handle HTTP
+# FIXME: requests on a given port. This accuracy matters.
+#
 def HTTPProtocol(routing, errorhandler=None):
     """
     This function will generate an HTTP Server that may be used with ServerCore.
@@ -342,7 +446,11 @@ def HTTPProtocol(routing, errorhandler=None):
     def _getHttpServer(**argd):
         return HTTPServer(requestHandlers(routing, errorhandler), **argd)
     return _getHttpServer
-    
+
+# FIXME: This function doesn't stay what actually happens here (not really). It assumes
+# FIXME: the user understands what why a "createRequestHandlers" function is
+# FIXME: needed. ie you can't understand this function without referencing
+# FIXME: something else from this doc string
 def requestHandlers(routing, errorhandler=None):
     """
     This function will generate a createRequestHandlers function for use with HTTPServer
