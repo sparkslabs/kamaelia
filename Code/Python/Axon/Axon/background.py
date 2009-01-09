@@ -27,6 +27,8 @@ The background class makes it easy to run an Axon system in a separate
 thread (in effect: in the background).
 
 This simplifies integration of Axon/Kamaelia code into other python code.
+See also Axon.Handle for a simple way to wrap a component in a thread safe
+way to access its inboxes and outboxes.
 
 
 
@@ -35,7 +37,10 @@ Example Usage
 
 At its simplest, you could run a Kamaelia task independently in the background
 - such as a simple network connection, that dumps received data into a thread
-safe queue, after de-chunking it into lines of text. To do this:
+safe queue, after de-chunking it into lines of text.
+
+NOTE: This example can be achieved more simply by using Axon.Handle. See the
+documentation of Axon.Handle to find out more.
 
 1. We implement a simple component to collect the data::
 
