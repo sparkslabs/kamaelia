@@ -91,7 +91,7 @@ We can now fetch items of data when they arrive, using the Handle, from the
 We can also send data, back to the server, by sending it to the "inbox" inbox
 of the pipeline::
 
-    connection.put("Bytes to send to server\n", "inbox")
+    connection.put("Bytes to send to server\\n", "inbox")
 
 
 
