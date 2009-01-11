@@ -156,7 +156,7 @@ class Minimal(component):
 
                 resource = {
                     "content-type"   : filetype,
-                    "statuscode"     : 200, # FIXME: Check this
+                    "statuscode"     : "200",
                 }
                 self.send(resource, "outbox")
             else:
