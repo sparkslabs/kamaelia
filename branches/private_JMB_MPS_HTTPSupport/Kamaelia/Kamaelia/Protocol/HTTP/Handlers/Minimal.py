@@ -151,10 +151,10 @@ class Minimal(component):
 
         error = None
         try:
-            if     os.path.exists(filepath):
+            if os.path.exists(filepath):
                 if os.path.isdir(filepath):
                     filepath += self.indexfilename
-                    
+
                 resource = {
                     "content-type"   : filetype,
                     "statuscode"     : 200,
