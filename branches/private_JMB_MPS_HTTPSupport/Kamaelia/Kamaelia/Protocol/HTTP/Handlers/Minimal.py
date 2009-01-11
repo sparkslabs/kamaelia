@@ -129,7 +129,10 @@ class Minimal(component):
         "_filesignal" : "Shutdown the file reader"
     }
 
-    def __init__(self, request, indexfilename='index.html', homedirectory='htdocs/', **argd):
+    indexfilename='index.html'
+    homedirectory='htdocs/' # TBD
+    debug_filepath = False
+    def __init__(self, request, **argd):
         super(Minimal, self).__init__(**argd)
         self.request = request
         self.indexfilename = indexfilename
