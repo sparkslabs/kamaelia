@@ -135,8 +135,6 @@ class Minimal(component):
     def __init__(self, request, **argd):
         super(Minimal, self).__init__(**argd)
         self.request = request
-        self.indexfilename = indexfilename
-        self.homedirectory = homedirectory
 
     def main(self):
         """Produce the appropriate response then terminate."""
