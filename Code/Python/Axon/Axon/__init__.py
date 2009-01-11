@@ -127,6 +127,12 @@ Integration with other systems
   - use Axon components within other python programs by wrapping them in
     a scheduler running in a separate thread
   
+* **Axon.Handle**
+
+  - a Handle for getting data into and out of the standard inboxes and outboxes
+    of a component from a non Axon based piece of code. Useful in combination
+    with Axon.background
+
 
 
 Internals for implementing inboxes, outboxes and linkages
