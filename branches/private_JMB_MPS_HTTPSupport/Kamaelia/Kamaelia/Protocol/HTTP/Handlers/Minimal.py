@@ -139,10 +139,11 @@ class Minimal(component):
     def main(self):
         """Produce the appropriate response then terminate."""
         filename = sanitizePath(self.request["uri-suffix"])
-        if not (self.homedirectory.endswith('/') or filename.startswith('/')):
-            filepath = self.homedirectory + '/' + filename
-        else:
+        if self.homedirectory.endswith('/') or filename.startswith('/'): # FIXME: Should really be using os.path etc really
             filepath = self.homedirectory + filename
+        else:
+            filepath = self.homedirectory + '/' + filename
+
 
         if debug_filepath:
             print filepath
