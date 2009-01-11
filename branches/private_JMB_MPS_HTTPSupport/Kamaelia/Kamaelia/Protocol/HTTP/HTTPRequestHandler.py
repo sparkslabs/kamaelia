@@ -252,7 +252,7 @@ class HTTPRequestHandler(component):
                 hl.append(header)
 
             #print hl
-            hl = [ str(x+": "+y) for x,y in hl ]
+            hl = [ str(x+": "+y) for x,y in hl ] # FIXME: Is this conversion valid?
 
             header = "\r\n".join(hl) + "\r\n\r\n"
         else:
@@ -316,7 +316,7 @@ class HTTPRequestHandler(component):
         pass
 
     def updateShouldShutdown(self):
-        # XXXX I can see where this is coming from, but it's just icky and needs to change
+        # FIXME: I can see where this is coming from, but it's just icky and needs to change
         while self.dataReady("control"):
 #            print "MESSAGE RECEIVED ON CONTROL PORT"
             temp = self.recv("control")
@@ -341,7 +341,7 @@ class HTTPRequestHandler(component):
         #print 'requestHandlerFactory=', self.requestHandlerFactory
         #print 'handler=', self.handler
         
-        # XXXX Do we *really* want to crash?
+        # FIXME: Do we *really* want to crash?
         assert(self.handler != None) # if no URL handlers match our request then requestHandlerFactory
                                      # should produce a 404 handler. Generally even that will not happen
                                      # because you'll set a "/" handler which catches all then produces
@@ -356,7 +356,7 @@ class HTTPRequestHandler(component):
         # many parts consecutively
         if msg.get("complete"):
             lengthMethod = "explicit"
-            msg["length"] = len(msg["data"]) # XXXX Is this used anywhere?
+            msg["length"] = len(msg["data"]) # FIXME: Is this used anywhere?
         elif msg.has_key("length"):
             lengthMethod = "explicit"
         else:
@@ -415,7 +415,7 @@ class HTTPRequestHandler(component):
                 self.debug("_handlercontrol received " + str(ctrl))
                 if isinstance(ctrl, producerFinished):
                     break
-            elif not self.anyReady() and not msg:
+            elif not self.anyReady() and not msg: # FIXME: Painfully convoluted logic
                 self.pause()
             
             yield 1
@@ -434,7 +434,7 @@ class HTTPRequestHandler(component):
         if not self.isValidRequest(request):
             return # then there's something odd going on, probably the remote
                     # host is sending blank lines or some such non-HTTP nonsense
-                    # XXXX actually this looks very borked compared with below
+                    # FIXME: actually this looks very borked compared with below
 
         request = request.header
         self.setUpRequestHandler(request)
