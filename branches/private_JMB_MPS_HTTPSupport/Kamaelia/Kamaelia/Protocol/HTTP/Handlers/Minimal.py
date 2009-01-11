@@ -144,7 +144,8 @@ class Minimal(component):
         else:
             filepath = self.homedirectory + filename
 
-        print filepath
+        if debug_filepath:
+            print filepath
 
         filetype = MimeTypes.workoutMimeType(filename)
 
