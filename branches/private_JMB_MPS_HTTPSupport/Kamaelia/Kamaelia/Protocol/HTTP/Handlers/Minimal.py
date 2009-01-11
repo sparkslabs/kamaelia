@@ -71,6 +71,17 @@ def sanitizePath(uri): #needs work
     outputpath = string.join(outputpath, "/")
     return outputpath
 
+# FIXME: The naming of this seems wrong. It normal terms it's actually a
+# FIXME: prefab because "Minimal" is in itself a factory.
+# FIXME: In fact, thinking about it, this is actually returns a curried
+# FIXME: function. (cf partial application)
+#
+# FIXME: The naming here as a result needs a bit of a rethink
+# FIXME: An alternate way of thinking about this is in fact as an
+# FIXME: Alternate constructor. ie insert this into the Minimal class
+# FIXME: as a class method called ...
+# FIXME: Again, needs a ponder :-)
+#
 def MinimalFactory(indexfilename='index.html', homedirectory='htdocs'):
     def _getMinimal(request):
         return Minimal(request, indexfilename, homedirectory)
