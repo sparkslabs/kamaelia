@@ -144,7 +144,6 @@ class Minimal(component):
         else:
             filepath = self.homedirectory + '/' + filename
 
-
         if debug_filepath:
             print filepath
 
@@ -198,7 +197,7 @@ class Minimal(component):
             if len(self.outboxes["outbox"]) < 3:
                 self.send("GARBAGE", "_fileprompt") # we use this to wakeup the filereader
 
-            while self.dataReady("_filecontrol") and not self.dataReady("_fileread"):
+            while self.dataReady("_filecontrol") and not self.dataReady("_fileread"): # FIXME: There seems to be a latent bug here with large files
                 msg = self.recv("_filecontrol")
                 if isinstance(msg, producerFinished):
                     done = True
