@@ -219,7 +219,7 @@ class HTTPRequestHandler(component):
         self.requestEndReached = False
 
     def formResponseHeader(self, resource, protocolversion, lengthMethod = "explicit"):
-        if isinstance(resource.get("statuscode"), int):
+        if isinstance(resource.get("statuscode"), int): # FIXME: This is overly flexible
             resource["statuscode"] = str(resource["statuscode"])
         elif not isinstance(resource.get("statuscode"), str):
             resource["statuscode"] = "500"
@@ -228,7 +228,7 @@ class HTTPRequestHandler(component):
             statustext = MapStatusCodeToText[resource["statuscode"]]
         except KeyError:
             statustext = resource["statuscode"]
-            
+
         hl = []
         if (protocolversion != "0.9"):
             status_line = "HTTP/1.0 " + statustext + "\r\n"
