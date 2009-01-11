@@ -266,7 +266,7 @@ if __name__ == '__main__':
     import socket
     from Kamaelia.Chassis.ConnectedServer import ServerCore
     from Kamaelia.Protocol.HTTP import HTTPProtocol
-    from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
+    from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator # FIXME: Blocker - This is NOT included in this branch. Needs reviewing.
     
     class handler(component):
         def __init__(self, request):
@@ -275,7 +275,7 @@ if __name__ == '__main__':
         def main(self):
             from pprint import pformat
             resource = {
-                'statuscode' : 200,
+                'statuscode' : "200",
                 'headers' : [('content-type', 'text/plain')],
                 'data' : pformat(self.request),
             }
