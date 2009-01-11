@@ -34,7 +34,7 @@ See HTTPResourceGlue.py for how to use request handlers.
 
 System Requirements
 -------------------
-This component requires a UNIX system to be run currently.
+This component requires a UNIX-type system to be run currently.
 """
 
 import string, time, dircache, os
