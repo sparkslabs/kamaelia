@@ -159,7 +159,7 @@ class Minimal(component):
                     "content-type"   : filetype,
                     "statuscode"     : 200,
                 }
-                self.send(resource, "outbox")                    
+                self.send(resource, "outbox")
             else:
                 print "Error 404, " + filename + " is not a file"
                 print "self.homedirectory(%s) , filename(%s)" % (self.homedirectory , filename)
