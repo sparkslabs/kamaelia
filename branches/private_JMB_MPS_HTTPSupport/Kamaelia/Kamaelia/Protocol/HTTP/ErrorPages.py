@@ -20,6 +20,7 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: RJL
+# FIXME: Phrasing here seems odd "this page contains..."
 """
 This page contains the default HTTP Error handling.  There are two ways to call
 this code:  either use getErrorPage to get the dictionary containing the error
@@ -76,15 +77,13 @@ def getErrorPage(errorcode, msg = ""):
             "content-type"       : "text/html"
         }
         
-class ErrorPageHandler(component):
+class ErrorPageHandler(component): # FIXME: Candidate for "simplified like-carousel"
     """
     This is the default error page handler.  It is essentially the above function
     getErrorPage mapped to a resource handler for the HTTPServer.
     """
-    def __init__(self, statuscode, message):
-        self.statuscode = statuscode
-        self.message = message
-        super(ErrorPageHandler, self).__init__()
+    statuscode = 400
+    message = "Undefined Error"
     def main(self):
         self.send(getErrorPage(self.statuscode, self.message))
         yield 1

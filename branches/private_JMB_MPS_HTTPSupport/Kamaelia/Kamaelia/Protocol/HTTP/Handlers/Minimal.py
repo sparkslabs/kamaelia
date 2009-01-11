@@ -84,8 +84,7 @@ def sanitizePath(uri): #needs work
 #
 def MinimalFactory(indexfilename='index.html', homedirectory='htdocs'):
     def _getMinimal(request):
-        return Minimal(request, indexfilename, homedirectory)
-    
+        return Minimal(request, indexfilename=indexfilename, homedirectory=homedirectory)
     return _getMinimal
 
 # old setup used functions - this needs to be converted to work with
@@ -144,7 +143,7 @@ class Minimal(component):
         else:
             filepath = self.homedirectory + '/' + filename
 
-        if debug_filepath:
+        if self.debug_filepath:
             print filepath
 
         filetype = MimeTypes.workoutMimeType(filename)
@@ -157,7 +156,7 @@ class Minimal(component):
 
                 resource = {
                     "content-type"   : filetype,
-                    "statuscode"     : 200,
+                    "statuscode"     : 200, # FIXME: Check this
                 }
                 self.send(resource, "outbox")
             else:

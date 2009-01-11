@@ -396,7 +396,8 @@ def PopKamaeliaURI(request): # FIXME: see note above
 # FIXME:
 # FIXME: ... meaning that there is a hidden, false, assumption here.
 
-def checkSlashes(item='', sl_char='/'):     """
+def checkSlashes(item='', sl_char='/'):
+    """
     This function will make sure that a URI begins with a slash and does not end
     with a slash.
 
