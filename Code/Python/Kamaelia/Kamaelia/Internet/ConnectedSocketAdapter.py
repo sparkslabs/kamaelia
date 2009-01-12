@@ -65,7 +65,7 @@ blocking when waiting for new data to arrive. Typically this is the Selector
 component.
 
 This component will terminate (and close its socket) if it receives a
-producerFinished message on its "control" inbox.
+producerFinished or shutdownMicroprocess message on its "control" inbox.
 
 When this component terminates, it sends a socketShutdown(socket) message out of
 its "CreatorFeedback" outbox and a shutdownCSA((selfCSA,self.socket)) message
