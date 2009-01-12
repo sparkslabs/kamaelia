@@ -28,15 +28,25 @@ A simple TCP server, bound to a specified port. For each client that connects, a
 protocol handler component, of your choosing, is created to send and receive
 data to and from that client.
 
+There are two variants of this: *SimpleServer* and *ServerCore*.
+
+ServerCore passes additional information about the connection to the function
+that creates the protocol handler. SimpleServer does not.
+
 
 
 Example Usage
 -------------
 
 A server using a simple echo protocol, that just echoes back anything sent by
-the client::
+the client. Becase the protocol has no need to know any details of the
+connection, the SimpleServer component is used::
 
-    class EchoProtocol(Axon.Component.component):
+    from Axon.Component import component
+    from Axon.Ipc import shutdownMicroprocess
+    from Kamaelia.Chassis.ConnectedServer import SimpleServer
+
+    class EchoProtocol(component):
     
         def main(self):
             while not self.shutdown():
@@ -48,13 +58,59 @@ the client::
         def shutdown(self):
             if self.dataReady("control"):
                 msg = self.recv("control")
-                return isinstance(msg, Axon.Ipc.producerFinished):
+                return isinstance(msg, producerFinished)
 
     def newProtocol():
         return EchoProtocol()
 
     simpleServer = SimpleServer( protocol = newProtocol, port = PORTNUMBER )
-    simpleServer.activate()
+    simpleServer.run()
+    
+Try connecting to this server using the telnet command, and it will echo back
+to you every character you type.
+
+A more complex server might need to inform the protocol of the IP address and
+port of the client that connects, or the ip address and port at this (the
+server end) to which the client has connected. For this, ServerCore is used::
+
+    from Axon.Component import component
+    from Axon.Ipc import shutdownMicroprocess
+    from Kamaelia.Chassis.ConnectedServer import ServerCore
+
+    class CleverEchoProtocol(component):
+    
+        def main(self):
+            self.send(self.welcomeMessage, "outbox")
+            while not self.shutdown():
+                yield 1
+                if self.dataReady("inbox"):
+                    data = self.recv("inbox")
+                    self.send(data, "outbox")
+                    
+        def shutdown(self):
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                return isinstance(msg, Axon.Ipc.producerFinished)
+
+    def newProtocol(peer, peerport, localip, localport):
+        handler = CleverEchoProtocol()
+        handler.welcomeMessage = \
+            "Welcome! You have connected to %s on port %d from %s on port %d" % \
+            (localip, localport, peer, peerport)
+        return handler
+
+    myServer = ServerCore( protocol = newProtocol, port = PORTNUMBER )
+    myServer.run()
+
+Example output when telnetting to this more complex server, assuming both
+server and telnet session are running on the same host, and the server is
+listening to port number 8081::
+
+    $ telnet localhost 8081
+    Trying 127.0.0.1...
+    Connected to localhost.
+    Escape character is '^]'.
+    Welcome! You have connected to 127.0.0.1 on port 8081 from 127.0.0.1 on port 47316
 
 
 
@@ -73,10 +129,70 @@ Provide this chassis with a factory function to create a component to
 handle the protocol. Whenever a client connects a handler component will then be
 created to handle communications with that client.
 
+Data received from the client will be sent to the protocol handler component's
+"inbox" inbox. To send data back to the client, the protocol handler component
+should send it out of its "outbox" outbox.
+
+For the SingleServer component, the factory function takes no arguments. It
+should simply return the component that will be used to handle the protocol,
+for example::
+
+    def makeNewProtocolHandler():
+        return MyProtocolComponent()
+        
+For the ServerCore component, the factory function must accept the following
+arguments (with these names):
+
+- peer  -- the address of the remote endpoint (the client's address)
+- peerport  -- the port number of the remote endpoint
+  (the port number from which the client connection originated)
+- localip  -- the address of the local endpoint (this end of the connection)
+- localport  -- the port number of the local endpoint (this end of the connection)
+        
+For example::
+
+    def makeNewProtocolHandler(peer, peerport, localip, localport):
+        print "Debugging: client at address "+peer+" on port "+str(peerport)
+        print " ... has connected to address "+localip+" on port "+str(localport)
+        return MyProtocolComponent()
+
+Do not activate the component. SingleServer or ServerCore will do this once
+the component is wired up.
+
+
+
+Writing a protocol handler
+--------------------------
+
+A protocol handler component should use its standard inboxes ("inbox" and
+"control") and outboxes ("outbox" and "signal") to communicate with client it
+is connected to.
+
+- Bytes received from the client will be sent to the "inbox" inbox as a string.
+
+- Send a string out of the "outbox" outbox to send bytes back to the client.
+
+If the connection is closed, a Kamaelia.IPC.socketShutdown message will arrive
+at the protocol handler's "control" inbox. If this happens then the connection
+should be assumed to have already closed. Any more messages sent will not be 
+sent to the client. The protocol handler should react by terminating as soon as
+possible.
+
+To cause the connection to close, send a producerFinished or shutdownMicroprocess
+message out of the protocol handler's "signal" outbox. As soon as this has been
+done, it can be assumed that the connection will be closed as soon as is
+practical. The protocol handler will probably also want to terminate at this
+point.
+
+
 
 
 How does it work?
 -----------------
+
+SimpleServer is based on ServerCore. It simply contains a wrapper around the
+protocol handler function that throws away the connection information instead
+of passing it in as arguments.
 
 At initialisation the component registers a TCPServer component to listen for
 new connections on the specified port.
@@ -90,8 +206,8 @@ protocol handler's "inbox" inbox and "outbox" outbox are wired to the
 ConnectedSocketAdapter (CSA) component handling that socket connection, so it can
 receive and send data.
 
-If SimpleServer receives a 'shutdownCSA' message (via "_socketactivity") then a
-Kamaelia.KamaeliaIpc.socketShutdown message is sent to the protocol handler's
+If a 'shutdownCSA' message is received (via "_socketactivity") then a
+Kamaelia.IPC.socketShutdown message is sent to the protocol handler's
 "control" inbox, and both it and the CSA are unwired.
 
 This component does not terminate. It ignores any messages sent to its "control"
@@ -129,7 +245,9 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     ServerCore(protocol[,port]) -> new Simple protocol server component
 
     A simple single port, multiple connection server, that instantiates a
-    protocol handler component to handle each connection.
+    protocol handler component to handle each connection. The function that
+    creates the protocol must access arguments providing information about the
+    connection.
 
     Keyword arguments:
 
@@ -288,6 +406,17 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.ceaseTrackingResource(connectedSocket)
 
 class SimpleServer(ServerCore):
+    """
+    SimpleServer(protocol[,port]) -> new Simple protocol server component
+
+    A simple single port, multiple connection server, that instantiates a
+    protocol handler component to handle each connection.
+
+    Keyword arguments:
+
+    - protocol  -- function that returns a protocol handler component
+    - port      -- Port number to listen on for connections (default=1601)
+    """
     def __init__(self, **argd):
         super(SimpleServer, self).__init__(**argd)
     def mkProtocolHandler(self, **sock_info):
