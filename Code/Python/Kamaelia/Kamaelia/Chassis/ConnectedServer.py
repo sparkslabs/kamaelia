@@ -90,7 +90,7 @@ protocol handler's "inbox" inbox and "outbox" outbox are wired to the
 ConnectedSocketAdapter (CSA) component handling that socket connection, so it can
 receive and send data.
 
-If SingleServer receives a 'shutdownCSA' message (via "_socketactivity") then a
+If SimpleServer receives a 'shutdownCSA' message (via "_socketactivity") then a
 Kamaelia.KamaeliaIpc.socketShutdown message is sent to the protocol handler's
 "control" inbox, and both it and the CSA are unwired.
 
