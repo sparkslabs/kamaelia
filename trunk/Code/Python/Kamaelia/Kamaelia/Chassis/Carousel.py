@@ -48,6 +48,22 @@ Whenever you send a filename to the "next" inbox of the reusableFileReader
 component, it will read that file. You can do this as many times as you wish.
 The data read from the file comes out of the carousel's outbox.
 
+Putting this re-usable file reader to use: the following simple example lets
+the user enter the names of files to read::
+
+   Graphline(
+      FILENAME_INPUT = ConsoleReader(prompt="enter a filename>"),
+      FILE_READER = Carousel(componentFactory = makeFileReader),
+      OUTPUT = ConsoleEchoer(),
+      linkages = {
+          ("FILENAME_INPUT", "outbox") : ("FILE_READER", "next"),
+          ("FILE_READER", "outbox") : ("OUTPUT", "inbox"),      
+      }).run()
+      
+The user input causes the Carousel to replace the current file reader component
+(if it has not already terminated) with a new one. The output from this file
+reader is sent straight back to the console.
+
 
 
 Why is this useful?
