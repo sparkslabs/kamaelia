@@ -93,33 +93,31 @@ A more complex server might need to inform the protocol of the IP address and
 port of the client that connects, or the ip address and port at this (the
 server end) to which the client has connected. For this, ServerCore is used::
 
-    from Axon.Component import component
+    import Axon
     from Axon.Ipc import shutdownMicroprocess
     from Kamaelia.Chassis.ConnectedServer import ServerCore
 
-    class CleverEchoProtocol(component):
-    
+    PORTNUMBER = 12345
+    class CleverEchoProtocol(Axon.Component.component):
+
         def main(self):
-            self.send(self.welcomeMessage, "outbox")
+            welcomeMessage = \
+                "Welcome! You have connected to %s on port %d from %s on port %d" % \
+                (self.localip, self.localport, self.peer, self.peerport)
+
+            self.send(welcomeMessage, "outbox")
             while not self.shutdown():
                 yield 1
                 if self.dataReady("inbox"):
                     data = self.recv("inbox")
                     self.send(data, "outbox")
-                    
+
         def shutdown(self):
             if self.dataReady("control"):
                 msg = self.recv("control")
                 return isinstance(msg, Axon.Ipc.producerFinished)
 
-    def newProtocol(peer, peerport, localip, localport):
-        handler = CleverEchoProtocol()
-        handler.welcomeMessage = \
-            "Welcome! You have connected to %s on port %d from %s on port %d" % \
-            (localip, localport, peer, peerport)
-        return handler
-
-    myServer = ServerCore( protocol = newProtocol, port = PORTNUMBER )
+    myServer = ServerCore( protocol = CleverEchoProtocol, port = PORTNUMBER )
     myServer.run()
 
 Example output when telnetting to this more complex server, assuming both
