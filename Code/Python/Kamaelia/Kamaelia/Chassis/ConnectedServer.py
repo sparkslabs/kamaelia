@@ -20,13 +20,13 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-=====================
-Simple Server Chassis
-=====================
+===================================
+SimpleServer and ServerCore Chassis
+===================================
 
-A simple TCP server, bound to a specified port. For each client that connects, a
-protocol handler component, of your choosing, is created to send and receive
-data to and from that client.
+These 'chassis' style components implement a simple TCP server, bound to a
+specified port. For each client that connects, a protocol handler component,
+of your choosing, is created to send and receive data to and from that client.
 
 There are two variants of this: *SimpleServer* and *ServerCore*.
 
