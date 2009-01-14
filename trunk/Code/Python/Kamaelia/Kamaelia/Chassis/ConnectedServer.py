@@ -62,12 +62,12 @@ A server using a simple echo protocol, that just echoes back anything sent by
 the client. Becase the protocol has no need to know any details of the
 connection, the SimpleServer component is used::
 
-    from Axon.Component import component
-    from Axon.Ipc import shutdownMicroprocess
+    import Axon
     from Kamaelia.Chassis.ConnectedServer import SimpleServer
 
-    class EchoProtocol(component):
-    
+    PORTNUMBER = 12345
+    class EchoProtocol(Axon.Component.component):
+
         def main(self):
             while not self.shutdown():
                 yield 1
@@ -78,13 +78,11 @@ connection, the SimpleServer component is used::
         def shutdown(self):
             if self.dataReady("control"):
                 msg = self.recv("control")
-                return isinstance(msg, producerFinished)
+                return isinstance(msg, Axon.Ipc.producerFinished)
 
-    def newProtocol():
-        return EchoProtocol()
-
-    simpleServer = SimpleServer( protocol = newProtocol, port = PORTNUMBER )
+    simpleServer = SimpleServer( protocol = EchoProtocol, port = PORTNUMBER )
     simpleServer.run()
+
     
 Try connecting to this server using the telnet command, and it will echo back
 to you every character you type.
