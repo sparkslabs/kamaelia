@@ -20,19 +20,39 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-===================================
-SimpleServer and ServerCore Chassis
-===================================
+=================
+Connected Servers
+=================
 
-These 'chassis' style components implement a simple TCP server, bound to a
-specified port. For each client that connects, a protocol handler component,
-of your choosing, is created to send and receive data to and from that client.
+These 'chassis' style components are used to implementing connected servers.
+The most common example of this is a server which runs on top of the TCP.
+Examples include: a web server, email server, imap server, game protocol
+server, etc.
 
-There are two variants of this: *SimpleServer* and *ServerCore*.
+At present, there are two variants of this: *ServerCore* and *SimpleServer*
+(You are generally recommended to use ServerCore)
 
-ServerCore passes additional information about the connection to the function
-that creates the protocol handler. SimpleServer does not.
+Both of these revolve around building TCP based servers. They handle the
+mechanics of creating the listening component, and when new connections come
+in, creating instances of your protocol handler components to handle the
+connections.
 
+As a result, the primary arguments are the port to listen on and a function
+call or class name that when called returns a component for handling this
+connection.
+
+Your protocol handler then receives data from a specific client on its inbox
+"inbox" and sends data to that same client on its outbox "outbox".
+
+ServerCore passes additional information about the connection to the
+function that creates the protocol handler. You are not required to do
+anything with that information if you don't need to. 
+
+Aside from that, ServerCore & SimpleServer are used in the same way.
+(ServerCore is just an extension, and rationalisation of the older simple
+server code).
+
+There is more information here: http://www.kamaelia.org/Cookbook/TCPSystems
 
 
 Example Usage
