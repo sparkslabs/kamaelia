@@ -263,10 +263,12 @@ __kamaelia_components__  = ( HTTPShutdownLogicHandling )
 __kamaelia_prefabs__  = ( HTTPServer, )
 
 if __name__ == '__main__':
+    # FIXME: Blocker - this example does not work *AT ALL* (WSGILikeTranslator is never called)
+    import Axon
     import socket
     from Kamaelia.Chassis.ConnectedServer import ServerCore
-    from Kamaelia.Protocol.HTTP import HTTPProtocol
-    from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator # FIXME: Blocker - This is NOT included in this branch. Needs reviewing.
+    from Kamaelia.Support.Protocol.HTTP import HTTPProtocol       # FIXME: Bug - this allows the creation of preconfigured pre-fabs - which means it should live here, not in support
+    from Kamaelia.Support.Protocol.HTTP import WSGILikeTranslator # FIXME: Bug - this code is never actually called or not called correctly if "routing" is changed
     
     class handler(component):
         def __init__(self, request):
@@ -284,6 +286,9 @@ if __name__ == '__main__':
             yield 1
 
     routing = [['/', handler]]
+    #routing = [['/non', handler]]
+
+    # Axon.Box.ShowAllTransits = True # Uncomment for debugging
 
     ServerCore(
         protocol=HTTPProtocol(routing, WSGILikeTranslator),

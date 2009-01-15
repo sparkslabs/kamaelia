@@ -235,6 +235,7 @@ def WSGILikeTranslator(request):
     """
     environ = {}
     #print request
+    print "-1-------------------------------------------------------------------------------------------"
     
     environ['REQUEST_METHOD'] = request['method']
     environ['REQUEST_URI'] = request['raw-uri']
@@ -279,6 +280,9 @@ def WSGILikeTranslator(request):
     environ['wsgi.url_scheme'] = request['uri-protocol'].lower()
     
     ConvertHeaders(request, environ)
+    print "-2-------------------------------------------------------------------------------------------"
+    print "TRANSLATED", environ
+    print "-3-------------------------------------------------------------------------------------------"
     
     return environ
     
