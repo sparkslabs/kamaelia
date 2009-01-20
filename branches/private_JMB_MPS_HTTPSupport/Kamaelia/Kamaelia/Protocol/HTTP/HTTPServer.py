@@ -288,7 +288,7 @@ if __name__ == '__main__':
     routing = [['/', handler]]
     #routing = [['/non', handler]]
 
-    # Axon.Box.ShowAllTransits = True # Uncomment for debugging
+    Axon.Box.ShowAllTransits = True # Uncomment for debugging
 
     ServerCore(
         protocol=HTTPProtocol(routing, WSGILikeTranslator),
