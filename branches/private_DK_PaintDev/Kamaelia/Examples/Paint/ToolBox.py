@@ -78,6 +78,7 @@ class ToolBox(Axon.Component.component):
         self.link( (prevlayerb,"outbox"), (self,"outbox"), passthrough = 2 )
         self.link( (nextlayerb,"outbox"), (self,"outbox"), passthrough = 2 )
         self.link( (dellayerb,"outbox"), (self,"outbox"), passthrough = 2 )
+        self.link( (saveb,"outbox"), (self,"outbox"), passthrough = 2 )
         colSel = ColourSelector(position = (10,170), size = (255,255)).activate()
         self.link( (colSel,"outbox"), (self,"outbox"), passthrough = 2 )
         SizeSlider = Slider(size=(255, 50), messagePrefix = "Size", position = (10, 460), default = 9).activate()
