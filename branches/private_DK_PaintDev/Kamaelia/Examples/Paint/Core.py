@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -193,12 +194,15 @@ class Paint(Axon.Component.component):
    def save(self, filename):
        """Merges all the layers (by bliting them all to the background) and
         saves as a jpg, note this requires pygame 1.8 otherwise will save a bmp."""
+       print "here"
        self.activeLayIn = 0
        self.activeLayer = self.layers[self.activeLayIn]
        self.send( self.activeLayIn, "laynum" )
        for x in self.layers:
            self.activeLayer.blit( x, (0,0) )
-       filename = filename+'.JPG'
+       if float(pygame.version.ver[0:3])>=1.8: #checking pygame version number
+           filename = filename+'.JPG'
+       else: filename = filename+'.BMP'
        pygame.image.save(self.activeLayer, filename)
 
 
@@ -454,7 +458,7 @@ class DisplayConfig(Axon.Component.component):
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
-   from Kamaelia.Apps.Paint.ToolBox import ToolBox
+   from ToolBox import ToolBox
    from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline
    from Kamaelia.Chassis.Pipeline import Pipeline
