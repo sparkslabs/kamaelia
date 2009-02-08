@@ -38,8 +38,8 @@ class AdaptiveCommsComponent_Test(unittest.TestCase):
       self.assert_( 0==len(a.outboxes['signal']) and 0==len(a.outboxes['outbox']) and 2==len(a.outboxes), "Correct Basic outboxes")
 
    def test_SmokeTest_Arguments(self):
-      "__init__ - Called with with arguments causes TypeError exception"
-      self.assertRaises(TypeError, AdaptiveCommsComponent.AdaptiveCommsComponent, "hello","world")
+      "__init__ - Called with with arguments does not cause problems"
+      AdaptiveCommsComponent.AdaptiveCommsComponent("hello","world")
 
    def test_addInbox_newName(self):
       "addInbox - adding an inbox with a completely new name results in that inbox being created/added"
