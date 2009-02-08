@@ -112,7 +112,8 @@ class Component_Test(unittest.TestCase):
       t = TComponent()
 #      t.send("fish")
 #      t.send("chips","signal")
-      stricttest = "Component (\S*\.)+TComponent_\d+ \[ inboxes : \{'control'\: <[^>]+>, 'inbox': <[^>]+>\} outboxes : \{'outbox': <[^>]+>, 'signal': <[^>]+>\}"
+#      stricttest = "Component (\S*\.)+TComponent_\d+ \[ inboxes : \{'control'\: \[[^]]*\], 'inbox': \[[^]]*\]\} outboxes : \{'outbox': <[^>]+>, 'signal': <[^>]+>\}"
+      stricttest = "Component (\S*\.)+TComponent_\d+ \[ inboxes : \{'control'\: \[[^]]*\], 'inbox': \[[^]]*\]\} outboxes : \{'outbox': <[^>]*>, 'signal': <[^>]*>\}"
       self.failUnless(re.match(stricttest,str(t)),"Strict match failed with expected string.  Any format change will have broken this.\n\n"+str(t)+"\n\n")
    
    def test___str__relaxed(self):
