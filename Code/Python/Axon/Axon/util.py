@@ -30,7 +30,7 @@ from AxonExceptions import invalidComponentInterface
 
 try:
     set                         # Exists in 2.5 & 2.6
-except ValueError:
+except NameError:
     from sets import Set as set # Exists in 2.3 onwards, deprecated in 2.6
 
 #"""This sets the system into production moe which means that many exception could be suppressed to allow the system to keep running.  Test all code with this set to false so that you are alerted to errors"""
