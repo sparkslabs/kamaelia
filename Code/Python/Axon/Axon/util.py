@@ -27,7 +27,11 @@ General utility functions & common includes
 """
 
 from AxonExceptions import invalidComponentInterface
-import sets
+
+try:
+    set                         # Exists in 2.5 & 2.6
+except ValueError:
+    from sets import Set as set # Exists in 2.3 onwards, deprecated in 2.6
 
 #"""This sets the system into production moe which means that many exception could be suppressed to allow the system to keep running.  Test all code with this set to false so that you are alerted to errors"""
 production=False
@@ -61,7 +65,7 @@ def removeAll(xs, y):
 
 def listSubset(requiredList, suppliedList):
    """Returns true if the requiredList is a subset of the suppliedList."""
-   return sets.Set(requiredList).issubset(sets.Set(suppliedList))
+   return set(requiredList).issubset(set(suppliedList))
 
 def testInterface(theComponent, interface):
    """Look for a minimal match interface for the component.
