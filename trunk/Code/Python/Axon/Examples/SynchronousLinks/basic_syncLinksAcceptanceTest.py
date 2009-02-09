@@ -1,89 +1,73 @@
 #!/usr/bin/python
 
-from Axon.Component import *
-import Axon.Component
-print component.__init__.__doc__
-class Consumer(component):
-    Inboxes = ["source"]
-    Outboxes = ["result"]
+import Axon
+import time
 
-    def __init__(self):
-        super(Consumer, self).__init__()
-        print "huh?"
-        #this variable is not used for anything important
-        self.i = 30
-    
-    def dosomething(self):
-        if self.dataReady("source"):
-            op = self.recv("source")
-            print self.name,"received --> ",op
-            self.send(op,"result")
-
+class SlowConsumer(Axon.Component.component):    
+    delay = 0.2
     def main(self):
+        print "     Consumer starting"
         yield 1
-        while(self.i):
-            self.i = self.i - 1
-            self.dosomething()
+        t = time.time()
+        i = 0
+        while i < 10: # Only accepting 10 items at most
+            if time.time() - t > self.delay:
+                if self.dataReady("inbox"):
+                    print "     C: got:", self.recv("inbox"), i
+                    t = time.time()
+                    i = i + 1
             yield 1
-        print "Consumer has finished consumption !!!"
+        print "     Consumer has finished consumption !"
 
-class Producer(component):
-   Inboxes=[]
-   Outboxes=["result"]
-   def __init__(self):
-      super(Producer, self).__init__()
+class Producer(Axon.Component.component):
    def main(self):
-      i = 30
-      while(i):
-         i = i - 1
-         try:
-            self.send("hello"+str(i), "result")
-            self.send("hello"+str(i), "result")
-            print self.name," sent --> hello"+str(i)
-         except noSpaceInBox, e:
-            print "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-            print "Failed to deliver"
-            size, capacity = e.args
-            print "Box Capacity", capacity
-            print "Current size", size
-         yield 1
-      print "Producer has finished production !!!"
+      for i in range(10):
+         success = False
+         message = "hello" + str(i)
+         while not success: # Since we know this may fail, we need to loop until it succeeds. You would wrap this normally
+             yield 1
+             try:
+                self.send(message, "outbox")
+                print "     P: sent:", message
+                success = True
+             except Axon.AxonExceptions.noSpaceInBox, e:
+                print "                                ","P: fail:", message, "PAUSING UNTIL READY TO SEND"
+                self.pause()
+      print "     Producer has finished production !!!"
 
-class testComponent(component):
-    Inboxes = ["_input"]
-    Outboxes = []
-    def __init__(self):
-        super(testComponent, self).__init__()
-        self.producer = Producer()
-        self.consumer = Consumer()
-        self.addChildren(self.producer,self.consumer)
-        #link the source i.e. "result" to the sink i.e. "source"
-        #this is the arrow no.1
-        L = self.link((self.producer,"result"),(self.consumer,"source"), pipewidth=5)
-        print "PIPEWIDTH", L.setSynchronous()
-        print "PIPEWIDTH", L.setSynchronous(4)
-        L.setShowTransit(True, "Producer, Consumer")
-        #source_component     --> self.consumer
-        #sink_component       --> self
-        #sourcebox            --> result
-        #sinkbox              --> _input
-        #postoffice           --> self.postoffice
-        #i.e. create a linkage between the consumer (in consumer.py) and 
-        #ourselves. The output from the consumer will be used by us. The
-        #sourcebox (outbox) would be "result" and the sinkbox (inbox) would
-        #be our box "_input"
-        #this is the arrow no. 2
-        self.link((self.consumer,"result"),(self,"_input"))
+print "======================================="
+print "Synchronous Link"
 
-    def childComponents(self):
-        return [self.producer,self.consumer]
-    
+class testComponent(Axon.Component.component):
     def main(self):
-        yield newComponent(*self.childComponents())
-        while not self.dataReady("_input"):
+        producer = Producer().activate()
+        consumer = SlowConsumer().activate()
+        self.link((producer,"outbox"),(consumer, "inbox"),synchronous=True)
+        self.addChildren(producer, consumer)
+        while 1:
             yield 1
-        result = self.recv("_input")
-        print "consumer finished with result: ", result , "!"
+            if producer._isStopped() and consumer._isStopped():
+                break
+            else:
+                self.pause() # Awoken when children exit
 
 testComponent().run()
+print "---------------------------------------"
+print
+print "======================================="
+print "link - Explicit Pipewidth = 1"
 
+class testComponent(Axon.Component.component):
+    def main(self):
+        producer = Producer().activate()
+        consumer = SlowConsumer().activate()
+        self.link((producer,"outbox"),(consumer, "inbox"),pipewidth=1)
+        self.addChildren(producer, consumer)
+        while 1:
+            yield 1
+            if producer._isStopped() and consumer._isStopped():
+                break
+            else:
+                self.pause() # Awoken when children exit
+
+testComponent().run()
