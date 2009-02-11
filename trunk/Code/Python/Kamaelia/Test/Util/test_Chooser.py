@@ -23,8 +23,7 @@
 # Chooser tests
 
 import unittest
-import sys ; sys.path.append("..")
-from Chooser import Chooser
+from Kamaelia.Util.Chooser import Chooser
 
 import Axon
 
