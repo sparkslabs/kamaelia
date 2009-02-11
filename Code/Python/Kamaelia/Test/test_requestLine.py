@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 
 import unittest
-import Kamaelia.requestLine
+from Kamaelia.Support.Data.requestLine import requestLine
 
 class requestLineTestCase(unittest.TestCase):
 	def test_Method_FullURL_UsernamePasswordCGIArgs_Protocol(self):
@@ -54,7 +54,6 @@ class requestLineTestCase(unittest.TestCase):
 		"Rejected URL Format"
 		r = "/"
                 foo=requestLine(r)
-                except "BadRequest":
 
 		
 	def test_http09_typical(self):
