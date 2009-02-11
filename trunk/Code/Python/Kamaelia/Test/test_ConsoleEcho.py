@@ -43,56 +43,5 @@ class ConsoleEcho_Test(unittest.TestCase):
        self.assert_(P.forwarder, "This is a forwarder")
        self.assert_(P.init)
 
-   def test_mainBody_NonForwarder(self):
-       """Basic test of a mainBody on a non-forwarder"""
-       P = Kamaelia.Util.Console.ConsoleEchoer()
-       self.assertEqual(P.mainBody(), 3, "With no data waiting the system should just loop")
-
-       P._deliver("junk", "inbox")
-       self.assertEqual(len(P.inboxes["inbox"]), 1, "Data ready to collect")
-       self.assertEqual(P.mainBody(), 2, "The data waiting will be collected and displayed")
-       self.assertEqual(len(P.inboxes["inbox"]), 0, "The data was collected")
-
-       P._deliver(("some", {"structured": "junk"}) , "inbox")
-       self.assertEqual(len(P.inboxes["inbox"]), 1, "Data ready to collect")
-       self.assertEqual(P.mainBody(), 2, "The data waiting will be collected and displayed")
-       self.assertEqual(len(P.inboxes["inbox"]), 0, "The data was collected")
-
-       P._deliver(("some", {"structured": "junk"}) , "inbox")
-       P._deliver(("some", "more", {"structured": "junk"}) , "inbox")
-       self.assertEqual(len(P.inboxes["inbox"]), 2, "Data ready to collect")
-       self.assertEqual(P.mainBody(), 2, "A piece of data waiting will be collected and displayed")
-       self.assertEqual(len(P.inboxes["inbox"]), 1, "The data was collected")
-       self.assertEqual(P.mainBody(), 2, "A piece of data waiting will be collected and displayed")
-       self.assertEqual(len(P.inboxes["inbox"]), 0, "All data has been collected")
-
-   def test_mainBody_Forwarder(self):
-       """Test of the mainbody of a forwarder console echoer component."""
-       P = Kamaelia.Util.Console.ConsoleEchoer(forwarder=True)
-       self.assertEqual(P.mainBody(), 3, "With no data waiting the system should just loop")
-
-       P._deliver("junk", "inbox")
-       self.assertEqual(len(P.inboxes["inbox"]), 1, "Data ready to collect")
-       self.assertEqual(P.mainBody(), 1, "The data waiting will be collected, displayed and forwarded")
-       self.assertEqual(len(P.inboxes["inbox"]), 0, "The data was collected")
-       self.assertEqual(len(P.outboxes["outbox"]), 1, "Data has been forwarded to the outbox")
-
-       P._deliver(("some", {"structured": "junk"}) , "inbox")
-       self.assertEqual(len(P.inboxes["inbox"]), 1, "Data ready to collect")
-       self.assertEqual(P.mainBody(), 1, "The data waiting will be collected, displayed and forwarded")
-       self.assertEqual(len(P.inboxes["inbox"]), 0, "The data was collected")
-       self.assertEqual(len(P.outboxes["outbox"]), 2, "Data has been forwarded to the outbox")
-
-       P._deliver(("some", {"structured": "junk"}) , "inbox")
-       P._deliver(("some", "more", {"structured": "junk"}) , "inbox")
-       self.assertEqual(len(P.inboxes["inbox"]), 2, "Data ready to collect")
-       self.assertEqual(P.mainBody(), 1, "A piece of data waiting was collected, displayed and forwarded")
-       self.assertEqual(len(P.inboxes["inbox"]), 1, "The data was collected")
-       self.assertEqual(len(P.outboxes["outbox"]), 3, "Data has been forwarded to the outbox")
-
-       self.assertEqual(P.mainBody(), 1, "All data waiting has be collected, displayed and forwarded")
-       self.assertEqual(len(P.inboxes["inbox"]), 0, "All data has been collected")
-       self.assertEqual(len(P.outboxes["outbox"]), 4, "Data has been forwarded to the outbox")
-
 if __name__=="__main__":
    unittest.main()
