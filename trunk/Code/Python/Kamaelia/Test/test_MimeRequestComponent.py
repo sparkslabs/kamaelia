@@ -31,7 +31,7 @@
 # Test the module loads
 import unittest
 import sys ; sys.path.append("..")
-import Kamaelia.MimeRequestComponent as MimeRequestComponent
+import Kamaelia.Protocol.MimeRequestComponent as MimeRequestComponent
 
 
 class mimeObject_Test(unittest.TestCase):
