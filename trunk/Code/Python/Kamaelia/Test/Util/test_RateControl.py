@@ -23,8 +23,7 @@
 # RateControl tests
 
 import unittest
-import sys ; sys.path.append("..")
-from RateFilter import ByteRate_RequestControl as RateControl
+from Kamaelia.Util.RateFilter import ByteRate_RequestControl as RateControl
 
 import time
 

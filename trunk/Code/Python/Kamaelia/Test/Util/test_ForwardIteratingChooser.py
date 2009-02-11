@@ -23,8 +23,7 @@
 # InfiniteChooser tests
 
 import unittest
-import sys ; sys.path.append("..")
-from Chooser import ForwardIteratingChooser as ForwardIteratingChooser
+from Kamaelia.Util.Chooser import ForwardIteratingChooser as ForwardIteratingChooser
 
 import Axon
 
