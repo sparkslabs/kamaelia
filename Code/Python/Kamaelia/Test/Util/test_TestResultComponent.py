@@ -21,26 +21,26 @@
 # -------------------------------------------------------------------------
 
 import unittest
-from Kamaelia.Util.TestResultComponent import testResultComponent, StopSystem, StopSystemException
+from Kamaelia.Util.TestResult import TestResult, StopSystem, StopSystemException
 from Axon.Component import component
 from Axon.Linkage import linkage
 from Axon.Postman import postman
 from Axon.util import testInterface
 from Axon.Scheduler import scheduler
 
-class testResultComponent_test1(unittest.TestCase):
+class TestResult_test1(unittest.TestCase):
     def test_smoketest1(self):
         "__init__ - Object creation no arguments."
-        self.failUnless(testResultComponent())
+        self.failUnless(TestResult())
     
     def test_smoketest2(self):
         """__init__ - Checks the created component has the correct inboxes and outboxes ("inbox", "control", "outbox")."""
-        self.failUnless(testInterface(testResultComponent(),(["inbox","control"],[])))
+        self.failUnless(testInterface(TestResult(),(["inbox","control"],[])))
     
-class testResultComponent_test2(unittest.TestCase):
+class TestResult_test2(unittest.TestCase):
     def setUp(self):
         self.tester = component()
-        self.trcomp = testResultComponent()
+        self.trcomp = TestResult()
         self.trcomp.activate()
         self.pm = postman()
         self.pm.activate()
@@ -90,8 +90,8 @@ class testResultComponent_test2(unittest.TestCase):
     
 def suite():
    #This returns a TestSuite made from the tests in the linkage_Test class.  It is required for eric3's unittest tool.
-   suite = unittest.makeSuite(testResultComponent_test1)
-   suite.addTest(testResultComponent_test2)
+   suite = unittest.makeSuite(TestResult_test1)
+   suite.addTest(TestResult_test2)
    return suite
       
 if __name__=='__main__':
