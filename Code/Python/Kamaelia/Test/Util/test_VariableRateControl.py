@@ -23,8 +23,7 @@
 # VariableRateControl tests
 
 import unittest
-import sys ; sys.path.append("..")
-from RateFilter import VariableByteRate_RequestControl as VariableRateControl
+from Kamaelia.Util.RateFilter import VariableByteRate_RequestControl as VariableRateControl
 
 import time
 
