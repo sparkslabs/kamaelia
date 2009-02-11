@@ -5,6 +5,7 @@ import unittest
 import Kamaelia.Protocol.Framing as Framing
 
 from Axon.Ipc import producerFinished
+import Axon
 
 class Framing_Tests(unittest.TestCase):
 
@@ -190,6 +191,11 @@ def makeTestCase(klass):
         def test_smokeTest5(self):
             import random
             X = klass()
+
+            Dummy = Axon.Component.component()
+            X.link((X, "outbox"),(Dummy, "inbox"))
+            X.link((X, "signal"),(Dummy, "control"))
+
             X.activate()
             shutdown_message = producerFinished()
             X._deliver(shutdown_message,"control")
@@ -202,7 +208,9 @@ def makeTestCase(klass):
                     componentExit = True
                     break
             try:
-                Y = X._collect("signal")
+#                Y = X._collect("signal")
+                Y = Dummy.recv("control")
+
                 self.assertEqual(shutdown_message, Y)
             except IndexError:
                 self.fail("Shutdown Message should be passed on")
@@ -218,15 +226,22 @@ class FramingComponent_Tests(unittest.TestCase):
         message = (1,'1')
         expect = str(Framing.SimpleFrame(*message))
         X = Framing.Framer()
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less!)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         self.assertEqual(expect, result)
 
     def test_marshalling_sequence(self):
         X = Framing.Framer()
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         for i in xrange(100):
             message = (i,str(i))
@@ -234,7 +249,8 @@ class FramingComponent_Tests(unittest.TestCase):
             X._deliver(message, "inbox")
             for i in xrange(20): # More than sufficient cycles (should be lots less!)
                 X.next()
-            result = X._collect("outbox")
+#            result = X._collect("outbox")
+            result = Dummy.recv("inbox")
             self.assertEqual(expect, result)
 
 class DeFramingComponent_Tests(unittest.TestCase):
@@ -246,15 +262,24 @@ class DeFramingComponent_Tests(unittest.TestCase):
         original = (1,'1')
         message = str(Framing.SimpleFrame(*original))
         X = Framing.DeFramer()
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
+        X.activate()
         X.activate()
         X._deliver(message, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less!)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         self.assertEqual(original, result)
 
     def test_demarshalling_sequence(self):
         X = Framing.DeFramer()
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
+        X.activate()
         X.activate()
         for i in xrange(100):
             original = (i,str(i))
@@ -262,12 +287,17 @@ class DeFramingComponent_Tests(unittest.TestCase):
             X._deliver(message, "inbox")
             for i in xrange(20): # More than sufficient cycles (should be lots less!)
                 X.next()
-            result = X._collect("outbox")
+#            result = X._collect("outbox")
+            result = Dummy.recv("inbox")
             self.assertEqual(original, result)
 
     def test_demarshalling_frame_missing_end(self):
         """DeFramer, will not pass on a frame if a chunk is missing out of it"""
         X = Framing.DeFramer()
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
+        X.activate()
         X.activate()
         originals = []
         for i in xrange(1,10):
@@ -281,8 +311,9 @@ class DeFramingComponent_Tests(unittest.TestCase):
             X.next()
         for i in xrange(1,10):
             if i!=5:
-                result = X._collect("outbox")
-                print result
+#                result = X._collect("outbox")
+                result = Dummy.recv("inbox")
+#                print result
                 self.assertEqual(originals[0], result)
             del originals[0]
 
@@ -301,11 +332,15 @@ class DataChunker_test(unittest.TestCase):
         message = "1234567890qwertyuiopasdfghjklzxcvbnm\n"*20
         syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         X = Framing.DataChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less!)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         result_start = result[:len(syncmessage)]
         result_message = result[len(syncmessage):]
 
@@ -318,11 +353,15 @@ class DataChunker_test(unittest.TestCase):
         message += syncmessage
         message += "1234567890qwertyuiopasdfghjklzxcvbnm\n"*10
         X = Framing.DataChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less!)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
 
         result_message = result[len(syncmessage):]
         index = result_message.find(syncmessage)
@@ -332,11 +371,15 @@ class DataChunker_test(unittest.TestCase):
 class DataDeChunker_Basictest(unittest.TestCase):
     def makeBasicChunk(self, message, syncmessage):
         X = Framing.DataChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less!)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         return result
 
     def test_DeChunkFullChunk(self):
@@ -344,6 +387,9 @@ class DataDeChunker_Basictest(unittest.TestCase):
         syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         chunk = self.makeBasicChunk(message, syncmessage)
         X = Framing.DataDeChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(chunk, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
@@ -351,7 +397,8 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X._deliver("junk", "flush")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         self.assertEqual(result, message)
 
     def test_DeChunkFullChunk_1(self):
@@ -361,6 +408,9 @@ class DataDeChunker_Basictest(unittest.TestCase):
         message += "1234567890qwertyuiopasdfghjklzxcvbnm\n"*10
         chunk = self.makeBasicChunk(message, syncmessage)
         X = Framing.DataDeChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(chunk, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
@@ -368,7 +418,8 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X._deliver("junk", "flush")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         self.assertEqual(result, message)
 
     def test_DeChunkFullChunk_2(self):
@@ -379,6 +430,9 @@ class DataDeChunker_Basictest(unittest.TestCase):
         chunk = self.makeBasicChunk(message, syncmessage)
         
         X = Framing.DataDeChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(chunk, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
@@ -386,7 +440,8 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X._deliver("junk", "flush")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         self.assertEqual(result, message)
 
     def test_DeChunkFullChunk_3(self):
@@ -397,6 +452,9 @@ class DataDeChunker_Basictest(unittest.TestCase):
         chunk = self.makeBasicChunk(message, syncmessage)
         
         X = Framing.DataDeChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(chunk, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
@@ -404,18 +462,23 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X._deliver("junk", "flush")
         for i in xrange(20): # More than sufficient cycles (should be lots less...)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         self.assertEqual(result, message)
 
 class DataDeChunker_BlocksTest(unittest.TestCase):
 
     def makeBasicChunk(self, message, syncmessage):
         X = Framing.DataChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
         for i in xrange(20): # More than sufficient cycles (should be lots less!)
             X.next()
-        result = X._collect("outbox")
+#        result = X._collect("outbox")
+        result = Dummy.recv("inbox")
         return result
 
     def blocks(self, someData, blocksize=20):
@@ -435,6 +498,9 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         chunk = self.makeBasicChunk(message, syncmessage)
 
         X = Framing.DataDeChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         for block in self.blocks(chunk):
             X._deliver(block, "inbox")
@@ -445,7 +511,8 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
             X._deliver("junk", "flush")
             for i in xrange(20): # More than sufficient cycles (should be lots less...)
                 X.next()
-            result = X._collect("outbox")
+#            result = X._collect("outbox")
+            result = Dummy.recv("inbox")
         except Framing.IncompleteChunk:
             self.fail("IncompleteChunk exception should not propogate")
         self.assertEqual(result, message)
@@ -457,6 +524,9 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         chunk = self.makeBasicChunk(message, syncmessage)
 
         X = Framing.DataDeChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         for block in self.blocks(chunk,blocksize=1):
             X._deliver(block, "inbox")
@@ -467,7 +537,8 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
             X._deliver("junk", "flush")
             for i in xrange(20): # More than sufficient cycles (should be lots less...)
                 X.next()
-            result = X._collect("outbox")
+#            result = X._collect("outbox")
+            result = Dummy.recv("inbox")
         except Framing.IncompleteChunk:
             self.fail("IncompleteChunk exception should not propogate")
         self.assertEqual(result, message)
@@ -477,6 +548,9 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         
         X = Framing.DataDeChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
 
         for base in xrange(10,1000,50):
@@ -491,7 +565,8 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
                     X.next()
                 X._deliver("junk", "flush")
                 X.next()
-                result = X._collect("outbox")
+#                result = X._collect("outbox")
+                result = Dummy.recv("inbox")
             except Framing.IncompleteChunk:
                 self.fail("IncompleteChunk exception should not propogate")
             self.assertEqual(result, message)
@@ -502,6 +577,9 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         
         X = Framing.DataDeChunker(syncmessage=syncmessage)
+        Dummy = Axon.Component.component()
+        X.link((X, "outbox"),(Dummy, "inbox"))
+        X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         message = ("".join([str(x) for x in xrange(10,60)]) + "\n")*10
         chunk = self.makeBasicChunk(message, syncmessage)
@@ -529,7 +607,8 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
                     X.next()
                 X._deliver("junk", "flush")
                 X.next()
-                result = X._collect("outbox")
+#                result = X._collect("outbox")
+                result = Dummy.recv("inbox")
             except Framing.IncompleteChunk:
                 self.fail("IncompleteChunk exception should not propogate")
             self.assertEqual(result, message)
@@ -537,17 +616,20 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
 
 
     def test_Message_chunkDeChunk_remainsintact(self):
-        from Kamaelia.Util.PipelineComponent import pipeline
+        from Kamaelia.Chassis.Pipeline import Pipeline
         syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
-        File = open("../../Support/Ulysses").read()
+        File = open("../../Examples/SimpleGraphicalApps/Ticker/Ulysses").read()
         chunks = [File[y:y+20] for y in xrange(0,len(File),20) ]
         
         chunker = Framing.DataChunker(syncmessage=syncmessage)
         dechunker = Framing.DataDeChunker(syncmessage=syncmessage)
-        system = pipeline(
+        system = Pipeline(
            chunker, 
            dechunker, 
         ).activate()
+        Dummy = Axon.Component.component()
+        system.link((system, "outbox"),(Dummy, "inbox"))
+        system.link((system, "signal"),(Dummy, "control"))
                 
         for chunk in chunks:
             system._deliver(chunk, "inbox")
@@ -559,7 +641,8 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         resultchunks = []
         try:
             while 1:
-                chunk = system._collect("outbox")
+#                chunk = system._collect("outbox")
+                chunk = Dummy.recv("inbox")
                 resultchunks.append(chunk)
         except IndexError:
            pass # We collect all items in the outbox
