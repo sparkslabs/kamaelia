@@ -278,7 +278,7 @@ class MimeRequestComponent_Test(unittest.TestCase):
       C.getData()
       self.assertEqual(C.currentBytes, "This is some test data", "Take the data and store it correctly")
       self.assertEqual(C.needData, 0, "Flag that we've got the data")
-      self.assertEqual(C.inboxes["inbox"], [], "Inbox is now empty")
+      self.assertEqual(len(C.inboxes["inbox"]), 0, "Inbox is now empty")
 
    def test_checkEndOfHeader_noData(self):
       """Internal Diagnostic: End of Header check - with no data of any kind supplied"""
