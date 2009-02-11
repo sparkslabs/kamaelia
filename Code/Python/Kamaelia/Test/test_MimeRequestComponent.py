@@ -30,7 +30,7 @@
 
 # Test the module loads
 import unittest
-import sys ; sys.path.append("..")
+import Axon
 import Kamaelia.Protocol.MimeRequestComponent as MimeRequestComponent
 
 
@@ -451,6 +451,10 @@ class MimeRequestComponent_Test(unittest.TestCase):
    def test_mainBody(self):
       """Black box test of mainBody"""
       C=MimeRequestComponent.MimeRequestComponent()
+      Dummy = Axon.Component.component()
+      
+      C.link((C, "outbox"), (Dummy, "inbox"))
+          
       self.assertEqual(len(C.outboxes["outbox"]), 0, "Outbox is empty")
       request = [ "GET http://user:password@127.0.0.1:1234/ HTTP/1.0\n",
                   "A-Header-Field: value\n",
@@ -466,7 +470,8 @@ class MimeRequestComponent_Test(unittest.TestCase):
       while C.mainBody():
          pass
       self.assertEqual(len(C.outboxes["outbox"]), 1, "Outbox contains a result")
-      result=C.outboxes["outbox"][0]
+      result=Dummy.recv("inbox")
+#      result=C.outboxes["outbox"][0]
       self.assert_(result.__class__ == MimeRequestComponent.mimeObject)
       self.assertEqual(result.header, expectedHeader, "Header correctly parsed")
       self.assertEqual(result.body, expectedBody, "Body correctly read")
