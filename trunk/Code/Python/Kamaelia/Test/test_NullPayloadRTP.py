@@ -29,6 +29,8 @@ import unittest
 import Kamaelia.Protocol.RTP.NullPayloadRTP
 NullPayloadRTP = Kamaelia.Protocol.RTP.NullPayloadRTP
 
+import Axon
+
 class NullPayloadRTP_Test(unittest.TestCase):
    def test_packLengthAsString(self):
       """Check that encoding a number as 4 ascii digits functions"""
@@ -132,13 +134,23 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_sendCurrentChunk_NonPartialSendOne(self):
       """Check that sending one non-partial chunk works"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       P.currentchunk = "A"*(P.chunksize+1)
 
       self.assertNotEqual(P.sendCurrentChunk(),0,    "Sending valid chunk should result in non-zero")
       self.assertEqual(len(P.currentchunk), 1,       "Incorrectly Trimmed off 'chunksize' octets")
       self.assertEqual(len(P.outboxes['output']), 1, "Should have 1 result in output")
 
-      theOutput = P.outboxes['output'][-1]   # Take the last thing to be .appended
+      item = None
+      while 1:
+          try:
+              item = Dummy.recv("inbox")
+          except:
+              break
+      theOutput = item
+      
+#      theOutput = P.outboxes['output'][-1]   # Take the last thing to be .appended
       self.assertEqual(theOutput.__class__, tuple,    "The output should be a tuple")
       self.assertEqual(len(theOutput), 2,             "The output should be a 2-tuple")
 
@@ -156,6 +168,8 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_sendCurrentChunk_NonPartialSendTwo(self):
       """Check that sending one non-partial chunks works"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       P.currentchunk = "A"*(P.chunksize*2+1)
 
       self.assertNotEqual(P.sendCurrentChunk(),0,    "Sending valid chunk should result in non-zero")
@@ -163,7 +177,15 @@ class NullPayloadRTP_Test(unittest.TestCase):
       self.assertEqual(len(P.currentchunk), 1,       "Incorrectly Trimmed off 'chunksize' octets")
       self.assertEqual(len(P.outboxes['output']), 2, "Should have 2 results in output")
 
-      theOutput = P.outboxes['output'][-1]   # Take the last thing to be .appended
+      item = None
+      while 1:
+          try:
+              item = Dummy.recv("inbox")
+          except:
+              break
+      theOutput = item
+      
+#      theOutput = P.outboxes['output'][-1]   # Take the last thing to be .appended
       self.assertEqual(theOutput.__class__, tuple,    "The output should be a tuple")
       self.assertEqual(len(theOutput), 2,             "The output should be a 2-tuple")
 
@@ -181,6 +203,8 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_sendCurrentChunk_Partial_NonEmpty(self):
       """Check that sending a partial chunks works"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       sentData = "A"*(P.chunksize/2)
       P.currentchunk = sentData
 
@@ -188,7 +212,15 @@ class NullPayloadRTP_Test(unittest.TestCase):
       self.assertEqual(len(P.currentchunk), 0,       "Remainder of chunk should be empty")
       self.assertEqual(len(P.outboxes['output']), 1, "Should have 1 results in output")
 
-      theOutput = P.outboxes['output'][-1]   # Take the last thing to be .appended
+      item = None
+      while 1:
+          try:
+              item = Dummy.recv("inbox")
+          except:
+              break
+      theOutput = item
+      
+#      theOutput = P.outboxes['output'][-1]   # Take the last thing to be .appended
       self.assertEqual(theOutput.__class__, tuple,    "The output should be a tuple")
       self.assertEqual(len(theOutput), 2,             "The output should be a 2-tuple")
 
@@ -206,6 +238,8 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_sendCurrentChunk_Partial_Empty(self):
       """Check that trying to send an empty chunk marked partial works"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       sentData = ""
       P.currentchunk = sentData
 
@@ -213,7 +247,15 @@ class NullPayloadRTP_Test(unittest.TestCase):
       self.assertEqual(len(P.currentchunk), 0,       "Remainder of chunk should be empty")
       self.assertEqual(len(P.outboxes['output']), 1, "Should have 1 results in output")
 
-      theOutput = P.outboxes['output'][-1]   # Take the last thing to be .appended
+      item = None
+      while 1:
+          try:
+              item = Dummy.recv("inbox")
+          except:
+              break
+      theOutput = item
+      
+#      theOutput = P.outboxes['output'][-1]   # Take the last thing to be .appended
       self.assertEqual(theOutput.__class__, tuple,    "The output should be a tuple")
       self.assertEqual(len(theOutput), 2,             "The output should be a 2-tuple")
 
@@ -237,6 +279,8 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_handleShutdown_OneChunk(self):
       """Check that chuntting down the component with one more chunk to send functions correctly"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       P.currentchunk="A"*P.chunksize
       self.assertEqual(P.handleShutdown(), 2, "Result should be non-zero indicating more data to send")
       self.assertEqual(len(P.outboxes['output']), 1, "Should have 1 result in output")
@@ -246,6 +290,8 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_handleShutdown_TwoChunks(self):
       """Check that chuntting down the component with two more chunks to send functions correctly"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       P.currentchunk="A"*(P.chunksize*2)
       self.assertEqual(P.handleShutdown(), 2, "Result should be non-zero indicating more data to send")
       self.assertEqual(len(P.outboxes['output']), 1, "Should have 1 result in output")
@@ -257,6 +303,8 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_handleShutdown_N_whole_Chunks(self):
       """Check that chuntting down the component with several chunks to send functions correctly"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       chunkCount = 0
       chunksSent = 5
       P.currentchunk="A"*(P.chunksize*chunksSent)
@@ -268,6 +316,8 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_handleShutdown_N_partial_Chunks(self):
       """Check that chuntting down the component with several partial chunks to send functions correctly"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       chunkCount = 0
       chunksSent = 5
       P.currentchunk="A"*(P.chunksize*chunksSent+1)
@@ -275,7 +325,15 @@ class NullPayloadRTP_Test(unittest.TestCase):
          chunkCount += 1
          self.assertEqual(len(P.outboxes['output']), chunkCount , "Should have "+(str(chunkCount))+" result(s) in output")
       self.assertEqual(P.currentchunk, "")
-      lastChunk = P.outboxes['output'][-1]
+      item = None
+      while 1:
+          try:
+              item = Dummy.recv("inbox")
+          except:
+              break
+      lastChunk = item
+      
+#      lastChunk = P.outboxes['output'][-1]
       (ts,chunk) = lastChunk
       lastData = chunk[4:]
       self.assertEqual("A",lastData)
@@ -311,6 +369,8 @@ class NullPayloadRTP_Test(unittest.TestCase):
    def test_mainBody(self):
       """Test the mainbody of the NullPayloadRTP preframer"""
       P=NullPayloadRTP.NullPayloadPreFramer("dummy")
+      Dummy = Axon.Component.component()
+      P.link((P,"output"),(Dummy, "inbox"))
       self.assert_(P.mainBody(), "In the just initialised, quiescent state this should return a true value")
       self.assertEqual(P.mainBody(), 5,"In fact should go all the way through the loop body")
 
