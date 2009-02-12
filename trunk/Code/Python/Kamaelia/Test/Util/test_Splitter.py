@@ -87,10 +87,6 @@ class Splitter_Test(unittest.TestCase):
    def deliverhelper(self):
       # Next bit not really needed due to direct delivery was implemented since then...
       pass
-#      for i in self.links: 
-#         while i.dataToMove():
-#            i.moveData()
-#      self.split.postoffice.domessagedelivery()
    
    def test_isacomponent(self):
       "__init__ - Splitter is a component."
@@ -98,16 +94,37 @@ class Splitter_Test(unittest.TestCase):
    
    def test_simplepassthrough_defaultbox(self):
       """mainBody - This test sets up a sink and checks it receives sent messages using the default box."""
-      self.controller.send(addsink(self.dst))
-      self.deliverhelper()
-      runrepeat(self.runner)
-      for i in xrange(0,10):
-         self.src.send(i)
-         self.deliverhelper()
-         runrepeat(self.runner)
-         self.deliverhelper()
-         self.failUnless(self.dst.dataReady())
-         self.failUnless(self.dst.recv() == i)
+      Axon.Scheduler.scheduler.run = Axon.Scheduler.scheduler()
+      execute = Axon.Scheduler.scheduler.run.main()
+
+      S = Splitter().activate()
+      D = component().activate()
+      W = component().activate()
+      W.link( (W, "outbox"), (S, "configuration") )
+      W.send(addsink(D), "outbox")
+      data = [ 1,2,3,4,5,6]
+      for i in data:
+          S._deliver(i, "inbox")
+
+      maxcycles = 10
+      i = 0
+      while 1:
+          execute.next()
+          if D.dataReady("inbox"):
+              break
+          else:
+             i += 1
+             if i > maxcycles:
+                 self.fail("Data hasn't arrived after "+str(i)+" cycles")
+
+      R = []
+      while 1:
+          try:
+              R.append(D.recv("inbox"))
+          except:
+              break
+      self.assert_( R == data )
+ 
          
    def test_simplepassthrough(self):
       """mainBody - addsink -> configuration - An addsink object is sent to the
