@@ -30,6 +30,7 @@ from Axon.Scheduler import scheduler
 from Axon.Linkage import linkage
 from Axon.Component import component
 from Axon.Axon import AxonObject
+import Axon
 import gc
 #from test_Component import Component_Test
 
@@ -84,10 +85,12 @@ class Splitter_Test(unittest.TestCase):
 #      self.linkout2 = linkage(self.split,self.dst2, sourcebox="out2")
    
    def deliverhelper(self):
-      for i in self.links:
-         while i.dataToMove():
-            i.moveData()
-      self.split.postoffice.domessagedelivery()
+      # Next bit not really needed due to direct delivery was implemented since then...
+      pass
+#      for i in self.links: 
+#         while i.dataToMove():
+#            i.moveData()
+#      self.split.postoffice.domessagedelivery()
    
    def test_isacomponent(self):
       "__init__ - Splitter is a component."
@@ -349,6 +352,9 @@ class PlugSplitter_Tests(unittest.TestCase):
     def test_PassThroughInboxOutbox(self):
         """Data sent to the inbox is sent on to the outbox"""
         split = Splitter()
+        Dummy = Axon.Component.component()
+        split.link((split, "outbox"), (Dummy, "inbox"))
+        split.link((split, "signal"), (Dummy, "control"))
         split.activate()
 
         for i in xrange(1,10):
@@ -358,7 +364,8 @@ class PlugSplitter_Tests(unittest.TestCase):
         for i in xrange(1,10):
             self.assert_(len(split.outboxes["outbox"]))
             self.assert_(0==len(split.outboxes["signal"]))
-            self.assert_( i == split._collect("outbox") )
+#            self.assert_( i == split._collect("outbox") )
+            self.assert_( i == Dummy.recv("inbox") )
         for i in xrange(1,10):
             split._deliver( i, "inbox" )
             split.next()
@@ -368,11 +375,15 @@ class PlugSplitter_Tests(unittest.TestCase):
         for i in xrange(1,10):
             self.assert_(len(split.outboxes["outbox"]))
             self.assert_(0==len(split.outboxes["signal"]))
-            self.assert_( i == split._collect("outbox") )
+#            self.assert_( i == split._collect("outbox") )
+            self.assert_( i == Dummy.recv("inbox") )
 
     def test_PassThroughControlSignal(self):
         """Data sent to the inbox is sent on to the outbox"""
         split = Splitter()
+        Dummy = Axon.Component.component()
+        split.link((split, "outbox"), (Dummy, "inbox"))
+        split.link((split, "signal"), (Dummy, "control"))
         split.activate()
 
         for i in xrange(1,10):
@@ -382,7 +393,8 @@ class PlugSplitter_Tests(unittest.TestCase):
         for i in xrange(1,10):
             self.assert_(len(split.outboxes["signal"]))
             self.assert_(0==len(split.outboxes["outbox"]))
-            self.assert_( i == split._collect("signal") )
+#            self.assert_( i == split._collect("signal") )
+            self.assert_( i == Dummy.recv("control") )
 
         for i in xrange(1,10):
             split._deliver( i, "control" )
@@ -393,12 +405,16 @@ class PlugSplitter_Tests(unittest.TestCase):
         for i in xrange(1,10):
             self.assert_(len(split.outboxes["signal"]))
             self.assert_(0==len(split.outboxes["outbox"]))
-            self.assert_( i == split._collect("signal") )
+#            self.assert_( i == split._collect("signal") )
+            self.assert_( i == Dummy.recv("control") )
 
     def test_SplitterShutdown(self):
         """If producerFinished or shutdownMicroprocess is received on the 'control' inbox they are passed on and the component shuts down"""
         for msg in [producerFinished(self), shutdownMicroprocess(self)]:
             split = Splitter()
+            Dummy = Axon.Component.component()
+            split.link((split, "outbox"), (Dummy, "inbox"))
+            split.link((split, "signal"), (Dummy, "control"))
             split.activate()
 
             for _ in xrange(0,10):
@@ -415,7 +431,8 @@ class PlugSplitter_Tests(unittest.TestCase):
                 pass
             self.assert_(0==len(split.outboxes["outbox"]))
             self.assert_(1==len(split.outboxes["signal"]))
-            received = split._collect("signal")
+#            received = split._collect("signal")
+            received = Dummy.recv("control")
             self.assert_( msg == received )
 
     def test_SplitterAddLinkBoth(self):
