@@ -97,6 +97,7 @@ class Splitter_Test(unittest.TestCase):
 
       self.S = Splitter().activate()
       self.D = component().activate()
+      self.D2 = TestComponent().activate()
       self.W = component().activate()
       self.W.link( (self.W, "outbox"), (self.S, "configuration") )
 
@@ -144,16 +145,24 @@ class Splitter_Test(unittest.TestCase):
       """mainBody - addsink -> configuration - An addsink object is sent to the
       configuration box and it creates a new sink.  A new outbox is created and
       linked to the sink."""
-      self.controller.send(addsink(self.dst2,"test"))
-      self.deliverhelper()
-      runrepeat(self.runner)
-      for i in xrange(0,10):
-         self.src.send(i)
-         self.deliverhelper()
-         runrepeat(self.runner)
-         self.deliverhelper()
-         self.failUnless(self.dst2.dataReady("test"))
-         self.failUnless(self.dst2.recv("test") == i)
+      self.W.send(addsink(self.D2, "test"))
+      
+      data = [ 1,2,3,4,5,6]
+      for i in data:
+          self.S._deliver(i, "inbox")
+
+      try:
+          self.waitEvent(10, self.D2.dataReady, "test" )
+      except Timeout, e:
+          self.fail("Data hasn't arrived after "+str(e.t)+" cycles")
+
+      R = []
+      while 1:
+          try:
+              R.append(self.D2.recv("test"))
+          except:
+              break
+      self.assert_( R == data )
    
    def test_addOutboxes(self):
       """mainBody - addsink->configurations - Adds a whole set of sinks and checks
