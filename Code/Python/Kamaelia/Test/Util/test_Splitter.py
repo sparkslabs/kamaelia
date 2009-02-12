@@ -248,21 +248,24 @@ class Splitter_Test(unittest.TestCase):
       checks that messages are delivered to the even sinks and not the odd ones."""
       boxes = 10
       boxlist = {}
-      for x in xrange(boxes):
-         c=TestComponent()
-         boxlist[x] = c
-         self.controller.send(addsink(c,"test"))
-         self.deliverhelper()
-         runrepeat(self.runner)
+
+      for x in xrange(boxes): 
+            C = TestComponent().activate()
+            boxlist[x] = C
+            self.W.send(addsink(C,"test"), "outbox")
+
+      self.runCycles()
+
       for x in xrange(1,boxes,2):
-         self.controller.send(removesink(boxlist[x],"test"))
-         self.deliverhelper()
-         runrepeat(self.runner)
+            C = boxlist[x]
+            self.W.send(removesink(C,"test"), "outbox")
+
+      self.runCycles()
+
       for i in xrange(20):
-         self.src.send(i)
-         self.deliverhelper()
-         runrepeat(self.runner)
-         self.deliverhelper()
+         self.S._deliver(i, "inbox")
+         self.runCycles()
+
          for j in xrange(0,boxes,2):
             self.failUnless(boxlist[j].dataReady("test"))
             self.failUnless(boxlist[j].recv("test") == i)   
