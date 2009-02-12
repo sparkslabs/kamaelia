@@ -70,6 +70,11 @@ def runrepeat(gen, count = 100):
    for i in xrange(count):
       gen.next()
    
+
+class Timeout(Exception):
+    def __init__(self, t=-1):
+        self.t = t
+
 class Splitter_Test(unittest.TestCase):
    def setUp(self):
       self.src = component()
@@ -83,6 +88,28 @@ class Splitter_Test(unittest.TestCase):
       self.links = [self.linkin, self.linkcont]
 #      self.linkout1 = linkage(self.split,self.dst)
 #      self.linkout2 = linkage(self.split,self.dst2, sourcebox="out2")
+
+      #
+      # -- NEW STUFF ------
+      #
+      Axon.Scheduler.scheduler.run = Axon.Scheduler.scheduler()
+      self.execute = Axon.Scheduler.scheduler.run.main()
+
+      self.S = Splitter().activate()
+      self.D = component().activate()
+      self.W = component().activate()
+      self.W.link( (self.W, "outbox"), (self.S, "configuration") )
+
+   def waitEvent(self, cycles, conditionFunc, *args):
+      i = 0
+      while 1:
+          self.execute.next()
+          if conditionFunc(*args):
+              break
+          else:
+             i += 1
+             if i > cycles:
+                 raise Timeout(i)
    
    def deliverhelper(self):
       # Next bit not really needed due to direct delivery was implemented since then...
@@ -94,38 +121,25 @@ class Splitter_Test(unittest.TestCase):
    
    def test_simplepassthrough_defaultbox(self):
       """mainBody - This test sets up a sink and checks it receives sent messages using the default box."""
-      Axon.Scheduler.scheduler.run = Axon.Scheduler.scheduler()
-      execute = Axon.Scheduler.scheduler.run.main()
 
-      S = Splitter().activate()
-      D = component().activate()
-      W = component().activate()
-      W.link( (W, "outbox"), (S, "configuration") )
-      W.send(addsink(D), "outbox")
+      self.W.send(addsink(self.D), "outbox")
       data = [ 1,2,3,4,5,6]
       for i in data:
-          S._deliver(i, "inbox")
+          self.S._deliver(i, "inbox")
 
-      maxcycles = 10
-      i = 0
-      while 1:
-          execute.next()
-          if D.dataReady("inbox"):
-              break
-          else:
-             i += 1
-             if i > maxcycles:
-                 self.fail("Data hasn't arrived after "+str(i)+" cycles")
+      try:
+          self.waitEvent(10, self.D.dataReady, "inbox" )
+      except Timeout, e:
+          self.fail("Data hasn't arrived after "+str(e.t)+" cycles")
 
       R = []
       while 1:
           try:
-              R.append(D.recv("inbox"))
+              R.append(self.D.recv("inbox"))
           except:
               break
       self.assert_( R == data )
- 
-         
+          
    def test_simplepassthrough(self):
       """mainBody - addsink -> configuration - An addsink object is sent to the
       configuration box and it creates a new sink.  A new outbox is created and
