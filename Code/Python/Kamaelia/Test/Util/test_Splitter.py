@@ -315,10 +315,10 @@ class Splitter_Test(unittest.TestCase):
       self.runCycles()
 
       self.failUnless(self.D2.dataReady("test"))
-#      self.failUnless(self.D2.dataReady("inbox"))         #### FAILING : Should not(?)
+      self.failUnless(self.D2.dataReady("inbox"))         #### FAILING : Should not(?)
       self.failIf(self.D2.dataReady("control"))
       self.failUnless(self.D2.recv("test") == "da")
-#      self.failUnless(self.D2.recv("inbox") == "da")      #### FAILING : Should not(?)
+      self.failUnless(self.D2.recv("inbox") == "da")      #### FAILING : Should not(?)
 
       self.W.send(addsink(self.D2, "control"), "outbox")
       self.runCycles()
@@ -326,11 +326,11 @@ class Splitter_Test(unittest.TestCase):
       self.runCycles()
 
       self.failUnless(self.D2.dataReady("test"))
-#      self.failUnless(self.D2.dataReady("inbox"))         #### FAILING : Should not(?)
-#      self.failUnless(self.D2.dataReady("control"))       #### FAILING : Should not(?)
+      self.failUnless(self.D2.dataReady("inbox"))         #### FAILING : Should not(?)
+      self.failUnless(self.D2.dataReady("control"))       #### FAILING : Should not(?)
       self.failUnless(self.D2.recv("test") == "bing")
-#      self.failUnless(self.D2.recv("inbox") == "bing")    #### FAILING : Should not(?)
-#      self.failUnless(self.D2.recv("control") == "bing")  #### FAILING : Should not(?)
+      self.failUnless(self.D2.recv("inbox") == "bing")    #### FAILING : Should not(?)
+      self.failUnless(self.D2.recv("control") == "bing")  #### FAILING : Should not(?)
 
       self.W.send(removesink(self.D2, "inbox"), "outbox")
       self.runCycles()
@@ -339,9 +339,9 @@ class Splitter_Test(unittest.TestCase):
   
       self.failUnless(self.D2.dataReady("test"))
       self.failIf(self.D2.dataReady("inbox"))
-#      self.failUnless(self.D2.dataReady("control"))   #### FAILING : Should not(?)
+      self.failUnless(self.D2.dataReady("control"))   #### FAILING : Should not(?)
       self.failUnless(self.D2.recv("test") == 'a')
-#      self.failUnless(self.D2.recv("control") == 'a') #### FAILING : Should not(?)
+      self.failUnless(self.D2.recv("control") == 'a') #### FAILING : Should not(?)
 
       self.W.send(removesink(self.D2, "control"), "outbox")
       self.runCycles()
@@ -358,7 +358,7 @@ class Splitter_Test(unittest.TestCase):
       self.S._deliver("c", "inbox")
       self.runCycles()
 
-#      self.failIf(self.D2.dataReady("test"))          #### FAILING : Should not
+      self.failIf(self.D2.dataReady("test"))          #### FAILING : Should not
       self.failIf(self.D2.dataReady("inbox"))
       self.failIf(self.D2.dataReady("control"))
 
