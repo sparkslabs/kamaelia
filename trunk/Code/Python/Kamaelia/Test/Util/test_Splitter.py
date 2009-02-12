@@ -111,6 +111,10 @@ class Splitter_Test(unittest.TestCase):
              i += 1
              if i > cycles:
                  raise Timeout(i)
+
+   def runCycles(self, cycles=20):
+      for _ in xrange(cycles):
+          self.execute.next()
    
    def deliverhelper(self):
       # Next bit not really needed due to direct delivery was implemented since then...
@@ -206,7 +210,7 @@ class Splitter_Test(unittest.TestCase):
          for comp in boxlist:
             self.failUnless(comp.dataReady("control"))
             self.failUnless(comp.recv("control") == i)
-            
+
    def test_removeOutboxes_default(self):
       """mainBody - addsink|removesink->configuration - Tests addition and removal
       of sinks using the default box arguments.  Adds a array of sinks, removes
@@ -214,26 +218,29 @@ class Splitter_Test(unittest.TestCase):
       sinks and not the odd ones."""
       boxes = 10
       boxlist = {}
-      for x in xrange(boxes):
-         c=component()
-         boxlist[x] = c
-         self.controller.send(addsink(c,"inbox"))
-         self.deliverhelper()
-         runrepeat(self.runner)
+      for x in xrange(boxes): 
+            C = component().activate()
+            boxlist[x] = C
+            self.W.send(addsink(C), "outbox")
+
+      self.runCycles()
+
       for x in xrange(1,boxes,2):
-         self.controller.send(removesink(boxlist[x]))
-         self.deliverhelper()
-         runrepeat(self.runner)
+            C = boxlist[x]
+            self.W.send(removesink(C), "outbox")
+
+      self.runCycles()
+
       for i in xrange(20):
-         self.src.send(i)
-         self.deliverhelper()
-         runrepeat(self.runner)
-         self.deliverhelper()
+         self.S._deliver(i, "inbox")
+         self.runCycles()
+
          for j in xrange(0,boxes,2):
             self.failUnless(boxlist[j].dataReady("inbox"))
-            self.failUnless(boxlist[j].recv("inbox") == i)   
+            self.failUnless(boxlist[j].recv("inbox") == i)
+            
          for j in xrange(1,boxes,2):
-            self.failIf(boxlist[j].dataReady("inbox"))
+             self.failIf(boxlist[j].dataReady("inbox"))
    
    def test_removeOutboxes(self):
       """mainBody - addsink|removesink->configuration inbox - Tests addition and
