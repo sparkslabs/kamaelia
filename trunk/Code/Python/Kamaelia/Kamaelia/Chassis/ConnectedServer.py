@@ -315,7 +315,8 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.handleClosedCSA(data)
             if self.dataReady("control"):
                 data = self.recv("control")
-                if isinstance(data, serverShutdown):
+#                if isinstance(data, serverShutdown):
+                if isinstance(data, shutdownMicroprocess): # Shutdown on serverShutdown or shutdownMicroprocess
                     break
             yield 1
 
