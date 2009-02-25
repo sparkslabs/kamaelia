@@ -20,13 +20,13 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Axon.Ipc import producerFinished, notify
+from Axon.Ipc import producerFinished, notify, shutdownMicroprocess
 
 class socketShutdown(producerFinished):
    """Message to indicate that the network connection has been closed."""
    pass
 
-class serverShutdown(producerFinished):
+class serverShutdown(shutdownMicroprocess):
    """Message to indicate that the server should shutdown"""
    pass
 
