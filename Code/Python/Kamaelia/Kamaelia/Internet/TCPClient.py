@@ -114,6 +114,8 @@ from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
 from Kamaelia.Internet.Selector import Selector
 
+import time
+
 class TCPClient(Axon.Component.component):
    """\
    TCPClient(host,port[,delay]) -> component with a TCP connection to a server.
@@ -139,7 +141,7 @@ class TCPClient(Axon.Component.component):
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
-   def __init__(self,host,port,delay=0):
+   def __init__(self,host,port,delay=0, connect_timeout=60):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(TCPClient, self).__init__()
       self.host = host
@@ -148,6 +150,7 @@ class TCPClient(Axon.Component.component):
       self.CSA = None
       self.sock = None
       self.howDied = None
+      self.connect_timeout = connect_timeout
 
    def main(self):
       """Main loop."""
@@ -259,9 +262,13 @@ class TCPClient(Axon.Component.component):
          try:
             sock.setblocking(0); yield 0.6
             try:
+               startConnect = time.time()
                while not self.safeConnect(sock,(self.host, self.port)):
                   if self.shutdown():
                       return
+                  if ( time.time() - startConnect ) > self.connect_timeout:
+                      self.howDied = "timeout"
+                      raise Finality
                   yield 1
                yield newComponent(*self.setupCSA(sock))
                while self.waitCSAClose():
