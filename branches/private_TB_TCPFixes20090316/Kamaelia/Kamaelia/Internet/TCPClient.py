@@ -236,8 +236,15 @@ class TCPClient(Axon.Component.component):
             #The socket is non-blocking and the connection cannot be completed immediately.
             # We handle this by allowing  the code to come back and repeatedly retry
             # connecting. Rather brute force.
-            self.connecting=1
-            return False # Not connected should retry until no error
+            if not getattr(self, 'connecting', 0):
+                self.connecting=1
+                return False # Not connected should retry until no error
+            else:
+                # MSW doesn't raise a nice connection refused exception.  Instead
+                # we detect going from a WSAEINVAL (like EALREADY for windows) back to a
+                # EWOULDBLOCK which means the connection was refused and we are trying to
+                # connect for a second time.
+                raise errno.ECONNREFUSED
          elif errorno == errno.EISCONN:
              # This is a windows error indicating the connection has already been made.
              self.connecting = 0 # as with the no exception case.
@@ -248,6 +255,8 @@ class TCPClient(Axon.Component.component):
                 # above.
                 assert(self.connecting==1)
                 return False
+            else:
+                raise socket.msg # We're on windows platform and unk exception occurred
          # Anything else is an error we don't handle
          else:
             raise socket.msg
