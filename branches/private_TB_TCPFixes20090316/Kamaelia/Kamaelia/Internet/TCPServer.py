@@ -91,7 +91,7 @@ from Kamaelia.Internet.Selector import Selector
 from Kamaelia.IPC import newReader, newWriter
 from Kamaelia.IPC import removeReader, removeWriter
 from Kamaelia.IPC import serverShutdown
-from Axon.Ipc import shutdown
+from Axon.Ipc import shutdown, shutdownMicroprocess
 
 class TCPServer(Axon.Component.component):
    """\
@@ -141,8 +141,22 @@ class TCPServer(Axon.Component.component):
           s.setsockopt(*self.socketOptions)
       s.setblocking(0)
       assert self.debugger.note("PrimaryListenSocket.makeTCPServerPort", 5, "HOST,PORT",":",HOST,":",PORT,":")
-      s.bind((HOST,PORT))
-      s.listen(maxlisten)
+      try:
+          s.bind((HOST,PORT))
+          s.listen(maxlisten)
+      except socket.error:
+          return None, None # FIXME: Later versions should potentially consider raising an exception here
+                            # FIXME: and failing primarily because this is failing silently - which is
+                            # FIXME: probably a BAD thing. cf Zen of Python:
+                            # FIXME:          Errors should never pass silently.
+                            # FIXME: 
+                            # FIXME: We are of course doing this:
+                            # FIXME:      Unless explicitly silenced.
+                            # FIXME: 
+                            # FIXME: But in practice this is probably a bad idea in this case in this way. Really requires
+                            # FIXME: a change to ConnectedServer.ServerCore ...
+                            # FIXME: That said, "main" below resolves this by passing on the fact that the server socket
+                            # FIXME: doesn't exist and shuts down.
       return s,PORT
 
    def createConnectedSocket(self, sock):
@@ -227,6 +241,13 @@ class TCPServer(Axon.Component.component):
 #             return CSA
 
    def main(self):
+       if self.listener is None:
+           self.send(shutdownMicroprocess, 'signal') # FIXME: Should probably be producerFinished. 
+                                                     # FIXME: (ie advisory that I've finished, rather than
+                                                     # FIXME: demand next component to shutdown)
+           yield 1
+           return  # NOTE: Change from suggested fix. (Simplifies code logic/makes diff smaller)
+
        selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)
        if newSelector:
            newSelector.activate()
@@ -249,15 +270,15 @@ class TCPServer(Axon.Component.component):
                    break
            yield 1
        self.send(removeReader(self, self.listener), "_selectorSignal") 
-#       for i in xrange(100): yield 1
        self.send(shutdown(), "_selectorShutdownSignal")
 
    def stop(self):
-       self.send(removeReader(self, self.listener), "_selectorSignal") 
-#       for i in xrange(100): yield 1
-       self.send(shutdown(), "_selectorShutdownSignal")
-       self.listener.close() # Ensure we close the server socket. Only really likely to
-                             # be called from the scheduler shutting down due to a stop.
+       if self.listener is not None:
+           self.send(removeReader(self, self.listener), "_selectorSignal") 
+           self.send(shutdown(), "_selectorShutdownSignal")
+           self.listener.close() # Ensure we close the server socket. Only really likely to
+                                 # be called from the scheduler shutting down due to a stop.
+           self.listener = None
        super(TCPServer,self).stop()
 
 
