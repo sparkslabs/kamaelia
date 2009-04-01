@@ -156,9 +156,8 @@ class TCPClient(Axon.Component.component):
       """Main loop."""
 
       # wait before connecting
-      import time
-      t=time.time()
-      while time.time()-t<self.delay:
+      waitUntil = time.time() + self.delay
+      while time.time() < waitUntil:
          yield 1
 
       for v in self.runClient():
@@ -262,11 +261,11 @@ class TCPClient(Axon.Component.component):
          try:
             sock.setblocking(0); yield 0.6
             try:
-               startConnect = time.time()
+               tryUntil = time.time() + self.connect_timeout
                while not self.safeConnect(sock,(self.host, self.port)):
                   if self.shutdown():
                       return
-                  if ( time.time() - startConnect ) > self.connect_timeout:
+                  if time.time() >= tryUntil:
                       self.howDied = "timeout"
                       raise Finality
                   yield 1
