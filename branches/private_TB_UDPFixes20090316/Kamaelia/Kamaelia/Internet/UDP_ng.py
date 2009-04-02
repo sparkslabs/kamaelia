@@ -26,7 +26,8 @@ Simple UDP components
 
 These components provide simple support for sending and receiving UDP packets.
 
-
+NOTE: This set of components really an evolution of those in UDP.py, and is
+likely to replace those in future.
 
 Example Usage
 -------------
@@ -132,6 +133,13 @@ from Kamaelia.Internet.Selector import Selector
 from Kamaelia.IPC import newReader, newWriter, removeReader, removeWriter
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
+#
+# FIXME: This is intended as a base class, which is fine, but most of the
+# FIXME: other components in here actually duplicate much of the
+# FIXME: functionality. This should change back to being something more
+# FIXME: appropriate. ie this file needed refactoring somewhat.
+# FIXmE: (does work though)
+#
 class BasicPeer(Axon.Component.component):
     """\
     BasicPeer() -> new BasicPeer component.
@@ -288,7 +296,7 @@ class UDPReceiver(BasicPeer):
     def main(self):
         """ Main loop """
         if not self.safeBind(self.local):
-            self.send(shutdownMicroprocess, "signal")
+            self.send(shutdownMicroprocess, "signal") # FIXME: Should probably be producer Finished.
             yield 1
             return
 
@@ -418,7 +426,7 @@ class SimplePeer(BasicPeer):
     def main(self):
         """ Main loop """
         if not self.safeBind(self.local):
-            self.send(shutdownMicroprocess, "signal")
+            self.send(shutdownMicroprocess, "signal")  # FIXME: Should probably be producer Finished.
             yield 1
             return
 
@@ -505,7 +513,7 @@ class TargettedPeer(BasicPeer):
     def main(self):
         """ Main loop """
         if not self.safeBind(self.local):
-            self.send(shutdownMicroprocess, "signal")
+            self.send(shutdownMicroprocess, "signal")  # FIXME: Should probably be producer Finished.
             yield 1
             return
 
@@ -591,7 +599,7 @@ class PostboxPeer(BasicPeer):
     def main(self):
         """ Main loop """
         if not self.safeBind(self.local):
-            self.send(shutdownMicroprocess, "signal")
+            self.send(shutdownMicroprocess, "signal")  # FIXME: Should probably be producer Finished.
             yield 1
             return
 
