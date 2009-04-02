@@ -129,7 +129,7 @@ import errno
 import Axon
 
 from Kamaelia.Internet.Selector import Selector
-from Kamaelia.IPC import newReader, newWriter
+from Kamaelia.IPC import newReader, newWriter, removeReader, removeWriter
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class BasicPeer(Axon.Component.component):
@@ -311,6 +311,10 @@ class UDPReceiver(BasicPeer):
                 self.pause()
             yield 1
 
+        self.send(removeReader(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
+
 class UDPSender(BasicPeer):
     """\
     UDPSender([receiver_addr][,receiver_port]) -> new UDPSender component.
@@ -373,6 +377,11 @@ class UDPSender(BasicPeer):
                     self.pause()
             yield 1
 
+        self.send(removeWriter(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
+
+
 class SimplePeer(BasicPeer):
     """\
     SimplePeer([localaddr][,localport][,receiver_addr][,receiver_port]) -> new SimplePeer component.
@@ -434,6 +443,12 @@ class SimplePeer(BasicPeer):
                 not (self.sending and len(self.sendBuffer[0]) != 0)):
                 self.pause()
             yield 1
+
+        self.send(removeReader(self, self.sock), "_selectorSignal")
+        self.send(removeWriter(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
+
 
 class TargettedPeer(BasicPeer):
     """\
@@ -515,6 +530,12 @@ class TargettedPeer(BasicPeer):
                 self.pause()
             yield 1
 
+        self.send(removeReader(self, self.sock), "_selectorSignal")
+        self.send(removeWriter(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
+
+
 class PostboxPeer(BasicPeer):
     """\
     PostboxPeer([localaddr][,localport]) -> new PostboxPeer component.
@@ -587,6 +608,12 @@ class PostboxPeer(BasicPeer):
                 not (self.sending and len(self.sendBuffer[0]) != 0)):
                 self.pause()
             yield 1
+
+        self.send(removeReader(self, self.sock), "_selectorSignal")
+        self.send(removeWriter(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
+
 
 __kamaelia_components__  = ( UDPSender, UDPReceiver, SimplePeer,
                              TargettedPeer, PostboxPeer, )
