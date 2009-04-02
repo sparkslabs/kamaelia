@@ -74,10 +74,10 @@ a registered descriptor that has closed.
 Register for a notification by sending an one of the following messages to the
 "notify" inbox, as returned by Selector.getSelectorService():
 
-* Kamaelia.KamaeliaIpc.newReader( (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.newWriter( (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.newExceptional( (component,inboxname), descriptor)
-   
+* Kamaelia.KamaeliaIpc.newReader(caller, (component,inboxname), descriptor)
+* Kamaelia.KamaeliaIpc.newWriter(caller, (component,inboxname), descriptor)
+* Kamaelia.KamaeliaIpc.newExceptional(caller, (component,inboxname), descriptor)
+
 Choose which as appropriate:
 
 * a newReader() request will notify when there is data ready to be read on
@@ -102,9 +102,9 @@ descriptor be deregistered, then someone can register for it once again.
 Deregister by sending on of the following messages to the "notify" inbox of
 Selector:
 
-* Kamaelia.KamaeliaIpc.removeReader( (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.removeWriter( (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.removeExceptional( (component,inboxname), descriptor)
+* Kamaelia.KamaeliaIpc.removeReader(caller, descriptor)
+* Kamaelia.KamaeliaIpc.removeWriter(caller, descriptor)
+* Kamaelia.KamaeliaIpc.removeExceptional(caller, descriptor)
 
 It is advisable to send a deregister message when the corresponding file
 descriptor closes, in case you registered for a notification, but it has not

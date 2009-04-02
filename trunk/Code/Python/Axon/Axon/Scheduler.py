@@ -432,6 +432,7 @@ class scheduler(microprocess):
            for mprocess in runqueue:
 #               if self.debuggingon:
 #                   print "Before Run", mprocess
+
                yield 1
                
                if self.threads[mprocess] == _ACTIVE:
@@ -541,10 +542,12 @@ class scheduler(microprocess):
 
       - slowmo  -- Optional. Number of seconds to wait between each cycle of executing microprocesses. (default=0 - no wait)
       """
+      print "Here", len(_gc.get_objects())
       for i in self.main(slowmo,canblock=True): pass
 
 microprocess.setSchedulerClass(scheduler)
 scheduler() # Initialise the class.
+
 
 if __name__ == '__main__':
    print "This code current has no test code"
