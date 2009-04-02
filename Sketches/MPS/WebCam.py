@@ -24,7 +24,7 @@ class VideoCapturePlayer(object):
         self.__dict__.update(**argd)
         super(VideoCapturePlayer, self).__init__(**argd)
         self.display = pygame.display.set_mode( self.displaysize )
-        self.camera = X=pygame.camera.Camera("/dev/video1", self.capturesize)
+        self.camera = X=pygame.camera.Camera("/dev/video0", self.capturesize)
         self.camera.start()
 
     def get_and_flip(self):
@@ -45,7 +45,8 @@ class VideoCapturePlayer(object):
             time.sleep(self.delay)
             self.get_and_flip()
 
-VideoCapturePlayer().main()
+if 1:
+    VideoCapturePlayer().main()
 
 
 class VideoCapturePlayer(Axon.ThreadedComponent.threadedcomponent):
@@ -241,6 +242,7 @@ class ProperSurfaceDisplayer(Axon.Component.component):
          while 1:
             while self.dataReady("inbox"):
                 t,snapshot = self.recv("inbox")
+                snapshot=snapshot.convert()
                 self.display.blit(snapshot, (0,0))
                 self.pygame_display_flip()
             while not self.anyReady():
@@ -249,10 +251,11 @@ class ProperSurfaceDisplayer(Axon.Component.component):
             yield 1
 
 
-if 1:
+if 0:
     VideoCapturePlayer().run() # Runs at full speed - basic test case
 
-if 0:
+if 1:
+    print "Hello World"
     sys.path.append("/home/zathras/kamaelia/trunk/Sketches/MH/pixformatConversion")
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
@@ -280,8 +283,9 @@ if 0:
         ProperSurfaceDisplayer(),
     ).run()
 
-if 0:
+if 1:
     X = VideoCaptureSource(fps=32)
     snap = X.capture_one()
 
-    pygame.image.save(snap, "photo.png")
+    pygame.image.save(snap, "photo.bmp")
+#    pygame.image.save(snap, "photo.png")
