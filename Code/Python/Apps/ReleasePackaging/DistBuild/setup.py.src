@@ -33,7 +33,7 @@ setup(name = "Kamaelia",
       packages = [\
 # REPLACE
                   ""],
-      data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png']) ],
+      data_files=[ ('share/kamaelia', ['App/kamaelia_logo.png']) ],
       long_description = """
 Kamaelia is an open source project from BBC R&D. It makes prototyping
 multimedia, network & broadcast aware systems simple. Kamaelia systems are
