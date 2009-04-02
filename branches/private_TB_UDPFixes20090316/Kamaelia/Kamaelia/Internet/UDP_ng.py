@@ -289,36 +289,38 @@ class UDPReceiver(BasicPeer):
         """ Main loop """
         if not self.safeBind(self.local):
             self.send(shutdownMicroprocess, "signal")
-        else:
-            # FIXME: This should possibly deal with problems with setting the
-            # socket non-blocking
-            self.sock.setblocking(0)
-
-            self.setupSelector()
             yield 1
-            self.send(newReader(self, ((self, "readReady"), self.sock)),
-                       "_selectorSignal")
+            return
 
-            while 1:
-                if self.dataReady("control"):
-                    msg = self.recv("control")
-                    if isinstance(msg, shutdownMicroprocess):
-                        self.send(msg, "signal")
-                        break
+        # FIXME: This should possibly deal with problems with setting the
+        # socket non-blocking
+        self.sock.setblocking(0)
 
-                if self.dataReady("readReady"):
-                    self.recv("readReady")
-                    self.receiving = True
+        self.setupSelector()
+        yield 1
+        self.send(newReader(self, ((self, "readReady"), self.sock)),
+                   "_selectorSignal")
 
-                if self.receiving:
-                    self.recvLoop()
-                if not self.anyReady():
-                    self.pause()
-                yield 1
+        while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
 
-            self.send(removeReader(self, self.sock), "_selectorSignal")
+            if self.dataReady("readReady"):
+                self.recv("readReady")
+                self.receiving = True
+
+            if self.receiving:
+                self.recvLoop()
+            if not self.anyReady():
+                self.pause()
             yield 1
-            self.sock.close()
+
+        self.send(removeReader(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
 
 class UDPSender(BasicPeer):
     """\
@@ -417,44 +419,46 @@ class SimplePeer(BasicPeer):
         """ Main loop """
         if not self.safeBind(self.local):
             self.send(shutdownMicroprocess, "signal")
-        else:
-            self.sock.setblocking(0)
-
-            self.setupSelector()
             yield 1
-            self.send(newWriter(self, ((self, "writeReady"), self.sock)),
-                      "_selectorSignal")
-            self.send(newReader(self, ((self, "readReady"), self.sock)),
-                      "_selectorSignal")
+            return
 
-            while 1:
-                if self.dataReady("control"):
-                    msg = self.recv("control")
-                    if isinstance(msg, shutdownMicroprocess):
-                        self.send(msg, "signal")
-                        break
+        self.sock.setblocking(0)
 
-                if self.dataReady("writeReady"):
-                    self.recv("writeReady")
-                    self.sending = True
-                if self.dataReady("readReady"):
-                    self.recv("readReady")
-                    self.receiving = True
+        self.setupSelector()
+        yield 1
+        self.send(newWriter(self, ((self, "writeReady"), self.sock)),
+                  "_selectorSignal")
+        self.send(newReader(self, ((self, "readReady"), self.sock)),
+                  "_selectorSignal")
 
-                if self.sending:
-                    self.sendLoop(self.remote)
-                if self.receiving:
-                    self.recvLoop()
+        while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
 
-                if (not self.anyReady() or
-                    not (self.sending and len(self.sendBuffer[0]) != 0)):
-                    self.pause()
-                yield 1
+            if self.dataReady("writeReady"):
+                self.recv("writeReady")
+                self.sending = True
+            if self.dataReady("readReady"):
+                self.recv("readReady")
+                self.receiving = True
 
-            self.send(removeReader(self, self.sock), "_selectorSignal")
-            self.send(removeWriter(self, self.sock), "_selectorSignal")
+            if self.sending:
+                self.sendLoop(self.remote)
+            if self.receiving:
+                self.recvLoop()
+
+            if (not self.anyReady() or
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
+                self.pause()
             yield 1
-            self.sock.close()
+
+        self.send(removeReader(self, self.sock), "_selectorSignal")
+        self.send(removeWriter(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
 
 
 class TargettedPeer(BasicPeer):
@@ -502,47 +506,49 @@ class TargettedPeer(BasicPeer):
         """ Main loop """
         if not self.safeBind(self.local):
             self.send(shutdownMicroprocess, "signal")
-        else:
-            self.sock.setblocking(0)
-
-            self.setupSelector()
             yield 1
-            self.send(newWriter(self, ((self, "writeReady"), self.sock)),
-                      "_selectorSignal")
-            self.send(newReader(self, ((self, "readReady"), self.sock)),
-                      "_selectorSignal")
+            return
 
-            while 1:
-                if self.dataReady("control"):
-                    msg = self.recv("control")
-                    if isinstance(msg, shutdownMicroprocess):
-                        self.send(msg, "signal")
-                        break
+        self.sock.setblocking(0)
 
-                if self.dataReady("target"):
-                    self.remote = self.recv("target")
+        self.setupSelector()
+        yield 1
+        self.send(newWriter(self, ((self, "writeReady"), self.sock)),
+                  "_selectorSignal")
+        self.send(newReader(self, ((self, "readReady"), self.sock)),
+                  "_selectorSignal")
 
-                if self.dataReady("writeReady"):
-                    self.recv("writeReady")
-                    self.sending = True
-                if self.dataReady("readReady"):
-                    self.recv("readReady")
-                    self.receiving = True
+        while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
 
-                if self.sending:
-                    self.sendLoop(self.remote)
-                if self.receiving:
-                    self.recvLoop()
+            if self.dataReady("target"):
+                self.remote = self.recv("target")
 
-                if (not self.anyReady() or
-                    not (self.sending and len(self.sendBuffer[0]) != 0)):
-                    self.pause()
-                yield 1
+            if self.dataReady("writeReady"):
+                self.recv("writeReady")
+                self.sending = True
+            if self.dataReady("readReady"):
+                self.recv("readReady")
+                self.receiving = True
 
-            self.send(removeReader(self, self.sock), "_selectorSignal")
-            self.send(removeWriter(self, self.sock), "_selectorSignal")
+            if self.sending:
+                self.sendLoop(self.remote)
+            if self.receiving:
+                self.recvLoop()
+
+            if (not self.anyReady() or
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
+                self.pause()
             yield 1
-            self.sock.close()
+
+        self.send(removeReader(self, self.sock), "_selectorSignal")
+        self.send(removeWriter(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
 
 
 class PostboxPeer(BasicPeer):
@@ -586,44 +592,46 @@ class PostboxPeer(BasicPeer):
         """ Main loop """
         if not self.safeBind(self.local):
             self.send(shutdownMicroprocess, "signal")
-        else:
-            self.sock.setblocking(0)
-
-            self.setupSelector()
             yield 1
-            self.send(newWriter(self, ((self, "writeReady"), self.sock)),
-                      "_selectorSignal")
-            self.send(newReader(self, ((self, "readReady"), self.sock)),
-                      "_selectorSignal")
+            return
 
-            while 1:
-                if self.dataReady("control"):
-                    msg = self.recv("control")
-                    if isinstance(msg, shutdownMicroprocess):
-                        self.send(msg, "signal")
-                        break
+        self.sock.setblocking(0)
 
-                if self.dataReady("writeReady"):
-                    self.recv("writeReady")
-                    self.sending = True
-                if self.dataReady("readReady"):
-                    self.recv("readReady")
-                    self.receiving = True
+        self.setupSelector()
+        yield 1
+        self.send(newWriter(self, ((self, "writeReady"), self.sock)),
+                  "_selectorSignal")
+        self.send(newReader(self, ((self, "readReady"), self.sock)),
+                  "_selectorSignal")
 
-                if self.sending:
-                    self.sendLoop()
-                if self.receiving:
-                    self.recvLoop()
+        while 1:
+            if self.dataReady("control"):
+                msg = self.recv("control")
+                if isinstance(msg, shutdownMicroprocess):
+                    self.send(msg, "signal")
+                    break
 
-                if (not self.anyReady() or
-                    not (self.sending and len(self.sendBuffer[0]) != 0)):
-                    self.pause()
-                yield 1
+            if self.dataReady("writeReady"):
+                self.recv("writeReady")
+                self.sending = True
+            if self.dataReady("readReady"):
+                self.recv("readReady")
+                self.receiving = True
 
-            self.send(removeReader(self, self.sock), "_selectorSignal")
-            self.send(removeWriter(self, self.sock), "_selectorSignal")
+            if self.sending:
+                self.sendLoop()
+            if self.receiving:
+                self.recvLoop()
+
+            if (not self.anyReady() or
+                not (self.sending and len(self.sendBuffer[0]) != 0)):
+                self.pause()
             yield 1
-            self.sock.close()
+
+        self.send(removeReader(self, self.sock), "_selectorSignal")
+        self.send(removeWriter(self, self.sock), "_selectorSignal")
+        yield 1
+        self.sock.close()
 
 
 __kamaelia_components__  = ( UDPSender, UDPReceiver, SimplePeer,
