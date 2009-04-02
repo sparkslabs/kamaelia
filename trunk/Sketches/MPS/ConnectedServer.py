@@ -275,13 +275,19 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 "control" : "We expect to get serverShutdown messages here" }
     Outboxes = { "_serversignal" : "we send shutdown messages to the TCP server here",
                }
-    port = 1601
+    _defaultconfig = { "port" :1601 }
+    config = {}
     protocol = None
-    socketOptions=None
     TCPS=TCPServer
     def __init__(self, **argd):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        super(ServerCore, self).__init__(**argd) 
+        super(ServerCore, self).__init__(**argd)
+
+        config = {}
+        config.update(self._defaultconfig)
+        config.update(self.config)
+        self.config = config
+
         self.connectedSockets = []
         self.server = None
         if not self.protocol:
@@ -289,10 +295,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             raise "Need a protocol to handle!"
 
     def initialiseServerSocket(self):
-        if self.socketOptions is None:
-            self.server = (self.TCPS)(listenport=self.port)
-        else:
-            self.server = (self.TCPS)(listenport=self.port, socketOptions=self.socketOptions)
+        self.server = (self.TCPS)(* (self.config))
 
         self.link((self.server,"protocolHandlerSignal"),(self,"_socketactivity"))
         self.link((self,"_serversignal"), (self.server,"control"))

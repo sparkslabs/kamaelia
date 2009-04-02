@@ -140,15 +140,15 @@ class Test_Graphline(unittest.TestCase):
         
         for (toComponent,toBox) in targets:
             if toComponent==self.graphline:
-                self.assertTrue(self.dataReadyAt(toBox))
+                self.assert_(self.dataReadyAt(toBox))
                 self.assertEquals(DATA, self.recvFrom(toBox))
             else:
-                self.assertTrue(toComponent.dataReady(toBox))
+                self.assert_(toComponent.dataReady(toBox))
                 self.assertEquals(DATA, toComponent.recv(toBox))
     
         for child in self.children.values():
             if child not in [toComponent for (toComponent,toBox) in targets]:
-               self.assertFalse(child.anyReady())
+               self.assert_(not(child.anyReady()))
 
 
 
@@ -181,7 +181,7 @@ class Test_Graphline(unittest.TestCase):
         
         gChildren = self.graphline.childComponents()
         for c in self.children.values():
-            self.assertTrue(c in gChildren)
+            self.assert_(c in gChildren)
         
         
     def test_unactivatedGraphlineHasNoChildren(self):
@@ -190,7 +190,7 @@ class Test_Graphline(unittest.TestCase):
         
         gChildren = self.graphline.childComponents()
         for c in self.children.values():
-            self.assertFalse(c in gChildren)
+            self.assert_(not(c in gChildren))
         
 
     def test_activatesChildrenOnlyWhenActivatedNotLinked(self):
@@ -198,14 +198,14 @@ class Test_Graphline(unittest.TestCase):
         self.setup_initialise(A=MockChild(), B=MockChild(), C=MockChild(), linkages={})
 
         for child in self.children.values():
-            self.assertFalse(child.wasActivated)
+            self.assert_(not(child.wasActivated))
 
         self.setup_activate()
         self.runFor(cycles=1)
         self.runFor(cycles=3)
         
         for child in self.children.values():
-            self.assertTrue(child.wasActivated)
+            self.assert_(child.wasActivated)
         
         
     def test_activatesChildrenOnlyWhenActivatedLinked(self):
@@ -217,14 +217,14 @@ class Test_Graphline(unittest.TestCase):
             })
 
         for child in self.children.values():
-            self.assertFalse(child.wasActivated)
+            self.assert_(not(child.wasActivated))
 
         self.setup_activate()
         self.runFor(cycles=1)
         self.runFor(cycles=3)
         
         for child in self.children.values():
-            self.assertTrue(child.wasActivated)
+            self.assert_(child.wasActivated)
         
         
     def test_linkagesBetweenComponents(self):
@@ -274,13 +274,13 @@ class Test_Graphline(unittest.TestCase):
         
         for i in range(0,2):
             self.runFor(cycles=100)
-            self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+            self.assert_(self.graphline in self.scheduler.listAllThreads())
             
         for child in self.children.values():
             child.stopNow()
             
         self.runFor(cycles=2)
-        self.assertFalse(self.graphline in self.scheduler.listAllThreads())
+        self.assert_(not(self.graphline in self.scheduler.listAllThreads()))
         
         
     def test_specifyingPassthruInLinkage(self):
@@ -399,14 +399,14 @@ class Test_Graphline(unittest.TestCase):
         self.runFor(cycles=100)
         
         # check nothing has been emitted yet!
-        self.assertFalse(self.dataReadyAt("signal"))
+        self.assert_(not(self.dataReadyAt("signal")))
         
         for child in self.children.values():
             child.stopNow()
             
         self.runFor(cycles=2)
-        self.assertTrue(self.dataReadyAt("signal"))
-        self.assertTrue(isinstance(self.recvFrom("signal"), producerFinished))
+        self.assert_(self.dataReadyAt("signal"))
+        self.assert_(isinstance(self.recvFrom("signal"), producerFinished))
         
 
 ## FIXME: This test is definitely broken since an example 
@@ -423,7 +423,7 @@ class Test_Graphline(unittest.TestCase):
         self.runFor(cycles=100)
         
         # check nothing has been emitted yet!
-        self.assertFalse(self.dataReadyAt("signal"))
+        self.assert_(not(self.dataReadyAt("signal")))
         
         shutdownMsg = shutdownMicroprocess();
         self.sendTo(shutdownMsg,"control")
@@ -435,10 +435,10 @@ class Test_Graphline(unittest.TestCase):
             
         self.runFor(cycles=3)
         
-        self.assertTrue(self.dataReadyAt("signal"))
+        self.assert_(self.dataReadyAt("signal"))
         recvd=self.recvFrom("signal")
         
-        self.assertTrue(recvd == shutdownMsg)
+        self.assert_(recvd == shutdownMsg)
         
         
     def test_receivesShutdownPassesThru(self):
@@ -475,12 +475,12 @@ class Test_Graphline(unittest.TestCase):
         self.sendTo(msg,"control")
         self.runFor(cycles=2)
         
-        self.assertTrue(A.dataReady("control"))
+        self.assert_(A.dataReady("control"))
         self.assertEquals(msg, A.recv("control"))
         
-        self.assertFalse(B.dataReady("control"))
+        self.assert_(not(B.dataReady("control")))
         
-        self.assertTrue(C.dataReady("control"))
+        self.assert_(C.dataReady("control"))
         self.assertEquals(msg, C.recv("control"))
 
     def test_receivesShutdownAndPropagates(self):
@@ -501,15 +501,15 @@ class Test_Graphline(unittest.TestCase):
         self.sendTo(msg,"control")
         
         self.runFor(cycles=100)
-        self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+        self.assert_(self.graphline in self.scheduler.listAllThreads())
         
         for child in self.children.values():
             child.stopNow()
 
         self.runFor(cycles=10)
-        self.assertTrue(self.graphline not in self.scheduler.listAllThreads())
+        self.assert_(self.graphline not in self.scheduler.listAllThreads())
         
-        self.assertTrue(self.dataReadyAt("signal"))
+        self.assert_(self.dataReadyAt("signal"))
         self.assertEquals(msg, self.recvFrom("signal"))
 
 
@@ -531,18 +531,18 @@ class Test_Graphline(unittest.TestCase):
         self.sendTo(msg,"control")
         
         self.runFor(cycles=100)
-        self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+        self.assert_(self.graphline in self.scheduler.listAllThreads())
         
         for child in self.children.values():
             child.stopNow()
 
         self.runFor(cycles=10)
-        self.assertTrue(self.graphline not in self.scheduler.listAllThreads())
+        self.assert_(self.graphline not in self.scheduler.listAllThreads())
         
-        self.assertTrue(self.dataReadyAt("signal"))
+        self.assert_(self.dataReadyAt("signal"))
         recvd=self.recvFrom("signal")
-        self.assertTrue(recvd != msg)
-        self.assertTrue(isinstance(recvd,producerFinished))
+        self.assert_(recvd != msg)
+        self.assert_(isinstance(recvd,producerFinished))
 
 
     def test_receivesShutdownAndPropagates23(self):
@@ -567,18 +567,18 @@ class Test_Graphline(unittest.TestCase):
             self.sendTo(msg,"control")
             
             self.runFor(cycles=100)
-            self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+            self.assert_(self.graphline in self.scheduler.listAllThreads())
             
             for child in self.children.values():
                 child.stopNow()
 
             self.runFor(cycles=10)
-            self.assertTrue(self.graphline not in self.scheduler.listAllThreads())
+            self.assert_(self.graphline not in self.scheduler.listAllThreads())
             
-            self.assertTrue(self.dataReadyAt("signal"))
+            self.assert_(self.dataReadyAt("signal"))
             recvd=self.recvFrom("signal")
-            self.assertTrue(recvd != msg)
-            self.assertTrue(isinstance(recvd,producerFinished))
+            self.assert_(recvd != msg)
+            self.assert_(isinstance(recvd,producerFinished))
 
 
     def test_doesNotPropagateShutdownMsg(self):
@@ -601,16 +601,16 @@ class Test_Graphline(unittest.TestCase):
         self.sendTo(shutdownMicroprocess(), "control")
         
         self.runFor(cycles=100)
-        self.assertTrue(self.graphline in self.scheduler.listAllThreads())
+        self.assert_(self.graphline in self.scheduler.listAllThreads())
         
-        self.assertFalse(self.dataReadyAt("signal"))
+        self.assert_(not(self.dataReadyAt("signal")))
         
         for child in self.children.values():
             child.stopNow()
 
         self.runFor(cycles=100)
         
-        self.assertFalse(self.dataReadyAt("signal"))
+        self.assert_(not(self.dataReadyAt("signal")))
 
 
     def test_manuallyImplementedShutdownOverrides(self):
@@ -629,8 +629,8 @@ class Test_Graphline(unittest.TestCase):
         self.setup_activate()
         self.runFor(cycles=100)
         
-        self.assertFalse(self.dataReadyAt("outbox"))
-        self.assertFalse(self.dataReadyAt("signal"))
+        self.assert_(not(self.dataReadyAt("outbox")))
+        self.assert_(not(self.dataReadyAt("signal")))
 
         self.checkDataFlows((self.graphline,"control"),(A,"control"))
         self.checkDataFlows((A,"signal"),(self.graphline,"signal"))
@@ -638,18 +638,18 @@ class Test_Graphline(unittest.TestCase):
         
         self.runFor(cycles=100)
 
-        self.assertFalse(self.dataReadyAt("outbox"))
-        self.assertFalse(self.dataReadyAt("signal"))
+        self.assert_(not(self.dataReadyAt("outbox")))
+        self.assert_(not(self.dataReadyAt("signal")))
         
         for child in self.children.values():
             child.stopNow()
         
         self.runFor(cycles=100)
 
-        self.assertTrue(self.graphline not in self.scheduler.listAllThreads())
+        self.assert_(self.graphline not in self.scheduler.listAllThreads())
         
-        self.assertFalse(self.dataReadyAt("outbox"))
-        self.assertFalse(self.dataReadyAt("signal"))
+        self.assert_(not(self.dataReadyAt("outbox")))
+        self.assert_(not(self.dataReadyAt("signal")))
 
 
     # hack to make this work in python 2.3
