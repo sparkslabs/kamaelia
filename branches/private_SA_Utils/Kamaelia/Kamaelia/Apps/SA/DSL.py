@@ -15,6 +15,9 @@ import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 from Kamaelia.IPC import serverShutdown
 
+# FIXME: Needs example of usage. (seems nice in theory, but practical
+# FIXME: example would be nice - appears to have overlap with Handle?)
+
 class DataSink(Axon.Component.component):
     '''
     This is a limited use component.  It is sort of the inverse of the

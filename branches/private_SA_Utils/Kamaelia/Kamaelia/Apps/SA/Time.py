@@ -8,6 +8,16 @@ import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 from Kamaelia.IPC import serverShutdown
 
+# FIXME: Needs example of usage. Very similar to lots of existing
+# FIXME: components, but with probably much more accuracy - so nabbing
+# FIXME: one of those examples would be good.
+#
+# FIXME: SingleTick is a specialisation of PeriodicTick. If PeriodicTick had
+# FIXME: a "maximum number of ticks" option, that would eliminate the need for
+# FIXME: SingleTick to duplicate code. (Name could still exist, names are
+# FIXME: good  :-) - but be a factory method (aka prefab) instead - or
+# FIXME: better a class which changes the default count argument :-)
+
 class SingleTick(Axon.ThreadedComponent.threadedcomponent):
     '''
     This threaded component will wait "delay" seconds then send True out it's
