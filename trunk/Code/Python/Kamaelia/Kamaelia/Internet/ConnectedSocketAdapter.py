@@ -213,12 +213,13 @@ class ConnectedSocketAdapter(component):
            # Explicitly silencing this because it is possible (but rare) that
            # the socket was already closed due to an earlier error.
            pass
+       sock = self.socket
        self.socket = None
 
        self.passOnShutdown()
        if (self.socket is not None):
-           self.send(removeReader(self, self.socket), "_selectorSignal")
-           self.send(removeWriter(self, self.socket), "_selectorSignal")
+           self.send(removeReader(self, sock), "_selectorSignal")
+           self.send(removeWriter(self, sock), "_selectorSignal")
        super(ConnectedSocketAdapter, self).stop()
 
    def _safesend(self, sock, data):
