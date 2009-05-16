@@ -200,8 +200,21 @@ class ConnectedSocketAdapter(component):
    def stop(self):
        # Some of these are going to crash initially when stop is called
 #       print "I AM CALLED"
-       self.socket.shutdown(2)
-       self.socket.close()
+       try:
+           self.socket.shutdown(2)
+       except Exception, e:
+           # Explicitly silencing this because it is possible (but rare) that
+           # the socket was already shutdown due to an earlier error.
+           pass
+
+       try:
+           self.socket.close()
+       except Exception, e:
+           # Explicitly silencing this because it is possible (but rare) that
+           # the socket was already closed due to an earlier error.
+           pass
+       self.socket = None
+
        self.passOnShutdown()
        if (self.socket is not None):
            self.send(removeReader(self, self.socket), "_selectorSignal")
