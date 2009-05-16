@@ -185,20 +185,21 @@ class TCPServer(Axon.Component.component):
       """
       theComponent,(sock,howdied) = shutdownMessage.caller, shutdownMessage.message
       ### FIXME: Pass on how died as well in TCPServer!
-      theComponent = self.socket_handlers[sock]
-      sock.close()
+      if sock is not None:
+          theComponent = self.socket_handlers[sock]
+          sock.close()
+
+          # tell the selector about it shutting down
       
-      # tell the selector about it shutting down
-      
-      self.send(removeReader(theComponent, sock), "_selectorSignal")            
-      self.send(removeWriter(theComponent, sock), "_selectorSignal")
+          self.send(removeReader(theComponent, sock), "_selectorSignal")            
+          self.send(removeWriter(theComponent, sock), "_selectorSignal")
 #      self.send(removeReader(theComponent, theComponent.socket), "_selectorSignal")            
 #      self.send(removeWriter(theComponent, theComponent.socket), "_selectorSignal")
 
-      # tell protocol handlers
-      self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
-      # Delete the child component
-      self.removeChild(theComponent)
+          # tell protocol handlers
+          self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
+          # Delete the child component
+          self.removeChild(theComponent)
 
    def anyClosedSockets(self):
       """Check "_feedbackFromCSA" inbox for socketShutdown messages, and close sockets in response."""
