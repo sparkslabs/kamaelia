@@ -315,6 +315,7 @@ class scheduler(microprocess):
       self.stopRequests = Queue.Queue()
       self.wakeRequests = Queue.Queue()
       self.pauseRequests = Queue.Queue()
+      self.exception_caught = StopIteration
       self.debuggingon = False
       if self.wait_for_one:
          self.extra = 1
@@ -381,6 +382,39 @@ class scheduler(microprocess):
      if isinstance(knockon, reactivate):
          self._addThread(knockon.original)
 
+   def immortalise(cls):
+       """\
+       immortalise() - Class method to make the default scheduler immune to components that crash unexpectedly
+       
+       immortalise() is a feature you'll want to call when running a
+       production system. In short it actively catches rogue components that
+       will take out your server during normal development. (Taking out the
+       server in normal development is a useful feature since it assists
+       with debugging, but a pain for unusual/exceptional scenarios in a
+       production system)
+       
+       It must be called *before* the scheduler starts running. Calling it
+       afterwards will have no effect.
+       
+       Usage: Axon.Scheduler.scheduler.immortalise()       
+       """
+       cls.run.exception_caught = Exception
+   immortalise = classmethod(immortalise)
+
+   def mortalise(cls):
+       """\
+       mortalise() - Class method to make the default scheduler use the default behaviour - to die if components crash unexpectedly
+       
+       mortalise undoes a call to immortalise. 
+       
+       NOTE: It must be called *before* the scheduler starts running.
+       Calling it afterwards will have no effect.
+       
+       Usage: Axon.Scheduler.scheduler.mortalise()
+       """
+       cls.run.exception_caught = StopIteration
+   mortalise = classmethod(mortalise)
+
    def main(self,slowmo=0,canblock=False):
        """\
        main([slowmo][,canblock]) - Scheduler main loop generator
@@ -409,6 +443,8 @@ class scheduler(microprocess):
        """
        nextrunqueue = []
        running = True
+       exception_caught = self.exception_caught
+       print "exception_caught", exception_caught
        
        while running:
            # slowmo
@@ -455,7 +491,7 @@ class scheduler(microprocess):
 #                           print "After Run", mprocess
                        if mprocess:
                            nextrunqueue.append(mprocess)
-                   except StopIteration:
+                   except exception_caught:
                        del self.threads[mprocess]
                        mprocess.stop()
                        knockon = mprocess._closeDownMicroprocess()
