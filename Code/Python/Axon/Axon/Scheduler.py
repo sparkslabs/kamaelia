@@ -444,7 +444,6 @@ class scheduler(microprocess):
        nextrunqueue = []
        running = True
        exception_caught = self.exception_caught
-       print "exception_caught", exception_caught
        
        while running:
            # slowmo
