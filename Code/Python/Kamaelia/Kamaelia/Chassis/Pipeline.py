@@ -96,9 +96,10 @@ class Pipeline(component):
    
    - components  -- the components you want, in the order you want them wired up
    """
-   def __init__(self, *components):
+   circular = False
+   def __init__(self, *components, **argv):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(Pipeline,self).__init__()
+      super(Pipeline,self).__init__(**argv)
       self.components = list(components)
 
    def main(self):
@@ -115,8 +116,13 @@ class Pipeline(component):
          source = dest
       self.link((self,"inbox"), (self.components[0],"inbox"), passthrough=1)
       self.link((self,"control"), (self.components[0],"control"), passthrough=1)
-      self.link((self.components[-1],"outbox"), (self,"outbox"), passthrough=2)
-      self.link((self.components[-1],"signal"), (self,"signal"), passthrough=2)
+      if self.circular:
+          self.link((self.components[-1],"outbox"), (self.components[0],"inbox"))
+          self.link((self.components[-1],"signal"), (self.components[0],"control"))
+      else:
+          self.link((self.components[-1],"outbox"), (self,"outbox"), passthrough=2)
+          self.link((self.components[-1],"signal"), (self,"signal"), passthrough=2)
+
       for child in self.children:
           child.activate()
 
