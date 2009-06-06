@@ -364,10 +364,10 @@ class WAVParser(component):
                 audioformat = "S16_LE"
                 blocksize=2*channels
             else:
-                raise "Can't handle WAV file with "+str(bitsPerSample)+"bits per sample"
+                raise ValueError("Can't handle WAV file with "+str(bitsPerSample)+"bits per sample")
 
             if blocksize != blockAlign:
-                raise "Can't handle WAV files with awkward block alignment padding between *every* sample!"
+                raise ValueError("Can't handle WAV files with awkward block alignment padding between *every* sample!")
 
             self.send(channels,"channels")
             self.send(audioformat,"sample_format")
@@ -379,7 +379,7 @@ class WAVParser(component):
                        }, "all_meta")
 
         else:
-            raise "Can't handle WAV file in anything other than uncompressed format. Format tag found = "+str(format)
+            raise ValueError("Can't handle WAV file in anything other than uncompressed format. Format tag found = "+str(format))
 
         # skip any excess header bytes
         if headerBytesLeft > 0:
@@ -451,7 +451,7 @@ class WAVWriter(component):
             self.bitsPerSample = 16
             self.bytespersample = 2
         else:
-            raise "WAVWriter can't handle sample format "+str(sample_format)+" at the moment"
+            raise ValueError("WAVWriter can't handle sample format "+str(sample_format)+" at the moment")
         
         self.samplingfrequency = sample_rate
         self.channels = channels
@@ -479,13 +479,13 @@ class WAVWriter(component):
                 return
             except noSpaceInBox:
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
                 
                 self.pause()
                 yield 1
                 
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
 
     def main(self):
         self.shutdownMsg=None
@@ -520,11 +520,11 @@ class WAVWriter(component):
                         yield 1
                     
                 if self.canStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
                         
                 self.pause()
 
-        except "STOP":
+        except UserWarning:
             self.send(self.shutdownMsg,"signal")
 
 

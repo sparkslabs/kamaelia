@@ -233,7 +233,7 @@ class Graphline(component):
    def __init__(self, linkages = None, **components):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       if linkages is None:
-         raise ValueError("linkages must be set")
+         raise TypeError("linkages must be set")
 
       self.layout = linkages
       self.components = dict(components)

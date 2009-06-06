@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python;
 
 # Copyright (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -153,7 +153,7 @@ class FormatOutput(component):
                     msg = self.recv("control")
                     if isinstance(msg, (producerFinished, shutdownMicroprocess)):
                         self.shutdownMsg=msg
-                        raise "STOP"
+                        raise UserWarning("STOP")
                     else:
                         self.send(msg, "signal")
 
@@ -161,7 +161,7 @@ class FormatOutput(component):
                 self.pause()
                 yield 1
                     
-        except "STOP":
+        except UserWarning:
             self.send("</detected_cuts>\n\n","outbox")
             yield 1
             yield 1

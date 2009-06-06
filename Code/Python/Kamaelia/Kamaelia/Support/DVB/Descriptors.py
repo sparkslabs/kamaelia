@@ -1745,7 +1745,7 @@ def parse_content_identifier_Descriptor(data,i,length,end):
             crid["ref"] = (ord(data[i+2]) << 8) + ord(data[i+3])
             i=i+3
         else:
-            raise "Unable to parse Content Identifier Descriptor - unknown cridLocation type"
+            raise ValueError("Unable to parse Content Identifier Descriptor - unknown cridLocation type")
         crids.append(crid)
         
     return { "type"  : "content_identifier",

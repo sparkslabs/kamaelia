@@ -146,7 +146,7 @@ class Expect(component):
             yield 1
             
         if len(self.what)>0:
-            raise "Took too long. Expected it to complete within %f seconds" % self.within
+            raise RuntimeError("Took too long. Expected it to complete within %f seconds" % self.within)
         yield 1
         # exit cleanly because we've succeeded
 

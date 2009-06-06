@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python5~
 #
 # Copyright (C) 2007 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -106,12 +106,12 @@ class TwoWaySplitter(Axon.Component.component):
                         yield _
 
                 if self.canStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
 
                 self.pause()
                 yield 1
 
-        except "STOP":
+        except UserWarning:
             self.send(self.shutdownMsg,"signal")
             self.send(self.shutdownMsg,"signal2")
 
@@ -151,7 +151,7 @@ class TwoWaySplitter(Axon.Component.component):
             else:
                 # otherwise we need to wait to be unpaused
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning( "STOP")
     
                 self.pause()
                 yield 1

@@ -158,7 +158,7 @@ class RateChunker(component):
                             except noSpaceInBox:
                                 can,must = self.checkShutdown()
                                 if must:
-                                    raise "STOP"
+                                    raise UserWarning("STOP")
                                 else:
                                     self.pause()
                                     yield 1
@@ -168,12 +168,12 @@ class RateChunker(component):
                 can,must = self.checkShutdown()
                 
                 if can or must:
-                    raise "STOP"
+                    raise UserWarning("STOP")
                 else:
                     self.pause()
                     yield 1
                     
-        except "STOP":
+        except UserWarning:
             if self.shutdownMsg:
                 self.send(self.shutdownMsg, "signal")
             else:

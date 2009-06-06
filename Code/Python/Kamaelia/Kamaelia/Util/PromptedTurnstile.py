@@ -131,13 +131,13 @@ class PromptedTurnstile(component):
                 while self.dataReady("inbox"):
                     canStop, mustStop = self.checkShutdown()
                     if mustStop:
-                        raise "STOP"
+                        raise UserWarning("STOP")
 
                     # ok, so there is data waiting to be emitted, so now we must wait for the 'next' signal
                     while not self.dataReady("next"):
                         canStop, mustStop = self.checkShutdown()
                         if mustStop:
-                            raise "STOP"
+                            raise UserWarning("STOP")
                         self.pause()
                         yield 1
                     self.recv("next")
@@ -150,20 +150,20 @@ class PromptedTurnstile(component):
                         except noSpaceInBox:
                             canStop, mustStop = self.checkShutdown()
                             if mustStop:
-                                raise "STOP"
+                                raise UserWarning( "STOP")
                             self.pause()
                             yield 1
     
                 canStop, mustStop = self.checkShutdown()
                 if canStop:
-                    raise "STOP"
+                    raise UserWarning( "STOP")
 
                 if not self.dataReady("inbox") and not self.dataReady("control"):
                     self.pause()
                     
                 yield 1
             
-        except "STOP":
+        except UserWarning:
             if self.shutdownMsg:
                 self.send(self.shutdownMsg,"signal")
             else:

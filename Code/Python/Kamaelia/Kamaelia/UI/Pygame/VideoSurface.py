@@ -179,13 +179,13 @@ class VideoSurface(component):
             # is it the same format as our current frame?
             if self.formatChanged(frame):
                 if self.display:
-                    raise "Can't cope with a format change yet!"
+                    raise RuntimeError("Can't cope with a format change yet!")
                 
                 self.size = frame['size']
                 self.pixformat = frame['pixformat']
                 
                 if self.pixformat != "RGB_interleaved":
-                    raise "Can't cope with any pixformat other than RGB_interleaved"
+                    raise RuntimeError("Can't cope with any pixformat other than RGB_interleaved")
               
       
                 # request a surface

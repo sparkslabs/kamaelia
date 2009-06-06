@@ -286,7 +286,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.server = None
         if not self.protocol:
             print self.__class__, self.__class__.protocol, self.protocol
-            raise "Need a protocol to handle!"
+            raise TypeError("Need a protocol to handle!")
 
     def initialiseServerSocket(self):
         if self.socketOptions is None:

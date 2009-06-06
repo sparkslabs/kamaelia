@@ -746,7 +746,7 @@ def _determineMRO(klass):
                 mergedBases = [baselist for baselist in mergedBases if baselist != []]
                 break
         if foundElsewhere:
-            raise "FAILURE"
+            raise RuntimeError("FAILURE")
     return order
     
     

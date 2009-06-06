@@ -186,6 +186,13 @@ from Axon.Ipc import producerFinished,shutdownMicroprocess
 
 import re
 
+class AllDone(Exception):
+   pass
+
+class ShutdownNow(Exception):
+   pass
+
+
 class SDPParser(component):
     """\
     SDPParser() -> new SDPParser component.
@@ -207,10 +214,10 @@ class SDPParser(component):
             msg = self.recv("control")
             if isinstance(msg,producerFinished):
                 self.shutdownMsg = msg
-                raise "DONE"
+                raise AllDone
             elif isinstance(msg,shutdownMicroprocess):
                 self.shutdownMsg = msg
-                raise "STOP"
+                raise ShutdownNow
             else:
                 self.send(msg,"signal")
 
@@ -316,13 +323,13 @@ class SDPParser(component):
                 # end of complete SDP file (we've hit another 'v' signifying the start of a new one)
                 self.sendOutParsedSDP(session)
             
-        except "DONE":
+        except AllDone:
             if mandatory=="":
                 self.sendOutParsedSDP(session)
             
             yield 1
 
-        except "STOP":
+        except ShutdownNow:
             pass
 
         if self.shutdownMsg is None:

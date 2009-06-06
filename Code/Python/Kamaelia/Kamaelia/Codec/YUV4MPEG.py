@@ -520,7 +520,7 @@ class FrameToYUV4MPEG(component):
         (noSpaceInBox exception) then it waits until there is space. It keeps
         retrying until it succeeds.
         
-        If the component is ordered to immediately terminate then "STOP" is
+        If the component is ordered to immediately terminate then UserWarning("STOP") is
         raised as an exception.
         """
         while 1:
@@ -530,14 +530,14 @@ class FrameToYUV4MPEG(component):
             except noSpaceInBox:
                 self.checkShutdown()
                 if self.mustShutdown():
-                    raise "STOP"
+                    raise UserWarning("STOP")
                 
                 self.pause()
                 yield 1
                 
                 self.checkShutdown()
                 if self.mustShutdown():
-                    raise "STOP"
+                    StopIteration("STOP")
         
     def main(self):
         """Main loop"""
@@ -547,7 +547,7 @@ class FrameToYUV4MPEG(component):
             while not self.dataReady("inbox"):
                 self.checkShutdown()
                 if self.canShutdown():
-                    raise "STOP"
+                    raise UserWarning( "STOP" )
                 self.pause()
                 yield 1
             
@@ -564,11 +564,11 @@ class FrameToYUV4MPEG(component):
                         yield _
                 self.checkShutdown()
                 if self.canShutdown():
-                    raise "STOP"
+                    raise UserWarning( "STOP" )
                 self.pause()
                 yield 1
                 
-        except "STOP":
+        except UserWarning:
             self.send(self.shutdownMsg,"signal")
 
     def write_header(self, frame):
