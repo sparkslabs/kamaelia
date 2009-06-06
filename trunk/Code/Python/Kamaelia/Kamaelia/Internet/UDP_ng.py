@@ -328,7 +328,12 @@ class UDPReceiver(BasicPeer):
 
         self.send(removeReader(self, self.sock), "_selectorSignal")
         yield 1
-        self.sock.close()
+        try:
+            self.sock.close()
+        except:
+            # In case the socket close fails for whatever reason
+            pass
+        self.sock = None
 
 class UDPSender(BasicPeer):
     """\
