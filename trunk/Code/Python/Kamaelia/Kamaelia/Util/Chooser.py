@@ -116,36 +116,35 @@ import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class Chooser(Axon.Component.component):
-   """\
-   Chooser([items]) -> new Chooser component.
+    """\
+   Chooser([items], [loop]) -> new Chooser component.
 
    Iterates through a finite list of items. Step by sending "NEXT", "PREV",
    "FIRST" or "LAST" messages to its "inbox" inbox.
+
+   If loop is provided and true, then the iterates round the given items.
    
    Keyword arguments:
    
    - items  -- list of items to be chosen from, must be type 'list' (default=[])
-   """
+    """
    
-   Inboxes = { "inbox"   : "receive commands",
-               "control" : "shutdown messages"
+    Inboxes = { "inbox"   : "receive commands",
+               "control" : ""
              }
-   Outboxes = { "outbox" : "emits chosen items",
-                "signal" : "shutdown messages"
+    Outboxes = { "outbox" : "emits chosen items",
+                "signal" : ""
               }
    
-   def __init__(self, items = []):
+    def __init__(self, items = [], loop = False):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Chooser,self).__init__()
       
       self.items = list(items)
-      self.useditems = []
+      self.index = 0
+      self.loop = loop
 
-      
-   def shutdown(self):
-        """
-        Returns True if a shutdownMicroprocess message was received.
-        """
+    def shutdown(self):
         if self.dataReady("control"):
             message = self.recv("control")
             if isinstance(message, shutdownMicroprocess):
@@ -153,183 +152,85 @@ class Chooser(Axon.Component.component):
                 return True
         return False
 
-
-            
-   def main(self):
-      """Main loop."""
+    def main(self):
       try:
          self.send( self.getCurrentChoice(), "outbox")
       except IndexError:
          pass
-         
+
       done = False
       while not done:
          yield 1
-
-         while self.dataReady("inbox"):
+         for msg in self.Inbox("inbox"):
             send = True
-            msg = self.recv("inbox")
-
             if msg == "SAME":
                pass
             elif msg == "NEXT":
                send = self.gotoNext()
             elif msg == "PREV":
-               send = self.gotoPrev()
+               send = self.gotoNext()
             elif msg == "FIRST":
                send = self.gotoFirst()
             elif msg == "LAST":
                send = self.gotoLast()
-            else:
-               send = False
 
             if send:
-               try:
-                  self.send( self.getCurrentChoice(), "outbox")
-               except IndexError:
-                  pass
+                try:
+                   self.send( self.getCurrentChoice(), "outbox")
+                except IndexError:
+                   pass
 
          done = self.shutdown()
-         
          if not done:
-             self.pause()
+             if not self.anyReady():
+                 self.pause()
 
-   
-   def getCurrentChoice(self):
-      """Return the current choice to the outbox"""
-      return self.items[0]
-            
-   def gotoNext(self):
-      """\
-      Advance the choice forwards one.
+    def getCurrentChoice(self):
+        """Return the current choice to the outbox"""
+        return self.items[self.index]
 
-      Returns True if successful or False if unable to (eg. already at end).
-      """
-      if len(self.items) > 1:
-         self.useditems.append(self.items[0])
-         del(self.items[0])
-         return True
-      return False
-
-   def gotoPrev(self):
-      """\
-      Backstep the choice backwards one.
-
-      Returns True if successful or False if unable to (eg. already at start).
-      """
-      try:
-         self.items.insert(0, self.useditems[-1])
-         del(self.useditems[-1])
-         return True
-      except IndexError:
-         return False
-   
-   def gotoLast(self):
-      """Goto the last item in the set. Returns True."""
-      self.useditems.extend(self.items[:-1])
-      self.items = [self.items[-1]]
-      return True
-            
-   def gotoFirst(self):
-      """Goto the first item in the set. Returns True."""
-      self.useditems.extend(self.items)
-      self.items = self.useditems
-      self.useditems = []
-      return True
-
-   
-   
-class ForwardIteratingChooser(Axon.Component.component):
-   """\
-   Chooser([items]) -> new Chooser component.
-
-   Iterates through an iterable set of items. Step by sending "NEXT" messages to
-   its "inbox" inbox.
-   
-   Keyword arguments:
-   - items  -- iterable source of items to be chosen from (default=[])
-   """
-   Inboxes = { "inbox"   : "receive commands",
-               "control" : "shutdown messages"
-             }
-   Outboxes = { "outbox" : "emits chosen items",
-                "signal" : "shutdown messages"
-              }
-
-   def __init__(self, items = []):
-      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(ForwardIteratingChooser,self).__init__()
-
-      self.items = iter(items)
-      self.gotoNext()
-
-
-   def shutdown(self):
+    def gotoNext(self):
+        """\
+        Advance the choice forwards one.
+    
+        Returns True if successful or False if unable to (eg. already at end).
         """
-        Returns True if a shutdownMicroprocess message was received.
-        """
-        if self.dataReady("control"):
-            message = self.recv("control")
-            if isinstance(message, shutdownMicroprocess):
-                self.send(message, "signal")
+        self.index = self.index + 1
+        if self.index >= len(self.items):
+            if self.loop:
+                self.index = 0
                 return True
-        return False
-
-   def main(self):
-      """Main loop."""
-      try:
-         self.send( self.getCurrentChoice(), "outbox")
-      except IndexError:
-         pass
-
-      done = False
-      while not done:
-         yield 1
-
-         while self.dataReady("inbox"):
-            send = True
-            msg = self.recv("inbox")
-
-            if msg == "SAME":
-               pass
-            elif msg == "NEXT":
-               send = self.gotoNext()
-               if not send:
-                   done = True
-                   self.send( producerFinished(self), "signal")
             else:
-               send = False
+                self.index = len(self.items)-1
+                return False
+        return True
 
-            if send:
-               try:
-                  self.send( self.getCurrentChoice(), "outbox")
-               except IndexError:
-                  pass
+    def gotoPrev(self):
+       """\
+       Backstep the choice backwards one.
 
-         done = done or self.shutdown()
-         
-         if not done:
-             self.pause()
+       Returns True if successful or False if unable to (eg. already at start).
+       """
+       self.index = self.index - 1
+       if self.index < 0:
+          if self.loop:
+             self.index = len(self.items)+1
+             return False
+          else:
+             self.index = 0
+             return True
+       return True
 
-   def getCurrentChoice(self):
-      """Return the current choice"""
-      try:
-         return self.currentitem
-      except AttributeError:
-         raise IndexError()
+    def gotoLast(self):
+      """Goto the last item in the set. Returns True."""
+      self.index = len(self.items)-1
+      return True
 
+    def gotoFirst(self):
+      """Goto the first item in the set. Returns True."""
+      self.index = 0
+      return True
 
-   def gotoNext(self):
-      """\
-      Advance the choice forwards one.
-
-      Returns True if successful or False if unable to (eg. already at end).
-      """
-      try:
-         self.currentitem = self.items.next()
-         return True
-      except StopIteration:
-         return False
 
 __kamaelia_components__  = ( Chooser, ForwardIteratingChooser, )
       
