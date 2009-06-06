@@ -154,13 +154,13 @@ class CropAndScale(component):
                 return
             except noSpaceInBox:
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
                 
                 self.pause()
                 yield 1
                 
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning( "STOP")
 
     def main(self):
         self.shutdownMsg = None
@@ -174,11 +174,11 @@ class CropAndScale(component):
                         yield _
     
                 if self.canStop():
-                    raise "STOP"
+                    raise UserWarning( "STOP")
     
                 self.pause()
                 yield 1
-        except "STOP":
+        except UserWarning:
             self.send(self.shutdownMsg,"signal")
 
 
@@ -193,7 +193,7 @@ class CropAndScale(component):
             mode = "L"
             datakey = "yuv"
         else:
-            raise "Can't process images with pixformat '"+frame['pixformat']+"'"
+            raise ValueError("Can't process images with pixformat '"+frame['pixformat']+"'")
 
         img = Image.frombuffer(mode, frame['size'], frame[datakey])
         newimg = img.transform(self.newsize,

@@ -588,9 +588,9 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                     name = self.getParticleLabel(node_id)
                     self.send( ("UPDATE_NAME", "NODE", node_id, name), "outbox" )
                 else:
-                    raise "Command Error"
+                    raise ValueError("Command Error")
             else:
-                raise "Command Error"
+                raise ValueError("Command Error")
         except:     
             import traceback
             errmsg = reduce(lambda a,b: a+b, traceback.format_exception(*sys.exc_info()) )
@@ -702,7 +702,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
     def quit(self, event=None):
         """Cause termination."""
         super(TopologyViewer,self).quit(event)
-        raise "QUITTING"           ### XXX FIXME : need better shutdown than this!
+        self.scheduler.stop()
         
     def scroll( self, (dx, dy) ):
         """Scroll the contents being displayed on the surface by (dx,dy) left and up."""

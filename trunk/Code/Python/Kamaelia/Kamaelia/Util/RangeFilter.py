@@ -122,13 +122,13 @@ class RangeFilter(component):
                         for _ in self.waitSend(item,"outbox"): yield _
                     
                 if self.canStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
                 
                 self.pause()
                 yield 1
                     
 
-        except "STOP":
+        except UserWarning:
             self.send(self.shutdownMsg,"signal")
 
     # shutdown handling
@@ -182,13 +182,13 @@ class RangeFilter(component):
                 return
             except noSpaceInBox:
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
                 
                 self.pause()
                 yield 1
                 
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
 
 
 __kamaelia_components__ = ( RangeFilter, )

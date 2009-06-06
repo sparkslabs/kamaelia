@@ -468,14 +468,14 @@ class _ToFileHandle(component):
             msg = self.recv("control")
             if isinstance(msg,shutdownMicroprocess):
                 self.shutdownMsg=msg
-                raise "STOP"
+                raise UserWarning("STOP")
             elif isinstance(msg, producerFinished):
                 if not isinstance(self.shutdownMsg, shutdownMicroprocess):
                     self.shutdownMsg=msg
             else:
                 pass
         if self.shutdownMsg and noNeedToWait:
-            raise "STOP"
+            raise UserWarning( "STOP" )
 
 
     def main(self):
@@ -524,7 +524,7 @@ class _ToFileHandle(component):
                 
                 self.checkShutdown(noNeedToWait=False)
         
-        except "STOP":
+        except UserWarning:
             pass  # ordered to shutdown!
         
         self.send(removeWriter(self,(self.fh)), "selector")
@@ -575,7 +575,7 @@ class _FromFileHandle(component):
             msg = self.recv("control")
             if isinstance(msg,shutdownMicroprocess):
                 self.shutdownMsg=msg
-                raise "STOP"
+                raise UserWarning( "STOP" )
             elif isinstance(msg,producerFinished):
                 self.shutdownMsg=msg
         return self.shutdownMsg
@@ -610,11 +610,11 @@ class _FromFileHandle(component):
                         #dataPending=self.fh.read(self.maxReadChunkSize)
                         dataPending = os.read(self.fh.fileno(), self.maxReadChunkSize)
                         if dataPending=="":
-                            raise "STOP"
+                            raise UserWarning( "STOP" )
                     except OSError,IOError:
                         # no data available yet, need to wait
                         if self.checkShutdown():
-                            raise "STOP"
+                            raise UserWarning( "STOP" )
                         if self.dataReady("ready"):
                             self.recv("ready")
                         else:

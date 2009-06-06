@@ -82,7 +82,7 @@ if __name__=="__main__":
 
     if doNavelgaze:
         if "serverPort" in dictArgs:
-            raise "Makes no sense to navelgaze and use --port option - they're mutually exclusive"
+            raise ValueError("Makes no sense to navelgaze and use --port option - they're mutually exclusive")
         app = Pipeline(
                  Introspector(),
                  text_to_token_lists(),

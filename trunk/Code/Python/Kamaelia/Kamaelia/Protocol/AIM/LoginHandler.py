@@ -209,7 +209,7 @@ class LoginHandler(SNACExchanger):
             while self.dataReady('_clock'):
                 if self.recv('_clock') and not_done:
                     if (time.time() - t) > 2:
-                        raise "Connection time out!"+ str( time.time() - t)
+                        raise RuntimeError("Connection time out!"+ str( time.time() - t))
                     else:
                         print "odd"
 

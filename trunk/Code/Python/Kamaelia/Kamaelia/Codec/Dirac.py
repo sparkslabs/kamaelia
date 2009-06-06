@@ -160,7 +160,7 @@ def map_chroma_type(chromatype):
     if chromatype == "420":
         return "YUV420_planar"
     else:
-        raise "Dont know how to deal with this chroma type yet, sorry! - " + chromtype
+        raise ValueError("Dont know how to deal with this chroma type yet, sorry! - " + chromtype)
 
 
 class DiracDecoder(component):
@@ -220,11 +220,11 @@ class DiracDecoder(component):
         
             except "STREAMERROR":
                 print "Stream error"
-                raise "STREAMERROR"
+                raise IOError("STREAMERROR")
         
             except "INTERNALFAULT":
                 print "Internal fault"
-                raise "INTERNALFAULT"
+                raise RuntimeError("INTERNALFAULT")
 
             if dataShortage and not done:
                 self.pause()
@@ -289,11 +289,11 @@ class DiracEncoder(component):
 
                     except "ENCODERERROR":
                         print "Encoder Error"
-                        raise "ENCODERERROR"
+                        raise RuntimeError("ENCODERERROR")
 
                     except "INTERNALFAULT":
                         print "Internal Fault"
-                        raise "INTERNALFAULT"
+                        raise RuntimeError("INTERNALFAULT")
 
 
             while self.dataReady("control"):

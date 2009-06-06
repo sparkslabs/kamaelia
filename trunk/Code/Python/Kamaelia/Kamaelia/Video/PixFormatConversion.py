@@ -144,13 +144,13 @@ class ToRGB_interleaved(component):
                 return
             except noSpaceInBox:
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
                 
                 self.pause()
                 yield 1
                 
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
 
     def main(self):
         """Main loop."""
@@ -184,12 +184,12 @@ class ToRGB_interleaved(component):
                         yield _
     
                 if self.canStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
     
                 self.pause()
                 yield 1
 
-        except "STOP":
+        except UserWarning:
             self.send(self.shutdownMsg,"signal")
 
 
@@ -236,13 +236,13 @@ class ToYUV420_planar(component):
                 return
             except noSpaceInBox:
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning("STOP")
                 
                 self.pause()
                 yield 1
                 
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning( "STOP")
 
     def main(self):
         """Main loop."""
@@ -274,12 +274,12 @@ class ToYUV420_planar(component):
                             yield _
                         
                 if self.canStop():
-                    raise "STOP"
+                    raise UserWarning( "STOP")
                         
                 self.pause()
                 yield 1
                 
-        except "STOP":
+        except UserWarning:
             self.send(self.shutdownMsg,"signal")
 
 

@@ -211,7 +211,7 @@ class UnixProcess(Axon.Component.component):
                         print sys.exc_info()[0]
                         break
 #                    if count != len(d):
-#                        raise "Yay, we broke it"
+#                        raise RuntimeError("Yay, we broke it")
 
             if stdout_ready:
                 try:

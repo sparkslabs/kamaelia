@@ -321,6 +321,9 @@ from Kamaelia.Util.RateFilter import ByteRate_RequestControl
 from Kamaelia.Chassis.Carousel import Carousel
 from Kamaelia.Chassis.Graphline import Graphline
 
+class EOF(Exception):
+    pass
+
 class PromptedFileReader(component):
     """\
     PromptedFileReader(filename[,readmode]) -> file reading component
@@ -362,7 +365,7 @@ class PromptedFileReader(component):
         """
         data = self.file.read(n)
         if not data:
-            raise "EOF"
+            raise EOF("EOF")
         return data
     
     
@@ -377,7 +380,7 @@ class PromptedFileReader(component):
         for i in xrange(0,n):
             data += self.file.readline()
         if not data:
-            raise "EOF"
+            raise EOF( "EOF" )
         return data
     
     def main(self):

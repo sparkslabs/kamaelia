@@ -92,10 +92,10 @@ if __name__=="__main__":
         if test == demarshalled:
             for char in marshalled[:-1]:
                 if ord(char) < 32:
-                    raise "\nFAILED (LOWCHAR) : "+str(test)
+                    raise ValueError("\nFAILED (LOWCHAR) : "+str(test))
             if marshalled[-1] != "\n":
-                raise "\nFAILED (ENDTERM) : "+str(test)
+                raise ValueError("\nFAILED (ENDTERM) : "+str(test))
             print "."
         else:
-            raise "\nFAILED (MISMATCH) : "+str(test)+"\nIt was : "+str(demarshalled)+"\n"
+            raise ValueError("\nFAILED (MISMATCH) : "+str(test)+"\nIt was : "+str(demarshalled)+"\n")
             

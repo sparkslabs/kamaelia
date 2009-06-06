@@ -265,7 +265,7 @@ class RawAudioMixer(threadedcomponent):
             self.quanta  = channels*2 # bytes per sample
             self.silence = "\0\0"
         else:
-            raise "Format '"+str(format)+"' not (yet) supported. Sorry!"
+            raise ValueError("Format '"+str(format)+"' not (yet) supported. Sorry!")
         
 
     def checkForShutdown(self):

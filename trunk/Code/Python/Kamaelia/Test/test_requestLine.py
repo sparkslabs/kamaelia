@@ -95,7 +95,7 @@ class requestLineTestCase(unittest.TestCase):
 			[self.url, protocolandver] = rest.split(" ", 1) # !!!! May well need changing due to Microsoft
 			[self.protocol, self.version] = protocolandver.split("/",1)
 		except:
-			raise "BadRequest"
+			raise RuntimeError("BadRequest")
 
 	def debug__str__(self):
 		result =  "METHOD  \t:" + self.method + "\n" +\

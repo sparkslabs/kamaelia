@@ -146,7 +146,7 @@ class bfrec(AxonObject):
                # And allocate a new one.
                if space ==0:         # Have we filled up a chunk (normally a byte)
                   if value > 2**csize-1:  # Sanity Check!
-                     raise "Bad Value", value
+                     raise ValueError("Bad Value", value)
                   r.append(value)    # Add the value onto the result
                   space=csize        # Reset available space
                   value = 0          # Reset value

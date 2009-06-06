@@ -1098,7 +1098,7 @@ if __name__ == "__main__":
         cfg=ConfigParser.ConfigParser()
         cfg.optionxform = str  # make case sensitive
         if not os.path.isfile(filename):
-            raise "Could not find symbol file: "+filename
+            raise RuntimeError("Could not find symbol file: "+filename)
         cfg.read(filename)                                     # not checking retval for python 2.3 compatibility
         renderer.addAutoLinksToURI(dict(cfg.items("CLASSES")))
         renderer.addAutoLinksToURI(dict(cfg.items("FUNCTIONS")))

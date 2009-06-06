@@ -439,7 +439,7 @@ class HTTPRequestHandler(component):
             yield 1
             self.updateShouldShutdown()
             if self.ShouldShutdownCode & 2 > 0: # if we've received a shutdown request
-                raise "BreakOut"
+                raise UserWarning("BreakOut")
             self.forwardBodyChunks()
             if not self.anyReady():
                 self.pause()
@@ -464,7 +464,7 @@ class HTTPRequestHandler(component):
                 try:
                     for i in self.handleRequest(request):
                         yield i
-                except "BreakOut":
+                except UserWarning:
                     break
             self.updateShouldShutdown()
 #            self.updateShutdownStatus()

@@ -120,13 +120,13 @@ class MaxSpeedFileReader(component):
                 return
             except noSpaceInBox:
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning( "STOP" )
                 
                 self.pause()
                 yield 1
                 
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning( "STOP" )
 
     def main(self):
         self.shutdownMsg=""
@@ -138,15 +138,15 @@ class MaxSpeedFileReader(component):
                 data = fh.read(self.chunksize)
                 if data=="":
                     self.shutdownMsg=producerFinished(self)
-                    raise "STOP"
+                    raise UserWarning( "STOP" ) 
 
                 for _ in self.waitSend(data,"outbox"):
                     yield _
 
                 if self.mustStop():
-                    raise "STOP"
+                    raise UserWarning( "STOP" )
 
-        except "STOP":
+        except UserWarning( "STOP") :
             self.send(self.shutdownMsg, "signal")
 
 
