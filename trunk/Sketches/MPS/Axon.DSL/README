@@ -1,0 +1,52 @@
+This directory will server as a starting point for managing Axon.DSL
+
+This has been mooted for a while, but not actively worked on. It really ought to be though.
+
+Axon.DSL contents:
+    Backplane.py
+    Carousel.py
+    Chooser.py
+        -- But what about Prompted Turnstile ? (copied in)
+    DataSource.py
+    Graphline.py
+    LossyConnector.py
+    NullSink.py
+    PassThrough.py
+    Pipeline.py
+    PureTransformer.py
+    Seq.py
+    TPipe.py
+
+    Filter.py <-- (Max.py)
+    MultiAIMBot.py --> PureServer, MessageDemuxer
+
+    Components identified as useful, but not written
+*        PureServer                  -       MultiAIMBot.AIMUserTalkAdapter ?
+*        MessageDemuxer             -       MultiAIMBot.MessageDemuxer ?
+*        Filter                     - Filter.py (Max)
+        Muxer
+        PAR
+        ALT
+        Pool
+        StatefulTransformer
+        CrossOver
+
+    Would like to have:
+        Pure command processor
+        Stateful command processor
+        Potentially AKA event processor (TBD)
+
+Clock etc? - Probably from:: ../../../../../../branches/private_SA_Utils/Kamaelia/Kamaelia/Apps/SA/Time.py
+    Chassis.TTL ?
+    DSL.DataSink
+    Time.*Tick* consolidated to a ticker
+
+Possible additions:
+    File reading
+    File writing
+
+
+../../../../../Code/Python/Kamaelia/Kamaelia/Util/PassThrough.py
+../../../../../Code/Python/Kamaelia/Kamaelia/Util/PromptedTurnstile.py
+../../../../../Code/Python/Kamaelia/Kamaelia/Util/Splitter.py
+../../../../../Code/Python/Kamaelia/Kamaelia/Util/TwoWaySplitter.py

@@ -1,0 +1,17 @@
+CHANGELOG
+
+Initial version, consolidated the following components from Kamaelia:
+
+    Candidate components:
+        Pipeline
+        Graphline
+        Tpipe
+        Seq
+        Backplane
+        PublishTo
+        SubscribeTo
+        Carousel
+        PureTransformer
+        MessageDemuxer
+        Source
+        NullSink
