@@ -1,0 +1,7 @@
+include COPYING
+include AUTHORS
+include CHANGELOG
+recursive-include Doc *
+
+
+
