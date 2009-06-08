@@ -1,5 +1,5 @@
 #!/usr/bin/python
 
-from PythonInterpreter import StandaloneInterpreter
+from Kamaelia.Experimental.PythonInterpreter import StandaloneInterpreter
 
 StandaloneInterpreter().run()

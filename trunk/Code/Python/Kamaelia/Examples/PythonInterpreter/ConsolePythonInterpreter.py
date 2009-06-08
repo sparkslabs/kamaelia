@@ -3,7 +3,7 @@
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Console import *
 
-from PythonInterpreter import InterpreterTransformer
+from Kamaelia.Experimental.PythonInterpreter import InterpreterTransformer
 
 Pipeline(
     ConsoleReader(),
