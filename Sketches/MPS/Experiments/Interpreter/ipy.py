@@ -54,7 +54,7 @@ import string
 
 import Axon
 
-class Interpreter(Axon.ThreadedComponent.threadedcomponent):
+class StandaloneInterpreter(Axon.ThreadedComponent.threadedcomponent):
     def console(self):
         while 1:
             yield raw_input("> ")
@@ -65,58 +65,52 @@ class Interpreter(Axon.ThreadedComponent.threadedcomponent):
         last = ""
         __co__ = None
         env = {}
-        for __line__ in __SCRIPT__:
-            _ = None
-            __script__ = __script__ + __line__ + "\n"
-            try:
-                __co__ = code.compile_command(__script__, "<stdin>", "exec")
-            except:
-                f = StringIO.StringIO()
-                traceback.print_exc(file=f)
-                print "EPIC FAIL"
-                print f.getvalue()
-                f.close()
-                print __script__
-                print repr(__script__)
-                __script__ = ""
-
-            if __line__[:1] != " ":
-                if __co__:
-    #                if ("=" not in __script__ and 
-    #                    ":" not in __script__ and
-    #                    "print" not in __script__ ):
-                    print "\nok"
-                    try:
-                        __co__ = code.compile_command("_="+__script__, "<stdin>", "exec")
-                    except:
-                        pass
-
-    #                print "successful statement"
-    #                # got a complete statement.  execute it!
-    #                print "-"*40
-    #                print __script__,
-    #                print "-"*40
-                    try:
-                        pre = env.get("_", None)
-#                        print "X: ",env.get("_", "undef")
-                        env.update(globals())
-                        env.update(locals())
-                        env["_"] = pre
-                        exec __co__ in env
-                        if env["_"]:
-                            print env["_"]
-                            env["_"] = None
-                    except:
-                        f = StringIO.StringIO()
-                        traceback.print_exc(file=f)
-                        print "EPIC FAIL"
-                        print f.getvalue()
-                        f.close()
+        try:
+            for __line__ in __SCRIPT__:
+                _ = None
+                __script__ = __script__ + __line__ + "\n"
+                try:
+                    __co__ = code.compile_command(__script__, "<stdin>", "exec")
+                except:
+                    f = StringIO.StringIO()
+                    traceback.print_exc(file=f)
+                    print "EPIC FAIL"
+                    print f.getvalue()
+                    f.close()
+                    print __script__
+                    print repr(__script__)
                     __script__ = ""
+
+                if __line__[:1] != " ":
+                    if __co__:
+                        print "\nok"
+                        try:
+                            __co__ = code.compile_command("_="+__script__, "<stdin>", "exec")
+                        except:
+                            pass
+
+                        try:
+                            pre = env.get("_", None)
+                            env.update(globals())
+                            env.update(locals())
+                            env["_"] = pre
+                            exec __co__ in env
+                            if env["_"]:
+                                print env["_"]
+                                env["_"] = None
+                        except:
+                            f = StringIO.StringIO()
+                            traceback.print_exc(file=f)
+                            print "EPIC FAIL"
+                            print f.getvalue()
+                            f.close()
+                        __script__ = ""
+                    else:
+                        last = __line__
                 else:
                     last = __line__
-            else:
-                last = __line__
+        except EOFError:
+            pass
 
 
 class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
@@ -148,24 +142,14 @@ class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
 
                 if __line__[:1] != " ":
                     if __co__:
-        #                if ("=" not in __script__ and 
-        #                    ":" not in __script__ and
-        #                    "print" not in __script__ ):
-#                        self.send( "ok" )
                         try:
                             __co__ = code.compile_command("_="+__script__, "<stdin>", "exec")
                         except:
                             pass
 
-        #                print "successful statement"
-        #                # got a complete statement.  execute it!
-        #                print "-"*40
-        #                print __script__,
-        #                print "-"*40
                         sent = False
                         try:
                             pre = env.get("_", None)
-    #                        print "X: ",env.get("_", "undef")
                             env.update(globals())
                             env.update(locals())
                             env["_"] = pre
@@ -189,23 +173,40 @@ class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
                 else:
                     last = __line__
 
-from Kamaelia.Chassis.ConnectedServer import ServerCore
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Util.Console import *
-from Kamaelia.Util.PureTransformer import PureTransformer
+if __name__ == "__main__":
 
-if 0:
-    Pipeline(
-        ConsoleReader(),
-        InterpreterTransformer(),
-        ConsoleEchoer(),
-    ).run()
+    from Kamaelia.Chassis.Pipeline import Pipeline
 
-def NetInterpreter(*args, **argv):
-    return Pipeline(
-                PureTransformer(lambda x: str(x).rstrip()),
-                InterpreterTransformer(),
-                PureTransformer(lambda x: str(x)+"\r\n>>> "),
-           )
+    if 0:
+        StandaloneInterpreter().run()
 
-ServerCore(protocol=NetInterpreter, port=1236).run()
+
+    if 0:
+        from Kamaelia.Util.Console import *
+        Pipeline(
+            ConsoleReader(),
+            InterpreterTransformer(),
+            ConsoleEchoer(),
+        ).run()
+
+    if 0:
+
+        from Kamaelia.Chassis.ConnectedServer import ServerCore
+        from Kamaelia.Util.PureTransformer import PureTransformer
+
+        def NetInterpreter(*args, **argv):
+            return Pipeline(
+                        PureTransformer(lambda x: str(x).rstrip()),
+                        InterpreterTransformer(),
+                        PureTransformer(lambda x: str(x)+"\r\n>>> "),
+                   )
+
+        ServerCore(protocol=NetInterpreter, port=1236).run()
+
+    if 1:
+        from Kamaelia.UI.Pygame.Text import Textbox, TextDisplayer
+        Pipeline(
+            Textbox(size = (800, 300), position = (100,380)),
+            InterpreterTransformer(),
+            TextDisplayer(size = (800, 300), position = (100,40)),
+        ).run()
