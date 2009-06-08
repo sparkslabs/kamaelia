@@ -118,4 +118,94 @@ class Interpreter(Axon.ThreadedComponent.threadedcomponent):
             else:
                 last = __line__
 
-Interpreter().run()
+
+class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
+    def console(self):
+        while 1:
+            yield raw_input("> ")
+
+    def main(self):
+        __script__ = ""
+        __SCRIPT__ = self.console()
+        last = ""
+        __co__ = None
+        env = {}
+        self.send(" ")
+        while True:
+            for __line__ in self.Inbox("inbox"):
+                _ = None
+                __script__ = __script__ + __line__ + "\n"
+                try:
+                    __co__ = code.compile_command(__script__, "<stdin>", "exec")
+                except:
+                    f = StringIO.StringIO()
+                    traceback.print_exc(file=f)
+                    self.send( "EPIC FAIL", "outbox" )
+                    self.send( f.getvalue() )
+                    f.close()
+                    self.send( repr(__script__) )
+                    __script__ = ""
+
+                if __line__[:1] != " ":
+                    if __co__:
+        #                if ("=" not in __script__ and 
+        #                    ":" not in __script__ and
+        #                    "print" not in __script__ ):
+#                        self.send( "ok" )
+                        try:
+                            __co__ = code.compile_command("_="+__script__, "<stdin>", "exec")
+                        except:
+                            pass
+
+        #                print "successful statement"
+        #                # got a complete statement.  execute it!
+        #                print "-"*40
+        #                print __script__,
+        #                print "-"*40
+                        sent = False
+                        try:
+                            pre = env.get("_", None)
+    #                        print "X: ",env.get("_", "undef")
+                            env.update(globals())
+                            env.update(locals())
+                            env["_"] = pre
+                            exec __co__ in env
+                            if env["_"]:
+                                self.send( env["_"] )
+                                env["_"] = None
+                                sent = True
+                        except:
+                            f = StringIO.StringIO()
+                            traceback.print_exc(file=f)
+                            self.send( "EPIC FAIL" )
+                            self.send( f.getvalue() )
+                            f.close()
+                            sent = True
+                        __script__ = ""
+                        if not sent:
+                            self.send( " " )
+                    else:
+                        last = __line__
+                else:
+                    last = __line__
+
+from Kamaelia.Chassis.ConnectedServer import ServerCore
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Console import *
+from Kamaelia.Util.PureTransformer import PureTransformer
+
+if 0:
+    Pipeline(
+        ConsoleReader(),
+        InterpreterTransformer(),
+        ConsoleEchoer(),
+    ).run()
+
+def NetInterpreter(*args, **argv):
+    return Pipeline(
+                PureTransformer(lambda x: str(x).rstrip()),
+                InterpreterTransformer(),
+                PureTransformer(lambda x: str(x)+"\r\n>>> "),
+           )
+
+ServerCore(protocol=NetInterpreter, port=1236).run()
