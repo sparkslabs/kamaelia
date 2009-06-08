@@ -97,19 +97,21 @@ class Interpreter(Axon.ThreadedComponent.threadedcomponent):
     #                print __script__,
     #                print "-"*40
                     try:
+                        pre = env.get("_", None)
+#                        print "X: ",env.get("_", "undef")
                         env.update(globals())
                         env.update(locals())
+                        env["_"] = pre
                         exec __co__ in env
+                        if env["_"]:
+                            print env["_"]
+                            env["_"] = None
                     except:
                         f = StringIO.StringIO()
                         traceback.print_exc(file=f)
                         print "EPIC FAIL"
                         print f.getvalue()
                         f.close()
-                    else:
-                        if _:
-                            print _
-                            _ = None
                     __script__ = ""
                 else:
                     last = __line__
