@@ -155,7 +155,7 @@ class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
                     f.close()
                     self.send( repr(__script__) )
                     __script__ = ""
-
+                
                 if __line__[:1] != " ":
                     if __co__:
                         try:
@@ -191,7 +191,7 @@ class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
 
 if __name__ == "__main__":
 
-"""
+    """
 Some basic examples on how to use this interpreter.
 """
 
