@@ -1,50 +1,66 @@
 #!/usr/bin/python
+#
+# Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
+#     All Rights Reserved.
+#
+# You may only modify and redistribute this under the terms of any of the
+# following licenses(2): Mozilla Public License, V1.1, GNU General
+# Public License, V2.0, GNU Lesser General Public License, V2.1
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     not this notice.
+# (2) Reproduced in the COPYING file, and at:
+#     http://kamaelia.sourceforge.net/COPYING
+# Under section 3.5 of the MPL, we are using this text since we deem the MPL
+# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
+# notice is prohibited.
+#
+# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
+# to discuss alternative licensing.
+# -------------------------------------------------------------------------
 """
+===========================
+PythonInterpreter Component
+===========================
+
 Initial version of an interactive console in Kamaelia. Provides a nice way
-of playing with Kamaelia components it seems.
+of playing with Kamaelia components and examining running systems.
 
-First working/nice transcript:
+Example Usage
+-------------
 
-> def send(arg):
->    self.send(arg)
->
+Show a pygame Textbox for reading user input, and a TextDisplayer, showing
+the interpreter's response.
 
-ok
-> from Kamaelia.UI.Pygame.Ticker import Ticker
+    from Kamaelia.UI.Pygame.Text import Textbox, TextDisplayer
+    Pipeline(
+        Textbox(size = (800, 300), position = (100,380)),
+        InterpreterTransformer(),
+        TextDisplayer(size = (800, 300), position = (100,40)),
+    ).run()
 
-ok
-> X=Ticker()
+This then operates as a normal python interpreter which happens to run in a
+pygame window.
 
-ok
-> def outputto(C):
->     self.link((self, "outbox"), (C, "inbox"))
->
+How to use it
+-------------
 
-ok
-> outputto(X)
+This component takes python commands from its inbox "inbox", and spits out
+normal python interpreter repsonses out its outbox "outbox". 
 
-ok
-> X.activate()
 
-ok
-> send("hello")
+There are more examples in the examples directory.
 
-ok
-> send("Chickens eat fish")
+Warning
+-------
 
-ok
-> send("OK")
+This component may well change its location in the Kamaelia namespace.
 
-ok
-> send("OKOKOKOKOK")
+TODO
+----
 
-ok
-> send("Interesting, that actually seems to work, I wonder what happens if I type alot in here")
-
-ok
-> send("Neat!")
-
-ok
+More detailed examples.
 
 """
 import code
@@ -174,6 +190,10 @@ class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
                     last = __line__
 
 if __name__ == "__main__":
+
+"""
+Some basic examples on how to use this interpreter.
+"""
 
     from Kamaelia.Chassis.Pipeline import Pipeline
 
