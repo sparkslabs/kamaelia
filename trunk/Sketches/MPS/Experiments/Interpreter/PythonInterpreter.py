@@ -177,10 +177,11 @@ if __name__ == "__main__":
 
     from Kamaelia.Chassis.Pipeline import Pipeline
 
+#FILE: STANDALONE
     if 0:
         StandaloneInterpreter().run()
 
-
+#FILE: Console Embeddable
     if 0:
         from Kamaelia.Util.Console import *
         Pipeline(
@@ -189,8 +190,9 @@ if __name__ == "__main__":
             ConsoleEchoer(),
         ).run()
 
-    if 0:
 
+#FILE: Server Embeddable
+    if 0:
         from Kamaelia.Chassis.ConnectedServer import ServerCore
         from Kamaelia.Util.PureTransformer import PureTransformer
 
@@ -203,6 +205,8 @@ if __name__ == "__main__":
 
         ServerCore(protocol=NetInterpreter, port=1236).run()
 
+
+#FILE: Pygame Embeddable
     if 1:
         from Kamaelia.UI.Pygame.Text import Textbox, TextDisplayer
         Pipeline(
