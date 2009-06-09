@@ -130,13 +130,8 @@ class StandaloneInterpreter(Axon.ThreadedComponent.threadedcomponent):
 
 
 class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
-    def console(self):
-        while 1:
-            yield raw_input("> ")
-
     def main(self):
         __script__ = ""
-        __SCRIPT__ = self.console()
         last = ""
         __co__ = None
         env = {}
