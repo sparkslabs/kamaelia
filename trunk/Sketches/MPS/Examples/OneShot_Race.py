@@ -56,8 +56,7 @@ if 1:  # Client
             OneShot("Hello8\r\n"),
         ),
         TCPClient("127.0.0.1", 2345),
-        Raw(),
-#        ConsoleEchoer(),
+        ConsoleEchoer(),
     ).run()
 
 if 0:  # Client Doesn't Connect
