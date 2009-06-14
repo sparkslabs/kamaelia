@@ -184,31 +184,64 @@ class TCPServer(Axon.Component.component):
       Sends a shutdownCSA(self, theCSA) message to "protocolHandlerSignal" outbox.
       """
       theComponent,(sock,howdied) = shutdownMessage.caller, shutdownMessage.message
+      shutdownMessage.caller, shutdownMessage.message = None, None
+      shutdownMessage = None
+#      print "SOCKET HANDLERS BEFORE", self.socket_handlers
+#      print "TCPServer.closeSocket", theComponent,(sock,howdied)
       ### FIXME: Pass on how died as well in TCPServer!
+      found = False
+      for s in self.socket_handlers:
+          if self.socket_handlers[s]==theComponent:
+              found = True
+      if found:
+        sock = s
+
       if sock is not None:
           theComponent = self.socket_handlers[sock]
           sock.close()
 
+      if theComponent:
           # tell the selector about it shutting down
-      
+
           self.send(removeReader(theComponent, sock), "_selectorSignal")            
           self.send(removeWriter(theComponent, sock), "_selectorSignal")
-#      self.send(removeReader(theComponent, theComponent.socket), "_selectorSignal")            
-#      self.send(removeWriter(theComponent, theComponent.socket), "_selectorSignal")
 
           # tell protocol handlers
           self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
           # Delete the child component
+#          print; print "DELETING", theComponent
           self.removeChild(theComponent)
+          if sock:
+              del self.socket_handlers[sock]
+          sock = None
+
+#      print "***************************************************************************************************************************************"
+#      print "*                                                                                                                                     *"
+#      print "*                                                                                                                                     *"
+#      print "SOCKET HANDLERS AFTER", self.socket_handlers
+#      print "protocolHandlerSignal", self.outboxes["protocolHandlerSignal"]
+#      print type(self.outboxes["protocolHandlerSignal"])
+#      print type(self.outboxes["protocolHandlerSignal"].storage)
+#      print type(self.outboxes["protocolHandlerSignal"].target)
+#      print type(self.outboxes["protocolHandlerSignal"].target.storage)
+#      print "*                                                                                                                                     *"
+#      print "*                                                                                                                                     *"
+#      print "***************************************************************************************************************************************"
+#      print "CHILDREN", self.children
+#      print "LINKAGES"
+#      import pprint
+#      pprint.pprint([str(x) for x in self.postoffice.linkages])
 
    def anyClosedSockets(self):
       """Check "_feedbackFromCSA" inbox for socketShutdown messages, and close sockets in response."""
       closedSomeSockets=False
       while self.dataReady("_feedbackFromCSA"):
          data = self.recv("_feedbackFromCSA")
+#         print "DATA", data
          if isinstance( data, _ki.socketShutdown):
             self.closeSocket(data)
          closedSomeSockets=True
+         data = None
       return closedSomeSockets
 
    def handleNewConnection(self):
@@ -261,6 +294,7 @@ class TCPServer(Axon.Component.component):
        while 1:
            if not self.anyReady():
                self.pause()
+               yield 1
            if self.anyClosedSockets():
                for i in xrange(10):
                   yield 1

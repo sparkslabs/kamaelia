@@ -313,6 +313,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     self.handleNewConnection(data)
                 if isinstance(data, shutdownCSA):
                     self.handleClosedCSA(data)
+                data = None
             if self.dataReady("control"):
                 data = self.recv("control")
 #                if isinstance(data, serverShutdown):
@@ -347,7 +348,6 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         - newCSAMessage  -- newCSAMessage.object is the ConnectedSocketAdapter component for the connection
         """
         connectedSocket = newCSAMessage.object
-
         sock = newCSAMessage.sock
         try:
             peer, peerport = sock.getpeername()
@@ -364,11 +364,12 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         # sys.stderr.write("Wooo!\n"); sys.stderr.flush()
 
-        self.trackResourceInformation(connectedSocket, 
-                                      [], 
-                                      [outboxToShutdownProtocolHandler], 
-                                      protocolHandler)
-        # sys.stderr.write("Um, that should've tracked something...!\n"); sys.stderr.flush()
+        if 0:
+            self.trackResourceInformation(connectedSocket,  # This link is replaced by the one marked XXXXXXXX below
+                                          [],
+                                          [outboxToShutdownProtocolHandler], 
+                                          protocolHandler)
+            # sys.stderr.write("Um, that should've tracked something...!\n"); sys.stderr.flush()
 
         self.link((connectedSocket,"outbox"),(protocolHandler,"inbox"))
         self.link((protocolHandler,"outbox"),(connectedSocket,"inbox"))
@@ -381,14 +382,19 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         else:
             controllink = None
 
-        self.trackResourceInformation(connectedSocket, 
-                                      [], 
+        # XXXXXXXX
+        self.trackResourceInformation(connectedSocket,
+                                      [],
                                       [outboxToShutdownProtocolHandler, outboxToShutdownConnectedSocket], 
                                       ( protocolHandler, controllink ) )
 
         self.addChildren(connectedSocket,protocolHandler)
+#        print "CSA", connectedSocket
+#        print "PH", protocolHandler
         connectedSocket.activate()
         protocolHandler.activate()
+
+        newCSAMessage = None
 
     def handleClosedCSA(self,shutdownCSAMessage):
         """
@@ -402,6 +408,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         connectedSocket = shutdownCSAMessage.object
         try:
             bundle=self.retrieveTrackedResourceInformation(connectedSocket)
+#            print "BUNDLE", bundle
         except KeyError:
             # This means we've actually already done this...
             return
@@ -409,7 +416,10 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
         self.connectedSockets = [ x for x in self.connectedSockets if x != connectedSocket ]
 
-        self.unlink(thelinkage=controllink)
+        if controllink:
+            self.unlink(thelinkage=controllink)
+#        else:
+#            print "Control Link is null, not unlinking"
 
         self.send(socketShutdown(),resourceOutboxes[0]) # This is now instantly delivered
         self.send(shutdownMicroprocess(),resourceOutboxes[1]) # This is now instantly delivered
@@ -420,7 +430,9 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                                # This did not used to be the case.
         self.deleteOutbox(resourceOutboxes[1]) # So this is now safe
                                                # This did not used to be the case.
+#        print "CEASING TRACKING", self._resourceStore
         self.ceaseTrackingResource(connectedSocket)
+#        print "CEASED TRACKING", self._resourceStore
 
 class SimpleServer(ServerCore):
     """
