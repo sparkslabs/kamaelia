@@ -19,6 +19,8 @@ class Echo(Axon.Component.component):
                print "msg", self.peer, self.peerport
                self.send(msg, "outbox")
            yield 1       
+       print "CLIENT DISCONNECT", self.peer, self.peerport
+       print "UNSENT", self.outboxes
        self.send(self.recv("control"), "signal")
 
 class Pause(Axon.ThreadedComponent.threadedcomponent):
@@ -60,7 +62,7 @@ if 1: # Server
                socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
               ).activate()
 
-if 1:  # Client
+if 0:  # Client
     from Kamaelia.Chassis.Graphline import Graphline
     Graphline(
         CLIENT_PROTOCOL=Seq(
@@ -103,8 +105,26 @@ if 0:  # Client
 
 if 0:  # Client Doesn't Connect
     Pipeline(
+        Seq(
+            OneShot("Hello\n"),
+        ),
+        TCPClient("127.0.0.1", 2345),
+        ConsoleEchoer(),
+    ).run()
+
+if 1:  # Client Doesn't Connect
+    Pipeline(
         OneShot("Hello\n"),
         TCPClient("127.0.0.1", 2345),
         ConsoleEchoer(),
+    ).run()
+
+if 0:  # Client Doesn't Connect
+    Seq(
+        Pipeline(
+            OneShot("Hello\n"),
+            TCPClient("127.0.0.1", 2345),
+            ConsoleEchoer(),
+        ),
     ).run()
 
