@@ -26,6 +26,16 @@ class Pause(Axon.ThreadedComponent.threadedcomponent):
     def main(self):
         time.sleep(self.delay)
 
+import sys
+class Raw(Axon.Component.component):
+    def main(self):
+        while 1:
+            for i in self.Inbox("inbox"):
+                sys.stdout.write(repr(i)+"\n")
+                sys.stdout.flush()
+            yield 1
+
+
 if 1: # Server
     ServerCore(protocol=Echo, 
                port=2345,
@@ -36,10 +46,18 @@ if 1:  # Client
     Pipeline(
         Seq(
             Pause(delay=0.1),
-            OneShot("Hello\n"),
+            OneShot("Hello1\r\n"),
+            OneShot("Hello2\r\n"),
+            OneShot("Hello3\r\n"),
+            OneShot("Hello4\r\n"),
+            OneShot("Hello5\r\n"),
+            OneShot("Hello6\r\n"),
+            OneShot("Hello7\r\n"),
+            OneShot("Hello8\r\n"),
         ),
         TCPClient("127.0.0.1", 2345),
-        ConsoleEchoer(),
+        Raw(),
+#        ConsoleEchoer(),
     ).run()
 
 if 0:  # Client Doesn't Connect
