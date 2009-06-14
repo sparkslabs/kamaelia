@@ -92,7 +92,6 @@ from Kamaelia.IPC import newReader, newWriter, removeReader, removeWriter
 
 from Kamaelia.KamaeliaExceptions import *
 import traceback
-import pprint
 
 whinge = { "socketSendingFailure": True, "socketRecievingFailure": True }
 crashAndBurn = { "uncheckedSocketShutdown" : True,
@@ -217,10 +216,16 @@ class ConnectedSocketAdapter(component):
        self.socket = None
 
        self.passOnShutdown()
-       if (self.socket is not None):
+       if (sock is not None):
            self.send(removeReader(self, sock), "_selectorSignal")
            self.send(removeWriter(self, sock), "_selectorSignal")
+       sock = None
        super(ConnectedSocketAdapter, self).stop()
+#       import gc
+#       import pprint
+#       gc.collect()
+#       print "REFERRERS", len(gc.get_referrers(self))
+#       pprint.pprint([(type(x),x) for x in gc.get_referrers(self)])
 
    def _safesend(self, sock, data):
        """Internal only function, used for sending data, and handling EAGAIN style
@@ -360,7 +365,19 @@ class ConnectedSocketAdapter(component):
           if not self.canDoSomething():
               self.pause()
  
-       self.passOnShutdown()
+#       self.passOnShutdown()
+       self.stop()
        # NOTE: the creator of this CSA is responsible for removing it from the selector
+
+#       print 
+#       print "------------------------------------------------------------------------------------"
+#       print "DROPPED OFF THE END OF THE GENERATOR",self.socket
+       self.socket=None
+#       print self.__dict__
+#       print self.postoffice
+#       print [str(x) for x in self.postoffice.linkages]
+       for linkage in self.postoffice.linkages:
+           self.unlink(thelinkage=linkage)
+#       print "------------------------------------------------------------------------------------"
 
 __kamaelia_components__  = ( ConnectedSocketAdapter, )

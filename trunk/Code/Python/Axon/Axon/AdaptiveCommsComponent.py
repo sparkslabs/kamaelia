@@ -198,8 +198,14 @@ class _AdaptiveCommsable(object):
       # print "TRACKING", inboxes, outboxes, information
       # print "USING", repr(resource)
 
+#      print "TRACKING FOR RESOURCE", resource
       [ self.inboxes[x] for x in inboxes] # Force an assertion if any inbox does not exist
       [ self.outboxes[x] for x in outboxes] # Force an assertion if any inbox does not exist
+#      if self._resourceStore.get(resource, False):
+#          print "Changing resources tracked for", resource
+#          print "Was tracking", self._resourceStore[resource]
+#          print "Now Tracking", (inboxes, outboxes, information)
+
       self._resourceStore[resource] = (inboxes, outboxes, information)
 
 
