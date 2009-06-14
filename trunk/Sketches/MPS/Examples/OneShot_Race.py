@@ -61,6 +61,30 @@ if 1: # Server
               ).activate()
 
 if 1:  # Client
+    from Kamaelia.Chassis.Graphline import Graphline
+    Graphline(
+        CLIENT_PROTOCOL=Seq(
+                          Pause(delay=0.1),
+                          OneShot("Hello1\r\n"),
+                          OneShot("Hello2\r\n"),
+                          OneShot("Hello3\r\n"),
+                          OneShot("Hello4\r\n"),
+                          OneShot("Hello5\r\n"),
+                          OneShot("Hello6\r\n"),
+                          OneShot("Hello7\r\n"),
+                          OneShot("Hello8\r\n"),
+                      ),
+        
+        CLIENT = TCPClient("127.0.0.1", 2345),
+        SANITY_CHECK = ConsoleEchoer(),
+        linkages = {
+            ("CLIENT_PROTOCOL","outbox"):("CLIENT","inbox"),
+            ("CLIENT","outbox"):("SANITY_CHECK","inbox"),
+        }
+    ).run()
+
+
+if 0:  # Client
     Pipeline(
         Seq(
             Pause(delay=0.1),
