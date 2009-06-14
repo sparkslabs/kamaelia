@@ -36,6 +36,24 @@ class Raw(Axon.Component.component):
             yield 1
 
 
+from Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.Experimental.PythonInterpreter import InterpreterTransformer
+
+def NetInterpreter(*args, **argv):
+    return Pipeline(
+                PureTransformer(lambda x: str(x).rstrip()),
+                PureTransformer(lambda x: str(x).replace("\r","")),
+                InterpreterTransformer(),
+                PureTransformer(lambda x: str(x)+"\r\n>>> "),
+           )
+
+ServerCore(protocol=NetInterpreter,
+           socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
+           port=8765).activate()
+
+
+
+
 if 1: # Server
     ServerCore(protocol=Echo, 
                port=2345,
