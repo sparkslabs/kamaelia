@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import time
 import socket
 import Axon
@@ -10,6 +11,64 @@ from Kamaelia.Util.OneShot import OneShot
 from Kamaelia.Util.Console import *
 from Kamaelia.Chassis.Seq import Seq
 from Kamaelia.Internet.TCPClient import TCPClient
+
+import gc
+
+class GDumper(Axon.ThreadedComponent.threadedcomponent):
+    def main(self):
+        while 1:
+            time.sleep(5)
+            X=Y=Z=o=rx=y=z=None
+            gc.collect()
+            Z=[]
+            for z in gc.get_objects():
+                try:
+                    z.__class__
+                    Z.append(z)
+                except AttributeError:
+                    pass
+
+            y=[x for x in Z if "Connected" in x.__class__.__name__]
+            print "--------------------------------------------------"
+            print [str(x) for x in y]
+            print [ len(gc.get_referrers(x)) for x in y]
+            for o in y:
+#                os.system("clear")
+                print "--------------------------------------------------"
+                print 
+                print "REFERRERS for ", str(o)
+                for r in gc.get_referrers(o):
+                    if 'frame' in str(type(r)):
+                         print dir(r)
+                         if './OneShot_Race.py' in str(r.f_code):
+                             continue
+                    if 'list' in str(type(r)):
+                        if id(r) == id(Z):
+                            continue
+                        if id(r) == id(y):
+                            continue
+                        print "LISTID", id(r), id(Z), id(y)
+                    if 'dict' in str(type(r)):
+                        print 
+                        print "DICT", type(r),str(r)[:190]
+                        for rr in  gc.get_referrers(r):
+
+                            if 'frame' in str(type(rr)):
+                                 if './OneShot_Race.py' in str(rr.f_code):
+                                     continue
+
+                            print "    --->", type(rr),str(rr)[:900]
+
+                        print
+                        print
+                        continue
+                    print "   ", type(r),str(r)[:200]
+                    
+            del y
+            del Z
+            
+
+GDumper().activate()
 
 class Echo(Axon.Component.component):
    def main(self):
@@ -62,6 +121,12 @@ if 1: # Server
                socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
               ).activate()
 
+if 0: # Server
+    ServerCore(protocol=Echo, 
+               port=2345,
+               socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
+              ).run()
+
 if 0:  # Client
     from Kamaelia.Chassis.Graphline import Graphline
     Graphline(
@@ -86,7 +151,7 @@ if 0:  # Client
     ).run()
 
 
-if 0:  # Client
+if 0: # Client doesn't get data back, because of producerFinished message
     Pipeline(
         Seq(
             Pause(delay=0.1),
@@ -103,7 +168,7 @@ if 0:  # Client
         ConsoleEchoer(),
     ).run()
 
-if 0:  # Client Doesn't Connect
+if 0: # Client doesn't get data back, because of producerFinished message
     Pipeline(
         Seq(
             OneShot("Hello\n"),
@@ -112,14 +177,14 @@ if 0:  # Client Doesn't Connect
         ConsoleEchoer(),
     ).run()
 
-if 1:  # Client Doesn't Connect
+if 0: # Client doesn't get data back, because of producerFinished message
     Pipeline(
         OneShot("Hello\n"),
         TCPClient("127.0.0.1", 2345),
         ConsoleEchoer(),
     ).run()
 
-if 0:  # Client Doesn't Connect
+if 1: # Client doesn't get data back, because of producerFinished message
     Seq(
         Pipeline(
             OneShot("Hello\n"),
