@@ -64,7 +64,7 @@ if 1:  # Client
     from Kamaelia.Chassis.Graphline import Graphline
     Graphline(
         CLIENT_PROTOCOL=Seq(
-                          Pause(delay=0.1),
+#                          Pause(delay=0.1),
                           OneShot("Hello1\r\n"),
                           OneShot("Hello2\r\n"),
                           OneShot("Hello3\r\n"),
