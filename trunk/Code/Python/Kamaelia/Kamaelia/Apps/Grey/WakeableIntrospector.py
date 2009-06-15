@@ -36,9 +36,7 @@ It then sits quietly waking for a message (any message) on the inbox "inbox".
 Termination
 -----------
 
-This component is not well behaved regarding termination, in that it does
-not have any shutdown conditions.
-
+This component will shutdown if any message is sent to its control inbox.
 
 
 TODO
