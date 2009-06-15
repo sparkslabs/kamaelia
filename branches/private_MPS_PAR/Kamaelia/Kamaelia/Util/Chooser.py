@@ -168,7 +168,7 @@ class Chooser(Axon.Component.component):
             elif msg == "NEXT":
                send = self.gotoNext()
             elif msg == "PREV":
-               send = self.gotoNext()
+               send = self.gotoPrev()
             elif msg == "FIRST":
                send = self.gotoFirst()
             elif msg == "LAST":
@@ -232,5 +232,5 @@ class Chooser(Axon.Component.component):
       return True
 
 
-__kamaelia_components__  = ( Chooser, ForwardIteratingChooser, )
-      
+# __kamaelia_components__  = ( Chooser, ForwardIteratingChooser, ) # Um, where's the missing chooser gone???
+__kamaelia_components__  = ( Chooser, )
