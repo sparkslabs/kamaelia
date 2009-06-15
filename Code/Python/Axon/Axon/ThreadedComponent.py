@@ -554,7 +554,7 @@ class threadedcomponent(Component.component):
                       try:
                           self._nonthread_send(msg, box)
                       except noSpaceInBox, e:
-                          raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+                          raise RuntimeError("Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?")
                   else:
                       stuffWaiting = True
                       break

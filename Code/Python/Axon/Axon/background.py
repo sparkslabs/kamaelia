@@ -126,7 +126,7 @@ class background(threading.Thread):
     lock = threading.Lock()
     def __init__(self,slowmo=0,zap=False):
         if not background.lock.acquire(False):
-            raise "only one scheduler for now can be run!"
+            raise RuntimeError("only one scheduler for now can be run!")
         self.slowmo = slowmo
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
