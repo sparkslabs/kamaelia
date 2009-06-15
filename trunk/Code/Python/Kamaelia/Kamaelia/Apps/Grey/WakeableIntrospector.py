@@ -62,7 +62,7 @@ class WakeableIntrospector(Axon.Component.component):
         x.flush()
         x.close()
     def main(self):
-        while 1:
+        while not self.dataReady("control"):
             Q = [ q.name for q in self.scheduler.listAllThreads() ]
             Q.sort()
             self.noteToLog("*debug* THREADS"+ str(Q))
@@ -71,6 +71,9 @@ class WakeableIntrospector(Axon.Component.component):
             while not self.dataReady("inbox"):
                 self.pause()
                 yield 1
-            while self.dataReady("inbox"): self.recv("inbox")
+            for _ in self.Inbox("inbox"):
+                pass
+
+        self.send(self.recv("control"),"signal")
 
 __kamaelia_components__  = ( WakeableIntrospector, )
