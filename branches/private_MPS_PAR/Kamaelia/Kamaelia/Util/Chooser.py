@@ -231,6 +231,97 @@ class Chooser(Axon.Component.component):
       self.index = 0
       return True
 
+class ForwardIteratingChooser(Axon.Component.component):
+   """\
+   Chooser([items]) -> new Chooser component.
 
-# __kamaelia_components__  = ( Chooser, ForwardIteratingChooser, ) # Um, where's the missing chooser gone???
-__kamaelia_components__  = ( Chooser, )
+   Iterates through an iterable set of items. Step by sending "NEXT" messages to
+   its "inbox" inbox.
+   
+   Keyword arguments:
+   - items  -- iterable source of items to be chosen from (default=[])
+   """
+   Inboxes = { "inbox"   : "receive commands",
+               "control" : "shutdown messages"
+             }
+   Outboxes = { "outbox" : "emits chosen items",
+                "signal" : "shutdown messages"
+              }
+
+   def __init__(self, items = []):
+      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+      super(ForwardIteratingChooser,self).__init__()
+
+      self.items = iter(items)
+      self.gotoNext()
+
+
+   def shutdown(self):
+        """
+        Returns True if a shutdownMicroprocess message was received.
+        """
+        if self.dataReady("control"):
+            message = self.recv("control")
+            if isinstance(message, shutdownMicroprocess):
+                self.send(message, "signal")
+                return True
+        return False
+
+   def main(self):
+      """Main loop."""
+      try:
+         self.send( self.getCurrentChoice(), "outbox")
+      except IndexError:
+         pass
+
+      done = False
+      while not done:
+         yield 1
+
+         while self.dataReady("inbox"):
+            send = True
+            msg = self.recv("inbox")
+
+            if msg == "SAME":
+               pass
+            elif msg == "NEXT":
+               send = self.gotoNext()
+               if not send:
+                   done = True
+                   self.send( producerFinished(self), "signal")
+            else:
+               send = False
+
+            if send:
+               try:
+                  self.send( self.getCurrentChoice(), "outbox")
+               except IndexError:
+                  pass
+
+         done = done or self.shutdown()
+         
+         if not done:
+             self.pause()
+
+   def getCurrentChoice(self):
+      """Return the current choice"""
+      try:
+         return self.currentitem
+      except AttributeError:
+         raise IndexError()
+
+
+   def gotoNext(self):
+      """\
+      Advance the choice forwards one.
+
+      Returns True if successful or False if unable to (eg. already at end).
+      """
+      try:
+         self.currentitem = self.items.next()
+         return True
+      except StopIteration:
+         return False
+
+
+ __kamaelia_components__  = ( Chooser, ForwardIteratingChooser, )
