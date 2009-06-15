@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2005 British Broadcasting Corporation and Kamaelia Contributors(1)
+# Copyright (C) 2009 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
 # You may only modify and redistribute this under the terms of any of the
@@ -20,252 +20,141 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 """\
-==================================
-Wiring up components in a topology
-==================================
+==========================================================
+Running components in parallel conveniently, shared output
+==========================================================
 
-The Graphline component wires up a set of components and encapsulates them as a
-single component. They are wired up to each other using the 'graph' of linkages
-that you specify.
+The PAR component activates all the subcomponents listed to run in parallel
+- hence the name - from Occam. Shutdown messages are passed to all
+subcomponents. Their shutdown messages propogate out the PAR component's
+signal outbox.
 
+Future work will include the ability to define input policies regarding what
+to do with messages from the main inbox. (not yet implemented)
+
+For more complex topologies, see the Graphline component.
 
 
 Example Usage
 -------------
 
-Joining a PromtedFileReader and a rate control component to make a file reader
-that reads at a given rate::
+One example initially. This::
 
-   return Graphline(RC  = ByteRate_RequestControl(**rateargs),
-                    RFA = PromptedFileReader(filename, readmode),
-                    linkages = { ("RC",  "outbox")  : ("RFA", "inbox"),
-                                ("RFA", "outbox")  : ("self", "outbox"),
-                                ("RFA", "signal")  : ("RC",  "control"),
-                                ("RC",  "signal")  : ("self", "signal"),
-                                ("self", "control") : ("RFA", "control")
-                                }
+    Pipeline(
+       PAR(
+           Button(caption="Next", msg="NEXT", position=(72,8)),
+           Button(caption="Previous", msg="PREV",position=(8,8)),
+           Button(caption="First", msg="FIRST",position=(256,8)),
+           Button(caption="Last", msg="LAST",position=(320,8)),
+       ),
+       Chooser(items = files),
+       Image(size=(800,600), position=(8,48)),
+    ).run()
 
-The references to 'self' create linkages that passes through a named inbox on
-the graphline to a named inbox of one of the child components. Similarly a
-child's outbox is pass-through to a named outbox on the graphline.
+Is equivalent to this::
+
+    Graphline(
+         NEXT = Button(caption="Next", msg="NEXT", position=(72,8)),
+         PREVIOUS = Button(caption="Previous", msg="PREV",position=(8,8)),
+         FIRST = Button(caption="First", msg="FIRST",position=(256,8)),
+         LAST = Button(caption="Last", msg="LAST",position=(320,8)),
+
+         CHOOSER = Chooser(items = files),
+         IMAGE = Image(size=(800,600), position=(8,48)),
+         linkages = {
+            ("NEXT","outbox") : ("CHOOSER","inbox"),
+            ("PREVIOUS","outbox") : ("CHOOSER","inbox"),
+            ("FIRST","outbox") : ("CHOOSER","inbox"),
+            ("LAST","outbox") : ("CHOOSER","inbox"),
+
+            ("CHOOSER","outbox") : ("IMAGE","inbox"),
+         }
+    ).run()
 
 
 
 Shutdown Examples
 -----------------
 
-In this example:
-
-* Pinger is a component that sends the messages from "tosend" after with a
-  brief delay between messages. It sends the messages out of the stated outbox.
-
-* Waiter is a component that starts up, and then waits for any message sent
-  to its inbox "control"
-
-* Whinger is a component that complains that it is running periodically, but
-  will shutdown if it receives any message on its inbox "control"
-
-As a result, this example creates 3 components inside a graphline that wait
-for shutdown. The Pinger sends a message, which is duplicated to all the
-subcomponents, at which point in time, they shutdown, causing the system to
-shutdown::
-
-      Pipeline(
-          Pinger(tosend=[Axon.Ipc.producerFinished()],box="signal"),
-          Graphline(
-              TO_SHUTDOWN1 = Waiter(),
-              TO_SHUTDOWN2 = Waiter(),
-              TO_SHUTDOWN3 = Waiter(),
-              linkages = {}
-          ),
-          Whinger(),
-      ).run()
-
-Note: the shutdown message propogates all the way through the system to the
-whinger, which then also shuts down.
-
-Full code for this is in ./Examples/UsingChassis/Graphline/DemoShutdown.py
-
-You can also still have shutdown links between components. If you do, then
-the Graphline doesn't interfere with them::
-
-      Pipeline(
-          Pinger(tosend=[Axon.Ipc.producerFinished()],box="signal"),
-          Graphline(
-              TO_SHUTDOWN1 = Waiter(),
-              TO_SHUTDOWN2 = Waiter(),
-              TO_SHUTDOWN3 = Waiter(),
-              linkages = {
-                  ("TO_SHUTDOWN1","signal"):("TO_SHUTDOWN2","control"),
-                  ("TO_SHUTDOWN2","signal"):("TO_SHUTDOWN3","control"),
-              }
-          ),
-          Whinger(),
-      ).run()
-
-Full code for this is in ./Examples/UsingChassis/Graphline/LinkedShutdown.py
+To be written.
 
 
 
 How does it work?
 -----------------
 
-A Graphline component gives you a way of wiring up a system of components and
-then encapsulating th ewhole as a single component, with its own inboxes and
-outboxes.
+To be written.
 
-The components you specify are registered as children of the Graphline
-component. When you activate the component, all the child components are
-activated, and the linkages you specified are created between them.
 
-When specifying linkages, the component 'name' is the string version of the
-argument name you used to refer to the component. In the example above, the
-components are therefore referred to as "RC" and "RFA".
+Policies
+--------
 
-If the name you specify is not one of the components you specify, then it is
-assumed you must be referring to the Graphline component itself. In the above
-example, "self" is used to make this clear. This gives you a way of passing data
-in and out of the system of components you have specified.
-
-In these cases, it is assumed you wish to create a pass-through linkage - you
-want the Graphline component to forward the named inbox to a child's inbox, or
-to forward a child's outbox to a named outbox of the Graphline. For example::
-
-    Graphline( child = MyComponent(...),
-               linkages = { ...
-                            ("self", "inbox") : ("child", "bar"),
-                            ... }
-             )
-
-... is interpreted as meaning you want to forward the "inbox" inbox of the
-Graphline to the "bar" inbox of the component referred to as "child".
-Similarly::
-
-    Graphline( child = MyComponent(...),
-               linkages = { ...
-                            ("child", "fwibble") : ("self", "outbox"),
-                            ... }
-             )
-
-...is interpreted as wishing to forward the "fwibble" outbox of the component
-referred to as "child" to the "outbox" outbox of the Graphline component.
-
-Any inbox or outbox you name on the Graphline component is created if it does
-not already exist. For example, you might want the Graphline to have a "video"
-and an "audio" inbox::
-
-    Graphline( videoHandler = MyVideoComponent(),
-               audioHandler = MyAudioComponent(),
-               linkages = { ...
-                            ("self", "video") : ("videoHandler", "inbox"),
-                            ("self", "audio") : ("audioHandler", "inbox"),
-                            ...
-                          }
-             )
-
-The Graphline component will always have inboxes "inbox" and "control" and
-outboxes "outbox" and "signal", even if you do not specify any linkages to them.
-
-During runtime, the Graphline component monitors the child components. It will
-terminate if, and only if, *all* the child components have also terminated.
-
-NOTE that if your child components create additional components themselves, the
-Graphline component will not know about them. It only monitors the components it
-was originally told about.
-
-Graphline does not GENERALLY intercept any of its inboxes or outboxes. It
-ignores whatever traffic flows through them. If you have specified linkages
-from them to components inside the graphline, then the data automatically
-flows to/from them as you specified.
-
+To be written. The idea behind policies is to allow someone to override the
+default behaviour regarding inbox data. This potentially enables the
+creation of things like threadpools, splitters, and general workers.
 
 
 Shutdown Handling
 -----------------
 
-There is however an exception: shutdown handling, where the difference is
-light touch, which is this::
+To be written.
 
-    while not self.childrenDone():
-         always pass on messages from our control to appropriate sub-component's control
-         if message is shutdown, set shutdown flag
 
-    # then after loop
-
-    if no component-has-linkage-to-graphline's signal
-         if shutdown flag set:
-             pass on shutdownMicroprocess
-         else:
-             pass on producerFinished
-
-If the user has wired up the graphline's control box to pass through to one
-of their components, then that request is honoured, and the user then
-becomes wholly responsible for shutdown.
 """
 
-# component that creates and encapsulates a pipeline of components, connecting
-# their outbox to inbox, and signal to control to form the pipeline chain.
-
-from Axon.Scheduler import scheduler as _scheduler
-import Axon as _Axon
+import Axon
 from Axon.Ipc import shutdownMicroprocess
 from Axon.Ipc import producerFinished
 
-component = _Axon.Component.component
-
-
-class Graphline(component):
+class PAR(Axon.Component.component):
    """\
-   Graphline(linkages,**components) -> new Graphline component
+   PAR(inputpolicy=None, outputpolicy=None, *components) -> new PAR component
 
-   Encapsulates the specified set of components and wires them up with the
-   specified linkages.
+   Activates all the components contained inside in parallel (Hence the name - from Occam).
+   
+   Inputs to inboxes can be controlled by passing in a policy. The default
+   policy is this::
+
+      messages to "control" are forwarded to all children
+      
+      if a control is a shutdownMicroprocess, shutdown
+      
+      when all children exit, exit.
+      
+      messages to "inbox" are forwarded to all components by default.
+
+   See the module docs on writing a policy function. 
+   
+   Outputs from all outboxes are sent to the graphline's corresponding
+   outbox. At present supported outboxes replicated are: "outbox", and
+   "signal".
+   
+   For more complex wiring/policies you probably ought to use a Graphline
+   component.
 
    Keyword arguments:
    
-   - linkages    -- dictionary mapping ("componentname","boxname") to ("componentname","boxname")
-   - components  -- dictionary mapping names to component instances (default is nothing)
+   - policy    -- policy function regarding input mapping.
+   - components -- list of components to be activated.
    """
    
    Inboxes = {"inbox":"", "control":""}
-   Outboxes = {"outbox":"", "signal":"", "_cs": "For signaling to subcomponents shutdown"}
+   Outboxes = {"outbox":"", 
+               "signal":"", 
+               "_co": "For passing data to subcomponents based on a policy (unusued at present)",
+               "_cs": "For signaling to subcomponents shutdown",
+              }
     
-   def __init__(self, linkages = None, **components):
+   def __init__(self, policy=None, *components, **argv):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      if linkages is None:
-         raise TypeError("linkages must be set")
+      self.components = list(components)
+      self.policy = policy
+      if self.policy:
+          print "Policies are not yet implemented, using default instead, sorry"
+          self.policy = None
 
-      self.layout = linkages
-      self.components = dict(components)
+      super(Graphline,self).__init__(**argv)
 
-      # adds to 'Inboxes' and 'Outboxes' before superclass takes those lists to create them
-      self.addExternalPostboxes()
-      
-      super(Graphline,self).__init__()
-
-
-   def addExternalPostboxes(self):
-      """Adds to self.Inboxes and self.Outboxes any postboxes mentioned in self.layout that don't yet exist"""
-      for componentRef,sourceBox in self.layout:
-         toRef, toBox = self.layout[(componentRef,sourceBox)]
-         fromComponent = self.components.get(componentRef, self)
-         toComponent = self.components.get(toRef, self)
-
-         if fromComponent == self:
-             if sourceBox not in self.Inboxes:
-                 # add inbox to list, and copy any description text (if it exists)
-                 try:
-                     self.Inboxes[sourceBox] = toComponent.Inboxes[toBox]
-                 except (KeyError, IndexError, TypeError):
-                     self.Inboxes[sourceBox] = ""
-
-         if toComponent == self:
-             if toBox not in self.Outboxes:
-                 # add outbox to list, and copy any description text (if it exists)
-                 try:
-                     self.Outboxes[toBox] = fromComponent.Outboxes[sourceBox]
-                 except (KeyError, IndexError, TypeError):
-                     self.Outboxes[toBox] = ""
       
    def main(self):
       """Main loop."""
@@ -274,71 +163,53 @@ class Graphline(component):
       
       noControlPassthru=True
       noSignalPassthru=True
+      
+      for c in self.components:
+          for outbox in ["outbox", "signal"]:
+              self.link( (c, outbox), (self, outbox) )
 
-      for componentRef,sourceBox in self.layout:
-         toRef, toBox = self.layout[(componentRef,sourceBox)]
+      shutdown = False
+      shutdownMessage = None
+            
+      while not shutdown:
+          
+          # If all the children exit, then exit
+          if self.self.childrenDone():
+              shutdown = True
+              break
+          
+          # If we reach here there may be data in an inbox.
+          # May, because a child terminating wakes us up as well.
+          if self.policy == None:
+              # Default policy: discard all messages sent to the main inbox
+              for _ in self.Inbox("inbox"):
+                  pass
+              
+              # Default policy, pass on all control messages to all sub components
+              # Shutdown the PAR component if the message is a shutdownMicroprocess message
+              for msg in self.Inbox("control"):
+                  for c in self.components:
 
-         fromComponent = self.components.get(componentRef, self)
-         toComponent = self.components.get(toRef, self)
+                      L = self.link( (self, "_cs"), (c, "control"))
+                      self.send( msg, "_cs")
+                      self.unlink(thelinkage=L)
 
-         if toBox == "control":
-             link_to_component_control[toComponent] = False
+                  if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):
+                      shutdown = True
+                      shutdownMessage = msg
 
-         passthrough = 0
-         if fromComponent == self: passthrough = 1
-         if toComponent == self: passthrough = 2
-         if (fromComponent == self) and (toComponent == self):
-            passthrough = 0
-            print "WARNING, assuming linking outbox to inbox on the graph. This is a poor assumption"
-         
-         self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)
-
-         if fromComponent==self and sourceBox=="control":
-             noControlPassthru=False
-
-         if toComponent == self and toBox == "signal":
-             noSignalPassthru=False
-
-      for ref in self.components.values():
-          if link_to_component_control.get(ref, None) == None:
-              link_to_component_control[ref] = True
-
-      self.addChildren(*self.components.values())
-      self.components_to_get_control_messages = []
-      for ref in link_to_component_control:
-          if link_to_component_control[ref]:
-              self.components_to_get_control_messages.append( ref )
-
-      for child in self.children:
-          child.activate()
-
-      shutdownMessage = None # We use this to capture the shutdown message sent to this graphline
-
-      # run until all child components have terminated
-      # at which point this component can implode
-
-      # becuase they are children, if they terminate, we'll be woken up
-      while not self.childrenDone():
-          if not self.anyReady():
+          # If there's nothing to do, then sleep
+          while not self.anyReady():
               self.pause()
-          
-          if noControlPassthru and self.dataReady("control"):
-              msg = self.recv("control")
-              for toComponent in self.components_to_get_control_messages:
-                  L = self.link( (self, "_cs"), (toComponent, "control"))
-                  self.send( msg, "_cs")
-                  self.unlink(thelinkage=L)
+              yield 1
 
-              if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):
-                  shutdownMessage = msg
-          
-          yield 1
-   
-      if noSignalPassthru:
-          if shutdownMessage:
-              self.send(shutdownMessage, "signal")
-          else:
-              self.send(producerFinished(), "signal")
+      if shutdownMessage:
+          self.send(shutdownMessage, "signal")
+      else:
+          self.send(producerFinished(), "signal")
+
+      for child in self.childComponents():
+          self.removeChild(child)   # deregisters linkages for 
    
    def childrenDone(self):
        """Unplugs any children that have terminated, and returns true if there are no
@@ -350,7 +221,7 @@ class Graphline(component):
 
        return 0==len(self.childComponents())
 
-__kamaelia_components__  = ( Graphline, )
+__kamaelia_components__  = ( PAR, )
 
 
 if __name__=="__main__":
