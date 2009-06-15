@@ -16,7 +16,7 @@ from Kamaelia.Apps.Grey.MailHandler import MailHandler
 from Kamaelia.Apps.Grey.ConcreteMailHandler import ConcreteMailHandler
 from Kamaelia.Apps.Grey.GreyListingPolicy import GreyListingPolicy
 from Kamaelia.Apps.Grey.PeriodicWakeup import PeriodicWakeup
-from Kamaelia.Apps.Grey.WakeableIntrospector import WakeableIntrospector
+from Kamaelia.Apps.Grey.WakeableIntrospector import LoggingWakeableIntrospector
 
 config_files = ["/usr/local/etc/Kamaelia/greylist.conf",
                 "/usr/local/etc/greylist.conf",
@@ -80,10 +80,9 @@ class GreylistServer(ServerCore):
 
 Pipeline(
     PeriodicWakeup(),
-    WakeableIntrospector(),
+    LoggingWakeableIntrospector(logfile=config["greylist_debuglog"]),
 ).activate()
 
-WakeableIntrospector.logfile = config["greylist_debuglog"]
 MailHandler.logfile = config["greylist_log"]
 MailHandler.debuglogfile = config["greylist_debuglog"]
 
