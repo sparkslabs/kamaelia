@@ -214,7 +214,7 @@ class background(threading.Thread):
     lock = threading.Lock()
     def __init__(self,slowmo=0,zap=False):
         if not background.lock.acquire(False):
-            raise "only one scheduler for now can be run!"
+            raise RuntimeError("only one scheduler for now can be run!")
         self.slowmo = slowmo
         threading.Thread.__init__(self)
         self.setDaemon(True) # Die when the caller dies
@@ -286,7 +286,7 @@ class componentWrapperInput(threadedadaptivecommscomponent):
                 try:
                     self.send(msg, parentSource)
                 except noSpaceInBox, e:
-                    raise "Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?"
+                    raise RuntimeError("Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?")
                 if isinstance(msg, (Ipc.shutdownMicroprocess, Ipc.producerFinished)):
 #                    print "Quietly dieing?"
                     return False
