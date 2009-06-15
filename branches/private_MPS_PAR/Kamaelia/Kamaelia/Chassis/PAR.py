@@ -144,16 +144,13 @@ class PAR(Axon.Component.component):
                "_co": "For passing data to subcomponents based on a policy (unusued at present)",
                "_cs": "For signaling to subcomponents shutdown",
               }
-    
-   def __init__(self, policy=None, *components, **argv):
+   policy = None
+   def __init__(self, *components, **argv):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      self.components = list(components)
-      self.policy = policy
-      if self.policy:
-          print "Policies are not yet implemented, using default instead, sorry"
-          self.policy = None
 
-      super(Graphline,self).__init__(**argv)
+      super(PAR,self).__init__(**argv)
+      self.components = list(components)
+      
 
       
    def main(self):
@@ -166,7 +163,11 @@ class PAR(Axon.Component.component):
       
       for c in self.components:
           for outbox in ["outbox", "signal"]:
-              self.link( (c, outbox), (self, outbox) )
+              self.link( (c, outbox), (self, outbox), passthrough=2 )
+          c.activate()
+      
+      self.addChildren(*self.components)
+      yield 1
 
       shutdown = False
       shutdownMessage = None
@@ -174,7 +175,7 @@ class PAR(Axon.Component.component):
       while not shutdown:
           
           # If all the children exit, then exit
-          if self.self.childrenDone():
+          if self.childrenDone():
               shutdown = True
               break
           
@@ -202,6 +203,7 @@ class PAR(Axon.Component.component):
           while not self.anyReady():
               self.pause()
               yield 1
+          yield 1
 
       if shutdownMessage:
           self.send(shutdownMessage, "signal")
