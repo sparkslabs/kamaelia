@@ -50,20 +50,21 @@ logging. Better termination/shutdown would be a good idea.
 import Axon
 
 class WakeableIntrospector(Axon.Component.component):
-    logfile = "greylist-debug.log"
-    def noteToLog(self, line):
-        try:
-            x = open(self.logfile,"a")
-        except IOError:
-            x = open(self.logfile,"w")
-        x.write(line+"\n")
-        x.flush()
-        x.close()
+#    logfile = "greylist-debug.log"
+#    def noteToLog(self, line):
+#        try:
+#            x = open(self.logfile,"a")
+#        except IOError:
+#            x = open(self.logfile,"w")
+#        x.write(line+"\n")
+#        x.flush()
+#        x.close()
     def main(self):
         while not self.dataReady("control"):
             Q = [ q.name for q in self.scheduler.listAllThreads() ]
             Q.sort()
-            self.noteToLog("*debug* THREADS"+ str(Q))
+            self.send(Q, "outbox")
+#            self.noteToLog("*debug* THREADS"+ str(Q))
             self.scheduler.debuggingon = False
             yield 1
             while not self.dataReady("inbox"):
@@ -74,4 +75,17 @@ class WakeableIntrospector(Axon.Component.component):
 
         self.send(self.recv("control"),"signal")
 
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.File.Append import Append
+from Kamaelia.Util.PureTransformer import PureTransformer
+
+def LoggingWakeableIntrospector(logfile="greylist-debug.log"):
+    return Pipeline(
+              WakeableIntrospector(),
+              PureTransformer(lambda x : "*debug* THREADS"+ str(Q) ),
+              Append(filename=logfile, hold_open=False),
+           )
+
+
 __kamaelia_components__  = ( WakeableIntrospector, )
+__kamaelia_prefabs__  = ( LoggingWakeableIntrospector, )
