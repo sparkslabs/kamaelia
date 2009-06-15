@@ -82,7 +82,7 @@ from Kamaelia.Util.PureTransformer import PureTransformer
 def LoggingWakeableIntrospector(logfile="greylist-debug.log"):
     return Pipeline(
               WakeableIntrospector(),
-              PureTransformer(lambda x : "*debug* THREADS"+ str(Q) ),
+              PureTransformer(lambda x : "*debug* THREADS"+ str(x) ),
               Append(filename=logfile, hold_open=False),
            )
 
