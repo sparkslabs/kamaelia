@@ -598,7 +598,12 @@ class component(microprocess):
 
       You are unlikely to want to override this method.
       """
-      return self.inboxes[boxname].pop(0)
+      msg = self.inboxes[boxname].pop(0)
+      if isinstance(msg, microprocessException):
+          print "Received and thrown"
+          raise msg.exception[0], msg.exception[1], msg.exception[2]
+      else:
+          return msg
 
    def Inbox(self, boxname="inbox"):
        while self.dataReady(boxname):
@@ -642,11 +647,17 @@ class component(microprocess):
       if not result:
          result = 1
       yield result
+
       while(result):
          result = self.mainBody()
          if result:
             yield result
       yield self.closeDownComponent()
+
+   def _handleException(self, ex):
+      # overrides stub in Microprocess
+      self.send(microprocessException(ex), "signal")
+          
 
    def initialiseComponent(self):
       """Stub method. **This method is designed to be overridden.** """

@@ -288,6 +288,7 @@ managed by the scheduler; not the microprocess itself.
 """
 
 import time
+import sys
 from util import removeAll
 from idGen import strId, numId, tupleId
 from debug import debug
@@ -499,14 +500,22 @@ class microprocess(Axon.AxonObject):
       """
       pc = someobject.__getattribute__(mainmethod)()
       while(1):
-          # Continually try to run the code, and then release control
-          if someobject._isStopped():
-              # Microprocess has stopped
-              yield None
+          try:
+              # Continually try to run the code, and then release control
+              if someobject._isStopped():
+                  # Microprocess has stopped
+                  yield None
+                  return
+              else:
+                  v = pc.next()
+                  yield v           # Yield control back - making us into a generator function
+          except:
+              exception = sys.exc_info()
+              self._handleException(exception)
               return
-          else:
-              v = pc.next()
-              yield v           # Yield control back - making us into a generator function
+              
+   def _handleException(self, exception):
+      pass # stub
 
    def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
       """\
