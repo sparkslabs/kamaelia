@@ -323,5 +323,13 @@ class errorInformation(ipc):
       self.exception = exception # if an exception was caught the exception object
       self.message = message # the message with bad data that caused the exception or error
 
+class microprocessException(ipc):
+   """\
+   Message for carrying (propagating) exceptions.
+   """
+   def __init__(self, exception):
+      self.exception = exception
+
+
 if __name__ == '__main__':
    print "This class currently contains no test code."
