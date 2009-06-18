@@ -59,7 +59,6 @@ class LineOrientedInputBuffer(Axon.Component.component):
             self.send(self.recv("control"), "signal")
             return
 
-        # Should not be able to reach this...
         self.send(producerFinished(), "signal")
 
 
