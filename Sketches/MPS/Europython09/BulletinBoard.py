@@ -10,7 +10,6 @@ from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Axon.Ipc import WaitComplete, producerFinished
 from Kamaelia.Chassis.Seq import Seq
-from Axon.STM import Store, ConcurrentUpdate, BusyRetry
 
 
 class GotShutdownMessage(Exception):
