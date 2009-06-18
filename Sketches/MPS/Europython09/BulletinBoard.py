@@ -216,7 +216,7 @@ class MessageBoardUI(RequestResponseComponent):
         self.netPrint("h - Help")
         self.netPrint("x - eXit to main menu")
 
-    def handleMessage(self, user):
+    def doMessagesMenu(self, user):
         try:
             messages = self.getUnreadMessages(user)
             while len(messages) > 0:
@@ -253,7 +253,7 @@ class MessageBoardUI(RequestResponseComponent):
                 if command == "q":
                     break
                 if command == "":
-                    yield WaitComplete(self.handleMessage(user))
+                    yield WaitComplete(self.doMessagesMenu(user))
                     self.checkControl()
         except GotShutdownMessage:
             self.send(self.recv("control"), "signal")
