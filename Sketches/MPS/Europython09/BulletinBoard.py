@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 import os
 import cjson
 import socket
@@ -16,14 +15,14 @@ from Axon.STM import Store, ConcurrentUpdate, BusyRetry
 
 class GotShutdownMessage(Exception):
     pass
-        
+
 
 class LineOrientedInputBuffer(Axon.Component.component):
     def main(self):
         linebuffer = []
         gotline = False
         line = ""
-        try:        
+        try:
             while 1:
                 # Get a line
                 while (not gotline):
@@ -92,7 +91,7 @@ class RequestResponseComponent(Axon.Component.component):
 
     def netPrint(self, arg):
         self.send(arg + "\r\n", "outbox")
-    
+
 
 class Authenticator(RequestResponseComponent):
     State = {}
@@ -105,18 +104,18 @@ class Authenticator(RequestResponseComponent):
                 self.send("login: ", "outbox")
                 yield self.waitMsg()
                 username = self.getMsg()[:-2]
-                
+
                 self.send("password: ", "outbox")
                 yield self.waitMsg()
                 password = self.getMsg()[:-2]
-                
+
                 self.netPrint("")
                 if users.get(username.lower(), None) == password:
                     self.netPrint("Login Successful")
                     loggedin = True
                 else:
                     self.netPrint("Login Failed!")
-            
+
         except GotShutdownMessage:
             self.send(self.recv("control"), "signal")
             return
@@ -185,7 +184,7 @@ class Folder(object):
     def getMessages(self):
         messages = []
         for i in os.listdir(self.folder):
-            if i == ".meta":
+            if i[:1] == ".":
                 continue
             messages.append(self.getMessage(i))
         return messages
@@ -207,51 +206,60 @@ class MessageBoardUI(RequestResponseComponent):
         self.netPrint("")
         self.netPrint(message["__body__"])
 
+    def doMainHelp(self):
+        self.netPrint("<return> - browse messages")
+        self.netPrint("h - help")
+        self.netPrint("q - quit")
+
+    def doMessagesHelp(self):
+        self.netPrint("<return> - next message (exit if on last message)")
+        self.netPrint("r - Reply (to be implemented)")
+        self.netPrint("d - Delete message (to be implemented)")
+        self.netPrint("h - Help")
+        self.netPrint("x - eXit to main menu")
+
+    def handleMessage(self, user):
+        try:
+            messages = self.getUnreadMessages(user)
+            while len(messages) > 0:
+                self.netPrint("")
+                self.netPrint("You have "+str(len(messages))+" message(s) waiting")
+
+                self.send("messages> ", "outbox")
+                yield self.waitMsg()
+                command = self.getMsg()[:-2]
+
+                if command == "":
+                    message = messages.pop(0)
+                    self.displayMessage(message)
+
+                if command == "x":
+                    break
+
+                if command == "h":
+                       self.doMessagesHelp()
+        except GotShutdownMessage:
+            pass # Expect the "caller" to check for control as well
+
     def main(self):
-        user = self.State["remoteuser"]
+        user = self.State.get("remoteuser", "anonymous")
         try:
             self.netPrint("")
             self.netPrint("Hello, "+user)
-            
             while 1:
                 self.send("main> ", "outbox")
                 yield self.waitMsg()
                 command = self.getMsg()[:-2]
-                
                 if command == "h":
-                    self.netPrint("q - quit")
-                    self.netPrint("h - help")
-
+                    self.doMainHelp()
                 if command == "q":
                     break
-                    
                 if command == "":
-                    messages = self.getUnreadMessages(user)
-                    while len(messages) > 0:
-                        self.netPrint("")
-                        self.netPrint("You have "+str(len(messages))+" message(s) waiting")
-
-                        self.send("messages> ", "outbox")
-                        yield self.waitMsg()
-                        command = self.getMsg()[:-2]
-                        
-                        if command == "":
-                            message = messages.pop(0)
-                            self.displayMessage(message)
-
-                        if command == "x":
-                            break
-
-                        if command == "h":
-                            self.netPrint("x - eXit to main menu")
-                            self.netPrint("r - Reply (to be implemented)")
-                            self.netPrint("d - Delete message (to be implemented)")
-                            self.netPrint("h - Help")
-
+                    yield WaitComplete(self.handleMessage(user))
+                    self.checkControl()
         except GotShutdownMessage:
             self.send(self.recv("control"), "signal")
         yield 1
-
 
 def MyProtocol(*args, **argd):
     ConnectionInfo = {}
