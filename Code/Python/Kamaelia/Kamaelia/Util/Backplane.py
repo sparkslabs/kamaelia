@@ -220,18 +220,22 @@ class PublishTo(Axon.Component.component):
     Inboxes = { "inbox"   : "Send to here data to be published to the backplane",
                 "control" : "Shutdown signalling (doesn't shutdown the Backplane)",
               }
-    Outboxes = { "outbox" : "NOT USED",
+    Outboxes = { "outbox" : "NOT USED, unless a forwarder - if a forwarder, copy of data",
+                 "_outbox" : "To backplane if a forwarder",
                  "signal" : "Shutdown signalling",
                }
-    
-    def __init__(self, destination):
-        super(PublishTo, self).__init__()
+    forwarder = False
+    def __init__(self, destination, **argd):
+        super(PublishTo, self).__init__(**argd)
         self.destination = destination
     def main(self):
         """Main loop."""
         cat = CAT.getcat()
         service = cat.retrieveService("Backplane_I_"+self.destination)
-        self.link((self,"inbox"), service, passthrough=1)
+        if not self.forwarder:
+            self.link((self,"inbox"), service, passthrough=1)
+        else:
+            self.link((self,"_outbox"), service)
         # FIXME: If we had a way of simply getting this to "exec" a new component in our place,
         # FIXME: then this while loop here would be irrelevent, which would be cool.
         # FIXME: especially if we could exec in such a way that passthrough linkages
@@ -243,7 +247,11 @@ class PublishTo(Axon.Component.component):
                 self.send(msg,"signal")
                 if isinstance(msg, (producerFinished,shutdownMicroprocess)):
                     shutdown=True
-                    
+            if self.forwarder:
+                for msg in self.Inbox("inbox"):
+                    self.send(msg, "outbox")
+                    self.send(msg, "_outbox")
+
             if not shutdown:
                 self.pause()
                 yield 1            
@@ -288,6 +296,8 @@ class SubscribeTo(Axon.Component.component):
         # FIXME: especially if we could exec in such a way that passthrough linkages
         # FIXME: still operated as you'd expect.
         while not self.childrenDone():
+            for msg in self.Inbox("inbox"):
+                self.send(msg, "outbox")
             self.pause()
             yield 1
 
