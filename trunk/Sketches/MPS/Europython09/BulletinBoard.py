@@ -3,18 +3,52 @@
 import os
 import cjson
 import socket
-
 import Axon
-
-from Kamaelia.Chassis.ConnectedServer import ServerCore
+from Axon.Ipc import WaitComplete
 from Kamaelia.Chassis.Pipeline import Pipeline
-from Axon.Ipc import WaitComplete, producerFinished
+from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Chassis.Seq import Seq
 
+def readUsers():
+    f = open("users.passwd")
+    users = f.read()
+    f.close()
+    users = cjson.decode(users)
+    return users
 
 class GotShutdownMessage(Exception):
     pass
 
+class Folder(object):
+    def __init__(self, folder="messages"):
+        super(Folder, self).__init__()
+        self.folder = folder
+        try:
+            f = open(self.folder + "/.meta")
+            raw_meta = f.read()
+            f.close()
+            meta = cjson.decode(raw_meta)
+        except IOError:
+            meta = {"maxid": 0}
+        self.meta = meta
+
+    def getMessage(self, messageid):
+        try:
+            f = open(self.folder + "/" + str(messageid))
+            message = f.read()
+            f.close()
+            message = cjson.decode(message)
+            return message
+        except IOError:
+            return None
+
+    def getMessages(self):
+        messages = []
+        for i in os.listdir(self.folder):
+            if i[:1] == ".":
+                continue
+            messages.append(self.getMessage(i))
+        return messages
 
 class LineOrientedInputBuffer(Axon.Component.component):
     def main(self):
@@ -60,23 +94,13 @@ class LineOrientedInputBuffer(Axon.Component.component):
 
         self.send(producerFinished(), "signal")
 
-
 class RequestResponseComponent(Axon.Component.component):
-    def __init__(self, *argv, **argd):
-        super(RequestResponseComponent, self).__init__(**argd)
-        self.msg = ""
     def waitMsg(self):
-        def _getLine(self):
-            while 1:
-                if self.dataReady("control"):
-                    break
-                elif self.dataReady("inbox"):
-                    self.msg = self.recv("inbox")
-                    break
-                else:
-                    self.pause()
+        def _waitMsg(self):
+            while (not self.dataReady("inbox")) and (not self.dataReady("control")):
+                self.pause()
                 yield 1
-        return WaitComplete(_getLine(self))
+        return WaitComplete( _waitMsg(self) ) 
 
     def checkControl(self):
         if self.dataReady("control"):
@@ -85,15 +109,18 @@ class RequestResponseComponent(Axon.Component.component):
     def getMsg(self):
         if self.dataReady("control"):
             raise GotShutdownMessage()
-        return self.msg
+        return self.recv("inbox")
 
     def netPrint(self, arg):
         self.send(arg + "\r\n", "outbox")
 
+    def main(self):
+        self.send("no protocol attached\r\n\r\n")
+        self.send( Axon.Ipc.producerFinished(), "signal")
+        yield 1
 
 class Authenticator(RequestResponseComponent):
     State = {}
-
     def main(self):
         loggedin = False
         try:
@@ -101,11 +128,11 @@ class Authenticator(RequestResponseComponent):
             while not loggedin:
                 self.send("login: ", "outbox")
                 yield self.waitMsg()
-                username = self.getMsg()[:-2]
+                username = self.getMsg()[:-2] # strip \r\n
 
                 self.send("password: ", "outbox")
                 yield self.waitMsg()
-                password = self.getMsg()[:-2]
+                password= self.getMsg()[:-2] # strip \r\n
 
                 self.netPrint("")
                 if users.get(username.lower(), None) == password:
@@ -116,25 +143,17 @@ class Authenticator(RequestResponseComponent):
 
         except GotShutdownMessage:
             self.send(self.recv("control"), "signal")
-            return
 
         if loggedin:
             self.State["remoteuser"] = username
 
-
-class StateDumper(Axon.Component.component):
+class UserRetriever(RequestResponseComponent):
     State = {}
     def main(self):
-        print self.State
+        self.netPrint("")
+        self.netPrint("Retrieving user data...")
+        self.netPrint("")
         yield 1
-
-
-class StateEmitter(Axon.Component.component):
-    State = {}
-    def main(self):
-        self.send( repr(self.State) + "\r\n", "outbox")
-        yield 1
-
 
 class StateSaverLogout(RequestResponseComponent):
     State = {}
@@ -146,50 +165,13 @@ class StateSaverLogout(RequestResponseComponent):
         self.netPrint("")
         yield 1
 
-
-class UserRetriever(RequestResponseComponent):
-    State = {}
-    def main(self):
-        self.netPrint("")
-        self.netPrint("Retrieving user data...")
-        self.netPrint("")
-        yield 1
-
-
-class Folder(object):
-    def __init__(self, folder="messages"):
-        super(Folder, self).__init__()
-        self.folder = folder
-        try:
-            f = open(self.folder + "/.meta")
-            raw_meta = f.read()
-            f.close()
-            meta = cjson.decode(raw_meta)
-        except IOError:
-            meta = {"maxid": 0}
-        self.meta = meta
-
-    def getMessage(self, messageid):
-        try:
-            f = open(self.folder + "/" + str(messageid))
-            message = f.read()
-            f.close()
-            message = cjson.decode(message)
-            return message
-        except IOError:
-            return None
-
-    def getMessages(self):
-        messages = []
-        for i in os.listdir(self.folder):
-            if i[:1] == ".":
-                continue
-            messages.append(self.getMessage(i))
-        return messages
-
-
 class MessageBoardUI(RequestResponseComponent):
     State = {}
+    def doMainHelp(self):
+        self.netPrint("<return> - browse messages")
+        self.netPrint("h - help")
+        self.netPrint("q - quit")
+
     def getUnreadMessages(self, user):
         X = Folder()
         return X.getMessages()
@@ -203,11 +185,6 @@ class MessageBoardUI(RequestResponseComponent):
             self.netPrint("In-Reply-To: "+(", ".join(message["reply-to"]) ) )
         self.netPrint("")
         self.netPrint(message["__body__"])
-
-    def doMainHelp(self):
-        self.netPrint("<return> - browse messages")
-        self.netPrint("h - help")
-        self.netPrint("q - quit")
 
     def doMessagesHelp(self):
         self.netPrint("<return> - next message (exit if on last message)")
@@ -259,7 +236,7 @@ class MessageBoardUI(RequestResponseComponent):
             self.send(self.recv("control"), "signal")
         yield 1
 
-def MyProtocol(*args, **argd):
+def CompositeBulletinBoardProtocol(**argd):
     ConnectionInfo = {}
     ConnectionInfo.update(argd)
     return Pipeline(
@@ -272,16 +249,8 @@ def MyProtocol(*args, **argd):
               )
            )
 
-def readUsers():
-    f = open("users.passwd")
-    users = f.read()
-    f.close()
-    users = cjson.decode(users)
-    return users
-
-
 users = readUsers()
 
-ServerCore(protocol = MyProtocol,
+ServerCore(protocol=CompositeBulletinBoardProtocol,
            socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1),
-           port = 1600).run()
+           port=1600).run()
