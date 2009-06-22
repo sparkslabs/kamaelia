@@ -268,14 +268,34 @@ class MessageRateLimit(component):
         mps = self.mps
         if self.hardlimit:
             self.setInboxSize("inbox", self.hardlimit)
+        flushing = False
+        shutdown_msg = None
         while 1:
             try:
+                if self.dataReady("control"):
+                    msg = self.recv("control")
+                    if isinstance(msg, shutdownMicroprocess):
+                       self.send(msg, "signal")
+                       return
+                    if isinstance(msg, producerFinished):
+                       flushing = True
+                       shutdown_msg = msg
+
                 while not( self.scheduler.time - last > interval):
-                    while self.dataReady("control"):
+                    if self.dataReady("control"):
                         msg = self.recv("control")
-                        self.send(msg,"signal")
-                        if isinstance(msg,(producerFinished,shutdownMicroprocess)):
-                            return
+                        if isinstance(msg, shutdownMicroprocess):
+                           self.send(msg, "signal")
+                           return
+                        if isinstance(msg, producerFinished):
+                           flushing = True
+                           shutdown_msg = msg
+
+#                    while self.dataReady("control"):
+#                        msg = self.recv("control")
+#                        self.send(msg,"signal")
+#                        if isinstance(msg,(producerFinished,shutdownMicroprocess)):
+#                            return
                     yield 1
                 c = c+1
                 last = self.scheduler.time
@@ -283,8 +303,13 @@ class MessageRateLimit(component):
                     rate = (last - start)/float(c)
                     start = last
                     c = 0
-                data = self.recv("inbox")
-                self.send(data, "outbox")
+                if self.dataReady("inbox"):
+                    data = self.recv("inbox")
+                    self.send(data, "outbox")
+                else:
+                    if flushing == True:
+                        self.send(shutdown_msg, "signal")
+                        return
             except IndexError:
                 pass
             yield 1
