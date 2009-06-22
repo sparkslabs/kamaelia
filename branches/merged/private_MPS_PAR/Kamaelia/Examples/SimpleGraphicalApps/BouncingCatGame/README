@@ -1,0 +1,17 @@
+Simple component based game using pygame. Not quite fully integrated with
+the other pygame code (will be), but fully reusable & reconfigurable code
+and it's a useful start for people wanting to see how to write things
+varying from games through other interactive systems.
+
+  * Simple bouncing images game. Designed for very small children who are
+    amused by things take beep and react when you press left/right mouse
+    buttons.
+  * Forms a demonstration of the new BasicSprite and SpriteScheduler
+    components, along with the associated EventHandler code, which is a
+    substantial subsystem. Shutdown of active bouncing sprites and their
+    associated components controlling them is controlled by a fanout
+    component. Also contains a nice demonstration of the flexibility of
+    Graphline
+
+
+Michael, October 2005
