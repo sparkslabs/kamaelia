@@ -200,7 +200,7 @@ class PAR(Axon.Component.component):
                       shutdownMessage = msg
 
           # If there's nothing to do, then sleep
-          while not self.anyReady():
+          while not self.anyReady() and not shutdown:
               self.pause()
               yield 1
           yield 1
