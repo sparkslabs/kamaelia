@@ -79,7 +79,7 @@ display surface it requested.
 
 import pygame
 import Axon
-from Axon.Ipc import producerFinished
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class Button(Axon.Component.component):
@@ -125,6 +125,8 @@ class Button(Axon.Component.component):
       if caption is None:
          caption = "Button "+str(self.id)
       
+      self.caption = caption
+
       self.size = size
       
       pygame.font.init()      
@@ -201,6 +203,7 @@ class Button(Axon.Component.component):
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg, "signal")
                done = True
+#               print "Shutdown recieved, exitting", self.caption
          
          while self.dataReady("inbox"):
             for event in self.recv("inbox"):
@@ -216,7 +219,10 @@ class Button(Axon.Component.component):
                       self.send( self.eventMsg, "outbox" )
          self.pause()
          yield 1
-            
+
+      self.display.set_alpha(0)
+      self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal")
+      yield 1
       
    def blitToSurface(self):
        """Clears the background and renders the text label onto the button surface."""
