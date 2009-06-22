@@ -166,6 +166,7 @@ OVERLAY_FUDGE_OFFSET_FACTOR = 2
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 
+import Axon
 
 class VideoOverlay(component):
     """\
@@ -186,6 +187,9 @@ class VideoOverlay(component):
                  "displayctrl" : "Sending requests to the Pygame Display service",
                  "yuvdata"     : "Sending yuv video data to overlay display service"
                }
+    pixformat = None
+    size = None
+    position = (0,0)
 
 
     def __init__(self, **argd):
@@ -193,9 +197,7 @@ class VideoOverlay(component):
         super(VideoOverlay,self).__init__()
         self.size = None
         self.pixformat = None
-        self.position = (0,0)
-        
-        
+        self.position = argd.get( "position", (0,0) )
 
     def waitBox(self,boxname):
         """Generator. yields 1 until data ready on the named inbox."""
@@ -226,8 +228,6 @@ class VideoOverlay(component):
                   "displayctrl")
 
         yield 1
-#        for _ in self.waitBox("control"): yield 1
-#        display = self.recv("control")
 
             
     def main(self):
@@ -255,18 +255,25 @@ class VideoOverlay(component):
                 
             yield 1
 
+#        self.send(Axon.Ipc.producerFinished(message=self.display), "displayctrl")
+        self.send(None, "yuvdata")
+#        print "OK, we're done"
+
 __kamaelia_components__  = ( VideoOverlay, )
 
             
         
 if __name__ == "__main__":
+    from Kamaelia.Codec.Dirac import DiracDecoder
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
     
-    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
+#    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.yuv", readmode="bitrate", bitrate = 2280960*8),
+    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.dirac.drc", readmode="bitrate", bitrate = 2280960*8),
 #    Pipeline( ReadFileAdaptor("test.yuv", readmode="bitrate", bitrate = 2280960*8),
-              RawYUVFramer(size=(352,288), pixformat = "YUV420_planar" ),
+              DiracDecoder(),
+#              RawYUVFramer(size=(352,288), pixformat = "YUV420_planar" ),
 #    Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-720x576x50.yuv", readmode="bitrate", bitrate = 2280960*8*4),
 #              RawYUVFramer(size=(720,576), pixformat = pygame.IYUV_OVERLAY),
               VideoOverlay(),
