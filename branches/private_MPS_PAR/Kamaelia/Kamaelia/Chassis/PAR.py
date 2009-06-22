@@ -76,15 +76,77 @@ Is equivalent to this::
 Shutdown Examples
 -----------------
 
-To be written.
+This component is well behaved with regard to shutdown. It has the following behaviour: if
+it recieves a shutdownMicroprocess message on it's control box, it forwards a copy of this
+to all the subcomponents. When they exit, this component exits. This enables it to be used
+to shutdown entire systems cleanly. For example, the above example using PAR can be shutdown
+after 15 seconds using this code::
 
+    class timedShutdown(Axon.ThreadedComponent.threadedcomponent):
+        TTL = 1
+        def main(self):
+            time.sleep(self.TTL)
+            self.send(Axon.Ipc.shutdownMicroprocess(), "signal")
+
+    Pipeline(
+        timedShutdown(TTL=5),
+        Pipeline(
+            PAR(
+                Button(caption="Next",     msg="NEXT", position=(72,8)),
+                Button(caption="Previous", msg="PREV", position=(8,8)),
+                Button(caption="First",    msg="FIRST" ,position=(256,8)),
+                Button(caption="Last",     msg="LAST", position=(320,8)),
+            ),
+            Chooser(items = files),
+            Image(size=(800,600), position=(8,48), maxpect=(800,600)),
+        ),
+    ).run()
+
+For a larger example, the following is also a well behaved with regard to shutdown
+from PAR components - despite containing a ticker, buttons, 2 different video playback
+subsystems, two "talker text" panes, and a presentation tool::
+
+    Pipeline(
+            timedShutdown(TTL=15),
+            PAR(
+                Pipeline(
+                         ReadFileAdaptor(file, readmode="bitrate",
+                                         bitrate = 300000*8/5),
+                         DiracDecoder(),
+                         MessageRateLimit(framerate),
+                         VideoOverlay(position=(260,48), size=(200,300)),
+                ),
+                Pipeline( ReadFileAdaptor(file, readmode="bitrate", bitrate = 2280960*8),
+                          DiracDecoder(),
+                          ToRGB_interleaved(),
+                          VideoSurface(size=(200, 300), position=(600,48)),
+                ),
+                Pipeline(
+                    PAR(
+                        Button(caption="Next",     msg="NEXT", position=(72,8)),
+                        Button(caption="Previous", msg="PREV", position=(8,8)),
+                        Button(caption="First",    msg="FIRST" ,position=(256,8)),
+                        Button(caption="Last",     msg="LAST", position=(320,8)),
+                    ),
+                    Chooser(items = files),
+                    Image(size=(200,300), position=(8,48), maxpect=(200,300)),
+                ),
+                Pipeline(
+                    Textbox(size=(200,300), position=(8,360)),
+                    TextDisplayer(size=(200,300), position=(228,360)),
+                ),
+                Ticker(size=(200,300), position=(450,360)),
+            ),
+    ).run()
 
 
 How does it work?
 -----------------
 
-To be written.
-
+As present this is a relatively simple container component. It links all the outboxes
+from all it's subcomponents to it's own outboxes. It then activates them all, and pauses.
+When awoken by a message on the control inbox, this is forwared to the child components
+in order to shutdown.
 
 Policies
 --------
@@ -92,12 +154,6 @@ Policies
 To be written. The idea behind policies is to allow someone to override the
 default behaviour regarding inbox data. This potentially enables the
 creation of things like threadpools, splitters, and general workers.
-
-
-Shutdown Handling
------------------
-
-To be written.
 
 
 """
