@@ -8,6 +8,8 @@ from Kamaelia.Device.DVB.Core import DVB_Multiplex
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 
+import dvb3
+
 feparams = {
     "inversion" : dvb3.frontend.INVERSION_AUTO,
     "constellation" : dvb3.frontend.QAM_16,
