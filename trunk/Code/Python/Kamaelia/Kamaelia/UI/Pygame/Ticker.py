@@ -125,6 +125,9 @@ from Kamaelia.UI.GraphicDisplay import PygameDisplay
 from Axon.Ipc import WaitComplete
 import time
 
+class GotShutdownException(Exception):
+    pass
+
 class Ticker(Axon.Component.component):
    """\
    Ticker(...) -> new Ticker component.
@@ -247,91 +250,91 @@ class Ticker(Axon.Component.component):
     last=time.time()
     blankcount = 0
     alpha = -1
-    while 1:
-       self.handleAlpha()
-       if self.dataReady("control"):
-          if self.dataReady("control"):
-              data = self.recv("control")
-              if isinstance(data, Axon.Ipc.producerFinished):
-                  self.send(Axon.Ipc.producerFinished(message=display), "signal") # pass on the shutdown
-                  return
-       if self.dataReady("inbox"):
-          word = self.recv("inbox")
-          if word =="\n":
-             word = ""
-          if "\n" in word:
-             lines = word.split("\n")[:-1]
-             word = "BONG"
-          else:
-             lines = [word]
-          c = len(lines)
-          for line in lines:
-              word = line
-              words = line.split()
-#              if len(words) == 0:
-#
-# Purpose of this code is lost in time.
-#
-#                  if blankcount:
-#                      blankcount = 0
-#                      self.send( {"CHANGEDISPLAYGEO": True,
-#                                  "surface" : self.display,
-#                                  "position":(108,60)
-#                                 },
-#                                "signal")
-#                  else:
-#                      blankcount = 1
-              for word in words:
-                  while time.time() - last < self.delay:
-                     self.handleAlpha()                     
-                     yield 1
-                  self.handleAlpha()
-                  if self.dataReady("pausebox"):
-                      data = self.recv("pausebox")
-                      while not self.dataReady("unpausebox"):
-                          yield 1
-                      self.recv("unpausebox")
-                  if self.dataReady("control"): ### VOMIT : code duplication
-                      if self.dataReady("control"):
-                          data = self.recv("control")
-                          if isinstance(data, Axon.Ipc.producerFinished):
-                               self.send(Axon.Ipc.producerFinished(message=display), "signal") # pass on the shutdown
-                               return
-                  last = time.time()
-                  word = " " + word
-                  
-                  alpha = self.display.get_alpha() # remember alpha for surface
-                  self.display.set_alpha(255)      # change temporarily so we render text not faded out
-                  wordsize = my_font.size(word)
-                  word_render= my_font.render(word, 1, self.text_colour)
+    
+    try:
 
-                  if position[0]+wordsize[0] > self.render_area.right or c > 1:
-                     position[0] = initial_postition[0]
-                     if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
-                        display.set_colorkey(None)
-                        display.blit(display,
-                                     (self.render_area.left, self.render_area.top),
-                                     (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
-                                      self.render_area.width-1, position[1]-self.render_area.top ))
+        while 1:
+           self.handleAlpha()
+           if self.dataReady("control"):
+               raise GotShutdownException()
+           if self.dataReady("inbox"):
+              word = self.recv("inbox")
+              if word =="\n":
+                 word = ""
+              if "\n" in word:
+                 lines = word.split("\n")[:-1]
+                 word = "BONG"
+              else:
+                 lines = [word]
+              c = len(lines)
+              for line in lines:
+                  word = line
+                  words = line.split()
+    #              if len(words) == 0:
+    #
+    # Purpose of this code is lost in time.
+    #
+    #                  if blankcount:
+    #                      blankcount = 0
+    #                      self.send( {"CHANGEDISPLAYGEO": True,
+    #                                  "surface" : self.display,
+    #                                  "position":(108,60)
+    #                                 },
+    #                                "signal")
+    #                  else:
+    #                      blankcount = 1
+                  for word in words:
+                      while time.time() - last < self.delay:
+                         self.handleAlpha()                     
+                         yield 1
+                      self.handleAlpha()
+                      if self.dataReady("pausebox"):
+                          data = self.recv("pausebox")
+                          while not self.dataReady("unpausebox"):
+                              yield 1
+                          self.recv("unpausebox")
+                      if self.dataReady("control"): ### VOMIT : code duplication
+                          raise GotShutdownException()
+                      last = time.time()
+                      word = " " + word
+                      
+                      alpha = self.display.get_alpha() # remember alpha for surface
+                      self.display.set_alpha(255)      # change temporarily so we render text not faded out
+                      wordsize = my_font.size(word)
+                      word_render= my_font.render(word, 1, self.text_colour)
 
-                        pygame.draw.rect(display, 
-                                        self.background_colour, 
-                                        (self.render_area.left, position[1], 
-                                         self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
-                                        0)
-                        # pygame.display.update()
-                        if c>1:
-                           c = c -1
-                     else:
-                        position[1] += maxheight + self.line_spacing
+                      if position[0]+wordsize[0] > self.render_area.right or c > 1:
+                         position[0] = initial_postition[0]
+                         if position[1] + (maxheight + self.line_spacing)*2 > self.render_area.bottom:
+                            display.set_colorkey(None)
+                            display.blit(display,
+                                         (self.render_area.left, self.render_area.top),
+                                         (self.render_area.left, self.render_area.top+self.text_height+self.line_spacing,
+                                          self.render_area.width-1, position[1]-self.render_area.top ))
 
-                  display.blit(word_render, position)
-                  self.send({"REDRAW":True, "surface":self.display}, "_displaysignal")
-                  position[0] += wordsize[0]
-                  if wordsize[1] > maxheight:
-                     maxheight = wordsize[1]
-                  self.display.set_alpha(alpha)   # put alpha back to what it was
-       yield 1
+                            pygame.draw.rect(display, 
+                                            self.background_colour, 
+                                            (self.render_area.left, position[1], 
+                                             self.render_area.width-1,self.render_area.top+self.render_area.height-1-(position[1])),
+                                            0)
+                            # pygame.display.update()
+                            if c>1:
+                               c = c -1
+                         else:
+                            position[1] += maxheight + self.line_spacing
+
+                      display.blit(word_render, position)
+                      self.send({"REDRAW":True, "surface":self.display}, "_displaysignal")
+                      position[0] += wordsize[0]
+                      if wordsize[1] > maxheight:
+                         maxheight = wordsize[1]
+                      self.display.set_alpha(alpha)   # put alpha back to what it was
+           yield 1
+
+    except GotShutdownException:
+        self.send(self.recv("control"), "signal")
+
+    self.send(Axon.Ipc.producerFinished(message=display), "_displaysignal") # pass on the shutdown
 
 __kamaelia_components__  = ( Ticker, )
 

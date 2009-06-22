@@ -68,6 +68,7 @@ other charachters), or too far inside the edge of the screen (usually).
 
 import pygame
 import time
+import Axon
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 from Axon.Component import component
@@ -164,6 +165,7 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
                 yield 1
 #        print "DONE"
          # FIXME: Pygame display needs to be told that we have finished with the surface, so it can be removed, and deallocated.
+        self.send(Axon.Ipc.producerFinished(message=self.screen), "_pygame")
 
     def update(self, text):
         """Updates text to the bottom of the screen while scrolling old text
@@ -281,9 +283,12 @@ class Textbox(TextDisplayer):
                     string_buffer += char
                 self.setText(string_buffer + '|')
                     
-            while not self.anyReady():  # changed to while - can be woken by messages leaving as well as arriving
+            while not self.anyReady() and not self.needShutdown():  # changed to while - can be woken by messages leaving as well as arriving
                 self.pause()            # Looping here is safe, since we only update based on information on inboxes
                 yield 1
+
+        self.send(Axon.Ipc.producerFinished(message=self.screen), "_pygame")
+
 
 __kamaelia_components__ = (TextDisplayer, Textbox, )
 

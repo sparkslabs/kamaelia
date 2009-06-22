@@ -84,7 +84,7 @@ the component will then terminate.
 import StringIO
 import pygame
 import Axon
-from Axon.Ipc import producerFinished
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class Image(Axon.Component.component):
@@ -179,12 +179,11 @@ class Image(Axon.Component.component):
               alpha = self.recv("alphacontrol")
               self.display.set_alpha(alpha)
          if self.dataReady("control"):
-            print "we do get here..."
             cmsg = self.recv("control")
             if isinstance(cmsg, producerFinished) or isinstance(cmsg, shutdownMicroprocess):
                self.send(cmsg,"signal")
                done = True
-         
+
          # if we're given a new surface, use that instead
          if self.dataReady("callback"):
             if self.display is None:
@@ -212,13 +211,14 @@ class Image(Axon.Component.component):
             self.send({"REDRAW":True, "surface":self.display}, "display_signal")
             change = False
 
-         self.pause()
-         yield 1
-      print "HERE"
+         if not done:
+             self.pause()
+             yield 1
+
       self.display.set_alpha(0)
       self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal") 
       yield 1
-      print "NOT HERE"
+
 
    def imageFromString(self, newImage):
        Y = StringIO.StringIO(newImage)
