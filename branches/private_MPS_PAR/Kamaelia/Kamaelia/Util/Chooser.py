@@ -324,4 +324,4 @@ class ForwardIteratingChooser(Axon.Component.component):
          return False
 
 
- __kamaelia_components__  = ( Chooser, ForwardIteratingChooser, )
+__kamaelia_components__  = ( Chooser, ForwardIteratingChooser, )
