@@ -82,7 +82,7 @@ the component will then terminate.
 
 import pygame
 import Axon
-from Axon.Ipc import producerFinished
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class KeyEvent(Axon.Component.component):
@@ -177,5 +177,9 @@ class KeyEvent(Axon.Component.component):
                    if self.allkeys:
                       self.send(("UP", event.key), "allkeys")
          yield 1
+
+      self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal")
+      yield 1
+
 
 __kamaelia_components__  = ( KeyEvent, )

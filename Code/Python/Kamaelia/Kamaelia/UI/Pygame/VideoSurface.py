@@ -88,6 +88,7 @@ the following entries::
 
 """
 
+import Axon
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.Ipc import WaitComplete
@@ -121,12 +122,12 @@ class VideoSurface(component):
                  "display_signal" : "Outbox used for sending signals of various kinds to the display service"
                }
         
-    def __init__(self, position=None):
+    def __init__(self, position=None, size = None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(VideoSurface, self).__init__()
         self.display = None
         
-        self.size = None
+        self.size = size
         self.pixformat = None
 
         if position is not None:
@@ -161,7 +162,6 @@ class VideoSurface(component):
         
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"display_signal"), displayservice)
-        
         while 1:
             # wait for a frame
             frame = False
@@ -172,7 +172,7 @@ class VideoSurface(component):
                     if self.shutdown():
                         return
               
-                if not self.anyReady():
+                if not self.anyReady() and not frame:
                     self.pause()
                 yield 1
               
@@ -196,8 +196,8 @@ class VideoSurface(component):
                                 "size": self.size,
                                 "position" : self.position
                               }
-                              
                 self.send(dispRequest, "display_signal")
+                yield 1
                 
                 # wait for the surface back
                 yield WaitComplete(self.waitBox("callback"))
@@ -211,12 +211,12 @@ class VideoSurface(component):
             
             # deal with possible shutdown requests
             if self.shutdown():
+                self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal")
                 return
             
             if not self.anyReady():
                 self.pause()
                 yield 1
-
 
 
 __kamaelia_components__  = ( VideoSurface, )
@@ -238,11 +238,14 @@ if __name__ == "__main__":
 #            ).run()
             
     from Kamaelia.Codec.Dirac import DiracDecoder
+
+    from Kamaelia.Util.Console import ConsoleEchoer
             
     Pipeline( ReadFileAdaptor("/data/dirac-video/snowboard-jum-352x288x75.dirac.drc", readmode="bitrate", bitrate = 2280960*8),
               DiracDecoder(),
               ToRGB_interleaved(),
-              ToYUV420_planar(),
-              ToRGB_interleaved(),
-              VideoSurface((200,100)),
+#              ToYUV420_planar(),
+#              ToRGB_interleaved(),
+#              ConsoleEchoer(forwarder = True),
+              VideoSurface((352, 288)),
             ).run()

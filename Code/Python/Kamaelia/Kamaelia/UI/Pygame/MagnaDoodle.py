@@ -34,7 +34,7 @@ right to erase your artwork.
 
 import pygame
 import Axon
-from Axon.Ipc import producerFinished
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 class MagnaDoodle(Axon.Component.component):
@@ -163,8 +163,11 @@ class MagnaDoodle(Axon.Component.component):
                             pygame.draw.line(self.display, (0,0,0), self.oldpos, event.pos, 3)
                             self.oldpos = event.pos
                         self.blitToSurface()
-         self.pause()
+         if not done:
+             self.pause()
          yield 1
+
+      self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal")
             
       
    def blitToSurface(self):

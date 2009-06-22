@@ -80,7 +80,7 @@ display surface it requested.
 
 import pygame
 import Axon
-from Axon.Ipc import producerFinished
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 
 class Multiclick(Axon.Component.component):
@@ -207,7 +207,11 @@ class Multiclick(Axon.Component.component):
                          message = self.eventMsg
                       self.send( message, "outbox" )
          yield 1
-            
+
+      self.send(Axon.Ipc.producerFinished(message=self.display), "display_signal")
+      
+
+
       
    def blitToSurface(self):
        """Clears the background and renders the text label onto the button surface."""

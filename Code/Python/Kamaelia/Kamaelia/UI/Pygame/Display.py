@@ -248,7 +248,7 @@ class _PygameEventSource(threadedcomponent):
     Event source for Pygame Display
     """
     Inboxes = { "inbox" : "NOT USED",
-                "control" : "NOT USED",
+                "control" : "Any message sent here shuts this down",
               }
     Outboxes = { "outbox" : "Wake up notifications - that there are pygame events waiting",
                  "signal" : "Not used",
@@ -264,6 +264,8 @@ class _PygameEventSource(threadedcomponent):
             time.sleep(0.01)
             eventswaiting = pygame.event.peek()  # and get any others waiting
             
+            if self.dataReady("control"):
+                break
             if eventswaiting:
                 try:
                     self.send(True,"outbox")
@@ -295,6 +297,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
               }
    Outboxes = { "outbox" : "NOT USED",
                 "signal" : "NOT USED",
+                "_signal" : "to signal to the events source",
               }
              
    def setDisplayService(pygamedisplay, tracker = None):
@@ -342,6 +345,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.visibility = {}
       self.events_wanted = {}
       self.surface_to_eventcomms = {}
+      self.startShutdown = False
 
    def surfacePosition(self,surface):
       """Returns a suggested position for a surface. No guarantees its any good!"""
@@ -357,7 +361,11 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          
          while self.dataReady("notify"):
             message = self.recv("notify")
+#            print message
             if isinstance(message, Axon.Ipc.producerFinished): ### VOMIT : mixed data types
+
+#               print "OK, got a producerFinished Message", message.message
+
                self.needsRedrawing = True
 #               print "SURFACE", message
                surface = message.message
@@ -366,6 +374,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                message = None
 #               print "BEFORE", [id(x[0]) for x in self.surfaces]
                self.surfaces = [ x for x in self.surfaces if x[0] is not surface ] ##H ERE
+
 #               print "AFTER", self.surfaces
 #               print "Hmm...", self.surface_to_eventcomms.keys()
                try:
@@ -382,7 +391,12 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                        "This sucks"
                        pass
 #                   print "REMOVED OUTBOX"
+               if (len(self.surfaces) == 0) and (len(self.overlays)==0):
+#                   print "ALL CLIENTS DISAPPEARED, OUGHT TO CONSIDER DISAPPEARING TOO"
+                   self.startShutdown = True
+
             elif message.get("DISPLAYREQUEST", False):
+#               print "GOT A DISPLAY REQUEST"
                self.needsRedrawing = True
                callbackservice = message["callback"]
                eventservice = message.get("events", None)
@@ -464,7 +478,14 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                     posinbox = self.addInbox("overlay_position")
                     self.link (posservice, (self, posinbox) )
                     posservice = (posinbox, posservice)
-                
+
+
+                if position != (0,0):
+                     overlay.set_location( ( position, 
+                                                       (size[0], size[1])
+                                                      ))
+
+
                 self.overlays.append( {"overlay":overlay,
                                        "yuv":yuvdata,
                                        "position":position,
@@ -502,8 +523,10 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    def updateOverlays(self):
       #
       # Update overlays - We do these second, so as to avoid flicker.
-      #
+      got_anyshutdown = False
+      new_overlays = []
       for theoverlay in self.overlays:
+          overlay_shutdown = False
 
           # receive new image data for display
           if theoverlay['yuvservice']:
@@ -511,12 +534,15 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
               theinbox, _ = theoverlay['yuvservice']
               while self.dataReady(theinbox):
                   yuv = self.recv(theinbox)
-
-                  # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
-                  if len(yuv) == 3:
-                      theoverlay['yuv'] = (yuv[0], yuv[2], yuv[1])
+                  if yuv is None:
+                      overlay_shutdown = True
+                      got_anyshutdown = True
                   else:
-                      theoverlay['yuv'] = yuv
+                      # transform (y,u,v) to (y,v,u) because pygame seems to want that(!)
+                      if len(yuv) == 3:
+                          theoverlay['yuv'] = (yuv[0], yuv[2], yuv[1])
+                      else:
+                          theoverlay['yuv'] = yuv
 
           # receive position updates
           if theoverlay['posservice']:
@@ -527,8 +553,14 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                   theoverlay['overlay'].set_location( (theoverlay['position'], 
                                                        (theoverlay['size'][0]/2, theoverlay['size'][1])
                                                       ))
-              
-   
+          if not overlay_shutdown:
+              new_overlays.append(theoverlay)
+
+      self.overlays = new_overlays
+      if got_anyshutdown:
+          if len(self.surfaces) == 0 and len(self.overlays) == 0:
+              self.startShutdown = True
+
    def handleEvents(self):
       # pre-fetch all waiting events in one go
       events = []
@@ -604,21 +636,35 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       eventsource = _PygameEventSource().activate()
       self.addChildren(eventsource)
       self.inboxes["events"].setSize(1)   # prevent wakeup notifications from backlogging too much :)
-      self.link( (eventsource,"outbox"), (self,"events") )
+      l1 = self.link( (eventsource,"outbox"), (self,"events") )
 
-      
+      l2 = self.link( (self,"_signal"), (eventsource,"control") )
+
+#      print "Initialised"
+      self.startShutdown = False # Something stopped the shutdonw
       while 1:
          self.needsRedrawing = False
          self.handleEvents()
          self.handleDisplayRequest()
          self.updateOverlays()
-         
+
          if self.needsRedrawing:
              self.updateDisplay(display)
              pygame.display.update()
-             
+
+         if self.startShutdown:
+            if len(self.surfaces) == 0 and len(self.overlays) == 0:
+#                print self, "UM"
+                break
+            self.startShutdown = False # Something stopped the shutdonw
          self.pause()
          yield 1
+
+      self.send(Axon.Ipc.shutdownMicroprocess(), "_signal")
+      self.send(Axon.Ipc.producerFinished(), "signal")
+      self.unlink(l1)
+      self.unlink(l2)
+#      print "Exitting"
 
 __kamaelia_components__  = ( PygameDisplay, )
 
