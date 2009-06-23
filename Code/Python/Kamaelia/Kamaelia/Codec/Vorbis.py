@@ -56,7 +56,7 @@ class AOAudioPlaybackAdaptor(component):
 
    """
    Inboxes = {
-       "inbox" : "Any raw PCM encoded data recieved here is played through the default oss playback device",
+       "inbox" : "Any raw PCM encoded data recieved here is played through the default oss & alsa playback device",
        "control" : "If a message is received here, the component shutsdown",
    }
    Outboxes = {
@@ -66,8 +66,11 @@ class AOAudioPlaybackAdaptor(component):
    def __init__(self):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(AOAudioPlaybackAdaptor, self).__init__()
-      self.dev = ao.AudioDevice("oss")
-
+      try:
+          self.dev = ao.AudioDevice("oss")
+      except ao.aoError:
+          self.dev = ao.AudioDevice("alsa")
+                
    def main(self):
       """Performs the logic described above"""
       playing = True
