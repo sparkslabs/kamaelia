@@ -366,6 +366,8 @@ class microprocess(Axon.AxonObject):
       else:
          self.__thread = None # Explicit better than implicit
          
+      self._exceptions = []
+         
       self.closeDownValue = closeDownValue
          
       self.scheduler = _nullscheduler
@@ -504,15 +506,25 @@ class microprocess(Axon.AxonObject):
               # Continually try to run the code, and then release control
               if someobject._isStopped():
                   # Microprocess has stopped
+                  self._handleStopped()
                   yield None
                   return
               else:
-                  v = pc.next()
+                  if self._exceptions:
+                      v = pc.throw(self._exceptions.pop(0))
+                  else:
+                      v = pc.next()
                   yield v           # Yield control back - making us into a generator function
+          except StopIteration:
+              self._handleStopped()
+              return
           except:
               exception = sys.exc_info()
               self._handleException(exception)
               return
+              
+   def _handleStopped(self):
+      pass # stub
               
    def _handleException(self, exception):
       pass # stub

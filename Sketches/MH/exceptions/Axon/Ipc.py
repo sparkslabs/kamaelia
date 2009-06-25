@@ -160,7 +160,7 @@ microprocess is resumed after the one that was launched terminates.
 
                 
 """
-class ipc(object):
+class ipc(Exception):
    """Message base class"""
    pass
 
@@ -323,11 +323,14 @@ class errorInformation(ipc):
       self.exception = exception # if an exception was caught the exception object
       self.message = message # the message with bad data that caused the exception or error
 
-class microprocessException(ipc):
+class microprocessException(shutdownMicroprocess):
    """\
    Message for carrying (propagating) exceptions.
+   Its a specialisation (subclass) of shutdownMicroprocess, so that code that
+   handles a shutdownMicroprocess will treat an exception the same
    """
-   def __init__(self, exception):
+   def __init__(self, exception=None, *microprocesses):
+      super(microprocessException,self).__init__(*microprocesses)
       self.exception = exception
 
 
