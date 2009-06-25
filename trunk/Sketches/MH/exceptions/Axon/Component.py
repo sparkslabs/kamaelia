@@ -382,7 +382,7 @@ from Linkage import linkage
 from Ipc import *
 
 
-from Box import makeInbox,makeOutbox
+from Box import makeInbox,makeOutbox,makeEventInbox
 
 
 
@@ -441,7 +441,10 @@ class component(microprocess):
 
       # Create boxes for inboxes/outboxes
       for boxname in self.Inboxes:
-          self.inboxes[boxname] = makeInbox(notify=self.unpause)
+          if boxname != "control":
+              self.inboxes[boxname] = makeInbox(notify=self.unpause)
+          else:
+              self.inboxes[boxname] = makeEventInbox(notify=self.__receiveEvent)
       for boxname in self.Outboxes:
           self.outboxes[boxname] = makeOutbox(notify=self.unpause)
 
@@ -598,12 +601,7 @@ class component(microprocess):
 
       You are unlikely to want to override this method.
       """
-      msg = self.inboxes[boxname].pop(0)
-      if isinstance(msg, microprocessException):
-          print "Received and thrown"
-          raise msg.exception[0], msg.exception[1], msg.exception[2]
-      else:
-          return msg
+      return self.inboxes[boxname].pop(0)
 
    def Inbox(self, boxname="inbox"):
        while self.dataReady(boxname):
@@ -654,9 +652,16 @@ class component(microprocess):
             yield result
       yield self.closeDownComponent()
 
+   def __receiveEvent(self, event):
+      self._exceptions.append(event)
+      self.unpause()
+
    def _handleException(self, ex):
       # overrides stub in Microprocess
-      self.send(microprocessException(ex), "signal")
+      self.send(microprocessException(exception=ex), "signal")
+      
+   def _handleStopped(self):
+      self.send(producerFinished(self), "signal")
           
 
    def initialiseComponent(self):

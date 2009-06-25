@@ -286,7 +286,7 @@ ShowAllTransits = False
 
 class nullsink(object):
     """\
-    nullsink() -> new nullsink object
+    nullsink([notify]) -> new nullsink object
 
     A dummy piece of storage for postboxes, that behaves a bit like a list.
 
@@ -308,6 +308,54 @@ class nullsink(object):
         """
         if self.showtransit:
             print "Discarding Delivery via [", self.tag, "] of ", repr(data)
+
+    def setShowTransit(self,showtransit, tag):
+        """\
+        Set showTransit to True to cause debugging output whenever a message is
+        delivered to this storage. The tag can be anything you want to identify
+        this occurrence.
+        """
+        self.showtransit = showtransit
+        self.tag = tag
+    
+    def __len__(self):
+        """Returns number of items in the list (always zero)"""
+        return 0
+    
+    def pop(self,index):
+        """Returns an item from the list (always raises IndexError"""
+        raise IndexError("nullsink: You can't pop from an empty piece of storage!")
+    def __repr__(self):
+        return "<>"
+
+class notifysink(object):
+    """\
+    notifysink([notify]) -> new notifysink object
+
+    A dummy piece of storage for postboxes, that behaves a bit like a list.
+
+    Discards data given to it by calling append() and always reports that it
+    contains no items, but does call the supplied notify() callback function
+    passing the item of data to it as an argument.
+    """
+    
+    def __init__(self, notify):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature."""
+        super(notifysink,self).__init__()
+        self.notify = notify
+        self.size = None
+        self.tag = None
+        self.showtransit = ShowAllTransits
+        self.wakeOnPop = []   # callbacks for when a pop() happens
+
+    def append(self, data):
+        """\
+        Append item to the list - though actually it just gets discarded.
+        But the notify callback is called with the item as an argument.
+        """
+        if self.showtransit:
+            print "Discarding Delivery via [", self.tag, "] of ", repr(data)
+        self.notify(data);
 
     def setShowTransit(self,showtransit, tag):
         """\
@@ -389,7 +437,6 @@ class realsink(list):
         for n in self.wakeOnPop:
             n()
         return item
-
 
 class postbox(object):
     """\
@@ -550,6 +597,14 @@ def makeInbox(notify, size = None):
     if size is not None:
        result.setSize(size)
     return result
+
+
+def makeEventInbox(notify, size = None):
+    result = postbox(storage=notifysink(notify=notify))
+    if size is not None:
+       result.setSize(size)
+    return result
+    
 
 def makeOutbox(notify):
     """\
