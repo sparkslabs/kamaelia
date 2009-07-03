@@ -41,8 +41,8 @@ class PeriodicWakeup(Axon.ThreadedComponent.threadedcomponent):
     interval = 300
     message = "tick"
     def main(self):
-        while 1:
+        while not self.dataReady("control"):
             time.sleep(self.interval)
             self.send(self.message, "outbox") # sleeper must awaken
-
+        self.send(self.recv("control"), "signal")
 __kamaelia_components__  = ( PeriodicWakeup, )
