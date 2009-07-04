@@ -97,3 +97,32 @@ class PeriodicTick(Axon.ThreadedComponent.threadedcomponent):
                 tick_count += 1
         self.send(self.recv('control'), 'signal')
 
+if __name__=="__main__":
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.Console import ConsoleEchoer
+    
+    if 0:
+        Pipeline(
+            PeriodicTick(0.3),
+            ConsoleEchoer(use_repr=True),
+        ).run()
+
+    if 0:
+        Pipeline(
+            PeriodicTick(0.3, tick_mesg="Hello\n"),
+            ConsoleEchoer(),
+        ).run()
+    
+    if 0:
+        Pipeline(
+            PeriodicTick(delay=0.3,tick_mesg="Hello\n",check_interval=0.01),
+            ConsoleEchoer(),
+        ).run()
+
+    Pipeline(
+        SingleTick(0.3),
+        ConsoleEchoer(use_repr=True),
+    ).run()
+
+   
+
