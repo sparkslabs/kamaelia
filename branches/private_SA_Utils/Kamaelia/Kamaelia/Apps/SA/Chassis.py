@@ -91,7 +91,6 @@ class TTL(Axon.Component.component):
         for msg in shutdown_messages:
             if not self.child._isStopped():
                 self.send( msg, "_sigkill")
-                print "trying", msg
                 yield 1
                 yield 1
             else:
@@ -100,7 +99,6 @@ class TTL(Axon.Component.component):
         self.removeChild(self.child)
         yield 1
         if not self.child._isStopped():
-            print "trying self.child.stop()"
             self.child.stop()
             yield 1
             if 'signal' in self.Outboxes:
