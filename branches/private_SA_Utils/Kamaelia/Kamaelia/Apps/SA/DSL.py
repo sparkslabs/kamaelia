@@ -57,3 +57,20 @@ class DataSink(Axon.Component.component):
             self.send(producerFinished(self), 'signal')
         yield 1
 
+
+if __name__ == "__main__":
+    from Kamaelia.Util.DataSource import DataSource
+    from Kamaelia.Chassis.Pipeline import Pipeline
+
+    class mylist(list):
+        def append(self, item):
+            print "Appending", item
+            super(mylist, self).append(item)
+
+    R = mylist()
+    Pipeline(
+        DataSource([1,2,3,4]),
+        DataSink(R)
+    ).run()
+
+    print R
