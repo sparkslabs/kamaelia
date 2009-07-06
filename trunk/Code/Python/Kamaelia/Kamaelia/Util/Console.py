@@ -151,23 +151,21 @@ class ConsoleEchoer(component):
 
    def main(self):
       """Main loop body."""
-      while not self.shutdown():
-          while self.dataReady("inbox"):
-              data = self.recv("inbox")
+      shutdown = False
+      while not shutdown:
+          for data in self.Inbox("inbox"):
               _sys.stdout.write(self.tag + self.serialise(data))
               _sys.stdout.flush()
               if self.forwarder:
                   self.send(data, "outbox")
-          self.pause()
+          if self.dataReady("control"):
+              shutdown = True
+          else:
+              self.pause()
           yield 1
-          
-   def shutdown(self):
-       while self.dataReady("control"):
-           data = self.recv("control")
-           if isinstance(data, producerFinished) or isinstance(data, shutdownMicroprocess):
-               self.send(data,"signal")
-               return True
-       return 0
+
+      for msg in self.Inbox("control"):
+          self.send(msg, "signal")
             
 __kamaelia_components__  = ( ConsoleReader, ConsoleEchoer, )
 

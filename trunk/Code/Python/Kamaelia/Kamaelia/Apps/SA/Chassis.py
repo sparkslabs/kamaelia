@@ -8,6 +8,8 @@ import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess, shutdown
 from Kamaelia.IPC import serverShutdown
 
+from Kamaelia.Apps.SA.Time import SingleTick
+
 # FIXME: Needs example of usage.
 
 class TTL(Axon.Component.component):
@@ -30,21 +32,18 @@ class TTL(Axon.Component.component):
         # right off the bat.  Instead we first replicate the wrapped component's
         # inboxes and outboxes.  Private "_name" boxes are not replicated.
         self.child = comp
-        
-        # FIXME: This assumes that <component>.Inboxes is always a
-        # FIXME: dictionary. It isn't. It's required to be any iterable that
-        # FIXME: returns strings - because self.Inbox is iterated over as:
-        # FIXME:
-        # FIXME:    for boxname in <component>.Inboxes:
-        # FIXME: 
-        # FIXME: The reason many components use dictionaries these days is
-        # FIXME: because of the recognition that doing the above with
-        # FIXME: dictionaries gives you keys, the values can then be docs
                 
-        for inbox in (item for item in self.child.Inboxes.iteritems() if not item[0].startswith('_')):
-            self.Inboxes[inbox[0]] = inbox[1]
-        for outbox in (item for item in self.child.Outboxes.iteritems() if not item[0].startswith('_')):
-            self.Outboxes[outbox[0]] = outbox[1]
+        for inbox in (item for item in self.child.Inboxes if not item.startswith('_')):
+            try:
+                self.Inboxes[inbox] = self.child.Inboxes.get(inbox, "")
+            except AttributeError: # not a dict
+                self.Inboxes[inbox] = ""
+
+        for outbox in (item for item in self.child.Outboxes if not item.startswith('_')):
+            try:
+                self.Outboxes[outbox] = self.child.Outboxes.get(outbox, "")
+            except AttributeError: # not a dict
+                self.Outboxes[outbox] = ""
 
         super(TTL, self).__init__()
 
@@ -52,15 +51,21 @@ class TTL(Axon.Component.component):
 
         # We can now create the mailbox linkages now that the parent class'
         # init() has been called.
+        
         self.link((self.timebomb, 'outbox'), (self, '_trigger'))
         self.link((self, '_disarm'), (self.timebomb, 'control'))
-        self.link((self, '_sigkill'), (self.child, 'control'))
+        try:
+            self.link((self, '_sigkill'), (self.child, 'control'))
+            self.nochildcontrol = False
+        except KeyError:
+            self.nochildcontrol = True
 
-        for inbox in (item for item in self.child.Inboxes.iteritems() if not item[0].startswith('_')):
-            self.link((self, inbox[0]), (self.child, inbox[0]), passthrough=1)
- 
-        for outbox in (item for item in self.child.Outboxes.iteritems() if not item[0].startswith('_')):
-            self.link((self.child, outbox[0]), (self, outbox[0]), passthrough=2)
+        for inbox in (item for item in self.child.Inboxes if not item.startswith('_')):
+            self.link((self, inbox), (self.child, inbox), passthrough=1)
+
+        for outbox in (item for item in self.child.Outboxes if not item.startswith('_')):
+            self.link((self.child, outbox), (self, outbox), passthrough=2)
+
         
         self.addChildren(self.child)
     
@@ -81,22 +86,16 @@ class TTL(Axon.Component.component):
             yield 1
         if not self.timebomb._isStopped():
             self.send(producerFinished(), '_disarm')
-        if not self.child._isStopped():
-            self.send(producerFinished(), '_sigkill')
-            yield 1
-            yield 1
+        
+        shutdown_messages = [ producerFinished(), shutdownMicroprocess(), serverShutdown(), shutdown() ]
+        for msg in shutdown_messages:
             if not self.child._isStopped():
-                self.send(shutdownMicroprocess(), '_sigkill')
+                self.send( msg, "_sigkill")
                 yield 1
                 yield 1
-                if not self.child._isStopped():
-                    self.send(serverShutdown(), '_sigkill')
-                    yield 1
-                    yield 1
-                    if not self.child._isStopped():
-                        self.send(shutdown(), '_sigkill')
-                        yield 1
-                        yield 1
+            else:
+                break
+             
         self.removeChild(self.child)
         yield 1
         if not self.child._isStopped():
@@ -105,3 +104,85 @@ class TTL(Axon.Component.component):
             if 'signal' in self.Outboxes:
                 self.send(shutdownMicroprocess(), 'signal')
                 yield 1
+
+
+if __name__=="__main__":
+    class WellBehaved1(Axon.Component.component):
+        def main(self):
+            t = time.time()
+            while not self.dataReady("control"):
+                if time.time() - t>0.3:
+                    self.send("hello", "outbox")
+                    print self
+                    t = time.time()
+                yield 1
+            self.send(self.recv("control"), "signal")
+    
+    TTL( WellBehaved1(), 1 ).run()
+
+    class WellBehaved2(Axon.Component.component):
+        Inboxes = {
+            "inbox"   : "Foo Bar",
+            "control" : "Foo Bar",
+        }
+        Outboxes = {
+            "outbox" : "Foo Bar",
+            "signal" : "Foo Bar",
+        }
+        def main(self):
+            t = time.time()
+            while not self.dataReady("control"):
+                if time.time() - t>0.3:
+                    self.send("hello", "outbox")
+                    print self
+                    t = time.time()
+                yield 1
+            self.send(self.recv("control"), "signal")
+    
+    TTL( WellBehaved2(), 1 ).run()
+
+    class WellBehaved3(Axon.Component.component):
+        Inboxes = [ "inbox", "control" ]
+        Outboxes = [ "outbox", "signal" ]
+        def main(self):
+            t = time.time()
+            while not self.dataReady("control"):
+                if time.time() - t>0.3:
+                    self.send("hello", "outbox")
+                    print self
+                    t = time.time()
+                yield 1
+            self.send(self.recv("control"), "signal")
+    
+    TTL( WellBehaved3(), 1 ).run()
+
+    class WellBehaved4(Axon.Component.component):
+        Inboxes = [ "inbox", "control" ]
+        Outboxes = {
+            "outbox" : "Foo Bar",
+            "signal" : "Foo Bar",
+        }
+        def main(self):
+            t = time.time()
+            while not self.dataReady("control"):
+                if time.time() - t>0.3:
+                    self.send("hello", "outbox")
+                    print self
+                    t = time.time()
+                yield 1
+            self.send(self.recv("control"), "signal")
+    
+    TTL( WellBehaved4(), 1 ).run()
+    
+    class BadlyBehaved1(Axon.Component.component):
+        Inboxes = [ ]
+        Outboxes = [ ]
+        def main(self):
+            t = time.time()
+            while 1:
+                if time.time() - t>0.3:
+                    print self
+                    t = time.time()
+                yield 1
+    
+    TTL( BadlyBehaved1(), 1 ).run()
