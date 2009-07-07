@@ -30,6 +30,7 @@ setup(name = "Kamaelia-JsonRPC",
       url = "http://www.kamaelia.org/JsonRPC",
       license = "Copyright (c)2009 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
       packages = [\
+            "jsonrpc",
 # REPLACE
                   ""],
 #      scripts = [ 'App/BatchFileProcessor.py' ],
