@@ -3,7 +3,7 @@
 # test functions
 from time import sleep
 import sys
-from bdjsonrpc import cb_notification, cb_request, JsonRpcTCPClient, RequestOrNotification, ResponseCallback
+from Kamaelia.Apps.JsonRPC.BDJsonRPC import cb_notification, cb_request, JsonRpcTCPClient, RequestOrNotification, ResponseCallback
 from Axon.Handle import Handle
 
 def ho_hum():

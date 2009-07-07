@@ -2,7 +2,7 @@
         
 # test functions
 from time import sleep
-from bdjsonrpc import cb_notification, cb_request, JsonRpcTCPServer, RequestOrNotification
+from Kamaelia.Apps.JsonRPC.BDJsonRPC import cb_notification, cb_request, JsonRpcTCPServer, RequestOrNotification
 import threading
 
 def double(x):
