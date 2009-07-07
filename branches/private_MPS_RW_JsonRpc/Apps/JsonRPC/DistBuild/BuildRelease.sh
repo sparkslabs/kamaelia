@@ -9,7 +9,7 @@ cp -R ../../../Axon/Axon/ ../Axon
 echo "Copying current Kamaelia"
 cp -R ../../../Kamaelia/Kamaelia/ ../Kamaelia
 echo "Copying authors & copying files"
-cp ../../../../../trunk/AUTHORS ../../../../../trunk/COPYING .
+cp ../../../../../trunk/AUTHORS ../../../../../trunk/COPYING ..
 
 echo "Creating setup.py file"
 egrep -B1000 "# REPLACE" setup.py.src |grep -v "# REPLACE" > ../setup.py
