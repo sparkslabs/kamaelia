@@ -32,9 +32,9 @@ args.update(conf_args)    # FIXME: unify args & conf_args in a nicer, more sensi
 
 if needToShowUsage(args, argspec):
     showUsageBasedOnHowUsed(args, argspec)
+    print "\nNote: This program can also read a JSON formatted config file called transcode.conf"
+    print "for these config options"
     sys.exit(0)
-    
-)
 
 Graphline(
     FILES = Pipeline(
