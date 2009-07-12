@@ -2,7 +2,7 @@ include COPYING
 include AUTHORS
 include CHANGELOG
 include Doc/*
-recursive-include App/*
-recursive-include Extras/*
+recursive-include App *
+recursive-include Extras *
 include Config/*
 
