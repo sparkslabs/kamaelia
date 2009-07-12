@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import os
 import sys
 
 def parseargs(argv, longopts, longflags, required,usesrest):
@@ -188,3 +189,60 @@ if __name__ == "__main__":
         sys.exit(0)
 
     pprint.pprint(args)
+
+#
+# Handle a reading a json encoded config file. Probably something nicer that
+# this would be good, but this will do for now.
+#
+def readJSONConfig(path):
+    if os.path.exists(path):
+        import cjson
+        g = open(path, "rb")
+        Y_ = g.read()
+        g.close()
+        conf_args = cjson.decode(Y_)
+    else:
+        conf_args = {}
+    return conf_args
+
+def checkArgs(args, argspec):
+    argsOK = True
+    missing = []
+    for required in argspec[2]:
+        default = None
+        for k,key in argspec[0]:
+            if key != required:
+                continue
+            default = argspec[0][k,key][0]
+            break
+        if args[required] == default:
+           missing.append(required)
+           argsOK = False
+    return argsOK, missing
+
+def needToShowUsage(args, argspec):
+    argsOK, missing = checkArgs(args, argspec)
+    return args["help"] or not argsOK
+
+def showUsageBasedOnHowUsed(args, argspec):
+    argsOK, missing = checkArgs(args, argspec)
+    if not args["help"]:
+        print "USAGE ERROR:"
+        for required in missing:
+            print "\t","--"+required, "must be given"
+    showHelp(argspec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
