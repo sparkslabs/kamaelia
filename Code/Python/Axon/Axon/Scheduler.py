@@ -331,7 +331,6 @@ class scheduler(microprocess):
       *not* use this method to activate a component - use the component's own
       activate() method instead.
       """
-      self.extra = 0
       self.wakeThread(mprocess, True)
       
    def wakeThread(self, mprocess, canActivate=False):
@@ -527,6 +526,7 @@ class scheduler(microprocess):
                     # modest timeout so we still regularly yield (in case this
                     # is a microprocess running in another scheduler)
                     mprocess, canActivate = self.wakeRequests.get(True,0.01)
+                    self.extra = 0   # Fix for race hazard regarding wait_for_one, esp problem with threaded components
                     try:
                         currentstate = self.threads[mprocess]
                         if currentstate == _SLEEPING:
