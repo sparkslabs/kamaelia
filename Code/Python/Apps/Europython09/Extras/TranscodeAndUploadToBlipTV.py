@@ -8,7 +8,8 @@ import Axon
 from Kamaelia.Chassis.Graphline import Graphline 
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-from Kamaelia.Apps.Europython09.Options import parseargs, showHelp
+from Kamaelia.Apps.Europython09.Options import parseargs, showHelp, readJSONConfig, checkArgs, needToShowUsage, showUsageBasedOnHowUsed
+
 from Kamaelia.Apps.Europython09.Util import Find, Sort, Grep, TwoWayBalancer
 from Kamaelia.Apps.Europython09.VideoFileTranscode import Transcoder
 from Kamaelia.Apps.Europython09.FTP import Uploader
@@ -24,41 +25,16 @@ argspec = [
             ["username", "password"],
             ""
           ]
-
-#
-# Handle a reading a json encoded config file. Probably something nicer that
-# this would be good, but this will do for now.
-#
-if os.path.exists("transcode.conf"):
-    import cjson
-    g = open("transcode.conf", "rb")
-    Y_ = g.read()
-    g.close()
-    conf_args = cjson.decode(Y_)
-else:
-    conf_args = {}
-
+    
+conf_args = readJSONConfig("transcode.conf")
 args = parseargs( sys.argv[1:], *argspec) 
+args.update(conf_args)    # FIXME: unify args & conf_args in a nicer, more sensible way.
 
-# FIXME: unify args & conf_args in a nicer, more sensible way.
-args.update(conf_args)
-
-#
-# This can probably be automated base on "required" part of argspec.
-#  Not yet done though!
-#
-if args["help"] or args["username"]=="" or args["password"]=="":
-    if not args["help"]:
-        print "USAGE ERROR:"
-        if args["username"] == "":
-            print "\tusername must be given"
-
-        if args["password"] == "":
-            print "\tpassword must be given"
-        print 
-
-    showHelp(argspec)
+if needToShowUsage(args, argspec):
+    showUsageBasedOnHowUsed(args, argspec)
     sys.exit(0)
+    
+)
 
 Graphline(
     FILES = Pipeline(
