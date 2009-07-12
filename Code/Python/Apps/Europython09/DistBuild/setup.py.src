@@ -23,8 +23,8 @@
 from distutils.core import setup
 
 setup(name = "Kamaelia-Europython09",
-      version = "1.0.0",
-      description = "Kamaelia's Europython tutorial bundle. Examples + Axon + Kamaelia 0.9.6.0",
+      version = "1.0.1",
+      description = "Kamaelia's Europython tutorial bundle. Examples + Axon + Kamaelia 0.9.7.0",
       author = "Michael Sparks & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/FileProcessor",
