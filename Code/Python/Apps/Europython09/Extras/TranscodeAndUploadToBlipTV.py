@@ -27,6 +27,8 @@ argspec = [
           ]
     
 conf_args = readJSONConfig("transcode.conf")
+conf_args.update (readJSONConfig(os.path.expanduser("~/.kamaelia/transcode.conf")))
+
 args = parseargs( sys.argv[1:], *argspec) 
 args.update(conf_args)    # FIXME: unify args & conf_args in a nicer, more sensible way.
 
@@ -35,7 +37,7 @@ if needToShowUsage(args, argspec):
     print "\nNote: This program can also read a JSON formatted config file called transcode.conf"
     print "for these config options"
     sys.exit(0)
-
+    
 Graphline(
     FILES = Pipeline(
                 Find(path=args["path"],walktype="f"),
