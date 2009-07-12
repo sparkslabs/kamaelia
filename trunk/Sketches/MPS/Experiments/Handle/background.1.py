@@ -1,8 +1,10 @@
 #!/usr/bin/python
-""" 
+"""
 
 This appears to be a minimal repeatable test case of a problem in
 Axon.background.
+
+(NOW FIXED: 20090712.2345)
 
 Specifically on some runs, Axon.background will *not* wait for any
 components to start before exitting. This means that anything that uses
@@ -54,7 +56,7 @@ print "hello"
 class Pinger(Axon.ThreadedComponent.threadedcomponent):
     def main(self):
         while 1:
-            time.sleep(0.1)
+            time.sleep(0.5)
             print "ping"
             print self.scheduler.listAllThreads()
 
@@ -62,6 +64,6 @@ c = 0
 while 1:
     c +=1
     time.sleep(1)
-    print "mainloop"
+    print "mainloop", Y
     if c == 1:
         Pinger().activate()
