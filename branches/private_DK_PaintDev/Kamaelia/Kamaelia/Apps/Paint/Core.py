@@ -40,7 +40,7 @@ import time
 import os
 import Axon
 import math
-from Kamaelia.Apps.Paint.gfxcursor import GfxCursor
+from ps_gfxcursor import GfxCursor
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Text import TextDisplayer
