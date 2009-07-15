@@ -1,4 +1,5 @@
 #!/bin/sh
 
 cd ..
-rm -rf AUTHORS Axon COPYING dist  Kamaelia setup.py
+rm -rf AUTHORS Axon COPYING dist  Kamaelia setup.py MANIFEST
+
