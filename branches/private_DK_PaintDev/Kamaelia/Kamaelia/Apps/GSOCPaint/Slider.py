@@ -18,7 +18,7 @@ Example Usage
 
 Create a slider bar at 10, 460 with the messagePrefix as "Size" and a default value of 9.
 
-    from Kamaelia.Apps.Paint.Slider import Slider
+    from Kamaelia.Apps.GSOCPaint.Slider import Slider
 
     SizeSlider = Slider(size=(255, 50), messagePrefix = "Size", position = (10, 460), default = 9).activate()
     self.link( (SizeSlider,"outbox"), (self,"outbox"), passthrough = 2 )

@@ -17,7 +17,7 @@ Example Usage
 Create a ColourSelector at 10,170 (from top-left corner) of size 255,255
 this provides best colour display.
 
-    from Kamaelia.Apps.Paint.ColourSelector import ColourSelector
+    from Kamaelia.Apps.GSOCPaint.ColourSelector import ColourSelector
 
     colSel = ColourSelector(position = (10,170), size = (255,255)).activate()
     self.link( (colSel,"outbox"), (self,"outbox"), passthrough = 2 )
