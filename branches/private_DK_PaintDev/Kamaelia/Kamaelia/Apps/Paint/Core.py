@@ -40,7 +40,7 @@ import time
 import os
 import Axon
 import math
-from gfxcursor import GfxCursor
+from Kamaelia.Apps.Paint.gfxcursor import GfxCursor
 from Axon.Ipc import producerFinished, WaitComplete
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.Text import TextDisplayer
@@ -456,7 +456,6 @@ class DisplayConfig(Axon.Component.component):
 
 
 if __name__ == "__main__":
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
    from ToolBox import ToolBox
    from Axon.experimental.Process import ProcessGraphline
