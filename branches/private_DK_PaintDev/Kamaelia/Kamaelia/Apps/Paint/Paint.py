@@ -31,12 +31,8 @@ Use your left mouse button to draw to the board and the
 right to erase your artwork.
 
 """
-import sys; sys.path.append("../MPS/pprocess/");
-from MultiPipeline import ProcessPipeline
-from MultiPipeline import ProcessGraphline
-from Kamaelia.Chassis.Graphline import Graphline
 
-import pprocess
+
 import pygame
 import Axon
 import math
@@ -236,9 +232,10 @@ __kamaelia_components__  = ( MagnaDoodle, )
 
                   
 if __name__ == "__main__":
-   from Kamaelia.Util.ConsoleEcho import consoleEchoer
    from pygame.locals import *
    
+   import sys; sys.path.append("../MPS/pprocess/");
+   from MultiPipeline import ProcessGraphline # Import moved here because not used by main code. Also, needs a dependency resolving.
   # Magna = MagnaDoodle().activate()
    ProcessGraphline(
         WINDOW1 = MagnaDoodle(bgcolour=(100,100,172),position=(0,0) ),
