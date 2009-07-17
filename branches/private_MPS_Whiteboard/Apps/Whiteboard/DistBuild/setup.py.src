@@ -22,20 +22,19 @@
 
 from distutils.core import setup
 
-setup(name = "Kamaelia-Europython09",
-      version = "1.0.1",
-      description = "Kamaelia's Europython tutorial bundle. Examples + Axon + Kamaelia 0.9.7.0",
-      author = "Michael Sparks & Kamaelia Contributors",
+setup(name = "Kamaelia-Whiteboard",
+      version = "1.0.0",
+      description = "Kamaelia Whiteboard bundle + Axon + Kamaelia 0.9.7.0",
+      author = "Michael Sparks, Matt Hammond & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
-      url = "http://kamaelia.sourceforge.net/FileProcessor",
+      url = "http://kamaelia.sourceforge.net/Whiteboard",
       license = "Copyright (c)2009 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
       packages = [\
 # REPLACE
                   ""],
       long_description = """
-The Kamaelia tutorial at Europython had a large amount of examples, and
-notes. The notes are available online (and printed from lulu.com). This
-contains the code examples, for modification, playing etc.
+Whiteboard application that has proven repeatedly useful over time.
+Extracting this out to make it easier for people to just install and use.
 """,
       )
 
