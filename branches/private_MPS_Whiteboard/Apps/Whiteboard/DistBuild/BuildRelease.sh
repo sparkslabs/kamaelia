@@ -1,9 +1,9 @@
 #!/bin/sh
 
-echo "Building the Kamaelia Europython '09 Distribution"
+echo "Building the Kamaelia Whiteboard Distribution"
 
 echo
-echo "----------------------------------------------------"
+echo "---------------------------------------------"
 echo "Copying current Axon"
 cp -R ../../../Axon/Axon/ ../Axon
 echo "Copying current Kamaelia"
