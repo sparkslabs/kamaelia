@@ -6,15 +6,20 @@ Install:
    sudo python setup.py install
 
 Necessary bindings:
-   pygame
+   pygame - this is necessary for the drawing surface, etc.
 
 Suggested bindings:
    pyspeex-0.2 - from http://www.freenet.org.nz/python/pySpeex/
    requires pyrex for build. This version works:
        http://www.kamaelia.org/release/deps/Pyrex-0.9.3.1.tar.gz
 
+   These are both included in the deps directory. Note: you do NOT need to
+   install these for the whiteboard to work, but the audio features will
+   not work if you do not. The whiteboard fails gracefully in this case.
 
-(For audio chatting over the network and local recording of presentations)
+    (For audio chatting over the network and local recording of whiteboard
+    sessions. Since you can do presentations this way, it can be pretty
+    neat)
 
 Usage:
 
