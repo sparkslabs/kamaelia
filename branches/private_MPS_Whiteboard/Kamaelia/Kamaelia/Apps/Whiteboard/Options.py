@@ -29,7 +29,7 @@ def parseOptions():
     serveport = None
 
     shortargs = ""
-    longargs  = [ "serveport=", "connectto=" ]
+    longargs  = [ "serveport=", "connectto=", "help" ]
     optlist, remargs = getopt.getopt(sys.argv[1:], shortargs, longargs)
 
     for o,a in optlist:
@@ -39,5 +39,11 @@ def parseOptions():
         elif o in ("-c","--connectto"):
             rhost,rport = re.match(r"^([^:]+):([0-9]+)$", a).groups()
             rport = int(rport)
+
+        elif o in ("-h","--help"):
+            print "USAGE:\n"
+            print "\t", sys.argv[0], "[--serveport=port] [--connectto=host:port]"
+            print
+            sys.exit(0)
 
     return rhost, rport, serveport
