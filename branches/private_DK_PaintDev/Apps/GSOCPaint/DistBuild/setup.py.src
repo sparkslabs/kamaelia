@@ -22,9 +22,9 @@
 
 from distutils.core import setup
 
-setup(name = "Kamaelia-Paint",
-      version = "0.1.0",
-      description = "Kamaelia Paint - a demo paint program",
+setup(name = "Kamaelia-GSOCPaint",
+      version = "1.0.0",
+      description = "Kamaelia GSOC Paint - a demo paint program",
       author = "Dave King & Kamaelia Contributors",
       author_email = " < insert email here >",
       url = "http://kamaelia.sourceforge.net/KamaeliaPaint", # User paint should be here
@@ -35,7 +35,7 @@ setup(name = "Kamaelia-Paint",
       scripts = [ 'App/KamPaint.py' ],
 #      data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png']) ],
       long_description = """
-Kamaelia Paint is ...
+Kamaelia GSOC Paint is ...
 ...
 ...
 ...
