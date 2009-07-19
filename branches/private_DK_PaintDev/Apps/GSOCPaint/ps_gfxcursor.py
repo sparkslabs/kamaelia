@@ -1,8 +1,23 @@
 """
 
-This has been added here, but probably should not be here and should in a
-support library for the specific application since it's license is unknown.
-For *this* moment, whilst testing it's placed here temporarily.
+This code is from this location:
+    * http://www.pygame.org/pcr/gfxcursor/index.php
+    
+ie from the Pygame Code Repository. The top level entry page for the Pygame
+Code Repository here:
+    * http://www.pygame.org/pcr/index.php
+
+.. covers usage of this code with this very generous statement:
+
+    This is the pygame code repository, a place to store, display and
+    share community-submitted python game code. Our goal here is to help
+    the members of the pygame community learn from one another, and to
+    reduce the amount of duplication that occurs in pygame projects.
+    Please feel free to examine and use any of the code in the repository
+    in your project.
+
+As a result, many thanks to the authors of this code for making it available
+:-)
 
 """
 """
