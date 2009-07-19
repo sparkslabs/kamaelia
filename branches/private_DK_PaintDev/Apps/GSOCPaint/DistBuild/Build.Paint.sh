@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Building the Kamaelia Paint distribution"
+echo "Building the Kamaelia GSOC Paint distribution"
 
 echo
 echo "----------------------------------------------------"
