@@ -26,9 +26,9 @@ from Axon.experimental.Process import ProcessGraphline
 from Kamaelia.Chassis.Seq import Seq
 
 from Kamaelia.Util.ConsoleEcho import consoleEchoer
-from Kamaelia.Apps.Paint.ToolBox import ToolBox
-from Kamaelia.Apps.Paint.Core import DisplayConfig
-from Kamaelia.Apps.Paint.Core import Paint
+from Kamaelia.Apps.GSOCPaint.ToolBox import ToolBox
+from Kamaelia.Apps.GSOCPaint.Core import DisplayConfig
+from Kamaelia.Apps.GSOCPaint.Core import Paint
 
 ProcessGraphline(
      COLOURS = Seq(
