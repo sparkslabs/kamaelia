@@ -1,0 +1,12 @@
+<html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Utility Modules</span></p>
+<ul type="disc"><div><span style="font-family:Courier 10 Pitch">Kamaelia.</span></div>
+<div><span style="font-family:Courier 10 Pitch">|-- Util.<br />|   |-- __init__.py<br />|   |-- ToStringComponent.py<br />|   `-- ConsoleEcho.py</span></div></ul>
+<p>This is a small collection of utility components. They're designed as simple filters for various uses - some perform simple, but useful transformations that convert data into a format suitable for other components, others are designed to be dropped in the middle of existing linkages to allow debugging and/or output.</p>
+<p><span style="font-family:Courier 10 Pitch">__init__.py</span> is as usual an empty file for the usual reasons.</p>
+<p><span style="font-family:Courier 10 Pitch">ConsoleEcho.py</span> is designed to allow the system to take any data given on its inbox and send it to stdout. It can also optionally forward the data recieved to it's outbox meaning that it can be dropped in the middle of a linkage to enable precise debugging when you wish to know what communications is taking place.</p>
+<p><span style="font-family:Courier 10 Pitch">ToStringComponent.py </span>is a simple filter component  - it takes every object supplied via its inbox, calls <span style="font-family:Courier 10 Pitch">str()</span> on the object, and forwards the result to its outbox. This allows, for example, a user to take the output of any component, convert it to a string suitable for output to a console. This doesn't require the console component to do the conversion (since someone may wish to send the objects to a console as an easy way to check types), and doesn't require components to provide special behaviour.</p>
+<p></p>
+<p>Michael, December 2004</p>
+<p></p>
+</body></html>
