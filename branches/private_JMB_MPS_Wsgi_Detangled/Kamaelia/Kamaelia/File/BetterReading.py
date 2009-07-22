@@ -33,6 +33,10 @@ To wake it, ideally Axon should unpause it when the outbox has less than
 a certain number of messages (i.e. when some are delivered) but for now
 you can send it an arbitrary message (to "inbox") which will wake the
 component.
+
+System Requirements
+-------------------
+This module requires a UNIX system to run currently.
 """
 
 import os, time, fcntl
@@ -41,7 +45,7 @@ from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.IPC import newReader
+from Kamaelia.IPC import newReader, removeReader
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import pipeline
 from Kamaelia.Internet.Selector import Selector
@@ -152,6 +156,9 @@ class IntelligentFileReader(component):
                     
             if not self.done:
                 self.pause()
+          
+        self.send(removeReader((self, '_selectorready'), self.fd), '_selectorask')
+        os.close(self.fd)
         
         self.send(producerFinished(self), "signal")
         self.debug("IntelligentFileReader terminated")

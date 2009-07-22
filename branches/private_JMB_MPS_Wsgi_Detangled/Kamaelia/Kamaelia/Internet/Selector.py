@@ -74,10 +74,10 @@ a registered descriptor that has closed.
 Register for a notification by sending an one of the following messages to the
 "notify" inbox, as returned by Selector.getSelectorService():
 
-* Kamaelia.KamaeliaIpc.newReader(caller, (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.newWriter(caller, (component,inboxname), descriptor)
-* Kamaelia.KamaeliaIpc.newExceptional(caller, (component,inboxname), descriptor)
-
+* Kamaelia.KamaeliaIpc.newReader( (component,inboxname), descriptor)
+* Kamaelia.KamaeliaIpc.newWriter( (component,inboxname), descriptor)
+* Kamaelia.KamaeliaIpc.newExceptional( (component,inboxname), descriptor)
+   
 Choose which as appropriate:
 
 * a newReader() request will notify when there is data ready to be read on
@@ -102,9 +102,9 @@ descriptor be deregistered, then someone can register for it once again.
 Deregister by sending on of the following messages to the "notify" inbox of
 Selector:
 
-* Kamaelia.KamaeliaIpc.removeReader(caller, descriptor)
-* Kamaelia.KamaeliaIpc.removeWriter(caller, descriptor)
-* Kamaelia.KamaeliaIpc.removeExceptional(caller, descriptor)
+* Kamaelia.KamaeliaIpc.removeReader( (component,inboxname), descriptor)
+* Kamaelia.KamaeliaIpc.removeWriter( (component,inboxname), descriptor)
+* Kamaelia.KamaeliaIpc.removeExceptional( (component,inboxname), descriptor)
 
 It is advisable to send a deregister message when the corresponding file
 descriptor closes, in case you registered for a notification, but it has not
@@ -151,9 +151,6 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         """
 #        \
 #print "removeLinks",selectable,meta,selectables
-#        import pprint
-#        print "REMOVING LINK"
-#        pprint.pprint((selectable, meta))
         try:
             replyService, outbox, Linkage = meta[selectable]
             self.unlink(thelinkage=Linkage)
@@ -184,7 +181,6 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
         the component that wants to be notified; adds the file descriptor to the
         set of selectables; and records the box and linkage info in meta.
         """
-#        print "ADDING LINK", replyService, selectable, meta
         if selectable not in meta:
             outbox = self.addOutbox(boxBase)
             L = self.link((self, outbox), replyService)
@@ -206,35 +202,29 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             if isinstance(message, removeReader):
                 selectable = message.object
                 self.removeLinks(selectable, meta[READERS], readers)
-                message.object = None
 
             if isinstance(message, removeWriter):
                 selectable = message.object
                 self.removeLinks(selectable, meta[WRITERS], writers)
-                message.object = None
 
             if isinstance(message, removeExceptional):
                 selectable = message.object
                 self.removeLinks(selectable, meta[EXCEPTIONALS], exceptionals)
-                message.object = None
 
             if isinstance(message, newReader):
                 replyService, selectable = message.object
                 L = self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
 #                print "new reader",selectable
                 L.showtransit = 0
-                message.object = None
 
             if isinstance(message, newWriter):
                 replyService, selectable = message.object
                 L = self.addLinks(replyService, selectable, meta[WRITERS], writers, "writerNotify")
                 L.showtransit = 0
-                message.object = None
 
             if isinstance(message, newExceptional):
                 replyService, selectable = message.object
                 self.addLinks(replyService, selectable, meta[EXCEPTIONALS], exceptionals, "exceptionalNotify")
-                message.object = None
 
     def trackedBy(self, tracker):
         self.trackedby = tracker
@@ -287,15 +277,14 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 #               else:
 #                   print "But someone is still using us...."
 #                   print readers, writers, exceptionals
-
+                   
             self.handleNotify(meta, readers,writers, exceptionals)
             if len(readers) + len(writers) + len(exceptionals) > 0:
                 timewithNone = 0
                 try:
                     read_write_except = select.select(readers, writers, exceptionals,0.05) #0.05
-#                    print "RWE", readers, writers, exceptionals
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
-
+                    
                     for i in xrange(3):
                         for selectable in read_write_except[i]:
 #                            try:
@@ -320,7 +309,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             # to find the broken ones, and remove
 #                            print "We're failing here for some reason"
 #                            print "readers, writers, exceptionals", readers, writers, exceptionals
-                            raise e
+                            raise
 
                 except select.error, e:
                     if e[0] == 9:
@@ -331,7 +320,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                             # to find the broken ones, and remove
 #                            print "We're failing here for some reason"
 #                            print "readers, writers, exceptionals", readers, writers, exceptionals
-                            raise e
+                            raise
 
                 self.sync()
 
