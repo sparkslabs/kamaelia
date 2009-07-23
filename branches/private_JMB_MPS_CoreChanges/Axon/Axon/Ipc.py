@@ -303,6 +303,15 @@ class producerFinished(ipc):
    def __init__(self,caller=None,message=None):
       self.caller = caller
       self.message = message
+      
+class internalNotify(ipc):
+   """
+   This class is used to indicate that a message was posted to shut a component
+   down internally.  This should not be sent to any component outside of one
+   particular system of components.
+   """
+   def __init__(self, message=None):
+      self.message = message
 
 class errorInformation(ipc):
    """\
@@ -322,6 +331,13 @@ class errorInformation(ipc):
       self.caller = caller # the component that the error occured in.
       self.exception = exception # if an exception was caught the exception object
       self.message = message # the message with bad data that caused the exception or error
+      
+__ipc_msgs = [errorInformation, producerFinished, wouldblock, status, shutdown,
+              shutdownMicroprocess, notify, newComponent, reactivate, WaitComplete,
+              ipc, internalNotify]
+
+def GetIPCs():
+   return __ipc_msgs
 
 if __name__ == '__main__':
    print "This class currently contains no test code."

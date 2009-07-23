@@ -31,6 +31,10 @@ MIME-type from their file extension.
 Example Usage
 -------------
 See HTTPResourceGlue.py for how to use request handlers.
+
+System Requirements
+-------------------
+This component requires a UNIX system to be run currently.
 """
 
 import string, time, dircache, os
@@ -54,9 +58,7 @@ def sanitizeFilename(filename):
 
 def sanitizePath(uri): #needs work
     outputpath = []
-    while uri[0] == "/": #remove leading slashes
-        uri = uri[1:]
-        if len(uri) == 0: break
+    uri = uri.lstrip('/')
 
     splitpath = string.split(uri, "/")
     for directory in splitpath:
@@ -68,6 +70,12 @@ def sanitizePath(uri): #needs work
             outputpath.append(directory)
     outputpath = string.join(outputpath, "/")
     return outputpath
+
+def MinimalFactory(indexfilename='index.html', homedirectory='htdocs'):
+    def _getMinimal(request):
+        return Minimal(request, indexfilename, homedirectory)
+    
+    return _getMinimal
 
 # old setup used functions - this needs to be converted to work with
 # the new component-based handler system
@@ -110,36 +118,35 @@ class Minimal(component):
         "_filesignal" : "Shutdown the file reader"
     }
 
-
-    def __init__(self, request, indexfilename = "index.html", homedirectory = "htdocs/"):
+    def __init__(self, request, indexfilename='index.html', homedirectory='htdocs/', **argd):
+        super(Minimal, self).__init__(**argd)
         self.request = request
         self.indexfilename = indexfilename
         self.homedirectory = homedirectory
-        super(Minimal, self).__init__()
 
     def main(self):
         """Produce the appropriate response then terminate."""
-        filename = sanitizePath(self.request["raw-uri"])
-        #if os.path.isdir(homedirectory + filename):
-        #    if filename[-1:] != "/": filename += "/"
-        #    if os.path.isfile(self.homedirectory + filename + self.indexfilename):
-        #        filename += indexfilename
-        #    else:
-        #        yield websiteListFilesPage(filename)
-        #        return
+        filename = sanitizePath(self.request["uri-suffix"])
+        if not (self.homedirectory.endswith('/') or filename.startswith('/')):
+            filepath = self.homedirectory + '/' + filename
+        else:
+            filepath = self.homedirectory + filename
+
+        print filepath
 
         filetype = MimeTypes.workoutMimeType(filename)
 
         error = None
         try:
-            if     os.path.exists(self.homedirectory + filename) and \
-               not os.path.isdir(self.homedirectory + filename):
+            if     os.path.exists(filepath):
+                if os.path.isdir(filepath):
+                    filepath += self.indexfilename
+                    
                 resource = {
-                    "content-type"           : filetype,
-                    "statuscode"     : "200",
-                    #"length" : os.path.getsize(homedirectory + filename)
+                    "content-type"   : filetype,
+                    "statuscode"     : 200,
                 }
-                self.send(resource, "outbox")
+                self.send(resource, "outbox")                    
             else:
                 print "Error 404, " + filename + " is not a file"
                 print "self.homedirectory(%s) , filename(%s)" % (self.homedirectory , filename)
@@ -157,7 +164,7 @@ class Minimal(component):
             self.send(producerFinished(self), "signal")
             return
 
-        self.filereader = IntelligentFileReader(self.homedirectory + filename, 50000, 10)
+        self.filereader = IntelligentFileReader(filepath, 50000, 10)
         self.link((self, "_fileprompt"), (self.filereader, "inbox"))
         self.link((self, "_filesignal"), (self.filereader, "control"))
         self.link((self.filereader, "outbox"), (self, "_fileread"))
