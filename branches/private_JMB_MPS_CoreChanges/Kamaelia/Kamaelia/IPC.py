@@ -20,13 +20,13 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from Axon.Ipc import producerFinished, notify
+from Axon.Ipc import producerFinished, notify, shutdownMicroprocess
 
 class socketShutdown(producerFinished):
    """Message to indicate that the network connection has been closed."""
    pass
 
-class serverShutdown(producerFinished):
+class serverShutdown(shutdownMicroprocess):
    """Message to indicate that the server should shutdown"""
    pass
 
@@ -111,45 +111,4 @@ class removeExceptional(notify):
    def __init__(self, caller, CSA):
       super(removeExceptional, self).__init__(caller, CSA)
       self.hasOOB = False
-      
-class userLoggedOut(notify):
-   def __init__(self, thread):
-      self.thread = thread
-      
-class batchDone(notify):
-   def __init__(self, thread):
-      self.thread=thread
-      
-class newBatch(notify):
-   def __init__(self, batch, bundle, to_jid):
-      self.batch_id = batch
-      self.bundle = bundle
-      self.to_jid = to_jid
 
-__ipc_msgs = [removeExceptional, removeWriter, removeReader, newExceptional, newReader,
-              newWriter, newServer, shutdownCSA, newCSA, serverShutdown, socketShutdown,
-              userLoggedOut, batchDone, newBatch]
-from Axon.Ipc import GetIPCs
-__ipc_msgs.extend(GetIPCs())
-
-__ipc_lookup = {}
-
-def LookupByText(name):
-   global __ipc_lookup
-   if not __ipc_lookup:
-      for item in __ipc_msgs:
-         __ipc_lookup[item.__name__] = item
-         
-   return __ipc_lookup.get(name)
-
-def ToText(signal):
-   """Convert a signal into a text representation"""
-   return type(signal).__name__
-   
-if __name__ == '__main__':
-   signal_type = LookupByText('producerFinished')
-   signal = signal_type()
-   text = ToText(signal)
-   
-   print 'signal=%s' % (signal)
-   print 'text=%s' % (text)

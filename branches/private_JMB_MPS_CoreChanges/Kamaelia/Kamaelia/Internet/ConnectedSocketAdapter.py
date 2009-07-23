@@ -65,7 +65,7 @@ blocking when waiting for new data to arrive. Typically this is the Selector
 component.
 
 This component will terminate (and close its socket) if it receives a
-producerFinished message on its "control" inbox.
+producerFinished or shutdownMicroprocess message on its "control" inbox.
 
 When this component terminates, it sends a socketShutdown(socket) message out of
 its "CreatorFeedback" outbox and a shutdownCSA((selfCSA,self.socket)) message
@@ -92,7 +92,6 @@ from Kamaelia.IPC import newReader, newWriter, removeReader, removeWriter
 
 from Kamaelia.KamaeliaExceptions import *
 import traceback
-import pprint
 
 whinge = { "socketSendingFailure": True, "socketRecievingFailure": True }
 crashAndBurn = { "uncheckedSocketShutdown" : True,
@@ -169,7 +168,7 @@ class ConnectedSocketAdapter(component):
       self.socket = listensocket
       self.data_to_send = ""
       self.crashOnBadDataToSend = crashOnBadDataToSend
-      self.noisyErrors = True
+      self.noisyErrors = noisyErrors
       self.selectorService = selectorService
       self.howDied = False
       self.isSSL = False
@@ -179,7 +178,6 @@ class ConnectedSocketAdapter(component):
       """Check for producerFinished message and shutdown in response"""
       if self.dataReady("control"):
           data = self.recv("control")
-
           if isinstance(data, producerFinished):
 #              print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
               self.connectionRECVLive = False
@@ -202,22 +200,32 @@ class ConnectedSocketAdapter(component):
        # Some of these are going to crash initially when stop is called
 #       print "I AM CALLED"
        try:
-         self.socket.shutdown(socket.SHUT_RDWR)
-       except:
-         try:
-            self.socket.shutdown(socket.SHUT_WR)
-         except:
-            try:
-               self.socket.shutdown(socket.SHUT_RD)
-            except:
-               pass
-            
-       self.socket.close()
+           self.socket.shutdown(2)
+       except Exception, e:
+           # Explicitly silencing this because it is possible (but rare) that
+           # the socket was already shutdown due to an earlier error.
+           pass
+
+       try:
+           self.socket.close()
+       except Exception, e:
+           # Explicitly silencing this because it is possible (but rare) that
+           # the socket was already closed due to an earlier error.
+           pass
+       sock = self.socket
+       self.socket = None
+
        self.passOnShutdown()
-       if (self.socket is not None):
-           self.send(removeReader(self, self.socket), "_selectorSignal")
-           self.send(removeWriter(self, self.socket), "_selectorSignal")
+       if (sock is not None):
+           self.send(removeReader(self, sock), "_selectorSignal")
+           self.send(removeWriter(self, sock), "_selectorSignal")
+       sock = None
        super(ConnectedSocketAdapter, self).stop()
+#       import gc
+#       import pprint
+#       gc.collect()
+#       print "REFERRERS", len(gc.get_referrers(self))
+#       pprint.pprint([(type(x),x) for x in gc.get_referrers(self)])
 
    def _safesend(self, sock, data):
        """Internal only function, used for sending data, and handling EAGAIN style
@@ -234,6 +242,7 @@ class ConnectedSocketAdapter(component):
              self.howDied = socket.msg
 
        except TypeError, ex:
+
           if self.noisyErrors:
              print "CSA: Exception sending on socket: ", ex, "(no automatic conversion to string occurs)."
           if self.crashOnBadDataToSend:
@@ -244,20 +253,14 @@ class ConnectedSocketAdapter(component):
        return bytes_sent
    
    def flushSendQueue(self):
-       self.tracker_buff = ""
        while ( len(self.data_to_send) != 0 ) or self.dataReady("inbox") :
            if len(self.data_to_send) == 0:
                # Can't get here unless self.dataReady("inbox")
-               msg = self.recv('inbox')
-               self.data_to_send = msg
-               #from pprint import pprint
+               self.data_to_send = self.recv("inbox")
            bytes_sent = self._safesend(self.socket, self.data_to_send)
-           self.tracker_buff += self.data_to_send[:bytes_sent]
            self.data_to_send = self.data_to_send[bytes_sent:]
            if bytes_sent == 0:
-               #break # failed to send right now, resend later
-               yield 1
-       yield 1
+               break # failed to send right now, resend later
 
    def _saferecv(self, sock, size=32768):
        """Internal only function, used for recieving data, and handling EAGAIN style
@@ -356,14 +359,25 @@ class ConnectedSocketAdapter(component):
           self.checkSocketStatus() # To be written
           self.handleControl()     # Check for producerFinished message in "control" and shutdown in response
           if self.sending:
-              for i in self.flushSendQueue():
-               yield i
+              self.flushSendQueue()
           if self.receiving:
               self.handleReceive()
           if not self.canDoSomething():
               self.pause()
  
-       self.passOnShutdown()
+#       self.passOnShutdown()
+       self.stop()
        # NOTE: the creator of this CSA is responsible for removing it from the selector
+
+#       print 
+#       print "------------------------------------------------------------------------------------"
+#       print "DROPPED OFF THE END OF THE GENERATOR",self.socket
+       self.socket=None
+#       print self.__dict__
+#       print self.postoffice
+#       print [str(x) for x in self.postoffice.linkages]
+       for linkage in self.postoffice.linkages:
+           self.unlink(thelinkage=linkage)
+#       print "------------------------------------------------------------------------------------"
 
 __kamaelia_components__  = ( ConnectedSocketAdapter, )
