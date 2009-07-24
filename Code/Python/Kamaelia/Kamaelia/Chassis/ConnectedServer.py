@@ -272,8 +272,12 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """
 
     Inboxes = { "_socketactivity" : "Messages about new and closing connections here",
-                "control" : "We expect to get serverShutdown messages here" }
+                "control" : "We expect to get serverShutdown messages here",
+                "inbox" : "Not used - but kept to allow usage in Seq/etc",
+              }
     Outboxes = { "_serversignal" : "we send shutdown messages to the TCP server here",
+                "outbox" : "Not used - but kept to allow usage in Seq/etc",
+                "signal" : "Not used - but kept to allow usage in Seq/etc",
                }
     port = 1601
     protocol = None
