@@ -1,0 +1,25 @@
+Tools for building Kamaelia website documentation
+=================================================
+
+
+./DocExtractor.py
+
+  Tool that processes a codebase and generated a directory
+  of HTML files documenting the components, prefabs, and
+  (optionally) classes and functions within it.
+
+  See internal doc strings or run with --help option for more info
+  and typical command lines used to build Axon or Kamaelia reference
+  docs
+
+
+./TestSuiteRun.py
+
+  Runs a directory of unittest based tests and generates a directory
+  of output separated out into lots of separate text files.
+
+  Can be supplied as additional input to DocExtractor.py for inclusion
+  of test suite results in the documentation.
+
+
+-- Matt, April 2007
