@@ -20,11 +20,11 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 homedirectory = "/srv/www/htdocs/"
 indexfilename = "index.html"
 
-#
-# This is the hello handler.  It will respond to every request with a Hello
-# world message (with some HTML formatting)
-#
 class HelloHandler(Axon.Component.component):
+    """\
+    This is the hello handler.  It will respond to every request with a
+    Hello world message (with some HTML formatting)
+    """
     def __init__(self, request):
         super(HelloHandler, self).__init__()
         self.request = request
@@ -43,12 +43,12 @@ class HelloHandler(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
-#
-# Like the unix command "cat", this takes whatever has been passed as an
-# argument and forwards it out it's standard output - in this case out the
-# outbox "outbox".
-#
 class Cat(Axon.Component.component):
+    """\
+    Like the unix command "cat", this takes whatever has been passed as an
+    argument and forwards it out it's standard output - in this case out the
+    outbox "outbox".
+    """
     def __init__(self, *args):
         super(Cat, self).__init__()
         self.args = args
@@ -57,14 +57,13 @@ class Cat(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
-#
-# This component will simply wrap any input it receives into a dictionary
-# that the HTTP Server can use to form a response.  Note that this code
-# works this way for example purposes.  In most instances, it's better to
-# buffer your output and send everything at once.
-#
 class ExampleWrapper(Axon.Component.component):
- 
+    """\
+    This component will simply wrap any input it receives into a dictionary
+    that the HTTP Server can use to form a response.  Note that this code
+    works this way for example purposes.  In most instances, it's better to
+    buffer your output and send everything at once.
+    """
     def main(self):
         # Tell the browser the type of data we're sending!
         resource = {
@@ -101,13 +100,13 @@ class ExampleWrapper(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
-#
-# This handler will join the 'Cat' handler and ExampleWrapper together such
-# that the 'Cat' will forward the request dictionary on to the
-# ExampleWrapper, which will wrap the data in a response dictionary and
-# forward the data on to the HTTP Server.
-#
 def EchoHandler(request):
+    """\
+    This handler will join the 'Cat' handler and ExampleWrapper together
+    such that the 'Cat' will forward the request dictionary on to the
+    ExampleWrapper, which will wrap the data in a response dictionary and
+    forward the data on to the HTTP Server.
+    """
     return Pipeline ( Cat(request), ExampleWrapper() )
 
 def servePage(request):
