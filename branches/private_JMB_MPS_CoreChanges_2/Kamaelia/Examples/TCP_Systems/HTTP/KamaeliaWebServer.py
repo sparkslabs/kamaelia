@@ -131,7 +131,6 @@ class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
             self.environ["QUERY_STRING"] = self.environ["uri-suffix"][self.environ["uri-suffix"].find("?")+1:]
         else:
             self.environ["QUERY_STRING"] = ""
-#        self.environ["QUERY_STRING"] = required    # Portion of request URL that follows the ? - may be empty or absent
         self.environ["CONTENT_TYPE"] = headers.get("content-type","") # Contents of an HTTP_CONTENT_TYPE field - may be absent or empty
         self.environ["CONTENT_LENGTH"] = headers.get("content-length","") # Contents of an HTTP_CONTENT_LENGTH field - may be absent or empty
         self.environ["SERVER_NAME"] = required     # Server name published to the outside world
@@ -192,36 +191,3 @@ class WebServer(ServerCore):
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 WebServer().run()
-
-"""
-Changed Webserver to use the newer ServerCore
-   * Requried change to HTTPServer
-   * HTTPParser
-
-IPs now in request object passed out for a handler with keys
-   * peer, peerip
-   * localip, localport
-
-
-
-
-
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
