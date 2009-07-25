@@ -99,6 +99,10 @@ def splitUri(url):
             requestobject["uri-username"] = splituri[0]
             requestobject["uri-password"] = splituri[1]
             
+#FIXME: This is most definitely in the wrong place IMO, but these values are
+#FIXME: used in Kamaelia.Support.Protocol.HTTP, among possibly other locations.
+#FIXME: This potentially needs revising.
+
     splituri = requestobject['raw-uri'].split('?')
     if len(splituri) > 1:
         splituri = requestobject['raw-uri'].split('?')
