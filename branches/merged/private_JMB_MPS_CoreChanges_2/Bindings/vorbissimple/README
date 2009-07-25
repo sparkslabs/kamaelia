@@ -1,0 +1,11 @@
+This directory contains libvorbissimple and some basic python bindings.
+2 sample programs are included using the libraries:
+   * simple_decoder.c
+   * simple_decoder.py
+
+Both programs do the same thing, but in different languages. The python
+version is 60% slower/more CPU intensive that the C version. It is however
+more than 60% shorter.
+
+
+Michael, July 2004
