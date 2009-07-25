@@ -71,7 +71,13 @@ def sanitizePath(uri): #needs work
     outputpath = string.join(outputpath, "/")
     return outputpath
 
-def MinimalFactory(indexfilename='index.html', homedirectory='htdocs'):
+# FIXME: I tend to dislike <X>Factory functions. It tends to miss what's
+# FIXME: actually being done. What this is really doing is creating
+# FIXME: PreconfiguredMinimalHandlers for a specific server configuration.
+# FIXME: As a result this name should change. Not a block to merge, but will
+# FIXME: need revisiting really.
+# FIXME: Also, this change strikes me as change for change's sake :-/
+def MinimalFactory(indexfilename='index.html', homedirectory='htdocs'): 
     def _getMinimal(request):
         return Minimal(request, indexfilename, homedirectory)
     
