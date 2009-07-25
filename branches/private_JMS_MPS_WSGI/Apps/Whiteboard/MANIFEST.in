@@ -1,0 +1,8 @@
+include COPYING
+include AUTHORS
+include CHANGELOG
+include Doc/*
+include Deps/*
+recursive-include App *
+include Config/*
+
