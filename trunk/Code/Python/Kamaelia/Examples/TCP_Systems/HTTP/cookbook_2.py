@@ -1,34 +1,30 @@
 #!/usr/bin/python
+"""
+This module demonstrates the Minimal HTTP Handler along
+with some custom-written components.
+
+System Requirements
+-------------------
+This example requires a UNIX operating system to run.
+"""
 
 import socket
 import Axon
 
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
-from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
-from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal
-import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages
+from Kamaelia.Chassis.ConnectedServer import ServerCore
+from Kamaelia.Protocol.HTTP.Handlers.Minimal import MinimalFactory
+from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 
 homedirectory = "/srv/www/htdocs/"
 indexfilename = "index.html"
 
-def requestHandlers(URLHandlers):
-    def createRequestHandler(request):
-        if request.get("bad"):
-            return ErrorPages.websiteErrorPage(400, request.get("errormsg",""))
-        else:
-            for (prefix, handler) in URLHandlers:
-                if request["raw-uri"][:len(prefix)] == prefix:
-                    request["uri-prefix-trigger"] = prefix
-                    request["uri-suffix"] = request["raw-uri"][len(prefix):]
-                    return handler(request)
-
-        return ErrorPages.websiteErrorPage(404, "No resource handlers could be found for the requested URL.")
-
-    return createRequestHandler
-
 class HelloHandler(Axon.Component.component):
+    """\
+    This is the hello handler.  It will respond to every request with a
+    Hello world message (with some HTML formatting)
+    """
     def __init__(self, request):
         super(HelloHandler, self).__init__()
         self.request = request
@@ -48,6 +44,11 @@ class HelloHandler(Axon.Component.component):
         yield 1
 
 class Cat(Axon.Component.component):
+    """\
+    Like the unix command "cat", this takes whatever has been passed as an
+    argument and forwards it out it's standard output - in this case out the
+    outbox "outbox".
+    """
     def __init__(self, *args):
         super(Cat, self).__init__()
         self.args = args
@@ -57,7 +58,12 @@ class Cat(Axon.Component.component):
         yield 1
 
 class ExampleWrapper(Axon.Component.component):
- 
+    """\
+    This component will simply wrap any input it receives into a dictionary
+    that the HTTP Server can use to form a response.  Note that this code
+    works this way for example purposes.  In most instances, it's better to
+    buffer your output and send everything at once.
+    """
     def main(self):
         # Tell the browser the type of data we're sending!
         resource = {
@@ -95,6 +101,12 @@ class ExampleWrapper(Axon.Component.component):
         yield 1
 
 def EchoHandler(request):
+    """\
+    This handler will join the 'Cat' handler and ExampleWrapper together
+    such that the 'Cat' will forward the request dictionary on to the
+    ExampleWrapper, which will wrap the data in a response dictionary and
+    forward the data on to the HTTP Server.
+    """
     return Pipeline ( Cat(request), ExampleWrapper() )
 
 def servePage(request):
@@ -102,13 +114,12 @@ def servePage(request):
                    homedirectory=homedirectory, 
                    indexfilename=indexfilename)
 
-def HTTPProtocol():
-    return HTTPServer(requestHandlers([
-                         ["/echo", EchoHandler ],
-                         ["/hello", HelloHandler ],
-                         ["/", servePage ],
-                      ]))
+routing = [
+            ["/echo", EchoHandler ],
+            ["/hello", HelloHandler ],
+            ["/", MinimalFactory(indexfilename, homedirectory) ],
+          ]
 
-SimpleServer(protocol=HTTPProtocol,
+ServerCore(protocol=HTTPProtocol(routing),
              port=8082,
              socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()

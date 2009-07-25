@@ -21,6 +21,8 @@ from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 
 Axon.Box.ShowAllTransits = False
 
+from Kamaelia.Util.OneShot import OneShot
+
 # This allows for configuring the request handlers in a nicer way. This is candidate
 # for merging into the mainline code. Effectively this is a factory that creates functions
 # capable of choosing which request handler to use.
@@ -31,7 +33,7 @@ def requestHandlers(URLHandlers, errorpages=None):
         errorpages = ErrorPages
     def createRequestHandler(request):
         if request.get("bad"):
-            return errorpages.websiteErrorPage(400, request.get("errormsg",""))
+            return OneShot(errorpages.getErrorPage(400, request.get("errormsg","")))
         else:
             for (prefix, handler) in URLHandlers:
                 if request["raw-uri"][:len(prefix)] == prefix:
@@ -39,7 +41,7 @@ def requestHandlers(URLHandlers, errorpages=None):
                     request["uri-suffix"] = request["raw-uri"][len(prefix):]
                     return handler(request)
 
-        return errorpages.websiteErrorPage(404, "No resource handlers could be found for the requested URL")
+        return OneShot(errorpages.getErrorPage(404, "No resource handlers could be found for the requested URL"))
 
     return createRequestHandler
 
@@ -129,7 +131,6 @@ class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent):
             self.environ["QUERY_STRING"] = self.environ["uri-suffix"][self.environ["uri-suffix"].find("?")+1:]
         else:
             self.environ["QUERY_STRING"] = ""
-#        self.environ["QUERY_STRING"] = required    # Portion of request URL that follows the ? - may be empty or absent
         self.environ["CONTENT_TYPE"] = headers.get("content-type","") # Contents of an HTTP_CONTENT_TYPE field - may be absent or empty
         self.environ["CONTENT_LENGTH"] = headers.get("content-length","") # Contents of an HTTP_CONTENT_LENGTH field - may be absent or empty
         self.environ["SERVER_NAME"] = required     # Server name published to the outside world
@@ -183,42 +184,10 @@ def HTTPProtocol():
 class WebServer(ServerCore):
     routing = [
                ["/wsgi", WSGIHandler("/wsgi", HTML_WRAP(simple_app)) ],
+               ["/hello", HelloHandler],
               ]
     protocol=HTTPProtocol()
     port=8082
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 WebServer().run()
-
-"""
-Changed Webserver to use the newer ServerCore
-   * Requried change to HTTPServer
-   * HTTPParser
-
-IPs now in request object passed out for a handler with keys
-   * peer, peerip
-   * localip, localport
-
-
-
-
-
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

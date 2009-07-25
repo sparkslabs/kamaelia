@@ -264,17 +264,28 @@ __kamaelia_prefabs__  = ( HTTPServer, )
 
 if __name__ == '__main__':
     import socket
+    from Kamaelia.Chassis.ConnectedServer import ServerCore
+    from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
+    
+    class TestHandler(component):
+        def __init__(self, request):
+            self.request = request
+            super(TestHandler, self).__init__()
+        def main(self):
+            from pprint import pformat
+            resource = {
+                'statuscode' : 200,
+                'headers' : [('content-type', 'text/plain')],
+                'data' : pformat(self.request),
+            }
+            self.send(resource, 'outbox')
+            self.send(producerFinished(self), 'signal')
+            yield 1
 
-    from Kamaelia.Chassis.ConnectedServer import SimpleServer
+    routing = [ ['/hello', TestHandler] ]
 
-    # this works out what the correct response to a request is
-    from Kamaelia.Protocol.HTTP.HTTPResourceGlue import createRequestHandler 
-
-    def createhttpserver():
-        return HTTPServer(createRequestHandler)
-
-    SimpleServer(
-        protocol=createhttpserver,
+    ServerCore(
+        protocol=HTTPProtocol(routing),
         port=8082,
         socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     ).run()
