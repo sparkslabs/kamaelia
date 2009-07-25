@@ -41,10 +41,14 @@ class HelloHandler(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
-#This is the request echoer.  It will simply forward a request on to the next component.
-class RequestEchoer(Axon.Component.component):
+#
+# Like the unix command "cat", this takes whatever has been passed as an
+# argument and forwards it out it's standard output - in this case out the
+# outbox "outbox".
+#
+class Cat(Axon.Component.component):
     def __init__(self, *args):
-        super(RequestEchoer, self).__init__()
+        super(Cat, self).__init__()
         self.args = args
     def main(self):
         self.send(self.args, "outbox")
@@ -93,12 +97,12 @@ class ExampleWrapper(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(self), "signal")        
         yield 1
 
-#This handler will join the RequestEchoer and ExampleWrapper together such that
-#the RequestEchoer will forward the request dictionary on to the ExampleWrapper,
+#This handler will join the 'Cat' handler and ExampleWrapper together such that
+#the 'Cat' will forward the request dictionary on to the ExampleWrapper,
 #which will wrap the data in a response dictionary and forward the data on to the
 #HTTP Server.
 def EchoHandler(request):
-    return Pipeline ( RequestEchoer(request), ExampleWrapper() )
+    return Pipeline ( Cat(request), ExampleWrapper() )
 
 def servePage(request):
     return Minimal(request=request, 
