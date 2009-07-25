@@ -151,7 +151,7 @@ from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
 #Translator stuff
 ####################################
 def ReqTranslatorFactory(hand, trans):
-    """
+    """\
     This function will make a factory that can create handlers for the HTTP Server
     If this is used, the requests coming in to that handler will be formatted using
     the given translator.
@@ -169,7 +169,7 @@ def ReqTranslatorFactory(hand, trans):
 
 
 def WSGILikeTranslator(request):
-    """
+    """\
     This function will translate the HTTPParser's syntax into a more WSGI-like syntax.
     Pass it to the HTTPProtocol factory function and requests will be sent to your
     resource handler with a subset of a WSGI environ dictionary.  You just need to
@@ -230,7 +230,7 @@ def WSGILikeTranslator(request):
     
     
 def ConvertHeaders(request, environ):
-    """
+    """\
     Converts environ variables to strings for wsgi compliance.  Also puts the 
     request headers into CGI variables.
     
@@ -247,7 +247,7 @@ def ConvertHeaders(request, environ):
         del environ['HTTP_CONTENT_LENGTH']
 
 def PopURI(request, sn_key, pi_key, ru_key):
-    """
+    """\
     This function is used to pop a directory from the PATH_INFO key to the SCRIPT_NAME
     key (named by pi_key and sn_key respectively).  This is logically equivalent
     to moving down a level in the webserver's 'file system.'
@@ -286,7 +286,7 @@ def PopURI(request, sn_key, pi_key, ru_key):
         request[pi_key] = checkSlashes(request[pi_key])
 
 def PopWsgiURI(request):
-    """
+    """\
     This is a function to pop a level from the PATH_INFO key into the SCRIPT_NAME
     key of a WSGI-like dictionary.
     
@@ -295,7 +295,7 @@ def PopWsgiURI(request):
     return PopURI(request, 'SCRIPT_NAME', 'PATH_INFO', 'NON_QUERY_URI')
 
 def PopKamaeliaURI(request):
-    """
+    """\
     This is a function to pop a level from the uri-suffix into the uri-prefix-trigger
     key of a request dictionary.
     
@@ -304,7 +304,7 @@ def PopKamaeliaURI(request):
     return PopURI(request, 'uri-prefix-trigger', 'uri-suffix', 'non-query-uri')
 
 def HTTPProtocol(routing, errorhandler=None):
-    """
+    """\
     This function will generate an HTTP Server that may be used with ServerCore.
 
       routing - An iterable of iterables.  Each item in the main iterabe may be thought
@@ -326,7 +326,7 @@ def HTTPProtocol(routing, errorhandler=None):
     return _getHttpServer
     
 def requestHandlers(routing, errorhandler=None):
-    """
+    """\
     This function will generate a createRequestHandlers function for use with HTTPServer
 
       routing - An iterable of iterables formatted the same as HTTPProtocol.
@@ -354,7 +354,7 @@ def requestHandlers(routing, errorhandler=None):
 
 
 def checkSlashes(item='', sl_char='/'):
-    """
+    """\
     This function will make sure that a URI begins with a slash and does not end
     with a slash.
 
