@@ -123,6 +123,9 @@ class Minimal(component):
         "_fileprompt" : "Get the file reader to do some reading",
         "_filesignal" : "Shutdown the file reader"
     }
+    
+    # FIXME: If this used inheritable defaults instead, this would actually
+    # FIXME: probably eliminate the need for the factory function above.
 
     def __init__(self, request, indexfilename='index.html', homedirectory='htdocs/', **argd):
         super(Minimal, self).__init__(**argd)
