@@ -265,13 +265,12 @@ __kamaelia_prefabs__  = ( HTTPServer, )
 if __name__ == '__main__':
     import socket
     from Kamaelia.Chassis.ConnectedServer import ServerCore
-    from Kamaelia.Protocol.HTTP import HTTPProtocol
-    from Kamaelia.Protocol.HTTP.Translators.WSGILike import WSGILikeTranslator
+    from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
     
-    class handler(component):
+    class TestHandler(component):
         def __init__(self, request):
             self.request = request
-            super(handler, self).__init__()
+            super(TestHandler, self).__init__()
         def main(self):
             from pprint import pformat
             resource = {
@@ -283,10 +282,10 @@ if __name__ == '__main__':
             self.send(producerFinished(self), 'signal')
             yield 1
 
-    routing = [['/', handler]]
+    routing = [ ['/hello', TestHandler] ]
 
     ServerCore(
-        protocol=HTTPProtocol(routing, WSGILikeTranslator),
+        protocol=HTTPProtocol(routing),
         port=8082,
         socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     ).run()
