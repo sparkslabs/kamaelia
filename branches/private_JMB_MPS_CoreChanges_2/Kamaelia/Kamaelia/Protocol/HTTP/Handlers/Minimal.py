@@ -137,19 +137,21 @@ class Minimal(component):
         """Produce the appropriate response then terminate."""
         filename = sanitizePath(self.request["uri-suffix"])
         if not (self.homedirectory.endswith('/') or filename.startswith('/')):
-            filepath = self.homedirectory + '/' + filename
+            filepath = self.homedirectory + '/' + filename   # FIXME: Should use os.path.join 
         else:
-            filepath = self.homedirectory + filename
+            filepath = self.homedirectory + filename         # FIXME: Should use os.path.join
 
-        print filepath
+        # print filepath
 
+        # FIXME: Logic here looks a little bust actually, and can probably
+        # FIXME: be reworked further and simplified.
         filetype = MimeTypes.workoutMimeType(filename)
 
         error = None
         try:
-            if     os.path.exists(filepath):
+            if os.path.exists(filepath):
                 if os.path.isdir(filepath):
-                    filepath += self.indexfilename
+                    filepath += self.indexfilename  # FIXME: Assumes X/index.html always exists
                     
                 resource = {
                     "content-type"   : filetype,
