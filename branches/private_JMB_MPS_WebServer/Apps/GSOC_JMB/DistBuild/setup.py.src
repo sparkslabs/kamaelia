@@ -45,7 +45,7 @@ import sys
 if "install" in sys.argv:
     import os
     if os.uname()[0] == "Linux" or os.uname()[0] == "Darwin":
-        os.chdir("App/WebServe")
+        os.chdir("App/PersonalWsgiServer")
         os.system("./make-unix.sh")
         os.system("cp dist/kwserve /usr/local/bin/personal_wsgi_server")
     else:
