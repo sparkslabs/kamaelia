@@ -1,0 +1,30 @@
+#! /bin/sh
+#
+# /etc/init.d/kamaelialogger
+#
+# Untested
+#
+
+case "$1" in
+  start)
+        echo "Starting KamaeliaLogger daemon"
+        /usr/local/bin/runKamaeliaLogger.sh
+        ;;
+    stop)
+        echo "Currently we don't support killing the greylisting daemon -"
+        echo "you have to do this manually - sorry! Improvements to this"
+        echo "script are welcome."
+        # rc_status -v
+        ;;
+    status)
+        echo "Currently we don't support status checking. Ought to improve this."
+        echo "Improvements welcome!"
+#        rc_failed 4
+#        rc_status -v
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status}"
+        exit 1
+        ;;
+esac
+
