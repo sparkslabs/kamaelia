@@ -23,7 +23,7 @@
 import socket
 
 import Axon
-from Kamaelia.Protocol.HTTP.Handlers.WSGI import WSGIFactory
+from Kamaelia.Apps.JMB.WSGI import WSGIFactory
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Protocol.HTTP import ErrorPages
 from Kamaelia.Support.Protocol.HTTP import HTTPProtocol

@@ -66,7 +66,7 @@ of these factory functions are made to work with ServerCore/SimpleServer.  Here 
 an example of how to create a simple WSGI server:
 
 from Kamaelia.Protocol.HTTP import HTTPProtocol
-from Kamaelia.Experimental.Wsgi.Factory import WsgiFactory
+from Kamaelia.Experimental.Wsgi.Factory import WsgiFactory  # FIXME: Docs are broken :-(
 
 WsgiConfig = {
     'wsgi_ver' : (1, 0),
