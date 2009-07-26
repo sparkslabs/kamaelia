@@ -31,7 +31,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Kamaelia.Chassis.Pipeline import Pipeline
 
-from Kamaelia.Apps.Web_common.Console import prompt_yesno, info
+from Kamaelia.Apps.JMB.Common.Console import prompt_yesno, info
 
 _logger_suffix = '.web_common.autoinstall'
 

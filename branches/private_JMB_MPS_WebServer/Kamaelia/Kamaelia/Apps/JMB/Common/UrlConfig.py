@@ -34,18 +34,18 @@ Suppose you had the following urls file:
 
 [static_files]
 regex: static
-import_path: Kamaelia.Support.WsgiApps.Static
+import_path: Kamaelia.Apps.JMB.WSGI.Apps.Static
 app_object: static_app
 static_path: ~/www
 index_file: index.html
 
 [simple_app]
 regex: simple
-import_path: Kamaelia.Support.WsgiApps.Simple
+import_path: Kamaelia.Apps.JMB.WSGI.Apps.Simple
 app_object: simple_app
 
 [error_404]
-import_path: Kamaelia.Support.WsgiApps.ErrorHandler
+import_path: Kamaelia.Apps.JMB.WSGI.Apps.ErrorHandler
 app_object: application
 
 A call to ParseUrlFile would produce the following output:
@@ -53,19 +53,19 @@ A call to ParseUrlFile would produce the following output:
 [
     {
         'kp.regex' : 'static',
-        'kp.import_path' : 'Kamaelia.Support.WsgiApps.Static',
+        'kp.import_path' : 'Kamaelia.Apps.JMB.WSGI.Apps.Static',
         'kp.app_object' : 'static_app',
         'kp.static_path' : '~/www',
         'kp.index_file' : 'index.html',
     }
     {
         'kp.regex' : 'simple',
-        'kp.import_path' : 'Kamaelia.Support.WsgiApps.Simple',
+        'kp.import_path' : 'Kamaelia.Apps.JMB.WSGI.Apps.Simple',
         'kp.app_object' : 'simple_app',
     }
     {
         'kp.regex' : '.*',
-        'kp.import_path' : 'Kamaelia.Support.WsgiApps.ErrorHandler',
+        'kp.import_path' : 'Kamaelia.Apps.JMB.WSGI.Apps.ErrorHandler',
         'kp.app_object' : 'application',
     }
 ]
@@ -85,7 +85,7 @@ contains a regex.
 * It will add '.*' as the regex for error_404.
 """
 
-from ConfigFile import FormatterBase, ParseConfigFile, DictFormatter, ParseException
+from Kamaelia.Apps.JMB.Common.ConfigFile import FormatterBase, ParseConfigFile, DictFormatter, ParseException
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class UrlListFormatter(FormatterBase):

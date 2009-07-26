@@ -56,7 +56,7 @@ def initializeLogger(consolename='kamaelia'):
     consolelogger = logging.getLogger(consolename)
     consolelogger.setLevel(logging.DEBUG)
     consolelogger.addHandler(console)
-    from Kamaelia.Apps.Web_common.Console import setConsoleName
+    from Kamaelia.Apps.JMB.Common.Console import setConsoleName
     setConsoleName(consolename)
     
     from atexit import register
