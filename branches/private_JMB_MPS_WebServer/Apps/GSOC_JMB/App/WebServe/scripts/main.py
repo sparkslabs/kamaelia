@@ -24,17 +24,17 @@ import sys, socket, os, zipfile, logging
 import cProfile as profile
 from pprint import pprint
 
-from Kamaelia.Protocol.HTTP.Handlers.WSGI import WSGIFactory
+from Kamaelia.Apps.JMB.WSGI import WSGIFactory
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
 from Kamaelia.Protocol.HTTP.Handlers.Minimal import MinimalFactory
 
 #Stuff that's shared between some of the webservers
-from Kamaelia.Apps.Web_common.Console import info
-from Kamaelia.Apps.Web_common.ConfigFile import DictFormatter, ParseConfigFile
-from Kamaelia.Apps.Web_common.autoinstall import autoinstall
-from Kamaelia.Apps.Web_common.UrlConfig import ParseUrlFile
-from Kamaelia.Apps.Web_common.ServerSetup import processPyPath, normalizeUrlList, \
+from Kamaelia.Apps.JMB.Common.Console import info
+from Kamaelia.Apps.JMC.Common.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.JMB.Common.autoinstall import autoinstall
+from Kamaelia.Apps.JMB.Common.UrlConfig import ParseUrlFile
+from Kamaelia.Apps.JMB.Common.ServerSetup import processPyPath, normalizeUrlList, \
     normalizeWsgiVars, initializeLogger
 
 _profile_ = False
