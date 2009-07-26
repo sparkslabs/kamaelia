@@ -44,12 +44,12 @@ WsgiConfig ={
 url_list = [
     {
     'kp.regex' : 'simple',
-    'kp.import_path' : 'Kamaelia.Apps.WSGI.Simple',
+    'kp.import_path' : 'Kamaelia.Apps.JMB.WSGI.Apps.Simple',
     'kp.app_object' : 'simple_app',
     },
     {
     'kp.regex' : '.*',  #This is the entry for the 404 error handler.  This basically says "match everything else."
-    'kp.import_path' : 'Kamaelia.Apps.WSGI.ErrorHandler',
+    'kp.import_path' : 'Kamaelia.Apps.JMB.WSGI.Apps.ErrorHandler',
     'kp.app_object' : 'application'
     }
 ]
