@@ -40,3 +40,14 @@ setup(name = "Kamaelia-GSOC-JMB",
 Jason Baker's GSOC work, repackaged as a standalone project.
 """,
       )
+
+import sys
+if "install" in sys.argv:
+    import os
+    if os.uname()[0] == "Linux" or os.uname()[0] == "Darwin":
+        os.chdir("App/WebServe")
+        os.system("./make-unix.sh")
+        os.system("cp dist/kwserve /usr/local/bin/personal_wsgi_server")
+    else:
+        print "Cannot build the personal wsgi server on this platform."
+        print "You can probably run it if you fiddle about with it enough though..."
