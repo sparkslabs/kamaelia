@@ -47,7 +47,7 @@ def autoinstall(zip, dir, app_name):
         sys.exit(1)
     
     tar_mem = cStringIO.StringIO( zip.read('data/kpuser.tar') )
-    kpuser_file = tarfile.open(fileobj=tar_mem, mode='r')
+    kpuser_file = tarfile.open(name="-", fileobj=tar_mem, mode='r')
     kpuser_file.extractall(path=dir)
     
     kpuser_file.close()
