@@ -31,7 +31,7 @@ from Kamaelia.Protocol.HTTP.Handlers.Minimal import MinimalFactory
 
 #Stuff that's shared between some of the webservers
 from Kamaelia.Apps.JMB.Common.Console import info
-from Kamaelia.Apps.JMC.Common.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.JMB.Common.ConfigFile import DictFormatter, ParseConfigFile
 from Kamaelia.Apps.JMB.Common.autoinstall import autoinstall
 from Kamaelia.Apps.JMB.Common.UrlConfig import ParseUrlFile
 from Kamaelia.Apps.JMB.Common.ServerSetup import processPyPath, normalizeUrlList, \
