@@ -1,7 +1,0 @@
-include COPYING
-include AUTHORS
-include CHANGELOG
-include Doc/*
-recursive-include App *
-include Config/*
-
