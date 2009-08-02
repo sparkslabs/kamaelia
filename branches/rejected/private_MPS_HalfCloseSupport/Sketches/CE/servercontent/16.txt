@@ -1,3 +1,0 @@
-Finagle's fourth Law:
-	Once a job is fouled up, anything done to improve it only makes
-it worse.

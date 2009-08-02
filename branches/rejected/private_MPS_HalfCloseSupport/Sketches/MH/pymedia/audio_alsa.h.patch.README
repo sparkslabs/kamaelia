@@ -1,8 +1,0 @@
-This is a patch to fix alsa sound capture in pymedia 1.3.5.0
-as taken from anonymous CVS checkout on 27th July 2006
-
-The file to be patched is:
-/pymedia/sound/audio_alsa.h
-
-
-Matt
