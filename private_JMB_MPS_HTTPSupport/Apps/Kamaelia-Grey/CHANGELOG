@@ -1,9 +1,0 @@
-Changelog
-
-1.0.0
-   * Initial release
-   * Changes since beta release:
-       * ServerCore has been merged and renamed that from MoreComplexServer
-       * The majority of Kamaelia Grey's components now reside in the
-         Kamaelia.Apps directory (or will before ready to merge mail)
-

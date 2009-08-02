@@ -1,9 +1,0 @@
-Microprocess is the logical place to start.
-However, the python version of microprocess does this:
-   def __init__(self):
-      ...
-      self.id,self.name = tupleId(self)
-      ...
-
-Which means we need the idGen subsystem tested first.
-
