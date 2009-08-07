@@ -40,10 +40,10 @@ until it receives a response.
 from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import Backplane, SubscribeTo
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.IPC import userLoggedOut, batchDone, newBatch
-from Kamaelia.Apps.Web_common.Console import debug, info, warning
-from Kamaelia.Apps.Publish.Gateway.consts import BPLANE_INBOX, BPLANE_CONTROL
-from Kamaelia.Apps.Publish.Gateway.JIDLookup import setUserStatus
+from Kamaelia.Apps.JMB.Common.IPC import userLoggedOut, batchDone, newBatch
+from Kamaelia.Apps.JMB.Common.Console import debug, info, warning
+from Kamaelia.Apps.JMB.Publish.Gateway.consts import BPLANE_INBOX, BPLANE_CONTROL
+from Kamaelia.Apps.JMB.Publish.Gateway.JIDLookup import setUserStatus
 
 from headstock.api.im import Message
 from headstock.api.jid import JID
