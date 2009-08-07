@@ -339,5 +339,29 @@ __ipc_msgs = [errorInformation, producerFinished, wouldblock, status, shutdown,
 def GetIPCs():
    return __ipc_msgs
 
+# Hmm. Above looks bad, this would be better (matbe) if memoised:
+"""
+>>> for key in dir(Ipc):
+...    try:
+...       if issubclass(getattr(Ipc,key),Ipc.ipc):
+...          print getattr(Ipc,key)
+...    except:
+...       pass
+... 
+<class 'Ipc.WaitComplete'>
+<class 'Ipc.errorInformation'>
+<class 'Ipc.ipc'>
+<class 'Ipc.newComponent'>
+<class 'Ipc.notify'>
+<class 'Ipc.producerFinished'>
+<class 'Ipc.reactivate'>
+<class 'Ipc.shutdown'>
+<class 'Ipc.shutdownMicroprocess'>
+<class 'Ipc.status'>
+<class 'Ipc.wouldblock'>
+"""
+
+
+
 if __name__ == '__main__':
    print "This class currently contains no test code."
