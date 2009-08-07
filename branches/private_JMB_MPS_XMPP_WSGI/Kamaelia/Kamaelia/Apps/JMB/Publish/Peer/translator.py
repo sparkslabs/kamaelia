@@ -117,8 +117,8 @@ prevent any text in the message from invalidating the XML that will be used by
 XMPP.
 """
 from Axon.Component import component
-from Kamaelia.IPC import LookupByText, ToText
-from Kamaelia.Apps.Web_common.Console import info, debug
+from Kamaelia.Apps.JMB.Common.IPC import LookupByText, ToText
+from Kamaelia.Apps.JMB.Common.Console import info, debug
 
 from xml.sax.saxutils import unescape, escape
 

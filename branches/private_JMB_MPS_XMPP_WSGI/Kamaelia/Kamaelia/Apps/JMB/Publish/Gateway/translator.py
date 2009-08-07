@@ -122,7 +122,7 @@ from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
-from Kamaelia.IPC import LookupByText, userLoggedOut, batchDone, newBatch
+from Kamaelia.Apps.JMB.Common.IPC import LookupByText, userLoggedOut, batchDone, newBatch
 from Kamaelia.Apps.JMB.Common.Console import info, debug, warning
 
 from headstock.api.im import Message, Body, Event, Thread
