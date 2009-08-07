@@ -123,7 +123,7 @@ from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.Backplane import PublishTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
 from Kamaelia.IPC import LookupByText, userLoggedOut, batchDone, newBatch
-from Kamaelia.Apps.Web_common.Console import info, debug, warning
+from Kamaelia.Apps.JMB.Common.Console import info, debug, warning
 
 from headstock.api.im import Message, Body, Event, Thread
 from headstock.api.jid import JID
@@ -136,8 +136,8 @@ from pprint import pformat
 
 import simplejson
 
-from Kamaelia.Apps.Publish.Gateway.consts import BPLANE_CONTROL, BPLANE_INBOX
-from Kamaelia.Apps.Publish.Gateway.JIDLookup import ExtractJID
+from Kamaelia.Apps.JMB.Publish.Gateway.consts import BPLANE_CONTROL, BPLANE_INBOX
+from Kamaelia.Apps.JMB.Publish.Gateway.JIDLookup import ExtractJID
 
 _logger_suffix='.publish.gateway.translator'
 

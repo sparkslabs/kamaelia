@@ -28,8 +28,9 @@ or not.  You may also call ExtractJID to tetermine a user's JID based on the URI
 that was passed to the server.
 """
 from Kamaelia.Support.Protocol.HTTP import PopWsgiURI
-from Kamaelia.Apps.Publish.Gateway.UserDatabase import getUserTable, User
-from Kamaelia.Apps.Web_common.Console import debug
+from Kamaelia.Apps.JMB.Publish.Gateway.UserDatabase import getUserTable, User
+from Kamaelia.Apps.JMB.Common.Console import debug
+
 from headstock.api.jid import JID
 
 import sqlalchemy
