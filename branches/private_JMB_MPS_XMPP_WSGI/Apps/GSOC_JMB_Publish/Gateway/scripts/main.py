@@ -21,13 +21,13 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: JMB
 
-from Kamaelia.Apps.Web_common.ConfigFile import DictFormatter, ParseConfigFile
-from Kamaelia.Apps.Web_common.Structs import ConfigObject
-from Kamaelia.Apps.Web_common.ServerSetup import initializeLogger
+from Kamaelia.Apps.JMB.Common.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.JMB.Common.Structs import ConfigObject
+from Kamaelia.Apps.JMB.Common.ServerSetup import initializeLogger
 
 from jabber import constructXMPPClient
 from http import constructHTTPServer
-from Kamaelia.Apps.Publish.Gateway.JIDLookup import connectToDB
+from Kamaelia.Apps.JMB.Publish.Gateway.JIDLookup import connectToDB
 import optparse
 
 def main():
