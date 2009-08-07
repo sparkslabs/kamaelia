@@ -43,7 +43,7 @@ respects.
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import SubscribeTo
 
-from Kamaelia.Apps.Publish.Peer.translator import TranslatorChassis, \
+from Kamaelia.Apps.JMB.Publish.Peer.translator import TranslatorChassis, \
     RequestDeserializer, ResponseSerializer, SimpleHandler
 
 from headstock.api.im import Message, Thread, Body

@@ -52,18 +52,18 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleReader
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 
-from Kamaelia.Protocol.HTTP.Handlers.WSGI import SimpleWSGIFactory, WSGIFactory
-from Kamaelia.Apps.WSGI.Simple import simple_app
-from Kamaelia.Apps.Web_common.ConfigFile import DictFormatter, ParseConfigFile
-from Kamaelia.Apps.Web_common.UrlConfig import ParseUrlFile
-from Kamaelia.Apps.Web_common.ServerSetup import processPyPath, normalizeUrlList,\
+from Kamaelia.Apps.JMB.WSGI import SimpleWSGIFactory, WSGIFactory
+from Kamaelia.Apps.JMB.WSGI.Apps.Simple import simple_app
+from Kamaelia.Apps.JMB.Common.ConfigFile import DictFormatter, ParseConfigFile
+from Kamaelia.Apps.JMB.Common.UrlConfig import ParseUrlFile
+from Kamaelia.Apps.JMB.Common.ServerSetup import processPyPath, normalizeUrlList,\
  normalizeWsgiVars, initializeLogger
 
 from transactions import TransactionManager
-from Kamaelia.Apps.Web_common.Structs import StaticConfigObject, XMPPConfigObject,\
+from Kamaelia.Apps.JMB.Common.Structs import StaticConfigObject, XMPPConfigObject,\
  ConfigObject
-from Kamaelia.Apps.Web_common.autoinstall import autoinstall
-from Kamaelia.Apps.Web_common.Console import prompt_corrupt
+from Kamaelia.Apps.JMB.Common.autoinstall import autoinstall
+from Kamaelia.Apps.JMB.Common.Console import prompt_corrupt
     
 from headstock.protocol.core.stream import ClientStream, StreamError, SaslError
 from headstock.protocol.core.presence import PresenceDispatcher
