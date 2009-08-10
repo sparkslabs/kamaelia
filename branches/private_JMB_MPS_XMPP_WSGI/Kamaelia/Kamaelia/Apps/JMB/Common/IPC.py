@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2004 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
@@ -45,8 +46,15 @@ class newBatch(notify):
 __ipc_msgs = [removeExceptional, removeWriter, removeReader, newExceptional, newReader,
               newWriter, newServer, shutdownCSA, newCSA, serverShutdown, socketShutdown,
               userLoggedOut, batchDone, newBatch]
-from Axon.Ipc import GetIPCs
-__ipc_msgs.extend(GetIPCs())
+
+import Axon.Ipc as Ipc
+
+for key in dir(Ipc):
+   try:
+      if issubclass(getattr(Ipc,key),Ipc.ipc):
+         __ipc_msgs.append(getattr(Ipc,key))
+   except:
+      pass
 
 __ipc_lookup = {}
 
