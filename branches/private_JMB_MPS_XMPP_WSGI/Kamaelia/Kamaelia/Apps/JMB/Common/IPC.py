@@ -28,6 +28,7 @@ from Kamaelia.IPC import socketShutdown, serverShutdown
 from Kamaelia.IPC import newCSA, shutdownCSA, newServer
 from Kamaelia.IPC import newWriter, newReader, newExceptional
 from Kamaelia.IPC import removeReader, removeWriter, removeExceptional
+import Axon.Ipc as Ipc
 
 class userLoggedOut(notify):
    def __init__(self, thread):
@@ -43,11 +44,19 @@ class newBatch(notify):
       self.bundle = bundle
       self.to_jid = to_jid
 
+class internalNotify(Ipc.ipc):
+   """
+   This class is used to indicate that a message was posted to shut a component
+   down internally.  This should not be sent to any component outside of one
+   particular system of components.
+   """
+   def __init__(self, message=None):
+      self.message = message
+
 __ipc_msgs = [removeExceptional, removeWriter, removeReader, newExceptional, newReader,
               newWriter, newServer, shutdownCSA, newCSA, serverShutdown, socketShutdown,
-              userLoggedOut, batchDone, newBatch]
+              userLoggedOut, batchDone, newBatch, internalNotify]
 
-import Axon.Ipc as Ipc
 
 for key in dir(Ipc):
    try:

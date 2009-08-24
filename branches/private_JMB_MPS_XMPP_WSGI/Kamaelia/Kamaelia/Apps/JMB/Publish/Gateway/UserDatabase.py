@@ -20,7 +20,7 @@
 # to discuss alternative licensing.
 # -------------------------------------------------------------------------
 
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, create_engine, Boolean
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, create_engine, Boolean, Unicode
 
 class BaseUser(object):
     def __init__(self, jid, url_prefix, active=False):

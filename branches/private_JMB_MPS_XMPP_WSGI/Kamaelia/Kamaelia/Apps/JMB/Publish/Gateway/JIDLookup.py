@@ -84,14 +84,28 @@ def setUserStatus(jid_text, active):
     if isinstance(jid_text, JID):
         jid_text = jid_text.nodeid()
     session = UserSession()
-    user = _getUser(jid_text, session)
+    try:
+        user = _getUser(jid_text, session)
+    except Exception, e:
+        print "WARNING FOR", jid_text, session, "UNABLE TO _getUser Exception:", e
+        return
+    print "GOT User", jid_text, session, user
     user.active=bool(active)
     session.update(user)
     session.commit()
     
 def _getUser(jid_text, session):
     """Gets a user out of the database by JID."""
-    return session.query(User).filter_by(jid=jid_text).one()
+    import sys
+    sys.stderr.write("_getUser.1" + repr( (jid_text, session) )+"\n\n")
+    Q = session.query(User)
+    sys.stderr.write("_getUser.2"+repr(Q)+"\n")
+    FBJ = Q.filter_by(jid=jid_text)
+    sys.stderr.write("_getUser.3"+repr(FBJ)+"\n")
+    O  = FBJ.one()
+    sys.stderr.write("_getUser.3"+repr(O)+"\n")
+    return O
+#    return session.query(User).filter_by(jid=jid_text).one()
 
 def _getUserByURI(uri, session):
     """Gets a user out of the database by URI."""
@@ -118,13 +132,17 @@ def connectToDB(Config, **argd):
         print Config.server.db
         
         _user_engine = sqlalchemy.create_engine(Config.server.db, **argd)
+        print _user_engine
         UserSession.configure(bind=_user_engine)
-        
+        print "Here"
         _meta = MetaData(bind=_user_engine)
+        print "There"
         _users = getUserTable(_meta)
+        print "Also There"
         _meta.create_all()
-        
+        print "Also here"
         mapper(User, _users)
+        
         
         from atexit import register
         register(_cleanup)

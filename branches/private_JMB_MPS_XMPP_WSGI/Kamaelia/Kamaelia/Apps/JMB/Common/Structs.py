@@ -65,6 +65,7 @@ class ServerConfigObject(object):
         
 class ConfigObject(object):
     def __init__(self, dictionary, options):
+        print "DEBUG", dictionary
         self.static = StaticConfigObject(dictionary['STATIC'])
         self.xmpp = XMPPConfigObject(dictionary['XMPP'])
         self.wsgi = dictionary['WSGI']  #FIXME:  Adapt the WSGI configuration dictionary
