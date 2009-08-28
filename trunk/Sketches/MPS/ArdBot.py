@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
-import t
+import time
 import serial
-ser = serial.Serial('/dev/tty.usbserial', 9600)
 
-class DummySer(object):
+import Axon
+
+class DummySerial(object):
     def __init__(self):
         self.log = []
 
@@ -15,7 +16,7 @@ class DummySer(object):
     def dumplog(self):
         return self.log
 
-class ArdBot(object):
+class ArdBot(Axon.Component.component):
     commands = {
         "forward" : "f",
         "backward" : "b",
@@ -29,27 +30,50 @@ class ArdBot(object):
         "s" : "s",
     }
     def __init__(self, ser):
+        super(ArdBot,self).__init__()
         self.ser = ser
 
     def do_continuous(self,command):
-        self.ser.write(self.commands[command])
+        serial_command = self.commands.get(command,None)
+        if serial_command:
+            self.ser.write(serial_command)
 
     def do(self, command, t=0.1):
         self.do_continuous(command)
+        print "t",repr(t)
         time.sleep(t)
         self.ser.write('s')
 
     def main(self):
         while not self.dataReady("control"):
-            for command_raw in self.inbox:
+            for command_raw in self.Inbox("inbox"):
                 command = command_raw.split()
-                if len(command) = 1:
+                if len(command) == 1:
                     print "Do Continuous", command[0]
-                    self.do_continuous(command)
-                else:
+                    self.do_continuous(command[0])
+                elif len(command) > 1:
+                    print command[1], repr(command[1])
                     t = float(command[1])
+                    print repr(t)
                     print "Do", command[0], "for", t
-                    self.do(command[0], command[1])
+                    self.do(command[0], t)
+            if not self.anyReady():
+                self.pause()
+            yield 1
         self.send(self.recv("control"), "signal")
 
+if __name__ == "__main__":
 
+    debugging = True
+    if not debugging:
+        ser = serial.Serial('/dev/tty.usbserial', 9600)
+    else:
+        ser = DummySerial()
+
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.Console import *
+    Pipeline(
+        ConsoleReader(">> "),
+        ArdBot(ser),
+        ConsoleEchoer(),
+    ).run()
