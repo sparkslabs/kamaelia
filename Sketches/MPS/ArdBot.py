@@ -64,16 +64,43 @@ class ArdBot(Axon.Component.component):
 
 if __name__ == "__main__":
 
-    debugging = True
+    debugging = False
     if not debugging:
-        ser = serial.Serial('/dev/tty.usbserial', 9600)
+        ser = serial.Serial('/dev/ttyUSB0', 9600)
     else:
         ser = DummySerial()
 
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import *
-    Pipeline(
-        ConsoleReader(">> "),
-        ArdBot(ser),
-        ConsoleEchoer(),
-    ).run()
+
+    if 0:
+        Pipeline(
+            ConsoleReader(">> "),
+            ArdBot(ser),
+            ConsoleEchoer(),
+        ).run()
+
+    if 1:
+        from Kamaelia.Util.Backplane import *
+        Backplane("ARDBOT").activate()
+
+        Pipeline(
+            ConsoleReader(">> "),
+            PublishTo("ARDBOT"),
+        ).activate()
+
+        Pipeline(
+            SubscribeTo("ARDBOT"),
+            ArdBot(ser),
+            ConsoleEchoer(),
+        ).activate()
+
+        def LocalArdBot(*argv, **argd):
+            return PublishTo("ARDBOT")
+
+        import socket
+        from Kamaelia.Chassis.ConnectedServer import ServerCore
+        ServerCore(protocol = LocalArdBot, 
+                   port = 1500,
+                   socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)).run()
+

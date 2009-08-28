@@ -12,11 +12,11 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 file = sys.argv[1]
-framerate = 15
+framerate = 10
 
 Pipeline(
          ReadFileAdaptor(file, readmode="bitrate",
-                         bitrate = 300000*8/5),
+                         bitrate = 1000000),
          DiracDecoder(),
          MessageRateLimit(framerate),
          VideoOverlay(),
