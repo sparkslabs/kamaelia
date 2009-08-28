@@ -1,4 +1,11 @@
 #!/usr/bin/python
+"""
+Useful notes on python/Arduino here:
+    http://www.arduino.cc/playground/Interfacing/Python
+
+http://bitsnbikes.blogspot.com/2009/03/arduino-suse-103-installation.html
+
+"""
 
 import time
 import serial
