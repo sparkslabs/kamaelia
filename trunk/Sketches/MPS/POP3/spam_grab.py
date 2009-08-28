@@ -320,21 +320,52 @@ class Pop3Client(Axon.Component.component):
             deletions = []
             greyzone = []
             higher = lower
-            lower = max(1, lower-50)
+#            lower = max(1, lower-50)
 #            lower = max(1, lower-200)
+            lower = max(1, lower-600)
+
+            if 1:
+                higher = lower
+                lower = max(1, lower-600)
+
+                higher = lower
+                lower = max(1, lower-600)
+
+                higher = lower
+                lower = max(1, lower-600)
+
+                higher = lower
+                lower = max(1, lower-600)
+
+                higher = lower
+                lower = max(1, lower-600)
+
+                higher = lower
+                lower = max(1, lower-600)
+
+                higher = lower
+                lower = max(1, lower-600)
+
+                higher = lower+200
+                lower = max(1, lower-500)
+
+#            if 0:
+                higher = lower
+                lower = max(1, lower-600)
+
+            print "lower, higher",lower, higher
             l = 0
             for mailid in range(lower, higher+1):
                 l +=1
                 if (l % 100) == 0: print
-                sys.stdout.write(".")
-                sys.stdout.flush()
     #            print "Retrieving HEADERS of mail", mailid
                 yield self.getMessageHeaders(mailid)
 
     #            print "-------- HEADERS RECEIVED --------"
                 delete = False
                 whitelisted = False
-                for sender in self.headers["from"]:
+
+                for sender in self.headers.get("from",[]):
                     if whitelisted:
                         continue
                     if self.blacklisted_sender(sender):
@@ -358,16 +389,21 @@ class Pop3Client(Axon.Component.component):
 
                 if delete:
                     deletions.append( (mailid, self.headers["from"], self.headers) )
+                    sys.stdout.write("D")
+                else:
+                    sys.stdout.write(".")
+                sys.stdout.flush()
+
                 if not delete and not whitelisted:
 #                    print "THIS /MAY/ BE SPAM", self.headers["subject"][0]
-                    greyzone.append( (mailid, self.headers["from"], self.headers) )
+                    greyzone.append( (mailid, self.headers.get("from",[]), self.headers) )
             print
 
             if len(deletions) != 0:
 
                 print 
                 print "============ CANDIDATES FOR DELETION ============"
-                pprint.pprint( [ (ID, FROM, HEADERS["subject"]) for (ID, FROM, HEADERS) in deletions ])
+                pprint.pprint( [ (ID, FROM, HEADERS.get("subject",[]) ) for (ID, FROM, HEADERS) in deletions ])
                 print "TOTAL Suggested", len(deletions)
                 
                 print "To delete these, don't type 'quit'"

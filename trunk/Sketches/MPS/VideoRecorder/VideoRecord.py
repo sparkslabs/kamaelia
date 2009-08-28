@@ -4,8 +4,6 @@
 # This import line is required to pull in pygame.camera support
 #
 import sys ; 
-#sys.path.insert(0, "/home/zathras/Incoming/X/pygame/pygame-nrp/build/lib.linux-i686-2.5")
-sys.path.insert(0, "/home/zathras/code.google/pygame-seul/trunk/build/lib.linux-i686-2.5")
 sys.path.insert(0, "/home/zathras/Documents/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
 
 import time
@@ -13,29 +11,18 @@ import pygame
 import pygame.camera
 
 import Axon
-import Image
+import Image # PIL - Python Imaging Library
+
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Codec.Dirac import DiracEncoder, DiracDecoder
+from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
+from Kamaelia.Video.PixFormatConversion import ToYUV420_planar
+from Kamaelia.File.Writing import SimpleFileWriter
+from Kamaelia.Util.PureTransformer import PureTransformer
+
 pygame.init()
 pygame.camera.init()
 
-
-if 0:
-    display = pygame.display.set_mode( (1024, 768) )
-    camera = pygame.camera.Camera("/dev/video0", ( 640, 480 ) )
-    camera.start()
-    snapshot = camera.get_image()
-    X =snapshot.get_buffer()
-    width, height = snapshot.get_size()
-
-    print X.length, width, height
-
-def save_raw(snapshot,i):
-    X = snapshot.get_buffer()
-    im = Image.frombuffer("RGB", snapshot.get_size(), X.raw, "raw", "RGB", 0, 1)
-    F = "vid/"+str(i)+".png"
-    print "F",F
-    im.save(F)
-
- 
 class VideoCapturePlayer(Axon.ThreadedComponent.threadedcomponent):
     displaysize = (1024, 768)
     capturesize = ( 640, 480 )
@@ -85,55 +72,14 @@ class VideoCapturePlayer(Axon.ThreadedComponent.threadedcomponent):
                if f<tfrU:
                    fudge -= 0.001
 
-
-class Mangler(Axon.Component.component):
-    def main(self):
-        while True:
-            i = None
-            for (i,F) in self.Inbox("inbox"): # Only try to get the last frame (for now)
-              if i is not None:
-                X = pygame.image.tostring(F, "RGB")
-                self.send( {
-                            "rgb" : X,
-                            "size" : (352, 288),
-                            "pixformat" : "RGB_interleaved",
-                           }, "outbox")
-
-            if not self.anyReady():
-                self.pause()
-            yield 1
-        
-
-class FileDump(Axon.Component.component):
-    def main(self):
-        f = open("X.drc","wb")
-#        if 1:
-        try:
-            while True:
-                for i in self.Inbox("inbox"):
-                    f.write(i)
-                yield 1
-                if not self.anyReady():
-                    self.pause()
-        except:
-            f.close()
-
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Codec.Dirac import DiracEncoder, DiracDecoder
-from Kamaelia.UI.Pygame.VideoOverlay import VideoOverlay
-from Kamaelia.Video.PixFormatConversion import ToYUV420_planar
-
 Pipeline(
     VideoCapturePlayer(),
-    Mangler(),
+    PureTransformer(lambda (i,F) : {
+                            "rgb" : pygame.image.tostring(F, "RGB"),
+                            "size" : (352, 288),
+                            "pixformat" : "RGB_interleaved",
+                          }),
     ToYUV420_planar(),
     DiracEncoder(preset="CIF",  encParams={"num_L1":0}),
-#    DiracDecoder(),
-#    VideoOverlay()
-    FileDump(),
+    SimpleFileWriter("X.drc"),
 ).run()
-
-
-
-
-

@@ -21,8 +21,8 @@ freq = 754.166670
 feparams = {
     "inversion" : dvb3.frontend.INVERSION_AUTO,
     "constellation" : dvb3.frontend.QAM_16,
-    "coderate_HP" : dvb3.frontend.FEC_3_4,
-    "coderate_LP" : dvb3.frontend.FEC_3_4,
+    "code_rate_HP" : dvb3.frontend.FEC_3_4,
+    "code_rate_LP" : dvb3.frontend.FEC_3_4,
 }
 feparams = {}
 service_ids = { "BBC ONE": 4168,
@@ -65,7 +65,7 @@ class dataRateMeasure(component):
                     size = 0
             yield 1
 
-if 0:
+if 1:
     pipeline(
         DVB_Multiplex(freq, [600,601], feparams),
         SimpleFileWriter("somefile.ts"),
@@ -85,7 +85,7 @@ if 0:
     ).run()
 
 
-if 1:
+if 0:
     pipeline(
         DVB_Multiplex(freq, [600,601], feparams),
         MaxSizePacketiser(),

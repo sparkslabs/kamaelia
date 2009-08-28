@@ -3,7 +3,11 @@
 #
 # This import line is required to pull in pygame.camera support
 #
-import sys ; sys.path.insert(0, "/home/zathras/Incoming/X/pygame/pygame-nrp/build/lib.linux-i686-2.5")
+import sys ; 
+#sys.path.insert(0, "/home/zathras/Incoming/X/pygame/pygame-nrp/build/lib.linux-i686-2.5")
+sys.path.insert(0, "/home/zathras/code.google/pygame-seul/trunk/build/lib.linux-i686-2.5")
+sys.path.insert(0, "/home/zathras/Documents/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
+
 import time
 import pygame
 import pygame.camera
@@ -11,6 +15,7 @@ import pygame.camera
 import Axon
 
 pygame.init()
+pygame.camera.init()
 
 def mprint(*args):
     print "VideoCapturePlayer", " ".join([str(x) for x in args])
@@ -26,18 +31,27 @@ class VideoCapturePlayer(object):
         self.display = pygame.display.set_mode( self.displaysize )
         self.camera = X=pygame.camera.Camera("/dev/video0", self.capturesize)
         self.camera.start()
+#        self.camera2 = X=pygame.camera.Camera("/dev/video1", self.capturesize)
+#        self.camera2.start()
 
     def get_and_flip(self):
         snapshot = self.camera.get_image()
-        snapshot = pygame.transform.scale(snapshot,(512,384))
-        if self.mirror:
+#        snapshot2 = self.camera2.get_image()
+#        print snapshot, snapshot2
+        snapshot = pygame.transform.scale(snapshot,(352,288))
+#        snapshot2 = pygame.transform.scale(snapshot2,(352,288))
+#        snapshot = pygame.transform.scale(snapshot,(512,384))
+#        snapshot = pygame.transform.scale(snapshot,(1024,768))
+        if 0:
+#        if self.mirror:
             flippedx = pygame.transform.flip(snapshot,1,0)
             flippedy = pygame.transform.flip(snapshot,0,1)
             flippedxy = pygame.transform.flip(snapshot,1,1)
-        self.display.blit(flippedy, (0,384))
-        self.display.blit(flippedxy, (512,384))
+#        self.display.blit(flippedy, (0,384))
+#        self.display.blit(flippedxy, (512,384))
         self.display.blit(snapshot, (0,0))
-        self.display.blit(flippedx, (512,0))
+#        self.display.blit(snapshot2, (0,384))
+#        self.display.blit(flippedx, (512,0))
         pygame.display.flip()
 
     def main(self):

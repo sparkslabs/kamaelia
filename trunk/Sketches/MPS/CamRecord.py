@@ -17,7 +17,7 @@ class VideoCapturePlayer(Axon.ThreadedComponent.threadedcomponent):
     capturesize = ( 640, 480 )
     mirror = True
     delay = 0
-    camera = "/dev/video1"
+    camera = "/dev/video0"
     imagesize = (352,288)
     def __init__(self, **argd):
         self.__dict__.update(**argd)
