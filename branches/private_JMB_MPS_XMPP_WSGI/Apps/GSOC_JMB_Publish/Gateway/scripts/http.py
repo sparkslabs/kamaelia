@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 #
+# JMB_PUBLISH_GATEWAY
+#
 # Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #

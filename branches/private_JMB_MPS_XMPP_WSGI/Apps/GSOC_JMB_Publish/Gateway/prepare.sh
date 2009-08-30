@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# JMB_PUBLISH_GATEWAY
+#
 #This shell script will check to see if an assemly directory already exits and create
 #one if not.  It will then copy all of the relevant files over to the assembly directory.
 

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 #
+#
+# JMB_PUBLISH_PEER
+#
 # Copyright (C) 2008 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #

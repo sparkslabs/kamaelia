@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# JMB_PUBLISH_GATEWAY
+#
 #make-unix.sh
 #usage:  ./make-unix.sh [clean] [include-files]
 #This script will first run scripts/publish.prepare.sh to assemble all of the relevant

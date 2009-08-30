@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# JMB_PUBLISH_PEER
+#
 # The majority of this code comes from:
 # Python Cookbook, 2nd ed., by Alex Martelli, Anna Martelli Ravenscroft, and David Asher
 # (O'Relly Media, 2005) 0-596-00797-3

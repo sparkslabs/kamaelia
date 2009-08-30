@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#
+# JMB_PUBLISH_GATEWAY
+#
 """
 This is an adapted version of Sylvain Hellegouarch's simplechat example.  It is used
 as the basis for Kamaelia Publish's XMPP code.  The original documentation is reproduced
