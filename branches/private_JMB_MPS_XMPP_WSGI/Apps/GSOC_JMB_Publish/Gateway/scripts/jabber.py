@@ -82,7 +82,7 @@ from bridge.common import XMPP_CLIENT_NS, XMPP_ROSTER_NS, \
 
 __all__ = ['Client']
 
-class RosterHandler(component):    
+class RosterHandler(component):    # Now identical to headstock's simple chat example
     Inboxes = {"inbox"        : "headstock.api.contact.Roster instance",
                "control"      : "stops the component",
                "pushed"       : "roster stanzas pushed by the server",
