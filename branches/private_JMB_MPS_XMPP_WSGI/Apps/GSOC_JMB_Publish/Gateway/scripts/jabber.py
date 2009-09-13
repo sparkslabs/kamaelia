@@ -297,13 +297,13 @@ class ActivityHandler(component):
         yield self.initComponents()
 
         while 1:
-            while self.dataReady("control"):
+            if self.dataReady("control"):
                 mes = self.recv("control")
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            while self.dataReady("inbox"):
+            if self.dataReady("inbox"):
                 disco = self.recv("inbox")
                 support = disco.has_feature(XMPP_LAST_NS)
                 print "Activity support: ", support
