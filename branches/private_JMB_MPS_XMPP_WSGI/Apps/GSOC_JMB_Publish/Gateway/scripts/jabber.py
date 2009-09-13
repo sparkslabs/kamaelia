@@ -676,7 +676,7 @@ class Client(component):
         self.stop()
         print "You can hit Ctrl-C to shutdown all processes now." 
 
-def constructXMPPClient(Config):
+def constructXMPPClient(Config): #FIXME: Irrelevant factory function
     return Client(Config)
 
 print __name__
