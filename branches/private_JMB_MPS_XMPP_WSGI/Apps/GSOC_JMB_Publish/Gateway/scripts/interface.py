@@ -55,6 +55,10 @@ from BoxManager import BoxManager
 
 _logger_suffix = '.publish.gateway.interface'
 
+from Kamaelia.Util.Backplane import SubscribeTo
+from Kamaelia.Util.Console import ConsoleEchoer
+from Kamaelia.Chassis.Pipeline import Pipeline
+
 class Interface(threadedadaptivecommscomponent):
     ThisJID = None
     Inboxes = {
@@ -89,6 +93,12 @@ class Interface(threadedadaptivecommscomponent):
         self.bplane_control = Backplane(BPLANE_CONTROL).activate()
         self.subscriber_in = SubscribeTo(BPLANE_INBOX).activate()
         self.subscriber_control = SubscribeTo(BPLANE_CONTROL).activate()
+
+        Pipeline(
+            SubscribeTo(BPLANE_INBOX),
+            ConsoleEchoer(),
+        ).activate()
+
         
         self.link((self.subscriber_in, 'outbox'), (self, 'inbox'))
         self.link((self.subscriber_control, 'outbox'), (self, 'control'))
@@ -106,6 +116,7 @@ class Interface(threadedadaptivecommscomponent):
                 self.handleMainControlBox(msg)
                 
             for msg in self.Inbox('inbox'):
+                print "Message to send, I think"
                 self.handleMainInbox(msg)
                 
             for msg in self.Inbox('xmpp.inbox'):
@@ -115,9 +126,15 @@ class Interface(threadedadaptivecommscomponent):
                 if box_manager:
                     box_manager.send(msg, 'outbox')
                 else:
-                    warning('%s received with no box manager.' % (msg),
+                    warning('%s received with no box manager.' %  (msg),
                             _logger_suffix)
-                    
+                    print dir(msg)
+                    for A in ['bodies', 'error', 'event', 'foreign', 'from_element', 'from_jid', 'lang', 'stanza_id', 'subjects', 'swap_jids', 'thread', 'timestamp', 'to_element', 'to_jid', 'type', 'wasOnError']:
+                        print A, "|",getattr(msg, A)
+                    for f in msg.foreign:
+                        print f.e
+
+
             for msg in self.Inbox('xmpp.available'):
                 if msg.from_jid.nodeid() != self.ThisJID.nodeid():
                     debug('%s available.' % (msg.from_jid), _logger_suffix)
@@ -138,8 +155,10 @@ class Interface(threadedadaptivecommscomponent):
         message is an instance of InitialMessage, it will create a BoxManager that
         will create the necessary outboxes and track the translator.  If it is a
         headstock message, it will be forwarded out to be sent via XMPP."""
+        print "Message to send", msg
         if isinstance(msg, Message):
             #Forward the message on to headstock
+            print "FORWARDING TO HEADSTOCK", msg
             self.send(msg, 'xmpp.outbox')
         else:
             warning('Unknown message %s received at interface.  Ignoring'
