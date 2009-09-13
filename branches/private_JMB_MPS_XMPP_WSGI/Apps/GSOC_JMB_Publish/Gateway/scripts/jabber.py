@@ -637,7 +637,7 @@ class Client(component):
         yield self.setup()
 
         while 1:
-            while self.dataReady("control"):
+            if self.dataReady("control"):
                 mes = self.recv("control")
 
                 if isinstance(mes, str):
@@ -647,14 +647,14 @@ class Client(component):
                     self.send(mes, "signal")
                     break
 
-            while self.dataReady("inbox"):
+            if self.dataReady("inbox"):
                 msg = self.recv('inbox')
                 if msg == "quit":
                     self.send(shutdownMicroprocess(), "signal")
                     yield 1
                     break
 
-            while self.dataReady("streamfeat"):
+            if self.dataReady("streamfeat"):
                 feat = self.recv('streamfeat')
                 if feat.register and self.register:
                     self.send(Registration(), 'doregistration')
@@ -664,7 +664,7 @@ class Client(component):
                 else:
                     self.send(feat, 'doauth')
                 
-            while self.dataReady("jid"):
+            if self.dataReady("jid"):
                 self.jid = self.recv('jid')
                 
             if not self.anyReady():
