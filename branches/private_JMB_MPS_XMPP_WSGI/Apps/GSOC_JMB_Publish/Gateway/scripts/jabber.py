@@ -560,23 +560,23 @@ class Client(component):
                                pbound = PublishTo("BOUND"),                      # SAME
                                webhandler=Interface(ThisJID=self.jid), # EXTRA (replaces dummy)
 
-                               linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
-                                           ('console', 'outbox'): ('client', 'control'),
-                                           ('client', 'forward'): ('xmpp', 'forward'),
-                                           ('client', 'outbox'): ('tcp', 'inbox'),
-                                           ('client', 'signal'): ('tcp', 'control'),
-                                           ("tcp", "outbox") : ("xmlparser", "inbox"),
-                                           ("xmpp", "starttls") : ("tcp", "makessl"),
-                                           ("tcp", "sslready") : ("xmpp", "tlssuccess"), 
-                                           ("xmlparser", "outbox") : ("xmpp" , "inbox"),
-                                           ("xmpp", "outbox") : ("tcp" , "inbox"),
-                                           ("xmpp", "reset"): ("xmlparser", "reset"),
-                                           ("client", "log"): ("logger", "inbox"),
-                                           ("xmpp", "log"): ("logger", "inbox"),
-                                           ("xmpp", "jid"): ("pjid", "inbox"),
-                                           ("xmpp", "bound"): ("pbound", "inbox"),
-                                           ("xmpp", "features"): ("client", "streamfeat"),
-                                           ("client", "doauth"): ("xmpp", "auth"),
+                               linkages = {('xmpp', 'terminated'): ('client', 'inbox'),                       # SAME
+                                           ('console', 'outbox'): ('client', 'control'),                      # SAME
+                                           ('client', 'forward'): ('xmpp', 'forward'),                        # SAME
+                                           ('client', 'outbox'): ('tcp', 'inbox'),                            # SAME
+                                           ('client', 'signal'): ('tcp', 'control'),                          # SAME
+                                           ("tcp", "outbox") : ("xmlparser", "inbox"),                        # SAME
+                                           ("xmpp", "starttls") : ("tcp", "makessl"),                         # SAME
+                                           ("tcp", "sslready") : ("xmpp", "tlssuccess"),                      # SAME
+                                           ("xmlparser", "outbox") : ("xmpp" , "inbox"),                      # SAME
+                                           ("xmpp", "outbox") : ("tcp" , "inbox"),                            # SAME
+                                           ("xmpp", "reset"): ("xmlparser", "reset"),                         # SAME
+                                           ("client", "log"): ("logger", "inbox"),                            # SAME
+                                           ("xmpp", "log"): ("logger", "inbox"),                              # SAME
+                                           ("xmpp", "jid"): ("pjid", "inbox"),                                # SAME
+                                           ("xmpp", "bound"): ("pbound", "inbox"),                            # SAME
+                                           ("xmpp", "features"): ("client", "streamfeat"),                    # SAME
+                                           ("client", "doauth"): ("xmpp", "auth"),                            # SAME
                                            
                                            # Registration
                                            ("xmpp", "%s.query" % XMPP_IBR_NS): ("registerdisp", "inbox"),
