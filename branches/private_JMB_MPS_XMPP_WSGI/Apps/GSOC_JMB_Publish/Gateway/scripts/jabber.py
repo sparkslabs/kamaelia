@@ -599,12 +599,12 @@ class Client(component):
                                            ("presencedisp", 'xmpp.unavailable') : ('webhandler', 'xmpp.unavailable'),#DIFFERENT
 
                                            # Roster
-                                           ("xmpp", "%s.query" % XMPP_ROSTER_NS): ("rosterdisp", "inbox"),
-                                           ("rosterdisp", "log"): ('logger', "inbox"),
-                                           ('rosterdisp', 'xmpp.set'): ('rosterhandler', 'pushed'),
-                                           ('rosterdisp', 'xmpp.result'): ('rosterhandler', 'inbox'),
-                                           ('rosterhandler', 'result'): ('rosterdisp', 'forward'),
-                                           ("rosterdisp", "outbox"): ("xmpp", "forward"),
+                                           ("xmpp", "%s.query" % XMPP_ROSTER_NS): ("rosterdisp", "inbox"), # SAME
+                                           ("rosterdisp", "log"): ('logger', "inbox"),                     # SAME
+                                           ('rosterdisp', 'xmpp.set'): ('rosterhandler', 'pushed'),        # SAME
+                                           ('rosterdisp', 'xmpp.result'): ('rosterhandler', 'inbox'),      # SAME
+                                           ('rosterhandler', 'result'): ('rosterdisp', 'forward'),         # SAME
+                                           ("rosterdisp", "outbox"): ("xmpp", "forward"),                  # SAME
 
                                            # Discovery
                                            ("xmpp", "%s.query" % XMPP_DISCO_INFO_NS): ("discodisp", "features.inbox"),
