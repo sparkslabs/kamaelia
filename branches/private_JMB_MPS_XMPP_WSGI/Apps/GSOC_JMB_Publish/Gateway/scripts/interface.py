@@ -40,6 +40,9 @@ FIXME:  This component needs a timeout mechanism.  It will currently wait indefi
 until it receives a response.
 """
 
+import Axon
+from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as cat
+
 from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import Backplane, SubscribeTo
 from Kamaelia.Chassis.Graphline import Graphline
@@ -58,6 +61,8 @@ _logger_suffix = '.publish.gateway.interface'
 from Kamaelia.Util.Backplane import SubscribeTo
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
+
+#  This component is a replacement for DummyMessageHandler in headstock's simplechat example
 
 class Interface(threadedadaptivecommscomponent):
     ThisJID = None
@@ -89,6 +94,7 @@ class Interface(threadedadaptivecommscomponent):
         This creates the necessary subcomponents to have messages sent to this component's
         inbox and control box via a backplane.
         """
+
         self.bplane_in = Backplane(BPLANE_INBOX).activate()
         self.bplane_control = Backplane(BPLANE_CONTROL).activate()
         self.subscriber_in = SubscribeTo(BPLANE_INBOX).activate()
@@ -111,6 +117,10 @@ class Interface(threadedadaptivecommscomponent):
     def main(self):        
         self.createSubcomponents()
         
+
+        myjid = cat.getcat().retrieveValue("MYJID")
+        self.ThisJID = myjid
+
         while self.not_done:
             for msg in self.Inbox('control'):
                 self.handleMainControlBox(msg)

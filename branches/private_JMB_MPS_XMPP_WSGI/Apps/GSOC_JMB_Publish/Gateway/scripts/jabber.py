@@ -45,6 +45,9 @@ removed.  The code is good for an example, but not a production system.
 """
 import re
 
+import Axon
+from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as cat
+
 from Axon.Component import component
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Kamaelia.Chassis.Graphline import Graphline
@@ -99,6 +102,12 @@ class RosterHandler(component):    # Now identical to headstock's simple chat ex
         super(RosterHandler, self).__init__() 
         self.from_jid = from_jid
         self.roster = None
+        print "NEW MYJID", self.from_jid
+        try:
+            cat.getcat().trackValue("MYJID", from_jid)
+        except Axon.AxonExceptions.NamespaceClash:
+            cat.getcat().updateValue("MYJID", self.from_jid)
+            print "MYJID", cat.getcat().retrieveValue("MYJID")
 
     def initComponents(self):
         # We subscribe to the JID backplane component
@@ -124,6 +133,13 @@ class RosterHandler(component):    # Now identical to headstock's simple chat ex
 
             if self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
+                print "NEW MYJID", self.from_jid
+                try:
+                    cat.getcat().trackValue("MYJID", self.from_jid)
+                except Axon.AxonExceptions.NamespaceClash:
+                    cat.getcat().updateValue("MYJID", self.from_jid)
+                    print "MYJID", cat.getcat().retrieveValue("MYJID")
+
             
             if self.dataReady("pushed"):
                 roster = self.recv('pushed')
@@ -186,6 +202,12 @@ class WebMessageHandler(component): # NOT USED - REPLACED BY 'Interface' -- from
 
             if self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
+                print "NEW MYJID", self.from_jid
+                try:
+                    cat.getcat().trackValue("MYJID", self.from_jid)
+                except Axon.AxonExceptions.NamespaceClash:
+                    cat.getcat().updateValue("MYJID", self.from_jid)
+                    print "MYJID", cat.getcat().retrieveValue("MYJID")
 
             # Assumes that messages to/from translator are already fully formed headstock messages. (maybe valid)
             for msg in self.Inbox('inbox'):       self.send(msg, 'trans_outbox')
@@ -213,6 +235,12 @@ class DiscoHandler(component):
         super(DiscoHandler, self).__init__() 
         self.from_jid = from_jid
         self.to_jid = to_jid
+        print "NEW MYJID", self.from_jid
+        try:
+            cat.getcat().trackValue("MYJID", from_jid)
+        except Axon.AxonExceptions.NamespaceClash:
+            cat.getcat().updateValue("MYJID", self.from_jid)
+            print "MYJID", cat.getcat().retrieveValue("MYJID")
 
     def initComponents(self):
         sub = SubscribeTo("JID")
@@ -245,6 +273,12 @@ class DiscoHandler(component):
 
             if  self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
+                print "NEW MYJID", self.from_jid
+                try:
+                    cat.getcat().trackValue("MYJID", self.from_jid)
+                except Axon.AxonExceptions.NamespaceClash:
+                    cat.getcat().updateValue("MYJID", self.from_jid)
+                    print "MYJID", cat.getcat().retrieveValue("MYJID")
             
             # When this box has some data, it means
             # that the client is bound to the server

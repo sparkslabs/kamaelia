@@ -118,12 +118,14 @@ The message will be gzipped to be smaller, and will then be base64 encoded to
 prevent any text in the message from invalidating the XML that will be used by
 XMPP.
 """
+import Axon
+from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as cat
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.idGen import numId
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Util.Backplane import PublishTo
+from Kamaelia.Util.Backplane import PublishTo, SubscribeTo
 from Kamaelia.Protocol.HTTP.ErrorPages import getErrorPage
 from Kamaelia.Apps.JMB.Common.IPC import LookupByText, userLoggedOut, batchDone, newBatch, internalNotify
 from Kamaelia.Apps.JMB.Common.Console import info, debug, warning
@@ -143,6 +145,7 @@ from Kamaelia.Apps.JMB.Publish.Gateway.consts import BPLANE_CONTROL, BPLANE_INBO
 from Kamaelia.Apps.JMB.Publish.Gateway.JIDLookup import ExtractJID
 
 _logger_suffix='.publish.gateway.translator'
+
 
 class RequestSerializer(component):
     """
@@ -167,7 +170,7 @@ class RequestSerializer(component):
     Outboxes = {'outbox' : 'Send messages to the Interface',
                 'signal' : 'Send signals',}
     
-    ThisJID = u'amnorvend_gateway@jabber.org'    #FIXME: BROKEN LIKE A BROKEN THING IN BROKEN VILLE ON BROKEN DAY
+    ThisJID = u'sparks.m@gmail.com'    #FIXME: BROKEN LIKE A BROKEN THING IN BROKEN VILLE ON BROKEN DAY
     def __init__(self, request, batch_id, **argd):
         """
         request - The request that was sent by the HTTPServer.
@@ -176,6 +179,7 @@ class RequestSerializer(component):
         """
         super(RequestSerializer, self).__init__(**argd)
         self.request = request
+        print "REQUEST", request
         self.signal = None
         self.batch_id = batch_id
         self.request['batch'] = self.batch_id
@@ -186,6 +190,8 @@ class RequestSerializer(component):
         self.bundle = None
         
     def main(self):
+        myjid = cat.getcat().retrieveValue("MYJID")
+        self.ThisJID = myjid
         self.ToJID = ExtractJID(self.request)
         info('request for [%s], batch %s', _logger_suffix, self.request['REQUEST_URI'], self.batch_id)
         
@@ -275,8 +281,10 @@ class RequestSerializer(component):
         The message will be sent out to the interface to be sent to the peer.
         """
         print "MAKING MESSAGE", self.ThisJID, self.ToJID, "chat"
-        hMessage = Message(self.ThisJID, self.ToJID,
-                           type=u'chat', stanza_id=generate_unique())
+        m = Message(unicode(self.ThisJID), 
+                           unicode(self.ToJID),
+                           type=u'chat',
+                           stanza_id=generate_unique())
             
         body = simplejson.dumps(serializable)
         debug_out = simplejson.dumps(serializable, indent=2, sort_keys=True)
@@ -284,19 +292,43 @@ class RequestSerializer(component):
         body = zlib.compress(body)
         body = base64.encodestring(body)
         body = unicode(body)
-        hMessage.bodies.append(Body(body))
+        m.bodies.append(Body(body))
         
-        hMessage.thread = Thread(self.batch_id)
-        print "MESSAGE MADE:", repr(hMessage)
-        return hMessage
+#        m.thread = Thread(self.batch_id)
+        print "MESSAGE MADE:", repr(m)
+        return m
     
     def sendMessage(self, serializable):
         """This convenience function will make a message and then send it out via
         the outbox."""
-        print "SENDING MESSAGE", serializable
-        serialised = self.makeMessage(serializable)
-        print "SERIALISED", serialised
-        self.send(serialised, 'outbox')
+        if True:
+            print "IGNORING USUAL STEPS, USING HEADSTOCK SIMPLECHAT CODE"
+
+            print "FROM",self.ThisJID, "TO", self.ToJID
+            print "MESSAGE", repr(serializable)
+            m = Message(unicode(self.ThisJID),
+                        unicode(self.ToJID), 
+                        type=u'chat',
+                        stanza_id=generate_unique())
+            m.event = Event.composing # note the composing event status
+            m.bodies.append(Body(unicode(repr(serializable))))
+            self.send(m, "outbox")
+
+            # Right after we sent the first message
+            # we send another one reseting the event status
+
+            m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
+                        type=u'chat', stanza_id=generate_unique())
+
+            self.send(m, "outbox")
+
+
+        else:
+            print "SENDING MESSAGE", serializable
+
+            serialised = self.makeMessage(serializable)
+            print "SERIALISED", serialised
+            self.send(serialised, 'outbox')
         
 class ResponseDeserializer(component):
     """
