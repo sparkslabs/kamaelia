@@ -607,11 +607,11 @@ class Client(component):
                                            ("rosterdisp", "outbox"): ("xmpp", "forward"),                  # SAME
 
                                            # Discovery
-                                           ("xmpp", "%s.query" % XMPP_DISCO_INFO_NS): ("discodisp", "features.inbox"),
-                                           ("discodisp", "log"): ('logger', "inbox"),
-                                           ("discohandler", "features-disco"): ('discodisp', "features.forward"),
-                                           ("discodisp", "out.features.result"): ('discohandler', "features.result"),
-                                           ("discodisp", "outbox"): ("xmpp", "forward"),
+                                           ("xmpp", "%s.query" % XMPP_DISCO_INFO_NS): ("discodisp", "features.inbox"),# SAME
+                                           ("discodisp", "log"): ('logger', "inbox"),                                 # SAME
+                                           ("discohandler", "features-disco"): ('discodisp', "features.forward"),     # SAME
+                                           ("discodisp", "out.features.result"): ('discohandler', "features.result"), # SAME
+                                           ("discodisp", "outbox"): ("xmpp", "forward"),                              # SAME
 
                                            # Message
                                            ("xmpp", "%s.message" % XMPP_CLIENT_NS): ("msgdisp", "inbox"),
