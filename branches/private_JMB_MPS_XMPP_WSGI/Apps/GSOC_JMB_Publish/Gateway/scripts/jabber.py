@@ -320,8 +320,8 @@ class PresenceHandler(component):
                "control"     : "Shutdown the client stream",
                "subscribe"   : "",
                "unsubscribe" : "",
-'unavailable' : 'Receive notifications when another client becomes unavailable', #notinheadstock
-'available': 'Receive notifications when another client becomes available'}      #notinheadstock
+'unavailable' : 'Receive notifications when another client becomes unavailable', #notinheadstock #unused
+'available': 'Receive notifications when another client becomes available'}      #notinheadstock #unused
     
     Outboxes = {"outbox" : "headstock.api.contact.Presence instance to return to the server",
                 "signal" : "Shutdown signal",
