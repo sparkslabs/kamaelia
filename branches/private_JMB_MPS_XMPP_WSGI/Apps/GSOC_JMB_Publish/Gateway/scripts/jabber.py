@@ -621,11 +621,11 @@ class Client(component):
                                            ("msgdisp", "outbox"): ("xmpp", "forward"),                      # SAME
 
                                            # Activity
-                                           ("xmpp", "%s.query" % XMPP_LAST_NS): ("activitydisp", "inbox"),
-                                           ("activitydisp", "log"): ('logger', "inbox"),
-                                           ("activitydisp", "outbox"): ("xmpp", "forward"),
-                                           ("activityhandler", 'activity-supported'): ('rosterhandler', 'ask-activity'),
-                                           ("rosterhandler", 'activity'): ('activitydisp', 'forward'),
+                                           ("xmpp", "%s.query" % XMPP_LAST_NS): ("activitydisp", "inbox"),   # SAME
+                                           ("activitydisp", "log"): ('logger', "inbox"),                     # SAME
+                                           ("activitydisp", "outbox"): ("xmpp", "forward"),                  # SAME
+                                           ("activityhandler", 'activity-supported'): ('rosterhandler', 'ask-activity'),# SAME
+                                           ("rosterhandler", 'activity'): ('activitydisp', 'forward'),       # SAME
                                            }
                                )
         self.addChildren(self.graph)
