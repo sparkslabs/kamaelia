@@ -236,20 +236,20 @@ class DiscoHandler(component):
         yield self.initComponents()
 
         while 1:
-            while self.dataReady("control"):
+            if self.dataReady("control"):
                 mes = self.recv("control")
                 
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            while self.dataReady("jid"):
+            if  self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
             
             # When this box has some data, it means
             # that the client is bound to the server
             # Let's ask for its supported features then.
-            while self.dataReady("initiate"):
+            if self.dataReady("initiate"):
                 self.recv("initiate")
                 d = FeaturesDiscovery(unicode(self.from_jid), self.to_jid)
                 self.send(d, "features-disco")
