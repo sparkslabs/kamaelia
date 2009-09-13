@@ -152,7 +152,7 @@ class RosterHandler(component):    # Now identical to headstock's simple chat ex
   
             yield 1
 
-class WebMessageHandler(component):
+class WebMessageHandler(component): # NOT USED - REPLACED BY 'Interface' -- from interface import Interface
     Inboxes = {"inbox"    : "headstock.api.contact.Message instance received from a peer",
                "trans_inbox" : "Receive messages from the inbound translator",
                "jid"      : "headstock.api.jid.JID instance received from the server",
@@ -445,20 +445,20 @@ class Client(component):
                "jid"        : "",
                "streamfeat" : "",
                "control"    : "Shutdown the client stream",
-               "http-inbox" : "Receive messages to an HTTP Server",
-               "output" : "Forward messages to the WebMessageHandler"}
+               "http-inbox" : "Receive messages to an HTTP Server",                #notinheadstock
+               "output" : "Forward messages to the WebMessageHandler"}             #notinheadstock
     
     Outboxes = {"outbox"  : "",
                 "forward" : "",
                 "log"     : "",
                 "doauth"  : "",
                 "signal"  : "Shutdown signal",
-                "lw-signal" : "Shutdown signal for WsgiLogWritable",
+                "lw-signal" : "Shutdown signal for WsgiLogWritable",             #notinheadstock
                 "doregistration" : ""}
 
-    def __init__(self, Config):
+    def __init__(self, Config):                 #notinheadstock, perhaps more logical
         super(Client, self).__init__() 
-        self.cfg = Config
+        self.cfg = Config              # notinheadstock
         self.jid = JID(
             Config.xmpp.username,
             Config.xmpp.domain,
@@ -471,8 +471,8 @@ class Client(component):
         self.graph = None
         self.domain = Config.xmpp.domain
         self.usetls = Config.xmpp.usetls
-        self.register = False
-        self.use_std_out = Config.options.xmpp_verbose
+        self.register = False         #notinheadstock - differnet logic-prevents register message
+        self.use_std_out = Config.options.xmpp_verbose    #notinheadstock
 
     def passwordLookup(self, jid):
         return self.password
@@ -515,10 +515,10 @@ class Client(component):
         self.addChildren(sub)
         sub.activate()
         
-        if self.use_std_out:
-            log = Logger(stdout=True, name='XmppLogger')
-        else:
-            log = nullSinkComponent()
+        if self.use_std_out:                             #notinheadstock - unlikely to be an issue
+            log = Logger(stdout=True, name='XmppLogger') #notinheadstock
+        else:                                            #notinheadstock
+            log = nullSinkComponent()                    #notinheadstock
         
         # We pipe everything typed into the console
         # directly to the console backplane so that
@@ -527,6 +527,8 @@ class Client(component):
         # will decide it it's of concern or not.
         Pipeline(ConsoleReader(), PublishTo('CONSOLE')).activate()
 
+        #FIXME: This actually looks potentially a bust (changes class for all new instances)
+        #FIXME: That said, it's in headstock's example, so it shouldn't be a major issue...
         # Add two outboxes ro the ClientSteam to support specific extensions.
         ClientStream.Outboxes["%s.query" % XMPP_IBR_NS] = "Registration"
         ClientStream.Outboxes["%s.query" % XMPP_LAST_NS] = "Activity"
@@ -534,28 +536,29 @@ class Client(component):
 
         self.client = ClientStream(self.jid, self.passwordLookup, use_tls=self.usetls)
 
-        self.graph = Graphline(client = self,
-                               console = SubscribeTo('CONSOLE'),
-                               logger = log,
-                               tcp = TCPClient(self.server, self.port),
-                               xmlparser = XMLIncrParser(),
-                               xmpp = self.client,
-                               streamerr = StreamError(),
-                               saslerr = SaslError(),
-                               discohandler = DiscoHandler(self.jid, self.domain),
-                               activityhandler = ActivityHandler(),
-                               rosterhandler = RosterHandler(self.jid),
-                               registerhandler = RegistrationHandler(self.username, self.password),
-                               presencehandler = PresenceHandler(),
-                               presencedisp = PresenceDispatcher(),
-                               rosterdisp = RosterDispatcher(),
-                               msgdisp = MessageDispatcher(),
-                               discodisp = DiscoveryDispatcher(),
-                               activitydisp = ActivityDispatcher(),
-                               registerdisp = RegisterDispatcher(),
-                               pjid = PublishTo("JID"),
-                               pbound = PublishTo("BOUND"),
-                               webhandler=Interface(ThisJID=self.jid),
+        self.graph = Graphline(client = self,                                    # SAME
+                               console = SubscribeTo('CONSOLE'),                 # SAME
+                               logger = log,                                     # SAME*
+                               tcp = TCPClient(self.server, self.port),          # SAME
+                               xmlparser = XMLIncrParser(),                      # SAME
+                               xmpp = self.client,                               # SAME
+                               streamerr = StreamError(),                        # SAME
+                               saslerr = SaslError(),                            # SAME
+                               discohandler = DiscoHandler(self.jid, self.domain),# SAME
+                               activityhandler = ActivityHandler(),              # SAME
+                               rosterhandler = RosterHandler(self.jid),          # SAME
+                               registerhandler = RegistrationHandler(self.username, self.password),              # SAME
+                               # CHANGE (was DummyMessageHander)
+                               presencehandler = PresenceHandler(),              # SAME
+                               presencedisp = PresenceDispatcher(),              # SAME
+                               rosterdisp = RosterDispatcher(),                  # SAME
+                               msgdisp = MessageDispatcher(),                    # SAME
+                               discodisp = DiscoveryDispatcher(),                # SAME
+                               activitydisp = ActivityDispatcher(),              # SAME
+                               registerdisp = RegisterDispatcher(),              # SAME
+                               pjid = PublishTo("JID"),                          # SAME
+                               pbound = PublishTo("BOUND"),                      # SAME
+                               webhandler=Interface(ThisJID=self.jid), # EXTRA (replaces dummy)
 
                                linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
                                            ('console', 'outbox'): ('client', 'control'),
