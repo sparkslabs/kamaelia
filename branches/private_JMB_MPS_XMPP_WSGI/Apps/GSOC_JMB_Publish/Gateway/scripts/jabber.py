@@ -588,15 +588,15 @@ class Client(component):
                                            ("registerdisp", "outbox"): ("xmpp", "forward"),                 # SAME
                                            
                                            # Presence 
-                                           ("xmpp", "%s.presence" % XMPP_CLIENT_NS): ("presencedisp", "inbox"),
-                                           ("presencedisp", "log"): ('logger', "inbox"),
-                                           ("presencedisp", "xmpp.subscribe"): ("presencehandler", "subscribe"),
-                                           ("presencedisp", "xmpp.unsubscribe"): ("presencehandler", "unsubscribe"),
-                                           ("presencehandler", "outbox"): ("presencedisp", "forward"),
-                                           ("presencehandler", "roster"): ("rosterdisp", "forward"),
-                                           ("presencedisp", "outbox"): ("xmpp", "forward"),
-                                           ("presencedisp", "xmpp.available") : ('webhandler', 'xmpp.available'),
-                                           ("presencedisp", 'xmpp.unavailable') : ('webhandler', 'xmpp.unavailable'),
+                                           ("xmpp", "%s.presence" % XMPP_CLIENT_NS): ("presencedisp", "inbox"),       # SAME
+                                           ("presencedisp", "log"): ('logger', "inbox"),                              # SAME
+                                           ("presencedisp", "xmpp.subscribe"): ("presencehandler", "subscribe"),      # SAME
+                                           ("presencedisp", "xmpp.unsubscribe"): ("presencehandler", "unsubscribe"),  # SAME
+                                           ("presencehandler", "outbox"): ("presencedisp", "forward"),                # SAME
+                                           ("presencehandler", "roster"): ("rosterdisp", "forward"),                  # SAME
+                                           ("presencedisp", "outbox"): ("xmpp", "forward"),                           # SAME
+                                           ("presencedisp", "xmpp.available") : ('webhandler', 'xmpp.available'),#DIFFERENT
+                                           ("presencedisp", 'xmpp.unavailable') : ('webhandler', 'xmpp.unavailable'),#DIFFERENT
 
                                            # Roster
                                            ("xmpp", "%s.query" % XMPP_ROSTER_NS): ("rosterdisp", "inbox"),
