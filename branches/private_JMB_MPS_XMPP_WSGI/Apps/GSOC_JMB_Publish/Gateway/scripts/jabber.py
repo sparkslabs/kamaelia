@@ -320,8 +320,8 @@ class PresenceHandler(component):
                "control"     : "Shutdown the client stream",
                "subscribe"   : "",
                "unsubscribe" : "",
-               'unavailable' : 'Receive notifications when another client becomes unavailable',
-               'available': 'Receive notifications when another client becomes available'}
+'unavailable' : 'Receive notifications when another client becomes unavailable', #notinheadstock
+'available': 'Receive notifications when another client becomes available'}      #notinheadstock
     
     Outboxes = {"outbox" : "headstock.api.contact.Presence instance to return to the server",
                 "signal" : "Shutdown signal",
@@ -333,14 +333,14 @@ class PresenceHandler(component):
 
     def main(self):
         while 1:
-            while self.dataReady("control"):
+            if self.dataReady("control"):
                 mes = self.recv("control")
                 
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            while self.dataReady("subscribe"):
+            if self.dataReady("subscribe"):
                 p = self.recv("subscribe")
                 p.swap_jids()
 
@@ -354,7 +354,7 @@ class PresenceHandler(component):
                              type=u'subscribe')
                 self.send(p, "outbox")
                 
-            while self.dataReady("unsubscribe"):
+            if self.dataReady("unsubscribe"):
                 p = self.recv("unsubscribe")
                 p.swap_jids()
                 
@@ -379,12 +379,12 @@ class PresenceHandler(component):
                 p = Presence(from_jid=p.from_jid, to_jid=unicode(p.to_jid),
                              type=u'unavailable')
                 self.send(p, "outbox")
-            while self.dataReady('available'):
-                #print 'Presence handler received:'
-                self.recv('available')
-            while self.dataReady('unavailable'):
-                #print 'Presence handler received:'
-                self.recv('unavailable')
+            if self.dataReady('available'): # Changed to match logic of rest, but #notinheadstock
+                #print 'Presence handler received:'                               #notinheadstock
+                self.recv('available             ')                               #notinheadstock
+            if self.dataReady('unavailable'):                                     #notinheadstock
+                #print 'Presence handler received:'                               #notinheadstock
+                self.recv('unavailable')                                          #notinheadstock
                 
             if not self.anyReady():
                 self.pause()
