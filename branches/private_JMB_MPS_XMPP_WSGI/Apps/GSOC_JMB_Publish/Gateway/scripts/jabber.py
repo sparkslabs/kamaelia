@@ -614,11 +614,11 @@ class Client(component):
                                            ("discodisp", "outbox"): ("xmpp", "forward"),                              # SAME
 
                                            # Message
-                                           ("xmpp", "%s.message" % XMPP_CLIENT_NS): ("msgdisp", "inbox"),
-                                           ("msgdisp", "log"): ('logger', "inbox"),
-                                           ("webhandler", "xmpp.outbox"): ('msgdisp', 'forward'),
-                                           ("msgdisp", "xmpp.chat"): ('webhandler', 'xmpp.inbox'),
-                                           ("msgdisp", "outbox"): ("xmpp", "forward"),
+                                           ("xmpp", "%s.message" % XMPP_CLIENT_NS): ("msgdisp", "inbox"),   # SAME
+                                           ("msgdisp", "log"): ('logger', "inbox"),                         # SAME
+                                           ("msgdisp", "xmpp.chat"): ('webhandler', 'xmpp.inbox'),          # DIFFERENT
+                                           ("webhandler", "xmpp.outbox"): ('msgdisp', 'forward'),           # DIFFERENT
+                                           ("msgdisp", "outbox"): ("xmpp", "forward"),                      # SAME
 
                                            # Activity
                                            ("xmpp", "%s.query" % XMPP_LAST_NS): ("activitydisp", "inbox"),
