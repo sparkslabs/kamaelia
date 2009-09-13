@@ -194,6 +194,9 @@ class RequestSerializer(component):
             yield 1 # give the register signal time to get to the interface
             self.sendMessage(self.request)
             debug('User found.  Initial message sent for batch %s.', _logger_suffix, self.batch_id)
+            print "USER ID", self.ToJID
+            print "REQUEST", self.request
+
         else:
             #FIXME:  Note that sometimes the gateway won't receive a message when
             #it first logs in that a user is available.  It's really better to double
@@ -271,6 +274,7 @@ class RequestSerializer(component):
         
         The message will be sent out to the interface to be sent to the peer.
         """
+        print "MAKING MESSAGE"
         hMessage = Message(self.ThisJID, self.ToJID,
                            type=u'chat', stanza_id=generate_unique())
             
@@ -283,13 +287,16 @@ class RequestSerializer(component):
         hMessage.bodies.append(Body(body))
         
         hMessage.thread = Thread(self.batch_id)
-        
+        print "MESSAGE MADE:", repr(hMessage)
         return hMessage
     
     def sendMessage(self, serializable):
         """This convenience function will make a message and then send it out via
         the outbox."""
-        self.send(self.makeMessage(serializable), 'outbox')
+        print "SENDING MESSAGE", serializable
+        serialised = self.makeMessage(serializable)
+        print "SERIALISED", serialised
+        self.send(serialised, 'outbox')
         
 class ResponseDeserializer(component):
     """
@@ -454,16 +461,26 @@ class TranslatorController(component):
 def Translator(request, mtr=None, rtm=None):
     batch = unicode(numId())
     if not mtr:
+        print "MAKING RequestSerializer"
         mtr = ResponseDeserializer(batch)
     if not rtm:
+        print "MAKING RequestSerializer"
         rtm = RequestSerializer(request, batch)
-        
+
+    X = TranslatorController()
+    print "MTR", mtr
+    print "RTM", rtm
+    print "BPLANE_INBOX", BPLANE_INBOX
+    print "BPLANE_CONTROL", BPLANE_CONTROL
+
+    print "TranslatorController", X
+
     trans = Graphline(
         mtr=mtr,
         rtm=rtm,
         interface_in=PublishTo(BPLANE_INBOX),
         interface_signal=PublishTo(BPLANE_CONTROL),
-        controller=TranslatorController(),
+            controller=X,
         linkages={
             #These are the boxes that the HTTPServer will use
             ('self', 'inbox') : ('rtm', 'inbox'),
@@ -488,8 +505,11 @@ def Translator(request, mtr=None, rtm=None):
     )
     
     rtm.bundle = weakref.ref(trans) #use a weakref to prevent circular references
-    
+    print rtm.bundle
+    print trans
+
     return trans
+
 
 if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer

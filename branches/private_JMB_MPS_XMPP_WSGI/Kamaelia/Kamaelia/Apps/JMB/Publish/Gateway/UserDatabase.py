@@ -27,11 +27,13 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, cre
 
 class BaseUser(object):
     def __init__(self, jid, url_prefix, active=False):
+        print "BaseUser.__init__"
         self.jid = jid
         self.url_prefix = url_prefix
         self.active = active
         
     def __repr__(self):
+        print "BaseUser.__repr__"
         return '<User jid=%s, url_prefix=%s>' % (self.jid, self.url_prefix)
     
 class User(BaseUser):
@@ -41,9 +43,12 @@ class ActiveUser(BaseUser):
     pass
 
 def getUserTable(meta, tablename='users'):
-    return Table(tablename, meta,
+    print "getUserTable"
+    X = Table(tablename, meta,
                 Column('id', Integer, primary_key=True),
                 Column('jid', Unicode(50)),
                 Column('url_prefix', Unicode(10)),
                 Column('active', Boolean())
     )
+    print "getUserTable", X
+    return X

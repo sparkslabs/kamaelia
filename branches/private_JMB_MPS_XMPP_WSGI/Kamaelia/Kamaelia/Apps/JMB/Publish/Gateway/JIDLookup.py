@@ -106,7 +106,7 @@ def _getUser(jid_text, session):
     FBJ = Q.filter_by(jid=jid_text)
     sys.stderr.write("_getUser.3"+repr(FBJ)+"\n")
     O  = FBJ.one()
-    sys.stderr.write("_getUser.3"+repr(O)+"\n")
+    sys.stderr.write("_getUser.4"+repr(O)+"\n")
     return O
 #    return session.query(User).filter_by(jid=jid_text).one()
 
@@ -143,6 +143,7 @@ def connectToDB(Config, **argd):
         _users = getUserTable(_meta)
         print "Also There"
         _meta.create_all()
+        print "_meta", _meta
         print "Also here"
         mapper(User, _users)
         
