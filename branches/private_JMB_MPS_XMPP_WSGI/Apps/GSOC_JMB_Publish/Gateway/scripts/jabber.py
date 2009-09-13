@@ -409,14 +409,14 @@ class RegistrationHandler(component):
 
     def main(self):
         while 1:
-            while self.dataReady("control"):
+            if self.dataReady("control"):
                 mes = self.recv("control")
                 
                 if isinstance(mes, shutdownMicroprocess) or isinstance(mes, producerFinished):
                     self.send(producerFinished(), "signal")
                     break
 
-            while self.dataReady("inbox"):
+            if self.dataReady("inbox"):
                 r = self.recv('inbox')
                 if r.registered:
                     print "'%s' is already a registered username." % self.username
@@ -431,7 +431,7 @@ class RegistrationHandler(component):
                         r.infos[u'password'] = self.password
                         self.send(r, 'outbox')
                 
-            while self.dataReady("error"):
+            if self.dataReady("error"):
                 r = self.recv('error')
                 print r.error
 
