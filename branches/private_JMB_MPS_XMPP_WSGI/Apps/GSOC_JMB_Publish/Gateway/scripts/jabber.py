@@ -560,72 +560,73 @@ class Client(component):
                                pbound = PublishTo("BOUND"),                      # SAME
                                webhandler=Interface(ThisJID=self.jid), # EXTRA (replaces dummy)
 
-                               linkages = {('xmpp', 'terminated'): ('client', 'inbox'),                       # SAME
-                                           ('console', 'outbox'): ('client', 'control'),                      # SAME
-                                           ('client', 'forward'): ('xmpp', 'forward'),                        # SAME
-                                           ('client', 'outbox'): ('tcp', 'inbox'),                            # SAME
-                                           ('client', 'signal'): ('tcp', 'control'),                          # SAME
-                                           ("tcp", "outbox") : ("xmlparser", "inbox"),                        # SAME
-                                           ("xmpp", "starttls") : ("tcp", "makessl"),                         # SAME
-                                           ("tcp", "sslready") : ("xmpp", "tlssuccess"),                      # SAME
-                                           ("xmlparser", "outbox") : ("xmpp" , "inbox"),                      # SAME
-                                           ("xmpp", "outbox") : ("tcp" , "inbox"),                            # SAME
-                                           ("xmpp", "reset"): ("xmlparser", "reset"),                         # SAME
-                                           ("client", "log"): ("logger", "inbox"),                            # SAME
-                                           ("xmpp", "log"): ("logger", "inbox"),                              # SAME
-                                           ("xmpp", "jid"): ("pjid", "inbox"),                                # SAME
-                                           ("xmpp", "bound"): ("pbound", "inbox"),                            # SAME
-                                           ("xmpp", "features"): ("client", "streamfeat"),                    # SAME
-                                           ("client", "doauth"): ("xmpp", "auth"),                            # SAME
+                                             # First set same as headstock simplechat example
+                               linkages = {('xmpp', 'terminated'): ('client', 'inbox'),
+                                           ('console', 'outbox'): ('client', 'control'),
+                                           ('client', 'forward'): ('xmpp', 'forward'),
+                                           ('client', 'outbox'): ('tcp', 'inbox'),
+                                           ('client', 'signal'): ('tcp', 'control'),
+                                           ("tcp", "outbox") : ("xmlparser", "inbox"),
+                                           ("xmpp", "starttls") : ("tcp", "makessl"),
+                                           ("tcp", "sslready") : ("xmpp", "tlssuccess"),
+                                           ("xmlparser", "outbox") : ("xmpp" , "inbox"),
+                                           ("xmpp", "outbox") : ("tcp" , "inbox"),
+                                           ("xmpp", "reset"): ("xmlparser", "reset"),
+                                           ("client", "log"): ("logger", "inbox"),
+                                           ("xmpp", "log"): ("logger", "inbox"),
+                                           ("xmpp", "jid"): ("pjid", "inbox"),
+                                           ("xmpp", "bound"): ("pbound", "inbox"),
+                                           ("xmpp", "features"): ("client", "streamfeat"),
+                                           ("client", "doauth"): ("xmpp", "auth"),
                                            
-                                           # Registration
-                                           ("xmpp", "%s.query" % XMPP_IBR_NS): ("registerdisp", "inbox"),   # SAME
-                                           ("registerdisp", "log"): ('logger', "inbox"),                    # SAME
-                                           ("registerdisp", "xmpp.error"): ("registerhandler", "error"),    # SAME
-                                           ("registerdisp", "xmpp.result"): ("registerhandler", "inbox"),   # SAME
-                                           ("registerhandler", "outbox"): ("registerdisp", "forward"),      # SAME
-                                           ("client", "doregistration"): ("registerdisp", "forward"),       # SAME
-                                           ("registerdisp", "outbox"): ("xmpp", "forward"),                 # SAME
+                                           # Registration - Same as headstock simplechat example
+                                           ("xmpp", "%s.query" % XMPP_IBR_NS): ("registerdisp", "inbox"),
+                                           ("registerdisp", "log"): ('logger', "inbox"),
+                                           ("registerdisp", "xmpp.error"): ("registerhandler", "error"),
+                                           ("registerdisp", "xmpp.result"): ("registerhandler", "inbox"),
+                                           ("registerhandler", "outbox"): ("registerdisp", "forward"),
+                                           ("client", "doregistration"): ("registerdisp", "forward"),
+                                           ("registerdisp", "outbox"): ("xmpp", "forward"),
                                            
-                                           # Presence 
-                                           ("xmpp", "%s.presence" % XMPP_CLIENT_NS): ("presencedisp", "inbox"),       # SAME
-                                           ("presencedisp", "log"): ('logger', "inbox"),                              # SAME
-                                           ("presencedisp", "xmpp.subscribe"): ("presencehandler", "subscribe"),      # SAME
-                                           ("presencedisp", "xmpp.unsubscribe"): ("presencehandler", "unsubscribe"),  # SAME
-                                           ("presencehandler", "outbox"): ("presencedisp", "forward"),                # SAME
-                                           ("presencehandler", "roster"): ("rosterdisp", "forward"),                  # SAME
-                                           ("presencedisp", "outbox"): ("xmpp", "forward"),                           # SAME
-                                           ("presencedisp", "xmpp.available") : ('webhandler', 'xmpp.available'),#DIFFERENT
-                                           ("presencedisp", 'xmpp.unavailable') : ('webhandler', 'xmpp.unavailable'),#DIFFERENT
+                                           # Presence - DIFFERENCES FROM HEADSTOCK SIMPLE CHAT EXAMPLE NOTED BELOW.
+                                           ("xmpp", "%s.presence" % XMPP_CLIENT_NS): ("presencedisp", "inbox"),
+                                           ("presencedisp", "log"): ('logger', "inbox"),
+                                           ("presencedisp", "xmpp.subscribe"): ("presencehandler", "subscribe"),
+                                           ("presencedisp", "xmpp.unsubscribe"): ("presencehandler", "unsubscribe"),
+                                           ("presencehandler", "outbox"): ("presencedisp", "forward"),
+                                           ("presencehandler", "roster"): ("rosterdisp", "forward"),
+                                           ("presencedisp", "outbox"): ("xmpp", "forward"),
+                                           ("presencedisp", "xmpp.available") : ('webhandler', 'xmpp.available'),# ADDITION
+                                           ("presencedisp", 'xmpp.unavailable') : ('webhandler', 'xmpp.unavailable'),# ADDITION
 
-                                           # Roster
-                                           ("xmpp", "%s.query" % XMPP_ROSTER_NS): ("rosterdisp", "inbox"), # SAME
-                                           ("rosterdisp", "log"): ('logger', "inbox"),                     # SAME
-                                           ('rosterdisp', 'xmpp.set'): ('rosterhandler', 'pushed'),        # SAME
-                                           ('rosterdisp', 'xmpp.result'): ('rosterhandler', 'inbox'),      # SAME
-                                           ('rosterhandler', 'result'): ('rosterdisp', 'forward'),         # SAME
-                                           ("rosterdisp", "outbox"): ("xmpp", "forward"),                  # SAME
+                                           # Roster - Same as headstock simplechat example
+                                           ("xmpp", "%s.query" % XMPP_ROSTER_NS): ("rosterdisp", "inbox"),
+                                           ("rosterdisp", "log"): ('logger', "inbox"),
+                                           ('rosterdisp', 'xmpp.set'): ('rosterhandler', 'pushed'),
+                                           ('rosterdisp', 'xmpp.result'): ('rosterhandler', 'inbox'),
+                                           ('rosterhandler', 'result'): ('rosterdisp', 'forward'),
+                                           ("rosterdisp", "outbox"): ("xmpp", "forward"),
 
-                                           # Discovery
-                                           ("xmpp", "%s.query" % XMPP_DISCO_INFO_NS): ("discodisp", "features.inbox"),# SAME
-                                           ("discodisp", "log"): ('logger', "inbox"),                                 # SAME
-                                           ("discohandler", "features-disco"): ('discodisp', "features.forward"),     # SAME
-                                           ("discodisp", "out.features.result"): ('discohandler', "features.result"), # SAME
-                                           ("discodisp", "outbox"): ("xmpp", "forward"),                              # SAME
+                                           # Discovery - Same as headstock simplechat example
+                                           ("xmpp", "%s.query" % XMPP_DISCO_INFO_NS): ("discodisp", "features.inbox"),
+                                           ("discodisp", "log"): ('logger', "inbox"),
+                                           ("discohandler", "features-disco"): ('discodisp', "features.forward"),
+                                           ("discodisp", "out.features.result"): ('discohandler', "features.result"),
+                                           ("discodisp", "outbox"): ("xmpp", "forward"),
 
-                                           # Message
-                                           ("xmpp", "%s.message" % XMPP_CLIENT_NS): ("msgdisp", "inbox"),   # SAME
-                                           ("msgdisp", "log"): ('logger', "inbox"),                         # SAME
-                                           ("msgdisp", "xmpp.chat"): ('webhandler', 'xmpp.inbox'),          # DIFFERENT
-                                           ("webhandler", "xmpp.outbox"): ('msgdisp', 'forward'),           # DIFFERENT
-                                           ("msgdisp", "outbox"): ("xmpp", "forward"),                      # SAME
+                                           # Message - DIFFERENCES FROM HEADSTOCK SIMPLE CHAT EXAMPLE NOTED BELOW.
+                                           ("xmpp", "%s.message" % XMPP_CLIENT_NS): ("msgdisp", "inbox"),
+                                           ("msgdisp", "log"): ('logger', "inbox"),
+                                           ("msgdisp", "xmpp.chat"): ('webhandler', 'xmpp.inbox'),          # CHANGE
+                                           ("webhandler", "xmpp.outbox"): ('msgdisp', 'forward'),           # CHANGE
+                                           ("msgdisp", "outbox"): ("xmpp", "forward"),
 
-                                           # Activity
-                                           ("xmpp", "%s.query" % XMPP_LAST_NS): ("activitydisp", "inbox"),   # SAME
-                                           ("activitydisp", "log"): ('logger', "inbox"),                     # SAME
-                                           ("activitydisp", "outbox"): ("xmpp", "forward"),                  # SAME
-                                           ("activityhandler", 'activity-supported'): ('rosterhandler', 'ask-activity'),# SAME
-                                           ("rosterhandler", 'activity'): ('activitydisp', 'forward'),       # SAME
+                                           # Activity - Same as headstock simplechat example
+                                           ("xmpp", "%s.query" % XMPP_LAST_NS): ("activitydisp", "inbox"),
+                                           ("activitydisp", "log"): ('logger', "inbox"),
+                                           ("activitydisp", "outbox"): ("xmpp", "forward"),
+                                           ("activityhandler", 'activity-supported'): ('rosterhandler', 'ask-activity'),
+                                           ("rosterhandler", 'activity'): ('activitydisp', 'forward'),
                                            }
                                )
         self.addChildren(self.graph)
