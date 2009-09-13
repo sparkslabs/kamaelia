@@ -186,10 +186,11 @@ class WebMessageHandler(component):
 
             if self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
-            
-            [self.send(msg, 'trans_outbox') for msg in self.Inbox('inbox')]
-            [self.send(msg, 'outbox') for msg in self.Inbox('trans_inbox')]
-                    
+
+            # Assumes that messages to/from translator are already fully formed headstock messages. (maybe valid)
+            for msg in self.Inbox('inbox'):       self.send(msg, 'trans_outbox')
+            for msg in self.Inbox('trans_inbox'): self.send(msg, 'outbox')
+
             if not self.anyReady():
                 self.pause()
   
