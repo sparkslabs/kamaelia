@@ -579,13 +579,13 @@ class Client(component):
                                            ("client", "doauth"): ("xmpp", "auth"),                            # SAME
                                            
                                            # Registration
-                                           ("xmpp", "%s.query" % XMPP_IBR_NS): ("registerdisp", "inbox"),
-                                           ("registerdisp", "log"): ('logger', "inbox"),
-                                           ("registerdisp", "xmpp.error"): ("registerhandler", "error"),
-                                           ("registerdisp", "xmpp.result"): ("registerhandler", "inbox"),
-                                           ("registerhandler", "outbox"): ("registerdisp", "forward"),
-                                           ("client", "doregistration"): ("registerdisp", "forward"),
-                                           ("registerdisp", "outbox"): ("xmpp", "forward"),
+                                           ("xmpp", "%s.query" % XMPP_IBR_NS): ("registerdisp", "inbox"),   # SAME
+                                           ("registerdisp", "log"): ('logger', "inbox"),                    # SAME
+                                           ("registerdisp", "xmpp.error"): ("registerhandler", "error"),    # SAME
+                                           ("registerdisp", "xmpp.result"): ("registerhandler", "inbox"),   # SAME
+                                           ("registerhandler", "outbox"): ("registerdisp", "forward"),      # SAME
+                                           ("client", "doregistration"): ("registerdisp", "forward"),       # SAME
+                                           ("registerdisp", "outbox"): ("xmpp", "forward"),                 # SAME
                                            
                                            # Presence 
                                            ("xmpp", "%s.presence" % XMPP_CLIENT_NS): ("presencedisp", "inbox"),
