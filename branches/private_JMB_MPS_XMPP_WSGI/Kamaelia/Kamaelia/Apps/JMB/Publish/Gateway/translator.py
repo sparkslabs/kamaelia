@@ -167,7 +167,7 @@ class RequestSerializer(component):
     Outboxes = {'outbox' : 'Send messages to the Interface',
                 'signal' : 'Send signals',}
     
-    ThisJID = u'amnorvend_gateway@jabber.org'    
+    ThisJID = u'amnorvend_gateway@jabber.org'    #FIXME: BROKEN LIKE A BROKEN THING IN BROKEN VILLE ON BROKEN DAY
     def __init__(self, request, batch_id, **argd):
         """
         request - The request that was sent by the HTTPServer.
@@ -274,7 +274,7 @@ class RequestSerializer(component):
         
         The message will be sent out to the interface to be sent to the peer.
         """
-        print "MAKING MESSAGE"
+        print "MAKING MESSAGE", self.ThisJID, self.ToJID, "chat"
         hMessage = Message(self.ThisJID, self.ToJID,
                            type=u'chat', stanza_id=generate_unique())
             
