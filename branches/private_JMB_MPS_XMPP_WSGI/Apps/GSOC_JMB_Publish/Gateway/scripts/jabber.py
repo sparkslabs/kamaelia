@@ -122,16 +122,16 @@ class RosterHandler(component):
                     self.send(producerFinished(), "signal")
                     break
 
-            while self.dataReady("jid"):
+            if self.dataReady("jid"):
                 self.from_jid = self.recv('jid')
             
-            while self.dataReady("pushed"):
+            if self.dataReady("pushed"):
                 roster = self.recv('pushed')
                 for nodeid in roster.items:
                     self.send(Roster(from_jid=self.from_jid, to_jid=nodeid,
                                      type=u'result', stanza_id=generate_unique()), 'result')
                 
-            while self.dataReady("inbox"):
+            if self.dataReady("inbox"):
                 roster = self.recv("inbox")
                 self.roster = roster
                 print "Your contacts:"
@@ -139,7 +139,7 @@ class RosterHandler(component):
                     contact = roster.items[nodeid]
                     print "  ", contact.jid
                     
-            while self.dataReady('ask-activity'):
+            if self.dataReady('ask-activity'):
                 self.recv('ask-activity')
                 if self.roster:
                     for nodeid in self.roster.items:
@@ -436,7 +436,7 @@ class RegistrationHandler(component):
 
             if not self.anyReady():
                 self.pause()
-  
+
             yield 1
 
 class Client(component):
