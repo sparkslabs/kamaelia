@@ -1,7 +1,13 @@
 #!/usr/bin/python
 
-import time
 import sys
+import time
+import re
+import Axon
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.DataSource import DataSource
+from Kamaelia.Util.Console import ConsoleEchoer
+
 
 def follow(fname):
     f = file(fname)
@@ -23,7 +29,6 @@ if 0:
     printer(g)
 
 if 1:
-    import Axon
     class BlockingProducer(Axon.ThreadedComponent.threadedcomponent):
         g = None
         def main(self):
@@ -46,9 +51,6 @@ if 1:
                 self.send(Axon.Ipc.producerFinished(), "signal")
 
 if 0:
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    from Kamaelia.Util.Console import ConsoleEchoer
-
     Pipeline(
         BlockingProducer(g = lambda : follow("somefile.txt")),
         ConsoleEchoer(),
@@ -74,21 +76,111 @@ def blockingProducer(GF):
         return BlockingProducer(g= lambda : GF(*argv,**argd))
     return replacement
 
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Util.Console import ConsoleEchoer
+if 0:
+    @blockingProducer
+    def follow(fname):
+        f = file(fname)
+        f.seek(0,2) # go to the end
+        while True:
+            l = f.readline()
+            if not l: # no data
+                time.sleep(.1)
+            else:
+                yield l
 
-@blockingProducer
-def follow(fname):
-    f = file(fname)
-    f.seek(0,2) # go to the end
-    while True:
-        l = f.readline()
-        if not l: # no data
-            time.sleep(.1)
+    Pipeline(
+        follow("somefile.txt"),
+        ConsoleEchoer(),
+    ).run()
+
+if 0:
+    def grep(lines, pattern):
+        regex = re.compile(pattern)
+        while 1:
+            for l in lines():
+                if regex.search(l):
+                    yield l
+            yield
+
+    def source():
+        lines = [
+           "hello",
+           "world",
+           "game",
+           "over",
+        ]
+        for line in lines:
+            yield line
+
+    for line in grep( source, "l"):
+        if line:
+            print line
         else:
-            yield l
+            break
 
-Pipeline(
-    follow("somefile.txt"),
-    ConsoleEchoer(),
-).run()
+class SourceIt(Axon.Component.component):
+    def main(self):
+        def grep(lines, pattern):
+            regex = re.compile(pattern)
+            while 1:
+                for l in lines():
+                    if regex.search(l):
+                        yield l
+                yield
+
+        while not self.dataReady("control"):
+            for line in grep( self.Inbox, "l"):
+                if line:
+                    print line
+                else:
+                    break
+            yield
+
+        if self.dataReady("control"):
+            self.send(self.recv("control"), "signal")
+        else:
+            self.send(Axon.Ipc.producerFinished(), "signal")
+
+if 0:
+    Pipeline(
+        DataSource([ "hello", "world", "game", "over"] ),
+        SourceIt(),
+    ).run()
+
+def source():
+    for data in ["a","b","c"]:
+        print data
+
+def source2():
+    for data in ["a","b","c"]:
+        print data
+
+def myWrapper(F):
+    def myFunc(*argv, **argd):
+        print "myFunc", F, argv, argd
+        argv = (source,) + argv
+        F(*argv, **argd)
+    return myFunc
+
+def myWrapper2(F):
+    def myFunc(*argv, **argd):
+        print "myFunc", F, argv, argd
+        argv = (source,) + argv[1:]
+        F(*argv, **argd)
+    return myFunc
+
+def myWrapper3(F):
+    def myFunc(*argv, **argd):
+        print "myFunc", F, argv, argd
+        if argv[0] == None:
+            argv = (source,) + argv[1:]
+        F(*argv, **argd)
+    return myFunc
+
+def mockGrep(lines, pattern):
+    print "mockGrep", lines, pattern
+
+# myWrapper(mockGrep)("l")
+# myWrapper2(mockGrep)(None, "l")
+myWrapper3(mockGrep)(None, "l")
+myWrapper3(mockGrep)(source2, "l")
