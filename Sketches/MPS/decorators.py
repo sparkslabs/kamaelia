@@ -89,7 +89,6 @@ def grep(lines, pattern):
 @TransformerGenComponent
 def printer(lines):
     "To stop this generator, you need to call it's .stop() method. The wrapper could do this"
-    print "Hello"
     while 1:
         for line in lines():
             sys.stdout.write(line)
