@@ -5,8 +5,6 @@ import time
 import re
 import Axon
 from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Util.DataSource import DataSource
-from Kamaelia.Util.Console import ConsoleEchoer
 
 class BlockingProducer(Axon.ThreadedComponent.threadedcomponent):
     g = None
