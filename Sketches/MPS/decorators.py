@@ -77,23 +77,6 @@ def blockingProducer(GF):
     return replacement
 
 if 0:
-    @blockingProducer
-    def follow(fname):
-        f = file(fname)
-        f.seek(0,2) # go to the end
-        while True:
-            l = f.readline()
-            if not l: # no data
-                time.sleep(.1)
-            else:
-                yield l
-
-    Pipeline(
-        follow("somefile.txt"),
-        ConsoleEchoer(),
-    ).run()
-
-if 0:
     def grep(lines, pattern):
         regex = re.compile(pattern)
         while 1:
@@ -118,6 +101,12 @@ if 0:
         else:
             break
 
+if 0:
+    Pipeline(
+        DataSource([ "hello", "world", "game", "over"] ),
+        SourceIt(),
+    ).run()
+
 class SourceIt(Axon.Component.component):
     def main(self):
         def grep(lines, pattern):
@@ -140,47 +129,88 @@ class SourceIt(Axon.Component.component):
             self.send(self.recv("control"), "signal")
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
+if 0:
+    def myWrapper3(F):
+        def source():
+            for data in ["a","b","c"]:
+                print data
+        def myFunc(*argv, **argd):
+            print "myFunc", F, argv, argd
+            if argv[0] == None:
+                argv = (source,) + argv[1:]
+            F(*argv, **argd)
+        return myFunc
 
+    def source2():
+        for data in ["a","b","c"]:
+            print data
+
+    @myWrapper3
+    def mockGrep(lines, pattern):
+        print "mockGrep", lines, pattern
+
+if 0:
+    mockGrep(None, "l")
+    mockGrep(source2, "l")
+
+def TransformerGenComponent(GF):
+    class SourceIt(Axon.Component.component):
+        def __init__(self, *argv, **argd):
+            self.argv = argv
+            self.argd = argd
+            self.F = GF
+            super(SourceIt, self).__init__()
+        def main(self):
+            F = self.F
+            argv = self.argv
+            if argv[0] == None:
+                argv = (self.Inbox,) + argv[1:]
+
+            argd = self.argd
+
+            gen = F( *argv, **argd )
+            while not self.dataReady("control"):
+                for line in gen:
+                    if line:
+                        self.send(line, "outbox")
+                    else:
+                        break
+                yield
+
+            if self.dataReady("control"):
+                self.send(self.recv("control"), "signal")
+            else:
+                self.send(Axon.Ipc.producerFinished(), "signal")
+    return SourceIt
+
+@blockingProducer
+def follow(fname):
+    f = file(fname)
+    f.seek(0,2) # go to the end
+    while True:
+        l = f.readline()
+        if not l: # no data
+            time.sleep(.1)
+        else:
+            yield l
+
+@TransformerGenComponent
+def grep(lines, pattern):
+    regex = re.compile(pattern)
+    while 1:
+        for l in lines():
+            if regex.search(l):
+                yield l
+        yield
 if 0:
     Pipeline(
         DataSource([ "hello", "world", "game", "over"] ),
-        SourceIt(),
+        grep(None, "o"),
     ).run()
 
-def source():
-    for data in ["a","b","c"]:
-        print data
-
-def source2():
-    for data in ["a","b","c"]:
-        print data
-
-def myWrapper(F):
-    def myFunc(*argv, **argd):
-        print "myFunc", F, argv, argd
-        argv = (source,) + argv
-        F(*argv, **argd)
-    return myFunc
-
-def myWrapper2(F):
-    def myFunc(*argv, **argd):
-        print "myFunc", F, argv, argd
-        argv = (source,) + argv[1:]
-        F(*argv, **argd)
-    return myFunc
-
-def myWrapper3(F):
-    def myFunc(*argv, **argd):
-        print "myFunc", F, argv, argd
-        if argv[0] == None:
-            argv = (source,) + argv[1:]
-        F(*argv, **argd)
-    return myFunc
-
-def mockGrep(lines, pattern):
-    print "mockGrep", lines, pattern
-
-# myWrapper(mockGrep)("l")
-# myWrapper2(mockGrep)(None, "l")
-myWrapper3(mockGrep)(None, "l")
-myWrapper3(mockGrep)(source2, "l")
+if 1:
+    Pipeline(
+        follow("somefile.txt"),
+        grep(None, "o"),
+        ConsoleEchoer(),
+    ).run()
