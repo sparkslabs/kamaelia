@@ -503,6 +503,17 @@ class threadedcomponent(Component.component):
        self.threadWakeUp.clear()
        return
 
+
+   def forwardInboxToThread(self, box):
+       while self._nonthread_dataReady(box):
+          if not self.inqueues[box].full():
+               msg = self._nonthread_recv(box)
+               self.inqueues[box].put(msg)
+               self.threadWakeUp.set()     # wake a paused main()
+          else:
+               break
+
+
    def _localmain(self):
        """\
        Do not overide this unless you reimplement the pass through of the boxes
@@ -534,14 +545,13 @@ class threadedcomponent(Component.component):
 
 
           for box in self.inboxes:
-              while self._nonthread_dataReady(box):
-                  if not self.inqueues[box].full():
-                      msg = self._nonthread_recv(box)
-                      self.inqueues[box].put(msg)
-                      self.threadWakeUp.set()     # wake a paused main()
-                  else:
-#                      stuffWaiting = True
-                      break
+              if "control" == box:
+                  continue
+              self.forwardInboxToThread(box)
+
+          if "control" in self.inboxes:
+              self.forwardInboxToThread("control")
+
                   
           for box in self.outboxes:
               
