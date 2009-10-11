@@ -311,7 +311,9 @@ class RequestSerializer(component):
                         type=u'chat',
                         stanza_id=generate_unique())
             m.event = Event.composing # note the composing event status
-            m.bodies.append(Body(unicode(repr(serializable))))
+            
+            m.bodies.append(Body(unicode(simplejson.dumps(serializable))))
+#            m.bodies.append(Body(unicode(repr(serializable))))
             self.send(m, "outbox")
 
             # Right after we sent the first message
