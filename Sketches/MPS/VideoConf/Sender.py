@@ -45,7 +45,12 @@ class VideoCaptureSource(threadedcomponent):
       self.send(self.snapshot, "outbox")
       time.sleep(self.delay)
 
-
+from Kamaelia.Internet.TCPClient import TCPClient
+from Record import AlsaRecorder
+Pipeline(
+    AlsaRecorder(),
+    TCPClient("127.0.0.1", 1501),
+).activate()
 
 Pipeline(
    VideoCaptureSource(),
