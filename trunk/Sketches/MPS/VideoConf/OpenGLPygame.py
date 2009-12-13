@@ -26,7 +26,7 @@ SCREEN = VideoSurface().activate()
 
 
 Pipeline(
-         ReadFileAdaptor("TestMaterial/TrainWindow.drc", readmode="bitrate",
+         ReadFileAdaptor("../TestMaterial/TrainWindow.drc", readmode="bitrate",
                          bitrate = 1000000),
          DiracDecoder(),
          MessageRateLimit(10),
