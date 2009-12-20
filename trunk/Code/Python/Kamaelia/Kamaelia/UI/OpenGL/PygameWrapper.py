@@ -226,6 +226,12 @@ class PygameWrapper(OpenGLComponent):
 
                     self.send([event], "wrapped_events")
             except KeyError: pass # event not wanted
+            except AttributeError:
+                    if not hasattr(event, "hitobjects"):
+                        pass # Means it's probably a keyboard press - or similar - instead (no objects hit)
+                    else:
+                        print "FAIL, Here's why:", event
+                        raise # rethrow if it's not that
 
 
     def frame(self):
