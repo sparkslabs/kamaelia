@@ -122,13 +122,14 @@ class VideoSurface(component):
                  "display_signal" : "Outbox used for sending signals of various kinds to the display service"
                }
         
-    def __init__(self, position=None, size = None):
+    def __init__(self, position=None, size = None,resize=None):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(VideoSurface, self).__init__()
         self.display = None
         
         self.size = size
         self.pixformat = None
+        self.resize = resize
 
         if position is not None:
             self.position = position
@@ -191,9 +192,13 @@ class VideoSurface(component):
                 # request a surface
                 # build the initial request to send to Pygame Display to obtain a surface
                 # but store it away until main() main loop is activated.
+                surfacesize = self.size
+                if self.resize:
+                    surfacesize = self.resize
+
                 dispRequest = { "DISPLAYREQUEST" : True,
                                 "callback" : (self,"callback"),
-                                "size": self.size,
+                                "size": surfacesize,
                                 "position" : self.position
                               }
                 self.send(dispRequest, "display_signal")
@@ -206,6 +211,9 @@ class VideoSurface(component):
             # now render our frame
             image = pygame.image.fromstring(frame['rgb'], frame['size'], "RGB", False)
       
+            if self.resize:
+                image = pygame.transform.scale(image, self.resize)
+
             self.display.blit(image, (0,0))
             self.send({"REDRAW":True, "surface":self.display}, "display_signal")
             
