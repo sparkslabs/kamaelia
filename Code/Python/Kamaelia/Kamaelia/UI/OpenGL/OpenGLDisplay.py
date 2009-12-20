@@ -362,7 +362,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         tracker.registerService("ogl_display", display, "notify")
     setDisplayService = staticmethod(setDisplayService)
 
-    def getDisplayService(tracker=None): # STATIC METHOD
+    def getDisplayService(tracker=None, **argd): # STATIC METHOD
         """\
         Returns any live pygamedisplay registered with the specified (or default)
         tracker, or creates one for the system to use.
@@ -375,7 +375,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             service = tracker.retrieveService("ogl_display")
             return service
         except KeyError:
-            display = OpenGLDisplay()
+            display = OpenGLDisplay(**argd)
             display.activate()
             OpenGLDisplay.setDisplayService(display, tracker)
             service=(display,"notify")
@@ -522,7 +522,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 ident = message.get("objectid")
                 if ident is None:
                     ident = id(message.get("surface", None))
-
+                surface = message.get("surface", None)
                 if ident in self.wrappedsurfaces:
                     self.send(message, self.wrapper_requestcomms[id(surface)])
                 else:
