@@ -3,13 +3,11 @@
 import Axon
 import alsaaudio
 
-class AlsaPlayer(Axon.Component.component):
+class AudioOutput(Axon.Component.component):
     channels = 2
     rate = 44100
     format = alsaaudio.PCM_FORMAT_S16_LE
     periodsize = 160
-    maxloops = 1000000
-    delay = 0.001
     def main(self):
         out = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK)
 
@@ -17,11 +15,8 @@ class AlsaPlayer(Axon.Component.component):
         out.setrate(self.rate)
         out.setformat(self.format)
         out.setperiodsize(self.periodsize)
-        loops = self.maxloops
-
         shutdown = False
         while not shutdown or self.dataReady("inbox"):
-            loops -= 1
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
                 out.write(data)
@@ -31,10 +26,6 @@ class AlsaPlayer(Axon.Component.component):
                     self.send(data, "signal")
                     shutdown = True
             yield 1
-        print "Shutdown :-)"
-
-
-
 
 if __name__ == "__main__":
     import sys
@@ -104,5 +95,5 @@ if __name__ == "__main__":
 
     Pipeline(
         SimpleReader(args["file"]),
-        AlsaPlayer(channels=args["channels"], rate=args["rate"]),
+        AudioOutput(channels=args["channels"], rate=args["rate"]),
     ).run()
