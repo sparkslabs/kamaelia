@@ -25,44 +25,6 @@ class AlsaRecorder(Axon.ThreadedComponent.threadedcomponent):
             if l:
               self.send(data, "outbox")
 
-def parseargs(argv, longopts, longflags):
-    args = {}
-    for k, key in longopts:
-        try:
-            i = argv.index("--"+key)
-            F = longopts[k,key].__class__(argv[i+1])
-            args[key] = F
-            del argv[i+1]
-            del argv[i]
-        except ValueError:
-            try:
-                i = argv.index("-"+k)
-                F = longopts[k,key].__class__(argv[i+1])
-                args[key] = F
-                del argv[i+1]
-                del argv[i]
-            except ValueError:
-                if longopts[k,key] == None:
-                    print "missing argument: --"+key, "-"+k
-                    sys.exit(0)
-                args[key] = longopts[k,key]
-
-    for f,flag in longflags:
-        try:
-            i = argv.index("--"+flag)
-            args[flag] = True
-            del argv[i]
-        except ValueError:
-            try:
-                i = argv.index("-"+f)
-                args[flag] = True
-                del argv[i]
-            except ValueError:
-                args[flag] = False
-
-    rest = [a for a in argv if len(argv)>0 and a[0] != "-"]
-    args["__anon__"] = rest
-    return args
 
 
 if __name__ == "__main__":
@@ -70,6 +32,45 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     
     import sys
+
+    def parseargs(argv, longopts, longflags):
+        args = {}
+        for k, key in longopts:
+            try:
+                i = argv.index("--"+key)
+                F = longopts[k,key].__class__(argv[i+1])
+                args[key] = F
+                del argv[i+1]
+                del argv[i]
+            except ValueError:
+                try:
+                    i = argv.index("-"+k)
+                    F = longopts[k,key].__class__(argv[i+1])
+                    args[key] = F
+                    del argv[i+1]
+                    del argv[i]
+                except ValueError:
+                    if longopts[k,key] == None:
+                        print "missing argument: --"+key, "-"+k
+                        sys.exit(0)
+                    args[key] = longopts[k,key]
+
+        for f,flag in longflags:
+            try:
+                i = argv.index("--"+flag)
+                args[flag] = True
+                del argv[i]
+            except ValueError:
+                try:
+                    i = argv.index("-"+f)
+                    args[flag] = True
+                    del argv[i]
+                except ValueError:
+                    args[flag] = False
+
+        rest = [a for a in argv if len(argv)>0 and a[0] != "-"]
+        args["__anon__"] = rest
+        return args
 
     args = parseargs( sys.argv[1:],
                       { ("f", "file" ): "audio.raw",
