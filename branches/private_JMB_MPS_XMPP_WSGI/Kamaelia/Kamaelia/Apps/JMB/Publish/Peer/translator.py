@@ -119,13 +119,16 @@ The message will be gzipped to be smaller, and will then be base64 encoded to
 prevent any text in the message from invalidating the XML that will be used by
 XMPP.
 """
+import Axon
+from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as cat
+
 from Axon.Component import component
 from Kamaelia.Apps.JMB.Common.IPC import LookupByText, ToText
 from Kamaelia.Apps.JMB.Common.Console import info, debug
 
 from xml.sax.saxutils import unescape, escape
 
-from headstock.api.im import Message, Body, Thread
+from headstock.api.im import Message, Body, Event, Thread
 from headstock.lib.utils import generate_unique
 
 import simplejson
@@ -181,7 +184,11 @@ class RequestDeserializer(component):
     def processInitialMessage(self):
         
         request = self.decodeMessage(self.message)
-        self.batch_id = request['batch']
+        self.batch_id = request.get('batch', 0)
+        if self.batch_id == 0:
+            print "BATCH ID IS UNSET, RETURNING"
+            return
+        print "BATCH ID", self.batch_id 
         self.send(self.batch_id, 'batch')
         sig = request.get('signal')
         if sig:
@@ -195,10 +202,20 @@ class RequestDeserializer(component):
     def decodeMessage(self, msg):
         temp = [str(x) for x in msg.bodies]
         body = ''.join(temp)
-        body = base64.decodestring(body)
-        body = zlib.decompress(body)
-        #print body
-        return simplejson.loads(body)
+        if body:
+            print len(body)
+            print "--------------------------------------"
+            print repr(body)
+            print "--------------------------------------"
+            print "--------------------------------------"
+            print body
+            print "--------------------------------------"
+    #        body = base64.decodestring(body)
+    #        body = zlib.decompress(body)
+            #print body
+            return simplejson.loads(body)
+        else:
+            return {}
     
 class ResponseSerializer(component):
     Inboxes = {
@@ -210,8 +227,8 @@ class ResponseSerializer(component):
         'outbox' : '',
         'signal' : '',
     }
-    ThisJID = u'amnorvend@jabber.org'
-    ToJID = u'amnorvend_gateway@jabber.org'
+    ThisJID = u'kamaelia.testing@googlemail.com'
+    ToJID = u'sparks.m@gmail.com'
     def main(self):
         #wait for the batch ID from the Request Translator
         while not self.dataReady('batch'):
@@ -227,11 +244,13 @@ class ResponseSerializer(component):
                     del response['signal']
                     
                 if response:
-                    self.send(self.makeMessage(response), 'outbox')
+                    self.sendMessage(response, 'outbox')
+#                    self.send(self.makeMessage(response), 'outbox')
                 
             for msg in self.Inbox('control'):
                 self.signal = msg
-                self.send(self.makeMessage({'signal' : type(self.signal).__name__}))
+                self.sendMessage({'signal' : type(self.signal).__name__},"outbox")
+#                self.send(self.makeMessage({'signal' : type(self.signal).__name__}))
                 
             if not self.anyReady() and not self.signal:
                 self.pause()
@@ -241,7 +260,47 @@ class ResponseSerializer(component):
         yield 1
         self.send(self.signal, 'signal')
         #print 'serializer dying!'
-        
+
+    def sendMessage(self, serializable, outbox):
+        if serializable.get('batch') != self.batch_id:
+            serializable['batch'] = self.batch_id
+
+        myjid = cat.getcat().retrieveValue("MYJID")
+        self.ThisJID = myjid
+
+        print "SENDMESSAGE", self.ThisJID, self.ToJID, serializable
+        print "SENDMESSAGE", u'kamaelia.testing@googlemail.com', self.ToJID, serializable
+
+        m = Message(unicode(self.ThisJID),
+                    unicode(self.ToJID), 
+                    type=u'chat',
+                    stanza_id=generate_unique())
+#        m = Message(unicode(u'kamaelia.testing@googlemail.com'),
+#                    unicode(self.ToJID), 
+#                    type=u'chat',
+#                    stanza_id=generate_unique())
+        m.event = Event.composing # note the composing event status
+
+        m.bodies.append(Body(unicode(simplejson.dumps(serializable))))
+        self.send(m, outbox)
+
+        debug_out = simplejson.dumps(serializable, indent=2, sort_keys=True)
+        debug('Outgoing CrossTalk message: %s' % (debug_out), _logger_suffix)
+
+
+        # Right after we sent the first message
+        # we send another one reseting the event status
+
+#        m = Message(unicode(u'kamaelia.testing@googlemail.com'), unicode(self.ToJID), 
+#                    type=u'chat', stanza_id=generate_unique())
+        m = Message(unicode(self.ThisJID), unicode(self.ToJID), 
+                    type=u'chat', stanza_id=generate_unique())
+
+        self.send(m, outbox)
+
+
+
+
     def makeMessage(self, serializable):
         #print serializable
         if serializable.get('batch') != self.batch_id:
@@ -252,7 +311,7 @@ class ResponseSerializer(component):
         text = zlib.compress(text)
         text = base64.encodestring(text)
         text = unicode(text)
-        
+
         msg = Message(self.ThisJID, self.ToJID,
                       type=u'chat', stanza_id=generate_unique())
         msg.bodies.append(Body(text))
@@ -285,7 +344,7 @@ class TranslatorChassis(component):
     responseTranslator = ResponseSerializer
     
     ThisJID = None
-    ToJID = u'amnorvend_gateway@jabber.org'
+    ToJID = u'sparks.m@gmail.com'
     def __init__(self, message, handler_factory, **argd):
         super(TranslatorChassis, self).__init__(**argd)
         self.message = message

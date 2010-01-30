@@ -43,6 +43,9 @@ FIXME
 This should really be made to look more like the gateway's interface in a lot of
 respects.
 """
+import Axon
+from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as cat
+
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 from Kamaelia.Util.Backplane import SubscribeTo
 
@@ -168,6 +171,9 @@ class TransactionManager(threadedadaptivecommscomponent):
         self.jid_subscriber = SubscribeTo('JID')
         self.link((self.jid_subscriber, 'outbox'), (self, 'jid'))
         self.jid_subscriber.activate()
+  
+        myjid = cat.getcat().retrieveValue("MYJID")
+        self.ThisJID = myjid
         
         self.signal = None
         while not self.signal:
