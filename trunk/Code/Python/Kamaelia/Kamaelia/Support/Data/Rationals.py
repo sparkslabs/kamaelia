@@ -77,7 +77,7 @@ greatest common denominator.
 
 For more information on continuous fractions try these:
 - http://mathworld.wolfram.com/ContinuedFraction.html
-- http://ourworld.cs.com/christopherereed/confracs.htm
+- http://sites.google.com/site/christopher3reed/confracs
 - http://www.cut-the-knot.org/do_you_know/fraction.shtml
 - http://www.mcs.surrey.ac.uk/Personal/R.Knott/Fibonacci/cfINTRO.html#real
 """
