@@ -323,6 +323,10 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             for outbox in pidmap[pid]:
                 if not self.outboxes.has_key(outbox):
                     self.addOutbox(outbox)
+        if "default" in pidmap:
+            self.forwardothers = True
+        else:
+            self.forwardothers = False
 
     def errorIndicatorSet(self, packet):  return ord(packet[1]) & 0x80
     def scrambledPacket(self, packet):    return ord(packet[3]) & 0xc0
@@ -380,6 +384,9 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                           for outbox in self.pidmap[ pid ]:
                               self.send(packet, outbox)
                       except KeyError:
+                          if self.forwardothers:
+                              for outbox in self.pidmap[ "default" ]:
+                                  self.send(packet, outbox)
                           pass
 
 
