@@ -364,7 +364,12 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                           buffer = ""
                           continue
                       if i>0:
-                          print "X"
+                          #
+                          # We generally don't enter here when we're taking DVB Data off air.
+                          # IF however we take DVB data from a multicast DVB stream over RTP,
+                          # Then we do.
+                          #
+                          # print "X" # debug code, triggered when taking DVB streams from multicast RTP
                           # if found remove all bytes preceeding that point in the buffers
                           # And try again
                           buffer = buffer[i:]
