@@ -484,27 +484,32 @@ class ERModel2Visualiser(Axon.Component.component):
             if len(item)==0: continue
             if item[0] == "relation":
                 relation = item[1]
-                NODES.append("ADD NODE %s %s auto relation" % (relation["name"],relation["name"]))
+                relationID = "r." + relation["name"]
+                NODES.append("ADD NODE %s %s auto relation" % (relationID,relation["name"]))
                 for entity in relation["entities"]:
-                    LINKS.append("ADD LINK %s %s" % (entity, relation["name"]))
+                    entityID = "e."+entity
+                    LINKS.append("ADD LINK %s %s" % (entityID, relationID))
             if item[0] == "entity":
                 entity = item[1]
                 name = entity["name"]
+                entityID = "e." + name
                 entities[name] = entity
                 supertype = entities[name].get("subtype")
-                NODES.append("ADD NODE %s %s auto entity" % (name,name) )
+                NODES.append("ADD NODE %s %s auto entity" % (entityID,name) )
                 if supertype:
                     if supertype not in supertypes:
                         supertypes[supertype] = True
+                        supertypeID = "e."+supertype
                         isamax += 1
                         NODES.append("ADD NODE ISA%d isa auto isa" % (isamax,) )
-                        LINKS.append("ADD LINK ISA%d %s" % (isamax,supertype) )
-                    LINKS.append("ADD LINK %s ISA%d" % (name,isamax) )
+                        LINKS.append("ADD LINK ISA%d %s" % (isamax,supertypeID) )
+                    LINKS.append("ADD LINK %s ISA%d" % (entityID,isamax) )
                 attributes = entity.get("simpleattributes")
                 if attributes:
                     for attribute in attributes:
-                        NODES.append("ADD NODE %s %s auto attribute" % (attribute,attribute) )
-                        LINKS.append("ADD LINK %s %s" % (name,attribute) )
+                        node_name = name + "." + attribute
+                        NODES.append("ADD NODE %s %s auto attribute" % (node_name,attribute) )
+                        LINKS.append("ADD LINK %s %s" % (entityID,node_name) )
 
         for node in NODES:
             self.send(node, "outbox")
