@@ -205,10 +205,14 @@ def tune_DVB(fe, frequency, feparams={}):
     # Build the tuning parameters - no longer assumes DVB-T
     build_params_type = fe.get_dvbtype()
 
-    params = build_params_type(
-        frequency = frequency * 1000 * 1000,
-        **feparams
-        )
+    if "frequency" not in feparams:
+        params = build_params_type(
+            frequency = frequency * 1000 * 1000,
+            **feparams
+            )
+    else:
+        params = build_params_type(**feparams)
+
     # Start the tuning
     fe.set_frontend(params)
 
@@ -255,6 +259,12 @@ class DVB_Multiplex(threadedcomponent):
     dump to disk. 
     """
     def __init__(self, freq, pids, feparams={},card=0):
+        if freq == 0:
+            if self.feparams.get("frequency", None) is None:
+                 raise ValueError("frequency not given explicitly nor in feparams - must be non-zero")
+            
+            freq = self.feparams.get("frequency", None)/(1000*1000) # Freq has always been defined as MHz not Hz.
+
         self.freq = freq
         self.feparams = feparams
         self.pids = pids
