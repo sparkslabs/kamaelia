@@ -260,10 +260,10 @@ class DVB_Multiplex(threadedcomponent):
     """
     def __init__(self, freq, pids, feparams={},card=0):
         if freq == 0:
-            if self.feparams.get("frequency", None) is None:
+            if feparams.get("frequency", None) is None:
                  raise ValueError("frequency not given explicitly nor in feparams - must be non-zero")
             
-            freq = self.feparams.get("frequency", None)/(1000*1000) # Freq has always been defined as MHz not Hz.
+            freq = feparams.get("frequency", None)/(1000*1000) # Freq has always been defined as MHz not Hz.
 
         self.freq = freq
         self.feparams = feparams
