@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # Copyright (C) 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
 #     All Rights Reserved.
 #
@@ -211,7 +212,7 @@ def parse_channel_config(unparsed_chans):
     chans_by_frequency = {}
 
     for chan in unparsed_chans:
-        name = chan[0]
+        name = chan[0].lower()
         freq_mhz = int(chan[1])/1000000.0    # Frequency in MHz
         frequency = int(chan[1])             # No processing   
         inversion    = getdvb(chan[2], dvb3.frontend.INVERSION_AUTO)
