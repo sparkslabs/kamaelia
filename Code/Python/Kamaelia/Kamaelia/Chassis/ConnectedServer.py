@@ -256,6 +256,7 @@ from Kamaelia.IPC import newCSA, shutdownCSA, socketShutdown, serverShutdown
 from Axon.Ipc import newComponent, shutdownMicroprocess
 
 
+
 class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """
     ServerCore(protocol[,port]) -> new Simple protocol server component
@@ -455,10 +456,13 @@ class SimpleServer(ServerCore):
     def mkProtocolHandler(self, **sock_info):
         return  (self.protocol)()
 
+class FastRestartServer(ServerCore):
+    socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
 # To act as a crutch during getting ready for merge.
 MoreComplexServer = ServerCore
 
-__kamaelia_components__ = ( ServerCore, SimpleServer, )
+__kamaelia_components__ = ( ServerCore, SimpleServer, FastRestartServer, )
 
 
 if __name__ == '__main__':
