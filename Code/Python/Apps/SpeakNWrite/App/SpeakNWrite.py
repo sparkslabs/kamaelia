@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import Axon
 from Axon.STM import Store
@@ -28,11 +29,10 @@ class aggregator(Axon.Component.component):
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 if len(data) == 0:
-                    continue
-                if data == "\\":
+                    pass
+                elif data == "\\":
                     data = data[1:]
                     self.send("\x08", "outbox")
-                    continue
 
                 for C in data:
                     self.send(C, "outbox") # sent
@@ -68,13 +68,13 @@ class Challenger(Axon.Component.component):
             self.send("      "+word+"\n", "outbox")
             self.send("\n", "outbox")
             yield 1
-            set = False
-            while not set:
+
+            while True:
                 try:
                     D = SpokenStore.using("challenge")
                     D["challenge"].set(word)
                     D.commit()
-                    set = True
+                    break
                 except ConcurrentUpdate:
                     yield 1
                 except BusyRetry:
