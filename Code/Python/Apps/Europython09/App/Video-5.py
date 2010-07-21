@@ -1,8 +1,6 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-# To use pygame alpha
-import sys ;
-sys.path.insert(0, "/home/zathras/Documents/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
 
 import time
 import pygame
@@ -39,10 +37,16 @@ class VideoCaptureSource(threadedcomponent):
     self.snapshot = self.camera.get_image()
 
   def main(self):
-    while 1:
+    while not self.dataReady("control"):
       self.capture_one()
       self.send(self.snapshot, "outbox")
       time.sleep(self.delay)
+
+    if self.dataReady("control"):
+        self.send(self.recv("control"), "signal")
+    else:
+        self.send(Axpn.Ipc.producerFinished(),  "signal")
+
 
 
 
