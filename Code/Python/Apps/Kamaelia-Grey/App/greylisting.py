@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 
 import socket
@@ -67,16 +68,34 @@ class GreylistServer(ServerCore):
     port = config["port"]
     class TCPS(TCPServer):
         CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=config["inactivity_timeout"], debug=False)
-    class protocol(GreyListingPolicy):
-        servername = config["servername"]
-        serverid = config["serverid"]
-        smtp_ip = config["smtp_ip"]
-        smtp_port = config["smtp_port"]
-        allowed_senders = config["allowed_senders"]
-        allowed_sender_nets = config["allowed_sender_nets"] # Yes, only class C network style
-        allowed_domains = config["allowed_domains"]
-        whitelisted_triples = config["whitelisted_triples"]
-        whitelisted_nonstandard_triples = config["whitelisted_nonstandard_triples"]
+        
+    # 
+    # What does this code do?
+    # It copies specifically enumerated configuration data
+    # into a dynamically created new class called protocol.
+    #
+    classdict = {}
+
+    for config_attribute in ('servername', 'serverid', 'smtp_ip',
+                             'smtp_port', 'allowed_senders', 'allowed_sender_nets',
+                             'allowed_domains', 'whitelisted_triples', ) :
+        classdict[config_attribute] = getattr(config, config_attribute)
+
+    protocol = type("Protocol", (GreyListingPolicy,) , classdict)
+
+    # The above code replaces the code below. The above code could be
+    # generalised further and made more flexible.
+    if 0:
+        class protocol(GreyListingPolicy):
+            servername = config["servername"]
+            serverid = config["serverid"]
+            smtp_ip = config["smtp_ip"]
+            smtp_port = config["smtp_port"]
+            allowed_senders = config["allowed_senders"]
+            allowed_sender_nets = config["allowed_sender_nets"] # Yes, only class C network style
+            allowed_domains = config["allowed_domains"]
+            whitelisted_triples = config["whitelisted_triples"]
+            whitelisted_nonstandard_triples = config["whitelisted_nonstandard_triples"]
 
 Pipeline(
     PeriodicWakeup(),
