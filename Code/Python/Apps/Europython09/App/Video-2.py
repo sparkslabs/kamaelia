@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-# To use pygame alpha
-import sys ;
-sys.path.insert(0, "/home/zathras/Documents/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
-
-
 import pygame
 import pygame.camera
 pygame.init()
@@ -21,7 +16,7 @@ class VideoCapturePlayer(object):
 
   def __init__(self, **argd):
     self.__dict__.update(**argd)
-    super(VideoCapturePlayer,self).__init__()
+    super(VideoCapturePlayer,self).__init__(**argd)
     self.display = pygame.display.set_mode(self.displaysize)
     self.camera = pygame.camera.Camera(self.device,
                                   self.capturesize)
