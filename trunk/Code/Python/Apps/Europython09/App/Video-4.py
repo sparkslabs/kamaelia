@@ -1,9 +1,5 @@
 #!/usr/bin/python
 
-# To use pygame alpha
-import sys ;
-sys.path.insert(0, "/home/zathras/Documents/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
-
 import time
 import pygame
 import pygame.camera
