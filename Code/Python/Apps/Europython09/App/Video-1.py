@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-# To use pygame alpha on my machine, You probably need to change this
-import sys ;
-sys.path.insert(0, "/home/zathras/Documents/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
-
-
 import pygame
 import pygame.camera
 pygame.init()
