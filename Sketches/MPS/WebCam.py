@@ -5,8 +5,8 @@
 #
 import sys ; 
 #sys.path.insert(0, "/home/zathras/Incoming/X/pygame/pygame-nrp/build/lib.linux-i686-2.5")
-sys.path.insert(0, "/home/zathras/code.google/pygame-seul/trunk/build/lib.linux-i686-2.5")
-sys.path.insert(0, "/home/zathras/Documents/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
+#sys.path.insert(0, "/home/zathras/code.google/pygame-seul/trunk/build/lib.linux-i686-2.5")
+# sys.path.insert(0, "/home/zathras/Documents/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
 
 import time
 import pygame
@@ -29,7 +29,7 @@ class VideoCapturePlayer(object):
         self.__dict__.update(**argd)
         super(VideoCapturePlayer, self).__init__(**argd)
         self.display = pygame.display.set_mode( self.displaysize )
-        self.camera = X=pygame.camera.Camera("/dev/video0", self.capturesize)
+        self.camera = X=pygame.camera.Camera("/dev/video1", self.capturesize)
         self.camera.start()
 #        self.camera2 = X=pygame.camera.Camera("/dev/video1", self.capturesize)
 #        self.camera2.start()
