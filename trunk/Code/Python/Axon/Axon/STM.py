@@ -1,23 +1,22 @@
 #!/usr/bin/python
 #
-# Copyright (C) 2007 Kamaelia Contributors(1) All Rights Reserved.
-#
-# You may only modify and redistribute this under the terms of any of the
-# following licenses(2): Mozilla Public License, V1.1, GNU General
-# Public License, V2.0, GNU Lesser General Public License, V2.1
+# Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
 #
 # (1) Kamaelia Contributors are listed in the AUTHORS file and at
-#     http://kamaelia.sourceforge.net/AUTHORS - please extend this file,
+#     http://www.kamaelia.org/AUTHORS - please extend this file,
 #     not this notice.
-# (2) Reproduced in the COPYING file, and at:
-#     http://kamaelia.sourceforge.net/COPYING
 #
-# Under section 3.5 of the MPL, we are using this text since we deem the MPL
-# notice inappropriate for this file. As per MPL/GPL/LGPL removal of this
-# notice is prohibited.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# Please contact us via: kamaelia-list-owner@lists.sourceforge.net
-# to discuss alternative licensing.
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 # -------------------------------------------------------------------------
 
 """
