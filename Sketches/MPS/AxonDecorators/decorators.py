@@ -38,8 +38,11 @@ def TransformerGenComponent(GF):
         def main(self):
             F = self.F
             argv = self.argv
-            if argv[0] == None:
-                argv = (self.Inbox,) + argv[1:]
+            try:
+                if argv[0] == None:
+                    argv = (self.Inbox,) + argv[1:]
+            except IndexError:
+                argv = [self.Inbox]
 
             argd = self.argd
 
