@@ -36,4 +36,9 @@ Pipeline(
     BasicSprite("mouse.png", name = "player", border=40),
 ).activate()
 
+Pipeline(
+    MyGamesEventsComponent(up="o", down="k", left="z", right="x"),
+    BasicSprite("fairy.jpg", name = "player", border=40),
+).activate()
+
 SpriteScheduler(BasicSprite.allSprites()).run()
