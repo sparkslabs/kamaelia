@@ -2,8 +2,8 @@
 Name:           python-kamaelia
 %define modname Kamaelia
 BuildRequires:  python-devel
-URL:            http://www.kamaelia.org/
-License:        Mozilla tri-license scheme (MPL/GPL/LGPL)
+URL:            http://www.kamaelia.org/Home.html
+License:        Apache 2 License
 Group:          Development/Languages
 Autoreqprov:    on
 Version:        0.6.0
@@ -27,7 +27,7 @@ backplanes, chassis, Dirac video encoding & decoding, Vorbis decoding,
 pygame & Tk based user interfaces and Tk, visualisation tools, presentation
 tools, games tools...
 
-See http://www.kamaelia.org/Home
+See http://www.kamaelia.org/Home.html
 
 Authors:
 --------
