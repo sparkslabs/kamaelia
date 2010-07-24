@@ -44,7 +44,7 @@ else:
           author = "Michael Sparks",
           author_email = "sparks.m@gmail.com",
           url = "http://www.kamaelia.org/Home",
-          license = "Copyright (c)2009 Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
+          license = "Apache Software License 2",
           packages = ["Axon.DSL", 
                        ],
           long_description=""
