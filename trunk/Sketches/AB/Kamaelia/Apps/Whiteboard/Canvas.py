@@ -295,8 +295,10 @@ class Canvas(Axon.Component.component):
         root.destroy()
         try:
             if (password):
+                #os.system("zip", "-j", "-q", "-P " + password, "Decks/" + filename, self.notepad + "/*.png")
+                os.system("zip -j -q -P " + password + " Decks/" + filename + " " + self.notepad + "/*.png")
                 self.send("CLRTKR", "toTicker")
-                self.send("Not yet implemented","toTicker")
+                self.send("Zip file 'Decks/" + filename + "' created successfully with password","toTicker")
             else:
                 zipped = ZipFile('Decks/' + filename,'w')
                 for x in range(num_pages + 1):
