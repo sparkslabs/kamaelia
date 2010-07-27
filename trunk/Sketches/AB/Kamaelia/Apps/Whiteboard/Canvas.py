@@ -36,6 +36,7 @@ from tkFileDialog import askopenfilename
 from tkSimpleDialog import askstring
 
 
+
 try:
     import Image
 except ImportError:
@@ -266,7 +267,7 @@ class Canvas(Axon.Component.component):
         root.destroy()
         root = Tk()
         root.withdraw()
-        password = askstring("Deck Password","Please enter the password for this zip file, or select 'Cancel' for if there is no password:", parent=root)
+        password = askstring("Deck Password","Please enter the password for this zip file, or leave blank if there is no password:", parent=root)
         root.destroy()
         if (filename):
             try:
@@ -291,20 +292,21 @@ class Canvas(Axon.Component.component):
         num_pages = len(os.listdir(self.notepad))
         root = Tk()
         root.withdraw()
-        password = askstring("Deck Password","Please enter a password for the zip file, or select 'Cancel' for no password:", parent=root)
+        password = askstring("Deck Password","Please enter a password for the zip file, or leave blank for no password:", parent=root)
         root.destroy()
         try:
-            if (password):
+            if (password != ""):
                 #os.system("zip", "-j", "-q", "-P " + password, "Decks/" + filename, self.notepad + "/*.png")
                 os.system("zip -j -q -P " + password + " Decks/" + filename + " " + self.notepad + "/*.png")
                 self.send("CLRTKR", "toTicker")
                 self.send("Zip file 'Decks/" + filename + "' created successfully with password","toTicker")
             else:
-                zipped = ZipFile('Decks/' + filename,'w')
+                os.system("zip -j -q Decks/" + filename + " " + self.notepad + "/*.png")
+                """zipped = ZipFile('Decks/' + filename,'w') # This seems to have broken
                 for x in range(num_pages + 1):
                     if (x > 0):
                         zipped.write(self.notepad + "/" +  "slide." + str(x) + ".png", "slide." + str(x) + ".png")
-                zipped.close()
+                zipped.close()"""
                 self.send("CLRTKR", "toTicker")
                 self.send("Zip file 'Decks/" + filename + "' created successfully without password","toTicker")
         except Exception, e:
