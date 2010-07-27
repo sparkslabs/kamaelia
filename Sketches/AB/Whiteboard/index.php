@@ -60,7 +60,8 @@ $hide = array(
 				'index.php',
 				'Thumbs',
 				'.htaccess',
-				'.htpasswd'
+				'.htpasswd',
+				'.svn'
 			);
 			 
 /* 
