@@ -316,8 +316,10 @@ class Canvas(Axon.Component.component):
         
     def clearscribbles(self, args):
         try:
+            #for x in os.listdir(self.notepad):
             for x in os.listdir(self.notepad):
-                os.remove(self.notepad + "/" + x)
+                if (os.path.splitext(x)[1] == ".png"):
+                    os.remove(self.notepad + "/" + x)
             self.clear("")
             self.send("first", "toFirstSlide")
         except Exception, e:
