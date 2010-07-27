@@ -29,7 +29,7 @@ import time
 # Webcam - Idea: Send images to network. Display on both local and remote screen
 import pygame.camera
         
-class Webcam(Axon.Component.component):
+class Webcam(Axon.ThreadedComponent.threadedcomponent):
     
     Inboxes =  { "inbox"   : "Receives stuff (possibly)",
                }
@@ -63,7 +63,7 @@ class Webcam(Axon.Component.component):
             except Exception, e:
                 pass
 	    #print("image")
-            self.pause()
-            yield 1
-            #time.sleep(0.2)
+            #self.pause()
+            #yield 1
+            time.sleep(0.2)
 	    yield 1
