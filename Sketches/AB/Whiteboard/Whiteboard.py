@@ -123,8 +123,11 @@ if (notepad is None):
 #
 colours_order = [ "black", "red", "orange", "yellow", "green", "turquoise", "blue", "purple", "darkgrey", "lightgrey" ]
 
-
-num_pages = len(os.listdir(notepad))
+num_pages = 0
+for x in os.listdir(notepad):
+    if (os.path.splitext(x)[1] == ".png"):
+        num_pages += 1
+#num_pages = len(os.listdir(notepad))
 if (num_pages < 1):
     num_pages = 1
 
