@@ -48,6 +48,7 @@ from Kamaelia.UI.Pygame.Ticker import Ticker
 
 # OpenGL (EEEEK)
 from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
+from Kamaelia.UI.PygameDisplay import PygameDisplay
 
 #
 # The following application specific components will probably be rolled
@@ -232,7 +233,11 @@ SLIDESPEC = notepad+"/slide.%d.png"
 
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    mydisplay = OpenGLDisplay(title="Kamaelia Whiteboard",width=width,height=height,background_colour=(255,255,255))
+    #mydisplay = OpenGLDisplay(title="Kamaelia Whiteboard",width=width,height=height,background_colour=(255,255,255))
+    ogl_display = OpenGLDisplay(title="Kamaelia Whiteboard",width=1280,height=1024,background_colour=(255,255,255))
+    ogl_display.activate()
+    OpenGLDisplay.setDisplayService(ogl_display)
+    PygameDisplay.setDisplayService(ogl_display)
     return Graphline( CANVAS  = Canvas( position=(left,top+32),width=width,height=(height-(32+15)),notepad=notepad ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
@@ -352,10 +357,6 @@ if __name__=="__main__":
 #             ConsoleEchoer()
 #            ).activate()
 
-    
-    #display = OpenGLDisplay.getDisplayService()
-    #PygameDisplay.getDisplayService()
-    #PygameDisplay.setDisplayService(display[0])
 
     Backplane("WHITEBOARD").activate()
     
