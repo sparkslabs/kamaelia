@@ -769,7 +769,12 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         glMatrixMode(GL_PROJECTION)
         glPushMatrix()
         glLoadIdentity()
-        gluPickMatrix(pos[0], self.height-pos[1], 1, 1)
+#        gluPickMatrix(pos[0], self.height-pos[1], 1, 1)
+
+        viewport = glGetIntegerv(GL_VIEWPORT)
+        
+
+        gluPickMatrix(pos[0], self.height-pos[1], 1, 1, viewport)
         self.setProjection()
 
         # "draw" objects in select mode
