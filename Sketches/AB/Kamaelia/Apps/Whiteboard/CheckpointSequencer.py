@@ -70,7 +70,10 @@ class CheckpointSequencer(Axon.Component.component):
                         dirty = False
                     current = 1
                     self.send( self.loadMessage(current), "outbox")        
-                    highest = len(os.listdir(self.notepad))
+                    highest = 0
+                    for x in os.listdir(self.notepad):
+                        if (os.path.splitext(x)[1] == ".png"):
+                            highest += 1
                     if (highest < 1):
                         highest = 1
                 if command == "checkpoint":
