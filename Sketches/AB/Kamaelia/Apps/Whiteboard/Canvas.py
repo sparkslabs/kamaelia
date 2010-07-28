@@ -90,7 +90,7 @@ class Canvas(Axon.Component.component):
     def requestDisplay(self, **argd):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"toDisplay"), displayservice)
-        argd["transparency"] = self.bgcolour
+        #argd["transparency"] = self.bgcolour
         self.send(argd, "toDisplay")
         self.send(argd, "toApp") # MODIFICATION
         for _ in self.waitBox("fromDisplay"):
