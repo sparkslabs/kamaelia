@@ -62,13 +62,11 @@ class Canvas(Axon.Component.component):
                  "toFirstSlide" : "Move to first slide",
                }
 
-    def __init__(self, position=(0,0), width=1024, height=768, bgcolour=(255,255,255), notepad="Scribbles"):
+    def __init__(self, position=(0,0), size=(1024,768), bgcolour=(255,255,255), notepad="Scribbles"):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Canvas,self).__init__()
         self.position = position
-        self.width = width
-        self.height = height
-        self.size = (width, height)
+        self.size = size
         self.antialias = False
         self.bgcolour = bgcolour
         self.notepad = notepad
@@ -116,8 +114,6 @@ class Canvas(Axon.Component.component):
               self.requestDisplay( DISPLAYREQUEST=True,
                                    callback = (self,"fromDisplay"),
                                    events = (self, "eventsIn"),
-                                   width = self.width,
-                                   height = self.height,
                                    size = self.size,
                                    position = self.position,
                                  )

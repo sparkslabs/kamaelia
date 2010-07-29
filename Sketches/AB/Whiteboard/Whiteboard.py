@@ -234,18 +234,14 @@ SLIDESPEC = notepad+"/slide.%d.png"
 
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    #mydisplay = OpenGLDisplay(title="Kamaelia Whiteboard",width=width,height=height,background_colour=(255,255,255))
-    """ogl_display = OpenGLDisplay(title="Kamaelia Whiteboard",width=1280,height=1024,background_colour=(255,255,255))
-    ogl_display.activate()
-    OpenGLDisplay.setDisplayService(ogl_display)
-    PygameDisplay.setDisplayService(ogl_display)"""
-    ogl_display = OpenGLDisplay(title="Kamaelia Whiteboard",width=1280,height=1024,background_colour=(255,255,255))
-    ogl_display.activate()
-    OpenGLDisplay.setDisplayService(ogl_display)
+    if(1):
+        ogl_display = OpenGLDisplay(title="Kamaelia Whiteboard",width=1024,height=768,background_colour=(255,255,255))
+        ogl_display.activate()
+        OpenGLDisplay.setDisplayService(ogl_display)
     
-    ogl_display = OpenGLDisplay.getDisplayService()
-    PygameDisplay.setDisplayService(ogl_display[0])
-    return Graphline( CANVAS  = Canvas( position=(left,top+32),width=width,height=(height-(32+15)),notepad=notepad ),
+        ogl_display = OpenGLDisplay.getDisplayService()
+        PygameDisplay.setDisplayService(ogl_display[0])
+    return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,(height-(32+15))),notepad=notepad ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
