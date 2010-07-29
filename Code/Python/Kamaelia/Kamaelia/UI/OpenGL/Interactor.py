@@ -198,6 +198,9 @@ class Interactor(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.handleEvents()
             # frame function from derived objects
             self.frame()
+            while not self.anyReady():
+                self.pause()
+                yield 1
 
     ##
     # Methods to be used by derived objects
