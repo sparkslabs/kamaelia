@@ -27,7 +27,7 @@ from Kamaelia.Chassis.Graphline import Graphline
 
 from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 from Kamaelia.UI.OpenGL.PygameWrapper import PygameWrapper
-from Kamaelia.UI.OpenGL.SimpleTranslationInteractor import SimpleTranslationInteractor
+from Kamaelia.UI.OpenGL.MatchedTranslationInteractor import MatchedTranslationInteractor
 
 from Kamaelia.Util.Console import ConsoleReader
 
@@ -60,7 +60,7 @@ if __name__=="__main__":
     PygameDisplay.setDisplayService(ogl_display[0])
     
     #PygameDisplay.setDisplayService(ogl_display)
-    CANVAS = Canvas( position=(left,top+32),width=1200,height=(900-(32+15)),notepad="Test" ).activate() #(replace width with 'width' and height with 'height-(32+15)'
+    CANVAS = Canvas( position=(left,top+32),size=(1200,(900-(32+15))),notepad="Test" ).activate() #(replace width with 'width' and height with 'height-(32+15)'
     PAINTER = Painter().activate()
     CANVAS_WRAPPER = PygameWrapper(wrap=CANVAS, position=(0,0,-10), rotation=(0,0,0)).activate() 
     ERASER  = Eraser(left,top).activate()
@@ -76,7 +76,7 @@ if __name__=="__main__":
     PAINTER.link( (CLEAR, "outbox"), (CANVAS, "inbox") )
               
     WEBCAM = VideoCaptureSource().activate()
-    BLANKCANVAS = Canvas( position=(left,top+32),width=(63*3+2),height=140,notepad="Test",bgcolour=(200,200,200) ).activate()
+    BLANKCANVAS = Canvas( position=(left,top+32),size=((63*3+2),140),notepad="Test",bgcolour=(200,200,200) ).activate()
     #BLANKCANVAS = BlankCanvas().activate()
     BLANKCANVAS.link( (WEBCAM, "outbox"), (BLANKCANVAS, "inbox") )
     WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.7,-9), rotation=(-1,-5,-5)).activate()
@@ -89,7 +89,7 @@ if __name__=="__main__":
     #TICKER_WRAPPER = PygameWrapper(wrap=TICKER, position=(4, 1,-10), rotation=(-20,15,3)).activate()
     #MAGNADOODLE = MagnaDoodle(size=(200,200)).activate()
     #MAGNADOODLEWRAPPER = PygameWrapper(wrap=MAGNADOODLE, position=(3,-2,-8), rotation=(1,-1,0)).activate()
-    i1 = SimpleTranslationInteractor(target=WEBCAM_WRAPPER).activate()
+    i1 = MatchedTranslationInteractor(target=WEBCAM_WRAPPER).activate()
     #READER = ConsoleReader().activate()
     
     #READER.link( (READER,"outbox"), (TICKER, "inbox") )
