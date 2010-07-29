@@ -46,12 +46,6 @@ from Kamaelia.Util.Console import ConsoleEchoer
 # Ticker
 from Kamaelia.UI.Pygame.Ticker import Ticker
 
-# OpenGL (EEEEK)
-from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
-from Kamaelia.UI.Pygame.Display import PygameDisplay
-from Kamaelia.UI.OpenGL.PygameWrapper import PygameWrapper
-from Kamaelia.UI.OpenGL.MatchedTranslationInteractor import MatchedTranslationInteractor
-
 #
 # The following application specific components will probably be rolled
 # back into the repository.
@@ -70,9 +64,7 @@ from Kamaelia.Apps.Whiteboard.Options import parseOptions
 from Kamaelia.Apps.Whiteboard.UI import PagingControls, LocalPagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles
 from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 from Kamaelia.Apps.Whiteboard.SmartBoard import SmartBoard
-#from Kamaelia.Apps.Whiteboard.Webcam import Webcam
-
-from Webcam import VideoCaptureSource
+from Kamaelia.Apps.Whiteboard.Webcam import Webcam
 
 try:
     from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
@@ -239,11 +231,7 @@ SLIDESPEC = notepad+"/slide.%d.png"
 
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    CANVAS  = Canvas( position=(left,top+32),size=(width,(height-(32+15))),notepad=notepad )
-    CANVAS_WRAPPER = PygameWrapper(wrap=CANVAS, position=(0,0,-10), rotation=(0,0,0))
-    return Graphline( CANVAS = CANVAS,
-                      CANVAS_WRAPPER = CANVAS_WRAPPER,
-                      #MOVER = MatchedTranslationInteractor(target=CANVAS_WRAPPER),
+    return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,(height-(32+15))),notepad=notepad ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
@@ -311,21 +299,13 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("SMARTBOARD", "erase") : ("PAINTER", "erase"),
                           ("SMARTBOARD", "toTicker") : ("TICKER", "inbox"),
                           
-                          #("WEBCAM", "outbox") : ("CANVAS", "inbox"),
+                          ("WEBCAM", "outbox") : ("CANVAS", "inbox"),
                           #("WEBCAM", "networkout") : ("", "outbox"), # send to network
                           },
                     )
 
 if __name__=="__main__":
-    
-    if(1):
-        ogl_display = OpenGLDisplay(title="Kamaelia Whiteboard",width=1024,height=768,background_colour=(255,255,255))
-        ogl_display.activate()
-        OpenGLDisplay.setDisplayService(ogl_display)
-    
-        ogl_display = OpenGLDisplay.getDisplayService()
-        PygameDisplay.setDisplayService(ogl_display[0])
-    
+
     left = 0
     top = 0
     width = 1024
@@ -339,12 +319,6 @@ if __name__=="__main__":
                                 ('CONSOLE','outbox'):('SKETCHER','inbox'),
                               }
                      )
-
-    WEBCAM = VideoCaptureSource().activate()
-    BLANKCANVAS = Canvas( position=(left,top+32),size=((63*3+2),140),notepad="Test",bgcolour=(200,200,200) ).activate()
-    BLANKCANVAS.link( (WEBCAM, "outbox"), (BLANKCANVAS, "inbox") )
-    WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.7,-9), rotation=(-1,-5,-5)).activate()
-    i1 = MatchedTranslationInteractor(target=WEBCAM_WRAPPER).activate()
                      
     # primary whiteboard
     Pipeline( SubscribeTo("WHITEBOARD"),
