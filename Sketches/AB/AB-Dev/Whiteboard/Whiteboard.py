@@ -29,6 +29,7 @@ import pygame
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 
+
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
@@ -83,7 +84,7 @@ except Exception, e:
 
 try:
     from Kamaelia.Apps.Whiteboard.Audio import SoundInput
-except ImportError:
+except ImportError: 
     print "SoundInput not available, using NullSink instead"
     SoundInput = nullSinkComponent
 
@@ -99,6 +100,14 @@ except ImportError:
     print "RawAudioMixer not available, using NullSink instead"
     RawAudioMixer = nullSinkComponent
     
+try:
+    from Kamaelia.Apps.MH.Profiling import FormattedProfiler
+    Pipeline(
+        FormattedProfiler(10.0,1.0),
+        ConsoleEchoer(),
+    ).activate()
+except ImportError:
+    print "Profiler not available, please update your Kamaelia installation"
     
 notepad = None
 if len(sys.argv) >1:
