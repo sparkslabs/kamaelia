@@ -293,7 +293,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("CANVAS","surfacechanged") : ("HISTORY", "inbox"),
                           
                           ("CANVAS", "toTicker") : ("TICKER", "inbox"),
-                          ("CANVAS", "toFirstSlide") : ("HISTORY", "inbox"),
+                          ("CANVAS", "toHistory") : ("HISTORY", "inbox"),
                           
                           ("SMARTBOARD", "colour") : ("PAINTER", "colour"),
                           ("SMARTBOARD", "erase") : ("PAINTER", "erase"),
