@@ -254,6 +254,9 @@ class Ticker(Axon.Component.component):
     try:
 
         while 1:
+           while not self.anyReady():
+               self.pause()
+               yield 1
            self.handleAlpha()
            if self.dataReady("control"):
                raise GotShutdownException()
