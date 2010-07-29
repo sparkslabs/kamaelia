@@ -59,7 +59,7 @@ class Canvas(Axon.Component.component):
                  "eventsOut" : "Events forwarded out of here",
                  "surfacechanged" : "If the surface gets changed from last load/save a 'dirty' message is emitted here",
                  "toTicker" : "Send data to text ticker",
-                 "toFirstSlide" : "Move to first slide",
+                 "toHistory" : "Move to first slide",
                }
 
     def __init__(self, position=(0,0), size=(1024,768), bgcolour=(255,255,255), notepad="Scribbles"):
@@ -195,6 +195,10 @@ class Canvas(Axon.Component.component):
             self.clearscribbles(args)
             self.clean = True
             self.dirty_sent = False
+        elif cmd=="DELETESLIDE":
+            self.deleteslide(args)
+            self.clean = True
+            self.dirty_sent = False
         elif cmd=="GETIMG":
             self.getimg(args)
             self.clean = False
@@ -273,7 +277,7 @@ class Canvas(Axon.Component.component):
                 files = os.listdir(self.notepad)
                 files.sort()
                 loadstring = self.notepad + "/" + files[0]
-                self.send("first", "toFirstSlide")
+                self.send("first", "toHistory")
                 self.send("CLRTKR", "toTicker")
                 self.send("Deck loaded successfully","toTicker")
             except Exception, e:
@@ -317,9 +321,14 @@ class Canvas(Axon.Component.component):
                 if (os.path.splitext(x)[1] == ".png"):
                     os.remove(self.notepad + "/" + x)
             self.clear("")
-            self.send("first", "toFirstSlide")
+            self.send("first", "toHistory")
         except Exception, e:
             pass
+        self.clean = True
+        
+    def deleteslide(self, args):
+        self.clear("")
+        self.send("delete", "toHistory")
         self.clean = True
 
     def getimg(self, args):

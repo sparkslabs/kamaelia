@@ -68,7 +68,7 @@ from Kamaelia.Apps.Whiteboard.Entuple import Entuple
 from Kamaelia.Apps.Whiteboard.Routers import Router, TwoWaySplitter, ConditionalSplitter
 from Kamaelia.Apps.Whiteboard.Palette import buildPalette, colours
 from Kamaelia.Apps.Whiteboard.Options import parseOptions
-from Kamaelia.Apps.Whiteboard.UI import PagingControls, LocalPagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles
+from Kamaelia.Apps.Whiteboard.UI import * #PagingControls, LocalPagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles, Delete, Quit
 from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 from Kamaelia.Apps.Whiteboard.SmartBoard import SmartBoard
 #from Kamaelia.Apps.Whiteboard.Webcam import Webcam
@@ -99,15 +99,15 @@ try:
 except ImportError:
     print "RawAudioMixer not available, using NullSink instead"
     RawAudioMixer = nullSinkComponent
-    
-try:
-    from Kamaelia.Apps.MH.Profiling import FormattedProfiler
-    Pipeline(
-        FormattedProfiler(10.0,1.0),
-        ConsoleEchoer(),
-    ).activate()
-except ImportError:
-    print "Profiler not available, please update your Kamaelia installation"
+if (0):    
+    try:
+        from Kamaelia.Apps.MH.Profiling import FormattedProfiler
+        Pipeline(
+            FormattedProfiler(10.0,1.0),
+            ConsoleEchoer(),
+        ).activate()
+    except ImportError:
+        print "Profiler not available, please update your Kamaelia installation"
     
 notepad = None
 if len(sys.argv) >1:
@@ -258,18 +258,20 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       ERASER  = Eraser(left,top),
                       CLEAR = ClearPage(left+(64*5)+32*len(colours),top),
                       
-                      SAVEDECK = SaveDeck(left+(64*9)+32*len(colours),top),
-                      LOADDECK = LoadDeck(left+(64*8)+32*len(colours),top),
+                      SAVEDECK = SaveDeck(left+(64*8)+32*len(colours),top),
+                      LOADDECK = LoadDeck(left+(64*7)+32*len(colours),top),
                       
                       SMARTBOARD = SmartBoard(),
                       
                       #WEBCAM = Webcam(),
                       
-                      CLOSEDECK = ClearScribbles(left+(64*10)+32*len(colours),top),
+                      CLOSEDECK = ClearScribbles(left+(64*9)+32*len(colours),top),
+                      DELETE = Delete(left+(64*6)+32*len(colours),top),
+                      QUIT = Quit(left+(64*10)+32*len(colours),top),
 
                       PAGINGCONTROLS = PagingControls(left+64+32*len(colours),top),
-                      LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
-                      LOCALPAGEEVENTS = LocalPageEventsFilter(),
+                      #LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
+                      #OCALPAGEEVENTS = LocalPageEventsFilter(),
 
                       HISTORY = CheckpointSequencer(lambda X: [["LOAD", SLIDESPEC % (X,)]],
                                                     lambda X: [["SAVE", SLIDESPEC % (X,)]],
@@ -299,13 +301,15 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("LOADDECK", "outbox") : ("CANVAS", "inbox"),
                           
                           ("CLOSEDECK", "outbox") : ("CANVAS", "inbox"),
+                          ("DELETE", "outbox") : ("CANVAS", "inbox"),
+                          ("QUIT", "outbox") : ("CANVAS", "inbox"),
                           
-                          ("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
-                          ("LOCALEVENT_SPLITTER", "outbox2"): ("", "outbox"), # send to network
-                          ("LOCALEVENT_SPLITTER", "outbox") : ("LOCALPAGEEVENTS", "inbox"),
-                          ("", "inbox")        : ("LOCALPAGEEVENTS", "inbox"),
-                          ("LOCALPAGEEVENTS", "false")  : ("CANVAS", "inbox"),
-                          ("LOCALPAGEEVENTS", "true")  : ("HISTORY", "inbox"),
+                          #("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
+                          #("LOCALEVENT_SPLITTER", "outbox2"): ("", "outbox"), # send to network
+                          #("LOCALEVENT_SPLITTER", "outbox") : ("LOCALPAGEEVENTS", "inbox"),
+                          #("", "inbox")        : ("LOCALPAGEEVENTS", "inbox"),
+                          #("LOCALPAGEEVENTS", "false")  : ("CANVAS", "inbox"),
+                          #("LOCALPAGEEVENTS", "true")  : ("HISTORY", "inbox"),
 
                           ("PAGINGCONTROLS","outbox") : ("HISTORY", "inbox"),
                           ("HISTORY","outbox")     : ("CANVAS", "inbox"),
@@ -314,7 +318,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("CANVAS","surfacechanged") : ("HISTORY", "inbox"),
                           
                           ("CANVAS", "toTicker") : ("TICKER", "inbox"),
-                          ("CANVAS", "toFirstSlide") : ("HISTORY", "inbox"),
+                          ("CANVAS", "toHistory") : ("HISTORY", "inbox"),
                           
                           ("SMARTBOARD", "colour") : ("PAINTER", "colour"),
                           ("SMARTBOARD", "erase") : ("PAINTER", "erase"),
@@ -352,7 +356,7 @@ if __name__=="__main__":
     WEBCAM = VideoCaptureSource().activate()
     BLANKCANVAS = Canvas( position=(left,top+32),size=((63*3+2),140),notepad="Test",bgcolour=(200,200,200) ).activate()
     BLANKCANVAS.link( (WEBCAM, "outbox"), (BLANKCANVAS, "inbox") )
-    WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.7,-9), rotation=(-1,-5,-5)).activate()
+    WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.6,-9), rotation=(0,0,0)).activate()
     i1 = MatchedTranslationInteractor(target=WEBCAM_WRAPPER).activate()
                      
     # primary whiteboard
