@@ -26,21 +26,22 @@ necessary with syncronized linkages.
 """
 from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-class nullSinkComponent(component):
-   Inboxes=["inbox","control"]
-   Outboxes=[]
 
-   def mainBody(self):
-      while self.dataReady("inbox"):
-         data = self.recv("inbox")
-      if self.dataReady("control"):
-         data = self.recv("control")
-         if isinstance(data,producerFinished) or isinstance(data, shutdownMicroprocess):
-            return 0
-      return 1
+class nullSinkComponent(component):
+    def main(self):
+        while not self.dataReady("control"):
+            for _ in self.Inbox("inbox"):
+               pass
+            while not self.anyReady():
+                self.pause()
+                yield 1
+            yield 1
+        if self.dataReady("control"):
+            self.send(self.recv("control"), "signal")
+        else:
+            self.send(producerFinished, "signal")
 
 __kamaelia_components__  = ( nullSinkComponent, )
 
-
 if __name__ =="__main__":
-   print "This module has no system test"
+    print "This module has no system test"
