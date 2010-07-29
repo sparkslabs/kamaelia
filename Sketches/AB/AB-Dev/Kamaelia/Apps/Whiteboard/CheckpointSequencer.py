@@ -22,6 +22,7 @@
 
 import Axon
 import os
+import shutil
 
 class CheckpointSequencer(Axon.Component.component):
     def __init__(self, rev_access_callback = None,
@@ -42,6 +43,22 @@ class CheckpointSequencer(Axon.Component.component):
     def loadMessage(self, current): return current
     def saveMessage(self, current): return current
     def newMessage(self, current): return current
+    
+    def fixNumbering(self):
+        exists = 1
+        slides = os.listdir(self.notepad)
+        slides.sort()
+        for x in slides:
+            if (x == "slide." + str(exists) + ".png"):
+                # This slide exists, skip to next one
+                pass
+            else:
+                # This slide doesn't exist, find the next one up and copy it down
+                try:
+                    shutil.move(self.notepad + "/" + x,self.notepad + "/slide." + str(exists) + ".png")
+                except Exception, e:
+                    print("Failed to renumber slides. There may be an error in the sequence")
+            exists += 1
 
     def main(self):
         current = self.initial
@@ -51,6 +68,32 @@ class CheckpointSequencer(Axon.Component.component):
         while 1:
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
+                if command == "delete":
+                    try:
+                        os.remove(self.notepad + "/slide." + str(current) + ".png")
+                    except Exception, e:
+                        pass
+                    
+                    if (current == highest) & (highest > 1):
+                        # go to previous slide
+                        dirty = False
+                        command = "prev"
+                        highest -= 1
+                        self.fixNumbering()
+                    elif (current < highest) & (current != 1):
+                        # go to previous slide and fix numbering
+                        dirty = False
+                        command = "prev"
+                        highest -= 1
+                        self.fixNumbering()
+                    elif (current == 1) & (current < highest):
+                        # fix numbering then reload current slide
+                        highest -= 1
+                        self.fixNumbering()
+                        self.send( self.loadMessage(current), "outbox")
+                    else:
+                        # Do nothing
+                        pass
                 if command == "prev":
                     if current >1:
                         if dirty:
