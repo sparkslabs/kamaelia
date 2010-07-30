@@ -260,11 +260,11 @@ class _PygameEventSource(threadedcomponent):
         
 
     def main(self):
+        waitevents = [pygame.VIDEORESIZE, pygame.VIDEOEXPOSE, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]
         
         while 1:
             time.sleep(0.01)
-            eventswaiting = pygame.event.peek()  # and get any others waiting
-            
+            eventswaiting = pygame.event.peek(waitevents)  # and get any others waiting - wait for specific events...
             if self.dataReady("control"):
                 break
             if eventswaiting:
@@ -272,7 +272,7 @@ class _PygameEventSource(threadedcomponent):
                     self.send(True,"outbox")
                 except noSpaceInBox:
                     pass # a notification is already queued - so no need to send another
-            
+            eventswaiting = False
 
 class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    """\
