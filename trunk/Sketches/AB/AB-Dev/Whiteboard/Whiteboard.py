@@ -21,6 +21,7 @@
 # -------------------------------------------------------------------------
 #
 
+import time
 import os
 import sys
 import Axon
@@ -52,6 +53,8 @@ from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.OpenGL.PygameWrapper import PygameWrapper
 from Kamaelia.UI.OpenGL.MatchedTranslationInteractor import MatchedTranslationInteractor
+
+from Kamaelia.File.Writing import SimpleFileWriter
 
 #
 # The following application specific components will probably be rolled
@@ -99,15 +102,17 @@ try:
 except ImportError:
     print "RawAudioMixer not available, using NullSink instead"
     RawAudioMixer = nullSinkComponent
-if (0):    
-    try:
-        from Kamaelia.Apps.MH.Profiling import FormattedProfiler
+    
+try:
+    from Kamaelia.Apps.MH.Profiling import FormattedProfiler
+    if 1:
         Pipeline(
             FormattedProfiler(10.0,1.0),
-            ConsoleEchoer(),
+            SimpleFileWriter("Whiteboard.profiling.log"),
+#            ConsoleEchoer(),
         ).activate()
-    except ImportError:
-        print "Profiler not available, please update your Kamaelia installation"
+except ImportError:
+    print "Profiler not available, please update your Kamaelia installation"
     
 notepad = None
 if len(sys.argv) >1:
@@ -329,7 +334,45 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           },
                     )
 
+class ProperSurfaceDisplayer(Axon.Component.component):
+    Inboxes = ["inbox", "control", "callback"]
+    Outboxes= ["outbox", "signal", "display_signal"]
+    displaysize = (640, 480)
+    def __init__(self, **argd):
+        super(ProperSurfaceDisplayer, self).__init__(**argd)
+        self.disprequest = { "DISPLAYREQUEST" : True,
+                           "callback" : (self,"callback"),
+                           "size": self.displaysize}
+
+    def pygame_display_flip(self):
+        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+
+    def getDisplay(self):
+       displayservice = PygameDisplay.getDisplayService()
+       self.link((self,"display_signal"), displayservice)
+       self.send(self.disprequest, "display_signal")
+       while not self.dataReady("callback"):
+           self.pause()
+           yield 1
+       self.display = self.recv("callback")
+
+    def main(self):
+       yield Axon.Ipc.WaitComplete(self.getDisplay())
+       if 1:
+         while 1:
+            while self.dataReady("inbox"):
+                snapshot = self.recv("inbox")
+                snapshot=snapshot.convert()
+                self.display.blit(snapshot, (0,0))
+                self.pygame_display_flip()
+            while not self.anyReady():
+                self.pause()
+                yield 1
+            yield 1
+
+
 if __name__=="__main__":
+
     
     if(1):
         ogl_display = OpenGLDisplay(title="Kamaelia Whiteboard",width=1024,height=768,background_colour=(255,255,255))
@@ -354,9 +397,12 @@ if __name__=="__main__":
                      )
 
     WEBCAM = VideoCaptureSource().activate()
-    BLANKCANVAS = Canvas( position=(left,top+32),size=((63*3+2),140),notepad="Test",bgcolour=(200,200,200) ).activate()
+
+    BLANKCANVAS = ProperSurfaceDisplayer(displaysize = (63*3+2, 140)).activate()
+
     BLANKCANVAS.link( (WEBCAM, "outbox"), (BLANKCANVAS, "inbox") )
     WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.6,-9), rotation=(0,0,0)).activate()
+#    WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.7,-9), rotation=(-1,-5,-5)).activate()
     i1 = MatchedTranslationInteractor(target=WEBCAM_WRAPPER).activate()
                      
     # primary whiteboard
@@ -366,17 +412,18 @@ if __name__=="__main__":
             ).activate()
             
     # primary sound IO - tagged and filtered, so can't hear self
-    Pipeline( SubscribeTo("AUDIO"),
-              TagAndFilterWrapperKeepingTag(
-                  Pipeline(
-                      RawAudioMixer(),
-                      SoundOutput(),
-                      ######
-                      SoundInput(),
+    if SoundOutput != nullSinkComponent:
+        Pipeline( SubscribeTo("AUDIO"),
+                  TagAndFilterWrapperKeepingTag(
+                      Pipeline(
+                          RawAudioMixer(),
+                          SoundOutput(),
+                          ######
+                          SoundInput(),
+                      ),
                   ),
-              ),
-              PublishTo("AUDIO"),
-            ).activate()
+                  PublishTo("AUDIO"),
+                ).activate()
 
     rhost, rport, serveport = parseOptions()
 
