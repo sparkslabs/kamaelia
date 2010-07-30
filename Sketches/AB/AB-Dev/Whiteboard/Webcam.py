@@ -45,7 +45,7 @@ pygame.camera.init() # Ditto for camera subsystem
 
 class VideoCaptureSource(threadedcomponent):
     capturesize = (352, 288)
-    delay = 0
+    delay = 0.04
     fps = -1
     device = "/dev/video0"
  
@@ -69,8 +69,8 @@ class VideoCaptureSource(threadedcomponent):
             while 1:
                 self.capture_one()
                 self.snapshot = pygame.transform.scale(self.snapshot,((63*3+2),140))
-                self.send([["CAM", self.snapshot, (0,0), "remote"]], "outbox")
-                #time.sleep(self.delay)
-                time.sleep(0.05)
+#                self.send([["CAM", self.snapshot, (0,0), "remote"]], "outbox")
+                self.send(self.snapshot, "outbox")
+                time.sleep(self.delay)
         except Exception, e:
             pass
