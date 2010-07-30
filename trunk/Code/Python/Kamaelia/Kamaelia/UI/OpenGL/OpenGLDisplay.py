@@ -290,7 +290,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from math import *
 
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+from Kamaelia.UI.Pygame.Display import PygameDisplay, _PygameEventSource
 
 from Vector import Vector
 from Transform import Transform
@@ -347,6 +347,7 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     Outboxes = {
         "outbox" : "NOT USED",
         "signal" : "NOT USED",
+        "_signal" : "Used for shutting down the events source",
     }
                 
                  
@@ -482,6 +483,12 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
     def main(self):
         """Main loop."""
+        eventsource = _PygameEventSource().activate()
+        self.addChildren(eventsource)
+        self.inboxes["events"].setSize(1)   # prevent wakeup notifications from backlogging too much :)
+        l1 = self.link( (eventsource,"outbox"), (self,"events") )
+        l2 = self.link( (self,"_signal"), (eventsource,"control") )
+
         while 1:
         
             # limit and show fps (if enabled)
@@ -493,8 +500,14 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             self.handleRequests()
             self.handleEvents()
             self.updateDisplay()
+            while not self.anyReady():
+                self.pause()
+                yield 1
             yield 1
 
+        self.unlink(l1)
+        self.unlink(l2)
+            
     
     def handleRequests(self):
         """ Handles service requests. """
@@ -553,16 +566,21 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         """ Handles pygame input events. """
         
         # pre-fetch all waiting events in one go
-        events = []
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                # On pygame.QUIT send shutdownMicroprocess to signal
-                self.send(Axon.Ipc.shutdownMicroprocess(), "signal")
-            else:
-                events.append(event)
+        if self.dataReady("events"):
+            events = []
 
-        self.handleOGLComponentEvents(events)
-        self.handlePygameComponentEvents(events)
+            while 1:
+                event = pygame.event.poll()
+                if event.type is pygame.NOEVENT: # Used as end of list
+                    break
+                else: 
+                    events.append(event)
+
+            for _ in self.Inbox("events"): pass # clear pending event messages
+
+            if events != []:
+                self.handleOGLComponentEvents(events)
+                self.handlePygameComponentEvents(events)
     
 
     def updateDisplay(self):
