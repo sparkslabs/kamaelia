@@ -401,7 +401,7 @@ if __name__=="__main__":
                               }
                      )
 
-    if (0):
+    if (1):
         WEBCAM = VideoCaptureSource().activate()
         BLANKCANVAS = ProperSurfaceDisplayer(displaysize = (63*3+2, 140)).activate()
         BLANKCANVAS.link( (WEBCAM, "outbox"), (BLANKCANVAS, "inbox") )

@@ -46,6 +46,8 @@ from Kamaelia.Util.Console import ConsoleEchoer
 # Ticker
 from Kamaelia.UI.Pygame.Ticker import Ticker
 
+from Kamaelia.UI.Pygame.Display import PygameDisplay
+
 #
 # The following application specific components will probably be rolled
 # back into the repository.
@@ -61,10 +63,10 @@ from Kamaelia.Apps.Whiteboard.Entuple import Entuple
 from Kamaelia.Apps.Whiteboard.Routers import Router, TwoWaySplitter, ConditionalSplitter
 from Kamaelia.Apps.Whiteboard.Palette import buildPalette, colours
 from Kamaelia.Apps.Whiteboard.Options import parseOptions
-from Kamaelia.Apps.Whiteboard.UI import PagingControls, LocalPagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles
+from Kamaelia.Apps.Whiteboard.UI import * #PagingControls, LocalPagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles
 from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 from Kamaelia.Apps.Whiteboard.SmartBoard import SmartBoard
-from Kamaelia.Apps.Whiteboard.Webcam import Webcam
+from Kamaelia.Apps.Whiteboard.Webcam import VideoCaptureSource
 
 try:
     from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
@@ -188,6 +190,12 @@ def LocalEventServer(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", p
                                audioBackplane=audioBackplane,
                                port=port)
     return SimpleServer(protocol=clientconnector, port=port)
+    
+def LocalWebcamEventServer(webcamBackplane="WEBCAM", port=1501):
+    def configuredClientConnector():
+        return clientconnector(webcamBackplane=webcamBackplane,
+                               port=port)
+    return SimpleServer(protocol=clientconnector, port=port)
 
 #/-------------------------------------------------------------------------
 # Client side of the system
@@ -218,7 +226,6 @@ def EventServerClients(rhost, rport,
                 ("NETWORK", "outbox") : ("APPCOMMS", "inbox"), # Continuous in
             } 
         )
-
 #/-------------------------------------------------------------------------
 
 class LocalPageEventsFilter(ConditionalSplitter): # This is a data tap/siphon/demuxer
@@ -231,23 +238,24 @@ SLIDESPEC = notepad+"/slide.%d.png"
 
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    return Graphline( CANVAS  = Canvas( position=(left,top+32),size=(width,(height-(32+15))),notepad=notepad ),
+    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-190,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=notepad ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
-                      CLEAR = ClearPage(left+(64*5)+32*len(colours),top),
+                      CLEAR = ClearPage(left+(64*5)+32*len(colours)+1,top),
                       
-                      SAVEDECK = SaveDeck(left+(64*9)+32*len(colours),top),
-                      LOADDECK = LoadDeck(left+(64*8)+32*len(colours),top),
+                      SAVEDECK = SaveDeck(left+(64*8)+32*len(colours)+1,top),
+                      LOADDECK = LoadDeck(left+(64*7)+32*len(colours)+1,top),
                       
                       SMARTBOARD = SmartBoard(),
                       
                       #WEBCAM = Webcam(),
                       
-                      CLOSEDECK = ClearScribbles(left+(64*10)+32*len(colours),top),
+                      DELETE = Delete(left+(64*6)+32*len(colours)+1,top),
+                      CLOSEDECK = ClearScribbles(left+(64*9)+32*len(colours)+1,top),
 
-                      PAGINGCONTROLS = PagingControls(left+64+32*len(colours),top),
-                      LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
+                      PAGINGCONTROLS = PagingControls(left+64+32*len(colours)+1,top),
+                      #LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
                       LOCALPAGEEVENTS = LocalPageEventsFilter(),
 
                       HISTORY = CheckpointSequencer(lambda X: [["LOAD", SLIDESPEC % (X,)]],
@@ -259,7 +267,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                                 ),
 
                       PAINT_SPLITTER = TwoWaySplitter(),
-                      LOCALEVENT_SPLITTER = TwoWaySplitter(),
+                      #LOCALEVENT_SPLITTER = TwoWaySplitter(),
                       DEBUG   = ConsoleEchoer(),
                       
                       TICKER = Ticker(position=(left,top+height-15),background_colour=(220,220,220),text_colour=(0,0,0),text_height=(17),render_right=(width),render_bottom=(15)),
@@ -278,10 +286,11 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("LOADDECK", "outbox") : ("CANVAS", "inbox"),
                           
                           ("CLOSEDECK", "outbox") : ("CANVAS", "inbox"),
+                          ("DELETE", "outbox") : ("CANVAS", "inbox"),
                           
-                          ("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
-                          ("LOCALEVENT_SPLITTER", "outbox2"): ("", "outbox"), # send to network
-                          ("LOCALEVENT_SPLITTER", "outbox") : ("LOCALPAGEEVENTS", "inbox"),
+                          #("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
+                          #("LOCALEVENT_SPLITTER", "outbox2"): ("", "outbox"), # send to network
+                          #("LOCALEVENT_SPLITTER", "outbox") : ("LOCALPAGEEVENTS", "inbox"),
                           ("", "inbox")        : ("LOCALPAGEEVENTS", "inbox"),
                           ("LOCALPAGEEVENTS", "false")  : ("CANVAS", "inbox"),
                           ("LOCALPAGEEVENTS", "true")  : ("HISTORY", "inbox"),
@@ -299,10 +308,71 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("SMARTBOARD", "erase") : ("PAINTER", "erase"),
                           ("SMARTBOARD", "toTicker") : ("TICKER", "inbox"),
                           
-                          ("WEBCAM", "outbox") : ("CANVAS", "inbox"),
+                          #("WEBCAM", "outbox") : ("CANVAS", "inbox"),
                           #("WEBCAM", "networkout") : ("", "outbox"), # send to network
                           },
                     )
+
+class ProperSurfaceDisplayer(Axon.Component.component):
+    Inboxes = ["inbox", "control", "callback"]
+    Outboxes= ["outbox", "signal", "display_signal"]
+    displaysize = (640, 480)
+    def __init__(self, **argd):
+        super(ProperSurfaceDisplayer, self).__init__(**argd)
+        self.disprequest = { "DISPLAYREQUEST" : True,
+                           "callback" : (self,"callback"),
+                           "size": self.displaysize,
+                           "position" : self.position,
+                           "bgcolour" : self.bgcolour}
+
+    def pygame_display_flip(self):
+        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
+
+    def getDisplay(self):
+       displayservice = PygameDisplay.getDisplayService()
+       self.link((self,"display_signal"), displayservice)
+       self.send(self.disprequest, "display_signal")
+       while not self.dataReady("callback"):
+           self.pause()
+           yield 1
+       self.display = self.recv("callback")
+       self.display.fill( (self.bgcolour) )
+
+    def main(self):
+       yield Axon.Ipc.WaitComplete(self.getDisplay())
+       if 1:
+         if (self.webcam == 1):
+            snapshot = "No Local Camera"
+            font = pygame.font.Font(None,22)
+            self.display.fill( (0,0,0) )
+            snapshot = font.render(snapshot, False, (255,255,255))
+            self.display.blit(snapshot, (34,56))
+            self.pygame_display_flip()
+         elif (self.webcam == 2):
+            snapshot = "No Remote Camera"
+            font = pygame.font.Font(None,22)
+            self.display.fill( (0,0,0),pygame.Rect(0,0,190,140*4))
+            snapshot = font.render(snapshot, False, (255,255,255))
+            self.display.blit(snapshot, (25,56)) 
+            self.display.blit(snapshot, (25,56+140*1)) 
+            self.display.blit(snapshot, (25,56+140*2)) 
+            self.display.blit(snapshot, (25,56+140*3)) 
+            self.pygame_display_flip()
+         while 1:
+            if (self.webcam):
+                while self.dataReady("inbox"):
+                    snapshot = self.recv("inbox")
+                    if (self.webcam == 1):
+                        snapshot=snapshot.convert()
+                        self.display.blit(snapshot, (0,0))
+                        self.pygame_display_flip()
+                while not self.anyReady():
+                    self.pause()
+                    yield 1
+                yield 1  
+            else:
+                self.pause()
+                yield 1
 
 if __name__=="__main__":
 
@@ -311,15 +381,30 @@ if __name__=="__main__":
     width = 1024
     height = 768
     
+    BACKGROUND = ProperSurfaceDisplayer(displaysize = (1024, 768), position = (0, 0), bgcolour=(0,0,0), webcam = 0).activate()
+    
     mainsketcher = \
-        Graphline( SKETCHER = makeBasicSketcher(left,top,width,height),
+        Graphline( SKETCHER = makeBasicSketcher(left,top+1,width,height-1),
                    CONSOLE = CommandConsole(),
                    linkages = { ('','inbox'):('SKETCHER','inbox'),
                                 ('SKETCHER','outbox'):('','outbox'),
                                 ('CONSOLE','outbox'):('SKETCHER','inbox'),
                               }
                      )
-                     
+    if (1):
+        #LOCALWEBCAM = VideoCaptureSource().activate()
+        #WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-190,32), bgcolour=(255,255,255), webcam = 1).activate()
+        camera = Graphline( LOCALWEBCAM = VideoCaptureSource(),
+                            WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-190,32+1), bgcolour=(0,0,0), webcam = 1),
+                            REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4), position = (1024-190,32+140+2), bgcolour=(0,0,0), webcam = 2),
+                            CAM_SPLITTER = TwoWaySplitter(),
+                            linkages = { ('','inbox'):('REMWCCANVAS','inbox'),
+                                ('LOCALWEBCAM','outbox'):('CAM_SPLITTER','inbox'),
+                                ('CAM_SPLITTER','outbox2'):('WCCANVAS','inbox'),
+                                ('CAM_SPLITTER','outbox'):('','outbox'),
+                              }
+                          ) #WCCANVAS.link( (LOCALWEBCAM, "outbox"), (WCCANVAS, "inbox") )
+        
     # primary whiteboard
     Pipeline( SubscribeTo("WHITEBOARD"),
               TagAndFilterWrapper(mainsketcher),
@@ -338,17 +423,25 @@ if __name__=="__main__":
               ),
               PublishTo("AUDIO"),
             ).activate()
+            
+    # primary webcam - capture > to jpeg > framing > backplane > TCPC > Deframing > etc
+    Pipeline( SubscribeTo("WEBCAM"),
+              TagAndFilterWrapper(camera),
+              PublishTo("WEBCAM")
+            ).activate()
 
     rhost, rport, serveport = parseOptions()
 
     # setup a server, if requested
     if serveport:
         LocalEventServer("WHITEBOARD", "AUDIO", port=serveport).activate()
+        LocalWebcamEventServer("WEBCAM", port=(serveport+1)).activate()
 
 
     # connect to remote host & port, if requested
     if rhost and rport:
         EventServerClients(rhost, rport, "WHITEBOARD", "AUDIO").activate()
+        #WebcamEventServerClients(rhost, (rport + 1), "WEBCAM").activate()
 
 #    sys.path.append("../Introspection")
 #    from Profiling import FormattedProfiler
@@ -359,6 +452,8 @@ if __name__=="__main__":
 
 
     Backplane("WHITEBOARD").activate()
+    
+    Backplane("WEBCAM").activate()
     
     Backplane("AUDIO").run()
     
