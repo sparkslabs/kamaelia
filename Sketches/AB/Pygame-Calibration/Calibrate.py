@@ -90,8 +90,11 @@ class Calibrate(component):
                 self.globalcount = 5
                 data = [["WRITE",'190','300','30','255','0','0',"Calibration complete. Now close the program and copy the conf file"]]
                 self.send(data,"outbox")
-                data = [self.topleft[0][4:6],self.topright[0][4:6],self.bottomleft[0][4:6],self.bottomright[0][4:6]]
-                data = ",".join(self.topleft[0][4:6]) + "," + ",".join(self.topright[0][4:6]) + "," + ",".join(self.bottomleft[0][4:6]) + "," + ",".join(self.bottomright[0][4:6])
+                #data = [self.topleft[0][4:6],self.topright[0][4:6],self.bottomleft[0][4:6],self.bottomright[0][4:6]]
+                #print(data)
+                data = str(self.topleft[0][4]) + "," + str(self.topleft[0][5]) + "," + str(self.topright[0][4]) + "," + str(self.topright[0][5]) + ","
+                data = data + str(self.bottomleft[0][4]) + "," + str(self.bottomleft[0][5]) + "," + str(self.bottomright[0][4]) + "," + str(self.bottomright[0][5])
+                #data = ",".join(str(self.topleft[0][4:6])) + "," + ",".join(str(self.topright[0][4:6])) + "," + ",".join(str(self.bottomleft[0][4:6])) + "," + ",".join(str(self.bottomright[0][4:6]))
                 data = ["pygame-calibration.conf",data]
                 self.send(data,"finaldata")
             while (self.dataReady("inbox") & (self.globalcount == 5)):
