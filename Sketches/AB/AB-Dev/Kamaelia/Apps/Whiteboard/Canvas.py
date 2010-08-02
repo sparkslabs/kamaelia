@@ -34,6 +34,7 @@ import os
 from Tkinter import *
 from tkFileDialog import askopenfilename
 from tkSimpleDialog import askstring
+from tkMessageBox import *
 
 
 
@@ -212,6 +213,8 @@ class Canvas(Axon.Component.component):
             self.webcam(args)
             self.clean = True
             self.dirty_sent = True
+        elif cmd== "QUIT":
+            self.quit(args)
 
     def line(self, args):
         (r,g,b,sx,sy,ex,ey) = [int(v) for v in args[0:7]]
@@ -278,10 +281,10 @@ class Canvas(Axon.Component.component):
                 files.sort()
                 loadstring = self.notepad + "/" + files[0]
                 self.send("first", "toHistory")
-                self.send("CLRTKR", "toTicker")
+                self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("Deck loaded successfully","toTicker")
             except Exception, e:
-                self.send("CLRTKR", "toTicker")
+                self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("Failed to open the deck specified. You may have entered the password incorrectly","toTicker")
         self.clean = True
 
@@ -298,7 +301,7 @@ class Canvas(Axon.Component.component):
             if (password != ""):
                 #os.system("zip", "-j", "-q", "-P " + password, "Decks/" + filename, self.notepad + "/*.png")
                 os.system("zip -j -q -P " + password + " Decks/" + filename + " " + self.notepad + "/*.png")
-                self.send("CLRTKR", "toTicker")
+                self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("Zip file 'Decks/" + filename + "' created successfully with password","toTicker")
             else:
                 os.system("zip -j -q Decks/" + filename + " " + self.notepad + "/*.png")
@@ -307,10 +310,10 @@ class Canvas(Axon.Component.component):
                     if (x > 0):
                         zipped.write(self.notepad + "/" +  "slide." + str(x) + ".png", "slide." + str(x) + ".png")
                 zipped.close()"""
-                self.send("CLRTKR", "toTicker")
+                self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("Zip file 'Decks/" + filename + "' created successfully without password","toTicker")
         except Exception, e:
-            self.send("CLRTKR", "toTicker")
+            self.send(chr(0) + "CLRTKR", "toTicker")
             self.send("Failed to write to zip file 'Decks/" + filename + "'","toTicker")
         self.clean = True
         
@@ -364,3 +367,15 @@ class Canvas(Axon.Component.component):
         self.redrawNeeded = True
         self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
         #self.send("dirty", "surfacechanged")
+        
+    def quit(self, args):
+        root = Tk()
+        root.withdraw()
+        if (askyesno("Confirm","Save changes?",parent=root)):
+            # Save current slide
+            self.send("save", "toHistory")
+        # perform quit
+        root.destroy()
+        print("Exiting")
+        pygame.quit() # This isn't the right way to do it!
+        # Also, saving won't work as the program exits before it's happened

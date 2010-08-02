@@ -262,7 +262,7 @@ class Ticker(Axon.Component.component):
                raise GotShutdownException()
            if self.dataReady("inbox"):
               word = self.recv("inbox")
-              if word == "CLRTKR":
+              if word == chr(0) + "CLRTKR":
                   word = ""
                   self.clearDisplay()
                   position[0] = initial_postition[0]

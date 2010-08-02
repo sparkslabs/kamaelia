@@ -54,6 +54,11 @@ from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.OpenGL.PygameWrapper import PygameWrapper
 from Kamaelia.UI.OpenGL.MatchedTranslationInteractor import MatchedTranslationInteractor
 
+# Dirac
+#from Kamaelia.Codec.Dirac import DiracEncoder
+#from Kamaelia.Codec.RawYUVFramer import RawYUVFramer
+#import WriteFileAdapter
+
 from Kamaelia.File.Writing import SimpleFileWriter
 
 #
@@ -276,7 +281,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 
                       PAGINGCONTROLS = PagingControls(left+64+32*len(colours),top),
                       #LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
-                      #OCALPAGEEVENTS = LocalPageEventsFilter(),
+                      #LOCALPAGEEVENTS = LocalPageEventsFilter(),
 
                       HISTORY = CheckpointSequencer(lambda X: [["LOAD", SLIDESPEC % (X,)]],
                                                     lambda X: [["SAVE", SLIDESPEC % (X,)]],
@@ -396,14 +401,24 @@ if __name__=="__main__":
                               }
                      )
 
-    WEBCAM = VideoCaptureSource().activate()
+    if (0):
+        WEBCAM = VideoCaptureSource().activate()
+        BLANKCANVAS = ProperSurfaceDisplayer(displaysize = (63*3+2, 140)).activate()
+        BLANKCANVAS.link( (WEBCAM, "outbox"), (BLANKCANVAS, "inbox") )
+        WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.6,-9), rotation=(0,0,0)).activate()
+        #    WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.7,-9), rotation=(-1,-5,-5)).activate()
+        i1 = MatchedTranslationInteractor(target=WEBCAM_WRAPPER).activate()
+        imagesize = (352, 288)      # "CIF" size video
+        if (0):
+            Pipeline(WEBCAM,
+                     RawYUVFramer(imagesize),
+                     DiracEncoder(preset="CIF"),
+                     WriteFileAdapter("diracvideo.drc")
+                    ).activate()
 
-    BLANKCANVAS = ProperSurfaceDisplayer(displaysize = (63*3+2, 140)).activate()
 
-    BLANKCANVAS.link( (WEBCAM, "outbox"), (BLANKCANVAS, "inbox") )
-    WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.6,-9), rotation=(0,0,0)).activate()
-#    WEBCAM_WRAPPER = PygameWrapper(wrap=BLANKCANVAS, position=(3.7,2.7,-9), rotation=(-1,-5,-5)).activate()
-    i1 = MatchedTranslationInteractor(target=WEBCAM_WRAPPER).activate()
+
+
                      
     # primary whiteboard
     Pipeline( SubscribeTo("WHITEBOARD"),

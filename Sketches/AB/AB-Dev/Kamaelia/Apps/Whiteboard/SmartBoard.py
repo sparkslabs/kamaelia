@@ -50,7 +50,7 @@ class SmartBoard(Axon.Component.component):
         try:
             dev = usb.core.find(idVendor=0x0b8c,idProduct=0x0001)
             if dev is None:
-                self.send("CLRTKR", "toTicker")
+                self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("SMART Board not detected", "toTicker")
             else:
                 datain = [0xe1,0x05,0x10,0x00] # Example
