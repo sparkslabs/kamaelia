@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
+
 # Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
 #
 # (1) Kamaelia Contributors are listed in the AUTHORS file and at
@@ -18,52 +18,59 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# -------------------------------------------------------------------------
-#
 
-import Axon
-from Axon.Ipc import producerFinished, shutdownMicroprocess
-import pygame
 import time
+import pygame
 
-# Webcam - Idea: Send images to network. Display on both local and remote screen
-import pygame.camera
-        
-class Webcam(Axon.ThreadedComponent.threadedcomponent):
-    
-    Inboxes =  { "inbox"   : "Receives stuff (possibly)",
-               }
-               
-    Outboxes = { "outbox" : "Issues drawing instructions locally",
-                 "networkout" : "Issues drawing instructions remotely",
-               }
-    
-    def __init__(self):
-        super(Webcam,self).__init__()
-        pygame.camera.init()
-        capturesize = (640,480)
-        self.imagesize=((63*3+2),140)
-        self.imageorigin = ((1024-(63*3+2+1)),1) #(768-(288+32+15))
-        device="/dev/video0"
-        self.camera = X=pygame.camera.Camera(device, capturesize)
+try:
+    import pygame.camera
+except ImportError:
+    print "*****************************************************************************************"
+    print
+    print "Sorry, Video camera support requires using a version of pygame with pygame.camera support"
+    print """You could try adding something like this at the start of your file using this componen:
+
+# To use pygame alpha
+import sys ;
+sys.path.insert(0, "<path to release candidate>/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
+
+"""
+    print "*****************************************************************************************"
+    raise
+  
+from Axon.ThreadedComponent import threadedcomponent
+
+pygame.init()        # Would be nice to be able to find out if pygame was already initialised or not.
+pygame.camera.init() # Ditto for camera subsystem
+
+class VideoCaptureSource(threadedcomponent):
+    capturesize = (352, 288)
+    delay = 0.04
+    fps = -1
+    device = "/dev/video0"
+ 
+    def __init__(self, **argd):
+        super(VideoCaptureSource, self).__init__(**argd)
+        self.camera = pygame.camera.Camera(self.device, self.capturesize)
+        if self.fps != -1:
+            self.delay = 1.0/self.fps
+        self.snapshot = None
+
+    def capture_one(self):
+        self.snapshot = None
+        try:
+            self.snapshot = self.camera.get_image()
+        except Exception, e:
+            pass
+
+    def main(self):
         try:
             self.camera.start()
+            while 1:
+                self.capture_one()
+                self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
+#                self.send([["CAM", self.snapshot, (0,0), "remote"]], "outbox")
+                self.send(self.snapshot, "outbox")
+                time.sleep(self.delay)
         except Exception, e:
-            self.camera = False
-            print ("Camera fail")
-    
-    def main(self):
-        while(1):
-            try:	
-                if (self.camera):
-                    snapshot = self.camera.get_image()
-                    snapshot = pygame.transform.scale(snapshot, self.imagesize)
-                    self.send([["CAM", snapshot, self.imageorigin, "local"]], "outbox")
-                    self.send([["CAM", snapshot, self.imageorigin, "remote"]], "networkout")
-            except Exception, e:
-                pass
-	    #print("image")
-            #self.pause()
-            #yield 1
-            time.sleep(0.2)
-	    yield 1
+            pass
