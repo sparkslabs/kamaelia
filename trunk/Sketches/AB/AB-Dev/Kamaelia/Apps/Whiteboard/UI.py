@@ -84,4 +84,4 @@ def Delete(left,top):
     return Button(caption="Delete Slide", size=(63,32), position=(left,top), msg=[["deleteslide"]])
     
 def Quit(left,top):
-    return Button(caption="Quit (TODO)", size=(63,32), position=(left,top), msg=[["quit"]])  
+    return Button(caption="Quit", size=(63,32), position=(left,top), msg=[["quit"]])  

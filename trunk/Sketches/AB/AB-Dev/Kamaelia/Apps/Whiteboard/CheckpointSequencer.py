@@ -94,6 +94,8 @@ class CheckpointSequencer(Axon.Component.component):
                     else:
                         # Do nothing
                         pass
+                if command == "save":
+                    self.send( self.saveMessage(current), "outbox")
                 if command == "prev":
                     if current >1:
                         if dirty:
