@@ -103,10 +103,10 @@ class Painter(Axon.Component.component):
 
     def cmd(self, mode, oldpos, newpos, r, g, b):
         if mode=="LINE":
-            self.sendbuffer.append( ["LINE", str(r),str(g),str(b), int(oldpos[0]), int(oldpos[1]), int(newpos[0]), int(newpos[1])] )
+            self.sendbuffer.append( ["LINE", str(r),str(g),str(b), repr(int(oldpos[0])), repr(int(oldpos[1])), repr(int(newpos[0])), repr(int(newpos[1]))] )
 
         elif mode=="ERASE":
-            self.sendbuffer.append( ["CIRCLE", "255","255","255", int(newpos[0]), int(newpos[1]), "8"])
+            self.sendbuffer.append( ["CIRCLE", "255","255","255", repr(int(newpos[0])), repr(int(newpos[1])), "8"])
 
     def flushbuffer(self):
         if len(self.sendbuffer):
