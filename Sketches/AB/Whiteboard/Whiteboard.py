@@ -47,6 +47,7 @@ from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.UI.Pygame.Ticker import Ticker
 
 from Kamaelia.UI.Pygame.Display import PygameDisplay
+from Kamaelia.Protocol.Framing import DataChunker, DataDeChunker
 
 #
 # The following application specific components will probably be rolled
@@ -180,6 +181,42 @@ def clientconnector(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", po
         tokenlists_to_lines(),
         )
 
+class SurfaceToJpeg(Axon.Component.component):
+    Inboxes = ["inbox", "inbox2", "control"]
+    Outboxes = ["outbox", "outbox2", "signal"]
+    
+    def __init__(self):
+        super(SurfaceToJpeg, self).__init__()
+    
+    def main(self):
+        while (self.dataReady("inbox")):
+            data = self.recv("inbox")
+            imagestring = pygame.image.tostring(data,"RGB")
+            self.send(imagestring, "outbox")
+        while (self.dataReady("inbox2")):
+            data = self.recv("inbox2")
+            image = pygame.image.fromstring(data,(190,140),"RGB")
+            self.send(image, "outbox2")
+            #pilImage = Image.fromstring("RGB", self.surface.get_size(), imagestring)
+            #pilImage.save(filename)
+        self.pause()
+        yield 1
+
+def clientconnectorwc(webcamBackplane="WEBCAM"):
+    return Pipeline(
+        chunks_to_lines(),
+        Graphline(
+            WEBCAM = FilteringPubsubBackplane(webcamBackplane),
+            CONVERTER = SurfaceToJpeg(),
+            linkages = {
+                ("", "inbox") : ("CONVERTER", "inbox2"),
+                ("CONVERTER", "outbox2") : ("WEBCAM", "inbox"),
+                ("WEBCAM", "outbox") : ("CONVERTER", "inbox"),
+                ("CONVERTER", "outbox") : ("", "outbox"),
+                },
+            ),
+        )
+
 #/-------------------------------------------------------------------------
 # Server side of the system
 #
@@ -193,9 +230,8 @@ def LocalEventServer(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", p
     
 def LocalWebcamEventServer(webcamBackplane="WEBCAM", port=1501):
     def configuredClientConnector():
-        return clientconnector(webcamBackplane=webcamBackplane,
-                               port=port)
-    return SimpleServer(protocol=clientconnector, port=port)
+        return clientconnectorwc(webcamBackplane=webcamBackplane)
+    return SimpleServer(protocol=clientconnectorwc, port=port)
 
 #/-------------------------------------------------------------------------
 # Client side of the system
@@ -204,7 +240,7 @@ def EventServerClients(rhost, rport,
                        whiteboardBackplane="WHITEBOARD",
                        audioBackplane="AUDIO"):
     # plug a TCPClient into the backplane
-
+    
     loadingmsg = "Fetching sketch from server..."
 
     return Graphline(
@@ -223,6 +259,32 @@ def EventServerClients(rhost, rport,
                 ("APPCOMMS", "outbox") : ("NETWORK", "inbox"), # Continuous out
 
                 ("BLACKOUT", "outbox") : ("APPCOMMS", "inbox"), # Single shot in
+                ("NETWORK", "outbox") : ("APPCOMMS", "inbox"), # Continuous in
+            } 
+        )
+        
+def WebcamEventServerClients(rhost, rport, 
+                       webcamBackplane="WEBCAM"):
+    # plug a TCPClient into the backplane
+
+    #loadingmsg = "Fetching sketch from server..."
+
+    return Graphline(
+            # initial messages sent to the server, and the local whiteboard
+            #GETIMG = Pipeline(
+            #            OneShot(msg=[["GETIMG"]]),
+            #            tokenlists_to_lines()
+            #        ),
+            #BLACKOUT =  OneShot(msg="CLEAR 0 0 0\r\n"
+            #                        "WRITE 100 100 24 255 255 255 "+loadingmsg+"\r\n"),
+            NETWORK = TCPClient(host=rhost,port=rport),
+            #CONSOLE = ConsoleEchoer(),
+            APPCOMMS = clientconnectorwc(webcamBackplane=webcamBackplane),
+            linkages = {
+                #("GETIMG",   "outbox") : ("NETWORK",    "inbox"), # Single shot out
+                ("APPCOMMS", "outbox") : ("NETWORK", "inbox"), # Continuous out
+
+                #("BLACKOUT", "outbox") : ("APPCOMMS", "inbox"), # Single shot in
                 ("NETWORK", "outbox") : ("APPCOMMS", "inbox"), # Continuous in
             } 
         )
@@ -363,9 +425,15 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                 while self.dataReady("inbox"):
                     snapshot = self.recv("inbox")
                     if (self.webcam == 1):
-                        snapshot=snapshot.convert()
+                        #snapshot=snapshot.convert()
                         self.display.blit(snapshot, (0,0))
                         self.pygame_display_flip()
+                    elif (self.webcam == 2):
+                        self.display.blit(snapshot, (0,0))
+                        self.pygame_display_flip()
+                        #snapshot=snapshot.convert()
+                        # if tagged with first client's id
+                        # blit to top position, if not put it further down etc
                 while not self.anyReady():
                     self.pause()
                     yield 1
@@ -398,10 +466,12 @@ if __name__=="__main__":
                             WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-190,32+1), bgcolour=(0,0,0), webcam = 1),
                             REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4), position = (1024-190,32+140+2), bgcolour=(0,0,0), webcam = 2),
                             CAM_SPLITTER = TwoWaySplitter(),
+                            #CONSOLE = ConsoleEchoer(),
                             linkages = { ('','inbox'):('REMWCCANVAS','inbox'),
                                 ('LOCALWEBCAM','outbox'):('CAM_SPLITTER','inbox'),
                                 ('CAM_SPLITTER','outbox2'):('WCCANVAS','inbox'),
                                 ('CAM_SPLITTER','outbox'):('','outbox'),
+                                #('CAM_SPLITTER','outbox'):('CONSOLE','inbox'),
                               }
                           ) #WCCANVAS.link( (LOCALWEBCAM, "outbox"), (WCCANVAS, "inbox") )
         
@@ -426,8 +496,9 @@ if __name__=="__main__":
             
     # primary webcam - capture > to jpeg > framing > backplane > TCPC > Deframing > etc
     Pipeline( SubscribeTo("WEBCAM"),
+              #ConsoleEchoer(), # Received data (its own?)
               TagAndFilterWrapper(camera),
-              PublishTo("WEBCAM")
+              PublishTo("WEBCAM"),
             ).activate()
 
     rhost, rport, serveport = parseOptions()
@@ -441,7 +512,7 @@ if __name__=="__main__":
     # connect to remote host & port, if requested
     if rhost and rport:
         EventServerClients(rhost, rport, "WHITEBOARD", "AUDIO").activate()
-        #WebcamEventServerClients(rhost, (rport + 1), "WEBCAM").activate()
+        WebcamEventServerClients(rhost, (rport + 1), "WEBCAM").activate()
 
 #    sys.path.append("../Introspection")
 #    from Profiling import FormattedProfiler
