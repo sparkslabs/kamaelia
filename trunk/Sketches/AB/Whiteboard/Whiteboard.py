@@ -162,15 +162,18 @@ def clientconnector(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", po
                         SpeexEncode(3),
                         Entuple(prefix=["SOUND"],postfix=[]),
                     ),
+            CONSOLE = ConsoleEchoer(),
             linkages = {
                 # incoming messages go to a router
                 ("", "inbox") : ("ROUTER", "inbox"),
+                ("", "inbox") : ("CONSOLE", "inbox"),
                 # distribute messages to appropriate destinations
                 ("ROUTER",      "audio") : ("AUDIO",      "inbox"),
                 ("ROUTER", "whiteboard") : ("WHITEBOARD", "inbox"),
                 # aggregate all output
                 ("AUDIO",      "outbox") : ("", "outbox"),
                 ("WHITEBOARD", "outbox") : ("", "outbox"),
+                ("WHITEBOARD", "outbox") : ("CONSOLE", "inbox"),
                 # shutdown routing, not sure if this will actually work, but hey!
                 ("", "control") : ("ROUTER", "control"),
                 ("ROUTER", "signal") : ("AUDIO", "control"),
@@ -189,30 +192,37 @@ class SurfaceToJpeg(Axon.Component.component):
         super(SurfaceToJpeg, self).__init__()
     
     def main(self):
-        while (self.dataReady("inbox")):
-            data = self.recv("inbox")
-            imagestring = pygame.image.tostring(data,"RGB")
-            self.send(imagestring, "outbox")
-        while (self.dataReady("inbox2")):
-            data = self.recv("inbox2")
-            image = pygame.image.fromstring(data,(190,140),"RGB")
-            self.send(image, "outbox2")
-            #pilImage = Image.fromstring("RGB", self.surface.get_size(), imagestring)
-            #pilImage.save(filename)
-        self.pause()
-        yield 1
+        while (1):
+            while (self.dataReady("inbox")):
+                data = self.recv("inbox")
+                imagestring = pygame.image.tostring(data,"RGB")
+                self.send(imagestring, "outbox")
+            while (self.dataReady("inbox2")):
+                data = self.recv("inbox2")
+                image = pygame.image.fromstring(data,(190,140),"RGB")
+                self.send(image, "outbox2")
+                #pilImage = Image.fromstring("RGB", self.surface.get_size(), imagestring)
+                #pilImage.save(filename)
+            self.pause()
+            yield 1
 
-def clientconnectorwc(webcamBackplane="WEBCAM"):
+def clientconnectorwc(webcamBackplane="WEBCAM", port=1501):
     return Pipeline(
         chunks_to_lines(),
         Graphline(
             WEBCAM = FilteringPubsubBackplane(webcamBackplane),
             CONVERTER = SurfaceToJpeg(),
+            FRAMER = DataChunker(),
+            CONSOLE = ConsoleEchoer(),
+            DEFRAMER = DataDeChunker(),
             linkages = {
+                #("", "inbox") : ("CONSOLE", "inbox"),
                 ("", "inbox") : ("CONVERTER", "inbox2"),
-                ("CONVERTER", "outbox2") : ("WEBCAM", "inbox"),
+                ("CONVERTER", "outbox2") : ("DEFRAMER", "inbox"),
+                ("DEFRAMER", "outbox") : ("WEBCAM", "inbox"),
                 ("WEBCAM", "outbox") : ("CONVERTER", "inbox"),
-                ("CONVERTER", "outbox") : ("", "outbox"),
+                ("CONVERTER", "outbox") : ("FRAMER", "inbox"),
+                ("FRAMER", "outbox") : ("", "outbox"),
                 },
             ),
         )
@@ -230,7 +240,8 @@ def LocalEventServer(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", p
     
 def LocalWebcamEventServer(webcamBackplane="WEBCAM", port=1501):
     def configuredClientConnector():
-        return clientconnectorwc(webcamBackplane=webcamBackplane)
+        return clientconnectorwc(webcamBackplane=webcamBackplane,
+                                 port=port)
     return SimpleServer(protocol=clientconnectorwc, port=port)
 
 #/-------------------------------------------------------------------------
@@ -278,14 +289,15 @@ def WebcamEventServerClients(rhost, rport,
             #BLACKOUT =  OneShot(msg="CLEAR 0 0 0\r\n"
             #                        "WRITE 100 100 24 255 255 255 "+loadingmsg+"\r\n"),
             NETWORK = TCPClient(host=rhost,port=rport),
-            #CONSOLE = ConsoleEchoer(),
+            CONSOLE = ConsoleEchoer(),
             APPCOMMS = clientconnectorwc(webcamBackplane=webcamBackplane),
             linkages = {
                 #("GETIMG",   "outbox") : ("NETWORK",    "inbox"), # Single shot out
                 ("APPCOMMS", "outbox") : ("NETWORK", "inbox"), # Continuous out
-
+                ("APPCOMMS", "outbox") : ("CONSOLE", "inbox"),
                 #("BLACKOUT", "outbox") : ("APPCOMMS", "inbox"), # Single shot in
                 ("NETWORK", "outbox") : ("APPCOMMS", "inbox"), # Continuous in
+                ("NETWORK", "outbox") : ("CONSOLE", "inbox"),
             } 
         )
 #/-------------------------------------------------------------------------
