@@ -423,6 +423,21 @@ class ProperSurfaceDisplayer(Axon.Component.component):
             self.pygame_display_flip()
          while 1:
             if (self.webcam):
+                if (self.webcam == 2):
+                    # Reset remote cameras where clients have disconnected (remotecamcount = 0)
+                    iteration = 0
+                    for x in self.remotecamcount:
+                        if (self.remotecamcount[iteration] == 0):
+                            snapshot = "No Remote Camera"
+                            font = pygame.font.Font(None,22)
+                            offset = (iteration * 140)
+                            self.display.fill( (0,0,0),pygame.Rect(0,offset,190,140))
+                            snapshot = font.render(snapshot, False, (255,255,255))
+                            self.display.blit(snapshot, (25,56+offset)) 
+                            self.remotecams[iteration] = 0
+                        elif (self.remotecamcount[iteration] > 0):
+                            self.remotecamcount[iteration] -= 1
+                        iteration += 1
                 while self.dataReady("inbox"):
                     snapshot = self.recv("inbox")
                     if (self.webcam == 1):
@@ -449,19 +464,7 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                             elif ((self.remotecams[2] == 0)):
                                 self.remotecams[3] = tag
                         
-                        # Reset remote cameras where clients have disconnected (remotecamcount = 0)
-                        iteration = 0
-                        for x in self.remotecamcount:
-                            if (self.remotecamcount[iteration] == 0):
-                                snapshot = "No Remote Camera"
-                                font = pygame.font.Font(None,22)
-                                self.display.fill( (0,0,0),pygame.Rect(0,0,190,140))
-                                snapshot = font.render(snapshot, False, (255,255,255))
-                                offset = (iteration * 140)
-                                self.display.blit(snapshot, (25,56+offset)) 
-                            elif (self.remotecamcount[iteration] > 0):
-                                self.remotecamcount[iteration] -= 1
-                            iteration += 1
+                       # code was here
                                 
                         # public cam pic to window if one is available
                         iteration = 0
