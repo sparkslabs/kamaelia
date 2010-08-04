@@ -166,14 +166,14 @@ def clientconnector(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", po
             linkages = {
                 # incoming messages go to a router
                 ("", "inbox") : ("ROUTER", "inbox"),
-                ("", "inbox") : ("CONSOLE", "inbox"),
+                #("", "inbox") : ("CONSOLE", "inbox"),
                 # distribute messages to appropriate destinations
                 ("ROUTER",      "audio") : ("AUDIO",      "inbox"),
                 ("ROUTER", "whiteboard") : ("WHITEBOARD", "inbox"),
                 # aggregate all output
                 ("AUDIO",      "outbox") : ("", "outbox"),
                 ("WHITEBOARD", "outbox") : ("", "outbox"),
-                ("WHITEBOARD", "outbox") : ("CONSOLE", "inbox"),
+                #("WHITEBOARD", "outbox") : ("CONSOLE", "inbox"),
                 # shutdown routing, not sure if this will actually work, but hey!
                 ("", "control") : ("ROUTER", "control"),
                 ("ROUTER", "signal") : ("AUDIO", "control"),
@@ -200,15 +200,15 @@ class SurfaceToJpeg(Axon.Component.component):
             while (self.dataReady("inbox2")):
                 data = self.recv("inbox2")
                 image = pygame.image.fromstring(data,(190,140),"RGB")
+                #pilImage = Image.fromstring("RGB", (190,140), data)
+                #pilImage.save("test.png")
                 self.send(image, "outbox2")
-                #pilImage = Image.fromstring("RGB", self.surface.get_size(), imagestring)
-                #pilImage.save(filename)
             self.pause()
             yield 1
 
 def clientconnectorwc(webcamBackplane="WEBCAM", port=1501):
     return Pipeline(
-        chunks_to_lines(),
+        #chunks_to_lines(),
         Graphline(
             WEBCAM = FilteringPubsubBackplane(webcamBackplane),
             CONVERTER = SurfaceToJpeg(),
@@ -216,10 +216,9 @@ def clientconnectorwc(webcamBackplane="WEBCAM", port=1501):
             CONSOLE = ConsoleEchoer(),
             DEFRAMER = DataDeChunker(),
             linkages = {
-                #("", "inbox") : ("CONSOLE", "inbox"),
-                ("", "inbox") : ("CONVERTER", "inbox2"),
-                ("CONVERTER", "outbox2") : ("DEFRAMER", "inbox"),
-                ("DEFRAMER", "outbox") : ("WEBCAM", "inbox"),
+                ("", "inbox") : ("DEFRAMER", "inbox"),
+                ("DEFRAMER", "outbox") : ("CONVERTER", "inbox2"),
+                ("CONVERTER", "outbox2") : ("WEBCAM", "inbox"),
                 ("WEBCAM", "outbox") : ("CONVERTER", "inbox"),
                 ("CONVERTER", "outbox") : ("FRAMER", "inbox"),
                 ("FRAMER", "outbox") : ("", "outbox"),
@@ -294,10 +293,10 @@ def WebcamEventServerClients(rhost, rport,
             linkages = {
                 #("GETIMG",   "outbox") : ("NETWORK",    "inbox"), # Single shot out
                 ("APPCOMMS", "outbox") : ("NETWORK", "inbox"), # Continuous out
-                ("APPCOMMS", "outbox") : ("CONSOLE", "inbox"),
+                #("APPCOMMS", "outbox") : ("CONSOLE", "inbox"),
                 #("BLACKOUT", "outbox") : ("APPCOMMS", "inbox"), # Single shot in
                 ("NETWORK", "outbox") : ("APPCOMMS", "inbox"), # Continuous in
-                ("NETWORK", "outbox") : ("CONSOLE", "inbox"),
+                #("NETWORK", "outbox") : ("CONSOLE", "inbox"),
             } 
         )
 #/-------------------------------------------------------------------------
@@ -478,7 +477,7 @@ if __name__=="__main__":
                             WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-190,32+1), bgcolour=(0,0,0), webcam = 1),
                             REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4), position = (1024-190,32+140+2), bgcolour=(0,0,0), webcam = 2),
                             CAM_SPLITTER = TwoWaySplitter(),
-                            #CONSOLE = ConsoleEchoer(),
+                            CONSOLE = ConsoleEchoer(),
                             linkages = { ('','inbox'):('REMWCCANVAS','inbox'),
                                 ('LOCALWEBCAM','outbox'):('CAM_SPLITTER','inbox'),
                                 ('CAM_SPLITTER','outbox2'):('WCCANVAS','inbox'),
