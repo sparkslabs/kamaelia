@@ -448,7 +448,16 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                                 self.remotecams[2] = tag
                             elif ((self.remotecams[2] == 0)):
                                 self.remotecams[3] = tag
-                        
+
+                        # public cam pic to window if one is available
+                        iteration = 0
+                        for x in self.remotecams:
+                            if (self.remotecams[iteration] == tag):
+                                offset = (140 * iteration)
+                                self.display.blit(data, (0,0+offset))
+                                self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
+                            iteration += 1
+
                         # Reset remote cameras where clients have disconnected (remotecamcount = 0)
                         iteration = 0
                         for x in self.remotecamcount:
@@ -462,15 +471,6 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                                 self.remotecams[iteration] = 0
                             elif (self.remotecamcount[iteration] > 0):
                                 self.remotecamcount[iteration] -= 1
-                            iteration += 1
-                                
-                        # public cam pic to window if one is available
-                        iteration = 0
-                        for x in self.remotecams:
-                            if (self.remotecams[iteration] == tag):
-                                offset = (140 * iteration)
-                                self.display.blit(data, (0,0+offset))
-                                self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
                             iteration += 1
 
                         self.pygame_display_flip()
