@@ -199,10 +199,11 @@ class SurfaceToJpeg(Axon.Component.component):
                 self.send(imagestring, "outbox")
             while (self.dataReady("inbox2")):
                 data = self.recv("inbox2")
-                image = pygame.image.fromstring(data,(190,140),"RGB")
-                #pilImage = Image.fromstring("RGB", (190,140), data)
-                #pilImage.save("test.png")
-                self.send(image, "outbox2")
+                try: # Prevent crashing with malformed received images
+                    image = pygame.image.fromstring(data,(190,140),"RGB")
+                    self.send(image, "outbox2")
+                except Exception, e:
+                    pass
             self.pause()
             yield 1
 
@@ -277,26 +278,12 @@ def WebcamEventServerClients(rhost, rport,
                        webcamBackplane="WEBCAM"):
     # plug a TCPClient into the backplane
 
-    #loadingmsg = "Fetching sketch from server..."
-
     return Graphline(
-            # initial messages sent to the server, and the local whiteboard
-            #GETIMG = Pipeline(
-            #            OneShot(msg=[["GETIMG"]]),
-            #            tokenlists_to_lines()
-            #        ),
-            #BLACKOUT =  OneShot(msg="CLEAR 0 0 0\r\n"
-            #                        "WRITE 100 100 24 255 255 255 "+loadingmsg+"\r\n"),
             NETWORK = TCPClient(host=rhost,port=rport),
-            CONSOLE = ConsoleEchoer(),
             APPCOMMS = clientconnectorwc(webcamBackplane=webcamBackplane),
             linkages = {
-                #("GETIMG",   "outbox") : ("NETWORK",    "inbox"), # Single shot out
                 ("APPCOMMS", "outbox") : ("NETWORK", "inbox"), # Continuous out
-                #("APPCOMMS", "outbox") : ("CONSOLE", "inbox"),
-                #("BLACKOUT", "outbox") : ("APPCOMMS", "inbox"), # Single shot in
                 ("NETWORK", "outbox") : ("APPCOMMS", "inbox"), # Continuous in
-                #("NETWORK", "outbox") : ("CONSOLE", "inbox"),
             } 
         )
 #/-------------------------------------------------------------------------
@@ -389,6 +376,8 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 class ProperSurfaceDisplayer(Axon.Component.component):
     Inboxes = ["inbox", "control", "callback"]
     Outboxes= ["outbox", "signal", "display_signal"]
+    remotecams = [0,0,0,0]
+    remotecamcount = [25,25,25,25]
     displaysize = (640, 480)
     def __init__(self, **argd):
         super(ProperSurfaceDisplayer, self).__init__(**argd)
@@ -413,7 +402,8 @@ class ProperSurfaceDisplayer(Axon.Component.component):
 
     def main(self):
        yield Axon.Ipc.WaitComplete(self.getDisplay())
-       if 1:
+       if 1: # pointless instruction
+         # initialise five webcam windows
          if (self.webcam == 1):
             snapshot = "No Local Camera"
             font = pygame.font.Font(None,22)
@@ -440,11 +430,50 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                         self.display.blit(snapshot, (0,0))
                         self.pygame_display_flip()
                     elif (self.webcam == 2):
-                        self.display.blit(snapshot, (0,0))
+                        # remove tag
+                        tag = snapshot[0]
+                        data = snapshot[1]
+                        pretagged = False
+                        # allocate tag to a cam window
+                        for x in self.remotecams:
+                            if (x == tag):
+                                pretagged = True
+                                
+                        if (pretagged == False):
+                            if (self.remotecams[0] == 0):
+                                self.remotecams[0] = tag
+                            elif ((self.remotecams[1] == 0)):
+                                self.remotecams[1] = tag
+                            elif ((self.remotecams[2] == 0)):
+                                self.remotecams[2] = tag
+                            elif ((self.remotecams[2] == 0)):
+                                self.remotecams[3] = tag
+                        
+                        # Reset remote cameras where clients have disconnected (remotecamcount = 0)
+                        iteration = 0
+                        for x in self.remotecamcount:
+                            if (self.remotecamcount[iteration] == 0):
+                                snapshot = "No Remote Camera"
+                                font = pygame.font.Font(None,22)
+                                self.display.fill( (0,0,0),pygame.Rect(0,0,190,140))
+                                snapshot = font.render(snapshot, False, (255,255,255))
+                                offset = (iteration * 140)
+                                self.display.blit(snapshot, (25,56+offset)) 
+                            elif (self.remotecamcount[iteration] > 0):
+                                self.remotecamcount[iteration] -= 1
+                            iteration += 1
+                                
+                        # public cam pic to window if one is available
+                        iteration = 0
+                        for x in self.remotecams:
+                            if (self.remotecams[iteration] == tag):
+                                offset = (140 * iteration)
+                                self.display.blit(data, (0,0+offset))
+                                self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
+                            iteration += 1
+
                         self.pygame_display_flip()
-                        #snapshot=snapshot.convert()
-                        # if tagged with first client's id
-                        # blit to top position, if not put it further down etc
+
                 while not self.anyReady():
                     self.pause()
                     yield 1
@@ -508,7 +537,7 @@ if __name__=="__main__":
     # primary webcam - capture > to jpeg > framing > backplane > TCPC > Deframing > etc
     Pipeline( SubscribeTo("WEBCAM"),
               #ConsoleEchoer(), # Received data (its own?)
-              TagAndFilterWrapper(camera),
+              TagAndFilterWrapperKeepingTag(camera),
               PublishTo("WEBCAM"),
             ).activate()
 
