@@ -45,7 +45,7 @@ pygame.camera.init() # Ditto for camera subsystem
 
 class VideoCaptureSource(threadedcomponent):
     capturesize = (352, 288)
-    delay = 0.04
+    delay = 0.1
     fps = -1
     device = "/dev/video0"
  
