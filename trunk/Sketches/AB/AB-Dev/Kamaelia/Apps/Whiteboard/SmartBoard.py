@@ -49,29 +49,53 @@ class SmartBoard(Axon.Component.component):
         yield 1
         try:
             dev = usb.core.find(idVendor=0x0b8c,idProduct=0x0001)
+            for cfg in dev:
+                print("Config")
+                print cfg.bConfigurationValue
+                for i in cfg:
+                    print("Interface")
+                    print i.bInterfaceNumber
+                    for e in i:
+                        print ("Endpoint")
+                        print e.bEndpointAddress
+            dev.set_configuration()
             if dev is None:
                 self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("SMART Board not detected", "toTicker")
             else:
+                self.send(chr(0) + "CLRTKR", "toTicker")
+                self.send("SMART Board initialised", "toTicker")
                 datain = [0xe1,0x05,0x10,0x00] # Example
                 recval = datain[2]
                 if (recval == 0x00):
                     # No tool selected
                     self.send(colours["black"],"colour")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("SMART: No tools selected, assuming black pen", "toTicker")
                 elif (recval == 0x01):
                     # Blue pen
                     self.send(colours["blue"],"colour")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("SMART: Blue pen selected", "toTicker")
                 elif (recval == 0x02):
                     # Green pen
                     self.send(colours["green"],"colour")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("SMART: Green pen selected", "toTicker")
                 elif (recval == 0x04):
                     # Eraser
                     self.send("erase","erase")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("SMART: Eraser selected", "toTicker")
                 elif (recval == 0x08):
                     # Red pen
                     self.send(colours["red"],"colour")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("SMART: Red pen selected", "toTicker")
                 elif (recval == 0x10):
                     # Black pen
                     self.send(colours["black"],"colour")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("SMART: Black pen selected", "toTicker")
         except Exception, e:
             pass
