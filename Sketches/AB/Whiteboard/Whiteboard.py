@@ -308,6 +308,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       
                       DELETE = Delete(left+(64*6)+32*len(colours)+1,top),
                       CLOSEDECK = ClearScribbles(left+(64*9)+32*len(colours)+1,top),
+                      QUIT = Quit(left+(64*10)+32*len(colours)+1,top),
 
                       PAGINGCONTROLS = PagingControls(left+64+32*len(colours)+1,top),
                       #LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
@@ -342,6 +343,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           
                           ("CLOSEDECK", "outbox") : ("CANVAS", "inbox"),
                           ("DELETE", "outbox") : ("CANVAS", "inbox"),
+                          ("QUIT", "outbox") : ("CANVAS", "inbox"),
                           
                           #("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
                           #("LOCALEVENT_SPLITTER", "outbox2"): ("", "outbox"), # send to network
@@ -366,17 +368,15 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                     )
 
 class ProperSurfaceDisplayer(Axon.Component.component):
-    Inboxes = ["inbox", "control", "callback", "eventsIn"]
+    Inboxes = ["inbox", "control", "callback"]
     Outboxes= ["outbox", "signal", "display_signal"]
     remotecams = [0,0,0,0]
     remotecamcount = [25,25,25,25]
     displaysize = (640, 480)
-    maxcam = False
     def __init__(self, **argd):
         super(ProperSurfaceDisplayer, self).__init__(**argd)
         self.disprequest = { "DISPLAYREQUEST" : True,
                            "callback" : (self,"callback"),
-                           "events" : (self,"eventsIn"),
                            "size": self.displaysize,
                            "position" : self.position,
                            "bgcolour" : self.bgcolour}
@@ -399,7 +399,6 @@ class ProperSurfaceDisplayer(Axon.Component.component):
        if 1: # pointless instruction
          # initialise five webcam windows
          if (self.webcam == 1):
-	    #self.send( {"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN, "surface" : self.display},"display_signal" )
             snapshot = "No Local Camera"
             font = pygame.font.Font(None,22)
             self.display.fill( (0,0,0) )
@@ -407,7 +406,6 @@ class ProperSurfaceDisplayer(Axon.Component.component):
             self.display.blit(snapshot, (34,56))
             self.pygame_display_flip()
          elif (self.webcam == 2):
-            self.send( {"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN, "surface" : self.display},"display_signal" )
             snapshot = "No Remote Camera"
             font = pygame.font.Font(None,22)
             self.display.fill( (0,0,0),pygame.Rect(0,0,190,140*4))
@@ -418,31 +416,12 @@ class ProperSurfaceDisplayer(Axon.Component.component):
             self.display.blit(snapshot, (25,56+140*3+3)) 
             self.pygame_display_flip()
          while 1:
-            while self.dataReady("eventsIn"):
-                message = self.recv("eventsIn")
-                for data in message:
-                    if data.type == pygame.MOUSEBUTTONDOWN:
-                        if data.button==1:
-                            if ((self.maxcam == False) & (data.pos[0] >= 0)):
-                                iteration = 1
-                                for x in self.remotecams:
-                                    if ((data.pos[1] < (141 * iteration)) & (self.maxcam == False) & (data.pos[1] >= 0)):
-                                        # maximise camera
-                                        self.maxcam = iteration
-                                    iteration += 1
-                            elif (self.maxcam != False):
-                                self.maxcam = False
             if (self.webcam):
                 while self.dataReady("inbox"):
                     snapshot = self.recv("inbox")
                     if (self.webcam == 1):
                         #snapshot=snapshot.convert()
-			#if (self.maxcam == False):
-	                snapshot = pygame.transform.scale(snapshot,(190,140))
-        	        self.display.blit(snapshot, (0,0))
-			#else:
-			#	snapshot = pygame.transform.scale(snapshot,(1024,768))
-			#	self.display.blit(snapshot, (-832,-175))
+                        self.display.blit(snapshot, (0,0))
                         self.pygame_display_flip()
                     elif (self.webcam == 2):
                         # remove tag
@@ -469,13 +448,6 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                         for x in self.remotecams:
                             if (self.remotecams[iteration] == tag):
                                 offset = (140 * iteration + iteration * 1)
-                                #if (self.maxcam == (iteration + 1)):
-                                #    # maximise current camera
-                                #    data = pygame.transform.scale(data,(1024,768)) # depends on 1024x768
-                                #    self.display.blit(data, (-832,-175)) # depends on 1024x768
-                                #else:
-                                #    # usual cam size
-                                data = pygame.transform.scale(data,(190,140))
                                 self.display.blit(data, (0,0+offset))
                                 self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
                             iteration += 1
@@ -504,9 +476,6 @@ class ProperSurfaceDisplayer(Axon.Component.component):
             else:
                 self.pause()
                 yield 1
-            while not self.anyReady():
-                    self.pause()
-                    yield 1
 
 if __name__=="__main__":
 

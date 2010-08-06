@@ -44,7 +44,8 @@ pygame.init()        # Would be nice to be able to find out if pygame was alread
 pygame.camera.init() # Ditto for camera subsystem
 
 class VideoCaptureSource(threadedcomponent):
-    capturesize = (352, 288)
+    #capturesize = (352, 288)
+    capturesize = (1024, 768)
     delay = 0.1
     fps = -1
     device = "/dev/video0"
@@ -68,8 +69,8 @@ class VideoCaptureSource(threadedcomponent):
             self.camera.start()
             while 1:
                 self.capture_one()
-                #self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
-                self.snapshot = self.snapshot.convert()
+                self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
+                self.snapshot=self.snapshot.convert()
                 self.send(self.snapshot, "outbox")
                 time.sleep(self.delay)
         except Exception, e:

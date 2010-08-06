@@ -371,11 +371,13 @@ class Canvas(Axon.Component.component):
     def quit(self, args):
         root = Tk()
         root.withdraw()
-        if (askyesno("Confirm","Save changes?",parent=root)):
-            # Save current slide
-            self.send("save", "toHistory")
-        # perform quit
+        kill = False
+        if (askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root)):
+            # perform quit
+            kill = True
+            #pygame.quit() # This isn't the right way to do it!
+            # Also, saving won't work as the program exits before it's happened
         root.destroy()
-        print("Exiting")
-        pygame.quit() # This isn't the right way to do it!
-        # Also, saving won't work as the program exits before it's happened
+        if (kill):
+            print("Exiting")
+            self.scheduler.stop()
