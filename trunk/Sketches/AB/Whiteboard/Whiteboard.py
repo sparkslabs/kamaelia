@@ -469,14 +469,14 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                         for x in self.remotecams:
                             if (self.remotecams[iteration] == tag):
                                 offset = (140 * iteration + iteration * 1)
-                                if (self.maxcam == (iteration + 1)):
-                                    # maximise current camera
-                                    data = pygame.transform.scale(data,(1024,768)) # depends on 1024x768
-                                    self.display.blit(data, (-832,-175)) # depends on 1024x768
-                                else:
-                                    # usual cam size
-                                    data = pygame.transform.scale(data,(190,140))
-                                    self.display.blit(data, (0,0+offset))
+                                #if (self.maxcam == (iteration + 1)):
+                                #    # maximise current camera
+                                #    data = pygame.transform.scale(data,(1024,768)) # depends on 1024x768
+                                #    self.display.blit(data, (-832,-175)) # depends on 1024x768
+                                #else:
+                                #    # usual cam size
+                                data = pygame.transform.scale(data,(190,140))
+                                self.display.blit(data, (0,0+offset))
                                 self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
                             iteration += 1
 
