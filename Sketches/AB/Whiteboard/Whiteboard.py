@@ -295,7 +295,7 @@ SLIDESPEC = notepad+"/slide.%d.png"
 
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-191,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=notepad ),
+    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-192,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=notepad ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
@@ -494,8 +494,8 @@ if __name__=="__main__":
                      )
 
     camera = Graphline( LOCALWEBCAM = VideoCaptureSource(),
-                        WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-190,32+2), bgcolour=(0,0,0), webcam = 1),
-                        REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4+4), position = (1024-190,32+140+3), bgcolour=(0,0,0), webcam = 2),
+                        WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-191,32+2), bgcolour=(0,0,0), webcam = 1),
+                        REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4+4), position = (1024-191,32+140+3), bgcolour=(0,0,0), webcam = 2),
                         CAM_SPLITTER = TwoWaySplitter(),
                         CONSOLE = ConsoleEchoer(),
                         linkages = { ('','inbox'):('REMWCCANVAS','inbox'),
