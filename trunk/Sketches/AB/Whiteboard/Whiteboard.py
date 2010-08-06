@@ -399,6 +399,7 @@ class ProperSurfaceDisplayer(Axon.Component.component):
        if 1: # pointless instruction
          # initialise five webcam windows
          if (self.webcam == 1):
+	    #self.send( {"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN, "surface" : self.display},"display_signal" )
             snapshot = "No Local Camera"
             font = pygame.font.Font(None,22)
             self.display.fill( (0,0,0) )
@@ -436,8 +437,12 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                     snapshot = self.recv("inbox")
                     if (self.webcam == 1):
                         #snapshot=snapshot.convert()
-                        snapshot = pygame.transform.scale(snapshot,(190,140))
-                        self.display.blit(snapshot, (0,0))
+			#if (self.maxcam == False):
+	                snapshot = pygame.transform.scale(snapshot,(190,140))
+        	        self.display.blit(snapshot, (0,0))
+			#else:
+			#	snapshot = pygame.transform.scale(snapshot,(1024,768))
+			#	self.display.blit(snapshot, (-832,-175))
                         self.pygame_display_flip()
                     elif (self.webcam == 2):
                         # remove tag
