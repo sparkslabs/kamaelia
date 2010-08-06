@@ -68,8 +68,8 @@ class VideoCaptureSource(threadedcomponent):
             self.camera.start()
             while 1:
                 self.capture_one()
-                self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
-                self.snapshot=self.snapshot.convert()
+                #self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
+                self.snapshot = self.snapshot.convert()
                 self.send(self.snapshot, "outbox")
                 time.sleep(self.delay)
         except Exception, e:
