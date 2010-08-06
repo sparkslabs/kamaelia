@@ -162,18 +162,15 @@ def clientconnector(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", po
                         SpeexEncode(3),
                         Entuple(prefix=["SOUND"],postfix=[]),
                     ),
-            CONSOLE = ConsoleEchoer(),
             linkages = {
                 # incoming messages go to a router
                 ("", "inbox") : ("ROUTER", "inbox"),
-                #("", "inbox") : ("CONSOLE", "inbox"),
                 # distribute messages to appropriate destinations
                 ("ROUTER",      "audio") : ("AUDIO",      "inbox"),
                 ("ROUTER", "whiteboard") : ("WHITEBOARD", "inbox"),
                 # aggregate all output
                 ("AUDIO",      "outbox") : ("", "outbox"),
                 ("WHITEBOARD", "outbox") : ("", "outbox"),
-                #("WHITEBOARD", "outbox") : ("CONSOLE", "inbox"),
                 # shutdown routing, not sure if this will actually work, but hey!
                 ("", "control") : ("ROUTER", "control"),
                 ("ROUTER", "signal") : ("AUDIO", "control"),
@@ -298,7 +295,7 @@ SLIDESPEC = notepad+"/slide.%d.png"
 
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-190,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=notepad ),
+    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-191,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=notepad ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
@@ -308,8 +305,6 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       LOADDECK = LoadDeck(left+(64*7)+32*len(colours)+1,top),
                       
                       SMARTBOARD = SmartBoard(),
-                      
-                      #WEBCAM = Webcam(),
                       
                       DELETE = Delete(left+(64*6)+32*len(colours)+1,top),
                       CLOSEDECK = ClearScribbles(left+(64*9)+32*len(colours)+1,top),
@@ -367,9 +362,6 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("SMARTBOARD", "colour") : ("PAINTER", "colour"),
                           ("SMARTBOARD", "erase") : ("PAINTER", "erase"),
                           ("SMARTBOARD", "toTicker") : ("TICKER", "inbox"),
-                          
-                          #("WEBCAM", "outbox") : ("CANVAS", "inbox"),
-                          #("WEBCAM", "networkout") : ("", "outbox"), # send to network
                           },
                     )
 
@@ -417,9 +409,9 @@ class ProperSurfaceDisplayer(Axon.Component.component):
             self.display.fill( (0,0,0),pygame.Rect(0,0,190,140*4))
             snapshot = font.render(snapshot, False, (255,255,255))
             self.display.blit(snapshot, (25,56)) 
-            self.display.blit(snapshot, (25,56+140*1)) 
-            self.display.blit(snapshot, (25,56+140*2)) 
-            self.display.blit(snapshot, (25,56+140*3)) 
+            self.display.blit(snapshot, (25,56+140*1+1)) 
+            self.display.blit(snapshot, (25,56+140*2+2)) 
+            self.display.blit(snapshot, (25,56+140*3+3)) 
             self.pygame_display_flip()
          while 1:
             if (self.webcam):
@@ -453,7 +445,7 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                         iteration = 0
                         for x in self.remotecams:
                             if (self.remotecams[iteration] == tag):
-                                offset = (140 * iteration)
+                                offset = (140 * iteration + iteration * 1)
                                 self.display.blit(data, (0,0+offset))
                                 self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
                             iteration += 1
@@ -464,7 +456,7 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                             if (self.remotecamcount[iteration] == 0):
                                 snapshot = "No Remote Camera"
                                 font = pygame.font.Font(None,22)
-                                offset = (iteration * 140)
+                                offset = (iteration * 140 + iteration * 1)
                                 self.display.fill( (0,0,0),pygame.Rect(0,offset,190,140))
                                 snapshot = font.render(snapshot, False, (255,255,255))
                                 self.display.blit(snapshot, (25,56+offset)) 
@@ -500,21 +492,18 @@ if __name__=="__main__":
                                 ('CONSOLE','outbox'):('SKETCHER','inbox'),
                               }
                      )
-    if (1):
-        #LOCALWEBCAM = VideoCaptureSource().activate()
-        #WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-190,32), bgcolour=(255,255,255), webcam = 1).activate()
-        camera = Graphline( LOCALWEBCAM = VideoCaptureSource(),
-                            WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-190,32+1), bgcolour=(0,0,0), webcam = 1),
-                            REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4), position = (1024-190,32+140+2), bgcolour=(0,0,0), webcam = 2),
-                            CAM_SPLITTER = TwoWaySplitter(),
-                            CONSOLE = ConsoleEchoer(),
-                            linkages = { ('','inbox'):('REMWCCANVAS','inbox'),
-                                ('LOCALWEBCAM','outbox'):('CAM_SPLITTER','inbox'),
-                                ('CAM_SPLITTER','outbox2'):('WCCANVAS','inbox'),
-                                ('CAM_SPLITTER','outbox'):('','outbox'),
-                                #('CAM_SPLITTER','outbox'):('CONSOLE','inbox'),
-                              }
-                          ) #WCCANVAS.link( (LOCALWEBCAM, "outbox"), (WCCANVAS, "inbox") )
+
+    camera = Graphline( LOCALWEBCAM = VideoCaptureSource(),
+                        WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-190,32+2), bgcolour=(0,0,0), webcam = 1),
+                        REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4+4), position = (1024-190,32+140+3), bgcolour=(0,0,0), webcam = 2),
+                        CAM_SPLITTER = TwoWaySplitter(),
+                        CONSOLE = ConsoleEchoer(),
+                        linkages = { ('','inbox'):('REMWCCANVAS','inbox'),
+                            ('LOCALWEBCAM','outbox'):('CAM_SPLITTER','inbox'),
+                            ('CAM_SPLITTER','outbox2'):('WCCANVAS','inbox'),
+                            ('CAM_SPLITTER','outbox'):('','outbox'),
+                          }
+                      )
         
     # primary whiteboard
     Pipeline( SubscribeTo("WHITEBOARD"),
@@ -537,7 +526,6 @@ if __name__=="__main__":
             
     # primary webcam - capture > to jpeg > framing > backplane > TCPC > Deframing > etc
     Pipeline( SubscribeTo("WEBCAM"),
-              #ConsoleEchoer(), # Received data (its own?)
               TagAndFilterWrapperKeepingTag(camera),
               PublishTo("WEBCAM"),
             ).activate()
