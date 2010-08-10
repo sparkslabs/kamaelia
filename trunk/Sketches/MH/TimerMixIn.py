@@ -11,6 +11,8 @@ class TimerMixIn(object):
         self.timerSuccess = True
           
     def startTimer(self, secs):
+        if self.timer is not None:
+            self.cancelTimer()
         self.timer = Timer(secs, self.__handleTimerDone)
         self.timerSuccess = False
         self.timer.start()
