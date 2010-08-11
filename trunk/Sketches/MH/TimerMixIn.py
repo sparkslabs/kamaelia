@@ -38,6 +38,7 @@ class TimerMixIn(object):
 if __name__ == "__main__":
     
     from Kamaelia.Chassis.Pipeline import Pipeline
+    from Axon.ThreadedComponent import threadedcomponent
     from Kamaelia.Util.Console import ConsoleEchoer
         
     class TestComponent(TimerMixIn,component):
@@ -57,5 +58,13 @@ if __name__ == "__main__":
                 self.send(count, "outbox")
                 count=count+1
                 
-    Pipeline(TestComponent(),ConsoleEchoer()).run()
+    class PassItOn(threadedcomponent):
+        def main(self):
+            while True:
+                while self.dataReady("inbox"):
+                    self.send(self.recv("inbox"), "outbox")
+                self.pause()
+    
+                
+    Pipeline(TestComponent(),PassItOn(),ConsoleEchoer()).run()
     
