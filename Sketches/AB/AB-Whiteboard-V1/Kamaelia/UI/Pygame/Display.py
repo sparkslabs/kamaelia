@@ -233,6 +233,7 @@ and display creation is not done in the main thread of the program.
 import pygame
 import cjson #MODIFICATION FOR CALIBRATION
 import Axon
+import time
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -242,7 +243,6 @@ class Bunch: pass
 
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.AxonExceptions import noSpaceInBox
-import time
  
 class _PygameEventSource(threadedcomponent):
     """\

@@ -121,9 +121,9 @@ sending a message to its "unpausebox" inbox.
 
 import pygame
 import Axon
+import time
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 from Axon.Ipc import WaitComplete
-import time
 
 class GotShutdownException(Exception):
     pass

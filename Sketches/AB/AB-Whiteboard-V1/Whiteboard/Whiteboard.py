@@ -64,7 +64,7 @@ from Kamaelia.Apps.Whiteboard.Entuple import Entuple
 from Kamaelia.Apps.Whiteboard.Routers import Router, TwoWaySplitter, ConditionalSplitter
 from Kamaelia.Apps.Whiteboard.Palette import buildPalette, colours
 from Kamaelia.Apps.Whiteboard.Options import parseOptions
-from Kamaelia.Apps.Whiteboard.UI import * #PagingControls, LocalPagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles
+from Kamaelia.Apps.Whiteboard.UI import PagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles, Delete
 from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 #from Kamaelia.Apps.Whiteboard.SmartBoard import SmartBoard
 from Kamaelia.Apps.Whiteboard.Webcam import VideoCaptureSource
