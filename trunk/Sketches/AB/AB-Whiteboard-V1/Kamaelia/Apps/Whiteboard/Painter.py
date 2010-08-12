@@ -22,8 +22,8 @@
 #
 
 import Axon
-from Axon.Ipc import producerFinished, shutdownMicroprocess
 import pygame
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class Painter(Axon.Component.component):
     """\

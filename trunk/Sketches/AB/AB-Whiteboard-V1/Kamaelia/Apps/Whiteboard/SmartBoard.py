@@ -22,8 +22,8 @@
 #
 
 import Axon
-from Axon.Ipc import producerFinished, shutdownMicroprocess
 import time
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 try:
     import usb.core
@@ -34,14 +34,19 @@ except Exception, e:
 class SmartBoard(Axon.Component.component):
     
     colours = { "black" :  (0,0,0), 
-            "red" :    (192,0,0),
-            "green" :  (0,192,0),
-            "blue": (0,0,255),
-          }
-    Outboxes = { "colour" : "colour selected",
-            "erase" : "eraser selected",
-            "toTicker" : "data to ticker",
-          }
+                "red" :    (192,0,0),
+                "green" :  (0,192,0),
+                "blue": (0,0,255),
+              }
+    Inboxes = { "inbox" : "",
+                "control" : "",
+              }
+    Outboxes = { "outbox" : "",
+                 "signal" : "",
+                 "colour" : "colour selected",
+                 "erase" : "eraser selected",
+                 "toTicker" : "data to ticker",
+                }
           
     def __init__(self):
         super(SmartBoard,self).__init__()

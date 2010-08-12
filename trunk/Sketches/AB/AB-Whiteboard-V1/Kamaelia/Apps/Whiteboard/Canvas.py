@@ -23,18 +23,20 @@
 
 import Axon
 import zlib
-from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
-from Kamaelia.UI.PygameDisplay import PygameDisplay
+import os
 import pygame
+
 from datetime import datetime
 from zipfile import ZipFile
-import os
 
-#from FileDialog import *
 from Tkinter import *
 from tkFileDialog import askopenfilename
 from tkSimpleDialog import askstring
 from tkMessageBox import *
+
+from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
+from Kamaelia.UI.PygameDisplay import PygameDisplay
+
 
 
 
