@@ -106,7 +106,8 @@ if (notepad is None) and os.path.exists("Scribbles"):
         notepad = "Scribbles"
 
 if (notepad is None):
-   N = os.path.join(os.path.expanduser("~"),"Scribbles")
+   #N = os.path.join(os.path.expanduser("~"),"Scribbles")
+   N = "Scribbles"
    if not os.path.exists(N):
        os.makedirs(N)
    if os.path.isdir(N):
