@@ -231,7 +231,9 @@ and display creation is not done in the main thread of the program.
 """
 
 import pygame
+import cjson #MODIFICATION FOR CALIBRATION
 import Axon
+import time
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -241,7 +243,6 @@ class Bunch: pass
 
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.AxonExceptions import noSpaceInBox
-import time
  
 class _PygameEventSource(threadedcomponent):
     """\
@@ -338,6 +339,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.width = argd.get("width",1024)
       self.height = argd.get("height",768)
       self.background_colour = argd.get("background_colour", (255,255,255))
+      self.offsets = argd.get("offsets", [20,30,1004,30,20,718,1004,718])
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (0,0)
       self.surfaces = []  ##HERE
@@ -605,7 +607,30 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                         continue # Don't forward event
                                 e = Bunch()
                                 e.type = event.type
-                                pos = event.pos[0],event.pos[1]
+                                
+                                # CALIBRATION - Currently relies on 1024x768??? Possible that weird things will happen if display is another size - or it may just work anyway
+                                # When clicking top left, co-ords should be [21,62] (add 32 to all y co-ords in calib data, they show as 30)
+                                # When clicking top right, co-ords should be [1005,62]
+                                # When clicking bottom left, co-ords should be [21,750]
+                                # When clicking bottom right, co-ords should be [1005,750]
+                                # Max co-ords are 1024 x 768 or whatever specified in self.width and self.height
+                                topleft = [float(self.offsets[0]-21),float(self.offsets[1]-62)]
+                                topright = [float(self.offsets[2]+19),float(self.offsets[3]-62)]
+                                bottomleft = [float(self.offsets[4]-21),float(self.offsets[5]+18)]
+                                bottomright = [float(self.offsets[6]+19),float(self.offsets[7]+18)]
+                                topxratio = float(self.width / (topright[0] - topleft[0]))
+                                bottomxratio = float(self.width / (bottomright[0] - bottomleft[0]))
+                                leftyratio = float(self.height / (bottomleft[1] - topleft[1]))
+                                rightyratio = float(self.height / (bottomright[1] - topright[1])) # ok up to here, any problems are in the two lines below...
+                                correctx = ((((float(event.pos[0]) * topxratio) - topleft[0]) * (1 - (float(event.pos[1]) / self.height))) + (((float(event.pos[0]) * bottomxratio) - bottomleft[0]) * (float(event.pos[1]) / self.height)))
+                                correcty = ((((float(event.pos[1]) * leftyratio) - topleft[1]) * (1 - (float(event.pos[0]) / self.width))) + (((float(event.pos[1]) * rightyratio) - topright[1]) * (float(event.pos[0]) / self.width)))
+                                #print (event.pos[0],event.pos[1])
+                                # BASIC CALIB BELOW
+                                """offsetx = (1005-21)/(self.offsets[6]-self.offsets[0])
+                                offsety = (750-62)/(self.offsets[3]-self.offsets[5])
+                                pos = event.pos[0]*offsetx,event.pos[1]*offsety"""
+                                pos = int(correctx),(int(correcty)-32)
+                                #pos = event.pos[0],event.pos[1]
                                 try:
                                     e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
                                     if event.type == pygame.MOUSEMOTION:
@@ -632,6 +657,17 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
           pygame.mixer.quit()
       except NotImplementedError:
           pass # If it's not implemented, it not closing isn't a problem because it doesn't need/can't be
+      
+      
+      # CALIBRATION
+      try:
+          file = open("pygame-calibration.conf")
+          self.offsets = cjson.decode("[" + file.readline() + "]")
+          file.close()
+      except Exception, e:
+          print ("Failed to load calibration data")
+      
+          
       display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF)
       eventsource = _PygameEventSource().activate()
       self.addChildren(eventsource)
@@ -781,3 +817,5 @@ To strive, to seek, to find, and not to yield.
               ).activate()
 
    Axon.Scheduler.scheduler.run.runThreads()
+
+

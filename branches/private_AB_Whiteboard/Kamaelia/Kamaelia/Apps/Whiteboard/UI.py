@@ -33,11 +33,11 @@ def PagingControls(left,top):
                                 size=(63,32), 
                                 position=(left+64, top),
                                 msg='next'),
-                CHECKPOINT  = Button(caption="checkpoint",
+                CHECKPOINT  = Button(caption="Checkpoint",
                                 size=(63,32),
                                 position=(left+128, top),
                                 msg="checkpoint"),
-                NEWPAGE = Button(caption="new page",
+                NEWPAGE = Button(caption="New Page",
                                  size=(63,32),
                                  position=(left+192, top),
                                  msg="new"),
@@ -69,4 +69,19 @@ def Eraser(left,top):
     return Button(caption="Eraser", size=(64,32), position=(left,top))
 
 def ClearPage(left,top):
-    return Button(caption="clear", size=(63,32), position=(left, top), msg=[["clear"]])
+    return Button(caption="Clear", size=(63,32), position=(left, top), msg=[["clear"]])
+    
+def SaveDeck(left,top):
+    return Button(caption="Save Deck", size=(63,32), position=(left,top), msg=[["savedeck"]])
+
+def LoadDeck(left,top):
+    return Button(caption="Load Deck", size=(63,32), position=(left,top), msg=[["loaddeck"]])
+    
+def ClearScribbles(left,top):
+    return Button(caption="Close Deck", size=(63,32), position=(left,top), msg=[["clearscribbles"]])
+    
+def Delete(left,top):
+    return Button(caption="Delete Slide", size=(63,32), position=(left,top), msg=[["deleteslide"]])
+    
+def Quit(left,top):
+    return Button(caption="Quit", size=(63,32), position=(left,top), msg=[["quit"]])  

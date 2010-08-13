@@ -22,8 +22,8 @@
 #
 
 import Axon
-from Axon.Ipc import producerFinished, shutdownMicroprocess
 import pygame
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class Painter(Axon.Component.component):
     """\
@@ -103,10 +103,10 @@ class Painter(Axon.Component.component):
 
     def cmd(self, mode, oldpos, newpos, r, g, b):
         if mode=="LINE":
-            self.sendbuffer.append( ["LINE", str(r),str(g),str(b), str(oldpos[0]), str(oldpos[1]), str(newpos[0]), str(newpos[1])] )
+            self.sendbuffer.append( ["LINE", str(r),str(g),str(b), repr(int(oldpos[0])), repr(int(oldpos[1])), repr(int(newpos[0])), repr(int(newpos[1]))] )
 
         elif mode=="ERASE":
-            self.sendbuffer.append( ["CIRCLE", "255","255","255", str(newpos[0]), str(newpos[1]), "8"])
+            self.sendbuffer.append( ["CIRCLE", "255","255","255", repr(int(newpos[0])), repr(int(newpos[1])), "8"])
 
     def flushbuffer(self):
         if len(self.sendbuffer):
