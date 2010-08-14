@@ -1,0 +1,305 @@
+<html>
+<head>
+<title> ReleaseJune2008 </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - ReleaseJune2008">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Target for next release: June 2008</h1>It's been too long since the last release, for a variety of valid,
+practical reasons. The aim is to restart the build/release process,
+basing it on the newer packaging style used by Kamaelia { Logger, Grey,
+Modeller }.<br>
+<br>
+Recent comments on various blogs suggest packaging can be improved, and
+whilst the newer packaging style is an improvement, more *concrete*
+suggestions for improvement are welcome - whether they're to do with
+"don't stop this" "stop doing this" "start doing this" etc.<br>
+<br>
+Davbo queried why a significant amount of code from private_MPS_Scratch
+hasn't been merged to trunk yet -- Michael replied it was largely time
+related, and extra help with merging would be useful, and also what's
+important to merge from there. It's worth noting that branches with specific sets of features now need claiming, and that there's still a ton of work to do in merging code.<br>
+<font size="3"><b><br>Branches (most recently) Merged</b><br></font><blockquote>private_MPS_JL_PygameText/<br>private_MPS_JL_AIMSupport/<br>private_MPS_ERModeller/<br>private_MPS_JL_IRCSupport/<br>private_MPS_KamaeliaLogger<br>private_MPS_STM<br>private_MPS_TCPServerImprovments <br>private_MPS_Tools2AppsConsolidation<br><br><i>private_MPS_TickerFix_mashed<br></i><i>private_MPS_LikeFileRewrite</i><br><i>private_MPS_PygameImprovements</i><br><i>private_MPS_AxonCoreImprovements_mashed<br>Multicore/multiprocess code merged as Axon.experimental - <u>expect this to change<br></u></i>..<i><u><br></u></i><font size="3"><b><br></b></font></blockquote><font size="3"><b>Branches Merged Prior to Mashed<br></b>Branches created (branch point rev included)<b> pre-mashed</b> to allow rollback if unstable<br></font><ul><li>4496 - private_MPS_TickerFix_mashed</li><li>4500 - private_MPS_LikeFileRewrite</li><li>4530 - private_MPS_AxonCoreImprovements_mashed</li><li>4538 - private_MPS_PygameImprovements</li><li>r4556 - private_MPS_HTTPImprovements</li></ul><font size="3"><b>Branches That Need Merging</b><br></font>These branches need claiming for merge:<br><blockquote><b><i>None at present!</i></b><br></blockquote><font size="3"><b>Things that can go in the release if time.</b></font><br><ul><li>Kamaelia Grey merge</li><li>Filereading improvements</li><li>TCPClient enhancements</li><li>TPipe Chassis (maybe)</li><li>Support.Data.Repository changes</li><li>PureTransformer enhancements</li><li>Shutdown improvements to a variety of components</li><li>Improvements to protect memory (hard limits in rate filtering)</li><li>Improvements to the topology visualiser core</li><li>Fixes/improvements to chunks_to_lines</li><li>PyMedia runtime protection</li><li>Initialisation/Configuration improvements (merged)<br></li><li>Axon enhancements <i><b>--</b></i><i><b> private_MPS_AxonCoreImprovements_mashed/ - r4530</b></i></li><li>Likefile replacement/reversion/reimplementation -<i> <b>private_MPS_LikeFileRewrite/ -r4500</b><b> (merged)</b></i><br></li><li><a href="ReleaseJune2008/PossibleHTTPMerge">HTTP subsystem improvements</a>  -<i><b> private_MPS_HTTPImprovements - 4556 (merged)</b></i><br></li><li>Ticker fixes -<i>  <b>private_MPS_TickerFix_mashed </b><b>- 4496 (merged)<br></b></i></li><li>Pygame.Image, Pygame.Display enhancements <i><b>- private_MPS_PygameImprovements - 4538 (merged)</b></i><br></li><li>More examples...</li></ul><font size="3"><b>Todo list beyond that, if time, in no particular order</b><br></font><ul><li>From discussion:</li><li>
+    MoreComplexServer should go in (named better - perhaps as ServerCore) - <b>DONE</b><br></li><li>
+    Experimental WSGI server needs to go in (under Experimental) - <b>first iteration of this has actually gone in as an *example* rather than as something intended for easy reuse.</b><br></li><li>
+    Matt wants to sort:</li><li>
+        sort out DVB bindings</li><li>
+        refresh dirac/schroedinger bindings</li><li>
+    j_baker may:</li><ul><li>
+        refactor the HTTPParser code some.</li></ul><li>
+    Push for website to be sorted by then. - <i>didn't happen, but hey, code comes first, website will get a revamp for the non-beta release.</i><br></li><li>
+    Lots of support from people on the channel :-)</li><li>
+    Need a more formal wishlist to know the goal posts.</li></ul>
+Starting point: a working wiki (done), but mailing list suffices Target
+release date:  By Midsummer's day (coincides with BBC "Mashed" )<br><br>
+<font size="3">Ideas for stuff to go into the release:</font><br><ul><li>runtime profiler - /Sketches/MH/Introspection/Profiling.py (needs tidying up first)</li><li>Merge as much of private_MPS_Scratch onto trunk - <b>This has worked really really well - massively there</b><br></li><li>Website update - <b>TBD</b><br></li><li>Packaging up major Kamaelia apps - <b>TBD</b><br></li><li>mhrd:</li><ul><li>I'm hoping to have a few more DVB components or example ready
+before then which I'd hope can make it into the release too (all a bit
+dependent on how much time I can devote to that tho)</li></ul><li>UDP components (including multicast) using Selector - <b>MERGED</b><br></li><li>The WSGI stuff should hopefully be able to go in in time (albeit possibly under Experimental) -Jason - <b>Parts actually under "examples"</b><br></li><li>Release notes - <b>Partial release notes in michael's blog</b><br></li><li>Detailed changelog - <b>Needs more detail</b><br></li><li>Documentation review</li></ul><b>Things can be very helpful:</b><br><ul><li>review and merge of branches (review includes running code if you have the hardware of course)</li></ul><h2> Current Changelog notes (since last release)</h2>This is turning into a very large/substantial release. This implies a bump from 0.5.X to 0.6.0<br><br><blockquote><pre>   * Kamaelia.UI.Pygame.Text Added - (similar to Ticker, but input as well</pre><pre>     as output. Line oriented rather than word)</pre><pre><br>   * Added minor bugfix for Windows support for TCP clients</pre><pre>   * Fix to reliability of DVB support</pre><pre>   * Basic SSL support added - allow, for example, HTTPS components</pre><pre><br>   NEW TOOLS:</pre><pre><br>   Simple Video Player:</pre><pre>    * plays the sound and pictures from a video file</pre><pre><br>   Video Reframer:</pre><pre>    * applies an XML edit decision list to cut, crop and scale a video sequence;</pre><pre>      reframing the content for other use.</pre><pre><br>   Video Shot Change Detector:</pre><pre>    * outputs an XML file describing the frame indices at which shot changes</pre><pre>      probably occur in a sequence of video</pre><pre><br></pre><pre>   NEW COMPONENTS:</pre><pre><br>    * WAV format parsing and writing</pre><pre>    * YUV4MPEG2 format parsing and writing</pre><pre>    * Additional UnixProcess component with named pipe support</pre><pre>    * Various simple utility components</pre><pre>    * Pygame Video Surfaces (as opposed to overlays)</pre><pre>    * YUV to/from RGB video frame pixel format conversion</pre><pre>    * SDP parsing</pre><pre>    * RTP packet parsing and writing</pre><pre>    * Out of order packet reordering</pre><pre>    * "Maximum speed" file reading</pre><pre>    * Simple XML parsing</pre><pre>    * Video shot change detection</pre><pre>    * Video frame cropping and scaling</pre><pre>    * Experimental Pipeline/Graphline/Carousel support for size limited inboxes</pre><pre>    * Sequencing of tasks (Seq component)</pre><pre><br></pre><pre>   Changed the CSA such that it no longer has internal buffering. This means</pre><pre>   that if you make the link *TO* the CSA synchronous that you will be able</pre><pre>   to send to the link as fast as the link will handle without causing over</pre><pre>   buffering.</pre><pre><br>   Bugfixes to:</pre><pre>    * Kamaelia.Chassis.Carousel component - rewrite to fix shutdown behaviour.</pre><pre><br>   Bugfixes to:</pre><pre>    * Kamaelia.UI.Pygame.BasicSprite component.</pre><pre>    * Kamaelia.Util.RateFilter.ByteRate_RequestControl component.</pre><pre>    * Kamaelia.Protocol.HTTP.HTTPClient.SimpleHTTPClient component.</pre><pre><br>   Added Documentation generation tools for generating Axon and Kamaelia</pre><pre>   reference documentation - see their docstrings for more information.</pre><pre><br>   Enhanced Kamaelia.Support.Data.Repository to support fuller introspection</pre><pre>   of components, prefabs, classes and methods in the repository, including</pre><pre>   their arguments and documentation. The "Compose" tool now uses this,</pre><pre>   instead of trying to import all components.</pre><pre><br>   Dirac 0.6.0 release now supported by Dirac components (through 0.6.0</pre><pre>   bindings)</pre><pre><br>   Bugfixes to:</pre><pre>    * Kamaelia.Audio.PyMedia.Input component now works on win32</pre><pre>    * Kamaelia.UI.Pygame.Display no longer freezes up on win32 &amp; MacOSX</pre><pre>    * "Show" example correctly now instantiates XML parser on win32 &amp; MacOSX</pre><pre>      including Kamaelia.Support.Data.Experimental XML graph parser</pre><pre>      component</pre><pre>    * Kamaelia.Util.Chooser components are now all quiescent when idle</pre><pre><br>   Bugfixes to:</pre><pre>    * Various example programs in /Code/Python/Kamaelia/Tools and Examples</pre><pre>      to remove use of deprecated components.</pre><pre><br></pre></blockquote>Please add to the top of this. Rationalising things together and correcting welcome.<br><br><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

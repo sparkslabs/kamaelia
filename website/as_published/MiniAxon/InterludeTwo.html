@@ -1,0 +1,108 @@
+<html>
+<head>
+<title> MiniAxon/InterludeTwo </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:14pt;font-weight:600">6 Interlude 2</span></p>
+<p>If you've come this far, you may be wondering the worth of what you've acheived. Essentially you've managed to implement the core of a working Axon system, specifically on the most used aspects of the system. Sure, there is some syntactic sugar relating to creation and managing of links, but that's what it is - sugar.</p>
+<p>One of the longer examples on the Kamaelia website, specifically in the blog area, is how to build new components. That's probably the next logical place to start looking. However, taking one of the components on that page, we find that the core implementation of them matches the same core API as the component system you've implemented.</p>
+<p>For example, let's take a look at the multicast sender. </p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>class Multicast_sender(component):</pre></span></div></ul>
+<p>This has an initialiser for grabbing some initial values, and ensuring the super class's initialiser is called:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>   def __init__(self, local_addr, local_port, remote_addr, remote_port):<br />       super(Multicast_sender, self).__init__()<br />       self.local_addr = local_addr<br />       self.local_port = local_port<br />       self.remote_addr = remote_addr<br />       self.remote_port = remote_port</pre></span></div></ul>
+<p></p>
+<p></p>
+<p>The main function/generator then is relatively simple - set up the socket, wait for data and send it out:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>   def main(self):<br />       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM,<br />                            socket.IPPROTO_UDP)<br />       sock.bind((self.local_addr,self.local_port))<br />       sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 10)<br />       while 1:<br />          if self.dataReady(&quot;inbox&quot;):<br />             data = self.recv()<br />             l = sock.sendto(data, (self.remote_addr,self.remote_port) );<br />          yield 1</pre></span></div></ul>
+<p>From this, it should be clear that this will work inside the mini-axon system you've created.</p>
+<p>Similarly, we can create a simple file reading component thus:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>class FileReader(component):<br />    def __init__(self, filename):<br />        super(ReadFileAdapter, self).__init__()<br />        self.file = open(filename, &quot;rb&quot;,0)<br />    def main(self):<br />        yield 1<br />        for line in self.file.xreadlines():<br />            self.send(line, &quot;outbox&quot;)<br />            yield 1</pre></span></div></ul>
+<p>This can then also be used using the component system you've just created to build a simplistic system for sending data to a multicast group:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>reader = FileReader(&quot;fortune.txt&quot;)<br />sender = Multicast_sender(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600)<br />postie = Postman(reader, &quot;outbox&quot;, sender, &quot;inbox&quot;)</pre></span></div></ul>
+<p>That can then be activated and run in the usual way:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>myscheduler = scheduler()<br />myscheduler.activateMicroprocess(reader)<br />myscheduler.activateMicroprocess(sender)<br />myscheduler.activateMicroprocess(postie)<br /><br />for _ in myscheduler.main():<br />    pass</pre></span></div></ul>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

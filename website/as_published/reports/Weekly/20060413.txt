@@ -1,0 +1,145 @@
+====== START OF WEEKLY IRC KAMAELIA SUMMIT MEETING, 20060413 ======
+Agenda
+~~~~~~
+1. Participants : Matt Hammond, Michael Sparks
+2. Note of agenda
+3. Activity reports 
+
+Michael's Lines:
+
+DONE - Moved sites
+       Documented our 2 key processes online
+       Set up the beginnings of the manchester office
+       Downloaded FC5 at home
+
+TODO - Continue work on the selector
+       Review/merge the box code
+       Install debian & fedora box
+       Install DVB-T card
+BLOCKED - Debian & fedora boxes
+           - one of the machines appears slightly borked
+           - both need reinstalling
+           - getting ISOs is not simple [ bandwidth ]
+
+Matt's Lines:
+
+DONE - Axon 'box' optimisations & revised tests
+TODO - work on 'thread' support for axon
+       Implement synchronous boxes
+       Write a collaborative whiteboard tool (low priority) BLOCKED - none
+FOLLOWUP - none  
+
+4. Discussion items (3 or max)
+4.1 Process documents uploaded - any issues at this stage?
+
+Michael noted these had been discussed before writing up anyway, so generally minor points.
+Minor points:
+    * Change the weekly meeting tim from 10:30 to 11am (UK time).
+    * Add note about common id for start of meeting to project process page
+
+Clarification on the CHAOS branch was asked for and given
+    * It doesn't exist yet, but is based on having seen it work well in
+      a different project before. The reason is because it really lets a
+      creative developer just let rip with their ideas.
+    * The difference between private_INITIALS... and CHAOS is that the
+      default is anyone can do anything they like in CHAOS, whereas in a
+      private_INITIALS... branch, the person owning it gets to set the
+      rules, and in the case of the HEAD should follow specific rules.
+
+One question was raised whether to formalise the Kamaelia Project Processes
+into a specific series of documents which are numbered like the java community
+process or python enhancement proposals. It was felt at this stage it's
+jumping the gun, but having a jump off page would be useful.
+
+However it was also realised that if (say) the number of process pages (what
+to do in specific circumstances) went over 10 pages, it might be useful to
+revisit thins. We're aiming to stay lightweight for the moment, rather than
+have a KPP list.
+
+4.2 What do we want to with regard to Macro over next 4 weeks, specifically
+    with regard to optimisations and working functionality. We have basic
+    code in place, what demo should we aim for ?
+
+After discussion we decided that:
+   * Having at least one channel being constantly recorded and transcoded
+     using the recent optimisations as part of the core was a reasonable
+     target. In development terms this would be an application spike designed
+     to down all the way through the system with regard to program data.
+
+   * It was also viewed as desirable to be at the stage of pulling SI data
+     from the DVB stream.
+
+In terms of core Axon/Kamaelia changes components in place as well it was
+suggested that the threaded component should be in place and as usable as
+a normal component at that point.
+
+The rationale being that this will be required for the database work to
+stuff the SI data into for later retrieval and correlation against the
+transcoded DVB data. 
+
+The intended review point for this work is May 12th 2006, and we expect
+to be recording SI data and transcoding at least a single channel in a
+continuous fashion at that point. (Doing more channels is then just
+a matter of grunt and store, the integration work is needed then)
+
+We are not aiming for segmented or indexed at that point. It should be
+sufficiently useful to be demoed in conjunction with VLC.
+
+Finally we noted that the progress on this item should be an item for
+future weekly meetings.
+
+4.3 item from Matt - perhaps regarding direction or scope. (eg new areas for optimisation, tidying of existing components, new systems to work on)
+
+Matt raised 3 points:
+   a) Integration of events into the system and translating data flow events into
+      control for the scheduler for CPU optimisations
+
+   b) A more capable but still simple window manager (pygame displays), but
+      non-traditional, is required, what do we want for it.
+
+   c) Changes to the introspection systems to allow the display and navigation
+      through nested views of the component system.
+
+It was suggested that all 3 would benefit from capturing in the bliki for
+discussion and documentation. Matt said he would do this ASAP.
+
+Regarding "a", Matt noted this relates to the optimisation work and that
+it relates to the possible inverting of some components. That is make the
+scheduler capable of waiting for threads to wake up, allowing (for example)
+the selector to be in a thread instead of busy waiting.
+
+Michael pointed out the MET++ project he discovered that was a dataflow+event
+based project revolving around multimedia applications.
+    * http://www.ifi.unizh.ch/mml/projects/met++/
+
+With regard to pygame display systems:
+    * Need enhancing to allow the ordering in which components stack to be specified explicitly. More obvious now due to box optimisations.
+    * Also need event routing (listeners, subscribers, simpler model than many window managers). Noted that the global events had been much more useful than expected, given different ways of looking at the problem.
+
+Also it Michael noted that he'd like a CSS style of approach for managing display surfaces. This was to help with separation of display from logic, and allow for more programmatic manipulation of the display surfaces. The comment "XUL" was mentioned as a pipedream :) Matt noted this may be easy to experiment with.
+
+4.4 Review date for first monthly project report
+
+Date decided: to be written up after the Friday meeting 28th April. Furthermore it was decided that it should always written up last friday of the month and if the report writer is on leave, on that date, written up as soon after that date that they get back as practicable. This means the report (this year) will be written up on the following dates:
+   * 28th April 2006
+   * 26th May 2006
+   * 30th June 2006
+   * 28th July 2006
+   * 25th August 2006
+   * 29th September 2006
+   * 27th October 2006
+   * 24th November 2006
+   * 29th December 2006
+
+5. Date/Time of next meeting
+
+Matt is unable to attend the expected next meeting date, which would have been expected to be 21 April 2006, 11am. The reason for 11am is because we've come to the conclusion this fits in better with normal schedules.
+
+Given Matt can't make then the date/time of next meeting is Friday 21st April 2006 2pm.
+
+6 Internal Follow up
+
+It turns out that a socksified ssh connection can connect out to a linux box on Reith and also the webserver is accessible as well. As a result the lab machines in Manchester will act as "the" lab for the moment raising the need for them to be made available/usable.
+
+====== END OF WEEKLY IRC KAMAELIA SUMMIT MEETING, 20060413 ======
+[off] FOLLOWUP - ssh access into NBH ?

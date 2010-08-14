@@ -1,0 +1,90 @@
+<html><body><table>
+            <tr><td>[03:32] *** TheBashar has parted #kamaelia</td></tr>
+            <tr><td>[09:02] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:16] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:37] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:04] *** TheBashar_web has joined #kamaelia</td></tr>
+            <tr><td>[15:17] *** TheBashar has joined #kamaelia</td></tr>
+            <tr><td>[17:02] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:04] &lt TheBashar&gt Artistic question for anyone listening.</td></tr>
+            <tr><td>[17:04] &lt TheBashar&gt If I want to make a new component that is a little different than an existing one, say a SingleShotHTTPClient with timeout...</td></tr>
+            <tr><td>[17:05] &lt TheBashar&gt Is it better stylstically to achieve the new functionality by subclassing the existing component and hooking to the internals?</td></tr>
+            <tr><td>[17:05] &lt TheBashar&gt Or is it better to encapsulate a mini-kamaelia graphline of other standard components inside a new component?</td></tr>
+            <tr><td>[17:11] *** TheBashar is now known as TheBashar-afk</td></tr>
+            <tr><td>[17:15] &lt Davbo&gt I'd probably just subclass it if it's not going to cause any problems</td></tr>
+            <tr><td>[17:26] &lt Davbo&gt this might be relevant TheBashar-afk http://code.google.com/p/kamaelia/source/diff?spec=svn6067&r=5266&format=side&path=/branches/private_DK_PaintDev/Kamaelia/Kamaelia/UI/Pygame/Button.py&old_path=/branches/private_DK_PaintDev/Kamaelia/Kamaelia/UI/Pygame/Button.py&old=5058</td></tr>
+            <tr><td>[17:26] &lt Davbo&gt that's a diff of me adding an "ImageButton" to the already existing pygame button class</td></tr>
+            <tr><td>[17:27] &lt Davbo&gt just a button represented by an image rather than a text caption</td></tr>
+            <tr><td>[17:28] &lt Davbo&gt what you're describing sounds more complex so probably different :)</td></tr>
+            <tr><td>[17:43] *** TheBashar-afk is now known as TheBashar</td></tr>
+            <tr><td>[17:46] &lt TheBashar&gt Davbo: Thank you for the example. I'm trying to get a feel for how far down to scale using the postoffice metaphor when making components. This is a good example.</td></tr>
+            <tr><td>[17:51] &lt Davbo&gt no problem</td></tr>
+            <tr><td>[18:37] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:46] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[18:47] &lt Davbo&gt Hey vmlemon_</td></tr>
+            <tr><td>[18:52] *** vmlemon_ is installing Cygwin on Windows 7 at the moment...</td></tr>
+            <tr><td>[18:52] &lt vmlemon_&gt (I ended up installing the beta on my crappy old desktop box, after someone sent me a copy on DVD)</td></tr>
+            <tr><td>[18:55] &lt vmlemon_&gt Surprisingly, it's not that slow, even though I only get a 1.0 on the "performance rating" thing, since there isn't a driver for the ATI Radeon 9000 card in that machine</td></tr>
+            <tr><td>[18:55] &lt vmlemon_&gt The other stats are around 3.5-5.0, if I remember correctly</td></tr>
+            <tr><td>[18:56] &lt Davbo&gt yeah it just tells you the lowest score from the components doesn't it?</td></tr>
+            <tr><td>[18:56] &lt Davbo&gt what do you think?</td></tr>
+            <tr><td>[18:57] &lt Davbo&gt screenshots look like KDE4</td></tr>
+            <tr><td>[18:57] &lt vmlemon_&gt I agree with the looks like KDE4 sentiment</td></tr>
+            <tr><td>[18:57] &lt Davbo&gt not a bad thing, KDE4 is awesome</td></tr>
+            <tr><td>[18:57] &lt vmlemon_&gt Although others disagreed, when I showed them the screenshots from Wikipedia side-by-side</td></tr>
+            <tr><td>[18:58] &lt vmlemon_&gt The taskbar screams "Stolen from KDE 4" ;)</td></tr>
+            <tr><td>[18:58] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[18:58] &lt vmlemon_&gt Not to mention the boxes around desktop icons, when you hover over them</td></tr>
+            <tr><td>[18:59] &lt Davbo&gt hey, we make open source software the way we want it to be. It's a stupid idea to ignore what the users want</td></tr>
+            <tr><td>[18:59] &lt Davbo&gt ;)</td></tr>
+            <tr><td>[18:59] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[18:59] &lt Davbo&gt I wonder if the KDE team scared Microsoft with the KDE on windows stuff :)</td></tr>
+            <tr><td>[19:00] &lt Davbo&gt "No, they're bringing KDE4 to windows!! What do we do?!?! Lets beat them to it!"</td></tr>
+            <tr><td>[19:01] *** Davbo isn't very happy with Microsoft recently.</td></tr>
+            <tr><td>[19:02] &lt Davbo&gt University project is making a "Workload Manager" for Engineering department, their current system is a massive excel spreadsheet :(</td></tr>
+            <tr><td>[19:02] &lt vmlemon_&gt Urgh</td></tr>
+            <tr><td>[19:03] &lt Davbo&gt Using xlrd to read it into nice Python structures then using sqlalchemy to get it into a database (where it should have been in the first place)</td></tr>
+            <tr><td>[19:04] *** vmlemon_ sees that Microsoft's "support" for UDF on non-optical volumes in Windows Vista and Windows 7 really isn't (it's a bastardised version that isn't supported by other OSes natively, until they get around to reverse-engineering the "enhancements", and W7/WV won't allow use of UDF volumes created on non WV/W7 OSes, no matter what version is used)</td></tr>
+            <tr><td>[19:05] &lt Davbo&gt MS are good at doing stuff like that</td></tr>
+            <tr><td>[19:06] &lt vmlemon_&gt I spent about 4 hours trying to mount a UDF-formatted test partition on a USB disk, and finally came to that conclusion</td></tr>
+            <tr><td>[19:06] &lt vmlemon_&gt (The UDF volume was created with mkudffs on Linux)</td></tr>
+            <tr><td>[19:07] &lt vmlemon_&gt "Microsoft: We Support (Abuse of ) Open Standards" ;)</td></tr>
+            <tr><td>[19:14] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[19:23] &lt vmlemon_&gt I can hear the chainsaws revving up, to cut down the trees to make coffins for Wine and ReactOS, after seeing a new clause in the W7 EULA stating that components from it can't be used outside of the product to run software intended for Windows, or words to that effect</td></tr>
+            <tr><td>[19:23] &lt vmlemon_&gt *intended for Windows on non-Windows platforms</td></tr>
+            <tr><td>[19:26] &lt vmlemon_&gt Still, I'm surprised to see that they've managed to produce a working NFS client</td></tr>
+            <tr><td>[19:26] &lt vmlemon_&gt http://picasaweb.google.com/tyson.key/Screenshots#5305748874342946994 - screenshot of the EULA dialogue, showing the said clause</td></tr>
+            <tr><td>[19:27] &lt vmlemon_&gt "You may not: * use components of the software to run applications not running on the software"</td></tr>
+            <tr><td>[19:46] &lt vmlemon_&gt Hah, "No. A quick search at the United States Patent and Trademark Office for "XWin" turns up one dead record and one live record. The live record is for a logo belonging to a rock crusher manufacturer based out of Belgium. Neither trademark affects Cygwin/X, as the dead record is no longer enforceable, while the live record is in an unrelated and distinct industry; there cannot be confusion between rock crushers and computer programs."</td></tr>
+            <tr><td>[21:09] &lt TheBashar&gt Anybody know if there is a way to hard kill a component without killing the scheduler?</td></tr>
+            <tr><td>[21:09] &lt TheBashar&gt I have an HTTPServer component that sometimes does not exit cleanly.</td></tr>
+            <tr><td>[21:10] &lt TheBashar&gt I wrapped in with a component with a time-bomb that sends a shutdownMicroprocess() if it doesn't exit after a time period.</td></tr>
+            <tr><td>[21:10] &lt TheBashar&gt But this still does not make it quit.</td></tr>
+            <tr><td>[21:11] &lt TheBashar&gt Actually, the timebomb sends it shutdownMicroprocess and serverShutdown. Neither work when it gets stuck.</td></tr>
+            <tr><td>[21:11] &lt TheBashar&gt Can I somehow get the scheduler to kill it?</td></tr>
+            <tr><td>[21:23] &lt vmlemon_&gt Hmm, not sure :(</td></tr>
+            <tr><td>[21:23] &lt vmlemon_&gt You could always wait and see if mhrd or MS- come here, tomorrow</td></tr>
+            <tr><td>[21:23] &lt vmlemon_&gt (They're the oracles on Kamaelia, since they built it) ;)</td></tr>
+            <tr><td>[21:24] &lt vmlemon_&gt *built most of it</td></tr>
+            <tr><td>[21:24] &lt TheBashar&gt Thanks, I might have to if I want to figure out why the httpserver is getting stuck.</td></tr>
+            <tr><td>[21:25] &lt TheBashar&gt But I'm going to keep digging to find the right shovel to clobber the stuck microprocess with.</td></tr>
+            <tr><td>[21:25] &lt vmlemon_&gt There was a recent drive to get a relatively coherent method of shutting systems down implemented, although I don't know what became of it</td></tr>
+            <tr><td>[21:26] &lt vmlemon_&gt There are race conditions and other things to worry about, if I vaguely remember correctly</td></tr>
+            <tr><td>[21:26] &lt TheBashar&gt I'm all for standardizing on shutdownMicroprocess for normal shutdowns.</td></tr>
+            <tr><td>[21:27] &lt TheBashar&gt But I guess we need a standard clobber shutdown as well.</td></tr>
+            <tr><td>[21:36] *** vmlemon_ has parted #kamaelia</td></tr>
+            <tr><td>[22:06] &lt Davbo&gt TheBashar, I'm not 100% but this might help http://groups.google.co.uk/group/kamaelia/browse_thread/thread/56e69d5f1cc7d43f/</td></tr>
+            <tr><td>[22:06] &lt Davbo&gt a few techniques for shutdown are discussed there</td></tr>
+            <tr><td>[22:08] &lt TheBashar&gt Thanks Davbo. Some good techniques.</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt also; http://code.google.com/p/kamaelia/source/browse/#svn/branches/private_JMB_HTTPSupport might be a relevant branch for you</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt http://groups.google.co.uk/group/kamaelia/browse_thread/thread/8d6f049ab9402e43</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt has the info for that branch</td></tr>
+            <tr><td>[22:11] &lt Davbo&gt  Kamaelia/Protocol/HTTP/HTTPRequestHandler.py: Added case- sensitivity handling and fixed issue with deadlocking on component shutdown.</td></tr>
+            <tr><td>[22:11] &lt TheBashar&gt Oooohh.... now that does sound good.</td></tr>
+            <tr><td>[22:12] &lt Davbo&gt hopefully that might help</td></tr>
+            <tr><td>[22:13] &lt TheBashar&gt Thanks a bunch!</td></tr>
+            <tr><td>[22:13] &lt Davbo&gt no problem</td></tr>
+            <tr><td>[23:21] *** Davbo wishes his Beechams cold relief tablets were not "non-drowsy"</td></tr>
+            <tr><td>[23:22] &lt Davbo&gt finally got my excel file parsed, well part of one sheet</td></tr>
+            <tr><td>[23:22] &lt Davbo&gt the "main" bit</td></tr>
+            <tr><td>[23:52] *** Davbo has joined #kamaelia</td></tr>

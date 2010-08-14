@@ -1,0 +1,334 @@
+<html><body><table>
+            <tr><td>[01:14] &lt Chong-&gt got to sleep. good night, all.</td></tr>
+            <tr><td>[01:15] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[08:19] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:48] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[08:50] &lt Lawouach&gt morning</td></tr>
+            <tr><td>[08:56] &lt orphans&gt morning Lawouach</td></tr>
+            <tr><td>[08:57] &lt Lawouach&gt hi mate</td></tr>
+            <tr><td>[08:57] &lt orphans&gt hows it going?</td></tr>
+            <tr><td>[08:57] &lt Lawouach&gt Good</td></tr>
+            <tr><td>[08:58] &lt Lawouach&gt My two English friends who came over for the weekend have just departed from St Malo</td></tr>
+            <tr><td>[08:58] &lt Lawouach&gt We had a good weekend</td></tr>
+            <tr><td>[08:58] &lt orphans&gt ahh, cool. you get up to much?</td></tr>
+            <tr><td>[08:59] &lt Lawouach&gt visited a few places, had great food, good wine and beer</td></tr>
+            <tr><td>[08:59] &lt Lawouach&gt yeah I'd say we did :)</td></tr>
+            <tr><td>[09:01] &lt orphans&gt sounds like an enjoyable weekend :)</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt it was :)</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt http://meta.ath0.com/2008/01/18/kde-4-ui-critique/ &lt -- I feel the same</td></tr>
+            <tr><td>[09:03] &lt Lawouach&gt That's one of the reason for the first time I've decided to use Gnome rather than KDE</td></tr>
+            <tr><td>[09:03] &lt Lawouach&gt KDE4 layout is too confusing</td></tr>
+            <tr><td>[09:04] &lt orphans&gt I've only seen screenies - thought it was beginning to look pretty nice (on a purely aesthetic basis taht is)</td></tr>
+            <tr><td>[09:17] &lt Lawouach&gt how did the exams go?</td></tr>
+            <tr><td>[09:18] &lt orphans&gt yeah, not too bad. I'm officially done for exams now (decided not to do the last one yesterday)</td></tr>
+            <tr><td>[09:18] &lt orphans&gt I've done enough in all of the to get a decent enough pass I think, so I'm pleased enough</td></tr>
+            <tr><td>[09:20] &lt Lawouach&gt okay that's cool :)</td></tr>
+            <tr><td>[09:20] &lt orphans&gt don't know if I said, but I got into my masters for next year too, so I'm pretty sorted now :)</td></tr>
+            <tr><td>[09:20] &lt Lawouach&gt congrats :)</td></tr>
+            <tr><td>[09:20] &lt Lawouach&gt what will be the subject?</td></tr>
+            <tr><td>[09:21] &lt orphans&gt ta</td></tr>
+            <tr><td>[09:21] &lt orphans&gt Creative Technologies - www.ioct.dmu.ac.uk/</td></tr>
+            <tr><td>[09:23] &lt Lawouach&gt very nice!</td></tr>
+            <tr><td>[09:24] &lt orphans&gt yeah - looks like a really interesting course</td></tr>
+            <tr><td>[10:22] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:11] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[11:11] &lt Lawouach&gt pong</td></tr>
+            <tr><td>[11:11] &lt orphans&gt you got a minute to look at something?</td></tr>
+            <tr><td>[11:11] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[11:12] &lt orphans&gt http://orphans.pastebin.com/d1dc6ea3b</td></tr>
+            <tr><td>[11:13] &lt orphans&gt I think this code should give results slightly greater than the sleep time (in the region of 0.5-1 ms)</td></tr>
+            <tr><td>[11:13] &lt orphans&gt for me I get around 3-4ms</td></tr>
+            <tr><td>[11:13] &lt Lawouach&gt time is never the best way to synchronise code</td></tr>
+            <tr><td>[11:14] *** orphans never knew that :)</td></tr>
+            <tr><td>[11:14] &lt orphans&gt what's better?</td></tr>
+            <tr><td>[11:14] &lt Lawouach&gt the operating system respects the time request value up to a certain precision only</td></tr>
+            <tr><td>[11:14] &lt Lawouach&gt what are you trying to do?</td></tr>
+            <tr><td>[11:14] &lt orphans&gt get the timing code running &lt 1ms accuracy</td></tr>
+            <tr><td>[11:14] &lt orphans&gt i.e. on the safe side of human hearing accuracy</td></tr>
+            <tr><td>[11:15] &lt orphans&gt I put that together as a test to see whether the problem was in the sleeping, threads etc</td></tr>
+            <tr><td>[11:15] &lt orphans&gt s/threads/thread</td></tr>
+            <tr><td>[11:18] &lt Lawouach&gt since you're using threads, wouldn't it make sense to use things like mutex to synchronise instead?</td></tr>
+            <tr><td>[11:19] &lt orphans&gt not done much threaded programming before - do you have an example somewhere?</td></tr>
+            <tr><td>[11:19] &lt Lawouach&gt The thing is I wonder if there isn't a better way with Kamaelia. I never use threaded components.</td></tr>
+            <tr><td>[11:21] &lt orphans&gt I think there probably isn't - I was talking to MS- about this sort of thing and he said that there wasn't any timing stuff built into the scheduler</td></tr>
+            <tr><td>[11:21] &lt orphans&gt at least not the sort of accuracy needed</td></tr>
+            <tr><td>[11:22] &lt orphans&gt http://yeoldeclue.com/logs/kamaelia2008-05-26_log.html - towards the top of taht</td></tr>
+            <tr><td>[11:22] &lt orphans&gt s/taht/that</td></tr>
+            <tr><td>[11:23] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[11:25] &lt Lawouach&gt http://docs.python.org/lib/event-objects.html</td></tr>
+            <tr><td>[11:25] &lt Lawouach&gt This is one way of doing things</td></tr>
+            <tr><td>[11:25] &lt Lawouach&gt The real problem however is not so much which tool to use but what precisely you want to be doing</td></tr>
+            <tr><td>[11:27] &lt orphans&gt for an idea of what I was working on see http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/JT/Jam/library/trunk/Kamaelia/Apps/Jam/Util/MusicTiming.py?revision=4142&view=markup</td></tr>
+            <tr><td>[11:28] &lt orphans&gt having components with an inbuilt timer which worked in musical timings</td></tr>
+            <tr><td>[11:31] &lt Lawouach&gt time.sleep is indeed the wrong way here</td></tr>
+            <tr><td>[11:31] &lt Lawouach&gt you will never be able to ensure the accuracy you need</td></tr>
+            <tr><td>[11:32] &lt Lawouach&gt well not only</td></tr>
+            <tr><td>[11:32] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[11:32] &lt Lawouach&gt one idea BTW is to look at how similar products do it :)</td></tr>
+            <tr><td>[11:33] *** orphans is on the jokosher svn at the moment</td></tr>
+            <tr><td>[11:37] &lt Lawouach&gt BTW, why not using pymedia to play out the midi file?</td></tr>
+            <tr><td>[11:37] &lt Lawouach&gt that would take care of it at a low level no?</td></tr>
+            <tr><td>[11:39] &lt orphans&gt didn't know pymedia did midi out</td></tr>
+            <tr><td>[11:41] &lt Lawouach&gt or pygame</td></tr>
+            <tr><td>[11:41] &lt Lawouach&gt since SDL supports it, pygame might</td></tr>
+            <tr><td>[11:41] &lt Lawouach&gt ah well pymedia doesn't do midi :)</td></tr>
+            <tr><td>[11:41] &lt Lawouach&gt pygame then?</td></tr>
+            <tr><td>[11:43] &lt Lawouach&gt http://www.daniweb.com/code/snippet755.html</td></tr>
+            <tr><td>[11:44] &lt Lawouach&gt http://www.pygame.org/docs/ref/music.html#pygame.mixer.music.load</td></tr>
+            <tr><td>[11:44] &lt Lawouach&gt Maybe that would simplify your task?</td></tr>
+            <tr><td>[11:45] &lt orphans&gt mm, not sure it's really suited to doing stuff in real-time though.</td></tr>
+            <tr><td>[11:46] *** orphans delves deeper</td></tr>
+            <tr><td>[11:47] &lt Lawouach&gt See it uses the clock.tick() to pause the process while the MIDI is playing</td></tr>
+            <tr><td>[11:48] &lt Lawouach&gt But it's not used as synchronization per-se</td></tr>
+            <tr><td>[11:48] &lt orphans&gt yeah, and clock.tick() only has about the same accuracy as I've got using time.sleep()</td></tr>
+            <tr><td>[11:49] &lt orphans&gt from here: http://www.pygame.org/docs/ref/time.html "Times in pygame are represented in milliseconds (1/1000 seconds). Most platforms have a limited time resolution of around 10 milliseconds."</td></tr>
+            <tr><td>[11:50] &lt orphans&gt but that's not quite true, because I can get latency of ~3ms in both windows and linux (on good days)</td></tr>
+            <tr><td>[11:52] &lt Lawouach&gt That's the big problem. You're not building a product for your own machine, are you? ;)</td></tr>
+            <tr><td>[11:53] &lt orphans&gt no, but it's not a complete beast by any stretch of the imagination (3 years old now)</td></tr>
+            <tr><td>[12:01] &lt orphans&gt mm, I think time.sleep() might actually be the best I can do</td></tr>
+            <tr><td>[12:02] &lt orphans&gt fwiw jokosher doesn't go any more accurate than 1/256th of a beat (~3ms for an 80bpm tune)</td></tr>
+            <tr><td>[12:09] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[12:39] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:39] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:12] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[14:37] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:37] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:38] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:41] &lt bcarlyon|laptop&gt HI!</td></tr>
+            <tr><td>[14:50] &lt Lawouach&gt 'lo</td></tr>
+            <tr><td>[15:00] &lt vmlemon_&gt Medium ;)</td></tr>
+            <tr><td>[15:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:31] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:43] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:51] *** vmlemon___ has joined #kamaelia</td></tr>
+            <tr><td>[15:53] *** vmlemon___ is now known as vmlemon__</td></tr>
+            <tr><td>[16:04] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[17:19] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:19] &lt MS-&gt evening</td></tr>
+            <tr><td>[17:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:04] &lt orphans&gt MS-, evening</td></tr>
+            <tr><td>[18:04] *** orphans notes /trunk/Sketches/MPS/JT/timer.py</td></tr>
+            <tr><td>[18:05] &lt orphans&gt any input on what I should be doing?</td></tr>
+            <tr><td>[18:05] *** orphans notes that it isn't the same as what I posted :D</td></tr>
+            <tr><td>[18:05] &lt orphans&gt reading</td></tr>
+            <tr><td>[18:08] &lt MS-&gt I had a play with the code you pasted in the pastebin</td></tr>
+            <tr><td>[18:11] &lt orphans&gt yeah - looks like a more complete version of my test :)</td></tr>
+            <tr><td>[18:12] &lt MS-&gt The most accurate way is to essentially do this:</td></tr>
+            <tr><td>[18:13] &lt orphans&gt results are pretty ugly sometimes - 50ms at 95th percentile</td></tr>
+            <tr><td>[18:13] &lt MS-&gt measure the amount of time you're out</td></tr>
+            <tr><td>[18:14] &lt MS-&gt and then sleep for the amount of time you wanted to sleep for, less the amount of time you're out</td></tr>
+            <tr><td>[18:14] &lt MS-&gt And to keep track of the amount you're generally out by</td></tr>
+            <tr><td>[18:15] &lt MS-&gt It's discussed a fair amount on the pygame list for what its worth</td></tr>
+            <tr><td>[18:15] &lt orphans&gt ok, I'll have a look there. Any threads in particular or will google make it pretty clear?</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt MS-: with audio though this kind of synchronisation is good enough if you have a decent buffer mechanism so you're sure you're never short of data</td></tr>
+            <tr><td>[18:19] &lt MS-&gt Lawouach: I don't really know :-)</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt well the problem with audio is that if you're not synced well enough it impacts immediately the end user experience</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt video or games can afford to lose a bit of data along the way usually</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt audio is rather more sensitive</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt so again it really comes down to what orphans is trying to do</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt which I'm still not clear about :)</td></tr>
+            <tr><td>[18:21] &lt orphans&gt Lawouach, *sigh* sorry :)</td></tr>
+            <tr><td>[18:21] &lt MS-&gt Indeed. And synchronisation matters (with audio/video), but continuity matters (almost more)</td></tr>
+            <tr><td>[18:21] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt orphans: not criticising you :)</td></tr>
+            <tr><td>[18:23] &lt vmlemon_&gt Just make it print "Buffering..." forever, that'll do the trick ;)</td></tr>
+            <tr><td>[18:23] &lt orphans&gt I guess maybe it'd all be a bit clearer if I was working on a component which depended more heavily on the timing (something like the step sequencer)</td></tr>
+            <tr><td>[18:24] &lt orphans&gt given that this has come about now perhaps it'd be better for me to rearrange my schedule a little and get that (timing and all) working before the networking stuff?</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt not necessarily</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt I usually prefer going for a working mockup of the system first</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt ensuring the overall design the right one</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt adjusting it</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt finally optimising wher it needs to be</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt that being said, if your optimisation changes the design</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt it's not optimisation anymore :)</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt it's more refactoring :)</td></tr>
+            <tr><td>[18:27] &lt orphans&gt yeah. I'll maybe do a really quick mockup of something which has tight timing, then leave it at that until later on (providing it looks OK)</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt I'd rather you having a working application asap than specialized components</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt We'll move to that gradually</td></tr>
+            <tr><td>[18:28] &lt orphans&gt yeah, cool</td></tr>
+            <tr><td>[18:29] &lt orphans&gt &lt = off to get food - thanks for the help Lawouach and MS-</td></tr>
+            <tr><td>[18:29] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt np</td></tr>
+            <tr><td>[19:18] *** vmlemon___ has joined #kamaelia</td></tr>
+            <tr><td>[19:22] *** vmlemon___ is now known as vmlemon__</td></tr>
+            <tr><td>[19:27] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[19:41] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:42] &lt Davbo&gt Evenin' all</td></tr>
+            <tr><td>[19:43] &lt Davbo&gt I read quite a bit on LikeFile but i'm not sure if i understand what functionality it has still</td></tr>
+            <tr><td>[19:43] &lt Davbo&gt Could anyone explain what it does?</td></tr>
+            <tr><td>[19:49] &lt Lawouach&gt hello Davbo</td></tr>
+            <tr><td>[19:50] &lt Davbo&gt Hey Lawouach</td></tr>
+            <tr><td>[19:50] &lt Lawouach&gt Basically it makes Axon components look like a file object</td></tr>
+            <tr><td>[19:51] &lt Davbo&gt I've not played my guitar for so long it has made my fingers hurt, brings back memories :)</td></tr>
+            <tr><td>[19:51] &lt Lawouach&gt Not sure if you know it but in Python it is common for an object to pretend it quacks like a file</td></tr>
+            <tr><td>[19:51] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[19:51] &lt Lawouach&gt so that you can open it, read/write from and to it</td></tr>
+            <tr><td>[19:51] &lt Davbo&gt I did not know that</td></tr>
+            <tr><td>[19:51] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:52] &lt Lawouach&gt for instance the socket module has a .makefile() method that wraps a socket into a file object</td></tr>
+            <tr><td>[19:52] &lt Lawouach&gt so that you can simple do:</td></tr>
+            <tr><td>[19:52] &lt Lawouach&gt mysock.read(), mysock.write()</td></tr>
+            <tr><td>[19:52] &lt Davbo&gt Hmm</td></tr>
+            <tr><td>[19:53] &lt Lawouach&gt Have you heard the concept of "interface" in programing?</td></tr>
+            <tr><td>[19:53] &lt Davbo&gt For abstraction?</td></tr>
+            <tr><td>[19:53] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[19:53] &lt Davbo&gt Yeah, i know what you mean</td></tr>
+            <tr><td>[19:53] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[19:54] &lt Lawouach&gt With OOP you can of course subclass and use inheritance</td></tr>
+            <tr><td>[19:54] &lt Davbo&gt So if i were to "implement" LikeFile as an interface would i need to provide methods for read() and write() - that kinda thing?</td></tr>
+            <tr><td>[19:56] &lt Lawouach&gt but more and more subclassing is left out in favour of interfaces as they define a contract without coupling too much objects between themselves</td></tr>
+            <tr><td>[19:56] &lt Lawouach&gt well, in dynamic languages like Python, interfaces are not really meaningful</td></tr>
+            <tr><td>[19:57] &lt Lawouach&gt because you can pretend to support a contract just by defining the API you need</td></tr>
+            <tr><td>[19:57] &lt Davbo&gt I see</td></tr>
+            <tr><td>[19:57] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[19:57] &lt Lawouach&gt a file object is a typical interface</td></tr>
+            <tr><td>[19:58] &lt Lawouach&gt .open(), .read(), .write(), .close()</td></tr>
+            <tr><td>[19:58] &lt Lawouach&gt That's an interface if you want</td></tr>
+            <tr><td>[19:58] &lt Lawouach&gt By the way the process of pretending in dynamic languages is called "duck typing" :)</td></tr>
+            <tr><td>[19:59] &lt Davbo&gt I'm not sure I understand "﻿pretend to support a contract"</td></tr>
+            <tr><td>[19:59] &lt Lawouach&gt It quacks like a duck, it looks like a duck, so let's take our chances and act as if it was a duck</td></tr>
+            <tr><td>[19:59] &lt Davbo&gt oh</td></tr>
+            <tr><td>[19:59] &lt Lawouach&gt well I'll take an example</td></tr>
+            <tr><td>[20:00] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:00] &lt Lawouach&gt Imagine a class called Clock</td></tr>
+            <tr><td>[20:00] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[20:00] &lt Lawouach&gt now you could have the following methods in that class</td></tr>
+            <tr><td>[20:00] &lt Lawouach&gt getTime()</td></tr>
+            <tr><td>[20:00] &lt Lawouach&gt setTime()</td></tr>
+            <tr><td>[20:01] &lt Lawouach&gt imagine now you have a piece of code that doesn't care about the type of objects it processes like this:</td></tr>
+            <tr><td>[20:01] &lt Lawouach&gt for obj in list_of_varios_objects:</td></tr>
+            <tr><td>[20:01] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[20:01] &lt Lawouach&gt imagine you want to put a Clock() instance in that list</td></tr>
+            <tr><td>[20:01] &lt Lawouach&gt you could simply define the following methods in the Clock class:</td></tr>
+            <tr><td>[20:02] &lt Lawouach&gt .read()</td></tr>
+            <tr><td>[20:02] &lt Lawouach&gt .write()</td></tr>
+            <tr><td>[20:02] &lt Lawouach&gt .read() would be the .getTime()</td></tr>
+            <tr><td>[20:02] &lt Lawouach&gt .write() would be .setTime()</td></tr>
+            <tr><td>[20:02] &lt Lawouach&gt  for obj in list_of_varios_objects:</td></tr>
+            <tr><td>[20:02] &lt Lawouach&gt  obj.read()</td></tr>
+            <tr><td>[20:02] &lt Davbo&gt I see, hmm</td></tr>
+            <tr><td>[20:02] &lt Lawouach&gt that list could contain files, sockets, Clocks objects</td></tr>
+            <tr><td>[20:03] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt you would not need to do:</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt for obj in list_of_varios_objects</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt  if isinstance(obj, Clock):</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt  obj.getTime()</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt See?</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt You pretend to ba file</td></tr>
+            <tr><td>[20:03] &lt Davbo&gt Yeah i see</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt s/ba/be</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[20:04] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt so you implement interfaces but you don't really say you're doing it?</td></tr>
+            <tr><td>[20:05] &lt Lawouach&gt In Python indeed you just declare some methods and let the application process the object independantly from its type</td></tr>
+            <tr><td>[20:05] &lt Lawouach&gt You duck type it :)</td></tr>
+            <tr><td>[20:05] &lt Davbo&gt in java you'd say</td></tr>
+            <tr><td>[20:05] &lt Davbo&gt public class Clock implements File {</td></tr>
+            <tr><td>[20:05] &lt Davbo&gt  public Read() ...</td></tr>
+            <tr><td>[20:05] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[20:05] &lt Lawouach&gt That's the idea.</td></tr>
+            <tr><td>[20:06] &lt Davbo&gt thanks Lawouach</td></tr>
+            <tr><td>[20:06] &lt Lawouach&gt Except with dynamic languages it's all very implicit</td></tr>
+            <tr><td>[20:06] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[20:06] &lt Lawouach&gt so</td></tr>
+            <tr><td>[20:06] &lt Lawouach&gt to come back at your original question</td></tr>
+            <tr><td>[20:06] &lt Lawouach&gt it could be useful to pretend for a component to be like a file</td></tr>
+            <tr><td>[20:06] &lt Lawouach&gt so that Axon's components could be used more regularly in Python applications</td></tr>
+            <tr><td>[20:06] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[20:07] &lt Davbo&gt but it's not so simple to make a component act like a file, right?</td></tr>
+            <tr><td>[20:07] &lt Lawouach&gt Well</td></tr>
+            <tr><td>[20:07] &lt Lawouach&gt The issue lies in the way you decide how you link boxes.</td></tr>
+            <tr><td>[20:08] &lt Lawouach&gt For a component like Pipeline it's easy</td></tr>
+            <tr><td>[20:08] &lt Lawouach&gt inbox &lt -&gt outbox</td></tr>
+            <tr><td>[20:08] &lt Lawouach&gt But for more complex components it becomes a greater challenge.</td></tr>
+            <tr><td>[20:09] &lt Davbo&gt I see why there was a big problem when i made another box in my program now</td></tr>
+            <tr><td>[20:09] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:10] &lt Davbo&gt i presume likefile doesn't look at box usage dynamically? / could it ?</td></tr>
+            <tr><td>[20:12] &lt Lawouach&gt well not really</td></tr>
+            <tr><td>[20:12] &lt Lawouach&gt when you wrap a component with likefile</td></tr>
+            <tr><td>[20:13] &lt Lawouach&gt it wraps every boxes in its own internal component</td></tr>
+            <tr><td>[20:13] &lt Lawouach&gt those wrappers basically use a thread-safe queue</td></tr>
+            <tr><td>[20:14] &lt Davbo&gt ah right</td></tr>
+            <tr><td>[20:14] &lt Lawouach&gt when you call .get() on the likefile component</td></tr>
+            <tr><td>[20:14] &lt Lawouach&gt it blocks on that queue (well the queue for the box you .get() on)</td></tr>
+            <tr><td>[20:14] &lt Davbo&gt this is where we get the "race hazard" that MS- told me about</td></tr>
+            <tr><td>[20:14] &lt Lawouach&gt internally the components are running on their own and fill that queue</td></tr>
+            <tr><td>[20:14] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt those queues are thread-safe but there are potential problems in the implementation</td></tr>
+            <tr><td>[20:15] &lt Davbo&gt I see</td></tr>
+            <tr><td>[20:16] &lt Davbo&gt Thank you Lawouach :-)</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt np</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt On a side note</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt Last year before the student started on that project I was very keen about the end result.</td></tr>
+            <tr><td>[20:18] &lt Lawouach&gt Then I started using Kamaelia heavily before he finished it so I never actually used it and I've never felt a need for it</td></tr>
+            <tr><td>[20:18] &lt Lawouach&gt But MS- has shown me uses cases where it'd be handy</td></tr>
+            <tr><td>[20:18] &lt Lawouach&gt Now, that being siad there is a fundamental difference between regular Axon components and the Likefile design.</td></tr>
+            <tr><td>[20:19] &lt Davbo&gt well Process stuff seems to use it as that's where i get problems</td></tr>
+            <tr><td>[20:19] &lt Lawouach&gt The former is all about push</td></tr>
+            <tr><td>[20:19] &lt Lawouach&gt The later is about pull</td></tr>
+            <tr><td>[20:20] &lt Davbo&gt right</td></tr>
+            <tr><td>[20:20] &lt Lawouach&gt This means that traditionnally with Axon and Kamaelia, you write components, link them together and Axon will simply ensure the data arrives where it needs to arrive</td></tr>
+            <tr><td>[20:21] &lt Lawouach&gt With Likefile, your code polls regularly the likefile component for more data</td></tr>
+            <tr><td>[20:21] &lt Davbo&gt ah i see</td></tr>
+            <tr><td>[20:21] &lt Lawouach&gt Although it makes code easier to write and read in many cases, it may also have a great impact on performances</td></tr>
+            <tr><td>[20:21] &lt Davbo&gt surely that isn't an "ideal" way for it to work?</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt It's hard to make it efficient</td></tr>
+            <tr><td>[20:23] &lt Lawouach&gt MS- could explain further here but I wonder if Python 2.5 generator support wouldn't allow for a more efficient implementation</td></tr>
+            <tr><td>[20:24] &lt Davbo&gt that sounds like a good idea Lawouach</td></tr>
+            <tr><td>[20:25] &lt Lawouach&gt But since Axon and Kamaelia do support Python 2.2 onward it won't happen soon I guess :)</td></tr>
+            <tr><td>[20:35] &lt Davbo&gt Well thanks for explaining those things Lawouach, i'm off to relax for a bit. :-)</td></tr>
+            <tr><td>[20:35] &lt Lawouach&gt np</td></tr>
+            <tr><td>[20:35] &lt Lawouach&gt take it easy :)</td></tr>
+            <tr><td>[20:52] *** MS- starts reading back</td></tr>
+            <tr><td>[20:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:54] *** MS- notes that the name "likefile" is probably not as good as it could be (reading the bit about read()/write() )</td></tr>
+            <tr><td>[20:55] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:02] &lt MS-&gt It's not meant to say it's "like the (specific) file interface protocol"</td></tr>
+            <tr><td>[21:03] &lt MS-&gt But more "it's an interface that is used like a file interface is used - ie you have a handle that represents the thing you're talking to & you talk to it"</td></tr>
+            <tr><td>[21:03] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[21:04] &lt Lawouach&gt I don't disagree. I think I may have been unclear earlier then</td></tr>
+            <tr><td>[21:04] &lt Lawouach&gt Because I totally agree with your point here :)</td></tr>
+            <tr><td>[21:05] &lt MS-&gt Yeah, the misinterpretation it causes is a problem.</td></tr>
+            <tr><td>[21:05] &lt MS-&gt LikeFile isn't really the same as AsFile</td></tr>
+            <tr><td>[21:05] &lt MS-&gt which is more the relationship I'd expect</td></tr>
+            <tr><td>[21:06] &lt Lawouach&gt true.</td></tr>
+            <tr><td>[21:07] &lt MS-&gt Regarding 2.5's generator support, that's something that I'm really torn with. I have a machine with 2.3 on which I really don't want to have to mess with (a mac mini I use as a home server)</td></tr>
+            <tr><td>[21:07] &lt Lawouach&gt I can appreciate your point really.</td></tr>
+            <tr><td>[21:07] &lt MS-&gt And a mobile which has python on which is a derivative of 2.2.&lt some late number&gt and hence supports generators (and has run Kamaelia in the past)</td></tr>
+            <tr><td>[21:08] &lt MS-&gt But, the key benefit that 2.5's generators give is actually the .stop() support</td></tr>
+            <tr><td>[21:08] &lt Lawouach&gt That being said it could be fun and interesting to try out a LikeFile component using those generators and see what comes out of it</td></tr>
+            <tr><td>[21:08] &lt MS-&gt since you can pass in any exception you like</td></tr>
+            <tr><td>[21:08] &lt MS-&gt The ability to do</td></tr>
+            <tr><td>[21:08] &lt MS-&gt .next(&lt some value&gt) wouldn't specifically make the component threadsafe, which is the issue with LikeFile</td></tr>
+            <tr><td>[21:09] &lt MS-&gt It also would mean you'd need a double nesting of values really</td></tr>
+            <tr><td>[21:10] &lt MS-&gt There are ways to optimise working with it though</td></tr>
+            <tr><td>[21:10] &lt MS-&gt But they're independent of 2.5's generator support</td></tr>
+            <tr><td>[21:11] &lt MS-&gt the whole .next(&lt some value&gt) thing doesn't really make much sense with Kamaelia IMO btw</td></tr>
+            <tr><td>[21:11] &lt MS-&gt since it implies tight code coupling AFAICT</td></tr>
+            <tr><td>[21:11] &lt MS-&gt It'd be interesting to see, but that was the impression I gained having seen some stuff written using it</td></tr>
+            <tr><td>[21:12] &lt Lawouach&gt I wouldn't know as I've never used it :)</td></tr>
+            <tr><td>[21:17] &lt MS-&gt It's just really wierd - you could happily do this:</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  def bla(...):</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  x = yield 1</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  while 1:</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  if isSomething(x):</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  y = yield 1</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  else:</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  z = yield 1</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  if yield 1:</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  break</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  print x, y</td></tr>
+            <tr><td>[21:17] &lt MS-&gt  print x,z</td></tr>
+            <tr><td>[21:17] &lt MS-&gt You couldn't actually tell upfront if that could ever work</td></tr>
+            <tr><td>[21:17] &lt MS-&gt In fact you could almost guarantee it never could work</td></tr>
+            <tr><td>[21:19] &lt MS-&gt In order to talk to it, you actually need to understand how the internal structure works</td></tr>
+            <tr><td>[21:19] &lt MS-&gt Which is plain *wierd*</td></tr>
+            <tr><td>[21:21] &lt Lawouach&gt Indeed</td></tr>
+            <tr><td>[21:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:48] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:09] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:16] *** MS- calls it a night</td></tr>
+            <tr><td>[22:16] &lt MS-&gt cya</td></tr>
+            <tr><td>[22:16] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[23:10] *** bcarlyon|laptop has joined #kamaelia</td></tr>

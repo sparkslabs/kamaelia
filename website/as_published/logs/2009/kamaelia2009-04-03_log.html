@@ -1,0 +1,109 @@
+<html><body><table>
+            <tr><td>[05:01] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:28] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:38] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:43] &lt Lawouach&gt hi folks</td></tr>
+            <tr><td>[09:25] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:25] &lt MS-&gt greetings</td></tr>
+            <tr><td>[11:34] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[11:37] &lt vmlemon_1&gt Hi</td></tr>
+            <tr><td>[11:41] *** vmlemon_2 has joined #kamaelia</td></tr>
+            <tr><td>[11:50] *** jae_ has joined #kamaelia</td></tr>
+            <tr><td>[11:53] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt MS-: I have a feeling it was for the best we didn't do GSoC this year</td></tr>
+            <tr><td>[11:57] &lt Lawouach_&gt we all look busy busy already :)</td></tr>
+            <tr><td>[11:57] &lt MS-&gt I think so. I'm actually planning on spending the time I'd spend on GSOC normally on actually improving kamaelia instead - which strikes me as a good idea :)</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt it does indeed :-)</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt Also, it sounds, going through of the mentor list, that it slowly becomes a heavy machinery with lots of bureaucracy</td></tr>
+            <tr><td>[12:02] &lt MS-&gt Quite possibly.</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt anyhow, what's on your plate in regards to K. then?</td></tr>
+            <tr><td>[12:05] &lt MS-&gt Well, getting Steve's code merged was one thing, but I've also been experimenting with a new axon core</td></tr>
+            <tr><td>[12:06] &lt MS-&gt For which I've created a scratch google project as a place to dump my code ideas without cluttering up kamaelia's SVN</td></tr>
+            <tr><td>[12:06] &lt MS-&gt That's currently sitting here:</td></tr>
+            <tr><td>[12:06] &lt MS-&gt http://code.google.com/p/kamaelian/source/browse/sketches/Axon/</td></tr>
+            <tr><td>[12:07] &lt MS-&gt The difference really though is that I'm building up checking performance constantly along the way adding functionality in</td></tr>
+            <tr><td>[12:07] &lt MS-&gt primarily so that I know the overall cost</td></tr>
+            <tr><td>[12:07] &lt Lawouach_&gt sounds good</td></tr>
+            <tr><td>[12:07] &lt MS-&gt Also, simon wittber's benchmarks give me a baseline</td></tr>
+            <tr><td>[12:08] &lt MS-&gt I'm also planning on taking Jesse's comments about the website to heart and going to try and make the website *clearer*</td></tr>
+            <tr><td>[12:08] &lt MS-&gt Which is always hard, since it's always* clear to the writer</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt it's very hard indeed</td></tr>
+            <tr><td>[12:09] &lt MS-&gt I'm on leave for the next 2 weeks as well, so the first week I'll not do a huge amount, but the second week I plan to do a fair amount of kamaelia hacking.</td></tr>
+            <tr><td>[12:09] &lt Lawouach_&gt Problem is you have one single landing page for many different people from various background and expectations</td></tr>
+            <tr><td>[12:09] &lt MS-&gt Currently I'm rebuilding threaded components</td></tr>
+            <tr><td>[12:09] &lt MS-&gt Yes, that is a key problem</td></tr>
+            <tr><td>[12:09] &lt MS-&gt Jesse's talk at pycon - which spent ~2 minutes on kamaelia was helpful for making it clear what he thought is the problem</td></tr>
+            <tr><td>[12:10] &lt MS-&gt As well as some follow ups since then</td></tr>
+            <tr><td>[12:10] &lt MS-&gt (The video is online - I watched it last night)</td></tr>
+            <tr><td>[12:10] &lt Lawouach_&gt http://divmod.org/trac &lt -- I think this is the kind of landing page I'd expect eventually</td></tr>
+            <tr><td>[12:12] &lt MS-&gt Thing is I think that has the same problem from Jesse's perspective</td></tr>
+            <tr><td>[12:12] &lt MS-&gt Suppose you know nothing about twisted for example</td></tr>
+            <tr><td>[12:12] &lt MS-&gt where do you start on that page?</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt true</td></tr>
+            <tr><td>[12:13] &lt MS-&gt You can see there's lots of cool stuff, and you know its good because lots of people say so - but where do you start</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt you probably need something at a higher level</td></tr>
+            <tr><td>[12:13] &lt MS-&gt Which was the criticism of kamaelia</td></tr>
+            <tr><td>[12:13] &lt MS-&gt his point of "pulling out and showcasing Axon" was more of a side note</td></tr>
+            <tr><td>[12:14] &lt MS-&gt I think the point is the site needs to follow through common use cases, and help with those.</td></tr>
+            <tr><td>[12:15] &lt MS-&gt It's the same sort of thing that Kathy Sierra has talked about for years as well.</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt ain't easy though considering how much stuff Kamaelia does</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt perhaps focusing on Axon would be better</td></tr>
+            <tr><td>[12:16] &lt MS-&gt Her starting point is to suggest treating learning complex things like computerr games</td></tr>
+            <tr><td>[12:16] &lt MS-&gt Indeed</td></tr>
+            <tr><td>[12:16] &lt MS-&gt ie the idea being at each point people learn to do more.</td></tr>
+            <tr><td>[12:18] &lt Patrick`&gt yeah</td></tr>
+            <tr><td>[12:18] &lt Patrick`&gt I have to admit, it's a bit obtuse at times (the website)</td></tr>
+            <tr><td>[12:18] &lt Patrick`&gt I would be available for consult as a source of reliable uninformedness</td></tr>
+            <tr><td>[12:19] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:19] &lt MS-&gt Patrick`: That's really helpful, believe it or not</td></tr>
+            <tr><td>[12:19] &lt Patrick`&gt I know</td></tr>
+            <tr><td>[12:19] &lt Patrick`&gt I've got tangled in stuff like that before</td></tr>
+            <tr><td>[12:20] &lt Patrick`&gt When I took a summer job in the civil service, I redesigned the induction pack</td></tr>
+            <tr><td>[12:20] &lt Patrick`&gt my most employable skill was that I was a noob</td></tr>
+            <tr><td>[12:20] &lt MS-&gt I've also come across this BTW: Dreyfus Model of Skill Acquisition - which looks like a really useful guide for trying to understand skill levels</td></tr>
+            <tr><td>[12:20] &lt MS-&gt (since teaching is really about moving between skill levels)</td></tr>
+            <tr><td>[12:21] &lt MS-&gt I came across that here: http://oreilly.com/catalog/9781934356050/ (Pragmatic Thinking and Learning)</td></tr>
+            <tr><td>[12:24] &lt MS-&gt BTW, regarding this new core: fibra results:</td></tr>
+            <tr><td>[12:24] &lt MS-&gt "import hackysack" "hackysack.runit(10000,1000,0)"</td></tr>
+            <tr><td>[12:24] &lt MS-&gt 10 loops, best of 3: 521 msec per loop</td></tr>
+            <tr><td>[12:24] &lt MS-&gt vs New core results:</td></tr>
+            <tr><td>[12:24] &lt MS-&gt "Hackysacker.runit(10000,1000,0)"</td></tr>
+            <tr><td>[12:24] &lt MS-&gt 10 loops, best of 3: 339 msec per loop</td></tr>
+            <tr><td>[12:24] &lt Patrick`&gt *high five*</td></tr>
+            <tr><td>[12:24] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:25] &lt Patrick`&gt although optimising python for performance is like teaching a ballet dancer to punch harder</td></tr>
+            <tr><td>[12:25] &lt MS-&gt New core is also threadsafe regarding scheduler allocation - to the extent of using STM</td></tr>
+            <tr><td>[12:26] &lt Patrick`&gt ok, I give up</td></tr>
+            <tr><td>[12:26] &lt MS-&gt heh</td></tr>
+            <tr><td>[12:26] &lt Patrick`&gt a cursory google tells me what stm stands fo</td></tr>
+            <tr><td>[12:26] &lt Patrick`&gt but what's the ... feeling of it, the shape of it</td></tr>
+            <tr><td>[12:26] &lt MS-&gt STM == version control for variables</td></tr>
+            <tr><td>[12:26] &lt Patrick`&gt we need a better word in english</td></tr>
+            <tr><td>[12:26] &lt Patrick`&gt ah</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt MS-: impressive</td></tr>
+            <tr><td>[12:26] &lt Patrick`&gt ok, I'm just wrong</td></tr>
+            <tr><td>[12:27] &lt MS-&gt Lawouach_: I'm currently working on adding threads back in at an early level</td></tr>
+            <tr><td>[12:27] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[12:27] &lt MS-&gt I can actually get a *much* faster result than that using the scheduler btw</td></tr>
+            <tr><td>[12:27] &lt MS-&gt But it's not using normal kamaelia approaches</td></tr>
+            <tr><td>[12:30] &lt MS-&gt To put it into perspective though the figures for Kamaelia 0.6.0:</td></tr>
+            <tr><td>[12:30] &lt MS-&gt "import hackysack" "hackysack.runit(10000,1000,0)"</td></tr>
+            <tr><td>[12:30] &lt MS-&gt 10 loops, best of 3: 5.59 sec per loop</td></tr>
+            <tr><td>[12:31] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[12:31] &lt MS-&gt So about a 16 fold speed up</td></tr>
+            <tr><td>[12:35] &lt Lawouach_&gt yeha</td></tr>
+            <tr><td>[12:42] *** vmlemon_3 has joined #kamaelia</td></tr>
+            <tr><td>[12:53] *** vmlemon_4 has joined #kamaelia</td></tr>
+            <tr><td>[13:00] *** vmlemon_2 has joined #kamaelia</td></tr>
+            <tr><td>[14:06] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt afternoon all</td></tr>
+            <tr><td>[14:13] &lt vmlemon_2&gt Hi Davbo</td></tr>
+            <tr><td>[14:25] *** jae_ is now known as eikenberry</td></tr>
+            <tr><td>[15:34] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[15:37] *** jae_ has joined #kamaelia</td></tr>
+            <tr><td>[17:43] *** jae_ is now known as eikenberry</td></tr>
+            <tr><td>[18:07] *** jae_ has joined #kamaelia</td></tr>
+            <tr><td>[18:07] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:56] *** jae_ is now known as eikenberry</td></tr>
+            <tr><td>[19:54] *** jae_ has joined #kamaelia</td></tr>
+            <tr><td>[19:56] *** jae_ is now known as eikenberry</td></tr>

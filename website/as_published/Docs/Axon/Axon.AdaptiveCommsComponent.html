@@ -1,0 +1,456 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.AdaptiveCommsComponent </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.AdaptiveCommsComponent">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.AdaptiveCommsComponent</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html">AdaptiveCommsComponent</a></h2>
+</div>
+</div>
+<div class="section">
+<h1>&quot;Adaptive Comms Components&quot; - can add and remove inboxes and outboxes</h1>
+<div class="container">
+<ul class="simple">
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">AdaptiveCommsComponent</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent._AdaptiveCommsable.html">_AdaptiveCommsable</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#61">Adding and removing inboxes and outboxes</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#62">Tracking resources</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#63">Implementation</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#64">Test documentation</a><ul>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<p>An AdaptiveCommsComponent is just like an ordinary component but with the
+ability to create and destroy extra inboxes and outboxes whilst it is running.</p>
+<ul class="simple">
+<li>An AdaptiveCommsComponent is based on an <a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a></li>
+</ul>
+<p>There are other variants on the basic component:</p>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html">Axon.ThreadedComponent.threadedcomponent</a></li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedadaptivecommscomponent.html">Axon.ThreadedComponent.threadedadaptivecommscomponent</a></li>
+</ul>
+<p>If your component needs to block - eg. wait on a system call; then make it a
+'threaded' component. If it needs to change what inboxes or outboxes it has at
+runtime, then make it an 'adaptive' component. Otherwise, simply make it an
+ordinary component!</p>
+<div class="section">
+<h2 id="61"><a id="adding-and-removing-inboxes-and-outboxes" name="adding-and-removing-inboxes-and-outboxes">Adding and removing inboxes and outboxes</a></h2>
+<p>To add a new inbox or outbox call self.addInbox() or self.addOutbox() specifying
+a base name for the inbox/outbox. The created inbox or outbox is immediately
+ready to be used.:</p>
+<pre class="literal-block">
+actualInboxName = self.addInbox(&quot;inputData&quot;)
+actualOutboxName = self.addOutbox(&quot;outputData&quot;)
+</pre>
+<p>You specify a name you would ideally like the inbox or outbox to be given. If
+that name is already taken then a variant of it will be generated. Calls to
+addInbox() and addOutbox() therefore return the actual name the inbox or outbox
+was given. You should always use this returned name. It is unwise to assume your
+ideal choice of name has been allocated!</p>
+<p>To remove a box, call self.deleteInbox() or self.deleteOutbox() specifying the
+name of the box to be deleted:</p>
+<pre class="literal-block">
+self.deleteInbox(actualInboxName)
+self.deleteOutbox(actualOutboxName)
+</pre>
+<p>When deleting an inbox or outbox, try to make sure that any linkages involving
+that inbox/outbox have been destroyed. This includes not only linkages created
+by your component, but any created by other components too.</p>
+</div>
+<div class="section">
+<h2 id="62"><a id="tracking-resources" name="tracking-resources">Tracking resources</a></h2>
+<p>adaptivecommscomponent also includes an ability to track associations between
+resources and inboxes, outboxes and other information.</p>
+<p>For example, you might want to associate another component (that your component
+is interacting with) with the set of inboxes, outboxes and any other info that
+are being used to communicate with it.</p>
+<p>You can also associate particular inboxes or outboxes with those resources. This
+therefore allows you to map both ways: &quot;which resource relates to this inbox?&quot;
+and &quot;which inboxes relate to this resource?&quot;</p>
+<p>For example, suppose a request leads to your component creating an inbox and
+outbox to deal with another component. You might store these as a tracked
+resource, along with other information, such as the 'other' component and any
+state or linkages that were created; and associate this resource with the inbox
+from which data might arrive:</p>
+<pre class="literal-block">
+def wireUpToOtherComponent(self, theComponent):
+    newIn  = self.addInbox(&quot;commsIn&quot;)
+    newOut = self.addOutbox(&quot;commsOut&quot;)
+
+    newState = &quot;WAITING&quot;
+    inLinkage  = self.link((theComponent,itsOutbox),(self,newIn))
+    outLinkage = self.link((theComponent,itsInbox), (self,newOut))
+
+    resource = theComponent
+
+    inboxes = [newIn]
+    outboxes = [newOut]
+    info = (newState, inLinkage, outLinkage)
+    self.trackResourceInformation(resource, inboxes, outboxes, info)
+
+    self.trackResource(resource, newIn)
+</pre>
+<p>If a message then arrives at that inbox, we can easily look up all the
+information we might need know where it came from and how to handle it:</p>
+<pre class="literal-block">
+def handleMessageArrived(self, inboxName):
+    msg = self.recv(inboxName)
+
+    resource = self.retrieveResource(inboxName)
+    inboxes, outboxes, info = self.retrieveResourceInformation(resource)
+    theComponent=resource
+
+    ...
+</pre>
+<p>When you are finished with a resource and its associated information you can
+clean it up with the ceaseTrackingResource() method which removes the
+association between the resource and information. For example when you get rid
+of a set of linkages and inboxes or outboxes associated with another component
+you might want to clean up the resource you were using to track this too:</p>
+<pre class="literal-block">
+def doneWithComponent(self, theComponent):
+    resource=theComponent
+    inboxes, outboxes, info = self.retrieveResourceInformation(resource)
+
+    for name in inboxes:
+        self.deleteInbox(name)
+    for name in outboxes:
+        self.deleteOutbox(name)
+
+    state,linkages = info[0], info[1:]
+    for linkage in linkages:
+        self.unlink(thelinkage=linkage)
+
+    self.ceaseTrackingResource(resource)
+</pre>
+</div>
+<div class="section">
+<h2 id="63"><a id="implementation" name="implementation">Implementation</a></h2>
+<p>AdaptiveCommsComponent's functionality above and beyond the ordinary
+<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a> is implemented in a separate mixin class
+_AdaptiveCommsable. This enables it to be reused for other variants on the
+basic component that need to inherit this functionality - such as the
+threadedadaptivecommscomponent.</p>
+<p>When adding new inboxes or outboxes, name clashes are resolved by permuting the
+box name with a suffixed unique ID number until there is no longer any clash.</p>
+</div>
+<h1 id="64">Test documentation</h1>
+<p>Tests passed:</p>
+<ul class="simple">
+<li>-Acceptance Test - Check Addition and Deletion of Inboxes</li>
+<li>-Acceptance Test - Check Addition and Deletion of Outboxes</li>
+<li>__init__ - Called with with arguments does not cause problems</li>
+<li>__init__ - Called with no arguments is expected, results in component superconstructor being called. performs no local initialisation</li>
+<li>addInbox - adding an inbox with an existing name results in an inbox being created/added with a similar name - same name with a suffix</li>
+<li>addInbox - adding an inbox with a completely new name results in that inbox being created/added</li>
+<li>addOutbox - adding an outbox with an existing name results in an outbox being created/added with a similar name - same name with a suffix</li>
+<li>addOutbox - adding an outbox with a completely new name results in that outbox being created/added</li>
+<li>deleteInbox - KeyError exception raised if you try to delete an inbox that does not exist  - this includes the case of an already deleted Inbox</li>
+<li>deleteInbox - Deletes the named inbox</li>
+<li>deleteOutbox - KeyError exception raised if you try to delete an outbox that does not exist - this includes the case of an already deleted Outbox</li>
+<li>deleteOutbox - Deletes the named outbox</li>
+<li>trackResourceInformation, retrieveTrackedResourceInformation - Tracking invalid inboxes using a resource fails.</li>
+<li>trackResourceInformation, retrieveTrackedResourceInformation - Tracking invalid outboxes using a resource fails.</li>
+<li>trackResourceInformation, retrieveTrackedResourceInformation - Associates communication &amp; user aspects related to a resource. Associating default in/out boxes with a resource is valid</li>
+<li>trackResourceInformation, retrieveTrackedResourceInformation - Associates communication &amp; user aspects related to a resource. Associating dynamically created in/out boxes with a resource is the default</li>
+<li>trackResource,retrieveTrackedResource - Tracking resources using an invalid inbox name should fail.</li>
+<li>trackResource,retrieveTrackedResource - Adds to &amp; retrieves from the mapping of inbox -&gt; resource to a local store. This allows retrieval of the resource based on which inbox messages arrive on. Whilst designed for custom inboxes, it should work with the 'default' inboxes for a component</li>
+<li>trackResource,retrieveTrackedResource - Tracking resources using a custom dynamic inbox name should work.</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html">AdaptiveCommsComponent</a>.<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">AdaptiveCommsComponent</a></h1>
+<div class="section">
+<h2 id="symbol-AdaptiveCommsComponent">class AdaptiveCommsComponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>, _AdaptiveCommsable)</h2>
+<div class="section">
+<p>Base class for a component that works just like an ordinary component but can
+also 'adapt' its comms by adding or removing inboxes and outboxes whilst it
+is running.</p>
+<p>Subclass to make your own.</p>
+<p>See <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent._AdaptiveCommsable.html">Axon.AdaptiveCommsComponent._AdaptiveCommsable</a> for the extra methods that
+this subclass of component has.</p>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-AdaptiveCommsComponent.__init__" name="symbol-AdaptiveCommsComponent.__init__">__init__(self, *args, **argd)</a></h4>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.mainBody">mainBody</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__str__">__str__</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents">childComponents</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize">setInboxSize</a>(self, boxname, size)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.send">send</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.main">main</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.dataReady">dataReady</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.initialiseComponent">initialiseComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady">anyReady</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild">__addChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.closeDownComponent">closeDownComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess">_closeDownMicroprocess</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.link">link</a>(self, source, sink, *optionalargs, **kwoptionalargs)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.unlink">unlink</a>(self[, thecomponent][, thelinkage])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.recv">recv</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._deliver">_deliver</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild">removeChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox">Inbox</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren">addChildren</a>(self, *children)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.pause">pause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop">stop</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.activate">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent._AdaptiveCommsable.html">Axon.AdaptiveCommsComponent._AdaptiveCommsable</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.retrieveTrackedResource">retrieveTrackedResource</a>(self, inbox)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.deleteOutbox">deleteOutbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable._newOutboxName">_newOutboxName</a>(self[, name])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.ceaseTrackingResource">ceaseTrackingResource</a>(self, resource)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.addInbox">addInbox</a>(self, *args)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.trackResource">trackResource</a>(self, resource, inbox)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.retrieveTrackedResourceInformation">retrieveTrackedResourceInformation</a>(self, resource)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.deleteInbox">deleteInbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable._newInboxName">_newInboxName</a>(self[, name])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.trackResourceInformation">trackResourceInformation</a>(self, resource, inboxes, outboxes, information)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.addOutbox">addOutbox</a>(self, *args)</li>
+</ul>
+</div>
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html">AdaptiveCommsComponent</a>.<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent._AdaptiveCommsable.html">_AdaptiveCommsable</a></h1>
+<div class="section">
+<h2 id="symbol-_AdaptiveCommsable">class _AdaptiveCommsable(object)</h2>
+<div class="section">
+Mixin for making a component 'adaptable' so that it can create and destroy
+extra inboxes and outboxes at runtime.</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.__init__" name="symbol-_AdaptiveCommsable.__init__">__init__(self, *args, **argd)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable._newInboxName" name="symbol-_AdaptiveCommsable._newInboxName">_newInboxName(self[, name])</a></h4>
+<p>Allocates a new inbox with name <em>based on</em> the name provided.</p>
+<p>If this name is available it will be returned unchanged.
+Otherwise the name will be returned with a number appended</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable._newOutboxName" name="symbol-_AdaptiveCommsable._newOutboxName">_newOutboxName(self[, name])</a></h4>
+<p>Allocates a new outbox name <em>based on</em> the name provided.</p>
+<p>If this name is available it will be returned unchanged.
+Otherwise the name will be returned with a number appended</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.addInbox" name="symbol-_AdaptiveCommsable.addInbox">addInbox(self, *args)</a></h4>
+<p>Allocates a new inbox with name <em>based on</em> the name provided. If a box
+with the suggested name already exists then a variant is used instead.</p>
+<p>Returns the name of the inbox added.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.addOutbox" name="symbol-_AdaptiveCommsable.addOutbox">addOutbox(self, *args)</a></h4>
+<p>Allocates a new outbox with name <em>based on</em> the name provided. If a box
+with the suggested name already exists then a variant is used instead.</p>
+<p>Returns the name of the outbox added.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.ceaseTrackingResource" name="symbol-_AdaptiveCommsable.ceaseTrackingResource">ceaseTrackingResource(self, resource)</a></h4>
+<p>Stop tracking a resource and release references to it</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.deleteInbox" name="symbol-_AdaptiveCommsable.deleteInbox">deleteInbox(self, name)</a></h4>
+<p>Deletes the named inbox. Any messages in it are lost.</p>
+<p>Try to ensure any linkages to involving this outbox have been destroyed -
+not just ones created by this component, but by others too! Behaviour is
+undefined if this is not the case, and should be avoided.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.deleteOutbox" name="symbol-_AdaptiveCommsable.deleteOutbox">deleteOutbox(self, name)</a></h4>
+<p>Deletes the named outbox.</p>
+<p>Try to ensure any linkages to involving this outbox have been destroyed -
+not just ones created by this component, but by others too! Behaviour is
+undefined if this is not the case, and should be avoided.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.retrieveTrackedResource" name="symbol-_AdaptiveCommsable.retrieveTrackedResource">retrieveTrackedResource(self, inbox)</a></h4>
+<p>Retrieve the resource that has been associated with the named inbox.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.retrieveTrackedResourceInformation" name="symbol-_AdaptiveCommsable.retrieveTrackedResourceInformation">retrieveTrackedResourceInformation(self, resource)</a></h4>
+<p>Retrieve a tuple (inboxes, outboxes, otherdata) that has been stored as
+the specified resource.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.trackResource" name="symbol-_AdaptiveCommsable.trackResource">trackResource(self, resource, inbox)</a></h4>
+<p>Associate the specified resource with the named inbox.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-_AdaptiveCommsable.trackResourceInformation" name="symbol-_AdaptiveCommsable.trackResourceInformation">trackResourceInformation(self, resource, inboxes, outboxes, information)</a></h4>
+<p>Store a list of inboxes, outboxes and other information as the specified
+resource.</p>
+<p>The inboxes and outboxes specified must exist.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

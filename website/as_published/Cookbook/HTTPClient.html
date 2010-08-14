@@ -1,0 +1,102 @@
+<html>
+<head>
+<title> Cookbook/HTTPClient </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/HTTPClient">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Cookbook: HTTPClient</h1>
+<p>The web client support in Kamaelia currently comes in two forms:</p><ul><li>A single shot web client</li><li>A reusable web client</li></ul>As well as basic examples for these two, this page also shows:<br><ul><li>How to build a basic RSS client (well, actually any feed <a href="http://feedparser.org/">the universal feedparser</a> will parse, which is a lot more than just RSS)</li></ul><br><h2>The Single Shot Web Client<br></h2><blockquote><pre><b>from</b> Kamaelia.Chassis.Pipeline <b>import</b> Pipeline<br><b>from</b> Kamaelia.Protocol.HTTP.HTTPClient <b>import</b> *<br><b>from</b> Kamaelia.Util.Console <b>import</b> *<br><br>Pipeline(<br>    SingleShotHTTPClient("http://kamaelia.sourceforge.net/Home"),<br>    ConsoleEchoer(),<br>).run()</pre></blockquote>As you can see, this component takes a single argument, goes off, fetches it, and spits it out of it's main outbox "outbox". If we run this, we get the following:<br><blockquote><pre>~&gt; ./test.py</pre><pre><Kamaelia.Protocol.HTTP.HTTPParser.ParsedHTTPBodyChunk object="" at="" 0xb78ec6ec=""></Kamaelia.Protocol.HTTP.HTTPParser.ParsedHTTPBodyChunk></pre></blockquote>As you can see this is not as simple an object as you might have expected. Rather than just being passed the data, you are passed an object. You're not really expected to use this, but it is useful to know about. <br><h2>The Reusable Web Client</h2><div style="float: right; border: solid;" class="twoC"> <b>NOTE:</b> The URLs passed over to the SimpleHTTPClient <b>MUST NOT</b> include a newline, or else you will be left wondering why your code doesn't work. This is why this example ensures that the ConsoleReader strips the carriage return from the end of line!</div><br><blockquote><pre>from Kamaelia.Chassis.Pipeline import Pipeline<br>from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer<br>from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient<br><br>Pipeline(<br>    ConsoleReader(eol=""),<br>    SimpleHTTPClient(),<br>    ConsoleEchoer(),<br>).run()</pre></blockquote><br>As you can see, this time we have a console reader - where we're expected to type URLs. These URLs are passed to the SimpleHTTPClient which goes off, grabs the URLs and dumps them out of it's main outbox "outbox". If we runs this, we get the following:<br><blockquote><pre><style></style></pre><pre>~&gt; ./PipedHTTP.py<br>&gt;&gt;&gt; http://kamaelia.sourceforge.net/Home<br>&gt;&gt;&gt; <br>.bodytext {<br>    font-size: 10pt;<br>...snip...<br><br>&gt;&gt;&gt;</pre></blockquote>As you can see, this version of the system simple sends the body of the HTTP response to its main outbox "outbox". If you want more information (such as response headers etc), you have to use these components differently. However as basic examples hopefully these are sufficient :-)<br><br><h2>Feed Fetching, Parsing, Printing, Displaying</h2><div style="float: right; border: solid;" class="twoC"> Note: This example can be simplified - see <a href="/Cookbook.html.html/PureTransformer.html">Cookbook PureTransformer</a></div> This is a more substantial, but relatively basic example. <br><blockquote><pre><b>import</b> feedparser<b><br>import</b> pprint<b><br>import</b> Axon<b><br>from </b>Kamaelia.Chassis.Pipeline <b>import</b> Pipeline<b><br>from </b>Kamaelia.Util.Console <b>import </b>ConsoleReader, ConsoleEchoer<b><br>from </b>Kamaelia.Protocol.HTTP.HTTPClient <b>import</b> SimpleHTTPClient<b><br><br>class </b>Feedparser(Axon.Component.component):<br>    <b>def</b> main(self):<br>        <b>while </b>1:<br>            <b>while</b> self.dataReady("inbox"):<br>                data = self.recv("inbox")<br>                parseddata = feedparser.parse(data)<br>                self.send(parseddata, "outbox")<br><br>            <b>if not</b> self.anyReady():<br>                self.pause()<br>            yield 1<b><br><br>class</b> PrettyPrinter(Axon.Component.component):<br>    <b>def</b> main(self):<br>        <b>while</b> 1:<br>            <b>while</b> self.dataReady("inbox"):<br>                data = self.recv("inbox")<br>                prettified = pprint.pformat(data)<br>                self.send(prettified, "outbox")<br><br>            <b>if not</b> self.anyReady():<br>                self.pause()<br>            <b>yield</b> 1<br><br>Pipeline(<br>    ConsoleReader(eol=""),<br>    SimpleHTTPClient(),<br>    Feedparser(),<br>    PrettyPrinter(),<br>    ConsoleEchoer(),<br>).run()</pre></blockquote>If we run this, we get the following:<br><blockquote><pre>~&gt; ./PipedFeedFetcher.py<br>&gt;&gt;&gt; http://kamaelia.sourceforge.net/cgi-bin/blog/feed.cgi<br>&gt;&gt;&gt; {'bozo': 0,<br> 'encoding': 'utf-8',<br> 'entries': [{'author': u'Michael',<br>              'guidislink': False,<br>              'id': u'http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1158348609.1',<br>              'link': u'http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1158348609.1',<br>...<br>              'title_detail': {'base': '',<br>                               'language': None,<br>                               'type': 'text/plain',<br>                               'value': u'How do I register?'},<br>              'updated': u'Fri, 29 Sep 2006 12:11:29 +0000',<br>              'updated_parsed': (2006, 9, 29, 12, 11, 29, 4, 272, 0)},<br>             {'author': u'Michael',<br>              'guidislink': False,<br>              'id': u'http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1148942995',<br>              'link': u'http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1148942995',<br>...<br>              'updated': u'Mon, 29 May 2006 22:49:55 +0000',<br>              'updated_parsed': (2006, 5, 29, 22, 49, 55, 0, 149, 0)}],<br> 'feed': {'author': u'email@example.com',<br>          'author_detail': {'name': u'', 'email': u'email@example.com'},<br>          'docs': u'http://blogs.law.harvard.edu/tech/rss',<br>          'generator': u'Kamaelia 0.1',<br>          'generator_detail': {'name': u'Kamaelia 0.1'},<br>...<br>          'updated': u'Wed, 27 Dec 2006 22:23:49 +0000',<br>          'updated_parsed': (2006, 12, 27, 22, 23, 49, 2, 361, 0)},<br> 'namespaces': {},<br> 'version': 'rss20'}<br>&gt;&gt;&gt;</pre></blockquote>It's probably worth noting at this point that you can pretty much use this then in a similar way to the way <a href="/Developers.html/.htmlProjects/KamaeliaMacro">Kamaelia Macro</a> handles multiplexes EIT information and uses that to trigger events (such as finishing a transcoding session).<br><br>-- Michael, December 2006<br><br><br><br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

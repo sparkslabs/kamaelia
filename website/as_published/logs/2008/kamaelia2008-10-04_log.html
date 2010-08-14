@@ -1,0 +1,169 @@
+<html><body><table>
+            <tr><td>[08:15] &lt aa_&gt morning</td></tr>
+            <tr><td>[08:16] *** aa_ wrote an app with kamaelia last night</td></tr>
+            <tr><td>[08:16] &lt aa_&gt "app"</td></tr>
+            <tr><td>[09:18] &lt aa_&gt MS-: around?</td></tr>
+            <tr><td>[09:18] &lt aa_&gt or anyone</td></tr>
+            <tr><td>[09:19] &lt aa_&gt I can't see how I can prevent my components from all spinning at 100% cpu</td></tr>
+            <tr><td>[09:19] &lt aa_&gt they both do... or maybe they should, or maybe I am doing something wrong</td></tr>
+            <tr><td>[09:32] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:42] &lt MS-&gt Hi - instead of just</td></tr>
+            <tr><td>[09:42] &lt MS-&gt yield 1</td></tr>
+            <tr><td>[09:42] &lt MS-&gt do</td></tr>
+            <tr><td>[09:42] &lt MS-&gt if not self.anyReady():</td></tr>
+            <tr><td>[09:42] &lt MS-&gt  self.pause()</td></tr>
+            <tr><td>[09:42] &lt MS-&gt yield 1</td></tr>
+            <tr><td>[09:43] &lt MS-&gt That self.pause() tells the schedule "don't call me until a message comes my way"</td></tr>
+            <tr><td>[09:43] &lt MS-&gt What was the app?</td></tr>
+            <tr><td>[09:43] *** MS- reading back</td></tr>
+            <tr><td>[09:43] &lt MS-&gt afternoon davbo</td></tr>
+            <tr><td>[09:43] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[09:44] &lt Davbo&gt stopping 100% CPU?</td></tr>
+            <tr><td>[09:45] *** Davbo is experiencing deja vu</td></tr>
+            <tr><td>[09:52] &lt aa_&gt Davbo: well, seems as though all my component while 1: loops are running tightly</td></tr>
+            <tr><td>[09:53] &lt aa_&gt Davbo: this is a simple one: http://paste.pocoo.org/show/87001/</td></tr>
+            <tr><td>[09:54] &lt aa_&gt when I hook that in a pipeline with a console echoer, I get 100% cpu usage</td></tr>
+            <tr><td>[09:54] &lt aa_&gt MS-: oh god, I failed tor ead your reply again :)</td></tr>
+            <tr><td>[09:54] &lt aa_&gt MS-: thanks</td></tr>
+            <tr><td>[09:55] *** Davbo nods</td></tr>
+            <tr><td>[09:55] &lt MS-&gt that'll change to send the date/time on demand</td></tr>
+            <tr><td>[09:55] &lt MS-&gt If you want that to send a message periodically you can do the same sort of thing that I discussed with Ben on the IRC channel a few days back and then summarised in the email message to the list</td></tr>
+            <tr><td>[09:55] *** MS- digs out link</td></tr>
+            <tr><td>[09:56] &lt MS-&gt http://groups.google.com/group/kamaelia/browse_thread/thread/d1928975f238061d</td></tr>
+            <tr><td>[09:56] &lt MS-&gt Specifically the difference between version 1 & version 2</td></tr>
+            <tr><td>[09:58] &lt MS-&gt http://paste.pocoo.org/show/87002/ - will send a message once per second</td></tr>
+            <tr><td>[09:59] &lt Davbo&gt am i right in thinking Python 2.6 doesn't break backwards compatibility but 3 will?</td></tr>
+            <tr><td>[09:59] &lt MS-&gt correct</td></tr>
+            <tr><td>[10:00] &lt aa_&gt MS-: but I have a small problem</td></tr>
+            <tr><td>[10:00] &lt MS-&gt what's the problem?</td></tr>
+            <tr><td>[10:00] &lt aa_&gt let me collect my thoughts</td></tr>
+            <tr><td>[10:00] &lt MS-&gt k</td></tr>
+            <tr><td>[10:01] &lt aa_&gt MS-: ok, it all boils down to the fact that the gtk main loop must block, and also must be running in the main thread</td></tr>
+            <tr><td>[10:01] &lt aa_&gt MS-: so I can write a fake mainloop in python</td></tr>
+            <tr><td>[10:01] &lt aa_&gt while 1: if events_pending(): iterate_the_loop()</td></tr>
+            <tr><td>[10:01] &lt aa_&gt and use that in kamaelia</td></tr>
+            <tr><td>[10:02] &lt aa_&gt MS-: otherwise I can think how to write a main() that blocks indefinitely</td></tr>
+            <tr><td>[10:02] &lt MS-&gt Did you know you can put the kamaelia scheduler into a background thread ?</td></tr>
+            <tr><td>[10:02] &lt aa_&gt MS-: now you are talking</td></tr>
+            <tr><td>[10:03] &lt aa_&gt MS-: that means I can run the main loop in gtk, and let kamaelia live in a thread</td></tr>
+            <tr><td>[10:03] &lt aa_&gt ?</td></tr>
+            <tr><td>[10:03] &lt MS-&gt Yes</td></tr>
+            <tr><td>[10:03] &lt MS-&gt from Axon.background import background</td></tr>
+            <tr><td>[10:03] &lt MS-&gt background().start()</td></tr>
+            <tr><td>[10:03] &lt aa_&gt awesome, where were you at 4am last night!</td></tr>
+            <tr><td>[10:03] &lt MS-&gt sleeping :-D</td></tr>
+            <tr><td>[10:03] &lt aa_&gt :)</td></tr>
+            <tr><td>[10:03] &lt Davbo&gt "now you are talking" /me chuckles</td></tr>
+            <tr><td>[10:04] *** MS- gentley makes a reminder about Lawouach's cool PyQT code</td></tr>
+            <tr><td>[10:04] &lt aa_&gt MS-: yeah, I can't actually find that</td></tr>
+            <tr><td>[10:04] &lt MS-&gt ah I see</td></tr>
+            <tr><td>[10:05] &lt aa_&gt oh wait, I can</td></tr>
+            <tr><td>[10:05] &lt MS-&gt http://trac.defuze.org/wiki/jlib</td></tr>
+            <tr><td>[10:06] &lt MS-&gt https://svn.defuze.org/oss/jlib/jlib/core/qaxon.py</td></tr>
+            <tr><td>[10:07] &lt aa_&gt yeah just looking at that</td></tr>
+            <tr><td>[10:07] &lt MS-&gt cool</td></tr>
+            <tr><td>[10:07] &lt aa_&gt it makes sense now</td></tr>
+            <tr><td>[10:07] &lt aa_&gt it made no sense the first time</td></tr>
+            <tr><td>[10:07] &lt aa_&gt because I don't know axon, or qt :)</td></tr>
+            <tr><td>[10:08] &lt aa_&gt MS-: still my main() will never yield, is that ok?</td></tr>
+            <tr><td>[10:09] *** Davbo has seen a lot of positive / constructive feedback after PyCon UK</td></tr>
+            <tr><td>[10:09] &lt Davbo&gt I see why you do these things MS-</td></tr>
+            <tr><td>[10:10] &lt aa_&gt PassThrough just passes inbox -&gt outbox ?</td></tr>
+            <tr><td>[10:11] &lt Davbo&gt Yeah, use it to avoid having to recv and send the same data in 1 component (if that makes sense)</td></tr>
+            <tr><td>[10:12] &lt aa_&gt yeah</td></tr>
+            <tr><td>[10:13] &lt Davbo&gt for example: http://code.google.com/p/kamaelia/source/browse/branches/private_DK_PaintDev/Kamaelia/Kamaelia/Apps/Paint/ToolBox.py</td></tr>
+            <tr><td>[10:13] &lt Davbo&gt the UI widgets just post to outbox that way</td></tr>
+            <tr><td>[10:17] &lt MS-&gt "still my main() will never yield, is that ok"</td></tr>
+            <tr><td>[10:17] &lt MS-&gt If you mean your front app, then yes</td></tr>
+            <tr><td>[10:17] &lt aa_&gt MS-: yeah just got it</td></tr>
+            <tr><td>[10:17] &lt MS-&gt or rather your GTK mainloop never yields, yes</td></tr>
+            <tr><td>[10:17] &lt aa_&gt I don't have to run a loop in my gtkcomponent's main any more</td></tr>
+            <tr><td>[10:18] &lt MS-&gt background literally just throws the scheduler in the background</td></tr>
+            <tr><td>[10:18] &lt aa_&gt MS-: I just create the pipeline and call background().start() ?</td></tr>
+            <tr><td>[10:19] &lt MS-&gt aa_: yep or after</td></tr>
+            <tr><td>[10:19] &lt MS-&gt background().start()</td></tr>
+            <tr><td>[10:19] &lt MS-&gt Pipeline( ... ).activate()</td></tr>
+            <tr><td>[10:19] &lt MS-&gt while 1:</td></tr>
+            <tr><td>[10:19] &lt MS-&gt  time.sleep(1000)</td></tr>
+            <tr><td>[10:19] &lt MS-&gt that pipeline will run happily despite the foreground being blocking</td></tr>
+            <tr><td>[10:19] &lt MS-&gt or completely blocked</td></tr>
+            <tr><td>[10:20] &lt aa_&gt alright!</td></tr>
+            <tr><td>[10:21] &lt aa_&gt ok, I was not grabbing the gtk thread lock</td></tr>
+            <tr><td>[10:22] &lt MS-&gt Davbo: Yeah - you get different amounts of feedback at different conferences, but invariably its always good to go talk to people and find out what people do/don't like since its the only way things improve</td></tr>
+            <tr><td>[10:22] &lt MS-&gt I'll probably be working some more on the website this weekend</td></tr>
+            <tr><td>[10:23] &lt Davbo&gt If you decide to go with a developer Planet i'll happily contribute</td></tr>
+            <tr><td>[10:23] &lt MS-&gt Cool, in which case that's the plan then :)</td></tr>
+            <tr><td>[10:26] &lt Davbo&gt cool :-)</td></tr>
+            <tr><td>[10:28] &lt aa_&gt and now I got to the point where it is timecomponent giving me more jip than gtkcomponent</td></tr>
+            <tr><td>[10:30] &lt aa_&gt and ok, I officially have a gtk kamaelia application</td></tr>
+            <tr><td>[10:30] &lt MS-&gt Wooo !</td></tr>
+            <tr><td>[10:30] &lt MS-&gt :-)</td></tr>
+            <tr><td>[10:30] &lt MS-&gt fantastic :)</td></tr>
+            <tr><td>[10:30] &lt aa_&gt yes, really is</td></tr>
+            <tr><td>[10:31] &lt aa_&gt except now I really need to abstract out this threading stuff</td></tr>
+            <tr><td>[10:31] &lt MS-&gt Yeah, but we all know it's easier to tidy things up than to get something working initially :)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt congrats :)</td></tr>
+            <tr><td>[10:31] &lt aa_&gt MS-: basically any time I call the UI from a kamalia component I have to make sure I get a thread lock, or make sure I add whatever function as agtk idle call</td></tr>
+            <tr><td>[10:32] &lt aa_&gt no doubt I could dig a bit deeper into kamaelia and fix that before a user has to deal with it</td></tr>
+            <tr><td>[10:32] &lt aa_&gt s/fix/hack/</td></tr>
+            <tr><td>[10:34] &lt aa_&gt these things are very tasklety</td></tr>
+            <tr><td>[10:34] &lt aa_&gt kamaelia components</td></tr>
+            <tr><td>[10:34] &lt MS-&gt If you post your code up somewhere when you're happy with a work around, I'll take a look and see if there's anything I can suggest that might fit better. Unless you just get something cool done :)</td></tr>
+            <tr><td>[10:34] &lt MS-&gt Yes</td></tr>
+            <tr><td>[10:34] &lt aa_&gt on steroids</td></tr>
+            <tr><td>[10:35] &lt aa_&gt now I need an application</td></tr>
+            <tr><td>[10:35] &lt MS-&gt If you skip down this page:</td></tr>
+            <tr><td>[10:35] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Axon/Axon/Component.py</td></tr>
+            <tr><td>[10:35] &lt aa_&gt BBC radio player!</td></tr>
+            <tr><td>[10:35] &lt aa_&gt I am addicted to 5 live</td></tr>
+            <tr><td>[10:35] &lt MS-&gt that'd be fantastic :)</td></tr>
+            <tr><td>[10:36] &lt MS-&gt to line 625-650</td></tr>
+            <tr><td>[10:36] &lt aa_&gt ok</td></tr>
+            <tr><td>[10:36] &lt MS-&gt You'll see a basic structure that you could think about</td></tr>
+            <tr><td>[10:36] &lt MS-&gt that or</td></tr>
+            <tr><td>[10:37] &lt MS-&gt lines 487 - 510 (_microprocessGenerator) in http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Axon/Axon/Microprocess.py</td></tr>
+            <tr><td>[10:37] &lt MS-&gt The latter is perhaps more appropriate</td></tr>
+            <tr><td>[10:37] &lt MS-&gt Without knowing what you're doing with gtk, I'm not sure about that of course :)</td></tr>
+            <tr><td>[10:37] &lt aa_&gt ok, so far have conveniently ignore microprocessors</td></tr>
+            <tr><td>[10:38] &lt MS-&gt Yep, I'm not saying you should have to care about it, but that it might give you some ideas</td></tr>
+            <tr><td>[10:38] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:41] &lt aa_&gt ok brb</td></tr>
+            <tr><td>[10:42] &lt aa_&gt MS-: looks like all I probably need to do is wrap the pc.next() with thread lock/unlock</td></tr>
+            <tr><td>[10:44] &lt aa_&gt it came to me in a flash: kamaelia is a library not a framework</td></tr>
+            <tr><td>[10:44] &lt aa_&gt I was looking for too much "integration"</td></tr>
+            <tr><td>[10:44] &lt aa_&gt I can make my ui as normal and just let kamaelia do the heavy lifting</td></tr>
+            <tr><td>[10:48] &lt MS-&gt yep. Kamaelia looks very much like a framework, but it's designed to be one that is relatively lightweight and keeps out of the way</td></tr>
+            <tr><td>[10:49] &lt MS-&gt After all Axon is actually the frameworky bit, and kamaelia itself is just a bunch of components</td></tr>
+            <tr><td>[11:03] &lt Davbo&gt Okay, so i've installed 2.6. Can I make a symbolic link or something so I don't need to install everything that's in 2.5's site packages again?</td></tr>
+            <tr><td>[11:03] &lt aa_&gt Davbo: you probably don't want to do that (imo)</td></tr>
+            <tr><td>[11:03] &lt aa_&gt best reinstall the stuff you need</td></tr>
+            <tr><td>[11:04] &lt Davbo&gt Fair enough</td></tr>
+            <tr><td>[11:04] &lt aa_&gt people do funny things like check version on install etc</td></tr>
+            <tr><td>[11:05] &lt Davbo&gt ah i see</td></tr>
+            <tr><td>[11:05] &lt aa_&gt and c suff might be problematic if the c api changed</td></tr>
+            <tr><td>[11:17] &lt aa_&gt MS-: well, its actually quite pretty http://paste.pocoo.org/show/87005/</td></tr>
+            <tr><td>[11:19] &lt aa_&gt ahven't done message sending, just receiving</td></tr>
+            <tr><td>[11:20] &lt aa_&gt not sure if I would need to schedule the out emssages or can just call component.send from anywhere</td></tr>
+            <tr><td>[11:24] &lt Davbo&gt looks good aa_</td></tr>
+            <tr><td>[11:25] &lt aa_&gt I would have put the component and the bridge in the same class, but it won't let me subclass both</td></tr>
+            <tr><td>[11:29] &lt MS-&gt very nice - and it runs :)</td></tr>
+            <tr><td>[11:29] &lt aa_&gt hehe</td></tr>
+            <tr><td>[11:30] &lt aa_&gt ok, well sending works too</td></tr>
+            <tr><td>[11:31] &lt aa_&gt I can just call component.send() from anywhere and it seems to work</td></tr>
+            <tr><td>[11:31] &lt aa_&gt MS-: one issue still I want to make the signals generic</td></tr>
+            <tr><td>[11:33] &lt aa_&gt um.. I mean it's not always "inbox" is it</td></tr>
+            <tr><td>[12:16] &lt aa_&gt ok I blogged a little bit about kamaelia</td></tr>
+            <tr><td>[12:16] &lt aa_&gt http://unpythonic.blogspot.com/2008/10/what-twisted-could-learn-from-kamaelia.html</td></tr>
+            <tr><td>[12:37] &lt Davbo&gt Sounds like you're having licensing fun with PIDA aa_</td></tr>
+            <tr><td>[12:38] &lt aa_&gt Davbo: :)</td></tr>
+            <tr><td>[12:39] &lt aa_&gt Davbo: to be honest, I rather would say "so sue me"</td></tr>
+            <tr><td>[12:39] &lt aa_&gt and then I'll take pida underground, and release it on torrent sites</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[12:44] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[12:44] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt it's funny, open source is supposed to be all about the community getting stuff done together. But we can't even use each others code.</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt it's no wonder whenever I talk to other students at Uni about getting involved with open source nobody is interested</td></tr>
+            <tr><td>[12:53] &lt aa_&gt right</td></tr>
+            <tr><td>[13:06] &lt Davbo&gt You could always try Beerware or WTFPL aa_</td></tr>
+            <tr><td>[13:50] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[15:43] *** Davbo has joined #kamaelia</td></tr>

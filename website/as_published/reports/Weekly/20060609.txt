@@ -1,0 +1,170 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060609 ======
+
+1. Note of Agenda 
+
+2. Participants 
+
+Participants: Michael, Matt, Ryan, Thomas
+Absent (notified in advance): Anagha, Devendra
+
+3. Activity Reports 
+
+Michael
+
+    DONE:
+        Weekly report, 1 merged inversion branch and UnixPipe into mainline,
+        Assisted Ryan getting started with handling Unicode properly -
+            making his HTTP code work
+        Checked in changes to Mainline,
+        Added backplane into mainline,
+        Fixed connected socket adaptor rewrite to be low CPU usage,
+        Component for asynchronous blocking calls implemented
+            (eg a non-blocking DNS service)
+        Proposed/agreed on components to put into RELEASE tree
+        Drafted a contributor agreement, and run it past legal.
+        Multicast proxying tools
+        Discussed online/offline security requirements
+        Discussed status and direction of work with thomas (implemented
+            bouncing cubes & pastel colours),
+        Discussed direction of work with anagha
+        Been invited to FOOCAMP (accepted invite)
+        Poster describing Kamaelia
+
+    TODO:
+        Send out contributor agreement (see blocked)
+        Document, backplane & UDP components
+        Sort out paperwork for conferences
+        Write documentation including poster for Macro
+        On the bliki: describe the requirement for the Database component
+        describe desired test first rewrite of the TCP components
+        Sort out next Axon/Kamaelia release
+            Add & checkin the proposed components into RELEASE branch
+            Build candidate release
+
+    BLOCKED:
+        Waiting to hear from legal regarding contributor agreement
+        Macro kit, waiting for TL (or BB)
+        Fix fedora box - requires hardware
+
+Thomas:
+
+    DONE:
+        Input handling (ray/OOB intersection)
+        Matrix and Vector classes
+        3D object control & feedback boxes
+        Moveable cube example
+        Textured plane component
+    TODO:
+        More intersection tests
+        Billboards
+        Make Display3D handle pygame components
+        Path classes for nice movement of objects
+    BLOCKED:
+        Exams and uni work (not totally blocked though)
+
+Ryan:
+
+    DONE:
+        Fixed charset issues in HTTPServer
+        Made kambot start up as a daemon (started with init.d script)
+        Started coding multiple BitTorrent client controller (MBCC)
+        Tests on chunkifier, chunk distributor and TorrentMaker
+    TODO:
+        Finish MBCC
+        Increase status feedback from bittorrent client
+        HTTP uploader (HTTP client)
+    BLOCKED:
+        Sourceforged cvs, exams/revision
+
+Matt:
+
+    DONE:
+        Merged Axon tests from threads branch
+        Release notes for optimisations
+        Propose components for adding to next release, incl. MACRO related
+        Fixed doc ref to next Kamaelia version number
+        Fixed Axon tests to pass for system inversion
+    BLOCKED:
+        Busy due to house move!
+    TODO:
+        Write tests for the system inversion
+        Write tests for linkage removal on component shutdown
+        Audit/update documentation as needed
+        Extract broken HP motherboard and issue support req.
+        Set up 2nd HP tower & rackmount
+        Purchase DVB-T cards for HPs
+        Improve Now and Next change detection
+        Reimplement synchronous boxes/linkages
+        CAT needs thread safety
+        Improve box destruction to handle when a box is still linked to
+          another
+        Mod various components to utilise inversion (timer component?)
+        Move sys-status from Macro.py, into the introspection code.
+        Improve website component documentation to include long spiely stuff
+        Add polling rate reduction to Introspector (reduce CPU load)
+        Allow physics to be turned off [automagically?] in AxonVisualiser
+           (reduce CPU load)
+        Remove inheritance from axon visualiser
+
+Michael noted that it's preferable for the TODO list to better reflect
+immediate todo's - ie the next week, possibly 2-3 weeks worth at most.
+
+
+4. Discussion items (max 3 or 4) 
+
+4.1 Release Issues
+
+Michael noted that the remaining steps were:
+   * Michael to move the agreed items into the RELEASE branch
+   * Then build a candidate release.
+
+Matt noted that short of actually releasing, the 'must haves' are pretty
+much all done. Michael also noted that he could do the two outstanding
+items or try and re-implement synchronous boxes. Michael noted he'd had
+some interest in synchronous boxes. Matt suggested that given there was
+potentially a week or two, that perhaps doing a candidate release *then*
+synchronous boxes might be a good idea.
+
+The question arised of whether the new release was checked in yet, so
+Michael clarified that what's currently in the main CVS branch is
+expected to be the code in the release. ie Summer of code people are
+likely to be using it already.
+
+Matt noted he intends to concentrate on improving axon tests wrt. threading
+& flow control inversion over the next few days ...
+
+Michael then clarified the release process:
+   * Files get tagged being in the RELEASE branch.
+       * cvs tag -b RELEASE foo
+   * The easiest way in practice is to copy the file over to a check
+     out of the branch and simply:
+       * cvs add FILE
+     on the branch which is what I actually do in practice
+
+     No actual editting occurs on the branch. To actually build the
+     release, I run 
+         /Code/Python/buildKamaeliaRelease.sh
+     That builds me a candidate release
+
+     If I'm happy with that, I then run tagKamaeliaRelease.sh
+
+     To make it so we can always retrieve earlier versions
+
+Michael asked for any final proposals for inclusions in the release really
+need to be made by early next week :)
+
+Michael was then interrupted in the meeting by a phone call, causing the
+meeting to be somewhat truncated. :(
+
+4.2 Summer of Code
+
+Michael noted that BBC legal had approved the changes (regarding
+the contributor agreement) he'd suggested, but want to remove 2
+small phrases, double check and get back to him. The result should
+be one everything that everyone's happy with.
+
+5. Date/Time of next meeting 
+
+Fri 16th June 2006, 11am BST (GMT+0100)
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060609 ======

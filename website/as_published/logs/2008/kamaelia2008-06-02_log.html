@@ -1,0 +1,1128 @@
+<html><body><table>
+            <tr><td>[06:44] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:44] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:46] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:46] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[06:46] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:47] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:51] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:17] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:18] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:18] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[08:13] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:14] &lt mhrd&gt hi all (just finished reading the weekend's scrollback excitement)</td></tr>
+            <tr><td>[08:15] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[08:15] &lt Lawouach_&gt Now coffee break :)</td></tr>
+            <tr><td>[08:17] &lt mhrd&gt MS- / Chong misunderstanding is unfortunate, but these things happen. Chong obviously did try to give warning; but it helps to be more explanatory as people don't necessarily share the same knowledge about things :-) (I've never heard of that show either!)</td></tr>
+            <tr><td>[08:17] &lt mhrd&gt orphans' timing issues: ought to have a chat with him if he's not already resolved them to his satisfaction</td></tr>
+            <tr><td>[08:18] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:22] &lt Lawouach_&gt hi orphans</td></tr>
+            <tr><td>[08:23] &lt mhrd&gt hi orphans: how's the timing issues? (and life in general :-) )</td></tr>
+            <tr><td>[08:23] &lt Lawouach_&gt mhrd: Regarding students not being loud and clear enough when they might be away I think may indeed have to reiterate that GSoC is a bit like a work placement in its commitment really.</td></tr>
+            <tr><td>[08:24] &lt Lawouach_&gt Students are working on OSS projects but they do so as part of an agreement</td></tr>
+            <tr><td>[08:24] &lt mhrd&gt Lawouach_: indeed</td></tr>
+            <tr><td>[08:24] &lt Lawouach_&gt It's different from willingly on your spare time doing the same thing.</td></tr>
+            <tr><td>[08:24] &lt orphans&gt morning all</td></tr>
+            <tr><td>[08:25] &lt orphans&gt timing issues = interesting - I'm still trying to work out what the right way to do everything is. Currently in the trying a failing and learning stage methinks</td></tr>
+            <tr><td>[08:26] &lt orphans&gt life in general = pretty good :)</td></tr>
+            <tr><td>[08:26] &lt mhrd&gt cool :)</td></tr>
+            <tr><td>[08:26] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[08:26] &lt mhrd&gt I've had to deal with timing issues with Kamaelia stuff before and with the Java VoIP stuff I'm doing at work ...</td></tr>
+            <tr><td>[08:26] &lt mhrd&gt the short answer is that unless you do platform specific optimisations, you won't be able to get better accuracy than you are already</td></tr>
+            <tr><td>[08:27] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:27] &lt Lawouach_&gt Hi Chong-</td></tr>
+            <tr><td>[08:27] &lt Chong-&gt morning, Lawouach_</td></tr>
+            <tr><td>[08:27] &lt orphans&gt yeah, I think I came to that conclusion. Now it's more about designing something which is easy enough but flexible enough to do what I want</td></tr>
+            <tr><td>[08:27] &lt orphans&gt hey Chong-</td></tr>
+            <tr><td>[08:27] &lt mhrd&gt python, java etc.. all try, to some degree, to hide you from the platform details - so they provide a "best effort" timer</td></tr>
+            <tr><td>[08:27] &lt Lawouach_&gt mhrd: You'd avise a good buffer management and a simple timer synchronisation?</td></tr>
+            <tr><td>[08:27] &lt mhrd&gt ooi why do you need that much accuracy?</td></tr>
+            <tr><td>[08:28] &lt Chong-&gt morning, orphans and mhrd</td></tr>
+            <tr><td>[08:28] &lt Lawouach_&gt mhrd: That's my question too ;)</td></tr>
+            <tr><td>[08:28] &lt mhrd&gt Lawouach_ : not quite sure I understand what you're suggesting, but I probably do agree :)</td></tr>
+            <tr><td>[08:28] &lt orphans&gt ah - well, I'd like to ideally get &lt 1ms because the limit between a human hearing two sounds at seperate times is ~2-10ms</td></tr>
+            <tr><td>[08:29] &lt mhrd&gt things like the audio subsystem work okay since they have built in FIFOs which you just ensure are filled with data - so you don't need to be particularly accurate (you just write in large chunks every few 10s of milliseconds)</td></tr>
+            <tr><td>[08:29] &lt Lawouach_&gt Well if your timer is not precise enoufgh, or in other way if you can't rely on it, you have to provide the audio synchronisation at a different stage</td></tr>
+            <tr><td>[08:29] &lt mhrd&gt yep</td></tr>
+            <tr><td>[08:29] &lt Lawouach_&gt Buffering and making sure you always enough data seems like one simple solution</td></tr>
+            <tr><td>[08:29] &lt mhrd&gt orphans: what are you causing to happen at specific times?</td></tr>
+            <tr><td>[08:29] &lt orphans&gt that's all offloaded to whatever's producing the sound though - nowt to do with me</td></tr>
+            <tr><td>[08:30] &lt mhrd&gt filling a buffer? triggering a sound playing? something else?</td></tr>
+            <tr><td>[08:30] &lt orphans&gt mhrd, sending out messages which trigger a sound (in some other program)</td></tr>
+            <tr><td>[08:30] &lt mhrd&gt what kind of msgs? what is the "other program" ?</td></tr>
+            <tr><td>[08:30] &lt orphans&gt OSC messages (or MIDI messages), and anything which will take them</td></tr>
+            <tr><td>[08:31] &lt orphans&gt I'm using pure data (puredata.info) for testing</td></tr>
+            <tr><td>[08:31] &lt mhrd&gt are the messages sporadically timed? or is it a constant stream (like playing out audio samples) ?</td></tr>
+            <tr><td>[08:31] &lt orphans&gt sporadically timed</td></tr>
+            <tr><td>[08:31] &lt mhrd&gt hmm, the awkward case :)</td></tr>
+            <tr><td>[08:32] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[08:32] &lt orphans&gt yeah, it's more about knowing when to trigger to get them out fast enough</td></tr>
+            <tr><td>[08:32] &lt mhrd&gt so you're filling a buffer for the "other program", which then sorts out exactly what to do and when?</td></tr>
+            <tr><td>[08:32] &lt orphans&gt yeah</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt Hmm. Still you don't necessarily have control on how the consumer will deal with your way of sending messages out.</td></tr>
+            <tr><td>[08:33] &lt mhrd&gt ok ...</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt Meaning you have to be rather sensible in your producer</td></tr>
+            <tr><td>[08:33] &lt orphans&gt no, I have no control really</td></tr>
+            <tr><td>[08:33] &lt orphans&gt the spec says that the consumer should just deal with the messages as they arrive</td></tr>
+            <tr><td>[08:33] &lt mhrd&gt yeah, the problem is you're not running on a "real time OS" with a real time "hard" scheduler ...</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[08:33] &lt orphans&gt yeah</td></tr>
+            <tr><td>[08:34] &lt mhrd&gt any requests your thread makes to be woken at any time are just a request - the OS will not guarantee to honour it ...</td></tr>
+            <tr><td>[08:34] &lt mhrd&gt so saying sleep(10ms) will only guarantee that you will be woken *at least* 10ms later ...</td></tr>
+            <tr><td>[08:34] &lt orphans&gt yeah, I've been reading a bit around</td></tr>
+            <tr><td>[08:34] &lt mhrd&gt so if you're trying to time output and you don't want to get behind, then you want to find out what the new time is after the sleep() returns; and compensate ...</td></tr>
+            <tr><td>[08:34] &lt mhrd&gt cool</td></tr>
+            <tr><td>[08:34] &lt Lawouach_&gt maybe you could think it the other way</td></tr>
+            <tr><td>[08:34] &lt orphans&gt MS-'s code illustrates it nicely</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt Rather than doing time-based sync', you could use size-based sync'</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt like a socket buffer</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt so you fill a buffer of messages and send them in one go</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt when that buffer is full</td></tr>
+            <tr><td>[08:35] &lt mhrd&gt yep</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt in such case the time is less of a concern</td></tr>
+            <tr><td>[08:35] *** aNickName has joined #kamaelia</td></tr>
+            <tr><td>[08:36] &lt Lawouach_&gt But would that play well with existing consumers and the way most people would implement consumers... I don't know :)</td></tr>
+            <tr><td>[08:36] &lt mhrd&gt if you're unable to do that; take a look at Kamaelia.Util.RateControl.ByteRate_RequestControl (apologies for the rubbish name) ...</td></tr>
+            <tr><td>[08:36] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[08:36] &lt orphans&gt mm. The other think I haven't really looked at properly is OSC supposedly supports timestamping</td></tr>
+            <tr><td>[08:37] &lt orphans&gt not sure how much it's actually supported, but that might make the whole job a bit easier</td></tr>
+            <tr><td>[08:37] &lt mhrd&gt its a timer I wrote to improve rate-controlled file reading; and it does alot of stuff to compensate for timer delays and to try to prevent drift due to rounding errors</td></tr>
+            <tr><td>[08:37] &lt mhrd&gt if you can attach playout timestamps to the data you're writing out then that sounds an excellent plan :)</td></tr>
+            <tr><td>[08:37] *** bNickName has joined #kamaelia</td></tr>
+            <tr><td>[08:38] &lt orphans&gt the problem is that you really want to be signalling as close to the time you want it played, cause someone might delete/change it in the meantime</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt its a trade off that is a weakness of doing stuff with computers, particularly with desktop multitasking OSes ..</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt orphans: well it depends really. Do you plan that every peer in the network lays the sound right at the same time?</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt you've got a trade-off to determine: how small can you make your buffer before spikes in CPU load (from other activity) causes problems</td></tr>
+            <tr><td>[08:40] &lt Lawouach_&gt It seems to me that you want the music to be continuous locally where it's played. But it might be offset from other peers</td></tr>
+            <tr><td>[08:40] &lt orphans&gt Lawouach_, it's not massively important, probably more important locally</td></tr>
+            <tr><td>[08:40] &lt Lawouach_&gt Okay</td></tr>
+            <tr><td>[08:40] &lt orphans&gt well, definitely more important locally</td></tr>
+            <tr><td>[08:40] &lt Lawouach_&gt so that already allievates part of the concurrency and synchronisation constraints.</td></tr>
+            <tr><td>[08:40] &lt mhrd&gt simplest way to determine it is 1) experimentally, 2) provide a user controllable buffer size (since their system will be different to yours)</td></tr>
+            <tr><td>[08:41] &lt orphans&gt I'm not 100% sure I understand the idea of the data buffer completely</td></tr>
+            <tr><td>[08:41] &lt mhrd&gt ok: take the situation that you're playing a WAV file ...</td></tr>
+            <tr><td>[08:41] &lt orphans&gt yup</td></tr>
+            <tr><td>[08:42] &lt mhrd&gt the OS, application software, etc. will be rubbish at doing exact timing ...</td></tr>
+            <tr><td>[08:42] &lt orphans&gt don't I know it</td></tr>
+            <tr><td>[08:42] &lt mhrd&gt so its completely impractical, to say, try to generate an interrupt every time a single sample needs to be played out, and to try and play it out exactly on time ...</td></tr>
+            <tr><td>[08:43] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[08:43] &lt mhrd&gt so the way your PC solves it is the sound hardware has a big input buffer</td></tr>
+            <tr><td>[08:43] &lt mhrd&gt and only interrupts the system when the buffer is starting to run dry</td></tr>
+            <tr><td>[08:43] &lt orphans&gt yeah</td></tr>
+            <tr><td>[08:43] &lt mhrd&gt then then software fills it with a large chunk of data</td></tr>
+            <tr><td>[08:44] &lt mhrd&gt so the exact time this is done at doesn't matter so much - and the cpu is being interrupted less often, which is more efficient</td></tr>
+            <tr><td>[08:44] &lt Lawouach_&gt and user experience is good :)</td></tr>
+            <tr><td>[08:44] &lt mhrd&gt the sound hardware then has hardware timers and plays the individual samples out of the buffer when they're needed (every 441000's of a second for example)</td></tr>
+            <tr><td>[08:44] &lt mhrd&gt yep</td></tr>
+            <tr><td>[08:44] &lt mhrd&gt the trade-off of course, is that the latency is higher (because you've got a big buffer in the way)</td></tr>
+            <tr><td>[08:44] &lt orphans&gt ok, so how does that correlate to the sporadic case? I timestamp all of the messages and send the buffer every n ms?</td></tr>
+            <tr><td>[08:45] &lt mhrd&gt if the playout system will accept timestamped data, then you just try to make sure the buffer is always reasonably full (as Lawouach_ suggests)</td></tr>
+            <tr><td>[08:45] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[08:45] &lt mhrd&gt if it doesn't; another solution might be to try to find a way to go from sporadic to periodic ...</td></tr>
+            <tr><td>[08:46] &lt Lawouach_&gt orphans: just one general note, trying to make things highly synchronised is usually hard and rarely needed in most domains. The buffer solution is usually a way to compensate for the trade off made by the OS.</td></tr>
+            <tr><td>[08:46] &lt mhrd&gt indeed</td></tr>
+            <tr><td>[08:46] &lt mhrd&gt eg. is it possible to fill in the gaps with some kind of null message? and instruct the receiving programme to play out one message every 'x' milliseconds</td></tr>
+            <tr><td>[08:47] &lt Lawouach_&gt Areas where you would need perfect real-time synchronisation would be stoke market, health care, planes. Try to ask yourself: "does my application require such high standard as a plane software?" :)</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt people pay big premiums for dedicated specialist equipment to do low latency/highly synchronised versions of the same jobs a cheap PC can do with poor timing/latency</td></tr>
+            <tr><td>[08:47] &lt orphans&gt mhrd: mm, probably possible if you do a lot of work on the receiving program, but not in the general case</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt Lawouach_ : many broadcasting apps too :)</td></tr>
+            <tr><td>[08:48] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[08:49] &lt mhrd&gt can you point me at a URL for docs/overview of the receiving program you're using?</td></tr>
+            <tr><td>[08:49] *** mhrd feeling very abstract :)</td></tr>
+            <tr><td>[08:49] &lt orphans&gt here's the protocol which programs should be following: http://opensoundcontrol.org/spec-1_0</td></tr>
+            <tr><td>[08:51] &lt Lawouach_&gt An OSC server must have access to a representation of the correct current absolute time. OSC does not provide any mechanism for clock synchronization.</td></tr>
+            <tr><td>[08:51] &lt Lawouach_&gt I wonder, what does "absolute time" mean here? How do you decide of its value?</td></tr>
+            <tr><td>[08:51] &lt mhrd&gt good question :)</td></tr>
+            <tr><td>[08:51] &lt orphans&gt mm, I read that somewhere</td></tr>
+            <tr><td>[08:51] &lt orphans&gt I think time since the epoch</td></tr>
+            <tr><td>[08:52] &lt mhrd&gt ah yeah - 3rd paragraph</td></tr>
+            <tr><td>[08:52] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:52] &lt mhrd&gt so you'll need to be aware of the datetime of the machine running the server :)</td></tr>
+            <tr><td>[08:52] &lt mhrd&gt so you're writing packets and sending them to an OSC server</td></tr>
+            <tr><td>[08:53] &lt mhrd&gt does indeed sound like you need to time-tag them, and make sure you send them a little before they're needed</td></tr>
+            <tr><td>[08:54] &lt orphans&gt yeah - rather than needing to wake up dead on when they need to be sent, needing to wake up a bit before</td></tr>
+            <tr><td>[08:54] &lt mhrd&gt yep</td></tr>
+            <tr><td>[08:54] &lt mhrd&gt exactly the same kind of "best effort" timing loop; just time the moment a little before :)</td></tr>
+            <tr><td>[08:54] &lt orphans&gt yeah</td></tr>
+            <tr><td>[08:55] &lt orphans&gt mm, cool</td></tr>
+            <tr><td>[08:55] *** Lawouach_ is cooking questions for orphans's meeting :)</td></tr>
+            <tr><td>[08:55] &lt orphans&gt has given me a lot to think about/work on</td></tr>
+            <tr><td>[08:55] &lt mhrd&gt enjoy :)</td></tr>
+            <tr><td>[08:56] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[08:56] &lt orphans&gt all this before my first coffee this morning too - I think it's probably time for me to fill my veins with some caffeine</td></tr>
+            <tr><td>[08:57] &lt mhrd&gt I've been sipping my fist cup of wholesome machine coffee whilst typing :)</td></tr>
+            <tr><td>[08:57] &lt mhrd&gt s/fist/first/</td></tr>
+            <tr><td>[08:57] &lt orphans&gt mm, envious</td></tr>
+            <tr><td>[08:57] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:57] &lt orphans&gt &lt = coffeee</td></tr>
+            <tr><td>[08:58] &lt mhrd&gt you wouldnt be so envious if you tasted it ;-)</td></tr>
+            <tr><td>[08:59] &lt Lawouach_&gt and I drink tea</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt now that's a strange World</td></tr>
+            <tr><td>[09:02] &lt mhrd&gt yay, finished processing emails :)</td></tr>
+            <tr><td>[09:29] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[09:30] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:37] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[09:37] &lt mhrd&gt hi vmlemon</td></tr>
+            <tr><td>[09:56] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:56] &lt MS-&gt Morning</td></tr>
+            <tr><td>[09:57] *** MS- notes aNickName, bNickName are chong's alter-egos</td></tr>
+            <tr><td>[09:57] *** MS- notes Davbo's not here yet, & checks logs, bearing in mind mail he sent last week</td></tr>
+            <tr><td>[09:58] &lt MS-&gt I've re-enabled times on this page btw: http://edit.kamaelia.org/RecentChanges</td></tr>
+            <tr><td>[10:00] &lt mhrd&gt yay RecentChanges :-)</td></tr>
+            <tr><td>[10:00] &lt Chong-&gt morning, MS-</td></tr>
+            <tr><td>[10:00] &lt mhrd&gt fussy request: swap around date and page name? (will look nicer imho) :-)</td></tr>
+            <tr><td>[10:00] &lt MS-&gt mhrd: Well it's always largely worked, but the times /dates were removed which was a pain - I discovered why last night, and fixed it</td></tr>
+            <tr><td>[10:01] &lt Chong-&gt yes. aNickName, bNickName are for testing the IRCClient :-)</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt Chong-: you might want to create a dummy IRC channel for those :)</td></tr>
+            <tr><td>[10:01] &lt MS-&gt mhrd: I'm probably going to change the format into a table</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt off to lunch :)</td></tr>
+            <tr><td>[10:01] &lt MS-&gt enjoy</td></tr>
+            <tr><td>[10:01] &lt Chong-&gt cya, Lawouach_</td></tr>
+            <tr><td>[10:02] &lt mhrd&gt cya Lawouach_</td></tr>
+            <tr><td>[10:02] *** bNickName has parted #kamaelia</td></tr>
+            <tr><td>[10:02] *** aNickName has parted #kamaelia</td></tr>
+            <tr><td>[10:33] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[10:33] &lt MS-&gt there you are</td></tr>
+            <tr><td>[10:40] &lt Uraeus&gt hmm, first voice activated IRC bot I ever seen :)</td></tr>
+            <tr><td>[10:41] &lt MS-&gt heh</td></tr>
+            <tr><td>[10:44] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[11:09] *** MS- has finished weekend spam deletion. Only 1100 of the b's</td></tr>
+            <tr><td>[11:11] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:11] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:33] &lt MS-&gt Oooh. I've had a thought</td></tr>
+            <tr><td>[11:34] &lt MS-&gt Most mail that is spam causes scatterback</td></tr>
+            <tr><td>[11:34] &lt MS-&gt ie if I have an out of office mail message going out, that almost always bounces for spams</td></tr>
+            <tr><td>[11:34] &lt MS-&gt So, I can use these bounces to train a spam system</td></tr>
+            <tr><td>[11:35] &lt MS-&gt In a similar way to greylisting</td></tr>
+            <tr><td>[11:35] &lt MS-&gt Since people will do the opposite ie not respond with an "undeliverable" message</td></tr>
+            <tr><td>[11:36] &lt MS-&gt Won't give a definite "this is not a spam" for messages that don't give a bounce</td></tr>
+            <tr><td>[11:37] &lt MS-&gt But for anything that does bounce, it's much more likely to be spam</td></tr>
+            <tr><td>[11:37] &lt MS-&gt That'll massively assist with monday mornings/time off</td></tr>
+            <tr><td>[11:41] *** MS- changes out of office message to state that it's going to be left up, for the purposes of assisting killing spam</td></tr>
+            <tr><td>[11:48] &lt MS-&gt OK, that's the oddest crash</td></tr>
+            <tr><td>[11:50] &lt vmlemon_&gt Ouch, it looks like there's something wrong with my USB SD card reader's USB port, and just when I needed to use it...</td></tr>
+            <tr><td>[11:51] &lt MS-&gt ouch</td></tr>
+            <tr><td>[11:52] &lt vmlemon_&gt I can get it to mount on Linux after fumbling with the port and cable, if I'm lucky</td></tr>
+            <tr><td>[11:53] &lt vmlemon_&gt although it gives weird errors in the dmesg 90% of the time</td></tr>
+            <tr><td>[11:54] &lt vmlemon_&gt And annoyingly, I couldn't get it to work at all with a Windows machine here</td></tr>
+            <tr><td>[12:06] &lt MS-&gt Chong-: I fixed your page here: http://edit.kamaelia.org/Developers/Projects/3DTopologyVisualiser</td></tr>
+            <tr><td>[12:06] &lt MS-&gt hope that helps :)</td></tr>
+            <tr><td>[12:06] &lt MS-&gt Not sure how you managed it, but you'd manage to save the editor as the page contents</td></tr>
+            <tr><td>[12:06] &lt MS-&gt Which causes interesting "issues" when it came to editting the page (it tried to load the editor within the editor)</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt MS-: I've added myself to the wiki. I assume you have to validate the account</td></tr>
+            <tr><td>[12:15] &lt MS-&gt Nope - it sends and email you to click on.</td></tr>
+            <tr><td>[12:15] &lt MS-&gt at present it's not used, favouring the apache level username/password thing</td></tr>
+            <tr><td>[12:16] &lt MS-&gt It is used to enable you to add tags to pages thouh</td></tr>
+            <tr><td>[12:16] &lt MS-&gt and so that will grow to be more useful</td></tr>
+            <tr><td>[12:16] &lt MS-&gt On sourceforge, it was used to cause an error when hitting "edit" to not occur</td></tr>
+            <tr><td>[12:17] &lt MS-&gt (thus making a non-logged-in-edit look like the wiki was bust)</td></tr>
+            <tr><td>[12:18] &lt MS-&gt The security on there at the moment is primarily needed it seems to prevent spam</td></tr>
+            <tr><td>[12:18] &lt MS-&gt in practice</td></tr>
+            <tr><td>[12:19] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[12:19] &lt Lawouach_&gt thanks</td></tr>
+            <tr><td>[12:19] &lt MS-&gt Code is going in here btw - http://code.google.com/p/cerenity/</td></tr>
+            <tr><td>[12:19] &lt MS-&gt (that code was written entirely on my own time, and so is BSD licensed)</td></tr>
+            <tr><td>[12:20] &lt MS-&gt (as far as I'm concerned)</td></tr>
+            <tr><td>[12:20] &lt Lawouach_&gt alright</td></tr>
+            <tr><td>[12:20] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:20] &lt MS-&gt Though I need to remove dependency on cgi_app & htmltmpl for that statement to be valid. Switching it over to use wsgi properly & something like either cheetah (or just use the CDML renderer properly) will eradicate that</td></tr>
+            <tr><td>[12:21] &lt MS-&gt Davbo: afternoon</td></tr>
+            <tr><td>[12:21] &lt Lawouach_&gt It'd be funny to make it GAE-compliant :)</td></tr>
+            <tr><td>[12:21] &lt Lawouach_&gt wouldn't it?</td></tr>
+            <tr><td>[12:21] &lt Lawouach_&gt you could scale (buzz-word inside)!</td></tr>
+            <tr><td>[12:22] &lt MS-&gt indeed - there's no reason it shouldn't really</td></tr>
+            <tr><td>[12:23] &lt Lawouach_&gt I was actually midly joking only. But well it's another task for another time :)</td></tr>
+            <tr><td>[12:24] &lt MS-&gt yeah, no rush :)</td></tr>
+            <tr><td>[12:25] &lt MS-&gt it was due to cerenity's existance (and being not too bad a code structure for it's type of code0</td></tr>
+            <tr><td>[12:25] &lt MS-&gt that made me want someone to look at (what became called) Shard's last summer</td></tr>
+            <tr><td>[12:25] &lt MS-&gt since if it's a component system it should support purely linear plugins like cerenity does as well</td></tr>
+            <tr><td>[12:29] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt hi Davbo</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt Sorry I wasn't online earlier MS-, completely forgot. I know it's not meant as a meeting as such and I'm still quite confident about what I'm doing next.</td></tr>
+            <tr><td>[12:34] &lt MS-&gt Davbo: No problem - you did give me warning that you may forget things</td></tr>
+            <tr><td>[12:34] &lt MS-&gt (which was appreciated)</td></tr>
+            <tr><td>[12:36] &lt MS-&gt BTW, if you have any feedback on LikeFile / MakeHandle, I'd appreciate it . Your project will be relying on it under the hood (since its used inside the process stuff), hence the question</td></tr>
+            <tr><td>[12:36] &lt MS-&gt I realise that you said that you weren't sure what it's *for*</td></tr>
+            <tr><td>[12:37] &lt MS-&gt The core behind it is to allow the use of kamaelia stuff in non-kamaelia systems</td></tr>
+            <tr><td>[12:37] &lt Davbo&gt Oh yes, Lawouach_ kindly explained it to me last night.</td></tr>
+            <tr><td>[12:37] &lt MS-&gt but also allows certain kinds of usage to be simpler</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Whilst the implementation of LikeFile on trunk at the moment has all those hidden issues,</td></tr>
+            <tr><td>[12:38] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Examples/LikeFile/</td></tr>
+            <tr><td>[12:38] &lt MS-&gt does have a number of examples that should help clarify :)</td></tr>
+            <tr><td>[12:39] &lt Davbo&gt is the reason why it doesn't use Generators just to preserve Axon support for older versions of Python?</td></tr>
+            <tr><td>[12:39] &lt MS-&gt Reading this backward: http://cia.vc/stats/author/ms_ should help</td></tr>
+            <tr><td>[12:40] &lt MS-&gt no, it's because it has to due to the usecase</td></tr>
+            <tr><td>[12:40] &lt Davbo&gt ah</td></tr>
+            <tr><td>[12:41] *** MS- just tests an example on the console to explain more clearly what I mean by that :)</td></tr>
+            <tr><td>[12:44] &lt Chong-&gt MS-: Thank you very much. It works now :-)</td></tr>
+            <tr><td>[12:45] &lt MS-&gt Davbo: OK, example</td></tr>
+            <tr><td>[12:45] &lt MS-&gt from background import background</td></tr>
+            <tr><td>[12:45] &lt MS-&gt from LikeFile import LikeFile</td></tr>
+            <tr><td>[12:45] &lt MS-&gt from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer</td></tr>
+            <tr><td>[12:46] &lt MS-&gt (all of that typed in an interactive python prompt)</td></tr>
+            <tr><td>[12:46] &lt Davbo&gt right</td></tr>
+            <tr><td>[12:46] &lt MS-&gt &gt&gt&gt background.start()</td></tr>
+            <tr><td>[12:46] &lt MS-&gt &gt&gt&gt TV = LikeFile(TopologyViewer()).activate()</td></tr>
+            <tr><td>[12:46] &lt MS-&gt &gt&gt&gt</td></tr>
+            <tr><td>[12:47] &lt MS-&gt The viewer pops up into existance and is running at the same time as the interactive python prompt</td></tr>
+            <tr><td>[12:47] &lt MS-&gt &gt&gt&gt TV.put("ADD NODE 1 1 auto -".split(), "inbox")</td></tr>
+            <tr><td>[12:47] &lt MS-&gt &gt&gt&gt TV.put("ADD NODE 2 2 auto -".split(), "inbox")</td></tr>
+            <tr><td>[12:47] &lt MS-&gt &gt&gt&gt TV.put("ADD LINK 1 2".split(), "inbox")</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt I see</td></tr>
+            <tr><td>[12:48] &lt MS-&gt At all times the prompt returns, but the topology viewer continues running in the background accepting messages</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt put being a LikeFile command?</td></tr>
+            <tr><td>[12:48] &lt MS-&gt yep</td></tr>
+            <tr><td>[12:48] &lt MS-&gt like file because it's "like a file" as in "something complicated going on concurrent to the mainline of execution"</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[12:48] &lt MS-&gt not "like file" as in "implements .read(), .write(), .seek(), .close()"</td></tr>
+            <tr><td>[12:49] &lt MS-&gt Essentially it's like a graphline running in a thread</td></tr>
+            <tr><td>[12:49] &lt MS-&gt as a threaded component instead of a normal generator based on</td></tr>
+            <tr><td>[12:49] &lt MS-&gt and with a slightly odd way of getting data in/out</td></tr>
+            <tr><td>[12:49] &lt MS-&gt (odd from a kamaelia perspective)</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt hmm, right</td></tr>
+            <tr><td>[12:50] &lt MS-&gt Anyway, if you have time to play with it/review it for sanity, it'd be welcome</td></tr>
+            <tr><td>[12:50] &lt MS-&gt if you don't, that's no problem</td></tr>
+            <tr><td>[12:50] &lt MS-&gt reading checkin messages backwards from here:</td></tr>
+            <tr><td>[12:50] &lt MS-&gt http://cia.vc/stats/author/ms_</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt uhh sure, it in your scratch?</td></tr>
+            <tr><td>[12:51] &lt MS-&gt yep</td></tr>
+            <tr><td>[12:51] &lt MS-&gt In: /trunk/Sketches/MPS/Experiments/Likefile2/likefile/</td></tr>
+            <tr><td>[12:51] &lt MS-&gt (sorry, not in scratch, but it does use *one* modification to the scheduler in scratch)</td></tr>
+            <tr><td>[12:52] &lt Davbo&gt ah "LikeFile" in scratch updated when I did svn update</td></tr>
+            <tr><td>[12:52] &lt Davbo&gt so i assumed that was it</td></tr>
+            <tr><td>[12:52] &lt MS-&gt Specifcally this change: http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/branches/private_MPS_Scratch/Axon/Axon/Scheduler.py?r1=3885&r2=4131</td></tr>
+            <tr><td>[12:53] &lt MS-&gt The likefile that I'm developing is here at present: http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/Experiments/Likefile2/likefile/</td></tr>
+            <tr><td>[12:53] &lt MS-&gt it relies on that one change to the scheduler</td></tr>
+            <tr><td>[12:54] &lt Davbo&gt right</td></tr>
+            <tr><td>[12:58] &lt MS-&gt It's alot simpler than the existing likefile and has the advantage that it works properly for the cases that LikeFile *should* work for (but doesn't quite) :0</td></tr>
+            <tr><td>[12:58] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:58] &lt MS-&gt I deliberately started from a copy/modification of Graphline to try and simplify someone's process of review</td></tr>
+            <tr><td>[12:59] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/Experiments/Likefile2/likefile/LikeFile.py?annotate=4141</td></tr>
+            <tr><td>[12:59] &lt MS-&gt for example, should help with showing what's new and why each bit was added</td></tr>
+            <tr><td>[13:01] &lt Davbo&gt oh alright thanks</td></tr>
+            <tr><td>[13:02] &lt MS-&gt As I say, only if you have time :)</td></tr>
+            <tr><td>[13:02] &lt MS-&gt thanks either way :)</td></tr>
+            <tr><td>[13:04] &lt Davbo&gt I understand get/put but I haven't used any child components yet</td></tr>
+            <tr><td>[13:04] &lt Davbo&gt so i'm not sure what's going on in the main loop</td></tr>
+            <tr><td>[13:06] &lt Davbo&gt it also sounds like the boxes are the wrong way round lol</td></tr>
+            <tr><td>[13:07] &lt Davbo&gt When you read the description next to them at least</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt (maybe that's just me)</td></tr>
+            <tr><td>[13:13] &lt MS-&gt It seems wrong because the boxes are on the inside, not on the outside</td></tr>
+            <tr><td>[13:14] &lt MS-&gt If you look at diagram 1 in section 2.3 of this document:</td></tr>
+            <tr><td>[13:14] &lt MS-&gt http://edit.kamaelia.org/Docs/NotationForVisualisingAxon</td></tr>
+            <tr><td>[13:14] &lt MS-&gt all the inboxes/outboxes are on the inside of the component</td></tr>
+            <tr><td>[13:15] &lt MS-&gt _inbox gets it's messages from the child components outbox</td></tr>
+            <tr><td>[13:15] &lt MS-&gt _control gets it's messages from the child components signal</td></tr>
+            <tr><td>[13:15] &lt MS-&gt s/it's/its/</td></tr>
+            <tr><td>[13:15] &lt MS-&gt the reason it looks odd is because it *is* odd :)</td></tr>
+            <tr><td>[13:15] *** MS- goes to get munch</td></tr>
+            <tr><td>[13:15] &lt Davbo&gt ah i see</td></tr>
+            <tr><td>[13:32] &lt Davbo&gt oh i get it</td></tr>
+            <tr><td>[13:32] &lt Davbo&gt because you wrap LikeFile around components with their own boxes</td></tr>
+            <tr><td>[13:32] &lt Davbo&gt *facepalm* ;-)</td></tr>
+            <tr><td>[13:32] &lt Davbo&gt it only took 15 minutes.</td></tr>
+            <tr><td>[13:38] *** Lawouach_ has bought the new The Black Angels album</td></tr>
+            <tr><td>[13:38] &lt Lawouach_&gt rockin'!</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt The Black Angels Death Song? Lawouach_?</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt Velvet Underground</td></tr>
+            <tr><td>[13:55] &lt Lawouach_&gt The band</td></tr>
+            <tr><td>[13:56] &lt Lawouach_&gt But the sound is indeed reminiscent from VU</td></tr>
+            <tr><td>[13:56] &lt Lawouach_&gt http://www.myspace.com/theblackangels</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt oh right lol</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt I thought you'd bought a VU album called that or something</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt never heard of these</td></tr>
+            <tr><td>[13:57] &lt Lawouach_&gt They're great</td></tr>
+            <tr><td>[13:57] &lt Lawouach_&gt If you're into that kind of music :)</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt I'm a big fan of the Velvet Underground though</td></tr>
+            <tr><td>[13:58] &lt Lawouach_&gt check them out then</td></tr>
+            <tr><td>[14:00] &lt Chong-&gt Hi MS-, are you ready for our meeting?</td></tr>
+            <tr><td>[14:01] &lt MS-&gt yep</td></tr>
+            <tr><td>[14:01] &lt MS-&gt whenever you are</td></tr>
+            <tr><td>[14:02] &lt MS-&gt I haven't had a chance to review any of the code you've checked in</td></tr>
+            <tr><td>[14:02] &lt Chong-&gt cool</td></tr>
+            <tr><td>[14:02] &lt Chong-&gt np</td></tr>
+            <tr><td>[14:02] &lt MS-&gt Largely because you're waiting until code is "done" before doing so, so I can't check</td></tr>
+            <tr><td>[14:02] &lt Chong-&gt I checked them in yesterday</td></tr>
+            <tr><td>[14:02] &lt MS-&gt or review</td></tr>
+            <tr><td>[14:03] &lt Chong-&gt I will check them in more often in the future</td></tr>
+            <tr><td>[14:03] &lt MS-&gt Checkin messages btw should explain what's been checked in and why, generally speaking</td></tr>
+            <tr><td>[14:03] &lt Chong-&gt sorry for late checkin</td></tr>
+            <tr><td>[14:03] &lt MS-&gt unless it's been discussed to death</td></tr>
+            <tr><td>[14:03] &lt MS-&gt "RelationTopology Add: sudo add"</td></tr>
+            <tr><td>[14:03] &lt MS-&gt doesn't actually mean anything to me I'm afraid</td></tr>
+            <tr><td>[14:03] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[14:03] &lt MS-&gt can you explain what you've checked in please</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt I check in twice</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt the first time with detailed explain, but I forgot to add sudo svn</td></tr>
+            <tr><td>[14:04] &lt MS-&gt check in what ?</td></tr>
+            <tr><td>[14:05] &lt MS-&gt http://cia.vc/stats/author/toplch</td></tr>
+            <tr><td>[14:05] &lt Chong-&gt I though the log might add automatically when I checkin the second time</td></tr>
+            <tr><td>[14:05] &lt MS-&gt Are you subscribed to the commits mailing list?</td></tr>
+            <tr><td>[14:05] &lt Chong-&gt the same code. but it failed because without sudo</td></tr>
+            <tr><td>[14:05] &lt MS-&gt http://edit.kamaelia.org/mailinglists</td></tr>
+            <tr><td>[14:05] &lt Chong-&gt no. only the group list</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt I will subscribe it.</td></tr>
+            <tr><td>[14:06] &lt MS-&gt Everyone should be subscribed to the commits list</td></tr>
+            <tr><td>[14:06] &lt MS-&gt wonder if anyone else isn't</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt np</td></tr>
+            <tr><td>[14:06] &lt MS-&gt if you had been subscribed you would have seen your checkin message</td></tr>
+            <tr><td>[14:07] *** Davbo wasn't subscribed, is now</td></tr>
+            <tr><td>[14:07] &lt MS-&gt And I would expect a follow up</td></tr>
+            <tr><td>[14:07] &lt MS-&gt Davbo: ta</td></tr>
+            <tr><td>[14:07] &lt MS-&gt I'm not sure I mentioned the commits list</td></tr>
+            <tr><td>[14:07] &lt Chong-&gt I also posted a review report for private_MPS_JL_IRCSupport and edited my project page today. Have you seen them?</td></tr>
+            <tr><td>[14:07] &lt Davbo&gt I believe you have in the past, before coding started</td></tr>
+            <tr><td>[14:07] &lt Davbo&gt but it's a very busy list</td></tr>
+            <tr><td>[14:07] &lt MS-&gt Davbo: cool</td></tr>
+            <tr><td>[14:08] &lt Chong-&gt It would be easier to see if the checkin and log has gone through</td></tr>
+            <tr><td>[14:08] &lt MS-&gt Davbo: Mail filters and folders were invented to deal with high traffic lists though</td></tr>
+            <tr><td>[14:08] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt yeah i'll label it and box it all</td></tr>
+            <tr><td>[14:09] &lt MS-&gt Since this</td></tr>
+            <tr><td>[14:09] &lt MS-&gt was only last editted an hour ago, no I haven't seen it, or had a chance to review it.</td></tr>
+            <tr><td>[14:09] &lt Chong-&gt np</td></tr>
+            <tr><td>[14:09] &lt MS-&gt If you came back last friday, I would have expected that to be what you work on, given it was the one thing I requested as a part of the coding period last week</td></tr>
+            <tr><td>[14:10] &lt MS-&gt Chong-: It's not "np" I ask for these things in advance, so that i can have a chance to review things and give feedback</td></tr>
+            <tr><td>[14:10] &lt Chong-&gt I see. I will do them earlier next time.:-)</td></tr>
+            <tr><td>[14:11] &lt MS-&gt Your schedule is very "functionality light"</td></tr>
+            <tr><td>[14:11] &lt MS-&gt In terms of, I can't actually tell from it what you mean to have done by when</td></tr>
+            <tr><td>[14:11] &lt MS-&gt 28/7 - Start application develop</td></tr>
+            <tr><td>[14:11] &lt MS-&gt 4/8 - Finish up application develop11/8 - Retrospect and clean up the project</td></tr>
+            <tr><td>[14:11] &lt MS-&gt 18/8 - Package and merge to trunk</td></tr>
+            <tr><td>[14:11] &lt MS-&gt For example doesn't tell me what you're actually planning on doing</td></tr>
+            <tr><td>[14:12] &lt Chong-&gt I agree. I should write in more detail.</td></tr>
+            <tr><td>[14:12] &lt MS-&gt Detail isn't really the point, specificity is</td></tr>
+            <tr><td>[14:13] &lt MS-&gt http://edit.kamaelia.org/Developers/Projects/KamaeliaPublish for example isn't actually any longer than yours, but has detail/specific</td></tr>
+            <tr><td>[14:13] &lt MS-&gt Also, I note that you've missed the same thing - you need to move packaging to the beginning, not the end</td></tr>
+            <tr><td>[14:14] &lt Chong-&gt I will rewrite it with more specificity</td></tr>
+            <tr><td>[14:14] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[14:15] &lt MS-&gt I'll review it more properly when there's some detail</td></tr>
+            <tr><td>[14:15] &lt Chong-&gt np</td></tr>
+            <tr><td>[14:15] &lt MS-&gt The blanket copy and paste of the where do I get it and install it isn't really helpful</td></tr>
+            <tr><td>[14:16] &lt MS-&gt Since it doesn't actually answer the question</td></tr>
+            <tr><td>[14:16] &lt MS-&gt your schedule doesn't mention a database at all btw</td></tr>
+            <tr><td>[14:16] &lt Chong-&gt I know. Because I have not set up my branch yet, so I left it blank.</td></tr>
+            <tr><td>[14:16] &lt MS-&gt Given this one line description:</td></tr>
+            <tr><td>[14:16] &lt MS-&gt This project is to parse relationships defined in database, a file or console and then show them in graph.</td></tr>
+            <tr><td>[14:17] &lt MS-&gt from the first line</td></tr>
+            <tr><td>[14:17] &lt MS-&gt I'd expect to see some mention related to this in your detailed schedule</td></tr>
+            <tr><td>[14:17] &lt MS-&gt largely to show you've thought what functionality you're writing</td></tr>
+            <tr><td>[14:17] &lt Chong-&gt I'll</td></tr>
+            <tr><td>[14:18] &lt Chong-&gt database should be put into application</td></tr>
+            <tr><td>[14:18] &lt MS-&gt I've actually said a lot of this regarding Jason's schedule btw, and he's taken it on board and it's really helped me understand what's involved & where he can take his project</td></tr>
+            <tr><td>[14:18] &lt MS-&gt it's all on the mailing list last week</td></tr>
+            <tr><td>[14:19] &lt Chong-&gt I will check the list</td></tr>
+            <tr><td>[14:20] &lt Chong-&gt One problem about the picture support: the picture cannot be clicked because it's not part of self</td></tr>
+            <tr><td>[14:20] &lt Chong-&gt how to make the picture a part of self?</td></tr>
+            <tr><td>[14:20] &lt MS-&gt Well, I can't answer as to why your code has problems, because I haven't reviewed your code yet</td></tr>
+            <tr><td>[14:20] &lt MS-&gt and you haven't described what was in your checkin</td></tr>
+            <tr><td>[14:21] &lt Chong-&gt It adds picture support for particles.</td></tr>
+            <tr><td>[14:22] &lt Chong-&gt Files: RelationAttributeTopologyViewer.py, Files/RelationAttribute.re</td></tr>
+            <tr><td>[14:23] &lt Chong-&gt Util/RelationAttributeParsing.py, GenericTopologyViewer.py, Particles.py</td></tr>
+            <tr><td>[14:23] &lt MS-&gt just finding those</td></tr>
+            <tr><td>[14:24] &lt Chong-&gt cool</td></tr>
+            <tr><td>[14:25] &lt MS-&gt you mean: https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/CL/Topology/src/RelationTopology/RelationAttributeTopologyViewer.py</td></tr>
+            <tr><td>[14:25] &lt MS-&gt ?</td></tr>
+            <tr><td>[14:25] *** MS- notes .pyc files in </td></tr>
+            <tr><td>[14:25] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/CL/Topology/src/RelationTopology/Util/</td></tr>
+            <tr><td>[14:25] &lt MS-&gt Those should be removed</td></tr>
+            <tr><td>[14:25] &lt MS-&gt L =`ls *pyc`</td></tr>
+            <tr><td>[14:25] &lt MS-&gt svn rm $L</td></tr>
+            <tr><td>[14:25] &lt MS-&gt svn ci $L</td></tr>
+            <tr><td>[14:26] &lt MS-&gt Ok, which file in that directort&gt</td></tr>
+            <tr><td>[14:26] &lt MS-&gt ?</td></tr>
+            <tr><td>[14:26] &lt Chong-&gt yes</td></tr>
+            <tr><td>[14:26] &lt Chong-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/CL/Topology/src/RelationTopology/</td></tr>
+            <tr><td>[14:27] &lt Davbo&gt what's a .pyc - should I just remain not knowing what it is? :P (assumes it's a compiled to byte-code version of the code)</td></tr>
+            <tr><td>[14:27] &lt Lawouach_&gt Davbo: it's byte compiled representation of the .py</td></tr>
+            <tr><td>[14:27] &lt MS-&gt Actually, this picking through your code bit by bit without a chance to even try running the code, is pretty pointless</td></tr>
+            <tr><td>[14:27] &lt Davbo&gt Thought so</td></tr>
+            <tr><td>[14:28] &lt MS-&gt I didn't try running it yesterday because the checkin didn't say it was runnable</td></tr>
+            <tr><td>[14:28] &lt MS-&gt or what it was supposed to do or how</td></tr>
+            <tr><td>[14:28] &lt MS-&gt Chong-: Why not explain to me</td></tr>
+            <tr><td>[14:28] &lt Chong-&gt I will make it clearer next time</td></tr>
+            <tr><td>[14:28] &lt MS-&gt What you were trying to do</td></tr>
+            <tr><td>[14:29] &lt MS-&gt What you've done to try to do that</td></tr>
+            <tr><td>[14:29] &lt MS-&gt What you've gotten that's caused you problems</td></tr>
+            <tr><td>[14:29] &lt Chong-&gt added picture support to viewer.</td></tr>
+            <tr><td>[14:29] &lt MS-&gt No, specifically</td></tr>
+            <tr><td>[14:29] &lt MS-&gt *how*</td></tr>
+            <tr><td>[14:29] &lt MS-&gt person mum gender='female',photo='Files/mum.jpg' person dad gender='male',photo='Files/dad.gif' person son gender='male',photo='Files/son.gif' person daughter childof(mum, son) childof(dad, son) childof(mum, daughter) childof(dad, daughter)</td></tr>
+            <tr><td>[14:29] &lt MS-&gt person mum gender='female',photo='Files/mum.jpg'</td></tr>
+            <tr><td>[14:29] &lt MS-&gt person dad gender='male',photo='Files/dad.gif'person son gender='male',photo='Files/son.gif'</td></tr>
+            <tr><td>[14:29] &lt MS-&gt gah</td></tr>
+            <tr><td>[14:30] &lt MS-&gt ie how does that relate to this:</td></tr>
+            <tr><td>[14:30] &lt MS-&gt person mum gender='female',photo='Files/mum.jpg'</td></tr>
+            <tr><td>[14:30] &lt MS-&gt person dad gender='male',photo='Files/dad.gif'</td></tr>
+            <tr><td>[14:30] &lt MS-&gt person son gender='male',photo='Files/son.gif'</td></tr>
+            <tr><td>[14:30] &lt Chong-&gt What I have done is to add in particles</td></tr>
+            <tr><td>[14:30] &lt Chong-&gt picture = pygame.image.load(self.extraArgd['pic']).convert()</td></tr>
+            <tr><td>[14:30] &lt Chong-&gt picture_rect = surface.blit(picture, (x,y))</td></tr>
+            <tr><td>[14:31] &lt MS-&gt Which file is that in</td></tr>
+            <tr><td>[14:31] &lt Chong-&gt in Util/Particles</td></tr>
+            <tr><td>[14:31] &lt Chong-&gt GenericParticle class, render function</td></tr>
+            <tr><td>[14:32] &lt MS-&gt this: https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/CL/Topology/src/RelationTopology/Util/Particles.py ?</td></tr>
+            <tr><td>[14:32] &lt Chong-&gt yes</td></tr>
+            <tr><td>[14:32] &lt MS-&gt Where is GenericParticle from?</td></tr>
+            <tr><td>[14:32] &lt MS-&gt (why is it called that? Why not something more specific?)</td></tr>
+            <tr><td>[14:33] &lt MS-&gt Where is it called from?</td></tr>
+            <tr><td>[14:33] &lt MS-&gt rather</td></tr>
+            <tr><td>[14:33] &lt MS-&gt This?</td></tr>
+            <tr><td>[14:33] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/CL/Topology/src/RelationTopology/Util/GenericTopologyViewer.py</td></tr>
+            <tr><td>[14:33] &lt Chong-&gt I would like to make it more customable parameters</td></tr>
+            <tr><td>[14:34] &lt Chong-&gt GenericParticle is in Util/Particles</td></tr>
+            <tr><td>[14:34] &lt MS-&gt The problem here is clear</td></tr>
+            <tr><td>[14:35] &lt MS-&gt You're not explaining what messages are going into the topology viewer</td></tr>
+            <tr><td>[14:35] &lt MS-&gt you're just doing a complete system "big bang" approach</td></tr>
+            <tr><td>[14:35] &lt MS-&gt which means you're having to debug several things at once</td></tr>
+            <tr><td>[14:36] &lt MS-&gt I'm looking at this for example:</td></tr>
+            <tr><td>[14:36] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/CL/Topology/src/RelationTopology/Util/GenericTopologyViewer.py</td></tr>
+            <tr><td>[14:36] &lt MS-&gt Specifically this:</td></tr>
+            <tr><td>[14:36] &lt MS-&gt  Proceses a topology command tuple:</td></tr>
+            <tr><td>[14:36] &lt MS-&gt  [ "ADD", "NODE", &lt id&gt, &lt name&gt, &lt positionSpec&gt, &lt particle type&gt ]</td></tr>
+            <tr><td>[14:36] &lt MS-&gt and note that it formally states it has 6 elements</td></tr>
+            <tr><td>[14:36] &lt MS-&gt BUT</td></tr>
+            <tr><td>[14:36] &lt MS-&gt  if cmd == ("ADD", "NODE") and (len(msg) == 6 or len(msg) == 7):</td></tr>
+            <tr><td>[14:37] &lt MS-&gt meaning you've defined a 7th somewhere and I don't know what that is</td></tr>
+            <tr><td>[14:37] &lt Chong-&gt yes. it's an additional parameter for particles</td></tr>
+            <tr><td>[14:37] &lt MS-&gt Gets added here:</td></tr>
+            <tr><td>[14:37] &lt MS-&gt  if len(msg) == 6: particle = ptype(position = pos, ID=id, name=name) else: attributes = msg[6] attributes_dict = eval('dict('+attributes+')') particle = ptype(position = pos, ID=id, name=name, **attributes_dict)</td></tr>
+            <tr><td>[14:37] &lt Chong-&gt for example, it's gender='female',photo='Files/mum.jpg'</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  if len(msg) == 6:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  particle = ptype(position = pos, ID=id, name=name)</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  else:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  attributes = msg[6]</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  attributes_dict = eval('dict('+attributes+')')</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  particle = ptype(position = pos, ID=id, name=name, **attributes_dict)</td></tr>
+            <tr><td>[14:38] &lt MS-&gt you do this ? eval('dict('+attributes+')') ?</td></tr>
+            <tr><td>[14:38] &lt Chong-&gt yes it goes into **attributes_dict</td></tr>
+            <tr><td>[14:39] &lt MS-&gt aside from that being a gaping security hole, OK</td></tr>
+            <tr><td>[14:39] &lt Chong-&gt yes. I know it's not secure, it's the easiest way to</td></tr>
+            <tr><td>[14:39] &lt MS-&gt (that should be parsed by your parser as arguments)</td></tr>
+            <tr><td>[14:40] &lt Chong-&gt transfer a string to dict</td></tr>
+            <tr><td>[14:40] &lt MS-&gt If the component has to use eval there because of that reason, it should not be accepting a string there</td></tr>
+            <tr><td>[14:40] &lt MS-&gt It should be defined to accept something else</td></tr>
+            <tr><td>[14:41] &lt Chong-&gt maybe just dict</td></tr>
+            <tr><td>[14:41] &lt MS-&gt but that's a detail</td></tr>
+            <tr><td>[14:41] &lt Chong-&gt and use parse to transfer first as you said</td></tr>
+            <tr><td>[14:41] &lt MS-&gt we'll come back to that after we've found what your question related to</td></tr>
+            <tr><td>[14:41] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:41] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:41] &lt Chong-&gt cool</td></tr>
+            <tr><td>[14:42] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:42] &lt Chong-&gt afternoon vmlemon_</td></tr>
+            <tr><td>[14:42] &lt MS-&gt Chong-: OK, I think I understand your question now</td></tr>
+            <tr><td>[14:42] &lt Chong-&gt cool</td></tr>
+            <tr><td>[14:43] &lt MS-&gt In &lt particle&gt.render() you do this:</td></tr>
+            <tr><td>[14:43] &lt vmlemon_&gt The Bejeweled game mentioned on the mailing list sounds interesting</td></tr>
+            <tr><td>[14:43] &lt MS-&gt  if self.extraArgd.has_key('pic'):</td></tr>
+            <tr><td>[14:43] &lt MS-&gt  picture = pygame.image.load(self.extraArgd['pic']).convert()</td></tr>
+            <tr><td>[14:43] &lt MS-&gt  picture_rect = surface.blit(picture, (x,y))</td></tr>
+            <tr><td>[14:43] &lt MS-&gt every single time you render the particle?</td></tr>
+            <tr><td>[14:43] &lt MS-&gt ie you load the image, and render it on every iteration?</td></tr>
+            <tr><td>[14:43] &lt MS-&gt correct?</td></tr>
+            <tr><td>[14:43] &lt MS-&gt And you're wondering</td></tr>
+            <tr><td>[14:43] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[14:43] &lt MS-&gt how can I change that to</td></tr>
+            <tr><td>[14:44] &lt MS-&gt  picture_rect = surface.blit(self.picture, (x,y))</td></tr>
+            <tr><td>[14:44] &lt MS-&gt ?</td></tr>
+            <tr><td>[14:44] &lt MS-&gt is that right?</td></tr>
+            <tr><td>[14:44] &lt Chong-&gt yep</td></tr>
+            <tr><td>[14:44] &lt MS-&gt Um, well, are you</td></tr>
+            <tr><td>[14:45] &lt MS-&gt sure you can't see how to do that?</td></tr>
+            <tr><td>[14:45] &lt MS-&gt (Just checking)</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt no. I want to make the picture part of the particle and clickable</td></tr>
+            <tr><td>[14:46] &lt Chong-&gt Now I can only click the circle ball not the picture</td></tr>
+            <tr><td>[14:46] &lt MS-&gt In which case the question is more detailed than just the one I was thinking you were asking</td></tr>
+            <tr><td>[14:46] &lt MS-&gt The question you were asking looked like</td></tr>
+            <tr><td>[14:46] &lt MS-&gt change this:</td></tr>
+            <tr><td>[14:46] &lt MS-&gt  def __init__(self, **argd):</td></tr>
+            <tr><td>[14:46] &lt MS-&gt  self.extraArgd = {}</td></tr>
+            <tr><td>[14:46] &lt MS-&gt  if argd.has_key('pic'):</td></tr>
+            <tr><td>[14:46] &lt MS-&gt  self.extraArgd.update({'pic':argd['pic']})</td></tr>
+            <tr><td>[14:46] &lt MS-&gt  argd.pop('pic')</td></tr>
+            <tr><td>[14:46] &lt MS-&gt to this:</td></tr>
+            <tr><td>[14:47] &lt MS-&gt  def __init__(self, **argd):</td></tr>
+            <tr><td>[14:47] &lt MS-&gt  self.extraArgd = {}</td></tr>
+            <tr><td>[14:47] &lt MS-&gt  if argd.has_key('pic'):</td></tr>
+            <tr><td>[14:47] &lt MS-&gt  self.extraArgd.update({'pic':argd['pic']})</td></tr>
+            <tr><td>[14:47] &lt MS-&gt  self.picture = pygame.image.load(self.extraArgd['pic']).convert()</td></tr>
+            <tr><td>[14:47] &lt MS-&gt  argd.pop('pic')</td></tr>
+            <tr><td>[14:48] &lt MS-&gt Which I believe is part 1 of your question</td></tr>
+            <tr><td>[14:48] &lt MS-&gt ("how to make it so I don't load the image on every iteration")</td></tr>
+            <tr><td>[14:48] &lt Chong-&gt I see</td></tr>
+            <tr><td>[14:48] &lt MS-&gt It's pretty basic that BTW</td></tr>
+            <tr><td>[14:49] &lt MS-&gt The other part is about selection?</td></tr>
+            <tr><td>[14:49] *** MS- waits for a yes/no</td></tr>
+            <tr><td>[14:50] &lt Chong-&gt yes</td></tr>
+            <tr><td>[14:50] &lt Chong-&gt I just tried. It seems there is some problem.</td></tr>
+            <tr><td>[14:52] &lt Chong-&gt ('ERROR', 'Error processing message : [\'ADD\', \'NODE\', \'mum\', \'mum\', \'auto\', \'-\', "color=\'(255,128,128)\'"] resason:\nTraceback (most recent call la</td></tr>
+            <tr><td>[14:52] &lt MS-&gt Shrug</td></tr>
+            <tr><td>[14:54] &lt Chong-&gt no. it works now. I put it in wrong positions.</td></tr>
+            <tr><td>[14:54] &lt Chong-&gt Now it's the problem of selection?</td></tr>
+            <tr><td>[14:55] &lt Chong-&gt I can select it by if self.selected:</td></tr>
+            <tr><td>[14:55] &lt Chong-&gt  pygame.draw.rect(surface, (0,0,0), picture_rect, 2)</td></tr>
+            <tr><td>[14:55] &lt Chong-&gt but cannot click it</td></tr>
+            <tr><td>[15:01] &lt MS-&gt It's likely that you're rectangle/image are not being centred</td></tr>
+            <tr><td>[15:02] &lt MS-&gt That could result in that behaviour</td></tr>
+            <tr><td>[15:02] &lt MS-&gt since you'd be clicking NOT inside the click area</td></tr>
+            <tr><td>[15:02] &lt Chong-&gt yes. The left top point of the rectangle/image is in the centre</td></tr>
+            <tr><td>[15:03] &lt MS-&gt That's your problem</td></tr>
+            <tr><td>[15:03] &lt MS-&gt get the height/width and do the obvious maths to centre it</td></tr>
+            <tr><td>[15:03] &lt Chong-&gt So my question is how to adjust click area?</td></tr>
+            <tr><td>[15:03] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:03] &lt MS-&gt Focus on drawing it in the "right" place first :)</td></tr>
+            <tr><td>[15:04] &lt Chong-&gt Because the picture is relatively big, so even if it is in the centre, the whole picture cannot be clickable</td></tr>
+            <tr><td>[15:04] &lt Chong-&gt np. I will do it first.</td></tr>
+            <tr><td>[15:07] &lt MS-&gt you're trying to run before you can walk if you do that</td></tr>
+            <tr><td>[15:08] *** Davbo goes to revise JK - Flip Flops and a range of other fun digital electronics *snore*</td></tr>
+            <tr><td>[15:08] &lt Chong-&gt I have just finished centering the pictures :-)</td></tr>
+            <tr><td>[15:08] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[15:08] &lt MS-&gt I'm sure I'm mentioned this before, but it is probably well worth your time (and mine) you looking at this code:</td></tr>
+            <tr><td>[15:08] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/Experiments/360</td></tr>
+            <tr><td>[15:09] &lt MS-&gt Which is a little dated, but goes a lot further than you code does right now</td></tr>
+            <tr><td>[15:09] *** Chong- looking</td></tr>
+            <tr><td>[15:09] &lt MS-&gt OK, I'm done, I can't really allocate any more time to this</td></tr>
+            <tr><td>[15:09] &lt MS-&gt In future, it's far more effective to checkin early</td></tr>
+            <tr><td>[15:10] &lt MS-&gt and if there's issues, to mail the group</td></tr>
+            <tr><td>[15:10] &lt Chong-&gt np</td></tr>
+            <tr><td>[15:10] &lt MS-&gt you need to include sufficient detail that allows us to run your code, or it's pure guesswork</td></tr>
+            <tr><td>[15:10] &lt Chong-&gt Thank you very much for your time.</td></tr>
+            <tr><td>[15:10] &lt MS-&gt and please, stop using "np"</td></tr>
+            <tr><td>[15:10] &lt MS-&gt When I'm asking you to do something which you haven't done :)</td></tr>
+            <tr><td>[15:10] &lt MS-&gt I'm sure that's just a language thing though:)</td></tr>
+            <tr><td>[15:11] &lt Chong-&gt got it :-)</td></tr>
+            <tr><td>[15:11] &lt MS-&gt Also, you will find it *alot* easier to test your code</td></tr>
+            <tr><td>[15:12] &lt Chong-&gt cool</td></tr>
+            <tr><td>[15:12] &lt MS-&gt if you write a basic harness like this:</td></tr>
+            <tr><td>[15:12] &lt MS-&gt  Pipeline(</td></tr>
+            <tr><td>[15:12] &lt MS-&gt  Source(</td></tr>
+            <tr><td>[15:12] &lt MS-&gt  ["ADD", "NODE", ...],</td></tr>
+            <tr><td>[15:12] &lt MS-&gt  ["ADD", "NODE", ...],</td></tr>
+            <tr><td>[15:12] &lt MS-&gt  ),</td></tr>
+            <tr><td>[15:12] &lt MS-&gt  GenericTopologyViewer(),</td></tr>
+            <tr><td>[15:13] &lt MS-&gt  ConsoleEchoer(),</td></tr>
+            <tr><td>[15:13] &lt MS-&gt  ).run()</td></tr>
+            <tr><td>[15:13] &lt MS-&gt Allows you to test the component you want in isolation</td></tr>
+            <tr><td>[15:13] &lt MS-&gt "Source" may or may not exist</td></tr>
+            <tr><td>[15:14] &lt MS-&gt I tend to write a version everytime I want one, and one of them may've ended up in the utils area</td></tr>
+            <tr><td>[15:14] &lt Chong-&gt cool</td></tr>
+            <tr><td>[15:15] &lt MS-&gt http://edit.kamaelia.org/Components/pydoc/Kamaelia.Util.DataSource seems to imply there has</td></tr>
+            <tr><td>[15:15] *** MS- will have to try to remember that</td></tr>
+            <tr><td>[15:16] &lt Chong-&gt I have used DataSource in RelationAttributeParsing.py and others to do unit test</td></tr>
+            <tr><td>[15:16] &lt Chong-&gt thanks to mhrd's suggestion</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt Hey MS-</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt That guy replied to you on the list, the Kamaelia - Bejeweled</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[15:44] &lt MS-&gt cool</td></tr>
+            <tr><td>[15:44] *** MS- looks</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt Nice to see things like this pop-up time to time i imagine :D</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt it's academic work so help with commits might be a bit too far ;-)</td></tr>
+            <tr><td>[15:45] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[15:46] &lt MS-&gt yes, it's very nice.</td></tr>
+            <tr><td>[15:47] &lt MS-&gt I can ask them for feedback afterwards about stuff :)</td></tr>
+            <tr><td>[15:50] &lt Davbo&gt Yeah that'd be cool to see what they think</td></tr>
+            <tr><td>[15:57] *** Davbo wonders where the idea for Axon came from</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt as a programmatic model, not the idea of nerve endings ;)</td></tr>
+            <tr><td>[15:58] &lt Davbo&gt I can recall reading something MS- linked me but I think it was only brief</td></tr>
+            <tr><td>[16:03] &lt MS-&gt Rainbdow AHV project, occam, unix pipelines, combined with frissance of experience of building (and running) large scale network systems and noticing the similarity</td></tr>
+            <tr><td>[16:03] &lt MS-&gt And deciding that co-routines were the way forward</td></tr>
+            <tr><td>[16:03] &lt MS-&gt Axon as a name comes from "what word starting with the letter A seems appropriate"</td></tr>
+            <tr><td>[16:04] &lt MS-&gt Kamaelia as a name comes from "I want a name that sounds mythological, but isn't, but has an obscure monty python link, and is deliberately mispelt to make the name highly googleable"</td></tr>
+            <tr><td>[16:04] &lt MS-&gt (and trademarkable if necessary)</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt Hehe :)</td></tr>
+            <tr><td>[16:05] &lt MS-&gt A Camellia bush is actually a shrubbery, which gives the tenuous link</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt All good Python projects should have a Monty Python link</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[16:05] &lt MS-&gt Though one thing I forgot is that Camellia Sinesis is in fact tea.</td></tr>
+            <tr><td>[16:05] &lt MS-&gt Which is kinda fun, given "java"</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt :D</td></tr>
+            <tr><td>[16:06] &lt MS-&gt And given that tea powers much of BBC R&D</td></tr>
+            <tr><td>[16:06] &lt MS-&gt Though it wasn't the reason :)</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt It powers me also :)</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt (like any good Yorkshire lad)</td></tr>
+            <tr><td>[16:08] &lt MS-&gt This btw is probably what I linked to: http://www.cs.man.ac.uk/~fellowsd/work/rainbow/msc.ps.gz</td></tr>
+            <tr><td>[16:09] &lt MS-&gt Though it is worth bearing in mind that I had 3 books on occam at that time, and had been using unix pipes for a fair while then, so it wasn't totally alien ideas then</td></tr>
+            <tr><td>[16:10] &lt MS-&gt i have you contributor agreement btw - thanks :)</td></tr>
+            <tr><td>[16:13] &lt Davbo&gt Ah good!</td></tr>
+            <tr><td>[16:17] &lt Davbo&gt That's another thing to tick off the "Worry about" list</td></tr>
+            <tr><td>[16:17] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[16:17] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:17] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:20] &lt Davbo&gt Back later chaps. Think I've got my head around LikeFile to review it tomorrow hopefully MS-</td></tr>
+            <tr><td>[16:24] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[16:27] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:37] &lt MS-&gt biab</td></tr>
+            <tr><td>[16:37] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:39] &lt j_baker&gt Hmmmm... so apparently, os x has an option for the file system to be case sensitive.</td></tr>
+            <tr><td>[16:39] &lt j_baker&gt So now I can check out the svn repository without svn complaining. :)</td></tr>
+            <tr><td>[17:43] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:43] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:59] &lt orphans&gt evening all</td></tr>
+            <tr><td>[18:01] &lt j_baker&gt hello orphans</td></tr>
+            <tr><td>[18:01] &lt orphans&gt how goes it j_baker?</td></tr>
+            <tr><td>[18:01] &lt j_baker&gt Not too bad. :)</td></tr>
+            <tr><td>[18:01] &lt j_baker&gt And you?</td></tr>
+            <tr><td>[18:03] &lt orphans&gt ok ta - spent the whole day trying to write something only to find out I'd rewritten (with added bugs) something which already existed, and I'd used before :)</td></tr>
+            <tr><td>[18:03] *** orphans slaps forehead :)</td></tr>
+            <tr><td>[18:04] &lt j_baker&gt That's always fun. :)</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt orphans: I'm taking a quick shower and I'll ping you</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt 10mn</td></tr>
+            <tr><td>[18:04] &lt orphans&gt k, no rush</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt back</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:10] &lt orphans&gt k k</td></tr>
+            <tr><td>[18:11] &lt orphans&gt right - I'm sposed to be leading this one aren't I :)</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt sort of yes</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt it should be more of an exchange that you drive</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt what have you done? what you plan on doing? etc.</td></tr>
+            <tr><td>[18:12] &lt orphans&gt yeah, that's what I mean really :)</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:12] &lt orphans&gt ok, so to start with what have I done</td></tr>
+            <tr><td>[18:13] &lt orphans&gt well, after much discussion and writing bad code I've got to a reasonably working way of doing timing stuff</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt alright, which approach have you chosen?</td></tr>
+            <tr><td>[18:14] &lt orphans&gt not thoroughly tested and/or optimised in any way shape or form, but it seems to work for writing nicely timed components</td></tr>
+            <tr><td>[18:14] &lt orphans&gt well, after a good few rewrites I've ended up using scheduler from sched (in the standard library)</td></tr>
+            <tr><td>[18:14] &lt orphans&gt because I ended up writing a worse version of it myself :)</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt where should I be looking at?</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt eh eh :)</td></tr>
+            <tr><td>[18:15] &lt orphans&gt erm, just let me check it in - I got it working about 10 mins ago :)</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:18] &lt orphans&gt https://viewcvs.svn.sourceforge.net/viewcvs.cgi/kamaelia?view=rev&rev=4154</td></tr>
+            <tr><td>[18:18] &lt orphans&gt mm, don't think that link'll work actually</td></tr>
+            <tr><td>[18:19] &lt orphans&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia?view=rev&revision=4154</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt no worries</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt I've updated my copy</td></tr>
+            <tr><td>[18:19] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:20] &lt orphans&gt at the moment it doesn't do any correction for time.time inaccuracy, but I think that'll be relatively easy to put in</td></tr>
+            <tr><td>[18:21] &lt orphans&gt i.e. average the difference between when events should be happening, subtract it, and timestamp any messages which are sent</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt where does "sched" come from?</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt meh</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt nevermind that</td></tr>
+            <tr><td>[18:24] &lt orphans&gt sched.scheduler bears a remarkable similarity to what I was writing before I realised that I was basically rewriting it. My one double triggered sometimes though :D</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt that sounds good</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt I don't know the efficiency and accuracy of the sched module but it was a good move</td></tr>
+            <tr><td>[18:26] &lt orphans&gt I think it should be pretty close to what I could manage, given that it's using time for sleeping etc</td></tr>
+            <tr><td>[18:26] &lt orphans&gt time (and testing) will tell :)</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt I would argue that it could be done with axon components indeed but let's have functionnality first</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt we'll improve where it needs later on</td></tr>
+            <tr><td>[18:28] &lt orphans&gt yeah - I thought it might not be the most Kamaelia-ific way of doing things, but it works</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt I'll be looking at how the sched module works internally :)</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt what else?</td></tr>
+            <tr><td>[18:29] &lt orphans&gt as you've probably seen I rearranged my home dir to something resembling what we discussed</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt That's very good</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt there is one problem however</td></tr>
+            <tr><td>[18:30] &lt orphans&gt and wrote a basic setup.py to let you install the library stuff easily enough</td></tr>
+            <tr><td>[18:30] &lt orphans&gt yup?</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt from Kamaelia.Apps.Jam.Protocol.Osc import Osc</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt was failing</td></tr>
+            <tr><td>[18:31] &lt orphans&gt hum, works for me</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt what do you need in a Python package to allow import like that?</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt Osc is not the pb BTW</td></tr>
+            <tr><td>[18:31] &lt orphans&gt __init__.py?</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt they are missing from the many intermediate directories</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:33] &lt orphans&gt oops :)</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt BTW, did setting up the layout help you out to develop?</td></tr>
+            <tr><td>[18:34] &lt orphans&gt still finding it a bit of a hassle at the moment tbh - it means I have to have at least another two screen tabs open. I'll get used to it though, and it'll have real advantages in the long run</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt hah!</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt developers tend to have many windows open at the same time :)</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt get used to it</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt or use an IDE like eric4 or PyDev</td></tr>
+            <tr><td>[18:35] &lt orphans&gt my ctrl-a n hand is getting awful strong :)</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt :D</td></tr>
+            <tr><td>[18:36] &lt orphans&gt it's cool though - just something to get used to</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt Personally I appreciated the layout because I'm used to packages being laid like that</td></tr>
+            <tr><td>[18:36] &lt orphans&gt I keep forgetting to run setup.py and wondering why stuff doesn't work</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt you'll get sed to it :)</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt or again just use eclipse and pydev</td></tr>
+            <tr><td>[18:36] &lt orphans&gt yeah, give it a week and I won't know how I lived without I'm sure :)</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt That also means you'll be more used at going through other packages</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt that's quite useful</td></tr>
+            <tr><td>[18:37] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt so unless you did something else last week, let's move to what you plan on doing this week</td></tr>
+            <tr><td>[18:38] &lt orphans&gt think that's about it</td></tr>
+            <tr><td>[18:38] *** orphans consults schedule :)</td></tr>
+            <tr><td>[18:39] &lt orphans&gt ok, yeah, so I need to do some proper testing on the timing code for a start</td></tr>
+            <tr><td>[18:39] &lt orphans&gt but I think that should be ok</td></tr>
+            <tr><td>[18:40] &lt orphans&gt so mainly network stuff I think - sorting out mhrd-afk's CSA to work with UDP, and getting components to talk to each other over a socket</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt Do not waste your entire time on the timing thing.</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt If it's good enough as it is, please move on</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt Alright</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt That UDP thing actually was one of the question I noted this morning for you</td></tr>
+            <tr><td>[18:41] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt As I understand it, the spec. doesn't force you to use UDP</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt TCP is allowed as well</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt why did you choose UDP over TCP?</td></tr>
+            <tr><td>[18:42] &lt orphans&gt because support is much wider at the moment. Almost nothing will accept OSC over TCP</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt You're connecting to a Osc server right?</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt Most of them are using solely UDP?</td></tr>
+            <tr><td>[18:43] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:43] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt so yes, please work on the UDP CSA this week</td></tr>
+            <tr><td>[18:44] &lt orphans&gt I could use TCP to do the communication with other instances of Jam though if you can see advantages</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt I would like to see if it'd be easy to switch transparently from UDP to TCP</td></tr>
+            <tr><td>[18:44] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:45] &lt orphans&gt the other thing is UDP CSA probably has a fair bit of value anyway, so I thought it was worthwhile</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt I believe mhrd-afk would confirm but I assume the CSA is the way to abstract the socket access</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt so that would work</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt You're right</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt Okay so with this in mind, what is your target for next week?</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt I mean working on the CSA is just a task, not a functionnality</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt what's the goal for this week?</td></tr>
+            <tr><td>[18:46] &lt orphans&gt yeah - working UDP send and receive so you have two XYPads being controlled simultaneously by different Jam instances</td></tr>
+            <tr><td>[18:47] &lt orphans&gt which I think gets me a bit ahead on my schedule, but I reckon it's pretty doable</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt Okay.</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt One thing I would appreciate also is that you extend your documentation (readme or install) so that I can setup a Osc server.</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt Not asking you to go into great details</td></tr>
+            <tr><td>[18:50] &lt orphans&gt yeah, I will do</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt But enough info so that I know what product to get, if there are specific settings</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt I was able to run your code today</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt That's great</td></tr>
+            <tr><td>[18:50] &lt orphans&gt cool :)</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt but I still don't quite understand what I should hear or see</td></tr>
+            <tr><td>[18:51] &lt Lawouach&gt That's less good :)</td></tr>
+            <tr><td>[18:51] &lt orphans&gt I'll stick up a doc in the next couple of days - you'll be hearing sound in no time :)</td></tr>
+            <tr><td>[18:51] &lt Lawouach&gt good</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt One more thing, since we enter a more important phase of the project now, I would appreciate if you could update me at least once before next week's meeting</td></tr>
+            <tr><td>[18:52] &lt orphans&gt ok, over irc or email?</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt Just a bullet point email to the list or here (the list could be better)</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt Nothing too involving</td></tr>
+            <tr><td>[18:52] &lt orphans&gt cool, will send it to the list</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt Mind you we already have the IRC meeting on Thursday but I still need to be updated more regularly now</td></tr>
+            <tr><td>[18:54] &lt orphans&gt yeah - what I might do is make an extended version of my todo, done, blocked and mail it to the list</td></tr>
+            <tr><td>[18:54] &lt orphans&gt that sort of thing good?</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt that'd do</td></tr>
+            <tr><td>[18:54] &lt orphans&gt ok, great</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt I'm asking it for my personal benefit :)</td></tr>
+            <tr><td>[18:55] &lt orphans&gt yeah, no probs</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt I'm looking forward to see two components working together over the network</td></tr>
+            <tr><td>[18:55] &lt orphans&gt me too - I've never made anything with networking in before now if I'm honest</td></tr>
+            <tr><td>[18:55] &lt orphans&gt should be exciting :)</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:57] &lt orphans&gt cool, so is that pretty much it?</td></tr>
+            <tr><td>[18:57] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt I'll expect two components conversing using Osc next week</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt Don't worry about the UI if it makes it more difficult</td></tr>
+            <tr><td>[18:58] &lt orphans&gt nah, UI should be pretty simple now - plus I like things which move and look fun :)</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[19:00] &lt orphans&gt cool cool</td></tr>
+            <tr><td>[19:01] &lt orphans&gt think I might be off to the pub now, cheers for the help Lawouach</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt take care then</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt thanks</td></tr>
+            <tr><td>[19:04] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:06] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:32] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:08] &lt j_baker&gt If MS- logs on looking for me, I have to run up to school to do some stuff and I'll be back in a while.</td></tr>
+            <tr><td>[20:08] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[20:10] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:21] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:50] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:50] &lt MS-&gt evening</td></tr>
+            <tr><td>[20:50] &lt mhrd-home&gt hi</td></tr>
+            <tr><td>[20:50] &lt MS-&gt Oh damn, just realised</td></tr>
+            <tr><td>[20:50] &lt mhrd-home&gt ?</td></tr>
+            <tr><td>[20:50] &lt MS-&gt excuse my language</td></tr>
+            <tr><td>[20:50] &lt mhrd-home&gt you missing BSG or something?</td></tr>
+            <tr><td>[20:50] &lt MS-&gt MIssed Jason's time</td></tr>
+            <tr><td>[20:50] &lt mhrd-home&gt :)</td></tr>
+            <tr><td>[20:50] &lt mhrd-home&gt oh :(</td></tr>
+            <tr><td>[20:50] &lt MS-&gt no, that's tomorrow due to the day out at the big top</td></tr>
+            <tr><td>[20:51] &lt MS-&gt But I can watch that when I get back (if it's not too late)</td></tr>
+            <tr><td>[20:51] &lt mhrd-home&gt wrt that I'm being experimenting with being defiant</td></tr>
+            <tr><td>[20:51] &lt MS-&gt ?</td></tr>
+            <tr><td>[20:51] &lt MS-&gt Ah</td></tr>
+            <tr><td>[20:51] &lt mhrd-home&gt yes :)</td></tr>
+            <tr><td>[20:51] &lt MS-&gt I believe bruce is doing the same</td></tr>
+            <tr><td>[20:51] &lt mhrd-home&gt well, I'll see him on IRC then :)</td></tr>
+            <tr><td>[20:52] &lt MS-&gt I'm going on the offchance there's anything worth knowing</td></tr>
+            <tr><td>[20:52] &lt mhrd-home&gt I ordinarily would, but I'm in a strange mood and would drive myself insane knowing I'd rather be sorting hackday/mashed stuff</td></tr>
+            <tr><td>[20:53] &lt MS-&gt Yeah, I know that one</td></tr>
+            <tr><td>[20:53] &lt MS-&gt One huge advantage to Sky - they're currently showing "The Goodies"</td></tr>
+            <tr><td>[20:53] &lt MS-&gt The only TV comedy to ever actually manage to kill an audience member</td></tr>
+            <tr><td>[20:54] &lt mhrd-home&gt just read scrollback for mentoring time stuff today: chong will need to spend time analysing the topologyviewer component to understand how particle selection works</td></tr>
+            <tr><td>[20:54] &lt MS-&gt I think I cheated when I did that</td></tr>
+            <tr><td>[20:54] &lt MS-&gt I resized the image to match the click radius</td></tr>
+            <tr><td>[20:55] &lt mhrd-home&gt heh :)</td></tr>
+            <tr><td>[20:55] &lt MS-&gt piece of randomness - I'm currently lit by solar lighting</td></tr>
+            <tr><td>[20:55] *** mhrd-home raises eyebrow</td></tr>
+            <tr><td>[20:55] &lt mhrd-home&gt bright enough?</td></tr>
+            <tr><td>[20:55] &lt MS-&gt An experiment to see how doable it is</td></tr>
+            <tr><td>[20:56] &lt MS-&gt It's not bad - I bought some garden ones from Tesco as an experiment. If they're all in one area (ie beside me) it's bright enough for this part of the room</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Which makes me think it's viable for being done "better" and therefore brighter</td></tr>
+            <tr><td>[20:56] &lt MS-&gt I'm toying with the idea of trying to run my home server using solar you see</td></tr>
+            <tr><td>[20:57] &lt MS-&gt so starting with side lighting, then lighting a room strikes me as a sensible starting points</td></tr>
+            <tr><td>[20:57] &lt MS-&gt LED lights of course</td></tr>
+            <tr><td>[20:57] &lt mhrd-home&gt MS- needs to do the wattage maths?</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Yeah, for a server it's a killer</td></tr>
+            <tr><td>[20:58] *** vmlemon_ has always thought of "solar(-powered) lighting" as the ultimate oxymoron ;)</td></tr>
+            <tr><td>[20:58] &lt MS-&gt low power laptop + high wattage solar panel + deep cycle 12V battery aren't cheap. But then neither is electricity these days</td></tr>
+            <tr><td>[20:58] &lt mhrd-home&gt get a low power via c7 or atom based mini itx board (they run off DC supplies - much more efficient than converting up to mains, then going through a std psu)</td></tr>
+            <tr><td>[20:58] &lt MS-&gt vmlemon_: yeah, it's strange</td></tr>
+            <tr><td>[20:58] &lt mhrd-home&gt heh</td></tr>
+            <tr><td>[20:58] &lt mhrd-home&gt unrelated: any ideas on how to, in a shell script, convert a long hex string to an equivalent base 36 (0-9a-z) string? I've got something horrific involving bc and I feel ashamed of it</td></tr>
+            <tr><td>[20:59] &lt MS-&gt Yep, I was think of that sort of approach - since you can go straight from 12V to most laptops</td></tr>
+            <tr><td>[20:59] &lt MS-&gt base 36?</td></tr>
+            <tr><td>[20:59] &lt MS-&gt You been reading Turing's papers?</td></tr>
+            <tr><td>[20:59] &lt mhrd-home&gt yeah, don't ask :)</td></tr>
+            <tr><td>[20:59] &lt mhrd-home&gt nope</td></tr>
+            <tr><td>[20:59] &lt MS-&gt (he liked bse 36)</td></tr>
+            <tr><td>[20:59] &lt MS-&gt So you want to go from base16 to base 36?</td></tr>
+            <tr><td>[20:59] &lt mhrd-home&gt trying to crush a uuid into the permitted number of chars for a TVAnytime CRID in a DVB transport stream SI descriptor</td></tr>
+            <tr><td>[20:59] &lt mhrd-home&gt yep</td></tr>
+            <tr><td>[21:00] &lt MS-&gt OK</td></tr>
+            <tr><td>[21:00] &lt MS-&gt Why not create a simple C program to do it? Make it accept the base16 number as an argument</td></tr>
+            <tr><td>[21:00] &lt MS-&gt compile it</td></tr>
+            <tr><td>[21:00] &lt MS-&gt with -O2</td></tr>
+            <tr><td>[21:00] &lt mhrd-home&gt its tempting :)</td></tr>
+            <tr><td>[21:01] &lt MS-&gt and then strip the binary?</td></tr>
+            <tr><td>[21:01] &lt MS-&gt That should be small/quick/simple to use</td></tr>
+            <tr><td>[21:01] &lt mhrd-home&gt "strip the binary"?</td></tr>
+            <tr><td>[21:01] &lt vmlemon_&gt Use the 'strip' utility to remove the debugging data in it</td></tr>
+            <tr><td>[21:01] &lt vmlemon_&gt to reduce the file size</td></tr>
+            <tr><td>[21:02] *** mhrd-home not fussed by size, more by the fact that the shell script I've got feels way too complicated</td></tr>
+            <tr><td>[21:02] &lt MS-&gt yep</td></tr>
+            <tr><td>[21:02] &lt MS-&gt more hello.c</td></tr>
+            <tr><td>[21:02] &lt MS-&gt #include &lt stdio.h&gt</td></tr>
+            <tr><td>[21:02] &lt MS-&gt void main(void) {</td></tr>
+            <tr><td>[21:02] &lt MS-&gt  printf("Hello World\n");</td></tr>
+            <tr><td>[21:02] &lt MS-&gt }</td></tr>
+            <tr><td>[21:02] &lt MS-&gt gcc -O2 -o Hello hello.c</td></tr>
+            <tr><td>[21:02] &lt MS-&gt ls -l Hello</td></tr>
+            <tr><td>[21:02] &lt MS-&gt -rwxr-xr-x 1 michael users 9026 2008-06-02 22:06 Hello</td></tr>
+            <tr><td>[21:02] &lt MS-&gt strip Hello</td></tr>
+            <tr><td>[21:03] &lt MS-&gt ls -l Hello</td></tr>
+            <tr><td>[21:03] &lt MS-&gt -rwxr-xr-x 1 michael users 5672 2008-06-02 22:06 Hello</td></tr>
+            <tr><td>[21:03] &lt mhrd-home&gt heh, ta, MS-, vmlemon_ - never knew about 'strip'</td></tr>
+            <tr><td>[21:03] &lt vmlemon_&gt Hmm, tried other optimisations</td></tr>
+            <tr><td>[21:03] &lt vmlemon_&gt ?</td></tr>
+            <tr><td>[21:03] &lt MS-&gt You could always hack bash and add a function to bash?</td></tr>
+            <tr><td>[21:04] &lt mhrd-home&gt hmm, these suggestions are, though welcome, feeling diproprortionate on the effort front :)</td></tr>
+            <tr><td>[21:04] &lt MS-&gt I think the c program version isn't bad</td></tr>
+            <tr><td>[21:04] &lt mhrd-home&gt MS-: sorry, yep - "c program" is a good suggestion. recompiling bash, less so :)</td></tr>
+            <tr><td>[21:04] &lt mhrd-home&gt ok, here's the shell script as it stands .. any simplifications are welcome :-) ...</td></tr>
+            <tr><td>[21:05] &lt vmlemon_&gt Write it in x86 assembler? ;)</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt x=(0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z)</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt for c in `(echo obase=36; echo ibase=16; uuidgen \</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt  | tr --delete "-" \</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt  | tr [:lower:] [:upper:]; ) \</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt  | bc | sed ':a;N;$!ba;s/[\\\n]//g'`;</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt do</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt  echo -n "${x[`echo $c | bc`]}";</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt done;</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt vmlemon_ after you sir :)</td></tr>
+            <tr><td>[21:05] &lt vmlemon_&gt Hah, I doubt I could, anyway</td></tr>
+            <tr><td>[21:05] &lt Lawouach&gt thanks</td></tr>
+            <tr><td>[21:05] &lt Lawouach&gt burp</td></tr>
+            <tr><td>[21:05] &lt Lawouach&gt wrong key</td></tr>
+            <tr><td>[21:06] &lt MS-&gt mhrd-home: That is a little sick</td></tr>
+            <tr><td>[21:06] &lt mhrd-home&gt MS-: thanks :)</td></tr>
+            <tr><td>[21:08] &lt MS-&gt I think "dc" may be more what you want</td></tr>
+            <tr><td>[21:08] &lt MS-&gt Given this quote</td></tr>
+            <tr><td>[21:08] &lt MS-&gt "Studying the info page for dc is a painful path to understanding its intricacies. There seems to be a small, select group of dc wizards who delight in showing off their mastery of this powerful, but arcane utility."</td></tr>
+            <tr><td>[21:08] &lt MS-&gt http://tldp.org/LDP/abs/html/mathc.html#HEXCONVERT</td></tr>
+            <tr><td>[21:09] *** vmlemon_ never knew about 'dc'</td></tr>
+            <tr><td>[21:09] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[21:09] &lt MS-&gt vmlemon_: It's the twisted companion</td></tr>
+            <tr><td>[21:10] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[21:10] &lt mhrd-home&gt MS- : thanks, I'll give dc a try</td></tr>
+            <tr><td>[21:10] &lt mhrd-home&gt I didn't know about it either</td></tr>
+            <tr><td>[21:10] *** vmlemon_ still wonders why most Linux distributions still have /sbin/ctrlaltdel, albeit hailing from Linux 1.2.x days, and very little information on why it still exists...</td></tr>
+            <tr><td>[21:11] &lt MS-&gt mhrd-home: It's a stack based calculator</td></tr>
+            <tr><td>[21:14] &lt mhrd-home&gt cool, looking good - I've gotten it to do the base 16 to base 36 conversion I need ... looks like it doesn't do annoying line wrapping like bc :-)</td></tr>
+            <tr><td>[21:16] &lt MS-&gt How did you get it to do base16 to base 36&gt</td></tr>
+            <tr><td>[21:16] &lt MS-&gt ?</td></tr>
+            <tr><td>[21:17] &lt mhrd-home&gt echo 16 i $hexval 36 o p | dc</td></tr>
+            <tr><td>[21:17] &lt mhrd-home&gt set input base to 16; put in value of 36; set output base to 36; print value off top of stack</td></tr>
+            <tr><td>[21:17] &lt mhrd-home&gt s/of 36//</td></tr>
+            <tr><td>[21:19] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[21:20] &lt j_baker&gt MS-: we still on for our meeting? :)</td></tr>
+            <tr><td>[21:21] &lt MS-&gt If you're OK</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Your new schedule looks alot clearer btw - many thanks for that</td></tr>
+            <tr><td>[21:22] &lt j_baker&gt Yeah, I'm OK.</td></tr>
+            <tr><td>[21:22] &lt j_baker&gt np</td></tr>
+            <tr><td>[21:22] &lt j_baker&gt I did also get a py2app version of the server up and running.</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Cool</td></tr>
+            <tr><td>[21:23] &lt MS-&gt Is the toolchain that got that going checked in?</td></tr>
+            <tr><td>[21:23] &lt j_baker&gt Yes. It's under private_JMB_DescartesComponentsAdded/Apps/Kamaelia-Publisher</td></tr>
+            <tr><td>[21:23] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:24] *** MS- updates that branch</td></tr>
+            <tr><td>[21:24] &lt j_baker&gt I made the pkg file for OS X using one of the tools in XCode. Is that going to be a problem since it's not open source?</td></tr>
+            <tr><td>[21:25] &lt MS-&gt I think that really depends on what you did / what it's used for /how</td></tr>
+            <tr><td>[21:26] &lt MS-&gt Perhaps simply documenting the steps you used (copy and paste of command lines for example) would be enough to answer that q</td></tr>
+            <tr><td>[21:26] &lt j_baker&gt I just made an installer that installs a directory for WSGI apps and then installs the app itself to the Applications directory</td></tr>
+            <tr><td>[21:27] &lt j_baker&gt It's a graphical tool. Will the command line steps to install the program with an app bundle be sufficient?</td></tr>
+            <tr><td>[21:27] &lt j_baker&gt (as opposed to the steps to make the pkg file)</td></tr>
+            <tr><td>[21:28] &lt MS-&gt "It's a graphical tool. Will the command line steps to install the program with an app bundle be sufficient?"</td></tr>
+            <tr><td>[21:28] &lt MS-&gt I don't know - I haven't seen the tool - so I can't really comment</td></tr>
+            <tr><td>[21:28] &lt mhrd-home&gt oops, mistake in my dc code :)</td></tr>
+            <tr><td>[21:28] &lt MS-&gt Are you referring to</td></tr>
+            <tr><td>[21:28] &lt MS-&gt PublishInstaller.pkg</td></tr>
+            <tr><td>[21:29] &lt j_baker&gt Yeah. The tool I made to package that up is what I was referring to.</td></tr>
+            <tr><td>[21:30] &lt MS-&gt I think you're missing some logical steps out I'm missing</td></tr>
+            <tr><td>[21:30] &lt MS-&gt What did you use py2app for?</td></tr>
+            <tr><td>[21:30] &lt MS-&gt And what does the thing added by XCode add ?</td></tr>
+            <tr><td>[21:30] &lt j_baker&gt To actually put the source files into an executable.</td></tr>
+            <tr><td>[21:30] &lt vmlemon_&gt Hah, http://www.plainenglish.co.uk/generator.htm/</td></tr>
+            <tr><td>[21:31] &lt MS-&gt "What did you use py2app for? --&gt To actually put the source files into an executable."</td></tr>
+            <tr><td>[21:31] &lt MS-&gt (is how I read that)</td></tr>
+            <tr><td>[21:31] &lt j_baker&gt The XCode package maker made it into an installer file that will install the executable into /Applications and install all the WSGI Apps into /WsgiApps</td></tr>
+            <tr><td>[21:31] &lt j_baker&gt Yes, that's correct. You type faster than I do. :)</td></tr>
+            <tr><td>[21:32] &lt MS-&gt Yeah, my typing fast sometimes confuses people - they sometimes think I'm ranting when it fact it's just a stream of ideas/suggestions</td></tr>
+            <tr><td>[21:32] &lt MS-&gt By /Applications do you mean system wide?</td></tr>
+            <tr><td>[21:32] &lt j_baker&gt Yes.</td></tr>
+            <tr><td>[21:33] &lt MS-&gt like this:</td></tr>
+            <tr><td>[21:33] &lt MS-&gt Michael-Sparks-Computer:/ michaelsparks$ ls</td></tr>
+            <tr><td>[21:33] &lt MS-&gt Applications Users import</td></tr>
+            <tr><td>[21:33] &lt MS-&gt Desktop DB Volumes mach</td></tr>
+            <tr><td>[21:33] &lt MS-&gt Desktop DF automount mach.sym</td></tr>
+            <tr><td>[21:33] &lt MS-&gt ...</td></tr>
+            <tr><td>[21:33] &lt MS-&gt k</td></tr>
+            <tr><td>[21:33] &lt MS-&gt And you also add</td></tr>
+            <tr><td>[21:33] &lt MS-&gt a new top level directory?</td></tr>
+            <tr><td>[21:33] &lt j_baker&gt Yes.</td></tr>
+            <tr><td>[21:34] &lt j_baker&gt Then below /WsgiApps, there's also a blank __init__.py and a subdir called Apps that contains simple_app.py and error_handler.py</td></tr>
+            <tr><td>[21:37] &lt MS-&gt OK</td></tr>
+            <tr><td>[21:38] &lt MS-&gt So, looking at this another way, this installer is just a binary blob, created by another binary blob, but you could still install it manually anyway</td></tr>
+            <tr><td>[21:38] &lt MS-&gt So given you have the code, as long as it's documented about what it puts where</td></tr>
+            <tr><td>[21:38] &lt MS-&gt it's not an issue</td></tr>
+            <tr><td>[21:38] &lt j_baker&gt The only thing that the installer does that may not necessarily be easy to do by hand is generate a package receipt in the Library somewhere.</td></tr>
+            <tr><td>[21:39] &lt j_baker&gt (which just makes it easier to upgrade/downgrade/uninstall the package)</td></tr>
+            <tr><td>[21:39] &lt MS-&gt It's probably worth documenting that on your page</td></tr>
+            <tr><td>[21:39] &lt MS-&gt Such as open issues, discussion of packaging/etc</td></tr>
+            <tr><td>[21:40] &lt j_baker&gt That can be done easily.</td></tr>
+            <tr><td>[21:40] &lt MS-&gt since it's quick to edit now, it's probably not a big problem :)</td></tr>
+            <tr><td>[21:40] &lt j_baker&gt So, should I move on to making a Linux installer, or is there something else that I should take care of?</td></tr>
+            <tr><td>[21:41] &lt j_baker&gt (I've started on the Linux installer anyway, but it's not quite ready yet)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt If you're happy it works, moving on makes sense ;)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt :-)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt (scrub the ;), typo)</td></tr>
+            <tr><td>[21:42] &lt j_baker&gt Ok. That makes sense. Do you know of any way to make a deb file with distutils?</td></tr>
+            <tr><td>[21:42] &lt mhrd-home&gt fwiw, the correct version of base converter: echo 36 o 16 i $hexval p | dc</td></tr>
+            <tr><td>[21:42] &lt j_baker&gt I did a google search, but came up with nothing.</td></tr>
+            <tr><td>[21:43] &lt MS-&gt A deb file isn't really any interest to me to be honest</td></tr>
+            <tr><td>[21:43] &lt MS-&gt for linux, distutils is definitely more appropriate</td></tr>
+            <tr><td>[21:43] &lt MS-&gt ala what Kamaelia-Grey does</td></tr>
+            <tr><td>[21:43] &lt MS-&gt (I don't use a .deb based linux system)</td></tr>
+            <tr><td>[21:44] &lt MS-&gt Hm.</td></tr>
+            <tr><td>[21:45] &lt j_baker&gt Well, I was actually planning on using the deb to make a 0install installer: www.0install.net</td></tr>
+            <tr><td>[21:45] &lt MS-&gt these might be useful though if you do want to use a .deb</td></tr>
+            <tr><td>[21:46] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/Contrib/Debian</td></tr>
+            <tr><td>[21:47] &lt MS-&gt The goals of that project look cool - I'd not heard of it</td></tr>
+            <tr><td>[21:47] &lt MS-&gt Does it use a similar approach to .dmg files ?</td></tr>
+            <tr><td>[21:47] &lt MS-&gt (ones which allow the user to run the app without installing)</td></tr>
+            <tr><td>[21:47] &lt j_baker&gt Well, yeah essentially.</td></tr>
+            <tr><td>[21:48] &lt j_baker&gt What I like about it is that it uses a "pull" model rather than a "push" model for installing. I hadn't thought of the similarities to .dmg installers, but I can see where that comes from.</td></tr>
+            <tr><td>[21:49] &lt MS-&gt Looks worth exploring</td></tr>
+            <tr><td>[21:49] &lt j_baker&gt Considering my project's goals, I would like something that's point and click, so that's what I was leaning towards. If you know of any other options, I can look into them.</td></tr>
+            <tr><td>[21:51] &lt MS-&gt Giving that it's your project, that's fine</td></tr>
+            <tr><td>[21:52] &lt MS-&gt My suggestion though is that many people using Linux, especially those who may be able to assist with developing it and moving it forward, will prefer something that is commandline based</td></tr>
+            <tr><td>[21:52] &lt j_baker&gt Oh yes. I was planning on getting a regular distutils version set up as well.</td></tr>
+            <tr><td>[21:52] &lt MS-&gt Aside from anything else because it makes repeated testing (aka continuous integration, though many people don't have the kit for that), automateable</td></tr>
+            <tr><td>[21:52] &lt MS-&gt k</td></tr>
+            <tr><td>[21:53] &lt MS-&gt For example, for many things I tend to use command line tools even under SuSE, because I know what they are</td></tr>
+            <tr><td>[21:53] &lt MS-&gt The GUI being a skein on top</td></tr>
+            <tr><td>[21:53] &lt mhrd-home&gt hurrah, crid generation sorted - thanks for assistance</td></tr>
+            <tr><td>[21:54] &lt j_baker&gt Yeah. I've definitely become more accustomed to command line tools in the past few weeks myself. :)</td></tr>
+            <tr><td>[21:54] &lt MS-&gt But it's your project, the installer approach you take will reflect the sort of user you're hoping will use it</td></tr>
+            <tr><td>[21:55] &lt MS-&gt Well, I grew up with 8bit micros and then the amiga & then (v briefly) pc/windows and then Linux. At all stages command lines were there</td></tr>
+            <tr><td>[21:55] &lt MS-&gt I also suspect that a new command line is likely to evolve at some point in the future</td></tr>
+            <tr><td>[21:55] &lt MS-&gt A more intelligent one - since people are used to talking using text and may decide that texting the computer makes sense again</td></tr>
+            <tr><td>[21:56] &lt MS-&gt I can see that being rather amusing in future</td></tr>
+            <tr><td>[21:56] &lt j_baker&gt I definitely agree with that. I think the primary reason why nobody likes command lines is because nobody's focused on making them user-friendly.</td></tr>
+            <tr><td>[21:56] &lt j_baker&gt (Although KDE's is the best I've seen)</td></tr>
+            <tr><td>[21:56] *** mhrd-home wants a command line where you can type: "I want 'a thing', give it to me" and it knows what you mean and sorts it for you :-)</td></tr>
+            <tr><td>[21:57] &lt j_baker&gt Anyway, staying on subject, is there anything else you can think of that needs to be done to work on the installer other than a Windows installer?</td></tr>
+            <tr><td>[22:01] &lt MS-&gt The key problem really is often actually getting any installation chain going. The sooner you do it in a poroject, the easier it is</td></tr>
+            <tr><td>[22:01] &lt j_baker&gt Ok. Sounds good to me.</td></tr>
+            <tr><td>[22:01] &lt j_baker&gt I don't really have any other questions for you then. :)</td></tr>
+            <tr><td>[22:02] &lt MS-&gt Cool. It seems like you've got things in hand - which is good</td></tr>
+            <tr><td>[22:02] &lt MS-&gt The one thing i would say is "document what you've done as if being read by someone with *zero* clue"</td></tr>
+            <tr><td>[22:02] &lt MS-&gt copies and pastes of commandlines are good</td></tr>
+            <tr><td>[22:02] &lt MS-&gt It's always OTT, but always useful for detail</td></tr>
+            <tr><td>[22:03] &lt j_baker&gt Ok, I can do that.</td></tr>
+            <tr><td>[22:03] &lt j_baker&gt Have you tried running the OS X installer?</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt Hah, "The label said 'roast chicken salad', but had a special flash on it saying 'Now with roast chicken'. So what was in it before?'"</td></tr>
+            <tr><td>[22:04] &lt MS-&gt j_baker: I don't tend to use the machine very often other than as a server</td></tr>
+            <tr><td>[22:04] &lt MS-&gt Though I can do,</td></tr>
+            <tr><td>[22:05] &lt j_baker&gt Oh, I see. I put some instructions into it and I was wondering if they were clear or not. I can put them up on the Kamaelia wiki or my wiki somewhere if not.</td></tr>
+            <tr><td>[22:05] &lt MS-&gt (It's got a teeny keyboard mouse plugged in, but rarely used with those)</td></tr>
+            <tr><td>[22:05] &lt MS-&gt On the Kamaelia wiki is preferable</td></tr>
+            <tr><td>[22:05] &lt MS-&gt Since that means there's only one place to look</td></tr>
+            <tr><td>[22:06] &lt j_baker&gt Ok. Will do.</td></tr>
+            <tr><td>[22:09] &lt MS-&gt Some something "zero install", this 0install stuff seems a real pain</td></tr>
+            <tr><td>[22:09] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:09] &lt MS-&gt I've rpm -Uvh'd the zeroinstall-injector</td></tr>
+            <tr><td>[22:10] &lt MS-&gt I can't actually see anything that installs using it</td></tr>
+            <tr><td>[22:11] &lt j_baker&gt Are you talking about user-friendliness or putting packages together?</td></tr>
+            <tr><td>[22:11] &lt MS-&gt Ah : http://www.0install.net/injector-feeds.html</td></tr>
+            <tr><td>[22:11] &lt MS-&gt finally</td></tr>
+            <tr><td>[22:12] *** MS- finds an example</td></tr>
+            <tr><td>[22:13] &lt j_baker&gt Yeah, it seems pretty user-friendly, but it seems like kind of a pain to put packages together in. That's why I was thinking about starting with a deb and then converting that over.</td></tr>
+            <tr><td>[22:13] &lt MS-&gt I'm not convinced it's user friendly myself</td></tr>
+            <tr><td>[22:20] &lt j_baker&gt Hmmm... there are a couple of other options that I can look into if that one falls through. I know there's one way that's more like a traditional installer package. If nothing else, I can just stick with debs and rpms.</td></tr>
+            <tr><td>[22:21] &lt j_baker&gt and basic distutils</td></tr>
+            <tr><td>[22:21] &lt MS-&gt I must admit I don't like the fact that it hides where it puts the files it downloads</td></tr>
+            <tr><td>[22:21] &lt vmlemon_&gt AutoPackage?</td></tr>
+            <tr><td>[22:21] &lt j_baker&gt That's what I was thinking of. Thanks vmlemon_.</td></tr>
+            <tr><td>[22:22] &lt MS-&gt "~/.cache"</td></tr>
+            <tr><td>[22:23] &lt MS-&gt OK, found where it's putting stuff</td></tr>
+            <tr><td>[22:27] &lt MS-&gt I must admit that I can see why you picked that, and I can see some people liking it</td></tr>
+            <tr><td>[22:27] &lt MS-&gt But it's not really an approach I like</td></tr>
+            <tr><td>[22:28] &lt MS-&gt It's nowhere near as "nice" as the approach taken with Mac Apps</td></tr>
+            <tr><td>[22:30] &lt j_baker&gt I agree. I haven't found as nice a system on linux yet. AutoPackage is nice also, but it requires that my script be able to find any data files no matter where they get installed to, which seems to be a lot more than my app is capable of at this point.</td></tr>
+            <tr><td>[22:30] &lt MS-&gt Well, the thing is, for me, rpm install & commandline install are fine</td></tr>
+            <tr><td>[22:31] &lt MS-&gt And the problem is that many developers are much the same, so many packaging things target that group</td></tr>
+            <tr><td>[22:31] &lt MS-&gt Since that is for all intents and purposes the user group</td></tr>
+            <tr><td>[22:31] &lt MS-&gt But the ability to have 3 versions of firefox installed sidebyside on a mac *easily* is really useful</td></tr>
+            <tr><td>[22:32] &lt j_baker&gt Yeah. And I suppose that Debs and RPMs are sufficiently point and click if the user has the right version of Linux.</td></tr>
+            <tr><td>[22:32] &lt MS-&gt But on the flip side, there's somethings that are a pain</td></tr>
+            <tr><td>[22:32] &lt MS-&gt Yep - the integration in Open SUSE 10.3 is really well done IMO</td></tr>
+            <tr><td>[22:33] &lt vmlemon_&gt Hmm, wouldn't the *buntu or Fedora folks have to run "Alien" on the package, before they can use it?</td></tr>
+            <tr><td>[22:33] &lt vmlemon_&gt (Depending on the package format)</td></tr>
+            <tr><td>[22:33] &lt MS-&gt vmlemon_: The 0install stuff gets around that by using a completely different format and running from that instead</td></tr>
+            <tr><td>[22:34] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[22:34] &lt vmlemon_&gt I was referring to "traditional" Linux packages, that said...</td></tr>
+            <tr><td>[22:34] &lt MS-&gt It's a bit like "what if we only distributed chroot jails"</td></tr>
+            <tr><td>[22:34] &lt vmlemon_&gt Would Klik be suitable for that sort of thing?</td></tr>
+            <tr><td>[22:35] &lt MS-&gt Klik?</td></tr>
+            <tr><td>[22:35] &lt vmlemon_&gt Although that seems better suited to quick evaluation of apps before deciding to install them propetly</td></tr>
+            <tr><td>[22:35] &lt vmlemon_&gt *properly</td></tr>
+            <tr><td>[22:35] &lt j_baker&gt It looks like Klik is basically just another 0install</td></tr>
+            <tr><td>[22:35] &lt MS-&gt maybe</td></tr>
+            <tr><td>[22:35] &lt vmlemon_&gt http://klik.atekon.de/wiki/index.php/</td></tr>
+            <tr><td>[22:36] &lt MS-&gt j_baker: yeah, but they have a bigger number of packages</td></tr>
+            <tr><td>[22:36] &lt j_baker&gt True.</td></tr>
+            <tr><td>[22:36] &lt MS-&gt ah, no, they have a more misleading number</td></tr>
+            <tr><td>[22:37] &lt MS-&gt The website is shinier. I don't know if the mechanism is better</td></tr>
+            <tr><td>[22:38] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[22:40] &lt j_baker&gt Well, I'll probably just stick to RPMs and Debs for now.</td></tr>
+            <tr><td>[22:41] &lt j_baker&gt Since 0install has a way to convert Debs (and I believe RPMs) into one of its interface files, it seems like it would be trivial to offer a download for 0install also after I've got that out of the way.</td></tr>
+            <tr><td>[22:41] *** MS- nods</td></tr>
+            <tr><td>[22:56] &lt MS-&gt j_baker: http://www.knoppix.net/forum/viewtopic.php?t=15701</td></tr>
+            <tr><td>[22:57] &lt MS-&gt ".cmg" files</td></tr>
+            <tr><td>[22:57] &lt MS-&gt http://klik.atekon.de/docs/index.php?page=Compressed%20Application%20Images</td></tr>
+            <tr><td>[22:58] &lt MS-&gt It's odd that they chose cramfs. IIRC .dmg files are actually .iso files</td></tr>
+            <tr><td>[22:58] &lt mhrd-home&gt anyone know if there' s anywhere in /proc where I can query system properties such as FSB speed?</td></tr>
+            <tr><td>[22:58] Reply: Hm?</td></tr>
+            <tr><td>[23:00] &lt MS-&gt mhrd-home: /sys may help</td></tr>
+            <tr><td>[23:02] &lt MS-&gt (that's /sys, not /proc/sys ...)</td></tr>
+            <tr><td>[23:02] &lt mhrd-home&gt ta, I'll poke around</td></tr>
+            <tr><td>[23:08] *** MS- sleeps</td></tr>
+            <tr><td>[23:08] &lt MS-&gt night</td></tr>
+            <tr><td>[23:08] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[23:15] &lt mhrd-home&gt good idea. night all</td></tr>
+            <tr><td>[23:15] *** mhrd-home has parted #kamaelia</td></tr>

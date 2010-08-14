@@ -1,0 +1,61 @@
+<html><body><table>
+            <tr><td>[03:01] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[03:52] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:14] &lt Lawouach_&gt RandIter: I doubt it</td></tr>
+            <tr><td>[04:15] &lt Lawouach_&gt both are different beasts if you consider that erlang has concurrency has a language paradigm whereas Kamaelia is a library which is limited by some aspects of Python</td></tr>
+            <tr><td>[05:51] &lt MS-&gt Morning</td></tr>
+            <tr><td>[05:51] &lt MS-&gt reading back</td></tr>
+            <tr><td>[05:52] &lt MS-&gt Thanks for the website pointer.</td></tr>
+            <tr><td>[05:52] &lt MS-&gt Regarding windows, kamaelia installs on windows, but I develop under linux & mac os x. (kamaelia has been reported working under windows)</td></tr>
+            <tr><td>[05:54] &lt MS-&gt Re: Erlang vs Kamaelia - my understanding is that the background to design decisions is similar, but I wasn't aware of erlang when designing kamaelia.</td></tr>
+            <tr><td>[05:54] &lt MS-&gt Kamaelia is influenced more by occam, unix, CSP and being frank, the Amiga.</td></tr>
+            <tr><td>[05:55] &lt MS-&gt (The Amiga's model was based on an OS called Tripos before that)</td></tr>
+            <tr><td>[05:55] &lt MS-&gt Specifically the idea of outboxes is like stdout or outchannels in occam.</td></tr>
+            <tr><td>[05:56] &lt MS-&gt As far as I can tell the idea of mailboxes/inboxes is relatively common, but the idea of outboxes/etc is unusual.</td></tr>
+            <tr><td>[05:56] &lt MS-&gt But it gives you all sorts of things, including extremely loose coupling, whilst enabling efficiencies like direct delivery</td></tr>
+            <tr><td>[05:56] &lt MS-&gt Probably the single biggest difference is the one that Lawouach already mentioned</td></tr>
+            <tr><td>[05:57] &lt MS-&gt in that Kamaelia is a library for components which is naturally concurrent, whereas erlang is a concurrency language.</td></tr>
+            <tr><td>[05:58] &lt MS-&gt The other difference is as obvious as well - one is based in an imperative language with easy access to lots of stuff created by other people, the other is in a functional language</td></tr>
+            <tr><td>[05:58] &lt MS-&gt which has its roots of being built on top of prolog (hence the syntax)</td></tr>
+            <tr><td>[05:59] &lt MS-&gt There are limitations from both directions as a result.</td></tr>
+            <tr><td>[05:59] &lt MS-&gt And a direct result in both cases from the original problems they were designed to solve. (eg string handling in erlang could be more fun)</td></tr>
+            <tr><td>[06:02] &lt MS-&gt Kamaelia also isn't a random library thrown up to be "a concurrency" thing. It was built to solve specific sorts of problems at my work place, and released in the hope it's useful to others. I am still using it daily though, and releasing whatever I can when I can :)</td></tr>
+            <tr><td>[06:03] &lt MS-&gt Sooner or later there will be a problem that forces a bunch of work to make the multiprocess stuff cleaner - but I'm driven like most open source people by need.</td></tr>
+            <tr><td>[06:04] &lt MS-&gt (as well as personal interest :-) )</td></tr>
+            <tr><td>[06:07] &lt RandIter&gt cool, thanks</td></tr>
+            <tr><td>[06:18] &lt MS-&gt Probably also worth remembering BTW that neither Jython nor IronPython have a GIL, so using threads there gives you multi-core friendliness (and access to other libraries).</td></tr>
+            <tr><td>[06:19] &lt RandIter&gt ah yes. wonder how far ironpython is from full 2.6 compatibility</td></tr>
+            <tr><td>[06:29] &lt RandIter&gt which version numbers of python does kamaelia currently support? also 32-bit only or 64-bit also?</td></tr>
+            <tr><td>[06:32] &lt RandIter&gt MS-: ^?</td></tr>
+            <tr><td>[06:33] &lt MS-&gt Sorry, didn't notice channel. (behind windows)</td></tr>
+            <tr><td>[06:33] &lt MS-&gt Kamaelia will run on most versions of python from the past several years</td></tr>
+            <tr><td>[06:34] &lt MS-&gt It works on 2.2.&lt late&gt where generators were implemented, but it's a pain to use on 2.2</td></tr>
+            <tr><td>[06:34] &lt MS-&gt I use it on machines with 2.3, 2.5 and 2.6</td></tr>
+            <tr><td>[06:34] &lt MS-&gt And I've heard reports that recent versions of Jython & IronPython will run kamaelia cleanly. :)</td></tr>
+            <tr><td>[06:35] &lt MS-&gt Also, from kamaelia's perspective whether the platform is 32bit or 64 bit is irrelevent since it's pure python. If python runs there and is 2.3 onwards, kamaelia runs there</td></tr>
+            <tr><td>[06:35] &lt RandIter&gt ok</td></tr>
+            <tr><td>[06:35] &lt MS-&gt I am tempted to drop support for pre-2.5 though</td></tr>
+            <tr><td>[06:36] &lt RandIter&gt yeah if it's holding you back from making improvements</td></tr>
+            <tr><td>[06:36] &lt MS-&gt Yep.</td></tr>
+            <tr><td>[06:38] &lt RandIter&gt ironpython seems interesting, although it seems somewhat slower than cpython, so I'm guessing that any reasonable benefit from ironpython+concurrency probably won't be realized until the number of cores is at least 4, versus cpython without concurrency</td></tr>
+            <tr><td>[06:39] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[06:39] &lt RandIter&gt MS-: i think it might help to state those python versions on the site</td></tr>
+            <tr><td>[06:40] &lt MS-&gt Indeed</td></tr>
+            <tr><td>[06:40] &lt MS-&gt If it's a standard cpython (or stackless python) from the past 5-7 years though it should be fine :)</td></tr>
+            <tr><td>[06:41] &lt RandIter&gt yes, some people including myself also wonder about 3.x compatibility</td></tr>
+            <tr><td>[06:44] &lt RandIter&gt it's not 3.x compatible yet, or is it? the default answer is usually no, so I'm checking despite what you just said</td></tr>
+            <tr><td>[06:56] &lt RandIter&gt MS-:</td></tr>
+            <tr><td>[06:56] &lt MS-&gt 3.x is syntactically different</td></tr>
+            <tr><td>[06:57] &lt MS-&gt trivial examples are print & except</td></tr>
+            <tr><td>[06:57] &lt MS-&gt so not yet is the answer</td></tr>
+            <tr><td>[06:57] &lt MS-&gt exception handling being different is a notable issue</td></tr>
+            <tr><td>[06:58] &lt MS-&gt This bit shows it more clearly:</td></tr>
+            <tr><td>[06:58] &lt MS-&gt http://www.ibm.com/developerworks/linux/library/l-python3-2/#exceptions</td></tr>
+            <tr><td>[08:44] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:44] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:12] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:16] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[22:15] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[22:15] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[22:15] *** tdobson has joined #kamaelia</td></tr>

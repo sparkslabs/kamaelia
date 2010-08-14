@@ -1,0 +1,218 @@
+<html><body><table>
+            <tr><td>[06:31] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:10] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:23] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:46] &lt Lawouach&gt hi</td></tr>
+            <tr><td>[08:20] *** musashi has joined #kamaelia</td></tr>
+            <tr><td>[08:20] &lt musashi&gt hello?</td></tr>
+            <tr><td>[08:20] &lt vmlemon_&gt Hi, musashi</td></tr>
+            <tr><td>[08:20] &lt musashi&gt How is going</td></tr>
+            <tr><td>[08:21] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[08:21] &lt musashi&gt I'm developing a application with Kamaelia, and have a (newbie I think) question...</td></tr>
+            <tr><td>[08:22] &lt musashi&gt Can I ask? :)</td></tr>
+            <tr><td>[08:23] &lt vmlemon_&gt Sure, you don't need to ask, in order to ask a question ;)</td></tr>
+            <tr><td>[08:23] &lt musashi&gt hehehehe just to be polite</td></tr>
+            <tr><td>[08:23] &lt musashi&gt I have a server, built with SimpleServer</td></tr>
+            <tr><td>[08:23] &lt musashi&gt It runs great, and tested connecting with telnet</td></tr>
+            <tr><td>[08:24] &lt musashi&gt but then, I want to open a connection from a client, using TCPClient</td></tr>
+            <tr><td>[08:24] &lt musashi&gt just to send a string and get the results</td></tr>
+            <tr><td>[08:24] &lt musashi&gt I'm using OneShot, but the server doesn't receive any message...</td></tr>
+            <tr><td>[08:24] &lt musashi&gt The code of the client is as follows:</td></tr>
+            <tr><td>[08:24] &lt musashi&gt Pipeline(OneShot("insultam"),</td></tr>
+            <tr><td>[08:24] &lt musashi&gt  ConsoleEchoer(True),</td></tr>
+            <tr><td>[08:24] &lt musashi&gt  TCPClient("localhost",clientServerTestPort),</td></tr>
+            <tr><td>[08:24] &lt musashi&gt  ConsoleEchoer(True),</td></tr>
+            <tr><td>[08:24] &lt musashi&gt  ).run()</td></tr>
+            <tr><td>[08:25] &lt musashi&gt any hints?</td></tr>
+            <tr><td>[08:25] &lt musashi&gt I also tried with a DataSource but without results :(</td></tr>
+            <tr><td>[08:26] &lt vmlemon_&gt I'm not sure, since it's a while since I last used the server stuff, but someone else probably knows</td></tr>
+            <tr><td>[08:27] &lt musashi&gt OK Thanks :)</td></tr>
+            <tr><td>[08:28] &lt vmlemon_&gt No problem</td></tr>
+            <tr><td>[08:29] &lt vmlemon_&gt You'll find that although people are "in" the channel, they're usually either sleeping, or busy doing other things</td></tr>
+            <tr><td>[08:29] &lt musashi&gt yes I figure</td></tr>
+            <tr><td>[08:29] &lt musashi&gt there's activity on sundays?</td></tr>
+            <tr><td>[08:29] &lt vmlemon_&gt Sometimes</td></tr>
+            <tr><td>[08:29] &lt musashi&gt okay :)</td></tr>
+            <tr><td>[08:35] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[08:35] &lt Lawouach&gt I'm afraid the ConsoleEchoer doesn't work as you might expect in this case</td></tr>
+            <tr><td>[08:35] &lt Lawouach&gt have you tried without them?</td></tr>
+            <tr><td>[08:35] &lt Lawouach&gt at least without the one after OneShot</td></tr>
+            <tr><td>[08:37] &lt musashi&gt Hello Lawouach</td></tr>
+            <tr><td>[08:37] &lt musashi&gt Yes, but let me try again...</td></tr>
+            <tr><td>[08:40] &lt musashi&gt No result :(</td></tr>
+            <tr><td>[08:40] &lt musashi&gt Seems like the server doesn't get the message</td></tr>
+            <tr><td>[08:41] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[08:41] &lt musashi&gt The server protocol starts like that:</td></tr>
+            <tr><td>[08:41] &lt musashi&gt class FuncionsProtocol(Axon.Component.component):</td></tr>
+            <tr><td>[08:41] &lt musashi&gt  def main(self):</td></tr>
+            <tr><td>[08:41] &lt musashi&gt  self.handler = funcions()</td></tr>
+            <tr><td>[08:41] &lt musashi&gt  while not self.shutdown():</td></tr>
+            <tr><td>[08:41] &lt musashi&gt  yield 1</td></tr>
+            <tr><td>[08:41] &lt musashi&gt  if self.dataReady("inbox"):</td></tr>
+            <tr><td>[08:41] &lt musashi&gt  print "rebo dades"</td></tr>
+            <tr><td>[08:42] &lt musashi&gt using telnet I get the print, but using TCPClient I don't</td></tr>
+            <tr><td>[08:42] &lt Lawouach&gt this looks okay though</td></tr>
+            <tr><td>[08:44] &lt musashi&gt If I replace the OneShot with a ConsoleReader it works</td></tr>
+            <tr><td>[08:44] &lt Lawouach&gt right</td></tr>
+            <tr><td>[08:45] &lt musashi&gt But I need to use OneShot or something like that...</td></tr>
+            <tr><td>[08:45] &lt Lawouach&gt oh right</td></tr>
+            <tr><td>[08:46] &lt Lawouach&gt OneShot sends to the "signal" outbox rather than "inbox"</td></tr>
+            <tr><td>[08:46] &lt Lawouach&gt I mean outbox</td></tr>
+            <tr><td>[08:46] &lt Lawouach&gt damn no</td></tr>
+            <tr><td>[08:46] &lt Lawouach&gt grumble I'm confusing myself :)</td></tr>
+            <tr><td>[08:47] &lt musashi&gt hehehe</td></tr>
+            <tr><td>[08:47] &lt musashi&gt Trying also with DataSource(["insultam"]) but same results :(</td></tr>
+            <tr><td>[08:48] &lt Lawouach&gt oh right</td></tr>
+            <tr><td>[08:48] &lt Lawouach&gt your use of ConsoleEchoer was fair since you were setting the forwarder parameter to True</td></tr>
+            <tr><td>[08:48] &lt Lawouach&gt was the message printed to the console then?</td></tr>
+            <tr><td>[08:50] &lt musashi&gt yes, it gets printed</td></tr>
+            <tr><td>[08:51] &lt Lawouach&gt damn that's weird then</td></tr>
+            <tr><td>[08:51] &lt musashi&gt I know :D</td></tr>
+            <tr><td>[08:51] &lt Lawouach&gt I'm wondering if the message doesn't get lost before the client is actually connected</td></tr>
+            <tr><td>[08:52] &lt musashi&gt hmmm I understand...</td></tr>
+            <tr><td>[08:52] &lt Lawouach&gt well it's just a guess of course</td></tr>
+            <tr><td>[08:56] &lt musashi&gt Tried to move the TCPClient before the pipeline: myclient = TCPClient("localhost",port).activate,</td></tr>
+            <tr><td>[08:56] &lt musashi&gt and Pipeline(OneShot("message"),</td></tr>
+            <tr><td>[08:56] &lt musashi&gt  myclient,).run()</td></tr>
+            <tr><td>[08:56] &lt musashi&gt but no luck also :(</td></tr>
+            <tr><td>[08:56] &lt Lawouach&gt activate()</td></tr>
+            <tr><td>[08:56] &lt musashi&gt on the pipeline or the TCPClient?</td></tr>
+            <tr><td>[08:56] &lt Lawouach&gt the client</td></tr>
+            <tr><td>[08:57] &lt musashi&gt without luck also :(</td></tr>
+            <tr><td>[08:57] &lt Lawouach&gt grumble</td></tr>
+            <tr><td>[09:00] &lt musashi&gt Ah, and anytime I run a kamaelia file I get a DeprecationWarning: the sets module is deprecated</td></tr>
+            <tr><td>[09:00] &lt musashi&gt  import sets</td></tr>
+            <tr><td>[09:00] &lt musashi&gt but haven't considered this important...</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt this isn't</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt you're using Python 2.6 or above but that's fine</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt I do to ;)</td></tr>
+            <tr><td>[09:04] &lt musashi&gt Well, I actually had another question... :D</td></tr>
+            <tr><td>[09:05] &lt Lawouach&gt sure</td></tr>
+            <tr><td>[09:08] &lt musashi&gt I want to use the result of that Pipeline as the parameters of another... The first pipeline returns the host and port of a server, which is used in the next Pipeline:</td></tr>
+            <tr><td>[09:08] &lt musashi&gt  Pipeline( ConsoleReader(eol=""),</td></tr>
+            <tr><td>[09:08] &lt musashi&gt  TCPClient("localhost", 7000),</td></tr>
+            <tr><td>[09:08] &lt musashi&gt  ConsoleEchoer()</td></tr>
+            <tr><td>[09:08] &lt musashi&gt  ).run()</td></tr>
+            <tr><td>[09:08] &lt musashi&gt (this is the second)</td></tr>
+            <tr><td>[09:08] &lt Lawouach&gt right</td></tr>
+            <tr><td>[09:09] &lt musashi&gt Do I have to create something like a "Sink" that captures the data, or is there another way to do this? ... More "pipelined"?</td></tr>
+            <tr><td>[09:11] &lt Lawouach&gt a pipeline doesn't return anything in its output IIRC</td></tr>
+            <tr><td>[09:11] &lt Lawouach&gt meaning you might want to look at graphline perhaps</td></tr>
+            <tr><td>[09:11] &lt Lawouach&gt or use a backplane</td></tr>
+            <tr><td>[09:11] &lt Lawouach&gt I don't have a solution off the top of my head</td></tr>
+            <tr><td>[09:12] &lt musashi&gt Ok I'll try :)</td></tr>
+            <tr><td>[09:15] &lt musashi&gt But as I see graphlines, it's a way of specify the connections of the components... what I was looking is something to pass the parameters of host and port to TCPClient("localhost", 7000)... I am wrong about graph?</td></tr>
+            <tr><td>[09:16] &lt MS-&gt That latter question relates to this: http://www.kamaelia.org/Cookbook/Carousels</td></tr>
+            <tr><td>[09:17] &lt MS-&gt I think you can get a race hazard in the way you use TCPClient AFAICT if they're in the same piece of code. Specifically with sending data too soon (before the server has started)</td></tr>
+            <tr><td>[09:18] &lt MS-&gt Though there's something odd there, which I've not seen before as well, so looking into that as well.</td></tr>
+            <tr><td>[09:18] &lt MS-&gt testing with telnet would naturally just work in that scenario because delay of a person resolves the race</td></tr>
+            <tr><td>[09:19] &lt musashi&gt I see...</td></tr>
+            <tr><td>[09:20] &lt Lawouach&gt hello MS-</td></tr>
+            <tr><td>[09:20] &lt MS-&gt Code I'm playing with: http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/MPS/Examples/OneShot_Race.py</td></tr>
+            <tr><td>[09:20] &lt MS-&gt Lawouach: heya</td></tr>
+            <tr><td>[09:20] &lt Lawouach&gt stayed up last night :)</td></tr>
+            <tr><td>[09:20] &lt MS-&gt I did for a while, yes</td></tr>
+            <tr><td>[09:20] &lt Lawouach&gt found that memory leak eventually?</td></tr>
+            <tr><td>[09:20] &lt MS-&gt having a rummage inside code</td></tr>
+            <tr><td>[09:20] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[09:20] &lt MS-&gt I've got a candidate, yes</td></tr>
+            <tr><td>[09:21] &lt MS-&gt It's not due to a component not deactivating itself, it's due to the gc not collecting it.</td></tr>
+            <tr><td>[09:21] &lt MS-&gt Which is actually pretty easy to construct test cases for</td></tr>
+            <tr><td>[09:21] &lt MS-&gt musashi: client at line 35 can connect to the server, and send data</td></tr>
+            <tr><td>[09:21] &lt MS-&gt resulting in line 19 causing this to be emitted:</td></tr>
+            <tr><td>[09:22] &lt musashi&gt looking at it right now :)</td></tr>
+            <tr><td>[09:22] &lt MS-&gt msg 127.0.0.1 50112</td></tr>
+            <tr><td>[09:22] &lt musashi&gt that's just what I want :D</td></tr>
+            <tr><td>[09:22] &lt MS-&gt I'm currently a little inclear as to why ConsoleEchoer() doesn't *appear* to get the response, but I'm sure it'll become clear</td></tr>
+            <tr><td>[09:22] &lt musashi&gt trying it right now</td></tr>
+            <tr><td>[09:22] &lt MS-&gt I suspect buffering</td></tr>
+            <tr><td>[09:27] &lt MS-&gt OK, looks like that's right</td></tr>
+            <tr><td>[09:28] &lt MS-&gt How odd that's not come to light before...</td></tr>
+            <tr><td>[09:29] &lt MS-&gt Updated that example to emit several messages</td></tr>
+            <tr><td>[09:31] &lt MS-&gt I think it must be an issue in TCPClient, for what it's worth, because I've been running servers like this for a fair while (years)</td></tr>
+            <tr><td>[09:33] &lt MS-&gt OK, I'm checking in a version that allows you to telnet to a python console running inside that client/server system...</td></tr>
+            <tr><td>[09:33] &lt MS-&gt Way that is used:</td></tr>
+            <tr><td>[09:34] &lt MS-&gt ~/code.google/kamaelia/trunk/Sketches/MPS/Examples&gt ./OneShot_Race.py</td></tr>
+            <tr><td>[09:34] &lt MS-&gt Then in another window:</td></tr>
+            <tr><td>[09:34] &lt MS-&gt ~&gt telnet 127.0.0.1 8765</td></tr>
+            <tr><td>[09:34] &lt MS-&gt Trying 127.0.0.1...</td></tr>
+            <tr><td>[09:34] &lt MS-&gt Connected to 127.0.0.1.</td></tr>
+            <tr><td>[09:34] &lt MS-&gt Escape character is '^]'.</td></tr>
+            <tr><td>[09:34] &lt MS-&gt &gt&gt&gt self</td></tr>
+            <tr><td>[09:34] &lt MS-&gt Component Kamaelia.Experimental.PythonInterpreter.InterpreterTransformer_39 [ inboxes : {'control': [], 'inbox': []} outboxes : {'outbox': [], 'signal': []}</td></tr>
+            <tr><td>[09:35] &lt MS-&gt &gt&gt&gt [ str(x) for x in self.scheduler.threads.keys() ]</td></tr>
+            <tr><td>[09:35] &lt MS-&gt which looks like...</td></tr>
+            <tr><td>[09:35] &lt MS-&gt http://pastebin.com/m57619c00</td></tr>
+            <tr><td>[09:35] &lt MS-&gt From that we can see that the responses</td></tr>
+            <tr><td>[09:36] &lt MS-&gt which are missing, are rather suprisingly stuck inside the Echo component</td></tr>
+            <tr><td>[09:37] &lt MS-&gt I wonder if the client is sleeping...</td></tr>
+            <tr><td>[09:38] &lt MS-&gt Oh, that's wierd, the TCPClient isn't there!</td></tr>
+            <tr><td>[09:39] &lt MS-&gt Oh, I think I know what the problem is... I think it's been passed on a shutdown message, and shutdown</td></tr>
+            <tr><td>[09:39] &lt MS-&gt because the OneShot component has sent its message and shutdown</td></tr>
+            <tr><td>[09:41] &lt MS-&gt And sorted</td></tr>
+            <tr><td>[09:42] &lt MS-&gt Checking in a version that works</td></tr>
+            <tr><td>[09:44] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/MPS/Examples/OneShot_Race.py Now uses a graphline instead</td></tr>
+            <tr><td>[09:45] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Sketches/MPS/Examples/OneShot_Race.py is the same file, but for anonymous checkouts</td></tr>
+            <tr><td>[09:46] &lt MS-&gt The issue with that code really is that TCPClient doesn't know if it's being used in any particular way</td></tr>
+            <tr><td>[09:46] &lt MS-&gt For sending, receiving or as a request/response thing</td></tr>
+            <tr><td>[09:46] &lt MS-&gt If it's request response you generally want to build something a little higher level to deal with that</td></tr>
+            <tr><td>[09:47] &lt MS-&gt Since OneShot & DataSource both emit producerFinished when they've sent their data</td></tr>
+            <tr><td>[09:47] &lt MS-&gt Whereas what you want to do is to get TCPClient to disconnect *after* it's recieved the response</td></tr>
+            <tr><td>[09:48] &lt MS-&gt Given it can't know what the response is supposed to be, or when it's supposed to get it you need something else controlling it</td></tr>
+            <tr><td>[09:53] &lt musashi&gt Thank you MS-! I understand the problem right now. As I just wanted to emit a message and get a single response I thought OneShot would do :)</td></tr>
+            <tr><td>[09:59] &lt MS-&gt In lots of cases it's fine, but there's occasionally little interactions to be aware of</td></tr>
+            <tr><td>[09:59] &lt MS-&gt could be argued that tcpclient needs more shutdown modes for example :)</td></tr>
+            <tr><td>[10:08] &lt MS-&gt Probably ought to package this up as a prefab which can just be instantiated and used in any piece of code:</td></tr>
+            <tr><td>[10:08] &lt MS-&gt http://pastebin.com/m2000f432</td></tr>
+            <tr><td>[10:37] &lt MS-&gt I am rather curious though as to what is actually going on in the original base case though</td></tr>
+            <tr><td>[11:48] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:46] &lt MS-&gt OK, it's very clear now that the key cause of the problem I'm seeing is due to something retaining a reference to socketobjects and ConnectedSocketAdapters</td></tr>
+            <tr><td>[12:47] &lt MS-&gt which means it's almost certainly related to cleanup issues</td></tr>
+            <tr><td>[12:47] &lt MS-&gt Probably inside servercore or TCPServer</td></tr>
+            <tr><td>[12:47] &lt MS-&gt time to start using "get_refererrers" methinks :)</td></tr>
+            <tr><td>[12:48] &lt Lawouach&gt the memory leak or the racing issue we saw earlier today?</td></tr>
+            <tr><td>[12:58] &lt MS-&gt mem leak</td></tr>
+            <tr><td>[12:58] &lt MS-&gt race issue was more a usage issue</td></tr>
+            <tr><td>[12:59] &lt MS-&gt Points at a usecase which needs a standard answer really. (eg an "expect" type component)</td></tr>
+            <tr><td>[13:00] &lt MS-&gt Digging through this leak is quite interesting. Certainly easier this way than it would be with either standard threads or with an event type system</td></tr>
+            <tr><td>[13:01] &lt MS-&gt For example, I can do this:</td></tr>
+            <tr><td>[13:01] &lt MS-&gt y=[x for x in Z if "Connected" in x.__class__.__name__]</td></tr>
+            <tr><td>[13:01] &lt MS-&gt at a prompt and rummage :)</td></tr>
+            <tr><td>[13:05] &lt Lawouach&gt nice</td></tr>
+            <tr><td>[13:08] &lt MS-&gt I'm then doing stuff like this:</td></tr>
+            <tr><td>[13:08] &lt MS-&gt &gt&gt&gt y[1]</td></tr>
+            <tr><td>[13:08] &lt MS-&gt Component Kamaelia.Internet.ConnectedSocketAdapter.ConnectedSocketAdapter_20</td></tr>
+            <tr><td>[13:08] &lt MS-&gt &gt&gt&gt y[0]</td></tr>
+            <tr><td>[13:08] &lt MS-&gt Component Kamaelia.Internet.ConnectedSocketAdapter.ConnectedSocketAdapter_12</td></tr>
+            <tr><td>[13:08] &lt MS-&gt To find out the specific CSA id</td></tr>
+            <tr><td>[13:08] &lt MS-&gt and then this to look in the scheduler:</td></tr>
+            <tr><td>[13:09] &lt MS-&gt [str(x) for x in self.scheduler.threads.keys() if "ConnectedSock" in str(x)]</td></tr>
+            <tr><td>[13:09] &lt MS-&gt Which tells me ConnectedSocketAdapter_20 is the dangling one</td></tr>
+            <tr><td>[13:11] &lt Lawouach&gt that's excellent</td></tr>
+            <tr><td>[13:11] &lt Lawouach&gt and most needed :p</td></tr>
+            <tr><td>[13:12] &lt Lawouach&gt it'd be nice to have a tool that performs a quick health check without having to do it manually</td></tr>
+            <tr><td>[13:12] &lt MS-&gt True.</td></tr>
+            <tr><td>[13:12] &lt MS-&gt I suppose codifying this particular sort of rummaging would help there</td></tr>
+            <tr><td>[13:12] &lt Lawouach&gt probably yes</td></tr>
+            <tr><td>[13:14] &lt MS-&gt heh, there's a dictionary that is using the actual connected socket (ie socket._socketobject) as a lookup for the CSA , and *that's* not had it's entry deleted</td></tr>
+            <tr><td>[13:18] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:06] &lt MS-&gt OK, socket object count stablised.</td></tr>
+            <tr><td>[15:06] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:09] &lt Lawouach&gt sweet</td></tr>
+            <tr><td>[15:09] &lt Lawouach&gt that's really cool</td></tr>
+            <tr><td>[15:25] &lt MS-&gt Still hunting CSAs though, weirdly</td></tr>
+            <tr><td>[15:25] &lt MS-&gt But at least one part is sorted</td></tr>
+            <tr><td>[15:44] &lt MS-&gt I suppose part of the issue is this is amongst the oldest code in K and as a result has the greatest cruft factor</td></tr>
+            <tr><td>[15:44] &lt MS-&gt When something's not broke you don't fix it :)</td></tr>
+            <tr><td>[16:02] *** musashi has parted #kamaelia</td></tr>
+            <tr><td>[16:21] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:47] &lt MS-&gt Woo, think I've killed it.</td></tr>
+            <tr><td>[16:47] &lt MS-&gt That took longer than it should</td></tr>
+            <tr><td>[17:25] &lt MS-&gt That's actually quite an important bugfix, assuming I've got everything :-)</td></tr>
+            <tr><td>[17:37] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:55] &lt MS-&gt Yay, it really does look like that I've stomped on that memory leak in the basic TCP Server code properly :-D</td></tr>
+            <tr><td>[18:31] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[18:43] &lt MS-&gt Not sure if those fixes are sufficient to make the greylister stable (may have issues elsewhere), but certainly makes the server (CSA, socketobject) stable.</td></tr>
+            <tr><td>[20:06] &lt MS-&gt This is my bugs queue that I've started:</td></tr>
+            <tr><td>[20:06] &lt MS-&gt http://twitter.com/kamaeliabugs</td></tr>
+            <tr><td>[20:07] &lt MS-&gt When something's fixed, I delete the status update.</td></tr>

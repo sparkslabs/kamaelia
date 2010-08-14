@@ -1,0 +1,89 @@
+<html><body><table>
+            <tr><td>[00:05] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[01:31] *** tdobson has joined #kamaelia</td></tr>
+            <tr><td>[04:36] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:52] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:26] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:26] &lt Lawouach_&gt hi guys</td></tr>
+            <tr><td>[06:55] &lt MS-&gt morning</td></tr>
+            <tr><td>[06:56] &lt Lawouach_&gt damn</td></tr>
+            <tr><td>[06:56] &lt Lawouach_&gt I'm trying to run kamaelia and cherrypy with multiprocessing</td></tr>
+            <tr><td>[06:57] &lt Lawouach_&gt but since multiprocessing forks children and since the scheduler and the cherrypy.engine are global module level instances</td></tr>
+            <tr><td>[06:57] &lt Lawouach_&gt the children all share the same objects</td></tr>
+            <tr><td>[06:57] &lt Lawouach_&gt grumble :(</td></tr>
+            <tr><td>[06:57] &lt MS-&gt That's why the scheduler has the zap option...</td></tr>
+            <tr><td>[06:58] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[06:58] &lt Lawouach_&gt hmmm?</td></tr>
+            <tr><td>[06:59] &lt MS-&gt If you look at</td></tr>
+            <tr><td>[06:59] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Code/Python/Axon/Axon/experimental/Process.py</td></tr>
+            <tr><td>[06:59] &lt MS-&gt It has the same issue in</td></tr>
+            <tr><td>[06:59] &lt MS-&gt ProcessWrap</td></tr>
+            <tr><td>[06:59] &lt MS-&gt So .activate() calls .run()</td></tr>
+            <tr><td>[06:59] &lt MS-&gt .run() wraps .main()</td></tr>
+            <tr><td>[06:59] &lt MS-&gt BUT .run() is the start of a new process, probably from a running kamaelia system</td></tr>
+            <tr><td>[07:00] &lt MS-&gt (or can be</td></tr>
+            <tr><td>[07:00] &lt MS-&gt sp it zaps the scheduler</td></tr>
+            <tr><td>[07:00] &lt MS-&gt  background(zap=True).start()</td></tr>
+            <tr><td>[07:01] &lt MS-&gt Without doing that you end up with really wierd effects</td></tr>
+            <tr><td>[07:01] &lt Lawouach_&gt let me see</td></tr>
+            <tr><td>[07:01] &lt MS-&gt It's not the cleanest code in the world I'll grant you</td></tr>
+            <tr><td>[07:01] &lt MS-&gt but it does run. The key thing really is to replace the scheduler with a zapped one</td></tr>
+            <tr><td>[07:02] &lt MS-&gt There may also be latent bugs which I've not found :)</td></tr>
+            <tr><td>[07:02] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[07:03] &lt Lawouach_&gt I'll try replacing the scheduler from my child process</td></tr>
+            <tr><td>[07:03] &lt MS-&gt But it does work</td></tr>
+            <tr><td>[07:03] &lt Lawouach_&gt I'd rather avoid using background</td></tr>
+            <tr><td>[07:03] *** MS- nods</td></tr>
+            <tr><td>[07:03] &lt Lawouach_&gt though</td></tr>
+            <tr><td>[07:03] &lt Lawouach_&gt let me think</td></tr>
+            <tr><td>[07:03] &lt Lawouach_&gt I'll try</td></tr>
+            <tr><td>[07:03] &lt Lawouach_&gt ta</td></tr>
+            <tr><td>[07:25] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[07:26] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:05] &lt Lawouach_&gt using a code similar to zap (basically creating a new instance of the scheduler) still gives me the same object if from any of my children</td></tr>
+            <tr><td>[08:05] &lt Lawouach_&gt off to lunch, need to rethink about all of this</td></tr>
+            <tr><td>[08:05] &lt Lawouach_&gt something's broken</td></tr>
+            <tr><td>[08:11] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[09:22] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[09:22] &lt Lawouach_&gt right, well I've thought about it and rather than trying to ensure the unicity of the secheduler instance or the CherryPy engine</td></tr>
+            <tr><td>[09:23] &lt Lawouach_&gt I'm gonna seperate my code so that I run each application in its own Python script started from the command line one by one</td></tr>
+            <tr><td>[09:23] &lt Lawouach_&gt rather than forking that is</td></tr>
+            <tr><td>[09:39] &lt Lawouach_&gt sorry if I sounded harsh by the way, I was frustrated :)</td></tr>
+            <tr><td>[09:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:56] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[10:06] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:06] &lt MS-&gt OK, I appear to have a simple dirac based webcam video recorder now</td></tr>
+            <tr><td>[10:06] &lt MS-&gt Now, how to add audio sensibly.</td></tr>
+            <tr><td>[10:07] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[10:07] &lt MS-&gt Reliable capture is more important than reliable playback after all.</td></tr>
+            <tr><td>[10:07] &lt MS-&gt (The latter can be solved by other means)</td></tr>
+            <tr><td>[10:09] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[10:16] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:02] *** Davbo_ has joined #kamaelia</td></tr>
+            <tr><td>[11:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:24] &lt Lawouach_&gt I think I've fixed that leak :)</td></tr>
+            <tr><td>[12:25] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[12:25] &lt MS-&gt congrats</td></tr>
+            <tr><td>[12:25] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt ta</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt mostly some trailing components</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt MS-: what value of slowmo do you usualy use?</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt I find that 0 isn't good CPU wise</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt but 0.02 isn't as good as I thought</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt my CPU is still at around 2% (both cores)</td></tr>
+            <tr><td>[12:30] &lt MS-&gt I don't tend to use slowmo - I tend to try to change components to pause ...</td></tr>
+            <tr><td>[12:31] &lt MS-&gt Though if I was doing I'd probably use something like 0.1 as an upper value</td></tr>
+            <tr><td>[12:31] &lt MS-&gt since it's just a time.sleep() in the code</td></tr>
+            <tr><td>[12:31] &lt MS-&gt It doesn't sleep *completely* so that threads can awaken the scheduler</td></tr>
+            <tr><td>[12:31] &lt MS-&gt eg the selector :)</td></tr>
+            <tr><td>[12:40] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:41] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:44] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[14:21] *** SamHasler_ has joined #kamaelia</td></tr>
+            <tr><td>[15:33] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[18:47] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:02] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[22:05] *** vmlemon_2 has joined #kamaelia</td></tr>
+            <tr><td>[22:08] *** vmlemon_3 has joined #kamaelia</td></tr>

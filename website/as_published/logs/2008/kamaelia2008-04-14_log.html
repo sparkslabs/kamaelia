@@ -1,0 +1,631 @@
+<html><body><table>
+            <tr><td>[00:01] &lt Chong&gt I see. But you can check if others met the same problem with you. If so, it should be its problem; if not, the problem is highly likely from your code.</td></tr>
+            <tr><td>[00:02] &lt Davbo&gt I have 4 people talking to me trying the same thing and i'm the only one this far. So I'm almost the solution i have is the final thing</td></tr>
+            <tr><td>[00:02] &lt Davbo&gt almost certain*</td></tr>
+            <tr><td>[00:05] &lt Chong&gt :-)</td></tr>
+            <tr><td>[00:06] &lt Davbo&gt Thanks for your help Chong</td></tr>
+            <tr><td>[00:06] &lt Chong&gt Davbo: pleasure</td></tr>
+            <tr><td>[00:08] &lt Chong&gt Got to sleep, or cannot get up this morning;)</td></tr>
+            <tr><td>[00:08] &lt Chong&gt See you, all.</td></tr>
+            <tr><td>[00:08] &lt Chong&gt Have a good night.</td></tr>
+            <tr><td>[00:09] &lt Davbo&gt Night Chong</td></tr>
+            <tr><td>[00:09] *** Chong has parted #kamaelia</td></tr>
+            <tr><td>[00:12] &lt MS-&gt Hm, it *is* late isn't it</td></tr>
+            <tr><td>[00:18] &lt Davbo&gt and yet i'm still drinking red bull and working on this. Wow, now i feel like a stereotype</td></tr>
+            <tr><td>[00:18] &lt MS-&gt night all - good luck with you queens Davbo - please do send at least a short answer to that mail BTW</td></tr>
+            <tr><td>[00:18] &lt MS-&gt heh</td></tr>
+            <tr><td>[00:18] &lt MS-&gt (when you have time)</td></tr>
+            <tr><td>[00:18] &lt Davbo&gt Yeah I'll be sure to reply</td></tr>
+            <tr><td>[00:19] &lt Davbo&gt Night MS-</td></tr>
+            <tr><td>[00:19] &lt MS-&gt cya</td></tr>
+            <tr><td>[00:19] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[02:22] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[05:48] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[06:58] *** NcTrun has joined #kamaelia</td></tr>
+            <tr><td>[07:40] *** Chong has joined #kamaelia</td></tr>
+            <tr><td>[07:41] *** Chong has parted #kamaelia</td></tr>
+            <tr><td>[07:41] *** Chong has joined #kamaelia</td></tr>
+            <tr><td>[07:42] &lt Chong&gt Good morning, everyone.</td></tr>
+            <tr><td>[07:51] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[07:58] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:00] &lt orphans&gt morning all</td></tr>
+            <tr><td>[08:01] &lt Chong&gt morning, orphans.</td></tr>
+            <tr><td>[08:08] &lt bcarlyon|lsrfm&gt morning</td></tr>
+            <tr><td>[08:09] &lt orphans&gt hows it going guys?</td></tr>
+            <tr><td>[08:09] &lt bcarlyon|lsrfm&gt Back to university today</td></tr>
+            <tr><td>[08:10] &lt orphans&gt I've got another week :)</td></tr>
+            <tr><td>[08:11] &lt orphans&gt then a month and a half of hell...</td></tr>
+            <tr><td>[08:11] &lt bcarlyon|lsrfm&gt All right for some....</td></tr>
+            <tr><td>[08:11] &lt bcarlyon|lsrfm&gt rofl</td></tr>
+            <tr><td>[08:30] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[08:33] *** NcTrun has joined #kamaelia</td></tr>
+            <tr><td>[08:54] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[08:54] &lt Chong&gt vmlemon: hi</td></tr>
+            <tr><td>[08:58] &lt bcarlyon|lsrfm&gt Morning</td></tr>
+            <tr><td>[08:59] &lt vmlemon&gt Hah, http://linux.slashdot.org/comments.pl?sid=518946&cid=23046394</td></tr>
+            <tr><td>[09:36] *** bcarlyon|lsrfm is now known as bcarlyon|away</td></tr>
+            <tr><td>[09:39] *** vmlemon is playing with a Java class decompiler</td></tr>
+            <tr><td>[09:44] *** bcarlyon|nub is off to a leacture</td></tr>
+            <tr><td>[09:44] &lt bcarlyon|nub&gt lecture*</td></tr>
+            <tr><td>[09:44] *** bcarlyon|nub is now known as bcarlyon|laptop</td></tr>
+            <tr><td>[10:26] *** Chong has parted #kamaelia</td></tr>
+            <tr><td>[10:27] &lt Lawouach&gt heya</td></tr>
+            <tr><td>[10:28] &lt MS-&gt heya</td></tr>
+            <tr><td>[10:31] &lt orphans&gt hey Lawouach, MS-</td></tr>
+            <tr><td>[10:31] &lt MS-&gt orphans: heya</td></tr>
+            <tr><td>[10:31] &lt orphans&gt MS-, did you get my email?</td></tr>
+            <tr><td>[10:32] &lt MS-&gt sent ... ?</td></tr>
+            <tr><td>[10:32] &lt orphans&gt always slightly sceptical about gmail losing them somewhere in the ether...</td></tr>
+            <tr><td>[10:32] &lt orphans&gt this morning</td></tr>
+            <tr><td>[10:33] &lt MS-&gt Currently greylisted:</td></tr>
+            <tr><td>[10:33] &lt MS-&gt 20080414102625.536 | nf-out-0910.google.com | 64.233.182.185 | &lt orphansandoligarchs@gmail.com&gt | &lt ms@cerenity.org&gt | DEFERRED |</td></tr>
+            <tr><td>[10:33] &lt MS-&gt meaning it's on its way through</td></tr>
+            <tr><td>[10:34] &lt orphans&gt :) cool cool</td></tr>
+            <tr><td>[10:34] &lt MS-&gt If you want me to see it sooner, you can either resend to gmail, or add it onto the web app :)</td></tr>
+            <tr><td>[10:35] &lt orphans&gt not that bothered - if you want to see it sooner I can resend :)</td></tr>
+            <tr><td>[10:35] &lt orphans&gt it's just the reply to the question</td></tr>
+            <tr><td>[10:35] &lt MS-&gt It would be useful - if it hasn't come through in the next hour or so, I'll ask :)</td></tr>
+            <tr><td>[10:36] &lt orphans&gt ok, cool</td></tr>
+            <tr><td>[11:13] &lt Lawouach&gt alright gotta head back to work</td></tr>
+            <tr><td>[11:15] &lt MS-&gt phone call timing as impeccable as ever.</td></tr>
+            <tr><td>[11:16] &lt MS-&gt ends just too late :-/</td></tr>
+            <tr><td>[11:16] &lt MS-&gt oh well.</td></tr>
+            <tr><td>[11:16] &lt MS-&gt Hope you're having a good day Lawouach :)</td></tr>
+            <tr><td>[11:25] &lt vmlemon&gt Hi MS-, orphans and Lawouach</td></tr>
+            <tr><td>[11:25] &lt vmlemon&gt (and the others)</td></tr>
+            <tr><td>[11:29] &lt MS-&gt vmlemon: Heya</td></tr>
+            <tr><td>[11:31] &lt orphans&gt hey vmlemon</td></tr>
+            <tr><td>[11:32] *** vmlemon wonders if he could hammer http://www.dryfish.org/projects/nfb.html into a Kamaelia component/his file dumping script</td></tr>
+            <tr><td>[11:38] &lt MS-&gt vmlemon: You should be able to</td></tr>
+            <tr><td>[11:38] &lt MS-&gt (having looked at them :) )</td></tr>
+            <tr><td>[11:41] &lt MS-&gt What's an nfb file?</td></tr>
+            <tr><td>[11:41] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:41] &lt MS-&gt Nokia File Block perhaps?</td></tr>
+            <tr><td>[11:41] &lt vmlemon&gt Not sure, it's some sort of back-up file</td></tr>
+            <tr><td>[11:42] &lt vmlemon&gt Supposedly doesn't stand for anything, from what I've read</td></tr>
+            <tr><td>[11:42] &lt MS-&gt ah ok</td></tr>
+            <tr><td>[11:43] &lt MS-&gt nokia file backup ?</td></tr>
+            <tr><td>[11:43] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:43] &lt vmlemon&gt I'd guess so</td></tr>
+            <tr><td>[11:43] &lt vmlemon&gt I guess that that bit of code saves me some reverse-engineering work</td></tr>
+            <tr><td>[11:43] &lt vmlemon&gt ;)</td></tr>
+            <tr><td>[11:44] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:45] &lt vmlemon&gt Although I still have some to do</td></tr>
+            <tr><td>[11:45] &lt vmlemon&gt Unless I stumble upon a file format specification by some sort of luck</td></tr>
+            <tr><td>[12:07] &lt MS-&gt orphans: could you resend what you wrote to my gmail account? It looks like the sender which google uses changes</td></tr>
+            <tr><td>[12:07] &lt MS-&gt meaning stuff will bounce</td></tr>
+            <tr><td>[12:08] &lt orphans&gt yeah sure, what's the address?</td></tr>
+            <tr><td>[12:08] &lt MS-&gt (ie I've not actually had anything through from your email address)</td></tr>
+            <tr><td>[12:09] &lt MS-&gt sparks.m@gmail.com</td></tr>
+            <tr><td>[12:09] &lt MS-&gt ta</td></tr>
+            <tr><td>[12:09] &lt MS-&gt also their source IPs vary even subnet</td></tr>
+            <tr><td>[12:09] &lt MS-&gt woo</td></tr>
+            <tr><td>[12:09] &lt MS-&gt adding exceptions into greylisting considered fun*</td></tr>
+            <tr><td>[12:09] &lt MS-&gt * may not actually be true</td></tr>
+            <tr><td>[12:10] &lt orphans&gt :)</td></tr>
+            <tr><td>[12:10] &lt orphans&gt k, sent now</td></tr>
+            <tr><td>[12:10] &lt MS-&gt Got it :)</td></tr>
+            <tr><td>[12:10] &lt orphans&gt cool</td></tr>
+            <tr><td>[12:10] *** orphans hopes it makes sense :)</td></tr>
+            <tr><td>[12:12] &lt MS-&gt it does - much appreciated</td></tr>
+            <tr><td>[12:12] &lt orphans&gt np</td></tr>
+            <tr><td>[12:13] &lt orphans&gt out of interest was that the kind of thing you were looking for (style of answer-wise - content-wise is probably a bit much to ask :))</td></tr>
+            <tr><td>[12:15] &lt MS-&gt Still waiting for one answer, so I think its inappropriate for me to answer at this stage :)</td></tr>
+            <tr><td>[12:16] &lt MS-&gt (the question was deliberately vague to avoid skewing answers in the direction we're interested in hearing about...)</td></tr>
+            <tr><td>[12:16] &lt orphans&gt sure - just curious</td></tr>
+            <tr><td>[12:16] &lt MS-&gt Naturally :)</td></tr>
+            <tr><td>[12:29] &lt bcarlyon|laptop&gt Greetings all :-)</td></tr>
+            <tr><td>[12:32] &lt orphans&gt hey bcarlyon|laptop</td></tr>
+            <tr><td>[12:33] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[12:45] &lt bcarlyon|away&gt Hows it going?</td></tr>
+            <tr><td>[12:45] &lt MS-&gt I've had better days. I've had worse. :)</td></tr>
+            <tr><td>[12:45] &lt MS-&gt Yourself?</td></tr>
+            <tr><td>[12:46] &lt bcarlyon|away&gt Not too bad, getting back to the joys of lectures ,although I am done fo the day...</td></tr>
+            <tr><td>[12:46] *** bcarlyon|away is now known as bcarlyon|lsr</td></tr>
+            <tr><td>[12:46] *** bcarlyon|lsr is now known as bcarlyon|lsrfm</td></tr>
+            <tr><td>[12:46] &lt MS-&gt cool</td></tr>
+            <tr><td>[13:37] *** petruccigp has joined #kamaelia</td></tr>
+            <tr><td>[14:51] *** MS- crosses fingers</td></tr>
+            <tr><td>[14:51] *** MS- crosses toes</td></tr>
+            <tr><td>[14:52] &lt orphans&gt MS-, ?</td></tr>
+            <tr><td>[14:52] *** orphans also crosses things incase it's something good :D</td></tr>
+            <tr><td>[14:53] &lt MS-&gt We got to see the second preliminary slot allocation yesterday</td></tr>
+            <tr><td>[14:53] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:53] &lt orphans&gt * in case</td></tr>
+            <tr><td>[14:53] &lt orphans&gt ahh</td></tr>
+            <tr><td>[14:53] &lt orphans&gt you asking for more?</td></tr>
+            <tr><td>[14:53] &lt MS-&gt Like probably everyone else it was lower than the number of slots asked for with an indication of a small number of slots more</td></tr>
+            <tr><td>[14:54] &lt orphans&gt when do you find out the final numbers?</td></tr>
+            <tr><td>[14:54] &lt MS-&gt It's still an amazing number of slots in total, and fantastic, but if we can get the extra slot (or slots) we've asked for, then its 1 or 2 less people we have to say "sorry" to</td></tr>
+            <tr><td>[14:54] &lt MS-&gt I think the final count is on wednesday</td></tr>
+            <tr><td>[14:55] &lt orphans&gt yeah. If it doesn't happen you happy with what you've got this year?</td></tr>
+            <tr><td>[14:55] &lt MS-&gt which for us probably means v late wednesday or thursday due to time zones</td></tr>
+            <tr><td>[14:55] &lt MS-&gt Of course :-)</td></tr>
+            <tr><td>[14:55] &lt orphans&gt that cool :)</td></tr>
+            <tr><td>[14:55] &lt MS-&gt It's just a real bummer to have to turn people away</td></tr>
+            <tr><td>[14:55] &lt orphans&gt yeah</td></tr>
+            <tr><td>[14:55] *** orphans crosses fingers :)</td></tr>
+            <tr><td>[14:56] &lt MS-&gt That said, I've got no problem in turning away the time wasters</td></tr>
+            <tr><td>[14:56] &lt MS-&gt But then who hasn't ? ;-)</td></tr>
+            <tr><td>[14:56] &lt orphans&gt heh</td></tr>
+            <tr><td>[15:01] *** Chong has joined #kamaelia</td></tr>
+            <tr><td>[15:01] &lt Chong&gt Good afternoon, everyone.</td></tr>
+            <tr><td>[15:01] &lt MS-&gt heya</td></tr>
+            <tr><td>[15:02] &lt MS-&gt orphans: It's *sooo* tempting to do a version of "The weakest link"</td></tr>
+            <tr><td>[15:02] &lt MS-&gt But that'd be really unfair :)</td></tr>
+            <tr><td>[15:02] &lt orphans&gt MS-, hah, that is quite cruel</td></tr>
+            <tr><td>[15:03] &lt orphans&gt "well Anne, I'd like to vote off MS- for thinking up perhaps the meanest way to cause infighting in SoC students" :D</td></tr>
+            <tr><td>[15:03] &lt MS-&gt heheh</td></tr>
+            <tr><td>[15:04] &lt MS-&gt I deserve that :)</td></tr>
+            <tr><td>[15:05] &lt Chong&gt hehe. I support you, orphans :-)</td></tr>
+            <tr><td>[15:06] &lt Chong&gt MS-: have you sent your feedback to me? still not received.</td></tr>
+            <tr><td>[15:06] *** bcarlyon|lsrfm just received some ubuntu server edition cds....</td></tr>
+            <tr><td>[15:07] &lt MS-&gt Chong: Not yet. (Having one of *those* days today)</td></tr>
+            <tr><td>[15:07] &lt Chong&gt np</td></tr>
+            <tr><td>[15:08] &lt bcarlyon|lsrfm&gt Anne "orphans wyou are statistically the weakest like, however Chong has received the most votes" "Chong, you are the weakest link, good bye!"</td></tr>
+            <tr><td>[15:08] &lt bcarlyon|lsrfm&gt s/like/link</td></tr>
+            <tr><td>[15:09] &lt MS-&gt heh</td></tr>
+            <tr><td>[15:10] &lt orphans&gt who wants to be an SoC student?</td></tr>
+            <tr><td>[15:11] &lt orphans&gt "the final question, for one SoC place: *INSERT MS-'s last email here* :)</td></tr>
+            <tr><td>[15:11] &lt orphans&gt they're only easy if you know them...</td></tr>
+            <tr><td>[15:11] &lt Chong&gt hehe:(</td></tr>
+            <tr><td>[15:12] &lt bcarlyon|lsrfm&gt Yes i would have MS- babies.....</td></tr>
+            <tr><td>[15:12] &lt orphans&gt heh, you got a different email to the one I did!</td></tr>
+            <tr><td>[15:12] &lt bcarlyon|lsrfm&gt lol</td></tr>
+            <tr><td>[15:12] &lt bcarlyon|lsrfm&gt I actually laughed at that in RL, people just gave me some weird looks</td></tr>
+            <tr><td>[15:13] &lt orphans&gt heh</td></tr>
+            <tr><td>[15:13] &lt Chong&gt MS-: just saw your article, Kamaelia Multicore Pipeline. The future is here.</td></tr>
+            <tr><td>[15:15] &lt Chong&gt It's very interesting and it seems it's pprocess that makes the difference. But cannot find it on the kamaelia website.</td></tr>
+            <tr><td>[15:16] &lt MS-&gt Well, it's a combination of pprocess *and* LikeFile from last summer of code that really make the difference</td></tr>
+            <tr><td>[15:16] &lt MS-&gt pprocess is here: http://pypi.python.org/pypi/pprocess</td></tr>
+            <tr><td>[15:17] &lt MS-&gt It's relatively simple to do, but it's handy that someone else has done the lifting.</td></tr>
+            <tr><td>[15:17] &lt Chong&gt Thanks for your info.</td></tr>
+            <tr><td>[15:18] &lt Chong&gt yes. "stands on giant's shoulder".</td></tr>
+            <tr><td>[15:28] *** bcarlyon|lsrfm has just noticed he is now reviewer assigned :-)</td></tr>
+            <tr><td>[15:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:29] &lt MS-&gt bcarlyon|lsrfm: Please don't take any notice of these things at this stage - we still have more requests for places than we have slots allocated</td></tr>
+            <tr><td>[15:29] &lt bcarlyon|lsrfm&gt I havnt :-)</td></tr>
+            <tr><td>[15:30] &lt bcarlyon|lsrfm&gt Just noticed the change :-)</td></tr>
+            <tr><td>[15:30] &lt bcarlyon|lsrfm&gt It means you are actually real MS- and not a figment of my imagination....</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt Good afternoon all</td></tr>
+            <tr><td>[15:30] &lt MS-&gt Davbo: afternoon</td></tr>
+            <tr><td>[15:31] &lt Chong&gt afternoon, Davbo.</td></tr>
+            <tr><td>[15:31] &lt MS-&gt bcarlyon|lsrfm: You can't be sure of that</td></tr>
+            <tr><td>[15:31] &lt bcarlyon|lsrfm&gt you mean your not real?</td></tr>
+            <tr><td>[15:31] &lt bcarlyon|lsrfm&gt afternoon Davbo</td></tr>
+            <tr><td>[15:32] &lt MS-&gt bcarlyon|lsrfm: I mean you can't be sure i'm real. But that starts getting into silly areas of philosophy</td></tr>
+            <tr><td>[15:32] &lt bcarlyon|lsrfm&gt I think therefore I am</td></tr>
+            <tr><td>[15:33] &lt MS-&gt I think I think therefore I may be, but I may be just a simulation of me</td></tr>
+            <tr><td>[15:35] &lt orphans&gt kamaeliabot: are you a simulation of MS?</td></tr>
+            <tr><td>[15:36] &lt Chong&gt kamaeliabot says "yes" :-)</td></tr>
+            <tr><td>[15:37] *** Davbo experiences flashbacks to his Philosophy course</td></tr>
+            <tr><td>[15:55] &lt Davbo&gt "Delivery Due Today" on my EEE-PC!! :o</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt Hmm they deliver until 7pm</td></tr>
+            <tr><td>[15:56] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:56] &lt orphans&gt more important philosophical question: does Davbo's eeepc exist?</td></tr>
+            <tr><td>[15:56] &lt orphans&gt I say no :)</td></tr>
+            <tr><td>[15:56] &lt MS-&gt orphans: I say "oooh, is that the delivery van at my door?"</td></tr>
+            <tr><td>[15:57] &lt orphans&gt "*sigh*, milkman again*</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt Hah :)</td></tr>
+            <tr><td>[15:57] &lt orphans&gt eesh, there were *s and "s everywhere in that, none of them in the right place</td></tr>
+            <tr><td>[15:57] &lt MS-&gt yes they are*</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt I hate waiting for a delivery, every large vehicle i hear on my road i get my hopes up</td></tr>
+            <tr><td>[15:57] &lt MS-&gt * may not be trye</td></tr>
+            <tr><td>[16:07] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:09] &lt j_baker&gt MS- did you get my email?</td></tr>
+            <tr><td>[16:09] &lt MS-&gt j_baker: I did thanks - I've copied on to the other mentors as well :)</td></tr>
+            <tr><td>[16:10] *** MS- note to self, really should note when he receives something</td></tr>
+            <tr><td>[16:12] &lt j_baker&gt Sweet. Just wanted to make sure. :)</td></tr>
+            <tr><td>[16:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:18] &lt j_baker&gt So just out of curiosity, how does the BBC view people torrenting its programming?</td></tr>
+            <tr><td>[16:18] &lt MS-&gt To be frank, I really don't know</td></tr>
+            <tr><td>[16:19] &lt j_baker&gt It has to at least be better than the TV networks here.</td></tr>
+            <tr><td>[16:19] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:19] &lt vmlemon_&gt I doubt that the BBC would want to see people 'Torrenting their programmes...</td></tr>
+            <tr><td>[16:19] &lt MS-&gt The BBC can't do it in the same way due to rights (basically we've got no more right that you* have)</td></tr>
+            <tr><td>[16:19] &lt vmlemon_&gt Although there's nothing to stop people</td></tr>
+            <tr><td>[16:20] &lt vmlemon_&gt (you can get a cheap DVB-T USB stick and snarf the raw transport stream, in order to re-encode it, with no particular loss of quality, depending on codec)</td></tr>
+            <tr><td>[16:20] &lt MS-&gt (you* being the general "you" rather than specific)</td></tr>
+            <tr><td>[16:20] &lt j_baker&gt I suppose that makes sense.</td></tr>
+            <tr><td>[16:20] &lt vmlemon_&gt People have used VCRs here for years to record BBC shows, and even passed the tapes on</td></tr>
+            <tr><td>[16:20] &lt MS-&gt But there's not alot the BBC can do to stop it really - the best way though is to provide a legit alternative</td></tr>
+            <tr><td>[16:20] &lt vmlemon_&gt and in some cases put the (rather poor quality) footage online</td></tr>
+            <tr><td>[16:20] &lt MS-&gt which is the idea behind iplayer (despite the restrictions on it)</td></tr>
+            <tr><td>[16:21] &lt MS-&gt But as vmlemon_ says, an un-drm'd system would be significantly simpler to create/put up.</td></tr>
+            <tr><td>[16:21] &lt j_baker&gt The only problem I have with iPlayer is that I can't set it to download automatically and then upload it to my iPod like I can with uTorrent.</td></tr>
+            <tr><td>[16:21] &lt j_baker&gt DRM is the devil.</td></tr>
+            <tr><td>[16:22] &lt vmlemon_&gt I find it interesting that ITV's offering and 4oD still don't support any alternatives to the Kontiki client</td></tr>
+            <tr><td>[16:22] &lt j_baker&gt But on the other hand, iPlayer is MUCH better than anything the US networks have come up with.</td></tr>
+            <tr><td>[16:22] &lt vmlemon_&gt Despite iPlayer implementing them</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt That's an interesting idea. How good is Ryan's torrent program?</td></tr>
+            <tr><td>[16:24] &lt bcarlyon|lsrfm&gt I think DRM is an interesting technology, I will probably, in time, investigate it further....</td></tr>
+            <tr><td>[16:25] &lt MS-&gt You've changed subjects subtly haven't you?</td></tr>
+            <tr><td>[16:25] &lt MS-&gt (you're referring to digital radio mondiale :-) - digital replacement for shortwave)</td></tr>
+            <tr><td>[16:25] &lt bcarlyon|lsrfm&gt I forgot it meant two things.....</td></tr>
+            <tr><td>[16:25] &lt bcarlyon|lsrfm&gt Both are interesting...</td></tr>
+            <tr><td>[16:25] &lt vmlemon_&gt Just need a DVB tuner, a nice low profile box with TV-Out support (a Shuttle PC?) probably with a big Kamaelia logo on the top for decoration, and a customized Linux distribution with a Kamaelia-based system for ripping shows out of the MPEG-2 transport stream with metadata, and to present a nice-ish menu system</td></tr>
+            <tr><td>[16:26] &lt bcarlyon|lsrfm&gt Since I work a lot in Radio.</td></tr>
+            <tr><td>[16:26] &lt bcarlyon|lsrfm&gt Rofl</td></tr>
+            <tr><td>[16:26] &lt vmlemon_&gt You could probably "hack" an Apple TV to do it, easily</td></tr>
+            <tr><td>[16:26] &lt vmlemon_&gt (using the word loosely)</td></tr>
+            <tr><td>[16:27] *** vmlemon_ sees one of the OneLAN digital signage boxes being suitable for something like that</td></tr>
+            <tr><td>[16:27] &lt vmlemon_&gt (seeing as they do a model with a PCI DVB-T card, and it already runs Linux)</td></tr>
+            <tr><td>[16:27] &lt MS-&gt vmlemon_: Saw a box like that the other day - but smaller than a shuttle</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt Mac Mini?</td></tr>
+            <tr><td>[16:29] &lt MS-&gt Nope - was different</td></tr>
+            <tr><td>[16:29] &lt MS-&gt I'll see if I can find</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt http://www.onelan.co.uk/product_model.html</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt Dunno if they'll sell you the box without installation, though</td></tr>
+            <tr><td>[16:31] &lt vmlemon_&gt I'd assume that you could modify the existing Fedora it comes with, or install your own choice of distribution, with enough work</td></tr>
+            <tr><td>[16:33] &lt vmlemon_&gt http://www.onelan.co.uk/product_ntb_specs.html probably has more detail, but the boxes seem small enough</td></tr>
+            <tr><td>[16:33] &lt vmlemon_&gt to fit under/near a telly</td></tr>
+            <tr><td>[16:34] &lt vmlemon_&gt At least from the one I once saw</td></tr>
+            <tr><td>[16:34] &lt MS-&gt ah, no this isn't the same at all : http://linitx.com/viewproduct.php?prodid=11309</td></tr>
+            <tr><td>[16:35] &lt MS-&gt though this is nice http://linitx.com/viewproduct.php?prodid=12010</td></tr>
+            <tr><td>[16:35] &lt vmlemon_&gt Just waiting for it to load</td></tr>
+            <tr><td>[16:37] &lt vmlemon_&gt That's a lot of serial ports on the first one</td></tr>
+            <tr><td>[16:37] &lt MS-&gt yep</td></tr>
+            <tr><td>[16:39] &lt vmlemon_&gt The second one looks interesting, and although I was sceptical at first, you could probably make a very fast booting Linux install on a CompactFlash drive</td></tr>
+            <tr><td>[16:39] &lt vmlemon_&gt and host the rest on one of the HDDs</td></tr>
+            <tr><td>[16:41] &lt vmlemon_&gt *the HDD, seeing as it only has a single P-ATA interface</td></tr>
+            <tr><td>[16:43] &lt vmlemon_&gt It's fanless, which could be handy</td></tr>
+            <tr><td>[16:43] &lt vmlemon_&gt And it's fairly cheap</td></tr>
+            <tr><td>[16:44] *** vmlemon_ assumes that you'd have to use an external optical drive, or NetBoot to install the OS on it</td></tr>
+            <tr><td>[16:46] &lt j_baker&gt You could use a USB thumb drive or external hard drive.</td></tr>
+            <tr><td>[16:47] &lt vmlemon_&gt Good point, although you'd only need to install the OS once if you wanted to make the theoretical appliance</td></tr>
+            <tr><td>[16:47] &lt vmlemon_&gt Although if you configured your software properly, you could let people dynamically add and remove storage space</td></tr>
+            <tr><td>[16:50] &lt MS-&gt Davbo: Your starter for 10 would be answer why your NXT component won't actually run</td></tr>
+            <tr><td>[16:50] &lt MS-&gt http://davbo.pastebin.com/f74a4d08</td></tr>
+            <tr><td>[16:50] &lt MS-&gt There are 3 issues with it</td></tr>
+            <tr><td>[16:59] &lt Lawouach&gt back again</td></tr>
+            <tr><td>[16:59] &lt MS-&gt heya</td></tr>
+            <tr><td>[17:01] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[17:03] &lt vmlemon_&gt bcarlyon|lsrfm: Hrm, are DRM recordings DRM'd? ;)</td></tr>
+            <tr><td>[17:05] &lt Davbo&gt Oh sorry MS- once i wrote that email i went to get something to eat</td></tr>
+            <tr><td>[17:05] &lt Davbo&gt also my EEE is here :)</td></tr>
+            <tr><td>[17:05] &lt vmlemon_&gt Yay</td></tr>
+            <tr><td>[17:06] &lt vmlemon_&gt No Yip-EEE, for the delivery of it? ;)</td></tr>
+            <tr><td>[17:06] *** vmlemon_ ducks, after trying to make a crap pun on the name</td></tr>
+            <tr><td>[17:06] &lt Davbo&gt lol :D</td></tr>
+            <tr><td>[17:07] &lt MS-&gt Davbo: Cool :)</td></tr>
+            <tr><td>[17:07] &lt MS-&gt (regarding eeeeeeeeeeeeeeeeeepc)</td></tr>
+            <tr><td>[17:09] &lt vmlemon_&gt Wiiii! ;)</td></tr>
+            <tr><td>[17:10] &lt bcarlyon|lsrfm&gt Nintendo</td></tr>
+            <tr><td>[17:11] &lt Davbo&gt Any tips on that NXT component are appreciated MS-</td></tr>
+            <tr><td>[17:12] &lt MS-&gt Well, threadedcomponents don't use a generator - so it'd need to be either Axon.Component.component (and keep the yield) or Axon.ThreadedComponent.threadedcomponent and ditch the yield</td></tr>
+            <tr><td>[17:12] &lt MS-&gt The other one is to do with the inboxes...</td></tr>
+            <tr><td>[17:13] &lt MS-&gt which I really ought to let you figure out :)</td></tr>
+            <tr><td>[17:13] &lt MS-&gt I realise you haven't run it due to not having the hardware at home</td></tr>
+            <tr><td>[17:14] &lt Davbo&gt Yeah thats a problem for me i constantly run and debug</td></tr>
+            <tr><td>[17:14] &lt Davbo&gt but couldn't do that</td></tr>
+            <tr><td>[17:14] &lt MS-&gt Well, this will help :)</td></tr>
+            <tr><td>[17:14] &lt MS-&gt ;)</td></tr>
+            <tr><td>[17:14] &lt bcarlyon|lsrfm&gt Do you want to borrow a shell account Davbo?</td></tr>
+            <tr><td>[17:14] &lt Davbo&gt I wasn't aware of that with the threadedcomponents, thanks MS-</td></tr>
+            <tr><td>[17:14] &lt MS-&gt Davbo: no problem</td></tr>
+            <tr><td>[17:14] &lt Davbo&gt Humm bcarlyon|lsrfm?</td></tr>
+            <tr><td>[17:15] &lt bcarlyon|lsrfm&gt to run python on to test the component...</td></tr>
+            <tr><td>[17:15] &lt MS-&gt IIRC I was the one that brought threadecomponents into the equation the other day</td></tr>
+            <tr><td>[17:15] &lt Lawouach&gt bcarlyon|lsrfm, I seldom use the threadedcomponent. I started thinking I would but rarely use it.</td></tr>
+            <tr><td>[17:15] &lt Lawouach&gt Make sure you actually need it</td></tr>
+            <tr><td>[17:15] &lt bcarlyon|lsrfm&gt wrong person Lawouach Davbo is the one in question.....</td></tr>
+            <tr><td>[17:16] &lt Davbo&gt Oh the reason i can't run it is because i don't have the robot</td></tr>
+            <tr><td>[17:16] &lt Davbo&gt nothing else</td></tr>
+            <tr><td>[17:16] &lt bcarlyon|lsrfm&gt o</td></tr>
+            <tr><td>[17:16] &lt Lawouach&gt ah sorry :)</td></tr>
+            <tr><td>[17:16] &lt Lawouach&gt my bad</td></tr>
+            <tr><td>[17:16] *** bcarlyon|lsrfm goes back to working on lsweb</td></tr>
+            <tr><td>[17:16] &lt Lawouach&gt Isn't "My bad" an american coloquialism by the way?</td></tr>
+            <tr><td>[17:17] &lt vmlemon_&gt Probably</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt I never know. I have some kind of mixed English and my British friends quite often made fun of it for that reason :)</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt I say friends purely because I'm out-numbered on this channel</td></tr>
+            <tr><td>[17:18] &lt MS-&gt It its an american colloquialism, but I use it all the time. (too much buffy/too much american TV)</td></tr>
+            <tr><td>[17:19] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:19] &lt MS-&gt Speaking of which, this is people's 24 hour Battlestar Galactica series 4 warning.</td></tr>
+            <tr><td>[17:19] &lt Lawouach&gt Well lovely jubley is unknow to the americans AFAIK</td></tr>
+            <tr><td>[17:19] &lt Lawouach&gt Only fools and horses being unknow over there I imagine</td></tr>
+            <tr><td>[17:21] *** bcarlyon|lsrfm doesnt have sky....</td></tr>
+            <tr><td>[17:21] &lt Lawouach&gt I do have Sky News in France for some reason</td></tr>
+            <tr><td>[17:21] &lt Lawouach&gt I watch TV via my ISP</td></tr>
+            <tr><td>[17:21] &lt Lawouach&gt I have around 200 channels or so</td></tr>
+            <tr><td>[17:21] &lt Lawouach&gt in HD for many :)</td></tr>
+            <tr><td>[17:22] &lt Lawouach&gt well guess what</td></tr>
+            <tr><td>[17:22] &lt Lawouach&gt still mainly crappy TV shows</td></tr>
+            <tr><td>[17:25] &lt MS-&gt So Davbo - have you spotted your issue with your inboxes?</td></tr>
+            <tr><td>[17:27] &lt Davbo&gt Not looked yet, will do in a sec getting this on wifi</td></tr>
+            <tr><td>[17:27] *** Davbo has a new toy</td></tr>
+            <tr><td>[17:28] &lt MS-&gt heheheh</td></tr>
+            <tr><td>[17:29] &lt MS-&gt I should have guessed</td></tr>
+            <tr><td>[17:29] &lt Davbo&gt Although I didn't initialise them I remember that</td></tr>
+            <tr><td>[17:29] &lt MS-&gt That's the what's wrong, the question is therefore "how do you fix that"</td></tr>
+            <tr><td>[17:30] &lt Davbo&gt oo I was right?</td></tr>
+            <tr><td>[17:30] &lt Davbo&gt I've not got it up at the moment MS- will look in a sec</td></tr>
+            <tr><td>[17:31] &lt MS-&gt np</td></tr>
+            <tr><td>[17:31] &lt MS-&gt yes, you were right</td></tr>
+            <tr><td>[17:33] *** Davbo-eee has joined #kamaelia</td></tr>
+            <tr><td>[17:33] &lt Davbo-eee&gt yay!</td></tr>
+            <tr><td>[17:34] &lt Davbo-eee&gt it comes with gaim/pidgin installed</td></tr>
+            <tr><td>[17:35] &lt bcarlyon|lsrfm&gt woot</td></tr>
+            <tr><td>[17:35] &lt Davbo-eee&gt this OS looks just like windows XP though</td></tr>
+            <tr><td>[17:38] &lt vmlemon_&gt Windows XPEEE? ;)</td></tr>
+            <tr><td>[17:39] &lt vmlemon_&gt How fast is it?</td></tr>
+            <tr><td>[17:39] &lt Davbo-eee&gt lol, hmm. Shame it has a webcam, waste of sreen real-estate</td></tr>
+            <tr><td>[17:40] &lt vmlemon_&gt Can it fly? ;)</td></tr>
+            <tr><td>[17:41] &lt Davbo-eee&gt seems pretty fast, youtube played no problems</td></tr>
+            <tr><td>[17:42] &lt vmlemon_&gt I'd assume that it's on it's maiden charge at the moment, unless they ship it with a full battery</td></tr>
+            <tr><td>[17:43] &lt Davbo-eee&gt I have no idea to be honest, never had a laptop before. it's plugged in now though</td></tr>
+            <tr><td>[17:43] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[17:48] &lt MS-&gt back at keybaord</td></tr>
+            <tr><td>[17:49] &lt vmlemon_&gt Tried the Bouncing Cat Game or Compose on it?</td></tr>
+            <tr><td>[17:50] &lt Davbo-eee&gt Okay, i'll play more with this in a bit</td></tr>
+            <tr><td>[17:50] &lt MS-&gt Bouncing cat was developed on a machine slower than an eeepc</td></tr>
+            <tr><td>[17:50] &lt MS-&gt compose *should be* ok, but not tested it on that machine</td></tr>
+            <tr><td>[17:50] &lt Davbo-eee&gt yeah actually i'll try one of those</td></tr>
+            <tr><td>[17:51] &lt vmlemon_&gt Or your other favourite Kamaelia example</td></tr>
+            <tr><td>[17:52] *** vmlemon_ wonders if it ships with gcc</td></tr>
+            <tr><td>[17:53] &lt Davbo-eee&gt MS-: i rushed that email a bit, was that the kind of thing you wanted? it was a bit open to iterpretation</td></tr>
+            <tr><td>[17:54] &lt MS-&gt It's fine :)</td></tr>
+            <tr><td>[17:54] &lt MS-&gt Which is about the same level of feedback I'm giving everyone else BTW.</td></tr>
+            <tr><td>[17:54] &lt MS-&gt waiting for feedback from everyone before commenting more</td></tr>
+            <tr><td>[17:54] &lt MS-&gt it was a question deliberately phrased to be open to interpretation to find out what people's interpretation would be</td></tr>
+            <tr><td>[17:55] &lt Davbo-eee&gt ah</td></tr>
+            <tr><td>[17:55] &lt Davbo-eee&gt you and your mind games ;p</td></tr>
+            <tr><td>[17:56] &lt MS-&gt No, not meant as a mind-game</td></tr>
+            <tr><td>[17:56] &lt MS-&gt Consider it being a problem akin to heisenberg's uncertainty principle</td></tr>
+            <tr><td>[17:57] &lt MS-&gt How do you find out some information where finding out an unbiassed answer relies upon the person being asked not being aware of the question, since if they knew the question it would modify their answer.</td></tr>
+            <tr><td>[17:58] &lt vmlemon_&gt o.O</td></tr>
+            <tr><td>[17:58] &lt MS-&gt But you still have to ask the question :-)</td></tr>
+            <tr><td>[17:58] &lt vmlemon_&gt No idea, to be honest</td></tr>
+            <tr><td>[17:58] &lt vmlemon_&gt Catch-22?</td></tr>
+            <tr><td>[17:58] &lt vmlemon_&gt Or more subtle?</td></tr>
+            <tr><td>[17:59] &lt MS-&gt essentially</td></tr>
+            <tr><td>[18:01] &lt MS-&gt We tried a more direct approach last year, and obviously didn't ask the right way :)</td></tr>
+            <tr><td>[18:02] &lt MS-&gt Hence the oblique approach this year :)</td></tr>
+            <tr><td>[18:08] *** MS- gets dinner. Back in a bit</td></tr>
+            <tr><td>[18:16] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[18:17] &lt Davbo-eee&gt oh i didn't mean to imply you were being insincere by the question MS-, just there was something more to it :)</td></tr>
+            <tr><td>[18:27] &lt vmlemon_&gt Hrm, whoever designed the crappy interface on our gas meter should be shot</td></tr>
+            <tr><td>[18:29] &lt vmlemon_&gt When you insert the card, it says "Please wait..." for about a year, and then it says "Press A for gas...", and when you do that it says "Please wait..." for another year before giving the "Press A..." message again (and you have to remove the card twice and reinsert it, and then press and hold the A button, only to have "Please wait..." again for ages before it finally says "Release A for gas", and it finally turns on)</td></tr>
+            <tr><td>[18:30] &lt Davbo&gt lol :/</td></tr>
+            <tr><td>[18:31] &lt vmlemon_&gt I lose count of how many times I've hammered the A button, only to have it not respond</td></tr>
+            <tr><td>[18:31] &lt vmlemon_&gt and it then keeps saying "Press A..."</td></tr>
+            <tr><td>[18:33] *** petruccigp has joined #kamaelia</td></tr>
+            <tr><td>[18:33] &lt vmlemon_&gt It also has a B button, which does nothing at all</td></tr>
+            <tr><td>[18:34] &lt vmlemon_&gt How very useful of it</td></tr>
+            <tr><td>[18:34] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[18:37] &lt Davbo&gt this is on a Gas Meter?</td></tr>
+            <tr><td>[18:37] &lt Davbo&gt is it pretty new or something because i don't think ours has buttons...</td></tr>
+            <tr><td>[18:45] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[18:45] &lt vmlemon_&gt It's a pre-payed one</td></tr>
+            <tr><td>[18:45] &lt vmlemon_&gt So yours might be different</td></tr>
+            <tr><td>[18:46] &lt Davbo&gt Ahh I see what you mean now</td></tr>
+            <tr><td>[18:46] &lt vmlemon_&gt I took some photos of the display, if you're curious</td></tr>
+            <tr><td>[18:46] &lt vmlemon_&gt Or I think I did</td></tr>
+            <tr><td>[19:04] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:05] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:09] *** NcTrun has parted #kamaelia</td></tr>
+            <tr><td>[19:10] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:12] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:16] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[19:38] &lt Davbo&gt Hmm not sure if this is correct, http://davbo.pastebin.com/dd8dc754</td></tr>
+            <tr><td>[19:41] *** MS- looks</td></tr>
+            <tr><td>[19:41] &lt MS-&gt Inboxes/Outboxes lines look good :)</td></tr>
+            <tr><td>[19:41] &lt MS-&gt __init__ looks good</td></tr>
+            <tr><td>[19:42] &lt MS-&gt main(self) looks good :-)</td></tr>
+            <tr><td>[19:42] &lt Davbo&gt I changed the logic of it, so it stops then breaks out of the while when the sensor is true</td></tr>
+            <tr><td>[19:42] &lt MS-&gt Can't tells if it works since can't test with hardware, but it looks good</td></tr>
+            <tr><td>[19:42] &lt MS-&gt I saw that - makes alot of sense :-)</td></tr>
+            <tr><td>[19:42] &lt MS-&gt Though personally I thought it fine where you had it :)</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt Can't you develop/test it at university?</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt (Just wondering)</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt Although I assume that you have to book kit and rooms</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt :(</td></tr>
+            <tr><td>[19:44] &lt MS-&gt orphans: Which university are you at?</td></tr>
+            <tr><td>[19:44] &lt orphans&gt sunny leicester :)</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt Well i live in sheffield, so i just commute to university vmlemon_</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[19:44] &lt orphans&gt although pretty miserable at the moment</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt Dark, here</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt Although I can still hear birds twittering through my window</td></tr>
+            <tr><td>[19:45] &lt MS-&gt Ahh, I see - south of nottingham</td></tr>
+            <tr><td>[19:45] &lt MS-&gt Though still up north from my original perspective</td></tr>
+            <tr><td>[19:45] &lt Davbo&gt It was fine where it was, but I'd like it to keep writing out values of light then you could do something interesting if you wanted</td></tr>
+            <tr><td>[19:45] &lt orphans&gt heh, yeah leicester definitely isn't up north</td></tr>
+            <tr><td>[19:45] *** MS- nods</td></tr>
+            <tr><td>[19:45] &lt orphans&gt guess I'm the most southern here am i?</td></tr>
+            <tr><td>[19:46] &lt Davbo&gt the bot could trace an area then move to the brightest position</td></tr>
+            <tr><td>[19:46] &lt vmlemon_&gt Could get it to imitate the weather forecasts ;)</td></tr>
+            <tr><td>[19:46] &lt Lawouach&gt http://www.pcworld.com/businesscenter/article/144494/sun_tackles_video_codec.html &lt -- why wouldn't they use Dirac?</td></tr>
+            <tr><td>[19:47] &lt Davbo&gt Lawouach is more southern orphans :P</td></tr>
+            <tr><td>[19:47] &lt MS-&gt orphans: 52.6 degrees north</td></tr>
+            <tr><td>[19:47] &lt Lawouach&gt I beg your pardon?</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt "&lt orphans&gt guess I'm the most southern here am i?"</td></tr>
+            <tr><td>[19:48] &lt Lawouach&gt ah</td></tr>
+            <tr><td>[19:48] &lt orphans&gt heh, it's alright Lawouach, being french is better than being southern :D</td></tr>
+            <tr><td>[19:48] &lt orphans&gt as my whole house tells me every day (I live with a bunch of yorkshirefolk)</td></tr>
+            <tr><td>[19:49] &lt Lawouach&gt Actually I would like to remind people on this channel that they ought to write French instead of french.</td></tr>
+            <tr><td>[19:49] &lt vmlemon_&gt Hmm, what about being Southern French, is that the worst of both worlds? ;)</td></tr>
+            <tr><td>[19:49] *** vmlemon_ ducks</td></tr>
+            <tr><td>[19:49] &lt Lawouach&gt Some might say I'm picky</td></tr>
+            <tr><td>[19:49] &lt Lawouach&gt :D</td></tr>
+            <tr><td>[19:49] &lt vmlemon_&gt Same with English, and Spanish, and Japanese, and so on...</td></tr>
+            <tr><td>[19:49] &lt MS-&gt orphans - sorry j_baker is further south</td></tr>
+            <tr><td>[19:49] &lt Lawouach&gt vmlemon_, yeah but who cares about those?</td></tr>
+            <tr><td>[19:49] &lt orphans&gt Lawouach, sorry, French. although I think I'm probably english with a small e. Maybe</td></tr>
+            <tr><td>[19:49] &lt MS-&gt ~32.6</td></tr>
+            <tr><td>[19:50] &lt Lawouach&gt I was joking ;)</td></tr>
+            <tr><td>[19:50] &lt orphans&gt :)</td></tr>
+            <tr><td>[19:50] &lt Davbo&gt You looking at the map on GSoC MS-?</td></tr>
+            <tr><td>[19:50] &lt MS-&gt Nah, just google maps</td></tr>
+            <tr><td>[19:50] &lt MS-&gt I'm aware it's not very sensible</td></tr>
+            <tr><td>[19:50] *** MS- reads Lawouach's link</td></tr>
+            <tr><td>[19:52] &lt MS-&gt The description is rather vague isn't it?</td></tr>
+            <tr><td>[19:52] &lt MS-&gt could be dirac for all I know</td></tr>
+            <tr><td>[19:52] &lt orphans&gt insider tips from MS- there :)</td></tr>
+            <tr><td>[19:52] &lt MS-&gt Since they're talking a software stack on top</td></tr>
+            <tr><td>[19:52] &lt MS-&gt orphans: All our best insider tips come from media guardian :-p</td></tr>
+            <tr><td>[19:53] &lt orphans&gt heh, media monkey yes?</td></tr>
+            <tr><td>[19:53] &lt vmlemon_&gt MediaDefender Defender, or something like that? (Who happen to be anti-MediaDefender)</td></tr>
+            <tr><td>[19:54] &lt orphans&gt MS-, I suppose it's better than all of your best insider tips coming from popbitch :)</td></tr>
+            <tr><td>[19:54] &lt MS-&gt heh</td></tr>
+            <tr><td>[19:54] &lt Lawouach&gt MS-, Well I'd be surprised really.</td></tr>
+            <tr><td>[19:55] &lt Lawouach&gt I bet they'll take on something that is based on H.264 or Theora</td></tr>
+            <tr><td>[19:55] &lt Lawouach&gt meh</td></tr>
+            <tr><td>[19:55] &lt MS-&gt During the dot.com crash most of the good tips we got (since I worked for a US startup) were from</td></tr>
+            <tr><td>[19:55] &lt Lawouach&gt nevermind really :)</td></tr>
+            <tr><td>[19:55] &lt vmlemon_&gt Haha</td></tr>
+            <tr><td>[19:55] &lt MS-&gt Lawouach: No idea :)</td></tr>
+            <tr><td>[19:55] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[20:02] &lt MS-&gt "OMS video will be based on H.26x technology, but is still only at its beginning stages"</td></tr>
+            <tr><td>[20:02] &lt MS-&gt Seems really odd</td></tr>
+            <tr><td>[20:02] &lt MS-&gt If they're just beginning they'd be far better off just taking Dirac/Schroedinger and using that since it's got the same goals</td></tr>
+            <tr><td>[20:03] &lt MS-&gt It's even been standardised as VC-2</td></tr>
+            <tr><td>[20:03] &lt MS-&gt wonder is they even know?</td></tr>
+            <tr><td>[20:03] &lt MS-&gt (It's a big world)</td></tr>
+            <tr><td>[20:03] &lt vmlemon_&gt I wonder if anyone's using Dirac for anything, these days</td></tr>
+            <tr><td>[20:03] &lt vmlemon_&gt Although it still looks interesting</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt It'd be a shame to see the effort to go to waste, although I assume that it's still a work in progress</td></tr>
+            <tr><td>[20:04] &lt MS-&gt vmlemon_: It's reaching the stage of usable</td></tr>
+            <tr><td>[20:04] &lt MS-&gt You can get hardware encoding boxes now as well</td></tr>
+            <tr><td>[20:04] &lt MS-&gt The focus has, unsurprisingly, been around targetting BBC apps</td></tr>
+            <tr><td>[20:05] &lt MS-&gt It may well be one of the supported codecs in DTT-2 AIUI</td></tr>
+            <tr><td>[20:05] &lt MS-&gt DVB-2 rather</td></tr>
+            <tr><td>[20:05] &lt vmlemon_&gt Aren't H.264 and co. encumbered by patents?</td></tr>
+            <tr><td>[20:05] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[20:05] &lt MS-&gt yes, h.264 is patent encumbered</td></tr>
+            <tr><td>[20:05] &lt vmlemon_&gt Any idea if they're still using MPEG-2 Transport Streams to encapsulate all the data? Or are they changing that?</td></tr>
+            <tr><td>[20:06] &lt MS-&gt No idea - not really my field, but given the diverse stuff that people work on in R&D you tend to hear research shrapnel</td></tr>
+            <tr><td>[20:06] *** vmlemon_ wants to see a working implementation of the IP-over-DVB spec</td></tr>
+            <tr><td>[20:07] &lt MS-&gt Oh there are some people who have that working. I believe some people at work dabble with that as well, but there's no way of reasonably deploying it, except for low power adhoc licensed events</td></tr>
+            <tr><td>[20:08] &lt vmlemon_&gt I assume that the EMAP DAB Radio Interactivity on Freeview and the BBCi/Teletext stuff is all MHEG-5</td></tr>
+            <tr><td>[20:08] &lt vmlemon_&gt I still ought to get hold of a DVB-T stick for the experiments I planned, although I don't have much money at the moment :(</td></tr>
+            <tr><td>[20:08] &lt orphans&gt off to the pub, bye all :)</td></tr>
+            <tr><td>[20:08] &lt vmlemon_&gt See you orphans</td></tr>
+            <tr><td>[20:08] &lt MS-&gt DTT is MHEG-5, on sky it's "open" tv, and on Vigin it's also "open" Tv, but a different version</td></tr>
+            <tr><td>[20:08] &lt MS-&gt orphans: enjoy</td></tr>
+            <tr><td>[20:09] *** vmlemon_ wonders how the Sky OTA firmware updates work</td></tr>
+            <tr><td>[20:09] &lt MS-&gt If I knew I'd say :)</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt I assume that they transmit them every so often, after a new version comes out, and then stop once everyone has it</td></tr>
+            <tr><td>[20:09] &lt MS-&gt I can make as many guesses as you :)</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt although I don't know how they deal with forced updates, or how they carry it</td></tr>
+            <tr><td>[20:10] &lt vmlemon_&gt My guess is that they wrap the EPG/OS software updates in the Transport Stream, presumable in a part that isn't used for other things</td></tr>
+            <tr><td>[20:10] &lt vmlemon_&gt Probably also encrypt it :(</td></tr>
+            <tr><td>[20:11] *** MS- finally notices what Davbo meant about the light sensor</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt The MediaGuard-encrypted channels on Freeview for Top-Up TV also seem interesting</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt Although they probably just send them as an encrypted video payload</td></tr>
+            <tr><td>[20:12] &lt MS-&gt That's quite neat. You could make it follow a line, hit a wall & die :-)</td></tr>
+            <tr><td>[20:12] &lt MS-&gt probably</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt and have some sort of "capsule" around it for devices that don't do MG crypto, or have a card</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt *don't have</td></tr>
+            <tr><td>[20:12] &lt MS-&gt That's probably defined in the spec</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt I assume that the DVB-T spec allows for multiple custom methods of encryption to be used</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt although I've never read it</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt I don't know many people who happen to be interested in technical minutiae for things like that</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[20:14] &lt MS-&gt I know some</td></tr>
+            <tr><td>[20:14] &lt MS-&gt But I've not read the DVB-T spec myself, though I know Matt's waded through it</td></tr>
+            <tr><td>[20:15] &lt vmlemon_&gt I'm sure there was an MHEG-5 "emulator" somewhere, and some sample files</td></tr>
+            <tr><td>[20:16] &lt MS-&gt http://redbutton.sourceforge.net/</td></tr>
+            <tr><td>[20:16] &lt MS-&gt The MHEG-5 spec is an open standard which you can't just download the standard for</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt That's the one</td></tr>
+            <tr><td>[20:16] &lt MS-&gt Which is bizarre</td></tr>
+            <tr><td>[20:17] &lt MS-&gt http://www.mheg.org/users/mheg/index.php?Download%3F</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt Similar to the Compact Disc spec</td></tr>
+            <tr><td>[20:17] &lt MS-&gt "Sorry, but you can't download the MHEG standard from this web site. ISO holds the copyright to the standards it manages. Please contact your ISO National Body (such as DIN, BSI, ANSI etc). Contact information can be found at http://www.iso.ch."</td></tr>
+            <tr><td>[20:17] &lt MS-&gt yep</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt I assume :|</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt Dunno about other people, but I've always thought of it as being proprietary</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt (the CD specs)</td></tr>
+            <tr><td>[20:18] &lt vmlemon_&gt Despite it being implemented in millions of products</td></tr>
+            <tr><td>[20:19] *** vmlemon_ wonders how easy it would be to make a DVB-T/FreeView player in Kamaelia, with support for stuff like MHEG-5</td></tr>
+            <tr><td>[20:19] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt Hi Trun</td></tr>
+            <tr><td>[20:20] &lt Trun&gt hi!</td></tr>
+            <tr><td>[20:20] &lt vmlemon_&gt Interesting, it turns out that the subtitle and MHEG-5 fonts are sometimes broadcast, as well as the subtitle images</td></tr>
+            <tr><td>[20:20] &lt vmlemon_&gt Although it probably depends on the channel/multiplex</td></tr>
+            <tr><td>[20:20] &lt MS-&gt vmlemon_: yeah, if you want the text of the subtitles you have to use OCR</td></tr>
+            <tr><td>[20:21] &lt MS-&gt It's a known madness</td></tr>
+            <tr><td>[20:21] &lt vmlemon_&gt Not sure how MHP differs from MHEG-5</td></tr>
+            <tr><td>[20:21] &lt MS-&gt Comes down to rights over fonts apparently</td></tr>
+            <tr><td>[20:21] &lt MS-&gt *sob*</td></tr>
+            <tr><td>[20:21] &lt MS-&gt MHP == MHEG-5 + Java</td></tr>
+            <tr><td>[20:21] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:21] &lt MS-&gt == Europe</td></tr>
+            <tr><td>[20:21] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt Hah, "-v is verbose/debug mode. Use -vv for even more mind-numbing tedium."</td></tr>
+            <tr><td>[20:22] &lt MS-&gt from ssh ?</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt Saw it on the RedButton usage guide on the homepage</td></tr>
+            <tr><td>[20:22] &lt MS-&gt I see :)</td></tr>
+            <tr><td>[20:23] *** vmlemon_ is really curious about Sky's DVB-S implementation, although notes that very few DVB-S USB devices exist, and it would probably be difficult to play with, without having a dish</td></tr>
+            <tr><td>[20:24] &lt vmlemon_&gt Sky claim that it's DVB-S, although some sites claim that it's been "enhanced" in specific ways</td></tr>
+            <tr><td>[20:25] &lt MS-&gt The closest you can get is to use a "dreambox" which can work with Sky - though apparently you have to hunt for your own software decrypter, which is apparently fun* to get hold of</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt I've heard various things about the DreamBox, and the various legality issues surrounding it :|</td></tr>
+            <tr><td>[20:26] &lt MS-&gt right, I'm going to go do something productive. Back in a bit :-)</td></tr>
+            <tr><td>[20:27] &lt vmlemon_&gt No idea about VirgiNTeLewest Media's patchwork quilt of a system, as far as implementation/protocols are concerned</td></tr>
+            <tr><td>[20:27] &lt vmlemon_&gt I assume that it's completely proprietary or at least non-DVB-C, though</td></tr>
+            <tr><td>[20:29] &lt vmlemon_&gt Hmm, "The default font for the UK MHEG Profile is Tiresias Screenfont which was developed with the RNIB to be readable on TV screens. You can download this font as part of the DigiTV iTuner package from Nebula Electronics. Extract the file called tt7268m_802.ttf and add it to your X Windows fonts. "</td></tr>
+            <tr><td>[21:10] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:10] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[21:36] &lt vmlemon__&gt o.O "You know those "Be The Best - Join The Army" (and get shot in Iraq) adverts? You can pick up the mosaic used for the four possible feeds:"</td></tr>
+            <tr><td>[21:56] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[21:56] *** bcarlyon|nub is now known as bcarlyon|laptop</td></tr>
+            <tr><td>[22:41] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[22:42] &lt MS-&gt bcarlyon|laptop, bcarlyon|ubuntu , bcarlyon|lsrfm - ping</td></tr>
+            <tr><td>[22:43] &lt bcarlyon|laptop&gt greetings.</td></tr>
+            <tr><td>[22:43] &lt MS-&gt Just a note to say I've seen your message :-)</td></tr>
+            <tr><td>[22:43] &lt bcarlyon|laptop&gt pong</td></tr>
+            <tr><td>[22:43] &lt MS-&gt Thanks for getting in touch quickly :)</td></tr>
+            <tr><td>[22:43] &lt bcarlyon|laptop&gt Coolio, the people in php.pecl on efnet suggested I leave a message to resolve the conflict :-)</td></tr>
+            <tr><td>[22:43] &lt MS-&gt You're more than welcome to hang around :)</td></tr>
+            <tr><td>[22:43] &lt bcarlyon|laptop&gt Thanks :-)</td></tr>
+            <tr><td>[22:44] &lt Davbo&gt conflict?</td></tr>
+            <tr><td>[22:44] &lt MS-&gt Indeed - when we saw the conflict I figured I'd contact them first since I guessed that PHP would be your preference (since you're more experience in PHP)</td></tr>
+            <tr><td>[22:44] &lt bcarlyon|laptop&gt I will probably work on the project I proposed, just will take longer that the hols.</td></tr>
+            <tr><td>[22:44] &lt bcarlyon|laptop&gt Ah :-)</td></tr>
+            <tr><td>[22:44] &lt bcarlyon|laptop&gt Davbo, I have two applications which are at the stage of acceptance.....(I believe)</td></tr>
+            <tr><td>[22:44] &lt MS-&gt Davbo: There's a technique to finding out if you're shortlisted - and its to put in 2 good apps to 2 orgs and see if they both go "interested" :)</td></tr>
+            <tr><td>[22:45] &lt bcarlyon|laptop&gt I put two good ones in :-) yay</td></tr>
+            <tr><td>[22:45] &lt MS-&gt since then a conflict has to be resolved - normally in the direction the student wants :)</td></tr>
+            <tr><td>[22:45] &lt bcarlyon|laptop&gt And the other application went in with about an hour or so before the deadline....</td></tr>
+            <tr><td>[22:45] &lt MS-&gt OK, unmentored! :)</td></tr>
+            <tr><td>[22:46] &lt MS-&gt What is the other application out of curiosity?</td></tr>
+            <tr><td>[22:46] &lt bcarlyon|laptop&gt Thanks for the support MS- I would still like some feedback on my module :-)</td></tr>
+            <tr><td>[22:46] &lt MS-&gt I will do :)</td></tr>
+            <tr><td>[22:46] &lt bcarlyon|laptop&gt the other application is PHP, working on improving the pecl website, and their bugtracker</td></tr>
+            <tr><td>[22:46] &lt MS-&gt Support and allowing people into the project isn't dependent on GSOC :)</td></tr>
+            <tr><td>[22:46] &lt bcarlyon|laptop&gt :-)</td></tr>
+            <tr><td>[22:47] &lt MS-&gt If you want SVN access to experiment and support/try stuff out, just let us know</td></tr>
+            <tr><td>[22:47] &lt bcarlyon|laptop&gt Ok :-)</td></tr>
+            <tr><td>[22:47] &lt MS-&gt We've got stuff set up to make that easy</td></tr>
+            <tr><td>[22:51] &lt Chong&gt bcarlyon|laptop, congratulations:-). But feel sad because you will leave us;)</td></tr>
+            <tr><td>[22:51] &lt bcarlyon|laptop&gt Im not leaving, I think I will still work on my project....</td></tr>
+            <tr><td>[22:52] &lt bcarlyon|laptop&gt Just it might take longer than summer hols....</td></tr>
+            <tr><td>[22:52] &lt Chong&gt That's great.</td></tr>
+            <tr><td>[22:52] &lt MS-&gt People aren't required to be GSOC students to be welcome here :)</td></tr>
+            <tr><td>[22:52] &lt bcarlyon|laptop&gt kamaelia has caught my interest :-)</td></tr>
+            <tr><td>[22:53] *** MS- is glad to hear that :)</td></tr>
+            <tr><td>[22:53] &lt Chong&gt Well done, kamaeliabot :-)</td></tr>
+            <tr><td>[22:53] &lt MS-&gt I'd be amused to hear of a miniaxon in PHP btw ;-)</td></tr>
+            <tr><td>[22:53] &lt Davbo&gt You're just too popular eh bcarlyon|laptop :)</td></tr>
+            <tr><td>[22:53] &lt MS-&gt No idea if that's practical in PHP mind :)</td></tr>
+            <tr><td>[22:53] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[23:00] &lt Chong&gt It's bed time. good night, MS-, bcarlyon|laptop and others. bcarlyon|laptop: please continuing hanging on this channel.</td></tr>
+            <tr><td>[23:00] &lt Chong&gt See you tomorrow.</td></tr>
+            <tr><td>[23:00] &lt bcarlyon|laptop&gt I shall i still have three mes here...</td></tr>
+            <tr><td>[23:00] &lt Chong&gt Glad to hear that.</td></tr>
+            <tr><td>[23:01] &lt Chong&gt See you later.</td></tr>
+            <tr><td>[23:01] &lt bcarlyon|laptop&gt :-)</td></tr>
+            <tr><td>[23:01] &lt bcarlyon|laptop&gt night</td></tr>
+            <tr><td>[23:01] &lt Chong&gt night</td></tr>
+            <tr><td>[23:01] *** Chong has parted #kamaelia</td></tr>
+            <tr><td>[23:15] &lt Davbo&gt ah, is it next week when my gsoc page updates telling me if i'm accepted?</td></tr>
+            <tr><td>[23:16] &lt Davbo&gt oh it say April 21 on the faq, nevermind :)</td></tr>
+            <tr><td>[23:19] &lt MS-&gt :)</td></tr>
+            <tr><td>[23:23] &lt Davbo&gt Did you get a response when you asked for more slots MS-?</td></tr>
+            <tr><td>[23:41] &lt MS-&gt LH has been travelling but sent a blanket email to the list about it.</td></tr>
+            <tr><td>[23:42] &lt MS-&gt The number of slots to orgs is a much higher ratio than you might hope btw</td></tr>
+            <tr><td>[23:44] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[23:46] &lt Davbo&gt It certainly seems fair</td></tr>
+            <tr><td>[23:57] *** MS- gets sleep</td></tr>
+            <tr><td>[23:57] &lt MS-&gt cya</td></tr>
+            <tr><td>[23:57] &lt Davbo&gt night MS-</td></tr>

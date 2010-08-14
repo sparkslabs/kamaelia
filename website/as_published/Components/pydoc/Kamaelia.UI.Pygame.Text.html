@@ -1,0 +1,326 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.UI.Pygame.Text </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.UI.Pygame.Text</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.html">Pygame</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.html">Text</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.TextDisplayer.html">TextDisplayer</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.Textbox.html">Textbox</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#374">Pygame components for text input and display</a><ul>
+<li><a class="reference" href="#375">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#376">How does it work?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#377">Known issues</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="374">Pygame components for text input and display</h1>
+<p>TextDisplayer displays any data it receives on a Pygame surface. Every new piece
+of data is displayed on its own line, and lines wrap automatically.</p>
+<p>Textbox displays user input while the user types, and sends its string buffer
+to its 'outbox' when it receives a '
+'.</p>
+<div class="section">
+<h2 id="375"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>To take user input in Textbox and display it in TextDisplayer:</p>
+<pre class="literal-block">
+Pipeline(Textbox(size = (800, 300),
+                 position = (0,0)),
+         TextDisplayer(size = (800, 300),
+                       position = (0,340))
+         ).run()
+</pre>
+</div>
+<div class="section">
+<h2 id="376"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>TextDisplayer requests a display from the Pygame Display service and requests
+that Pygame Display send all keypresses to it. Every time TextDisplayer receives
+a keypress, it updates its string buffer and the display.</p>
+<p>If it receives a newline, or if text must wrap, it moves the existing text
+upwards and blits the new line onto the bottom.</p>
+</div>
+<div class="section">
+<h2 id="377"><a id="known-issues" name="known-issues">Known issues</a></h2>
+<p>The line wrapping length is specified by the width of the display divided by the
+width of the letter 'a' in the displayed font, so lines may wrap too far off the
+edge of the screen if the user types very narrow text (i.e. just spaces with no
+other charachters), or too far inside the edge of the screen (usually).</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.html">Pygame</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.html">Text</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.TextDisplayer.html">TextDisplayer</a></h1>
+<div class="section">
+<h2 id="symbol-TextDisplayer">class TextDisplayer(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>TextDisplayer(...) -&gt; new TextDisplayer Pygame component.</p>
+<p>Keyword arguments:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>size             -- (w, h) size of the TextDisplayer surface, in pixels.</dt>
+<dd><p class="first last">Default (500, 300).</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">text_height      -- font size. Default 18.</p>
+</li>
+<li><dl class="first docutils">
+<dt>bgcolour         -- tuple containing RGB values for the background color.</dt>
+<dd><p class="first last">Default is a pale yellow.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>fgcolour         -- tuple containing RGB values for the text color.</dt>
+<dd><p class="first last">Default is black.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>position         -- tuple containing x,y coordinates of the surface's</dt>
+<dd><p class="first last">upper left corner in relation to the Pygame
+window. Default (0,0)</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-TextDisplayer.Inboxes" name="symbol-TextDisplayer.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : shutdown handling</li>
+<li><strong>_quitevents</strong> : user-generated quit events</li>
+<li><strong>_surface</strong> : for PygameDisplay to send surfaces to</li>
+<li><strong>inbox</strong> : for incoming lines of text</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-TextDisplayer.Outboxes" name="symbol-TextDisplayer.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : not used</li>
+<li><strong>signal</strong> : propagates out shutdown signals</li>
+<li><strong>_pygame</strong> : for sending requests to PygameDisplay</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-TextDisplayer.__init__" name="symbol-TextDisplayer.__init__">__init__(self, **argd)</a></h4>
+<p>Initialises</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TextDisplayer.initPygame" name="symbol-TextDisplayer.initPygame">initPygame(self, **argd)</a></h4>
+<p>requests a display surface from the PygameDisplay service, fills
+the color in, and copies it</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TextDisplayer.main" name="symbol-TextDisplayer.main">main(self)</a></h4>
+<p>Main loop</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TextDisplayer.needShutdown" name="symbol-TextDisplayer.needShutdown">needShutdown(self)</a></h4>
+<p>Checks for control messages</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TextDisplayer.update" name="symbol-TextDisplayer.update">update(self, text)</a></h4>
+<p>Updates text to the bottom of the screen while scrolling old text
+upwards. Delegates most of the work to updateLine</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TextDisplayer.updateLine" name="symbol-TextDisplayer.updateLine">updateLine(self, line)</a></h4>
+<p>Updates one line of text to bottom of screen, scrolling old text upwards.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.html">Pygame</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.html">Text</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.Textbox.html">Textbox</a></h1>
+<div class="section">
+<h2 id="symbol-Textbox">class Textbox(TextDisplayer)</h2>
+<p>Textbox(...) -&gt; New Pygame Textbox component</p>
+<p>Keyword Arguments:</p>
+<ul class="simple">
+<li>Textbox inherits its keyword arguments from TextDisplayer. Please see
+TextDisplayer docs.</li>
+</ul>
+<p>Reads keyboard input and updates it on the screen. Flushes string buffer and
+sends it to outbox when a newline is encountered.</p>
+<div class="section">
+<h3><a id="symbol-Textbox.Inboxes" name="symbol-Textbox.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : shutdown handling</li>
+<li><strong>_quitevents</strong> : user-generated quit events</li>
+<li><strong>_events</strong> : key events</li>
+<li><strong>_surface</strong> : for PygameDisplay to send surfaces to</li>
+<li><strong>inbox</strong> : for incoming lines of text</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-Textbox.Outboxes" name="symbol-Textbox.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : not used</li>
+<li><strong>signal</strong> : propagates out shutdown signals</li>
+<li><strong>_pygame</strong> : for sending requests to PygameDisplay</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-Textbox.main" name="symbol-Textbox.main">main(self)</a></h4>
+<p>Requests a surface from PygameDisplay and registers to listen for events
+Then enters the main loop, which checks for Pygame events and updates
+them to the screen.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Textbox.setText" name="symbol-Textbox.setText">setText(self, text)</a></h4>
+<p>erases the screen and updates it with text</p>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.TextDisplayer.html">Kamaelia.UI.Pygame.Text.TextDisplayer</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.html#symbol-TextDisplayer.updateLine">updateLine</a>(self, line)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.html#symbol-TextDisplayer.update">update</a>(self, text)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.html#symbol-TextDisplayer.needShutdown">needShutdown</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.html#symbol-TextDisplayer.initPygame">initPygame</a>(self, **argd)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Text.html#symbol-TextDisplayer.__init__">__init__</a>(self, **argd)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

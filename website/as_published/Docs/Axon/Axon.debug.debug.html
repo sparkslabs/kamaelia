@@ -1,0 +1,263 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.debug.debug </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.debug.debug">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.debug.debug</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.debug.html">debug</a>.<a class="reference" href="/Docs/Axon/Axon.debug.debug.html">debug</a></h2>
+</div>
+<p>For examples and more explanations, see the <a class="reference" href="/Docs/Axon/Axon.debug.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-debug">class debug(object)</h2>
+<div class="section">
+<p>debug([assertBadDebug]) -&gt; new debug object.</p>
+<p>Object for outputting debugging output, filtered as required. Only outputs
+debugging data for section names it recognises - as specified in a debug
+config file.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>assertBadDebug  -- Optional. If evaluates to true, then any debug output for an unrecognised section (as defined in the configuration) causes an exception (default=1)</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-debug.__init__" name="symbol-debug.__init__">__init__(self[, assertBadDebug])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.addDebug" name="symbol-debug.addDebug">addDebug(self, **debugSections)</a></h4>
+<p>Add several debug sections. Each argument's name corresponds to a section
+name fo rwhich debug output can be generated. The value is the maximum
+debug level for which there will be output.</p>
+<p>This does not affect the configuration of other debug objects.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.addDebugSection" name="symbol-debug.addDebugSection">addDebugSection(self, section, level)</a></h4>
+<p>Add a section name for which debug output can be generated, specifying
+a maximum debug level for which there will be output.</p>
+<p>This does not affect the configuration of other debug objects.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.areDebugging" name="symbol-debug.areDebugging">areDebugging(self, section, level)</a></h4>
+<p>Returns true if we are debugging this level, doesn't try to enforce
+correctness</p>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.debug" name="symbol-debug.debug">debug(self, section, level, *message)</a></h4>
+<p>Output a debug message.</p>
+<p>Specify the 'section' the debug message should come under. The user will
+have specified the maximum 'level' to be outputted for that section.</p>
+<ul class="simple">
+<li>Use higher level numbers for more detailed debugging output.</li>
+<li>Use different section names for different parts of your code to allow
+the user to select which sections they want output for</li>
+</ul>
+<p>Always returns True, so can be used as argument to an assert statement.
+This means you can then disable debugging output (and any associated
+performance overhead) by using python's &quot;-O&quot; command line flag.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>section   -- the section you want this debugging output classified under</li>
+<li>level     -- the level of detail of this debugging output (number)</li>
+<li>*message  -- object(s) to print as the debugging output</li>
+</ul>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.debugmessage" name="symbol-debug.debugmessage">debugmessage(self, section, *message)</a></h4>
+<p>Output a debug messge (never filtered)</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>section   --</li>
+<li>*message  -- object(s) to print as the debugging output</li>
+</ul>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.decreaseDebug" name="symbol-debug.decreaseDebug">decreaseDebug(self, section)</a></h4>
+<p>Decreases the maximum debug level for which output will be generated for
+the specified section.</p>
+<p>This does not affect the configuration of other debug objects.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.increaseDebug" name="symbol-debug.increaseDebug">increaseDebug(self, section)</a></h4>
+<p>Increases the maximum debug level for which output will be generated for
+the specified section.</p>
+<p>This does not affect the configuration of other debug objects.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.note" name="symbol-debug.note">note(self, section, level, *message)</a></h4>
+<p>Output a debug message.</p>
+<p>Specify the 'section' the debug message should come under. The user will
+have specified the maximum 'level' to be outputted for that section.</p>
+<ul class="simple">
+<li>Use higher level numbers for more detailed debugging output.</li>
+<li>Use different section names for different parts of your code to allow
+the user to select which sections they want output for</li>
+</ul>
+<p>Always returns True, so can be used as argument to an assert statement.
+This means you can then disable debugging output (and any associated
+performance overhead) by using python's &quot;-O&quot; command line flag.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>section   -- the section you want this debugging output classified under</li>
+<li>level     -- the level of detail of this debugging output (number)</li>
+<li>*message  -- object(s) to print as the debugging output</li>
+</ul>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.readConfig" name="symbol-debug.readConfig">readConfig(self[, configFile])</a></h4>
+<p><strong>INTERNAL</strong>
+Reads specified debug configuration file.</p>
+<p>Uses <a class="reference" href="/Docs/Axon/Axon.debugConfigFile.html">Axon.debugConfigFile</a></p>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.setDebugSections" name="symbol-debug.setDebugSections">setDebugSections(self, **debugSections)</a></h4>
+<p>Set the debug sections. Replaces any existing ones.</p>
+<p>Each argument's name corresponds to a section name fo rwhich debug output
+can be generated. The value is the maximum debug level for which there
+will be output.</p>
+<blockquote>
+This does not affect the configuration of other debug objects.</blockquote>
+</div>
+<div class="section">
+<h4><a id="symbol-debug.useConfig" name="symbol-debug.useConfig">useConfig(self[, filename])</a></h4>
+<p>Instruct this object to set up its debugging configuration.</p>
+<p>If this, or another debug object has previously set it up, then that is
+applied for this object; otherwise it is loaded from the specified file.
+However, if no file is specified or the file could not be read, then
+alternative defaults are used. This configuration is then used for all
+future debug objects.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

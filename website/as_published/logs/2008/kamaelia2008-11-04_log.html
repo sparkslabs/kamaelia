@@ -1,0 +1,162 @@
+<html><body><table>
+            <tr><td>[00:45] *** elvum has joined #kamaelia</td></tr>
+            <tr><td>[06:52] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[08:34] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:30] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:30] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[11:24] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:24] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[11:37] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[11:57] &lt MS-&gt I now have my GSOC t-shirt</td></tr>
+            <tr><td>[11:59] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:08] &lt mhrd&gt "been there, got the t-shirt"</td></tr>
+            <tr><td>[12:49] *** MS- nods</td></tr>
+            <tr><td>[12:50] &lt mhrd&gt MS-: wrt failing test_Graphline.py ... I'm guessing the simplest solution is to stop using the unittest method calls not supported in python 2.3 ?</td></tr>
+            <tr><td>[12:50] &lt MS-&gt yep</td></tr>
+            <tr><td>[12:50] &lt elvum&gt surely stopping using python 2.3 would be easier (for mhrd) ;-)</td></tr>
+            <tr><td>[12:50] &lt mhrd&gt (or to put in an implementation of them :-) )</td></tr>
+            <tr><td>[12:50] &lt MS-&gt elvum: No, 2.3 is supported</td></tr>
+            <tr><td>[12:50] &lt MS-&gt I can make the change</td></tr>
+            <tr><td>[12:50] &lt mhrd&gt MS- : k</td></tr>
+            <tr><td>[12:51] &lt elvum&gt stopping supporting 2.3?</td></tr>
+            <tr><td>[12:51] &lt MS-&gt elvum: which is the easiest option for 2.3</td></tr>
+            <tr><td>[12:51] &lt elvum&gt :-)</td></tr>
+            <tr><td>[12:51] &lt MS-&gt elvum I like python 2.2.LATE</td></tr>
+            <tr><td>[12:51] &lt MS-&gt since it works on my mobile</td></tr>
+            <tr><td>[12:52] &lt MS-&gt besides it's an easy change to go from</td></tr>
+            <tr><td>[12:52] &lt MS-&gt  self.assertFalse(child.anyReady())</td></tr>
+            <tr><td>[12:52] &lt MS-&gt to</td></tr>
+            <tr><td>[12:53] &lt MS-&gt  self.assert_(not(child.anyReady()))</td></tr>
+            <tr><td>[12:55] &lt MS-&gt hah</td></tr>
+            <tr><td>[12:57] &lt MS-&gt ooh, odd</td></tr>
+            <tr><td>[12:57] &lt MS-&gt there's actually more errors matt :)</td></tr>
+            <tr><td>[12:57] &lt mhrd&gt cool :)</td></tr>
+            <tr><td>[12:58] &lt MS-&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[12:58] &lt MS-&gt  File "./test_Graphline.py", line 478, in test_receivesShutdownDisseminated</td></tr>
+            <tr><td>[12:58] &lt MS-&gt  self.assert_(A.dataReady("control"))</td></tr>
+            <tr><td>[12:58] &lt MS-&gt  File "/usr/lib/python2.3/unittest.py", line 278, in failUnless</td></tr>
+            <tr><td>[12:58] &lt MS-&gt  if not expr: raise self.failureException, msg</td></tr>
+            <tr><td>[12:58] &lt MS-&gt AssertionError</td></tr>
+            <tr><td>[12:58] &lt MS-&gt Is an odd one</td></tr>
+            <tr><td>[12:59] &lt MS-&gt Oh no it's doing the right thing</td></tr>
+            <tr><td>[12:59] &lt MS-&gt it's saying that the assertion is failing rather than unittest being bust</td></tr>
+            <tr><td>[12:59] *** mhrd concurrs</td></tr>
+            <tr><td>[12:59] &lt MS-&gt how odd</td></tr>
+            <tr><td>[12:59] &lt MS-&gt will have to come back to :)</td></tr>
+            <tr><td>[13:00] &lt MS-&gt (not checked in - thought would be trivial and surprisingly isn't)</td></tr>
+            <tr><td>[13:01] &lt mhrd&gt how are you running it?</td></tr>
+            <tr><td>[13:01] &lt MS-&gt ./test_Graphline.py</td></tr>
+            <tr><td>[13:01] &lt mhrd&gt on bbc.kamaelia.org ?</td></tr>
+            <tr><td>[13:01] *** MS- nods</td></tr>
+            <tr><td>[13:02] &lt mhrd&gt installed Axon on bbc.kamaelia.org may be old</td></tr>
+            <tr><td>[13:02] &lt MS-&gt possibly</td></tr>
+            <tr><td>[13:02] &lt MS-&gt I'll fiddle</td></tr>
+            <tr><td>[13:02] &lt mhrd&gt when auto-doc-gen runs teh test suite, it prepends a SVN checkout to the python path</td></tr>
+            <tr><td>[13:02] &lt mhrd&gt (svn checkout of axon)</td></tr>
+            <tr><td>[13:02] &lt mhrd&gt (and kamaelia)</td></tr>
+            <tr><td>[13:02] &lt mhrd&gt (or something like that)</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Nopem it's not that - just tried it in /home/michaels/kamaelia.googlecode.com/trunk/Code/Python/T</td></tr>
+            <tr><td>[13:03] &lt MS-&gt which has:</td></tr>
+            <tr><td>[13:03] &lt MS-&gt michaels@kamaelia:~/kamaelia.googlecode.com/trunk/Code/Python/T&gt ls</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Axon Kamaelia</td></tr>
+            <tr><td>[13:04] &lt MS-&gt michaels@kamaelia:~/kamaelia.googlecode.com/trunk/Code/Python/T&gt (cd Axon; svn info|grep http); (cd Kamaelia; svn info|grep http)</td></tr>
+            <tr><td>[13:04] &lt MS-&gt URL: https://kamaelia.googlecode.com/svn/trunk/Code/Python/Axon/Axon</td></tr>
+            <tr><td>[13:04] &lt MS-&gt URL: https://kamaelia.googlecode.com/svn/trunk/Code/Python/Kamaelia/Kamaelia</td></tr>
+            <tr><td>[13:04] &lt MS-&gt so some other interesting foible</td></tr>
+            <tr><td>[13:04] &lt MS-&gt I'll worry about it</td></tr>
+            <tr><td>[13:04] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:29] &lt mhrd&gt k</td></tr>
+            <tr><td>[13:29] &lt mhrd&gt suggestion: check in existing fixes, and see what happens at 4am</td></tr>
+            <tr><td>[13:29] &lt mhrd&gt :)</td></tr>
+            <tr><td>[13:30] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:31] *** davbop has joined #kamaelia</td></tr>
+            <tr><td>[13:31] &lt mhrd&gt vmlemon_: greetings</td></tr>
+            <tr><td>[13:31] &lt vmlemon_&gt Hi mhrd and davbop</td></tr>
+            <tr><td>[13:33] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[13:38] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[13:49] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:51] &lt vmlemon_&gt Hmm, anyone know how big the current Kamaelia SVN trunk is, before I check it out?</td></tr>
+            <tr><td>[13:51] Reply: Hm?</td></tr>
+            <tr><td>[13:51] &lt vmlemon_&gt kamlogbot: poke</td></tr>
+            <tr><td>[13:51] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[13:51] &lt vmlemon_&gt Oh, just missed it ;)</td></tr>
+            <tr><td>[14:14] &lt mhrd&gt the entire of trunk (including Sketches etc) is 150 megs</td></tr>
+            <tr><td>[14:14] &lt mhrd&gt just trunk/Code (ie. Axon and Kamaelia) is 34 megs</td></tr>
+            <tr><td>[14:14] &lt mhrd&gt (ran "du -hs" over my working copy)</td></tr>
+            <tr><td>[14:15] &lt vmlemon_&gt Aah, thanks</td></tr>
+            <tr><td>[14:15] &lt vmlemon_&gt Hah,</td></tr>
+            <tr><td>[14:15] &lt vmlemon_&gt [15:42] &lt Jake&gt Yeah... kids have too much money anyway</td></tr>
+            <tr><td>[14:15] &lt vmlemon_&gt [15:42] &lt Jake&gt Or some kind of "Adopt a BBC employee" scheme</td></tr>
+            <tr><td>[14:15] &lt vmlemon_&gt [15:42] &lt vmlemon&gt Do you get a photo postcard and a letter? ;)</td></tr>
+            <tr><td>[14:15] &lt vmlemon_&gt [15:42] &lt vmlemon&gt (Just like the "Adopt-a-Panda" at zoos)</td></tr>
+            <tr><td>[14:15] &lt vmlemon_&gt [15:42] &lt Jake&gt Oh yes, regular updates via twitter too</td></tr>
+            <tr><td>[14:15] &lt mhrd&gt heh. I believe yammer is the current fad :-)</td></tr>
+            <tr><td>[14:16] &lt vmlemon_&gt (Current discussion in #glow on BSIRC is a phony charity event entitled "BBC in Need" aimed at raising money for the annual Christmas part)</td></tr>
+            <tr><td>[14:16] &lt vmlemon_&gt *party</td></tr>
+            <tr><td>[14:17] &lt mhrd&gt heh ... *who* is getting an xmas party (I'm pretty sure we're not!) :-)</td></tr>
+            <tr><td>[14:17] &lt mhrd&gt ?</td></tr>
+            <tr><td>[14:17] &lt mhrd&gt (or is that the point?)</td></tr>
+            <tr><td>[14:17] &lt vmlemon_&gt Not sure</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt http://paster.dazjorz.com/?p=3612 is the start of it</td></tr>
+            <tr><td>[14:22] &lt vmlemon_&gt [15:50] &lt Frances&gt i'm a mistreated CSD. I'd like to be adopted.</td></tr>
+            <tr><td>[14:23] &lt vmlemon_&gt [15:50] &lt vmlemon&gt *sobs*</td></tr>
+            <tr><td>[14:23] &lt vmlemon_&gt [15:50] * Frances wastes away.</td></tr>
+            <tr><td>[14:23] &lt vmlemon_&gt [15:51] &lt Frances&gt for only £5 a week, you'll keep me in smarties and coffee.</td></tr>
+            <tr><td>[14:23] &lt mhrd&gt heh</td></tr>
+            <tr><td>[14:25] *** vmlemon_ wonders what "mh" and "thls" are</td></tr>
+            <tr><td>[14:26] &lt mhrd&gt context?</td></tr>
+            <tr><td>[14:26] &lt vmlemon_&gt Buildings?</td></tr>
+            <tr><td>[14:26] &lt vmlemon_&gt BBC hostnames</td></tr>
+            <tr><td>[14:26] &lt mhrd&gt mh is probably "maidenhead" ... part of our internet ops is based out of there</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt Moroccan Hideout? ;)</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[14:27] &lt mhrd&gt thls is probably "TeleHouse &lt something&gt"</td></tr>
+            <tr><td>[14:30] &lt vmlemon_&gt [15:56] &lt gaz-laptop&gt I'm arranging a Christmas party get-together - but it seems best to keep it all off the record. Hence, it'll probably end up with bundles of us swamping a big pub</td></tr>
+            <tr><td>[14:30] &lt vmlemon_&gt [15:56] &lt Frances&gt yay.</td></tr>
+            <tr><td>[14:30] &lt vmlemon_&gt [15:56] &lt Frances&gt i'll come!</td></tr>
+            <tr><td>[14:30] &lt vmlemon_&gt [15:56] * vmlemon hands Frances a Smarties muffin and a cup of Starbucks ;)</td></tr>
+            <tr><td>[14:30] &lt vmlemon_&gt [15:56] * Frances likes vmlemon</td></tr>
+            <tr><td>[14:30] &lt vmlemon_&gt [15:57] &lt Jake&gt Hmm, Smarties</td></tr>
+            <tr><td>[14:30] *** vmlemon_ doubts they're planning it for R&I ;)</td></tr>
+            <tr><td>[14:30] *** mhrd afk for a bit (meetings)</td></tr>
+            <tr><td>[14:34] &lt MS-&gt "mhrd: heh ... *who* is getting an xmas party (I'm pretty sure we're not!) :-)"</td></tr>
+            <tr><td>[14:34] &lt MS-&gt Didn't Jonathan Ross donate us 3 months wages for that purpose ?</td></tr>
+            <tr><td>[14:34] &lt MS-&gt I'd hate to think it was in vain</td></tr>
+            <tr><td>[14:34] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[14:34] &lt MS-&gt And just went on eastenders or something :-)</td></tr>
+            <tr><td>[14:34] &lt MS-&gt See, I'm good at wishful thinking me</td></tr>
+            <tr><td>[14:37] &lt vmlemon_&gt Anyone tried http://socialgraph-resources.googlecode.com/svn/trunk/samples/findyours.html?</td></tr>
+            <tr><td>[14:37] &lt vmlemon_&gt Gave surprising results when I tested it with just 5 URls</td></tr>
+            <tr><td>[14:37] &lt vmlemon_&gt *URLs</td></tr>
+            <tr><td>[14:41] &lt MS-&gt I had a look but didn't get anything I personally found interesting out of it</td></tr>
+            <tr><td>[14:42] &lt vmlemon_&gt Probably depends on how many links you have to various things</td></tr>
+            <tr><td>[14:42] &lt vmlemon_&gt Might be interesting to plug the API into a Kamaelia visualiser though</td></tr>
+            <tr><td>[14:44] &lt vmlemon_&gt [16:07] &lt Jake&gt If Ross's wages went on my christmas party...... cirrhosis</td></tr>
+            <tr><td>[14:52] &lt MS-&gt right, i'm off again, back later</td></tr>
+            <tr><td>[14:52] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[15:43] *** mhrd de-meetinged</td></tr>
+            <tr><td>[15:47] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:48] &lt vmlemon_&gt Ooh, Qt for Symbian OS/S60... Wouldn't have saw that coming</td></tr>
+            <tr><td>[17:32] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:02] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:03] &lt MS-&gt evening</td></tr>
+            <tr><td>[18:03] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[19:15] &lt MS-&gt odd, testing with python2.3 works on this other machine</td></tr>
+            <tr><td>[19:27] &lt Davbo&gt Hey MS-, my K-Nearest-Neighbor in Python got a first, lecturer (who doesn't know Python) said she understood my code more than the Java ones (she also gives advanced java lectures lol)</td></tr>
+            <tr><td>[19:28] &lt Davbo&gt thought you might like to know I got to use some Python</td></tr>
+            <tr><td>[19:28] &lt Davbo&gt should make this text processing a doddle too</td></tr>
+            <tr><td>[19:29] &lt Davbo&gt will have my reg-ex mug handy for when I'm doing that ;-)</td></tr>
+            <tr><td>[19:30] &lt vmlemon_&gt No Kamaelia yet? ;)</td></tr>
+            <tr><td>[19:31] &lt Davbo&gt one step at a time :-)</td></tr>
+            <tr><td>[19:35] *** vmlemon_ wonders how the Profilactic folks managed to make such a bloated/"top-heavy" with JavaScript site...</td></tr>
+            <tr><td>[19:35] &lt vmlemon_&gt (It hangs Firefox here for about 30-40 seconds periodically)</td></tr>
+            <tr><td>[20:20] &lt MS-&gt Did you know that when a hollowed out pumpkin which is carved with a face in a warm room collapses in on itself, starts to rot and ooze really icky liquid ?</td></tr>
+            <tr><td>[20:20] &lt MS-&gt I certainly didn't !</td></tr>
+            <tr><td>[20:20] &lt MS-&gt But I do now</td></tr>
+            <tr><td>[20:20] &lt MS-&gt :-/</td></tr>
+            <tr><td>[20:35] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:40] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:41] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:41] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[22:44] *** vmlemon_ has joined #kamaelia</td></tr>

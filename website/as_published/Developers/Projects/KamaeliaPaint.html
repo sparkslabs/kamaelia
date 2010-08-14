@@ -1,0 +1,196 @@
+<html>
+<head>
+<title> Developers/Projects/KamaeliaPaint </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/KamaeliaPaint">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Kamaelia: Paint</h1><h2>What is it?</h2>Kamaelia: Paint is still very much in development (so this is my "vision" of what I want 'Paint' to become). Paint will be a powerful image editing tool, it will have native support of multiple core processors and put them all to good use :-). It should handle large volumes of images and have some simple tools for animations.<br><h2>Where do I get it &amp; install it?</h2><b>developers</b><br><ul><li>svn co <where><br></where></li><li>cd <dir><li>python setup.py install</li></dir></li></ul><b>Linux</b><br><i>Something like:<br>
+</i>
+<ul><li><i>download .tar.gz<br></i></li><li><i>sudo python setup.py install</i><br></li><li><i>run <appname></appname></i><br>
+  </li></ul>
+<br><b>Windows</b><br><i>Something like:<br></i><ul><li><i>download .exe</i></li><li><i>Install</i></li><li><i>Enjoy</i><br></li></ul><br><b>Mac</b><br><i>Something like:<br>
+</i>
+<ul><li><i>download .dmg</i></li><li><i>Install</i></li><li><i>Enjoy</i><br>
+  </li></ul>
+<h2>Planned Schedule:</h2><ul><li>26/5 - Extend MagnaDoodle (Simple paint tool located in Sketches/DK) to implement the features of ProcessGraphline, with the end goal being having it running on a Backplane.</li><li>2/6 - Finish up working on MagnaDoodle / Start planning how the paint tool will be packaged. - Working on MagnaDoodle may take longer than expected however much of it will cross over to my Paint program so time spent here is also contributing to my main project.</li><li>9/6 - Consider what can be moved from the MagnaDoodle to Paint. Begin working on Paint, implementing mutual features from MagnaDoodle and extending them.</li><li>16/6 - Work on the painting canvas, look for the potential ways to implement a "layering" feature. nb. Something like what happens when you run MagnaDoodle with the Graphline.</li><li>23/6 - Finish up the canvas and start work a separate window for tools, such as Circles, lines various vector shapes. - note: this might take longer than 1 week</li><li>30/6 - Finish up the painting tools, and any additional work on the Canvas. I expect a colour selector to have been made in MagnaDoodle, however, it might be an idea to extend this and add more functionality to it.</li><li>7/7 - Hopefully now I have a fairly robust Paint program at this point. Now start to look at ways to extend this to various Animation methods.</li><li>14/7 - Work on Animator, try to reach a stage where I can have a "flick book" style animation see: http://en.wikipedia.org/wiki/Flip_book This style thing should be pretty easy.</li><li>21/7 - Look at more animation tools, perhaps modifying many frames of the animation at once.</li><li>28/7 - Consider encoding animations using something like dirac.</li><li>4/8 - Perhaps at this point look at implementing "given time" features such as simple video editing. Decoding dirac video's to a bunch of images for animation editing.</li><li>11/8 - Continue work on video editing features. Try to implement "Resume Session" feature.</li><li>18/8 - Wrap up the project and work on packaging it up.</li></ul><h2>
+
+
+
+
+
+
+Progress (dates related to the weekly meeting - these are the "DONE" lines)</h2><ul><li>15 May: Looked through code for MultiPipeline / Magnadoodle</li><li>22 May: Got 2 MagnaDoodle.py working together using ProcessPipeline(), also implemented simple scaling 
+circle tool.</li><li>29 May: Got ProcessGraphline to clear one window when right click in the other (really cool :D) - this can be easily extended but encountered some problems with ProcessGraphline</li><li>5 June: I got the 2 MagnaDoodles talking, you can draw on the blue and it paints also on the Red. Abstracted away pygame events from the drawing for more flexibility.</li><li>12 June: &#65279;Merged IRC Logger, got Tools2Apps ready for merge just got to resolve merging error. Moved to Paint from MagnaDoodle, started working on main project! Just started using an XYPad for paint selection</li><li>19 June: &#65279;Recursive flood-fill algorithm for a "paint bucket fill" tool. Turned an XYPad into a nice colour selector and hooked that up to Kamaelia - Paint. Cleaned up code.</li><li>26 June: Non-recursive flood-fill working nicely lots better than last week, cleaned up code and added buttons for controling the tools. Started work on methods for layering</li><li>3 July: Layers (using pygame surfaces) are now working, little functionality currently but core is there. Added an Eraser tool and Eyedropper tool. PASSED MY EXAMS!</li><li>10 July: Functionality of layers, adding layers, switching between layers and changing the Alpha values (via slider bar) for each layer. Made a start using layers as a basis for Animations</li></ul><h2>Progress so far<br></h2>Screenshots of my progress can be found <a href="../../../Developers/Projects/KamaeliaPaint/ProgressScreens">here!</a><br><br>July 28th: I have restructured my code so it's worth making clear what I've changed. Previously I was working with a highly modified version of the XYPad for sliders and the colour selector. However that wasn't really the Kamaelia way to approach the problem, I had left it that way for too long and the longer I worked on the XYPad the more convoluted it became. IMO the Kamaelia way was to break that down into smaller components, this way the code would be reusable for anyone else. So I've broke the XYPad into the Slider, ColourSelector and ToolBox component. The colour selector and slider are both now just some pygame widgets and the ToolBox is the Paint specific code. Recently I've also worked on input and output of images, one bug I want to note (for my own benefit) is that when you save it will merge all layers to the background. Still looking to solve it but have wasted enough time on it for now :-). <br><br><h2>Wishlist</h2>Everyone has their favourite tools in paint programs like The Gimp and Photoshop, so if there's something you'd like to see in Kamaelia: Paint feel free to edit this list and add whatever you want. No promises! Oh, and don't add "Lens Flare" :P I'll go through this list and add priorities (5-1  low to high respectively) Thanks! Dave.<br><ul><li>Image Layers [1]</li><li>Crop tool [2]</li><li>Rotate tool [3]</li><li>Storyboarding features (strikes me as a really cool idea) [2]</li><li>Multi-frame animation editing [3]</li><li>Various Brushes [2]</li><li>Looking at the what Michael has made with the SpeakNWrite app maybe I could implement that with the storyboarding? Reading the dialogue from a storyboard? Handling separate speech bubbles using something similar to the flood fill algorithm<br></li></ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

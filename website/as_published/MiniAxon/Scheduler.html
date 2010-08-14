@@ -1,0 +1,128 @@
+<html>
+<head>
+<title> MiniAxon/Scheduler </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><a name="Scheduler"></a><span style="font-size:14pt;font-weight:600">2. Scheduler - A means of running lots of microprocesses</span></p>
+<p dir="ltr"><span style="font-weight:600">Exercise: </span>Write a class called <span style="font-family:Courier;font-weight:600">scheduler</span> with the following characteristics.</p>
+<ul type="disc"><li dir="ltr">It should subclass microprocess.</li></ul>
+<p dir="ltr">Objects created shold have the following attributes:</p>
+<ul type="disc"><li dir="ltr"><span style="font-family:Courier">self.active</span> - this is a list. (initially empty)</li>
+<li dir="ltr"><span style="font-family:Courier">self.newqueue</span> - this is also a list. (initially empty)<br /><span style="font-weight:600">Hint: </span>Initialise these in the __init__ method!</li></ul>
+<p dir="ltr">Objects created should have the following methods:</p>
+<ul type="disc"><li dir="ltr"><span style="font-family:Courier">__init__(self)</span> - Perform any initialisation you need here (see above)<br /><span style="font-weight:600">Remember: </span>Don't forget to called your super class's __init__ method!</li>
+<li dir="ltr"> <span style="font-family:Courier">main(self) </span>- Takes no arguments<br />This should be a generator with the following logic: (Looped 100 times)</li>
+<ul type="disc"><li dir="ltr">Loop through all the objects in self.active using any mechanism you choose.</li>
+<ul type="disc"><li dir="ltr">IMMEDIATELY YIELD CONTROL HERE WITH a &quot;non -1 value&quot;</li>
+<li dir="ltr">Suppose you call the current object (from self.active) current</li>
+<li dir="ltr">Call current.next()</li>
+<li dir="ltr">If a StopIteration exception is thrown, just catch and skip on to the next iteration. (eg continue)</li>
+<li dir="ltr">If the result from current.next() was NOT -1, then append current onto self.newqueue</li></ul>
+<li dir="ltr">Having looped through all the objects, REPLACE self.active with self.newqueue, and replace the value of self.newqueue with a new empty list</li></ul>
+<li dir="ltr"><span style="font-family:Courier">activateMicroprocess(self, someprocess)</span></li>
+<ul type="disc"><li dir="ltr">someprocess is a microprocess object (or anything that conforms to the same interface/behaviour seen by the scheduler).</li>
+<li dir="ltr">This method should call the object's main method and append the result to self.newqueue</li></ul></ul>
+<p dir="ltr"><table width='100%'><td bgcolor='#FFFFAA' align='center'><b><a href='/MiniAxon/Scheduler.html'>Answer Hidden</a></b></td><td bgcolor='#AAAAAA' align='center'><b><a href='/MiniAxon/Scheduler.html?sat=2'>Show Answer</a></b></td></table><p><span style="font-weight:600">Answer:</span></p>
+<ul type="disc"><li>Select from the above tabs to show the answer!</li></ul>
+<p></p>
+</p>
+<p dir="ltr"><span style="font-weight:600">Discussion:</span></p>
+<p dir="ltr">This class provides us with a rudimentary way of activating generators embedded inside a class, adding them to a runqueue and then letting something run them. So let's try it. The default microprocess is relatively boring, so let's create some microprocesses that are little more than an age old program that repeatedly displays a messae. To do that we declare a class subclassing microprocess and provide a generator called main. We'll also capture a provided argument:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>class printer(microprocess):<br />    def __init__(self, tag):<br />        super(printer, self).__init__()<br />        self.tag = tag<br />    def main(self):<br />        while 1:<br />            yield 1 # Must be a generator<br />            print self.tag</pre></span></div></ul>
+<p dir="ltr">Note that this generator doesn't ever exit. We can then create a couple of these printers:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>X = printer(&quot;Hello World&quot;)</span></div>
+<div dir="ltr"><span style="font-family:Courier">Y = printer(&quot;Game Over&quot;) # Another well known 2 word phrase :-)</pre></span></div></ul>
+<p dir="ltr">Next we can create a scheduler:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>myscheduler = scheduler()</pre></span></div></ul>
+<p dir="ltr">We can then ask this scheduler to activate the two microprocesses - X &amp; Y :</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>myscheduler.activateMicroprocess(X)<br />myscheduler.activateMicroprocess(Y)</pre></span></div></ul>
+<p dir="ltr">We can then run our scheduler by iterating through its main method:</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>for _ in myscheduler.main():<br />    pass</pre></span></div></ul>
+<p dir="ltr">If we run this we get the following output (middle of output snipped):</p>
+<ul type="disc"><div dir="ltr"><span style="font-family:Courier"><pre>&gt;&gt;&gt; for _ in myscheduler.main():<br />...     pass<br />...<br />Hello World<br />Game Over<br />Hello World<br />Game Over<br />...<br />Hello World<br />Game Over<br />&gt;&gt;&gt;</pre></span></div></ul>
+<p dir="ltr">As you can see, the scheduler hits the 100th iteration and then halts.</p>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

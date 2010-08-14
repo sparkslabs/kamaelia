@@ -1,0 +1,226 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.File.UnixProcess </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.File.UnixProcess</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.html">File</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.UnixProcess.html">UnixProcess</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.File.UnixProcess.UnixProcess.html">UnixProcess</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#709">UnixProcess</a><ul>
+<li><a class="reference" href="#710">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#711">How to use it</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#712">Python and platform compatibility</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="709">UnixProcess</h1>
+<p>Launch another unix process and communicate with it via its standard input and
+output, by using the &quot;inbox&quot; and &quot;outbox&quot; of this component.</p>
+<div class="section">
+<h2 id="710"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>The purpose behind this component is to allow the following to occur:</p>
+<pre class="literal-block">
+Pipeline(
+  dataSource(),
+  UnixProcess(&quot;command&quot;, *args),
+  dataSink(),
+).run()
+</pre>
+</div>
+<div class="section">
+<h2 id="711"><a id="how-to-use-it" name="how-to-use-it">How to use it</a></h2>
+<p>More specificaly, the longer term interface of this component will be:</p>
+<p>UnixProcess:</p>
+<ul class="simple">
+<li>inbox - data recieved here is sent to the program's stdin</li>
+<li>outbox - data sent here is from the program's stdout</li>
+<li>control - at some point we'll define a mechanism for describing
+control messages - these will largely map to SIG* messages
+though. We also need to signal how we close our writing pipe.
+This can happen using the normal producerFinished message.</li>
+<li>signal - this will be caused by things like SIGPIPE messages. What
+this will look like is yet to be defined. (Let's see what works
+first.</li>
+</ul>
+</div>
+<div class="section">
+<h2 id="712"><a id="python-and-platform-compatibility" name="python-and-platform-compatibility">Python and platform compatibility</a></h2>
+<p>This code is only really tested on Linux.</p>
+<p>Initially this will be python 2.4 only, but it would be nice to support
+older versions of python (eg 2.2.2 - for Nokia mobiles).</p>
+<p>For the moment I'm going to send STDERR to dev null, however things won't
+stay that way.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.html">File</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.UnixProcess.html">UnixProcess</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.UnixProcess.UnixProcess.html">UnixProcess</a></h1>
+<div class="section">
+<h2 id="symbol-UnixProcess">class UnixProcess(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<div class="section">
+<h3><a id="symbol-UnixProcess.Inboxes" name="symbol-UnixProcess.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : We receive shutdown messages here</li>
+<li><strong>stdinready</strong> : We're notified here when we can write to the sub-process</li>
+<li><strong>inbox</strong> : Strings containing data to send to the sub process</li>
+<li><strong>stderrready</strong> : We're notified here when we can read errors from the sub-process</li>
+<li><strong>stdoutready</strong> : We're notified here when we can read from the sub-process</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-UnixProcess.Outboxes" name="symbol-UnixProcess.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : data from the sub command is output here</li>
+<li><strong>signal</strong> : not used</li>
+<li><strong>selectorsignal</strong> : To send control messages to the selector</li>
+<li><strong>selector</strong> : We send messages to the selector here, requesting it tell us when file handles can be read from/written to</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-UnixProcess.__init__" name="symbol-UnixProcess.__init__">__init__(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-UnixProcess.main" name="symbol-UnixProcess.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-UnixProcess.openSubprocess" name="symbol-UnixProcess.openSubprocess">openSubprocess(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

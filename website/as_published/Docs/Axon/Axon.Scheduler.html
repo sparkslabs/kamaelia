@@ -1,0 +1,527 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.Scheduler </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.Scheduler">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.Scheduler</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Scheduler.html">Scheduler</a></h2>
+</div>
+</div>
+<div class="section">
+<h1>Scheduler - runs things concurrently</h1>
+<div class="container">
+<ul class="simple">
+<li><strong><a class="reference" href="/Docs/Axon/Axon.Scheduler._sort.html">_sort</a></strong>(somelist)</li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Scheduler.scheduler.html">scheduler</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#26">Using the scheduler</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#27">Pausing and Waking microprocesses</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#28">'yielding' new components for activation and replacement generators</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#29">What happens when a microprocess finishes?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#30">Querying the scheduler (Introspection)</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#31">Slowing down execution (for debugging)</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#32">How does it work internally?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#33">Test documentation</a><ul>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<p>The Scheduler runs active microprocesses - giving a regular timeslice to each.
+It also provides the ability to pause and wake them; allowing an Axon based
+system to play nicely and relinquish the cpu when idle.</p>
+<ul class="simple">
+<li>The Scheduler runs microprocesses that have been 'activated'</li>
+<li>The Scheduler is itself a microprocess</li>
+</ul>
+<div class="section">
+<h2 id="26"><a id="using-the-scheduler" name="using-the-scheduler">Using the scheduler</a></h2>
+<p>The simplest way is to just use the default scheduler <tt class="docutils literal"><span class="pre">scheduler.run</span></tt>.
+Simply activate components or microprocesses then call the runThreads() method
+of the scheduler:</p>
+<pre class="literal-block">
+from <a class="reference" href="/Docs/Axon/Axon.Scheduler.html">Axon.Scheduler</a> import scheduler
+from MyComponents import MyComponent, AnotherComponent
+
+c1 = MyComponent().activate()
+c2 = MyComponent().activate()
+c3 = AnotherComponent().activate()
+
+scheduler.run.runThreads()
+</pre>
+<p>Alternatively you can create a specific scheduler instance, and activate
+them using that specific scheduler:</p>
+<pre class="literal-block">
+mySched = scheduler()
+
+c1 = MyComponent().activate(Scheduler=mySched)
+c2 = MyComponent().activate(Scheduler=mySched)
+c3 = AnotherComponent().activate(Scheduler=mySched)
+
+mySched.runThreads()
+</pre>
+<p>The runThreads() method is the way of bootstrapping the scheduler. Being a
+microprocess, it needs something to schedule it! The runThreads() method does
+exactly that.</p>
+<p>The activate() method is fully thread-safe. It can handle multiple simultaneous
+callers from different threads to the one the scheduler is running in.</p>
+</div>
+<div class="section">
+<h2 id="27"><a id="pausing-and-waking-microprocesses" name="pausing-and-waking-microprocesses">Pausing and Waking microprocesses</a></h2>
+<p>The Scheduler supports the ability to, in a thread safe manner, pause and wake
+individual microprocesses under its control. Because it is thread safe, any
+thread of execution can issue pause and wake requests for any scheduled
+microprocess.</p>
+<p>The pauseThread() and wakeThread() methods submit requests to pause or wake
+microprocesses. The scheduler will process these when it is next able to - the
+requests are queued rather than processed immediately. This is done to ensure
+thread safety. It can handle multiple simultaneous callers from different
+threads to the one the scheduler is running in.</p>
+<p>Pausing a microprocess means the scheduler removes it from its 'run queue'. This
+means that it no longer executes that microprocess. Waking it puts it back into
+the 'run queue'.</p>
+<p>If no microprocesses are awake then the scheduler relinquishes cpu usage by
+blocking.</p>
+<p>If however this scheduler is itself being scheduled by another microprocess then
+it does not block. Ideally it should ask its scheduler to pause it, but instead
+it busy-waits - self pausing functionality is not yet implemented.</p>
+</div>
+<div class="section">
+<h2 id="28"><a id="yielding-new-components-for-activation-and-replacement-generators" name="yielding-new-components-for-activation-and-replacement-generators">'yielding' new components for activation and replacement generators</a></h2>
+<p>In general, the main() generator in a microprocess (its thread of execution)
+can return any values it likes when it uses the <tt class="docutils literal"><span class="pre">yield</span></tt> statement. It is
+recommended to not yield zeros or other kinds of 'false' value as these are
+reserved for possible future special meaning.</p>
+<p>However, this scheduler does understand certain values that can be yielded:</p>
+<ul>
+<li><p class="first"><strong><a class="reference" href="/Docs/Axon/Axon.Ipc.newComponent.html">Axon.Ipc.newComponent</a></strong> - a microprocess can yield this to ask the scheduler
+to activate a new component or microprocess:</p>
+<pre class="literal-block">
+def main(self):
+    ...
+    x=MyComponent()
+    yield <a class="reference" href="/Docs/Axon/Axon.Ipc.newComponent.html">Axon.Ipc.newComponent</a>(x)
+    ...
+</pre>
+<p>This is simply an alternative to calling x.activate().</p>
+</li>
+<li><p class="first"><strong><a class="reference" href="/Docs/Axon/Axon.Ipc.WaitComplete.html">Axon.Ipc.WaitComplete</a></strong> - this is a way for a microprocess to substitute
+itself (temporarily) with another one that uses a new generator.
+For example:</p>
+<pre class="literal-block">
+def main(self):
+    ...
+    yield <a class="reference" href="/Docs/Axon/Axon.Ipc.WaitComplete.html">Axon.Ipc.WaitComplete</a>(self.waitOneSecond())
+    ...
+
+def waitOneSecond(self):
+    t=time.time()
+    while time.time() &lt; t+1.0:
+        yield 1
+</pre>
+<p>This is a convenient way to modularise parts of your main() code. But there
+is an important limitation with the current implementation:</p>
+<ul class="simple">
+<li>self.pause() will not cause the replacement generator to pause. (Where
+'self' is the original microprocess - as in the example code above)</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h2 id="29"><a id="what-happens-when-a-microprocess-finishes" name="what-happens-when-a-microprocess-finishes">What happens when a microprocess finishes?</a></h2>
+<p>The scheduler will stop running it! It will call the microprocess's stop()
+method. It will also call the _closeDownMicroprocess() method and will act on
+the return value if it is one of the following:</p>
+<ul class="simple">
+<li><strong><a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a></strong> - the specified microprocess will also be
+stopped. Use with caution as the implementation is currently untested and
+likely to fail, possibly even crash the scheduler!</li>
+<li><strong><a class="reference" href="/Docs/Axon/Axon.Ipc.reactivate.html">Axon.Ipc.reactivate</a></strong> - the specified microprocess will be (re)activated.
+The scheduler uses this internally to pick up where it left off when a
+<a class="reference" href="/Docs/Axon/Axon.Ipc.WaitComplete.html">Axon.Ipc.WaitComplete</a> instigated detour finishes (see above).</li>
+</ul>
+</div>
+<div class="section">
+<h2 id="30"><a id="querying-the-scheduler-introspection" name="querying-the-scheduler-introspection">Querying the scheduler (Introspection)</a></h2>
+<p>The listAllThreads() method returns a list of all activated microprocesses -
+both paused and awake.</p>
+<p>The isThreadPaused() method lets you determine if an individual microprocess is
+paused. Note that the result returned by this method is conservative (the
+default assumption is that a thread is probably awake). the result will vary
+depending on the exact moment it is called!</p>
+<p>Both these methods are thread safe.</p>
+</div>
+<div class="section">
+<h2 id="31"><a id="slowing-down-execution-for-debugging" name="slowing-down-execution-for-debugging">Slowing down execution (for debugging)</a></h2>
+<p>It also has a slow motion mode designed to help with debugging &amp; testing. Call
+runThreads() with the slowmo argument set to the number of seconds the scheduler
+should pause after each cycle of executing all microprocesses. For example, to
+wait half a second after each cycle of execution:</p>
+<pre class="literal-block">
+scheduler.run.runThreads(slowmo=0.5)
+</pre>
+</div>
+<div class="section">
+<h2 id="32"><a id="how-does-it-work-internally" name="how-does-it-work-internally">How does it work internally?</a></h2>
+<p>The scheduler keeps the following internal state:</p>
+<ul class="simple">
+<li><strong>time</strong> - updated to time.time() every execution cycle - can be inspected by
+microprocesses instead of having to call time.time() themselves.</li>
+<li><strong>threads</strong> - a dictionary containing the state of activated microprocesses
+(whether they are awake or not)</li>
+<li><strong>wakeRequests</strong> and <strong>pauseRequests</strong> - the thread safe queues of requests to
+wake and pause individual microprocesses</li>
+<li>Internal to the main() generator:<ul>
+<li><strong>runqueue</strong> - the list of active and awake microprocesses being run</li>
+<li><strong>nextrunqueue</strong> - the list of microprocesses to be run next time round</li>
+</ul>
+</li>
+</ul>
+<p>The scheduler uses a simple round robin approach - it walks through its run
+queue and calls the next() method of each microprocess in turn. As it goes, it
+builds a new run queue, ready for the next cycle. If a microprocess terminates
+(raises a StopIteration exception) then it is not included in the next cycle's
+run queue.</p>
+<p>After it has gone through all microprocesses, the scheduler then processes
+messages in its wakeRequests and sleepRequests queues. Sleep requests are
+processed first; then wake requests second. Suppose there is a sleep and wake
+request queued for the same microprocess; should it be left awake or put to
+sleep? By processing wake requests last, the scheduler can err on the side of
+caution and prefer to leave it awake.</p>
+<p>Microprocesses are all in one of three possible states (recorded in the
+<tt class="docutils literal"><span class="pre">threads</span></tt> dictionary):</p>
+<ul class="simple">
+<li><strong>ACTIVE</strong> - the microprocess is awake. It should be in the run queue being
+prepared for the next execution cycle.</li>
+<li><strong>SLEEPING</strong> - the microprocess is asleep/paused. It should <em>not</em> be in the
+run queue for the next cycle.</li>
+<li><strong>GOINGTOSLEEP</strong> - the microprocess has been requested to be put to sleep.</li>
+</ul>
+<p>A request to put a microprocess to sleep is handled as follows:</p>
+<ul>
+<li><p class="first">If the microprocess is already <em>sleeping</em>, then nothing needs to happen.</p>
+</li>
+<li><p class="first">If the microprocess is <em>active</em>, then it is changed to &quot;going to sleep&quot;. It
+is not removed from the run queue immediately. Instead, what happens is:</p>
+<blockquote>
+<ul class="simple">
+<li>on the next cycle of execution, as the scheduler goes through items in the
+run queue, it doesn't execute any that are &quot;going to sleep&quot; and doesn't
+include them in the next run queue it is building. It also sets them to the
+&quot;sleeping&quot; state,</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>Wake requests are used to both wake up sleeping microprocesses and also to
+activate new ones. A request to wake a microprocess is handled like this:</p>
+<ul class="simple">
+<li>If the microprocess is already <em>active</em>, then nothing needs to happen.</li>
+<li>If the microprocess is <em>sleeping</em> then it is added to the next run queue and
+changed to be <em>active</em>.</li>
+<li>If the microprocess is <em>going to sleep</em> then it is only changed to be <em>active</em>
+(it will already be in the run queue, so doesn't need to be added)</li>
+</ul>
+<p>If the request contains a flag indicating that this is actually an activation
+request, then this also happens:</p>
+<ul class="simple">
+<li>If the microprocess is not in the <tt class="docutils literal"><span class="pre">threads</span></tt> dictionary then it is added to
+both the run queue and <tt class="docutils literal"><span class="pre">threads</span></tt>. It is set to be <em>active</em>.</li>
+</ul>
+<p>This three state system is a performance optimisation: it means that the
+scheduler does not need to waste time searching through the next run queue to
+remove items - they simply get removed on the next cycle of execution.</p>
+<p>Wake requests and sleep requests are handled through thread-safe queues. This
+enables other threads of execution (eg. threaded components) to safely make
+requests to wake or pause components.</p>
+</div>
+<h1 id="33">Test documentation</h1>
+<p>Tests passed:</p>
+<ul class="simple">
+<li>__init__ - Called with no arguments ...</li>
+<li>By default, if all microprocesses are paused, the scheduler will immediately yield back - it will not block.</li>
+<li>test_importsuccess (__main__.scheduler_Test)</li>
+<li>The isThreadPaused() method will return True for micropocesses not scheduled with this scheduler.</li>
+<li>The isThreadPaused() method returns True if a thread is currently paused, or False is it is active.</li>
+<li>The listAllThreads() method returns a list of all activated microprocesses whether paused or awake.</li>
+<li>If one microprocess is paused, the scheduler continues to run other microprocesses.</li>
+<li>If a microprocess pauses and immediately terminates (without further yields) it will still terminate properly.</li>
+<li>If a microprocess is paused, calling sheduler.wakeThread() will unpause it.</li>
+<li>A microprocess is run until paused, by calling scheduler.pauseThread(). The microprocess is then no longer 'run'.</li>
+<li>Specifying slowMo&gt;0 argument to runThreads() causes a delay of the specified number of seconds between each pass through all microprocesses. During the delay it will yield.</li>
+<li>If run using the runThreads method, then the scheduler may/will block for short periods, relinquishing processor time, if all microprocesses are paused.</li>
+<li>When run with a single microprocess, the scheduler microprocess only terminates once the scheduled microprocess has terminated.</li>
+<li>When run with multiple microprocesses, the scheduler microprocess only terminates once all scheduled microprocesses have terminated.</li>
+<li>When run, the scheduler microprocess terminates immediately if there are no microprocesses to schedule.</li>
+<li>Waking or pausing a microprocess that is already awake or paused (respectively) has no effect.</li>
+<li>Waking or pausing a microprocess that has not yet been activated has no effect.</li>
+<li>Waking a paused microprocess will not wake other paused microprocesses.</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Scheduler.html">Scheduler</a>.<a class="reference" href="/Docs/Axon/Axon.Scheduler._sort.html">_sort</a></h1>
+<div class="section">
+<h2><a id="symbol-_sort" name="symbol-_sort">_sort(somelist)</a></h2>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Scheduler.html">Scheduler</a>.<a class="reference" href="/Docs/Axon/Axon.Scheduler.scheduler.html">scheduler</a></h1>
+<div class="section">
+<h2 id="symbol-scheduler">class scheduler(<a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a>)</h2>
+<div class="section">
+Scheduler - runs microthreads of control.</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-scheduler.__init__" name="symbol-scheduler.__init__">__init__(self, **argd)</a></h4>
+<p>Creates a scheduler object. If scheduler.run has not been set, sets it.
+Class initialisation ensures that this object/class attribute is initialised - client
+modules always have access to a standalone scheduler.
+Internal attributes:</p>
+<blockquote>
+<ul class="simple">
+<li>time = time when this object was last active.</li>
+<li>threads = set of threads to be run, including their state - whether active or sleeping(paused)</li>
+</ul>
+</blockquote>
+<p>Whilst there can be more than one scheduler active in the general case you will NOT
+want to create a custom scheduler.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler._addThread" name="symbol-scheduler._addThread">_addThread(self, mprocess)</a></h4>
+<p>A Microprocess adds itself to the runqueue using this method, using
+the mannerism scheduler.run._addThread(). Generally component writers should
+<em>not</em> use this method to activate a component - use the component's own
+activate() method instead.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.handleMicroprocessShutdownKnockon" name="symbol-scheduler.handleMicroprocessShutdownKnockon">handleMicroprocessShutdownKnockon(self, knockon)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.isThreadPaused" name="symbol-scheduler.isThreadPaused">isThreadPaused(self, mprocess)</a></h4>
+<p>Returns True if the specified microprocess is sleeping, or the scheduler
+does not know about it.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.listAllThreads" name="symbol-scheduler.listAllThreads">listAllThreads(self)</a></h4>
+<p>Returns a list of all microprocesses (both active and sleeping)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.main" name="symbol-scheduler.main">main(self[, slowmo][, canblock])</a></h4>
+<p>main([slowmo][,canblock]) - Scheduler main loop generator</p>
+<p>Each cycle through this generator does two things:
+* one pass through all active microprocesses, giving executing them.
+* processing of wake/sleep requests</p>
+<p>You can optionally slow down execution to aid debugging. You can also
+allow the scheduler to block if there are no active, awake microprocesses.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>slowmo    -- slow down execution by waiting this number of seconds each cycle (default=0)</li>
+<li>canblock  -- if True, then will block (waiting for wake requests) if all microprocesses are sleeping (default=False)</li>
+</ul>
+<p>slowmo specifies a delay (in seconds) before the main loop is run.
+slowmo defaults to 0.</p>
+<p>If canblock is True, this generator will briefly) block if there are
+no active microprocesses, otherwise it will return immediately (default).</p>
+<p>This generator terminates when there are no microprocesses left (either
+sleeping or awake) because they've all terminated. (or because there were
+none to begin with!)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.pauseThread" name="symbol-scheduler.pauseThread">pauseThread(self, mprocess)</a></h4>
+<p>pauseThread(mprocess) - request to put a mprocess to sleep.</p>
+<p>If active, or already sleeping, the specified microprocess will be put
+to leep on the next cycle through the scheduler.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.runThreads" name="symbol-scheduler.runThreads">runThreads(self[, slowmo])</a></h4>
+<p>Runs the scheduler until there are no activated microprocesses left
+(they've all terminated).</p>
+<p>Think of this as bootstrapping the scheduler - after all it is a
+microprocess like any other, so needs something to run it!</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>slowmo  -- Optional. Number of seconds to wait between each cycle of executing microprocesses. (default=0 - no wait)</li>
+</ul>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.stop" name="symbol-scheduler.stop">stop(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.waitForOne" name="symbol-scheduler.waitForOne">waitForOne(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.wakeThread" name="symbol-scheduler.wakeThread">wakeThread(self, mprocess[, canActivate])</a></h4>
+<p>Request to wake a sleeping mprocess, or activate a new one.</p>
+<p>If sleeping or already active, the specified microprocess will be ensured
+to be active on the next cycle through the scheduler.</p>
+<p>If the microprocess is not running yet then it will be woken if (and only if)
+canActivate is set to True (the default is False).</p>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._closeDownMicroprocess">_closeDownMicroprocess</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.pause">pause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.__str__">__str__</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.activate">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

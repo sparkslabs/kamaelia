@@ -1,0 +1,180 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.File.UnixProcess2.UnixProcess2 </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.File.UnixProcess2.UnixProcess2</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.html">File</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.UnixProcess2.html">UnixProcess2</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.UnixProcess2.UnixProcess2.html">UnixProcess2</a></h1>
+<p>For examples and more explanations, see the <a class="reference" href="/Components/pydoc/Kamaelia.File.UnixProcess2.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-UnixProcess2">class UnixProcess2(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>UnixProcess2(command[,buffersize][,outpipes][,inpipes][,boxsizes]) -&gt; new UnixProcess2 component.</p>
+<p>Starts the specified command as a separate process. Data can be sent to
+stdin and received from stdout. Named pipes can also be created for extra
+channels to get data to and from the process.</p>
+<p>Keyword arguments:</p>
+<pre class="literal-block">
+- command     -- command line string that will invoke the subprocess
+- buffersize  -- bytes size of buffers on the pipes to and from the process (default=32768)
+- outpipes    -- dict mapping named-pipe-filenames to outbox names (default={})
+- inpipes     -- dict mapping named-pipe-filenames to inbox names (default={})
+- boxsizes    -- dict mapping inbox names to box sizes (default={})
+</pre>
+<div class="section">
+<h3><a id="symbol-UnixProcess2.Inboxes" name="symbol-UnixProcess2.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : Binary string data to go to STDIN of the process.</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-UnixProcess2.Outboxes" name="symbol-UnixProcess2.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : Binary string data from STDOUT of the process</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+<li><strong>_shutdownPipes</strong> : For shutting down any named pipes used for output</li>
+<li><strong>error</strong> : Binary string data from STDERR of the process</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-UnixProcess2.__init__" name="symbol-UnixProcess2.__init__">__init__(self, command[, buffersize][, outpipes][, inpipes][, boxsizes])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-UnixProcess2.childrenDone" name="symbol-UnixProcess2.childrenDone">childrenDone(self)</a></h4>
+<p>Unplugs any children that have terminated, and returns true if there are no
+running child components left (ie. their microproceses have finished)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-UnixProcess2.main" name="symbol-UnixProcess2.main">main(self)</a></h4>
+<p>main loop</p>
+</div>
+<div class="section">
+<h4><a id="symbol-UnixProcess2.setupNamedInPipes" name="symbol-UnixProcess2.setupNamedInPipes">setupNamedInPipes(self, pipeshutdown)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-UnixProcess2.setupNamedOutPipes" name="symbol-UnixProcess2.setupNamedOutPipes">setupNamedOutPipes(self, pipeshutdown)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

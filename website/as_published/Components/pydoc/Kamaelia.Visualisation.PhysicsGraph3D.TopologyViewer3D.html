@@ -1,0 +1,554 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.html">Visualisation</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.html">PhysicsGraph3D</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html">TopologyViewer3D</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D.html">TopologyViewer3D</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#413">Generic 3D Topology Viewer</a><ul>
+<li><a class="reference" href="#414">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#415">User Interface</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#416">How does it work?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#417">Termination</a><ul>
+<li><a class="reference" href="#418">Customising the 3D topology viewer</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#419">Writing your own particle class</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="413">Generic 3D Topology Viewer</h1>
+<p>A 3D version of TopologyViewer plus hierarchy topology support, pygame based
+display of graph topologies. Rendering and physics laws can be customised
+for specific applications.</p>
+<div class="section">
+<h2 id="414"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>A simple console driven topology viewer:</p>
+<pre class="literal-block">
+Pipeline( ConsoleReader(),
+          lines_to_tokenlists(),
+          TopologyViewer3D(),
+        ).run()
+</pre>
+<p>Then at runtime try typing these commands to change the topology in real time:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; DEL ALL
+&gt;&gt;&gt; ADD NODE 1 &quot;1st node&quot; (0,0,-10) teapot
+&gt;&gt;&gt; ADD NODE 2 &quot;2nd node&quot; randompos sphere
+&gt;&gt;&gt; ADD NODE 3 &quot;3rd node&quot; randompos -
+&gt;&gt;&gt; ADD NODE 1:1 &quot;1st child node of the 1st node&quot; &quot; ( 0 , 0 , -10 ) &quot; -
+&gt;&gt;&gt; ADD NODE 1:2 &quot;2nd child node of the 1st node&quot; randompos -
+&gt;&gt;&gt; ADD LINK 1 2
+&gt;&gt;&gt; ADD LINK 3 2
+&gt;&gt;&gt; DEL LINK 1 2
+&gt;&gt;&gt; ADD LINK 1:1 1:2
+&gt;&gt;&gt; DEL NODE 1
+</pre>
+</div>
+<div class="section">
+<h2 id="415"><a id="user-interface" name="user-interface">User Interface</a></h2>
+<p>TopologyViewer3D manifests as a pygame OpenGL display surface. As it is sent
+topology information, nodes and links between them will appear.</p>
+<p>You can click a node with the mouse to select it. Depending on the application,
+this may display additional data or, if integrated into another app, have some
+other effect.</p>
+<p>Click and drag with the left mouse button to move nodes around. Note that a
+simple physics model or repulsion and attraction forces is always active. This
+causes nodes to move around to help make it visually clearer, however you may
+still need to drag nodes about to tidy it up.</p>
+<p>For hierarchy topology, double-click a particle (or select one then press return key)
+to show its child topology; right-click (or press backspace key) to show last level's
+topology.</p>
+<p>Operations supported:</p>
+<blockquote>
+<ul>
+<li><p class="first">esc --- quit</p>
+</li>
+<li><p class="first">a --- viewer position moves left</p>
+</li>
+<li><p class="first">d --- viewer position moves right</p>
+</li>
+<li><p class="first">w --- viewer position moves up</p>
+</li>
+<li><p class="first">s --- viewer position moves down</p>
+</li>
+<li><p class="first">pgup --- viewer position moves forward (zoom in)</p>
+</li>
+<li><p class="first">pgdn --- viewer position moves backward (zoom out)</p>
+</li>
+<li><p class="first">left --- rotate selected particles to left around y axis  (all particles if none of them is selected)</p>
+</li>
+<li><p class="first">right --- rotate selected particles to right around y axis  (all particles if none of them is selected)</p>
+</li>
+<li><p class="first">up --- rotate selected  particles to up around x axis  (all particles if none of them is selected)</p>
+</li>
+<li><p class="first">down --- rotate selected particles to down around x axis  (all particles if none of them is selected)</p>
+</li>
+<li><p class="first">&lt; --- rotate selected particles anticlock-wise around z axis  (all particles if none of them is selected)</p>
+</li>
+<li><p class="first">&gt; --- rotate selected particles clock-wise around z axis  (all particles if none of them is selected)</p>
+</li>
+<li><p class="first">return --- show next level's topology of the selected particle when only one particle is selected</p>
+</li>
+<li><p class="first">backspace --- show last level's topology</p>
+</li>
+<li><p class="first">Mouse click --- click particle to select one, click empty area to deselect all</p>
+</li>
+<li><p class="first">Mouse drag --- move particles</p>
+</li>
+<li><p class="first">Mouse double-click --- show next level's topology of the particle clicked</p>
+</li>
+<li><p class="first">Mouse right-click --- show last level's topology</p>
+</li>
+<li><p class="first">shift --- multi Select Mode; shift+click for multiple selection/ deselection</p>
+</li>
+<li><dl class="first docutils">
+<dt>ctrl ---  rotation Mode; when ctrl is pressed, mouse motion will rotate the selected particle</dt>
+<dd><p class="first last">(all particles if none of them is selected)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section">
+<h2 id="416"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>TopologyViewer3D is a Kamaeila component which renders Topology on a pygame OpenGL display surface.</p>
+<p>A 3D topology (graph) of nodes and links between them is rendered to the surface.</p>
+<p>You can specify an initial topology by providing a list of instantiated
+particles and another list of pairs of those particles to show how they are
+linked.</p>
+<p>TopologyViewer3D responds to commands arriving at its &quot;inbox&quot; inbox
+instructing it on how to change the topology. A command is a list/tuple.</p>
+<p>Commands recognised are:</p>
+<blockquote>
+<dl class="docutils">
+<dt>[ &quot;ADD&quot;, &quot;NODE&quot;, &lt;id&gt;, &lt;name&gt;, &lt;posSpec&gt;, &lt;particle type&gt; ]</dt>
+<dd><p class="first">Add a node, using:</p>
+<ul class="last">
+<li><dl class="first docutils">
+<dt>id            -- a unique ID used to refer to the particle in other topology commands. Cannot be None.</dt>
+<dd><p class="first last">For hierarchy topology, the id is joined by its parent id with &quot;:&quot; to represent the
+hierarchy structure.
+E.g., suppose the topology has 3 levels. The id of a particle in the 1st level is 1Node;
+it has a child particle whose id is 2Node; 2Node also has a child particle whose id is 3Node;
+then their ids are represented as
+1Node
+1Node:2Node
+1Node:2Node:3Node</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">name          -- string name label for the particle</p>
+</li>
+<li><dl class="first docutils">
+<dt>posSpec       -- string describing initial (x,y,z) (see _generateXY); spaces are allowed</dt>
+<dd><p class="first last">within the tuple, but quotation is needed in this case.
+E.g., &quot; ( 0 , 0 , -10 ) &quot;</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>particleType  -- particle type (default provided is &quot;-&quot;, unless custom types are provided - see below)</dt>
+<dd><p class="first last">currently supported: &quot;-&quot; same as cuboid, cuboid, sphere and teapot
+Note: it would be much slower than cuboid if either sphere or teapot is used.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>[ &quot;DEL&quot;, &quot;NODE&quot;, &lt;id&gt; ]</dt>
+<dd>Remove a node (also removes all links to and from it)</dd>
+<dt>[ &quot;ADD&quot;, &quot;LINK&quot;, &lt;id from&gt;, &lt;id to&gt; ]</dt>
+<dd>Add a link, directional from fromID to toID</dd>
+<dt>[ &quot;DEL&quot;, &quot;LINK&quot;, &lt;id from&gt;, &lt;id to&gt; ]</dt>
+<dd>Remove a link, directional from fromID to toID</dd>
+<dt>[ &quot;DEL&quot;, &quot;ALL&quot; ]</dt>
+<dd>Clears all nodes and links</dd>
+<dt>[ &quot;GET&quot;, &quot;ALL&quot; ]</dt>
+<dd>Outputs the current topology as a list of commands, just like
+those used to build it. The list begins with a 'DEL ALL'.</dd>
+<dt>[ &quot;UPDATE_NAME&quot;, &quot;NODE&quot;, &lt;id&gt;, &lt;new name&gt; ]</dt>
+<dd>If the node does not already exist, this does NOT cause it to be created.</dd>
+<dt>[ &quot;GET_NAME&quot;, &quot;NODE&quot;, &lt;id&gt; ]</dt>
+<dd>Returns UPDATE_NAME NODE message for the specified node</dd>
+</dl>
+</blockquote>
+<p>Commands are processed immediately, in the order in which they arrive. You
+therefore cannot refer to a node or linkage that has not yet been created, or
+that has already been destroyed.</p>
+<p>If a stream of commands arrives in quick succession, rendering and physics will
+be temporarily stopped, so commands can be processed more quickly. This is
+necessary because when there is a large number of particles, physics and
+rendering starts to take a long time, and will therefore bottleneck the
+handling of commands.</p>
+<p>However, there is a 1 second timeout, so at least one update of the visual
+output is guaranteed per second.</p>
+<p>TopologyViewer sends any output to its &quot;outbox&quot; outbox in the same
+list/tuple format as used for commands sent to its &quot;inbox&quot; inbox. The following
+may be output:</p>
+<blockquote>
+<dl class="docutils">
+<dt>[ &quot;SELECT&quot;, &quot;NODE&quot;, &lt;id&gt; ]</dt>
+<dd>Notification that a given node has been selected.</dd>
+<dt>[ &quot;SELECT&quot;, &quot;NODE&quot;, None ]</dt>
+<dd>Notificaion that <em>no node</em> is now selected.</dd>
+<dt>[ &quot;TOPOLOGY&quot;, &lt;topology command list&gt; ]</dt>
+<dd>List of commands needed to build the topology, as it currently stands.
+The list will start with a (&quot;DEL&quot;,&quot;ALL&quot;) command.
+This is sent in response to receiving a (&quot;GET&quot;,&quot;ALL&quot;) command.</dd>
+</dl>
+</blockquote>
+<p>Error and tip information is printed out directly when applied.</p>
+<p>For hierarchy topology, the id of particles should be joined by its parent id with &quot;:&quot;
+to represent the hierarchy structure. See &quot;ADD NODE&quot; command above for more information.</p>
+</div>
+<div class="section">
+<h2 id="417"><a id="termination" name="termination">Termination</a></h2>
+<p>If a shutdownMicroprocess message is received on this component's &quot;control&quot;
+inbox, it will pass it on out of its &quot;signal&quot; outbox and immediately
+terminate.</p>
+<p>NOTE: Termination is currently rather cludgy - it raises an exception which
+will cause the rest of a kamaelia system to halt. Do not rely on this behaviour
+as it will be changed to provide cleaner termination at some point.</p>
+<div class="section">
+<h3 id="418"><a id="customising-the-3d-topology-viewer" name="customising-the-3d-topology-viewer">Customising the 3D topology viewer</a></h3>
+<p>You can customise:</p>
+<ul class="simple">
+<li>the 'types' of particles (nodes)</li>
+<li>visual appearance of particles (nodes) and the links between them;</li>
+<li>the physics laws used to assist with layout</li>
+</ul>
+<p>Use the particleTypes argument of the initialiser to specify classes that
+should be instantiated to render each type of particle (nodes). particleTypes
+should be a dictionary mapping names for particle types to the respective
+classes, for example:</p>
+<pre class="literal-block">
+{ &quot;major&quot; : BigParticle,  &quot;minor&quot;  : SmallParticle  }
+</pre>
+<p>See below for information on how to write your own particle classes.</p>
+<p>Layout of the nodes on the surface is assisted by a physics model, provided
+by an instance of the <a class="reference" href="/Components/pydoc/Kamaelia.Support.Particles.ParticleSystem.html">Kamaelia.Support.Particles.ParticleSystem</a> class. Freeze them
+if you want to make some particles not subject to the law (particle.freeze()).</p>
+<p>Customise the laws used for each particle type by providing a
+Kamaelia.Phyics.Simple.MultipleLaws object at initialisation.</p>
+</div>
+<div class="section">
+<h3 id="419"><a id="writing-your-own-particle-class" name="writing-your-own-particle-class">Writing your own particle class</a></h3>
+<p>should inherit from Kamaelia.PhysicsGraph3D.Particles3D.Particle3D
+and implement the following method (for rendering purposes):</p>
+<blockquote>
+<dl class="docutils">
+<dt>draw()</dt>
+<dd>draw OpenGL particles and links in this method.</dd>
+</dl>
+</blockquote>
+<p>TODO: Reduce CPU usage, improve responsive speed</p>
+<p>References: 1. <a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.html">Kamaelia.Visualisation.PhysicsGraph.TopologyViewer</a>
+2. <a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLComponent.html">Kamaelia.UI.OpenGL.OpenGLComponent</a>
+3. <a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.MatchedTranslationInteractor.html">Kamaelia.UI.OpenGL.MatchedTranslationInteractor</a></p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.html">Visualisation</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.html">PhysicsGraph3D</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html">TopologyViewer3D</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D.html">TopologyViewer3D</a></h1>
+<div class="section">
+<h2 id="symbol-TopologyViewer3D">class TopologyViewer3D(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>TopologyViewer3D(...) -&gt; new TopologyViewer3D component.</p>
+<p>A component that takes incoming topology (change) data and displays it live
+using pygame OpenGL. A simple physics model assists with visual layout. Particle
+types, appearance and physics interactions can be customised.</p>
+<p>Keyword arguments (in order):</p>
+<ul class="simple">
+<li>screensize          -- (width,height) of the display area (default = (800,600))</li>
+<li>fullscreen          -- True to start up in fullscreen mode (default = False)</li>
+<li>caption             -- Caption for the pygame window (default = &quot;3D Topology Viewer&quot;)</li>
+<li>particleTypes       -- dict(&quot;type&quot; -&gt; klass) mapping types of particle to classes used to render them (default = {&quot;-&quot;:CuboidParticle3D})</li>
+<li>initialTopology     -- (nodes,bonds) where bonds=list((src,dst)) starting state for the topology  (default=([],[]))</li>
+<li>laws                -- Physics laws to apply between particles (default = SimpleLaws(bondlength=2))</li>
+<li>simCyclesPerRedraw  -- number of physics sim cycles to run between each redraw (default=1)</li>
+<li>border              -- Minimum distance from edge of display area that new particles appear (default=0)</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-TopologyViewer3D.Inboxes" name="symbol-TopologyViewer3D.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>callback</strong> : for the response after a displayrequest</li>
+<li><strong>inbox</strong> : Topology (change) data describing an <a class="reference" href="/Docs/Axon/Axon.html">Axon</a> system</li>
+<li><strong>events</strong> : Place where we recieve events from the outside world</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-TopologyViewer3D.Outboxes" name="symbol-TopologyViewer3D.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : Notification and topology output</li>
+<li><strong>signal</strong> : Control signalling</li>
+<li><strong>display_signal</strong> : Requests to Pygame Display service</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.__init__" name="symbol-TopologyViewer3D.__init__">__init__(self[, screensize][, fullscreen][, caption][, particleTypes][, initialTopology][, laws][, simCyclesPerRedraw][, border])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D._generatePos" name="symbol-TopologyViewer3D._generatePos">_generatePos(self, posSpec)</a></h4>
+<p>generateXY(posSpec) -&gt; (x,y,z) or raises ValueError</p>
+<p>posSpec == &quot;randompos&quot; or &quot;auto&quot; -&gt; random (x,y,z) within the surface (specified border distance in from the edege)
+posSpec == &quot;(XXX,YYY,ZZZ)&quot; -&gt; specified x,y,z (positive or negative integers)
+spaces are allowed within the tuple, but quotation is needed in this case.
+E.g., &quot; ( 0 , 0 , -10 ) &quot;</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.addListenEvents" name="symbol-TopologyViewer3D.addListenEvents">addListenEvents(self, events)</a></h4>
+<p>Sends listening request for pygame events to the display service.
+The events parameter is expected to be a list of pygame event constants.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.addParticle" name="symbol-TopologyViewer3D.addParticle">addParticle(self, *particles)</a></h4>
+<p>Add particles to the system</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.breakBond" name="symbol-TopologyViewer3D.breakBond">breakBond(self, source, dest)</a></h4>
+<p>Break a bond from source to destination particle, specified by IDs</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.deselectAll" name="symbol-TopologyViewer3D.deselectAll">deselectAll(self)</a></h4>
+<p>Deselect all particles.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.doCommand" name="symbol-TopologyViewer3D.doCommand">doCommand(self, msg)</a></h4>
+<p>Proceses a topology command tuple:
+[ &quot;ADD&quot;, &quot;NODE&quot;, &lt;id&gt;, &lt;name&gt;, &lt;positionSpec&gt;, &lt;particle type&gt; ]
+[ &quot;DEL&quot;, &quot;NODE&quot;, &lt;id&gt; ]
+[ &quot;ADD&quot;, &quot;LINK&quot;, &lt;id from&gt;, &lt;id to&gt; ]
+[ &quot;DEL&quot;, &quot;LINK&quot;, &lt;id from&gt;, &lt;id to&gt; ]
+[ &quot;DEL&quot;, &quot;ALL&quot; ]
+[ &quot;GET&quot;, &quot;ALL&quot; ]</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.draw" name="symbol-TopologyViewer3D.draw">draw(self)</a></h4>
+<p>Dummy method reserved for future use</p>
+<p>Invoke draw() and save its commands to a newly generated displaylist.</p>
+<p>The displaylist name is then sent to the display service via a
+&quot;DISPLAYLIST_UPDATE&quot; request.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.drawParticles" name="symbol-TopologyViewer3D.drawParticles">drawParticles(self, *particles)</a></h4>
+<p>Sends particles drawing opengl command to the display service.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.getParticleLabel" name="symbol-TopologyViewer3D.getParticleLabel">getParticleLabel(self, node_id)</a></h4>
+<p>getParticleLabel(node_id) -&gt; particle's name</p>
+<p>Returns the name/label of the specified particle.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.getTopology" name="symbol-TopologyViewer3D.getTopology">getTopology(self)</a></h4>
+<p>getTopology() -&gt; list of command tuples that would build the current topology</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.gotoDisplayLevel" name="symbol-TopologyViewer3D.gotoDisplayLevel">gotoDisplayLevel(self, dlevel)</a></h4>
+<p>Switch to another display level.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.handleEvents" name="symbol-TopologyViewer3D.handleEvents">handleEvents(self)</a></h4>
+<p>Handle events.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.handleKeyEvents" name="symbol-TopologyViewer3D.handleKeyEvents">handleKeyEvents(self, event)</a></h4>
+<p>Handle keyboard events.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.handleMouseEvents" name="symbol-TopologyViewer3D.handleMouseEvents">handleMouseEvents(self, event)</a></h4>
+<p>Handle mouse events.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.initialiseComponent" name="symbol-TopologyViewer3D.initialiseComponent">initialiseComponent(self)</a></h4>
+<p>Initialises.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.main" name="symbol-TopologyViewer3D.main">main(self)</a></h4>
+<p>Main loop.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.makeBond" name="symbol-TopologyViewer3D.makeBond">makeBond(self, source, dest)</a></h4>
+<p>Make a bond from source to destination particle, specified by IDs</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.quit" name="symbol-TopologyViewer3D.quit">quit(self[, msg])</a></h4>
+<p>Cause termination.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.removeListenEvents" name="symbol-TopologyViewer3D.removeListenEvents">removeListenEvents(self, events)</a></h4>
+<p>Sends stop listening request for pygame events to the display service.
+The events parameter is expected to be a list of pygame event constants.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.removeParticle" name="symbol-TopologyViewer3D.removeParticle">removeParticle(self, *ids)</a></h4>
+<p>Remove particle(s) specified by their ids.</p>
+<p>Also breaks any bonds to/from that particle.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.rotateParticles" name="symbol-TopologyViewer3D.rotateParticles">rotateParticles(self, particles, dAngle)</a></h4>
+<p>Rotate the particles around their common centre dAngle degree.
+Particles is a list; dAngle is a triple tuple of degree.
+If particles are given an empty list, rotate all particles instead.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.scroll" name="symbol-TopologyViewer3D.scroll">scroll(self)</a></h4>
+<p>Scroll the surface by resetting gluLookAt.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.selectParticle" name="symbol-TopologyViewer3D.selectParticle">selectParticle(self, particle)</a></h4>
+<p>Select the specified particle.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3D.updateParticleLabel" name="symbol-TopologyViewer3D.updateParticleLabel">updateParticleLabel(self, node_id, new_name)</a></h4>
+<p>updateParticleLabel(node_id, new_name) -&gt; updates the given nodes name &amp; visual label if it exists</p>
+<p>node_id - an id for an already existing node
+new_name - a string (may include spaces) defining the new node name</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

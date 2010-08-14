@@ -1,0 +1,185 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Codec.YUV4MPEG.FrameToYUV4MPEG </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Codec.YUV4MPEG.FrameToYUV4MPEG</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Codec.html">Codec</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.html">YUV4MPEG</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.FrameToYUV4MPEG.html">FrameToYUV4MPEG</a></h1>
+<p>For examples and more explanations, see the <a class="reference" href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-FrameToYUV4MPEG">class FrameToYUV4MPEG(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>FrameToYUV4MPEG() -&gt; new FrameToYUV4MPEG component.</p>
+<p>Parses uncompressed video frame data structures sent to its &quot;inbox&quot; inbox
+and writes YUV4MPEG format binary data as strings to its &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-FrameToYUV4MPEG.Inboxes" name="symbol-FrameToYUV4MPEG.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-FrameToYUV4MPEG.Outboxes" name="symbol-FrameToYUV4MPEG.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-FrameToYUV4MPEG.canShutdown" name="symbol-FrameToYUV4MPEG.canShutdown">canShutdown(self)</a></h4>
+<p>Returns true if the component should terminate when it has finished
+processing any pending data.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-FrameToYUV4MPEG.checkShutdown" name="symbol-FrameToYUV4MPEG.checkShutdown">checkShutdown(self)</a></h4>
+<p>Collects any new shutdown messages arriving at the &quot;control&quot; inbox, and
+ensures self.shutdownMsg contains the highest priority one encountered
+so far.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-FrameToYUV4MPEG.main" name="symbol-FrameToYUV4MPEG.main">main(self)</a></h4>
+<p>Main loop</p>
+</div>
+<div class="section">
+<h4><a id="symbol-FrameToYUV4MPEG.mustShutdown" name="symbol-FrameToYUV4MPEG.mustShutdown">mustShutdown(self)</a></h4>
+<p>Returns true if the component should terminate immediately.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-FrameToYUV4MPEG.sendoutbox" name="symbol-FrameToYUV4MPEG.sendoutbox">sendoutbox(self, data)</a></h4>
+<p>Generator.</p>
+<p>Sends data out of the &quot;outbox&quot; outbox. If the destination is full
+(noSpaceInBox exception) then it waits until there is space. It keeps
+retrying until it succeeds.</p>
+<p>If the component is ordered to immediately terminate then &quot;STOP&quot; is
+raised as an exception.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-FrameToYUV4MPEG.write_frame" name="symbol-FrameToYUV4MPEG.write_frame">write_frame(self, frame)</a></h4>
+<p>Generator.</p>
+<p>Writes out YUV4MPEG format frame marker and data.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-FrameToYUV4MPEG.write_header" name="symbol-FrameToYUV4MPEG.write_header">write_header(self, frame)</a></h4>
+<p>Generator.</p>
+<p>Sends the YUV4MPEG format header to the &quot;outbox&quot; outbox, based on
+attributes of the supplied frame data structure.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

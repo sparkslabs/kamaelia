@@ -1,0 +1,566 @@
+<html><body><table>
+            <tr><td>[00:50] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[01:06] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[05:59] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[06:15] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[06:53] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:53] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:53] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[08:20] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:24] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:27] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[08:48] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[08:55] &lt orphans&gt morning Lawouach_</td></tr>
+            <tr><td>[08:58] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt morning orphans</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt feeling better?</td></tr>
+            <tr><td>[09:10] &lt orphans&gt a bit tired but not too bad ta</td></tr>
+            <tr><td>[09:10] &lt orphans&gt slightly lost in my own code at the moment too, but that's my fault :)</td></tr>
+            <tr><td>[09:11] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:11] &lt MS-&gt morning</td></tr>
+            <tr><td>[09:12] &lt orphans&gt hey MS-</td></tr>
+            <tr><td>[09:23] &lt Lawouach_&gt hi MS-</td></tr>
+            <tr><td>[09:24] *** Lawouach_ will have to look at the mid-term eval this week closely</td></tr>
+            <tr><td>[09:24] *** Lawouach_ has the mighty power</td></tr>
+            <tr><td>[09:26] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:26] &lt orphans&gt :o</td></tr>
+            <tr><td>[09:30] &lt MS-&gt Quote of the day: "don't tell me vista is popular because X million users have it. ... lots of people have cancer, both through not having a choice"</td></tr>
+            <tr><td>[09:32] &lt Lawouach_&gt ouch :)</td></tr>
+            <tr><td>[09:55] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:59] *** MS- randomly breaks Pablo's branch (removal/replacement of LikeFile.py - which simply should not even be used any more due to deletion from /trunk)</td></tr>
+            <tr><td>[09:59] &lt MS-&gt He's writing a test framework and sould know better</td></tr>
+            <tr><td>[10:02] &lt MS-&gt It's worse in that he actually appears to have branched off /trunk and added it back in</td></tr>
+            <tr><td>[10:09] *** MS- adds in evilness</td></tr>
+            <tr><td>[10:16] &lt Davbo&gt morning all</td></tr>
+            <tr><td>[10:16] &lt MS-&gt Anyone know how to use ctypes to cause a segfault?</td></tr>
+            <tr><td>[10:17] &lt MS-&gt Davbo: morning</td></tr>
+            <tr><td>[10:31] *** MS- thinks this is pretty evil:</td></tr>
+            <tr><td>[10:31] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_PO_Tests/Axon/Axon/LikeFile.py</td></tr>
+            <tr><td>[10:33] &lt Davbo&gt umm</td></tr>
+            <tr><td>[10:35] &lt MS-&gt He shouldn't be using it and knows it.</td></tr>
+            <tr><td>[10:35] &lt Davbo&gt ah</td></tr>
+            <tr><td>[10:35] &lt MS-&gt "Adding private_MPS_Scratch/**/LikeFile.py to the testing branch. Although I should use Handle instead of LikeFile, "</td></tr>
+            <tr><td>[10:35] &lt Davbo&gt I thought you'd just gone crazy</td></tr>
+            <tr><td>[10:36] &lt MS-&gt No :)</td></tr>
+            <tr><td>[10:41] &lt MS-&gt It's a bit harsh, but he's not actually doing anything I've asked so far</td></tr>
+            <tr><td>[10:42] &lt MS-&gt At the moment he appears to just be writing a clone of the "Planet" aggregator code and assuming that in doing so he'll invent something useful for testing things that aren't his KamPlanet code</td></tr>
+            <tr><td>[10:43] &lt MS-&gt Probably is, that is incredibly unlikely to be useful for, for example, testing random graphlines webserver/client systems</td></tr>
+            <tr><td>[10:43] &lt MS-&gt testing input/output with devices (midi, pygame)</td></tr>
+            <tr><td>[10:43] &lt MS-&gt testing code components (dirac, vorbis)</td></tr>
+            <tr><td>[10:43] &lt MS-&gt etc</td></tr>
+            <tr><td>[10:44] &lt MS-&gt Which is his project was "Build a clone of 'Planet'" would be OK</td></tr>
+            <tr><td>[10:44] &lt MS-&gt but it isn't</td></tr>
+            <tr><td>[10:45] &lt Davbo&gt Huh, a "Planet" as in a sort of Python Planet ? the blog aggregating stuff?</td></tr>
+            <tr><td>[10:45] &lt orphans&gt ew, just remembered I need to do a load of work on MIDI support</td></tr>
+            <tr><td>[10:45] *** orphans alters schedule</td></tr>
+            <tr><td>[10:45] &lt MS-&gt Davbo: yep</td></tr>
+            <tr><td>[10:46] &lt MS-&gt It's Ok as a test for a 2-3 week period (max)</td></tr>
+            <tr><td>[10:46] &lt MS-&gt But to not talk to _anyone_ else even when prompted repeatedly about what they actually do/need is bizarre</td></tr>
+            <tr><td>[10:47] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[10:49] &lt Davbo&gt LugRadio are finishing up after this LugRadio live later this month MS- (thought you might have been interested)</td></tr>
+            <tr><td>[10:50] *** Davbo is just listening to todays episode where they announce it</td></tr>
+            <tr><td>[10:50] &lt MS-&gt finishing up?</td></tr>
+            <tr><td>[10:50] &lt Davbo&gt Yeah they're stopping the show</td></tr>
+            <tr><td>[10:50] &lt MS-&gt really?</td></tr>
+            <tr><td>[10:50] &lt Davbo&gt because they don't want to become Spandau Ballet, or so they say lol</td></tr>
+            <tr><td>[10:50] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[10:51] &lt MS-&gt heh</td></tr>
+            <tr><td>[10:51] &lt MS-&gt cool</td></tr>
+            <tr><td>[10:53] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_PO_Tests/Axon/Axon/LikeFile.py</td></tr>
+            <tr><td>[10:53] &lt MS-&gt -- will now cause a segfault and crash</td></tr>
+            <tr><td>[11:29] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:33] &lt orphans&gt quick question - is there any sort of dirty hack I can do to get a component to start running it's main loop a second or two after the rest of the components??</td></tr>
+            <tr><td>[11:33] &lt orphans&gt s/??/?</td></tr>
+            <tr><td>[11:33] &lt orphans&gt s/it's/its</td></tr>
+            <tr><td>[11:33] &lt orphans&gt I fail at writing</td></tr>
+            <tr><td>[11:35] &lt Lawouach_&gt I don't recall any such parameters</td></tr>
+            <tr><td>[11:35] &lt Lawouach_&gt I assume you could put a time.sleep() at the top of the main()</td></tr>
+            <tr><td>[11:36] &lt orphans&gt Ahh yeah, hadn't thought of that. it should do the trick for me</td></tr>
+            <tr><td>[11:39] &lt orphans&gt woop, syncing code finally works :)</td></tr>
+            <tr><td>[11:51] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[11:55] *** Davbo may have to go to LugRadio Live now it's the last one</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt MS-: I took the liberty of replying to Pablo</td></tr>
+            <tr><td>[12:02] *** Davbo hopes Pablo gets stuff sorted</td></tr>
+            <tr><td>[12:05] &lt Lawouach_&gt I hope so too of course.</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt That's why i'm insisting so much for GSoC student to consider their commitment as a work placement. A project does expect a certain level of work and result.</td></tr>
+            <tr><td>[12:07] &lt Lawouach_&gt If Pablo was doing stuff on his own outside GSoC things would be easier.</td></tr>
+            <tr><td>[12:10] &lt Davbo&gt Yeah#</td></tr>
+            <tr><td>[12:12] &lt Davbo&gt Humm, should</td></tr>
+            <tr><td>[12:12] &lt Davbo&gt Graphline (</td></tr>
+            <tr><td>[12:12] &lt Davbo&gt blah phone</td></tr>
+            <tr><td>[12:15] &lt Davbo&gt Ahaa.</td></tr>
+            <tr><td>[12:16] &lt Davbo&gt MS-: That code works with a Graphline but not ProcessGraphline</td></tr>
+            <tr><td>[12:17] &lt Davbo&gt For some reason</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt http://davbo.pastebin.com/m4c9f30bd Works</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt http://davbo.pastebin.com/me02e211 Doesn't work</td></tr>
+            <tr><td>[12:29] &lt MS-&gt ProcessGraphline is currently not yet supported</td></tr>
+            <tr><td>[12:30] &lt MS-&gt Though if you want to look at the code, you're more than welcome to do so :-)</td></tr>
+            <tr><td>[12:30] &lt MS-&gt that's a useful test case though - thanks :-D</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt Just letting you know</td></tr>
+            <tr><td>[12:33] &lt MS-&gt much appreciated</td></tr>
+            <tr><td>[12:33] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:33] *** MS- stressed</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt how so?</td></tr>
+            <tr><td>[12:37] *** MS- certainly doesn't take offense FWIW</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt cool</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Oh, there's a meeting today, bit behind on work stuff, meeting is an hour earlier than expected, and someone phoned up for a pre-meeting meeting - when an email would've been quicker/more async to deal with - the usual sort of work crap</td></tr>
+            <tr><td>[12:38] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:39] &lt MS-&gt nothing major</td></tr>
+            <tr><td>[12:39] &lt MS-&gt Nothing a good cup of coffee won't cure later on :)</td></tr>
+            <tr><td>[12:39] &lt MS-&gt I thought it worth mentioning because my comment to Davbo looked curt, and wasn't the intent</td></tr>
+            <tr><td>[12:39] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:39] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:40] &lt MS-&gt Pablo's mail is far too long for me to read at the moment as a result, so just responded to the likefile comment</td></tr>
+            <tr><td>[12:41] *** Davbo is looking at hotels in Wolverhampton :-)</td></tr>
+            <tr><td>[12:41] *** MS- stayed at the premier inn (nee premier travel inn, nee travel inn) last year</td></tr>
+            <tr><td>[12:41] &lt MS-&gt was nice</td></tr>
+            <tr><td>[12:41] &lt MS-&gt But then I like those places</td></tr>
+            <tr><td>[12:42] &lt MS-&gt what date is it?</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt Dunno if i'll go, never been to one of these things.</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt 19-20 July</td></tr>
+            <tr><td>[12:42] &lt MS-&gt You should definitely go</td></tr>
+            <tr><td>[12:43] &lt MS-&gt Or to Pycon :)</td></tr>
+            <tr><td>[12:43] &lt MS-&gt (pycon uk)</td></tr>
+            <tr><td>[12:43] &lt MS-&gt Since they're community organised events and generally very cool</td></tr>
+            <tr><td>[12:44] &lt MS-&gt If it wasn't for something happening later that week, I'd be definitely going without thinking. (not sure at this instant if I *can* go basically)</td></tr>
+            <tr><td>[12:44] &lt Davbo&gt I'm gonna go to PyCon but not LugRadio is ending I want to go to this too :-)</td></tr>
+            <tr><td>[12:44] &lt MS-&gt But that's more about timing rather than anything else :)</td></tr>
+            <tr><td>[12:44] *** MS- nods</td></tr>
+            <tr><td>[12:45] &lt Davbo&gt s/not/now</td></tr>
+            <tr><td>[12:48] *** MS- tods</td></tr>
+            <tr><td>[12:57] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[12:57] &lt Trun&gt hi all</td></tr>
+            <tr><td>[13:00] &lt MS-&gt Afternoon Pablo. I'll need to delay our meeting until 3 since I'm expected to be on a phone conf between 2 & 3</td></tr>
+            <tr><td>[13:00] &lt MS-&gt (localtime is 2pm now)</td></tr>
+            <tr><td>[13:00] &lt Trun&gt ok</td></tr>
+            <tr><td>[13:01] &lt MS-&gt if the person who organised it gives me a number to call that is or phones me</td></tr>
+            <tr><td>[13:01] &lt MS-&gt (still waiting)</td></tr>
+            <tr><td>[13:01] &lt MS-&gt I haven't had a chance to read your long reply justifying stuff</td></tr>
+            <tr><td>[13:02] &lt MS-&gt I'm not particularly interested in justifications though - I am interested in what your project is doing , why it's doing things in a certain way (the most important bit) and where you intend going next (and why)</td></tr>
+            <tr><td>[13:03] &lt MS-&gt The *why* has always been implicit and I never realised I needed to spell it out</td></tr>
+            <tr><td>[13:03] &lt MS-&gt but have been posting to you regularly asking for informtaion, asking you to start talking to the rest of us etc</td></tr>
+            <tr><td>[13:03] &lt MS-&gt And nada, zip, zilch</td></tr>
+            <tr><td>[13:04] &lt MS-&gt I was primarily warning you that a time would come when I stop asking because it's having no effect</td></tr>
+            <tr><td>[13:04] &lt MS-&gt By comparison, chong was having similar problems with his checkin messages (which is why I emailed both of you)</td></tr>
+            <tr><td>[13:04] &lt MS-&gt and he's improved</td></tr>
+            <tr><td>[13:04] &lt MS-&gt Dramatically so in fact</td></tr>
+            <tr><td>[13:05] &lt MS-&gt which is much more fun and useful for both of us</td></tr>
+            <tr><td>[13:06] &lt MS-&gt For example, I have no indication where you are relative to your public schedule here:</td></tr>
+            <tr><td>[13:06] &lt MS-&gt http://edit.kamaelia.org/Developers/Projects/TestingFramework</td></tr>
+            <tr><td>[13:07] &lt MS-&gt And its scary: "Freeze the testing framework API"</td></tr>
+            <tr><td>[13:07] &lt MS-&gt in what, 3 days?</td></tr>
+            <tr><td>[13:07] &lt MS-&gt With *zero* discussion with the users of the framework?</td></tr>
+            <tr><td>[13:07] &lt MS-&gt That's pointless</td></tr>
+            <tr><td>[13:08] &lt Trun&gt yeah, I know</td></tr>
+            <tr><td>[13:09] &lt MS-&gt You may wish to read todays log as well</td></tr>
+            <tr><td>[13:09] &lt MS-&gt Since you don't bother hanging around on IRC</td></tr>
+            <tr><td>[13:09] &lt MS-&gt http://yeoldeclue.com/logs/kamaelia2008-07-01_log.html</td></tr>
+            <tr><td>[13:09] *** MS- feels like he's wasting his time</td></tr>
+            <tr><td>[13:10] &lt MS-&gt (doesn't help that still haven't been phone by the people running the meeting)</td></tr>
+            <tr><td>[13:11] &lt Trun&gt (I'm reading the logs)</td></tr>
+            <tr><td>[13:12] &lt Trun&gt done</td></tr>
+            <tr><td>[13:12] &lt MS-&gt You'll find that the version of LikeFile in our branch will now bomb out</td></tr>
+            <tr><td>[13:12] &lt Trun&gt yeah, I saw it in the commits list</td></tr>
+            <tr><td>[13:12] &lt MS-&gt It was deleted from /trunk for good reasons</td></tr>
+            <tr><td>[13:13] &lt Trun&gt yeah, I know</td></tr>
+            <tr><td>[13:13] &lt Trun&gt I just thought that I could start writing tests if I added it temporarily</td></tr>
+            <tr><td>[13:13] &lt MS-&gt You could use handle</td></tr>
+            <tr><td>[13:13] &lt MS-&gt That works</td></tr>
+            <tr><td>[13:13] &lt Trun&gt since last week I had problems using Handle</td></tr>
+            <tr><td>[13:13] &lt MS-&gt The examples in the distribution were rewritten</td></tr>
+            <tr><td>[13:13] &lt MS-&gt Specifically to use Handle</td></tr>
+            <tr><td>[13:13] &lt Trun&gt yeah, I saw the examples</td></tr>
+            <tr><td>[13:13] &lt MS-&gt In which case you should post the problems to the list</td></tr>
+            <tr><td>[13:14] &lt MS-&gt or discuss on IRC</td></tr>
+            <tr><td>[13:14] &lt Trun&gt but still, the way it works is different</td></tr>
+            <tr><td>[13:14] &lt MS-&gt Yes</td></tr>
+            <tr><td>[13:14] &lt MS-&gt It is</td></tr>
+            <tr><td>[13:14] &lt MS-&gt Slightly</td></tr>
+            <tr><td>[13:14] &lt MS-&gt not radically</td></tr>
+            <tr><td>[13:14] &lt MS-&gt slightly</td></tr>
+            <tr><td>[13:14] &lt Trun&gt yeah, I should have asked in the list</td></tr>
+            <tr><td>[13:14] &lt MS-&gt This isn't a problem - it was the first release with the code in.</td></tr>
+            <tr><td>[13:15] &lt MS-&gt Anyway, at present I can't use your testing framework, and see no reason to as a result</td></tr>
+            <tr><td>[13:16] &lt MS-&gt And we're 6 weeks in</td></tr>
+            <tr><td>[13:16] &lt Trun&gt last week I couldn't get KamTestCase working with it. That's why I commited a KamTestCase "using it" but broken, and then I commited the old version again</td></tr>
+            <tr><td>[13:16] &lt MS-&gt 5 and a bit</td></tr>
+            <tr><td>[13:16] &lt MS-&gt No, I mean more fundamentally</td></tr>
+            <tr><td>[13:16] &lt MS-&gt you've not bothered documenting it</td></tr>
+            <tr><td>[13:16] &lt Trun&gt why do you say you can't use it?</td></tr>
+            <tr><td>[13:16] &lt MS-&gt you've not bothered creating small examples</td></tr>
+            <tr><td>[13:16] &lt Trun&gt you mean no documentation?</td></tr>
+            <tr><td>[13:16] &lt MS-&gt (14:23:29) Trun: why do you say you can't use it?</td></tr>
+            <tr><td>[13:16] &lt MS-&gt (14:23:23) MS-: you've not bothered documenting it</td></tr>
+            <tr><td>[13:16] &lt MS-&gt (14:23:30) MS-: you've not bothered creating small examples</td></tr>
+            <tr><td>[13:17] &lt MS-&gt You do realise that without any docs you wouldn't stand a chance of using any part of kamaelia?</td></tr>
+            <tr><td>[13:17] &lt MS-&gt You've created a branch for unknown reasons</td></tr>
+            <tr><td>[13:18] &lt MS-&gt You've not explained anywhere AFAICT what the code in where does what</td></tr>
+            <tr><td>[13:18] &lt Trun&gt I did a simple sample for it: https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/PO/KamPlanet/test/test_SimpleSample.py</td></tr>
+            <tr><td>[13:18] &lt MS-&gt (IRC Is not appropriate)</td></tr>
+            <tr><td>[13:18] &lt MS-&gt Oh right</td></tr>
+            <tr><td>[13:18] &lt MS-&gt How silly of me to miss that</td></tr>
+            <tr><td>[13:18] &lt MS-&gt ~/kamaelia/trunk/Sketches/PO&gt find |grep py$|wc</td></tr>
+            <tr><td>[13:18] &lt MS-&gt  48 48 1568</td></tr>
+            <tr><td>[13:18] &lt MS-&gt 48 files</td></tr>
+            <tr><td>[13:18] &lt Trun&gt and I thought that the tests of kamplanet were good "samples"</td></tr>
+            <tr><td>[13:18] &lt MS-&gt one example</td></tr>
+            <tr><td>[13:19] &lt MS-&gt Trun: That's like me saying the Whiteboard code is a good example of how to use a backplane</td></tr>
+            <tr><td>[13:19] &lt Trun&gt ok</td></tr>
+            <tr><td>[13:20] &lt MS-&gt 12,225 lines</td></tr>
+            <tr><td>[13:20] &lt MS-&gt ~/kamaelia/trunk/Sketches/PO&gt wc `find |grep py$`</td></tr>
+            <tr><td>[13:20] &lt Trun&gt I created the branch trying to do what you told me to do in an e-mail to the list</td></tr>
+            <tr><td>[13:20] &lt MS-&gt Why not actually TALK then?</td></tr>
+            <tr><td>[13:20] &lt MS-&gt Seriously</td></tr>
+            <tr><td>[13:20] &lt Trun&gt  * After you're *relatively* happy that you can test kamplanet "enough", I</td></tr>
+            <tr><td>[13:20] &lt Trun&gt  would suggest that you move on to creating a branch[1] and working in:</td></tr>
+            <tr><td>[13:20] &lt Trun&gt  /branches/&lt yourbranch&gt/Kamaelia/Kamaelia/Test</td></tr>
+            <tr><td>[13:21] &lt MS-&gt Subject?</td></tr>
+            <tr><td>[13:21] &lt Trun&gt "Testing Framework: current state report"</td></tr>
+            <tr><td>[13:21] &lt Trun&gt 11 Jun 2008 10:32:11 +0100</td></tr>
+            <tr><td>[13:21] &lt MS-&gt OFFS</td></tr>
+            <tr><td>[13:21] &lt MS-&gt nearly 3 weeks ago?</td></tr>
+            <tr><td>[13:22] &lt Trun&gt yeah, I started testing HTTP in the KamPlanet test folder</td></tr>
+            <tr><td>[13:22] &lt MS-&gt Why?</td></tr>
+            <tr><td>[13:22] &lt MS-&gt That is the SINGLE most important question</td></tr>
+            <tr><td>[13:22] &lt Trun&gt then I moved to the new branch to add it "more properly" to then add more tests of Kamaelia.Chassis.* and so on</td></tr>
+            <tr><td>[13:22] &lt MS-&gt That you always need an answer for</td></tr>
+            <tr><td>[13:22] &lt MS-&gt I mean that was 3 *week*s ago</td></tr>
+            <tr><td>[13:23] &lt MS-&gt I give up</td></tr>
+            <tr><td>[13:23] &lt Trun&gt because I didn't want to spend time creating the branch back then, and I waited as soon as I had tested something else (not KamPlanet)</td></tr>
+            <tr><td>[13:23] &lt MS-&gt you either build the project you proposed or you don't</td></tr>
+            <tr><td>[13:23] &lt MS-&gt If you don't I'll not bother with any of this</td></tr>
+            <tr><td>[13:24] &lt MS-&gt You need to read up on communications</td></tr>
+            <tr><td>[13:24] &lt MS-&gt and learn some communications skills</td></tr>
+            <tr><td>[13:24] &lt Trun&gt yes, I agree</td></tr>
+            <tr><td>[13:24] &lt MS-&gt rather than coming up for justifications for pissing around with kam planet</td></tr>
+            <tr><td>[13:24] &lt MS-&gt I'm not the most diplomatic of people in the world</td></tr>
+            <tr><td>[13:24] &lt Trun&gt ok, and I really want to move on from kam planet</td></tr>
+            <tr><td>[13:24] &lt MS-&gt To say the least</td></tr>
+            <tr><td>[13:25] &lt MS-&gt But I do aim for clarity</td></tr>
+            <tr><td>[13:25] &lt MS-&gt I'd like your project to be useful to the rest of us</td></tr>
+            <tr><td>[13:25] &lt Trun&gt i also want it to be useful</td></tr>
+            <tr><td>[13:25] &lt MS-&gt That's why you were accepted this year, and because you'd proposed it the previous year and it showed improvment</td></tr>
+            <tr><td>[13:25] &lt MS-&gt However at present you're just creating stuff that's of no use to anyone</td></tr>
+            <tr><td>[13:26] &lt MS-&gt The worlds best system is no use if no-one understands how to use it or why they should</td></tr>
+            <tr><td>[13:26] &lt MS-&gt And you'll just get upset and frustrated at the end of the summer if you end up in that situation</td></tr>
+            <tr><td>[13:26] &lt Trun&gt I know</td></tr>
+            <tr><td>[13:26] &lt MS-&gt 12 weeks, 3 months, and a minimum of 12,225 lines (since that's what you've done so far) and you'll be left with no-one knowing how to use it</td></tr>
+            <tr><td>[13:27] &lt MS-&gt That's perhaps the single harshest lesson we all learn from open source</td></tr>
+            <tr><td>[13:27] &lt MS-&gt that reality sucks :)</td></tr>
+            <tr><td>[13:27] &lt Trun&gt yeah</td></tr>
+            <tr><td>[13:27] &lt MS-&gt But also that communication is important</td></tr>
+            <tr><td>[13:27] &lt MS-&gt So, you can either carry on on your current path</td></tr>
+            <tr><td>[13:28] &lt MS-&gt or you can rummage around and find out how we have already been doing tests for the past 5 years</td></tr>
+            <tr><td>[13:28] &lt MS-&gt (because we do and have</td></tr>
+            <tr><td>[13:28] &lt MS-&gt )</td></tr>
+            <tr><td>[13:28] &lt MS-&gt And work with the project</td></tr>
+            <tr><td>[13:28] &lt MS-&gt or work in a quiet dark corner and have a very well tested kam planet</td></tr>
+            <tr><td>[13:28] &lt MS-&gt I was nearly that blunt 2 weeks ago</td></tr>
+            <tr><td>[13:29] &lt Trun&gt ok, I get it</td></tr>
+            <tr><td>[13:29] &lt MS-&gt k</td></tr>
+            <tr><td>[13:29] &lt MS-&gt good</td></tr>
+            <tr><td>[13:30] &lt MS-&gt I get to choose whether to cut my losses shortly, and would rather us have a disagreement now (where you probably think I'm annoying :) ) and end up with you happier at the end of the summer and something we can all use</td></tr>
+            <tr><td>[13:30] &lt MS-&gt than to just let it drift</td></tr>
+            <tr><td>[13:31] &lt MS-&gt But bear in mind that I didn't post this link to you : http://blog.red-bean.com/sussman/?p=96</td></tr>
+            <tr><td>[13:31] &lt MS-&gt for no reason</td></tr>
+            <tr><td>[13:31] &lt Trun&gt yeah, I have it printed on top of my laptop</td></tr>
+            <tr><td>[13:31] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:31] &lt Trun&gt s/laptop/desktop table/</td></tr>
+            <tr><td>[13:31] &lt MS-&gt I actually think CS courses are to blame for this behaviour BTW</td></tr>
+            <tr><td>[13:32] &lt MS-&gt ie something you've learnt rather than how you are - since it seems to be a problem with more experienced people</td></tr>
+            <tr><td>[13:32] &lt MS-&gt So in some respects it's unlearning and going back to basics</td></tr>
+            <tr><td>[13:32] &lt Lawouach_&gt They certainly don't encourage for communication across student projects (at least in many instances in the Uni I went to)</td></tr>
+            <tr><td>[13:33] &lt MS-&gt Lawouach_: Indeed. They also heavily encourage the "don't show anyone anything until it's perfect" mode of behaviour as well</td></tr>
+            <tr><td>[13:33] &lt MS-&gt The combination is a real pain</td></tr>
+            <tr><td>[13:35] &lt Lawouach_&gt indeed</td></tr>
+            <tr><td>[13:35] &lt Lawouach_&gt Hi Pablo BTW :)</td></tr>
+            <tr><td>[13:35] &lt Trun&gt Hi :-)</td></tr>
+            <tr><td>[13:35] &lt Trun&gt (answering your e-mail)</td></tr>
+            <tr><td>[13:36] &lt MS-&gt Trun: Just trying to say, this isn't necessarily just your natural behaviour - it may be reinforced by training</td></tr>
+            <tr><td>[13:36] &lt MS-&gt The manta of TDD is after all - "what's the minimal thing needed to make the test pass"</td></tr>
+            <tr><td>[13:37] &lt MS-&gt The minimal thing in TDD terms for creating a test framework (which is a little meta) would be "to collect all the existing tests in one place and make them run"</td></tr>
+            <tr><td>[13:37] &lt MS-&gt Then "to extract out the code that makes the run"</td></tr>
+            <tr><td>[13:37] &lt MS-&gt It also has the fringe benefit of being useful immediately</td></tr>
+            <tr><td>[13:38] &lt MS-&gt an "a priori" implementation would perhaps be useful</td></tr>
+            <tr><td>[13:38] &lt Trun&gt yeah, I really want to change the behaviour. I'm not used at all to this kind of communication etc. (my advisor doesn't even know python; and in the lab we all tend to work on our own most of the time)</td></tr>
+            <tr><td>[13:39] *** MS- nods</td></tr>
+            <tr><td>[13:39] &lt MS-&gt I guessed that</td></tr>
+            <tr><td>[13:39] &lt Trun&gt (no review, I usually don't even know in what my labmates are exactly working on)</td></tr>
+            <tr><td>[13:39] &lt MS-&gt But the point is watch the mailing list, and copy the beahviours</td></tr>
+            <tr><td>[13:39] &lt MS-&gt I think that's a work thing as well</td></tr>
+            <tr><td>[13:40] &lt Trun&gt yeah</td></tr>
+            <tr><td>[13:40] &lt MS-&gt I've got no idea what my colleague who is sharing my office is actually working on</td></tr>
+            <tr><td>[13:40] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:40] &lt MS-&gt Looks fun though</td></tr>
+            <tr><td>[13:40] &lt MS-&gt Involves cameras and finding stuff in images AFAICT</td></tr>
+            <tr><td>[13:41] &lt MS-&gt But the difference is that your code should be used by everyone in the project sooner or later - if its done even half right</td></tr>
+            <tr><td>[13:41] &lt MS-&gt Even if its just for core sections</td></tr>
+            <tr><td>[13:42] &lt MS-&gt Anyhow, I need you to go away, think about what you're doing, how you're doing it, and *why* you're making certain decisions</td></tr>
+            <tr><td>[13:42] &lt MS-&gt The why is very important</td></tr>
+            <tr><td>[13:43] &lt Davbo&gt MS-: quick question</td></tr>
+            <tr><td>[13:43] &lt MS-&gt Davbo: go</td></tr>
+            <tr><td>[13:43] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:43] &lt Davbo&gt can you point me at the docs for DisplayConfig(width=270, height=600)</td></tr>
+            <tr><td>[13:43] &lt Trun&gt ok</td></tr>
+            <tr><td>[13:44] &lt Trun&gt prior to all this stuff, I was going to keep testing more code even with the "old" LikeFile.py, which is obviously wrong</td></tr>
+            <tr><td>[13:45] &lt MS-&gt Davbo: do you mean this: http://edit.kamaelia.org/Components/pydoc/Kamaelia.UI.Pygame.Display.html</td></tr>
+            <tr><td>[13:46] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[13:46] &lt Trun&gt should I focus on documenting and making the testing framework ready for other uses with current Handle?</td></tr>
+            <tr><td>[13:46] &lt MS-&gt Trun: I'd focus on building something that we can actually use</td></tr>
+            <tr><td>[13:47] &lt Trun&gt ok</td></tr>
+            <tr><td>[13:47] &lt MS-&gt That is after all the core</td></tr>
+            <tr><td>[13:47] &lt Trun&gt yep</td></tr>
+            <tr><td>[13:47] &lt MS-&gt Now that Chong for example has his code to the stage it can be used, he's gotten feedback which is useful</td></tr>
+            <tr><td>[13:47] &lt MS-&gt It doesn't have to be pretty (helps)</td></tr>
+            <tr><td>[13:47] &lt MS-&gt Doesn't have to be large (large hinders)</td></tr>
+            <tr><td>[13:47] &lt MS-&gt But actually usable would be great</td></tr>
+            <tr><td>[13:47] &lt Lawouach_&gt I'll be honest but personally I would be more interested in seeing one dummy Axon component under test than a complete application like KamPlanet. At least on the first stage.</td></tr>
+            <tr><td>[13:48] &lt MS-&gt Ditto</td></tr>
+            <tr><td>[13:48] &lt Trun&gt yeah, I was answering the e-mail just a minute ago</td></tr>
+            <tr><td>[13:48] &lt MS-&gt I suspect also that given the amount of effort already expended that should be a relatively easy task</td></tr>
+            <tr><td>[13:48] &lt MS-&gt Trun: Rule #1 of meetings - you're either in it or not</td></tr>
+            <tr><td>[13:48] &lt Trun&gt yeah, I'm in</td></tr>
+            <tr><td>[13:48] &lt MS-&gt If you're in it, and doing emails, the meeting is pointless</td></tr>
+            <tr><td>[13:49] &lt Trun&gt ok</td></tr>
+            <tr><td>[13:49] &lt MS-&gt If you're doing emails then you shouldn't be in the meeting (that's a general opinion I have with all meetings tbh)</td></tr>
+            <tr><td>[13:50] &lt MS-&gt Anyway, that's actually the point of the examples director</td></tr>
+            <tr><td>[13:50] &lt MS-&gt y</td></tr>
+            <tr><td>[13:50] &lt Trun&gt ok, sorry for that (I haven't written even three lines, I started when I saw the e-mail before we talked)</td></tr>
+            <tr><td>[13:50] &lt MS-&gt all the examples there are small (generally) to the point of triviality</td></tr>
+            <tr><td>[13:50] &lt MS-&gt perhaps too trivial really</td></tr>
+            <tr><td>[13:51] &lt MS-&gt but they serve as basic intros</td></tr>
+            <tr><td>[13:52] &lt MS-&gt Have you read test driven design BTW/</td></tr>
+            <tr><td>[13:52] &lt MS-&gt ?</td></tr>
+            <tr><td>[13:52] &lt MS-&gt By Kent beck?</td></tr>
+            <tr><td>[13:52] &lt Trun&gt you mean the kent beck book?</td></tr>
+            <tr><td>[13:52] &lt MS-&gt I keep giving my copy away to people</td></tr>
+            <tr><td>[13:52] &lt MS-&gt to encourage better code</td></tr>
+            <tr><td>[13:53] &lt Trun&gt yeah, I also have it on my desktop</td></tr>
+            <tr><td>[13:53] &lt MS-&gt cool</td></tr>
+            <tr><td>[13:53] &lt Trun&gt yeah, I really like Kent Beck and Martin Fowler books</td></tr>
+            <tr><td>[13:53] &lt MS-&gt just that one</td></tr>
+            <tr><td>[13:54] &lt MS-&gt no, looks like I've given my one away (again)</td></tr>
+            <tr><td>[13:54] &lt Trun&gt :-)</td></tr>
+            <tr><td>[13:54] &lt MS-&gt Anyway, the point about it is that you'll not he spends about a third of the book building up how TDD systems work</td></tr>
+            <tr><td>[13:54] &lt MS-&gt and building a testing framework to go with it</td></tr>
+            <tr><td>[13:54] &lt Trun&gt the "refactoring: improving the design of existing code" by Martin Fowler (and contributions of Kent Beck) is also really really nice</td></tr>
+            <tr><td>[13:54] &lt MS-&gt deriving the latter from the former</td></tr>
+            <tr><td>[13:55] &lt MS-&gt May get work to buy that one</td></tr>
+            <tr><td>[13:55] &lt MS-&gt anyway, the point is that it starts small</td></tr>
+            <tr><td>[13:55] &lt MS-&gt and in his case it was with something dummy</td></tr>
+            <tr><td>[13:55] &lt MS-&gt but actually in the context of really recommending something real</td></tr>
+            <tr><td>[13:56] &lt MS-&gt It's worth considering</td></tr>
+            <tr><td>[13:56] &lt MS-&gt You could for example declare everything to date experimentation and effectively restart, but from a much greater knowledgebase/starting point</td></tr>
+            <tr><td>[13:57] &lt MS-&gt But progress rapidly by pulling in stuff that DOES do what you need/want</td></tr>
+            <tr><td>[13:57] &lt MS-&gt That DOES match with how we actually test things and assists with automating them</td></tr>
+            <tr><td>[13:58] *** Davbo feels like an idiot</td></tr>
+            <tr><td>[13:58] &lt Trun&gt hmm... I hadn't even considered it</td></tr>
+            <tr><td>[13:58] &lt Davbo&gt found what i wanted MS-</td></tr>
+            <tr><td>[13:58] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[13:59] &lt MS-&gt Trun: We often don't</td></tr>
+            <tr><td>[13:59] &lt MS-&gt Also for example</td></tr>
+            <tr><td>[13:59] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/GSOC08/MultiPipeTest.py</td></tr>
+            <tr><td>[13:59] &lt MS-&gt is specifically created for testing multi process stuff</td></tr>
+            <tr><td>[13:59] &lt Trun&gt do you think it would worth it? you mean by copying some code fragments when useful?</td></tr>
+            <tr><td>[14:00] &lt MS-&gt now I'm not saying you should make *that* test suite run automagically</td></tr>
+            <tr><td>[14:00] &lt MS-&gt but you'll note that it does this:</td></tr>
+            <tr><td>[14:00] &lt MS-&gt  if 0: # This stuff works</td></tr>
+            <tr><td>[14:00] &lt MS-&gt  &lt test&gt</td></tr>
+            <tr><td>[14:00] &lt MS-&gt  if 0: # Basic test of Source/Expecter</td></tr>
+            <tr><td>[14:00] &lt MS-&gt  &lt another&gt</td></tr>
+            <tr><td>[14:00] &lt MS-&gt  if 1: # Basic test of Source/Expecter</td></tr>
+            <tr><td>[14:00] &lt MS-&gt  &lt another&gt</td></tr>
+            <tr><td>[14:00] &lt MS-&gt  if 0:</td></tr>
+            <tr><td>[14:00] &lt MS-&gt  &lt another&gt</td></tr>
+            <tr><td>[14:01] &lt MS-&gt which isn't uncommon</td></tr>
+            <tr><td>[14:01] &lt MS-&gt And is a *very* manual way of testing something and ripe for automation</td></tr>
+            <tr><td>[14:02] &lt MS-&gt Heck it could be even that you do something like this</td></tr>
+            <tr><td>[14:02] &lt MS-&gt SchedulerKiller(timeout=...).activate()</td></tr>
+            <tr><td>[14:02] &lt MS-&gt Pipeline(TestSource(),</td></tr>
+            <tr><td>[14:02] &lt MS-&gt  Component(),</td></tr>
+            <tr><td>[14:02] &lt MS-&gt  TestSink(),</td></tr>
+            <tr><td>[14:02] &lt MS-&gt ).run()</td></tr>
+            <tr><td>[14:03] &lt MS-&gt and after it exits (cleanly or otherwise)</td></tr>
+            <tr><td>[14:03] &lt MS-&gt you check the results inside a testsink</td></tr>
+            <tr><td>[14:03] &lt Trun&gt oh, sounds really good</td></tr>
+            <tr><td>[14:03] &lt MS-&gt That's just one option</td></tr>
+            <tr><td>[14:03] &lt MS-&gt Your work so far may've opened up others</td></tr>
+            <tr><td>[14:04] &lt MS-&gt Build one to throw away after all</td></tr>
+            <tr><td>[14:04] &lt MS-&gt and all that</td></tr>
+            <tr><td>[14:04] &lt MS-&gt Even Davbo's done that with his paint app :)</td></tr>
+            <tr><td>[14:06] &lt MS-&gt (though I'm not sure if that was conscious good behaviour of just a good behavior by accident :) )</td></tr>
+            <tr><td>[14:06] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:07] &lt Trun&gt ok, I'll look how to do this</td></tr>
+            <tr><td>[14:08] &lt MS-&gt OK good</td></tr>
+            <tr><td>[14:09] &lt MS-&gt Can I have daily (short) status updates to the list for the next week in that case as well?</td></tr>
+            <tr><td>[14:09] &lt MS-&gt (Or at minimum every other day?)</td></tr>
+            <tr><td>[14:09] &lt Trun&gt ok</td></tr>
+            <tr><td>[14:09] &lt MS-&gt ta</td></tr>
+            <tr><td>[14:10] &lt MS-&gt (the more clear/frequent updates (==short & includes why) , the better chance we have of pushing things back on track before next friday...)</td></tr>
+            <tr><td>[14:10] &lt MS-&gt In a way that gives us both confidence</td></tr>
+            <tr><td>[14:11] &lt Trun&gt that's good</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt Believe it or not! that was conscious behaviour MS-! ;-)</td></tr>
+            <tr><td>[14:14] &lt Davbo&gt on a related note to earlier I've just managed to get a segfault</td></tr>
+            <tr><td>[14:14] &lt Davbo&gt Fatal Python error: (pygame parachute) Segmentation Fault</td></tr>
+            <tr><td>[14:27] &lt MS-&gt Davbo: cool</td></tr>
+            <tr><td>[14:27] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:27] &lt MS-&gt (re behaviour)</td></tr>
+            <tr><td>[14:27] &lt MS-&gt Re the segfault that's pretty impressive</td></tr>
+            <tr><td>[14:27] &lt MS-&gt Can you make it reprodicible?</td></tr>
+            <tr><td>[14:27] &lt MS-&gt If so, separating it out as a test case would be useful</td></tr>
+            <tr><td>[14:28] &lt Davbo&gt I'm not sure why it happens tbh, if it work it out I'll let you know</td></tr>
+            <tr><td>[14:28] &lt Davbo&gt if it's a pygame error i'll post it to their list</td></tr>
+            <tr><td>[14:34] &lt MS-&gt It could be a threading issue which is why I ask</td></tr>
+            <tr><td>[14:35] &lt MS-&gt If it is, it's a kamaelia problem not a pygame one</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt i'll checkin maybe you could have a look</td></tr>
+            <tr><td>[14:47] &lt MS-&gt ta</td></tr>
+            <tr><td>[14:48] &lt MS-&gt i'll or i've ?</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt oh sorry, it's up now :)</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt http://groups.google.com/group/google-summer-of-code-announce/web/student-survey-questions</td></tr>
+            <tr><td>[15:09] &lt Davbo&gt I can't even answer the first question :-(</td></tr>
+            <tr><td>[15:09] *** Davbo first contacted Kamaelia after GSoC was announced but before Kamaelia was accepted.</td></tr>
+            <tr><td>[15:25] &lt MS-&gt FWIW, it looks like the problem will be a kamaelia thing</td></tr>
+            <tr><td>[15:25] &lt MS-&gt I have to go now but back later</td></tr>
+            <tr><td>[15:25] &lt MS-&gt I'll explain later</td></tr>
+            <tr><td>[15:25] *** MS- does svn update for the train</td></tr>
+            <tr><td>[15:26] &lt Davbo&gt alright MS-</td></tr>
+            <tr><td>[15:26] &lt MS-&gt Regarding first Q - I'd say B in your case</td></tr>
+            <tr><td>[15:26] &lt MS-&gt Since it's not A</td></tr>
+            <tr><td>[15:26] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt Yeah I will do</td></tr>
+            <tr><td>[15:27] &lt MS-&gt OK biab</td></tr>
+            <tr><td>[15:27] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[15:37] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:37] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:43] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[15:43] Reply: does the macarena</td></tr>
+            <tr><td>[17:55] &lt Lawouach&gt back</td></tr>
+            <tr><td>[17:55] &lt orphans&gt hey Lawouach</td></tr>
+            <tr><td>[17:58] &lt Lawouach&gt hey mate</td></tr>
+            <tr><td>[17:59] &lt orphans&gt how's it going?</td></tr>
+            <tr><td>[17:59] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt good</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt give me a minute please :)</td></tr>
+            <tr><td>[18:02] &lt orphans&gt never! no-one escapes the English inquisition</td></tr>
+            <tr><td>[18:03] &lt orphans&gt or erm, yeah, cool</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt right-o</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt sorry</td></tr>
+            <tr><td>[18:09] &lt orphans&gt np :)</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt you can start</td></tr>
+            <tr><td>[18:11] &lt orphans&gt ok, so since I last spoke to you the main thing that I've done is sort out getting components to tempo-sync properly</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:11] &lt orphans&gt which turned out to be a bit harder than I though, but is OK (if a little hacky) now</td></tr>
+            <tr><td>[18:13] &lt orphans&gt but with that in place I can start work on the piano roll, and should be able to make real music :)</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt good</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt you seem to be on schedule according to your plan</td></tr>
+            <tr><td>[18:14] &lt orphans&gt yeah. I had to change it a bit today cause I remembered I need to sort out MIDI later on</td></tr>
+            <tr><td>[18:15] &lt orphans&gt but yeah, I think I'm pretty much on schedule now</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt I liked your StepSequencer code</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt It was well written</td></tr>
+            <tr><td>[18:17] &lt orphans&gt thanks</td></tr>
+            <tr><td>[18:18] &lt orphans&gt I've put a bit more docs in there now too (over the last few of hours)</td></tr>
+            <tr><td>[18:18] &lt orphans&gt s/of//</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt You'll have update some areas of the MusicTiming module so that it doesn't refer to the sched module any longer.</td></tr>
+            <tr><td>[18:20] &lt orphans&gt yeah, I added that to the TODO at the top</td></tr>
+            <tr><td>[18:20] &lt orphans&gt there's a couple of bits of doc I need to catch up on - I think I'm going to sort that out tomorrow morning</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt I've been able to start the jam application without problem</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt However I still don't get any sound... I assume it's because I haven't configured my MIDI output properly</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt Also, on the jam application I don't understand why there are two boxes but only one of them supports mouse events.</td></tr>
+            <tr><td>[18:22] &lt orphans&gt ooh, I've got a couple of things to commit for that. I don't know if you remember but I switched to pure-data for testing stuff</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt Yeah</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt But I've installed PureData from Synaptic</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt but not sure that helped: )</td></tr>
+            <tr><td>[18:23] &lt orphans&gt I'll get the stuff committed then update the getting started document and ping you</td></tr>
+            <tr><td>[18:24] &lt orphans&gt it should be really simple now, but I've got to sort out my setup files a bit</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt no worries</td></tr>
+            <tr><td>[18:24] &lt orphans&gt I forgot I hadn't committed it actually</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt I'm quite pleased how it moves forward, code wise I don't have much comment so far actually.</td></tr>
+            <tr><td>[18:24] &lt orphans&gt and the two boxes with one controllable is really a test of the network stuff - not really necessary now the step sequencer is running</td></tr>
+            <tr><td>[18:25] &lt orphans&gt cool :) touch wood it seems to be going fairly smoothly at the moment - things are working almost easier than I expected</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt That's what happens when you set the right bricks at the beginning</td></tr>
+            <tr><td>[18:26] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt Did you modify the TransformSplitter based on our discussion a couple of weeks ago?</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt Remember about the filters</td></tr>
+            <tr><td>[18:27] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:27] &lt orphans&gt oh, wait, maybe not</td></tr>
+            <tr><td>[18:27] &lt orphans&gt what was I supposed to do? Convert everything to using backplanes?</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt Well it's a bit rusty in my head</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:29] *** orphans reads back the logs</td></tr>
+            <tr><td>[18:30] &lt orphans&gt &lt  Lawouach&gt It might be better if the filter was a component</td></tr>
+            <tr><td>[18:30] &lt orphans&gt [18:32] &lt  Lawouach&gt rather than a function &lt = that?</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt I think I explained then how I would do it, didn't I?</td></tr>
+            <tr><td>[18:31] &lt orphans&gt yeah, reading through I've done what you suggested, using a SubscribeTo component for any data coming in through the socket then filtering it through various components</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[18:32] &lt orphans&gt yup - if you look in jam (which needs splitting up some) you can see how that works</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt you're not using the TransformerSplitter module anymore then?</td></tr>
+            <tr><td>[18:35] &lt orphans&gt no</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt alright, in that case could you remove it?</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt I mean later on :)</td></tr>
+            <tr><td>[18:37] &lt orphans&gt yeah. actually reminds me, there's another little test thing which could do with removing too</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt I like the code</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt It really smells like Kamaelia code :)</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt That's good.</td></tr>
+            <tr><td>[18:37] &lt orphans&gt cool :)</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt In fact I won't bother you any longer tonight. You're moving forward and that's good. I will ask you one thing though...</td></tr>
+            <tr><td>[18:38] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:39] &lt Lawouach&gt Since it's also mid-term for you as a student, along the GSoC questions you'll have to answer, could you think of what this experience has provided to you so far.</td></tr>
+            <tr><td>[18:39] &lt Lawouach&gt Don't worry, I'm not asking too much.</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt I'd like your view between now and three months ago.</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt Do you feel you've improved? Where? Are there areas you'd like to discuss about?</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt Things like that, don't write me an essay :)</td></tr>
+            <tr><td>[18:40] &lt orphans&gt ok, do you want it in email form or something?</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt No no.</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt I think we'll go through that on our next meeting.</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt It's really informal.</td></tr>
+            <tr><td>[18:41] &lt orphans&gt ahh, ok</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt so don't put too much time into it, just think a bit about it and draw me the big picture next week :)</td></tr>
+            <tr><td>[18:43] &lt orphans&gt yeah, I will. I've kinda been thinking about it as I've gone along, but I'll try and get the thoughts in some sort of coherent order :)</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt Thanks. Much appreciated.</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt Well that's all for me for this evening.</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt I'll be looking forward having sound from your application :)</td></tr>
+            <tr><td>[18:44] &lt orphans&gt ok, cool</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt And I'll be even more interested in launching several jam clients at the same time</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt and see what happens :)</td></tr>
+            <tr><td>[18:44] &lt orphans&gt yeah - it currently sounds (kinda) lovely here</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt ah :)</td></tr>
+            <tr><td>[18:45] &lt orphans&gt that is if you like listening to drum beats repeating for ever (which I do :))</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt that's what happens whenever I use hydrogen :)</td></tr>
+            <tr><td>[18:47] &lt orphans&gt I played a gig a couple of weeks ago, had to spend like a day listening to the same beat in hydrogen so I learnt the lyrics :)</td></tr>
+            <tr><td>[18:48] &lt orphans&gt actually, if you're interested - http://www.archive.org/details/FourLiveSongs</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt http://fr.youtube.com/watch?v=_SGwDhKTrwU &lt -- did they steal your idea?</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:48] &lt orphans&gt nah, they stole monome's idea</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt will be listening to it</td></tr>
+            <tr><td>[18:48] &lt orphans&gt going to make a monome emulator when I get a chance</td></tr>
+            <tr><td>[18:49] &lt orphans&gt I think it'll only be a ~10 line hack, which is fun :)</td></tr>
+            <tr><td>[18:52] &lt orphans&gt right I'm off to get some food I think. Cheers Lawouach</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt np</td></tr>
+            <tr><td>[19:21] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:08] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[21:26] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[21:30] *** Davbo is eating large amounts of Prawn Crackers</td></tr>
+            <tr><td>[21:30] *** MS- has found the .tld ".cat"</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt where's that for?</td></tr>
+            <tr><td>[21:31] &lt MS-&gt catalonia</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt huh, makes sense</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt one day I'll get dav.bo! but that damn Bolivia don't like handing out the top top ones</td></tr>
+            <tr><td>[21:32] &lt MS-&gt .cat appears to be quite expensive sadly</td></tr>
+            <tr><td>[21:32] &lt MS-&gt â‚¬62</td></tr>
+            <tr><td>[21:33] &lt MS-&gt (for a year)</td></tr>
+            <tr><td>[21:36] &lt Davbo&gt £?</td></tr>
+            <tr><td>[21:37] &lt Davbo&gt Sorry it didn't show up properly, probably because I'm in Windows (to play Team Fortress 2 with some friends :))</td></tr>
+            <tr><td>[21:47] &lt j_baker_&gt Hey MS-: what about having a Plugins directory in the tree? I'm not really sure about putting the WsgiApps in the Apps directory because they're not really standalone apps.</td></tr>
+            <tr><td>[23:11] &lt MS-&gt Plugins is a strange concept - largely because kamaelia code *is* plugins</td></tr>
+            <tr><td>[23:12] &lt MS-&gt The things you're talking about are really support code for a WSGI app.</td></tr>
+            <tr><td>[23:12] &lt MS-&gt But it's a little late here, so I'll need to discuss that another time</td></tr>
+            <tr><td>[23:13] &lt MS-&gt However, my intent/feeling here is that the code in the WSGI server stuff is actually sufficient to mark it as a separate app (and packageable seperately - independently from your main project - which opens up that aspect)</td></tr>
+            <tr><td>[23:14] &lt MS-&gt They also don't make sense incidentally as "shards" which is a concept we explored last summer - since those are about creating "sub-component pieces" that can be aggregated into a real component</td></tr>
+            <tr><td>[23:55] &lt Davbo&gt Just been playing Audiosurf, I bet orphans would like this game (http://www.audio-surf.com/)</td></tr>

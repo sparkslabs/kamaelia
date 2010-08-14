@@ -1,0 +1,330 @@
+<html><body><table>
+            <tr><td>[06:40] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:40] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[06:41] *** Lawouach_ is listening to Pulp - Common People to start the day :)</td></tr>
+            <tr><td>[07:33] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[07:45] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[07:45] &lt Trun&gt hi</td></tr>
+            <tr><td>[07:49] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:00] &lt Lawouach_&gt hello Trun</td></tr>
+            <tr><td>[08:00] &lt Lawouach_&gt hi Chong-</td></tr>
+            <tr><td>[08:01] &lt mhrd&gt hi Trun, Chong-, et al</td></tr>
+            <tr><td>[08:01] &lt Trun&gt hi</td></tr>
+            <tr><td>[08:01] &lt Trun&gt Lawouach: I've been trying to start from zero writing a test for the simple component you pointed</td></tr>
+            <tr><td>[08:02] &lt Trun&gt the Echoer: http://rafb.net/p/qedlke78.html</td></tr>
+            <tr><td>[08:02] &lt Trun&gt but I tend to just move towards the same interface again and again</td></tr>
+            <tr><td>[08:03] &lt Trun&gt I wrote last night some documentation of an example of this interface</td></tr>
+            <tr><td>[08:03] &lt Trun&gt in the way Michael documented one of the examples on r4826</td></tr>
+            <tr><td>[08:03] &lt mhrd&gt is the test code you've written in svn? I'd be interested to take a peek</td></tr>
+            <tr><td>[08:04] &lt Trun&gt nope, it's here: http://pablo.ordunya.com/test_Echoer.py</td></tr>
+            <tr><td>[08:04] &lt mhrd&gt Sorry I've not replied to your mailing list question yet - been kinda busy</td></tr>
+            <tr><td>[08:04] &lt Trun&gt don't worry :-)</td></tr>
+            <tr><td>[08:04] &lt mhrd&gt shove it in svn - its a good checkpoint and makes it easier for me/others to pull down and get working :)</td></tr>
+            <tr><td>[08:05] &lt mhrd&gt you can always make a subdir in your sketches folder - eg 'experiments' if you want to keep it separate from other code you're working on</td></tr>
+            <tr><td>[08:05] &lt Trun&gt well, I'm working without svn access, should I send it to the list with subject "[PATCH] Adding example of a testing interface"</td></tr>
+            <tr><td>[08:05] &lt Chong-&gt morning, Lawouach_, Lawouach_ and Trun</td></tr>
+            <tr><td>[08:05] &lt Trun&gt ?</td></tr>
+            <tr><td>[08:06] &lt mhrd&gt Trun: oops - sorry - I forgot. Apologies</td></tr>
+            <tr><td>[08:06] &lt Chong-&gt s/Lawouach_/mhrd</td></tr>
+            <tr><td>[08:06] &lt Chong-&gt sorry :-)</td></tr>
+            <tr><td>[08:06] &lt mhrd&gt Chong- : heh, np</td></tr>
+            <tr><td>[08:07] &lt Chong-&gt mhrd: thanks :-)</td></tr>
+            <tr><td>[08:08] &lt mhrd&gt Trun: I'm not sure - ask MS- - in the meantime, pastebin will suit me fine :)</td></tr>
+            <tr><td>[08:08] &lt mhrd&gt (or ask Lawouach_ )</td></tr>
+            <tr><td>[08:08] &lt mhrd&gt KamTestCase defined in a separate source file?</td></tr>
+            <tr><td>[08:09] &lt Trun&gt yep, KamTestCase is in the branch "branches_PO_Test"</td></tr>
+            <tr><td>[08:09] &lt Trun&gt yes, pastebin is probably far cleared</td></tr>
+            <tr><td>[08:10] &lt mhrd&gt "but I tend to just move towards the same interface again and again" ... for KamTestCase or for test_Echoer ?</td></tr>
+            <tr><td>[08:10] &lt Trun&gt the point of this example was to show the ideas behind the interface, rather than the implementation itself (I probably change both, the problem is that right now I'm always moving forward that interface)</td></tr>
+            <tr><td>[08:10] &lt Trun&gt for KamTestCase</td></tr>
+            <tr><td>[08:11] &lt Trun&gt like "something that has initialization -setUp-, finalization -tearDown-, that you provide messages to its inboxes 'in real time' through some kind of method</td></tr>
+            <tr><td>[08:11] &lt mhrd&gt "in real time" ?</td></tr>
+            <tr><td>[08:11] &lt Trun&gt and you get the output from the component also 'in real time'</td></tr>
+            <tr><td>[08:11] &lt Trun&gt I mean, the component is executing in background</td></tr>
+            <tr><td>[08:12] &lt mhrd&gt I can see that makes test cases more concise</td></tr>
+            <tr><td>[08:12] &lt Trun&gt so, you the component is actually running when you send the messages (they are safely sent through a "Source")</td></tr>
+            <tr><td>[08:12] &lt mhrd&gt the lack of determinacy could cause issues for some kinds of tests though ... I'll see fi I can dig out a concrete example</td></tr>
+            <tr><td>[08:14] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:17] &lt Trun&gt yep, the first iteration I worked on was intended to be more "deterministic", being based on "steps of the scheduler" rather than on "time past"</td></tr>
+            <tr><td>[08:20] &lt mhrd&gt  /trunk/Code/Python/Kamaelia/Test/Util/test_RateControl.py ...tests timing behaviour, albeit does it with a mock 'time' module ... so might be able to be made to work in your system.</td></tr>
+            <tr><td>[08:20] &lt Trun&gt but in a mentor meeting ( http://yeoldeclue.com/logs/kamaelia2008-06-10_log.html [14:06] to [14:12] ) I was suggested to define the expectations in terms of time instead of in terms of steps</td></tr>
+            <tr><td>[08:20] *** Trun looks at test_RateControl</td></tr>
+            <tr><td>[08:20] &lt Lawouach_&gt Personally the interface you designed suit me well</td></tr>
+            <tr><td>[08:20] &lt Lawouach_&gt Your test_Echoer.py is nicely commented and laid out</td></tr>
+            <tr><td>[08:21] &lt Lawouach_&gt that's really a good start</td></tr>
+            <tr><td>[08:21] *** mhrd reads logs Trun identified</td></tr>
+            <tr><td>[08:22] &lt Lawouach_&gt Trun: You'll notice that it's already easier for us to comment and help you ;)</td></tr>
+            <tr><td>[08:23] &lt Trun&gt ( Lawouach_: the comments are based on comments added by Michael to another example... my original comments were really bad, so I used his much clearer format )</td></tr>
+            <tr><td>[08:23] &lt Trun&gt Lawouach_: yep, thanks :-)</td></tr>
+            <tr><td>[08:23] &lt mhrd&gt I think I've decided that I provisionally disagree with MS-</td></tr>
+            <tr><td>[08:23] &lt mhrd&gt :)</td></tr>
+            <tr><td>[08:23] &lt Lawouach_&gt I'm not sure about the time based decision.</td></tr>
+            <tr><td>[08:24] &lt mhrd&gt maybe we need both? :)</td></tr>
+            <tr><td>[08:24] &lt Lawouach_&gt mhrd: ditto</td></tr>
+            <tr><td>[08:24] &lt Lawouach_&gt I cann his rational but I don't think that ought to impact the test interface</td></tr>
+            <tr><td>[08:24] &lt Lawouach_&gt can see</td></tr>
+            <tr><td>[08:24] &lt Lawouach_&gt meh</td></tr>
+            <tr><td>[08:26] &lt Trun&gt mhrd: what do you mean by "a mock 'time' module"?</td></tr>
+            <tr><td>[08:26] &lt mhrd&gt My concerns are that time based testing is non deterministic - eg. if your machine gets heavily loaded suddenly, the test can fail. However, there are one or two attempts at thread-safety tests in axon which I put in the Axon test suite, which do work like that</td></tr>
+            <tr><td>[08:27] &lt mhrd&gt A class with the same methods/attributes as the 'time' module. It is then plugged in in place of the normal 'time' module</td></tr>
+            <tr><td>[08:27] &lt Lawouach_&gt Trun: why is there a return in the main() method of the Echo component? You don't want to read more than one message?</td></tr>
+            <tr><td>[08:27] &lt Lawouach_&gt mhrd: I agree.</td></tr>
+            <tr><td>[08:28] &lt mhrd&gt Also (though I admit I'm not sure if I can find any examples) - I can think of cases where you want to test things at a precise moment in time - eg. making sure messages arriving at the inbox of the Carousel are not lost when teh carousel swaps out its child component for a new one</td></tr>
+            <tr><td>[08:28] &lt Trun&gt is not it the same that what it's done in http://rafb.net/p/qedlke78.html ?</td></tr>
+            <tr><td>[08:28] &lt Trun&gt I mean, once I get a control message, I finish the main method. In http://rafb.net/p/qedlke78.html it breaks the loop and then it finishes the main method</td></tr>
+            <tr><td>[08:28] &lt Lawouach_&gt Trun: there i no return in mine ;)</td></tr>
+            <tr><td>[08:29] &lt Lawouach_&gt oh my bad</td></tr>
+            <tr><td>[08:29] &lt Lawouach_&gt you changed the order of your box handling</td></tr>
+            <tr><td>[08:29] &lt Lawouach_&gt that's fine then</td></tr>
+            <tr><td>[08:29] &lt Lawouach_&gt forget about it :)</td></tr>
+            <tr><td>[08:30] &lt Lawouach_&gt mhrd: I agree. However, Trun, what did you mean by "step" testing?</td></tr>
+            <tr><td>[08:30] &lt Lawouach_&gt What does "step" reffer to?</td></tr>
+            <tr><td>[08:31] &lt Trun&gt I was thinking in running iterations of the scheduler</td></tr>
+            <tr><td>[08:32] &lt Trun&gt (hold on, I have a piece of code for that)</td></tr>
+            <tr><td>[08:32] &lt mhrd&gt maybe it would be possible to put some kind of wrapper between the scheduler and the component under test, so you could count (or even control) when it gets executed?</td></tr>
+            <tr><td>[08:32] &lt mhrd&gt (no idea how to do that :) )</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt I guess i'm missing the underlying issue here.</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt As far as I know, once a component is wrapped in a Handle() the .get() is blocking isn't it?</td></tr>
+            <tr><td>[08:33] &lt mhrd&gt iirc, yes</td></tr>
+            <tr><td>[08:35] &lt Trun&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/branches/private_PO_Tests/Kamaelia/Kamaelia/Testing/KamTestCaseOld.py?revision=4786&view=markup</td></tr>
+            <tr><td>[08:35] &lt Trun&gt in the line 225</td></tr>
+            <tr><td>[08:35] &lt Trun&gt to 261</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt Trun: what is the rational of that piece of code?</td></tr>
+            <tr><td>[08:36] &lt Trun&gt in lines 231-233 I started running a scheduler</td></tr>
+            <tr><td>[08:36] &lt Lawouach_&gt I still don't understand the issue you're trying to solve here.</td></tr>
+            <tr><td>[08:36] &lt Lawouach_&gt why? :)</td></tr>
+            <tr><td>[08:36] &lt Trun&gt yep, sorry :-)</td></tr>
+            <tr><td>[08:36] &lt Trun&gt the idea of this code</td></tr>
+            <tr><td>[08:36] &lt Trun&gt is to make the testing "deterministic"</td></tr>
+            <tr><td>[08:37] &lt Trun&gt for that, I tried to have "the control of the scheduler"</td></tr>
+            <tr><td>[08:37] &lt Trun&gt so in that first version of the testing framework, I tried to be able to say</td></tr>
+            <tr><td>[08:37] &lt mhrd&gt aah, that code is trying to second guess how many steps/iterations of the scheduler will be needed to ensure that every currently active component is run?</td></tr>
+            <tr><td>[08:38] &lt Trun&gt "hey, component under test, you will get this input at 'step' "</td></tr>
+            <tr><td>[08:38] &lt Trun&gt "then you will get this other input at this other 'step' "</td></tr>
+            <tr><td>[08:38] &lt Trun&gt mhrd: yep</td></tr>
+            <tr><td>[08:38] &lt Trun&gt "then I run during N 'steps', and if you have not finished I assert that something has failed"</td></tr>
+            <tr><td>[08:39] &lt Trun&gt "finally, I get the stored messages and I check the expectations"</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt the main() generator in the scheduler is, basically:</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt def main():</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt . for c in activeComponents:</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt . c.next()</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt . yield 1</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt oops, bad indentation...</td></tr>
+            <tr><td>[08:40] &lt mhrd&gt the main() generator in the scheduler is, basically:</td></tr>
+            <tr><td>[08:40] &lt mhrd&gt def main():</td></tr>
+            <tr><td>[08:40] &lt mhrd&gt . for c in activeComponents:</td></tr>
+            <tr><td>[08:40] &lt mhrd&gt . . c.next()</td></tr>
+            <tr><td>[08:40] &lt mhrd&gt . . yield 1</td></tr>
+            <tr><td>[08:40] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:41] &lt Lawouach_&gt I understand the assumption you've made but I wonder if that meets the way a real Kamaelia based application would be working.</td></tr>
+            <tr><td>[08:41] &lt Lawouach_&gt Afterall unit test is about to simulate *real life* use cases</td></tr>
+            <tr><td>[08:41] &lt Lawouach_&gt Otherwise it's just a sandbox with no little added value.</td></tr>
+            <tr><td>[08:43] &lt mhrd&gt I also consider it a way to validate specific assertions about the behaviour of a component - eg. asserting that a timer component will have certain properties.</td></tr>
+            <tr><td>[08:43] &lt Trun&gt I see, but then what are you thinking on when you talked about a "not time based" version?</td></tr>
+            <tr><td>[08:43] &lt mhrd&gt ... which then makes me more confident about using it later for real life stuff</td></tr>
+            <tr><td>[08:44] &lt Lawouach_&gt mhrd: I'm not sure which way you're arguing for ;)</td></tr>
+            <tr><td>[08:44] &lt mhrd&gt Trun: is that a q for me or Lawouach_ ? :)</td></tr>
+            <tr><td>[08:44] &lt Trun&gt for Lawouach_ (sorry, not used to IRC :-D )</td></tr>
+            <tr><td>[08:44] &lt mhrd&gt Lawouach_ : heh. I have to say, I've not really seriously considered what the benefits might be of teh 'time based' approach - I'd never realised ti could make teh test code x100 cleaner :)</td></tr>
+            <tr><td>[08:45] &lt Lawouach_&gt Trun: I don't know yet :)</td></tr>
+            <tr><td>[08:45] &lt mhrd&gt I'm arguing for an approach where your test can step through the execution of the component(s) under test</td></tr>
+            <tr><td>[08:46] &lt Trun&gt mhrd: do you mean something like:</td></tr>
+            <tr><td>[08:47] &lt Trun&gt 1. add input (optional)</td></tr>
+            <tr><td>[08:47] &lt Trun&gt 2. move N steps to the future</td></tr>
+            <tr><td>[08:47] &lt Trun&gt 3. add new input / check outputs</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt yep</td></tr>
+            <tr><td>[08:47] &lt Trun&gt (loop 2-3 some times)</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt ie. X = MyComponent.main()</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt do something</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt X.next()</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt test something</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt X.next()</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt test something else</td></tr>
+            <tr><td>[08:47] &lt mhrd&gt X.next()</td></tr>
+            <tr><td>[08:47] &lt Trun&gt I see</td></tr>
+            <tr><td>[08:48] &lt Trun&gt but dealing with the scheduler so as to interact with children components, etc.?</td></tr>
+            <tr><td>[08:48] &lt mhrd&gt yes</td></tr>
+            <tr><td>[08:48] &lt Trun&gt I see</td></tr>
+            <tr><td>[08:48] &lt mhrd&gt as I said, I think I'm disagreeing with MS- :)</td></tr>
+            <tr><td>[08:49] &lt Trun&gt anyway, the time based idea would still be interesting as a more "realistic" way to test certain components, right?</td></tr>
+            <tr><td>[08:49] &lt mhrd&gt and I do really like the simplicity of the example you pastebin'ed</td></tr>
+            <tr><td>[08:49] &lt Trun&gt I mean, as you said maybe the testing framework should support both ways</td></tr>
+            <tr><td>[08:49] &lt mhrd&gt possibly yes</td></tr>
+            <tr><td>[08:50] &lt mhrd&gt I'd still worry a little about the indeterminacy of the time based approach. It would be great if it could be emulated somehow as a layer around the stepping approach.</td></tr>
+            <tr><td>[08:50] &lt Lawouach_&gt alright</td></tr>
+            <tr><td>[08:50] &lt Lawouach_&gt I like the .next() interface but I admit I can see the simplicity of the approach you've chosen in your pastebin example</td></tr>
+            <tr><td>[08:50] &lt Lawouach_&gt Both would probably be needed</td></tr>
+            <tr><td>[08:51] &lt Trun&gt ok, should I sum this up in an e-mail to the list?</td></tr>
+            <tr><td>[08:51] &lt mhrd&gt Lawouach_ - I herald you resolver of disagreements :-)</td></tr>
+            <tr><td>[08:51] &lt mhrd&gt Trun: good idea</td></tr>
+            <tr><td>[08:52] &lt Trun&gt ok :-)</td></tr>
+            <tr><td>[08:52] &lt mhrd&gt you have any thoughts about this? I'm just saying what I think, which is not necessarily what you should do :)</td></tr>
+            <tr><td>[08:52] &lt Trun&gt my first idea was using a "deterministic" way, to make the tests independent from the context (machine, other processes running, etc.)</td></tr>
+            <tr><td>[08:53] &lt Trun&gt since I thought that tests should be as deterministic as possible</td></tr>
+            <tr><td>[08:54] &lt Trun&gt but when suggested by MS- and had some code done, I also liked the time based approach</td></tr>
+            <tr><td>[08:55] &lt Trun&gt I find it more "realistic" and easier to interact with (it may seem closer to a debugger, like 'now I add this', and actually at that point that message is added)</td></tr>
+            <tr><td>[08:55] &lt Trun&gt but for instance, the test in the pastebin can't test if the Echoer uses a "while" or a "if" when gathering information from 'inbox'</td></tr>
+            <tr><td>[08:56] &lt Trun&gt if you provide two messages in a step and a producerFinished, you will see both messages being forwarded</td></tr>
+            <tr><td>[08:57] &lt Trun&gt because the two messages may be sent in a different step</td></tr>
+            <tr><td>[08:57] &lt mhrd&gt actually thats a good example - its hard to test the behaviour at point of shutdown. eg. testing an assertion that the compnoent will finish off processing any pending data</td></tr>
+            <tr><td>[08:58] &lt Trun&gt yep, so I like the idea of supporting both approaches</td></tr>
+            <tr><td>[08:59] &lt mhrd&gt I suspect MS- may disagree with me over whether the precision of that kind of behaviour (at shutdown) really matters. I'm pretty sure I've built systems where I've needed it.</td></tr>
+            <tr><td>[08:59] &lt Trun&gt btw, are you comfortable with the approach of being integrated in a "unittest.TestCase"-like way?</td></tr>
+            <tr><td>[08:59] &lt mhrd&gt But I've tended to get more worried about shutdown behaviour than MS- in the past :)</td></tr>
+            <tr><td>[08:59] &lt Trun&gt I mean, maybe something else should be built for that or this way may be fine?</td></tr>
+            <tr><td>[09:00] &lt mhrd&gt integrating like that looks pretty clean - nice to keep the familiar style of API, irrespective of whether the actual implementation subclasses it directly or not</td></tr>
+            <tr><td>[09:00] &lt Trun&gt ok</td></tr>
+            <tr><td>[09:01] &lt Trun&gt thank you very much for this feedback :-)</td></tr>
+            <tr><td>[09:01] &lt Trun&gt I'm taking a coffee and I come back to write the e-mail to the list</td></tr>
+            <tr><td>[09:01] &lt mhrd&gt sounds like a few small examples (test cases !) might be useful to demo where/what potential issues there might be</td></tr>
+            <tr><td>[09:02] &lt Trun&gt yep</td></tr>
+            <tr><td>[09:02] &lt mhrd&gt Trun: cool - its been helpful for me too - haven't really thought properly about these issues before</td></tr>
+            <tr><td>[09:03] &lt mhrd&gt also most of the tests I've written have been ones for the internals of Axon - for which the emphasis is going to be slightly different</td></tr>
+            <tr><td>[09:21] *** matthew-p has parted #kamaelia</td></tr>
+            <tr><td>[09:25] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:34] &lt orphans&gt morning all</td></tr>
+            <tr><td>[09:36] &lt Lawouach_&gt hi mate</td></tr>
+            <tr><td>[09:36] &lt orphans&gt how's it going?</td></tr>
+            <tr><td>[09:36] &lt Lawouach_&gt good but feeling tired today</td></tr>
+            <tr><td>[09:37] &lt orphans&gt today I've already managed to get locked out of my house for about two hours :)</td></tr>
+            <tr><td>[09:37] &lt orphans&gt feeling bright and fresh after that</td></tr>
+            <tr><td>[09:39] &lt Lawouach_&gt I bet :)</td></tr>
+            <tr><td>[09:43] &lt orphans&gt eesh, how much time do we spend "interacting" Lawouach_? This student survey is a nightmare :)</td></tr>
+            <tr><td>[09:44] &lt Lawouach_&gt I filled mine this morning</td></tr>
+            <tr><td>[09:44] &lt Lawouach_&gt I've put from 0-5</td></tr>
+            <tr><td>[09:45] &lt Lawouach_&gt We may spend more time but not always not on the project</td></tr>
+            <tr><td>[09:45] &lt Lawouach_&gt anyway I'm not gonna give you the answers</td></tr>
+            <tr><td>[09:45] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[09:45] &lt orphans&gt heh, damn you :)</td></tr>
+            <tr><td>[09:45] *** Lawouach_ edits his review</td></tr>
+            <tr><td>[09:45] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:46] &lt orphans&gt I can has google money?</td></tr>
+            <tr><td>[09:47] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:47] *** Lawouach_ puts Oceansize on</td></tr>
+            <tr><td>[09:48] &lt Lawouach_&gt If you want to albums that'll rock you: Amplifier by Amplifier and Effloresce by Oceansize</td></tr>
+            <tr><td>[09:48] &lt Lawouach_&gt LOUD :)</td></tr>
+            <tr><td>[09:49] &lt orphans&gt mm, I think I know Oceansize, but I couldn't place the music</td></tr>
+            <tr><td>[09:49] &lt Lawouach_&gt prog-rock I guess</td></tr>
+            <tr><td>[09:49] &lt Lawouach_&gt Both bands are from Manchester BTW</td></tr>
+            <tr><td>[09:50] &lt orphans&gt ahh, yeah - they've toured with Biffy and Mclusky</td></tr>
+            <tr><td>[10:01] &lt Chong-&gt Hi Trun, just replied to your question in the list. Some of them may not fit your framework. If so, just ignore them :-)</td></tr>
+            <tr><td>[10:05] &lt Trun&gt thanks for the that, Chong- :-)</td></tr>
+            <tr><td>[10:06] &lt Chong-&gt Trun: my pleasure :-)</td></tr>
+            <tr><td>[10:14] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:15] &lt orphans&gt survey in - that took far too long :)</td></tr>
+            <tr><td>[10:15] &lt MS-&gt Hey Trun - just a note -please make sure that you forward the daily 2-3 paragraph status updates we agreed :) Doesn't have to be long or detailed, but you'll probably get useful feedback if you do :)</td></tr>
+            <tr><td>[10:16] &lt Trun&gt MS-: oh, ok</td></tr>
+            <tr><td>[10:16] &lt MS-&gt Just along the lines of "done this, planning to do this (not necessarily something you can do in 24 hours, just what you're planning :), and anything else arising" :)</td></tr>
+            <tr><td>[10:16] &lt MS-&gt Think of it like blogging</td></tr>
+            <tr><td>[10:16] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:17] &lt MS-&gt It *does* have an RSS feed after all ;-) :-D</td></tr>
+            <tr><td>[10:17] &lt MS-&gt [08:03] &lt  Trun&gt I wrote last night some documentation of an example of this interface</td></tr>
+            <tr><td>[10:17] &lt MS-&gt [08:03] &lt  Trun&gt in the way Michael documented one of the examples on r4826</td></tr>
+            <tr><td>[10:18] &lt MS-&gt That should be forwarded to the list....</td></tr>
+            <tr><td>[10:18] &lt Trun&gt ok, may I first finish answering to the thread discussion and send an e-mail about the discussion I had with Matt and Sylvain this morning?</td></tr>
+            <tr><td>[10:18] &lt MS-&gt Yeah, sure</td></tr>
+            <tr><td>[10:18] &lt MS-&gt This is just "adding to the list" ;-)</td></tr>
+            <tr><td>[10:18] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:18] &lt MS-&gt Now that I can see what you're doing I can make "helpful" suggestions :)</td></tr>
+            <tr><td>[10:18] &lt Trun&gt yep, I'm going to send a (short) e-mail regarding that discussion</td></tr>
+            <tr><td>[10:19] &lt MS-&gt [08:05] &lt  Trun&gt well, I'm working without svn access, should I send it to the list with subject "[PATCH] Adding example of a testing interface"</td></tr>
+            <tr><td>[10:19] &lt MS-&gt Fantastic idea :)</td></tr>
+            <tr><td>[10:19] &lt Trun&gt &lt MS-&gt This is just "adding to the list" ;-) --&gt ok :-)</td></tr>
+            <tr><td>[10:20] &lt MS-&gt Just trying to break a habit that's all. The best way we can achieve that is but encouraging use of things that break that habit ;) :-)</td></tr>
+            <tr><td>[10:20] &lt MS-&gt [08:23] &lt  mhrd&gt I think I've decided that I provisionally disagree with MS-</td></tr>
+            <tr><td>[10:20] &lt MS-&gt heheh cool</td></tr>
+            <tr><td>[10:21] *** MS- wonders what mhrd disagreed with</td></tr>
+            <tr><td>[10:23] &lt mhrd&gt I like the clarity of writing tests like that - where you can treat the system as something running in the background; but I worry about the lack of determinacy - makes it hard to validate assertions for certain kinds of behaviour - eg. at time of shutdown (see [09:56] to [09:59] )</td></tr>
+            <tr><td>[10:23] &lt MS-&gt Tests like what?</td></tr>
+            <tr><td>[10:24] *** MS- misses the context</td></tr>
+            <tr><td>[10:24] &lt MS-&gt Do you mean Axon.background()</td></tr>
+            <tr><td>[10:24] &lt MS-&gt ?</td></tr>
+            <tr><td>[10:24] &lt mhrd&gt eg. I might assert that if a component receives a shutdown message it will guarantee to finish processing any data remaining in its "inbox" inbox before terminating</td></tr>
+            <tr><td>[10:25] &lt MS-&gt I think I'm missing what the conversation is about</td></tr>
+            <tr><td>[10:25] &lt mhrd&gt I've been pretty remiss and not really written any tests for that kind of thing, but I think I ought to in future</td></tr>
+            <tr><td>[10:25] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:26] &lt mhrd&gt """09:21 Trun but in a mentor meeting ( http://yeoldeclue.com/logs/kamaelia2008-06-10_log.html [14:06] to [14:12] ) I was suggested to define the expectations in terms of time instead of in terms of steps"""</td></tr>
+            <tr><td>[10:27] &lt mhrd&gt which by my understanding, and Trun's (on the basis of what he has written) means that you run a compnoent in a backgrounded scheduler then use something like the Axon.Handle mechanism to read/write from it</td></tr>
+            <tr><td>[10:27] &lt mhrd&gt +ve: very nice clear succinct test code</td></tr>
+            <tr><td>[10:28] &lt mhrd&gt -ve: can't see how I'd test/validate assertions for specific behaviour under some precise conditions - eg. the shutdown one I just described.</td></tr>
+            <tr><td>[10:29] &lt mhrd&gt I think I currently agree with Lawouach_ that what might be cool would be to be able to test both</td></tr>
+            <tr><td>[10:29] &lt mhrd&gt (excuse - phone)</td></tr>
+            <tr><td>[10:29] &lt mhrd&gt &lt /phone&gt</td></tr>
+            <tr><td>[10:30] *** mhrd ought to produce some short examples that demonstrate in the context of some existing components that make these kinds of assertions in their docs</td></tr>
+            <tr><td>[10:30] &lt MS-&gt Ah, I think you're treating that as either/or</td></tr>
+            <tr><td>[10:30] &lt MS-&gt I prefer this AND that</td></tr>
+            <tr><td>[10:30] &lt MS-&gt Rather than this OR that</td></tr>
+            <tr><td>[10:30] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:30] &lt mhrd&gt OR rather than XOR?</td></tr>
+            <tr><td>[10:30] &lt MS-&gt yep :)</td></tr>
+            <tr><td>[10:30] &lt mhrd&gt cool</td></tr>
+            <tr><td>[10:30] &lt mhrd&gt I'm happy then</td></tr>
+            <tr><td>[10:31] &lt mhrd&gt :)</td></tr>
+            <tr><td>[10:31] &lt orphans&gt anyone ever used ctypes before?</td></tr>
+            <tr><td>[10:31] &lt MS-&gt 99% kamaelia is more OR than XOR :)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt yep, it's great for causing a segfault</td></tr>
+            <tr><td>[10:31] &lt MS-&gt &gt:-)</td></tr>
+            <tr><td>[10:31] &lt orphans&gt not a good thing for definite?</td></tr>
+            <tr><td>[10:31] &lt MS-&gt (that's about my limit BTW)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt Oh, no it's a fantastic thing</td></tr>
+            <tr><td>[10:31] &lt MS-&gt But you have to be careful how you use it, that's all</td></tr>
+            <tr><td>[10:32] &lt MS-&gt with great power, etc</td></tr>
+            <tr><td>[10:32] &lt orphans&gt mhm</td></tr>
+            <tr><td>[10:33] &lt orphans&gt context: don't know whether you saw last night's discussion with Lawouach_ about whether to include MIDI support. I reckon it's maybe worthwhile but the python library is horribly packaged, hard to install etc etc</td></tr>
+            <tr><td>[10:34] &lt orphans&gt but I've just found a new lib which wraps PortMidi using ctypes which looks a lot cleaner and easier to distribute</td></tr>
+            <tr><td>[10:34] &lt Lawouach&gt orphans: rather then technical limitations, I'd rather have a point of view based on the value to the project.</td></tr>
+            <tr><td>[10:35] &lt Lawouach&gt orphans: just as a FYI, more than once in your developer life you'll go back to your manager and will tell him "it's not technically easy to achieve" and he/she'll turn back and reply "I don't care, the customer wants it so we'll deliver it"</td></tr>
+            <tr><td>[10:35] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[10:35] &lt Lawouach&gt So you have to convince me based on whether or not it adds reall value to the project.</td></tr>
+            <tr><td>[10:35] &lt MS-&gt BTW, Trun, you don't "not have access to svn", I'm just your checkin-bot at the moment. Unlike the svn binary though I'll probably ask awkward questions, that's all</td></tr>
+            <tr><td>[10:36] &lt Trun&gt MS-: ok :)</td></tr>
+            <tr><td>[10:36] &lt MS-&gt I still view /Sketches/PO as your area, you just now have a "customer service representative" now instead of just talking to a machine</td></tr>
+            <tr><td>[10:36] &lt MS-&gt "Hi, my name's michael, I'll be your server for today, how may I help you?" :)</td></tr>
+            <tr><td>[10:37] &lt orphans&gt Lawouach, ok, in that case I think I've made my mind up to go for it - I don't think it's too hard to write the code to get jam working with it (should be relatively trivial), and there's definite value there for the project</td></tr>
+            <tr><td>[10:37] &lt MS-&gt We could probably get kamaelia bot to do that actually...</td></tr>
+            <tr><td>[10:37] &lt MS-&gt ;)</td></tr>
+            <tr><td>[10:37] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:37] &lt Lawouach&gt orphans: cool</td></tr>
+            <tr><td>[10:37] &lt Lawouach&gt That's fine by me. You make the commitment ;)</td></tr>
+            <tr><td>[10:37] &lt orphans&gt Lawouach, my main reservations were technical, so if we're ignoring them then I reckon it can't hurt to give it a go :)</td></tr>
+            <tr><td>[10:37] &lt Lawouach&gt Sounds fair.</td></tr>
+            <tr><td>[10:39] *** MS- has to disappear for a while.</td></tr>
+            <tr><td>[10:39] &lt MS-&gt biab</td></tr>
+            <tr><td>[10:39] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[11:55] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:22] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[12:44] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:23] *** Davbo is filling in the mid-term student survey for SoC</td></tr>
+            <tr><td>[13:46] &lt Davbo&gt 22. What advice would you give to future would-be Summer of Code mentoring organizations? (required)</td></tr>
+            <tr><td>[13:46] *** Davbo ponders</td></tr>
+            <tr><td>[13:46] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[13:47] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[14:21] &lt Chong-&gt *Students who receive a positive evaluation but fail to complete the midterm survey will also be dropped from the program and no further payments made to them.*</td></tr>
+            <tr><td>[14:22] &lt Chong-&gt So, please remember to fill it in before Monday, July 14th at 19:00 UTC (12 noon Pacific time) :-)</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt Yeah, mhrd you should have one to do for me I believe :-) (friendly reminder) "Your mentor has not yet started the midterm survey."</td></tr>
+            <tr><td>[14:35] *** mhrd rummages</td></tr>
+            <tr><td>[14:36] &lt mhrd&gt don't worry - will be sorted in good time :)</td></tr>
+            <tr><td>[14:51] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[14:52] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[15:06] &lt Lawouach_&gt my god YUI documentation is patchy</td></tr>
+            <tr><td>[16:04] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:07] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[16:57] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[18:08] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt http://news.bbc.co.uk/2/hi/technology/7495085.stm &lt -- :/</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt via reddit http://www.evolus.vn/Pencil/Home.html &lt -- nice</td></tr>
+            <tr><td>[18:55] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[19:03] &lt j_baker&gt Sigh... it looks like my country isn't the only one in its telecoms' pockets, Lawouach. :/</td></tr>
+            <tr><td>[19:04] &lt j_baker&gt http://arstechnica.com/articles/culture/fisa-compromise.ars</td></tr>
+            <tr><td>[19:05] &lt j_baker&gt "What? You helped the government wiretap our citizens without any legal reason to? No problem! We'll just give you immunity. And make it easier for you to do semi-legal wiretaps."</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt that's crazy</td></tr>
+            <tr><td>[19:35] &lt vmlemon&gt Anyone saw the Vodafone Greece wiretapping incident that lead to someone committing suicide?</td></tr>
+            <tr><td>[20:47] &lt Lawouach&gt kde4 sucks so bad on Ubuntu for now</td></tr>
+            <tr><td>[21:08] &lt aa_&gt Lawouach: I think kde4 is not ready yet</td></tr>
+            <tr><td>[21:08] &lt aa_&gt Lawouach: it's certainly broken :)</td></tr>
+            <tr><td>[21:08] &lt Lawouach&gt it's clumsy</td></tr>
+            <tr><td>[21:09] &lt Lawouach&gt On the other hand I'm using Qt4 quite happily</td></tr>
+            <tr><td>[21:09] &lt Lawouach&gt very stable, fast and memory-friendly</td></tr>
+            <tr><td>[21:14] &lt aa_&gt yeah qt4 has been around for years though</td></tr>
+            <tr><td>[21:15] &lt aa_&gt I thing kde4 will be ready at like 4.3 or something</td></tr>
+            <tr><td>[21:15] &lt aa_&gt maybe 4.2.99999</td></tr>

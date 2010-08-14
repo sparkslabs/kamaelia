@@ -1,0 +1,276 @@
+<html><body><table>
+            <tr><td>[00:20] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[00:21] &lt MS-&gt test</td></tr>
+            <tr><td>[00:21] &lt MS-&gt http://yeoldeclue.com/logs/kamaelia2008-03-20_log.html</td></tr>
+            <tr><td>[00:21] &lt MS-&gt We've been accepted for GSOC 2008 | ideas/info page: http://kamaelia.sourceforge.net/SummerOfCode2008 | Don't ask to ask, just ask | Multicore Kamaelia : http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1205626569 | logs: http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[00:22] *** MS- changed the topic to We've been accepted for GSOC 2008 | ideas/info page: http://kamaelia.sourceforge.net/SummerOfCode2008 | Don't ask to ask, just ask | Multicore Kamaelia : http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1205626569 | logs: http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[00:23] &lt MS-&gt OK, That's the logger packaged up and tested on linux and mac os</td></tr>
+            <tr><td>[00:23] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Apps/Kamaelia-Logger has the packaging</td></tr>
+            <tr><td>[00:24] &lt MS-&gt Specifically https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Apps/Kamaelia-Logger/DistBuild/Logger.build.sh is the package build script</td></tr>
+            <tr><td>[00:24] &lt MS-&gt (based on the packaging approach for kamaelia grey)</td></tr>
+            <tr><td>[00:25] &lt MS-&gt http://yeoldeclue.com/t/Kamaelia-Logger-1.0.0.tar.gz is the tar ball</td></tr>
+            <tr><td>[00:26] &lt MS-&gt install is the usual</td></tr>
+            <tr><td>[00:26] &lt MS-&gt tar zxvf Kamaelia-Logger-1.0.0.tar.gz</td></tr>
+            <tr><td>[00:26] &lt MS-&gt cd Kamaelia-Logger-1.0.0</td></tr>
+            <tr><td>[00:26] &lt MS-&gt sudo python setup.py install</td></tr>
+            <tr><td>[00:26] &lt MS-&gt dance</td></tr>
+            <tr><td>[00:26] &lt MS-&gt Config file in /etc</td></tr>
+            <tr><td>[00:27] &lt MS-&gt init script in /etc/init.d under linux and in /System/Library/StartupItems/KamaeliaLogger on Mac OS X</td></tr>
+            <tr><td>[00:27] &lt MS-&gt (tested on both, running on the latter)</td></tr>
+            <tr><td>[00:28] &lt MS-&gt and on that note, I'm off :)</td></tr>
+            <tr><td>[00:28] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[00:30] &lt ms-away&gt Oh, before I go</td></tr>
+            <tr><td>[00:30] &lt ms-away&gt all lines preceded with [off]</td></tr>
+            <tr><td>[00:30] &lt ms-away&gt aren't logged</td></tr>
+            <tr><td>[00:30] &lt ms-away&gt (kinda handy)</td></tr>
+            <tr><td>[01:35] &lt Davbo&gt Looks good ms-away</td></tr>
+            <tr><td>[01:59] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[07:52] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[08:45] *** ms-away has parted #kamaelia</td></tr>
+            <tr><td>[09:07] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[09:37] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:38] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:36] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[11:46] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[12:36] &lt MS-&gt kamaeliabot: help</td></tr>
+            <tr><td>[12:36] Reply: Name: kamaeliabot   Channel: #kamaelia</td></tr>
+            <tr><td>[12:36] Reply: I do a simple job -- recording all channel traffic.</td></tr>
+            <tr><td>[12:36] Reply: Lines prefixed by [off] won't get recorded</td></tr>
+            <tr><td>[12:36] Reply: I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', 'boo', and 'reload {modulename}'.</td></tr>
+            <tr><td>[12:36] &lt MS-&gt kamaeliabot: dance</td></tr>
+            <tr><td>[12:36] Reply: does the macarena</td></tr>
+            <tr><td>[12:37] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[12:38] &lt mhrd&gt kamaeliabot: help reload</td></tr>
+            <tr><td>[12:38] Reply: Name: kamaeliabot   Channel: #kamaelia</td></tr>
+            <tr><td>[12:38] Reply: I do a simple job -- recording all channel traffic.</td></tr>
+            <tr><td>[12:38] Reply: Lines prefixed by [off] won't get recorded</td></tr>
+            <tr><td>[12:38] Reply: I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', 'boo', and 'reload {modulename}'.</td></tr>
+            <tr><td>[12:38] &lt mhrd&gt kamaeliabot: reload</td></tr>
+            <tr><td>[12:39] &lt MS-&gt It's just Jinna's code from last summer, but repackaged up for easier install/maintainence</td></tr>
+            <tr><td>[12:39] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[12:40] &lt MS-&gt vmlemon__: Hi</td></tr>
+            <tr><td>[12:40] &lt MS-&gt mhrd: https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Apps/Kamaelia-Logger</td></tr>
+            <tr><td>[12:41] &lt MS-&gt It expects to reload changes to this https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Kamaelia/Kamaelia/Apps/IRCLogger/Support.py (i think :) )</td></tr>
+            <tr><td>[12:49] &lt vmlemon__&gt Hmm, do they still sell the old (green, I think) BT Phonecards?</td></tr>
+            <tr><td>[12:50] &lt MS-&gt No idea</td></tr>
+            <tr><td>[12:50] &lt MS-&gt I don't think so</td></tr>
+            <tr><td>[12:58] *** vmlemon__ wonders why phoneboxes still have slots for them</td></tr>
+            <tr><td>[13:10] &lt MS-&gt You can put creditcards in</td></tr>
+            <tr><td>[13:10] &lt MS-&gt So if they're magstripe readers..</td></tr>
+            <tr><td>[13:11] &lt MS-&gt maybe it's just a matter of "we didn't say this would go away and its too expensive to change"</td></tr>
+            <tr><td>[13:11] &lt MS-&gt mayb</td></tr>
+            <tr><td>[13:11] &lt MS-&gt e</td></tr>
+            <tr><td>[13:18] &lt vmlemon__&gt I know that some boxes have both a credit card reader, and a legacy green card reader as two slots</td></tr>
+            <tr><td>[13:19] &lt vmlemon__&gt Probably to avoid confusion with boxes that don't accept credit cards</td></tr>
+            <tr><td>[13:22] &lt vmlemon__&gt They also did an incompatible "new-style" card</td></tr>
+            <tr><td>[13:56] &lt vmlemon__&gt Shame some people tar all of the BBC with the same brush</td></tr>
+            <tr><td>[13:56] &lt MS-&gt Of course they d</td></tr>
+            <tr><td>[13:56] &lt MS-&gt o</td></tr>
+            <tr><td>[13:56] &lt MS-&gt It's human nature, sadly</td></tr>
+            <tr><td>[14:26] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt I've got a question about MiniAxon</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt Is there any difference between</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt  result = self.boxes[inboxname][0]</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt  del self.boxes[inboxname][0]</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt  return result</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt and</td></tr>
+            <tr><td>[15:19] &lt Davbo&gt return self.boxes[boxname].pop()</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X=[1,2,3,4]</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X.pop()</td></tr>
+            <tr><td>[15:20] &lt MS-&gt 4</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X</td></tr>
+            <tr><td>[15:20] &lt MS-&gt [1, 2, 3]</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X=[1,2,3,4]</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X[0]</td></tr>
+            <tr><td>[15:20] &lt MS-&gt 1</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt del X[0]</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X</td></tr>
+            <tr><td>[15:20] &lt MS-&gt [2, 3, 4]</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X=[1,2,3,4]</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X.pop(0)</td></tr>
+            <tr><td>[15:20] &lt MS-&gt 1</td></tr>
+            <tr><td>[15:20] &lt MS-&gt &gt&gt&gt X</td></tr>
+            <tr><td>[15:20] &lt MS-&gt [2, 3, 4]</td></tr>
+            <tr><td>[15:20] &lt MS-&gt is probably what you're thinking</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt ah</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt so i need to change it to pop(0) so it takes one from the front of the list</td></tr>
+            <tr><td>[15:21] &lt MS-&gt Well, needs to be the opposite end from where you append :)</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt otherwise it's working like a stack and not a list right?</td></tr>
+            <tr><td>[15:21] &lt MS-&gt stack rather than queue</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt yeah, thanks MS-</td></tr>
+            <tr><td>[15:23] &lt Davbo&gt kinda forgot you could just run "python" and easily test it there.</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt getting used to an interpreted language again</td></tr>
+            <tr><td>[15:29] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt finished the MiniAxon</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt dictionaries seem so useful</td></tr>
+            <tr><td>[15:50] &lt Davbo&gt i may have to hassle my lecturers to let me implement my project in Python :p</td></tr>
+            <tr><td>[16:02] &lt MS-&gt COol</td></tr>
+            <tr><td>[16:03] &lt MS-&gt Dictionaries are highly optimised in python btw</td></tr>
+            <tr><td>[16:03] &lt MS-&gt since they use the same implementation as the byte code interpreter uses for looking up names</td></tr>
+            <tr><td>[16:03] &lt MS-&gt and values</td></tr>
+            <tr><td>[16:07] *** LightningMonkey has joined #kamaelia</td></tr>
+            <tr><td>[16:07] &lt LightningMonkey&gt hello</td></tr>
+            <tr><td>[16:09] &lt MS-&gt Hi</td></tr>
+            <tr><td>[16:10] &lt LightningMonkey&gt I am interested in some of the google summer of code projects</td></tr>
+            <tr><td>[16:10] &lt MS-&gt ok</td></tr>
+            <tr><td>[16:10] &lt MS-&gt which one(s) ?</td></tr>
+            <tr><td>[16:10] &lt LightningMonkey&gt specifically working on the topology viewer to make it 3D</td></tr>
+            <tr><td>[16:11] &lt MS-&gt Cool.</td></tr>
+            <tr><td>[16:11] &lt LightningMonkey&gt it sounds like it would be a fun project</td></tr>
+            <tr><td>[16:11] &lt MS-&gt Indeed.</td></tr>
+            <tr><td>[16:11] &lt MS-&gt The existing topology visualiser is based on a simple physics model</td></tr>
+            <tr><td>[16:11] &lt LightningMonkey&gt I have experience with OpenGL</td></tr>
+            <tr><td>[16:11] &lt LightningMonkey&gt mhm</td></tr>
+            <tr><td>[16:11] &lt LightningMonkey&gt I am also a fan of physics</td></tr>
+            <tr><td>[16:11] &lt MS-&gt which whilst 2D based, works on 2D vectors</td></tr>
+            <tr><td>[16:11] &lt LightningMonkey&gt mhm</td></tr>
+            <tr><td>[16:12] &lt MS-&gt extending it should be a matter of changing that to 3D vectors, and an appropriate open GL visualisation component</td></tr>
+            <tr><td>[16:12] &lt LightningMonkey&gt so is it as simple as particles having vector directions, then add forces to slow/speed them up</td></tr>
+            <tr><td>[16:12] &lt MS-&gt No,particles are simply points</td></tr>
+            <tr><td>[16:13] &lt MS-&gt there's linkages which provide tensions</td></tr>
+            <tr><td>[16:13] &lt MS-&gt (attract/repulse)</td></tr>
+            <tr><td>[16:13] &lt LightningMonkey&gt ah</td></tr>
+            <tr><td>[16:13] &lt MS-&gt It's a very simple model :)</td></tr>
+            <tr><td>[16:14] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Visualisation/PhysicsGraph/ has the code for the 2D components</td></tr>
+            <tr><td>[16:14] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Visualisation/PhysicsGraph/TopologyViewer.py?revision=2735&view=markup</td></tr>
+            <tr><td>[16:14] &lt MS-&gt is the main entry point</td></tr>
+            <tr><td>[16:15] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Support/Particles/ contains the particles themselves</td></tr>
+            <tr><td>[16:15] &lt LightningMonkey&gt By the way, I am current at work so if I don't respond quickly it is because I have to help a suer</td></tr>
+            <tr><td>[16:16] &lt LightningMonkey&gt 'user</td></tr>
+            <tr><td>[16:16] &lt LightningMonkey&gt I work in a computer lab</td></tr>
+            <tr><td>[16:16] &lt MS-&gt along with the laws that get applied at each iteration (esentially its a simulation)</td></tr>
+            <tr><td>[16:17] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Support/Particles/ParticleSystem.py?revision=2356&view=markup</td></tr>
+            <tr><td>[16:17] &lt MS-&gt is the core of the particle system code</td></tr>
+            <tr><td>[16:17] &lt MS-&gt The key part of that piece of code is this:</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  73 ParticleSystem will work for particles in space with any number of dimensions -</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  74 so long as all particles use the same!</td></tr>
+            <tr><td>[16:18] &lt LightningMonkey&gt very nice</td></tr>
+            <tr><td>[16:18] &lt MS-&gt Open GL components are here:</td></tr>
+            <tr><td>[16:18] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/UI/OpenGL/</td></tr>
+            <tr><td>[16:18] &lt MS-&gt And you'd essentially be rendering using the same approach there</td></tr>
+            <tr><td>[16:19] &lt MS-&gt Or expected to</td></tr>
+            <tr><td>[16:19] &lt LightningMonkey&gt right</td></tr>
+            <tr><td>[16:19] &lt LightningMonkey&gt so the project would be just to make it into 3D, or would there be tinkering with the physics model as well?</td></tr>
+            <tr><td>[16:19] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/UI/OpenGL/Button.py?revision=2735&view=markup</td></tr>
+            <tr><td>[16:19] &lt MS-&gt Gives an example of a simple 3D "button" that can sit in space</td></tr>
+            <tr><td>[16:20] &lt MS-&gt The project's goal would be to make the topology visualiser work in 3D</td></tr>
+            <tr><td>[16:20] &lt MS-&gt If that involves changes to the physics model, that's fine</td></tr>
+            <tr><td>[16:20] &lt MS-&gt If it doesn't need it, that's fine too</td></tr>
+            <tr><td>[16:20] &lt LightningMonkey&gt alright</td></tr>
+            <tr><td>[16:20] &lt MS-&gt The key use that we'd be interested in (due to someone asking for it :) )</td></tr>
+            <tr><td>[16:21] &lt MS-&gt is the ability to dump a social network into the visualiser and explore it</td></tr>
+            <tr><td>[16:21] &lt MS-&gt and do so in a 3D environment</td></tr>
+            <tr><td>[16:22] &lt MS-&gt (not necessarily a huge one, but that's what the aim would be)</td></tr>
+            <tr><td>[16:22] &lt LightningMonkey&gt That is a very cool idea I will admit</td></tr>
+            <tr><td>[16:23] &lt LightningMonkey&gt So if it was a social network like say, facebook, would each node be a person and connection be who they are friends with?</td></tr>
+            <tr><td>[16:23] &lt LightningMonkey&gt at least something of that nature?</td></tr>
+            <tr><td>[16:23] &lt MS-&gt The idea is actually based around organising & exploring information around contacts between organisations</td></tr>
+            <tr><td>[16:24] &lt MS-&gt "who knows X who also knows Y in organisation A, B, C"</td></tr>
+            <tr><td>[16:24] &lt MS-&gt But you can also view it in terms of facebook</td></tr>
+            <tr><td>[16:24] &lt MS-&gt though with a much lower number of friends per node :)</td></tr>
+            <tr><td>[16:24] &lt LightningMonkey&gt very true</td></tr>
+            <tr><td>[16:24] &lt MS-&gt and more colleagues than friends :)</td></tr>
+            <tr><td>[16:24] &lt LightningMonkey&gt lol</td></tr>
+            <tr><td>[16:25] &lt MS-&gt not that the two are necessarily disjoint :)</td></tr>
+            <tr><td>[16:25] &lt LightningMonkey&gt yes i was about to say that one would hope some of the colleagues were friends</td></tr>
+            <tr><td>[16:25] &lt LightningMonkey&gt lol</td></tr>
+            <tr><td>[16:26] &lt MS-&gt So there may be some interesting possible extensions to the physics model to say "these things should be in the same locale, even though there isn't a link between them"</td></tr>
+            <tr><td>[16:26] &lt MS-&gt and "these others are from a different group"</td></tr>
+            <tr><td>[16:26] &lt MS-&gt the 2D topology visualiser has turned out to be very useful in the past and its customisability has turned out useful</td></tr>
+            <tr><td>[16:27] &lt LightningMonkey&gt so like nodes that represent people in the same group should remain close to each other even if they dont have a link?</td></tr>
+            <tr><td>[16:27] &lt MS-&gt yes</td></tr>
+            <tr><td>[16:27] &lt MS-&gt For example I needed to remodel a large datamodel and didn't particularly want to draw it, even though visualising it was the best way - so I created an ER modelling tool - which is documented roughly here:</td></tr>
+            <tr><td>[16:27] &lt MS-&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1195955570</td></tr>
+            <tr><td>[16:28] &lt MS-&gt The separation of rendering from physics makes it really nice to work with</td></tr>
+            <tr><td>[16:28] &lt MS-&gt (I didn't write the original engine :) )</td></tr>
+            <tr><td>[16:28] &lt LightningMonkey&gt nice</td></tr>
+            <tr><td>[16:29] &lt LightningMonkey&gt it would seem you could just use the existing attraction/repelent model to keep people together, just give them lower attraction constants</td></tr>
+            <tr><td>[16:29] &lt LightningMonkey&gt or something of that nature</td></tr>
+            <tr><td>[16:29] &lt MS-&gt Quite possibly. You could also think of it like a weak force & a strong force</td></tr>
+            <tr><td>[16:29] &lt LightningMonkey&gt yup</td></tr>
+            <tr><td>[16:30] &lt MS-&gt Weak attract/repulse for the overall type and strong at the nodel level</td></tr>
+            <tr><td>[16:30] &lt LightningMonkey&gt exactly</td></tr>
+            <tr><td>[16:31] &lt MS-&gt The nice thing about that is that you'd be able to see if there are individuals in groups that are highly connected beyond groups</td></tr>
+            <tr><td>[16:31] &lt LightningMonkey&gt this music model is pretty cool by the way</td></tr>
+            <tr><td>[16:31] &lt MS-&gt you'd expect "yes" to that, and it'd be nice</td></tr>
+            <tr><td>[16:31] &lt MS-&gt music model?</td></tr>
+            <tr><td>[16:31] &lt MS-&gt Oh that</td></tr>
+            <tr><td>[16:31] &lt LightningMonkey&gt the link you jsut sent</td></tr>
+            <tr><td>[16:31] &lt MS-&gt That's from looking at my old universities website and looking for current examples</td></tr>
+            <tr><td>[16:32] &lt MS-&gt and then using that to re-render :)</td></tr>
+            <tr><td>[16:32] &lt LightningMonkey&gt mhm</td></tr>
+            <tr><td>[16:33] &lt LightningMonkey&gt So as I said before, I have worked with opengl before, but not through python. I have always done it though C</td></tr>
+            <tr><td>[16:33] &lt MS-&gt The PyOpenGL interface is pretty much the same</td></tr>
+            <tr><td>[16:34] &lt LightningMonkey&gt ya I noticed</td></tr>
+            <tr><td>[16:34] &lt MS-&gt It calls out to the same libraries</td></tr>
+            <tr><td>[16:34] &lt MS-&gt So as long as you use display lists, it's not a huge deal</td></tr>
+            <tr><td>[16:34] &lt LightningMonkey&gt mhm</td></tr>
+            <tr><td>[16:34] &lt MS-&gt But then that's not exactly unusual</td></tr>
+            <tr><td>[16:35] &lt MS-&gt The Open GL support was added BTW by a GSOC'er 2 years ago</td></tr>
+            <tr><td>[16:35] &lt LightningMonkey&gt Well I may hopefully continue in that grand tradition</td></tr>
+            <tr><td>[16:36] &lt LightningMonkey&gt hehe</td></tr>
+            <tr><td>[16:36] &lt MS-&gt His blog from GSOC was here: http://thfsoc.blogspot.com/</td></tr>
+            <tr><td>[16:38] &lt MS-&gt OK, I'm going AFK for a couple of hours. kamaeliabot is logging the channel - logs are http://yeoldeclue.com/logs/ - if you have questions, please feel free to ask away and I'll see them when I come back</td></tr>
+            <tr><td>[16:38] &lt MS-&gt cya</td></tr>
+            <tr><td>[16:38] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:38] *** LightningMonkey has parted #kamaelia</td></tr>
+            <tr><td>[17:27] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[18:12] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:37] &lt Davbo&gt MS-, now i've got my MiniAxon is there anything you'd recommend i read up on before applying?</td></tr>
+            <tr><td>[19:38] &lt MS-&gt I'd suggest, given you've got time,</td></tr>
+            <tr><td>[19:38] &lt MS-&gt playing with Matt's code in /Sketches/MH</td></tr>
+            <tr><td>[19:39] &lt MS-&gt Largely because Matt's done all sorts of things which could be interesting from a GSOC perspective</td></tr>
+            <tr><td>[19:39] &lt Davbo&gt Got 3 weeks off Uni</td></tr>
+            <tr><td>[19:39] &lt MS-&gt but he didn't move over to /Code for whatever reason</td></tr>
+            <tr><td>[19:39] &lt MS-&gt There's interesting stuff in there like gesture recognition, open gl based "page turning" and so on</td></tr>
+            <tr><td>[19:40] &lt Davbo&gt It's not necessarily about gsoc i've just got myself interested now - especially with Python</td></tr>
+            <tr><td>[19:40] &lt MS-&gt in my area /Sketches/MPS theres some interesting stuff there as well, but I'm trying to package up</td></tr>
+            <tr><td>[19:40] &lt MS-&gt Ah , cool</td></tr>
+            <tr><td>[19:41] &lt MS-&gt I think one book (which is available online) that I'd read if I was in your position would be "how to think like a computer scientist using python", simply because its a well written book (ie very skimmable)</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt Just read the cookbook pages for Pipelines Graphlines and Carousels</td></tr>
+            <tr><td>[19:42] &lt MS-&gt I think also I'd read through the /Cookbook pages as well and have a ponder</td></tr>
+            <tr><td>[19:42] &lt Davbo&gt lol</td></tr>
+            <tr><td>[19:42] &lt Davbo&gt :)</td></tr>
+            <tr><td>[19:42] &lt MS-&gt The Open GL examples are very interesting/fun as well</td></tr>
+            <tr><td>[19:43] &lt Davbo&gt We've not started 3d graphics in my course yet so i'm curious with Open GL</td></tr>
+            <tr><td>[19:43] &lt MS-&gt I mean, I know I've got some clear ideas of what I would like to see, (multi-window image editor/manipulation/video annotation/simple editor), but that's the interesting thing</td></tr>
+            <tr><td>[19:43] &lt MS-&gt I see</td></tr>
+            <tr><td>[19:43] &lt MS-&gt Have you ever heard of Logo?</td></tr>
+            <tr><td>[19:43] &lt Davbo&gt nope</td></tr>
+            <tr><td>[19:43] &lt MS-&gt no problem</td></tr>
+            <tr><td>[19:44] &lt MS-&gt Stack based languages?</td></tr>
+            <tr><td>[19:44] &lt MS-&gt in the style of forth or postscript?</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt umm no :(</td></tr>
+            <tr><td>[19:44] &lt MS-&gt no problem - just looking for a point of reference really</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt i've heard of Stack based languages</td></tr>
+            <tr><td>[19:45] &lt MS-&gt I was just going to suggest that, in a way, open GL is a bit like that.</td></tr>
+            <tr><td>[19:45] &lt MS-&gt Essentially open GL has a concept of "the current model transform"</td></tr>
+            <tr><td>[19:45] &lt MS-&gt which is a combination of this:</td></tr>
+            <tr><td>[19:45] &lt MS-&gt [translate]*[scale]*[rotate]*[transform]*[scale]</td></tr>
+            <tr><td>[19:46] &lt MS-&gt which since they're internally modelled as matrices boils down to a single matrix</td></tr>
+            <tr><td>[19:46] &lt Davbo&gt Ah right</td></tr>
+            <tr><td>[19:46] &lt MS-&gt When you add a new transform (with a "begin"), it extends that transform</td></tr>
+            <tr><td>[19:46] &lt Davbo&gt I wonder if MATLAB can do such things</td></tr>
+            <tr><td>[19:46] &lt MS-&gt [translate]*[scale]*[rotate]*[transform]*[scale]*[.....]</td></tr>
+            <tr><td>[19:46] &lt Davbo&gt sounds similar</td></tr>
+            <tr><td>[19:46] &lt MS-&gt and when it "ends" it pops one</td></tr>
+            <tr><td>[19:47] &lt MS-&gt yep, matlab will do that sort of thing (I've not used matlab)</td></tr>
+            <tr><td>[19:47] &lt Davbo&gt it's horrible.</td></tr>
+            <tr><td>[19:47] &lt MS-&gt So in opengl you end up defining everything in terms of local co-ordinate systems, and then let it handle transformation into the 3D space</td></tr>
+            <tr><td>[19:47] &lt MS-&gt which is fairly friendly</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt oh okay</td></tr>
+            <tr><td>[19:48] &lt MS-&gt as long as you know what's going on :-)</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt Maybe a look at an old version of the Red Book?</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt or is that too advanced you think?</td></tr>
+            <tr><td>[19:49] &lt Davbo&gt I heard it was the only book you need for Open GL</td></tr>
+            <tr><td>[19:51] &lt Davbo&gt http://openbookproject.net//thinkCSpy/</td></tr>
+            <tr><td>[19:54] &lt MS-&gt The Red Book is fine IMO</td></tr>
+            <tr><td>[20:02] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:02] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[20:02] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt Hi vmlemon__ and bye! i'm off to do the pub quiz</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt bye all</td></tr>
+            <tr><td>[22:35] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[23:12] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[23:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[23:55] &lt vmlemon_&gt Hi</td></tr>

@@ -1,0 +1,101 @@
+<html>
+<head>
+<title> Cookbook/Backplanes </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/Backplanes">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Cookbook : Backplanes</h1><p>Backplanes provide an easy way to distribute data from many sources to many destinations. For example<br></p><h3>Serving to multiple clients<br></h3><p>For example, perhaps we want to build a server where each client that connects receives a copy of a stream of data - perhaps the current time. First, lets create our source of time data:</p><blockquote><pre>from Axon.ThreadedComponent import threadedcomponent<br>import time<br><br>class TimeTick(threadedcomponent):<br>    def main(self):<br>        prev=""<br>        while 1:<br>            now = time.asctime() + "\n"<br>            if now!=prev:<br>                self.send(now, "outbox")<br>                prev=now<br>            else:<br>                self.pause(0.1)</pre></blockquote>We're going to use SimpleServer to provide a simple TCP server to clients. Every time a client connects, we could make a new, private instance of TimeTick to handle that client. Alternatively we could make a single TimeTick component that sends (publishes) its messages to a Backplane:<br><br><blockquote><pre>from Kamaelia.Util.Backplane import Backplane<br>from Kamaelia.Util.Backplane import PublishTo<br>from Kamaelia.Chassis.Pipeline import Pipeline<br><br>Backplane("TIME").activate()<br><br>Pipeline( TimeTick(),<br>          PublishTo("TIME"),<br>        ).activate()</pre></blockquote><p>Then for each client that connects, we ask SimpleServer to make a component that fetches (subscribes) from that same backplane:<br><br></p><blockquote><pre>from Kamaelia.Util.Backplane import SubscribeTo<br>from Kamaelia.Chassis.ConnectedServer import SimpleServer<br><br>SimpleServer(protocol=lambda : SubscribeTo("TIME"), port=1500).run()</pre></blockquote><p></p><h3>So what's going on?<br></h3>Notice we've named the Backplane "TIME" to distinguish it from other Backplanes. You can therefore have as many Backplanes in a system as you like. The SubscribeTo and PublishTo components connect to the right backplane because they look it up (by the name) using the Coordinating Assistant Tracker (CAT). Once the subscribers and publishers are all linked up, you get something like this:<br><br><div align="center"><img src="/images/backplane1.gif" alt="PublishTo components send data to the Backplane. The Backplane then sends it onto ALL SubscribeTo components subscribed to it." align="middle"><br></div><br>PublishTo components send anything that arrives at their "inbox" inbox onto the Backplane. SubscribeTo components talk to the backplane and send on anything they receive from it to their "outbox" outbox. The Backplane itself acts like a splitter component - anything it receives is sent onto all outputs; in this case - all subscribers.<br><h3>Couldn't we have done that more simply?<br></h3><p>For a really simple example like this, there is little or no benefit of doing it this way ... in fact, it might seem like unnecessary extra effort and components! However, the real power is that all the clients are sharing the same data source.</p><h3>A simple relay server<br></h3><p>Perhaps, for example, our source of data is actually coming from another server (say "foo.bar.com" on port 1600). Using a backplane, its easy to build a relay server capable of replicating the data to multiple clients:</p><blockquote><pre>from Kamaelia.Internet.TCPClient import TCPClient<br><br>Pipeline( TCPClient("foo.bar.com", port=1600),<br>          PublishTo("DATA"),<br>        ).activate()<br><br></pre><pre>Backplane("DATA").activate()<br><br>SimpleServer(protocol=lambda : SubscribeTo("DATA"), port=1600).run()</pre></blockquote><h3>An aggregating logger...<br></h3><p>Backplanes aren't just useful for distributing data in a one-to-many fashion; they can also be used for many-to-one or many-to-many. For example, we can use a Backplane to build a logging server capable of logging, to a single file, data received from multiple clients. In effect, a simple aggregating logger:</p><blockquote><pre>from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines<br>from Kamaelia.File.Writing import SimpleFileWriter<br><br>def sendToBackplane():<br>    return Pipeline( chunks_to_lines(),<br>                      PublishTo("LOGGER"),<br>                    )<br><br>SimpleServer(protocol=sendToBackplane, port=1500).activate()<br><br>Pipeline( SubscribeTo("LOGGER"),<br>          SimpleFileWriter("log.data"),<br>        ).activate()<br><br>Backplane("LOGGER").run()</pre></blockquote><h3>...that can also be a relay<br></h3><p>Because we use a Backplane and a SimpleServer chassis, the client connections are not hard wired - clients can connect and disconnect whenever they choose. In fact, we could extend this further, by allowing clients to connect on a different port to receive a live stream of the aggregated logging data:</p><blockquote><pre>SimpleServer(protocol=SubscribeTo("LOGGER"), port=1501).activate()<br><br></pre></blockquote><p>Our aggregating logger is now also a relay, using the backplane to distribute messages from many sources to many destinations.</p><br>-- Jan 2007, Matt<br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

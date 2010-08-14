@@ -1,0 +1,229 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.Box.postbox </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.Box.postbox">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.Box.postbox</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Box.html">Box</a>.<a class="reference" href="/Docs/Axon/Axon.Box.postbox.html">postbox</a></h2>
+</div>
+<p>For examples and more explanations, see the <a class="reference" href="/Docs/Axon/Axon.Box.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-postbox">class postbox(object)</h2>
+<div class="section">
+<p>postbox(storage[,notify]) -&gt; new postbox object.</p>
+<p>Creates a postbox, using the specified storage as default storage. Storage
+should have the interface of list objects.</p>
+<p>Also takes optional notify callback, that will be called whenever an item is
+taken out of a postbox further down the chain.</p>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-postbox.__init__" name="symbol-postbox.__init__">__init__(self, storage[, notify])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.__len__" name="symbol-postbox.__len__">__len__(self)</a></h4>
+<p>Returns number of items in the postbox</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.__repr__" name="symbol-postbox.__repr__">__repr__(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox._addnotifys" name="symbol-postbox._addnotifys">_addnotifys(self, newnotifys)</a></h4>
+<p>Updates the local storage's list of notification callbacks for when messages are
+taken out of inboxes. Then recurses this info to this postbox's target, so it can
+update too.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox._removenotifys" name="symbol-postbox._removenotifys">_removenotifys(self, oldnotifys)</a></h4>
+<p>Updates the local storage's list of notification callbacks for when messages are
+taken out of inboxes. Then recurses this info to this postbox's target, so it can
+update too.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox._retarget" name="symbol-postbox._retarget">_retarget(self[, newtarget])</a></h4>
+<p>retarget([newtarget]) aims requests at to this postbox at a different
+target.</p>
+<p>If newtarget is unspecified or None, target is default local storage.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.addsource" name="symbol-postbox.addsource">addsource(self, newsource)</a></h4>
+<p>addsource(newsource) registers newsource as a source and tells it to
+'retarget' at this postbox.</p>
+<p>Also finds out from the new source who wants to be notified when messages are taken
+out of postboxes, and updates records accordingly, and passes this info further down
+the chain of linkages.</p>
+<p>Raises <a class="reference" href="/Docs/Axon/Axon.AxonExceptions.BoxAlreadyLinkedToDestination.html">Axon.AxonExceptions.BoxAlreadyLinkedToDestination</a> if the newsource is already
+targetted at a destination. This is because Axon does not support one-to-many
+arrangements.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.getSize" name="symbol-postbox.getSize">getSize(self)</a></h4>
+<p>Gets current box size limit</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.getnotifys" name="symbol-postbox.getnotifys">getnotifys(self)</a></h4>
+<p>Returns list of all callbacks that should be made when messages are collected
+from a postbox using this one as a source.</p>
+<p>The list returned is effectively all callbacks this postbox would have to make
+<em>plus</em> the callback for the owner of this box (if there is one)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.isFull" name="symbol-postbox.isFull">isFull(self)</a></h4>
+<p>Returns True if the destination box is full (and has a size limit)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.removesource" name="symbol-postbox.removesource">removesource(self, oldsource)</a></h4>
+<p>removesource(oldsource) deregisters oldsource as a source and tells it
+to 'retarget' at None (nothing).</p>
+<p>Also finds out from the old source who was being notified when messages are taken
+out of postboxes, and updates records accordingly, and passes this info further down
+the chain of linkages.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.setShowTransit" name="symbol-postbox.setShowTransit">setShowTransit(self[, showtransit][, tag])</a></h4>
+<p>Set showTransit to True to cause debugging output whenever a message is
+delivered to this postbox. The tag can be anything you want to identify
+this occurrence.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.setSize" name="symbol-postbox.setSize">setSize(self, size)</a></h4>
+<p>Set box size limit (use None for no limit)</p>
+<p>Behaviour is undefined (and not recommended!) if this call is made whilst
+there may be items in the postbox!</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

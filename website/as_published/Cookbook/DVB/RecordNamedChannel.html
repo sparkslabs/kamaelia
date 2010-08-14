@@ -1,0 +1,255 @@
+<html>
+<head>
+<title> Cookbook/DVB/RecordNamedChannel </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/DVB/RecordNamedChannel">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Cookbook : Recording a named channel from a DVB broadcast<br></h1><p align="left"><i>Find the code for this here:<br></i><a href="http://svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Examples/DVB_Systems/RecordNamedChannel.py?view=markup">/Code/Python/Kamaelia/Examples/DVB_Systems/RecordNamedChannel.py</a></p><p>Recording a channel from a DVB (digital video broadcasting) broadcast <a href="../../../Cookbook/DVB/SingleChannelTransportStreamCapture">is relatively simple</a><a href="../../../Cookbook/DVB/SingleChannelTransportStreamCapture"></a> if you know the packet IDs (PIDs) for packets containing the audio and video streams of the service (the channel) you want to record. But what if you only know the channel's name?</p><p>In this example the component  <i>DVB_TuneToChannel</i> uses various DVB components to extract and parse the Program Specific Information (PSI) tables needed to work it out itself. It therefore needs to be able to talk to the DVB <i>Receiver</i> to request packets with varous PIDs as it realises it needs them.</p><p>The top level of the system is therefore this:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+<pre>    <span style="color: rgb(255, 0, 255);">from</span> Kamaelia.Chassis.Graphline <span style="color: rgb(255, 0, 255);">import</span> Graphline
+    <span style="color: rgb(255, 0, 255);">from</span> Kamaelia.File.Writing <span style="color: rgb(255, 0, 255);">import</span> SimpleFileWriter
+    
+    <span style="color: rgb(255, 0, 255);">import</span> dvb3.frontend
+
+    feparams <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(255, 0, 255);">{</span>
+        <span style="color: rgb(255, 0, 0);">"inversion"</span> <span style="color: rgb(255, 0, 255);">:</span> dvb3.frontend.INVERSION_AUTO,
+        <span style="color: rgb(255, 0, 0);">"constellation"</span> <span style="color: rgb(255, 0, 255);">:</span> dvb3.frontend.QAM_16,
+        <span style="color: rgb(255, 0, 0);">"coderate_HP"</span> <span style="color: rgb(255, 0, 255);">:</span> dvb3.frontend.FEC_3_4,
+        <span style="color: rgb(255, 0, 0);">"coderate_LP"</span> <span style="color: rgb(255, 0, 255);">:</span> dvb3.frontend.FEC_3_4,
+    <span style="color: rgb(255, 0, 255);">}</span>
+
+    <span style="color: rgb(255, 0, 255);">from</span> Kamaelia.Device.DVB.Receiver <span style="color: rgb(255, 0, 255);">import</span> Receiver
+    
+    RegisterService<span style="color: rgb(255, 0, 255);">(</span> Receiver<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 0, 128);">505833330.0</span><span style="color: rgb(255, 0, 255);">/</span><span style="color: rgb(128, 0, 128);">1000000.0</span>, feparams<span style="color: rgb(255, 0, 255);">)</span>,
+                     <span style="color: rgb(255, 0, 255);">{</span><span style="color: rgb(255, 0, 0);">"MUX1"</span><span style="color: rgb(255, 0, 255);">:</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">}</span>
+                   <span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        
+    Pipeline<span style="color: rgb(255, 0, 255);">(</span> DVB_TuneToChannel<span style="color: rgb(255, 0, 255);">(</span>channel<span style="color: rgb(255, 0, 255);">=</span><span style="color: rgb(255, 0, 0);">"BBC ONE"</span>,fromDemuxer<span style="color: rgb(255, 0, 255);">=</span><span style="color: rgb(255, 0, 0);">"MUX1"</span><span style="color: rgb(255, 0, 255);">)</span>,
+              SimpleFileWriter<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"bbc_one.ts"</span><span style="color: rgb(255, 0, 255);">)</span>,
+            <span style="color: rgb(255, 0, 255);">)</span>.run<span style="color: rgb(255, 0, 255);">()</span>
+</pre></p><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+The DVB <i>Receiver</i> component (which contains both a tuner and demuxer) is registered as a named service "MUX1". <i>DVB_TuneToChannel</i> is given its name, so it can request packets with specific PIDs.<br><br><i>DVB_TuneToChannel</i> is then pipelined with a <i>SimpleFileWriter</i> so that audio and video packets it eventually outputs will be written to a file.<br><h2>What does DVB_TuneToChannel do?</h2><p>The component takes a channel name, and the name of the demuxer service as arguments:</p><blockquote><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+<pre><b>class</b> DVB_TuneToChannel<span style="color: rgb(255, 0, 255);">(</span>AdaptiveCommsComponent<span style="color: rgb(255, 0, 255);">):</span>
+<span style="color: rgb(0, 128, 2);"><i>    ...</i></span><span style="color: rgb(0, 128, 2);"><i></i></span>
+
+    <b>def</b> __init__<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>, channel, fromDemuxer<span style="color: rgb(255, 0, 255);">):</span>
+        super<span style="color: rgb(255, 0, 255);">(</span>DVB_TuneToChannel,<span style="color: rgb(128, 128, 128);">self</span><span style="color: rgb(255, 0, 255);">)</span>.__init__<span style="color: rgb(255, 0, 255);">()</span>
+        <span style="color: rgb(128, 128, 128);">self</span>.channelname <span style="color: rgb(255, 0, 255);">=</span> channel
+        <span style="color: rgb(128, 128, 128);">self</span>.demuxerservice <span style="color: rgb(255, 0, 255);">=</span> fromDemuxer
+</pre></p></blockquote><p>First, <i>DVB_TuneToChannel</i> resolves the demuxer service name it was given and adds an outbox and linkage to allow it to send requests to it:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+<pre>    <b>def</b> main<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span><span style="color: rgb(255, 0, 255);">):</span>
+        <span style="color: rgb(0, 128, 2);"><i># get the demuxer service</i></span>
+        toDemuxer <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.addOutbox<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"toDemuxer"</span><span style="color: rgb(255, 0, 255);">)</span>
+        cat <span style="color: rgb(255, 0, 255);">=</span> CAT.getcat<span style="color: rgb(255, 0, 255);">()</span>
+        service <span style="color: rgb(255, 0, 255);">=</span> cat.retrieveService<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>.demuxerservice<span style="color: rgb(255, 0, 255);">)</span>
+        <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">((</span><span style="color: rgb(128, 128, 128);">self</span>,toDemuxer<span style="color: rgb(255, 0, 255);">)</span>,service<span style="color: rgb(255, 0, 255);">)</span>
+</pre></p><p>Before they can be parsed, PSI tables need to be reconstructed from the transport stream packets they are carried in. So next it sets up a named service "PSI" to reconstruct them, based on a <i>ReassemblePSITablesService</i> component. It is linked to the demuxer service so it can requests packets with the PIDs it needs:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+<pre>        psi <span style="color: rgb(255, 0, 255);">=</span> ReassemblePSITablesService<span style="color: rgb(255, 0, 255);">()</span>
+        psi_service <span style="color: rgb(255, 0, 255);">=</span> RegisterService<span style="color: rgb(255, 0, 255);">(</span>psi,<span style="color: rgb(255, 0, 255);">{</span><span style="color: rgb(255, 0, 0);">"PSI"</span><span style="color: rgb(255, 0, 255);">:</span><span style="color: rgb(255, 0, 0);">"request"</span><span style="color: rgb(255, 0, 255);">})</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span>psi,<span style="color: rgb(255, 0, 0);">"pid_request"</span><span style="color: rgb(255, 0, 255);">)</span>, service <span style="color: rgb(255, 0, 255);">)</span>
+</pre></p><h3>1. Resolving service name to service id<br></h3>The first step is to resolve the service name "BBC ONE" in this example, to the service's id. This data is held in the Service Description Table (SDT), which is carried in a fixed PID. So <i>DVB_TuneToChannel</i> creates the correct parsing component and subscribes it to the PSI table service; then adds an inbox and links it to receive output from the pipeline:<p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+<pre>        sdt_parser <span style="color: rgb(255, 0, 255);">=</span> Pipeline<span style="color: rgb(255, 0, 255);">(</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PSI"</span>, <span style="color: rgb(255, 0, 255);">[</span>SDT_PID<span style="color: rgb(255, 0, 255);">])</span>,
+                               ParseServiceDescriptionTable_ActualTS<span style="color: rgb(255, 0, 255);">()</span>
+                             <span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        
+        fromSDT <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.addInbox<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"fromSDT"</span><span style="color: rgb(255, 0, 255);">)</span>
+        fromSDT_linkage <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span>sdt_parser,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>,fromSDT<span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">)</span>
+</pre></p><i>DVB_TuneToChannel</i> then waits for the parsing component to return a table and searches it for the matching service ID and transport stream ID:<br><pre>        service_id <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">None</span>
+        <b>while</b> service_id <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">None</span><span style="color: rgb(255, 0, 255);">:</span>
+            <b>while</b> <b>not</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span>fromSDT<span style="color: rgb(255, 0, 255);">):</span>
+                <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+        
+            sdt_table <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span>fromSDT<span style="color: rgb(255, 0, 255);">)</span>
+            
+            transport_stream_id <span style="color: rgb(255, 0, 255);">=</span> sdt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'transport_stream_id'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span>
+            
+            <span style="color: rgb(0, 128, 2);"><i># see if we can find our services channel name</i></span>
+            <b>for</b> <span style="color: rgb(255, 0, 255);">(</span>sid,service<span style="color: rgb(255, 0, 255);">)</span> <b>in</b> sdt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'services'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span>.items<span style="color: rgb(255, 0, 255);">():</span>
+                <b>for</b> <span style="color: rgb(255, 0, 255);">(</span>dtype,descriptor<span style="color: rgb(255, 0, 255);">)</span> <b>in</b> service<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'descriptors'</span><span style="color: rgb(255, 0, 255);">]:</span>
+                    <b>if</b> descriptor<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'type'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span> <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(255, 0, 0);">"service"</span><span style="color: rgb(255, 0, 255);">:</span>
+                        <b>if</b> descriptor<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'service_name'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span>.lower<span style="color: rgb(255, 0, 255);">()</span> <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">self</span>.channelname.lower<span style="color: rgb(255, 0, 255);">():</span>
+                            service_id <span style="color: rgb(255, 0, 255);">=</span> sid<br>                            <b>break</b>
+        
+        <b>print</b> <span style="color: rgb(255, 0, 0);">"Found service id:"</span>,service_id<br>        <b>print</b> <span style="color: rgb(255, 0, 0);">"Its in transport stream id:"</span>,transport_stream_id<br></pre><p>The PIDs for the audio and video streams are recorded in a Program Map Table (PMT). There is one of these for each service in the multiplex. The PIDs for these are listed in the Program Association Table (PAT) which is carried in packets with a known PID.<br></p><p>So the next steps are to examine the Program Association Table, then find and examine the correct Program Map Table for the service we want.</p><h3>2. Finding the Program Map Table for a given service id</h3><p>As was done for the Service Description table, <i>DVB_TuneToChannel</i> sets up a parser for the Program Association Table, and an inbox to collect the results:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>        pat_parser <span style="color: rgb(255, 0, 255);">=</span> Pipeline<span style="color: rgb(255, 0, 255);">(</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PSI"</span>, <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span>PAT_PID<span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                               ParseProgramAssociationTable<span style="color: rgb(255, 0, 255);">()</span>
+                             <span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        
+        fromPAT <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.addInbox<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"fromPAT"</span><span style="color: rgb(255, 0, 255);">)</span>
+        fromPAT_linkage <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span>pat_parser,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>,fromPAT<span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">)</span>
+</pre><p>It then waits for a parsed table to be returned and searches it for the PID for packets containing the Program Map Table for the service:<br>
+</p><pre>        <span style="color: rgb(0, 128, 2);"><i># wait until we get data back from the PAT</i></span>
+        PMT_PID <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">None</span>
+        <b>while</b> PMT_PID <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">None</span><span style="color: rgb(255, 0, 255);">:</span>
+            <b>while</b> <b>not</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span>fromPAT<span style="color: rgb(255, 0, 255);">):</span>
+                <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+        
+            sdt_table <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span>fromPAT<span style="color: rgb(255, 0, 255);">)</span>
+            <span style="color: rgb(0, 128, 2);"><i># see if we can find our service's PMT</i></span>
+            ts_services <span style="color: rgb(255, 0, 255);">=</span> sdt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'transport_streams'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span>transport_stream_id<span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span>
+            <b>if</b> service_id <b>in</b> ts_services<span style="color: rgb(255, 0, 255);">:</span>
+                PMT_PID <span style="color: rgb(255, 0, 255);">=</span> ts_services<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span>service_id<span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span>
+                <b>break</b>
+            
+        <b>print</b> <span style="color: rgb(255, 0, 0);">"Found PMT PID for this service:"</span>,PMT_PID<br></pre><h3>3. Finding the PIDs containing audio and video<br></h3><p>Nowthe PID for packets containing the Program Map Table is known, <i>DVB_TuneToChannel</i> can set up a parser that table:<br>
+</p><pre>        pmt_parser <span style="color: rgb(255, 0, 255);">=</span> Pipeline<span style="color: rgb(255, 0, 255);">(</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PSI"</span>, <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span>PMT_PID<span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                               ParseProgramMapTable<span style="color: rgb(255, 0, 255);">()</span>
+                             <span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        
+        fromPMT <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.addInbox<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"fromPMT"</span><span style="color: rgb(255, 0, 255);">)</span>
+        fromPMT_linkage <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span>pmt_parser,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>,fromPMT<span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">)</span>
+</pre><p>It then waits for the parsed table to be returned and searches for the first PIDs it can find for an audio and a video stream:</p>
+<pre>        <span style="color: rgb(0, 128, 2);"><i># wait until we get data back from the PMT</i></span>
+        audio_pid <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">None</span>
+        video_pid <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">None</span>
+        <b>while</b> audio_pid <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">None</span> <b>and</b> video_pid <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">None</span><span style="color: rgb(255, 0, 255);">:</span>
+            <b>while</b> <b>not</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span>fromPMT<span style="color: rgb(255, 0, 255);">):</span>
+                <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span><br><br>        pmt_table <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span>fromPMT<span style="color: rgb(255, 0, 255);">)</span>
+            <b>if</b> service_id <b>in</b> pmt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'services'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);">:</span>
+                service <span style="color: rgb(255, 0, 255);">=</span> pmt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'services'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span>service_id<span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span>
+                <b>for</b> stream <b>in</b> service<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'streams'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);">:</span>
+                    <b>if</b>   stream<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'type'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span> <b>in</b> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(0, 0, 255);">3</span>,<span style="color: rgb(0, 0, 255);">4</span><span style="color: rgb(255, 0, 255);">]</span> <b>and</b> <b>not</b> audio_pid<span style="color: rgb(255, 0, 255);">:</span>
+                        audio_pid <span style="color: rgb(255, 0, 255);">=</span> stream<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'pid'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span>
+                    <b>elif</b> stream<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'type'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span> <b>in</b> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(0, 0, 255);">1</span>,<span style="color: rgb(0, 0, 255);">2</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span> <b>and</b> <b>not</b> video_pid<span style="color: rgb(255, 0, 255);">:</span>
+                        video_pid <span style="color: rgb(255, 0, 255);">=</span> stream<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">'pid'</span><span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span><br><br>        <b>print</b> <span style="color: rgb(255, 0, 0);">"Found audio PID:"</span>,audio_pid
+        <b>print</b> <span style="color: rgb(255, 0, 0);">"Found video PID:"</span>,video_pid
+</pre><h3>4. Demuxing the audio and video packets<br></h3><p>Now the PIDs for packets containing the service's audio and video are known, the final step is for <i>DVB_TuneToChannel</i> to request to be sent packets with those PIDs; so they can be sent on out of its "outbox" outbox (to go to the file writer component):</p><p>
+</p><pre>        fromDemuxer <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.addInbox<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"fromDemuxer"</span><span style="color: rgb(255, 0, 255);">)</span>
+        <span style="color: rgb(128, 128, 128);">self</span>.send<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"ADD"</span>,<span style="color: rgb(255, 0, 255);">[</span>audio_pid,video_pid<span style="color: rgb(255, 0, 255);">]</span><span style="color: rgb(255, 0, 255);"></span>, <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>,fromDemuxer<span style="color: rgb(255, 0, 255);">))</span>, toDemuxer<span style="color: rgb(255, 0, 255);">)</span>
+        
+        <b>while</b> <span style="color: rgb(0, 0, 255);">1</span><span style="color: rgb(255, 0, 255);">:</span>
+            <b>while</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span>fromDemuxer<span style="color: rgb(255, 0, 255);">):</span>
+                packet <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span>fromDemuxer<span style="color: rgb(255, 0, 255);">)</span>
+                <span style="color: rgb(128, 128, 128);">self</span>.send<span style="color: rgb(255, 0, 255);">(</span>packet,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>
+                
+            <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+            <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+</pre>So there you have it. <i>DVB_TuneToChannel</i> uses various parsing components that are part of Kamaelia to extract and interpret the Program Specific Information tables available in a DVB multiplex carrying an MPEG transport stream.<br><p>-- 04 Jan 2007, Matt<br></p>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

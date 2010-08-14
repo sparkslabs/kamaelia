@@ -1,0 +1,158 @@
+<html>
+<head>
+<title> Developers/Tasks </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Tasks">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Project Tasks<br></h1><p><font face="Arial, Helvetica, sans-serif">Specific things that would be useful. If you want to work on these, please start a /Developers/Projects/ProjectTaskPage  with a basic outline of what, why, how, when, who, where, etc. The key things out of those really are the who, what, where.<br></font></p><h3><font face="Arial, Helvetica, sans-serif">TCP Server improvements<br></font></h3>Shutdown:<br><ul><li><strike>* Calling stop on the scheduler causes it to call stop on all the scheduled microprocesses</strike></li><ul><li>DONE - now sitting on Michael's branch. Needs merge.<br></li></ul><li><strike>* The stop on TCP Server &amp; CSA causes respective sockets to be shutdown cleanly</strike></li><ul><li>INITIAL PASS DONE - Needs testing. Likely to need to catch situation where sockets are closed multiple times. (Since the internet subsystem is going to prefer to attempt to close too many times rather than not enough times!!)</li><li>Need to write test examples showing usage.</li><li>Needs to also catch keyboardInterrupt and allow that to be a general case which can kill the system via a .stop()<br></li></ul></ul><br>Throttling<br><ul><li><strike>* CSA needs to respect the fact that when it forwards data it make get a NoSpaceInbox</strike></li><ul><li>DONE - now sitting on Michael's branch. Needs merge.</li></ul><li>Interesting thought:</li><ul><li><p><font size="3">A later version of the CSA &amp; TCPServer could have an option to make it such that when a client (or protocol) tries to _send_ data to a socket </font>that it fails if there's no capacity <font size="3">As a configurable option. (Most protocol handlers won't be expecting it) </font><font size="3"> That should be doable by setting the max inbox size to zero</font></p></li></ul></ul><font size="3"></font><h3><font face="Arial, Helvetica, sans-serif">Platform compatibility (Windows, Mac):</font></h3>Windows<br><ul><li><font face="Arial, Helvetica, sans-serif"> Check windows, find out what works, what doesn't</font></li><li><font face="Arial, Helvetica, sans-serif"> Windows specific megabundle</font></li><li><font face="Arial, Helvetica, sans-serif"> Package up whiteboard for windows users</font></li><li><font face="Arial, Helvetica, sans-serif"> Something similar to the selector for files for windows, preferably transparent so the developer doesn't have to choose different components for different platforms</font></li><li><font face="Arial, Helvetica, sans-serif">Get speex working for windows users</font></li></ul><font face="Arial, Helvetica, sans-serif">Mac<br></font><ul><li><font face="Arial, Helvetica, sans-serif"> Package up whiteboard for mac users</font></li><li><font face="Arial, Helvetica, sans-serif"> Audio capture component for macs</font></li><li><font face="Arial, Helvetica, sans-serif"> Get speex working for macs</font></li><li><font face="Arial, Helvetica, sans-serif"> Resolve (likely) arising endian issues.</font></li></ul>General<br><ul><li><font face="Arial, Helvetica, sans-serif">Test on Python 2.5</font></li></ul><h3>Axon core:</h3><ul><li>Improve box destruction to handle when a box is still linked to another</li><ul><li>linkages are not properly broken at the moment</li></ul><li>Fix WaitComplete microprocess closures so the substitute microprocess self.pause() actually pauses<br></li><li>Make CAT fully threadsafe<br></li></ul><h3>Tidying-up and Quick wins:<br></h3><ul><li><font face="Arial, Helvetica, sans-serif">Tidy and simplify the Plug &amp; PlugSplitter components</font></li><li><font face="Arial, Helvetica, sans-serif">Have SimpleServer tell the source IP, source port, dest IP, dest port</font></li></ul><h3>Topology visualiser &amp; Introspection:</h3><ul><li><font face="Arial, Helvetica, sans-serif"> Change topology visualiser to support "on demand" screen update rather than continuous</font></li><li><font face="Arial, Helvetica, sans-serif"> Support "no render" layout update (has to an extent already).</font></li><li><font face="Arial, Helvetica, sans-serif"> Change topology visualiser to support hierarchical display/etc</font></li><li><font face="Arial, Helvetica, sans-serif">Rewrite topology viewer to abstract from rendering mechanism (so rendering components could be plugged in for opengl, pygame etc)</font></li><li><font face="Arial, Helvetica, sans-serif">Rewrite topology physics in pyrex for serious speed boost :-) (thereby making it practical for visualising 'real' systems, eg. whiteboard, which contains 61 components when running stand alone)</font></li><ul><li><font face="Arial, Helvetica, sans-serif"> Ryan expressed doubt that the slowness was all due to python and offered to investigate how it could be rewritten to be faster. Matt gratefully accepted</font></li></ul><li><br></li></ul><h3>Whiteboard ideas:<br></h3><ul><li><font face="Arial, Helvetica, sans-serif"> Try whiteboard in 3D</font></li><li><font face="Arial, Helvetica, sans-serif"> Try an automated "scatter onto a concave hemisphere with me the me middle layout for auto layout of pictures. Allow links to be drawn between said pictures positioned in 3D, potentially integrate with topology visualiser subsystem (simply different rule set?).</font></li><li><font face="Arial, Helvetica, sans-serif"> Ability to edit the different pages of the same "shared pad" in whiteboard session, rather than forced to be on the same page</font></li><li><font face="Arial, Helvetica, sans-serif">A whiteboard in 3d with multiple sheets etc.</font></li><li><br></li></ul><h3>Protocols, codecs, integration:<br></h3><ul><li><font face="Arial, Helvetica, sans-serif"> User authentication modules</font></li><li><font face="Arial, Helvetica, sans-serif"> Clean integration with twisted for reuse of twisted.protocols</font></li><li><font face="Arial, Helvetica, sans-serif">DNS client (would be useful in several places)</font></li><li><font face="Arial, Helvetica, sans-serif"> Gstreamer integration</font></li><li><font face="Arial, Helvetica, sans-serif">A better way to do his (Ryan's) HTML parser in Kamaelia:</font></li><ul><li><font face="Arial, Helvetica, sans-serif"> "I ended up doing my HTML parser as a state machine and a stack - if I did it as a standard unix program (like a filter) it would have been much simpler using function calls and blocking."</font></li></ul><ul><li><font face="Arial, Helvetica, sans-serif">Michael commented that he had some ideas on this issue</font></li></ul></ul><h3>AIM Support</h3><ul><li>Remove from x import * statements from Protocol/AIM/ChatManager.</li><li>Provide a set of pre-defined SNAC constants (or possibly even classes) such that it is possible to write self.sendSnac(MESSAGE_TO_USER, data) instead of self.sendSnac(04, 07, data).</li><li>Remove the block of code at the end of AIMHarness's main method that keeps it running.&nbsp; After that code is run, AIMHarness serves only to pass messages between ChatManager and OSCARClient.&nbsp; It could probably be refactored such that those two components link directly to each other rather than keeping the AIMHarness around.</li><li>The LoginHandler code can be a tad confusing with several different levels of WaitCompletes.&nbsp; It could probably be refactored to simplify things.<br></li></ul><h3>Graphics framework support (pygame, OpenGL, etc):<br></h3><ul><li><font face="Arial, Helvetica, sans-serif"> Integrate PGU (Phil's pyGame Utils)</font></li><li><font face="Arial, Helvetica, sans-serif"> Use integrated PGU for buttons drop down lists, etc</font></li><ul><li><font face="Arial, Helvetica, sans-serif">in Whiteboard</font></li></ul><ul><li><font face="Arial, Helvetica, sans-serif">Inside Compose, (simplifying use on Macs)</font></li></ul><li><font face="Arial, Helvetica, sans-serif">Simple window manager support components -</font></li><ul><li><font face="Arial, Helvetica, sans-serif">    Add policies to display locations and management for xxDisplays (providing layering, z positioning, reposition for pygame &amp; opengl surfaces, opengl code has this to an extent),</font></li></ul><li><font face="Arial, Helvetica, sans-serif"> Styleable HTML layout engine for the window manager</font></li><li><font face="Arial, Helvetica, sans-serif"> Flesh out pygame related tools (perhaps independently of PGU)</font></li><li><font face="Arial, Helvetica, sans-serif"> Resolve MH.PygameApp issues,</font></li><li><font face="Arial, Helvetica, sans-serif">Create joined spaces (2D and 3D) using Pygame &amp; OpenGL code</font></li><li><font face="Arial, Helvetica, sans-serif">Adding visual ordering of components to pygame: eg. a component specifies a "layer number" to appear on</font></li><li><font face="Arial, Helvetica, sans-serif">Adding better event routing for pygame &amp; opengl - eg. only top-most component receives a click event</font></li></ul><h3>Random project ideas<br></h3><ul><li><font face="Arial, Helvetica, sans-serif">Write 3D game using Kamaelia</font></li><li><font face="Arial, Helvetica, sans-serif"> Automate release process.</font></li><li><font face="Arial, Helvetica, sans-serif">A major python web framework, (eg turbogears or django) with a kamaelia based web server and sample bi-directional "ajax" chat application</font></li><ul><li><font face="Arial, Helvetica, sans-serif">Michael mentioned that Simon Willison of Django queried the possibility of integrating Kamaelia at Euro OSCON</font></li></ul><li><font face="Arial, Helvetica, sans-serif">RTP client and server implementation - potential internal bbc requirement</font></li><ul><li><font face="Arial, Helvetica, sans-serif">Matt has developed nascent RTP packeting/depacketing components<br></font></li></ul></ul><h3>DVB, PVRs timeshifting, etc:<br></h3><ul><li><font face="Arial, Helvetica, sans-serif">Write a graphical EPG for DVB</font></li><li><font face="Arial, Helvetica, sans-serif">Build a more complete PVR application</font></li><li><font face="Arial, Helvetica, sans-serif">An interactive introspector/visualiser that only displays 'neighbourhood' of a component (eg. those connected to a particular component) ... allowing you to explore by moving through a system</font></li><li><font face="Arial, Helvetica, sans-serif">Implementation of ssh protocol</font></li></ul><h3>Relevant to HTTP, SMTP systems:</h3><ul><li>Half-close support in TCP client and server components (e.g. by sending messages via the signal outbox, or accepting a half-close command via the control inbox)</li><li>Better flow control (i.e. pausing components when what they've already processed is setting in a big backlog of the next component, or that the component way down the chain has limited bandwidth)</li><li>DNS client component</li></ul><br>
+
+
+
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

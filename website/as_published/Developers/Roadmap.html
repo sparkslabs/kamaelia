@@ -1,0 +1,159 @@
+<html>
+<head>
+<title> Developers/Roadmap </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Roadmap">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    <h1>Development Roadmap</h1><h2 align="right">The path to Kamaelia 1.0</h2>
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+<br><br><h2>Timeline</h2><ul><li><a href="http://www.kamaelia.org/ReleaseAnnouncement060">0.6.0 - Released</a> </li></ul>Note: the version numbering below is changing to date based versioning.<br><br>Releases to happen:<br><ul><li>0.9.5, Target: 31st May 2009</li><li>0.9.7, Freeze: 6th July 2009, Target: 13th July 2009</li><li>0.9.9, Freeze: 7th Sept 2009, Target: 14th Sept 2009</li><li>0.9.11, Freeze: 2nd Nov 2009, Target: 9th Nov 2009</li></ul>Beyond that date, this release schedule - which is based on "freeze on the first monday of every other month, and full release the following monday" - will probably need reviewing. If it seems appropriate, and if code has reached an appropriate stage, the release cycle will probably be this:<br><ul><li><b>1.0.2 - </b><b>Probable Full Release, Freeze: 1st Feb 2010, Target release: 8th Feb 2010</b></li><li>1.0.4 - Freeze: 5th April 2010, Target: 12th April 2010</li><li>1.0.6 - Freeze: 7th June 2010, Target release: 14th June 2010</li></ul>Reaching beyond that sort of timeline seems foolish, so I'm not going to try.<br><br><h2>Feature Roadmap</h2>Things that would be useful to go into releases... This section is a work in progress and will take time to dump out the various ideas people have had. Please bear with us and <a href="http://groups.google.com/group/kamaelia/post?subject=Features+Roadmap+on+http://www.kamaelia.org/Developers/Roadmap">discuss this on the mailing list.</a><br><ul><li><b>Overall aims:</b></li><ul><li>Performance, Performance, Performance. Fibra shows that this is doable, and we should either match fibra, beat fibra, or join with fibra. (the last option is probably most fun :)<br></li><li>Frame work for enabling greater contribution - through Kamaelia.Apps.* namespace</li><li>Larger, more comprehensive examples - based around existing real world apps.</li><li>Website goals:</li><ul><li>To make overall clearer &amp; greater/clearer separation of:</li></ul><ul><ul><li>Axon</li></ul><ul><li>Kamaelia</li></ul><ul><li>Kamaelia Apps</li></ul><ul><li>Ongoing development area<br></li></ul></ul></ul><li><b>Aspirations:</b></li><ul><li>Merged of Chong's Google Summer of code project - <a href="http://www.kamaelia.org/Developers/Projects/3DTopologyVisualiser">3D visualisation work</a> (since this is something I actually need sooner rather than later)</li><li>Flesh out http://www.kamaelia.org/Presentations somewhat...</li><li>Packaging up of the <a href="http://www.kamaelia.org/t/TN-LinuxFormat-Kamaelia.pdf">whiteboard</a> (pdf) as a standalone app</li><li>Packaging up of the <a href="http://code.google.com/p/kamaelia/source/browse/branches/private_MPS_Participate/Apps/FileProcessor/App/BatchFileProcessor.py">batch file processor</a> (image/video transcoder) as a standalone app (or better packaging than <a href="http://http//www.kamaelia.org/release/Kamaelia-FileProcessor-0.1.0.tar.gz">this</a>)</li><li>A mirror of the Ben's <a href="http://code.google.com/p/kamaelia-aws/">Kamaelia AWS</a> code into Kamaelia.Apps.AWS, if it's at a stage where it's ready. (aside from reviews etc)</li></ul><ul><li>Merge
+of Jason's google summer of code on on extensions/improvements to the
+HTTP server code, including a better example of the seaside like
+functionality. (I think <a href="http://www.kamaelia.org/Developers/Projects/KamaeliaPublish">Kamaelia Publish</a> itself should probably wait until 0.8.12 or 0.9.X) Probably after it gets a clearer name.</li></ul><ul><li>Perhaps initial work on <a href="http://groups.google.com/group/kamaelia/browse_frm/thread/7c9fe6a4202303e5">integration of the STM code into the CAT</a>. (The what? <a href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation/">The STM and CAT tools were discussed at pycon uk</a>) Though I suspect this will get started now, and merged in 0.8.12</li><li>2.6 cleanups (probably based on hinting from 2to3), and work started on a 3.0 autoconversion/build system.</li><li>Other
+stuff I'd like to see includes : work started on rationalising
+Kamaelia.File, Full review and merge of UDP_ng code in place of current
+UDP code, basic "connected" UDP server support (perhaps) (ie such that
+it can be used as a drop in replacement for TCPServer in ServerCore)</li><li>Better graphline shutdown <a href="http://groups.google.com/group/kamaelia/msg/dd78c6c1a8125236">as discussed on the list.</a></li><li>Tyson's extended version of the file appender,</li><li>SuSE packaging for <a href="http://rpm.pbone.net/index.php3/stat/4/idpl/9272711/com/python-axon-1.5.1-1.1.i586.rpm.html">Axon</a> &amp; <a href="http://rpm.pbone.net/index.php3/stat/4/idpl/9308970/com/python-kamaelia-0.5.0-1.1.i586.rpm.html">Kamaelia</a> updated from 0.5.0 to K0.6.0 &amp; A1.6.0</li><ul><li>And future packaging changes automated, ideally. (enabling 0.7.0 easily)</li></ul></ul><ul><li>Nanowrimo examples! &amp; results of Nanowrimo example writing...</li><li>Merge of other Summer of code projects.</li><ul><li>Probably Dave's paint program</li><li>Rest of Jason's code, esp WSGI support</li><li>Start scavenging Joe's project for mergeable components.</li><li>Could consider merging code from Pablo's abortive planet code, since may have useful scavengeable code.</li><li>Start extracting Matt's testing framework from graphline tests, to see what we can do.</li><ul><li>Will better graphline shutdown help here?</li></ul></ul><li><a href="http://groups.google.com/group/kamaelia/browse_frm/thread/7c9fe6a4202303e5#">Start work on merging CAT with STM code</a></li></ul><ul><li><a href="http://groups.google.com/group/kamaelia/browse_frm/thread/fb61e380c3e8a0c9#">Aim to have started the path to python 3.0. (hence 0.9.3 would hopefully be alpha quality python 3.0</a></li><li>Would be nice to have a Threaded* Chassis - for taking normal Kamaelia components and slinging them into seperate threads.</li><ul><li>Requires CAT+STM to be completed</li></ul><ul><li>If done, rewrite threaded components to use this chassis</li><li>If done, potentially deprecate threadedcomponent. (maybe, needs thought)<br></li></ul></ul><ul><li><b>Aspiration:</b></li><ul><li><b>Compatible with python 3.0 through a combination of using 2to3 and automated patches</b></li><li>Requires a framework to be started to assist with this.</li></ul></ul><li><b>1.0.2 - </b><b>Probable Full Release</b></li><ul><li>
+Kamaelia 1.0 Release</li><li>Axon 2.0 Release</li><li>Python 3.0 compatible release (non alpha, non beta, actual release)<br></li></ul></ul><h2>Other Aspiration Features</h2>If you want to add features you'd like to see, please <a href="http://groups.google.com/group/kamaelia/post?subject=Possible+Roadmap+Feature+Your+Idea">add to this thread on the mailing list</a>, we can then reference the thread back here for discussion purposes. <b>PLEASE</b> remember to replace "Your Idea" in the subject line with your feature idea!<br><h2>Possible Questions, Answers</h2><h3>Version
+numbers.</h3>Kamaelia's version number is pre-1.0 for good
+reasons (as of Nov 2008) - there are specific things that (at least) Michael would like
+to see in a full version 1.0. However, many projects are switching to a
+more date based approach. Since we figure that we're about a year away
+from being "feature complete" in Kamaelia (in terms of graphical
+creation tools, full set of appropriate chassis, potential for shard
+support, etc) it seems reasonable to switch to a versioning of <b>Y</b>.<b>Y</b>.<b>MM</b>.<br><br>This
+is the reason for 2 releases before the end of the year - 0.7.0 being
+the next logical one after 0.6.0, and the one after 0.7.0 being 0.8.12,
+with 0.8.12 being the first release matching the new versioning scheme.<br><br>If the project keeps running then, then I would also expect the following:<br><ul><li>Y.Y.MM to be used as version number in 2009</li><li>
+Y.Y.MM to be used as version number in 2010</li><li>1.MM to be used as version number in 2011</li><li>Y.MM to be used as version number 2012 - 2019(last digit of year only)</li></ul>
+It seems really odd to be planning version numbers that far out, but
+it's worth realising the first release of Kamaelia was in 2004, so 2012
+is the same timeframe (or so) forwards. Not only that, but Kamaelia's
+model does seem to have longevity.<br>
+<h3>Timing? 6 Weeks? Bi-Monthly?<br></h3>These target dates are deliberately far enough to be
+doable, but not so far that the planning for each stage to become
+unrealistic. Also, they're specifically designed to prevent "mega"
+releases being planned with "one more thing" preventing actual release.<br>
+
+<br>-- Last updated November 2008<br><br>That didn't work. Shifting to 2 monthly cycles instead, since it feels more "humane" :-)<br><br>-- May 2009<br><br><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    As of the <a href="http://www.kamaelia.org/ReleaseAnnouncement060">0.6.0 release</a> the project is moving through a transition stage.<br>
+<br>
+Future releases will be based on a bi-monthly release cycle, with version numbers based on dates, rather than arbitrary(!) version numbers.
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

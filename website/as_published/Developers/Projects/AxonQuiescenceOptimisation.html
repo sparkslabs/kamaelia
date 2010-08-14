@@ -1,0 +1,111 @@
+<html>
+<head>
+<title> Developers/Projects/AxonQuiescenceOptimisation </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/AxonQuiescenceOptimisation">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<div class="bodytext">
+
+
+
+<h2>Project Task Page: Axon Quiescence Optimisation<br></h2>
+
+</div> <div class="boxright"><b> Status:</b> Completed <br><b>Current Developers: </b> <i>MH</i><br><b>Current "inflight" dev location:</b> <i>/branches/</i>private_MH_axon_flowcontrolinversion<br><b>Start Date:</b> <i>May 2006</i><br><b>Expected End Date:</b> n/a<br><b>End Date:</b> <i>May 2006</i><br><b>Date this page last updated:</b> <i>22 February 2007</i><br><b>Estimated effort so far:</b> <i>20 days</i><br></div><br><br><h2><b>Description</b></h2>Modifying
+axon so that components are not scheduled (ie. run) when they are paused. If all components are paused, then the whole Axon system sleeps until woken - it goes quiescent. As it stands, Axon does not do this - the scheduler keeps all microprocesses in a single list and polls all of them continually.<br><br>This is also an "inversion of flow control" - since it enables an Axon based system to become reactive to events, rather than polling.<br><br>Benefits:<br><ul><li>General performance and responsiveness improvement - processor cycles will not be wasted on idle microprocesses</li><li>Better cooperation with other processes on a computer - Axon based systems will no longer hog processor cycles, even when inactive</li></ul>Needed to make practical high data throughput Kamaelia systems, such as <a href="../../../Developers/Projects/KamaeliaMacro"> KamaeliaMacro</a>.<br><h2>Inputs</h2><ul><li>Task Sponsor: Michael (MS)<br></li><li>Task Owner: Michael, Matt (MH)<br></li><li>Developers: Matt (initial sketches and final code dev), Michael (final merge)<br></li><li>Users: Michael, Matt<br></li><li>Interested third parties: none<br></li><li>Requirements</li><ul><li>MUST cause an Axon system to relinquish the cpu when idle</li><li>MUST not change the behaviour of an Axon system from the perspective of individual components</li><li>MUST be threadsafe</li><li>SHOULD only schedule and run microprocesses that are actually active at a given time (scheduler should properly pause() microprocesses and also unpause() them)</li><li>SHOULD not noticeably impact performance</li><li>SHOULD be responsive to external stimuli when quiescent (eg. Selector component gets woken when data is available)<br></li></ul></ul>Relevant Influencing factors:<br>
+<ul><li><i>Needed for Kamaelia Macro</i></li></ul><br><h2>Outputs</h2><h3>Expected</h3><ul><li>Modifications to Axon (initially in branch, then merged into mainline code)</li><li>Modifications and additions to Axon test suite</li><li>Improved performance<br></li></ul><h3>Actual</h3><ul><li>Code:</li><ul><li>Experiments (in order):</li><ul><li>/Sketches/MH/Inversion/miniaxon.py</li><li>/Sketches/MH/Inversion/cleverscheduling.py</li><li>/Sketches/MH/Inversion/aggregatedevents.py</li></ul><li>CVS branch: private_MH_axon_flowcontrolinversion</li><li>Mainline code: /Code/Python/Axon/Axon/</li><ul><li>Modified: most/all source files<br></li></ul><li>Mainline code: /Code/Python/Axon/Axon/Tests</li><ul><li>Tests removed that were now inapplicable</li><li>New tests added</li></ul><li>Bugfixes for components in mainline: (turned out several components did not use self.pause() properly)<br></li><ul><li>/Code/Python/Kamaelia/Kamaelia/Internet/Selector.py - made threaded and pausing</li><li>/Code/Python/Kamaelia/Kamaelia/Internet/TCPServer.py</li><li>/Code/Python/Kamaelia/Kamaelia/Chassis/ConnectedServer.py</li><li>/Code/Python/Kamaelia/Examples/example2/SimpleStreamingSystem.py</li><li>/Sketches/MPS/Macro/UnixPipe.py</li><li>/Code/Python/Kamaelia/Kamaelia/File/*</li><li>/Code/Python/Kamaelia/Kamaelia/Util/passThrough.py</li><li>/Code/Python/Kamaelia/Kamaelia/Visualisation/PhysicsGraph/lines_to_tokenlists.py</li><li>/Code/Python/Kamaelia/Kamaelia/UI/*</li><li>/Code/Python/Kamaelia/Examples/example11/Ticker.py</li><li>/Sketches/MH/Sketcher/*</li><li>/Sketches/MPS/Paint/Paint.py</li><li>/Sketches/MH/Editor2/Sandbox.py</li><li>/Code/Python/Kamaelia/Kamaelia/Util/Introspector.py</li><li><br></li></ul></ul></ul><h3>Realistic possibilities arising as a result of activity on this task</h3>Axon's support for the following was removed; and needed to be added back in again:<br><ul><li>limited
+"pipewidths" - linkages that could only carry a limited number of items
+data before becoming 'full' - (a rate limiting mechanism)<br></li><li>waking a component when a message leaves on of its outboxes (free space to send to)</li></ul><h2>Task Log</h2><ul><li>4 May 2006 : Added developer Matt</li><li>4 May 2006 : <b>Task status changed</b> to running.</li><li>4 May 2006 : Matt : worked on inital sketches/experiments<br></li><li>4 May 2006 : Matt : work commenced on private_MH_axon_flowcontrolinversion branch</li><li>7 May 2006 : Matt : finished sketches/experiments</li><li>14 May 2006 : Matt : began retrofitting new threading and pausing support to key Kamaelia components<br></li><li>31 May 2006 : Matt : completed development</li><li>31 May 2006 : Michael : Allocated to merge branch into mainline</li><li>1 June 2006 : Michael : Merge completed</li><li>1 June 2006 : <b>Task status changed</b> to completed<br></li><li>1 June 2006 : Removed developers, Michael, Matt</li><li>22 February 2007 : Matt : Project Task Page created<br></li></ul><h2>Discussion</h2>This work mainly centred on modifications to the scheduler - replacing its main loop with on that wouldn't iterate through inactive microprocesses, and providing a thread safe mechanism for submitting requests to it to activate, pause and unpause microprocesses.<br><br>Two variants were experimented on in /Sketches/MH/Inversion. <i>cleverscheduling.py</i> used queues for the pause/unpause/activate requests. <i>aggregatedevents.py</i> attempted to improve efficiency by building a table of changes, rather than simply queuing repeat requests. The former approach was adopted as it was slightly simpler to implement.<br><br>The following components notably underwent substantial overhauls to take advantage of the new quiescence capability, and in some cases, fixing buggy uses of self.pause():<br><ul><li>Selector - made into a threaded component that blocked on select calls and would pause when idle</li><li>Pipeline/Graphline/Carousel - improved handling for child shutdown on termination</li><li>Pygame components - separated event polling into a threaded component to allow pausing when inactive; and modified existing components to explicitly send a request when they need to be redrawn, rather than assuming it happens continuously.</li><li>Introspector - new method calls were added to the scheduler for it to use, so it could introspect without knowing too much about the scheduler's internal structure.</li></ul><br>-- Matt Hammond, 22 February 2007
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,110 @@
+<html><body><table>
+            <tr><td>[01:17] *** TheBashar has parted #kamaelia</td></tr>
+            <tr><td>[08:04] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:22] &lt ms-afk&gt Looks like a distutils bug</td></tr>
+            <tr><td>[08:22] &lt ms-afk&gt Something that can be worked around. But a pain.</td></tr>
+            <tr><td>[08:57] *** ms-afk is now known as ms-</td></tr>
+            <tr><td>[10:22] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:36] *** TheBashar has joined #kamaelia</td></tr>
+            <tr><td>[11:39] &lt TheBashar&gt ms-: So your gut feel is that it is a distutils bug in 2.6.1? I was thinking maybe I should try pulling kamaelia from svn. Put that won't help if it's a distutils problem.</td></tr>
+            <tr><td>[11:43] &lt ms-&gt Well, it's not a distutils problem per se.</td></tr>
+            <tr><td>[11:44] &lt ms-&gt It's a "distutils isn't sufficiently intelligent" problem</td></tr>
+            <tr><td>[11:44] &lt ms-&gt The problem part of the setup.py file is this:</td></tr>
+            <tr><td>[11:44] &lt ms-&gt  data_files=[ ('/usr/local/share/kamaelia', ['App/kamaelia_logo.png']) ],</td></tr>
+            <tr><td>[11:45] &lt ms-&gt which says take 'App/kamaelia_logo.png' and place it in "/usr/local/share/kamaelia"</td></tr>
+            <tr><td>[11:45] &lt ms-&gt if you remove that line it'll work OK</td></tr>
+            <tr><td>[11:46] &lt ms-&gt I may need to rethink data files anyway</td></tr>
+            <tr><td>[11:46] &lt TheBashar&gt Ok, thank you. I'll try that. So this might be the same problem mentioned in google groups as a sandbox violation when using easy_install?</td></tr>
+            <tr><td>[11:46] &lt ms-&gt I think so</td></tr>
+            <tr><td>[11:47] &lt ms-&gt hence my pondering about rethinking data files :)</td></tr>
+            <tr><td>[11:48] &lt TheBashar&gt Definitely, I mean who wants to install kamaelia if you don't get the cute cat logo? ;)</td></tr>
+            <tr><td>[11:51] &lt TheBashar&gt Removing that line worked. Thanks again for your help!</td></tr>
+            <tr><td>[11:51] &lt ms-&gt You're welcome :)</td></tr>
+            <tr><td>[12:37] *** TheBashar has parted #kamaelia</td></tr>
+            <tr><td>[14:28] *** TheBashar_web has joined #kamaelia</td></tr>
+            <tr><td>[14:30] &lt TheBashar_web&gt What is the best way to run two independant (non connected) components at the same time? Using a backplane? I tried just running one then the other but I see the run() method blocks.</td></tr>
+            <tr><td>[14:32] &lt ms-&gt One.activate()</td></tr>
+            <tr><td>[14:32] &lt ms-&gt Two.run()</td></tr>
+            <tr><td>[14:32] &lt ms-&gt .run() is a convenience method really</td></tr>
+            <tr><td>[14:33] &lt TheBashar_web&gt So componentB.run() will run everything, assuming I previously activated componentA? Cool.</td></tr>
+            <tr><td>[14:33] &lt ms-&gt Yep</td></tr>
+            <tr><td>[14:34] &lt TheBashar_web&gt Thank you. Sorry to keep pestering with the beginner questions.</td></tr>
+            <tr><td>[14:35] &lt ms-&gt That's fine :)</td></tr>
+            <tr><td>[14:40] &lt TheBashar_web&gt I'm going to want to rotate the ports that are listened on over time.</td></tr>
+            <tr><td>[14:40] &lt TheBashar_web&gt I'm about to google for kamaelia scheduled tasks and the opposite of the activate (deactivate?).</td></tr>
+            <tr><td>[14:40] &lt TheBashar_web&gt Before I go down that road though, should I look into a carousel?</td></tr>
+            <tr><td>[14:44] &lt ms-&gt The opposite of activate is to send a message to the component shutdownMicroprocess - to its control inbox</td></tr>
+            <tr><td>[14:45] &lt ms-&gt The reason for not calling a method on the component from the outside is to avoid any concurrency issues, since you can't know for certain what state the component is in otherwise.</td></tr>
+            <tr><td>[14:46] &lt TheBashar_web&gt Okay, I'm using producerFinished to close the connection after sending the motd. Using shutdownMicroprocess will stop listening on the port and tear down the protocol handler?</td></tr>
+            <tr><td>[14:46] &lt ms-&gt shutdownMicroprocess is generally used as a message to tell a component "shutdown now". producerFinished means "I'm not sending you any more data"</td></tr>
+            <tr><td>[14:47] &lt ms-&gt So if you want to shut down a ServerCore, sending it a shutdownMicroprocess will tear it down</td></tr>
+            <tr><td>[14:47] &lt ms-&gt http://www.kamaelia.org/Cookbook/TCPSystems - may be of help here</td></tr>
+            <tr><td>[14:49] &lt TheBashar_web&gt Yes, I've been following that but I subbed producerFinished from your pastebin example. Now I see where I should use each. Thanks.</td></tr>
+            <tr><td>[14:49] &lt ms-&gt As might this:</td></tr>
+            <tr><td>[14:49] &lt ms-&gt http://www.kamaelia.org/Docs/NotationForVisualisingAxon</td></tr>
+            <tr><td>[14:50] &lt ms-&gt Also, this server has a slide show which walks through the run time behaviour: http://www.kamaelia.org/KamaeliaGrey</td></tr>
+            <tr><td>[14:50] &lt ms-&gt Slides 31 & 32 specifically :)</td></tr>
+            <tr><td>[14:51] &lt TheBashar_web&gt Great! :) I had not seen that notations page before. That will help.</td></tr>
+            <tr><td>[14:52] &lt ms-&gt :)</td></tr>
+            <tr><td>[14:52] &lt ms-&gt I've given a variety of presentations on kamaelia in the past, and so some of these may be of use: http://www.slideshare.net/kamaelian/slideshows</td></tr>
+            <tr><td>[14:53] &lt TheBashar_web&gt Good stuff. I stumble a lot but when I finally get it, I like the way it makes sense. Fits my brain easier than twisted.</td></tr>
+            <tr><td>[14:55] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:08] &lt aa_&gt ms-: have you seen: http://opensource.hyves.org/concurrence/</td></tr>
+            <tr><td>[15:40] &lt TheBashar_web&gt I'm trying to make a component that periodically (everey 3s) sends a message. The only example I've found so far is torrentclient which uses rawserver.addtask(). Is this the best way to go about periodic tasks?</td></tr>
+            <tr><td>[15:41] &lt ms-&gt It varies, but there's two approaches I take</td></tr>
+            <tr><td>[15:42] &lt ms-&gt One is to have a component sit and wait for a message on an inbox, and when it gets one it does something , and to have a "pinger" component</td></tr>
+            <tr><td>[15:42] &lt ms-&gt The other is to just do the two things in one.</td></tr>
+            <tr><td>[15:42] &lt ms-&gt The latter is simpler really</td></tr>
+            <tr><td>[15:43] *** ms- writes something in a pastebin</td></tr>
+            <tr><td>[15:44] &lt TheBashar_web&gt I'm okay with the pinger component, but I'm not seeing how to make the pinger periodically ping.</td></tr>
+            <tr><td>[15:45] &lt ms-&gt http://pastebin.com/m3578ae56</td></tr>
+            <tr><td>[15:47] &lt TheBashar_web&gt Oh, okay, I'm a boob. So it's as simple as time.sleep() as long as it's on a separate thread.</td></tr>
+            <tr><td>[15:52] &lt ms-&gt If you wanted something a bit like hardware, where a single timed clock awakens other components, you can do this: http://pastebin.com/m855e8a0</td></tr>
+            <tr><td>[15:52] &lt ms-&gt That activates 3 components every 3 seconds</td></tr>
+            <tr><td>[15:55] &lt TheBashar_web&gt Thanks, that's great! I think the basic timed echoer will do for what I need now. But I'm going to save that backplane clock example. That example of having the components sleep and wake up would come in handy for other things.</td></tr>
+            <tr><td>[15:56] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:56] &lt ms-&gt That's useful to hear :)</td></tr>
+            <tr><td>[16:48] &lt TheBashar_web&gt self.send( self.recv("signal"), "control")</td></tr>
+            <tr><td>[16:48] &lt TheBashar_web&gt That's backwards? Shouldn't it be: self.send(self.recv("control"), "signal")</td></tr>
+            <tr><td>[17:40] &lt ms-&gt Yes, what I wrote was backwards</td></tr>
+            <tr><td>[17:40] &lt ms-&gt one of those days :)</td></tr>
+            <tr><td>[17:42] &lt TheBashar_web&gt :) I'm just happy I finally understood something on my own.</td></tr>
+            <tr><td>[17:42] &lt TheBashar_web&gt Am I going to run into any problems activating new components once we're already run()ing?</td></tr>
+            <tr><td>[17:43] &lt ms-&gt Nope.</td></tr>
+            <tr><td>[17:43] &lt ms-&gt What actually happens is calling .activate effectively ends up adding the component to a threadsafe queue, which are then popped off the queue by the scheduler, which then runs them</td></tr>
+            <tr><td>[17:44] &lt ms-&gt It needs to be a threadsafe queue due to the existence of threaded components, but you can be happy that it's done safely :)</td></tr>
+            <tr><td>[17:45] &lt TheBashar_web&gt I am. On a side note, I'm looking forward to seeing any progress made in the future on integrating kamaelia with the new multiprocess module.</td></tr>
+            <tr><td>[17:49] &lt TheBashar_web&gt Is there a significant difference between getting a single self.recv("inbox") and iterating through self.Inbox("inbox")?</td></tr>
+            <tr><td>[18:01] &lt TheBashar_web&gt Also, if component1 is not tied (with say a pipeline) to component2, can a method in c1 still call c2.send("message", "inbox")?</td></tr>
+            <tr><td>[18:01] &lt TheBashar_web&gt Or do I somehow have to dynamically connect c1 outbox to c2 inbox, send the message, disconnect, and connect to c3, etc, etc</td></tr>
+            <tr><td>[18:06] &lt TheBashar_web&gt AdaptiveComsComponent?</td></tr>
+            <tr><td>[18:06] &lt TheBashar_web&gt outLinkage = self.link((theComponent,itsInbox), (self,newOut))?</td></tr>
+            <tr><td>[18:11] &lt ms-&gt "Is there a significant difference between getting a single self.recv("inbox") and iterating through self.Inbox("inbox")?"</td></tr>
+            <tr><td>[18:11] &lt ms-&gt for d in self.Inbox("inbox"):</td></tr>
+            <tr><td>[18:12] &lt ms-&gt is just syntactic sugar for</td></tr>
+            <tr><td>[18:12] &lt ms-&gt while self.dataReady("inbox"):</td></tr>
+            <tr><td>[18:12] &lt ms-&gt  d = self.recv("inbox")</td></tr>
+            <tr><td>[18:12] &lt ms-&gt  ...</td></tr>
+            <tr><td>[18:13] &lt ms-&gt "a method in c1 still call c2.send("message", "inbox")" isn't valid</td></tr>
+            <tr><td>[18:13] &lt ms-&gt but you can do</td></tr>
+            <tr><td>[18:13] &lt ms-&gt linkage = self.link((c1,"someoutbox"), (c2,"someinbox"))?</td></tr>
+            <tr><td>[18:14] &lt ms-&gt and then c1 would do self.send( ... "someoutbox")</td></tr>
+            <tr><td>[18:14] &lt ms-&gt AdaptiveComms Component is more about creating new inboxes/outboxes on the fly</td></tr>
+            <tr><td>[18:15] &lt ms-&gt for example the selector component needs to tell connected socket adapters when to wake up, and the numbers of connected sockets is unknown in advance</td></tr>
+            <tr><td>[18:18] &lt ms-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/MPS/Examples/AIM/MultiAIMBot.py - specifically the MessageDemuxer class shows how to use the adaptive comms component relatively tidily</td></tr>
+            <tr><td>[18:34] &lt TheBashar_web&gt Thanks Michael!</td></tr>
+            <tr><td>[18:38] &lt TheBashar_web&gt The adaptive comms component page has an example of dynamically linking and unlinking. I'll just need to play around to get a feel for how to keep track of the linkages.</td></tr>
+            <tr><td>[18:52] *** ms- nods</td></tr>
+            <tr><td>[19:33] &lt TheBashar_web&gt If I send compB a shutdownMicroprocess() message</td></tr>
+            <tr><td>[19:33] &lt TheBashar_web&gt crap</td></tr>
+            <tr><td>[19:34] &lt TheBashar_web&gt If I send compB's control a shutdownMicroprocess message, will there be any problem unlinking compA-&gtcompB after compB has shutdown?</td></tr>
+            <tr><td>[20:39] *** TheBashar has joined #kamaelia</td></tr>
+            <tr><td>[20:49] &lt ms-&gt "will there be any problem unlinking" nope</td></tr>
+            <tr><td>[21:07] *** ms- calls it a night </td></tr>
+            <tr><td>[21:07] *** ms- is now known as ms-afk</td></tr>
+            <tr><td>[21:36] &lt TheBashar&gt Two lines in http://www.kamaelia.org/Docs/Axon/Axon.AdaptiveCommsComponent.html</td></tr>
+            <tr><td>[21:37] &lt TheBashar&gt inLinkage = self.link((theComponent,itsOutbox),(self,newIn))</td></tr>
+            <tr><td>[21:37] &lt TheBashar&gt outLinkage = self.link((theComponent,itsInbox), (self,newOut))</td></tr>
+            <tr><td>[21:38] &lt TheBashar&gt Isn't the second line backwards? Shouldn't it be:</td></tr>
+            <tr><td>[21:38] &lt TheBashar&gt outLinkage = self.link((self, newOut), (theComponent, itsInbox))</td></tr>
+            <tr><td>[22:18] &lt TheBashar&gt ms: I finally found the documentation I've been dying for. If it's there already, I'm blind. If not, I suggest clearly linking to this much higher up on the documentation list: http://www.kamaelia.org/Docs/Axon/Axon.Component.html</td></tr>

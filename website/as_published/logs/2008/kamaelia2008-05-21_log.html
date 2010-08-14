@@ -1,0 +1,463 @@
+<html><body><table>
+            <tr><td>[01:14] *** zaheer_ has joined #kamaelia</td></tr>
+            <tr><td>[02:54] *** zaheer__ has joined #kamaelia</td></tr>
+            <tr><td>[06:22] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:50] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[06:50] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[07:08] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:25] *** zaheer__ is now known as zaheerm</td></tr>
+            <tr><td>[08:41] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:42] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:01] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[11:02] &lt orphans&gt or Lawouach_, why not :)</td></tr>
+            <tr><td>[11:05] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:05] &lt Lawouach&gt pong</td></tr>
+            <tr><td>[11:05] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:05] &lt Lawouach&gt I'm going back to work in a few minutes, I'll ping you back from there orphans</td></tr>
+            <tr><td>[11:05] &lt orphans&gt k, tis just a quick silly question - no rush</td></tr>
+            <tr><td>[11:06] &lt Lawouach&gt ask it anyway and I'll reply when I'm back :)</td></tr>
+            <tr><td>[11:06] &lt Lawouach&gt should be in 30mns or so</td></tr>
+            <tr><td>[11:11] &lt orphans&gt k - should I be looking for a shutdownMicroprocess or a producerFinished or both for closing components generally? I think (for something like the OSC component) I should be only looking for shutdownMicroprocess, as two different producers may be connected to the one inbox, and so it'll shut down before you really want it to. Quite a lot of components I've seen shutdown on both though. Why is that, and what should I be do</td></tr>
+            <tr><td>[11:11] &lt orphans&gt ing?</td></tr>
+            <tr><td>[11:11] &lt orphans&gt long :D</td></tr>
+            <tr><td>[11:11] &lt orphans&gt s/do ing/doing</td></tr>
+            <tr><td>[11:21] &lt orphans&gt &lt = off to get lunch</td></tr>
+            <tr><td>[11:30] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:31] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:32] &lt Lawouach_&gt orphans: It's a tricky one I can't really help with because the closing down of components is still slightly unclear in my mind.</td></tr>
+            <tr><td>[11:32] &lt Lawouach_&gt The problem is that Axon is quite unclear as to whethe ror not it propagates both messages down to each children and children of children</td></tr>
+            <tr><td>[11:33] &lt Lawouach_&gt I've put that aside until recently but I think i'll have to look at it more with headstock.</td></tr>
+            <tr><td>[11:33] &lt Lawouach_&gt The doc says you can ovewrite _closeDownComponent() and return a shutdownMicroprocess</td></tr>
+            <tr><td>[11:34] &lt Lawouach_&gt When I look at the code inside Axon it's unclear what happens next</td></tr>
+            <tr><td>[11:34] &lt Lawouach_&gt Maybe ms-away or mhrd-afk could clarify</td></tr>
+            <tr><td>[11:36] &lt Lawouach_&gt I think it's a matter of perspective</td></tr>
+            <tr><td>[11:37] &lt Lawouach_&gt When a component receives a producrFinished, it knows that a component that was linked to its control notifies that it has nothing more to do. It did its job.</td></tr>
+            <tr><td>[11:38] &lt Lawouach_&gt A shutdownMicroprocess means that another component notifies the receiving one it has shutdown, likely on error or because it was requested to.</td></tr>
+            <tr><td>[11:38] &lt vmlemon&gt o.O 06:36 &lt  dre^&gt you should really consider switching to a non-fossil based midnight working fuel</td></tr>
+            <tr><td>[11:38] &lt Lawouach_&gt This could lead the receiving component to shutdown as well if it considers this was an error the sending component terminated unexpectedly.</td></tr>
+            <tr><td>[11:39] &lt Lawouach_&gt In other words, use producrFinished when things terminates as expected and shutdownMicroprocess otherwise.</td></tr>
+            <tr><td>[11:39] &lt Lawouach_&gt That's my take on it.</td></tr>
+            <tr><td>[11:40] &lt orphans&gt Lawouach, ok, cool. What messages should I be looking for to shut down the component though?</td></tr>
+            <tr><td>[11:41] &lt Lawouach_&gt Again it depends on your perspective.</td></tr>
+            <tr><td>[11:41] &lt orphans&gt From the docs I kinda get the impression that a shutdownMicroprocess is "shut down or else", and a producerFinished is "maybe shutdown in a, b and c happen"</td></tr>
+            <tr><td>[11:41] &lt orphans&gt s/in/if</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt That's what I said :)</td></tr>
+            <tr><td>[11:42] &lt orphans&gt yeah, cool :)</td></tr>
+            <tr><td>[11:42] &lt orphans&gt are there any specifics to what a b and c are though?</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt When you know the use cases in which your component can be terminated (out of its main function) then producrFinished</td></tr>
+            <tr><td>[11:42] &lt orphans&gt or is it up to the component really</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt Otherwise shutdown</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt It is up to the component indeed</td></tr>
+            <tr><td>[11:43] &lt Lawouach_&gt If you take a TCPClient component, it makes sense that it shutdowns when the peer closed the connection down unexpedtely</td></tr>
+            <tr><td>[11:43] &lt Lawouach_&gt But if the peer sent a message informing TCPClient it will close down the connection, then producrFinished would sound correct</td></tr>
+            <tr><td>[11:43] &lt Lawouach_&gt It's a matter of context and perspective.</td></tr>
+            <tr><td>[11:43] &lt Lawouach_&gt What you receive and what you want to send</td></tr>
+            <tr><td>[11:44] &lt orphans&gt yeah, I think I get it - it's quite a fine distinction</td></tr>
+            <tr><td>[11:44] &lt Lawouach_&gt One of your child may die aburptly and you may receive a shutdown. But you could still consider it ok and send a producrFinished later on.</td></tr>
+            <tr><td>[11:44] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[11:45] &lt Lawouach_&gt And don't be fooled, this is actually a critical distinction that can have a very big impact on how your application will behave</td></tr>
+            <tr><td>[11:45] &lt orphans&gt right, I'll work from that and see how it all pans out :) Cheers Lawouach_</td></tr>
+            <tr><td>[11:46] &lt Lawouach_&gt np</td></tr>
+            <tr><td>[11:49] &lt ms-away&gt "Maybe ms-away or mhrd-afk could clarify"</td></tr>
+            <tr><td>[11:49] *** ms-away reads</td></tr>
+            <tr><td>[11:49] &lt Lawouach_&gt Ta</td></tr>
+            <tr><td>[11:50] &lt ms-away&gt shutdownMicroprocess means "die, die now"</td></tr>
+            <tr><td>[11:50] &lt ms-away&gt producerFinished means "OK, I'm done"</td></tr>
+            <tr><td>[11:51] &lt ms-away&gt That's the crux of it</td></tr>
+            <tr><td>[11:52] &lt ms-away&gt Regarding this:</td></tr>
+            <tr><td>[11:52] &lt ms-away&gt "two different producers may be connected to the one inbox"</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt But that's where it's interesting to notice that the former gets a status from another component when the former gives a direct order</td></tr>
+            <tr><td>[11:53] &lt Lawouach_&gt It's subtle</td></tr>
+            <tr><td>[11:53] &lt ms-away&gt Yes, it is.</td></tr>
+            <tr><td>[11:53] &lt ms-away&gt The problem is really related to what happens in a pipe</td></tr>
+            <tr><td>[11:53] &lt ms-away&gt producerFinished is like "OK, no more data is coming on stdin"</td></tr>
+            <tr><td>[11:54] &lt ms-away&gt shutdownMicroprocess is equivalent (really) to receiving a message saying</td></tr>
+            <tr><td>[11:54] &lt ms-away&gt gah</td></tr>
+            <tr><td>[11:54] &lt ms-away&gt recieving the result of a "kill -&lt sigspec&gt &lt pid&gt"</td></tr>
+            <tr><td>[11:55] &lt orphans&gt yeah, that makes sense. So following the analogy something like grep stops when it receives producerFinished, whereas something like less lives on</td></tr>
+            <tr><td>[11:55] &lt orphans&gt and that kinda thing determines whether your component wants to shutdown on a producerFinished</td></tr>
+            <tr><td>[11:55] &lt ms-away&gt (such as SIGPIPE)</td></tr>
+            <tr><td>[11:56] &lt ms-away&gt orphans: Yep</td></tr>
+            <tr><td>[11:56] &lt ms-away&gt The topology visualiser is another good example</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt Interestingly there is no way for a component to say "I was killed" in such case. producerFinished doesn't seem right in such case.</td></tr>
+            <tr><td>[11:57] &lt ms-away&gt Lawouach_: well, you could, but generally components just pass the shutdownMicroprocess on</td></tr>
+            <tr><td>[11:57] &lt ms-away&gt But there isn't (for example) support inside the scheduler to inject the equivalent of a SIGPIPE (ie broken pipe) to the "next" component in a chain</td></tr>
+            <tr><td>[11:58] &lt ms-away&gt maybe there should be</td></tr>
+            <tr><td>[11:58] &lt ms-away&gt It'd be interesting to see which usecases it simplified</td></tr>
+            <tr><td>[11:58] &lt ms-away&gt (if it did :) )</td></tr>
+            <tr><td>[12:00] &lt ms-away&gt I think chained shutdown in an automatic fashion (which is related) is at present an open issue.</td></tr>
+            <tr><td>[12:01] &lt ms-away&gt Since the last thing we want is (for example) a broken TCP connection in a proxy causing the entire system to shutdown. (clearly an example of going too far)</td></tr>
+            <tr><td>[12:02] &lt ms-away&gt Likewise, if there was an exception that caused a TCP connection to die, auto-shutdown pass on would be really useful, so it's not obvious.</td></tr>
+            <tr><td>[12:02] *** ms-away suspects that someone has already solved this before</td></tr>
+            <tr><td>[12:02] *** ms-away really ought to given mascot & erlang a proper look at some point</td></tr>
+            <tr><td>[12:03] &lt ms-away&gt (mascot's model is closer to kamaelia than erlang IIRC though)</td></tr>
+            <tr><td>[12:03] &lt Lawouach_&gt Well</td></tr>
+            <tr><td>[12:03] &lt Lawouach_&gt the CSA does uses Ipc.socketShutdown in place</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt It seems Kamaelia had to bring a set of per-use-case "something wrong happened" messages</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt So in essence the problem was dealt with but not in a generic kind of way like producerFinished and shutdownMicroprocess</td></tr>
+            <tr><td>[12:05] &lt ms-away&gt Well</td></tr>
+            <tr><td>[12:05] &lt ms-away&gt class socketShutdown(producerFinished):</td></tr>
+            <tr><td>[12:05] &lt ms-away&gt  """Message to indicate that the network connection has been closed."""</td></tr>
+            <tr><td>[12:05] &lt ms-away&gt  pass</td></tr>
+            <tr><td>[12:05] &lt ms-away&gt The problem is though that that's not really sufficient either (having looked at it)</td></tr>
+            <tr><td>[12:06] &lt ms-away&gt on private_MPS_HalfCloseSupport there's also support been going in for a little while</td></tr>
+            <tr><td>[12:06] &lt ms-away&gt which needs to diffrentiate between these:</td></tr>
+            <tr><td>[12:06] &lt ms-away&gt  def shutdownSending(self):</td></tr>
+            <tr><td>[12:06] &lt ms-away&gt  self.socket.shutdown(socket.SHUT_WR)</td></tr>
+            <tr><td>[12:06] &lt ms-away&gt  self.connectionSENDLive = False</td></tr>
+            <tr><td>[12:06] &lt ms-away&gt  def shutdownReceiving(self):</td></tr>
+            <tr><td>[12:06] &lt ms-away&gt  self.socket.shutdown(socket.SHUT_RD)</td></tr>
+            <tr><td>[12:06] &lt ms-away&gt  self.connectionRECVLive = False</td></tr>
+            <tr><td>[12:07] &lt ms-away&gt  def shutdownBoth(self):</td></tr>
+            <tr><td>[12:07] &lt ms-away&gt  self.socket.shutdown(socket.SHUT_RDWR)</td></tr>
+            <tr><td>[12:07] &lt ms-away&gt  self.connectionRECVLive = False</td></tr>
+            <tr><td>[12:07] &lt ms-away&gt  self.connectionSENDLive = False</td></tr>
+            <tr><td>[12:07] &lt ms-away&gt So the CSA is a pretty useful pathological case of these sorts of things</td></tr>
+            <tr><td>[12:07] &lt ms-away&gt for many things, receiving from the socket is find</td></tr>
+            <tr><td>[12:07] &lt ms-away&gt gah</td></tr>
+            <tr><td>[12:08] &lt ms-away&gt for many things producerFinished & shutdown are fine</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt indeed</td></tr>
+            <tr><td>[12:08] &lt ms-away&gt But yes, domain specific things are needed too sometimes</td></tr>
+            <tr><td>[12:08] &lt ms-away&gt I suspect the codebase is getting to the size where it's going to become clear what the separation really needs to be as well.</td></tr>
+            <tr><td>[12:10] &lt Lawouach_&gt Well I'm feeling still really not ease with the way I shutdown my XMPP client. I'm using shutdownMicroprocess but I'm not sure it is propagated correctly to all my components.</td></tr>
+            <tr><td>[12:10] *** ms-away nods</td></tr>
+            <tr><td>[12:10] &lt Lawouach_&gt That makes me uneasy for long running processes.</td></tr>
+            <tr><td>[12:10] &lt ms-away&gt That's the kind of statement that worries me</td></tr>
+            <tr><td>[12:10] &lt Lawouach_&gt I feel I don't control it :)</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt Too bad I haven't comitted my code I would have shown you what i do</td></tr>
+            <tr><td>[12:11] &lt ms-away&gt *shrug*</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt Anyway this is the one single area where I can't really be sure of what is going on under the hood.</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt I think this will be a problem with GSoC applications this year.</td></tr>
+            <tr><td>[12:12] &lt ms-away&gt It's probably because its the one area that has the largest area of uncertainty at present</td></tr>
+            <tr><td>[12:12] &lt ms-away&gt I'm sure it will.</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt heh :)</td></tr>
+            <tr><td>[12:12] &lt ms-away&gt There's some headaches that I expect to have, but then they say necessity is the mother of invention :)</td></tr>
+            <tr><td>[12:12] &lt ms-away&gt It's certainly aleady changed the topology visualiser after all</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:48] *** ms-away thanks Lawouach_ for making me see something I hadn't read right </td></tr>
+            <tr><td>[13:02] &lt Lawouach_&gt I believe I can fly.</td></tr>
+            <tr><td>[13:02] &lt Lawouach_&gt I believe I can touch the skyyyyyyyyyyyyyyyyyyyy</td></tr>
+            <tr><td>[13:03] &lt vmlemon&gt Really? ;)</td></tr>
+            <tr><td>[13:03] &lt vmlemon&gt Have you tried it?</td></tr>
+            <tr><td>[13:03] &lt vmlemon&gt ;)</td></tr>
+            <tr><td>[13:04] &lt Lawouach_&gt I wouldn't say I believe now would I?</td></tr>
+            <tr><td>[13:05] *** vmlemon hands Lawouach_ a pair of (knitted) wax wings ;)</td></tr>
+            <tr><td>[13:06] &lt ms-away&gt I know I can fly.</td></tr>
+            <tr><td>[13:06] &lt ms-away&gt Just requires a plane</td></tr>
+            <tr><td>[13:06] &lt ms-away&gt :)</td></tr>
+            <tr><td>[13:06] &lt vmlemon&gt So much easier</td></tr>
+            <tr><td>[13:06] &lt Lawouach_&gt So British. The easy way out.</td></tr>
+            <tr><td>[13:07] &lt vmlemon&gt Does the Chunnel count? Although it doesn't fly</td></tr>
+            <tr><td>[13:33] &lt ms-away&gt vmlemon: Depends on whether you use the Chunnel as a canon or not</td></tr>
+            <tr><td>[13:33] &lt ms-away&gt If you do, then probably, but it'd be the oddest route to scotland that I've come across</td></tr>
+            <tr><td>[13:33] &lt ms-away&gt :)</td></tr>
+            <tr><td>[13:37] &lt vmlemon&gt Hah</td></tr>
+            <tr><td>[13:37] &lt vmlemon&gt I haven't used it, but can you even get to Scotland (or Wales) on the Chunnel?</td></tr>
+            <tr><td>[13:38] &lt Lawouach_&gt You can't get to Scotland. There's a wall somewhere in the middle.</td></tr>
+            <tr><td>[14:50] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:14] &lt Lawouach_&gt http://www.25hoursaday.com/weblog/2008/05/21/NoteToWeb20CompaniesEarlyAdoptersAreNotTheMassMarket.aspx</td></tr>
+            <tr><td>[15:15] &lt Lawouach_&gt I can't agree more with Dare's opinion here.</td></tr>
+            <tr><td>[15:15] &lt Lawouach_&gt Not always the case :)</td></tr>
+            <tr><td>[15:20] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[15:20] Reply: does the macarena</td></tr>
+            <tr><td>[15:38] &lt Lawouach_&gt http://highscalability.com/how-i-learned-stop-worrying-and-love-using-lot-disk-space-scale &lt -- one article that wouldn't fit the University's mindset :)</td></tr>
+            <tr><td>[15:41] &lt Lawouach_&gt well at least my teachers would have killed the guy</td></tr>
+            <tr><td>[15:41] &lt Lawouach_&gt Like some of my previous bosses</td></tr>
+            <tr><td>[15:58] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:02] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt If anyone else is like me and reads: http://www.penny-arcade.com/ - they'll be happy to know that the Penny Arcade game is out today :)</td></tr>
+            <tr><td>[16:09] Reply: Hm?</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt On Linux too :)</td></tr>
+            <tr><td>[16:10] &lt Davbo&gt www.playgreenhouse.com</td></tr>
+            <tr><td>[16:10] &lt Davbo&gt rare you see a game on Linux, unfortunately</td></tr>
+            <tr><td>[16:13] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:24] &lt ms-away&gt That link on big table is useful Lawouach - ta</td></tr>
+            <tr><td>[16:25] &lt ms-away&gt I've been trying to explain that to someone, and the focus there is useful</td></tr>
+            <tr><td>[16:29] &lt Lawouach&gt eh eh</td></tr>
+            <tr><td>[17:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:48] *** ms-away finds a way of reducing someone else's code from &gt400 lines down to 10 lines</td></tr>
+            <tr><td>[17:49] &lt vmlemon_&gt By taking out all the newlines? ;)</td></tr>
+            <tr><td>[17:50] &lt ms-away&gt No, by recognising the inherent duplication in their code could be sidestepped :)</td></tr>
+            <tr><td>[17:51] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[17:52] &lt ms-away&gt [off</td></tr>
+            <tr><td>[17:53] &lt vmlemon_&gt Sounds fun</td></tr>
+            <tr><td>[17:53] &lt ms-away&gt Yeah.</td></tr>
+            <tr><td>[17:53] &lt ms-away&gt Like a brick wall</td></tr>
+            <tr><td>[17:54] &lt vmlemon_&gt Does that include using 3rd party code/frameworks to do the job?</td></tr>
+            <tr><td>[17:54] &lt ms-away&gt Oh like you wouldn't believe</td></tr>
+            <tr><td>[17:55] &lt ms-away&gt I think the amusing aspect here is I've essentially optimised out all their types :-)</td></tr>
+            <tr><td>[17:55] &lt ms-away&gt Since I don't need them :)</td></tr>
+            <tr><td>[17:59] *** vmlemon_ contemplates trying to make something that somewhat resembles a Linux distribution on top of QNX...</td></tr>
+            <tr><td>[17:59] &lt vmlemon_&gt Albeit without the Linux bit</td></tr>
+            <tr><td>[18:05] &lt j_baker&gt ms-away: I think I've finalized the Logger. I think it's been simplified a lot from what I originally intended to do.</td></tr>
+            <tr><td>[18:06] &lt vmlemon_&gt (Nothing against Linux, but I'm up for a challenge ;))</td></tr>
+            <tr><td>[18:49] &lt ms-away&gt j_baker: Cool</td></tr>
+            <tr><td>[18:50] &lt ms-away&gt I'll take a look later this evening hopefully :)</td></tr>
+            <tr><td>[18:50] &lt j_baker&gt I posted a little bit more detail about it on the list.</td></tr>
+            <tr><td>[18:50] &lt ms-away&gt I just saw :)</td></tr>
+            <tr><td>[18:52] &lt j_baker&gt Btw, is there necessarily such thing as committing too much? I've probably made several commits for the logger just today.</td></tr>
+            <tr><td>[18:52] &lt ms-away&gt If you go OTT I'll mention it.</td></tr>
+            <tr><td>[18:52] &lt ms-away&gt Personally I don't think so, but I can see how to make it OTT :)</td></tr>
+            <tr><td>[18:53] &lt j_baker&gt Ok, just wanted to make sure I wasn't annoying anyone with a ton of commit emails. :)</td></tr>
+            <tr><td>[18:53] &lt ms-away&gt Probably an issue when the updates can be measured as a frame rate :)</td></tr>
+            <tr><td>[18:53] &lt j_baker&gt lol</td></tr>
+            <tr><td>[19:08] &lt j_baker&gt So does anyone here have an opinion on what a good email client for Linux is? (it has to support exchange)</td></tr>
+            <tr><td>[19:13] &lt ms-away&gt kmail</td></tr>
+            <tr><td>[19:13] &lt ms-away&gt If you want to use it with exchange and need the calendaring, then you'll want to use Kontact which uses kmail for the mail component</td></tr>
+            <tr><td>[19:14] &lt ms-away&gt And the calendaring messages will get passed through to korganiser</td></tr>
+            <tr><td>[19:21] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:26] &lt j_baker&gt Works for me. I'm using KDE on this computer.</td></tr>
+            <tr><td>[19:39] &lt ms-away&gt I was using KDE when all the zealots were still upset by it</td></tr>
+            <tr><td>[19:39] &lt ms-away&gt :)</td></tr>
+            <tr><td>[19:43] &lt j_baker&gt "But it's too pretty!"</td></tr>
+            <tr><td>[19:46] &lt ms-away&gt Nah, they were upset that someone used a license that wasn't the GPL, essentially.</td></tr>
+            <tr><td>[19:47] &lt ms-away&gt Which is a little harsh, but IMO true</td></tr>
+            <tr><td>[19:59] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:03] &lt vmlemon_&gt The Qt thing?</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt (Trolltech's QPL license)</td></tr>
+            <tr><td>[20:04] &lt mhrd-home&gt greetings</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt Nout wrong with KDE or Qt</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt Hi mhrd-home</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt They look much better than GNOME and GTK in my opinion</td></tr>
+            <tr><td>[20:05] &lt vmlemon_&gt GTK screams "Motif Reincarnated" to me, for some reason</td></tr>
+            <tr><td>[20:07] &lt mhrd-home&gt wrt shutdown signal discussion earlier today ...</td></tr>
+            <tr><td>[20:07] &lt mhrd-home&gt my view is similar to MS-'s ... the producerFinished and shutdownMicroprocess messages are like signals</td></tr>
+            <tr><td>[20:09] &lt mhrd-home&gt personally, I've treated shutdownMicroprocess as a request to "stop immediately" (an instruction) ...</td></tr>
+            <tr><td>[20:09] &lt mhrd-home&gt and producerFinished as "the data has dried up" (informational) aka "stdin has closed" ...</td></tr>
+            <tr><td>[20:10] &lt mhrd-home&gt the majority of components we've written have been for the purposes of taking in data, processing it, then passing it on ...</td></tr>
+            <tr><td>[20:11] &lt mhrd-home&gt in which case the behaviour that has made sense to me is to react to both messages by stopping (and passing the message on out of the "signal" outbox)</td></tr>
+            <tr><td>[20:11] &lt mhrd-home&gt however in the case of a producerFinished message - also finishing processing any pending data (eg. waiting at an inbox) first</td></tr>
+            <tr><td>[20:12] &lt mhrd-home&gt the recent change to TopologyViewer is the first component that, to me, made sense to *not* stop on receiving a producerFinished message</td></tr>
+            <tr><td>[20:12] &lt ms-away&gt There could be others of course :)</td></tr>
+            <tr><td>[20:12] &lt ms-away&gt (hi btw :) )</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt For systems I've built using Kamaelia; I've come to view wiring up the "control"-&gt"signal" paths as the way to control the shutdown process - eg. in a few cases purposely putting in splitters or other component to ensure shutdown msgs get to the right place</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt ms-away: indeed (and hi :-) )</td></tr>
+            <tr><td>[20:14] &lt mhrd-home&gt if I've wanted to deviate from the 'usual' behaviour I've described, then I've put in different wiring, or even filtering for the "control"-&gt"signal" path</td></tr>
+            <tr><td>[20:14] &lt ms-away&gt Yep</td></tr>
+            <tr><td>[20:14] &lt mhrd-home&gt &lt /braindump&gt</td></tr>
+            <tr><td>[20:14] &lt ms-away&gt ditto</td></tr>
+            <tr><td>[20:14] &lt mhrd-home&gt (that said, sometimes its ended up rather messy :-) )</td></tr>
+            <tr><td>[20:15] &lt mhrd-home&gt however I do kinda like it (the ability to purposely author the shutdown process) ... but perhaps thats because I've gotten used to it :)</td></tr>
+            <tr><td>[20:17] &lt ms-away&gt Quite possibly</td></tr>
+            <tr><td>[20:17] &lt ms-away&gt I think that any changes would be syntactic sugar to assist it, rather than replace it</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt I'm not too familiar with Kamaelia, but isn't there some sort of "Safe Landing"/clean shutdown component to assist with that sort of stuff? Or is it something that the developer has to take care of entirely by themselves?</td></tr>
+            <tr><td>[20:17] &lt ms-away&gt A bit like the Backplane code is at the end of the day just a splitter</td></tr>
+            <tr><td>[20:18] &lt ms-away&gt vmlemon_: I'm not sure what that would do if it existed, but it's an interesting idea</td></tr>
+            <tr><td>[20:18] &lt mhrd-home&gt ditto</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt I assume that it would introspect the Kamaelia system, and see what's running, and then signal it to stop in sequence before safely stopping the app</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt (similar in concept to SysV init shutdowns)</td></tr>
+            <tr><td>[20:20] *** mhrd-home wonders what it would be like if Axon trapped exceptions in components and initiated some kind of controlled termination of the component; maybe sending out an exception msg (subclass of shutdownMicroprocess perhaps)</td></tr>
+            <tr><td>[20:20] &lt vmlemon_&gt Although it would probably need cooperation from components</td></tr>
+            <tr><td>[20:23] &lt mhrd-home&gt vmlemon_ : you thinking of handling error conditions? or getting the system to stop cleanly when it has finished doing whatever its doing? (or am I barking up the wrong tree? :-) )</td></tr>
+            <tr><td>[20:24] &lt vmlemon_&gt Essentially getting the whole app and components it uses to stop cleanly in sequence</td></tr>
+            <tr><td>[20:24] &lt vmlemon_&gt Although it's just an idle brainfart/musing, so you can ignore it at will ;)</td></tr>
+            <tr><td>[20:24] &lt ms-away&gt "(similar in concept to SysV init shutdowns)"</td></tr>
+            <tr><td>[20:24] &lt ms-away&gt Hm, that's an interesting idea</td></tr>
+            <tr><td>[20:25] &lt ms-away&gt and potentially applicable</td></tr>
+            <tr><td>[20:25] &lt ms-away&gt maybe not directly, but it *is* interesting</td></tr>
+            <tr><td>[20:25] &lt mhrd-home&gt how do SysV init shutdowns work ooi? just sending kill signals to the tasks?</td></tr>
+            <tr><td>[20:25] &lt ms-away&gt I'll have a ponder :)</td></tr>
+            <tr><td>[20:25] &lt ms-away&gt cheers :)</td></tr>
+            <tr><td>[20:25] &lt ms-away&gt mhrd-home: essentially, yes</td></tr>
+            <tr><td>[20:26] &lt ms-away&gt But in a defined order base on the run level information encoded into the file names</td></tr>
+            <tr><td>[20:26] &lt ms-away&gt (essentially)</td></tr>
+            <tr><td>[20:26] &lt vmlemon_&gt Yay, my half-ISO st</td></tr>
+            <tr><td>[20:27] &lt vmlemon_&gt *still boots after gluing additional chunks of the file to it</td></tr>
+            <tr><td>[20:27] &lt ms-away&gt :)</td></tr>
+            <tr><td>[20:27] &lt Lawouach&gt One thing Axon doesn't deal well with is KeyboardInterrupt exceptions.</td></tr>
+            <tr><td>[20:27] &lt Lawouach&gt It'd be really nice indeed that we could handle such signals</td></tr>
+            <tr><td>[20:28] &lt mhrd-home&gt slightly related - some mechanism to collect/detect/react to signals would be interesting (eg. a CAT service for collecting signals)</td></tr>
+            <tr><td>[20:28] &lt mhrd-home&gt snap :)</td></tr>
+            <tr><td>[20:28] &lt vmlemon_&gt I ended up downloading it onto a shell server, splitting it into 3 100MB chunks (well 2 100MB ones, and I think 1 45MB chunk), and then breaking the 2nd part of the ISO into 2MB parts (after moving the other two onto a USB drive over FTP)</td></tr>
+            <tr><td>[20:29] &lt vmlemon_&gt It sounds confusing, but it seems to work</td></tr>
+            <tr><td>[20:29] &lt vmlemon_&gt Seeing as I only have a crappy connection at home</td></tr>
+            <tr><td>[20:29] &lt ms-away&gt The STM code opens up interesting options in these areas BTW, since it really is a threadsafe way of sharing values.</td></tr>
+            <tr><td>[20:33] *** vmlemon_ wonders if it'll now copy over the help files that it seemingly skipped without giving a warning, seeing as they're probably stored in other segments of the ISO </td></tr>
+            <tr><td>[20:43] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:45] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:39] &lt ms-away&gt interesting:</td></tr>
+            <tr><td>[21:39] &lt ms-away&gt  http://nodebox.net/perception/?cake&depth=l</td></tr>
+            <tr><td>[21:44] *** ms-away has backed up everything from sourceforge</td></tr>
+            <tr><td>[21:44] &lt ms-away&gt (website related)</td></tr>
+            <tr><td>[21:44] &lt ms-away&gt Now doing secondary backup</td></tr>
+            <tr><td>[21:46] &lt ms-away&gt Looks like that could take a while</td></tr>
+            <tr><td>[21:46] &lt vmlemon_&gt Ugh, "Last week, I published a post on the "iPod of film cameras." Lucky for me, the post didn't include an image of an iPod Classic. That's because Apple has just trademarked the iPod shape. I cannot, for obvious reasons, show you the shape directly, so instead, allow me to show you its various subcomponents. It is up to you, dear reader, to perform the requisite mental assembly:"</td></tr>
+            <tr><td>[21:46] &lt ms-away&gt heh</td></tr>
+            <tr><td>[21:47] &lt ms-away&gt delightful</td></tr>
+            <tr><td>[21:47] &lt ms-away&gt Was it magenta as well</td></tr>
+            <tr><td>[21:47] &lt ms-away&gt ?</td></tr>
+            <tr><td>[21:47] &lt vmlemon_&gt (http://bp2.blogger.com/_swGyNR8UhGg/SCmr18eU2kI/AAAAAAAAALM/yrv5mMSGX_Y/s400/ipod_pieces.gif being the image it refers to)</td></tr>
+            <tr><td>[21:47] &lt vmlemon_&gt Hah, it was neither magenta, or knitted ;)</td></tr>
+            <tr><td>[21:47] &lt vmlemon_&gt Found it at http://onqpl.blogspot.com/2008/05/using-robots-to-address-serious-kneed.html</td></tr>
+            <tr><td>[21:49] &lt vmlemon_&gt Article on it at http://blog.wired.com/gadgets/2008/05/apple-trademark.html (it has the obligatory magenta mention, too) ;)</td></tr>
+            <tr><td>[21:50] &lt ms-away&gt Rather surreal</td></tr>
+            <tr><td>[21:50] *** vmlemon_ never knew it would come to that</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt Hah, "Sensenon: In 2001 Australia adopted new patent laws, and just to show how flawed they were, a lawyer filed and received a patent for the wheel simply by renaming it a "circular transportation facilitation device"!" (one of the comments)</td></tr>
+            <tr><td>[21:52] *** mhrd-home decides to finish adding docs to his dvb fixes branch then mark it ready for merge (otherwise I'll end up rolling lots of new stuff in and bloating it)</td></tr>
+            <tr><td>[21:53] *** ms-away continues waiting for the download he's doing to finish</td></tr>
+            <tr><td>[21:53] &lt ms-away&gt Patenting the wheel ?!</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt A so-called "Innovation Patent"</td></tr>
+            <tr><td>[21:53] &lt ms-away&gt Seems true: http://news.bbc.co.uk/1/hi/world/asia-pacific/1418165.stm</td></tr>
+            <tr><td>[21:54] &lt vmlemon_&gt I remember reading something a while ago about Ford forcing a motoring hobbyist group to stop producing calendars with photos of their cars on due to some weird trademark related thing, ages ago</td></tr>
+            <tr><td>[21:54] &lt ms-away&gt " The new innovation patent can be prepared without professional help and only requires claimants to show "innovation", not "invention"."</td></tr>
+            <tr><td>[21:54] &lt ms-away&gt That's scary</td></tr>
+            <tr><td>[21:54] &lt ms-away&gt Yeah, I've heard about the car thing before</td></tr>
+            <tr><td>[21:54] &lt vmlemon_&gt I think the fact that they mentioned "Ford" a load of times on the calendar despite it being unofficial didn't help, either</td></tr>
+            <tr><td>[21:56] &lt ms-away&gt Probably</td></tr>
+            <tr><td>[21:57] &lt vmlemon_&gt Still makes me wonder why it's possible to trademark the physical characteristics of an object, though</td></tr>
+            <tr><td>[21:57] &lt vmlemon_&gt I can see why someone would want to patent one that's non-trivial/non-obvious depending on how it's constructed, although I wouldn't think of trademarking something like that</td></tr>
+            <tr><td>[22:00] *** vmlemon_ would consider something like a cube, or the wheel to be trivial, and perfectly obvious for those purposes...</td></tr>
+            <tr><td>[22:21] &lt ms-away&gt OK, http://edit.kamaelia.org/and http://132.185.142.2/ should now be different</td></tr>
+            <tr><td>[22:23] &lt j_baker&gt I get a 404 with the first and a fish message with the second.</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt Tried removing the "/and"?</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt (looks like a typo)</td></tr>
+            <tr><td>[22:25] &lt j_baker&gt Ah. Get a giant cat.</td></tr>
+            <tr><td>[22:25] &lt vmlemon_&gt Yay</td></tr>
+            <tr><td>[22:28] &lt vmlemon_&gt Fish message with the IP address</td></tr>
+            <tr><td>[22:28] &lt vmlemon_&gt Big cat with the first URL</td></tr>
+            <tr><td>[22:35] &lt ms-away&gt cool</td></tr>
+            <tr><td>[22:35] &lt ms-away&gt ta</td></tr>
+            <tr><td>[22:39] *** vmlemon_ wonders if the cat's favourite food is trout ala creme ;)</td></tr>
+            <tr><td>[22:51] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[22:52] &lt mhrd-home&gt night vmlemon_</td></tr>
+            <tr><td>[22:54] &lt ms-away&gt http://edit.kamaelia.org/Home</td></tr>
+            <tr><td>[22:55] &lt ms-away&gt (not yet edittable, but getting there)</td></tr>
+            <tr><td>[22:56] &lt ms-away&gt Pretty good start for this evening IMO</td></tr>
+            <tr><td>[22:58] *** mhrd-home takes a look....</td></tr>
+            <tr><td>[23:00] &lt mhrd-home&gt yay, wiki editing again :-)</td></tr>
+            <tr><td>[23:00] &lt ms-away&gt Shouldn't actually save ... :)</td></tr>
+            <tr><td>[23:00] &lt mhrd-home&gt oh :-( :-)</td></tr>
+            <tr><td>[23:00] &lt mhrd-home&gt well its a good start :)</td></tr>
+            <tr><td>[23:01] &lt ms-away&gt Indeed</td></tr>
+            <tr><td>[23:01] &lt ms-away&gt I'm in the process of trying to put an ad-hoc patch on to re-enable editting</td></tr>
+            <tr><td>[23:05] &lt ms-away&gt OK, http://edit.kamaelia.org/cgi-bin/Wiki/edit/Components?mode=edit is partway there</td></tr>
+            <tr><td>[23:05] &lt ms-away&gt requires username/password to edit</td></tr>
+            <tr><td>[23:05] &lt ms-away&gt which is wiki/wiki</td></tr>
+            <tr><td>[23:05] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[23:05] &lt ms-away&gt (for now)</td></tr>
+            <tr><td>[23:05] &lt ms-away&gt But doesn't redirect to right places (yet)</td></tr>
+            <tr><td>[23:12] &lt ms-away&gt OK, wiki re-enabled</td></tr>
+            <tr><td>[23:12] &lt ms-away&gt The edit link requires a username/password of wiki/wiki</td></tr>
+            <tr><td>[23:12] &lt ms-away&gt It's primarily there to keep out spammers</td></tr>
+            <tr><td>[23:12] &lt ms-away&gt among other people...</td></tr>
+            <tr><td>[23:17] *** ms-away changed the topic to wiki here: http://edit.kamaelia.org/Wiki u/p : wiki/wiki | Next weekly meeting 4pm 22nd May 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[23:17] &lt ms-away&gt But I can find out :)</td></tr>
+            <tr><td>[23:18] &lt mhrd-home&gt google knows :)</td></tr>
+            <tr><td>[23:18] &lt mhrd-home&gt (or more to the point, if google doesn't, then does anyone?!)</td></tr>
+            <tr><td>[23:19] &lt ms-away&gt My logs will know :)</td></tr>
+            <tr><td>[23:19] &lt ms-away&gt (server logs)</td></tr>
+            <tr><td>[23:20] &lt ms-away&gt Last time crawled was may 4th by google</td></tr>
+            <tr><td>[23:21] &lt ms-away&gt Interestingly msn's bot seems rather incapable.</td></tr>
+            <tr><td>[23:21] &lt ms-away&gt So the answer is yes, but not often</td></tr>
+            <tr><td>[23:21] &lt ms-away&gt So that gives me time to change the way the logs are served.</td></tr>
+            <tr><td>[23:22] &lt ms-away&gt (specifically to spit out an HTTP 404 status)</td></tr>
+            <tr><td>[23:22] &lt ms-away&gt indeed</td></tr>
+            <tr><td>[23:22] &lt ms-away&gt For the moment it's fine</td></tr>
+            <tr><td>[23:22] &lt mhrd-home&gt cool</td></tr>
+            <tr><td>[23:23] &lt ms-away&gt Since this isn't (yet) pushing out to kamaelia.sourceforge.net</td></tr>
+            <tr><td>[23:23] &lt ms-away&gt And not advertised anywhere yet</td></tr>
+            <tr><td>[23:23] &lt mhrd-home&gt indeed</td></tr>
+            <tr><td>[23:23] &lt ms-away&gt But it will mean I can start evolving the site better now</td></tr>
+            <tr><td>[23:24] &lt ms-away&gt since aside from anything else, there won't be files I can't change the permissions of (!)</td></tr>
+            <tr><td>[23:24] &lt ms-away&gt (sf is a very very odd place to host a wiki/etc)</td></tr>
+            <tr><td>[23:24] &lt mhrd-home&gt branch private_MH_20080518_DvbFixes now ready for merge (have posted to list). The list of changed files looks scary, but most a one or two line changes, or mods to docstrings</td></tr>
+            <tr><td>[23:24] &lt ms-away&gt Cool</td></tr>
+            <tr><td>[23:25] &lt mhrd-home&gt editing the site again will be cool :)</td></tr>
+            <tr><td>[23:25] &lt ms-away&gt indeed</td></tr>
+            <tr><td>[23:25] &lt ms-away&gt Nice thing is it also actually feels nippier</td></tr>
+            <tr><td>[23:26] &lt mhrd-home&gt heh, dare I say, it'd be hard to make hosting much slower than sf's :-)</td></tr>
+            <tr><td>[23:26] &lt ms-away&gt True</td></tr>
+            <tr><td>[23:27] &lt mhrd-home&gt doesn't change the fact that improved nippiness will be extremely welcome :)</td></tr>
+            <tr><td>[23:27] &lt ms-away&gt true</td></tr>
+            <tr><td>[23:28] &lt ms-away&gt Will be particularly nippy at work :)</td></tr>
+            <tr><td>[23:29] &lt ms-away&gt coderate -&gt code_rate ?</td></tr>
+            <tr><td>[23:29] &lt ms-away&gt seems an odd change?</td></tr>
+            <tr><td>[23:30] &lt mhrd-home&gt turns out it always was code_rate</td></tr>
+            <tr><td>[23:30] &lt mhrd-home&gt we were mistyping it all this time</td></tr>
+            <tr><td>[23:31] &lt mhrd-home&gt it just so happened the hauppauge boxes had sensible defaults when it wasn't specified</td></tr>
+            <tr><td>[23:31] &lt mhrd-home&gt but the usb sticks didn't - and therefore showed up the problem</td></tr>
+            <tr><td>[23:31] &lt ms-away&gt ah</td></tr>
+            <tr><td>[23:32] &lt ms-away&gt  def notLocked(fe):</td></tr>
+            <tr><td>[23:32] &lt ms-away&gt ...</td></tr>
+            <tr><td>[23:32] &lt ms-away&gt  return (fe.read_status() & dvb3.frontend.FE_HAS_LOCK) == 0</td></tr>
+            <tr><td>[23:32] &lt ms-away&gt ?</td></tr>
+            <tr><td>[23:33] &lt mhrd-home&gt ?</td></tr>
+            <tr><td>[23:33] &lt mhrd-home&gt is that not in there?</td></tr>
+            <tr><td>[23:34] &lt ms-away&gt Ah, was just checking it was correct</td></tr>
+            <tr><td>[23:34] &lt ms-away&gt and just found mail</td></tr>
+            <tr><td>[23:34] &lt ms-away&gt saying it is :)</td></tr>
+            <tr><td>[23:34] &lt mhrd-home&gt yes it is</td></tr>
+            <tr><td>[23:34] &lt mhrd-home&gt :)</td></tr>
+            <tr><td>[23:35] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[23:36] &lt ms-away&gt ReassemblePSITables.py appears to have a major change</td></tr>
+            <tr><td>[23:37] &lt mhrd-home&gt yes - mentioned in email; can explain more</td></tr>
+            <tr><td>[23:37] &lt mhrd-home&gt test code used to validate it in trunk</td></tr>
+            <tr><td>[23:38] &lt ms-away&gt seen the comment in the mail now :)</td></tr>
+            <tr><td>[23:39] &lt ms-away&gt I think in future it would've been preferable to do all the coderate -&gt code_rate changes in one changeset</td></tr>
+            <tr><td>[23:39] &lt ms-away&gt I take it</td></tr>
+            <tr><td>[23:39] &lt ms-away&gt - e = [ord(data[i]) for i in range(0,12) ]</td></tr>
+            <tr><td>[23:39] &lt ms-away&gt + e = [ord(data[i]) for i in range(0,3) ]</td></tr>
+            <tr><td>[23:39] &lt ms-away&gt is to do with parsing TV-A EIT tables ?</td></tr>
+            <tr><td>[23:40] &lt ms-away&gt + DVB_Multiplex(754-754+505.8, [640, 641], feparams), # BBC NEWS 24</td></tr>
+            <tr><td>[23:40] &lt ms-away&gt is confusing :)</td></tr>
+            <tr><td>[23:40] &lt ms-away&gt Index: Python/Kamaelia/Examples/DVB_Systems/SingleChannelTransportStreamCapture.py</td></tr>
+            <tr><td>[23:41] &lt mhrd-home&gt no - thats another bugfix (which I've just noticed I've somehow forgotten to mention in the email) ...</td></tr>
+            <tr><td>[23:41] &lt mhrd-home&gt (the "e = ....")</td></tr>
+            <tr><td>[23:41] &lt mhrd-home&gt "BBC NEWS 24" ... ah, because it has been rebranded?</td></tr>
+            <tr><td>[23:41] &lt ms-away&gt no the : 754-754+505.8</td></tr>
+            <tr><td>[23:42] &lt mhrd-home&gt oh, I've no idea where thats come from !</td></tr>
+            <tr><td>[23:42] *** mhrd-home removes it</td></tr>
+            <tr><td>[23:42] &lt ms-away&gt heh</td></tr>
+            <tr><td>[23:43] &lt ms-away&gt :)</td></tr>
+            <tr><td>[23:44] &lt mhrd-home&gt the "e = ..." fix was r3964 :</td></tr>
+            <tr><td>[23:44] &lt ms-away&gt BTW, the content_types stuff is interesting</td></tr>
+            <tr><td>[23:44] &lt mhrd-home&gt oops, no its not</td></tr>
+            <tr><td>[23:45] &lt mhrd-home&gt hmm, yes ... Im thinking I ought to take that out completely and reserve it for another branch when I actually need that data</td></tr>
+            <tr><td>[23:45] &lt mhrd-home&gt s/I'm thinking/I'm starting to think/</td></tr>
+            <tr><td>[23:46] &lt ms-away&gt ?</td></tr>
+            <tr><td>[23:46] &lt ms-away&gt Ah, I see - it's extra functionality rather than bugfixes ?</td></tr>
+            <tr><td>[23:46] &lt mhrd-home&gt yeah</td></tr>
+            <tr><td>[23:46] &lt mhrd-home&gt sorry - its only just clocked that I could actually take it out</td></tr>
+            <tr><td>[23:47] &lt ms-away&gt Is it actually usable at present?</td></tr>
+            <tr><td>[23:47] &lt ms-away&gt (with minimal runnable test cases?)</td></tr>
+            <tr><td>[23:47] &lt mhrd-home&gt yes</td></tr>
+            <tr><td>[23:47] &lt mhrd-home&gt I've run all ParseXXXX.py examples</td></tr>
+            <tr><td>[23:47] &lt mhrd-home&gt which exercise the full set</td></tr>
+            <tr><td>[23:47] *** sadrul1 has joined #kamaelia</td></tr>
+            <tr><td>[23:48] &lt ms-away&gt k</td></tr>
+            <tr><td>[23:48] &lt mhrd-home&gt hmm, svn log doesn't seem to show some of my more recent revisions (today) :-(</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt hmm, now it does (after having done an svn blame)</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt I'm even more confused now</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt anyway ...</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt the "e = [ .... ]" mods are another bugfix: r4017 : """Impoved robustness of table section structure parsing code - tests with TOT picked up</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt exception condition if fed a table section that was shorter than expected (eg. from</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt a PID that contains more than one table type, such as pid 0x14)</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt """</td></tr>
+            <tr><td>[23:50] &lt ms-away&gt OK, code looks reasonable. I'm sure you've tested it, so I'm not about to second guess</td></tr>
+            <tr><td>[23:50] &lt mhrd-home&gt the mod extracts the minimum needed to check its the correct table before extracting more</td></tr>
+            <tr><td>[23:50] &lt ms-away&gt Leaving the TVA is fine IMO</td></tr>
+            <tr><td>[23:50] &lt mhrd-home&gt cool - thanks</td></tr>
+            <tr><td>[23:50] &lt ms-away&gt leaving (in) the TVA stuff is fine rather</td></tr>
+            <tr><td>[23:50] &lt ms-away&gt would be nice otherwise, but so would a lottery win :-D</td></tr>
+            <tr><td>[23:51] &lt mhrd-home&gt interestingly, I'm suspecting the thing that caused me to notice r4017 *might* have been the ReassemblePSITables.py parsing fixes</td></tr>
+            <tr><td>[23:52] &lt ms-away&gt :)</td></tr>
+            <tr><td>[23:53] &lt ms-away&gt OK, read through the diff</td></tr>
+            <tr><td>[23:53] &lt ms-away&gt now just doing this:</td></tr>
+            <tr><td>[23:53] &lt ms-away&gt svn merge --dry-run -r3961:HEAD ../../branches/private_MH_20080518_DvbFixes .</td></tr>
+            <tr><td>[23:53] &lt mhrd-home&gt (the fix was likely to cause more table sections to be received where table sections are small - eg. for simple tables like the TOT (Time Offset Table) - which is where I spotted it</td></tr>
+            <tr><td>[23:53] &lt mhrd-home&gt k</td></tr>
+            <tr><td>[23:53] &lt ms-away&gt No complaints from that, yay</td></tr>
+            <tr><td>[23:53] &lt mhrd-home&gt if you want longer to check ... I'm not in *this*much of a hurry :)</td></tr>
+            <tr><td>[23:55] &lt ms-away&gt Oh I've gone through it line by line :)</td></tr>
+            <tr><td>[23:55] &lt ms-away&gt The new docs and module/package level docs are nice :)</td></tr>
+            <tr><td>[23:55] &lt mhrd-home&gt well, you're quicker at that than I am :)</td></tr>
+            <tr><td>[23:55] &lt mhrd-home&gt ta</td></tr>
+            <tr><td>[23:55] &lt mhrd-home&gt by an order of magnitude :)</td></tr>
+            <tr><td>[23:56] &lt ms-away&gt heh</td></tr>
+            <tr><td>[23:56] &lt ms-away&gt I'm used to going through patches :)</td></tr>
+            <tr><td>[23:57] &lt mhrd-home&gt anyway, I'll bid you goodnight (blimey is that the time?)</td></tr>
+            <tr><td>[23:57] &lt mhrd-home&gt thanks for looking at this so quickly</td></tr>
+            <tr><td>[23:59] &lt ms-away&gt indeed</td></tr>
+            <tr><td>[23:59] &lt ms-away&gt night</td></tr>
+            <tr><td>[23:59] &lt ms-away&gt :)</td></tr>
+            <tr><td>[23:59] *** mhrd-home has parted #kamaelia</td></tr>

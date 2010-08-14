@@ -1,0 +1,66 @@
+<html><body><table>
+            <tr><td>[04:48] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:55] *** salmon_1 has joined #kamaelia</td></tr>
+            <tr><td>[04:56] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:59] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[05:40] &lt Lawouach&gt MS-: hi mate, are you around?</td></tr>
+            <tr><td>[06:07] &lt MS-&gt morning :)</td></tr>
+            <tr><td>[06:07] &lt MS-&gt I am now</td></tr>
+            <tr><td>[06:10] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[06:10] &lt Lawouach&gt pm</td></tr>
+            <tr><td>[07:12] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:37] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[09:09] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:16] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:17] &lt MS-&gt vmlemon_: Hiya</td></tr>
+            <tr><td>[09:49] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:13] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:34] &lt MS-&gt Afternoon dave</td></tr>
+            <tr><td>[11:00] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[11:04] &lt Lawouach&gt MS-: do you plan on changing the version number of Axon and K. in trunk?</td></tr>
+            <tr><td>[11:05] &lt MS-&gt yes. I was planning of merging PAR onto trunk this week and then bumping it</td></tr>
+            <tr><td>[11:05] &lt MS-&gt I was in the process of writing an example using shutdown for PAR actually</td></tr>
+            <tr><td>[11:05] &lt MS-&gt and have been buried in tidying up cleanup in a number of components as a result</td></tr>
+            <tr><td>[11:05] &lt MS-&gt So bumping the version in trunk for this and all the other stuff in there makes alot of sense</td></tr>
+            <tr><td>[11:05] &lt MS-&gt Why do you ask ?</td></tr>
+            <tr><td>[11:06] &lt Lawouach&gt Just because I'm creating some internal packages at work</td></tr>
+            <tr><td>[11:06] &lt Lawouach&gt and I'd like to specify the trunk version</td></tr>
+            <tr><td>[11:06] &lt Lawouach&gt not a specific revision</td></tr>
+            <tr><td>[11:07] &lt MS-&gt OK, now I'm unclear what you mean by that?</td></tr>
+            <tr><td>[11:07] &lt Lawouach&gt but at least ensure the version won't be mistaken with the existing stable release</td></tr>
+            <tr><td>[11:07] &lt MS-&gt Ah.</td></tr>
+            <tr><td>[11:08] &lt Lawouach&gt sorry if I was unclear. The thing is, I'm yet unsure as to whether or not I should be using setuptools at work but if I do, knowing the precise version my product requires is essential</td></tr>
+            <tr><td>[11:09] &lt Lawouach&gt That being said, we are using PIP which supports things like:</td></tr>
+            <tr><td>[11:09] &lt Lawouach&gt pip install MY_SVN_URL</td></tr>
+            <tr><td>[11:09] &lt Lawouach&gt so you can indeed specify a revision if needed with pip</td></tr>
+            <tr><td>[11:09] &lt Lawouach&gt which is useful</td></tr>
+            <tr><td>[11:10] &lt MS-&gt Just changed the trunk version number to this:</td></tr>
+            <tr><td>[11:10] &lt MS-&gt  version = "0.9.6.0", # Year.Year.Month.ReleaseCountThisMonth</td></tr>
+            <tr><td>[11:10] &lt MS-&gt Does that work for you?</td></tr>
+            <tr><td>[11:11] &lt Lawouach&gt It does though I'm wondering, does it carry the right meaning you, as the maintainer, wish to express in version changing?</td></tr>
+            <tr><td>[11:11] &lt MS-&gt Well, I've been meaning to change to a date based form for a while</td></tr>
+            <tr><td>[11:11] &lt Lawouach&gt right-o</td></tr>
+            <tr><td>[11:11] &lt Lawouach&gt probably best doing so before EuroPython I guess</td></tr>
+            <tr><td>[11:11] &lt MS-&gt I also want to hit Kamaelia 1.0 at some point next year irrelevant of versioning</td></tr>
+            <tr><td>[11:12] &lt Lawouach&gt fair enough</td></tr>
+            <tr><td>[11:12] &lt MS-&gt And that as well</td></tr>
+            <tr><td>[11:12] &lt Lawouach&gt having an official 1.0 would be very good</td></tr>
+            <tr><td>[11:12] &lt MS-&gt Indeed.</td></tr>
+            <tr><td>[11:12] &lt MS-&gt I think now I'm ALOT clearer about what needs to go into such a beat now as well</td></tr>
+            <tr><td>[11:12] &lt MS-&gt I think implementing and using PAR was the final stepping stone to understanding in fact</td></tr>
+            <tr><td>[11:13] &lt MS-&gt Along with the examples over the past week or so</td></tr>
+            <tr><td>[11:16] &lt MS-&gt I think adding the very minor version number ie X in 0.9.6.X is a useful one though</td></tr>
+            <tr><td>[11:17] &lt MS-&gt since it allows for a bugfix release of an earlier release (for whatever reason)</td></tr>
+            <tr><td>[11:17] &lt MS-&gt whilst keeping version clear</td></tr>
+            <tr><td>[11:18] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[12:50] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:31] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:23] *** tdobson is now known as bjwebb_</td></tr>
+            <tr><td>[14:23] *** bjwebb_ is now known as tdobson</td></tr>
+            <tr><td>[14:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:59] *** Lawouach_ is now known as Lawouach</td></tr>
+            <tr><td>[16:33] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[19:57] &lt MS-&gt Lawouach: PAR looks like it should be useful for handling shutdown on large systems</td></tr>
+            <tr><td>[19:57] &lt MS-&gt Probably worth knowing :)</td></tr>
+            <tr><td>[21:32] &lt vmlemon_&gt Filling out pension slips for Kamaelia components, are we, MS-? ;)</td></tr>
+            <tr><td>[23:50] *** eikenberry has joined #kamaelia</td></tr>

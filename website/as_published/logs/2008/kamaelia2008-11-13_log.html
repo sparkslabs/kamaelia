@@ -1,0 +1,252 @@
+<html><body><table>
+            <tr><td>[03:59] *** raz has joined #kamaelia</td></tr>
+            <tr><td>[03:59] &lt raz&gt hi guys</td></tr>
+            <tr><td>[03:59] &lt raz&gt i just looked at kamaelia and the concept sticks :)</td></tr>
+            <tr><td>[03:59] &lt raz&gt just a few questions:</td></tr>
+            <tr><td>[03:59] &lt raz&gt has anyone written an app that uses/integrates with sqlalchemy? any gotchas?</td></tr>
+            <tr><td>[04:00] &lt raz&gt and: i assume for dealing with blocking database interaction (such as sqlalchemy) i'll inevitably need to use threadedcomponents</td></tr>
+            <tr><td>[04:01] &lt raz&gt i'm a bit concerned about performance (GIL), has anyone tried to turn threadedcomponent into a "processcomponent" that uses pyprocessing to spawn processes instead of threads?</td></tr>
+            <tr><td>[07:10] &lt MS-&gt raz: I'm not aware of anyone having using sqlalchemy with Kamaelia, but it should be a big deal. The only issue would be to put the code that uses it into a threaded component due to blocking</td></tr>
+            <tr><td>[07:10] &lt MS-&gt But you already clocked that :)</td></tr>
+            <tr><td>[07:11] &lt MS-&gt As a result you are likely to want to play with what makes sense from a component perspective in updating & accessing the DB.</td></tr>
+            <tr><td>[07:13] &lt MS-&gt However, writing a threaded component is little different from writing a small stub application. (A bit like a small program controlled via stdin/stdout, except you have more options, can sling python objects round & so on)</td></tr>
+            <tr><td>[07:13] &lt raz&gt hmm thx for the input</td></tr>
+            <tr><td>[07:13] &lt raz&gt well, i'm not so eager to try and to it myself as SQLAlchemy performs a lot of magic behind the scenes that could easily come back and bite me</td></tr>
+            <tr><td>[07:14] &lt raz&gt i was just a bit surprised that there seems to be no database support kamaelia so far, how are people persisting their stuff?</td></tr>
+            <tr><td>[07:16] &lt MS-&gt Not every application relates to databases :) Most of the stuff we've been doing has related to stuff that relates to either document like data or media related.</td></tr>
+            <tr><td>[07:16] &lt MS-&gt The closest that's had something database like so far was Macro which extracted meta data about broadcast TV from the broadcast stream.</td></tr>
+            <tr><td>[07:16] &lt MS-&gt But for that it was sufficient to out put that as a seperate file per program since that data was not needed to be searched</td></tr>
+            <tr><td>[07:16] &lt MS-&gt However if it had needed to be searched</td></tr>
+            <tr><td>[07:17] &lt MS-&gt then the seperate files output would've formed an ideal candidate for feeding into an "inserter" component</td></tr>
+            <tr><td>[07:17] &lt raz&gt hmm yea</td></tr>
+            <tr><td>[07:17] &lt MS-&gt To give an idea of the amount of work involved in turning a normal piece of code into a threaded component...</td></tr>
+            <tr><td>[07:17] &lt MS-&gt (ie very little)</td></tr>
+            <tr><td>[07:18] &lt MS-&gt This: http://pastebin.com/m492fdb7f is a simple pygame based program for grabbing & displaying video from a webcam</td></tr>
+            <tr><td>[07:19] &lt MS-&gt And this is the threadedcomponent version - with minimal change: http://pastebin.com/m2ebf49eb</td></tr>
+            <tr><td>[07:20] &lt MS-&gt (OK, a few more changes than there should be in terms of config)</td></tr>
+            <tr><td>[07:20] &lt MS-&gt Those two examples are yanked from here:</td></tr>
+            <tr><td>[07:20] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Sketches/MPS/WebCam.py</td></tr>
+            <tr><td>[07:20] &lt MS-&gt It steps through changing from non-component to fully componentised</td></tr>
+            <tr><td>[07:20] &lt raz&gt well, i fear a "sqlalchemy-component" alone would not do in my case. after all i want all (or most) of my other components to access SA objects in a transparent way.</td></tr>
+            <tr><td>[07:21] &lt MS-&gt If that's threadsafe to do, then that would be fine, but you're then hitting whether that's actually safe to do in sqlalchemy rather than whether it's good/bad in kamaelia :)</td></tr>
+            <tr><td>[07:22] &lt MS-&gt BTW, the GIL is often less of an issue that you might expect.</td></tr>
+            <tr><td>[07:22] *** MS- 's phone goes</td></tr>
+            <tr><td>[07:27] &lt raz&gt hmm</td></tr>
+            <tr><td>[07:39] &lt MS-&gt back</td></tr>
+            <tr><td>[07:40] &lt MS-&gt Essentially the way to look at kamaelia in this case, is "how can this assist with maintaining my code", rather than "how do I kamaelia-ise it"</td></tr>
+            <tr><td>[07:40] &lt MS-&gt kamaelia is specifically designed for assisting maintenance of systems that happen to be concurrent</td></tr>
+            <tr><td>[07:41] &lt raz&gt hmm yes</td></tr>
+            <tr><td>[07:41] &lt MS-&gt As a result if you're likely to need threads, then hopefully what our code should do is help you there.</td></tr>
+            <tr><td>[07:41] &lt raz&gt well, i'm looking at eventlet at the same time and wonder whether eventlet.tpool.Proxy() could help me dodge my problem here - and whether kamaelia might grow a something similar function in the future. =&gt http://wiki.secondlife.com/wiki/Eventlet/Documentation#Integrating_Blocking_Code_with_Threads</td></tr>
+            <tr><td>[07:41] &lt MS-&gt a) by encouraging safe behaviours - which is what the inbox/outbox model is really about - the metaphor naturally encourages safe behaviour.</td></tr>
+            <tr><td>[07:41] *** MS- looks</td></tr>
+            <tr><td>[07:42] &lt MS-&gt b) If you do need to share things, then the basic STM code provides a mechanism for doing so</td></tr>
+            <tr><td>[07:43] &lt MS-&gt but regarding b) it's possible that sqlalchemy itself actually deal with any concurrency issues if its designed with threading use in mind (I've never used it)</td></tr>
+            <tr><td>[07:43] *** MS- still waiting for that page...</td></tr>
+            <tr><td>[07:43] &lt raz&gt yea it seems they just killed their wiki this minute..grmbl</td></tr>
+            <tr><td>[07:43] &lt MS-&gt sods law :)</td></tr>
+            <tr><td>[07:44] &lt raz&gt and yes, sqlalchemy is built for threading. that's part of the problem because SA objects pulled from a database may decide to perform further database operations on attribute access</td></tr>
+            <tr><td>[07:44] *** MS- nods</td></tr>
+            <tr><td>[07:45] &lt raz&gt basically i want to call and use these objects from my main-thread, but make sure that they cannot block the main thread</td></tr>
+            <tr><td>[07:45] &lt MS-&gt Personally I suspect that what you'd end up with in such a system is dividing it, at least conceptually, into two main chunks - the parts using sqlalchemy and parts not using it</td></tr>
+            <tr><td>[07:45] &lt raz&gt quite an adventure ;)</td></tr>
+            <tr><td>[07:45] &lt MS-&gt sounds like you want proxy objects in that case</td></tr>
+            <tr><td>[07:45] &lt raz&gt yup, i'll have to talk with the SA guys about this</td></tr>
+            <tr><td>[07:46] &lt MS-&gt I'd be interested in hearing how you deal with it BTW</td></tr>
+            <tr><td>[07:46] &lt raz&gt me too ;)</td></tr>
+            <tr><td>[07:46] &lt raz&gt it seems there are at least two nice alternatives to twisted for non-blocking network stuff (kamaelia and eventlet) but neither tackles the issue of integrating with blocking calls</td></tr>
+            <tr><td>[07:46] &lt MS-&gt Generally I've been slinging json encoded objects around from a to b, and so either just serialising it, or serialising with a view to data ending up in something like conchdb at some point</td></tr>
+            <tr><td>[07:47] &lt MS-&gt Well, our approach is "well, if you block, use a thread", which doesn't really work for you here.</td></tr>
+            <tr><td>[07:48] &lt raz&gt i'd prefer to avoid the "slinging around" because the conversion is fairly error prone when datatypes are involved that cannot be easily serialized to json</td></tr>
+            <tr><td>[07:48] &lt raz&gt or rather that cannot be easily deserialized *from* json. stuff like references to other objects...</td></tr>
+            <tr><td>[07:48] &lt MS-&gt Hence, that implies there's a pattern of usage we need to support, or a pattern of usage (of kamaelia) which we ought to recommend...</td></tr>
+            <tr><td>[07:48] *** MS- nods</td></tr>
+            <tr><td>[07:48] &lt MS-&gt Not all problems are the same.</td></tr>
+            <tr><td>[07:49] &lt raz&gt yup. databases leave nasty scars on every non-blocking architecture :\</td></tr>
+            <tr><td>[07:49] &lt MS-&gt what sort of data are you storing/updating, if you don't mind me asking?</td></tr>
+            <tr><td>[07:49] &lt raz&gt it's a gameserver that we have here. it needs to load games and userdata from the db and persist them back later (along with game-results, game states etc.)</td></tr>
+            <tr><td>[07:50] &lt MS-&gt OK</td></tr>
+            <tr><td>[07:50] &lt raz&gt we cannot really swap out SA because we use the sharding features (our data spans n physical databases) and duplicating that would turn into a maintenance nightmare immediately</td></tr>
+            <tr><td>[07:50] &lt MS-&gt in game as well - or just at beginning / end ?</td></tr>
+            <tr><td>[07:50] &lt MS-&gt I see</td></tr>
+            <tr><td>[07:50] &lt MS-&gt sounds like you do it in game</td></tr>
+            <tr><td>[07:51] &lt raz&gt only beginning/end would suffice for a while</td></tr>
+            <tr><td>[07:51] &lt MS-&gt If you need ingame, that sounds more problematic, and worth solving first</td></tr>
+            <tr><td>[07:51] &lt raz&gt well, we can live without ingame.</td></tr>
+            <tr><td>[07:52] &lt raz&gt right now, with twisted, we perform all db ops in a dedicated thread, convert the results to "intermediate" objects (basically identical to the SA objects but without any SA magic), use that inside the game logic, then the whole thing backwards</td></tr>
+            <tr><td>[07:52] &lt MS-&gt I wonder if you could treat SQL Alchemy as being like an STM store. You check out values and periodically just commit your current values.</td></tr>
+            <tr><td>[07:53] &lt raz&gt stm store sounds like an interesting keyword</td></tr>
+            <tr><td>[07:53] &lt MS-&gt Esp if they're mainly updated by a single player.</td></tr>
+            <tr><td>[07:53] &lt raz&gt can i find examples for that on the homepage?</td></tr>
+            <tr><td>[07:53] &lt MS-&gt http://www.kamaelia.org/STM</td></tr>
+            <tr><td>[07:54] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Code/Python/Axon/Examples/STM</td></tr>
+            <tr><td>[07:54] &lt raz&gt hmm yes that's an interesting pattern, very close to what we'd need</td></tr>
+            <tr><td>[07:54] &lt MS-&gt Adapting this:</td></tr>
+            <tr><td>[07:54] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Code/Python/Axon/Axon/STM.py</td></tr>
+            <tr><td>[07:54] &lt MS-&gt to use sqlalchemy behind the scenes could well work nicely</td></tr>
+            <tr><td>[07:54] &lt MS-&gt very nicely in fact</td></tr>
+            <tr><td>[07:54] &lt raz&gt hmm gotta look into it more, thx for the pointer</td></tr>
+            <tr><td>[07:54] &lt MS-&gt you're welcome :)</td></tr>
+            <tr><td>[07:55] &lt MS-&gt I'll make a note of the problem somewhere - I like interesting problems :)</td></tr>
+            <tr><td>[07:55] &lt raz&gt hehe</td></tr>
+            <tr><td>[07:56] &lt raz&gt it's not a new one at all</td></tr>
+            <tr><td>[07:56] &lt MS-&gt Indeed, but it's just one we've not had to look at before you see :)</td></tr>
+            <tr><td>[07:56] &lt raz&gt when you google for "sqlalchemy twisted" you'll find quite a lot of people have tackled this before</td></tr>
+            <tr><td>[07:56] *** MS- nods</td></tr>
+            <tr><td>[07:56] &lt MS-&gt I lurk on the twisted list</td></tr>
+            <tr><td>[07:56] &lt raz&gt if kamelia finds a decent way to deal with it then it'd definately be the first</td></tr>
+            <tr><td>[07:57] &lt MS-&gt I suspect that the STM approach is probably the cleanest</td></tr>
+            <tr><td>[07:58] &lt MS-&gt Since it gives you start of game/end of game for free as well</td></tr>
+            <tr><td>[07:58] &lt raz&gt hmm yes</td></tr>
+            <tr><td>[07:58] &lt MS-&gt The problem with starting with start of game/end of game IMO is that it won't necessarily give you in-game, which would be problematic</td></tr>
+            <tr><td>[07:59] &lt raz&gt in-game is not an issue for us. we need to persist the ingame state to a fast flat-file anyways because the frequency is too high for db writes.</td></tr>
+            <tr><td>[07:59] &lt MS-&gt k</td></tr>
+            <tr><td>[08:00] &lt raz&gt we persist like once per second in each game (to survive hardware failures) and that would kill our databases quickly if we sent it to them</td></tr>
+            <tr><td>[08:00] *** MS- nods</td></tr>
+            <tr><td>[08:01] &lt MS-&gt So, how often do you persist to the backend DB? Or do you do batch updates?</td></tr>
+            <tr><td>[08:01] &lt MS-&gt (ie rolling batch updates)</td></tr>
+            <tr><td>[08:02] &lt MS-&gt I suppose that's not relevant really.</td></tr>
+            <tr><td>[08:02] &lt raz&gt we persist only on game-start and game-end. the in-game saves are really just for resume-after-outage when we have to temporarily shutdown the gc for upgrades or maintenance.</td></tr>
+            <tr><td>[08:03] &lt MS-&gt Ahh, OK, very different order of magnitude</td></tr>
+            <tr><td>[08:03] &lt raz&gt it doesn't kill us if we lose a few games in a server crash, we've written that off as "happens so rarely, not worth the effort"</td></tr>
+            <tr><td>[08:03] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:03] &lt MS-&gt You know, I suspect still taking the same pattern as the STM code would be the cleanest</td></tr>
+            <tr><td>[08:03] &lt raz&gt yup i'll definately look into that.</td></tr>
+            <tr><td>[08:04] &lt raz&gt as said, we have a working twisted impl here, but it's butt-ugly and kamaelia looks very promising in that regard.</td></tr>
+            <tr><td>[08:04] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[08:05] &lt raz&gt one more question would be, though, if there is a processcomponent equivalent to threadedcomponent? (process instead of thread)</td></tr>
+            <tr><td>[08:05] &lt raz&gt right now we use pyprocssing instead of threads for the actual game logic because we have hundreds of concurrent games and threads were quite expensive memory-wise iirc</td></tr>
+            <tr><td>[08:06] &lt raz&gt or was it cpu contention. i'm not sure what the problem was, we converted about 6 months ago.</td></tr>
+            <tr><td>[08:07] &lt MS-&gt There is a process component, but at present it uses Paul Boddies pprocess code. We're planning on shifting it over to the multiprocess support in 2.6/3.0 at some point</td></tr>
+            <tr><td>[08:07] &lt raz&gt hmm ok</td></tr>
+            <tr><td>[08:07] &lt MS-&gt The nice thing is it works, but I would view it as experimental at present personally.</td></tr>
+            <tr><td>[08:07] &lt raz&gt yep</td></tr>
+            <tr><td>[08:07] &lt MS-&gt It'll probably get redone when we move to the builtin library</td></tr>
+            <tr><td>[08:08] &lt raz&gt ah btw i remember what the real problem was: threads didn't utilize our dual-core cpu's properly :)</td></tr>
+            <tr><td>[08:08] &lt MS-&gt :-)</td></tr>
+            <tr><td>[08:08] *** MS- nods</td></tr>
+            <tr><td>[08:08] &lt MS-&gt Well, the multiprocess stuff does work</td></tr>
+            <tr><td>[08:08] &lt MS-&gt You either have a ProcessComponent</td></tr>
+            <tr><td>[08:09] &lt MS-&gt or you can use a ProcessPipeline or ProcessGraphline</td></tr>
+            <tr><td>[08:09] &lt raz&gt hmm cool!</td></tr>
+            <tr><td>[08:09] &lt MS-&gt Those distribute all the components in the pipeline/graphline across multiple processes</td></tr>
+            <tr><td>[08:10] &lt MS-&gt ProcessGraphline is slightly more restricted than Graphline in topologies it'll handle at present than I'd like</td></tr>
+            <tr><td>[08:10] &lt MS-&gt But that was chosen deliberately for safety over functionality :)</td></tr>
+            <tr><td>[08:10] &lt raz&gt good choice imho</td></tr>
+            <tr><td>[08:11] &lt raz&gt well, i'll have to see if we can wrap our heads around the programming model at all anyways</td></tr>
+            <tr><td>[08:12] &lt MS-&gt I think the more awkward thing is probably that it can simplify things rather than be harder. That's awkward because the more experienced you are, the more likely you are to go "no, that cannot work"</td></tr>
+            <tr><td>[08:12] &lt MS-&gt :)</td></tr>
+            <tr><td>[08:12] &lt raz&gt hmm</td></tr>
+            <tr><td>[08:13] &lt MS-&gt I might have a look at SQL Alchemy/STM at the weekend.</td></tr>
+            <tr><td>[08:13] &lt raz&gt well, i'd like a few more "down to earth" examples in your otherwise excellent documentation.</td></tr>
+            <tr><td>[08:13] &lt raz&gt the problem with the existing samples is that they import a lot of stuff from the standard library</td></tr>
+            <tr><td>[08:13] &lt MS-&gt What sort of examples?</td></tr>
+            <tr><td>[08:13] &lt MS-&gt k</td></tr>
+            <tr><td>[08:13] &lt raz&gt http://www.kamaelia.org/Examples/FortuneCookieProtocolClientServer.html</td></tr>
+            <tr><td>[08:14] &lt raz&gt that one actually made me laugh out loud because it literally starts with: from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol</td></tr>
+            <tr><td>[08:14] &lt raz&gt ;)</td></tr>
+            <tr><td>[08:14] &lt MS-&gt yeah, that was written a looooong time ago :)</td></tr>
+            <tr><td>[08:14] &lt raz&gt the UDPSimplePeer comes closest to what i want to see</td></tr>
+            <tr><td>[08:15] &lt raz&gt but anyways, i'll just have more digging to do</td></tr>
+            <tr><td>[08:15] &lt raz&gt there are tons of docs, first impression is not everything</td></tr>
+            <tr><td>[08:16] &lt MS-&gt This was a larger example written for someone asking on the list :</td></tr>
+            <tr><td>[08:16] &lt MS-&gt http://groups.google.com/group/kamaelia/msg/387c1209ca99279f</td></tr>
+            <tr><td>[08:16] &lt MS-&gt For some reason my blog isn't responding where the full example is</td></tr>
+            <tr><td>[08:17] &lt raz&gt oh yes, that looks *very* good</td></tr>
+            <tr><td>[08:19] &lt MS-&gt I suspect it would probably be useful to take existing systems apart and document them as examples actually</td></tr>
+            <tr><td>[08:19] &lt raz&gt whatever helps the cause. but ultimately newbies like me can't expect to be spoon-fed.</td></tr>
+            <tr><td>[08:19] &lt raz&gt the docs are already excellent as they are.</td></tr>
+            <tr><td>[08:20] &lt MS-&gt thanks :)</td></tr>
+            <tr><td>[08:21] &lt raz&gt a simple chatserver example might be interesting to provide</td></tr>
+            <tr><td>[08:21] &lt MS-&gt I'm actually looking to try and produce 24 or so examples this month which will be "unlocked" once per day in december as an advent calendar</td></tr>
+            <tr><td>[08:21] &lt raz&gt haha great!</td></tr>
+            <tr><td>[08:21] &lt MS-&gt The upshot of course would then be 24 examples :)</td></tr>
+            <tr><td>[08:21] &lt raz&gt then make a clone of the eventlet example: http://wiki.secondlife.com/wiki/Eventlet/Documentation#Eventlet_Overview</td></tr>
+            <tr><td>[08:21] &lt MS-&gt Chat server is a good idea</td></tr>
+            <tr><td>[08:22] &lt MS-&gt Aha, their wiki has come back :)</td></tr>
+            <tr><td>[08:22] &lt raz&gt yup, i have a heart for chat servers.i always found them the most instructive for any networking framework that i've looked at.</td></tr>
+            <tr><td>[08:22] &lt raz&gt i guess that's because they touch all the basics of in/out without littering the code with too much else</td></tr>
+            <tr><td>[08:24] &lt MS-&gt This contains a simple P2P splitting system for capturing radio off air, and then players at the edges playing it:</td></tr>
+            <tr><td>[08:24] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Sketches/MPS/Examples/LUGRadio/</td></tr>
+            <tr><td>[08:24] &lt MS-&gt System source: http://kamaelia.googlecode.com/svn/trunk/Sketches/MPS/Examples/LUGRadio/SimpleSwarmRadioSource.py</td></tr>
+            <tr><td>[08:24] &lt MS-&gt Very similar in structure to a chat server, but slightly more interesting due to going further by building a network</td></tr>
+            <tr><td>[08:25] &lt raz&gt hmm interesting indeed</td></tr>
+            <tr><td>[08:25] &lt raz&gt ah work's calling, gotta run. thanks for the enlightening conversation :) bbl!</td></tr>
+            <tr><td>[08:26] &lt MS-&gt http://www.slideshare.net/kamaelian/building-systems-with-kamaelia</td></tr>
+            <tr><td>[08:26] &lt MS-&gt details the structure from about slide 42</td></tr>
+            <tr><td>[08:26] &lt MS-&gt cool</td></tr>
+            <tr><td>[08:26] &lt MS-&gt have fun :)</td></tr>
+            <tr><td>[08:28] &lt MS-&gt For whenever you look at the logs (or if you do) : http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1223342651</td></tr>
+            <tr><td>[08:45] &lt MS-&gt Simple chat server:</td></tr>
+            <tr><td>[08:45] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Sketches/MPS/Examples/SimpleChatServer.py</td></tr>
+            <tr><td>[08:45] &lt MS-&gt could be simpler, but this one tells you who messages are coming from</td></tr>
+            <tr><td>[09:25] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:25] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[09:31] &lt MS-&gt Blogged about this example, and created a basic graphical client for it as well</td></tr>
+            <tr><td>[09:31] &lt MS-&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1226574014</td></tr>
+            <tr><td>[10:25] *** raz has joined #kamaelia</td></tr>
+            <tr><td>[10:26] *** elvum has joined #kamaelia</td></tr>
+            <tr><td>[12:02] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[12:42] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:56] *** salmon_ has parted #kamaelia</td></tr>
+            <tr><td>[14:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:03] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:25] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[14:28] &lt vmlemon_&gt Hi SamHasler</td></tr>
+            <tr><td>[14:37] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[14:37] Reply: does the macarena</td></tr>
+            <tr><td>[15:47] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:58] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:00] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:41] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[17:11] &lt MS-&gt SamHasler: ping</td></tr>
+            <tr><td>[17:12] &lt SamHasler&gt Hi MS-</td></tr>
+            <tr><td>[17:13] &lt MS-&gt Hiya - saw your reply on my blog</td></tr>
+            <tr><td>[17:13] &lt MS-&gt I was wondering what the suggestion is ... Sounds a little, cryptic I suppose</td></tr>
+            <tr><td>[17:13] &lt MS-&gt Were you suggesting rewriting that plaxo script?</td></tr>
+            <tr><td>[17:14] &lt SamHasler&gt I don't know python, kamaelia , and I haven't looked at the script, so I can't really answer that</td></tr>
+            <tr><td>[17:15] &lt MS-&gt o..k..</td></tr>
+            <tr><td>[17:15] &lt MS-&gt I'm not sure how to interpret your comment the at all :)</td></tr>
+            <tr><td>[17:16] &lt SamHasler&gt I've used the script to crawl my own social graph and I've put a link to it on my openID endpoint</td></tr>
+            <tr><td>[17:16] &lt SamHasler&gt http://www.plaxo.com/opensocialgraph.py?url=http%3A%2F%2Fsam.haslers.info%2F&output=&verbose=1</td></tr>
+            <tr><td>[17:16] *** vmlemon_ waits for someone to come up with the Antisocial Graph ;)</td></tr>
+            <tr><td>[17:16] &lt MS-&gt I'm sure I'm being obtuse here, but I don't see how the comment relates to the post it's attached to...</td></tr>
+            <tr><td>[17:16] &lt MS-&gt vmlemon_: That would actually be more useful :)</td></tr>
+            <tr><td>[17:17] &lt SamHasler&gt I noticed it was written in python and that they mentioned it not being threaded and I thought of kamaelia, even before you made that post. I was going to mention it some time</td></tr>
+            <tr><td>[17:17] &lt MS-&gt Much like the "can we offend you", "if so, how much"</td></tr>
+            <tr><td>[17:17] &lt MS-&gt Ahhh, OK, now it makes sense</td></tr>
+            <tr><td>[17:17] &lt MS-&gt maybe I ought to have a random drop box for stuff</td></tr>
+            <tr><td>[17:18] &lt vmlemon_&gt Was just thinking of FriendFeed (albeit with the "Friends" options switched with "Enemies") ;)</td></tr>
+            <tr><td>[17:18] &lt vmlemon_&gt last.fm could get an "I hate this track and never want to hear it ever again!" button, too</td></tr>
+            <tr><td>[17:20] &lt MS-&gt Indeed. It's the one thing that does make a difference</td></tr>
+            <tr><td>[17:20] &lt MS-&gt People are often more than happy to listen to random stuff as long as they don't want to claw their ears out</td></tr>
+            <tr><td>[17:20] &lt vmlemon_&gt (I could think of a lot of music that I'd hit that button on)</td></tr>
+            <tr><td>[17:21] &lt MS-&gt Simply liking something doesn't tell someone what you dislike</td></tr>
+            <tr><td>[17:21] &lt vmlemon_&gt Very true</td></tr>
+            <tr><td>[17:21] &lt MS-&gt knowing negatives as well often simplifies constraint satisfaction</td></tr>
+            <tr><td>[17:22] &lt vmlemon_&gt You could actually get some pretty good quality results (subjective of course) by building a system that records which tracks a user dislikes</td></tr>
+            <tr><td>[17:22] &lt vmlemon_&gt Naturally, you'd want a system for tracking likes too</td></tr>
+            <tr><td>[17:23] &lt MS-&gt I've always thought there's more information in the negatives than in the positives</td></tr>
+            <tr><td>[17:23] &lt MS-&gt But obviously more when you have both</td></tr>
+            <tr><td>[17:24] &lt vmlemon_&gt An "it depends"/"so-so" option might be useful too</td></tr>
+            <tr><td>[17:24] &lt vmlemon_&gt Although machines obviously can't determine a person's mood</td></tr>
+            <tr><td>[17:26] &lt MS-&gt It's been alleged that if you have a keystroke logger that you can, but you have to calibrate based on the person.</td></tr>
+            <tr><td>[17:26] &lt MS-&gt Also, it does rely on a keystroke logger, which is a rather dubious thing to want to have installed :)</td></tr>
+            <tr><td>[17:26] *** vmlemon_ wonders what happened to dis.gust.in </td></tr>
+            <tr><td>[17:27] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:27] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[17:27] &lt MS-&gt evening Davbo</td></tr>
+            <tr><td>[17:27] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[17:28] *** Davbo goes to wash pots</td></tr>
+            <tr><td>[17:29] *** vmlemon_ wonders why he could find the story about Norio Ogha and his defective tape recorder by misspelling his name in a Google search, but can't find it when it's spelt correctly (even though it's spelt correctly in the article) </td></tr>
+            <tr><td>[17:51] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:24] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:04] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[21:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:51] *** Davbo is now known as Davbop</td></tr>
+            <tr><td>[22:59] *** Davbop is now known as Davbo</td></tr>
+            <tr><td>[23:02] &lt Davbo&gt freenode staff are awesome</td></tr>

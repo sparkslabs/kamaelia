@@ -1,0 +1,605 @@
+<html><body><table>
+            <tr><td>[02:45] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[06:29] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:29] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[06:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:00] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[07:08] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:09] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:09] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[07:09] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:13] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[07:15] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:15] &lt j_baker&gt Hello</td></tr>
+            <tr><td>[07:28] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:28] &lt Lawouach_&gt hi folks</td></tr>
+            <tr><td>[07:28] &lt j_baker&gt Hello Lawouach</td></tr>
+            <tr><td>[07:29] &lt vmlemon__&gt Ugh, damn client keeps timing out</td></tr>
+            <tr><td>[07:29] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[07:31] &lt vmlemon_&gt I wonder if anyone's built their own Kamaelia Macro box, based on the example in SVN/CVS</td></tr>
+            <tr><td>[07:32] &lt j_baker&gt What exactly is Kamaelia macro?</td></tr>
+            <tr><td>[07:34] &lt vmlemon_&gt It's a system for making recording stuff from a DVB source, extracting metadata, transcoding it and providing a nice web interface to the content</td></tr>
+            <tr><td>[07:35] &lt j_baker&gt Interesting. So sort of like Orb?</td></tr>
+            <tr><td>[07:36] &lt vmlemon_&gt MS- has (had?) a URL for a demo version on a BBC server that was fully functional, except that only people in the BBC with a username and password could view the video</td></tr>
+            <tr><td>[07:36] *** ms-away is now known as ms-</td></tr>
+            <tr><td>[07:36] &lt ms-&gt morning</td></tr>
+            <tr><td>[07:36] &lt vmlemon_&gt (for obvious reasons)</td></tr>
+            <tr><td>[07:36] &lt ms-&gt http://132.185.142.2/cgi-bin/blog/blog.cgi - takes a while to load</td></tr>
+            <tr><td>[07:37] &lt vmlemon_&gt *videos</td></tr>
+            <tr><td>[07:37] *** ms- googles orb </td></tr>
+            <tr><td>[07:37] &lt ms-&gt No, not like orb really by the sounds of things</td></tr>
+            <tr><td>[07:38] &lt ms-&gt This was designed for transcoding everything broadcast off air and keeping it.</td></tr>
+            <tr><td>[07:38] &lt j_baker&gt Ah, I see.</td></tr>
+            <tr><td>[07:38] &lt ms-&gt including metadata capture & cutting automagically at programme junctions</td></tr>
+            <tr><td>[07:38] &lt vmlemon_&gt Not sure if it was the server hosting a webpage with a big Kamaelia cat and a "Coming Soon..." banner</td></tr>
+            <tr><td>[07:39] &lt ms-&gt Person who internally "sponsored" the work left the BBC to go work at ofcom</td></tr>
+            <tr><td>[07:39] &lt ms-&gt In practical terms it drove work on optimisations</td></tr>
+            <tr><td>[07:39] &lt vmlemon_&gt (kamaelia.kw.bbc.co.uk/cgi-bin/blog.cgi, I think, although it's probably wrong)</td></tr>
+            <tr><td>[07:41] &lt j_baker&gt So I finally got MoinMoin to work.</td></tr>
+            <tr><td>[07:41] &lt ms-&gt cool</td></tr>
+            <tr><td>[07:41] &lt j_baker&gt It was a big mess. Although half the problem was my unfamiliarity with mod_wsgi.</td></tr>
+            <tr><td>[07:44] &lt j_baker&gt Anyway, I'm going to bed now. :)</td></tr>
+            <tr><td>[07:44] &lt vmlemon_&gt Which server was the one with the big cat and "Coming Soon..."?</td></tr>
+            <tr><td>[07:44] &lt j_baker&gt Talk to you guys later.</td></tr>
+            <tr><td>[07:44] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[07:44] &lt vmlemon_&gt Or do they all offer fish, now?</td></tr>
+            <tr><td>[07:47] *** vmlemon_ has just remembered that j_baker is in the US...</td></tr>
+            <tr><td>[07:48] &lt vmlemon_&gt (I was thinking "bed, now?")</td></tr>
+            <tr><td>[07:50] &lt ms-&gt yep</td></tr>
+            <tr><td>[07:50] &lt ms-&gt I was quite surprised to see him up :)</td></tr>
+            <tr><td>[07:54] &lt Lawouach_&gt It's no reason.</td></tr>
+            <tr><td>[07:54] *** Lawouach_ calls back j_baker</td></tr>
+            <tr><td>[07:54] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[07:54] &lt vmlemon_&gt Hah, "Natural Mineral Water Drink". I thought all water was natural ;)</td></tr>
+            <tr><td>[07:59] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[08:01] &lt vmlemon&gt I guess that they're stating the obvious on the drink carton, though</td></tr>
+            <tr><td>[08:11] &lt vmlemon&gt Hrm, how many shows are on the Macro page?</td></tr>
+            <tr><td>[08:11] &lt vmlemon&gt Since it seems to load very slowly</td></tr>
+            <tr><td>[08:12] &lt ms-&gt Lots</td></tr>
+            <tr><td>[08:12] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[08:12] &lt ms-&gt More than are actually stored on the drive</td></tr>
+            <tr><td>[08:13] &lt vmlemon&gt It looks like the link to the Kamaelia logo image is broken, too (although that's another matter)</td></tr>
+            <tr><td>[08:13] &lt ms-&gt since whilst the programme data was deleted (when the disks became full..) on an "oldest first" approach</td></tr>
+            <tr><td>[08:13] &lt ms-&gt the metadata /blog entries weren't</td></tr>
+            <tr><td>[08:14] &lt vmlemon&gt I take it that the files are auto-deleted after a certain time</td></tr>
+            <tr><td>[08:16] &lt vmlemon&gt Yay, Pingu</td></tr>
+            <tr><td>[08:16] &lt vmlemon&gt ;)</td></tr>
+            <tr><td>[08:16] &lt ms-&gt vmlemon: Sadly</td></tr>
+            <tr><td>[08:16] &lt ms-&gt yes</td></tr>
+            <tr><td>[08:16] &lt ms-&gt (even if terabyte disks are now £100)</td></tr>
+            <tr><td>[08:17] &lt ms-&gt (saw this this morning http://www.dabs.com/productview.aspx?quicklinx=4ZTT)</td></tr>
+            <tr><td>[08:17] &lt vmlemon&gt Shame that they couldn't wire something up so that people could enter their TV license details on the auth form, and watch them, although you would have just RIvTW'd the iPlayer</td></tr>
+            <tr><td>[08:17] &lt vmlemon&gt (RIvTW being Reinventing The Wheel)</td></tr>
+            <tr><td>[08:18] &lt ms-&gt I can think of a half dozen reinventions of that sort of thing</td></tr>
+            <tr><td>[08:18] &lt ms-&gt iPlayer isn't really the first one of that kinda either</td></tr>
+            <tr><td>[08:18] &lt vmlemon&gt Still, I'd imagine that the BBC Macro videos would be higher quality than the iPlayer ones</td></tr>
+            <tr><td>[08:18] &lt ms-&gt Just the first one that anyone's had the patiece to push forward</td></tr>
+            <tr><td>[08:19] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[08:19] &lt ms-&gt Probably not actually. It easily *could* be (by changing settings to whatever you like), but we targetted a lower bitrate IIRC</td></tr>
+            <tr><td>[08:19] &lt vmlemon&gt At least compared to the Flash ones</td></tr>
+            <tr><td>[08:19] &lt ms-&gt Dunno :)</td></tr>
+            <tr><td>[08:20] &lt vmlemon&gt Although there's probably a load of tradeoffs to make</td></tr>
+            <tr><td>[08:20] &lt vmlemon&gt (Quality vs File Size vs Time Stored, or something like that)</td></tr>
+            <tr><td>[08:20] &lt ms-&gt Indeed - live encoding is harder for the CPU to do than offline encoding as well</td></tr>
+            <tr><td>[08:20] &lt ms-&gt (The data was encoding before it hit the disk)</td></tr>
+            <tr><td>[08:20] &lt vmlemon&gt I guess that running a web server on the same box is fairly taxing, too</td></tr>
+            <tr><td>[08:21] &lt vmlemon&gt Although I don't think many people would be hitting it</td></tr>
+            <tr><td>[08:21] &lt ms-&gt No, the webserver doesn't hold the encoding/etc</td></tr>
+            <tr><td>[08:21] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[08:21] &lt ms-&gt The files are transferred over</td></tr>
+            <tr><td>[08:22] &lt ms-&gt *shrug*</td></tr>
+            <tr><td>[08:22] &lt ms-&gt At some point I'll probably build one at home, when storage is cheap enough</td></tr>
+            <tr><td>[08:22] *** vmlemon wonders if kamaeliabot likes trout ala creme ;)</td></tr>
+            <tr><td>[08:22] &lt ms-&gt (It's getting close)</td></tr>
+            <tr><td>[08:24] &lt ms-&gt If I could use it for non-freeview channels - eg regular sky channels, I'd've done it by now</td></tr>
+            <tr><td>[09:09] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:10] *** vmlemon__ is blowing up helium balloons at the moment</td></tr>
+            <tr><td>[09:25] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:25] &lt ms-&gt Has strange visions of vmlemon__ breathing in helium and then blowing balloons up with said helium</td></tr>
+            <tr><td>[09:28] &lt Lawouach_&gt The beer has to be damn good where you guys live.</td></tr>
+            <tr><td>[09:29] &lt ms-&gt heheh</td></tr>
+            <tr><td>[09:36] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:08] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[10:22] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[10:50] *** ms- is now known as ms-away</td></tr>
+            <tr><td>[11:36] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:54] &lt vmlemon&gt Not actually inhaling the said helium, of course</td></tr>
+            <tr><td>[11:59] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:09] &lt Lawouach_&gt hope you're not producing it either...</td></tr>
+            <tr><td>[12:09] &lt vmlemon&gt Hah</td></tr>
+            <tr><td>[12:09] &lt vmlemon&gt They had a big tank of the stuff</td></tr>
+            <tr><td>[12:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt Hi all</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt hi Davbo</td></tr>
+            <tr><td>[12:42] *** ms-away is now known as ms-</td></tr>
+            <tr><td>[12:43] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[12:46] *** ms- goes woo about something</td></tr>
+            <tr><td>[12:46] &lt ms-&gt :)</td></tr>
+            <tr><td>[12:47] *** Davbo assumes it was his arrival on irc</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt Why thank you ms- :)</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt ;)</td></tr>
+            <tr><td>[12:47] &lt ms-&gt heheheh</td></tr>
+            <tr><td>[12:47] &lt ms-&gt Yep, precisely :)</td></tr>
+            <tr><td>[12:48] &lt ms-&gt Now I just have to decide what I want to write ...</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt what was the "woo" about ms-?</td></tr>
+            <tr><td>[12:49] &lt ms-&gt I posted something about GSOC somewhere, someone else suggested writing about it somewhere else, and the person who owns that somewhere else likes the idea</td></tr>
+            <tr><td>[12:49] &lt ms-&gt I know its a little vague, but it'll hopefully be a nice surprise :)</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt sounds good!</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt I have high hopes</td></tr>
+            <tr><td>[12:50] &lt ms-&gt up in the sky hopes?</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt should i be buying the Guardian on thursday ms-?</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt ;)</td></tr>
+            <tr><td>[12:50] &lt ms-&gt heh, I'd be surprised if it was reported there</td></tr>
+            <tr><td>[12:50] &lt ms-&gt Actually, I could probably write for the guardian without asking anyone actually. There's a standard form for that sort of thing.</td></tr>
+            <tr><td>[12:51] &lt ms-&gt They just wouldn't like my standard of writing ;)</td></tr>
+            <tr><td>[12:51] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[12:51] *** Davbo likes the Guardian :(</td></tr>
+            <tr><td>[12:51] &lt Davbo&gt although it is £0.30 for students :P</td></tr>
+            <tr><td>[12:52] &lt vmlemon__&gt What about the Guardian? MS-/Kamaelia/GSoC are in it? Or something else?</td></tr>
+            <tr><td>[12:53] &lt Davbo&gt tee-hee :P</td></tr>
+            <tr><td>[12:53] &lt ms-&gt vmlemon__: Nothing to do with the guardian</td></tr>
+            <tr><td>[12:53] &lt ms-&gt Something else</td></tr>
+            <tr><td>[12:54] &lt vmlemon__&gt Aah</td></tr>
+            <tr><td>[12:59] *** Davbo was just making fun :)</td></tr>
+            <tr><td>[12:59] &lt Davbo&gt let us know when it's up ms-</td></tr>
+            <tr><td>[12:59] &lt ms-&gt will do</td></tr>
+            <tr><td>[13:48] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:58] &lt Lawouach_&gt hey ms- BTW, if you feel like adding me to the SF project my nickname is seel20</td></tr>
+            <tr><td>[13:58] &lt Lawouach_&gt I spit on SF but well :)</td></tr>
+            <tr><td>[13:58] &lt ms-&gt heh</td></tr>
+            <tr><td>[13:58] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[14:00] &lt ms-&gt Done.</td></tr>
+            <tr><td>[14:01] &lt ms-&gt Also created /Sketches/SH for you</td></tr>
+            <tr><td>[14:01] &lt Lawouach_&gt Thank you :)</td></tr>
+            <tr><td>[14:01] &lt ms-&gt branching policy is /branches/private_SH_&lt anything&gt is yours</td></tr>
+            <tr><td>[14:01] &lt ms-&gt essentially</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt it'd be nice if code.google provided as much space as gmail</td></tr>
+            <tr><td>[14:02] &lt ms-&gt Indeed it would</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt They could use that same sort of "cloud computing" ie: everyone has 1gb but if everyone actually filled it we'd have problems</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt I can understand why you wouldn't want that though</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt it's different on svn than mail</td></tr>
+            <tr><td>[14:03] &lt Lawouach_&gt I really believe that it's just a matter of asking them</td></tr>
+            <tr><td>[14:03] &lt ms-&gt Probably</td></tr>
+            <tr><td>[14:03] &lt Lawouach_&gt How much space do you believe Kamaelia would need?</td></tr>
+            <tr><td>[14:03] &lt ms-&gt They probably just don't think anyone's going to create that amount of stuff</td></tr>
+            <tr><td>[14:04] &lt Lawouach_&gt indeed</td></tr>
+            <tr><td>[14:04] &lt ms-&gt Dunno, we're pretty lax on worrying about branches</td></tr>
+            <tr><td>[14:04] &lt ms-&gt Depends on how much space they cost on the server really</td></tr>
+            <tr><td>[14:04] &lt ms-&gt been a while since I checked out the entire tree</td></tr>
+            <tr><td>[14:06] &lt Lawouach_&gt The first question though is whether or not you have the motivation to migrate and when would we be doing that?</td></tr>
+            <tr><td>[14:06] &lt Davbo&gt 85MB on the trunk</td></tr>
+            <tr><td>[14:06] &lt ms-&gt Dunno. I'd like to check out whether things like cia still work</td></tr>
+            <tr><td>[14:07] &lt Lawouach_&gt cia?</td></tr>
+            <tr><td>[14:07] &lt ms-&gt http://cia.vc/stats/project/kamaelia/</td></tr>
+            <tr><td>[14:07] &lt ms-&gt As well as project level you get developer level as well</td></tr>
+            <tr><td>[14:08] &lt ms-&gt which can be useful if trying to track what someone's doing</td></tr>
+            <tr><td>[14:08] &lt ms-&gt (say, over the summer... )</td></tr>
+            <tr><td>[14:08] &lt ms-&gt :)</td></tr>
+            <tr><td>[14:08] &lt Lawouach_&gt hey i'm using Ohloh http://www.ohloh.net/projects/4076</td></tr>
+            <tr><td>[14:08] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[14:09] &lt ms-&gt Does it support per developer feeds?</td></tr>
+            <tr><td>[14:10] &lt ms-&gt eg http://cia.vc/stats/author/ms_/.rss</td></tr>
+            <tr><td>[14:11] &lt ms-&gt It's just these sorts of things really that I'd find useful, and that really requires just a little time to sit and look through what google code can directly hook into</td></tr>
+            <tr><td>[14:11] &lt ms-&gt I *do* much prefer the way that google code handle changesets</td></tr>
+            <tr><td>[14:13] &lt Lawouach_&gt I'm not saying we should switch to Ohloh... was just stating the fact I'm using it :)</td></tr>
+            <tr><td>[14:14] &lt Lawouach_&gt I guess maybe you should list down all the required features you'd expect from a code host</td></tr>
+            <tr><td>[14:14] &lt Lawouach_&gt Then we look for the right one</td></tr>
+            <tr><td>[14:14] &lt Lawouach_&gt Might be it is SF in the end</td></tr>
+            <tr><td>[14:16] &lt ms-&gt Davbo: including branches (without an update...)</td></tr>
+            <tr><td>[14:16] &lt ms-&gt The amount of storage on this machine required by a top level checkout is 2.2G</td></tr>
+            <tr><td>[14:16] &lt ms-&gt I doubt it actually uses that much storage on the server</td></tr>
+            <tr><td>[14:17] &lt ms-&gt Oh hold on</td></tr>
+            <tr><td>[14:17] &lt ms-&gt I can find that out</td></tr>
+            <tr><td>[14:17] &lt Davbo&gt Yeah I was just saying for the bit I checked-out</td></tr>
+            <tr><td>[14:17] &lt ms-&gt doh</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt back later folks</td></tr>
+            <tr><td>[14:21] &lt ms-&gt cya</td></tr>
+            <tr><td>[14:21] &lt ms-&gt interesting, just done an update, and it's gone down to 1.9G</td></tr>
+            <tr><td>[14:22] &lt ms-&gt Primarily due, I guess, to changeing what's happening with Apps/Kamaelia-Whiteboard</td></tr>
+            <tr><td>[14:22] &lt ms-&gt Looks like I can rsync the actual repository though</td></tr>
+            <tr><td>[14:22] &lt ms-&gt So I'll see how big that is</td></tr>
+            <tr><td>[14:24] &lt Lawouach_&gt The BBC doesn't have a spare machine somewhere :)</td></tr>
+            <tr><td>[14:24] &lt Lawouach_&gt ?</td></tr>
+            <tr><td>[14:25] &lt ms-&gt The reason for using $externalhost is that it doesn't put us at the vagaries of changes in senior management</td></tr>
+            <tr><td>[14:25] &lt ms-&gt Also, the only machine I know I *could* use is one that's not accessible inside the BBC which is rather less than ideal</td></tr>
+            <tr><td>[14:27] &lt Lawouach_&gt Well we could also take a shared host like WebFaction but that'd require to pay for it :/</td></tr>
+            <tr><td>[14:27] &lt ms-&gt yep</td></tr>
+            <tr><td>[14:27] &lt ms-&gt OK, the DB size is 72M</td></tr>
+            <tr><td>[14:28] &lt Lawouach_&gt ah well</td></tr>
+            <tr><td>[14:28] &lt Lawouach_&gt quite reasonable :)</td></tr>
+            <tr><td>[14:28] &lt ms-&gt Yep</td></tr>
+            <tr><td>[14:29] &lt ms-&gt Even more reasonable if willing to break the version control history</td></tr>
+            <tr><td>[14:29] &lt ms-&gt Which I'm not really sure I like the idea of</td></tr>
+            <tr><td>[14:29] &lt ms-&gt annotations as to when lines were added</td></tr>
+            <tr><td>[14:29] &lt Lawouach_&gt That defeats its purpose :)</td></tr>
+            <tr><td>[14:29] &lt ms-&gt can also help with *why*</td></tr>
+            <tr><td>[14:29] &lt ms-&gt indeed</td></tr>
+            <tr><td>[14:32] &lt Lawouach_&gt Maybe... I'm saying that out of nonsense</td></tr>
+            <tr><td>[14:32] &lt Lawouach_&gt it'd be worth trying to setup Google code with it</td></tr>
+            <tr><td>[14:32] &lt Lawouach_&gt see if you like it or not :)</td></tr>
+            <tr><td>[14:33] &lt Lawouach_&gt If we do, we go for it</td></tr>
+            <tr><td>[14:33] &lt Lawouach_&gt My point is, we might have to expriment to truly understand our expectations</td></tr>
+            <tr><td>[14:33] &lt Lawouach_&gt I'm sure you have tons of better stuff to do for now though :)</td></tr>
+            <tr><td>[14:33] &lt ms-&gt I've actually also had more errors and outages with code.google over the past few weeks than I've ever seen with sourceforge's SVN</td></tr>
+            <tr><td>[14:34] &lt ms-&gt so I might hold off on doing this for a little while :)</td></tr>
+            <tr><td>[14:34] &lt ms-&gt I am thinking about it though</td></tr>
+            <tr><td>[14:34] &lt Lawouach_&gt oh really?</td></tr>
+            <tr><td>[14:34] &lt Lawouach_&gt I don't use it that much since I have my own server</td></tr>
+            <tr><td>[14:35] &lt ms-&gt Yep</td></tr>
+            <tr><td>[15:19] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:20] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:20] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:31] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[15:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:54] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:21] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[17:08] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[17:41] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[17:42] &lt j_baker&gt So has anybody here tried linux on PPC?</td></tr>
+            <tr><td>[17:52] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:55] &lt j_baker&gt Hello Davbo</td></tr>
+            <tr><td>[17:55] &lt Davbo&gt Hey all :)</td></tr>
+            <tr><td>[18:00] &lt Davbo&gt we really could do with updating that topic :)</td></tr>
+            <tr><td>[18:01] &lt orphans&gt hey folks</td></tr>
+            <tr><td>[18:03] &lt Davbo&gt Hi orphans</td></tr>
+            <tr><td>[18:04] &lt orphans&gt hows it going Davbo?</td></tr>
+            <tr><td>[18:05] &lt Davbo&gt not too bad</td></tr>
+            <tr><td>[18:05] &lt Davbo&gt yourself?</td></tr>
+            <tr><td>[18:05] &lt j_baker&gt Holy crap, google's going to announce who got in at ~8pm UK time!</td></tr>
+            <tr><td>[18:06] &lt j_baker&gt (I really had just gotten in the habit of ignoring the channel topic until Davbo mentioned it)</td></tr>
+            <tr><td>[18:07] &lt orphans&gt yeah, fine ta</td></tr>
+            <tr><td>[18:08] &lt orphans&gt heh, I remember the waiting for the results :)</td></tr>
+            <tr><td>[18:08] *** orphans prematurely reminisces</td></tr>
+            <tr><td>[18:08] &lt Davbo&gt You guys sent off that form yet?</td></tr>
+            <tr><td>[18:08] &lt j_baker&gt I need to.</td></tr>
+            <tr><td>[18:09] &lt Davbo&gt it's a different one for you right j_baker?</td></tr>
+            <tr><td>[18:09] &lt j_baker&gt Did they already send out those packages?</td></tr>
+            <tr><td>[18:09] &lt j_baker&gt Yeah</td></tr>
+            <tr><td>[18:09] &lt Davbo&gt don't think so</td></tr>
+            <tr><td>[18:09] &lt Davbo&gt I think it was something like 12th of May</td></tr>
+            <tr><td>[18:11] &lt j_baker&gt I've been trying to sign up for Planet SOC, but it won't let me...</td></tr>
+            <tr><td>[18:11] &lt orphans&gt not sent the form off yet, fax?!?</td></tr>
+            <tr><td>[18:11] &lt j_baker&gt It keeps telling me it will send me an email, but doesn't.</td></tr>
+            <tr><td>[18:12] &lt Davbo&gt heh orphans, it's easier for things like this though</td></tr>
+            <tr><td>[18:12] &lt orphans&gt j_baker, put a post in the forums if it's been a few days - I think it's pretty easy for them to miss people</td></tr>
+            <tr><td>[18:12] &lt Davbo&gt plus the fax number we have is straight to one of google's attorneys they probably prefer it all on paper</td></tr>
+            <tr><td>[18:13] &lt orphans&gt yeah, I'd imagine that's why. saves having to press print 1000 times :)</td></tr>
+            <tr><td>[18:14] &lt Davbo&gt there are ways to send faxes online anyways</td></tr>
+            <tr><td>[18:15] &lt orphans&gt I can probably do it in uni somewhere I guess</td></tr>
+            <tr><td>[18:16] &lt j_baker&gt How are we supposed to get our contributor agreements in?</td></tr>
+            <tr><td>[18:16] &lt j_baker&gt Are those supposed to be faxed as well?</td></tr>
+            <tr><td>[18:16] &lt Davbo&gt not sure, ms- will explain i'm sure,</td></tr>
+            <tr><td>[18:17] &lt orphans&gt I think I read snail mail somewhere, but I guess fax will be much easier for you :)</td></tr>
+            <tr><td>[18:17] &lt Davbo&gt did you read the discussion on the student mailing list about the guy who couldn't agree with the contributor agreement</td></tr>
+            <tr><td>[18:17] &lt Davbo&gt so he's not participating</td></tr>
+            <tr><td>[18:17] &lt j_baker&gt I don't know... An international fax could get pretty expensive.</td></tr>
+            <tr><td>[18:17] &lt j_baker&gt Yeah, I read that.</td></tr>
+            <tr><td>[18:18] &lt orphans&gt Davbo: yeah - it was a bit crazy</td></tr>
+            <tr><td>[18:18] &lt j_baker&gt Kind of a dick move on the organization if you ask me.</td></tr>
+            <tr><td>[18:18] &lt orphans&gt 'cause it was reverse engineering wasn't it?</td></tr>
+            <tr><td>[18:18] &lt orphans&gt I think stuff like that you've gotta be pretty tight on the legal stuff</td></tr>
+            <tr><td>[18:18] &lt orphans&gt and stuff...</td></tr>
+            <tr><td>[18:20] &lt j_baker&gt Well, that may be right. Their CA looks pretty complicated.</td></tr>
+            <tr><td>[18:20] &lt Davbo&gt I'm not sure we have the full story from what he said</td></tr>
+            <tr><td>[18:20] &lt Davbo&gt to be honest, this ASF is usually really good with contributors</td></tr>
+            <tr><td>[18:20] &lt Davbo&gt from what i've heard</td></tr>
+            <tr><td>[18:21] &lt orphans&gt I remember there was a big thing a while ago where contributors to reactos had read stuff from windows that they shouldn't have - had to spend about a year auditing every line of code to make sure it was legal</td></tr>
+            <tr><td>[18:22] &lt Davbo&gt :|</td></tr>
+            <tr><td>[18:22] &lt Davbo&gt ouch</td></tr>
+            <tr><td>[18:22] &lt j_baker&gt wow</td></tr>
+            <tr><td>[18:22] &lt orphans&gt http://www.reactos.org/en/news_page_14.html</td></tr>
+            <tr><td>[18:33] &lt Davbo&gt that's insane orphans</td></tr>
+            <tr><td>[18:33] &lt Davbo&gt it'd send me crazy having to do that</td></tr>
+            <tr><td>[18:34] &lt orphans&gt yeah, I know. So you can see why ASF were so touchy about it (I think - that's just what I understood from reading the contributer agreement)</td></tr>
+            <tr><td>[18:35] &lt Davbo&gt Yeah the problem got sorted out with the guy from GSoC btw</td></tr>
+            <tr><td>[18:35] &lt Davbo&gt just checked the discussion again</td></tr>
+            <tr><td>[18:36] &lt orphans&gt uh huh. be interesting to know how it got sorted :)</td></tr>
+            <tr><td>[18:36] &lt Davbo&gt lh sorted out a meeting i think</td></tr>
+            <tr><td>[18:38] &lt orphans&gt yeah, I wonder if they're still working on that particular project?</td></tr>
+            <tr><td>[18:40] &lt j_baker&gt I would hope not</td></tr>
+            <tr><td>[18:41] &lt Davbo&gt how come j_baker?</td></tr>
+            <tr><td>[18:43] &lt j_baker&gt They posted stolen code? I wouldn't let them work on my project.</td></tr>
+            <tr><td>[18:45] &lt orphans&gt nah, they didn't post stolen code, but they looked at free (as in beer) code which, if they used the knowledge of, would break Sun's IP</td></tr>
+            <tr><td>[18:45] &lt Davbo&gt what he said</td></tr>
+            <tr><td>[18:45] &lt orphans&gt is I think how it works...</td></tr>
+            <tr><td>[18:45] &lt Davbo&gt lol</td></tr>
+            <tr><td>[18:46] &lt j_baker&gt Wait, are we talking about the apache dude or the reactos dude?</td></tr>
+            <tr><td>[18:46] *** j_baker is confused now</td></tr>
+            <tr><td>[18:46] &lt orphans&gt oh, apache, sorry</td></tr>
+            <tr><td>[18:46] &lt orphans&gt were you talking about the reactos dude?</td></tr>
+            <tr><td>[18:46] &lt j_baker&gt yeah</td></tr>
+            <tr><td>[18:46] &lt Davbo&gt lol</td></tr>
+            <tr><td>[18:46] &lt Davbo&gt oops.</td></tr>
+            <tr><td>[18:47] &lt orphans&gt fwiw I don't think the reactos code was stolen - ex-MS employee or something maybe?</td></tr>
+            <tr><td>[18:47] &lt j_baker&gt Now that I re-read it, it makes sense.</td></tr>
+            <tr><td>[18:47] &lt orphans&gt heh :)</td></tr>
+            <tr><td>[18:47] &lt j_baker&gt Nah, I think he was a ninja, orphans.</td></tr>
+            <tr><td>[18:47] &lt j_baker&gt Albeit not a good one.</td></tr>
+            <tr><td>[18:48] &lt orphans&gt ahh - not ex-employee, but someone may have used disassembled code directly</td></tr>
+            <tr><td>[18:49] &lt j_baker&gt Possibly</td></tr>
+            <tr><td>[18:50] &lt j_baker&gt So what do you guys think I should try first, OpenSUSE or Fedora?</td></tr>
+            <tr><td>[18:50] &lt orphans&gt it's cause in the US you have to use this crazy clean-room thing, where one person disassembles and documents it, then someone else has to implement it from that documentation</td></tr>
+            <tr><td>[18:50] *** Davbo is currently running OpenSUSE</td></tr>
+            <tr><td>[18:50] &lt j_baker&gt I want to try Ubuntu, but their PPC version is unsupported now.</td></tr>
+            <tr><td>[18:51] &lt Davbo&gt lots of people still use it though j_baker</td></tr>
+            <tr><td>[18:52] &lt j_baker&gt Hmmm... I may just end up going with YellowDog Linux</td></tr>
+            <tr><td>[18:52] &lt Davbo&gt Hmm I read something about it when trying to get my Kubuntu working</td></tr>
+            <tr><td>[18:56] &lt j_baker&gt Holy crap. Yellow dog is a 6 cd set...</td></tr>
+            <tr><td>[18:57] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[18:58] &lt j_baker&gt Screw that. I think I'm going to give Fedora a try.</td></tr>
+            <tr><td>[19:02] *** ms- changed the topic to P-Taking Announcements from floogle_woogle at ~8pm UK time | PTAKE: http://kamaelia.sourceforge.net/UrineExtractionAgency | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/)</td></tr>
+            <tr><td>[19:02] &lt Davbo&gt Hahaha</td></tr>
+            <tr><td>[19:03] &lt j_baker&gt UrineExtractionAgency?</td></tr>
+            <tr><td>[19:03] &lt j_baker&gt Heh...</td></tr>
+            <tr><td>[19:08] &lt j_baker&gt Heh... the place I live is mentioned in the WSJ.</td></tr>
+            <tr><td>[19:09] &lt j_baker&gt Basically along the lines of "It's one of the most backwards, redneck conservative towns in America. And I still couldn't find anyone that liked President Bush."</td></tr>
+            <tr><td>[19:22] *** j_baker is out to get food.</td></tr>
+            <tr><td>[19:22] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[19:26] &lt Davbo&gt We all going to make pages on the Group for our projects?</td></tr>
+            <tr><td>[19:26] &lt Davbo&gt http://groups.google.co.uk/group/kamaelia/web</td></tr>
+            <tr><td>[19:27] &lt ms-&gt No.</td></tr>
+            <tr><td>[19:27] &lt ms-&gt That isn't the project site</td></tr>
+            <tr><td>[19:28] &lt ms-&gt I'll enable the wiki for those - we do actually have a mechanism for this</td></tr>
+            <tr><td>[19:28] &lt ms-&gt And your work can either be part of the project or no.</td></tr>
+            <tr><td>[19:28] &lt ms-&gt nit</td></tr>
+            <tr><td>[19:28] &lt ms-&gt not</td></tr>
+            <tr><td>[19:28] &lt ms-&gt (got there in the end)</td></tr>
+            <tr><td>[19:28] &lt ms-&gt If it's not, well, ...</td></tr>
+            <tr><td>[19:29] &lt ms-&gt not many nice ways of phrasing, so I'll leave it at "..."</td></tr>
+            <tr><td>[19:29] &lt Davbo&gt Alrighty</td></tr>
+            <tr><td>[19:30] &lt ms-&gt http://groups.google.co.uk/group/kamaelia is *just* a replacement for the mailing list at present</td></tr>
+            <tr><td>[19:30] &lt ms-&gt Otherwise you end up with 20 places to look for things, which is just annoying</td></tr>
+            <tr><td>[19:30] &lt ms-&gt Or could</td></tr>
+            <tr><td>[19:31] &lt Davbo&gt Sounds good</td></tr>
+            <tr><td>[19:31] &lt Davbo&gt I'm happy to use the existing wiki</td></tr>
+            <tr><td>[19:31] &lt Davbo&gt rather keep non-ML stuff on the sf.net page</td></tr>
+            <tr><td>[19:34] &lt ms-&gt Cool. (Sorry, grumpy about something else, and bit silly of it to filter through)</td></tr>
+            <tr><td>[19:35] &lt Davbo&gt s'ok ms-</td></tr>
+            <tr><td>[19:36] &lt ms-&gt On the upside it does remind me "Michael, do get your arse in gear about authenticated edits"</td></tr>
+            <tr><td>[19:37] &lt ms-&gt Which isn't really a bad thing</td></tr>
+            <tr><td>[19:37] &lt ms-&gt :)</td></tr>
+            <tr><td>[19:37] &lt Davbo&gt No rush tbh :)</td></tr>
+            <tr><td>[19:37] *** Davbo thinks j_baker might have been a bit eager when he made that page hehe</td></tr>
+            <tr><td>[19:37] &lt ms-&gt Well, if you've noticed the checkins recently, I am working on website related stuff</td></tr>
+            <tr><td>[19:38] &lt ms-&gt :)</td></tr>
+            <tr><td>[19:38] &lt ms-&gt Oh is that a real link?</td></tr>
+            <tr><td>[19:38] &lt ms-&gt ooh, so it is</td></tr>
+            <tr><td>[19:38] &lt ms-&gt Thought it was hypothetical</td></tr>
+            <tr><td>[19:38] &lt Davbo&gt nah, that's why i was asking lol</td></tr>
+            <tr><td>[19:38] &lt ms-&gt heh</td></tr>
+            <tr><td>[19:39] &lt ms-&gt Well, if pages are being made, I *really* ought to get my arse in gear</td></tr>
+            <tr><td>[19:39] &lt Davbo&gt thought it might have been mentioned on IRC and i missed it (despite my Orwellian parsing of the logs)</td></tr>
+            <tr><td>[19:40] &lt ms-&gt Nah, it's just initiative - which is a good thing in the absence of decent facilities</td></tr>
+            <tr><td>[19:40] &lt ms-&gt (which due to spam ... and a very strange oddity ... is what's happened on the website)</td></tr>
+            <tr><td>[19:43] &lt ms-&gt Spam. The constant undercurrent of the internet reminding you of the darker side of human nature.</td></tr>
+            <tr><td>[19:43] &lt ms-&gt If it wasn't for abuse of these things, it'd all be alot simpler</td></tr>
+            <tr><td>[19:43] &lt ms-&gt ah well</td></tr>
+            <tr><td>[19:47] &lt Davbo&gt it would be really boring without the darker side of human nature though :)</td></tr>
+            <tr><td>[19:56] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[19:57] &lt j_baker&gt grrr....</td></tr>
+            <tr><td>[19:57] &lt j_baker&gt Is there a command to un-away yourself?</td></tr>
+            <tr><td>[19:57] &lt j_baker&gt Or do you just have to type a message in?</td></tr>
+            <tr><td>[20:03] &lt j_baker&gt Oh, and ms- do you know which sections of axon/kamaelia aren't working in IronPython?</td></tr>
+            <tr><td>[20:09] *** Davbo feels ill.</td></tr>
+            <tr><td>[20:09] &lt Davbo&gt back later lol.</td></tr>
+            <tr><td>[20:09] &lt j_baker&gt later.</td></tr>
+            <tr><td>[21:01] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[21:01] *** Davbo no longer feels ill</td></tr>
+            <tr><td>[21:11] &lt Davbo&gt Could someone sum up the LGPL for me at all?</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt I wanna use http://javamusictag.sourceforge.net/ in this thing i'm coding but it's LGPL</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt Any ideas ?</td></tr>
+            <tr><td>[21:14] &lt j_baker&gt The LGPL is like the GPL without the "viral" clause.</td></tr>
+            <tr><td>[21:15] &lt j_baker&gt In other words, you can use an LGPL library in any program without the program itself having to be GPL</td></tr>
+            <tr><td>[21:15] &lt Davbo&gt I see! this is good</td></tr>
+            <tr><td>[21:15] &lt Davbo&gt thank you j_baker :)</td></tr>
+            <tr><td>[21:15] &lt j_baker&gt Indeed. :)</td></tr>
+            <tr><td>[21:16] *** j_baker is off to the store to buy some blank DVDs.</td></tr>
+            <tr><td>[21:17] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[21:17] &lt Davbo&gt tee-hee! "store"</td></tr>
+            <tr><td>[21:17] &lt Davbo&gt :)</td></tr>
+            <tr><td>[21:17] &lt Davbo&gt Cya j_baker-away</td></tr>
+            <tr><td>[21:25] &lt Davbo&gt nice to know my EEE-PC is in the status "Repairing()"</td></tr>
+            <tr><td>[21:25] &lt Davbo&gt apparently repairing is a function that takes no arguments. Interesting</td></tr>
+            <tr><td>[21:26] &lt Davbo&gt If they don't repair it soon they will have an argument *shakes fist* ;)</td></tr>
+            <tr><td>[21:27] &lt Davbo&gt public FixedEEE Repairing(BrokenEEE DavesEEE) {</td></tr>
+            <tr><td>[21:31] *** Davbo coughs</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt oops</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt def Repairing(DavesEEE):</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt better</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt :)</td></tr>
+            <tr><td>[21:41] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[21:42] &lt ms-&gt class eeePC(coolgadget):</td></tr>
+            <tr><td>[21:42] &lt ms-&gt  def repair(self):</td></tr>
+            <tr><td>[21:42] &lt ms-&gt  ....</td></tr>
+            <tr><td>[21:46] &lt Davbo&gt Arigato gozaimashita</td></tr>
+            <tr><td>[21:47] &lt Davbo&gt :)</td></tr>
+            <tr><td>[21:48] &lt Davbo&gt I'm still learning where self should go</td></tr>
+            <tr><td>[21:48] &lt Davbo&gt sometimes i forget (like then) that it's really different to "this" in java</td></tr>
+            <tr><td>[21:51] &lt Davbo&gt This stupid group work is done this friday and i'll have chance to do more python. Sorry for not getting round to doing much ms-</td></tr>
+            <tr><td>[21:51] &lt ms-&gt Ooh, Indiana Jones advert</td></tr>
+            <tr><td>[21:51] &lt ms-&gt Sunday BBC One 8pm</td></tr>
+            <tr><td>[21:52] &lt Davbo&gt Hmm? advert...</td></tr>
+            <tr><td>[21:52] &lt ms-&gt Advert was on BBC One.</td></tr>
+            <tr><td>[21:52] &lt ms-&gt (left on after the news)</td></tr>
+            <tr><td>[21:52] &lt Davbo&gt Yeah but...the BBC lol</td></tr>
+            <tr><td>[21:53] &lt Davbo&gt I'm confused, why would an Indiana Jones advert be on the BBC?</td></tr>
+            <tr><td>[21:53] &lt Davbo&gt Are they doing an Indiana Jones show?</td></tr>
+            <tr><td>[21:55] *** Davbo slams head on desk</td></tr>
+            <tr><td>[21:55] &lt ms-&gt No, they're showing Indiana Jones & raiders of the lost ark</td></tr>
+            <tr><td>[21:55] &lt Davbo&gt I thought you meant they were advertising Indiana 4 lol</td></tr>
+            <tr><td>[21:55] &lt ms-&gt Do you need more coffee ?</td></tr>
+            <tr><td>[21:55] &lt ms-&gt Ahhh</td></tr>
+            <tr><td>[21:55] &lt ms-&gt I see</td></tr>
+            <tr><td>[21:55] &lt ms-&gt Well, they're showing the trilogy</td></tr>
+            <tr><td>[21:55] &lt ms-&gt I guess over 3 weeks</td></tr>
+            <tr><td>[21:55] &lt ms-&gt so it is kinda an advert really</td></tr>
+            <tr><td>[21:55] &lt Davbo&gt Practically an advert for 4</td></tr>
+            <tr><td>[21:55] &lt ms-&gt But I think "who cares" springs to mind</td></tr>
+            <tr><td>[21:55] &lt ms-&gt :)</td></tr>
+            <tr><td>[21:56] *** Davbo loves Indiana Jones :D</td></tr>
+            <tr><td>[21:56] &lt ms-&gt I didn't know they were making a new one, so when someone posted a link without saying what it was, I was bouncing up and down</td></tr>
+            <tr><td>[21:56] &lt Davbo&gt Hehehe! It's gonna be amazing</td></tr>
+            <tr><td>[21:56] &lt ms-&gt Then unexpectedly saw a trailer for it at a Kids Club showing of some random film</td></tr>
+            <tr><td>[21:57] &lt ms-&gt (kids are 4 & 6, so films for a quid on saturday :) )</td></tr>
+            <tr><td>[21:57] &lt ms-&gt I thought "OK, can go home now :)"</td></tr>
+            <tr><td>[21:57] &lt ms-&gt Pretty sad</td></tr>
+            <tr><td>[21:57] &lt ms-&gt :)</td></tr>
+            <tr><td>[21:57] &lt ms-&gt But I think "who cares" springs to mind</td></tr>
+            <tr><td>[21:57] &lt ms-&gt :)</td></tr>
+            <tr><td>[21:57] &lt Davbo&gt lol</td></tr>
+            <tr><td>[21:57] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[21:59] &lt Davbo&gt I've got the boxset but it's inevitable i'll end up watching it on sunday</td></tr>
+            <tr><td>[22:01] &lt j_baker-away&gt So they are making Indiana Jones 4?</td></tr>
+            <tr><td>[22:02] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[22:02] &lt Davbo&gt lol</td></tr>
+            <tr><td>[22:02] &lt Davbo&gt How could you not know?</td></tr>
+            <tr><td>[22:02] &lt Davbo&gt it's frickin' Indiana Jones</td></tr>
+            <tr><td>[22:03] &lt j_baker&gt I haven't seen Indiana Jones since I was like 8</td></tr>
+            <tr><td>[22:04] &lt j_baker&gt Much as I wouldn't mind a new Indiana Jones, I have to say: is there no originality left in Hollywood anymore?</td></tr>
+            <tr><td>[22:04] &lt ms-&gt People always say that about hollywood</td></tr>
+            <tr><td>[22:05] &lt j_baker&gt Because it's true. :)</td></tr>
+            <tr><td>[22:05] &lt ms-&gt I mean, they said that about "the cat from outer space"</td></tr>
+            <tr><td>[22:05] &lt ms-&gt I actually really liked Stardust last year</td></tr>
+            <tr><td>[22:06] &lt ms-&gt The book is, interestingly, completely different</td></tr>
+            <tr><td>[22:06] &lt ms-&gt But the film has Gaiman's blessing</td></tr>
+            <tr><td>[22:06] &lt j_baker&gt Didn't see it.</td></tr>
+            <tr><td>[22:07] &lt ms-&gt Mr Magorium likewise was pretty different. A bit like some things, but still different.</td></tr>
+            <tr><td>[22:09] &lt Davbo&gt Last film I went to see at the Cinema was "The Orphanage" that was good, it was produced by the same guy who directed Pan's Labyrinth which is one of my favorite films ever.</td></tr>
+            <tr><td>[22:10] &lt j_baker&gt Pan's Labyrinth was awesome although it was nothing like I expected it to be.</td></tr>
+            <tr><td>[22:10] &lt ms-&gt I have still to watch that</td></tr>
+            <tr><td>[22:10] &lt ms-&gt And have still to watch Nightwatch (or Daywatch)</td></tr>
+            <tr><td>[22:10] &lt ms-&gt Mind you nightwatch isn't hollywood, so it doesn't count</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt It's difficult for things like Pan's Labyrinth to float to the top in Hollywood as it is but they do.</td></tr>
+            <tr><td>[22:11] &lt ms-&gt This sounds fun: "How to Lose Friends & Alienate People"</td></tr>
+            <tr><td>[22:11] &lt ms-&gt Or at least wins my vote for the title</td></tr>
+            <tr><td>[22:12] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[22:12] &lt ms-&gt On a sad note, this is a really bad idea for a remake</td></tr>
+            <tr><td>[22:12] &lt ms-&gt "The Day the Earth Stood Still"</td></tr>
+            <tr><td>[22:12] &lt ms-&gt Which is apparently out this year</td></tr>
+            <tr><td>[22:12] &lt ms-&gt The original was utterly fantastic</td></tr>
+            <tr><td>[22:12] &lt ms-&gt IMO</td></tr>
+            <tr><td>[22:12] &lt ms-&gt and all they can do is screw it up</td></tr>
+            <tr><td>[22:13] &lt j_baker&gt I think a remake of "Plan 9 from outerspace" would be awesome :)</td></tr>
+            <tr><td>[22:13] &lt j_baker&gt It couldn't be any worse than the original</td></tr>
+            <tr><td>[22:13] &lt Davbo&gt I haven't seen the original of that</td></tr>
+            <tr><td>[22:13] &lt Davbo&gt ("The Day the Earth Stood Still"</td></tr>
+            <tr><td>[22:13] &lt ms-&gt That reminds me, I really ought to order Morons From Outerspace from play, now that I know its on DVD</td></tr>
+            <tr><td>[22:13] &lt ms-&gt Davbo: You should</td></tr>
+            <tr><td>[22:13] &lt ms-&gt it's good</td></tr>
+            <tr><td>[22:14] &lt ms-&gt Periodically it gets repeated on film 4</td></tr>
+            <tr><td>[22:14] &lt j_baker&gt Crapola.... I have a final tomorrow at 7:30 AM</td></tr>
+            <tr><td>[22:14] &lt Davbo&gt Haha, says the remake has Keanu Reeves in it. I wonder if he'll manage 3 facial expressions</td></tr>
+            <tr><td>[22:14] &lt ms-&gt j_baker: Good luck</td></tr>
+            <tr><td>[22:14] &lt ms-&gt 7:30 am ?!</td></tr>
+            <tr><td>[22:14] &lt Davbo&gt Good luck j_baker!</td></tr>
+            <tr><td>[22:15] &lt Davbo&gt Good luck at getting up in time for it too!</td></tr>
+            <tr><td>[22:15] &lt j_baker&gt I can bet you the word "whoa" will be in there once or twice Davbo.</td></tr>
+            <tr><td>[22:15] &lt Davbo&gt :)</td></tr>
+            <tr><td>[22:15] &lt ms-&gt Davbo: actually he may be able to the role OK</td></tr>
+            <tr><td>[22:15] &lt j_baker&gt I think having finals at 7:30 in the morning should be illegal.</td></tr>
+            <tr><td>[22:15] &lt j_baker&gt Once I had a final at 7:30 AM on a saturday...</td></tr>
+            <tr><td>[22:15] &lt Davbo&gt our exams can only be either 9am or 1:30pm</td></tr>
+            <tr><td>[22:16] &lt Davbo&gt I hear Keanu isn't that bad in the film he's in atm</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt "Street Kings" i think it is</td></tr>
+            <tr><td>[22:17] &lt ms-&gt No idea</td></tr>
+            <tr><td>[22:17] &lt j_baker&gt Well, I still stick to my theory about Keanu. He's a bad actor, but he has really good taste in movies.</td></tr>
+            <tr><td>[22:18] &lt j_baker&gt Right along with Nicholas Cage.</td></tr>
+            <tr><td>[22:19] &lt j_baker&gt Much as I dislike both of them, they seem to have a lot lower ratio of bad movies to good movies compared to better actors.</td></tr>
+            <tr><td>[22:19] &lt j_baker&gt Most notably Samuel L Jackson and Christopher Walken</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt Iron Man will probably be the next thing i see</td></tr>
+            <tr><td>[22:20] &lt j_baker&gt BTW ms-, how should I get my contributor agreement to you?</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt Fully prepared to be disappointed with that</td></tr>
+            <tr><td>[22:20] &lt ms-&gt Post preferably</td></tr>
+            <tr><td>[22:20] &lt ms-&gt To</td></tr>
+            <tr><td>[22:22] *** Davbo takes note</td></tr>
+            <tr><td>[22:24] &lt ms-&gt I did try to get things sorted about having a web form, or similar in early days</td></tr>
+            <tr><td>[22:24] &lt ms-&gt But you wouldn't believe how complicated that gets real fast</td></tr>
+            <tr><td>[22:24] &lt Davbo&gt ooo Jeff Bridges is in Iron Man and also How to Lose Friends & Alienate People lol</td></tr>
+            <tr><td>[22:25] &lt ms-&gt probably needs the work</td></tr>
+            <tr><td>[22:25] &lt Davbo&gt he'll always be "the dude" to me</td></tr>
+            <tr><td>[22:25] &lt j_baker&gt The dude abides</td></tr>
+            <tr><td>[22:25] &lt ms-&gt That said, if he's in a "pick and choose" position, which I think he probably is, that probably says good things about Iron Man</td></tr>
+            <tr><td>[22:29] &lt Davbo&gt Nah he's certainly in the former category "needs the work"</td></tr>
+            <tr><td>[22:30] &lt Davbo&gt http://www.imdb.com/title/tt0423294/</td></tr>
+            <tr><td>[22:34] &lt Davbo&gt Isn't Verilog just C?</td></tr>
+            <tr><td>[22:34] &lt j_baker&gt No.</td></tr>
+            <tr><td>[22:34] &lt Davbo&gt Oh. I thought it was something like a fork of C for HDL</td></tr>
+            <tr><td>[22:34] &lt ms-&gt j_baker: Yep, should be doable</td></tr>
+            <tr><td>[22:34] &lt j_baker&gt It uses C like syntax in a lot of places, but it's a lot different.</td></tr>
+            <tr><td>[22:35] &lt Davbo&gt Ah, k</td></tr>
+            <tr><td>[22:35] &lt ms-&gt The ideas in Kamaelia are rooted, at least partially, in asynchronous hardware</td></tr>
+            <tr><td>[22:35] &lt j_baker&gt That idea just struck me while reading up for me EE test tomorrow.</td></tr>
+            <tr><td>[22:35] &lt ms-&gt There's a language called "green" which I reference as an example in the presentation embedded in the SummerOfCode page</td></tr>
+            <tr><td>[22:36] &lt ms-&gt However "green" was part of a wider project that also included languages called blue, yellow and red which had different levels of abstraction of hardware</td></tr>
+            <tr><td>[22:37] &lt ms-&gt So, yes, there should definitely be a correspondance</td></tr>
+            <tr><td>[22:37] &lt j_baker&gt The only problem I would see is that I'm assuming there's not really anywhere to just download a verilog interpreter. :)</td></tr>
+            <tr><td>[22:37] &lt ms-&gt However it's probably worth noting that the box metaphor we use is equivalent to a channel & a buffer</td></tr>
+            <tr><td>[22:37] &lt ms-&gt yep</td></tr>
+            <tr><td>[22:37] &lt ms-&gt The closest you can get is the MyHDL project I think</td></tr>
+            <tr><td>[22:37] &lt j_baker&gt Would have made an interesting GSoC proposal.</td></tr>
+            <tr><td>[22:38] &lt ms-&gt but that uses python as the HDL</td></tr>
+            <tr><td>[22:38] &lt ms-&gt (and generators)</td></tr>
+            <tr><td>[22:38] &lt ms-&gt I've often been intrigued by the idea of MyHDL based kamaelia components...</td></tr>
+            <tr><td>[22:38] &lt Davbo&gt Hmm, I could swear the fans on my computer just stopped :|</td></tr>
+            <tr><td>[22:38] &lt ms-&gt Since due to the heritage of ideas it could work</td></tr>
+            <tr><td>[22:38] &lt ms-&gt Davbo: Could be dust - try blowing on them</td></tr>
+            <tr><td>[22:38] &lt Davbo&gt :|</td></tr>
+            <tr><td>[22:38] &lt ms-&gt before the machine overheats...</td></tr>
+            <tr><td>[22:39] &lt ms-&gt :)</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt Nah i had it open not long ago</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt I think they've just started going slow</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt interesting</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt lets see how long I last.</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt :P</td></tr>
+            <tr><td>[22:40] &lt Davbo&gt My experience with the temperature gauge on the motherboard is pretty bad, like +-50%</td></tr>
+            <tr><td>[22:41] &lt Davbo&gt They're still spinning...</td></tr>
+            <tr><td>[22:41] &lt Davbo&gt perhaps it was in my head</td></tr>
+            <tr><td>[22:42] &lt Davbo&gt *aherm* anyway Green sounds a bit like Java</td></tr>
+            <tr><td>[22:43] &lt Davbo&gt in terms of the language</td></tr>
+            <tr><td>[22:45] &lt Davbo&gt it's like someone has shoved Pascal into Java</td></tr>
+            <tr><td>[22:46] &lt j_baker&gt That's a weird combination</td></tr>
+            <tr><td>[22:46] &lt ms-&gt Not really</td></tr>
+            <tr><td>[22:46] &lt ms-&gt It's more like occam really</td></tr>
+            <tr><td>[22:47] &lt Davbo&gt They say the syntax is based in Pascal anyways</td></tr>
+            <tr><td>[22:47] &lt Davbo&gt http://www2.dc.ufscar.br/~jose/green/syntax.htm</td></tr>
+            <tr><td>[22:48] &lt ms-&gt Um, that's not it</td></tr>
+            <tr><td>[22:49] &lt Davbo&gt oh lol!</td></tr>
+            <tr><td>[22:50] &lt Davbo&gt there's another programming language called "Green"?</td></tr>
+            <tr><td>[22:50] &lt Davbo&gt http://en.wikipedia.org/wiki/Green_%28programming_language%29</td></tr>
+            <tr><td>[22:50] &lt ms-&gt Skip forward to slide 25 of this: http://kamaelia.sourceforge.net/SummerOfCode2008</td></tr>
+            <tr><td>[22:50] &lt ms-&gt That's visual green</td></tr>
+            <tr><td>[22:50] &lt ms-&gt 26 has another example of visual green</td></tr>
+            <tr><td>[22:50] &lt ms-&gt 31 has the textual version</td></tr>
+            <tr><td>[22:50] &lt ms-&gt as does slide 32</td></tr>
+            <tr><td>[22:51] &lt Davbo&gt ah</td></tr>
+            <tr><td>[22:51] &lt Davbo&gt I see</td></tr>
+            <tr><td>[22:54] &lt Davbo&gt Well that other Green was like someone had shoved Pascal into Java</td></tr>
+            <tr><td>[22:56] &lt ms-&gt http://thwackety.com/donal-green.ps</td></tr>
+            <tr><td>[22:58] &lt Davbo&gt thanks ms-</td></tr>
+            <tr><td>[23:04] &lt Davbo&gt ms-: Should I grab Matt sometime to arrange whens best for the 1hr a week, or shall I sort that out with you?</td></tr>
+            <tr><td>[23:04] &lt Davbo&gt the mentoring thingy</td></tr>
+            <tr><td>[23:05] &lt Davbo&gt or even a time that's good for all of us</td></tr>
+            <tr><td>[23:06] &lt ms-&gt Let's talk about that tomorrow. (it's really late)</td></tr>
+            <tr><td>[23:06] &lt Davbo&gt Good idea</td></tr>
+            <tr><td>[23:16] &lt Davbo&gt &lt thinking out loud&gt</td></tr>
+            <tr><td>[23:16] &lt j_baker&gt ms- do you necessarily have to be root to install kamaelia?</td></tr>
+            <tr><td>[23:16] &lt Davbo&gt I need to keep a track ID for every song in this Music Organiser thing i'm programming</td></tr>
+            <tr><td>[23:17] &lt Davbo&gt Think so j_baker</td></tr>
+            <tr><td>[23:17] &lt j_baker&gt Or was that just to get the libraries installed in a system location&gt</td></tr>
+            <tr><td>[23:17] &lt Davbo&gt You're installing and adding to the Python config</td></tr>
+            <tr><td>[23:19] &lt j_baker&gt Well, you can add to the python config just for one user. I may have to try it out.</td></tr>
+            <tr><td>[23:19] &lt j_baker&gt 'Twould be awesome to get kamaelia running on my webhost.</td></tr>
+            <tr><td>[23:20] &lt Davbo&gt it uses http://docs.python.org/dist/pure-pkg.html</td></tr>
+            <tr><td>[23:20] &lt Davbo&gt You could always have a look and see what that does, then do it yourself</td></tr>
+            <tr><td>[23:22] &lt Davbo&gt You could also test it where you have a copy of "Kamaelia" and "Axon" in the same directory as your script (or is it the directory above that)</td></tr>
+            <tr><td>[23:22] &lt Davbo&gt and it can rummage through the packages that way</td></tr>
+            <tr><td>[23:22] &lt Davbo&gt perhaps</td></tr>
+            <tr><td>[23:22] *** Davbo isn't too sure and should shut up</td></tr>
+            <tr><td>[23:22] &lt j_baker&gt Heh... you guys are about to get the "senior PC"</td></tr>
+            <tr><td>[23:23] &lt j_baker&gt http://arstechnica.com/news.ars/post/20080430-your-grandmas-computer-microsoft-seniorpc-en-route-to-uk.html</td></tr>
+            <tr><td>[23:26] &lt j_baker&gt I'll try that out though, Davbo</td></tr>
+            <tr><td>[23:26] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[23:26] &lt j_baker&gt Grrr....</td></tr>
+            <tr><td>[23:43] &lt Davbo&gt night all</td></tr>

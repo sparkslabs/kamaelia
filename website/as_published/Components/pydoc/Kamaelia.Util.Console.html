@@ -1,0 +1,272 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Util.Console </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Util.Console</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Util.html">Util</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Util.Console.html">Console</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Util.Console.ConsoleEchoer.html">ConsoleEchoer</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Util.Console.ConsoleReader.html">ConsoleReader</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#149">Console Input/Output</a><ul>
+<li><a class="reference" href="#150">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#151">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="149">Console Input/Output</h1>
+<p>The ConsoleEchoer component outputs whatever it receives to the console.</p>
+<p>The ConsoleReader component outputs whatever is typed at the console, a line at
+a time.</p>
+<div class="section">
+<h2 id="150"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Whatever it typed is echoed back, a line at a time:</p>
+<pre class="literal-block">
+Pipeline( ConsoleReader(),
+          ConsoleEchoer()
+        ).run()
+</pre>
+</div>
+<div class="section">
+<h2 id="151"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>ConsoleReader is a threaded component. It provides a 'prompt' at which you can
+type. Your input is taken, a line a a time, and output to its &quot;outbox&quot; outbox,
+with the specified end-of-line character(s) suffixed onto it.</p>
+<p>The ConsoleReader component ignores any input on its &quot;inbox&quot; and &quot;control&quot;
+inboxes. It does not output anything from its &quot;signal&quot; outbox.</p>
+<p>The ConsoleReader component does not terminate.</p>
+<p>The ConsoleEchoer component receives data on its &quot;inbox&quot; inbox. Anything it
+receives this way is displayed on standard output. All items are passed through
+the str() builtin function to convert them to strings suitable for display.</p>
+<p>However, if the 'use_repr' argument is set to True during initialization, then
+repr() will be used instead of str(). Similarly if a &quot;tag&quot; is provided it's
+prepended before the data.</p>
+<p>If the 'forwarder' argument is set to True during initialisation, then whatever
+is received is not only displayed, but also set on to the &quot;outbox&quot; outbox
+(unchanged).</p>
+<p>If a producerFinished or shutdownMicroprocess message is received on the
+ConsoleEchoer component's &quot;control&quot; inbox, then it is sent on to the &quot;signal&quot;
+outbox and the component then terminates.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Util.html">Util</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Util.Console.html">Console</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Util.Console.ConsoleEchoer.html">ConsoleEchoer</a></h1>
+<div class="section">
+<h2 id="symbol-ConsoleEchoer">class ConsoleEchoer(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>ConsoleEchoer([forwarder][,use_repr][,tag]) -&gt; new ConsoleEchoer component.</p>
+<p>A component that outputs anything it is sent to standard output (the
+console).</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>forwarder  -- incoming data is also forwarded to &quot;outbox&quot; outbox if True (default=False)</li>
+<li>use_repr   -- use repr() instead of str() if True (default=False)</li>
+<li>tag -- Pre-pend this text tag before the data to emit</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-ConsoleEchoer.Inboxes" name="symbol-ConsoleEchoer.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : Stuff that will be echoed to standard output</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-ConsoleEchoer.Outboxes" name="symbol-ConsoleEchoer.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : Stuff forwarded from 'inbox' inbox (if enabled)</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-ConsoleEchoer.__init__" name="symbol-ConsoleEchoer.__init__">__init__(self[, forwarder][, use_repr][, tag])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ConsoleEchoer.main" name="symbol-ConsoleEchoer.main">main(self)</a></h4>
+<p>Main loop body.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ConsoleEchoer.shutdown" name="symbol-ConsoleEchoer.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Util.html">Util</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Util.Console.html">Console</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Util.Console.ConsoleReader.html">ConsoleReader</a></h1>
+<div class="section">
+<h2 id="symbol-ConsoleReader">class ConsoleReader(<a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html">Axon.ThreadedComponent.threadedcomponent</a>)</h2>
+<p>ConsoleReader([prompt][,eol]) -&gt; new ConsoleReader component.</p>
+<p>Component that provides a console for typing in stuff. Each line is output
+from the &quot;outbox&quot; outbox one at a time.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>prompt  -- Command prompt (default=&quot;&gt;&gt;&gt; &quot;)</li>
+<li>eol     -- End of line character(s) to put on end of every line outputted (default is newline)</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-ConsoleReader.Inboxes" name="symbol-ConsoleReader.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : NOT USED</li>
+<li><strong>inbox</strong> : NOT USED</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-ConsoleReader.Outboxes" name="symbol-ConsoleReader.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : Lines that were typed at the console</li>
+<li><strong>signal</strong> : NOT USED</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-ConsoleReader.__init__" name="symbol-ConsoleReader.__init__">__init__(self[, prompt][, eol])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ConsoleReader.main" name="symbol-ConsoleReader.main">main(self)</a></h4>
+<p>Main thread loop.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ConsoleReader.shutdown" name="symbol-ConsoleReader.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

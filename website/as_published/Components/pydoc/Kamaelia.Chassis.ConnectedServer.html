@@ -1,0 +1,456 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Chassis.ConnectedServer </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Chassis.ConnectedServer</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.html">Chassis</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html">ConnectedServer</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.ServerCore.html">ServerCore</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.SimpleServer.html">SimpleServer</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#268">Connected Servers</a><ul>
+<li><a class="reference" href="#269">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#270">Why is this useful?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#271">Writing a protocol handler</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#272">How does it work?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#273">History</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#274">To do</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="268">Connected Servers</h1>
+<p>These 'chassis' style components are used to implementing connected servers.
+The most common example of this is a server which runs on top of the TCP.
+Examples include: a web server, email server, imap server, game protocol
+server, etc.</p>
+<p>At present, there are two variants of this: <em>ServerCore</em> and <em>SimpleServer</em>
+(You are generally recommended to use ServerCore)</p>
+<p>Both of these revolve around building TCP based servers. They handle the
+mechanics of creating the listening component, and when new connections come
+in, creating instances of your protocol handler components to handle the
+connections.</p>
+<p>As a result, the primary arguments are the port to listen on and a function
+call or class name that when called returns a component for handling this
+connection.</p>
+<p>Your protocol handler then receives data from a specific client on its inbox
+&quot;inbox&quot; and sends data to that same client on its outbox &quot;outbox&quot;.</p>
+<p>ServerCore passes additional information about the connection to the
+function that creates the protocol handler. You are not required to do
+anything with that information if you don't need to.</p>
+<p>Aside from that, ServerCore &amp; SimpleServer are used in the same way.
+(ServerCore is just an extension, and rationalisation of the older simple
+server code).</p>
+<p>There is more information here: <a class="reference" href="http://www.kamaelia.org/Cookbook/TCPSystems">http://www.kamaelia.org/Cookbook/TCPSystems</a></p>
+<div class="section">
+<h2 id="269"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>A server using a simple echo protocol, that just echoes back anything sent by
+the client. Becase the protocol has no need to know any details of the
+connection, the SimpleServer component is used:</p>
+<pre class="literal-block">
+import <a class="reference" href="/Docs/Axon/Axon.html">Axon</a>
+from <a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html">Kamaelia.Chassis.ConnectedServer</a> import SimpleServer
+
+PORTNUMBER = 12345
+class EchoProtocol(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    def main(self):
+        while not self.shutdown():
+            yield 1
+            if self.dataReady(&quot;inbox&quot;):
+                data = self.recv(&quot;inbox&quot;)
+                self.send(data, &quot;outbox&quot;)
+
+    def shutdown(self):
+        if self.dataReady(&quot;control&quot;):
+            msg = self.recv(&quot;control&quot;)
+            return isinstance(msg, <a class="reference" href="/Docs/Axon/Axon.Ipc.producerFinished.html">Axon.Ipc.producerFinished</a>)
+
+simpleServer = SimpleServer( protocol = EchoProtocol, port = PORTNUMBER )
+simpleServer.run()
+</pre>
+<p>Try connecting to this server using the telnet command, and it will echo back
+to you every character you type.</p>
+<p>A more complex server might need to inform the protocol of the IP address and
+port of the client that connects, or the ip address and port at this (the
+server end) to which the client has connected. For this, ServerCore is used:</p>
+<pre class="literal-block">
+import <a class="reference" href="/Docs/Axon/Axon.html">Axon</a>
+from <a class="reference" href="/Docs/Axon/Axon.Ipc.html">Axon.Ipc</a> import shutdownMicroprocess
+from <a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html">Kamaelia.Chassis.ConnectedServer</a> import ServerCore
+
+PORTNUMBER = 12345
+class CleverEchoProtocol(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    def main(self):
+        welcomeMessage =                 &quot;Welcome! You have connected to %s on port %d from %s on port %d&quot; %                 (self.localip, self.localport, self.peer, self.peerport)
+
+        self.send(welcomeMessage, &quot;outbox&quot;)
+        while not self.shutdown():
+            yield 1
+            if self.dataReady(&quot;inbox&quot;):
+                data = self.recv(&quot;inbox&quot;)
+                self.send(data, &quot;outbox&quot;)
+
+    def shutdown(self):
+        if self.dataReady(&quot;control&quot;):
+            msg = self.recv(&quot;control&quot;)
+            return isinstance(msg, <a class="reference" href="/Docs/Axon/Axon.Ipc.producerFinished.html">Axon.Ipc.producerFinished</a>)
+
+myServer = ServerCore( protocol = CleverEchoProtocol, port = PORTNUMBER )
+myServer.run()
+</pre>
+<p>Example output when telnetting to this more complex server, assuming both
+server and telnet session are running on the same host, and the server is
+listening to port number 8081:</p>
+<pre class="literal-block">
+$ telnet localhost 8081
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Welcome! You have connected to 127.0.0.1 on port 8081 from 127.0.0.1 on port 47316
+</pre>
+</div>
+<div class="section">
+<h2 id="270"><a id="why-is-this-useful" name="why-is-this-useful">Why is this useful?</a></h2>
+<p>Provides a framework for creating generic protocol handlers to deal with
+information coming in on a single port (and a single port only). This however
+covers a large array of server types.</p>
+<p>A protocol handler is simply a component that can receive and send data (as
+byte strings) in a particular format and with a particular behaviour - ie.
+conforming to a particular protocol.</p>
+<p>Provide this chassis with a factory function to create a component to
+handle the protocol. Whenever a client connects a handler component will then be
+created to handle communications with that client.</p>
+<p>Data received from the client will be sent to the protocol handler component's
+&quot;inbox&quot; inbox. To send data back to the client, the protocol handler component
+should send it out of its &quot;outbox&quot; outbox.</p>
+<p>For the SingleServer component, the factory function takes no arguments. It
+should simply return the component that will be used to handle the protocol,
+for example:</p>
+<pre class="literal-block">
+def makeNewProtocolHandler():
+    return MyProtocolComponent()
+</pre>
+<p>For the ServerCore component, the factory function must accept the following
+arguments (with these names):</p>
+<ul class="simple">
+<li>peer  -- the address of the remote endpoint (the client's address)</li>
+<li>peerport  -- the port number of the remote endpoint
+(the port number from which the client connection originated)</li>
+<li>localip  -- the address of the local endpoint (this end of the connection)</li>
+<li>localport  -- the port number of the local endpoint (this end of the connection)</li>
+</ul>
+<p>For example:</p>
+<pre class="literal-block">
+def makeNewProtocolHandler(peer, peerport, localip, localport):
+    print &quot;Debugging: client at address &quot;+peer+&quot; on port &quot;+str(peerport)
+    print &quot; ... has connected to address &quot;+localip+&quot; on port &quot;+str(localport)
+    return MyProtocolComponent()
+</pre>
+<p>Do not activate the component. SingleServer or ServerCore will do this once
+the component is wired up.</p>
+</div>
+<div class="section">
+<h2 id="271"><a id="writing-a-protocol-handler" name="writing-a-protocol-handler">Writing a protocol handler</a></h2>
+<p>A protocol handler component should use its standard inboxes (&quot;inbox&quot; and
+&quot;control&quot;) and outboxes (&quot;outbox&quot; and &quot;signal&quot;) to communicate with client it
+is connected to.</p>
+<ul class="simple">
+<li>Bytes received from the client will be sent to the &quot;inbox&quot; inbox as a string.</li>
+<li>Send a string out of the &quot;outbox&quot; outbox to send bytes back to the client.</li>
+</ul>
+<p>If the connection is closed, a Kamaelia.IPC.socketShutdown message will arrive
+at the protocol handler's &quot;control&quot; inbox. If this happens then the connection
+should be assumed to have already closed. Any more messages sent will not be
+sent to the client. The protocol handler should react by terminating as soon as
+possible.</p>
+<p>To cause the connection to close, send a producerFinished or shutdownMicroprocess
+message out of the protocol handler's &quot;signal&quot; outbox. As soon as this has been
+done, it can be assumed that the connection will be closed as soon as is
+practical. The protocol handler will probably also want to terminate at this
+point.</p>
+</div>
+<div class="section">
+<h2 id="272"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>SimpleServer is based on ServerCore. It simply contains a wrapper around the
+protocol handler function that throws away the connection information instead
+of passing it in as arguments.</p>
+<p>At initialisation the component registers a TCPServer component to listen for
+new connections on the specified port.</p>
+<p>You supply a factory function that takes no arguments and returns a new
+protocol handler component.</p>
+<p>When it receives a 'newCSA' message from the TCPServer (via the &quot;_socketactivity&quot;
+inbox), the factory function is called to create a new protocol handler. The
+protocol handler's &quot;inbox&quot; inbox and &quot;outbox&quot; outbox are wired to the
+ConnectedSocketAdapter (CSA) component handling that socket connection, so it can
+receive and send data.</p>
+<p>If a 'shutdownCSA' message is received (via &quot;_socketactivity&quot;) then a
+Kamaelia.IPC.socketShutdown message is sent to the protocol handler's
+&quot;control&quot; inbox, and both it and the CSA are unwired.</p>
+<p>This component does not terminate. It ignores any messages sent to its &quot;control&quot;
+inbox.</p>
+<p>In practice, this component provides no external connectors for your use.</p>
+</div>
+<div class="section">
+<h2 id="273"><a id="history" name="history">History</a></h2>
+<p>This code is based on the code used for testing the Internet Connection
+abstraction layer.</p>
+</div>
+<div class="section">
+<h2 id="274"><a id="to-do" name="to-do">To do</a></h2>
+<p>This component currently lacks an inbox and corresponding code to allow it to
+be shut down (in a controlled fashion). Needs a &quot;control&quot; inbox that responds to
+shutdownMicroprocess messages.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.html">Chassis</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html">ConnectedServer</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.ServerCore.html">ServerCore</a></h1>
+<div class="section">
+<h2 id="symbol-ServerCore">class ServerCore(<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</a>)</h2>
+<p>ServerCore(protocol[,port]) -&gt; new Simple protocol server component</p>
+<p>A simple single port, multiple connection server, that instantiates a
+protocol handler component to handle each connection. The function that
+creates the protocol must access arguments providing information about the
+connection.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>protocol  -- function that returns a protocol handler component</li>
+<li>port      -- Port number to listen on for connections (default=1601)</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-ServerCore.Inboxes" name="symbol-ServerCore.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : We expect to get serverShutdown messages here</li>
+<li><strong>_socketactivity</strong> : Messages about new and closing connections here</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-ServerCore.Outboxes" name="symbol-ServerCore.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>_serversignal</strong> : we send shutdown messages to the TCP server here</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-ServerCore.__init__" name="symbol-ServerCore.__init__">__init__(self, **argd)</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ServerCore.handleClosedCSA" name="symbol-ServerCore.handleClosedCSA">handleClosedCSA(self, shutdownCSAMessage)</a></h4>
+<p>handleClosedCSA(shutdownCSAMessage) -&gt; None</p>
+<p>Terminates and unwires the protocol handler for the closing socket.</p>
+<p>Keyword arguments:
+shutdownCSAMessage -- shutdownCSAMessage.object is the ConnectedSocketAdapter for socket that is closing.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ServerCore.handleNewConnection" name="symbol-ServerCore.handleNewConnection">handleNewConnection(self, newCSAMessage)</a></h4>
+<p>handleNewConnection(newCSAMessage) -&gt; <a class="reference" href="/Docs/Axon/Axon.Ipc.newComponent.html">Axon.Ipc.newComponent</a>(protocol handler)</p>
+<p>Creates and returns a protocol handler for new connection.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>newCSAMessage  -- newCSAMessage.object is the ConnectedSocketAdapter component for the connection</li>
+</ul>
+</div>
+<div class="section">
+<h4><a id="symbol-ServerCore.initialiseServerSocket" name="symbol-ServerCore.initialiseServerSocket">initialiseServerSocket(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ServerCore.main" name="symbol-ServerCore.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ServerCore.mkProtocolHandler" name="symbol-ServerCore.mkProtocolHandler">mkProtocolHandler(self, **sock_info)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ServerCore.stop" name="symbol-ServerCore.stop">stop(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.html">Chassis</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html">ConnectedServer</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.SimpleServer.html">SimpleServer</a></h1>
+<div class="section">
+<h2 id="symbol-SimpleServer">class SimpleServer(ServerCore)</h2>
+<p>SimpleServer(protocol[,port]) -&gt; new Simple protocol server component</p>
+<p>A simple single port, multiple connection server, that instantiates a
+protocol handler component to handle each connection.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>protocol  -- function that returns a protocol handler component</li>
+<li>port      -- Port number to listen on for connections (default=1601)</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-SimpleServer.Inboxes" name="symbol-SimpleServer.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-SimpleServer.Outboxes" name="symbol-SimpleServer.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-SimpleServer.__init__" name="symbol-SimpleServer.__init__">__init__(self, **argd)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleServer.mkProtocolHandler" name="symbol-SimpleServer.mkProtocolHandler">mkProtocolHandler(self, **sock_info)</a></h4>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.MoreComplexServer.html">Kamaelia.Chassis.ConnectedServer.MoreComplexServer</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html#symbol-MoreComplexServer.handleNewConnection">handleNewConnection</a>(self, newCSAMessage)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html#symbol-MoreComplexServer.stop">stop</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html#symbol-MoreComplexServer.initialiseServerSocket">initialiseServerSocket</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html#symbol-MoreComplexServer.handleClosedCSA">handleClosedCSA</a>(self, shutdownCSAMessage)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html#symbol-MoreComplexServer.main">main</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

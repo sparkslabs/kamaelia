@@ -1,0 +1,754 @@
+<html><body><table>
+            <tr><td>[06:12] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[06:20] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:21] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[06:22] &lt j_baker&gt hello</td></tr>
+            <tr><td>[06:51] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:57] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[06:57] Reply: does the macarena</td></tr>
+            <tr><td>[06:57] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:58] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[06:58] &lt vmlemon_&gt Hi Lawouach</td></tr>
+            <tr><td>[06:59] &lt Lawouach_&gt hi vmlemon_</td></tr>
+            <tr><td>[07:46] &lt Lawouach_&gt http://oubiwann.blogspot.com/2008/05/required-reading-ultra-large-systems.html &lt -- beyond the divmod propaganda this is an interesting resource</td></tr>
+            <tr><td>[07:48] &lt MS-&gt Appears to be content free IMO. I presume you mean the links?</td></tr>
+            <tr><td>[07:49] &lt MS-&gt After all, it doesn't even define what they mean by ultra large systems, and just leaves that to the reader to infer</td></tr>
+            <tr><td>[07:51] &lt Lawouach_&gt Yes.</td></tr>
+            <tr><td>[07:52] &lt Lawouach_&gt The blog post is pretty empty but the links are interesting</td></tr>
+            <tr><td>[07:53] &lt MS-&gt This is interesting: http://blog.isotoma.com/2008/05/some_thoughts_on_concurrency.html</td></tr>
+            <tr><td>[07:53] &lt MS-&gt secondary knock off link</td></tr>
+            <tr><td>[07:53] &lt MS-&gt However doesn't tell me anything I don't already know</td></tr>
+            <tr><td>[07:53] &lt MS-&gt However it's conclusion is</td></tr>
+            <tr><td>[07:53] &lt MS-&gt "use erlang"</td></tr>
+            <tr><td>[07:53] &lt Lawouach_&gt well it's the koolaid these days</td></tr>
+            <tr><td>[07:53] &lt MS-&gt Which is bizarre, since it assumes everyone *can* use erlang</td></tr>
+            <tr><td>[07:54] &lt Lawouach_&gt I think what it means is apply Erlang's principles of "let it fail".</td></tr>
+            <tr><td>[07:54] &lt Lawouach_&gt Well that's the way I approach those "use erlang" posts</td></tr>
+            <tr><td>[07:55] &lt Lawouach_&gt Erlang as a language is not developer friendly and oddly enough nobody takes that into account</td></tr>
+            <tr><td>[07:55] &lt Lawouach_&gt But I enjoy many ideas behind Erlang</td></tr>
+            <tr><td>[07:56] &lt MS-&gt Indeed - the non-developer friend thing is the bit that concerns me.</td></tr>
+            <tr><td>[07:56] &lt MS-&gt That said, kamaelia's had a convergent evolution, but from the imperative rather than functional side of things</td></tr>
+            <tr><td>[07:57] &lt MS-&gt If there's something missing that would make sense, it should get cherry picked at some point.</td></tr>
+            <tr><td>[07:57] &lt MS-&gt (much like the STM code)</td></tr>
+            <tr><td>[07:57] &lt Lawouach_&gt Indeed</td></tr>
+            <tr><td>[07:58] &lt Lawouach_&gt I think that's why I like language independant message technology like XMPP or AMQP</td></tr>
+            <tr><td>[07:58] &lt MS-&gt Yep - makes a lot of sense</td></tr>
+            <tr><td>[07:58] &lt MS-&gt The odd thing is the number of people who haven't made the cross-link to mashups</td></tr>
+            <tr><td>[07:58] &lt Lawouach_&gt The debate around Erlang is so noisy these days that it's quite hard to truly understand its merits and drawbacks.</td></tr>
+            <tr><td>[07:59] &lt MS-&gt My guess is that the best way to view Erlang is the same way to view Smalltalk of the late 70s</td></tr>
+            <tr><td>[07:59] &lt MS-&gt Smalltalk wasn't the first OO language after all (Simula 67 had that distinction 10 years before)</td></tr>
+            <tr><td>[08:00] &lt MS-&gt and Erlang isn't the first concurrent language (Occam probably holds that honour 20 years ago)</td></tr>
+            <tr><td>[08:00] &lt Lawouach_&gt Well that's the reason I agree with you when you say one should use Erlang only when it fits the job description. Mashing up languages is much harder than technologies like XMPP</td></tr>
+            <tr><td>[08:00] &lt MS-&gt But they're popularising an approach</td></tr>
+            <tr><td>[08:00] &lt Lawouach_&gt True</td></tr>
+            <tr><td>[08:01] &lt MS-&gt The problem for me is that language choice has to take context into account, and part of that is "who are we going to get maintaining the code".</td></tr>
+            <tr><td>[08:01] &lt MS-&gt And it's a very big part of it</td></tr>
+            <tr><td>[08:02] &lt MS-&gt The amusing part of this, is alot of the descriptions of functionality either match what kamaelia does today, or things I would like it to do, and would be a natural fit for it to do</td></tr>
+            <tr><td>[08:04] &lt MS-&gt anyhow, I should be travelling to the office rather than chatting/reading. biab :)</td></tr>
+            <tr><td>[08:04] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[08:05] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:09] *** zaheerm has joined #kamaelia</td></tr>
+            <tr><td>[08:10] &lt mhrd&gt auto doc generation has identified a missing colon (syntax error) in Parsing: Kamaelia.Internet.UDP line 243 ... I'll fix trunk directly</td></tr>
+            <tr><td>[08:22] &lt Lawouach_&gt so mhrd, that is your super power!</td></tr>
+            <tr><td>[08:22] &lt Lawouach_&gt man I'm jealous.</td></tr>
+            <tr><td>[08:22] &lt mhrd&gt ?</td></tr>
+            <tr><td>[08:22] *** mhrd confused</td></tr>
+            <tr><td>[08:23] &lt Lawouach_&gt The man who can fix trunk repositories directly :)</td></tr>
+            <tr><td>[08:23] &lt mhrd&gt aaah. well, not quite directly. you know what I mean :)</td></tr>
+            <tr><td>[08:23] &lt Lawouach_&gt heehee :)</td></tr>
+            <tr><td>[08:23] &lt Lawouach_&gt Don't be shy</td></tr>
+            <tr><td>[08:24] *** mhrd still waiting for "svn update" to complete following last night's quite significant rejig of /branches</td></tr>
+            <tr><td>[08:24] &lt Lawouach_&gt And considering how fast sourceforge... you might wait quite a while</td></tr>
+            <tr><td>[08:25] &lt mhrd&gt *sometimes* its due to rubbishy proxies at our end</td></tr>
+            <tr><td>[08:25] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[08:25] &lt Lawouach_&gt that too. I know the feeling</td></tr>
+            <tr><td>[08:29] &lt mhrd&gt curious, it didn't fail in UDP, which did it fail in then</td></tr>
+            <tr><td>[08:30] &lt mhrd&gt ah, tcpclient</td></tr>
+            <tr><td>[08:35] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:48] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:51] &lt Chong-&gt MS-: just leave a message, I maybe a little late for our meeting, but I should be able to come around 12:30.</td></tr>
+            <tr><td>[08:52] &lt Chong-&gt In addition, I have checked in the newer codes including relation file parser and pink/ blue rendering.</td></tr>
+            <tr><td>[08:53] &lt Chong-&gt Please check them when you get time. See you later.</td></tr>
+            <tr><td>[08:53] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[09:25] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:27] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:39] &lt Lawouach_&gt http://blogs.teamb.com/craigstuntz/2008/05/19/37819</td></tr>
+            <tr><td>[09:39] &lt Lawouach_&gt &gt&gt&gt Like Armstrong, I cannot think of another system that works quite this way.</td></tr>
+            <tr><td>[09:39] &lt Lawouach_&gt I can think of Kamaelia :)</td></tr>
+            <tr><td>[09:40] &lt vmlemon_&gt The sequencer thing?</td></tr>
+            <tr><td>[09:42] &lt Lawouach_&gt Not really</td></tr>
+            <tr><td>[09:43] &lt Lawouach_&gt I should've been clearer.</td></tr>
+            <tr><td>[09:43] &lt Lawouach_&gt I can think of Axon.</td></tr>
+            <tr><td>[09:43] &lt Lawouach_&gt Axon linking mechanisms could reproduce what he describes in that article.</td></tr>
+            <tr><td>[09:57] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:00] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:00] &lt MS-&gt Morning</td></tr>
+            <tr><td>[10:00] &lt MS-&gt alarm here</td></tr>
+            <tr><td>[10:00] &lt MS-&gt arrgh</td></tr>
+            <tr><td>[10:01] &lt Davbo&gt Morning MS-</td></tr>
+            <tr><td>[10:05] &lt Davbo&gt off-topic but cool: http://bitnami.org/</td></tr>
+            <tr><td>[10:13] &lt Davbo&gt let me know when you're ready MS-</td></tr>
+            <tr><td>[10:22] *** MS- back</td></tr>
+            <tr><td>[10:22] &lt MS-&gt well that was exciting. Unfortunately we were let back in the building.</td></tr>
+            <tr><td>[10:22] &lt MS-&gt Hopefully they'll do it again in about 2-3 hours</td></tr>
+            <tr><td>[10:22] &lt Davbo&gt What happened?</td></tr>
+            <tr><td>[10:23] &lt MS-&gt Fire alarm went off, lots of people left building, stood around for a little while, came back, came back in</td></tr>
+            <tr><td>[10:23] &lt MS-&gt Dunno if a test or not</td></tr>
+            <tr><td>[10:23] &lt Davbo&gt lol, I would hope so. Otherwise you're in a burning building</td></tr>
+            <tr><td>[10:23] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[10:24] &lt MS-&gt Indeed :)</td></tr>
+            <tr><td>[10:25] &lt Davbo&gt You okay for me to ask a few questions?</td></tr>
+            <tr><td>[10:26] &lt MS-&gt indeed.</td></tr>
+            <tr><td>[10:26] &lt Davbo&gt I was looking at how you got the text displayer and text box talking</td></tr>
+            <tr><td>[10:27] &lt Davbo&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1205626569</td></tr>
+            <tr><td>[10:27] &lt Davbo&gt essentially that's piping output of text box into the displayer</td></tr>
+            <tr><td>[10:27] &lt Davbo&gt i think</td></tr>
+            <tr><td>[10:28] &lt Davbo&gt using this "pprocess.Exchange()"</td></tr>
+            <tr><td>[10:28] &lt MS-&gt Underlying it, yes</td></tr>
+            <tr><td>[10:28] &lt MS-&gt The syntactic sugar handles that for you.</td></tr>
+            <tr><td>[10:28] &lt MS-&gt Actually what happens under the hood is this</td></tr>
+            <tr><td>[10:28] &lt MS-&gt a pipe is created</td></tr>
+            <tr><td>[10:29] &lt MS-&gt the process then forks</td></tr>
+            <tr><td>[10:29] &lt MS-&gt the processes then exchange data across the pipe</td></tr>
+            <tr><td>[10:29] &lt Davbo&gt hmm right</td></tr>
+            <tr><td>[10:29] &lt MS-&gt The data is pickled before being sen</td></tr>
+            <tr><td>[10:29] &lt MS-&gt t</td></tr>
+            <tr><td>[10:29] &lt MS-&gt which means most objects, except generators can be sent across</td></tr>
+            <tr><td>[10:29] &lt Davbo&gt So I shouldn't need to handle interactions at pprocess.Exchange() ?</td></tr>
+            <tr><td>[10:29] &lt MS-&gt Correct</td></tr>
+            <tr><td>[10:29] &lt Davbo&gt oh right</td></tr>
+            <tr><td>[10:30] &lt MS-&gt The only two things you should need to worry about are using ProcessPipeline(...) and</td></tr>
+            <tr><td>[10:30] &lt MS-&gt ProcessGraphline(...)</td></tr>
+            <tr><td>[10:30] &lt Davbo&gt Oh I see!</td></tr>
+            <tr><td>[10:31] &lt MS-&gt the only caveat to remember is NOT to activate the components before putting them in the list of things</td></tr>
+            <tr><td>[10:31] &lt MS-&gt so no doing this</td></tr>
+            <tr><td>[10:31] &lt Davbo&gt So I can make a Graphline to handle it then put that into the ProcessPipeline?</td></tr>
+            <tr><td>[10:31] &lt MS-&gt X = MyComponent()</td></tr>
+            <tr><td>[10:31] &lt MS-&gt X.activate()</td></tr>
+            <tr><td>[10:31] &lt MS-&gt ProcessPipeline( ...,X,...)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt yes</td></tr>
+            <tr><td>[10:32] &lt mhrd&gt MS- : which is a caveat that would apply to ordinary Pipelines and Graphlines too anyway (it might still work, but certainly isn't guaranteed to)</td></tr>
+            <tr><td>[10:32] &lt MS-&gt mhrd: Yep</td></tr>
+            <tr><td>[10:32] &lt Davbo&gt Oh I see,</td></tr>
+            <tr><td>[10:32] &lt mhrd&gt ok, auto docs rebuild seems to have passed this time.</td></tr>
+            <tr><td>[10:33] &lt MS-&gt It's intended to be a drop in replacement for Pipeline & Graphline when you decide "hmm, those things could be on different CPUs"</td></tr>
+            <tr><td>[10:33] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[10:34] &lt MS-&gt FWIW, I was expecting it to be harder</td></tr>
+            <tr><td>[10:34] &lt Davbo&gt You think a Graphline is the best way to do it?</td></tr>
+            <tr><td>[10:34] &lt MS-&gt i think the best way to do things initially would be to change magnadoodle to output events about what its doing</td></tr>
+            <tr><td>[10:34] &lt MS-&gt and then also to change it such that it handles taking the same events as commands</td></tr>
+            <tr><td>[10:34] &lt MS-&gt and then piping the output of one to the other</td></tr>
+            <tr><td>[10:35] &lt MS-&gt (have it just one way initially)</td></tr>
+            <tr><td>[10:35] &lt Davbo&gt Ah I see hmm</td></tr>
+            <tr><td>[10:35] &lt MS-&gt (if you do it both ways initially you'll hit looping issues)</td></tr>
+            <tr><td>[10:35] &lt MS-&gt The idea of course here to be getting used to the idea of how to can intercept messages and pass them around</td></tr>
+            <tr><td>[10:35] &lt Davbo&gt Why did you expect it to be more difficult?</td></tr>
+            <tr><td>[10:36] &lt MS-&gt because the networking case is more difficult mainly</td></tr>
+            <tr><td>[10:36] &lt MS-&gt I hadn't expected the code to just work. The ProcessPipeline code does require changes though to the scheduler</td></tr>
+            <tr><td>[10:36] &lt MS-&gt for example</td></tr>
+            <tr><td>[10:36] &lt MS-&gt to enable zapping of the display</td></tr>
+            <tr><td>[10:37] &lt MS-&gt zapping of the list of processes after forking</td></tr>
+            <tr><td>[10:37] &lt MS-&gt rather</td></tr>
+            <tr><td>[10:37] &lt MS-&gt list of active components rather</td></tr>
+            <tr><td>[10:37] &lt mhrd&gt "zapping"?</td></tr>
+            <tr><td>[10:37] &lt MS-&gt mhrd: It's caused by the scenario</td></tr>
+            <tr><td>[10:38] &lt MS-&gt Pipeline( Textbox()...</td></tr>
+            <tr><td>[10:38] &lt MS-&gt  ProcessPipeline(</td></tr>
+            <tr><td>[10:38] &lt MS-&gt  Textdisplayer()</td></tr>
+            <tr><td>[10:38] &lt MS-&gt ).run()</td></tr>
+            <tr><td>[10:38] &lt MS-&gt If you don't have process pipeline zap the components in the scheduler</td></tr>
+            <tr><td>[10:38] &lt MS-&gt the second window ends up with both a textbox and textdisplay</td></tr>
+            <tr><td>[10:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:38] &lt MS-&gt the the first with just a textbox</td></tr>
+            <tr><td>[10:38] &lt MS-&gt rather than a textbox in one and textdisplayer in the other</td></tr>
+            <tr><td>[10:38] &lt Davbo&gt Hmm, not sure i follow</td></tr>
+            <tr><td>[10:39] &lt MS-&gt due to timing of .activate() calls</td></tr>
+            <tr><td>[10:39] &lt MS-&gt Davbo: You don't need to be able to at this stage :)</td></tr>
+            <tr><td>[10:39] &lt MS-&gt Just answering mhrd's question :)</td></tr>
+            <tr><td>[10:39] &lt Davbo&gt alright</td></tr>
+            <tr><td>[10:39] &lt MS-&gt The idea is that it should be transparent and "just work"</td></tr>
+            <tr><td>[10:39] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:39] &lt Davbo&gt phone brb</td></tr>
+            <tr><td>[10:41] *** MS- needs to nip of briefly too</td></tr>
+            <tr><td>[10:41] &lt MS-&gt back in a sec</td></tr>
+            <tr><td>[10:44] &lt Davbo&gt back</td></tr>
+            <tr><td>[10:45] &lt Davbo&gt I was thinking of using a Backlane actually MS-, I thought that would make it easier to add more windows / was more intuitive</td></tr>
+            <tr><td>[10:45] &lt Davbo&gt when changes happen on one window they publish to the backlane and others read from it</td></tr>
+            <tr><td>[10:47] &lt mhrd&gt that approach works well for the whiteboard ...</td></tr>
+            <tr><td>[10:48] &lt mhrd&gt which also does some additional stuff to make sure that anything that publishes and subscribes to the whiteboard doesn't receive stuff it sent out (the looping issue MS- mentions)</td></tr>
+            <tr><td>[10:48] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[10:48] &lt mhrd&gt MS- : re. zapping - aaah yes, kinda helps I suspect :-)</td></tr>
+            <tr><td>[10:50] &lt Davbo&gt door brb</td></tr>
+            <tr><td>[10:53] &lt MS-&gt (back)</td></tr>
+            <tr><td>[10:54] &lt MS-&gt Backplane is definitely a good idea, however initially I would do point to point.</td></tr>
+            <tr><td>[10:54] *** mhrd agrees - step by step</td></tr>
+            <tr><td>[10:55] &lt Davbo&gt what do you mean by getting it to output events MS-?</td></tr>
+            <tr><td>[10:55] &lt MS-&gt eg</td></tr>
+            <tr><td>[10:55] &lt MS-&gt  if event.button == 3:</td></tr>
+            <tr><td>[10:55] &lt MS-&gt  self.oldpos = None</td></tr>
+            <tr><td>[10:55] &lt MS-&gt  self.drawBG()</td></tr>
+            <tr><td>[10:55] &lt MS-&gt  self.blitToSurface()</td></tr>
+            <tr><td>[10:55] &lt MS-&gt would also be</td></tr>
+            <tr><td>[10:56] &lt MS-&gt  if event.button == 3:</td></tr>
+            <tr><td>[10:56] &lt MS-&gt  self.oldpos = None</td></tr>
+            <tr><td>[10:56] &lt MS-&gt  self.drawBG()</td></tr>
+            <tr><td>[10:56] &lt MS-&gt  self.blitToSurface()</td></tr>
+            <tr><td>[10:56] &lt MS-&gt  self.send("clear", "outbox")</td></tr>
+            <tr><td>[10:56] &lt Davbo&gt ah thought so</td></tr>
+            <tr><td>[10:56] &lt Davbo&gt so you kinda trick them to think a user event has happened on that MagnaDoodle</td></tr>
+            <tr><td>[10:56] &lt MS-&gt  pygame.draw.circle(self.display, (0,0,0), self.oldpos, rad, 0)</td></tr>
+            <tr><td>[10:56] &lt MS-&gt  self.send(["circle", (0,0,0), self.oldpos, rad] , "outbox")</td></tr>
+            <tr><td>[10:57] &lt MS-&gt You'll rapidly find that you need to standardise the messages you're sending</td></tr>
+            <tr><td>[10:57] &lt Davbo&gt uh-huh</td></tr>
+            <tr><td>[10:57] &lt MS-&gt cf "clear" vs ["circle", (0,0,0), self.oldpos, rad]</td></tr>
+            <tr><td>[10:57] &lt MS-&gt Essentially</td></tr>
+            <tr><td>[10:57] &lt MS-&gt What you should end up doing is decoupling handing user events from painting the surface</td></tr>
+            <tr><td>[10:58] &lt Davbo&gt Yeah I see what you mean</td></tr>
+            <tr><td>[10:58] &lt MS-&gt Which will lead you down the starting point of the structure of the whiteboard</td></tr>
+            <tr><td>[10:58] &lt Davbo&gt So a user event triggers something (say) onto a backlane then they read off that</td></tr>
+            <tr><td>[10:58] &lt MS-&gt Later, yes</td></tr>
+            <tr><td>[10:58] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[10:58] &lt MS-&gt It's very easy to jump ahead :)</td></tr>
+            <tr><td>[10:59] &lt Davbo&gt (it's more intuitive to think of the Backlane for me)</td></tr>
+            <tr><td>[10:59] &lt Davbo&gt Yeah I can do that I think :)</td></tr>
+            <tr><td>[10:59] &lt mhrd&gt Davbo: you can view these as natural steps to check bits work before plugging them into a backplane</td></tr>
+            <tr><td>[10:59] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[11:00] &lt Davbo&gt I can see how it could cause problems</td></tr>
+            <tr><td>[11:00] &lt mhrd&gt and a little functionality/change ... test ... commit ... repeat :)</td></tr>
+            <tr><td>[11:00] &lt MS-&gt it's important to remember that this is a learning exercise, rather than the main project. Learning how this can work :)</td></tr>
+            <tr><td>[11:00] &lt Davbo&gt indeed :)</td></tr>
+            <tr><td>[11:00] &lt MS-&gt Once you've got this though, it should be clear that you could replace the keypresses with messages from outside as well</td></tr>
+            <tr><td>[11:01] &lt MS-&gt (eg currently doing circle & line from "c", "l", to be extended to also include from buttons you could click on</td></tr>
+            <tr><td>[11:01] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[11:02] &lt MS-&gt Or if you're willing to find something to train and code up, even from a speech recognition system</td></tr>
+            <tr><td>[11:02] &lt Davbo&gt I can see how that would be pretty easy if you standardise what they actually write out</td></tr>
+            <tr><td>[11:02] &lt MS-&gt Though I would suggest that's out of scope</td></tr>
+            <tr><td>[11:02] &lt MS-&gt Yep</td></tr>
+            <tr><td>[11:03] &lt MS-&gt My concrete suggestion - given you do have a basic multiwindow thing going</td></tr>
+            <tr><td>[11:04] &lt MS-&gt would be to define 1 to be "window 1", the other to be "window 2"</td></tr>
+            <tr><td>[11:04] &lt MS-&gt and have the drawing events on window 1 copied to window 2 (as per this discussion) for window 2 to be able to copy.</td></tr>
+            <tr><td>[11:05] &lt MS-&gt That then gives you a basic control protocol.</td></tr>
+            <tr><td>[11:05] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[11:05] &lt mhrd&gt then you can start moving the two windows 'further apart' in some logical sense :)</td></tr>
+            <tr><td>[11:05] &lt Davbo&gt right</td></tr>
+            <tr><td>[11:05] &lt MS-&gt my suggestion isn't really quite that, it's more "OK, then add a third window"</td></tr>
+            <tr><td>[11:06] &lt MS-&gt which has tools on it - initially just 3 buttons</td></tr>
+            <tr><td>[11:06] &lt MS-&gt circle, line, clear</td></tr>
+            <tr><td>[11:06] &lt Davbo&gt uh-huh. I was going to try that too :-)</td></tr>
+            <tr><td>[11:06] &lt MS-&gt since you have that basic functionality, and that should then control window 1</td></tr>
+            <tr><td>[11:07] &lt MS-&gt which should of course also ripple over to window 2</td></tr>
+            <tr><td>[11:07] &lt MS-&gt in this scenario</td></tr>
+            <tr><td>[11:07] &lt MS-&gt The next step, which should be harder</td></tr>
+            <tr><td>[11:08] &lt MS-&gt is to figure out how to have the 3rd window - the control pallette - only control *one* of the windows</td></tr>
+            <tr><td>[11:08] &lt MS-&gt And to stop events from window 1 being passed to window 2</td></tr>
+            <tr><td>[11:08] &lt Davbo&gt Hmm right</td></tr>
+            <tr><td>[11:08] &lt MS-&gt At that point I'd add in changing colour</td></tr>
+            <tr><td>[11:09] &lt MS-&gt The reason of course is at that point you have a very basic paint program with 2 independent windows, but a single common control</td></tr>
+            <tr><td>[11:10] &lt Davbo&gt Yeah I can see some potential ways of doing that</td></tr>
+            <tr><td>[11:10] &lt Davbo&gt ï»¿Do you think it would be wise to start from scratch for my project or to start from this and extend it?</td></tr>
+            <tr><td>[11:11] &lt MS-&gt I would continue to extend the code you already have for these learning exercises, but the overall goal was to be able to extend/modify the whiteboard IIRC</td></tr>
+            <tr><td>[11:11] &lt MS-&gt So these things explore the problem space in a restricted/toy example first</td></tr>
+            <tr><td>[11:11] &lt MS-&gt before moving over to the bigger/full system.</td></tr>
+            <tr><td>[11:11] &lt MS-&gt That's my take anyway</td></tr>
+            <tr><td>[11:12] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[11:12] &lt Davbo&gt I think that's wise</td></tr>
+            <tr><td>[11:12] &lt Davbo&gt I can move more to Whiteboards approach to it also, ie. like Matt said with the Backlane</td></tr>
+            <tr><td>[11:12] &lt MS-&gt Defensive coding practices really. The key thing you get by doing this is something you can go back to and explore</td></tr>
+            <tr><td>[11:12] &lt MS-&gt yep</td></tr>
+            <tr><td>[11:14] &lt MS-&gt OK, summarising</td></tr>
+            <tr><td>[11:14] &lt MS-&gt Make window 2 slave events from window 1</td></tr>
+            <tr><td>[11:14] &lt MS-&gt Then add a third window to control window 1 - circle, line, clear</td></tr>
+            <tr><td>[11:15] &lt MS-&gt The break slaving of window 1 & 2, but keep events going from the third control window to window 1 & 2</td></tr>
+            <tr><td>[11:15] &lt MS-&gt Then change it such that events are only sent to one or the other</td></tr>
+            <tr><td>[11:15] &lt MS-&gt Then add in colour</td></tr>
+            <tr><td>[11:16] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[11:16] &lt MS-&gt (eg just one extra colour is fine - red & blue vs just black)</td></tr>
+            <tr><td>[11:16] &lt Davbo&gt Sounds good to me</td></tr>
+            <tr><td>[11:16] &lt MS-&gt beyond that, I would suggested re-enabling communication between 1 & 2 and make it bidirectional & such that you can toggle it on/off</td></tr>
+            <tr><td>[11:17] &lt Davbo&gt This alright to be what I'm working on while i have exams? - You happy with this progression?</td></tr>
+            <tr><td>[11:17] &lt MS-&gt So that "the blue one can draw on window 1 and see it appear (in blue) in window 2"</td></tr>
+            <tr><td>[11:17] &lt MS-&gt and vice versa</td></tr>
+            <tr><td>[11:17] &lt MS-&gt After that, the next logical step is 3 windows, since that then naturally screams "backplane"</td></tr>
+            <tr><td>[11:17] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:18] &lt Davbo&gt Yeah, I can see that :)</td></tr>
+            <tr><td>[11:18] &lt MS-&gt That's probably /more/ than enough for the week though</td></tr>
+            <tr><td>[11:18] &lt MS-&gt but definitely moves you down the route of understanding the issues the whiteboard deals with, and also the issues your project will need to deal with</td></tr>
+            <tr><td>[11:18] &lt Davbo&gt Good</td></tr>
+            <tr><td>[11:19] &lt MS-&gt When do you exams finish again?</td></tr>
+            <tr><td>[11:19] &lt MS-&gt next friday ?</td></tr>
+            <tr><td>[11:19] &lt MS-&gt Or week after?</td></tr>
+            <tr><td>[11:19] &lt Davbo&gt 6/6</td></tr>
+            <tr><td>[11:19] &lt MS-&gt Week after, OK</td></tr>
+            <tr><td>[11:19] &lt Davbo&gt Yeah week after</td></tr>
+            <tr><td>[11:19] &lt MS-&gt I'll bear that in mind</td></tr>
+            <tr><td>[11:20] &lt Davbo&gt I literally have nothing after that though</td></tr>
+            <tr><td>[11:20] &lt Davbo&gt So should be full speed ahead :)</td></tr>
+            <tr><td>[11:21] &lt MS-&gt Cool</td></tr>
+            <tr><td>[11:22] &lt MS-&gt I think the stuff we've just covered may take more than a week since you're getting up to speed with things. For me/matt it'd be less than a day I guess, since we're used to the codebase. However, if things are quicker, we can re-evaluate.</td></tr>
+            <tr><td>[11:23] &lt MS-&gt If they're longer, then I'm not too worried, but would like to think about tasks which make it easier to explore the whiteboard code</td></tr>
+            <tr><td>[11:23] *** zaheerm has joined #kamaelia</td></tr>
+            <tr><td>[11:23] &lt MS-&gt So that you're at least familiar with it so that you can hit the floor running with it</td></tr>
+            <tr><td>[11:24] &lt MS-&gt (thinking ahead)</td></tr>
+            <tr><td>[11:24] &lt Davbo&gt Alright, I think it might take longer than a week. Alot of Kamaelia is getting used to the tools which already exist and what's suitable to use where</td></tr>
+            <tr><td>[11:24] &lt MS-&gt Yep</td></tr>
+            <tr><td>[11:25] &lt MS-&gt I'm deliberately suggesting more than I would expect to fit in a week at this stage BTW</td></tr>
+            <tr><td>[11:25] &lt MS-&gt largely because it makes forward planning easier next time</td></tr>
+            <tr><td>[11:25] &lt MS-&gt Since your todo list on thursday will be clear, making review and planning next week simple :)</td></tr>
+            <tr><td>[11:26] &lt Davbo&gt nah it's fine. I think we've laid out a good plan, now i can see where we're going with this</td></tr>
+            <tr><td>[11:26] &lt MS-&gt me too</td></tr>
+            <tr><td>[11:26] &lt MS-&gt my aim would also be that either before or immediately after your exams are done is that you'll be directing these "next steps"/"plans"</td></tr>
+            <tr><td>[11:27] &lt MS-&gt But I do recognise at this stage you need gudiance due to not knowing what's inside things :)</td></tr>
+            <tr><td>[11:27] &lt MS-&gt OK, do you have any more questions for me?</td></tr>
+            <tr><td>[11:27] &lt Davbo&gt Humm nah I'm good now</td></tr>
+            <tr><td>[11:28] &lt MS-&gt Excellent :-)</td></tr>
+            <tr><td>[11:28] &lt Davbo&gt I'll go and post this Contributer Agreement</td></tr>
+            <tr><td>[11:28] &lt MS-&gt Fantastic :)</td></tr>
+            <tr><td>[11:28] &lt MS-&gt That's 2 I have now from this year</td></tr>
+            <tr><td>[11:28] &lt Davbo&gt Thanks MS- :-)</td></tr>
+            <tr><td>[11:28] &lt MS-&gt one from pablo (the one via BH did get here in the end) and one from chong</td></tr>
+            <tr><td>[11:28] &lt MS-&gt you're welcome :)</td></tr>
+            <tr><td>[11:30] *** MS- notes Chong must've forgotten about our meeting at 12 today</td></tr>
+            <tr><td>[11:34] &lt orphans&gt MS-, Chong-&gt MS-: just leave a message, I maybe a little late for our meeting, but I should be able to come around 12:30.</td></tr>
+            <tr><td>[11:34] &lt orphans&gt &lt Chong-&gt In addition, I have checked in the newer codes including relation file parser and pink/ blue rendering.</td></tr>
+            <tr><td>[11:34] &lt orphans&gt &lt Chong-&gt Please check them when you get time. See you later.</td></tr>
+            <tr><td>[11:34] &lt orphans&gt @9.30 ish</td></tr>
+            <tr><td>[11:34] &lt MS-&gt Ah, I missed that</td></tr>
+            <tr><td>[11:35] &lt MS-&gt orphans: Much appreciated :)</td></tr>
+            <tr><td>[11:35] &lt orphans&gt sorry, forgot to ping you it</td></tr>
+            <tr><td>[11:35] &lt orphans&gt np</td></tr>
+            <tr><td>[11:35] &lt MS-&gt should've checked log</td></tr>
+            <tr><td>[11:35] &lt MS-&gt OK, I *really* need to go get food since I have another meeting (not kamaelia) in 25 minutes</td></tr>
+            <tr><td>[11:36] &lt orphans&gt you want me to tell Chong that you won't be around?</td></tr>
+            <tr><td>[11:36] *** orphans is stuck here revising :)</td></tr>
+            <tr><td>[11:43] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[11:43] &lt Chong-&gt Hi MS-</td></tr>
+            <tr><td>[11:45] &lt orphans&gt Chong: [12:35] &lt MS-&gt OK, I *really* need to go get food since I have another meeting (not kamaelia) in 25 minutes</td></tr>
+            <tr><td>[11:46] *** mhrd wonders if we need to rull orphans functionality into kamaeliabot ;-)</td></tr>
+            <tr><td>[11:46] &lt mhrd&gt s/rull/roll/</td></tr>
+            <tr><td>[11:46] &lt Chong-&gt orphans: I see. Thank you very much for your remind orphans.</td></tr>
+            <tr><td>[11:46] &lt orphans&gt Chong-, np</td></tr>
+            <tr><td>[11:46] &lt Chong-&gt and thanks for reminding MS- of my message :-)</td></tr>
+            <tr><td>[11:47] &lt orphans&gt mhrd, but then what would I do to procrastinate?</td></tr>
+            <tr><td>[11:47] &lt Chong-&gt hehe</td></tr>
+            <tr><td>[11:49] &lt Davbo&gt back later</td></tr>
+            <tr><td>[11:50] &lt Chong-&gt cya, Davbo.</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt did I miss anything? :)</td></tr>
+            <tr><td>[12:28] &lt MS-&gt Yay, conf call over. I can come back to life :)</td></tr>
+            <tr><td>[12:28] &lt MS-&gt Nice and sunny though</td></tr>
+            <tr><td>[12:29] &lt Chong-&gt Hi MS-, sorry for being late</td></tr>
+            <tr><td>[12:30] &lt MS-&gt Chong-: np</td></tr>
+            <tr><td>[12:30] &lt Chong-&gt thanks :-)</td></tr>
+            <tr><td>[12:30] &lt Chong-&gt Have you got opportunity to check my code?</td></tr>
+            <tr><td>[12:30] &lt MS-&gt Just taking a look now</td></tr>
+            <tr><td>[12:31] &lt Chong-&gt cool</td></tr>
+            <tr><td>[12:31] *** MS- waits for an update to complete</td></tr>
+            <tr><td>[12:32] &lt MS-&gt OK, RelationTopologyViewer.py runs</td></tr>
+            <tr><td>[12:33] &lt Chong-&gt good</td></tr>
+            <tr><td>[12:33] &lt MS-&gt OK, your parser is a single shot component?</td></tr>
+            <tr><td>[12:35] &lt Chong-&gt I think no</td></tr>
+            <tr><td>[12:35] &lt MS-&gt  for node in nodes:</td></tr>
+            <tr><td>[12:35] &lt MS-&gt  self.send(node, "outbox")</td></tr>
+            <tr><td>[12:35] &lt MS-&gt  for link in links:</td></tr>
+            <tr><td>[12:35] &lt MS-&gt  self.send(link, "outbox")</td></tr>
+            <tr><td>[12:35] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[12:35] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[12:35] &lt MS-&gt  self.send(self.shutdown_mess,"signal")</td></tr>
+            <tr><td>[12:35] &lt MS-&gt Kinda implies it is</td></tr>
+            <tr><td>[12:35] &lt MS-&gt ie it couldn't be used interactively</td></tr>
+            <tr><td>[12:36] &lt Davbo&gt back - posted the Contributor Agreement MS-</td></tr>
+            <tr><td>[12:36] &lt MS-&gt (not an issue, more an observation)</td></tr>
+            <tr><td>[12:36] &lt MS-&gt Davbo: ta</td></tr>
+            <tr><td>[12:36] &lt MS-&gt OK,key thing is that works</td></tr>
+            <tr><td>[12:36] &lt Chong-&gt yes if you mean that.</td></tr>
+            <tr><td>[12:37] &lt Chong-&gt I copy it from your ERparsing :-)</td></tr>
+            <tr><td>[12:37] &lt MS-&gt ./RelationColorTopologyViewer.py Files/RelationGender.re works as well</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Chong-: Yes, i noticed the similarity</td></tr>
+            <tr><td>[12:38] &lt MS-&gt It's good to cite sources of data</td></tr>
+            <tr><td>[12:38] &lt MS-&gt and code</td></tr>
+            <tr><td>[12:38] &lt Chong-&gt I think I receive message one by one but send messages one shot.</td></tr>
+            <tr><td>[12:38] &lt Chong-&gt I will :-)</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Blue links and pink links?</td></tr>
+            <tr><td>[12:39] &lt MS-&gt What's the differentiation?</td></tr>
+            <tr><td>[12:40] &lt Chong-&gt For example, dad is blue node, the link to him is pink;</td></tr>
+            <tr><td>[12:40] &lt MS-&gt ./RelationColorTopologyViewer.py Files/RelationAttribute.re doesn't run yet. I'm guessing this is expected behaviour</td></tr>
+            <tr><td>[12:40] &lt Chong-&gt mum is pink node, the link to her is blue;</td></tr>
+            <tr><td>[12:40] &lt MS-&gt Do link colour is opposite to node colour</td></tr>
+            <tr><td>[12:40] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[12:41] &lt MS-&gt k</td></tr>
+            <tr><td>[12:41] &lt MS-&gt OK, what are your planned next steps?</td></tr>
+            <tr><td>[12:41] &lt Chong-&gt Any suggestions to improve?</td></tr>
+            <tr><td>[12:41] &lt MS-&gt i'd rather hear your next planned steps first :)</td></tr>
+            <tr><td>[12:42] &lt Chong-&gt np</td></tr>
+            <tr><td>[12:42] &lt Chong-&gt Next one should be able to use customable pictures</td></tr>
+            <tr><td>[12:42] &lt MS-&gt as per Files/RelationAttribute.re ?</td></tr>
+            <tr><td>[12:43] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[12:43] &lt Chong-&gt I think it probably needs to extend / modify TopologyViewer</td></tr>
+            <tr><td>[12:43] &lt Chong-&gt Add one data field, such as</td></tr>
+            <tr><td>[12:43] &lt MS-&gt If you think you need to do that, you'll have to make a branch for doing that</td></tr>
+            <tr><td>[12:43] &lt Chong-&gt ADD NODE ID POS PARTICLE DATA</td></tr>
+            <tr><td>[12:44] &lt Chong-&gt What do you think?</td></tr>
+            <tr><td>[12:44] &lt MS-&gt I think you probably ought to investigate whether you can work withing the current system first</td></tr>
+            <tr><td>[12:45] &lt Chong-&gt send the photo path or other information through DATA</td></tr>
+            <tr><td>[12:45] &lt MS-&gt I suspect you make be able to see a different way of deal with it</td></tr>
+            <tr><td>[12:45] &lt MS-&gt and then be able to decide if it make sense</td></tr>
+            <tr><td>[12:46] &lt MS-&gt After all, you may be able to do something interesting with particle type</td></tr>
+            <tr><td>[12:46] &lt Chong-&gt yes. it is hightly customale wtih particle type</td></tr>
+            <tr><td>[12:46] &lt MS-&gt After all, at present it does this:</td></tr>
+            <tr><td>[12:47] &lt MS-&gt  if self.particleTypes.has_key(msg[5]):</td></tr>
+            <tr><td>[12:47] &lt MS-&gt  ptype = self.particleTypes[msg[5]]</td></tr>
+            <tr><td>[12:47] &lt MS-&gt ...</td></tr>
+            <tr><td>[12:47] &lt MS-&gt That may be reasonable to deal with differently</td></tr>
+            <tr><td>[12:47] &lt MS-&gt After all if particle type could be defined as</td></tr>
+            <tr><td>[12:48] &lt Chong-&gt yes, I have understood how it works. but I cannot figure out one way to send the path of photos to particle</td></tr>
+            <tr><td>[12:48] &lt MS-&gt person(gender=female,picture=Files/Filename.png)</td></tr>
+            <tr><td>[12:48] &lt MS-&gt That would work OK</td></tr>
+            <tr><td>[12:48] &lt MS-&gt Since then yes, the topology visualiser code would need extending, but it would be a minor change</td></tr>
+            <tr><td>[12:49] &lt MS-&gt However, I suspect that that is suboptimal</td></tr>
+            <tr><td>[12:49] &lt MS-&gt since it causes problems for filenames with spaces in</td></tr>
+            <tr><td>[12:49] &lt Chong-&gt yes</td></tr>
+            <tr><td>[12:50] &lt MS-&gt I think my suggestion would be to try something that you can get to work, and then seek feedback as to whether it makes sense</td></tr>
+            <tr><td>[12:50] &lt MS-&gt (on the list)</td></tr>
+            <tr><td>[12:51] &lt MS-&gt But either way, yes, I think you'll need to modify the topology visualiser</td></tr>
+            <tr><td>[12:51] &lt Chong-&gt cool</td></tr>
+            <tr><td>[12:51] &lt MS-&gt I think my suggestion there though would be "add a new command"</td></tr>
+            <tr><td>[12:51] &lt MS-&gt rather than "change the existing one"</td></tr>
+            <tr><td>[12:51] &lt MS-&gt yes, base the new on on the old if you like, but make a change that leaves current behaviour intact.</td></tr>
+            <tr><td>[12:52] &lt Chong-&gt got it.</td></tr>
+            <tr><td>[12:52] &lt MS-&gt Since you'll be working on a branch, you won't be affecting anyone</td></tr>
+            <tr><td>[12:52] &lt MS-&gt I would suggest calling it private_CL_Scratch</td></tr>
+            <tr><td>[12:53] &lt MS-&gt since then when you're done, you can delete the branch if you like</td></tr>
+            <tr><td>[12:53] &lt MS-&gt and reinstate if necessary another time</td></tr>
+            <tr><td>[12:53] &lt Chong-&gt great.</td></tr>
+            <tr><td>[12:54] &lt Chong-&gt one question, just now, do you suggest to embed the informaiton into the NODEID?</td></tr>
+            <tr><td>[12:56] &lt MS-&gt I think, if you're creating your own branch, I think you should probably think about extending things as you indicate above</td></tr>
+            <tr><td>[12:56] &lt MS-&gt rather than (to put it badly) abusing existing functionality</td></tr>
+            <tr><td>[12:56] &lt MS-&gt After all, the nodeid is used when you want to add/delete things, make/break links</td></tr>
+            <tr><td>[12:56] &lt MS-&gt It may also be worth considering this:</td></tr>
+            <tr><td>[12:57] &lt MS-&gt if I already have a node, how do I update it?</td></tr>
+            <tr><td>[12:57] &lt MS-&gt eg to change it's label</td></tr>
+            <tr><td>[12:57] &lt MS-&gt Or in the case of an image, to change it's picture etc</td></tr>
+            <tr><td>[12:58] &lt MS-&gt or even to the extent of changing the particle type completely</td></tr>
+            <tr><td>[12:58] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[12:59] &lt MS-&gt That last one may actually have a real implication for some of the things you have planned</td></tr>
+            <tr><td>[12:59] &lt MS-&gt given the hierarchical stuff</td></tr>
+            <tr><td>[12:59] &lt MS-&gt Having the ability to support (even badly) changing the node type</td></tr>
+            <tr><td>[12:59] &lt MS-&gt would open up interesting options.</td></tr>
+            <tr><td>[13:00] &lt Chong-&gt yes. interesting.</td></tr>
+            <tr><td>[13:00] &lt MS-&gt As a result, maybe thinking in terms of</td></tr>
+            <tr><td>[13:00] &lt MS-&gt you may wish to think in terms of the ability to do things like "ADD ASSET"</td></tr>
+            <tr><td>[13:00] &lt MS-&gt or perhaps allowing particle types to define extra commands</td></tr>
+            <tr><td>[13:01] &lt MS-&gt To make this sort of thing easier to retrofit in future</td></tr>
+            <tr><td>[13:02] &lt Chong-&gt yes. That would be cool.</td></tr>
+            <tr><td>[13:02] &lt MS-&gt It'd perhaps make it easier to retarget in more interesting ways</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Beyond that, I think probably the next step after this would be to look at hierarchies.</td></tr>
+            <tr><td>[13:03] &lt MS-&gt how you would expand a node to show it's sub-graph, and how you would shrink it again back down</td></tr>
+            <tr><td>[13:04] &lt MS-&gt Pipeline( Pipeline( A, B) , Pipeline( C, D) ) - springs to mind as a basic thing there</td></tr>
+            <tr><td>[13:04] &lt MS-&gt if you're able to update the node inplace, it'd probably make that easier to do</td></tr>
+            <tr><td>[13:05] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[13:05] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[13:05] &lt MS-&gt OK Chong- - if you have more questions, please do send them to the list :0</td></tr>
+            <tr><td>[13:05] &lt MS-&gt :-)</td></tr>
+            <tr><td>[13:05] &lt MS-&gt Trun: hiya</td></tr>
+            <tr><td>[13:05] &lt Trun&gt hi</td></tr>
+            <tr><td>[13:06] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[13:06] *** Lawouach_ feels like sleeping</td></tr>
+            <tr><td>[13:06] &lt MS-&gt Lawouach_: ditto :-)</td></tr>
+            <tr><td>[13:06] &lt Lawouach_&gt well let's listen to Pulp then. Might wake me up :)</td></tr>
+            <tr><td>[13:06] &lt MS-&gt heh</td></tr>
+            <tr><td>[13:07] &lt Chong-&gt one question, can one kamaelia component accept inputs (the same inbox) from two components, say both FileAdaptor and ConsoleReader?</td></tr>
+            <tr><td>[13:07] &lt MS-&gt yes</td></tr>
+            <tr><td>[13:07] &lt Chong-&gt that's cool</td></tr>
+            <tr><td>[13:07] &lt MS-&gt You cannot guarantee *any* ordering</td></tr>
+            <tr><td>[13:07] &lt MS-&gt since it will be determined by the scheduler</td></tr>
+            <tr><td>[13:08] &lt MS-&gt If I discover that people do start relying on ordering, I reserve the right to change the scheduler to import from random</td></tr>
+            <tr><td>[13:08] &lt MS-&gt :-D</td></tr>
+            <tr><td>[13:08] &lt Lawouach_&gt Note that it can't allow the opposite on the other hand.</td></tr>
+            <tr><td>[13:08] &lt Chong-&gt hehe'</td></tr>
+            <tr><td>[13:08] &lt MS-&gt indeed</td></tr>
+            <tr><td>[13:09] &lt Lawouach_&gt You can't link one outbox to more than one inboxes</td></tr>
+            <tr><td>[13:09] &lt Lawouach_&gt You may use specific components for tha</td></tr>
+            <tr><td>[13:09] &lt Lawouach_&gt I commonly use Backplanes</td></tr>
+            <tr><td>[13:09] &lt MS-&gt ditto</td></tr>
+            <tr><td>[13:09] &lt MS-&gt makes debugging simpler too :)</td></tr>
+            <tr><td>[13:09] &lt Lawouach_&gt Very handy to more loosely link components. Make the code a little harder to follow though.</td></tr>
+            <tr><td>[13:09] &lt Lawouach_&gt Yes</td></tr>
+            <tr><td>[13:09] &lt Lawouach_&gt But readability is less easy I find.</td></tr>
+            <tr><td>[13:09] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[13:10] &lt MS-&gt Yes, they can drive down readability</td></tr>
+            <tr><td>[13:10] &lt MS-&gt OK, Chong- you happy for now then? Plenty to move forward with?</td></tr>
+            <tr><td>[13:11] &lt MS-&gt I'll be expecting you to be driving this forward from next week really</td></tr>
+            <tr><td>[13:11] &lt MS-&gt just as an fyi :)</td></tr>
+            <tr><td>[13:11] &lt Chong-&gt yes, You have solved a lot of questions for me and at the same time raised more questions for me :-)</td></tr>
+            <tr><td>[13:11] &lt MS-&gt Cool</td></tr>
+            <tr><td>[13:12] &lt MS-&gt Trun: OK, you ready ?</td></tr>
+            <tr><td>[13:13] &lt Davbo&gt It's like a meeting relay-race</td></tr>
+            <tr><td>[13:13] *** MS- has been wondering about the code you've produced and how to do it</td></tr>
+            <tr><td>[13:13] &lt MS-&gt Davbo: Yeah, work can sometimes be like that. If you spread them out over a week, it becomes insane since you end up in one long meeting</td></tr>
+            <tr><td>[13:13] &lt MS-&gt It's why I try to a) keep them short & focussed</td></tr>
+            <tr><td>[13:14] &lt Chong-&gt just before Trun responses, I will ask another question :-)</td></tr>
+            <tr><td>[13:14] &lt MS-&gt b) compress them into one part of the week</td></tr>
+            <tr><td>[13:14] &lt Chong-&gt About the hierarchy one, will we still do it under pygame or under opengl?</td></tr>
+            <tr><td>[13:14] &lt MS-&gt Chong-: Can you please put it on the list</td></tr>
+            <tr><td>[13:14] &lt Chong-&gt np</td></tr>
+            <tr><td>[13:14] &lt MS-&gt Trun: can you join #kamaelia-mentor please ?</td></tr>
+            <tr><td>[13:15] &lt MS-&gt ie /join #kamaelia-mentor</td></tr>
+            <tr><td>[13:15] &lt MS-&gt (whilst waiting, Chong- yes, for now everything in pygame - get used to doing everything in one place first, before shifting the rug under yourself)</td></tr>
+            <tr><td>[13:16] &lt Chong-&gt np</td></tr>
+            <tr><td>[13:16] &lt MS-&gt Incidentally these mentor time meetings aren't really meetings for meetings sake, it's time I'm specifically putting aside to ensue you've got undivided attention</td></tr>
+            <tr><td>[13:30] &lt Davbo&gt Humm using grep could I go through some folders and look for files with no extensions and give them .mp3 ?</td></tr>
+            <tr><td>[13:47] &lt Lawouach_&gt Davbo: ?</td></tr>
+            <tr><td>[13:49] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:50] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt Lawouach_?</td></tr>
+            <tr><td>[13:57] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:00] &lt Lawouach_&gt What were you saying before about grep and mp3?</td></tr>
+            <tr><td>[14:00] &lt mhrd&gt davbo: find . ! -name "*.*" -type f -exec echo Found {} \;</td></tr>
+            <tr><td>[14:01] &lt Lawouach_&gt &lt  Davbo&gt Humm using grep could I go through some folders and look for files with no extensions and give them .mp3 ?</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt Oh I have a bunch of files with no extension which are actually MP3's wanted to just find and append their extension with a script</td></tr>
+            <tr><td>[14:01] &lt Lawouach_&gt python -c "import glob;print glob.glob('*.mp3')"</td></tr>
+            <tr><td>[14:02] &lt MS-&gt http://132.185.142.2/Kamaelia/ - the results of Pablo's KamPlanet code</td></tr>
+            <tr><td>[14:02] &lt Lawouach_&gt to get them and you can easily change the name by extending that line</td></tr>
+            <tr><td>[14:02] &lt Lawouach_&gt mhrd: nerd :)</td></tr>
+            <tr><td>[14:02] &lt MS-&gt Currently breaks with Lawouach_'s blog/feed</td></tr>
+            <tr><td>[14:02] *** vmlemon_ wonders where he can get a cheap 1GB RS-MMC card...</td></tr>
+            <tr><td>[14:02] &lt Lawouach_&gt with the RSS feed? weird since it works with Planet Python</td></tr>
+            <tr><td>[14:03] &lt mhrd&gt Lawouach_ : thanks :)</td></tr>
+            <tr><td>[14:04] &lt MS-&gt Lawouach_: I think it's more due to assumptions in Trun's code rather than your feed</td></tr>
+            <tr><td>[14:04] &lt Davbo&gt Thanks mhrd & Lawouach_</td></tr>
+            <tr><td>[14:04] &lt mhrd&gt vmlemon_ 7dayshop.com ?</td></tr>
+            <tr><td>[14:04] &lt MS-&gt your feed is rather more ... rich .. that the others :)</td></tr>
+            <tr><td>[14:04] &lt vmlemon_&gt Thanks, I'll look when I get home</td></tr>
+            <tr><td>[14:04] &lt Lawouach_&gt hu hu</td></tr>
+            <tr><td>[14:05] &lt Lawouach_&gt Trun: what library do you use to parse the feeds?</td></tr>
+            <tr><td>[14:05] &lt MS-&gt Lawouach_: I'm certain the issue is with KamPlanet (BTW)</td></tr>
+            <tr><td>[14:05] &lt Davbo&gt lol Lawouach_, poor mhrd ;-)</td></tr>
+            <tr><td>[14:05] &lt MS-&gt (15:04:28) Trun: &gt&gt&gt parsed = feedparser.parse("http://www.defuze.org/feeds/index.rss2")</td></tr>
+            <tr><td>[14:05] &lt MS-&gt (15:04:39) Trun: &gt&gt&gt print parsed.entries[0].keys()</td></tr>
+            <tr><td>[14:05] &lt MS-&gt (15:04:43) Trun: ['license', 'slash_comments', 'wfw_comment', 'subtitle', 'author', 'links', 'tags', 'title', 'updated', 'comments', 'id', 'content', 'guidislink', 'title_detail', 'link', 'wfw_commentrss', 'author_detail', 'updated_parsed']</td></tr>
+            <tr><td>[14:06] &lt MS-&gt (15:05:55) Trun: no, but it's a KamPlanet problem</td></tr>
+            <tr><td>[14:06] &lt MS-&gt (15:06:08) Trun: that feed does not provide summary, but it provides content</td></tr>
+            <tr><td>[14:06] &lt MS-&gt (15:06:34) Trun: I should check for both, but up to date all what I had played with was with a blog at localhost and pablo.ordunya.com</td></tr>
+            <tr><td>[14:06] &lt Davbo&gt Very cool stuff Trun</td></tr>
+            <tr><td>[14:06] &lt Lawouach_&gt I see</td></tr>
+            <tr><td>[14:07] &lt MS-&gt (15:07:20) Trun: there are still several things regarding encodings, characters, etc. that I'm not happy with and I have not tested with many blogs</td></tr>
+            <tr><td>[14:07] &lt MS-&gt (15:07:50) Trun: but for the moment I wanted to focus in kamaelia itself</td></tr>
+            <tr><td>[14:07] &lt MS-&gt Which makes sense :)</td></tr>
+            <tr><td>[14:08] &lt MS-&gt Anyhow, as an exercise of building up something useful as a test case for testing, it makes sense</td></tr>
+            <tr><td>[14:09] *** MS- moves discussion back onto here instead</td></tr>
+            <tr><td>[14:09] &lt MS-&gt (moved off channel due to channel noise earlier :) )</td></tr>
+            <tr><td>[14:09] &lt Trun&gt I was reading, yeah, I was just playing around with kamaelia</td></tr>
+            <tr><td>[14:10] &lt Trun&gt I'm sure there are lots of problems with KamPlanet and feeds :-)</td></tr>
+            <tr><td>[14:10] &lt Trun&gt it currently does not even finish itself :-D</td></tr>
+            <tr><td>[14:10] &lt MS-&gt Davbo: find|grep -v mp3$|while read filename; do mv $filename $filename.mp3; done</td></tr>
+            <tr><td>[14:10] &lt Davbo&gt Hah, thanks MS-</td></tr>
+            <tr><td>[14:11] &lt MS-&gt Actually that'll rename directories too</td></tr>
+            <tr><td>[14:11] &lt MS-&gt find -type f|grep -v mp3$|while read filename; do mv $filename $filename.mp3; done</td></tr>
+            <tr><td>[14:11] &lt MS-&gt is better</td></tr>
+            <tr><td>[14:11] *** MS- thinks trun needs a better irc client than mibbit ...</td></tr>
+            <tr><td>[14:13] &lt Trun&gt noh, I'm here, mibbit is working today :-D</td></tr>
+            <tr><td>[14:13] &lt MS-&gt OK, I need to bring that meeting to a close</td></tr>
+            <tr><td>[14:13] &lt MS-&gt sicne this is just too slow for me</td></tr>
+            <tr><td>[14:13] &lt MS-&gt Can you forward me via email what you're planning on doing next, and hope to achieve in the next week</td></tr>
+            <tr><td>[14:14] &lt Trun&gt ok</td></tr>
+            <tr><td>[14:14] &lt MS-&gt I think you also need to start thinking about how testing applies in these situations</td></tr>
+            <tr><td>[14:14] &lt MS-&gt KamPlanet's not a bad one</td></tr>
+            <tr><td>[14:14] &lt MS-&gt but also need to think about systems involving services - eg the selector & PygameDisplay</td></tr>
+            <tr><td>[14:15] &lt MS-&gt (in terms of very specific components)</td></tr>
+            <tr><td>[14:15] &lt Trun&gt ok, I'll check them</td></tr>
+            <tr><td>[14:15] &lt MS-&gt Also, there is /Code/Python/Kamaelia/Tests</td></tr>
+            <tr><td>[14:15] &lt MS-&gt and also /Tests</td></tr>
+            <tr><td>[14:15] &lt MS-&gt so it needs to take those into account as well</td></tr>
+            <tr><td>[14:16] &lt MS-&gt The tests in the /Tests (the axon ones) are actually intended to be sufficient for producing documentation as well</td></tr>
+            <tr><td>[14:16] &lt MS-&gt by using the docstring for tests in unittest in an imaginative way</td></tr>
+            <tr><td>[14:16] &lt MS-&gt However, clearly there's issues of black box testing and also black box testing</td></tr>
+            <tr><td>[14:17] &lt MS-&gt then for things like TCPClient & ConnectedSocketAdaptor</td></tr>
+            <tr><td>[14:17] &lt MS-&gt the key things the tests ought to be able to check is that the socket library is being used correctly</td></tr>
+            <tr><td>[14:17] &lt Trun&gt aham</td></tr>
+            <tr><td>[14:17] &lt MS-&gt which implies a means of mocking socket and using those as exemplars</td></tr>
+            <tr><td>[14:17] &lt MS-&gt i'll drop this by mail though</td></tr>
+            <tr><td>[14:18] &lt MS-&gt I *do* think that KamPlanet is a good idea though</td></tr>
+            <tr><td>[14:18] &lt MS-&gt since it has a variety of different styles it has to deal with</td></tr>
+            <tr><td>[14:18] &lt MS-&gt and are all testworthy :)</td></tr>
+            <tr><td>[14:18] &lt MS-&gt So I'd continue with getting that "complete" :)</td></tr>
+            <tr><td>[14:18] &lt Trun&gt ok</td></tr>
+            <tr><td>[14:19] &lt MS-&gt A few docs on it would be useful too - but I'm very inclined to keep that running</td></tr>
+            <tr><td>[14:19] &lt MS-&gt and have it as a live datasource on the new site</td></tr>
+            <tr><td>[14:19] &lt MS-&gt when the new site goes live</td></tr>
+            <tr><td>[14:19] &lt MS-&gt :-)</td></tr>
+            <tr><td>[14:19] &lt Trun&gt cool :-)</td></tr>
+            <tr><td>[14:19] &lt Trun&gt I'll think about all this and send you an e-mail tonight with the TODO for the next week</td></tr>
+            <tr><td>[14:20] &lt Trun&gt is that ok?</td></tr>
+            <tr><td>[14:20] &lt MS-&gt Sounds good.</td></tr>
+            <tr><td>[14:20] &lt MS-&gt I'd also extend it to be a general "todo in the next 3 weeks, with expectation of &lt these&gt being priority"</td></tr>
+            <tr><td>[14:20] &lt MS-&gt since that's really what I'm encouraging people to do</td></tr>
+            <tr><td>[14:21] &lt MS-&gt Also, since then it would provide a nice path into projects</td></tr>
+            <tr><td>[14:21] &lt Trun&gt oh, ok</td></tr>
+            <tr><td>[14:21] &lt MS-&gt Just a thought :)</td></tr>
+            <tr><td>[14:22] &lt Trun&gt ok then :-)</td></tr>
+            <tr><td>[14:22] *** Lawouach_ can hear Ben Stiller in Dodgeball saying "Do it!" </td></tr>
+            <tr><td>[14:22] &lt Lawouach_&gt :D</td></tr>
+            <tr><td>[14:23] *** vmlemon_ started using Remember The Milk last night, after signing up a while ago...</td></tr>
+            <tr><td>[14:24] &lt Davbo&gt :)</td></tr>
+            <tr><td>[14:24] &lt vmlemon_&gt I've probably used the WAP frontend more than the regular one, that said</td></tr>
+            <tr><td>[14:26] &lt vmlemon_&gt A slight annoyance is when I add an item with a date like "Later this week", it seems to disappear until I look in the Inbox</td></tr>
+            <tr><td>[14:28] &lt vmlemon_&gt Although it's probably a "feature"</td></tr>
+            <tr><td>[14:30] &lt Davbo&gt Never used the WAP frontend actually</td></tr>
+            <tr><td>[14:31] &lt vmlemon_&gt It's rather handy, though</td></tr>
+            <tr><td>[14:32] &lt vmlemon_&gt (If I can remember to Remember The Milk at least once a day, that is ;))</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt :)</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt That's the thing, as with anything like this. It's only good if you use it like every day</td></tr>
+            <tr><td>[14:38] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:03] *** MS- goes afk</td></tr>
+            <tr><td>[15:04] &lt mhrd&gt wap.nationalrail.co.uk is lovely as is tflwap.gov.uk</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt vmlemon: http://www.defuze.org/archives/18-XMPP,-AtomPub-and-microblogging.html</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt That might interest you</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt That could interest j_baker too :)</td></tr>
+            <tr><td>[15:12] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:14] &lt Lawouach_&gt alright I have no clue which vmlemon_ I just talked to :)</td></tr>
+            <tr><td>[15:16] &lt vmlemon_&gt Hah, I lost connectivity just then :|</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt so I was saying</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt vmlemon: http://www.defuze.org/archives/18-XMPP,-AtomPub-and-microblogging.html</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt Might interest you :)</td></tr>
+            <tr><td>[15:17] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt I'll look soon, but it sounds interesting from the URL</td></tr>
+            <tr><td>[15:29] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[15:29] Reply: does the macarena</td></tr>
+            <tr><td>[15:42] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[15:42] &lt Davbo&gt Twitter is XMPP isn't it Lawouach_?</td></tr>
+            <tr><td>[15:42] &lt Davbo&gt I can update that from sms/jabber etc</td></tr>
+            <tr><td>[15:45] &lt Lawouach_&gt I think yes. i'm not inventing anything new ;)</td></tr>
+            <tr><td>[15:45] &lt Lawouach_&gt Just having fun :)</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt oh i know, it's really cool imo</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt Just saying that I think it's really useful</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[16:14] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:29] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:43] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:04] &lt Davbo&gt Argh, you gotta hate it when things are named with an acronym in mind - Music Orchestration Systems in Algorithmic Research Technology (MOSART)</td></tr>
+            <tr><td>[18:05] &lt vmlemon_&gt Looks like they thought of an acronym, and then tried to bend words around it in the hope that it makes some form of sense</td></tr>
+            <tr><td>[18:06] &lt Davbo&gt Exactly.</td></tr>
+            <tr><td>[18:41] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[18:53] *** vmlemon_ is trying to think of a name for the rabbit at http://openlina.org/forum/viewtopic.php?f=34&t=69&p=357</td></tr>
+            <tr><td>[20:07] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:08] &lt MS-&gt evening</td></tr>
+            <tr><td>[20:08] *** MS- changed the topic to Next weekly meeting 4pm 22nd May 2008 (first of restart) | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[20:08] *** MS- changed the topic to Next weekly meeting 4pm 22nd May 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[20:10] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:10] &lt mhrd-home&gt evening all</td></tr>
+            <tr><td>[20:10] &lt MS-&gt evening</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt Hi mhrd-home</td></tr>
+            <tr><td>[20:12] &lt MS-&gt question (to anyone): What do you get if you type:</td></tr>
+            <tr><td>[20:12] &lt MS-&gt "nslookup edit.kamaelia.org"</td></tr>
+            <tr><td>[20:12] &lt MS-&gt on a console</td></tr>
+            <tr><td>[20:12] &lt Davbo&gt bash: nslookup: command not found</td></tr>
+            <tr><td>[20:12] &lt Davbo&gt :)</td></tr>
+            <tr><td>[20:13] &lt Davbo&gt Glad I could help!</td></tr>
+            <tr><td>[20:13] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt nmatteh@r44115:~$ nslookup edit.kamaelia.org</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt Server: 192.168.1.1</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt Address: 192.168.1.1#53</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt Non-authoritative answer:</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt Name: edit.kamaelia.org</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt Address: 132.185.142.2</td></tr>
+            <tr><td>[20:13] &lt MS-&gt Or host edit.kamaelia.org</td></tr>
+            <tr><td>[20:13] &lt MS-&gt or ping edit.kamaelia.org</td></tr>
+            <tr><td>[20:13] &lt MS-&gt mhrd-home: Cheers</td></tr>
+            <tr><td>[20:13] &lt MS-&gt Looks like it's propogated somewhere then :-)</td></tr>
+            <tr><td>[20:13] &lt mhrd-home&gt host (unsurprisingly) returns the same address</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt nslookup edit.kamaelia.org</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Server: 193.35.133.10</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Address: 193.35.133.10#53</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Non-authoritative answer:</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Name: edit.kamaelia.org</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Address: 132.185.142.2</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Here</td></tr>
+            <tr><td>[20:14] &lt MS-&gt Cool, visible in at least 2 locations then</td></tr>
+            <tr><td>[20:14] &lt mhrd-home&gt oh d*£% my rice just boiled over :)</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Not sure why Server: is different for me</td></tr>
+            <tr><td>[20:14] &lt MS-&gt That's your local DNS server</td></tr>
+            <tr><td>[20:14] &lt Davbo&gt PING edit.kamaelia.org (132.185.142.2) 56(84) bytes of data.</td></tr>
+            <tr><td>[20:14] &lt Davbo&gt 64 bytes from kamaelia.kw.bbc.co.uk (132.185.142.2): icmp_seq=1 ttl=55 time=39.6 ms</td></tr>
+            <tr><td>[20:15] &lt Davbo&gt FYI</td></tr>
+            <tr><td>[20:15] &lt MS-&gt ta</td></tr>
+            <tr><td>[20:16] &lt Davbo&gt What you doing with that MS-?</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:17] &lt Davbo&gt is that the server that's only visible from outside the BBC network?</td></tr>
+            <tr><td>[20:17] &lt MS-&gt Yes, but I've found a work around</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt Coral Cache/Tor?</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt Or more subtle?</td></tr>
+            <tr><td>[20:17] &lt MS-&gt If the DNS service is one that the BBC network can see, then it can do a DNS lookup, find the address and the the BBC web proxies understand how to get to it</td></tr>
+            <tr><td>[20:18] &lt MS-&gt It's a little convoluted</td></tr>
+            <tr><td>[20:18] &lt j_baker&gt MS-: when you get a chance, I was wondering if you could give me some advice on a component I'm designing.</td></tr>
+            <tr><td>[20:18] &lt vmlemon_&gt Can't you cheat and use something like OpenDNS?</td></tr>
+            <tr><td>[20:18] &lt MS-&gt vmlemon_: For who?</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt For testing the server that's only externally visible</td></tr>
+            <tr><td>[20:19] &lt MS-&gt No that wouldn't solve the problem</td></tr>
+            <tr><td>[20:19] &lt MS-&gt (if open dns does what I think it does)</td></tr>
+            <tr><td>[20:19] *** Davbo uses OpenDNS</td></tr>
+            <tr><td>[20:20] &lt MS-&gt But that's a client side "solution" yes ?</td></tr>
+            <tr><td>[20:21] *** vmlemon_ was going to say that it might not provide access to the BBC internal proxies, assuming that they're only accessible via a certain DNS name (and that they can't be accessed otherwise by using the IP address)...</td></tr>
+            <tr><td>[20:21] &lt vmlemon_&gt *using just the IP address</td></tr>
+            <tr><td>[20:22] &lt MS-&gt I don't understand what you're getting at</td></tr>
+            <tr><td>[20:22] &lt MS-&gt 132.185.142.2 is accessible from outside the BBC - which is fine, that's what it's there fore</td></tr>
+            <tr><td>[20:22] &lt MS-&gt However, inside the BBC, we have to use a proxy to access anything outside</td></tr>
+            <tr><td>[20:23] &lt MS-&gt There's a special rule in the bbc.pac autoconfig to say "if it's this network range, yes, do actually use the proxy"</td></tr>
+            <tr><td>[20:23] &lt MS-&gt However, the real oddity is that because there's a firewall between the inside and outside, there is a nasty re-use of ip addresses.</td></tr>
+            <tr><td>[20:23] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[20:23] &lt MS-&gt ie there's a 132.185.142.2 inside *and* outside</td></tr>
+            <tr><td>[20:24] &lt MS-&gt So if you have a DNS glue record</td></tr>
+            <tr><td>[20:24] &lt MS-&gt that says ns0.kamaelia.org is 132.185.142.2</td></tr>
+            <tr><td>[20:25] &lt MS-&gt and have this rule:</td></tr>
+            <tr><td>[20:25] &lt MS-&gt ;; AUTHORITY SECTION:</td></tr>
+            <tr><td>[20:25] &lt MS-&gt kamaelia.org. 42755 IN NS ns1.kamaelia.org.</td></tr>
+            <tr><td>[20:25] &lt MS-&gt kamaelia.org. 42755 IN NS ns0.kamaelia.org.</td></tr>
+            <tr><td>[20:25] &lt MS-&gt Then outside the BBC, the world will do the right thing, and be able to see the server.</td></tr>
+            <tr><td>[20:25] &lt MS-&gt However inside, DNS lookups will go horribly wrong</td></tr>
+            <tr><td>[20:25] &lt MS-&gt Meaning that the client never gets redirected through the proxy to the server</td></tr>
+            <tr><td>[20:26] &lt MS-&gt Hosting the DNS serving *outside* that network completely</td></tr>
+            <tr><td>[20:26] &lt MS-&gt kamaelia:/etc # host ns0.kamaelia.org</td></tr>
+            <tr><td>[20:26] &lt MS-&gt ns0.kamaelia.org has address 212.56.88.101</td></tr>
+            <tr><td>[20:26] &lt MS-&gt Bypasses that problem</td></tr>
+            <tr><td>[20:27] &lt Davbo&gt Sounds a bit messy</td></tr>
+            <tr><td>[20:27] &lt MS-&gt yeah</td></tr>
+            <tr><td>[20:27] &lt Davbo&gt but hey, if it works.</td></tr>
+            <tr><td>[20:27] &lt Davbo&gt What you planning to use it for?</td></tr>
+            <tr><td>[20:28] &lt MS-&gt I think the hint is in the name used ;)</td></tr>
+            <tr><td>[20:28] &lt MS-&gt edit.kamaelia.org</td></tr>
+            <tr><td>[20:28] &lt MS-&gt OK,</td></tr>
+            <tr><td>[20:28] &lt vmlemon_&gt Wiki editing interface?</td></tr>
+            <tr><td>[20:28] *** MS- goes back to fiddling with stuff</td></tr>
+            <tr><td>[20:28] &lt j_baker&gt Today's fish is trout ala creme, please enjoy your meal.</td></tr>
+            <tr><td>[20:31] &lt MS-&gt j_baker: I'd really appreciate whatever question you have to be sent to the list</td></tr>
+            <tr><td>[20:31] &lt MS-&gt I've got a really odd headache at present</td></tr>
+            <tr><td>[20:32] &lt j_baker&gt np :)</td></tr>
+            <tr><td>[20:37] *** MS- watches BSG instead</td></tr>
+            <tr><td>[20:37] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[21:01] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[21:13] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[21:22] &lt vmlemon_&gt o.O [22:19] &lt alanc&gt the marketing guys didn't like me when they asked if we could have a screensaver show off our eco-responsibility somehow and I responded the best way to do that was to rename "blank screen" to "eco-responsible blank screen"</td></tr>
+            <tr><td>[21:27] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[21:41] &lt Davbo&gt What word would you use to describe a feature you had in the design stages but was missing in the Implementation?</td></tr>
+            <tr><td>[21:41] &lt vmlemon_&gt Hmm, not regression</td></tr>
+            <tr><td>[21:41] &lt Davbo&gt I'm writing this presentation but I don't want to sound too harsh on the people which programmed it</td></tr>
+            <tr><td>[21:41] &lt Davbo&gt ie. They will be in the room lol</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt "A cut feature"? "A feature that didn't quite make the release"?</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt Can't think of a single word at the moment, though</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt humm, thanks anyway :)</td></tr>
+            <tr><td>[21:43] &lt Davbo&gt I have a list of "Functionality" then i want a list of Cut Features without being so harsh lol</td></tr>
+            <tr><td>[21:45] *** vmlemon_ wonders if Microsoft maintains lists of "disfunctionality" for their products ;)</td></tr>
+            <tr><td>[21:49] &lt Davbo&gt Well whatever i put down is better than what it was before</td></tr>
+            <tr><td>[21:49] &lt Davbo&gt (one list titled "Does" and one titled "Doesn't")</td></tr>
+            <tr><td>[21:49] &lt Davbo&gt :|</td></tr>
+            <tr><td>[21:50] &lt vmlemon_&gt It's better than nothing</td></tr>
+            <tr><td>[21:50] &lt vmlemon_&gt "Coming Soon..."?</td></tr>
+            <tr><td>[21:51] &lt Davbo&gt "Missing features"</td></tr>
+            <tr><td>[21:51] &lt Davbo&gt that'll do.</td></tr>
+            <tr><td>[21:52] &lt Davbo&gt Well nobody is gonna be adding anything vmlemon_ so they really are missing</td></tr>
+            <tr><td>[21:52] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[21:53] &lt Davbo&gt Thanks for helping :)</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt No problem</td></tr>
+            <tr><td>[22:31] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[22:49] &lt mhrd-home&gt night</td></tr>
+            <tr><td>[22:49] *** mhrd-home has parted #kamaelia</td></tr>
+            <tr><td>[23:31] &lt Davbo&gt Night all.</td></tr>

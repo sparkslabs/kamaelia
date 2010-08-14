@@ -1,0 +1,111 @@
+<html>
+<head>
+<title> WaitComplete </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - WaitComplete">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+<h1>Axon.Ipc.WaitComplete</h1>The purpose behind WaitComplete is to allow a generator based component to say cleanly: run this other generator for a while and when they're done, return to me. This allows for more direct representation of certain kinds of code structure. It is likely to be joined at somepoint with a "continue with this" style message. There are two common usecases where it is nice to use:<br><ul><li>One is with regard to reading lines of data from a network connection. This allows for a more direct form of writing code, and essentially provides a mechanism of dealing with the idea that "you can't nest yield statements cleanly". But telling the scheduler "run this until it's finished, not me" you essentially gain that ability.</li><li>The other is where you are requesting a resource from a Kamaelia service using the idiom</li><ul><li>Find the service, create links to talk to it</li><li>Send it a message</li><li>Wait for the response, containing the resource<br></li><li>Move on</li><ul><li>A good example of a resource that's like this is pygame displays<br></li></ul></ul></ul><h2>Basic Usage</h2>To give an example which isn't tied up with a usecase, but just shows the mechanism, you use it like this:<br><blockquote><pre>class myComponent(Axon.Component.component):<br>&nbsp;&nbsp;&nbsp; def main(self):<br>        print "Running inside main"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield WaitComplete( self.someGenerator() )<br>        print "Back Running inside main"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield WaitComplete( self.anotherGenerator() )<br>        print "Back Running inside main again"
+<br>&nbsp;&nbsp;&nbsp; def someGenerator(self):<br>        print "running in the secondary generator"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br>        print "still running in the secondary generator"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br><br>&nbsp;&nbsp;&nbsp; def anotherGenerator(self):<br>        print "running in the other secondary generator"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br>        print "still running in the other secondary generator"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br></pre></blockquote>The way that runs it would result in the following output:<br><blockquote><pre>Running inside main<br>running in the secondary generator<br>still running in the secondary generator<br>Back Running inside main<br>running in the other secondary generator<br>still running in the other secondary generator<br>Back Running inside main again<br></pre></blockquote>This doesn't look like a big deal, but it's worth asking "what would this look like without WaitComplete" ?<br><br>If we were doing this without WaitComplete, it would look like this:<br><pre>class myComponent(Axon.Component.component):<br>&nbsp;&nbsp;&nbsp; def main(self):<br>        print "Running inside main"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in self.someGenerator():<br>            yield i<br>        print "Back Running inside main"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i self.anotherGenerator():<br>            yield i<br>        print "Back Running inside main again"<br><br>&nbsp;&nbsp;&nbsp; def someGenerator(self):<br>        print "running in the secondary generator"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br>        print "still running in the secondary generator"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br><br>&nbsp;&nbsp;&nbsp; def anotherGenerator(self):<br>        print "running in the other secondary generator"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br>        print "still running in the other secondary generator"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1</pre>Whilst it's not that much worse, it does obfuscate things, as we'll see with real world examples.<br><h2>Real world example - Connecting to a POP3 server &amp; Logging in</h2>The following code is from a basic POP3 client skeleton (as used in the client side spam tools):<br><blockquote><pre>    def waitForBanner(self):<br>        yield WaitComplete(self.getline(), tag="_getline1")<br>        self.banner = self.line.strip()<br><br>        if self.banner[:3] == "+OK":<br>            self.connectionSuccess = True<br>        else:<br>            self.connectionSuccess = False<br><br>    def doLogin(self, username, password):<br>        self.sendCommand("USER "+username)<br>        yield WaitComplete(self.getline(), tag="_getline2")<br>        if self.line[:3] == "+OK":<br>            self.sendCommand("PASS "+ password)<br>            yield WaitComplete(self.getline(), tag="_getline3")<br>            if self.line[:3] == "+OK":<br>                self.loggedIn = True<br><br>&nbsp;&nbsp;&nbsp; def main(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.control_message = None<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.connectionSuccess = False<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.loggedIn = False<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield WaitComplete(self.waitForBanner())<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if self.connectionSuccess:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield WaitComplete( self.doLogin(self.username, self.password))<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if self.loggedIn:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run = True<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while run:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while not self.anyReady():<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.pause()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while self.dataReady("client_inbox"):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; command = self.recv("client_inbox")<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield WaitComplete(self.handleCommand(command))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if command[0] == "QUIT":<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run = False<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.sendCommand("QUIT")<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield WaitComplete(self.getline(), tag="_getline5")<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print "SERVER RESPONSE", self.line</pre></blockquote>Now, ignoring the tag= parts at the end, restructuring this to use the more tradition for ... in self.generator() syntax, you would get this:<br><blockquote><pre>    def waitForBanner(self):<br>        for i in self.getline():<br>            yield i<br><br>        self.banner = self.line.strip()<br><br>        if self.banner[:3] == "+OK":<br>            self.connectionSuccess = True<br>        else:<br>            self.connectionSuccess = False<br><br>    def doLogin(self, username, password):<br>        self.sendCommand("USER "+username)<br>        for i in self.getline():<br>            yield i<br>        if self.line[:3] == "+OK":<br>            self.sendCommand("PASS "+ password)<br>            for i in self.getline():<br>                yield i<br>            if self.line[:3] == "+OK":<br>                self.loggedIn = True<br><br>&nbsp;&nbsp;&nbsp; def main(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.control_message = None<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.connectionSuccess = False<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.loggedIn = False<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in self.waitForBanner():<br>            yield i<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if self.connectionSuccess:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in self.doLogin(self.username, self.password):<br>                yield i<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if self.loggedIn:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run = True<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while run:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while not self.anyReady():<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.pause()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while self.dataReady("client_inbox"):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; command = self.recv("client_inbox")<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in self.handleCommand(command):<br>                             yield i<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if command[0] == "QUIT":<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; run = False<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.sendCommand("QUIT")<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in self.getline():<br>                    yield i<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print "SERVER RESPONSE", self.line</pre></blockquote>
+Whilst each individual part is only slightly less clear, the overall effect is significantly less clear. <br><br>The tag= line incidentally allows us to give each call to a generator a different tag. This allows us to determine if a generator is getting stuck in any particular state. In the case of a network system, knowing just where the system is getting unexpected data (or not getting expected data) causing it to stay in an unexpected state is particularly useful - hence the use of tags. In the second, non-WaitComplete version we don't have that hinting available.<br><h2>Real World Example - Requesting A Pygame Display Surface</h2>In this example we have to do this:<br><ul><li>Find the pygame display</li><li>Send it a request</li><li>Wait for the response</li></ul>This is a common task that would be nice to wrap up inside a method that we can just call trivially. Again this is where WaitComplete comes in, since it assists in wrapping up this functionality cleanly as follows:<br><blockquote><pre>&nbsp;&nbsp;&nbsp; def __init__(self, **argd):<br>....<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.disprequest = { "DISPLAYREQUEST" : True,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "callback" : (self,"callback"),<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "size": self.displaysize}<br><br>&nbsp;&nbsp;&nbsp; def getDisplay(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; displayservice = PygameDisplay.getDisplayService()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.link((self,"display_signal"), displayservice)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.send(self.disprequest, "display_signal")<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while not self.dataReady("callback"):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.pause()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.display = self.recv("callback")</pre></blockquote>This can then be used like this:<br><blockquote><pre>&nbsp;&nbsp;&nbsp; def main(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield WaitComplete(self.getDisplay())<br></pre></blockquote>And <b>that</b> is a significant simplication over the current structure. <br><br>Furthermore, it also allows this:<br><blockquote><pre>&nbsp;&nbsp;&nbsp; def getDisplay(self):<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; def gen():<br>&nbsp;&nbsp;    &nbsp;&nbsp;&nbsp; displayservice = PygameDisplay.getDisplayService()<br>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; self.link((self,"display_signal"), displayservice)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; self.send(self.disprequest, "display_signal")<br><br>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while not self.dataReady("callback"):<br>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.pause()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  self.display = self.recv("callback")<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return WaitComplete(get())</pre></blockquote>
+Which can itself be used like this:<br><blockquote><pre>&nbsp;&nbsp;&nbsp; def main(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield self.getDisplay()<br></pre></blockquote>It's perhaps worth noting that the common alternative here is this:<br><blockquote><pre>&nbsp;&nbsp;&nbsp; def main(self):<br>   &nbsp;&nbsp;&nbsp; displayservice = PygameDisplay.getDisplayService()<br>  &nbsp;&nbsp;&nbsp;&nbsp; self.link((self,"display_signal"), displayservice)<br>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; self.send(self.disprequest, "display_signal")<br><br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while not self.dataReady("callback"):<br>&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.pause()<br>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  self.display = self.recv("callback")<br></pre></blockquote>And that for example is something that can be placed into a potential baseclass to be used as a re-usable mixin, which can then just be used in a simple manner of "yield self.getDisplay()". <br>Given that this is a commonly used idiom, the ability to cleanly wrap this is a massive advantage.<br><h2>Summary</h2>WaitComplete is a useful as:<br><ul><li>Syntactic sugar to make a common construct clearer</li><li>A mechanism for wrapping up functionality that needs to yield inside a seperate method for reuse</li><li>A mechanism for assisting debugging of more complex systems, due to the tag= notation.</li></ul><br>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

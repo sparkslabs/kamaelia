@@ -1,0 +1,281 @@
+<html><body><table>
+            <tr><td>[04:25] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:12] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:08] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:54] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:56] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[09:06] *** Uraeus__ has joined #kamaelia</td></tr>
+            <tr><td>[10:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:46] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:47] &lt MS-&gt For those who may note have seen it, the kamaelia videos are now available on blip.tv</td></tr>
+            <tr><td>[10:47] &lt Lawouach_&gt cool</td></tr>
+            <tr><td>[10:47] &lt MS-&gt Details: http://groups.google.com/group/kamaelia/msg/ff6bcad3804106fa</td></tr>
+            <tr><td>[10:48] &lt MS-&gt Process of transcoding here:</td></tr>
+            <tr><td>[10:48] &lt MS-&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1246925071</td></tr>
+            <tr><td>[10:48] &lt Lawouach_&gt I saw that on planetpython yeah</td></tr>
+            <tr><td>[10:48] &lt MS-&gt I thought that a nice way of answering lots of incoming questions :)</td></tr>
+            <tr><td>[10:49] &lt vmlemon_&gt Heh, http://holgr.com/blog/2009/07/07/about-licenses-photos-and-online-mobs/</td></tr>
+            <tr><td>[10:49] &lt vmlemon_&gt Classy</td></tr>
+            <tr><td>[11:11] &lt MS-&gt OK, uploading from work is a MUCH better idea overall.</td></tr>
+            <tr><td>[11:12] &lt MS-&gt 783.80 kB/s</td></tr>
+            <tr><td>[11:33] &lt MS-&gt aa_: your tutorial is now fully uploaded to blip.tv. I'll let you know when it's transcoded.</td></tr>
+            <tr><td>[11:33] &lt MS-&gt At some point though, I'll sit down and re-record it, since as you noted it's not very photo-genic</td></tr>
+            <tr><td>[11:33] &lt MS-&gt Though if walked through with a camera it would probably work well.</td></tr>
+            <tr><td>[11:47] &lt Lawouach_&gt arggh</td></tr>
+            <tr><td>[11:48] &lt Lawouach_&gt Selector component has some very hurtful pauses</td></tr>
+            <tr><td>[11:48] &lt Lawouach_&gt way too long for high load</td></tr>
+            <tr><td>[11:49] &lt Lawouach_&gt it took me some time but finally traced it down to a nasty self.payse(0.5) in the Selector component</td></tr>
+            <tr><td>[11:50] &lt Lawouach_&gt on my local machine using the loopback I'm not on a 15ms for a ping/pong message (XMPP) when I used to be at 110ms</td></tr>
+            <tr><td>[11:50] &lt Lawouach_&gt purely due to that pause</td></tr>
+            <tr><td>[11:51] &lt MS-&gt really?</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt yeap</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt look line around 339 of the selector component</td></tr>
+            <tr><td>[11:52] &lt MS-&gt you mean inside here:</td></tr>
+            <tr><td>[11:52] &lt aa_&gt MS-: wow thanks</td></tr>
+            <tr><td>[11:53] &lt MS-&gt  elif not self.anyReady():</td></tr>
+            <tr><td>[11:53] &lt MS-&gt aa_: You're welcome</td></tr>
+            <tr><td>[11:53] &lt Lawouach_&gt MS-: yes</td></tr>
+            <tr><td>[11:53] *** aa_ is having one of those stamped on his iphone costing 400 quid days</td></tr>
+            <tr><td>[11:53] &lt Lawouach_&gt I've switched from 0.5 to 0.01</td></tr>
+            <tr><td>[11:54] &lt Lawouach_&gt and I have much better results</td></tr>
+            <tr><td>[11:54] &lt MS-&gt That's really weird</td></tr>
+            <tr><td>[11:54] &lt Lawouach_&gt why is that?</td></tr>
+            <tr><td>[11:55] &lt MS-&gt well, that branch should only be entered if there's nothing to call select on.</td></tr>
+            <tr><td>[11:55] &lt MS-&gt and if there's no data in an inbox</td></tr>
+            <tr><td>[11:55] &lt MS-&gt Oh.</td></tr>
+            <tr><td>[11:55] &lt MS-&gt I wonder</td></tr>
+            <tr><td>[11:56] &lt MS-&gt Logic is</td></tr>
+            <tr><td>[11:56] &lt MS-&gt  if len(readers) + len(writers) + len(exceptionals) &gt 0:</td></tr>
+            <tr><td>[11:56] &lt MS-&gt #do select stuff</td></tr>
+            <tr><td>[11:56] &lt MS-&gt  elif not self.anyReady():</td></tr>
+            <tr><td>[11:56] &lt MS-&gt  # no readers, writers, or anything - wait a few moments just in case</td></tr>
+            <tr><td>[11:56] &lt MS-&gt But, I'm wondering what's up with the pause</td></tr>
+            <tr><td>[11:58] &lt MS-&gt It *should* wake up instantly</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt hang on</td></tr>
+            <tr><td>[11:58] &lt MS-&gt (even reading Axon.ThreadedComponent)</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt I'm wondering as well if I'm correct here</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt grumble</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt shouldn't be changing more than one parameter at a time</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt let me start over</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt sorry</td></tr>
+            <tr><td>[11:59] &lt MS-&gt np</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt BTW, http://pastebin.ca/1486905</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt I've added a couple of print statements in Microprocess</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt they are quite valuable to find out which component takes time</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt a lot of traces but that's helping nonetheless</td></tr>
+            <tr><td>[12:00] *** MS- nods</td></tr>
+            <tr><td>[12:00] &lt Lawouach_&gt just GYI ;)</td></tr>
+            <tr><td>[12:00] &lt Lawouach_&gt FYI</td></tr>
+            <tr><td>[12:00] &lt MS-&gt There's somewhere in sketches a component that will tell you which component is taking up time btw</td></tr>
+            <tr><td>[12:00] &lt MS-&gt ie a bit like top</td></tr>
+            <tr><td>[12:01] &lt Lawouach_&gt handy</td></tr>
+            <tr><td>[12:01] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Sketches/MH/Introspection/Profiling.py</td></tr>
+            <tr><td>[12:05] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[12:05] &lt Lawouach_&gt actually found the culprit</td></tr>
+            <tr><td>[12:05] &lt MS-&gt Really ought to add that Profiler into core somewhere sensible</td></tr>
+            <tr><td>[12:05] &lt MS-&gt Probably into Axon itself</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt nope</td></tr>
+            <tr><td>[12:06] &lt MS-&gt Or with the introspection components</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt not even a pb with my code nor yours</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt I'm using ejabberd</td></tr>
+            <tr><td>[12:06] &lt MS-&gt And that's the problem ?</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt and there is a throughput limitor</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt which by default is rather low</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt too low</td></tr>
+            <tr><td>[12:06] &lt MS-&gt Ah.</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt by increasing it a bit I'm having normal results</td></tr>
+            <tr><td>[12:07] &lt Lawouach_&gt sigh :)</td></tr>
+            <tr><td>[12:07] &lt MS-&gt So the bug is the code is sufficiently capable, it's hitting limits in a seperate system ?</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt yes</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt the code actually runs fine</td></tr>
+            <tr><td>[12:08] &lt MS-&gt I can live with that sort of bug :)</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt eh eh :)</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt I'm actually pusing teh whole stack rather hard</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt and I'm rather pleased with the performances I see from it</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt at least in the constraints I have</td></tr>
+            <tr><td>[12:08] &lt MS-&gt That is useful to do and nice to hear :)</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt no doubt</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt It's funny "no doubt" would be an exception to the "no TERM+s" rule?</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt like "no worries"</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt or is my English wrong again?</td></tr>
+            <tr><td>[12:13] &lt MS-&gt I'm not sure I understand the ''' "no TERM+s" rule'''</td></tr>
+            <tr><td>[12:13] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:13] &lt MS-&gt I've yet to see a situation where your english is wrong for what it's worth :)</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt thanks</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt Well, I've always heard things like "no worries" rather than "no worry"</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt where the term following "no" is plural</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt not singular</td></tr>
+            <tr><td>[12:14] &lt MS-&gt Ah, I see</td></tr>
+            <tr><td>[12:15] &lt MS-&gt I think you're right, most things can be plural or would be plural there</td></tr>
+            <tr><td>[12:15] &lt MS-&gt but you wouldn't say "no doubts"</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt fair enough</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt we have exceptions too</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt in fact we often say "The exception makes up the rule"</td></tr>
+            <tr><td>[12:16] &lt MS-&gt English has everyone's exceptions</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt eh eh</td></tr>
+            <tr><td>[12:16] &lt MS-&gt Like i after e except after c is patently false</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt I've learnt that yeap</td></tr>
+            <tr><td>[12:16] &lt MS-&gt I gave up on it years ago, and then decided to play with grep and /usr/dict/words</td></tr>
+            <tr><td>[12:16] &lt MS-&gt and felt rather justified at getting it wrong :)</td></tr>
+            <tr><td>[12:18] &lt Lawouach_&gt heehee</td></tr>
+            <tr><td>[12:19] &lt MS-&gt well, I just failed the UK citizenship test</td></tr>
+            <tr><td>[12:19] &lt MS-&gt http://www.ukcitizenshiptest.co.uk/ - 12 out of 24</td></tr>
+            <tr><td>[12:20] &lt Lawouach_&gt let's see</td></tr>
+            <tr><td>[12:20] &lt Lawouach_&gt darn it's slow</td></tr>
+            <tr><td>[12:21] &lt Lawouach_&gt right we'll see later, once I've managed to respond the first question</td></tr>
+            <tr><td>[12:21] &lt Lawouach_&gt ahem</td></tr>
+            <tr><td>[12:23] &lt MS-&gt heh :)</td></tr>
+            <tr><td>[12:23] &lt MS-&gt I got the first question wrong :)</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:31] &lt Lawouach_&gt I'm doing some various tests against ejabberd and my XMPP lib</td></tr>
+            <tr><td>[12:32] *** MS- nods</td></tr>
+            <tr><td>[12:32] &lt MS-&gt I suspected that was the case</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt I'm setting one XMPP service using headstock</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:32] &lt MS-&gt I'd be interested in reading a summary of that at some point.</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt a XMPP component as per the spec is a service which acts as an extension of the server</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt so if you send a message/stanza to that service, the servers forwards it to the component</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt usually they are written in erlang and loaded as part of ejabberd</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt but you can write them in anything as long as you follow XEP 114</td></tr>
+            <tr><td>[12:33] &lt MS-&gt service as in XMPP service or service as in kamaelia service ?</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt which headstock does</td></tr>
+            <tr><td>[12:33] &lt MS-&gt Ah, OK</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt XMPP service</td></tr>
+            <tr><td>[12:33] &lt MS-&gt cool</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt yes</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt well by stressing with 200 clients, I'm reaching between 15000 and 20000 messages per second</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt XMPP messages</td></tr>
+            <tr><td>[12:34] &lt MS-&gt Through what sort of hardware ?</td></tr>
+            <tr><td>[12:34] &lt MS-&gt That sounds good :)</td></tr>
+            <tr><td>[12:35] &lt Lawouach_&gt not too shaby for some code that hasn't been really optimised yet</td></tr>
+            <tr><td>[12:35] &lt Lawouach_&gt well the hardware is good</td></tr>
+            <tr><td>[12:35] &lt MS-&gt Indeed :)</td></tr>
+            <tr><td>[12:35] &lt Lawouach_&gt 4 cores</td></tr>
+            <tr><td>[12:35] &lt Lawouach_&gt 4Gb of RAM</td></tr>
+            <tr><td>[12:35] &lt MS-&gt Is any of the code using multiple cores ?</td></tr>
+            <tr><td>[12:36] &lt Lawouach_&gt well I think yes</td></tr>
+            <tr><td>[12:36] &lt MS-&gt cool</td></tr>
+            <tr><td>[12:36] &lt Lawouach_&gt i'm actually starting 4 Python processes using a bash script</td></tr>
+            <tr><td>[12:36] &lt Lawouach_&gt each running 50 XMPP clients in its own Axon scheduler</td></tr>
+            <tr><td>[12:36] &lt MS-&gt Ah :)</td></tr>
+            <tr><td>[12:36] &lt MS-&gt That will always work too :)</td></tr>
+            <tr><td>[12:36] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[12:37] &lt MS-&gt bash is underrated</td></tr>
+            <tr><td>[12:37] &lt Lawouach_&gt I actually managed around 25000 stanza/s</td></tr>
+            <tr><td>[12:37] &lt Lawouach_&gt indeed</td></tr>
+            <tr><td>[12:38] &lt MS-&gt I have no real basis for comparison, but those do sound like good numbers</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt well I don't have yet basis for comparison either</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt I need to write the same piece of service in erlang</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt that'd be the reference</td></tr>
+            <tr><td>[12:39] &lt MS-&gt I'm certain that that would show that kamaelia still has some way to go.</td></tr>
+            <tr><td>[12:40] &lt Lawouach_&gt well i'm sure we could get better performances if I was to clean up my code and optimise it a bit, coupled with a better scheduler would help as well</td></tr>
+            <tr><td>[12:40] &lt Lawouach_&gt I think Kamaelia has plenty to go</td></tr>
+            <tr><td>[12:42] *** MS- nods</td></tr>
+            <tr><td>[12:42] &lt MS-&gt Now, if the GIL was removed and threadedchassis was implemented though, then that would open up a much nicer model for coding for multicore</td></tr>
+            <tr><td>[12:43] &lt Lawouach_&gt yeah well i'll bet on bash for now then</td></tr>
+            <tr><td>[12:43] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:45] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:45] &lt MS-&gt Indeed :)</td></tr>
+            <tr><td>[12:50] *** eikenberry_ is now known as eikenberry</td></tr>
+            <tr><td>[13:36] &lt Lawouach_&gt oh Kamaelia.org is down</td></tr>
+            <tr><td>[13:58] &lt MS-&gt is it?</td></tr>
+            <tr><td>[13:58] *** MS- looks</td></tr>
+            <tr><td>[13:58] &lt MS-&gt OK, host itself is up</td></tr>
+            <tr><td>[13:58] *** MS- is logged into it</td></tr>
+            <tr><td>[13:58] &lt MS-&gt (132.185.142.2)</td></tr>
+            <tr><td>[13:58] &lt MS-&gt As is the machine that serves its DNS</td></tr>
+            <tr><td>[13:59] &lt MS-&gt local lookup here (on a different network from either) succeeds</td></tr>
+            <tr><td>[13:59] &lt MS-&gt http://downforeveryoneorjustme.com/www.kamaelia.org</td></tr>
+            <tr><td>[13:59] &lt MS-&gt says</td></tr>
+            <tr><td>[13:59] &lt MS-&gt  It's just you. http://www.kamaelia.org is up.</td></tr>
+            <tr><td>[14:31] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[14:31] &lt Lawouach&gt back</td></tr>
+            <tr><td>[14:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:32] &lt Lawouach&gt don't know if this is just me but the sound isn't synchronised on the first blip video</td></tr>
+            <tr><td>[14:32] &lt MS-&gt It seems to be like that with the transcoding on blip. The original video is synced, but something blip have done is wierd.</td></tr>
+            <tr><td>[14:32] &lt Lawouach&gt :/</td></tr>
+            <tr><td>[14:36] &lt MS-&gt yep, just replaying it here, and the AV is synced, but the flash isn't</td></tr>
+            <tr><td>[14:36] &lt MS-&gt (ie replaying the .avi file and that's synced, but the flash file isn't)</td></tr>
+            <tr><td>[14:37] &lt MS-&gt Though intriguing, retrying playing back with mplayer rather than ffplay shows a desync</td></tr>
+            <tr><td>[14:37] &lt MS-&gt With the video getting ahead</td></tr>
+            <tr><td>[14:39] &lt MS-&gt Very odd</td></tr>
+            <tr><td>[14:54] &lt MS-&gt Wonder why one video will play in sync with one player and *not* in sync with another</td></tr>
+            <tr><td>[15:12] &lt MS-&gt retrying with mencoder, now that I know what options result in blip.tv not exploding</td></tr>
+            <tr><td>[15:13] &lt MS-&gt If that works OK, I'll come back and redo the tutorials</td></tr>
+            <tr><td>[15:13] &lt MS-&gt I suspect ffmpeg is doing something "wrong"</td></tr>
+            <tr><td>[15:14] &lt MS-&gt Probably need a longer chunk thinking about it</td></tr>
+            <tr><td>[15:18] *** Davbo_ has joined #kamaelia</td></tr>
+            <tr><td>[15:34] &lt MS-&gt first test-sync test seems pretty good</td></tr>
+            <tr><td>[15:34] &lt MS-&gt testing with a longer chunk of video now</td></tr>
+            <tr><td>[15:34] &lt MS-&gt http://blip.tv/file/2330630 is the first test</td></tr>
+            <tr><td>[15:35] &lt Davbo_&gt http://www.reddit.com/r/Python/comments/8yysl/kamaelia_an_intuitive_approach_to_concurrency/</td></tr>
+            <tr><td>[15:35] &lt Davbo_&gt if it gets many more upvotes you need to expect a spike in traffic MS-</td></tr>
+            <tr><td>[15:35] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:35] &lt Davbo_&gt just a warning :)</td></tr>
+            <tr><td>[15:36] &lt MS-&gt That machine was being used for uploading video to blip earlier - ~800KBytes/s</td></tr>
+            <tr><td>[15:36] *** Davbo_ has upvoted</td></tr>
+            <tr><td>[15:36] &lt MS-&gt If it breaks beyond that, that's fine :)</td></tr>
+            <tr><td>[15:36] &lt Davbo_&gt hehe</td></tr>
+            <tr><td>[15:40] *** eikenberry upvoted </td></tr>
+            <tr><td>[15:42] *** MS- fixes the source & SVN text </td></tr>
+            <tr><td>[15:42] &lt MS-&gt ;)</td></tr>
+            <tr><td>[15:43] &lt MS-&gt Also added a link right next to the download section to the europython tutorial notes</td></tr>
+            <tr><td>[15:44] &lt MS-&gt thanks for upvoting :)</td></tr>
+            <tr><td>[15:48] &lt MS-&gt Davbo_: You may be gratified to hear btw that I used your paint program to show that kamaelia supports multiple processes last week :)</td></tr>
+            <tr><td>[15:49] &lt MS-&gt ie as a concrete example of something that *must* be using multiple processes</td></tr>
+            <tr><td>[15:52] &lt Davbo_&gt pleased to hear it, I'm going to write a prototype of what I'm working on over summer in Kamealia to see if its better than the existing threaded method</td></tr>
+            <tr><td>[15:52] &lt Davbo_&gt can't really say much about it unfortunately</td></tr>
+            <tr><td>[15:53] &lt Davbo_&gt might be a nice use case though</td></tr>
+            <tr><td>[15:54] &lt MS-&gt That's fine. If it's useful, that's what matters (to me). If it helps that's good. if it doesn't that's useful to know</td></tr>
+            <tr><td>[15:57] &lt MS-&gt Don't forget BTW, that you "own" the namespace Kamaelia.Apps.DK</td></tr>
+            <tr><td>[15:59] &lt MS-&gt I think the av sync in this works quite well: http://blip.tv/file/2330727</td></tr>
+            <tr><td>[16:00] &lt MS-&gt OK, I'm happy with that</td></tr>
+            <tr><td>[16:00] &lt MS-&gt That's much better. Plan then: do the keynotes, then redo the tutorials, then the sessions, then the lightning talks</td></tr>
+            <tr><td>[16:00] &lt MS-&gt back later</td></tr>
+            <tr><td>[16:00] &lt MS-&gt (tram)</td></tr>
+            <tr><td>[16:01] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[18:14] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:14] &lt MS-&gt back</td></tr>
+            <tr><td>[19:12] &lt aa_&gt ms, anyone written a two-way rpc for kamaelia?</td></tr>
+            <tr><td>[19:12] &lt aa_&gt MS-: ^^</td></tr>
+            <tr><td>[19:12] &lt MS-&gt json-rpc</td></tr>
+            <tr><td>[19:12] &lt MS-&gt Yes, they have. I ought to put it into Kamaelia.Apps.</td></tr>
+            <tr><td>[19:12] &lt MS-&gt Thanks for reminding me :)</td></tr>
+            <tr><td>[19:13] &lt aa_&gt MS-: where is it, does rasjid hang out here?</td></tr>
+            <tr><td>[19:14] &lt MS-&gt He mailed it through a little while before europython, whilst I was rapidly doing lost of stuff.</td></tr>
+            <tr><td>[19:14] &lt MS-&gt He's posted to the list a couple of times.</td></tr>
+            <tr><td>[19:14] &lt MS-&gt And offered to contribute it</td></tr>
+            <tr><td>[19:14] &lt aa_&gt MS-: I have to convince everyone to let me remove dbus from pida</td></tr>
+            <tr><td>[19:15] &lt aa_&gt and replace it with something based on kamaelia</td></tr>
+            <tr><td>[19:15] &lt aa_&gt I think we have ronny convinced</td></tr>
+            <tr><td>[19:15] &lt MS-&gt :-)</td></tr>
+            <tr><td>[19:15] &lt aa_&gt so go on, cough up the code please :P</td></tr>
+            <tr><td>[19:20] &lt aa_&gt MS-: how do you serialize messages?</td></tr>
+            <tr><td>[19:21] &lt MS-&gt I didn't write it - rasjid did</td></tr>
+            <tr><td>[19:21] &lt MS-&gt I suspect as json messages</td></tr>
+            <tr><td>[19:22] &lt MS-&gt hold on, I'll check it in</td></tr>
+            <tr><td>[19:26] &lt MS-&gt http://code.google.com/p/kamaelia/source/detail?r=6203</td></tr>
+            <tr><td>[19:26] &lt aa_&gt awesome and tidy code</td></tr>
+            <tr><td>[19:27] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/Contrib/jsonrpc/ - perhaps a better view</td></tr>
+            <tr><td>[19:27] &lt MS-&gt :-)</td></tr>
+            <tr><td>[19:29] &lt MS-&gt I need to shift the components into a namespace in Kamaelia.Apps.JsonRpc though</td></tr>
+            <tr><td>[19:29] &lt MS-&gt Since that'd allow reuse of any parts of the code in other applications easier</td></tr>
+            <tr><td>[19:29] &lt MS-&gt But it's really cool :)</td></tr>
+            <tr><td>[19:30] &lt aa_&gt seems there are two versions, one is bd</td></tr>
+            <tr><td>[19:31] &lt aa_&gt you know if the bd one supports async signal-type things?</td></tr>
+            <tr><td>[19:31] &lt MS-&gt "The bdjsonrpc.py file is the main code"</td></tr>
+            <tr><td>[19:31] &lt MS-&gt "It uses jsonrpc.py which is currently Roland Koebler's code"</td></tr>
+            <tr><td>[19:31] &lt aa_&gt oh</td></tr>
+            <tr><td>[19:32] &lt MS-&gt FWIW, I don't know, but I'm happy to give the code a home</td></tr>
+            <tr><td>[19:32] &lt MS-&gt I think it should be useable in an async way</td></tr>
+            <tr><td>[19:33] &lt MS-&gt But even if it can't directly, I suspect that K should make it easier to decouple.</td></tr>
+            <tr><td>[19:34] &lt MS-&gt I'll forward you rasjid's mails</td></tr>
+            <tr><td>[19:36] &lt MS-&gt (just checking that I'm not forwarding anything I shouldn't before sending)</td></tr>
+            <tr><td>[19:38] &lt MS-&gt OK, sent</td></tr>
+            <tr><td>[19:48] &lt aa_&gt thanks</td></tr>
+            <tr><td>[20:01] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:09] &lt MS-&gt aa_: Nearly finished packaging up Rasjid's code btw</td></tr>
+            <tr><td>[21:20] &lt MS-&gt OK, packaged up, installable tar ball here:</td></tr>
+            <tr><td>[21:20] &lt MS-&gt http://www.kamaelia.org/release/Kamaelia-JsonRPC-0.0.1.tar.gz</td></tr>
+            <tr><td>[21:20] &lt MS-&gt And details sent to the mailing list</td></tr>
+            <tr><td>[22:08] *** MS- has parted #kamaelia</td></tr>

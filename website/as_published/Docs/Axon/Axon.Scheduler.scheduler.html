@@ -1,0 +1,251 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.Scheduler.scheduler </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.Scheduler.scheduler">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.Scheduler.scheduler</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Scheduler.html">Scheduler</a>.<a class="reference" href="/Docs/Axon/Axon.Scheduler.scheduler.html">scheduler</a></h2>
+</div>
+<p>For examples and more explanations, see the <a class="reference" href="/Docs/Axon/Axon.Scheduler.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-scheduler">class scheduler(<a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a>)</h2>
+<div class="section">
+Scheduler - runs microthreads of control.</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-scheduler.__init__" name="symbol-scheduler.__init__">__init__(self, **argd)</a></h4>
+<p>Creates a scheduler object. If scheduler.run has not been set, sets it.
+Class initialisation ensures that this object/class attribute is initialised - client
+modules always have access to a standalone scheduler.
+Internal attributes:</p>
+<blockquote>
+<ul class="simple">
+<li>time = time when this object was last active.</li>
+<li>threads = set of threads to be run, including their state - whether active or sleeping(paused)</li>
+</ul>
+</blockquote>
+<p>Whilst there can be more than one scheduler active in the general case you will NOT
+want to create a custom scheduler.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler._addThread" name="symbol-scheduler._addThread">_addThread(self, mprocess)</a></h4>
+<p>A Microprocess adds itself to the runqueue using this method, using
+the mannerism scheduler.run._addThread(). Generally component writers should
+<em>not</em> use this method to activate a component - use the component's own
+activate() method instead.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.handleMicroprocessShutdownKnockon" name="symbol-scheduler.handleMicroprocessShutdownKnockon">handleMicroprocessShutdownKnockon(self, knockon)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.isThreadPaused" name="symbol-scheduler.isThreadPaused">isThreadPaused(self, mprocess)</a></h4>
+<p>Returns True if the specified microprocess is sleeping, or the scheduler
+does not know about it.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.listAllThreads" name="symbol-scheduler.listAllThreads">listAllThreads(self)</a></h4>
+<p>Returns a list of all microprocesses (both active and sleeping)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.main" name="symbol-scheduler.main">main(self[, slowmo][, canblock])</a></h4>
+<p>main([slowmo][,canblock]) - Scheduler main loop generator</p>
+<p>Each cycle through this generator does two things:
+* one pass through all active microprocesses, giving executing them.
+* processing of wake/sleep requests</p>
+<p>You can optionally slow down execution to aid debugging. You can also
+allow the scheduler to block if there are no active, awake microprocesses.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>slowmo    -- slow down execution by waiting this number of seconds each cycle (default=0)</li>
+<li>canblock  -- if True, then will block (waiting for wake requests) if all microprocesses are sleeping (default=False)</li>
+</ul>
+<p>slowmo specifies a delay (in seconds) before the main loop is run.
+slowmo defaults to 0.</p>
+<p>If canblock is True, this generator will briefly) block if there are
+no active microprocesses, otherwise it will return immediately (default).</p>
+<p>This generator terminates when there are no microprocesses left (either
+sleeping or awake) because they've all terminated. (or because there were
+none to begin with!)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.pauseThread" name="symbol-scheduler.pauseThread">pauseThread(self, mprocess)</a></h4>
+<p>pauseThread(mprocess) - request to put a mprocess to sleep.</p>
+<p>If active, or already sleeping, the specified microprocess will be put
+to leep on the next cycle through the scheduler.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.runThreads" name="symbol-scheduler.runThreads">runThreads(self[, slowmo])</a></h4>
+<p>Runs the scheduler until there are no activated microprocesses left
+(they've all terminated).</p>
+<p>Think of this as bootstrapping the scheduler - after all it is a
+microprocess like any other, so needs something to run it!</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>slowmo  -- Optional. Number of seconds to wait between each cycle of executing microprocesses. (default=0 - no wait)</li>
+</ul>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.stop" name="symbol-scheduler.stop">stop(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.waitForOne" name="symbol-scheduler.waitForOne">waitForOne(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-scheduler.wakeThread" name="symbol-scheduler.wakeThread">wakeThread(self, mprocess[, canActivate])</a></h4>
+<p>Request to wake a sleeping mprocess, or activate a new one.</p>
+<p>If sleeping or already active, the specified microprocess will be ensured
+to be active on the next cycle through the scheduler.</p>
+<p>If the microprocess is not running yet then it will be woken if (and only if)
+canActivate is set to True (the default is False).</p>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._closeDownMicroprocess">_closeDownMicroprocess</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.pause">pause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.__str__">__str__</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.activate">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

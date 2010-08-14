@@ -1,0 +1,118 @@
+<html>
+<head>
+<title> Examples/FortuneCookieProtocolClientServer </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Examples/FortuneCookieProtocolClientServer">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+<meta name="qrichtext" content="1">
+<p><span style="font-size: 24pt; font-weight: 600;">Cookbook Example</span></p>
+<p align="right"><span style="font-size: 18pt;">How can I...?</span></p>
+<p>Example 1: Building a Simple TCP Based Server that allows multiple connections at once and sends a fortune cookie to the client. Includes simple TCP based client that displays the fortune cookie. <span style="font-weight: 600;">Components used:  </span><a href="/Components.html/pydoc/Kamaelia.html.Chassis.html.ConnectedServer.html.SimpleServer.html">SimpleServer</a>, <a href="/Components.html/pydoc/Kamaelia.html.Protocol.FortuneCookieProtocol.html.FortuneCookieProtocol.html.html">FortuneCookieProtocol</a>, <a href="/Components.html/pydoc/Kamaelia.html.Chassis.html.Pipeline.html.html">Pipeline</a>, <a href="/Components.html/pydoc/Kamaelia.html.Internet.html.TCPClient.TCPClient.html">TCPClient</a>, <a href="/Components.html/pydoc/Kamaelia.html.Util.html.Console.ConsoleEchoer.html">ConsoleEchoer</a></p>
+<p></p>
+<ul type="disc"><div><pre><span style="font-style: italic;">#!/usr/bin/python</span><br><br><span style="font-weight: 600;">from</span> Kamaelia.Protocol.FortuneCookieProtocol <span style="font-weight: 600;">import</span> FortuneCookieProtocol<br><span style="font-weight: 600;">from</span> Kamaelia.SimpleServerComponent <span style="font-weight: 600;">import</span> SimpleServer<br><span style="font-weight: 600;">from</span> Kamaelia.Internet.TCPClient <span style="font-weight: 600;">import</span> TCPClient<br><span style="font-weight: 600;">from</span> Kamaelia.Util.Console <span style="font-weight: 600;">import</span> ConsoleEchoer<br><span style="font-weight: 600;">from</span> Kamaelia.Chassis.Pipeline <span style="font-weight: 600;">import</span> Pipeline<br><span style="font-weight: 600;">import</span> random<br><br>clientServerTestPort=random.randint(1500,1599)<br><br>SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()<br><br>Pipeline(TCPClient("127.0.0.1",clientServerTestPort),<br>         ConsoleEchoer()<br>        ).run()<br></pre></div>
+<div><span style="font-weight: 600;">Source:</span> Examples/example1/FortuneCookie_ServerClient.py</div></ul>
+<p></p>
+<p></p>
+<p></p>
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

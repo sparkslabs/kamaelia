@@ -1,0 +1,142 @@
+<html>
+<head>
+<title> Developers/Projects/WebServer </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/WebServer">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Project Task page: Web Server</h1><blockquote><font style="background-color: rgb(51, 51, 255);" bgcolor="#3333ff" color="#3333ff">    <b>PLEASE NOTE THIS PAGE IS CURRENTLY (15/12/2006. </b></font><font style="background-color: rgb(51, 51, 255);" bgcolor="#3333ff" color="#3333ff"><b>12:01)</b></font><font style="background-color: rgb(51, 51, 255);" bgcolor="#3333ff" color="#3333ff"><b> being filled in!     </b>   </font><br><font style="background-color: rgb(51, 51, 255);" bgcolor="#3333ff"><font color="#ffff00">    <b>PLEASE NOTE THIS PAGE IS CURRENTLY (15/12/2006. 12:01) being filled in!     </b>   </font></font><br><font style="background-color: rgb(51, 51, 255);" bgcolor="#3333ff" color="#3333ff">    <b>PLEASE NOTE THIS PAGE IS CURRENTLY (15/12/2006. </b></font><font style="background-color: rgb(51, 51, 255);" bgcolor="#3333ff" color="#3333ff"><b>12:01)</b></font><font style="background-color: rgb(51, 51, 255);" bgcolor="#3333ff" color="#3333ff"><b> being filled in!     </b>   </font><br></blockquote>
+
+<p><div style="float: right; border: solid;" class="twoC"><b> Status:</b> Running - Code has been integrated with another project providing another usecase <br><b>Current Developers: </b> Michael Sparks<br><b>Current "inflight" dev location:</b> /Code/Python/Kamaelia/Kamaelia/HTTP<i></i><br><b>Start Date:</b> Jul 2006<br><b>Major Milestone date:</b> Sept 2006 - initial release<br><b>Expected End Date: </b>n/a<br><b>End Date:</b> n/a<br><b>Date this page last updated:</b> 15 December 2006 <br><b>Estimated effort so far:</b> Original dev+ 0 days<br></div><b><i></i><br></b></p><h2><b>Description</b></h2>The aim of this task is to create a complete, pure python, webserver that is designed from the ground up to be suitable for use in Kamaelia systems, and also easy to use/integrate with other python projects.<br><br>It should be possible to use the Kamaelia web server to expose a web
+interface for a Kamaelia system. It should be possible to take an
+existing python based web application and use Kamaelia as a webserver
+for that application.<br><br>The original development context for this server was during Google Summer of Code. Specifically:<i><br></i><ul><li>Ryan wanted to create a webserver to serve IRC logs. (the reasons for this are shrouded by the mists of time).</li><li>Ryan also needed a webserver to upload .torrent files to as part of his summer of code project. This provided a useful test case.<br></li></ul><i></i>Benefits of creating this set of components:<br><ul><li>This enables Kamaelia based systems to gain an interface that many users are now familiar with - specifically using a web interface. However since we're python based, this means that we also have a webserver that can run client side, which is useful for a number of future projects beyond "just" integration with other web frameworks.<br></li></ul><h2>Inputs</h2><i>This section is largely about
+WHO has influenced this task to do WHAT, and where possible WHY. It is
+also about WHO to contact with regard to this task to influence what's
+going on.<br></i><ul><li><i>Task Sponsor: (can be main developer)</i></li><li><i>Task Owner: (likely to be main developer)<br></i></li><li><i>Developers involved in the task at some point<br></i></li><ul><li><i>There is likely to be at least one. One will be the task owner (if the project is not in stasis)<br></i></li></ul><li><i>Users:</i></li><ul><li><i>Specific concrete users who have provided input</i></li></ul><li><i>Interested third parties</i></li><ul><li><i>This will be specific third parties who have provided input to the project</i></li></ul><li><i>Requirements</i></li><ul><li><i>Each requirement should have who the requirement came from attached to it</i></li><li><i>Each requirement should have an indication of MUST/SHOULD/MAY/WOULD LIKE attached.</i></li></ul></ul><i>The
+people listed here should be real people. Unless you have agreement
+however, this this should be their initials rather than name.<br><br>Relevant Influencing factors:<br></i>
+<ul><li><i>eg release of a tool doing the same sort of thing that renders this non-relevant</i></li><li><i>people joining/leaving project</i></li><li><i>change of sponsorship</i></li><li><i>growth in users/thirdparties</i></li><li><i>tool dependency suitablility</i></li><li><i>unexpected complications</i></li></ul>
+<h2>Outputs</h2><i>This section is largely about WHAT has been produced, normally by WHO (in order to provide a point of contact)</i><br><h3>Expected</h3><ul><li><i>There is likely to be at least one thing expected</i><br></li></ul><h3>Actual</h3><i>This can take many forms<br></i><ul><li><i>Code - what does it do, where is it?<br></i></li><li><i>Reports - where is it, who wrote it, what was it about, when?<br></i></li><li><i>Presentation - where is it, where was it presented, what was it about, who presented it, when?<br></i></li><li><i>Events - eg The Brussels open space event</i></li><li><i>Other - other actual strands of work arising.<br></i></li></ul><i>Note: Especially with speculative tasks,actual outputs may be substantially different from expected.<br></i><h3>Realistic possibilities arising as a result of activity on this task</h3><p><i>Generally
+speaking there may or may not be anything here. The reason this is
+under outputs, is because this really is an output, even if it doesn't
+look like it at first glance.<br></i></p><h2>Related Tasks</h2><h3>Tasks that directly enable this task (dependencies)<br></h3><ul><li><i>example: Multicast transciever, internet subsystem</i></li><li><i>This tasks should ideally be links to the project task pages for these other tasks. <br></i></li></ul><h3>Sub Tasks</h3><ul><li><i>Example: Selector subsystem shutdown</i></li><li><i>Each subtask here should ideally be a link to a project task page for that project</i></li><li><i>It would be </i><i>nice but not mandatory to note the subtask status</i></li><li><i>For small subtasks, it <b>IS</b>
+acceptable to merely have subtasks as bullet points with the sort of
+information you'd put on a project task page, but for which it seems
+overkill to create a project task page for. (It can always become a
+full PTP later on)<br></i></li></ul><h2>Task Log</h2><p><i>This is a list
+of time indexed day to day item. There should ideally be an entry here
+every time you work on this task. Ideally the time taken relating to
+each entry should be listed as well, preferably in man days, down to
+1/4 day granuarity. (ie 2 hours). Sanity is expected to prevail when
+noting this down. They should be annotated by who made the entry, when,
+and any status changes.</i><br></p><i><b>When a task is running, then this is where most updates will occur.</b><br><br>Please put <b>Output</b> in bold prior to any entries where an output was produced<br>Please put <b>Task status changed</b> in bold when the entry relates to a task status change.<br>Example entries:<br></i><ul><li><i>Created the PTP page for the project, and brainstormed how to get started. Michael. November 27th 2006. Time spent 1/4 day</i></li><li><i><b>Output: </b>Produced report (added to output list), Michael. November 27th 2006. Time spent 1/4 day.</i></li><li><i>Liased with sponsor (input to task). Michael, Sponsor,  November 27th 2006. Time spent 1/2 day.</i></li><li><i>Started working of frobbing the bibble, code is being worked in in /Sketches/MPS/Here/...<br><b>Task status changed</b> to running. <br>Time spent: 1/2 day<br>Michael, November 27th 2006<br></i></li><li><i>Project blocked due to lack of access to kit, Michael, 27th November 2006. Time spent: n/a, <b>Task status changed</b> to blocked. </i></li><li><i>Changed sponsor to Jimbo</i></li><li><i>Added developer Matt</i></li><li><i>Removed developer Michael</i></li><li><i>Removed developer Matt</i></li><li><i><b>Task status changed</b> to stasis</i></li></ul><i>This
+is however a task log. The format of entries hasn't be decided on yet.
+However there should ideally be an entry an minimum whenever the state
+of the task changes - that is new developers, sponsors, inputs from
+people, outputs from the task, whether the project is completed,
+finished etc.<br>The reason for including times is to assist in future time estimation exercises.<br>As a result each entry is likely to have:<br></i><ul><li><i>A
+note of any state change (new person, new input, new output, status
+change, new work started, completed etc) This can however simply be a
+note to say what's been done in that amount of time working on the
+task. eg code refactoring is none of the above, but is work, and is
+suitable for the task log, as is simply "coding, Michael, November
+27th, 1 day", etc</i></li><li><i>Who is making the entry</i></li><li><i>When they are making the entry</i></li><li><i>The amount of time spent in the process of effecting that entry. (eg 1/2 day writing a report, 1/2 writing code, etc)</i></li></ul><i>I'd expect much of this text to be deleted.</i><br><br><h2>Discussion</h2><p><i>This
+is where random comments with regard to the project can be added. It's
+expected this section will be in thread mode rather than document mode,
+but people should feel able to refactor comments. If they do, these
+comments become inputs to the project, and the people who have added
+comments would be added under interested third parties.</i></p><p><i>Anything that doesn't fit above fits in here.</i></p><h4>end note (delete from any actual PTP)</h4><font size="2"><font color="#6495ed">(10:34:02) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> well</font><br><font size="2"><font color="#6495ed">(10:34:15) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> the handler needs to differentiateHTTP methods</font><br><font size="2"><font color="#6495ed">(10:34:28) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> the example assumes every methods will behave the same ay</font><br><font size="2"><font color="#6495ed">(10:34:29) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> way</font><br><font size="2"><font color="#6495ed">(10:34:38) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> which is perfectly fine for an example</font><br><font size="2"><font color="#6495ed">(10:34:44) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> but didn't suit my requirements<br></font><font size="2"><font color="#ff8c00">(10:34:59) </font></font><font color="#ff8c00"><b><font size="3">mhrd:</font></b></font><font size="3"> indeed</font><br><font size="2"><font color="#6495ed">(10:35:05) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> in fact</font><br><font size="2"><font color="#6495ed">(10:35:09) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> when you have time</font><br><font size="2"><font color="#6495ed">(10:35:20) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> I'll be happy to tell you where the HTTP protocol could be improved</font><br><font size="2"><font color="#6495ed">(10:35:24) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> for the developer</font><br><font size="2"><font color="#6495ed">(10:35:28) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> not the internal code</font><br><font size="2"><font color="#6495ed">(10:35:35) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> but the public interface</font><br><font size="2"><font color="#6495ed">(10:35:55) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> and of course having support for DELETE and PUT will be a must have :D</font><br><font size="2"><font color="#16569e">(10:36:09) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> Please chat away whilst your mind is fresh</font><br><font size="2"><font color="#062585">(10:36:11) </font></font><font color="#062585"><b><font size="3">***mhrd</font></b></font><font size="3"> crash courses himself in how Ryan's HTTP server protocol is used :)</font><br><font size="2"><font color="#6495ed">(10:37:17) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> well</font><br><font size="2"><font color="#6495ed">(10:37:45) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> take this file<br></font><font size="2"><font color="#6495ed">(10:37:46) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> <a href="http://trac.defuze.org/browser/oss/amplee/amplee/examples/web/demo_wsgi.py">http://trac.defuze.org/browser/oss/amplee/amplee/examples/web/demo_wsgi.py</a></font><br><font size="2"><font color="#6495ed">(10:37:52) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> based on a pure WSGI approach</font><br><font size="2"><font color="#6495ed">(10:38:04) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> using the selector WSGI middleware to do the dispatching</font><br><font size="2"><font color="#6495ed">(10:38:17) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> you can see I associate my handlers based on the HTTp methods</font><br><font size="2"><font color="#6495ed">(10:38:36) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> the current interface of the HTTP package coming with K.</font><br><font size="2"><font color="#6495ed">(10:38:50) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> does not help make this an easy task</font><br><font size="2"><font color="#6495ed">(10:38:54) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> and as you've seen</font><br><font size="2"><font color="#6495ed">(10:39:05) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> I had to do a if/else within the handler</font><br><font size="2"><font color="#16569e">(10:39:15) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> Yep.</font><br><font size="2"><font color="#6495ed">(10:39:25) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> it's fine but also a bit... hmmm</font><br><font size="2"><font color="#16569e">(10:39:32) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> inelegant</font><br><font size="2"><font color="#6495ed">(10:39:36) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> yes</font><br><font size="2"><font color="#6495ed">(10:40:04) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> but I don't blame Ryan's code, I don't think it was a priority :)</font><br><font size="2"><font color="#6495ed">(10:40:10) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> rightly so</font><br><font size="2"><font color="#6495ed">(10:40:30) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> moreover</font><br><font size="2"><font color="#6495ed">(10:40:41) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> the dispatching based on the path of the URI</font><br><font size="2"><font color="#6495ed">(10:40:44) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> is cumbersome</font><br><font size="2"><font color="#6495ed">(10:40:50) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> and will be prone to error </font><br><font size="2"><font color="#6495ed">(10:40:55) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> because it is way to simplistic</font><br><font size="2"><font color="#6495ed">(10:40:59) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> mind you</font><br><font size="2"><font color="#6495ed">(10:41:06) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> this is easily tweakable<br></font><font size="2"><font color="#6495ed">(10:41:12) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> via the createRequestHandler code</font><br><font size="2"><font color="#6495ed">(10:41:37) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> it'd be nice however if K. could have better code in built-in</font><br><font size="2"><font color="#6495ed">(10:41:52) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> something based on Routes/selector for instance would be great</font><br><font size="2"><font color="#6495ed">(10:42:32) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> brb</font><br><font size="2"><font color="#16569e">(10:42:39) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> np</font><br><font size="2"><font color="#6495ed">(10:44:03) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> back</font><br><font size="2"><font color="#6495ed">(10:44:26) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> anyway, I think Ryan's code s a very good stab at HTTP/1.1</font><br><font size="2"><font color="#6495ed">(10:44:33) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> it supports many features</font><br><font size="2"><font color="#6495ed">(10:44:39) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> it's just a bit rough around the edges</font><br><font size="2"><font color="#16569e">(10:44:57) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> Indeed, I was  impressed with what he managed to get written quickly<br></font><font size="2"><font color="#16569e">(10:45:32) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> Examples of APIs you like would be useful.</font><br><font size="2"><font color="#16569e">(10:45:41) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> In essence this will be an "odd" area</font><br><font size="2"><font color="#16569e">(10:46:05) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> because in order to stay useful as a kamaelia component, certain aspects of the API need to stay</font><br><font size="2"><font color="#16569e">(10:46:14) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> However it's a component that sits on an edge</font><br><font size="2"><font color="#16569e">(10:46:19) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> (an adapter)</font><br><font size="2"><font color="#16569e">(10:46:24) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> to other sorts of libraries</font><br><font size="2"><font color="#6495ed">(10:46:33) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> yes</font><br><font size="2"><font color="#16569e">(10:46:41) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> So knowing a better API would be useful</font><br><font size="2"><font color="#6495ed">(10:46:57) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> it would not need much</font><br><font size="2"><font color="#16569e">(10:46:58) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> (After all providing that API would be best implemented as a component itself)</font><br><font size="2"><font color="#16569e">(10:49:32) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> OK, I think I'll create a PTP page for the HTTPServer, and copy this into the discussion area.</font><br><font size="2"><font color="#16569e">(10:50:35) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> I think having an adapter component that adapts the framework to provide a WSGI interface would probably be a good step since it then</font><br><font size="2"><font color="#16569e">(10:50:45) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> makes the server more generally available</font><br><font size="2"><font color="#16569e">(10:50:53) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> Not that I've ever written any WSGI stuff</font><br><font size="2"><font color="#6495ed">(10:51:39) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> but as you said this component lives on the edge, that means, I know my library does not take benefit from K. per se, but instead I use the HTTPServer as an interface between my library and K.</font><br><font size="2"><font color="#6495ed">(10:51:50) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> I expect more of this to happen in the future</font><br><font size="2"><font color="#16569e">(10:51:58) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> Yep</font><br><font size="2"><font color="#16569e">(10:52:20) </font></font><font color="#16569e"><b><font size="3">MS-:</font></b></font><font size="3"> I've been considering also providing a file like interface to components BTW</font><br><font size="2"><font color="#6495ed">(10:52:24) </font></font><font color="#6495ed"><b><font size="3">Lawouach:</font></b></font><font size="3"> re: WSGI &lt;-- yes indeed!</font><br><font size="3"><br><br></font>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

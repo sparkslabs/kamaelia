@@ -1,0 +1,73 @@
+<html><body><table>
+            <tr><td>[02:09] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:34] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[08:15] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:15] &lt MS-&gt morning</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt hi MS-</td></tr>
+            <tr><td>[08:34] &lt Lawouach_&gt how's life?</td></tr>
+            <tr><td>[08:35] &lt MS-&gt Not too bad. Writing up summaries for 4 proposals that I'm pitching for the new workplan tomorrow.</td></tr>
+            <tr><td>[08:35] &lt MS-&gt Using the Kamaelia PTP format as a guide for summarising them in fact :)</td></tr>
+            <tr><td>[08:35] &lt MS-&gt (this format that is : http://www.kamaelia.org/Developers/Projects/ProjectTaskPageTemplate )</td></tr>
+            <tr><td>[08:38] &lt MS-&gt Hopefully one particular one will go through out of the ideas, which will be cool but also have a very clear reason for using kamaelia in it.</td></tr>
+            <tr><td>[08:39] &lt MS-&gt Indeed, I've put that as a staff requirement for the project :-)</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt good man :)</td></tr>
+            <tr><td>[08:39] &lt MS-&gt And yourself?</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt doing good too</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt I started my new job last week</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt Working for a small company that is set on the Google Android market</td></tr>
+            <tr><td>[08:39] &lt MS-&gt Cool. I saw you'd started somewhere, and some erlang comments...</td></tr>
+            <tr><td>[08:40] &lt Lawouach_&gt Using also XMPP a lot thus ejabberd</td></tr>
+            <tr><td>[08:40] &lt MS-&gt Sounds like a good idea :)</td></tr>
+            <tr><td>[08:40] &lt MS-&gt Ahhh. I see</td></tr>
+            <tr><td>[08:40] &lt Lawouach_&gt So currently I'm doping lots of erlang</td></tr>
+            <tr><td>[08:40] *** MS- nods</td></tr>
+            <tr><td>[08:40] &lt Lawouach_&gt which is rather fun</td></tr>
+            <tr><td>[08:40] &lt Lawouach_&gt How's the scheduler refactoring coming?</td></tr>
+            <tr><td>[08:54] &lt MS-&gt Well, its more of a complete rewrite</td></tr>
+            <tr><td>[08:55] &lt MS-&gt Based on experimenting with getting the hackysacker thing going as fast as possible through benchmark whoring</td></tr>
+            <tr><td>[08:55] &lt MS-&gt the hackysack benchmark is really a measure of "this is the scalability when you have very large numbers of players, and almost 100% of work being message passing" rather than the usual kamaelia workload</td></tr>
+            <tr><td>[08:56] &lt MS-&gt So it's rather atypical, but if you can minimise the cost, it's useful</td></tr>
+            <tr><td>[08:56] &lt MS-&gt I suspect pygame components would benefit for example</td></tr>
+            <tr><td>[08:56] &lt MS-&gt I've created a scratch project on code.google for playing btw</td></tr>
+            <tr><td>[08:57] &lt MS-&gt http://code.google.com/p/kamaelian/source/browse/sketches/Axon/Axon.py contains the pathological case - what happens if you optimise for speed</td></tr>
+            <tr><td>[08:57] &lt MS-&gt That runs quicker than stackless's code</td></tr>
+            <tr><td>[08:58] &lt MS-&gt And is amenable to performance boosts using psyco - which gives it an extra 40% or so</td></tr>
+            <tr><td>[08:58] &lt MS-&gt (ie around twice the speed of stackless)</td></tr>
+            <tr><td>[08:58] &lt MS-&gt http://code.google.com/p/kamaelian/source/browse/sketches/Axon/Axon2.py is much closer to something real</td></tr>
+            <tr><td>[08:58] &lt MS-&gt for example it includes:</td></tr>
+            <tr><td>[08:58] &lt MS-&gt             self.link(self, "outbox", (kickto, "inbox"))</td></tr>
+            <tr><td>[08:58] &lt MS-&gt             self.send(self, "outbox")</td></tr>
+            <tr><td>[08:59] &lt MS-&gt Which runs about 2-3 times as fast as fibra at present and a bit slower than stackless.</td></tr>
+            <tr><td>[08:59] &lt MS-&gt I think it can be improved further</td></tr>
+            <tr><td>[09:00] &lt MS-&gt Whether these changes get refactored into the core, or if this replaces the core yet, I'm not sure</td></tr>
+            <tr><td>[09:01] &lt MS-&gt I still need to integrate threads as well, since at present that's a cause for concern</td></tr>
+            <tr><td>[09:01] &lt MS-&gt The interesting thing is that this has crucially simplified the scheduler</td></tr>
+            <tr><td>[09:09] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:40] &lt Lawouach&gt Thread components have always been a bit of a misunderstanding to me</td></tr>
+            <tr><td>[09:40] &lt Lawouach&gt they seem almost against the general idea behind Axon</td></tr>
+            <tr><td>[09:41] &lt Lawouach&gt so I can understand they don't blend well</td></tr>
+            <tr><td>[10:17] &lt MS-&gt fwiw, I'm actually more thinking of doing what we did with processes</td></tr>
+            <tr><td>[10:18] &lt MS-&gt ie you have a threaded chassis</td></tr>
+            <tr><td>[10:18] &lt MS-&gt So Pipeline(A,B,C) is a normal pipeline</td></tr>
+            <tr><td>[10:18] &lt MS-&gt and Threaded(X) puts X in a separate thread</td></tr>
+            <tr><td>[10:19] &lt MS-&gt Historically the reason for introducing threaded components was for 2 reasons:</td></tr>
+            <tr><td>[10:19] &lt MS-&gt 1) a platform we targeted needed to do TCP stuff, but didn't have poll, select or anything similar - it only had threads</td></tr>
+            <tr><td>[10:19] &lt MS-&gt (so it kinda had to happen)</td></tr>
+            <tr><td>[10:20] &lt MS-&gt 2) It's really needed for anything that may block</td></tr>
+            <tr><td>[10:20] &lt MS-&gt Otherwise you hit the performance of the system</td></tr>
+            <tr><td>[10:20] &lt MS-&gt The reason for the split between component & threaded component</td></tr>
+            <tr><td>[10:20] &lt MS-&gt ie the reason for NOT having Threaded(X) earlier is simple - thread safety</td></tr>
+            <tr><td>[10:21] &lt MS-&gt There was no clear way to guarantee that Threaded(X) was safe, so it wasn't allowed.</td></tr>
+            <tr><td>[10:21] &lt MS-&gt Specifically using services (eg backplanes, Selector, pygame display) would be unsafe without that co-ordination</td></tr>
+            <tr><td>[10:22] &lt MS-&gt Due to the implementation of the CAT.</td></tr>
+            <tr><td>[10:22] &lt MS-&gt And also component activation etc</td></tr>
+            <tr><td>[10:23] &lt MS-&gt But, having written the STM code now, I can see how that can be made significantly safer - especially given we now have a wide variety of (real world) use cases now.</td></tr>
+            <tr><td>[10:25] &lt MS-&gt Also threaded components give you something rather special on Jython & Ironpython - multicore support for "free" :)</td></tr>
+            <tr><td>[10:26] &lt MS-&gt (To get blocking handled transparently, you need to monkey patch the stdlib and have true co-routines - ala stackless)</td></tr>
+            <tr><td>[11:28] &lt Lawouach_&gt I like the Threaded(X) bit</td></tr>
+            <tr><td>[15:24] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[17:06] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[17:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:12] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:24] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[22:24] *** vmlemon_1 has parted #kamaelia</td></tr>

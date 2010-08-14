@@ -1,0 +1,108 @@
+<html><body><table>
+            <tr><td>[02:35] &lt plaes&gt hey guys</td></tr>
+            <tr><td>[02:35] &lt plaes&gt do you have any plans to separate out axon from the main tarball?</td></tr>
+            <tr><td>[02:46] &lt plaes&gt also, where can I report bugs?</td></tr>
+            <tr><td>[08:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:31] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:36] *** Dgjgj has joined #kamaelia</td></tr>
+            <tr><td>[08:36] *** Dgjgj is now known as vmlemon_</td></tr>
+            <tr><td>[08:36] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[11:03] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[11:23] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[11:25] *** Uraeus_ is now known as Uraeus</td></tr>
+            <tr><td>[13:46] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[14:05] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:07] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:38] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[14:39] *** MS- reads back log</td></tr>
+            <tr><td>[14:39] &lt MS-&gt plaes: "where can I report bugs" - the place to report bugs is currently the mailing list</td></tr>
+            <tr><td>[14:39] &lt MS-&gt which is a google group - http://groups.google.com/group/kamaelia</td></tr>
+            <tr><td>[14:39] &lt plaes&gt cool..</td></tr>
+            <tr><td>[14:40] &lt plaes&gt also, I tried to do the tutorial, but the example code didn't work...</td></tr>
+            <tr><td>[14:40] &lt MS-&gt re seperating (back) out Axon, that's interesting - I hadn't specifically planned to do so at the moment, but a seperate release is relatively simple since it's maintained separately</td></tr>
+            <tr><td>[14:40] &lt MS-&gt (in terms of code tree, examples, docs locations)</td></tr>
+            <tr><td>[14:40] &lt plaes&gt also, I couldn't find tests...</td></tr>
+            <tr><td>[14:41] &lt plaes&gt execpt few of them scattered throughout the tree</td></tr>
+            <tr><td>[14:42] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Tests/Python/Axon/</td></tr>
+            <tr><td>[14:42] &lt MS-&gt The examples in the release form acceptance tests primarily fwiw</td></tr>
+            <tr><td>[14:43] &lt MS-&gt regarding separately releasing Axon, I'll probably do a build of an Axon tar ball this weekend if there's interest</td></tr>
+            <tr><td>[14:44] &lt MS-&gt (Primarily because Kamaelia - 0.7.0 is due out that weekend as well, and will built at the same time)</td></tr>
+            <tr><td>[14:44] &lt MS-&gt As per: http://www.kamaelia.org/ReleaseProgress070</td></tr>
+            <tr><td>[14:50] &lt plaes&gt cool</td></tr>
+            <tr><td>[14:50] *** plaes has also Gentoo ebuild for 0.6.0</td></tr>
+            <tr><td>[14:52] &lt plaes&gt now.. I was playing with MiniAxon tutorial</td></tr>
+            <tr><td>[14:53] &lt plaes&gt in section 2. Scheduler ...</td></tr>
+            <tr><td>[14:53] &lt plaes&gt I have written the code as it is..</td></tr>
+            <tr><td>[14:53] &lt plaes&gt and when I try to import it in python, I get following error:</td></tr>
+            <tr><td>[14:54] &lt plaes&gt http://paste.pocoo.org/show/92530/</td></tr>
+            <tr><td>[14:57] &lt MS-&gt OK, I've just copied and pasted</td></tr>
+            <tr><td>[14:57] &lt MS-&gt http://www.kamaelia.org/MiniAxon/?tab=3&sat=2</td></tr>
+            <tr><td>[14:57] &lt MS-&gt and</td></tr>
+            <tr><td>[14:57] &lt MS-&gt http://www.kamaelia.org/MiniAxon/?tab=2&mat=2</td></tr>
+            <tr><td>[14:57] &lt MS-&gt into a file</td></tr>
+            <tr><td>[14:58] &lt MS-&gt called miniaxon.py</td></tr>
+            <tr><td>[14:58] &lt MS-&gt and from the command line typed</td></tr>
+            <tr><td>[14:58] &lt MS-&gt (or rather inside a python prompt)</td></tr>
+            <tr><td>[14:58] &lt MS-&gt &gt&gt&gt from miniaxon import scheduler</td></tr>
+            <tr><td>[14:58] &lt MS-&gt &gt&gt&gt</td></tr>
+            <tr><td>[14:58] &lt MS-&gt and that works fine</td></tr>
+            <tr><td>[14:58] &lt MS-&gt http://pastebin.com/m5237f009</td></tr>
+            <tr><td>[15:00] &lt plaes&gt aha..</td></tr>
+            <tr><td>[15:00] &lt plaes&gt it works when these are both in one file</td></tr>
+            <tr><td>[15:00] &lt plaes&gt it might be picking something else up from pythonpath</td></tr>
+            <tr><td>[15:00] &lt MS-&gt http://pastebin.com/m607369fe</td></tr>
+            <tr><td>[15:00] &lt MS-&gt is the longer thing</td></tr>
+            <tr><td>[15:00] &lt MS-&gt maybe</td></tr>
+            <tr><td>[15:01] &lt plaes&gt thank you :)</td></tr>
+            <tr><td>[15:01] &lt MS-&gt You're welcome :-)</td></tr>
+            <tr><td>[15:01] &lt MS-&gt I'll add a note to be more explicit about being in the same file :-)</td></tr>
+            <tr><td>[15:05] &lt plaes&gt ouch</td></tr>
+            <tr><td>[15:05] &lt MS-&gt ouch?</td></tr>
+            <tr><td>[15:05] &lt plaes&gt some of the axon files do "/usr/bin/env python2.3"</td></tr>
+            <tr><td>[15:05] &lt MS-&gt really?</td></tr>
+            <tr><td>[15:06] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[15:06] Reply: does the macarena</td></tr>
+            <tr><td>[15:06] &lt plaes&gt in 0.6.0 tarball at least</td></tr>
+            <tr><td>[15:06] &lt MS-&gt These files:</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Axon/AdaptiveCommsComponent.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Axon/AxonExceptions.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Axon/Component.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Axon/CoordinatingAssistantTracker.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Axon/debugConfigDefaults.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Axon/debugConfigFile.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Axon/Microprocess.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Axon/Postoffice.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:07] &lt MS-&gt Axon/Scheduler.py:#!/usr/bin/env python2.3</td></tr>
+            <tr><td>[15:07] &lt MS-&gt That line should be ignored by python & shell actually</td></tr>
+            <tr><td>[15:07] &lt MS-&gt (which is why I don't hit a problem)</td></tr>
+            <tr><td>[15:07] &lt plaes&gt yeah, but still :)</td></tr>
+            <tr><td>[15:07] &lt MS-&gt since they're always pulled in using</td></tr>
+            <tr><td>[15:07] &lt MS-&gt well yes</td></tr>
+            <tr><td>[15:07] &lt MS-&gt But that's the reason it'd been missed :)</td></tr>
+            <tr><td>[15:08] &lt MS-&gt I'll fix that</td></tr>
+            <tr><td>[15:11] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:12] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[15:14] &lt MS-&gt fixed: http://code.google.com/p/kamaelia/source/detail?r=5512</td></tr>
+            <tr><td>[15:15] *** MS- leaves for home</td></tr>
+            <tr><td>[15:15] &lt MS-&gt biab</td></tr>
+            <tr><td>[15:15] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[15:15] &lt elvum&gt bah</td></tr>
+            <tr><td>[15:16] &lt elvum&gt given that speediness, I was going to get him to fix lots of non-kamaelia things</td></tr>
+            <tr><td>[15:16] &lt plaes&gt :D</td></tr>
+            <tr><td>[16:40] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[16:46] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:17] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[17:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:38] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:42] &lt vmlemon_&gt Hah, "The Internet is a system for transmitting packets of information fast, but unreliably. TCP/IP stacks reliability on top of the Internet. HTTP stacks a standardized protocol for interacting with URLs on top of TCP/IP. The WWW stacks funny cat pictures on top of HTTP. That's how I see it."</td></tr>
+            <tr><td>[17:42] &lt Davbo&gt Hey vmlemon_, brb</td></tr>
+            <tr><td>[17:45] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:27] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:41] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[21:48] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[21:48] &lt MS-&gt evening</td></tr>
+            <tr><td>[21:49] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[22:19] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[22:21] &lt MS-&gt Davbo: evening</td></tr>
+            <tr><td>[22:22] &lt Davbo&gt evening MS-</td></tr>

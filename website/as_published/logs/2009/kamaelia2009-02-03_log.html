@@ -1,0 +1,73 @@
+<html><body><table>
+            <tr><td>[07:53] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:53] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:33] *** liwp has joined #kamaelia</td></tr>
+            <tr><td>[12:50] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:59] &lt MS-&gt been playing with an RFID tag reader & python over the past couple of days. Will probably post a blog post about how to do this nicely and how to combine with Kamaelia.</td></tr>
+            <tr><td>[13:00] &lt MS-&gt The kamaelia transform is really trivial, but opens up some quite fun things</td></tr>
+            <tr><td>[13:00] &lt aa_&gt MS-: hah, I have been doing that too!</td></tr>
+            <tr><td>[13:00] &lt aa_&gt MS-: which reader?</td></tr>
+            <tr><td>[13:00] &lt MS-&gt Tikitag</td></tr>
+            <tr><td>[13:00] &lt aa_&gt except I have been using it with Twisted, not Kamaelia :(</td></tr>
+            <tr><td>[13:00] &lt aa_&gt oh, I bought one from um.. somethingy-widgety-somename</td></tr>
+            <tr><td>[13:01] &lt MS-&gt Naive componentisation is as simple as this:</td></tr>
+            <tr><td>[13:01] &lt MS-&gt http://groups.google.com/group/kamaelia/msg/3b2db2e80d37b667</td></tr>
+            <tr><td>[13:01] &lt aa_&gt that's cool, rfid is cool</td></tr>
+            <tr><td>[13:02] &lt MS-&gt From there, it's a small hop to this:</td></tr>
+            <tr><td>[13:02] &lt MS-&gt http://groups.google.com/group/geekup/msg/30725ea0f916336f</td></tr>
+            <tr><td>[13:02] &lt MS-&gt which would be "controlling the simplest possible presentation tool using RFID tags"</td></tr>
+            <tr><td>[13:13] &lt aa_&gt MS-: on a slightly similar topic, I also had a good play with some contactless chip and pin devices</td></tr>
+            <tr><td>[13:17] &lt MS-&gt cool</td></tr>
+            <tr><td>[13:19] &lt aa_&gt you know those things have publickey privatekey pairs on them</td></tr>
+            <tr><td>[13:19] &lt aa_&gt and the private key is generated on-chip and never leaves the chip</td></tr>
+            <tr><td>[13:19] &lt aa_&gt and the pin is your passphrase</td></tr>
+            <tr><td>[13:19] &lt aa_&gt clever really :)</td></tr>
+            <tr><td>[13:19] *** MS- nods</td></tr>
+            <tr><td>[13:19] &lt MS-&gt That's the way the TCPA stuff works</td></tr>
+            <tr><td>[13:20] &lt aa_&gt right</td></tr>
+            <tr><td>[13:20] &lt aa_&gt trust is interesting</td></tr>
+            <tr><td>[13:20] &lt MS-&gt I think the tikitag reader has something similar built in btw</td></tr>
+            <tr><td>[13:21] &lt MS-&gt but that's not as easy to hack at present</td></tr>
+            <tr><td>[13:21] &lt MS-&gt sadly</td></tr>
+            <tr><td>[13:21] &lt aa_&gt does it come with python libs</td></tr>
+            <tr><td>[13:22] &lt MS-&gt Nope. Only comes with windows/mac downloads, but that's not stopped people :)</td></tr>
+            <tr><td>[13:22] &lt aa_&gt hah</td></tr>
+            <tr><td>[13:22] &lt MS-&gt I'm using this code - which uses libusb directly - https://projects.nesl.ucla.edu/view/viewcvs.cgi/tikitag/trunk/pytiki/</td></tr>
+            <tr><td>[13:52] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[15:58] &lt Lawouach&gt evening folks</td></tr>
+            <tr><td>[16:26] &lt MS-&gt evening</td></tr>
+            <tr><td>[16:29] &lt Lawouach&gt hi mate</td></tr>
+            <tr><td>[16:29] &lt Lawouach&gt how are you?</td></tr>
+            <tr><td>[16:31] &lt MS-&gt I'm pretty good actually. Last week was manic - writing up stupid amounts of docs for work which will probably never be read by anyone ( :-/ ), preceded by being off ill with antibiotics, and avoiding things generally as a result</td></tr>
+            <tr><td>[16:32] &lt MS-&gt Back to normal now though :-)</td></tr>
+            <tr><td>[16:32] &lt MS-&gt Got myself a new toy - http://www.tikitag.com/ - which is fun so far (RFID reader + tags - all with 75% off :) )</td></tr>
+            <tr><td>[16:32] &lt MS-&gt etc</td></tr>
+            <tr><td>[16:32] &lt MS-&gt and yourself?</td></tr>
+            <tr><td>[16:33] &lt MS-&gt Saw you had a sore throat - how's that?</td></tr>
+            <tr><td>[16:33] &lt Lawouach&gt still sour :)</td></tr>
+            <tr><td>[16:33] &lt Lawouach&gt that's mainly annyoing and tiring but not that bad</td></tr>
+            <tr><td>[16:34] &lt Lawouach&gt the tikitag looks great</td></tr>
+            <tr><td>[16:34] *** MS- nods</td></tr>
+            <tr><td>[16:34] &lt MS-&gt It's fun. It's a pity they've sold out, but at the price it was worth a punt :)</td></tr>
+            <tr><td>[16:34] &lt MS-&gt Makes a perfect foil for kamaelia too I've realised</td></tr>
+            <tr><td>[16:35] &lt Lawouach&gt sold out!</td></tr>
+            <tr><td>[16:35] &lt Lawouach&gt dang</td></tr>
+            <tr><td>[16:36] &lt MS-&gt indeed :-/ Looks like they're getting more in (probably branded differently) in March by the sounds of things</td></tr>
+            <tr><td>[16:36] &lt Lawouach&gt damn I want one now :)</td></tr>
+            <tr><td>[16:37] &lt Lawouach&gt probably worth trying ebay</td></tr>
+            <tr><td>[16:37] &lt MS-&gt It wouldn't surprise me to see them there, given that they were so heavily discounted</td></tr>
+            <tr><td>[16:37] &lt MS-&gt Someone probably thought "I'll buy a load and ebay them"</td></tr>
+            <tr><td>[17:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:44] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:45] &lt MS-&gt evening</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt The TikiTag stuff sounds interesting</td></tr>
+            <tr><td>[17:51] &lt MS-&gt It's quite nice</td></tr>
+            <tr><td>[18:20] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:00] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:01] &lt MS-&gt Hm, It'd be really neat to be able to run a single component as a different user</td></tr>
+            <tr><td>[19:04] &lt MS-&gt That's like saying "it'd be nice to run this one function as another user" though, which is a bit moon on a stick</td></tr>
+            <tr><td>[19:39] &lt vmlemon_&gt Haha, http://i.friendfeed.com/4e83b341c7cab13302be4b4b75f37fc688c5f05e</td></tr>
+            <tr><td>[20:01] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[21:00] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:04] *** jae_ has joined #kamaelia</td></tr>
+            <tr><td>[21:09] *** jae_ is now known as eikenberry</td></tr>

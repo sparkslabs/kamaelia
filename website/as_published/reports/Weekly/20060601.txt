@@ -1,0 +1,211 @@
+Meeting length: 36 minutes, record time :-)
+
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060601 ======
+1. Note of Agenda
+2. Participants
+   Participants: Matt, Michael, c-ryan, devendra_l, thomasFx, anagha
+   Attending: tav, Uraeus
+3. Activity Reports
+
+Michael.
+   DONE - /Rewrote/ internet subsystem to work with selector, including a fair rewrite of CSA,
+          *** NOTED IN SOURCE THAT THE SELECTOR HAS A GENERAL ISSUE AFFECTING SERVICES ***
+          Follow up with SM regarding one sider,
+          Weekly meeting notes, Monthly report,
+          Instigated Kamaelia.Community
+   TODO - Merge inversion branch onto head (3.5 KLOC patch to merge)
+          Merge tests from threading branch
+          Write detailed design document for Proper Macro
+          Sort out next Axon/Kamaelia release
+          Audit/update documentation as needed
+          Propose candidate components to move into release tree.
+          Improve website documentation - long spiely text and how its used.
+   BLOCKED - Bank holiday weekend, earlier meeting than usual, No access to Macro
+          kit, bbc.kamaelia.org still not accessible inside BBC(!), several day
+          long meetings this coming week. Sourceforge down again for 1/2 day.
+
+Matt:
+   DONE - Soak test the fixed programme transcoder
+          Check RF signal in office (borrowed kit to do this)
+          check monthly report for MS
+          comment on Kamaelia.Community stuff
+          bugfix: add linkage removal when components shutdown
+          Added to Axon & Kamaelia changelogs
+   TODO - Release notes for optimisations
+          Propose components for adding to next release.
+          Audit/update documentation as needed
+          extract broken HP motherboard and issue support req.
+          Set up 2nd HP tower & rackmount
+          Purchase DVB-T cards for HPs
+          Improve Now and Next change detection
+          Reimplement synchronous boxes/linkages
+          Improve box destruction to handle when a box is still linked to another
+          Mod various components to utilise inversion (timer component?)
+          Move sys-status from Macro.py, into the introspection code.
+          Improve website component documentation to include long spiely stuff
+   BLOCKED - debug soft demuxer segfault (unable to find fault)
+          Write tests for the system inversion (waiting for merge of threads branch tests)
+          Write tests for linkage removal on component shutdown
+
+Thomas:
+   DONE - Controlled cube example
+          Basic 3D framework
+          Class for generating transform matrices
+   TODO - Input handling (intersection)
+          Interactive Components
+          Map pygame surfaces on ogl planes
+   BLOCKED - I have had exams until wednesday
+
+Devendra:
+   DONE - Blog http://dengineer.blogspot.com/
+          Commit of MiniAxon
+   TODO - Further study of components
+   BLOCKED - Exams
+
+Ryan:
+   DONE - Chunkifier, basic wrapper component for BitTorrent client, .torrent-file maker
+   TODO - Multiple BitTorrent client component, HTTP uploader (HTTP client)
+   BLOCKED - Exams/revision
+
+Anagha
+   DONE - (( Got into the loop with Kamaelia project ))
+   TODO - Miniaxon
+   BLOCKED - None
+
+Michael & Matt agreed for Matt to merge his tests for the threads branch,
+despite /general/ policy not to merge your own code. This is intended to
+unblock Matt. Matt noted that it'd be done same day.
+
+4. Discussion items (max 3 or 4)
+4.1 Release Issues
+
+Michael noted the inversion branch is now closed.
+
+For those present he also summarised what this means:
+    ... the inversion means a flip of control in the scheduler rather than
+        busy waiting checking everything it and other components can run in
+        threads and wake each other up using Thread.Event objects, Which
+        means when there's nothing happening things really sleep, much
+        like using semaphores.
+        
+        In terms of components, things generally remain the same, except
+        that when you call self.pause() and yield you'd really better mean
+        it now :) , since the system WILL pause and not wake up unless you
+        have something in a thread :)
+
+Matt also noted that the
+    * current implementation based on queues of wake & pause requests, but
+      that can/might-well change".
+    * many components still need to be modified to make full use of
+      this - eg. file reading components still busy wait
+
+Michael also noted that as a result, any changes to the core should be
+developed in sketches now for the moment until merge is complete.
+
+Michael also asked people to consider proposing for the release tree items
+which they rely on. The way to do this is to add the following string to
+the end of the file you'd like to see in the release:
+
+   # RELEASE: initals
+
+Nothing in sketches should be proposed at this stage
+   - Exception from discussion: Backplane.py, include the sketcher's mods
+
+Michael can then review and move into the release tree or not as makes sense
+
+After reviewing the release checklist, we noted that the release checklist now
+looks like this:
+
+    MUST HAVES
+    
+          Sort out next Axon/Kamaelia release
+    DONE  Modify internet subsystem to be compliant with selector changes
+          Merge inversion branch onto head
+    DONE  add linkage removal when components shutdown
+          components that Macro.py depends on should be included in the release, even if we tag them as being experimental
+    DONE  Anybox problem - looks at final destination inbox in a passthrough chain, this is broken :)
+
+    WOULD LIKE TO HAVES
+    
+          Now and Next change detection needs to distinguish between programme update and programme junction.
+    DONE  Move threading branch axon tests to right location & notify Michael.
+          Merge tests from threading branch
+          Write tests for the system inversion changes
+          Synchronised boxes need reimplementing
+          Many components don't play nicely with the inversion right now due to busy wait.
+
+          Audit/update documentation as needed
+          Propose candidate components to move into release tree.
+
+Matt noted he'd tag macro related components in the manner described above.
+First 2 items on the MUST HAVEs are assigned to Michael.
+
+Michael noted that he needs to do this:
+   * Add - c-ryan's change to handling of TCP socket options
+
+Matt/Michael noted we're still on target for a fast release.
+
+Michael again called for people to review documentation, and provide
+patches & rewrites where possible.
+
+Decision was made to include UnixPipe & Backplane to the release.
+(Discussion over backplane was longer and really finished outside
+the meeting)
+
+A warning needs to be added to Backplane to warn it may need further
+changes.
+
+4.2 Summer of Code Community Points
+
+Kamaelia.Community
+
+Michael noted he's asked for feedback on the mailing lists, but have
+not had any as yet, aside from Matt, and that he'd really like it.
+and he's waiting for more feedback before responding.
+
+Michael quashed discussion of the proposal in the meeting because he
+wants detailed feedback preferably via email or bliki.
+
+Regarding the guidelines document - the email with lots of ACTIONs for
+people Michael asked everyone to review their ACTIONs again and get any
+outstanding ones out of the way ASAP. He also noted he'd wasn't going to go
+through laboriously again this week but will chase next week.
+----------------
+Licensing - appears resolved. After discussion Kamaelia.Community started.
+feedback from 3 students stating their happy with BSD license to the BBC
+for Summer of Code work, and happy with Kamaelia.Community for other stuff.
+Precise document yet to be sent out.
+
+Anagha also stated he's happy with this.
+
+Michael also wanted to make the following notes:
+
+Weekly 1 on 1 meetings appear useful so far, minor cockups on timings. Will
+leave detailed status updates for SoC work for those 1 on 1 meetings.
+
+Dedicated mentoring time is working for Michael. Appears useful for mentees
+For those whose time has been/gone so far that is :)
+
+Thomas and Anagha, who were the only ones who'd been able to take advantage
+of this so far, also agreed with this sentiment.
+
+Michael also noted he'd be tracking DONE/TODO/BLOCKED against timelines
+in student proposals as well as 1 on 1 meetings, this met with general
+approval.
+
+Devendra queried whether the contributor agreement would be for SoC work only.
+Michael clarified this as follows, conceptually it's a check box:
+   * Everything
+   * Everything relation to Summer of Code
+   * Nothing
+
+... and that the key point is that as the BBC knows where it stands,
+that's fine.
+
+5. Date/Time of next meeting
+   Proposed: Fri 9th June 2006, 11am BST (GMT+0100)
+
+   Devendra will be absent, but would provide action list on thu eve.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060601 ======
+

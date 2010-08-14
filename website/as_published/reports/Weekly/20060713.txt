@@ -1,0 +1,181 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060713 ======
+
+1. Note of Agenda
+
+2. Participants
+   cryan
+   devendra_l
+   G0SUB
+   mhrd
+   MS-
+   Uraeus
+
+3. Activity Reports
+
+Matt:
+    DONE:
+        experiment with auto-shutting down services
+        continue with DVB components
+        experimenting with DL's securephone
+    BLOCKED:
+        bbc meetings
+        reluctant to fix made codebase and/or start branches whilst svnnotify is down
+        alsa+speex choppy-audio problems
+    TODO:
+        sign up for euro oscon
+        build up services experiments into something more comprehensive
+        track down alsa+speex problem
+        make pymedia wrappers
+        continue with DVB components
+        review/revisit experimental Timer component
+
+Ryan:
+    DONE:
+        Created tone generator, musical note name -> note frequency and .wav file writer components
+        Basic Tk GUI component for BitTorrent
+        Fixed HTTPServer to use new HTTPParser and support components as request handlers
+        Found and dealt with 100% CPU bug in Selector
+    TODO:
+        Modules for HTTPServer
+        component test scripts
+        reconnecting kambot
+        HTTPServer - stop sending file after a disconnect
+        resuming support for TorrentClient
+        shutdown support for TorrentService, TorrentClient
+        unpausing of HTTPServer when its messages are delivered
+    BLOCKED:
+        Nope
+
+Michael:
+
+    DONE:
+        Mainly SOC oriented, meeting with university, lots of *little* things
+        Ah, I also helped anagha rewrite a bunch of code.
+        Code reviewed Ryan's file reader
+        Continued liasing with legal - we look like we should have a solution soonish
+        Organising travel for OSCON
+        Organising travel for next week
+
+    BLOCKED:
+        Meeting in london Monday
+        Arranging talking related things like oscon, euro-oscon, and linuxworld
+        Caught up on Friday with workshop related stuff
+        Meeting with university
+
+    TODO:
+        Fix the win32 pygame issues
+        Test release on GP2X, Mac OS X
+        On the bliki: Describe the requirement for the Database component
+        Write detailed design document for Proper Macro
+        Fix throughput & capture issues for Alsa
+        Write up what we want from the website & release going forward.
+        Write up monthly notes and meeting notes from the day HDD drive died.
+        Write presentation for OSCON, converge Whiteboard & Show
+        reply to Gangadhar
+        create public todo list
+        investigate pygame issues
+        update website with Ryan's change
+        look into 100% cpu issues and client connection handling.
+
+Matt noted that he would follow up with Ryan later regarding services.
+
+4. Discussion items (max 3 or 4)
+
+4.1 SoC progress check
+
+Michael noted that progress seemed to be going well overall within the
+revised expectations for each individual.
+
+Ryan noted that he felt a little unfocussed. Michael noted that refocussing
+back on the specific project Ryan proposed (eg streaming over torrent) would
+be a good starting point. Michael also noted that he'd been holding back a
+touch on guidance *because* Ryan had been producing lots of interesting
+stuff. Michael noted that if Ryan was having problems with usecases - which
+he feels are the best way to think of direction and focus - that he can help
+there, but we'd do that outside the meeting.
+
+Action: michael to help Ryan regain focus.
+
+Michael also wanted to raise that due to vacation and OSCON that the amount of
+time he'd be around for actual mentoring would be minimal for the final month,
+and that people should take advantage of this time whilst he was around.
+
+Michael also noted that the last two weeks should focussed around fully
+documenting and packaging up. This would involve 2 things@
+
+    a) deciding what you want to go into the main tree and putting it there.
+    b) deciding what you want to have not in the main tree
+       and packaging up using the Kamaelia.Community process
+
+Matt noted that this means both components and any 'examples' built from
+them. Some specific points:
+Torrent code for example: 
+    /Code/Python/Kamaelia/Kamaelia
+
+Made avaiable as:
+   (11:38:56) MS-: Kamaelia.Protocol.BitTorrent
+
+   (11:39:02) c-ryan: ok
+   (11:39:17) MS-: That's the sort of thing I mean for dealing with packaging issues
+   (11:39:23) c-ryan: ok
+
+Ryan's HTTP code, I'd *like* it to go in Kamaelia.Protocol.HTTP
+But could also go in Kamaelia.Community.RJL.Kamaelia.Protocol.HTTP
+
+Matt noted he'd get up to speed on everyone's code.
+
+Michael also noted that he'd add in some import magic to allow:
+
+    import Kamaelia.Community.RJL.Namespace
+
+That would then allow
+    import Kamaelia.Protocol.HTTP
+
+Ryan noted he was away from 12th to 21st August meaning that for all intents
+and purposes his summer of code involvement would finish on 21st August.
+Michael therefore suggested that Ryan's last "coding day" should therefore
+be August 4th with the final time spent on documentation.
+
+Michael also noted that everyone is very welcome to continue coding after
+SoC, since there's a reason the project says "Kamaelia Contributors".
+
+4.2 svnnotify & The Backlog(tm)
+
+SVN notify was becoming a problem and everyone was finding irritating.
+Michael suggested the only way through this would be to formalise manual
+checkin notices - by getting people to email kamaelia-list with
+changes in /Code. (/Sketches too if possible)
+
+Matt noted it's crippling not being able to see what other people are
+doing, or know that they're being kept informed of stuff 
+
+Michael offered if things continued this way to write a wrapper script
+around svn to allow checkins to have manual emails automatically sent.
+
+4.3 Project Wiki
+
+Michael noted that he'll be migrating the website to a wiki engine very
+shortly, which will initially only be edittable by developers on the
+project.
+
+He noted that it understands the same directives as the current
+website and is wysiwyg using HTML as the "plain text" of the system
+so much of the website will be able to migrate in. Assuming its fast
+enough, I'll intend to use this after a trial period for editting
+and updating the website.
+
+Michael noted that the restriction to developers only at present is due
+to the fact the code doesn't at present protect against XSS attacks. (in
+addition to problems with random images, and wikispam)
+
+Michael noted that we need greater ability to do things needs to be
+devolved away from Michael since his todo list is getting silly, and lots
+of that could be solved by simply making my todo list publicly attackable
+by others. Or it'd make it easier for others to cherry pick something
+they're interested in 
+
+5. Date/Time of next meeting
+
+Thursday 20th July 2006, 11am BST (GMT+0100)
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060713 ======

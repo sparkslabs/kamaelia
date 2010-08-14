@@ -1,0 +1,101 @@
+<html><body><table>
+            <tr><td>[04:31] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[07:23] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:28] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[07:49] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:05] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:05] &lt MS-&gt greetings</td></tr>
+            <tr><td>[09:05] &lt Uraeus&gt hi MS-</td></tr>
+            <tr><td>[09:06] &lt Uraeus&gt MS-: we will probably have a BBC person in the office today or in the near future, seems the BBC has given the greenlight to a documentary about Sinclair, and the producer wants to come here to do some location scouting etc, since Sinclair used to have his office close to ours :)</td></tr>
+            <tr><td>[09:07] &lt MS-&gt Ahh, that's pretty cool :)</td></tr>
+            <tr><td>[09:07] &lt MS-&gt IIRC you still tend to even see a sinclair C5 going round Cambridge</td></tr>
+            <tr><td>[09:07] &lt MS-&gt Or used to last time I was around :)</td></tr>
+            <tr><td>[09:07] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[09:40] &lt aa_&gt in the year 18 hundred and something</td></tr>
+            <tr><td>[09:40] *** aa_ hides</td></tr>
+            <tr><td>[09:40] &lt MS-&gt heh</td></tr>
+            <tr><td>[09:40] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:35] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[11:42] &lt Lawouach&gt eh eh http://github.com/disturbyte/zenqueue/tree/master</td></tr>
+            <tr><td>[11:42] &lt Lawouach&gt this reminds of when I wrote bucker http://trac.defuze.org/wiki/bucker</td></tr>
+            <tr><td>[11:42] &lt Lawouach&gt seems everyone writes his own queue/distributed product these days</td></tr>
+            <tr><td>[11:43] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[13:01] &lt Lawouach&gt MS-: are you there mate?</td></tr>
+            <tr><td>[13:02] &lt Lawouach&gt I have a quick question if you're around</td></tr>
+            <tr><td>[13:02] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[13:02] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[13:02] &lt MS-&gt yep</td></tr>
+            <tr><td>[13:02] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[13:02] &lt MS-&gt sorry, I hadn't noticed earlier (was afk for a bit)</td></tr>
+            <tr><td>[13:02] &lt Lawouach&gt have you tried running Axon inside a process started using the multiprocessing module?</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Not inside multiprocessing, but there are hooks in there for dealing with running inside pprocess</td></tr>
+            <tr><td>[13:03] &lt Lawouach&gt I'm evaluating my options for a task at work and I'd like to be able to run Axon components that way</td></tr>
+            <tr><td>[13:03] &lt MS-&gt (specifically zapping the scheduler in case it's already got anything there)</td></tr>
+            <tr><td>[13:03] &lt Lawouach&gt essentially, do you see any pitfalls?</td></tr>
+            <tr><td>[13:03] &lt Lawouach&gt right</td></tr>
+            <tr><td>[13:03] &lt MS-&gt If you do something wrong you can get some real wierd stuff going on :)</td></tr>
+            <tr><td>[13:04] &lt MS-&gt (for example components being active in two processes, and one feeding into another)</td></tr>
+            <tr><td>[13:04] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[13:04] &lt MS-&gt That's why the scheduler gained the zap method :)</td></tr>
+            <tr><td>[13:04] &lt Lawouach&gt I'm wondering, are those processes real unix processes with their own Python vm?</td></tr>
+            <tr><td>[13:04] &lt MS-&gt yes</td></tr>
+            <tr><td>[13:04] &lt Lawouach&gt or do they share the Python VM instance?</td></tr>
+            <tr><td>[13:04] &lt Lawouach&gt so how come the scheduler is leaking?</td></tr>
+            <tr><td>[13:05] &lt MS-&gt What do you mean?</td></tr>
+            <tr><td>[13:05] &lt MS-&gt Oh, transferring onto the other?</td></tr>
+            <tr><td>[13:05] &lt MS-&gt pprocess calls fork()</td></tr>
+            <tr><td>[13:05] &lt MS-&gt if you do that after the scheduler has started</td></tr>
+            <tr><td>[13:06] &lt Lawouach&gt oooooh</td></tr>
+            <tr><td>[13:06] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[13:06] &lt MS-&gt then you get a copy of everything ...</td></tr>
+            <tr><td>[13:06] &lt Lawouach&gt I should be safe if I start the scehduler from within the forked process right?</td></tr>
+            <tr><td>[13:06] &lt MS-&gt I suspect that multiprocessing does the same</td></tr>
+            <tr><td>[13:06] &lt MS-&gt yes</td></tr>
+            <tr><td>[13:06] &lt Lawouach&gt right</td></tr>
+            <tr><td>[13:07] &lt Lawouach&gt The thing is, I find the multiprocessing package very tempting for some long tasks I have to run but once inside a forked process, I'd like to use Kamaelia to perform the actual job :)</td></tr>
+            <tr><td>[13:07] *** MS- nods</td></tr>
+            <tr><td>[13:09] &lt MS-&gt rummaging inside the multiprocessing module yields this:</td></tr>
+            <tr><td>[13:09] &lt MS-&gt forking.py: self.pid = os.fork()</td></tr>
+            <tr><td>[13:09] &lt MS-&gt which shows that it can have similar issues.</td></tr>
+            <tr><td>[13:13] &lt Lawouach&gt right</td></tr>
+            <tr><td>[13:14] &lt Lawouach&gt thanks</td></tr>
+            <tr><td>[13:14] &lt MS-&gt you're welcome :)</td></tr>
+            <tr><td>[13:15] &lt MS-&gt BTW, how would you feel if I mirrored your Kamaelia apps into Kamaelia.Apps ? (eg Kamaelia.Apps.Bucker or Kamaelia.Apps.bucker ) ? The idea is to make it easier for people to reuse components from inside other apps.</td></tr>
+            <tr><td>[13:16] &lt MS-&gt I'm planning on opening Kamaelia.Apps up more widely, and reserving namespaces for known existing apps</td></tr>
+            <tr><td>[13:16] &lt MS-&gt I'd imagine that at the moment it just doesn't fit or make sense at all</td></tr>
+            <tr><td>[13:17] &lt MS-&gt But I'm planning on trying to make it easier to reuse whole kamaelia apps for other stuff. (much like reusing the whiteboard code in the scribble n write app & scribble n link toy)</td></tr>
+            <tr><td>[13:20] &lt Lawouach&gt I'm fine by it and the license allows it :)</td></tr>
+            <tr><td>[13:21] &lt Lawouach&gt that being said, I don't actively maintain all of those products (though headstock is currently maintained)</td></tr>
+            <tr><td>[13:21] &lt Lawouach&gt bucker on the other hand isn't really anymore</td></tr>
+            <tr><td>[13:21] &lt Lawouach&gt though it probably still works just as well :)</td></tr>
+            <tr><td>[13:21] &lt MS-&gt Cool.</td></tr>
+            <tr><td>[13:23] &lt MS-&gt I'm currently writing a mail at work to try and get Kamaelia's license changed to something BSD like - probably Apache 2.0 license, and I might use "being compatible with other Kamaelia projects" as a rationale :)</td></tr>
+            <tr><td>[13:23] &lt MS-&gt (along with other reasons)</td></tr>
+            <tr><td>[13:23] &lt MS-&gt since actually I've been asked that by a lot of people really</td></tr>
+            <tr><td>[13:24] &lt MS-&gt (well, alot is relative, but... :) )</td></tr>
+            <tr><td>[13:24] &lt Lawouach&gt I saw that</td></tr>
+            <tr><td>[13:24] &lt Lawouach&gt I didn't mind the current license but well</td></tr>
+            <tr><td>[13:24] &lt Lawouach&gt BSD is the real deal :p</td></tr>
+            <tr><td>[13:24] &lt Lawouach&gt bucker seems to work just fine</td></tr>
+            <tr><td>[13:26] &lt MS-&gt Well, yes. BSD is my personal preference. The MIT license seems to be the simplest of all really, but clause 5 of the Apache license is really handy:</td></tr>
+            <tr><td>[13:27] &lt MS-&gt  5. Submission of Contributions. Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions.</td></tr>
+            <tr><td>[13:27] &lt MS-&gt ie "done"</td></tr>
+            <tr><td>[13:29] &lt Lawouach&gt right</td></tr>
+            <tr><td>[14:47] &lt MS-&gt OK, asking the legal people first if they have any objections.</td></tr>
+            <tr><td>[14:47] &lt MS-&gt The fact that the BBC's released more than one project under the apache license (which I've pointed out) SHOULD mean they don't have any.</td></tr>
+            <tr><td>[14:53] &lt MS-&gt Means that also given it's not on the workplan at work, and the fact that I don't work on it during work time (unless I'm using it for a project of course...)</td></tr>
+            <tr><td>[14:53] &lt MS-&gt it is then fairer to everyone else (including me :)</td></tr>
+            <tr><td>[14:56] &lt Lawouach_&gt MS-: good</td></tr>
+            <tr><td>[14:56] &lt MS-&gt It's why I personally prefer the BSD license family in general really - everyone ends up with the same rights, abilities, and most importantly, complete lack of headaches :)</td></tr>
+            <tr><td>[15:49] &lt Lawouach_&gt http://news.bbc.co.uk/2/hi/uk_news/8056700.stm</td></tr>
+            <tr><td>[15:49] &lt Lawouach_&gt come on :)</td></tr>
+            <tr><td>[15:58] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:07] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[16:09] &lt vmlemon_1&gt Hi</td></tr>
+            <tr><td>[16:09] &lt Lawouach_&gt hi</td></tr>
+            <tr><td>[16:09] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[16:09] *** vmlemon_1 is now known as vmlemon_</td></tr>
+            <tr><td>[18:00] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:24] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[19:20] *** vmlemon_ has joined #kamaelia</td></tr>

@@ -1,0 +1,308 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Experimental.Services </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Experimental.Services</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.html">Experimental</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.html">Services</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>prefab <a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.RegisterService.html">RegisterService</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.Subscribe.html">Subscribe</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.ToService.html">ToService</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#553">Components to help build Services (EXPERIMENTAL)</a><ul>
+<li><a class="reference" href="#554">Register Service</a><ul>
+<li><a class="reference" href="#555">Example Usage:</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#556">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#557">Subscibe To Service</a><ul>
+<li><a class="reference" href="#558">Example Usage:</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#559">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#560">Connect To Service</a><ul>
+<li><a class="reference" href="#561">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#562">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="553">Components to help build Services (EXPERIMENTAL)</h1>
+<p>These components make it easier to build and use public services, registered
+with the Coordinating Assistant Tracker.</p>
+<p>Note: These components are EXPERIMENTAL and are likely to under go substantial
+change</p>
+<div class="section">
+<h2 id="554"><a id="register-service" name="register-service">Register Service</a></h2>
+<p>A function that registers specified inboxes on a component as named services
+with the Coordinating Assistant Tracker (CAT). Returns the component, so can
+be dropped in where you would ordinarily use a component.</p>
+<div class="section">
+<h3 id="555"><a id="example-usage" name="example-usage">Example Usage:</a></h3>
+<p>Create and activate MyComponent instance, registering its &quot;inbox&quot; inbox with the
+CAT as a service called &quot;MyService&quot;:</p>
+<pre class="literal-block">
+RegisterService( MyComponent(), {&quot;MyService&quot;:&quot;inbox&quot;} ).activate()
+</pre>
+</div>
+<div class="section">
+<h3 id="556"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h3>
+<p>This method registers the component you provide with the CAT. It register the
+inboxes on it that you specify using the names that you specify.</p>
+</div>
+</div>
+<div class="section">
+<h2 id="557"><a id="subscibe-to-service" name="subscibe-to-service">Subscibe To Service</a></h2>
+<p>A component that connects to a public service and sends a fixed format message
+to it requesting to subscribe to a set of 'things' it provides.</p>
+<div class="section">
+<h3 id="558"><a id="id1" name="id1">Example Usage:</a></h3>
+<p>Subscribe to a (fictional) &quot;TV Channels Service&quot;, asking for three channels. The
+tv channel data is then recorded:</p>
+<pre class="literal-block">
+pipeline(
+    SubscribeTo( &quot;TV Channels Service&quot;, [&quot;BBC ONE&quot;, &quot;BBC TWO&quot;, &quot;ITV&quot;] ),
+    RecordChannels(),
+    ).run()
+</pre>
+<p>The message sent to the &quot;TV Channels Service&quot; will be:</p>
+<pre class="literal-block">
+(&quot;ADD&quot;, [&quot;BBC ONE&quot;, &quot;BBC TWO&quot;, &quot;ITV&quot;], ( &lt;theSubscribeToComponent&gt;, &quot;inbox&quot; ) )
+</pre>
+</div>
+<div class="section">
+<h3 id="559"><a id="id2" name="id2">How does it work?</a></h3>
+<p>Describe more detail here</p>
+</div>
+</div>
+<div class="section">
+<h2 id="560"><a id="connect-to-service" name="connect-to-service">Connect To Service</a></h2>
+<p>A component that connects to a public service. Any data you send to its inbox
+gets sent to the service.</p>
+<div class="section">
+<h3 id="561"><a id="id3" name="id3">Example Usage</a></h3>
+<pre class="literal-block">
+pipeline( MyComponentThatSendMessagesToService(),
+        ConnectTo(&quot;Name of service&quot;),
+        ).run()
+</pre>
+</div>
+<div class="section">
+<h3 id="562"><a id="id4" name="id4">How does it work?</a></h3>
+<p>Describe in more detail here.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.html">Experimental</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.html">Services</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.RegisterService.html">RegisterService</a></h1>
+<div class="section">
+<h2 id="symbol-RegisterService">prefab: RegisterService</h2>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.html">Experimental</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.html">Services</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.Subscribe.html">Subscribe</a></h1>
+<div class="section">
+<h2 id="symbol-Subscribe">class Subscribe(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>Subscribes to a service, and forwards what it receives to its outbox.
+Also forwards anything that arrives at its inbox to its outbox.</p>
+<p>Unsubscribes when shutdown.</p>
+<div class="section">
+<h3><a id="symbol-Subscribe.Inboxes" name="symbol-Subscribe.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-Subscribe.Outboxes" name="symbol-Subscribe.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : </li>
+<li><strong>signal</strong> : shutdown signalling</li>
+<li><strong>_toService</strong> : request to service</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-Subscribe.__init__" name="symbol-Subscribe.__init__">__init__(self, servicename, *requests)</a></h4>
+<p>Subscribe to the specified service, wiring to it, then sending the specified messages.
+Requests are of the form (&quot;ADD&quot;, request, destination)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Subscribe.main" name="symbol-Subscribe.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Subscribe.shutdown" name="symbol-Subscribe.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.html">Experimental</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.html">Services</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Experimental.Services.ToService.html">ToService</a></h1>
+<div class="section">
+<h2 id="symbol-ToService">class ToService(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<div class="section">
+<h3><a id="symbol-ToService.Inboxes" name="symbol-ToService.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-ToService.Outboxes" name="symbol-ToService.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-ToService.__init__" name="symbol-ToService.__init__">__init__(self, toService)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ToService.main" name="symbol-ToService.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ToService.shutdown" name="symbol-ToService.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

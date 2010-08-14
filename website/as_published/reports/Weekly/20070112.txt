@@ -1,0 +1,41 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20070112 ======
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 Open floor for questions
+5. Date/Time of next weekly meeting
+Friday 19th January 2007, 11am GMT
+
+2. Participants
+Participants: MS-, ...
+Present: G0SUB, Lawouach, sadrul, Uraeus
+Absent: Matt is has been seconded to another project this week
+
+3. Activity Reports
+
+Since it's probably just me :)
+
+BLOCKED: Organising BBC's involvement at TVNR 2007 
+( http://tinyurl.com/y8w9s6 )
+DONE: None on Kamaelia (completely blocked)
+TODO: RSS demuxer/remuxer, initial pass at DB Components, find a better name 
+for exogenous components, finish GSOC2006 page, Backplane cookbook entry
+
+4. Discussion items (max 3 or 4)
+
+4.1 Open floor for questions
+
+"""I thought we'd still keep the meeting even though I've been completely 
+blocked & Matt's not around in case anyone had anything they wanted to 
+raise :-) Also means I can say "hi" to Sadrul, even though I suspect you're 
+asleep based on your IP :) """
+
+No comments/questions.
+
+5. Date/Time of next weekly meeting
+Friday 19th January 2007, 11am GMT
+
+Noted that Matt isn't like to be around then.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20070112 ======

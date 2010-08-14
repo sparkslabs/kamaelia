@@ -1,0 +1,85 @@
+<html><body><table>
+            <tr><td>[06:26] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:23] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:29] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:33] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[10:53] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:42] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:42] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[14:05] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:28] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:02] &lt MS-&gt Ha! Getting to closer to getting this bugger working. It's trying to send messages from the wrong user.</td></tr>
+            <tr><td>[15:02] &lt MS-&gt Now I just need to figure out *why* that's the case :-/</td></tr>
+            <tr><td>[15:04] &lt MS-&gt Oh my. It's *massively* hardcoded it seems. That's why.</td></tr>
+            <tr><td>[15:06] &lt MS-&gt OK, message still not getting anywhere, but at least identified how to test it better...</td></tr>
+            <tr><td>[16:06] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[16:06] &lt Lawouach&gt I feel you're talking about xmpp :)</td></tr>
+            <tr><td>[16:09] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:14] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:39] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:45] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:46] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:51] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:51] &lt MS-&gt I've decided to give up on Jason's XMPP code</td></tr>
+            <tr><td>[18:51] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:53] &lt MS-&gt It's all just too painfully tied up.</td></tr>
+            <tr><td>[19:00] &lt MS-&gt Oh, I think I *may* understand what's going wrong.</td></tr>
+            <tr><td>[19:01] &lt MS-&gt maybe</td></tr>
+            <tr><td>[19:02] &lt MS-&gt I think my problem really here with jason's code is the lack of encapsulation</td></tr>
+            <tr><td>[19:02] &lt MS-&gt Means that things don't hang together cleanly</td></tr>
+            <tr><td>[19:04] &lt MS-&gt I don't also see how Jason's code could ever have actually worked</td></tr>
+            <tr><td>[19:04] &lt MS-&gt Unless he was breaking it near the end of GSOC</td></tr>
+            <tr><td>[19:04] &lt MS-&gt Since the XMPP messages aren't being sent from the "right" user</td></tr>
+            <tr><td>[19:05] &lt MS-&gt and going astray, I think, as a result</td></tr>
+            <tr><td>[19:07] &lt MS-&gt If I understand this correctly, it looks like you login to a server.</td></tr>
+            <tr><td>[19:07] &lt MS-&gt The server then allocates you a jid</td></tr>
+            <tr><td>[19:07] &lt MS-&gt your messages then have to come *from* that jid in order for things to work</td></tr>
+            <tr><td>[19:07] &lt MS-&gt Jason's "Interface" component skips that step</td></tr>
+            <tr><td>[19:15] &lt MS-&gt OK, now found *where* this thing is, in theory, defined.</td></tr>
+            <tr><td>[19:15] &lt MS-&gt in theory</td></tr>
+            <tr><td>[19:39] &lt MS-&gt **** And the crowd goes wild ****</td></tr>
+            <tr><td>[19:39] &lt MS-&gt I *knew* the CAT would be useful, one day</td></tr>
+            <tr><td>[19:42] &lt MS-&gt OK, whilst slightly annoying I understand the logic of why that happens, and get it working the way it's supposed to.</td></tr>
+            <tr><td>[19:45] &lt MS-&gt In case anyone's reading this and going "WTF"? The thing that's working here is that I'm completely sidestepping the way headstock is supposed to be used</td></tr>
+            <tr><td>[19:45] &lt MS-&gt And sidestepping how Jason's code from last year doesn't quite understand headstock</td></tr>
+            <tr><td>[19:45] &lt MS-&gt By deliberately choosing to create a system global value</td></tr>
+            <tr><td>[19:45] &lt MS-&gt using the cat</td></tr>
+            <tr><td>[19:45] &lt MS-&gt ie using this :</td></tr>
+            <tr><td>[19:46] &lt MS-&gt import Axon</td></tr>
+            <tr><td>[19:46] &lt MS-&gt from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as cat</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  if self.dataReady("jid"):</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  self.from_jid = self.recv('jid')</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  print "NEW MYJID", self.from_jid</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  try:</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  cat.getcat().trackValue("MYJID", self.from_jid)</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  except Axon.AxonExceptions.NamespaceClash:</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  cat.getcat().updateValue("MYJID", self.from_jid)</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  print "MYJID", cat.getcat().retrieveValue("MYJID")</td></tr>
+            <tr><td>[19:46] &lt MS-&gt In order to set the global sender id - since I can guarantee only one sender</td></tr>
+            <tr><td>[19:47] &lt MS-&gt And inside the sender component, which is guaranteed to be started later</td></tr>
+            <tr><td>[19:47] &lt MS-&gt I can grab this global value thus:</td></tr>
+            <tr><td>[19:47] &lt MS-&gt  myjid = cat.getcat().retrieveValue("MYJID")</td></tr>
+            <tr><td>[19:47] &lt MS-&gt  self.ThisJID = myjid</td></tr>
+            <tr><td>[19:47] &lt MS-&gt And thus the system hangs together.</td></tr>
+            <tr><td>[19:48] &lt MS-&gt At least one way :-)</td></tr>
+            <tr><td>[19:50] &lt MS-&gt Key thing from my perspective here isn't whether it's clean - it's the fact it IS working, which means it can be made to work, and then cleaner :-)</td></tr>
+            <tr><td>[19:52] &lt MS-&gt OK, not going to give up now, but I will call that success for tonight :-)</td></tr>
+            <tr><td>[19:53] &lt MS-&gt tis a remarkably sweet thing to see one of jason's "crosstalk" messages arrive on the other end of the XMPP connection :-)</td></tr>
+            <tr><td>[19:53] &lt vmlemon_&gt Trying to untangle spaghetti?</td></tr>
+            <tr><td>[19:56] &lt MS-&gt Yes.</td></tr>
+            <tr><td>[19:56] &lt MS-&gt And actually getting somewhere too.</td></tr>
+            <tr><td>[19:56] &lt MS-&gt To be fair also, the vast majority of Jason's code *does* hang together</td></tr>
+            <tr><td>[19:56] &lt MS-&gt with an internal logic.</td></tr>
+            <tr><td>[19:57] &lt MS-&gt It's not a logic I would've used, but it is relatively self consistent</td></tr>
+            <tr><td>[19:58] &lt MS-&gt In case it seems wierd to be trying to figure out this stuff.</td></tr>
+            <tr><td>[19:59] &lt MS-&gt The nice thing about doing this is that it'd be a potential route for someone to be able to</td></tr>
+            <tr><td>[19:59] &lt MS-&gt run a google app-engine application locally</td></tr>
+            <tr><td>[19:59] &lt MS-&gt rather than "in the cloud"</td></tr>
+            <tr><td>[19:59] &lt MS-&gt but still have it accessible by the rest of the world</td></tr>
+            <tr><td>[19:59] &lt MS-&gt At least that's one possible direction to extend it to</td></tr>
+            <tr><td>[20:00] &lt MS-&gt Since it acts as a wsgi host, in the same sort of way app-engine does</td></tr>
+            <tr><td>[20:00] &lt vmlemon_&gt Aah, cool</td></tr>
+            <tr><td>[20:02] &lt MS-&gt I think there'd be a need for a lot of simplification in the code/etc based on what I've read etc</td></tr>
+            <tr><td>[20:02] &lt MS-&gt But it's definitely a good starting point, primarily because I can see it will work :)</td></tr>

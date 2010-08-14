@@ -1,0 +1,86 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20061215 ======
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 Open Floor
+5. Date/Time of next meeting
+   Proposed: Fri 7th(sic) Jan 2007, 11am GMT
+
+2. Participants
+
+Participants: Matt, Michael
+Attending: tav, Uraeus, G0SUB, Lawouach
+
+3. Activity Reports
+
+Michael:
+    DONE
+       * Largely blocked by other work this week.
+       * Compose PTP created, development roadmap started on it.
+       * HTTP Server Tutorial.
+       * Small things: updated Axon page.
+    TODO 
+       * Add in auth framework
+       * Create Project Task Pages for: 
+       * Whiteboard - Headless server
+       * Whiteboard - Headless (audio only) client
+       * Whiteboard - Improve audio quality
+       * Database component ideas - to capture requirements
+       * TCP components - to capture desire for test first rewrite
+       * Include correct shutdown in TCP Client
+       * Bit Torrent
+       * Tools for completely self contained diagnostic. (eg integration
+with 
+kamaelia webserver, etc)
+    BLOCKED
+       * Been completely blocked working on TVNR 2007.
+
+Matt:
+    DONE
+        * Developed and checked in video shot change/cut detector.
+        * make binding containing software mpeg ts demuxer
+        * simple SDP parser for RTP remultiplexer
+    BLOCKED
+        * RTP code doesn't run fast enough. Investigated solutions.
+        * Meetings for other BBC internal projects (VoIP for BBC News)
+        * Misc BBC meetings
+    TODO
+        * finish soak testing software mpeg ts demuxer
+        * write some tutorials (DVB, Carousel, ...)
+        * freshen Axon docs
+        * sort selector shutdown in mobile reframer / UnixProcess
+        * sort shutdown of Backplane to similar model as Selector
+
+Notes:
+Re: Axon page: 
+
+It had references to linkage etc, pipeline instead f Pipeline, missing
+imports
+Also it did: scheduler.... run rather than Component().run()
+Matt suggested updating the Axon docs more fully.
+
+Michael suggested Matt's RTP problem may be due to framing/deframing code 
+speed
+
+4. Discussion items (max 3 or 4)
+4.1 Open Floor
+
+Was a note to have an open floor for discussion if anyone wanted to raise 
+anything. 
+Michael wanted to make note of the fact that Lawouach had integrated the 
+Kamaelia web server into his framework:
+links:
+   
+http://koala.ilog.fr/twikiirc/bin/irclogger_log/kamaelia?date=2006-12-14,Thu&sel=113#l109
+   
+http://trac.defuze.org/browser/oss/amplee/amplee/handler/store/kamaelia/__init__.py
+
+Michael noted that a PTP for HTTP Server needed creating.
+
+5. Date/Time of next meeting
+   Proposed: Fri 5th Jan 2007, 11am GMT
+
+Date was a typo corrected from 7th to 5th.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20061215 ======

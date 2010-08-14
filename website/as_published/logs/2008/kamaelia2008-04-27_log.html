@@ -1,0 +1,312 @@
+<html><body><table>
+            <tr><td>[01:31] *** Davbop has joined #kamaelia</td></tr>
+            <tr><td>[09:38] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:15] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[10:56] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:56] &lt MS-&gt greetings</td></tr>
+            <tr><td>[10:56] *** MS- is reading http://www.informit.com/articles/article.aspx?p=1193856</td></tr>
+            <tr><td>[10:56] &lt MS-&gt which includes a rant on concurrency and multicore by Donald Knuth</td></tr>
+            <tr><td>[10:56] &lt orphans&gt morning</td></tr>
+            <tr><td>[10:57] &lt MS-&gt orphans: morning</td></tr>
+            <tr><td>[10:57] &lt MS-&gt it includes the wonderful quote</td></tr>
+            <tr><td>[10:57] &lt MS-&gt They think a magic bullet will come along to make multicores speed up my kind of work; I think it’s a pipe dream. (No—that’s the wrong metaphor! "Pipelines" actually work for me, but threads don’t. Maybe the word I want is "bubble.")</td></tr>
+            <tr><td>[10:59] &lt orphans&gt you agree with what he says about multicore?</td></tr>
+            <tr><td>[11:00] &lt MS-&gt No, fundamentally sequential systems have to hit a limit sooner or later, and it was clear a few years back that it was going to be sooner</td></tr>
+            <tr><td>[11:00] &lt MS-&gt So the next logical step there was to go parallel</td></tr>
+            <tr><td>[11:00] &lt Lawouach_&gt hello folks</td></tr>
+            <tr><td>[11:00] &lt MS-&gt Lawouach_: Hi</td></tr>
+            <tr><td>[11:00] &lt MS-&gt Graphics cards went parallel far sooner after all</td></tr>
+            <tr><td>[11:01] &lt MS-&gt However his rant about the tools people use (threading primarily) being broken I agree with</td></tr>
+            <tr><td>[11:01] &lt orphans&gt hi Lawouach_</td></tr>
+            <tr><td>[11:01] &lt MS-&gt I personally think that certain kinds of parallel system are simpler than their sequential counterparts these days</td></tr>
+            <tr><td>[11:02] &lt MS-&gt (Not all though (yet))</td></tr>
+            <tr><td>[11:02] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[11:02] &lt MS-&gt That's conjecture though</td></tr>
+            <tr><td>[11:03] &lt MS-&gt I certainly don't agree with his comments on unit tests though</td></tr>
+            <tr><td>[11:03] &lt MS-&gt But I suspect that's due to perspective</td></tr>
+            <tr><td>[11:03] &lt MS-&gt after all software engineering and computer science sound similar, but they're not</td></tr>
+            <tr><td>[11:04] &lt orphans&gt mm, I've heard an awful lot of people evangelise about unit testing - enough that I reckon it's probably a pretty sound idea :)</td></tr>
+            <tr><td>[11:04] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:05] &lt Lawouach_&gt brb</td></tr>
+            <tr><td>[11:06] &lt MS-&gt Well, you have to remember that a lot what Knuth talks about refers to proving algorithms working</td></tr>
+            <tr><td>[11:06] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:06] &lt MS-&gt Indeed TeX was written to support writing his books</td></tr>
+            <tr><td>[11:06] &lt MS-&gt vmlemon_: Hi</td></tr>
+            <tr><td>[11:06] &lt MS-&gt And unit testing is a pragmatic version of proof</td></tr>
+            <tr><td>[11:07] &lt MS-&gt But it's nowhere near as rigorous as a proof based approach</td></tr>
+            <tr><td>[11:07] &lt MS-&gt So if your preferred approach is proof based, unit testing will look like monkey science or quackery</td></tr>
+            <tr><td>[11:07] &lt MS-&gt :-)</td></tr>
+            <tr><td>[11:07] &lt MS-&gt (my preferred approach is closest to unit testing)</td></tr>
+            <tr><td>[11:07] &lt orphans&gt yeah :)</td></tr>
+            <tr><td>[11:08] &lt orphans&gt heh, I think my new SoC resolution (or something...) is to be as good as possible at documenting and writing tests as I go</td></tr>
+            <tr><td>[11:09] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:16] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:17] &lt vmlemon__&gt Damn battery</td></tr>
+            <tr><td>[11:32] *** vmlemon___ has joined #kamaelia</td></tr>
+            <tr><td>[11:32] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[11:33] *** vmlemon___ is now known as vmlemon_</td></tr>
+            <tr><td>[11:56] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[12:36] &lt MS-&gt Presentation I wish some specific people I knew had read, at least just the basics of</td></tr>
+            <tr><td>[12:36] &lt MS-&gt http://www.slideshare.net/al3x/designing-your-api</td></tr>
+            <tr><td>[13:11] *** vmlemon___ has joined #kamaelia</td></tr>
+            <tr><td>[13:12] *** vmlemon___ is now known as vmlemon_</td></tr>
+            <tr><td>[13:13] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[13:13] Reply: does the macarena</td></tr>
+            <tr><td>[13:20] *** MS- wonders what gender kamaeliabot should have</td></tr>
+            <tr><td>[13:20] &lt MS-&gt given he/she is nicer than "it"</td></tr>
+            <tr><td>[13:21] *** MS- considers asking Pablo since unlike english, spanish does have gender for such things</td></tr>
+            <tr><td>[13:22] &lt vmlemon_&gt le kamaeliabot?</td></tr>
+            <tr><td>[13:22] &lt orphans&gt rename it Davbo and see what Davbo does :D</td></tr>
+            <tr><td>[13:22] &lt orphans&gt Davbo: dance</td></tr>
+            <tr><td>[13:22] &lt vmlemon_&gt Davbot? ;)</td></tr>
+            <tr><td>[13:22] &lt orphans&gt Davbo does the macarena</td></tr>
+            <tr><td>[13:22] &lt vmlemon_&gt Haha</td></tr>
+            <tr><td>[13:23] &lt orphans&gt I like it, confusion would reign</td></tr>
+            <tr><td>[13:23] &lt vmlemon_&gt You'd lock him out of his nick, too</td></tr>
+            <tr><td>[13:24] &lt MS-&gt heh</td></tr>
+            <tr><td>[13:24] &lt vmlemon_&gt Which would be fun to watch</td></tr>
+            <tr><td>[13:25] &lt vmlemon_&gt Especially with NickServ intervening</td></tr>
+            <tr><td>[13:31] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[13:55] *** vmlemon_ has just found a Gnutella client for his phone</td></tr>
+            <tr><td>[13:56] &lt MS-&gt cool</td></tr>
+            <tr><td>[13:56] *** MS- has just sent j_baker the feedback I promised him</td></tr>
+            <tr><td>[13:56] &lt MS-&gt Hoepfully it'll be taken as positive :-)</td></tr>
+            <tr><td>[13:57] &lt MS-&gt orphans: You may've noticed that I like single word names for projects</td></tr>
+            <tr><td>[13:57] &lt vmlemon_&gt Shame it doesn't have a filter for useless files, though</td></tr>
+            <tr><td>[13:57] &lt MS-&gt You may wish to consider what word is most illustrative of your project - as in "does exactly what it says on the tin"</td></tr>
+            <tr><td>[13:58] &lt orphans&gt MS-, naming, fun :)</td></tr>
+            <tr><td>[13:58] *** vmlemon_ sucks at naming things</td></tr>
+            <tr><td>[13:58] &lt MS-&gt I've got an idea, but don't want to sway you early on :)</td></tr>
+            <tr><td>[13:58] *** orphans has be labouring away with a long title</td></tr>
+            <tr><td>[13:58] &lt orphans&gt MS-, tbh I'm really bad at stuff like this - give me a sway</td></tr>
+            <tr><td>[13:58] &lt MS-&gt "Jam"</td></tr>
+            <tr><td>[13:59] &lt orphans&gt I like it actually - that's pretty nice</td></tr>
+            <tr><td>[13:59] &lt MS-&gt See, I said it'd sway...</td></tr>
+            <tr><td>[13:59] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:59] &lt orphans&gt heh</td></tr>
+            <tr><td>[14:00] &lt orphans&gt http://freetype.sourceforge.net/jam/index.html</td></tr>
+            <tr><td>[14:00] *** MS- looks</td></tr>
+            <tr><td>[14:01] &lt Lawouach&gt My own naming pattern is to use parts of a guitar</td></tr>
+            <tr><td>[14:01] &lt Lawouach&gt or things around guitar gear</td></tr>
+            <tr><td>[14:01] &lt Lawouach&gt amplee, headstock, bridge</td></tr>
+            <tr><td>[14:01] &lt MS-&gt It'd be "Kamaelia Jam" though. (Kamaelia: Whiteboard, Kamaelia: Compose) for example</td></tr>
+            <tr><td>[14:01] &lt MS-&gt ahhh</td></tr>
+            <tr><td>[14:01] &lt Lawouach&gt usually unrelated to the project but that used to drive me mad otherwise</td></tr>
+            <tr><td>[14:01] &lt MS-&gt Is that where your names come from :-)</td></tr>
+            <tr><td>[14:01] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[14:02] &lt Lawouach&gt Being a guitar player that suited me well :)</td></tr>
+            <tr><td>[14:02] &lt MS-&gt I see</td></tr>
+            <tr><td>[14:02] &lt orphans&gt I quite like KamJam, sticking with j_bakers naming</td></tr>
+            <tr><td>[14:02] &lt orphans&gt do you prefer the full Kamaelia in the name MS-?</td></tr>
+            <tr><td>[14:03] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:03] &lt Lawouach&gt If I may, when CherryPy was still unknown, lots of projects around it used naming like "CherryWhatever". We discouraged it later on because some users thought there was official support from the CherryPy project.</td></tr>
+            <tr><td>[14:03] &lt orphans&gt Lawouach, next one called whammy? :)</td></tr>
+            <tr><td>[14:03] &lt Lawouach&gt When there wasn't.</td></tr>
+            <tr><td>[14:04] &lt Davbo&gt Afternoon all!</td></tr>
+            <tr><td>[14:04] &lt Lawouach&gt orphans: :)</td></tr>
+            <tr><td>[14:04] &lt orphans&gt afternoon Davbo</td></tr>
+            <tr><td>[14:04] *** vmlemon_ tends to name things after places, or by thinking of a random letter and number and combining them...</td></tr>
+            <tr><td>[14:04] &lt Lawouach&gt orphans: One of the project is bucker rather than humbucker because I didn't want any copyright issue.</td></tr>
+            <tr><td>[14:04] &lt Lawouach&gt Whammy is a copyrighted term, isn't it?</td></tr>
+            <tr><td>[14:04] &lt Lawouach&gt Or maybe whammy bar.</td></tr>
+            <tr><td>[14:04] &lt orphans&gt yeah, maybe - it's sposed to be a tremelo arm isn't it</td></tr>
+            <tr><td>[14:05] &lt Lawouach&gt Yes</td></tr>
+            <tr><td>[14:05] &lt Lawouach&gt Like the bigsby or the floyd rose although they don't quite work the same</td></tr>
+            <tr><td>[14:05] &lt vmlemon_&gt Konnekt?</td></tr>
+            <tr><td>[14:06] &lt Lawouach&gt That sounds cool :)</td></tr>
+            <tr><td>[14:08] &lt vmlemon_&gt Yum, CherryPy ;)</td></tr>
+            <tr><td>[14:08] &lt vmlemon_&gt With custard?</td></tr>
+            <tr><td>[14:08] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[14:11] &lt orphans&gt vamp? http://en.wikipedia.org/wiki/Vamp_%28music%29</td></tr>
+            <tr><td>[14:12] &lt orphans&gt http://sourceforge.net/projects/vamp/ *sigh*</td></tr>
+            <tr><td>[14:12] &lt orphans&gt this is difficult :)</td></tr>
+            <tr><td>[14:13] &lt Davbo&gt Woo! got a first on stage 1 of my project :D</td></tr>
+            <tr><td>[14:13] &lt orphans&gt Davbo, congrats :)</td></tr>
+            <tr><td>[14:13] &lt Davbo&gt thanks :)</td></tr>
+            <tr><td>[14:16] &lt Davbo&gt What are you trying to name?</td></tr>
+            <tr><td>[14:19] &lt orphans&gt my soc project</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt ah :)</td></tr>
+            <tr><td>[14:24] &lt Davbo&gt Trying to use musical terms? umm,</td></tr>
+            <tr><td>[14:24] &lt Davbo&gt i'll let you know.</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt naming things is difficult</td></tr>
+            <tr><td>[14:25] &lt Lawouach&gt staffaelia</td></tr>
+            <tr><td>[14:25] &lt orphans&gt mm, bit of a mouthful maybe</td></tr>
+            <tr><td>[14:25] &lt orphans&gt jamaelia</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt Haha Jamaelia</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt :D</td></tr>
+            <tr><td>[14:26] &lt Davbo&gt Kamarok ? :P</td></tr>
+            <tr><td>[14:26] &lt orphans&gt heh</td></tr>
+            <tr><td>[14:27] &lt Davbo&gt I like Jamaelia</td></tr>
+            <tr><td>[14:28] &lt Davbo&gt Either that or look to name it after a song / album</td></tr>
+            <tr><td>[14:29] &lt orphans&gt yeah, i was looking at that</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt There's an Elliot Smith album called "Either/or" that'd be cool for a playlist thing maybe</td></tr>
+            <tr><td>[14:32] &lt orphans&gt mm, been listening to a lot of elliot smith recently</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt Eponymous?</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt That's a cool name.</td></tr>
+            <tr><td>[14:36] &lt orphans&gt heh, it's a bit crazy maybe :)</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt oh by the way, i'm really bad at naming thing.</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt s/thing/things</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt Just don't name it after "Suffer Little Children" - The Smiths, and you'll be okay</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt I'd stay away from The Smiths songs as a whole really.</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt ;)</td></tr>
+            <tr><td>[14:41] &lt Lawouach&gt Maybe a Guns N'Roses song like "Don't damn me"</td></tr>
+            <tr><td>[14:41] &lt Lawouach&gt That'd set the mood.</td></tr>
+            <tr><td>[14:41] &lt orphans&gt :) girlfriend in a coma</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[14:44] &lt Lawouach&gt Coma is actually one of my favourite song by GN'R</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt "Doolots" named after Pixies album Doolittle :P</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt Yeah I totally shouldn't be allowed to name things</td></tr>
+            <tr><td>[14:45] &lt Lawouach&gt ::)</td></tr>
+            <tr><td>[14:46] &lt orphans&gt heh</td></tr>
+            <tr><td>[14:52] &lt Davbo&gt Think i'll go with "Paint" for my project D:</td></tr>
+            <tr><td>[14:53] &lt orphans&gt gahhhhh</td></tr>
+            <tr><td>[14:53] &lt Davbo&gt what's wrong with Paint ? :P</td></tr>
+            <tr><td>[14:54] &lt orphans&gt :)</td></tr>
+            <tr><td>[15:01] &lt Davbo&gt Kamaelia-Paint</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt Then we can do a simple text editor, advanced text editor then release a distribution :P</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt Axonify the Kernel</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt we can leave unix pipelines, "they cool."</td></tr>
+            <tr><td>[15:09] &lt orphans&gt how about Motorik? http://en.wikipedia.org/wiki/Motorik</td></tr>
+            <tr><td>[15:13] &lt Davbo&gt Why not keep up the tradition and go with something like Kinamo, and be like "Kinamo is not a media organiser"</td></tr>
+            <tr><td>[15:14] &lt orphans&gt heh, I hate recursive acronyms</td></tr>
+            <tr><td>[15:15] &lt Davbo&gt Just throwing it out there</td></tr>
+            <tr><td>[15:15] &lt orphans&gt nah, it's cool - loads of people use em, just annoys me :)</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt MS-: You should watch Lost.</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt This weeks episode was amazing</td></tr>
+            <tr><td>[15:24] &lt MS-&gt "If I may, when CherryPy was still unknown, lots of projects around it used naming like "CherryWhatever". We discouraged it later on because some users thought there was official support from the CherryPy project. When there wasn't."</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Indeed. For things inside the SVN tree though Kamaelia: &lt thing&gt (I'd expect these to end in in "Apps") kinda makes sense</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Davbo: Maybe</td></tr>
+            <tr><td>[15:25] &lt MS-&gt Did they find a plot?</td></tr>
+            <tr><td>[15:25] &lt Davbo&gt Things were explained this episode but there's a lot which i don't think they could possibly explain</td></tr>
+            <tr><td>[15:26] &lt MS-&gt orphans: They're not just recursive acronyms, they're intellectual w^&^&g in the form of bacronyms - "think of a word, then make it an acronym and to really get ourselves off make it recursive"</td></tr>
+            <tr><td>[15:26] &lt orphans&gt MS-, :D</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt They're just names</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt lol</td></tr>
+            <tr><td>[15:27] &lt orphans&gt Kamaelia Jam ok then?</td></tr>
+            <tr><td>[15:27] *** orphans gives up on creativity</td></tr>
+            <tr><td>[15:28] *** Davbo thinks recursive acronyms only exist because folks like us can't name things :P</td></tr>
+            <tr><td>[15:28] &lt MS-&gt orphans: It's entirely up to you</td></tr>
+            <tr><td>[15:28] &lt MS-&gt You can call it what you like :)</td></tr>
+            <tr><td>[15:29] &lt MS-&gt I mean, there's a TV channel called "Dave" after all</td></tr>
+            <tr><td>[15:29] &lt orphans&gt heh</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt I claim all rights to that, being a Dave myself</td></tr>
+            <tr><td>[15:29] &lt orphans&gt I read an article which said that their viewing figures doubled instantly after they renamed it</td></tr>
+            <tr><td>[15:30] &lt MS-&gt orphans: Not too surprising really.</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt it's an added extra of being called Dave, people like having a friend called Dave.</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt it's a "blokey" "matey" name</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt not so good with the ladies though. :P</td></tr>
+            <tr><td>[15:31] &lt orphans&gt heh, yeah, it's definitely the name which does that :D</td></tr>
+            <tr><td>[15:31] &lt MS-&gt Their argument (which was dubious) was that most people know someone called "Dave"</td></tr>
+            <tr><td>[15:32] &lt MS-&gt I think I would've preferred "Why not?" as a justification :-)</td></tr>
+            <tr><td>[15:32] &lt Davbo&gt Commercial wing of the BBC sure do have a good marketing team lol</td></tr>
+            <tr><td>[15:33] &lt orphans&gt "Most people know someone called dave. They ask dave to turn the TV on with hilarious consequences." I swear it's easy being an ad man</td></tr>
+            <tr><td>[15:35] &lt Davbo&gt also UKTV has no understanding of output ratios</td></tr>
+            <tr><td>[15:36] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[15:44] &lt orphans&gt If it ends up being Kamaelia Jam I can do annoying fruit based release names too!</td></tr>
+            <tr><td>[15:47] &lt MS-&gt Apricot, Banana, Cherry, Damson, Eggfruit, F&lt ?&gt</td></tr>
+            <tr><td>[15:47] &lt MS-&gt Fig</td></tr>
+            <tr><td>[15:49] *** vmlemon___ has joined #kamaelia</td></tr>
+            <tr><td>[15:49] *** vmlemon___ is now known as vmlemon_</td></tr>
+            <tr><td>[15:52] &lt vmlemon_&gt Hi again</td></tr>
+            <tr><td>[15:55] &lt orphans&gt MS-, banana jam?</td></tr>
+            <tr><td>[15:55] &lt orphans&gt whatever floats your boat :)</td></tr>
+            <tr><td>[15:58] &lt vmlemon_&gt Tomato jam, anyone? ;)</td></tr>
+            <tr><td>[15:59] &lt MS-&gt orphans: You can buy banana jam...</td></tr>
+            <tr><td>[15:59] &lt orphans&gt no way</td></tr>
+            <tr><td>[15:59] &lt MS-&gt And beetroot</td></tr>
+            <tr><td>[15:59] &lt MS-&gt bramble jam is probably better though</td></tr>
+            <tr><td>[16:00] &lt Davbo&gt People make Jam out of all sorts o' stuff.</td></tr>
+            <tr><td>[16:00] &lt orphans&gt i made beetroot pie once - like pumpkin pie with beetroot</td></tr>
+            <tr><td>[16:00] &lt vmlemon_&gt I saw a chilli flavour decorated jelly lolly, ages ago</td></tr>
+            <tr><td>[16:00] &lt MS-&gt http://www.recipeland.com/recipe/1506/</td></tr>
+            <tr><td>[16:01] &lt orphans&gt shocking</td></tr>
+            <tr><td>[16:01] &lt orphans&gt sounds quite nice actually :)</td></tr>
+            <tr><td>[16:02] &lt vmlemon_&gt Ugh, I tried the Gnutella client, and it saps the battery fast, even with the charger connected</td></tr>
+            <tr><td>[16:02] &lt orphans&gt vmlemon_, talking of breakfast spreads :D</td></tr>
+            <tr><td>[16:02] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[16:03] &lt vmlemon_&gt The chocolate, hazelnut and illegitimate music spread, erm app? ;)</td></tr>
+            <tr><td>[16:07] &lt vmlemon_&gt It crashes when trying to download a file with a name containing non-Latin characters, for some reason</td></tr>
+            <tr><td>[16:08] &lt vmlemon_&gt and it doesn't maintain state in between sessions</td></tr>
+            <tr><td>[16:30] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[16:32] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:32] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[16:43] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:44] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:45] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[16:45] Reply: does the macarena</td></tr>
+            <tr><td>[17:18] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:28] &lt Davbo&gt MS-: Are those "GeekUp" things any good?</td></tr>
+            <tr><td>[18:30] *** Davbo wonders why it's linked to from Kamaelia's main page</td></tr>
+            <tr><td>[18:40] &lt Davbo&gt scratch that, looks like a bunch of web-developers</td></tr>
+            <tr><td>[19:24] &lt MS-&gt Davbo: It's because I went along to some of them and the people who go along are interesting</td></tr>
+            <tr><td>[19:24] &lt MS-&gt Yes, lots of them are web devs, but there's also a fair amount of other people too</td></tr>
+            <tr><td>[19:25] &lt MS-&gt I keep on meaning to go, but lots of things have transpired against me</td></tr>
+            <tr><td>[19:25] &lt MS-&gt eg this month, I have to be on london the 13th May</td></tr>
+            <tr><td>[19:25] &lt MS-&gt and that's when the next meetup is</td></tr>
+            <tr><td>[19:32] &lt MS-&gt Probably shouldn't be linked anymore</td></tr>
+            <tr><td>[19:35] &lt Davbo&gt I give up trying to implement miniaxon in JAva</td></tr>
+            <tr><td>[19:36] &lt MS-&gt Someone has done that...</td></tr>
+            <tr><td>[19:36] &lt Davbo&gt Really?</td></tr>
+            <tr><td>[19:36] &lt Davbo&gt where?</td></tr>
+            <tr><td>[19:36] &lt Davbo&gt I was just doing it because I thought of a way</td></tr>
+            <tr><td>[19:37] &lt Davbo&gt but i'm not sure how to do this bit</td></tr>
+            <tr><td>[19:37] *** MS- finds it</td></tr>
+            <tr><td>[19:38] &lt MS-&gt http://buni.org/viewvc/buni-axon/src/org/buni/axon/</td></tr>
+            <tr><td>[19:38] &lt Davbo&gt I was looking at the one in C++ for tips lol</td></tr>
+            <tr><td>[19:39] &lt MS-&gt Also: http://chaoticjava.com/posts/category/code/java/frameworks/yielder/</td></tr>
+            <tr><td>[19:39] &lt MS-&gt http://blog.buni.org/blog/mbarker/Meldware/2007/08/24/Mini-Axon-for-Java</td></tr>
+            <tr><td>[19:40] &lt Davbo&gt lol!!</td></tr>
+            <tr><td>[19:40] &lt Davbo&gt I was looking at that yielder</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt ah so it does do what i want</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt i wasn't sure</td></tr>
+            <tr><td>[19:41] &lt MS-&gt Might do :)</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt I was trying to do it with Thread.yield() in java</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt which returns void</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt so no good for the -1 check</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt in scheduler</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt i see</td></tr>
+            <tr><td>[19:42] &lt Davbo&gt thanks MS-</td></tr>
+            <tr><td>[19:44] &lt MS-&gt you're welcome :)</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt don't know what i'm doing with it really at the moment so i'll leave it for a bit and come back to it</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt got some other things to work on at the moment</td></tr>
+            <tr><td>[19:46] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:46] &lt MS-&gt I'm sorting out a bug someone reported in my blog's rss feed</td></tr>
+            <tr><td>[19:47] &lt MS-&gt (To do with the 2 dates regarding when the blog was published)</td></tr>
+            <tr><td>[19:47] &lt MS-&gt (which you can depending on your point of view say isn't a bug, but I like a quiet life :) )</td></tr>
+            <tr><td>[19:47] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt I emailed some work to my lecturer as a tar.gz - I have a horrible feeling that he's not going to be able to open it as many of them are useless</td></tr>
+            <tr><td>[19:49] &lt MS-&gt I'd be rather shocked if that was the case</td></tr>
+            <tr><td>[19:50] &lt Davbo&gt me too but i just remembered they have 7zip installed at university which can handle them, hnn</td></tr>
+            <tr><td>[19:50] &lt Davbo&gt hopefully will be okay.</td></tr>
+            <tr><td>[19:53] &lt Davbo&gt I got stuck with a problem in Java and asked the folks in #java the other night and they helped me fix it in like 10 minutes</td></tr>
+            <tr><td>[19:53] &lt Davbo&gt good thing about freenode</td></tr>
+            <tr><td>[19:53] &lt Davbo&gt you can join #&lt programming language&gt and people are more than happy to help you out</td></tr>
+            <tr><td>[19:55] *** MS- nods</td></tr>
+            <tr><td>[20:20] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[20:20] *** bcarlyon|nub is now known as bcarlyon|laptop</td></tr>
+            <tr><td>[20:25] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[20:33] &lt Davbo&gt first commit :)</td></tr>
+            <tr><td>[20:36] *** Davbo sends yet another angry email to his group</td></tr>
+            <tr><td>[20:36] &lt Davbo&gt ;)</td></tr>
+            <tr><td>[21:14] *** MS- notes that angry emails rarely achieve the desired goal</td></tr>
+            <tr><td>[21:14] &lt MS-&gt (beyond venting frustration)</td></tr>
+            <tr><td>[21:59] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:00] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[22:06] &lt MS-&gt evening</td></tr>
+            <tr><td>[22:10] *** vmlemon__ wonders if any sources of per-track Japanese music downloads exist (excepting P2P networks and iTunes)...</td></tr>
+            <tr><td>[22:12] &lt vmlemon__&gt P2P networks tend to be slow and there are often time windows before hosts vanish to obtain a file, and iTunes doesn't work on Linux and has obnoxious DRM</td></tr>
+            <tr><td>[22:14] &lt vmlemon__&gt I suppose I could buy an entire album and have it imported, but it seems wasteful if you only want one specific track</td></tr>
+            <tr><td>[22:24] &lt vmlemon__&gt kamaeliabot: dance</td></tr>
+            <tr><td>[22:24] Reply: does the macarena</td></tr>
+            <tr><td>[22:33] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[22:39] *** MS- has sorted out the stuff he was sorting out </td></tr>
+            <tr><td>[22:40] *** MS- now moves onto looking at redoing the redesign he'd done of the website</td></tr>
+            <tr><td>[22:40] &lt MS-&gt To get things updated</td></tr>
+            <tr><td>[22:40] &lt MS-&gt Next task after that will be to stablise private_MPS_Scratch as a candidate for /trunk</td></tr>
+            <tr><td>[22:40] &lt MS-&gt As well as to merge the Multicore support into Axon</td></tr>
+            <tr><td>[22:41] &lt MS-&gt (from /trunk/Scratch/MPS/ )</td></tr>
+            <tr><td>[23:02] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[23:04] &lt Davbo&gt Hmm network outage at my ISP</td></tr>
+            <tr><td>[23:04] &lt Davbo&gt been on and off all day</td></tr>
+            <tr><td>[23:04] &lt Davbo&gt cue vmlemon's joke "be limited" :P</td></tr>
+            <tr><td>[23:17] &lt MS-&gt hm</td></tr>

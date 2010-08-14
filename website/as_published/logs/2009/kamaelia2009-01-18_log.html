@@ -1,0 +1,37 @@
+<html><body><table>
+            <tr><td>[05:28] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[10:35] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:14] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:14] &lt MS-&gt Afternoon</td></tr>
+            <tr><td>[11:15] &lt Davbo&gt Hey MS-</td></tr>
+            <tr><td>[11:15] &lt MS-&gt Hiya</td></tr>
+            <tr><td>[11:15] &lt MS-&gt How's things?</td></tr>
+            <tr><td>[11:16] &lt Davbo&gt hectic, first exam tomorrow :) yourself?</td></tr>
+            <tr><td>[11:17] &lt MS-&gt Good luck with the exam. I'm OK. Bit of a cough, but fine. Wondering if I'll hear back from Jason regarding his proposed branch for merge.</td></tr>
+            <tr><td>[11:18] &lt MS-&gt (AFAICT his branch can't be merged as is because it contains lots of code which isn't actually used by anything outside the lib of components, and the sole example that does use it all in theory, doesn't actually work)</td></tr>
+            <tr><td>[11:18] &lt MS-&gt Rather annoying given it was claimed "ready to merge" and that I've spent a good couple of weeks reviewing it</td></tr>
+            <tr><td>[11:19] &lt MS-&gt Lack of documentation about what the bits do doesn't help either :-/</td></tr>
+            <tr><td>[11:19] &lt MS-&gt &lt /whinge_bitch_moan&gt</td></tr>
+            <tr><td>[11:20] &lt MS-&gt What's the first exam?</td></tr>
+            <tr><td>[11:22] &lt Davbo&gt "Adaptive Robotics"</td></tr>
+            <tr><td>[11:22] &lt Davbo&gt it's a bit of a history lesson on various things really</td></tr>
+            <tr><td>[11:41] &lt Patrick`&gt mmm, robots</td></tr>
+            <tr><td>[11:53] &lt MS-&gt "Adaptive Robotics" == Borg</td></tr>
+            <tr><td>[11:59] &lt Lawouach&gt afternoon folks</td></tr>
+            <tr><td>[12:14] &lt Davbo&gt haha, i wish MS- :)</td></tr>
+            <tr><td>[12:50] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:50] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:23] &lt MS-&gt hm. whilst I think twitter is a PITA the way you have to distill something down to fit the space seems helpful</td></tr>
+            <tr><td>[13:24] &lt MS-&gt Been thinking about Jason's branch and realised that this summary of what I'm thinking is accurate:</td></tr>
+            <tr><td>[13:25] &lt MS-&gt """What to do about a "ready to merge" branch which contains a load of unused code, which doesn't work, isn't doc'ed no tests & has bad naming."""</td></tr>
+            <tr><td>[13:27] &lt MS-&gt And if I read that the answer is pretty clear - either reject the branch or rip out all the things which are in it which aren't OK</td></tr>
+            <tr><td>[13:27] &lt MS-&gt Most of the badly named stuff isn't actually used by anything else on the branch</td></tr>
+            <tr><td>[13:28] &lt MS-&gt Or if it is the stuff that uses it isn't outside the Kamaelia.* namespace (ie not in an example or tool) and doesn't actually work in the places it's used</td></tr>
+            <tr><td>[14:00] &lt MS-&gt sent an email to this list pointing out which bits of code are the issue and that without decent examples, I can't verify if the code in the branch works or not, and hence left with the choice of</td></tr>
+            <tr><td>[14:00] &lt MS-&gt ripping out the code or rejecting the branch</td></tr>
+            <tr><td>[14:00] &lt MS-&gt Most projects would just reject the code tbh</td></tr>
+            <tr><td>[14:06] &lt Patrick`&gt twitter's kind of doing the same thing as the 160 char sms limit is</td></tr>
+            <tr><td>[14:07] &lt MS-&gt This sort of thing - broken contributed code - sucks all the fun out of this as well</td></tr>
+            <tr><td>[14:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:52] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[21:53] *** MS- has parted #kamaelia</td></tr>

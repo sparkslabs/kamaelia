@@ -1,0 +1,108 @@
+<html><body><table>
+            <tr><td>[04:11] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:08] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:18] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:46] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:46] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:47] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:58] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[11:30] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[12:19] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[12:22] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[15:16] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:26] &lt MS-&gt *yawn*</td></tr>
+            <tr><td>[15:31] *** Lawouach hands chocolate over to MS-</td></tr>
+            <tr><td>[15:34] &lt MS-&gt ooh, ta muchly</td></tr>
+            <tr><td>[15:34] &lt MS-&gt *nom* *nom* *nom*</td></tr>
+            <tr><td>[15:35] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[15:36] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[15:36] &lt Lawouach&gt could use some jaffa cakes meself</td></tr>
+            <tr><td>[15:44] *** vmlemon_1 wonders who at the Symbian Foundation decided to create the most confusing and convoluted source code repository layout possible</td></tr>
+            <tr><td>[15:44] *** vmlemon_1 is now known as vmlemon_</td></tr>
+            <tr><td>[15:48] &lt SamHasler&gt can kamaelia be installed on windows?</td></tr>
+            <tr><td>[15:48] &lt vmlemon_&gt Supposedly</td></tr>
+            <tr><td>[15:49] &lt SamHasler&gt C:\Users\Sam Hasler\Desktop\Kamaelia-0.6.0&gtpython setup.py install</td></tr>
+            <tr><td>[15:49] &lt SamHasler&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[15:49] &lt SamHasler&gt  File "setup.py", line 24, in &lt module&gt</td></tr>
+            <tr><td>[15:49] &lt SamHasler&gt  from setuptools import setup</td></tr>
+            <tr><td>[15:49] &lt SamHasler&gt ImportError: No module named setuptools</td></tr>
+            <tr><td>[15:49] &lt vmlemon_&gt Not sure when anyone last tried it, although I don't see why it shouldn't work</td></tr>
+            <tr><td>[15:50] &lt vmlemon_&gt Hmm, if I remember correctly it needed easyinstall or setuptools installed</td></tr>
+            <tr><td>[15:50] &lt vmlemon_&gt http://thinkhole.org/wp/2007/02/01/howto-install-setuptools-in-windows/ might be of use</td></tr>
+            <tr><td>[15:50] &lt Lawouach&gt SamHasler: you need setuptools first</td></tr>
+            <tr><td>[15:55] &lt MS-&gt setuptools was a mistake in hindsight, based on over eager recommendations at pycon last year</td></tr>
+            <tr><td>[15:56] &lt vmlemon_&gt Heh, and the alternative was? ;)</td></tr>
+            <tr><td>[15:56] &lt MS-&gt Only thing it seems to be useful for is easy_install</td></tr>
+            <tr><td>[15:57] &lt MS-&gt vmlemon_: to stick with distutils or build something better that builds on distutils</td></tr>
+            <tr><td>[15:57] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[15:58] &lt MS-&gt (and only to package up eggs using setuptools - so that it remains easy_install-able)</td></tr>
+            <tr><td>[15:58] &lt MS-&gt That said, easy_install isn't really</td></tr>
+            <tr><td>[15:59] &lt vmlemon_&gt tricky_install and impossible_install didn't quite sound as good?</td></tr>
+            <tr><td>[16:01] &lt Lawouach&gt I've switched to pip+virtualenv and I'm much happier</td></tr>
+            <tr><td>[16:01] &lt Lawouach&gt thinking about dropping setuptools support from my setup.py modules</td></tr>
+            <tr><td>[16:02] &lt Lawouach&gt and go with good ol' distutils back again</td></tr>
+            <tr><td>[16:02] *** vmlemon_ tends to be suspect of stuff being hyped up as "easy"</td></tr>
+            <tr><td>[16:03] &lt Lawouach&gt Well it was heavily backed up by many big voice in the community</td></tr>
+            <tr><td>[16:03] &lt Lawouach&gt took me sometime to introduce it and I don't believe it has made my life easier</td></tr>
+            <tr><td>[16:03] &lt MS-&gt I think it makes the lives of a very few easier</td></tr>
+            <tr><td>[16:04] &lt MS-&gt Primarily those willing to type easy_install &lt food&gt and allow it to handle all the dependencies and auto install stuff</td></tr>
+            <tr><td>[16:04] &lt MS-&gt &lt foo&gt even</td></tr>
+            <tr><td>[16:04] &lt MS-&gt (must be hungry :) )</td></tr>
+            <tr><td>[16:06] &lt SamHasler&gt could you add a note and link to setuptools here please: http://www.kamaelia.org/GetKamaelia</td></tr>
+            <tr><td>[16:06] &lt MS-&gt will do</td></tr>
+            <tr><td>[16:08] &lt Lawouach&gt might watch E.T this evening</td></tr>
+            <tr><td>[16:08] &lt Lawouach&gt kid movie that never grows old</td></tr>
+            <tr><td>[16:08] &lt SamHasler&gt I'm going to try to write a bot that writes RSS post titles to an IRC channel, I've found a couple of IRC examples, but what would be a good starting point?</td></tr>
+            <tr><td>[16:12] &lt Lawouach&gt on which front?</td></tr>
+            <tr><td>[16:12] &lt MS-&gt There's some code in /Sketches/PO that downloads RSS feeds, which is probably a good starting point</td></tr>
+            <tr><td>[16:13] &lt MS-&gt I'd suggest an RSS poller piping into something that checks for changes in the RSS feed, piping into the IRC bot</td></tr>
+            <tr><td>[16:14] &lt SamHasler&gt thanks MS-</td></tr>
+            <tr><td>[16:14] *** vmlemon_ wanted to see something that does the reverse, ages ago</td></tr>
+            <tr><td>[16:14] &lt vmlemon_&gt (i.e. producing channel logs in RSS format)</td></tr>
+            <tr><td>[16:14] &lt MS-&gt vmlemon_: Surely that's just an IRC bot that posts to twitter ?</td></tr>
+            <tr><td>[16:14] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:14] &lt MS-&gt which is pretty trivial</td></tr>
+            <tr><td>[16:15] &lt vmlemon_&gt Could be something like that</td></tr>
+            <tr><td>[16:15] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:15] &lt vmlemon_&gt The 140 character limit would be the killer</td></tr>
+            <tr><td>[16:15] &lt MS-&gt There is that</td></tr>
+            <tr><td>[16:15] &lt MS-&gt mind you, doesn't seem to be an issue with feeds from friend feed</td></tr>
+            <tr><td>[16:16] &lt vmlemon_&gt Hmm, the RSS standard calls for a body and a title as mandatory elements?</td></tr>
+            <tr><td>[16:16] &lt MS-&gt cf: http://twitter.com/nlothian/status/1668646563</td></tr>
+            <tr><td>[16:16] &lt SamHasler&gt agh my eyes</td></tr>
+            <tr><td>[16:17] &lt vmlemon_&gt I'm sure that it should be relatively simple to have the bot spew a files that uses the title to dump the text that someone's posted as a "title", have the handle/nick as an author, and has a timestamp</td></tr>
+            <tr><td>[16:17] &lt vmlemon_&gt *an RSS file</td></tr>
+            <tr><td>[16:18] &lt vmlemon_&gt Grm, I'm surprised by how many typos I've made today</td></tr>
+            <tr><td>[16:18] &lt vmlemon_&gt Serves me right for not being able to sleep until ~2am for some reason</td></tr>
+            <tr><td>[16:20] &lt vmlemon_&gt Heh, that background is pretty nasty</td></tr>
+            <tr><td>[16:21] *** vmlemon_ wonders how they managed to bust out of the character limit, whilst still having Twitter accept the post</td></tr>
+            <tr><td>[16:21] &lt vmlemon_&gt I think I tried to type something longer than 140 characters once, and it drove the counter into a negative number</td></tr>
+            <tr><td>[16:22] &lt vmlemon_&gt Didn't try to post it, though</td></tr>
+            <tr><td>[16:23] &lt vmlemon_&gt kamlogbot: poke</td></tr>
+            <tr><td>[16:23] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[16:33] &lt MS-&gt vmlemon_: I think the twitter API allows for more characters for some things - it's an unexpected edge case I think</td></tr>
+            <tr><td>[16:35] &lt vmlemon_&gt Coming soon - the Twovel? ;)</td></tr>
+            <tr><td>[17:09] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[17:09] Reply: does the macarena</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt WTF? I wonder how RSA can get away with calling http://rsashare.com/ a "Free Software Initiative", when the software and source code in the free of cost download (after registration) is covered under a 3 year-long NDA and a restrictive license that prevents redistribution, except in closed-source software, and gives them the right to audit users at any time</td></tr>
+            <tr><td>[17:55] &lt MS-&gt free as in gratis</td></tr>
+            <tr><td>[17:56] &lt vmlemon_&gt Still, I can't help but think that there's some (deliberate?) confusion involved, especially given that there's source code changing hands</td></tr>
+            <tr><td>[17:57] &lt vmlemon_&gt Good point</td></tr>
+            <tr><td>[17:57] &lt MS-&gt There's alot of misunderstanding about various terms</td></tr>
+            <tr><td>[17:57] *** vmlemon_ blames the FSF a little</td></tr>
+            <tr><td>[17:57] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[17:59] &lt vmlemon_&gt If they'd have called it Shared Source, or similar, then people would know what they're getting into</td></tr>
+            <tr><td>[18:00] &lt vmlemon_&gt Or just Publicly Available Source</td></tr>
+            <tr><td>[18:00] &lt vmlemon_&gt Visible Source? I don't know...</td></tr>
+            <tr><td>[18:05] &lt vmlemon_&gt Still, it's a crafty trick on their part</td></tr>
+            <tr><td>[18:05] &lt vmlemon_&gt Although I assume that they're not targeting "people in the know"</td></tr>
+            <tr><td>[18:07] &lt vmlemon_&gt Still, there's a reason why I call it Open Source most of the time, and this sort of stuff is partially why - it leaves little wiggle room for confusion or misinterpretation</td></tr>
+            <tr><td>[18:09] &lt MS-&gt It's highly likely that they've charged for access to source in the past</td></tr>
+            <tr><td>[18:09] &lt MS-&gt (embedded systems etc)</td></tr>
+            <tr><td>[18:10] &lt vmlemon_&gt They do mention that it's "the same codebase, as used by [[big laundry list of vendors]]", barring some missing functionality that they want to upsell people on</td></tr>
+            <tr><td>[18:10] &lt vmlemon_&gt (FIPS-compliant encryption strengths or something like that)</td></tr>
+            <tr><td>[18:10] &lt vmlemon_&gt So that could be partially to do with it</td></tr>
+            <tr><td>[18:12] &lt vmlemon_&gt Heh, I'm surprised that Wikipedia has an article on shopping lists, of all things</td></tr>
+            <tr><td>[21:35] &lt MS-&gt night all :)</td></tr>
+            <tr><td>[21:35] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[23:53] *** kamlogbot has joined #kamaelia</td></tr>

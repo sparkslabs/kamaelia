@@ -1,0 +1,51 @@
+<html><body><table>
+            <tr><td>[10:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:43] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:08] &lt Davbo&gt quickly started a summary but has to go now: http://www.kamaelia.org/ReleaseNotes060/Summary</td></tr>
+            <tr><td>[12:11] *** ms-afk deletes that summary since it's worse than useless</td></tr>
+            <tr><td>[12:11] &lt ms-afk&gt not intended as an insult, but quite frankly, it is</td></tr>
+            <tr><td>[12:13] &lt ms-afk&gt """ To allow for reuse we have moved components from the following Tools into Kamaelia.Apps.* Whiteboard Games4Kids blah more stuff """</td></tr>
+            <tr><td>[12:14] &lt ms-afk&gt Is the entirety of the content (!)</td></tr>
+            <tr><td>[12:14] &lt ms-afk&gt Would totally mislead as to the full set of changes (hence why worse than ...)</td></tr>
+            <tr><td>[12:15] *** vmlemon_ wonders if any decent tools exist for searching through source code locally (other than hypersrc, which has so many quirks and limitations that it's not worth bothering with)...</td></tr>
+            <tr><td>[12:16] &lt ms-afk&gt I tend to use grep... which is a bit sucky. There's also things like gtags and ctags, but they're targetted at C</td></tr>
+            <tr><td>[12:16] &lt ms-afk&gt which may be sufficient for you</td></tr>
+            <tr><td>[12:17] &lt vmlemon_&gt Hmm, hypersrc happens to use ctags, although it seems extremely picky about which files it'll handle :|</td></tr>
+            <tr><td>[12:18] &lt vmlemon_&gt (i.e. It won't separate out/produce a tree from files without UNIX linefeeds, it chokes on certain characters and encodings, it doesn't even bother with stuff in Pascal or other languages, and the interface is pretty awful)</td></tr>
+            <tr><td>[12:21] *** vmlemon_ tries Google Desktop</td></tr>
+            <tr><td>[12:51] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:02] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:14] &lt vmlemon_&gt Hmm, will the Lipsum text on the homepage under "Source & SVN" be replaced with a real description soon, out of interest?</td></tr>
+            <tr><td>[14:16] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:35] &lt ms-afk&gt vmlemon_: hm?</td></tr>
+            <tr><td>[14:35] *** ms-afk looks</td></tr>
+            <tr><td>[14:35] &lt ms-afk&gt heh, yes</td></tr>
+            <tr><td>[14:35] &lt ms-afk&gt Must've missed that</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt OK, 0.6.0 final-release uploaded to /release/</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt Updating pypi</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt then release announcement :)</td></tr>
+            <tr><td>[15:11] &lt ms-afk&gt Hm. should check easy_install before release announcement I guess</td></tr>
+            <tr><td>[15:19] &lt ms-afk&gt sudo easy_install Kamaelia seems to work</td></tr>
+            <tr><td>[15:19] &lt ms-afk&gt OK, release announcement</td></tr>
+            <tr><td>[15:24] &lt ms-afk&gt OK www.kamaelia.org is now the primary URL with other versions now redirecting people to the right place</td></tr>
+            <tr><td>[16:15] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:23] &lt ms-afk&gt Writing release announcement</td></tr>
+            <tr><td>[16:29] &lt ms-afk&gt I do now have to go off and cook food though</td></tr>
+            <tr><td>[16:29] &lt ms-afk&gt biab</td></tr>
+            <tr><td>[16:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:34] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[17:43] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:06] &lt ms-afk&gt Lawouach: evening</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt heya</td></tr>
+            <tr><td>[18:07] &lt ms-afk&gt Currently writing release announcement</td></tr>
+            <tr><td>[18:20] &lt ms-afk&gt How would you describe this btw:</td></tr>
+            <tr><td>[18:21] &lt ms-afk&gt class Foo(component):</td></tr>
+            <tr><td>[18:21] &lt ms-afk&gt  Argument = default value</td></tr>
+            <tr><td>[18:21] &lt ms-afk&gt class MyFoo(Foo):</td></tr>
+            <tr><td>[18:21] &lt ms-afk&gt  Argument = local default</td></tr>
+            <tr><td>[18:21] &lt ms-afk&gt MyFoo(Argument = instance value)</td></tr>
+            <tr><td>[18:21] &lt ms-afk&gt inheritable default vaues ?</td></tr>
+            <tr><td>[18:23] &lt ms-afk&gt I quite like that description now that I think about it</td></tr>
+            <tr><td>[19:07] &lt ms-afk&gt http://www.kamaelia.org/InheritableDefaultValues</td></tr>
+            <tr><td>[19:22] *** vmlemon_ has joined #kamaelia</td></tr>

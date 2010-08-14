@@ -1,0 +1,96 @@
+<html><body><table>
+            <tr><td>[03:08] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:54] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:59] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:07] &lt Lawouach_&gt That KeyboardInterrupt really complicates my life right now :/</td></tr>
+            <tr><td>[08:32] &lt MS-&gt If you want to take a look at where to put it into the Scheduler, please do, and give some hints as to where you like it...</td></tr>
+            <tr><td>[08:36] &lt MS-&gt Being rather blase about it, you could potentially wrap lines 447 - 555 in a try/except KeyboardInterrupt, and if caught, so the same thing as lines 558-560</td></tr>
+            <tr><td>[08:36] &lt MS-&gt In this:</td></tr>
+            <tr><td>[08:36] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Axon/Axon/Scheduler.py</td></tr>
+            <tr><td>[08:36] &lt MS-&gt That may actually do what you want.</td></tr>
+            <tr><td>[08:37] &lt MS-&gt I suspect though that in order to have "correct" behaviour in general</td></tr>
+            <tr><td>[08:37] &lt MS-&gt that after doing that you'd want to re-raise the KeyboardInterrupt.</td></tr>
+            <tr><td>[08:39] &lt MS-&gt One thing that can't be ignored is that simply carrying on looping is valid - because you can't know which component the KeyboardInterrupt was raised inside</td></tr>
+            <tr><td>[08:39] &lt MS-&gt That generator will have had its stack frame deactivated by python - since there's no concept in python of resumeable exceptions.</td></tr>
+            <tr><td>[08:40] &lt MS-&gt The alternative you'd need, thinking about it, is to write a signal handler.</td></tr>
+            <tr><td>[08:40] &lt MS-&gt That signal handler, can then call scheduler.run.stop()</td></tr>
+            <tr><td>[08:41] &lt MS-&gt To tell the primary scheduler to shut down, allowing all components to shutdown cleanly.</td></tr>
+            <tr><td>[08:41] &lt MS-&gt That would probably need to ideally set a timer signal to get the system to recall the handler</td></tr>
+            <tr><td>[08:41] &lt MS-&gt so it can kill the scheduler properly if it fails to shutdown, due to (say) a rogue component.</td></tr>
+            <tr><td>[08:42] &lt MS-&gt Thinking about it, this is probably what vlc does internally</td></tr>
+            <tr><td>[09:44] &lt Lawouach_&gt hello guys</td></tr>
+            <tr><td>[09:44] &lt Lawouach_&gt oops</td></tr>
+            <tr><td>[09:44] &lt Lawouach_&gt sorry</td></tr>
+            <tr><td>[09:44] &lt Lawouach_&gt I didn't realise you had replied</td></tr>
+            <tr><td>[09:44] &lt Lawouach_&gt reading</td></tr>
+            <tr><td>[09:45] &lt Lawouach_&gt right it makes sense</td></tr>
+            <tr><td>[09:45] &lt Lawouach_&gt I think I'm more annoyed at how little leverage you get from Python on a SIGINT</td></tr>
+            <tr><td>[09:46] &lt Lawouach_&gt From Axon, I suppose I'd just want my component to be shutdown cleanly, or at least get to call scheduler.stop properly indeed</td></tr>
+            <tr><td>[09:46] &lt Lawouach_&gt But this isn't blocking me in any way, just not friendly</td></tr>
+            <tr><td>[09:57] *** MS- nods</td></tr>
+            <tr><td>[09:58] &lt MS-&gt I get the impression though that if we catch the SIGINT signal, we could probably do something relatively intelligent</td></tr>
+            <tr><td>[10:04] &lt Lawouach_&gt that'd be nice :)</td></tr>
+            <tr><td>[10:11] &lt MS-&gt I'll bung on my bugs list. I'm treating it as a todo list, and so far seems a pretty good approach</td></tr>
+            <tr><td>[10:16] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:05] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[13:08] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:04] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:06] &lt Lawouach&gt hi vmlemon_</td></tr>
+            <tr><td>[16:33] &lt MS-&gt evening</td></tr>
+            <tr><td>[16:46] &lt eikenberry&gt MS-. Ever get any feedback on that syntactic sugar post. I keep meaning to...</td></tr>
+            <tr><td>[16:48] &lt MS-&gt I haven't had anything specific. I've got some thoughts, but would welcome thoughts of others :-)</td></tr>
+            <tr><td>[16:49] &lt eikenberry&gt I had various thoughts... mainly outsider beginner things as I haven't done much more than the axon tutorial and some reading.</td></tr>
+            <tr><td>[16:49] &lt MS-&gt Those are fine :-)</td></tr>
+            <tr><td>[16:51] &lt eikenberry&gt Want them here or would you prefer the list?</td></tr>
+            <tr><td>[16:52] &lt MS-&gt Things like syntactic sugar tend to work best on the list IMO.</td></tr>
+            <tr><td>[16:52] &lt MS-&gt It's alot easier to discuss examples there</td></tr>
+            <tr><td>[16:53] &lt eikenberry&gt cool. context wise... I'm looking at the various pipeline systems in relation to a project I'm starting. I want to use it but and still thinking about how to do it.</td></tr>
+            <tr><td>[16:54] &lt eikenberry&gt I've been stuck in zope2 land for years so am quite reticent about getting locked into a framework.</td></tr>
+            <tr><td>[16:54] &lt MS-&gt I can understand that.</td></tr>
+            <tr><td>[16:54] &lt Lawouach&gt eikenberry: Kamaelia will free your mind :)</td></tr>
+            <tr><td>[16:54] &lt MS-&gt That's part of the reason for wanting to make Axon.Handle work better - so that people aren't locked into to one form of code. It also simplifies some circumstances.</td></tr>
+            <tr><td>[16:56] &lt eikenberry&gt So I was looking primarily at either simple generators or coroutines. I'm reconsidering that a bit, but still want to stick as close to idiomatic python as possible.</td></tr>
+            <tr><td>[16:57] &lt MS-&gt I can understand that desire. I'm considering some syntactic sugar which would be relatively close to idiomatic python.</td></tr>
+            <tr><td>[16:57] &lt eikenberry&gt Looking over the 99 bottles page on the concurrency wiki as an example. Kamaelia seems to have a lot of boilerplate compared to say fibra.</td></tr>
+            <tr><td>[16:57] &lt MS-&gt That's because I chose to do it that way</td></tr>
+            <tr><td>[16:57] &lt eikenberry&gt heh.</td></tr>
+            <tr><td>[16:58] &lt MS-&gt It's more an example of idiomatic Axon usage, rather than idiomatic Kamaelia.</td></tr>
+            <tr><td>[16:58] &lt MS-&gt But then it was nice to do it that way because it generated some comments...</td></tr>
+            <tr><td>[16:59] &lt eikenberry&gt Does Kamaelia have decorators for wrapping generators.</td></tr>
+            <tr><td>[16:59] &lt eikenberry&gt ?</td></tr>
+            <tr><td>[16:59] &lt eikenberry&gt Making them into components?</td></tr>
+            <tr><td>[17:00] &lt MS-&gt No, that's the comments I'm looking for on twitter.</td></tr>
+            <tr><td>[17:00] &lt MS-&gt (which is why I prefer specific ideas posted on the mailing list, since they don't get lost :-) )</td></tr>
+            <tr><td>[17:01] *** eikenberry nods</td></tr>
+            <tr><td>[17:02] &lt MS-&gt This was a similar comment/request: http://twitter.com/atl/status/1846111439</td></tr>
+            <tr><td>[17:03] &lt eikenberry&gt Is that in relation to your blog post? The coroutine to component one.</td></tr>
+            <tr><td>[17:05] &lt MS-&gt yep</td></tr>
+            <tr><td>[17:09] &lt eikenberry&gt cool. I agree. IMO the best system would be one that would look almost just like a system based on generators/coroutines, that you would just decorate into a more capable system. Something akin to beazley's coroutine talk... taking the basic blocks then hooking them into a scheduler and allowing for more easily setting up complex pipelines.</td></tr>
+            <tr><td>[17:09] &lt MS-&gt That's nice, until you realise how the control flow of beazley's coroutines work.</td></tr>
+            <tr><td>[17:10] &lt MS-&gt Specifically they seem to be limited to pipelines.</td></tr>
+            <tr><td>[17:10] *** eikenberry nods. They are more an example than a working system. I just really liked how they built on idiomatic python rather than a framework.</td></tr>
+            <tr><td>[17:10] &lt MS-&gt The reason is because the last coroutine *pulls* rather than pushes values.</td></tr>
+            <tr><td>[17:11] &lt MS-&gt Mixing push and pull - which kamaelia does - seems to be somewhat harder to do that way</td></tr>
+            <tr><td>[17:12] *** eikenberry nods.</td></tr>
+            <tr><td>[17:13] &lt MS-&gt I've just posted to the list a piece of code that's a syntax I'm toying with.</td></tr>
+            <tr><td>[17:14] &lt MS-&gt But more ideas as to what you'd like to type would be v useful</td></tr>
+            <tr><td>[17:14] &lt eikenberry&gt cool. reading email.</td></tr>
+            <tr><td>[17:15] &lt MS-&gt There, found the tweet which is similar. http://twitter.com/jessenoller/status/1903052945</td></tr>
+            <tr><td>[17:15] &lt eikenberry&gt Are multiple inboxes and outboxes normal?</td></tr>
+            <tr><td>[17:16] &lt MS-&gt Yes</td></tr>
+            <tr><td>[17:17] &lt MS-&gt Much like each unix process has stdin, stderr and stdout, *and* signals from the OS.</td></tr>
+            <tr><td>[17:17] &lt MS-&gt stdin ~ "inbox" , signals from OS ~ "control", stdout ~ "outbox", stderr ~ "signal" (signals to pass on to next component)</td></tr>
+            <tr><td>[17:19] &lt eikenberry&gt Hmm. I'd almost think it would be clearer to pass the boxes as arguments rather. Make it more function like, less like an unbound method.</td></tr>
+            <tr><td>[17:21] &lt MS-&gt Have a ponder, post something that you think you like :) If its ideal, that's great, if it's not, its a step forward :-)</td></tr>
+            <tr><td>[17:21] &lt MS-&gt I'm very much in favour of trying stuff and seeing :)</td></tr>
+            <tr><td>[17:22] *** MS- needs to put kids to bed</td></tr>
+            <tr><td>[17:22] &lt MS-&gt biab</td></tr>
+            <tr><td>[17:22] &lt eikenberry&gt I'll see what I can come up with.</td></tr>
+            <tr><td>[17:23] &lt MS-&gt cheers :)</td></tr>
+            <tr><td>[17:23] &lt eikenberry&gt thanks. later. :)</td></tr>
+            <tr><td>[17:35] &lt vmlemon_&gt kamlogbot: date</td></tr>
+            <tr><td>[17:35] Reply: 2009-06-16</td></tr>
+            <tr><td>[18:14] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:49] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[23:53] *** kamlogbot has joined #kamaelia</td></tr>

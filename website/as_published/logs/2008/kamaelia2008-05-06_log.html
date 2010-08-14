@@ -1,0 +1,267 @@
+<html><body><table>
+            <tr><td>[00:04] *** j_baker goes to store to get stuff to make dinner</td></tr>
+            <tr><td>[00:04] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[07:21] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:21] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[07:56] &lt Lawouach_&gt ms-: you there?</td></tr>
+            <tr><td>[07:57] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[07:58] &lt ms-&gt Lawouach: For a very brief time (I should be in transit really)</td></tr>
+            <tr><td>[07:58] &lt ms-&gt what's up?</td></tr>
+            <tr><td>[07:59] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:02] &lt Lawouach_&gt ah ok</td></tr>
+            <tr><td>[08:02] &lt Lawouach_&gt well we'll see that later</td></tr>
+            <tr><td>[08:02] &lt Lawouach_&gt nothing urgent</td></tr>
+            <tr><td>[08:02] &lt ms-&gt ah, OK - cheers</td></tr>
+            <tr><td>[08:03] &lt Lawouach_&gt I just started working on ssl support in the TCPClient</td></tr>
+            <tr><td>[08:03] &lt Lawouach_&gt we'll discuss about it :)</td></tr>
+            <tr><td>[08:03] &lt ms-&gt Cool.</td></tr>
+            <tr><td>[08:03] &lt Lawouach_&gt Much much easier than I thought :)</td></tr>
+            <tr><td>[08:03] &lt ms-&gt excellent :)</td></tr>
+            <tr><td>[08:03] &lt Lawouach_&gt I mean the integration not ssl :D</td></tr>
+            <tr><td>[08:03] &lt ms-&gt :)</td></tr>
+            <tr><td>[08:03] &lt Lawouach_&gt ssl is a bitch to debug</td></tr>
+            <tr><td>[08:03] &lt Lawouach_&gt anyway</td></tr>
+            <tr><td>[08:03] &lt ms-&gt Indeed</td></tr>
+            <tr><td>[08:04] &lt Lawouach_&gt will you be there this evening?</td></tr>
+            <tr><td>[08:04] &lt ms-&gt Yep. And today.</td></tr>
+            <tr><td>[08:05] &lt Lawouach_&gt ok</td></tr>
+            <tr><td>[08:05] &lt Lawouach_&gt just ping me back then</td></tr>
+            <tr><td>[08:06] &lt ms-&gt k</td></tr>
+            <tr><td>[08:14] *** ms- notes that j_baker's indentation was broken</td></tr>
+            <tr><td>[08:14] &lt ms-&gt and that time.* should not be inside that component...</td></tr>
+            <tr><td>[08:24] *** mhrd notes ms-'s BBC Internet blog post</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt mhrd: a link?</td></tr>
+            <tr><td>[08:34] &lt mhrd&gt http://www.bbc.co.uk/blogs/bbcinternet/2008/05/google_summer_of_code.html</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt ta</td></tr>
+            <tr><td>[08:40] &lt mhrd&gt Lawouach_ : google calendar - ta :)</td></tr>
+            <tr><td>[08:41] &lt Lawouach_&gt np :)</td></tr>
+            <tr><td>[09:12] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:35] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[09:43] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:04] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:08] &lt orphans&gt hey MS-</td></tr>
+            <tr><td>[10:08] &lt MS-&gt hi</td></tr>
+            <tr><td>[10:09] &lt orphans&gt hows it going?</td></tr>
+            <tr><td>[10:10] &lt MS-&gt spam spam spam spam</td></tr>
+            <tr><td>[10:10] &lt orphans&gt a regular MS- morning then :)</td></tr>
+            <tr><td>[10:11] &lt MS-&gt sadly</td></tr>
+            <tr><td>[10:16] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[10:17] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:23] &lt orphans&gt MS-, if you have a minute after digging through an onslaught of canned meat products would you mind sticking up the comments about the cpu usage in the code I showed Lawouach yesterday?</td></tr>
+            <tr><td>[10:24] &lt MS-&gt Well, I've got ~1900 to go, so very briefly:</td></tr>
+            <tr><td>[10:25] &lt MS-&gt a) Look at the Magnadoodle component - it will make you like easier...</td></tr>
+            <tr><td>[10:25] &lt MS-&gt Since its a nice self contained example that's v similar to what you're doing</td></tr>
+            <tr><td>[10:25] *** orphans likes an easy life</td></tr>
+            <tr><td>[10:25] &lt MS-&gt b)</td></tr>
+            <tr><td>[10:25] &lt MS-&gt while not self.anyReady():</td></tr>
+            <tr><td>[10:25] &lt MS-&gt  self.pause()</td></tr>
+            <tr><td>[10:25] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[10:26] &lt MS-&gt (the magnadoodle component should also make that check, but I note it doesn't)</td></tr>
+            <tr><td>[10:26] &lt orphans&gt k, cool</td></tr>
+            <tr><td>[10:26] &lt MS-&gt You'll note "listen events"</td></tr>
+            <tr><td>[10:27] &lt MS-&gt You can tell the scheduler "I'm waiting for an event on a (in/out)-box"</td></tr>
+            <tr><td>[10:27] &lt MS-&gt which is what self.pause() does</td></tr>
+            <tr><td>[10:27] &lt MS-&gt and you are awakened when something happens to those</td></tr>
+            <tr><td>[10:27] &lt MS-&gt ie mouse events</td></tr>
+            <tr><td>[10:27] &lt orphans&gt yeah - I thought I was probably doing that bit badly</td></tr>
+            <tr><td>[10:27] &lt MS-&gt The pygame display itself has an event handler which sits in a thread in a blocking fashion, and so doesn't use CPU</td></tr>
+            <tr><td>[10:28] &lt MS-&gt and the same can go for the scheduler itself</td></tr>
+            <tr><td>[10:28] &lt MS-&gt meaning a pygame app can utilise 0% cpu (or as close as you can get</td></tr>
+            <tr><td>[10:28] &lt MS-&gt )</td></tr>
+            <tr><td>[10:28] &lt MS-&gt makes a difference :)</td></tr>
+            <tr><td>[10:28] &lt MS-&gt but that's the really short version</td></tr>
+            <tr><td>[10:28] &lt mhrd&gt http://kamaelia.sourceforge.net/Docs/Axon/Axon.Component.html#15</td></tr>
+            <tr><td>[10:28] *** MS- goes back to despamming</td></tr>
+            <tr><td>[10:29] &lt bcarlyon|laptop&gt yay despamming :-)</td></tr>
+            <tr><td>[10:29] &lt orphans&gt yeah, that's great, cheers MS- and mhrd</td></tr>
+            <tr><td>[10:32] &lt mhrd&gt orphans: not badly - getting it working first is most important. Getting your component to relinquish cpu usage when idle is an optimisation imo. In some cases it can make the internal design more complex, so it can be better to leave it until later</td></tr>
+            <tr><td>[10:32] *** mhrd -&gt mtg</td></tr>
+            <tr><td>[10:34] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[11:00] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[11:00] &lt Chong-&gt Morning, all.</td></tr>
+            <tr><td>[11:18] *** mhrd &lt - mtg</td></tr>
+            <tr><td>[11:44] &lt vmlemon&gt Hi Chong-</td></tr>
+            <tr><td>[11:44] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[11:45] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:51] &lt Chong-&gt Hi vmlemon</td></tr>
+            <tr><td>[11:51] &lt Chong-&gt hi Lawouach_</td></tr>
+            <tr><td>[11:54] &lt Lawouach_&gt hi Chong-</td></tr>
+            <tr><td>[12:05] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[12:22] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:25] &lt Davbo&gt who would have thought it, my group has come out of the woodwork :P</td></tr>
+            <tr><td>[12:25] &lt Davbo&gt When there are 2.5hours to the deadline suddenly people are interested!</td></tr>
+            <tr><td>[12:38] &lt orphans&gt Davbo, *sigh*</td></tr>
+            <tr><td>[12:39] &lt Davbo&gt The lab is booked out too orphans, so there are no free computers. Meaning 2 members who have done nothing are just stood around not doing much lol :)</td></tr>
+            <tr><td>[12:40] &lt orphans&gt heh, brilliant</td></tr>
+            <tr><td>[12:47] &lt orphans&gt MS-, Lawouach - http://orphans.pastebin.com/d1cb0bd8 - should use less cpu</td></tr>
+            <tr><td>[12:53] &lt bcarlyon|laptop&gt Olinda pictures -&gt http://www.bbc.co.uk/blogs/radiolabs/2008/05/olinda_a_new_radio.shtml</td></tr>
+            <tr><td>[12:53] &lt mhrd&gt I keep being wary about using WaitComplete - because at one time there was a bug meaning it didn't work properly - but iirc it was fixed a while ago</td></tr>
+            <tr><td>[12:55] &lt orphans&gt mhrd, MS- said it was recommended using it, and it's used in Kamaelia Grey fwiw</td></tr>
+            <tr><td>[12:55] &lt mhrd&gt cool</td></tr>
+            <tr><td>[12:56] &lt mhrd&gt your code looks like it'll relinquish CPU safely - only way to be sure is to test it though</td></tr>
+            <tr><td>[12:56] &lt mhrd&gt :)</td></tr>
+            <tr><td>[12:57] &lt orphans&gt it's definitely down from what it was (according to slightly rickety top values) :)</td></tr>
+            <tr><td>[12:58] &lt orphans&gt bcarlyon|laptop, http://www.pixelsumo.com/post/olinda</td></tr>
+            <tr><td>[13:00] &lt bcarlyon|laptop&gt nice</td></tr>
+            <tr><td>[13:04] &lt mhrd&gt orphans: you might find this useful: http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MH/Introspection/Profiling.py</td></tr>
+            <tr><td>[13:04] &lt mhrd&gt (see the __main__ section at the end for example usage)</td></tr>
+            <tr><td>[13:06] &lt vmlemon&gt The BBCIB post on GSoC and Dirac/Kamaelia made for interesting reading</td></tr>
+            <tr><td>[13:07] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[13:07] &lt MS-&gt mhrd: I think I must've dealt with the issues that were in WaitComplete</td></tr>
+            <tr><td>[13:07] &lt MS-&gt Since kamaelia grey uses it extensively and it works fine</td></tr>
+            <tr><td>[13:07] &lt mhrd&gt MS-: agreed. I think any concerns were my memory being faulty :)</td></tr>
+            <tr><td>[13:07] &lt MS-&gt Though to be honest I really can't remember what the concerns were :-)</td></tr>
+            <tr><td>[13:08] &lt mhrd&gt I'm trying to remember too - might be something to do with which microprocess receives wake-up's on inbox/outbox activity</td></tr>
+            <tr><td>[13:08] &lt mhrd&gt but if its working, then there's no problem :)</td></tr>
+            <tr><td>[13:09] &lt MS-&gt orphans: Code looks reasonable</td></tr>
+            <tr><td>[13:09] &lt MS-&gt mhrd: Quite possibly</td></tr>
+            <tr><td>[13:16] *** MS- still despamming</td></tr>
+            <tr><td>[14:33] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[14:33] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[14:34] &lt vmlemon&gt Hmm, interesting, http://cvs.opensolaris.org/source/xref/onnv/onnv-gate/usr/src/cmd/ls/ls.c</td></tr>
+            <tr><td>[14:36] &lt Lawouach_&gt ugly :)</td></tr>
+            <tr><td>[14:36] &lt Lawouach_&gt I'm intrigued, in what way is this interesting to you?</td></tr>
+            <tr><td>[14:36] &lt vmlemon&gt The Microsoft copyright note</td></tr>
+            <tr><td>[14:37] &lt vmlemon&gt of all things...</td></tr>
+            <tr><td>[14:38] &lt Lawouach_&gt Indeed</td></tr>
+            <tr><td>[14:39] &lt Lawouach_&gt That makes you wonder, how do we then map the copyright to the code it protects? Or is the copyright bound to the file in its entirety? In such case what happens with multiple copyrights?</td></tr>
+            <tr><td>[14:40] &lt vmlemon&gt Isn't it 50-70 years for a copyright, in most countries?</td></tr>
+            <tr><td>[14:40] &lt vmlemon&gt Or at least that was the impression that I got from an MCPS document that I came across</td></tr>
+            <tr><td>[14:41] &lt Lawouach_&gt Not sure</td></tr>
+            <tr><td>[14:42] &lt vmlemon&gt Hmm, who then owns the copyright for something written by a person or organization that no longer exists?</td></tr>
+            <tr><td>[14:42] &lt vmlemon&gt Does it get put into the public domain automatically? Go into limbo of some kind?</td></tr>
+            <tr><td>[14:43] &lt Lawouach_&gt I don't know.</td></tr>
+            <tr><td>[14:43] &lt vmlemon&gt It would probably depend on the country that the copyright is held in</td></tr>
+            <tr><td>[14:43] &lt MS-&gt vmlemon: 95 in some</td></tr>
+            <tr><td>[14:44] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[14:44] &lt vmlemon&gt Ouch</td></tr>
+            <tr><td>[14:44] &lt vmlemon&gt Got to go</td></tr>
+            <tr><td>[14:44] &lt vmlemon&gt See you...</td></tr>
+            <tr><td>[14:44] &lt MS-&gt np</td></tr>
+            <tr><td>[14:44] &lt MS-&gt cya</td></tr>
+            <tr><td>[14:44] &lt Lawouach_&gt MS-: I've responded to the list regarding the organisation of K.</td></tr>
+            <tr><td>[14:45] &lt Lawouach_&gt It doesn't seem to be online yet</td></tr>
+            <tr><td>[14:45] &lt MS-&gt Lawouach_: People claim copyright over the bits they've written. In the case of a file, the problem is the lack of svn blame</td></tr>
+            <tr><td>[14:45] &lt MS-&gt Cool</td></tr>
+            <tr><td>[14:46] &lt MS-&gt Will read it when I see it :-)</td></tr>
+            <tr><td>[14:47] &lt MS-&gt The copyright thing with things like that ls.c file is a pain.</td></tr>
+            <tr><td>[14:47] &lt Lawouach_&gt MS-: indeed. That's the problem in those old files I guess. I guess even RCS wasn't existing yet back in 1987</td></tr>
+            <tr><td>[14:47] &lt MS-&gt no idea :)</td></tr>
+            <tr><td>[14:47] &lt Lawouach_&gt eh eh</td></tr>
+            <tr><td>[14:47] &lt MS-&gt The license applies to the whole file though</td></tr>
+            <tr><td>[14:48] &lt MS-&gt The CDDL is also a file based license, so it will only apply to the files that header is on</td></tr>
+            <tr><td>[14:48] &lt Lawouach_&gt right.</td></tr>
+            <tr><td>[14:48] &lt MS-&gt haven't seen your mail yet</td></tr>
+            <tr><td>[14:49] &lt MS-&gt I don't suppose you mailed it from an address not subscribed to that group?</td></tr>
+            <tr><td>[14:49] &lt MS-&gt I do that all the time with the GSOC lists</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt I do that often too</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt But there I used my defuze address which should be subscribed to that list</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt I have both my defuze and gmail addresses registered</td></tr>
+            <tr><td>[14:59] &lt Lawouach_&gt MS-: nice article BTW :)</td></tr>
+            <tr><td>[15:03] &lt Lawouach_&gt ah it's there :)</td></tr>
+            <tr><td>[15:03] *** sadru1 is now known as sadrul</td></tr>
+            <tr><td>[15:22] &lt MS-&gt Lawouach_: ta :)</td></tr>
+            <tr><td>[15:23] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[15:24] *** MS- sees mail</td></tr>
+            <tr><td>[15:24] &lt MS-&gt There's more than I can digest this instant (need to get train)</td></tr>
+            <tr><td>[15:24] &lt MS-&gt but will read in detail</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Looks useful stuff :-)</td></tr>
+            <tr><td>[15:24] &lt j_baker&gt MS- I found the indentation error. I got thrown for a loop because the debug loop ended up just being a really long loop, not an infinite one.</td></tr>
+            <tr><td>[15:25] &lt MS-&gt j_baker: cool</td></tr>
+            <tr><td>[15:25] &lt MS-&gt Lawouach_: Maybe I should find a way of moving the docs etc back such that they end up in SVN as they used to before we moved to online editting.</td></tr>
+            <tr><td>[15:25] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:25] &lt MS-&gt OK, back in a while.</td></tr>
+            <tr><td>[15:25] &lt MS-&gt cya</td></tr>
+            <tr><td>[15:25] &lt MS-&gt (bout 2 hours I guess)</td></tr>
+            <tr><td>[15:25] &lt Lawouach_&gt see you</td></tr>
+            <tr><td>[15:26] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[15:26] &lt mhrd&gt cya</td></tr>
+            <tr><td>[16:16] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:31] &lt Davbo&gt my EEE is back :D</td></tr>
+            <tr><td>[16:45] &lt j_baker&gt About to go take my last final in a little while.</td></tr>
+            <tr><td>[16:45] &lt j_baker&gt And it's in discrete math. :(</td></tr>
+            <tr><td>[16:45] *** j_baker hates discrete math.</td></tr>
+            <tr><td>[16:46] &lt Davbo&gt good luck j_baker :)</td></tr>
+            <tr><td>[16:46] &lt Davbo&gt i quite like discrete maths :P</td></tr>
+            <tr><td>[16:47] &lt j_baker&gt It may just be my professor, but it's turning out to be one of those "When am I ever going to use this?" subjects.</td></tr>
+            <tr><td>[16:47] &lt j_baker&gt (I know of course I'll use more of it in algorithm design though)</td></tr>
+            <tr><td>[16:51] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[16:52] &lt Lawouach&gt good luck j_baker</td></tr>
+            <tr><td>[16:53] &lt j_baker&gt ty</td></tr>
+            <tr><td>[17:06] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[17:32] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:34] &lt Davbo&gt ooo Google app engine</td></tr>
+            <tr><td>[17:34] &lt Davbo&gt just got my invite</td></tr>
+            <tr><td>[18:44] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:36] &lt j_baker-away&gt Davbo, I just got mine too...</td></tr>
+            <tr><td>[20:37] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[20:37] &lt j_baker&gt (google app engine invite)</td></tr>
+            <tr><td>[20:41] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:42] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:35] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:37] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[22:51] &lt Davbo&gt Quiet in here tonight, MS- is clearly the life of the party ;)</td></tr>
+            <tr><td>[22:52] &lt j_baker&gt Yeah. I think he's going to end up breaking stuff or something.</td></tr>
+            <tr><td>[22:53] &lt Davbo&gt How did your exam go j_baker?</td></tr>
+            <tr><td>[22:56] &lt j_baker&gt Not too bad. :)</td></tr>
+            <tr><td>[22:56] &lt j_baker&gt I'm now done for the semester.</td></tr>
+            <tr><td>[22:57] &lt Chong-&gt j_baker: time for celebration:-)</td></tr>
+            <tr><td>[22:57] &lt Chong-&gt I got the google app invitation too</td></tr>
+            <tr><td>[22:57] &lt j_baker&gt If only I had the money for a celebration. :(</td></tr>
+            <tr><td>[22:58] &lt Chong-&gt hehe</td></tr>
+            <tr><td>[22:59] &lt Chong-&gt Gotta sleep. Have a nice night.</td></tr>
+            <tr><td>[23:00] &lt Davbo&gt Goodnight Chong-.</td></tr>
+            <tr><td>[23:00] &lt j_baker&gt night</td></tr>
+            <tr><td>[23:00] &lt Davbo&gt Nice work j_baker</td></tr>
+            <tr><td>[23:00] &lt Chong-&gt j_baker: Do enjoy the time without examination and study pressure.</td></tr>
+            <tr><td>[23:00] &lt j_baker&gt :)</td></tr>
+            <tr><td>[23:00] &lt Chong-&gt night</td></tr>
+            <tr><td>[23:00] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[23:01] *** Davbo has a ton of MATLAB work to do</td></tr>
+            <tr><td>[23:01] &lt j_baker&gt Never used MATLAB before.</td></tr>
+            <tr><td>[23:02] &lt Davbo&gt believe me, you aint missing out on much.</td></tr>
+            <tr><td>[23:03] &lt j_baker&gt I didn't think so. :P</td></tr>
+            <tr><td>[23:04] &lt j_baker&gt Is it just me or are the letter templates that are included in OpenOffice hideous?</td></tr>
+            <tr><td>[23:06] &lt Davbo&gt Yeah i find that with many of the templates in open office</td></tr>
+            <tr><td>[23:06] &lt Davbo&gt in the presentation thing too</td></tr>
+            <tr><td>[23:08] &lt j_baker&gt Well, that's one thing that I'm not going to be able to replace my laptop for.</td></tr>
+            <tr><td>[23:08] &lt j_baker&gt Pages &gt OO Writer</td></tr>
+            <tr><td>[23:09] &lt j_baker&gt The only thing that sucks in iWork is Numbers.</td></tr>
+            <tr><td>[23:12] &lt j_baker&gt Sadly, I think Excel is the best spreadsheet IMO.</td></tr>
+            <tr><td>[23:13] &lt Davbo&gt lol</td></tr>
+            <tr><td>[23:13] &lt Davbo&gt I quite like the latest MS Office</td></tr>
+            <tr><td>[23:14] &lt Davbo&gt I don't like the price tag but it has got a lot better.</td></tr>
+            <tr><td>[23:14] &lt j_baker&gt Fortunately, I don't have to pay the price for it.</td></tr>
+            <tr><td>[23:14] &lt j_baker&gt Microsoft practically gives the software away to us.</td></tr>
+            <tr><td>[23:15] &lt Davbo&gt Yeah same here</td></tr>
+            <tr><td>[23:15] &lt Davbo&gt If v is a 2£n matrix whose columns correspond to the vertices of an n-sided polygon, then the</td></tr>
+            <tr><td>[23:15] &lt Davbo&gt polygon may be plotted by:</td></tr>
+            <tr><td>[23:15] &lt Davbo&gt plot([v(1,:) v(1,1)], [v(2,:) v(2,1)])</td></tr>
+            <tr><td>[23:15] &lt Davbo&gt oops!</td></tr>
+            <tr><td>[23:16] &lt Davbo&gt Sorry about that lol</td></tr>
+            <tr><td>[23:16] &lt j_baker&gt np :)</td></tr>
+            <tr><td>[23:16] &lt Davbo&gt Was pasting it to the guys in #matlab asking if they understood what it meant</td></tr>
+            <tr><td>[23:17] &lt Davbo&gt unfortunately that channel is really inactive</td></tr>
+            <tr><td>[23:17] &lt j_baker&gt Heh... is this the same professor who likes to make typos?</td></tr>
+            <tr><td>[23:17] &lt Davbo&gt Nah hehe</td></tr>
+            <tr><td>[23:18] &lt Davbo&gt We have a maths lecturer teaching us MATLAB who doesn't like computers</td></tr>
+            <tr><td>[23:18] &lt j_baker&gt What class is this for?</td></tr>
+            <tr><td>[23:19] &lt Davbo&gt it's 10% of our Discrete Math module</td></tr>
+            <tr><td>[23:20] &lt j_baker&gt Sounds like classes work differently there...</td></tr>
+            <tr><td>[23:20] &lt Davbo&gt hmm?</td></tr>
+            <tr><td>[23:21] &lt j_baker&gt Well say, I took discrete math this semester.</td></tr>
+            <tr><td>[23:21] &lt j_baker&gt and just took the final for it.</td></tr>
+            <tr><td>[23:22] &lt Davbo&gt final being 100% of your marks for that class?</td></tr>
+            <tr><td>[23:22] &lt j_baker&gt I don't remember how much of the grade it was, but there were two midterms as well</td></tr>
+            <tr><td>[23:23] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[23:23] &lt Davbo&gt Ours are all over the place</td></tr>
+            <tr><td>[23:24] &lt Davbo&gt You need to do 120 credits in a year, I did 70 first semester and doing 50 this semester. Some more intensive classes are 20credits but all of mine are 10 each.</td></tr>
+            <tr><td>[23:25] &lt Davbo&gt it's a bit weird.</td></tr>
+            <tr><td>[23:26] &lt j_baker&gt Well, we take classes in hours. To be full time, you have to have 12 hours a semester.</td></tr>
+            <tr><td>[23:26] &lt j_baker&gt So I suppose classes aren't too different.</td></tr>
+            <tr><td>[23:26] &lt Davbo&gt I see</td></tr>
+            <tr><td>[23:26] &lt j_baker&gt Most classes are 3 hours, but ones with labs are 4 hours.</td></tr>
+            <tr><td>[23:30] &lt j_baker&gt Be back later. Gotta pay rent.</td></tr>
+            <tr><td>[23:31] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[23:47] *** bcarlyon|ubuntu_ is now known as bcarlyon|ubuntu</td></tr>

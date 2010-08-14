@@ -1,0 +1,639 @@
+<html><body><table>
+            <tr><td>[00:54] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[04:16] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[04:16] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[04:16] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[04:28] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[06:43] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:43] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:44] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[06:52] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[06:52] Reply: does the macarena</td></tr>
+            <tr><td>[07:19] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:19] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:35] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[07:37] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:37] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[07:37] *** Lawouach_ wonders if Kamaelia and Axon setup.py shouldn't have seen their version bumped to 0.6.0 in trunk?</td></tr>
+            <tr><td>[07:38] &lt Lawouach_&gt or whatever the new version is</td></tr>
+            <tr><td>[07:39] &lt vmlemon_&gt It's a surprise gift for them ;)</td></tr>
+            <tr><td>[08:04] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:26] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:28] *** MS- notes https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Apps/ReleasePackaging/DistBuild/setup.py.src</td></tr>
+            <tr><td>[08:29] &lt MS-&gt setup(name = "Kamaelia",</td></tr>
+            <tr><td>[08:29] &lt MS-&gt  version = "0.6.0-rc7",</td></tr>
+            <tr><td>[08:30] &lt MS-&gt When that goes "final", https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/setup.py will bump to 0.6.0, and https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Axon/setup.py will bump to 1.6</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt I see</td></tr>
+            <tr><td>[08:36] &lt Lawouach_&gt Though it's a bit unclear actually :)</td></tr>
+            <tr><td>[08:38] &lt Lawouach_&gt right ok I see</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt I really need to look into the package mechanism you guys put in place</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt currently I don't understand it :)</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt But I haven't tried either :)</td></tr>
+            <tr><td>[08:41] &lt Lawouach_&gt IIUC you basically create a zip containing everything related to Axon and kamaelia and use one single setup module to deploy</td></tr>
+            <tr><td>[08:41] &lt Lawouach_&gt alright</td></tr>
+            <tr><td>[08:41] &lt Lawouach_&gt Then your explanation makes more sense to me now :)</td></tr>
+            <tr><td>[08:48] &lt MS-&gt Consider the newer packaging of Kamaelia 0.6.0 (when released) to come with Axon 1.6 for FREE !</td></tr>
+            <tr><td>[08:48] &lt MS-&gt :-)</td></tr>
+            <tr><td>[08:48] *** mhrd has a theory why pablo's use of Axon.background has problems</td></tr>
+            <tr><td>[08:48] *** mhrd tests solution and will email list</td></tr>
+            <tr><td>[08:48] &lt MS-&gt He shouldn't be using background(zap=True) that's why</td></tr>
+            <tr><td>[08:49] &lt MS-&gt It's there really to support the process forking stuff</td></tr>
+            <tr><td>[08:49] &lt mhrd&gt ah, yes - good point - that would fix it</td></tr>
+            <tr><td>[08:49] &lt MS-&gt It's a very dangerous thing really to use in normal code</td></tr>
+            <tr><td>[08:50] &lt MS-&gt The question is to first ask him why he's using it</td></tr>
+            <tr><td>[08:50] *** mhrd had no clue what purpose the zap argument existed for</td></tr>
+            <tr><td>[08:50] &lt MS-&gt It's to deal with some fun issues where you use the process code which forks</td></tr>
+            <tr><td>[08:51] &lt MS-&gt If you have, for example,</td></tr>
+            <tr><td>[08:51] &lt MS-&gt ProcessPipeline(SomePygameComponent)</td></tr>
+            <tr><td>[08:51] &lt MS-&gt gah</td></tr>
+            <tr><td>[08:51] &lt MS-&gt Pipeline( SomePygameComponent,</td></tr>
+            <tr><td>[08:51] &lt MS-&gt  ProcessPipeline(AnotherPygameComponent)</td></tr>
+            <tr><td>[08:51] &lt MS-&gt )</td></tr>
+            <tr><td>[08:51] &lt MS-&gt without zapping the run queue in ProcessPipeline prior to starting AnotherPygameComponent</td></tr>
+            <tr><td>[08:52] &lt MS-&gt Then you have 2 copies of SomePygameComponent running - one in each process :)</td></tr>
+            <tr><td>[08:52] &lt MS-&gt It looks cool because it works, but it's a pain, because it works and does things you don't want or expect :-)</td></tr>
+            <tr><td>[08:52] &lt MS-&gt Did rather catch me out when I first did that example</td></tr>
+            <tr><td>[08:53] &lt MS-&gt (I was testing using Kamaelia.UI.Pygame.Text boxes</td></tr>
+            <tr><td>[08:53] &lt MS-&gt )</td></tr>
+            <tr><td>[08:53] &lt mhrd&gt what happens if I have: Pipeline( X, Y, ProcessPipeline(Z), A, B, C) ? will A, B, and C still get activated in the forked process - since Pipeline() possibly activates them in order?</td></tr>
+            <tr><td>[08:53] &lt mhrd&gt heh</td></tr>
+            <tr><td>[08:56] *** Lawouach_ notes that the choice of the name 'zap' is rather strange</td></tr>
+            <tr><td>[08:56] *** mhrd constructs a test</td></tr>
+            <tr><td>[08:56] &lt Lawouach_&gt Why not 'reset'?</td></tr>
+            <tr><td>[08:59] &lt MS-&gt Because I thought of it as zapping the run queue :)</td></tr>
+            <tr><td>[08:59] &lt Lawouach_&gt fair enough :)</td></tr>
+            <tr><td>[09:00] &lt MS-&gt If you have</td></tr>
+            <tr><td>[09:00] &lt MS-&gt Pipeline( X, Y, ProcessPipeline(Z), A, B, C)</td></tr>
+            <tr><td>[09:00] &lt MS-&gt then Pipeline, X,Y,A,B,C, ProcessPipeline all get started in the same process, and Z is started (by ProcessPipeline) in the forked process</td></tr>
+            <tr><td>[09:01] &lt Lawouach_&gt Side but not unrelated note, I was wondering if we should consider reviewing and maybe cleaning/refactoring/improving the Axon scheduler mainllop before the next stable release.</td></tr>
+            <tr><td>[09:01] &lt Lawouach_&gt Currently the scheduler mainloop works but is rather hard to follow and not flexible.</td></tr>
+            <tr><td>[09:03] &lt mhrd&gt Lawouach_ : no harm in giving it a go - I agree it could be clearer</td></tr>
+            <tr><td>[09:06] &lt MS-&gt Before 0.7.0 ?</td></tr>
+            <tr><td>[09:06] &lt MS-&gt K0.7.0/A1.7.0 or K 0.6.0 or A 1.6.0 ?</td></tr>
+            <tr><td>[09:06] &lt Lawouach_&gt MS-: depends when 0.7 is planned</td></tr>
+            <tr><td>[09:06] &lt MS-&gt Now that I've got a decent build/release mechanism, much sooner</td></tr>
+            <tr><td>[09:07] &lt Lawouach_&gt mhrd: I will look into it into a branch then. No harm looking at it as you say.</td></tr>
+            <tr><td>[09:07] &lt Lawouach_&gt That's where a solid unit tests suite would be critical</td></tr>
+            <tr><td>[09:07] &lt MS-&gt Probably more like autumn</td></tr>
+            <tr><td>[09:07] &lt MS-&gt We do have test suite for Axon BTW</td></tr>
+            <tr><td>[09:07] &lt Lawouach_&gt Changing such a core feature is not a simple decision</td></tr>
+            <tr><td>[09:07] &lt Lawouach_&gt MS-: ah true. That'd be a good start.</td></tr>
+            <tr><td>[09:07] &lt MS-&gt The other aspect of the scheduler is the reason for it being "one big loop"</td></tr>
+            <tr><td>[09:07] &lt Lawouach_&gt MS-: autumn is fine then.</td></tr>
+            <tr><td>[09:08] &lt MS-&gt is because when we started I did some tests and found that each function call in the scheduler does actually make a big difference</td></tr>
+            <tr><td>[09:08] &lt Lawouach_&gt yes</td></tr>
+            <tr><td>[09:08] &lt MS-&gt However that doesn't mean that it has to stay being built/written that way</td></tr>
+            <tr><td>[09:08] &lt Lawouach_&gt function calls are expensive in Python</td></tr>
+            <tr><td>[09:08] &lt MS-&gt After all, we could always use a templating system to put the scheduler together</td></tr>
+            <tr><td>[09:08] &lt Lawouach_&gt That's why i'm not sure headstock will be the fastest XMPP lib out there but good enough for clients :)</td></tr>
+            <tr><td>[09:09] &lt MS-&gt But that's a huge change in coding style</td></tr>
+            <tr><td>[09:09] &lt MS-&gt But it may make it more maintainable</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt What do you mean by "templating system" here?</td></tr>
+            <tr><td>[09:09] &lt MS-&gt Precisely that - use a templating system to achieve what you'd get with inlining in (say) C or C++</td></tr>
+            <tr><td>[09:10] &lt MS-&gt The sort of thing really that Tara worked on last summer for example...</td></tr>
+            <tr><td>[09:10] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:11] &lt MS-&gt (this is not actually anything other than a mild thought at present btw)</td></tr>
+            <tr><td>[09:11] &lt MS-&gt But python's lack of ability to do inlining is really the problem here</td></tr>
+            <tr><td>[09:12] &lt Lawouach_&gt I think my main motive in a first stage is to clarify the scheduler mainloop, if only from a documentation point of view</td></tr>
+            <tr><td>[09:12] &lt Lawouach_&gt Not that the code is cryptic, but it isn't straightforward either.</td></tr>
+            <tr><td>[09:13] &lt Lawouach_&gt Next would be to define what ought to be modular and why.</td></tr>
+            <tr><td>[09:15] &lt Lawouach_&gt anyway</td></tr>
+            <tr><td>[09:15] &lt Lawouach_&gt not to worry</td></tr>
+            <tr><td>[09:15] &lt Lawouach_&gt I'm not arguing to change anything for now</td></tr>
+            <tr><td>[09:15] &lt MS-&gt There are places it can be improved I'll admit, but as you can expect, I'll need a very strong argument for change :)</td></tr>
+            <tr><td>[09:15] &lt Lawouach_&gt Just the idea that we might want to refactor that bit</td></tr>
+            <tr><td>[09:15] &lt Lawouach_&gt MS-: heck yeah. I'll have to prepare myself ;)</td></tr>
+            <tr><td>[09:17] &lt MS-&gt That said, the scheduler is a microprocess and microprocesses can take a scheduler argument to their activate code to enable *specifically* the use of multiple schedulers</td></tr>
+            <tr><td>[09:17] &lt MS-&gt So the idea of a second scheduler isn't actually necessarily an issue</td></tr>
+            <tr><td>[09:17] &lt MS-&gt (necessarily)</td></tr>
+            <tr><td>[09:17] &lt MS-&gt though it could be</td></tr>
+            <tr><td>[09:17] &lt MS-&gt OK</td></tr>
+            <tr><td>[09:17] &lt MS-&gt gtg</td></tr>
+            <tr><td>[09:17] &lt MS-&gt biab</td></tr>
+            <tr><td>[09:17] &lt MS-&gt cya</td></tr>
+            <tr><td>[09:17] &lt Lawouach_&gt Well in the current implementation it is more or less</td></tr>
+            <tr><td>[09:18] &lt MS-&gt :)</td></tr>
+            <tr><td>[09:18] &lt Lawouach_&gt Because of the fglobal scheduler instance</td></tr>
+            <tr><td>[09:18] &lt Lawouach_&gt Whcih propagates implicitely with components like Graphline</td></tr>
+            <tr><td>[09:18] &lt MS-&gt No, you can have multiple schedulers, happily</td></tr>
+            <tr><td>[09:18] &lt MS-&gt I'll be back later</td></tr>
+            <tr><td>[09:18] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[09:18] &lt Lawouach_&gt I scared him :)</td></tr>
+            <tr><td>[09:39] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:42] &lt Davbo&gt Wooo!!</td></tr>
+            <tr><td>[09:42] *** Davbo Passed all his exams :-D</td></tr>
+            <tr><td>[09:42] &lt orphans&gt Davbo, grats :)</td></tr>
+            <tr><td>[09:43] &lt orphans&gt eesh, I graduate in 6 days time</td></tr>
+            <tr><td>[09:44] &lt Lawouach_&gt Davbo: congrats</td></tr>
+            <tr><td>[09:45] &lt Davbo&gt Thank you!</td></tr>
+            <tr><td>[10:21] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[10:22] &lt Trun&gt hi</td></tr>
+            <tr><td>[10:23] &lt Trun&gt mhrd, may I ask you about your theory? (reading the logs; "mhrd has a theory why pablo's use of Axon.background has problems")</td></tr>
+            <tr><td>[10:24] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:25] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[10:25] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:31] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[10:32] &lt vmlemon_&gt Hi Chong-</td></tr>
+            <tr><td>[10:32] &lt Chong-&gt Morning, vmlemon_ and others.</td></tr>
+            <tr><td>[10:33] &lt mhrd&gt Trun: you can ask :)</td></tr>
+            <tr><td>[10:34] &lt mhrd&gt related: anyone suggest why this only displays "CCC" instead of all the different 'yells'? http://pastebin.com/m18726638</td></tr>
+            <tr><td>[10:36] &lt mhrd&gt Trun: my (untested) guess is that the creation of the scheduler in background's run() method happens after the other component is activated when the call to start() returns ... ie. a race condition</td></tr>
+            <tr><td>[10:37] &lt mhrd&gt you could remove that problem by overriding the start() method and having it wait for some kind of signalling from the thread to let it know that the thread had created the new scheduler and was ready. only when it receives this signal would it return.</td></tr>
+            <tr><td>[10:37] &lt Trun&gt I see</td></tr>
+            <tr><td>[10:37] &lt mhrd&gt therefore when the call to start() returns you can guarantee that the "background" system is running</td></tr>
+            <tr><td>[10:37] &lt mhrd&gt however ...</td></tr>
+            <tr><td>[10:37] &lt mhrd&gt as MS- pointed out he shouldn't have the 'zap=True' argument, so I'm guessing that would avoid the problem completely</td></tr>
+            <tr><td>[10:37] &lt Trun&gt yep, I read that too</td></tr>
+            <tr><td>[10:40] &lt mhrd&gt that's why, for example, there's signalling like that in threadedcomponent - eg. when the thread calls self.link() it won't return until the main thread of execution has signalled back saying that it has been done. Not good for performance, but safe.</td></tr>
+            <tr><td>[10:42] &lt mhrd&gt ... but as I've said, I've not tested this hypothesis</td></tr>
+            <tr><td>[10:42] &lt mhrd&gt and I dont' understand Handle and background well enough atm :)</td></tr>
+            <tr><td>[10:43] &lt Trun&gt yeah, I'm going to check it without the zap=True etc. (I used it to force a new scheduler to be created), thank you very much for all</td></tr>
+            <tr><td>[10:44] &lt mhrd&gt np</td></tr>
+            <tr><td>[10:45] &lt mhrd&gt sorry - "he shouldn't have" ---&gt "you shouldn't have" ... for some reason my brain forgot that Trun = Pablo :)</td></tr>
+            <tr><td>[10:45] &lt Trun&gt yep, me neither :-( I worked well with the LikeFile version and migrating to Handle is being difficult (I wanted to do that after I got some "non-kamplanet" tests done)</td></tr>
+            <tr><td>[10:45] &lt Trun&gt yep, it's me :-)</td></tr>
+            <tr><td>[10:48] &lt mhrd&gt (will teach me for not being very active round here for teh past few months ;-) )</td></tr>
+            <tr><td>[11:03] &lt Lawouach&gt via reddit: http://googleonlinesecurity.blogspot.com/2008/07/meet-ratproxy-our-passive-web-security.html</td></tr>
+            <tr><td>[11:12] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[11:22] *** Davbo loves reddit Ideas (http://www.reddit.com/r/ideas/)</td></tr>
+            <tr><td>[11:23] &lt Davbo&gt reddit in general is amazing but the ideas page is often hilarious</td></tr>
+            <tr><td>[11:50] &lt Lawouach_&gt I had never seen it</td></tr>
+            <tr><td>[12:00] *** orphans notes a serious design flaw with his new room. If it rains and the window is open it goes *everywhere*</td></tr>
+            <tr><td>[12:04] &lt Davbo&gt that's not a window orphans it's the roof, and you shouldn't be able to "open" it</td></tr>
+            <tr><td>[12:05] &lt orphans&gt strangely close to the truth :)</td></tr>
+            <tr><td>[12:05] *** orphans loves student housing</td></tr>
+            <tr><td>[12:05] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:21] &lt orphans&gt Lawouach_, the new version of the jam pure data patch is in svn now if you want to test it out at some point. I'm just updating the getting started guide now. Soon you will have sound!</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt sound!! :D</td></tr>
+            <tr><td>[12:38] &lt mhrd&gt Trun/anyone: can you explain what 'Axon.Handle.handle' is? its a component you wire up in your system that you can access its inboxes and outboxes using get/put methods?</td></tr>
+            <tr><td>[12:39] *** Lawouach_ would like to hear Trun's point of view</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt From my understanding, having read the code when it was LikeFile, it's a putter and getter for boxes yeah. Gives similar functionality to a File type but doesn't implement the File interface (if that makes sense)</td></tr>
+            <tr><td>[12:44] &lt Davbo&gt i know it's used in the multiprocess code i'm using to wire up the actual different pprocesses with boxes</td></tr>
+            <tr><td>[12:44] &lt Davbo&gt was it a trick question mhrd? :-)</td></tr>
+            <tr><td>[12:46] &lt mhrd&gt nope - all I know is that likefile disappeared a while ago, and Handle has appeared in its place ...</td></tr>
+            <tr><td>[12:46] &lt mhrd&gt I have code that uses likefile, so need it or an equivalent ... but am aware that there appear to be outstanding issues with Handle</td></tr>
+            <tr><td>[12:47] &lt mhrd&gt I've not really been around here much, so am not fully clued up - hence asking for someone to validate my "at first glance" understanding</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[12:48] &lt mhrd&gt Trun seemed to be using it, so seemed like a good person to ask :)</td></tr>
+            <tr><td>[12:49] &lt mhrd&gt Davbo: how are you doing that ooi?</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt The Multicore code has some problems with LikeFile as it was previously. And when MS went back to look at the problem he discovered some rather nasty code so that's probably the changes between LikeFile and Handle</td></tr>
+            <tr><td>[12:50] &lt mhrd&gt multicore code? Axon.experimental.Process ?</td></tr>
+            <tr><td>[12:50] &lt Trun&gt (I was using it as a communication with a scheduler from not-axon code)</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt How am I using Handle? Just through Axon.experimental.Process</td></tr>
+            <tr><td>[12:50] &lt mhrd&gt k, ta</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt Yeah mhrd</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt Axon.fu.we.kick.ass.da.supra.multiprocess</td></tr>
+            <tr><td>[12:51] &lt Davbo&gt nah Lawouach_, Axon.error.prone.code.multiprocess</td></tr>
+            <tr><td>[12:51] &lt Davbo&gt ;-D</td></tr>
+            <tr><td>[12:51] &lt mhrd&gt ahh ... it'll get there :)</td></tr>
+            <tr><td>[12:54] &lt Lawouach_&gt Axon.i.like.dolphins.multiprocess</td></tr>
+            <tr><td>[12:54] &lt Lawouach_&gt poetry guyes!</td></tr>
+            <tr><td>[12:54] &lt Lawouach_&gt guys</td></tr>
+            <tr><td>[12:55] *** mhrd doesn't usually do trick questions</td></tr>
+            <tr><td>[12:56] &lt Lawouach_&gt But trick answers</td></tr>
+            <tr><td>[12:57] &lt Lawouach_&gt Blue or red?</td></tr>
+            <tr><td>[12:57] &lt Lawouach_&gt I like banana</td></tr>
+            <tr><td>[12:58] &lt mhrd&gt Davbo: can you tell me why http://pastebin.com/m18726638 only prints "CCC"'s ?</td></tr>
+            <tr><td>[12:58] &lt mhrd&gt (should print 'A's 'BB's 'DDDD's and 'EEEEE's too?)</td></tr>
+            <tr><td>[13:01] &lt Lawouach_&gt orphans: I will check your update asap</td></tr>
+            <tr><td>[13:03] &lt orphans&gt it's fun :)</td></tr>
+            <tr><td>[13:03] &lt Davbo&gt interesting mhrd</td></tr>
+            <tr><td>[13:07] *** mhrd wants a sanity check - am I completely misunderstanding and doing something silly? :)</td></tr>
+            <tr><td>[13:10] &lt Lawouach_&gt shall I respond?</td></tr>
+            <tr><td>[13:12] *** Davbo was on the phone</td></tr>
+            <tr><td>[13:12] &lt mhrd&gt go for it</td></tr>
+            <tr><td>[13:12] &lt Davbo&gt mhrd: that will certainly be considered a bug by ms (you should be able to go Pipeline -&gt ProcessPipeline with no change)</td></tr>
+            <tr><td>[13:13] &lt Lawouach_&gt I meant respond "to something silly?" :)</td></tr>
+            <tr><td>[13:13] &lt mhrd&gt you can respond to that too :)</td></tr>
+            <tr><td>[13:17] &lt Lawouach_&gt I haven't looked at the process components yet</td></tr>
+            <tr><td>[13:17] &lt Lawouach_&gt So can't really help</td></tr>
+            <tr><td>[13:17] &lt mhrd&gt thanks anyway :)</td></tr>
+            <tr><td>[13:18] &lt Davbo&gt seems odd to me mhrd, the fact it skips the first things in the Pipeline seems strange</td></tr>
+            <tr><td>[13:18] &lt Davbo&gt you'd expect that to be a problem in the Pipeline code, I'm not sure though</td></tr>
+            <tr><td>[13:19] &lt mhrd&gt my gut feeling is its something to do with the forking and the way the new scheduler is invoked - new functionality like that shouldn't affect Pipeline which has a strong track record of reliability now</td></tr>
+            <tr><td>[13:19] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[13:20] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[13:25] &lt mhrd&gt ok, stronger test: http://pastebin.com/m38ffc028 ... each Yell writes to a file so this should eliminate the possibility that stdout was simply not making it to the console from the forked process</td></tr>
+            <tr><td>[13:27] &lt mhrd&gt stronger still: http://pastebin.com/m20b8da0 ... added output flushing and more diagnostic output</td></tr>
+            <tr><td>[13:29] &lt mhrd&gt forgot to mention, I'm using pprocess 0.3.1 ... in case thats a difference</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt nah i'm using the same</td></tr>
+            <tr><td>[13:30] &lt Davbo&gt "﻿possibility that stdout was simply not making it to the console from the forked process" - FWIW I've never had this</td></tr>
+            <tr><td>[13:30] &lt Lawouach_&gt pprocess seems to fail on windows</td></tr>
+            <tr><td>[13:30] &lt Lawouach_&gt meh</td></tr>
+            <tr><td>[13:54] &lt mhrd&gt Chong-: File "/home/matteh/kamaelia/svn/trunk/Sketches/CL/Topology3D/Utils/Particles3D.py", line 220, in &lt module&gt</td></tr>
+            <tr><td>[13:54] &lt mhrd&gt  from THF.Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent</td></tr>
+            <tr><td>[13:54] &lt mhrd&gt ImportError: No module named THF.Kamaelia.UI.OpenGL.OpenGLComponent</td></tr>
+            <tr><td>[14:00] &lt Chong-&gt mhrd: thanks. I forgot to change the path to standard library :-)</td></tr>
+            <tr><td>[14:00] &lt mhrd&gt np</td></tr>
+            <tr><td>[14:00] &lt mhrd&gt coming along nicely btw</td></tr>
+            <tr><td>[14:01] &lt mhrd&gt the rotation stuff you added - it rotates the linkages as well as the nodes - can it rotate just the nodes? or was it intended to rotate the whole particle system?</td></tr>
+            <tr><td>[14:02] &lt Chong-&gt mhrd: thank you. I have noticed the problem.</td></tr>
+            <tr><td>[14:02] &lt mhrd&gt cool</td></tr>
+            <tr><td>[14:03] *** Davbo is trying to get his Layers to work</td></tr>
+            <tr><td>[14:03] &lt mhrd&gt final thing: I get this error when I move the mouse over the window:</td></tr>
+            <tr><td>[14:03] &lt mhrd&gt ValueError: gluPickMatrix requires 5 arguments (x, y, delX, delY, viewport), received 4: (777, 17, 1, 1)</td></tr>
+            <tr><td>[14:03] &lt Chong-&gt at present, the link is drawn with nodes, so the link would rotate with nodes</td></tr>
+            <tr><td>[14:03] &lt Chong-&gt I think it may be better to draw links seperately.</td></tr>
+            <tr><td>[14:03] &lt mhrd&gt were you trying to make it rotate everything as a whole, or just the nodes?</td></tr>
+            <tr><td>[14:04] &lt mhrd&gt "draw links separately" - probably a good idea</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt I think just the nodes are enough, because rotation doesn't change nodes position. what do you think?</td></tr>
+            <tr><td>[14:05] &lt Davbo&gt Oh, I was just about to go on a rant about Pygame surfaces but just got it working :-)</td></tr>
+            <tr><td>[14:05] &lt mhrd&gt Davbo: heh, cool</td></tr>
+            <tr><td>[14:05] &lt Chong-&gt Davbo: well done :-)</td></tr>
+            <tr><td>[14:05] &lt mhrd&gt Chong- : if I am trying to look at a set of nodes - being able to rotate the whole thing (to see it from a different angle) seems more useful to me</td></tr>
+            <tr><td>[14:06] &lt mhrd&gt ... that is a guess</td></tr>
+            <tr><td>[14:07] &lt Chong-&gt mhrd: do you mean to move nodes with links? or you want to just move nodes you have selected rather than all nodes?</td></tr>
+            <tr><td>[14:09] &lt Chong-&gt mhrd: about the ValueError, I haven't met it before. When did it happen? when you drag nodes or do rotation or something else?</td></tr>
+            <tr><td>[14:09] &lt mhrd&gt I mean: imagine all the nodes and links are a single object - then rotate that single object as a whole</td></tr>
+            <tr><td>[14:09] &lt mhrd&gt it happens as soon as I move the mouse into the window</td></tr>
+            <tr><td>[14:10] &lt mhrd&gt ( I'm using ubuntu 8.04 with the built-in packages for python and python-opengl )</td></tr>
+            <tr><td>[14:11] &lt orphans&gt mhrd, just tried it - I get the same error too</td></tr>
+            <tr><td>[14:11] &lt Chong-&gt mhrd: I have not the problem :-) Have others encountered the same problem?</td></tr>
+            <tr><td>[14:12] *** orphans is procrastinating by trying out people's stuff :)</td></tr>
+            <tr><td>[14:12] &lt Chong-&gt orphans: thanks</td></tr>
+            <tr><td>[14:12] &lt mhrd&gt here is the full error message: http://pastebin.com/m78f6ad88</td></tr>
+            <tr><td>[14:12] &lt Chong-&gt mhrd and orphans: I'll check it.</td></tr>
+            <tr><td>[14:14] &lt mhrd&gt the ubuntu package for python-opengl is version 3.0.0-b1-0</td></tr>
+            <tr><td>[14:14] &lt mhrd&gt python-pygame 1.7.1</td></tr>
+            <tr><td>[14:15] &lt mhrd&gt python 2.5.2-0</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt mhrd: what do you get "﻿ValueError: gluPickMatrix requires 5 arguments (x, y, delX, delY, viewport), received 4: (777, 17, 1, 1)" with?</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt TopolgyViewer3D.py?</td></tr>
+            <tr><td>[14:18] &lt mhrd&gt yes</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt Strange, I don't get that</td></tr>
+            <tr><td>[14:19] &lt mhrd&gt what versions of python, pygame and python-opengl do you have?</td></tr>
+            <tr><td>[14:19] &lt Davbo&gt let me check what versions I have from Mandriva's repos</td></tr>
+            <tr><td>[14:19] &lt mhrd&gt :)</td></tr>
+            <tr><td>[14:19] *** mhrd -&gt afk for a bit</td></tr>
+            <tr><td>[14:21] *** orphans gets the error with: python-opengl 3.0.0a6, python-pygame 1.7.1, Python 2.5.1</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt pygame: 1.7.1</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt python-opengl: 2.0.1.09</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt python 2.5.2</td></tr>
+            <tr><td>[14:21] &lt orphans&gt maybe python-opengl 2=&gt3?</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt Yeah.</td></tr>
+            <tr><td>[14:22] &lt Davbo&gt interesting</td></tr>
+            <tr><td>[14:22] &lt Davbo&gt what do you do to trigger it orphans? mouse over the window?</td></tr>
+            <tr><td>[14:22] &lt Chong-&gt mhrd: thanks for the error info.</td></tr>
+            <tr><td>[14:23] &lt orphans&gt Davbo, mhm</td></tr>
+            <tr><td>[14:23] &lt orphans&gt only if it has focus too</td></tr>
+            <tr><td>[14:24] &lt Chong-&gt gluPickMatrix( x , y , delX , delY , viewport = None)</td></tr>
+            <tr><td>[14:24] &lt Davbo&gt You should have a look at that Chong-</td></tr>
+            <tr><td>[14:24] &lt Davbo&gt try both versions 2 and 3</td></tr>
+            <tr><td>[14:24] *** orphans tries</td></tr>
+            <tr><td>[14:25] &lt Chong-&gt I guess it should has relation to pyOpenGL version, newer versions give a default viewport</td></tr>
+            <tr><td>[14:26] &lt orphans&gt Chong-, where is gluPickMatrix?</td></tr>
+            <tr><td>[14:26] &lt orphans&gt what file?</td></tr>
+            <tr><td>[14:27] &lt Chong-&gt in Kamaelia.UI.OpenGL.OpenGLDisplay</td></tr>
+            <tr><td>[14:27] &lt orphans&gt ahh</td></tr>
+            <tr><td>[14:27] &lt Chong-&gt File "/usr/lib/python2.5/site-packages/Kamaelia/UI/OpenGL/OpenGLDisplay.py", line 772, in doPicking</td></tr>
+            <tr><td>[14:27] &lt Davbo&gt I guess that was made for version 2</td></tr>
+            <tr><td>[14:29] &lt Chong-&gt Davbo: I think so, too. Mine is 3.0, what is yours and orphans and mhrd's?</td></tr>
+            <tr><td>[14:29] &lt orphans&gt Chong: http://orphans.pastebin.com/d54e0ab46</td></tr>
+            <tr><td>[14:29] &lt orphans&gt 3 not working for me, 2 working for davbo...</td></tr>
+            <tr><td>[14:33] &lt Chong-&gt orphans: that's strange. try just use None, gluPickMatrix(pos[0], self.height-pos[1], 1, 1, None)</td></tr>
+            <tr><td>[14:33] &lt orphans&gt ahh, think I've found the fix</td></tr>
+            <tr><td>[14:33] &lt orphans&gt 2 secs</td></tr>
+            <tr><td>[14:34] &lt orphans&gt  gluPickMatrix(pos[0], self.height-pos[1], 1, 1, glGetIntegerv(GL_VIEWPORT)) works</td></tr>
+            <tr><td>[14:35] &lt orphans&gt (on my box anyway...)</td></tr>
+            <tr><td>[14:36] &lt orphans&gt heh, this is fun :)</td></tr>
+            <tr><td>[14:36] &lt Chong-&gt orphans: yes. It seems that you have to specify viewpoint. It works for sure.</td></tr>
+            <tr><td>[14:38] &lt Chong-&gt I was wondering why some works with 4 parameters and others not. :(</td></tr>
+            <tr><td>[14:38] &lt orphans&gt fairly simple fix thought - might be able to get MS- or mhrd to merge it straight in</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt does it break backwards compatibility though?</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt I'll test it for you</td></tr>
+            <tr><td>[14:41] &lt Chong-&gt orphans: I agree. better to ensure it works for all. thanks.</td></tr>
+            <tr><td>[14:42] *** orphans goes to eat something</td></tr>
+            <tr><td>[14:42] &lt Chong-&gt Davbo: normally it should have 5 parameters and the default value for the 5th is just glGetIntegerv(GL_VIEWPORT), so I think it should have no backwards compatibility issues.</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt Yeah, works for me Chong-</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt small change so i wouldn't bother with a branch, ask ms or mhrd to merge it straight in</td></tr>
+            <tr><td>[14:46] &lt Chong-&gt Davbo: yes. we can discuss it in our meeting.</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt oh yeah!</td></tr>
+            <tr><td>[14:47] &lt Chong-&gt my version is PyOpenGL-2.0.1.09 rather than 3.0</td></tr>
+            <tr><td>[14:47] *** Davbo had completely forgot about the meeting :-)</td></tr>
+            <tr><td>[14:47] &lt Chong-&gt so, the problem may be from PyOpenGL 3.0</td></tr>
+            <tr><td>[14:48] *** Davbo nods</td></tr>
+            <tr><td>[14:48] &lt Davbo&gt certainly looks that way</td></tr>
+            <tr><td>[14:49] &lt Chong-&gt Davbo: yes. Anyway, writing complete parameters and not depending on versions are the right way to go.</td></tr>
+            <tr><td>[14:52] &lt Chong-&gt mhrd: about the rotation, do you suggest using a common axis for all nodes to rotate rather than using their own axis?</td></tr>
+            <tr><td>[14:54] &lt Davbo&gt Yeah i was thinking that, don't you want it to rotate around the centre. That would make more sense to me</td></tr>
+            <tr><td>[14:56] &lt Chong-&gt Davbo: yes. I agree. it would more interesting. I was also think about rotating particles selected rather than all.</td></tr>
+            <tr><td>[14:59] &lt Chong-&gt if there is a node selected, only rotate the ones selected. If not, rotate all around a common axis, say the centre of all nodes.</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt YAY LAYERS!</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt in a kinda horrible ugly way, but whatever! :)</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt it's a start</td></tr>
+            <tr><td>[15:04] &lt j_baker&gt Thanks for looking into that for me Lawouach.</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt j_baker: np</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt You caught a sneaky bug :)</td></tr>
+            <tr><td>[15:21] &lt orphans&gt you reckon we should just post up our DONE TODO BLOCKED again today?</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt Yeah, I guess MS would have probably also pointed out Mid-term assessments are next week</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt we'll all have to fill in some form online I think</td></tr>
+            <tr><td>[15:24] &lt j_baker&gt It opens July 7 I believe</td></tr>
+            <tr><td>[15:24] &lt orphans&gt can't wait - I just love those online forms...</td></tr>
+            <tr><td>[15:25] &lt Davbo&gt thanks j_baker</td></tr>
+            <tr><td>[15:25] &lt j_baker&gt Who doesn't like online forms?</td></tr>
+            <tr><td>[15:26] *** j_baker points out that he was being sarcastic before anyone doubts his sanity.</td></tr>
+            <tr><td>[15:26] &lt Lawouach_&gt too late</td></tr>
+            <tr><td>[15:26] &lt j_baker&gt :)</td></tr>
+            <tr><td>[15:26] &lt Davbo&gt Any points for the meeting you can think of Lawouach_?</td></tr>
+            <tr><td>[15:28] &lt Lawouach_&gt who bakes cookies?</td></tr>
+            <tr><td>[15:28] &lt Lawouach_&gt not really no</td></tr>
+            <tr><td>[15:28] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[15:28] &lt j_baker&gt Cookies are awesome.</td></tr>
+            <tr><td>[15:29] &lt j_baker&gt I think that's one thing that Kamaelia should provide more of.</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt The WI meeting is next door Lawouach_ ;-)</td></tr>
+            <tr><td>[15:29] &lt j_baker&gt Women in Industry?</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt lol</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt I was thinking Women's Institute but that's good too</td></tr>
+            <tr><td>[15:30] &lt orphans&gt the WI meeting has cookies?</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt They make the cookies!</td></tr>
+            <tr><td>[15:30] &lt orphans&gt mmm, cookies</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt Do they do anything other than bake?</td></tr>
+            <tr><td>[15:30] &lt orphans&gt and women :)</td></tr>
+            <tr><td>[15:30] &lt orphans&gt *sigh*</td></tr>
+            <tr><td>[15:31] &lt orphans&gt Davbo, I think they did that naked calendar which they made a film out of</td></tr>
+            <tr><td>[15:31] &lt j_baker&gt http://www.womens-institute.co.uk/ : I hope it wasn't any of those women. I'd pay them money NOT to give me the calendar.</td></tr>
+            <tr><td>[15:32] &lt orphans&gt j_baker, that's kinda the idea I think - it's like reverse psychology or something</td></tr>
+            <tr><td>[15:33] &lt orphans&gt DONE: Add tempo-sync code to jam and step sequencer. Create new Pure Data examp</td></tr>
+            <tr><td>[15:33] &lt orphans&gt le. Rewritten sdist build system. Document various bits of code.</td></tr>
+            <tr><td>[15:33] &lt orphans&gt TODO: Write piano roll component. Make tempo syncing between jam instances work.</td></tr>
+            <tr><td>[15:33] &lt orphans&gt BLOCKED: Graduation on Weds, but nothing else</td></tr>
+            <tr><td>[15:33] &lt j_baker&gt I'll have to keep that in mind next time I want to have a fund raiser. Being a CS major, it's not very difficult to find ugly people to put in a calendar like that.</td></tr>
+            <tr><td>[15:33] &lt j_baker&gt DONE: Finished up (for the most part) the WSGI server, started working with Lawouach's headstock library</td></tr>
+            <tr><td>[15:33] &lt j_baker&gt TODO: Adapt the webserver to work with headstock</td></tr>
+            <tr><td>[15:33] &lt j_baker&gt BLOCKED: None</td></tr>
+            <tr><td>[15:33] &lt Trun&gt DONE: Branch created for the testing framework, with a minor modifications in {Protocol.HTTP,Schedule}, tests and the testing framework itself. In process of migrating to Handle (it still fails ~20% of times) to replace LikeFile-based working testing framework, adding examples as documentation.</td></tr>
+            <tr><td>[15:33] &lt Trun&gt TODO: Finish moving from LikeFile to Handle, and then, finally, add real-world tests.</td></tr>
+            <tr><td>[15:33] &lt Trun&gt BLOCKED: None</td></tr>
+            <tr><td>[15:33] &lt Lawouach_&gt j_baker: Your TODO is not exactly meaningful</td></tr>
+            <tr><td>[15:33] &lt Lawouach_&gt You can't make a webserver to work with XMPP</td></tr>
+            <tr><td>[15:34] &lt Lawouach_&gt You might want to rephrase</td></tr>
+            <tr><td>[15:34] &lt j_baker&gt I couldn't think of any succinct way to phrase it.</td></tr>
+            <tr><td>[15:34] &lt Lawouach_&gt But I agree, we need more cookies</td></tr>
+            <tr><td>[15:34] &lt Lawouach_&gt j_baker: MS- will hunt you down. That's okay with me :)</td></tr>
+            <tr><td>[15:34] *** mhrd back (unexpected delays)</td></tr>
+            <tr><td>[15:35] &lt mhrd&gt Chong- : yes - rotate everything around a common centre</td></tr>
+            <tr><td>[15:35] &lt Lawouach_&gt you win</td></tr>
+            <tr><td>[15:35] &lt mhrd&gt :)</td></tr>
+            <tr><td>[15:35] &lt j_baker&gt TODO: Make a headstock Message handler that will forward input to the HTTPServer and receive output from the HTTPServer</td></tr>
+            <tr><td>[15:36] &lt Lawouach_&gt http://www.cmlenz.net/archives/2008/07/the-truth-about-unicode-in-python &lt -- informative reading</td></tr>
+            <tr><td>[15:36] &lt j_baker&gt Was anybody already posting this? If not, I'll go ahead and do it.</td></tr>
+            <tr><td>[15:36] &lt Lawouach_&gt j_baker: better :)</td></tr>
+            <tr><td>[15:36] &lt Davbo&gt DONE: Layers (using pygame surfaces) are now working, little functionality currently but core is there. Added an Eraser tool and Eyedropper tool. PASSED MY EXAMS!</td></tr>
+            <tr><td>[15:36] &lt Davbo&gt TODO: Improve on layers so they're more useful (transparency will be useful) Make a start on animations</td></tr>
+            <tr><td>[15:36] &lt Davbo&gt BLOCKED: None</td></tr>
+            <tr><td>[15:36] &lt mhrd&gt DONE: n/a TODO: may investigate debugging background/handle and possibly pprocess stuff BLOCKED: non K work</td></tr>
+            <tr><td>[15:36] &lt Chong-&gt DONE: made a workable OpenGL version TopologyViewer and Particle, applied existing physics law, and be able to click, drag, rotate and change viewer position</td></tr>
+            <tr><td>[15:36] &lt Chong-&gt TODO: debug, change some behaviours (such as rotation), add more functions (such as initialTopology handling)</td></tr>
+            <tr><td>[15:36] &lt Chong-&gt BLOCKED: None</td></tr>
+            <tr><td>[15:36] &lt j_baker&gt BTW, congrats orphans. :)</td></tr>
+            <tr><td>[15:37] &lt orphans&gt on?</td></tr>
+            <tr><td>[15:37] *** orphans tries to think of something notable I've done</td></tr>
+            <tr><td>[15:37] &lt orphans&gt oh graduating :)</td></tr>
+            <tr><td>[15:37] &lt orphans&gt thanks</td></tr>
+            <tr><td>[15:37] &lt Chong-&gt mhrd: thanks for your suggestion. :-)</td></tr>
+            <tr><td>[15:38] &lt Chong-&gt orphans: congrats on your graduation too :-)</td></tr>
+            <tr><td>[15:39] &lt mhrd&gt orphans: yes, congratulations</td></tr>
+            <tr><td>[15:40] &lt j_baker&gt BTW, did you have anything to bring up for the meeting, mhrd?</td></tr>
+            <tr><td>[15:40] &lt orphans&gt ty guys :)</td></tr>
+            <tr><td>[15:40] &lt mhrd&gt nope</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt argh why did you mention that calendar orphans</td></tr>
+            <tr><td>[15:45] *** Davbo shivers</td></tr>
+            <tr><td>[15:46] &lt Davbo&gt Enjoy your silly hat and robe on Weds orphans (Congratulations! :-))</td></tr>
+            <tr><td>[15:47] &lt orphans&gt yup, I'm 100% guaranteed to look ridiculous</td></tr>
+            <tr><td>[15:48] &lt orphans&gt I think I might be getting a prize off Patrick Moore though :)</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt Patrick Moore?</td></tr>
+            <tr><td>[15:49] &lt orphans&gt http://en.wikipedia.org/wiki/Patrick_Moore</td></tr>
+            <tr><td>[15:49] &lt Lawouach_&gt My mum was so proud when my brother had to wear it when he graduated from Cardiff University</td></tr>
+            <tr><td>[15:49] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[15:50] &lt orphans&gt yeah, literally half my family is coming - it's going to be a nightmare of a day</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt Wow. That's interesting.</td></tr>
+            <tr><td>[15:50] *** j_baker wants to graduate.</td></tr>
+            <tr><td>[15:50] *** j_baker has been in college way to long.</td></tr>
+            <tr><td>[15:51] &lt orphans&gt meh, I'm aiming for perpetual studenthood</td></tr>
+            <tr><td>[15:52] &lt Lawouach_&gt you can do that, provided you drink enough.</td></tr>
+            <tr><td>[15:54] &lt j_baker&gt That's one thing that's definitely not hard to do at my school.</td></tr>
+            <tr><td>[15:55] &lt j_baker&gt But then again, that seems to be the case with all the public universities in Texas.</td></tr>
+            <tr><td>[15:55] &lt orphans&gt Lawouach_, not quite beer-o-clock yet. Maybe soon though</td></tr>
+            <tr><td>[15:56] &lt orphans&gt although I'd imagine you had a couple of bottles of wine with lunch hm? :D</td></tr>
+            <tr><td>[15:56] &lt j_baker&gt Just out of curiosity, what kinds of beer do you guys drink?</td></tr>
+            <tr><td>[15:56] &lt orphans&gt france is amazing :)</td></tr>
+            <tr><td>[15:56] &lt mhrd&gt bitter</td></tr>
+            <tr><td>[15:57] &lt orphans&gt ale/bitter</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt Like Guiness?</td></tr>
+            <tr><td>[15:59] &lt orphans&gt mm, guiness is stout which is a type of ale. Personally not much of a fan of Guiness, but yeah, that sort of thing</td></tr>
+            <tr><td>[15:59] &lt orphans&gt but better :)</td></tr>
+            <tr><td>[16:00] &lt j_baker&gt I agree. I dislike Guinness too. There's a micro-brewery nearby that makes an awesome Chocolate Stout.</td></tr>
+            <tr><td>[16:01] &lt orphans&gt what's it called?</td></tr>
+            <tr><td>[16:01] &lt j_baker&gt Triple J</td></tr>
+            <tr><td>[16:02] &lt orphans&gt not heard of it. Sounds nice :)</td></tr>
+            <tr><td>[16:02] &lt orphans&gt one of my friends has just gone on a bit of a tour of micro-breweries in the US, sounded really fun</td></tr>
+            <tr><td>[16:04] &lt j_baker&gt That actually sounds like a fun trip.</td></tr>
+            <tr><td>[16:07] &lt j_baker&gt If he is still here, you might tell him to stop by Shiner, TX (if he isn't already going there).</td></tr>
+            <tr><td>[16:08] &lt j_baker&gt That's where the Shiner Bock plant is, which is one of my favorite Texas beers. :)</td></tr>
+            <tr><td>[16:09] &lt orphans&gt I think he's already come past onto the west coast</td></tr>
+            <tr><td>[16:14] &lt j_baker&gt That must be fun. Beach + beer sounds like a perfect combo to me. :)</td></tr>
+            <tr><td>[16:15] &lt orphans&gt yeah, I wouldn't say no</td></tr>
+            <tr><td>[16:22] *** Davbo drinks mostly German / Belgian Beer :-)</td></tr>
+            <tr><td>[16:22] &lt Davbo&gt otherwise I'll drink just about any lager</td></tr>
+            <tr><td>[16:23] &lt Davbo&gt must say i've never had a Chocolate Stout though</td></tr>
+            <tr><td>[16:23] &lt Davbo&gt I've had Strawberry Beer though :-)</td></tr>
+            <tr><td>[16:24] &lt j_baker&gt That sounds interesting.</td></tr>
+            <tr><td>[16:24] &lt j_baker&gt Chocolate Stout is good. It's not quite as bitter.</td></tr>
+            <tr><td>[16:33] &lt Davbo&gt There are a lot of local breweries in and around Sheffield and most of the Beers they produce are identical</td></tr>
+            <tr><td>[16:33] &lt Davbo&gt there's a beer society at University though that has some interesting stuff :)</td></tr>
+            <tr><td>[16:33] &lt Davbo&gt (they brew their own)</td></tr>
+            <tr><td>[16:35] &lt j_baker&gt That must be awesome to have a lot of breweries though. If there's one thing I have to give Britain, it's that you guys have awesome beer.</td></tr>
+            <tr><td>[16:35] &lt j_baker&gt We do have a lot of beer societies at our university too though. They're called fraternities. :)</td></tr>
+            <tr><td>[16:37] &lt Davbo&gt Hah, not sure about good beer coming from the UK but we're a nation of beer drinkers ;-)</td></tr>
+            <tr><td>[16:37] &lt j_baker&gt A lot of my favorite beers are British. I like Bass a lot for example.</td></tr>
+            <tr><td>[16:38] &lt Davbo&gt Bass no1. draft is the best Beer i've ever had :-)</td></tr>
+            <tr><td>[16:39] &lt Davbo&gt Budweiser is the best bad beer I've had</td></tr>
+            <tr><td>[16:40] &lt j_baker&gt Heh... I dislike most of our big national brands.</td></tr>
+            <tr><td>[16:40] &lt j_baker&gt And what's sad is that I have way too many friends who drink it just out of fear of trying anything new.</td></tr>
+            <tr><td>[16:40] &lt Davbo&gt There's a time and place for Budweiser i find</td></tr>
+            <tr><td>[16:41] &lt Davbo&gt generally hot day and a BBQ :-)</td></tr>
+            <tr><td>[16:42] &lt j_baker&gt I'll agree to that.</td></tr>
+            <tr><td>[16:42] &lt orphans&gt my housemate makes his own wine</td></tr>
+            <tr><td>[16:42] &lt orphans&gt very enjoyable (if hangover-inducing)</td></tr>
+            <tr><td>[16:42] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[16:43] &lt Davbo&gt i wish i was more into wine, i might start buying some</td></tr>
+            <tr><td>[16:43] &lt Davbo&gt some people really seem to love it but i just don't get it :)</td></tr>
+            <tr><td>[16:45] &lt orphans&gt just started getting into whisky too - now there's a drink!</td></tr>
+            <tr><td>[16:45] &lt orphans&gt although for me it's almost certainly a one way street to drunkenness. Impossible to avoid</td></tr>
+            <tr><td>[16:46] &lt j_baker&gt I like wine a lot too.</td></tr>
+            <tr><td>[16:46] &lt j_baker&gt Perhaps Lawouach would be able to give us some advice on good wines.</td></tr>
+            <tr><td>[16:47] &lt Davbo&gt Hah, my brother is quite into Whisky. I drink Southern Comfort a lot though (technically a whisky flavoured liqueur i think)</td></tr>
+            <tr><td>[16:47] &lt orphans&gt mm, southern comfort is pretty horrible</td></tr>
+            <tr><td>[16:47] &lt j_baker&gt Depends which one you try.</td></tr>
+            <tr><td>[16:48] &lt j_baker&gt There's an 80 proof and a 100 proof</td></tr>
+            <tr><td>[16:48] &lt Davbo&gt is there?</td></tr>
+            <tr><td>[16:48] &lt j_baker&gt In my experience 80 proof is best for taking shots and 100 proof is best for mixing.</td></tr>
+            <tr><td>[16:48] &lt Davbo&gt interesting</td></tr>
+            <tr><td>[16:48] *** Davbo checks his bottle</td></tr>
+            <tr><td>[16:48] &lt orphans&gt 80/100 proof = percentage?</td></tr>
+            <tr><td>[16:49] &lt j_baker&gt Unless of course you enjoy your throat burning like hell. Then the 100 proof is great for taking shots.</td></tr>
+            <tr><td>[16:49] &lt j_baker&gt Divide the proof by 2 and you get the percentage. :)</td></tr>
+            <tr><td>[16:49] &lt orphans&gt ahh</td></tr>
+            <tr><td>[16:50] &lt orphans&gt I've also (very steadily) been drinking some 65% overproof rum my mate bought back from Jamaica</td></tr>
+            <tr><td>[16:50] &lt orphans&gt it's deadly - like white spirit in rum form</td></tr>
+            <tr><td>[16:50] &lt orphans&gt or perhaps the other way round...</td></tr>
+            <tr><td>[16:50] &lt Davbo&gt 35% on mine which would make it 70 proof by that lol</td></tr>
+            <tr><td>[16:51] &lt j_baker&gt I tried some moonshine one of my friend's parents made. And I'll never do it again.</td></tr>
+            <tr><td>[16:51] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[16:51] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:51] &lt orphans&gt :)</td></tr>
+            <tr><td>[16:52] &lt Davbo&gt I had a similar encounter with home brewed live beer</td></tr>
+            <tr><td>[16:52] &lt Davbo&gt Anyone had a living beer before?</td></tr>
+            <tr><td>[16:52] &lt j_baker&gt Hmmm... the 70 proof may be a British thing.</td></tr>
+            <tr><td>[16:52] &lt j_baker&gt I prefer mine dead.</td></tr>
+            <tr><td>[16:53] &lt Davbo&gt You can get *very* ill drinking live beer lol</td></tr>
+            <tr><td>[16:53] &lt j_baker&gt What is live beer?</td></tr>
+            <tr><td>[16:53] &lt Davbo&gt it's when yeasts are still in the beer from the brewing</td></tr>
+            <tr><td>[16:54] &lt j_baker&gt That sounds nasty.</td></tr>
+            <tr><td>[16:55] &lt Davbo&gt It can be</td></tr>
+            <tr><td>[16:55] &lt Davbo&gt but I've had very nice ones before at the beer festival</td></tr>
+            <tr><td>[16:55] &lt j_baker&gt brb</td></tr>
+            <tr><td>[16:56] &lt Davbo&gt All this talk is making me thirsty, I'll be back on later chaps. Cya :)</td></tr>
+            <tr><td>[16:57] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:59] &lt j_baker&gt Pidgen's IRC chat isn't half bad.</td></tr>
+            <tr><td>[16:59] &lt j_baker&gt s/Pidgen/Pidgin</td></tr>
+            <tr><td>[17:00] &lt j_baker&gt Plus it doesn't annoyingly use the clipboard and clear out what I had in there.</td></tr>
+            <tr><td>[17:00] &lt j_baker&gt Unlike x-chat.</td></tr>
+            <tr><td>[17:25] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:25] &lt MS-&gt evening</td></tr>
+            <tr><td>[17:28] *** mhrd preps to leave</td></tr>
+            <tr><td>[17:28] &lt mhrd&gt hi MS- :)</td></tr>
+            <tr><td>[17:30] &lt MS-&gt hiya</td></tr>
+            <tr><td>[17:32] &lt MS-&gt Short version : they had an intermittent hardware failure, I found it, worked around it and set it copying 1.9TB from A to B. With luck that'll resolve things. Go back tomorrow to put it all back together :)</td></tr>
+            <tr><td>[17:32] &lt mhrd&gt cool</td></tr>
+            <tr><td>[17:33] &lt MS-&gt If all successful, everyone has to watch Dragon's Den next week :)</td></tr>
+            <tr><td>[17:33] &lt MS-&gt If it isn't, they can't :)</td></tr>
+            <tr><td>[17:34] &lt mhrd&gt hence the phone call request I passed on? didn't know you were involved in that project</td></tr>
+            <tr><td>[17:34] &lt MS-&gt I'm not, but their emergency was local</td></tr>
+            <tr><td>[17:34] &lt mhrd&gt "are you ... local?" :-)</td></tr>
+            <tr><td>[17:35] &lt MS-&gt Their boxes were up here for post-production editting</td></tr>
+            <tr><td>[17:35] &lt MS-&gt heh, yes</td></tr>
+            <tr><td>[17:35] &lt MS-&gt That's filmed up here btw</td></tr>
+            <tr><td>[17:35] &lt mhrd&gt "hadleigh" iirc</td></tr>
+            <tr><td>[17:35] &lt MS-&gt Yep</td></tr>
+            <tr><td>[17:35] &lt MS-&gt 20 minutes out from manc - we went there walking one sunday</td></tr>
+            <tr><td>[17:35] &lt MS-&gt 'tis quite nice round there</td></tr>
+            <tr><td>[17:37] &lt mhrd&gt s/hadleigh/hadfield/</td></tr>
+            <tr><td>[17:37] &lt MS-&gt yep</td></tr>
+            <tr><td>[17:38] &lt MS-&gt Been standing up most of the afternoon though</td></tr>
+            <tr><td>[17:40] &lt mhrd&gt :(</td></tr>
+            <tr><td>[17:40] *** mhrd gotta go now</td></tr>
+            <tr><td>[17:40] &lt mhrd&gt cya</td></tr>
+            <tr><td>[17:40] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[17:45] &lt Chong-&gt hi, MS-</td></tr>
+            <tr><td>[17:45] &lt MS-&gt evening</td></tr>
+            <tr><td>[17:45] &lt MS-&gt Oh it's thursday isn't it</td></tr>
+            <tr><td>[17:45] &lt MS-&gt I have probably the best reason for not attending a meeting ever</td></tr>
+            <tr><td>[17:45] *** MS- hopes mhrd made excuses on my behalf</td></tr>
+            <tr><td>[17:45] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[17:46] &lt Chong-&gt You met some emergency during work?</td></tr>
+            <tr><td>[17:47] &lt Chong-&gt mhrd found a problem of OpenGLDisplay</td></tr>
+            <tr><td>[17:47] &lt Chong-&gt [14:12] &lt  mhrd&gt here is the full error message: http://pastebin.com/m78f6ad88</td></tr>
+            <tr><td>[17:47] *** MS- gets tempted by Axon.fu.we.kick.ass.da.supra.multiprocess</td></tr>
+            <tr><td>[17:48] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[17:48] &lt MS-&gt Chong-: Let's just say that if what I did works, then a BBC One programme goes on air gets week</td></tr>
+            <tr><td>[17:48] &lt MS-&gt and if it doesn't then it eitehr doesn't or someone has a really nasty weekend</td></tr>
+            <tr><td>[17:50] &lt MS-&gt (18:54:22) Chong-: mhrd found a problem of OpenGLDisplay</td></tr>
+            <tr><td>[17:50] &lt MS-&gt (18:54:46) Chong-: [14:12] &lt  mhrd&gt here is the full error message: http://pastebin.com/m78f6ad88</td></tr>
+            <tr><td>[17:50] &lt MS-&gt That's nice</td></tr>
+            <tr><td>[17:51] &lt Chong-&gt I see. that's very urgent, potentially millions of angry audience :-)</td></tr>
+            <tr><td>[17:51] &lt Chong-&gt thanks.</td></tr>
+            <tr><td>[17:51] &lt MS-&gt  [14:21] *** orphans gets the error with: python-opengl 3.0.0a6, python-pygame 1.7.1, Python 2.5.1 [14:21] &lt  Davbo&gt pygame: 1.7.1 [14:21] &lt  Davbo&gt python-opengl: 2.0.1.09 [14:21] &lt  Davbo&gt python 2.5.2 [14:21] &lt  orphans&gt maybe python-opengl 2=&gt3?</td></tr>
+            <tr><td>[17:51] *** MS- notes he probably doesn't get the error due ti:</td></tr>
+            <tr><td>[17:51] &lt MS-&gt ~&gt rpm -qa|grep opengl</td></tr>
+            <tr><td>[17:51] &lt MS-&gt python-opengl-2.0.1.09-127</td></tr>
+            <tr><td>[17:52] &lt Chong-&gt mine is also 2.0.1.09 and have no problem.</td></tr>
+            <tr><td>[17:53] *** MS- notes that 3.0.X was released after the opengl components were created</td></tr>
+            <tr><td>[17:53] &lt MS-&gt cf http://sourceforge.net/project/showfiles.php?group_id=5988&package_id=6035</td></tr>
+            <tr><td>[17:54] *** MS- notes the TODO/etc lines, thankfully :)</td></tr>
+            <tr><td>[17:54] &lt Chong-&gt yes, I see.</td></tr>
+            <tr><td>[17:57] &lt Chong-&gt probably from 3.0.X, it is necessary to specify the fifth parameter viewport of gluPickMatrix explictly</td></tr>
+            <tr><td>[17:57] &lt Chong-&gt [14:34] &lt  orphans&gt gluPickMatrix(pos[0], self.height-pos[1], 1, 1, glGetIntegerv(GL_VIEWPORT)) works</td></tr>
+            <tr><td>[18:01] &lt MS-&gt &gt&gt&gt OpenGL.__version__</td></tr>
+            <tr><td>[18:01] &lt MS-&gt '2.0.1.09'</td></tr>
+            <tr><td>[18:01] &lt MS-&gt is your friend</td></tr>
+            <tr><td>[18:10] *** MS- ponders cookies</td></tr>
+            <tr><td>[18:15] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[18:16] *** MS- feels the Patrick Moore page doesn't play up the fact that Patrick Moore has single handedly presented "The Sky At Night" for over 50 years anywhere near enough</td></tr>
+            <tr><td>[18:17] &lt MS-&gt I mean 1 presenter, 1 program, 50 years, every month, and always interesting factual and cool</td></tr>
+            <tr><td>[18:17] &lt MS-&gt Probably one of the best science programmes on TV</td></tr>
+            <tr><td>[18:19] &lt Chong-&gt That's an incredible record.</td></tr>
+            <tr><td>[18:21] &lt MS-&gt Probably one of the longest, if not the longest TV shows</td></tr>
+            <tr><td>[18:22] &lt Chong-&gt MS-: yes. as far as I know.</td></tr>
+            <tr><td>[19:02] &lt j_baker&gt MS-: can an Axon box name be any python string, or is there anything that's disallowed?</td></tr>
+            <tr><td>[19:04] &lt MS-&gt generally I would suggest the same naming rules as for variables</td></tr>
+            <tr><td>[19:04] &lt MS-&gt Also,</td></tr>
+            <tr><td>[19:05] &lt MS-&gt inboxes & outboxes designed for linking to components created by the component</td></tr>
+            <tr><td>[19:05] &lt MS-&gt (ie as subcomponents)</td></tr>
+            <tr><td>[19:05] &lt MS-&gt (or children)</td></tr>
+            <tr><td>[19:05] &lt MS-&gt are prefaced by a "_"</td></tr>
+            <tr><td>[19:05] &lt MS-&gt to indicate private - that they should not be linked to from outside</td></tr>
+            <tr><td>[19:06] &lt MS-&gt If you want a rule - it should "as clear as you can possibly make it"</td></tr>
+            <tr><td>[19:06] &lt j_baker&gt Ok. I'm making an AdaptiveCommsComponent that will make a boxname partially based on the repr of an object. I just wanted to check and make sure that there's not anything that would be illegal.</td></tr>
+            <tr><td>[19:07] &lt MS-&gt It's worth beaing in mind that at some later point in time</td></tr>
+            <tr><td>[19:07] &lt MS-&gt we may choose to expose boxes as attributes</td></tr>
+            <tr><td>[19:08] &lt j_baker&gt I see.</td></tr>
+            <tr><td>[19:08] &lt MS-&gt self.inbox, self.control, self.outbox, self.signal</td></tr>
+            <tr><td>[19:08] &lt MS-&gt so ruling that out would be a pain</td></tr>
+            <tr><td>[19:09] &lt MS-&gt Have you see this BTW?</td></tr>
+            <tr><td>[19:09] &lt MS-&gt &gt&gt&gt from Kamaelia.Chassis.Pipeline import Pipeline</td></tr>
+            <tr><td>[19:09] &lt MS-&gt &gt&gt&gt X=Pipeline()</td></tr>
+            <tr><td>[19:09] &lt MS-&gt &gt&gt&gt X</td></tr>
+            <tr><td>[19:09] &lt MS-&gt &lt Kamaelia.Chassis.Pipeline.Pipeline object at 0x808a06c&gt</td></tr>
+            <tr><td>[19:09] &lt MS-&gt &gt&gt&gt X.id</td></tr>
+            <tr><td>[19:09] &lt MS-&gt 5</td></tr>
+            <tr><td>[19:09] &lt MS-&gt &gt&gt&gt X.name</td></tr>
+            <tr><td>[19:09] &lt MS-&gt 'Kamaelia.Chassis.Pipeline.Pipeline_5'</td></tr>
+            <tr><td>[19:10] &lt MS-&gt X.id is unique and like a process id</td></tr>
+            <tr><td>[19:10] &lt MS-&gt X.name is the combo of that and the fully qualified classname</td></tr>
+            <tr><td>[19:10] &lt MS-&gt Means you can also do:</td></tr>
+            <tr><td>[19:10] &lt MS-&gt &gt&gt&gt X.name[X.name.rfind(".")+1:]</td></tr>
+            <tr><td>[19:10] &lt MS-&gt 'Pipeline_5'</td></tr>
+            <tr><td>[19:10] &lt MS-&gt which may be useful</td></tr>
+            <tr><td>[19:11] &lt j_baker&gt That's pretty cool.</td></tr>
+            <tr><td>[19:12] &lt j_baker&gt The object I'm wanting to make a box out of is a function though (the HTTPProtocol function for ServerCore).</td></tr>
+            <tr><td>[19:12] &lt j_baker&gt I suppose I could give a function a name attribute though.</td></tr>
+            <tr><td>[19:13] &lt MS-&gt HTTPProtocol returns a component though, right?</td></tr>
+            <tr><td>[19:13] &lt MS-&gt So that component will have an id/name</td></tr>
+            <tr><td>[19:14] &lt j_baker&gt That's true. I suppose that's the best idea.</td></tr>
+            <tr><td>[19:18] &lt j_baker&gt Also, one other question, (just to be on the safe side): Suppose I use addOutbox to make a box name and it gives it a name like "box123" using idGen. If I were to delete that oubox, will it reuse that box name?</td></tr>
+            <tr><td>[19:19] &lt j_baker&gt (It looks like no based on the source code. I just want to make sure because that would cause some strange bugs.)</td></tr>
+            <tr><td>[19:19] &lt MS-&gt Note the docs for http://edit.kamaelia.org/Docs/Axon/Axon.AdaptiveCommsComponent.html</td></tr>
+            <tr><td>[19:19] &lt MS-&gt  addOutbox(self, *args) Allocates a new outbox with name based on the name provided. If a box with the suggested name already exists then a variant is used instead. Returns the name of the outbox added.</td></tr>
+            <tr><td>[19:20] &lt MS-&gt In otherwords, you should do</td></tr>
+            <tr><td>[19:20] &lt MS-&gt boxname = self.addOutbox("mybox")</td></tr>
+            <tr><td>[19:20] &lt MS-&gt and be prepared to get back "mybox123"</td></tr>
+            <tr><td>[19:21] &lt MS-&gt In terms of names, IIRC I think I figured reusing names wasn't needed</td></tr>
+            <tr><td>[19:23] &lt j_baker&gt Ah, actually the "tracking resources" part actually looks like what I want to do. I was planning on storing the info in a dict indexed by the box name.</td></tr>
+            <tr><td>[19:24] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:25] &lt MS-&gt Components that use adaptive comms (and relevant) :</td></tr>
+            <tr><td>[19:25] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/UI/Pygame/Display.py?revision=4542&view=markup</td></tr>
+            <tr><td>[19:26] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Internet/Selector.py?view=markup</td></tr>
+            <tr><td>[19:27] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Util/Splitter.py?revision=3882&view=markup</td></tr>
+            <tr><td>[19:28] &lt MS-&gt You'll note that generally speaking you know about some "resource" or "Thing" which you can then use to determine what to track</td></tr>
+            <tr><td>[19:45] *** MS- wanders off, had a very insane day</td></tr>
+            <tr><td>[19:45] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[20:26] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:27] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:29] &lt j_baker&gt Hello mhrd-home</td></tr>
+            <tr><td>[20:32] &lt mhrd-home&gt hi j_baker</td></tr>
+            <tr><td>[20:48] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[20:48] *** j_baker_ has joined #kamaelia</td></tr>
+            <tr><td>[20:51] *** j_baker_ is now known as j_baker</td></tr>
+            <tr><td>[20:59] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:59] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:59] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[20:59] &lt mhrd-home&gt hi</td></tr>
+            <tr><td>[21:46] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[21:54] &lt mhrd-home&gt I've discovered what was wrong with his ProcessPipeline experiments : I was using ProcessPipeline but I should have been using ProcessPipelineComponent</td></tr>
+            <tr><td>[21:55] &lt mhrd-home&gt MS- if you see logs: perhaps useful to change the names, eg: ProcessPipeline --&gt _ProcessPipeline and ProcessPipelineComponent --&gt ProcessPipeline</td></tr>
+            <tr><td>[21:56] &lt mhrd-home&gt s/his/my/</td></tr>
+            <tr><td>[21:57] *** mhrd-home goes to watch heroes :)</td></tr>
+            <tr><td>[21:57] *** mhrd-home has parted #kamaelia</td></tr>
+            <tr><td>[21:58] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[22:50] *** j_baker just spent 30 mins debugging what ended up being an indentation error.</td></tr>

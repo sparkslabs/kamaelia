@@ -1,0 +1,81 @@
+<html><body><table>
+            <tr><td>[06:37] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[09:17] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:13] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[10:24] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:25] &lt MS-&gt woo. Looks like the logger is working properly :)</td></tr>
+            <tr><td>[10:25] &lt MS-&gt aside from thinking the time is aaaages ago</td></tr>
+            <tr><td>[10:25] &lt MS-&gt kamlogbot: help</td></tr>
+            <tr><td>[10:25] Reply: Name: kamlogbot   Channel: #kamaelia</td></tr>
+            <tr><td>[10:25] Reply: I do a simple job -- recording all channel traffic.</td></tr>
+            <tr><td>[10:25] Reply: Lines prefixed by [off] won't get recorded</td></tr>
+            <tr><td>[10:25] Reply: I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', 'boo', and 'reload {modulename}'.</td></tr>
+            <tr><td>[10:25] &lt MS-&gt kamlogbot: time</td></tr>
+            <tr><td>[10:25] Reply: 10:25:40</td></tr>
+            <tr><td>[10:25] &lt MS-&gt probably ought to sort that</td></tr>
+            <tr><td>[10:35] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[10:43] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[11:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:54] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:29] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[12:29] Reply: does the macarena</td></tr>
+            <tr><td>[14:22] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[15:45] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:47] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:04] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:13] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:40] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:47] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:10] &lt MS-&gt kamlogbot: poke</td></tr>
+            <tr><td>[19:10] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[19:14] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[19:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:17] &lt vmlemon_&gt kamlogbot: ping</td></tr>
+            <tr><td>[19:18] &lt vmlemon_&gt kamlogbot: poke</td></tr>
+            <tr><td>[19:18] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[19:18] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[19:18] Reply: does the macarena</td></tr>
+            <tr><td>[19:18] &lt MS-&gt heh</td></tr>
+            <tr><td>[19:18] &lt vmlemon_&gt Hmm, lagging today...</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Probably ought to add a bit more intellgence to it</td></tr>
+            <tr><td>[19:18] &lt MS-&gt kamlogbot: poke</td></tr>
+            <tr><td>[19:18] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[19:18] &lt MS-&gt there is a teeny lag isn't there</td></tr>
+            <tr><td>[19:18] &lt MS-&gt kamlogbot: help</td></tr>
+            <tr><td>[19:18] Reply: Name: kamlogbot   Channel: #kamaelia</td></tr>
+            <tr><td>[19:18] Reply: I do a simple job -- recording all channel traffic.</td></tr>
+            <tr><td>[19:18] Reply: Lines prefixed by [off] won't get recorded</td></tr>
+            <tr><td>[19:18] Reply: I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', 'boo', and 'reload {modulename}'.</td></tr>
+            <tr><td>[19:18] *** vmlemon_ was playing with MegaHAL, earlier...</td></tr>
+            <tr><td>[19:19] &lt MS-&gt yeah?</td></tr>
+            <tr><td>[19:19] &lt vmlemon_&gt I see that they have some Python glue stuff</td></tr>
+            <tr><td>[19:19] &lt vmlemon_&gt (a rather simple API for it)</td></tr>
+            <tr><td>[19:19] &lt vmlemon_&gt Which could make an interesting Kamaelia component</td></tr>
+            <tr><td>[19:20] &lt MS-&gt May be interesting to hook into kamaeliabot</td></tr>
+            <tr><td>[19:21] *** vmlemon_ pushes kamlogbot's Turbo Mode button ;)</td></tr>
+            <tr><td>[19:23] &lt vmlemon_&gt Looks like there's only 4 interfaces/API calls, too</td></tr>
+            <tr><td>[19:23] &lt vmlemon_&gt (mh_python.initbrain(), mh_python.doreply(text), mh_python.learn(text) and finally mh_python.cleanup() )</td></tr>
+            <tr><td>[19:24] *** vmlemon_ is tempted to try and hammer it into a copy of the logger, somehow...</td></tr>
+            <tr><td>[19:51] &lt vmlemon_&gt kamlogbot: ecky</td></tr>
+            <tr><td>[19:51] Reply: Ptang!</td></tr>
+            <tr><td>[19:53] &lt MS-&gt That would probably be quite simple to put in really</td></tr>
+            <tr><td>[19:55] &lt MS-&gt You modify this file: http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Kamaelia/Kamaelia/Apps/IRCLogger/Support.py</td></tr>
+            <tr><td>[19:56] &lt MS-&gt learn would be used in</td></tr>
+            <tr><td>[19:56] &lt MS-&gt     if msg[0] == 'PRIVMSG':</td></tr>
+            <tr><td>[19:56] &lt MS-&gt doreply would probably make sense in</td></tr>
+            <tr><td>[19:56] &lt MS-&gt     if msg[0] == 'PRIVMSG' and msg[3].split(':')[0] == self.name:</td></tr>
+            <tr><td>[19:57] &lt MS-&gt initbrain & cleanup would probably go in the main code</td></tr>
+            <tr><td>[19:58] &lt MS-&gt ie in http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Apps/Kamaelia-Logger/App/KamaeliaLogger.py</td></tr>
+            <tr><td>[19:59] &lt MS-&gt Probably in class BasicLogger, method main</td></tr>
+            <tr><td>[19:59] &lt MS-&gt after</td></tr>
+            <tr><td>[19:59] &lt MS-&gt         self.login()</td></tr>
+            <tr><td>[19:59] &lt MS-&gt         self.changeDate()</td></tr>
+            <tr><td>[19:59] &lt MS-&gt         yield 1</td></tr>
+            <tr><td>[20:00] &lt MS-&gt with cleanup() after the loop</td></tr>
+            <tr><td>[20:00] &lt MS-&gt though that's less useful here.</td></tr>
+            <tr><td>[20:02] *** Mjejajm has joined #kamaelia</td></tr>
+            <tr><td>[20:04] *** Mjejajm is now known as vmlemon_</td></tr>
+            <tr><td>[20:06] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[20:06] Reply: does the macarena</td></tr>
+            <tr><td>[20:30] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:42] *** vmlemon_ has joined #kamaelia</td></tr>

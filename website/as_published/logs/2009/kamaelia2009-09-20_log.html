@@ -1,0 +1,143 @@
+<html><body><table>
+            <tr><td>[05:54] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:50] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[08:13] *** vmlemon_ is surprised by how convoluted the PyGame installation process was on Mac OS X 10.5.6, prior to running the Kamaelia examples</td></tr>
+            <tr><td>[08:14] &lt vmlemon_&gt So much for "everything's included in the base installation"</td></tr>
+            <tr><td>[08:22] &lt vmlemon_&gt Still, at least the PyGame examples seem to work</td></tr>
+            <tr><td>[09:29] *** dsuch has joined #kamaelia</td></tr>
+            <tr><td>[09:54] &lt dsuch&gt hmm.. does importing Kamealia in an Apache licensed code makes it GPL/LGPL/MPL licensed?</td></tr>
+            <tr><td>[10:40] &lt vmlemon_&gt Not sure</td></tr>
+            <tr><td>[10:41] &lt vmlemon_&gt It presumably isn't a derivative work, though</td></tr>
+            <tr><td>[10:41] &lt vmlemon_&gt Although software licensing is a complex area</td></tr>
+            <tr><td>[11:00] &lt dsuch&gt yea</td></tr>
+            <tr><td>[11:00] &lt dsuch&gt Life would be much easier if all libraries and frameworks were licensed under BSD/Apache or Python :-)</td></tr>
+            <tr><td>[11:01] &lt dsuch&gt vmlemon_: MS- is Kamaelia's author I take it?</td></tr>
+            <tr><td>[11:01] &lt vmlemon_&gt Of course, the Apache License 2.0 is incompatible with the GPLv2</td></tr>
+            <tr><td>[11:01] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[11:01] &lt vmlemon_&gt Although you can blame the FSF for that idiocy</td></tr>
+            <tr><td>[11:02] &lt dsuch&gt heh</td></tr>
+            <tr><td>[11:02] &lt vmlemon_&gt (They decided that they wanted to put themselves into a licensing ghetto)...</td></tr>
+            <tr><td>[11:02] &lt dsuch&gt Personally I'd like where frameworks use BSD & friends and end-user applications use GPL, makes sense to me.</td></tr>
+            <tr><td>[11:02] &lt vmlemon_&gt Or something like that</td></tr>
+            <tr><td>[11:03] &lt dsuch&gt hm, *I like when, I mean</td></tr>
+            <tr><td>[11:03] &lt vmlemon_&gt Yeah</td></tr>
+            <tr><td>[11:03] &lt vmlemon_&gt Linking against frameworks and libraries under proprietary licenses is just as thorny</td></tr>
+            <tr><td>[11:03] &lt dsuch&gt right</td></tr>
+            <tr><td>[11:03] *** vmlemon_ thinks that GPLing libraries is a stupid idea</td></tr>
+            <tr><td>[11:04] &lt dsuch&gt is there any major one actually doing it?</td></tr>
+            <tr><td>[11:04] &lt vmlemon_&gt Some of the FFMPEG libraries were GPLed, if I remember correctly</td></tr>
+            <tr><td>[11:05] &lt dsuch&gt but you're right, when there's a new GPL-licensed annnounced on PyPI I usually don't even bother taking look at it</td></tr>
+            <tr><td>[11:05] &lt vmlemon_&gt (Although there was a compile-time function to remove that code, so that the resulting binaries are LGPL'd)</td></tr>
+            <tr><td>[11:05] &lt vmlemon_&gt Not sure if the GNU LibC is GPL'd or LGPL'd, for what it's worth</td></tr>
+            <tr><td>[11:06] &lt vmlemon_&gt Heh, the FSF were endorsing GPLing libraries a while ago, for some weird reason</td></tr>
+            <tr><td>[11:06] &lt dsuch&gt okay, will it wait for MS-, hope he'll clarify it :)</td></tr>
+            <tr><td>[11:07] &lt dsuch&gt in the hope of taking over the whole world probably</td></tr>
+            <tr><td>[11:07] &lt vmlemon_&gt Qt comes to mind as a major library that was GPLed</td></tr>
+            <tr><td>[11:07] &lt vmlemon_&gt Yeah...</td></tr>
+            <tr><td>[11:07] &lt dsuch&gt but err.. the channel's publicly logged right?</td></tr>
+            <tr><td>[11:08] &lt vmlemon_&gt Although Nokia came to their senses, after acquiring TrollTech and LGPL'd it</td></tr>
+            <tr><td>[11:08] &lt vmlemon_&gt Yeah</td></tr>
+            <tr><td>[11:08] &lt vmlemon_&gt When kamlogbot's functional, anyway</td></tr>
+            <tr><td>[11:08] &lt dsuch&gt I don't know you, we've never met</td></tr>
+            <tr><td>[11:08] &lt dsuch&gt I love GPL!</td></tr>
+            <tr><td>[11:09] &lt dsuch&gt vmlemon_: (that's the part where you start to chuckle..)</td></tr>
+            <tr><td>[11:09] &lt vmlemon_&gt Folks are encouraged to post in the channel, and check the answer later</td></tr>
+            <tr><td>[11:10] &lt vmlemon_&gt At least if they're not willing to wait in the channel</td></tr>
+            <tr><td>[11:11] &lt dsuch&gt I am, going through MiniAxom in that time.</td></tr>
+            <tr><td>[11:11] &lt vmlemon_&gt Aah, col</td></tr>
+            <tr><td>[11:11] &lt vmlemon_&gt *cool</td></tr>
+            <tr><td>[11:11] &lt vmlemon_&gt Stupid typos</td></tr>
+            <tr><td>[11:12] &lt dsuch&gt he</td></tr>
+            <tr><td>[11:12] &lt dsuch&gt hm, just noticed it's Axon not Axom</td></tr>
+            <tr><td>[11:13] &lt vmlemon_&gt Heh, Microsoft confusingly started a project named "Axum", a while ago, with vaguely similar goals</td></tr>
+            <tr><td>[11:13] &lt dsuch&gt I think there was a Twisted Axom years ago</td></tr>
+            <tr><td>[11:13] &lt vmlemon_&gt They seem to enjoy pinching names and mangling them</td></tr>
+            <tr><td>[11:14] &lt vmlemon_&gt Unless it was purely coincidental...</td></tr>
+            <tr><td>[11:14] &lt dsuch&gt Does Ax have any special meaning?</td></tr>
+            <tr><td>[11:14] &lt dsuch&gt Other than an axe? :)</td></tr>
+            <tr><td>[11:15] &lt vmlemon_&gt If you're curious, the Mac OS X Dictionary application says, "the long threadlike part of a nerve cell along which impulses are conducted from the cell body to other cells."</td></tr>
+            <tr><td>[11:15] &lt vmlemon_&gt (for "Axon")</td></tr>
+            <tr><td>[11:15] &lt vmlemon_&gt Not sure if that's the inspiration of the name, though</td></tr>
+            <tr><td>[11:16] &lt dsuch&gt sure, I actually knew that, so it may be that 'ax' is a common root for each of those projects</td></tr>
+            <tr><td>[11:16] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[11:17] &lt dsuch&gt Although this Latin dictionary doesn't seem to be in agreement http://www.archives.nd.edu/cgi-bin/lookup.pl?stem=ax&ending=</td></tr>
+            <tr><td>[11:17] &lt vmlemon_&gt Might have been related to the concept of using IPC to link components together</td></tr>
+            <tr><td>[11:17] &lt dsuch&gt yea</td></tr>
+            <tr><td>[11:18] &lt dsuch&gt what are we doing anyway, going back to the tutorial! :)</td></tr>
+            <tr><td>[11:19] &lt vmlemon_&gt "Axon: It's what's inside the cat's brain" was probably not one of the initial slogans considered ;)</td></tr>
+            <tr><td>[11:21] *** vmlemon_ notes that we had "Tools for Doing Cool Stuff", or something like that, initially...</td></tr>
+            <tr><td>[11:21] &lt dsuch&gt that was the project's name?</td></tr>
+            <tr><td>[11:22] &lt vmlemon_&gt Nah</td></tr>
+            <tr><td>[11:22] &lt vmlemon_&gt That was just an initial slogan, prior to the redesign of the website</td></tr>
+            <tr><td>[11:23] &lt dsuch&gt ah</td></tr>
+            <tr><td>[11:24] &lt dsuch&gt Do you know that http://www.kamaelia.org/About links to two placeholder pages?</td></tr>
+            <tr><td>[11:24] &lt vmlemon_&gt Yeah</td></tr>
+            <tr><td>[11:25] &lt vmlemon_&gt There's still some Lipsum text on the homepage, too</td></tr>
+            <tr><td>[11:25] *** vmlemon_ isn't in charge of maintaining the Website</td></tr>
+            <tr><td>[11:25] &lt dsuch&gt kind of makes me feel like Alice in the Wonderland, combined with the logo, that is</td></tr>
+            <tr><td>[11:26] &lt vmlemon_&gt Although there is a tea-related connection, that was discovered after the fact, as the story went, if I remember correctly</td></tr>
+            <tr><td>[11:27] &lt dsuch&gt It seems like you tried really, *really* hard to get rid of any pompous style during making it</td></tr>
+            <tr><td>[11:27] &lt dsuch&gt which is fine with me</td></tr>
+            <tr><td>[11:28] *** vmlemon_ wonders why the KDE4 for Mac OS X initial version insists on making me download an older version of Qt4, when I already had a perfectly good later version installed...</td></tr>
+            <tr><td>[11:29] &lt dsuch&gt oh, can't help you with that, I'm a happy Ubuntu & Gnome user</td></tr>
+            <tr><td>[11:29] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[11:29] &lt dsuch&gt though of course I have half of the KDE dependencies installed anyway</td></tr>
+            <tr><td>[11:30] *** vmlemon_ was using KDE4 on Fedora previously, before deciding to install a modified copy of Mac OS X on a spare HDD</td></tr>
+            <tr><td>[11:31] &lt dsuch&gt heh, I didn't even know you could install a Mac OS separately, without buying hardware from Apple</td></tr>
+            <tr><td>[11:31] &lt dsuch&gt which I think proves I really don't know how to help you :)</td></tr>
+            <tr><td>[11:32] &lt vmlemon_&gt Conveniently, the latest versions are compiled for x86, but just ship with a limited set of drivers, and insist on being installed to a disk with a GPT label, instead of a traditional x86 MBR</td></tr>
+            <tr><td>[11:33] &lt vmlemon_&gt Although there are workarounds for that, which were aided by the fact that a significant amount of the core OS is Open Source...</td></tr>
+            <tr><td>[11:35] &lt dsuch&gt the only thing I really like in Mac OS is that application for drawing simple diagrams which name I always forget..</td></tr>
+            <tr><td>[11:35] &lt dsuch&gt hm..</td></tr>
+            <tr><td>[11:35] &lt vmlemon_&gt OmniGraffle, or whatever it was called?</td></tr>
+            <tr><td>[11:35] &lt dsuch&gt ah, OmniGraffle, right</td></tr>
+            <tr><td>[11:35] &lt vmlemon_&gt Although I've never used that</td></tr>
+            <tr><td>[11:36] *** vmlemon_ came into it with a UNIX/Linux user's mindset, which helped somewhat</td></tr>
+            <tr><td>[11:36] &lt dsuch&gt that was actually the only reason I wanted to install Mac OS in VirtualBox, until I learnt it would be illegal</td></tr>
+            <tr><td>[11:36] &lt vmlemon_&gt Of course, a lot of people who've never used it expect it to work like like Windows</td></tr>
+            <tr><td>[11:36] &lt vmlemon_&gt *work like</td></tr>
+            <tr><td>[11:37] &lt dsuch&gt better approach would be to expect everything work just like Ubuntu :)</td></tr>
+            <tr><td>[11:37] &lt dsuch&gt vmlemon_: but we're really drifting away from MiniAxon now :)</td></tr>
+            <tr><td>[11:38] *** vmlemon_ assumes that the chances of being sued are minimal, unless you're selling it preinstalled on hardware </td></tr>
+            <tr><td>[11:38] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[11:38] &lt vmlemon_&gt Good point...</td></tr>
+            <tr><td>[11:39] &lt dsuch&gt getting back to it, chat later vmlemon_ !</td></tr>
+            <tr><td>[11:39] &lt dsuch&gt nice talking to you</td></tr>
+            <tr><td>[11:39] &lt vmlemon_&gt No problem</td></tr>
+            <tr><td>[13:05] &lt MS-&gt dsuch: "does importing Kamealia in an Apache licensed code makes it GPL/LGPL/MPL"</td></tr>
+            <tr><td>[13:05] &lt MS-&gt Answer is no - the minimal restriction is LGPL. Usage of the library does not change the license of your code.</td></tr>
+            <tr><td>[13:07] &lt MS-&gt (reading back from scrollback btw)</td></tr>
+            <tr><td>[13:07] &lt MS-&gt name "axon" is meant to allude to real world axons in nerves. ie to emphasise the idea is communications.</td></tr>
+            <tr><td>[13:09] &lt MS-&gt "http://www.kamaelia.org/Licensing" gives a longer summary, but boils down to "If you change code we give you, and you distribute that, then those changes must be lgpl". and "your code is yours"</td></tr>
+            <tr><td>[13:10] &lt dsuch&gt I see, thanks MS-</td></tr>
+            <tr><td>[13:10] &lt dsuch&gt I was a bit confused when I saw it was triple-licensed</td></tr>
+            <tr><td>[13:12] &lt MS-&gt It's the same license as Mozilla for what it's worth</td></tr>
+            <tr><td>[13:12] &lt MS-&gt The idea is to try and keep as many people happy as possible.</td></tr>
+            <tr><td>[13:13] &lt MS-&gt I'd prefer a BSD-like license personally, but I didn't have as much of a choice as I'd like</td></tr>
+            <tr><td>[13:13] &lt MS-&gt Though it's possible we may move to something like apache at some point.</td></tr>
+            <tr><td>[13:14] &lt MS-&gt The only foible with the LGPL is that you can argue that inheritance triggers the LGPL, but with python, that inheritance is at runtime.</td></tr>
+            <tr><td>[13:14] &lt MS-&gt If you have an alternate possible thing to import the name from</td></tr>
+            <tr><td>[13:14] &lt MS-&gt ... like a mini-axon ... then it clarifies that it's NOT triggered</td></tr>
+            <tr><td>[13:15] &lt MS-&gt So as well as being a tutorial, the mini-axon thing also helps people in a concrete way - making sure your code stays yours :)</td></tr>
+            <tr><td>[13:22] &lt dsuch&gt um, sorry, I'm back</td></tr>
+            <tr><td>[13:22] &lt dsuch&gt ok, thanks for clarifying it, those licenses are always confusing to me</td></tr>
+            <tr><td>[13:23] &lt dsuch&gt especially because I know they've been created hundreds of years ago with C programs in mind</td></tr>
+            <tr><td>[13:23] &lt Lawouach&gt afternoon folks</td></tr>
+            <tr><td>[13:23] &lt dsuch&gt hello</td></tr>
+            <tr><td>[13:47] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[13:57] &lt MS-&gt dsuch: np.</td></tr>
+            <tr><td>[14:06] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:34] &lt vmlemon_&gt Hi Lawouach</td></tr>
+            <tr><td>[16:33] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:49] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:35] *** salmon_1 has joined #kamaelia</td></tr>
+            <tr><td>[19:06] *** salmon_1 is now known as salmon_</td></tr>
+            <tr><td>[19:19] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:27] &lt vmlemon_&gt Hmm, http://www.readwriteweb.com/archives/bbc_to_kill_open_source_tv.php</td></tr>
+            <tr><td>[19:27] *** vmlemon_ can't see that happening any time soon</td></tr>
+            <tr><td>[19:28] &lt vmlemon_&gt Given that they'd render a ton of STBs obsolete</td></tr>
+            <tr><td>[20:48] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:52] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:53] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:38] *** vmlemon has joined #kamaelia</td></tr>

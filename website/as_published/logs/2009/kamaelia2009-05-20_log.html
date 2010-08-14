@@ -1,0 +1,99 @@
+<html><body><table>
+            <tr><td>[04:31] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[06:04] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:00] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[07:11] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:13] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:13] &lt MS-&gt greetings</td></tr>
+            <tr><td>[08:13] &lt MS-&gt aa_: Manchester in fact :) (in reply to your tweet)</td></tr>
+            <tr><td>[08:13] &lt MS-&gt Looks like they're breaking the trams completely in August.</td></tr>
+            <tr><td>[09:13] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:20] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:10] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:37] &lt MS-&gt debugging a work colleague's Kamaelia based system</td></tr>
+            <tr><td>[12:48] &lt Lawouach&gt fun or no fun ?</td></tr>
+            <tr><td>[12:53] &lt MS-&gt Quite fun actually. It's actually tracking down a resource leak, but it's an interesting systems</td></tr>
+            <tr><td>[12:53] &lt MS-&gt It's a system that reads video frames from a DVS video capture card (the kind of thing you plug a broadcast camera into), and serves it out to clients</td></tr>
+            <tr><td>[12:54] &lt MS-&gt Also appears to write whole frames to disk as well - so it's presumably for use in wiring up broadcast video cameras over IP</td></tr>
+            <tr><td>[12:54] &lt MS-&gt which is neat</td></tr>
+            <tr><td>[12:55] &lt MS-&gt Also appears to integrate with pyro for remote control AFAICT</td></tr>
+            <tr><td>[12:56] &lt MS-&gt There's somethings that are very kamaelia like, but that's understandable because I think it was a non-kamaelia program beforehand, and he's used K to give it some structure in a nicer way</td></tr>
+            <tr><td>[12:58] &lt MS-&gt Quite pleased with the bugfix from the weekend in the CSA</td></tr>
+            <tr><td>[12:59] &lt MS-&gt The greylister code is now stable. It also has a resource leak of a few meg a day, so I'll probably plug in an interactive interpreter to make it easier to find that bug</td></tr>
+            <tr><td>[13:00] &lt MS-&gt Rummaging around inside the internals of a running mail server should be interesting :)</td></tr>
+            <tr><td>[13:03] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[13:22] &lt MS-&gt ok, back in a bit :)</td></tr>
+            <tr><td>[13:23] &lt MS-&gt cya</td></tr>
+            <tr><td>[13:23] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[13:54] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:40] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[15:43] &lt vmlemon_1&gt Ho</td></tr>
+            <tr><td>[15:44] &lt vmlemon_1&gt *Hi</td></tr>
+            <tr><td>[15:44] &lt vmlemon_1&gt Even</td></tr>
+            <tr><td>[16:56] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:02] &lt vmlemon_1&gt Hi Davbo</td></tr>
+            <tr><td>[17:07] &lt Davbo&gt Hey vmlemon_1</td></tr>
+            <tr><td>[17:13] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:13] &lt MS-&gt evening</td></tr>
+            <tr><td>[17:40] &lt Davbo&gt evenin' MS-</td></tr>
+            <tr><td>[17:50] &lt Davbo&gt walked out of my first meeting with dissertation supervisor with a book on learning C..</td></tr>
+            <tr><td>[17:51] *** Davbo may have made a terrible mistake.</td></tr>
+            <tr><td>[17:51] &lt vmlemon_1&gt Heh</td></tr>
+            <tr><td>[17:52] &lt vmlemon_1&gt Still, there are things that are much worse than C ;)</td></tr>
+            <tr><td>[17:52] &lt vmlemon_1&gt Java and VisualBASIC come to mind</td></tr>
+            <tr><td>[17:54] &lt Davbo&gt on the upside it's related to grid computing so I get about 80cpu's to play with</td></tr>
+            <tr><td>[17:54] &lt vmlemon_1&gt Cool</td></tr>
+            <tr><td>[17:55] *** vmlemon_1 wonders how Kamaelia would scale on that sort of kit</td></tr>
+            <tr><td>[17:55] *** Davbo will find out</td></tr>
+            <tr><td>[17:55] &lt Davbo&gt :)</td></tr>
+            <tr><td>[17:55] &lt Davbo&gt need to write a test suite for testing different file access strategies and file systems</td></tr>
+            <tr><td>[17:56] &lt vmlemon_1&gt There's always Bonnie++...</td></tr>
+            <tr><td>[17:56] &lt Davbo&gt in over my head but that's the idea of these things i believe</td></tr>
+            <tr><td>[17:57] &lt vmlemon_1&gt Meh, my connectivity seems craptastic right now</td></tr>
+            <tr><td>[17:57] &lt Davbo&gt not heard of this bonnie vmlemon_1, thanks</td></tr>
+            <tr><td>[17:57] &lt vmlemon_1&gt No problem</td></tr>
+            <tr><td>[17:59] &lt Davbo&gt i got the 3 skypephone last week</td></tr>
+            <tr><td>[17:59] &lt vmlemon_1&gt Any good?</td></tr>
+            <tr><td>[17:59] &lt Davbo&gt hsdpa seems hit and miss</td></tr>
+            <tr><td>[17:59] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[17:59] &lt Davbo&gt it's cool, had my old phone for about 5 years</td></tr>
+            <tr><td>[18:00] &lt Davbo&gt skype is nice though, mostly used it as an IM client with friends though</td></tr>
+            <tr><td>[18:01] &lt Davbo&gt + it's cheap</td></tr>
+            <tr><td>[18:01] &lt Davbo&gt hey Lawouach</td></tr>
+            <tr><td>[18:01] &lt vmlemon_1&gt Weren't 3 supposedly offering "Free Skype Access" or something like that, a while ago?</td></tr>
+            <tr><td>[18:01] &lt Davbo&gt Yeah, they are</td></tr>
+            <tr><td>[18:02] &lt vmlemon_1&gt I got an SMS earlier claiming that they're now offering free SMSes or Internet access, or some other service a few days ago</td></tr>
+            <tr><td>[18:02] &lt Davbo&gt not sure about that</td></tr>
+            <tr><td>[18:02] &lt vmlemon_1&gt A far cry from when the only Internet access on 3 was none at all, other than their proprietary content portal</td></tr>
+            <tr><td>[18:03] &lt Davbo&gt I can use Skype all day for free but then browse to facebook and it cost me 15p</td></tr>
+            <tr><td>[18:03] &lt vmlemon_1&gt "From 3: From 1 June, you'll get free texts and free internet with every top-up. Use the free link to see your new price plan http://mobile5.three.co.uk/sdf/3pay"</td></tr>
+            <tr><td>[18:03] &lt vmlemon_1&gt (Of course, the link only works if you happen to be connected to the Internet through 3)</td></tr>
+            <tr><td>[18:03] &lt Lawouach&gt hi guys</td></tr>
+            <tr><td>[18:04] &lt vmlemon_1&gt Hi Lawouach</td></tr>
+            <tr><td>[18:06] &lt vmlemon_1&gt Heh, I'm sure I saw another person using Twitter at college, for the first time ever, earlier on today</td></tr>
+            <tr><td>[18:06] &lt vmlemon_1&gt Everyone seems to either use FaceBook, or nothing at all</td></tr>
+            <tr><td>[18:07] &lt Davbo&gt Twitter is quite popular now here</td></tr>
+            <tr><td>[18:07] &lt vmlemon_1&gt Interesting</td></tr>
+            <tr><td>[18:08] &lt vmlemon_1&gt I can't remember the last time I actually looked for anyone there on it, or anyone looked for me there, for what it's worth, though</td></tr>
+            <tr><td>[18:08] &lt vmlemon_1&gt (FB that is)</td></tr>
+            <tr><td>[18:09] &lt vmlemon_1&gt Still haven't seen any GMail users</td></tr>
+            <tr><td>[18:09] &lt Davbo&gt Yeah even in Computer Science there are a lot of people which use Hotmail for some reason</td></tr>
+            <tr><td>[18:09] &lt vmlemon_1&gt Surprisingly, Yahoo! Mail seems to be pretty popular, although of course, Hotmail still gets used a lot</td></tr>
+            <tr><td>[18:12] &lt Davbo&gt although a lot of people don't seem to "get" twitter</td></tr>
+            <tr><td>[18:12] &lt Davbo&gt http://twitter.com/filmunit prime example</td></tr>
+            <tr><td>[18:12] &lt vmlemon_1&gt Yeah, I've noticed that</td></tr>
+            <tr><td>[18:12] &lt vmlemon_1&gt Heh, they've protected their microblog, how quaint</td></tr>
+            <tr><td>[18:13] &lt Davbo&gt indeed</td></tr>
+            <tr><td>[18:14] &lt vmlemon_1&gt I've never really understood the rationale behind using "protection" features, except for folks in very specific circumstances</td></tr>
+            <tr><td>[18:16] &lt Davbo&gt impressive! http://www.flickr.com/photos/quasimondo/3518306770/in/photostream/</td></tr>
+            <tr><td>[18:17] &lt vmlemon_1&gt I would have thought that the "Sheffield University Students' Union Cinema" club would have wanted to attract interest to themselves</td></tr>
+            <tr><td>[18:17] &lt vmlemon_1&gt Cool</td></tr>
+            <tr><td>[18:18] &lt Davbo&gt they do on the union website and on posters around the campus, but as I said, they don't "get" twitter</td></tr>
+            <tr><td>[18:19] &lt vmlemon_1&gt There's always Base64-over-Twitter, although that usually exceeds the character limit</td></tr>
+            <tr><td>[18:19] *** vmlemon_1 likes the Google LangMang "translation" of the image text, posted by mikeg626</td></tr>
+            <tr><td>[18:21] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[18:21] &lt Davbo&gt nice poem</td></tr>
+            <tr><td>[18:22] &lt vmlemon_1&gt Engrish 2.0 comes to mind</td></tr>
+            <tr><td>[18:41] *** Davbo_ has joined #kamaelia</td></tr>
+            <tr><td>[19:04] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[19:32] *** MS- has parted #kamaelia</td></tr>

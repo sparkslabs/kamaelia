@@ -1,0 +1,279 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay.OpenGLDisplay </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.UI.OpenGL.OpenGLDisplay.OpenGLDisplay</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.html">OpenGL</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay.html">OpenGLDisplay</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay.OpenGLDisplay.html">OpenGLDisplay</a></h1>
+<p>For examples and more explanations, see the <a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-OpenGLDisplay">class OpenGLDisplay(<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</a>)</h2>
+<p>OpenGLDisplay(...) -&gt; new OpenGLDisplay component</p>
+<p>Use OpenGLDisplay.getDisplayService(...) in preference as it returns an
+existing instance, or automatically creates a new one.</p>
+<p>Or create your own and register it with setDisplayService(...)</p>
+<p>Keyword arguments (all optional):</p>
+<ul>
+<li><p class="first">title             -- caption of window (default=http://kamaelia.sourceforge.net)</p>
+</li>
+<li><p class="first">width              -- pixels width (default=800)</p>
+</li>
+<li><p class="first">height             -- pixels height (default=600)</p>
+</li>
+<li><p class="first">background_colour  -- (r,g,b) background colour (default=(255,255,255))</p>
+</li>
+<li><p class="first">fullscreen         -- set to True to start up fullscreen, not windowed   (default=False)</p>
+</li>
+<li><p class="first">show_fps          -- show frames per second in window title (default=True)</p>
+</li>
+<li><dl class="first docutils">
+<dt>limit_fps           -- maximum frame rate (default=60)</dt>
+<dd><p class="first last">Projection parameters</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">near              -- distance to near plane (default=1.0)</p>
+</li>
+<li><p class="first">far               -- distance to far plane (default=100.0)</p>
+</li>
+<li><dl class="first docutils">
+<dt>perspective       -- perspective angle (default=45.0)</dt>
+<dd><p class="first last">Viewer position and orientation</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">viewerposition        -- position of viewer (default=(0,0,0))</p>
+</li>
+<li><p class="first">lookat                -- look at point (default= (0,0,-self.farPlaneDist))</p>
+</li>
+<li><dl class="first docutils">
+<dt>up                    -- up vector (default(0,1,0))</dt>
+<dd><p class="first last">Fog</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">fog           -- tuple of fog distances (start, end). if not set, fog is disabled (default)</p>
+</li>
+<li><p class="first">fog_colour    -- (r,g,b) fog colour (default=(255,255,255) )</p>
+</li>
+<li><dl class="first docutils">
+<dt>fog_density   -- fog density (default=0.35)</dt>
+<dd><p class="first last">Event processing</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">hitall        -- boolean, if false, only the nearest object under the cursor gets activated (default=False)</p>
+</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-OpenGLDisplay.Inboxes" name="symbol-OpenGLDisplay.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : NOT USED</li>
+<li><strong>events</strong> : For reception of pygame events</li>
+<li><strong>inbox</strong> : Default inbox, not currently used</li>
+<li><strong>notify</strong> : For reception of requests for surfaces, overlays and events</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-OpenGLDisplay.Outboxes" name="symbol-OpenGLDisplay.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : NOT USED</li>
+<li><strong>signal</strong> : NOT USED</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.__init__" name="symbol-OpenGLDisplay.__init__">__init__(self, **argd)</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.calcPow2Size" name="symbol-OpenGLDisplay.calcPow2Size">calcPow2Size(self, size)</a></h4>
+<p>Calculates the power of 2 dimensions for a given size.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.doPicking" name="symbol-OpenGLDisplay.doPicking">doPicking(self, pos)</a></h4>
+<p>Uses OpenGL picking to determine objects that have been hit by mouse pointer.
+see e.g. OpenGL Redbook</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.drawOpenGLComponents" name="symbol-OpenGLDisplay.drawOpenGLComponents">drawOpenGLComponents(self)</a></h4>
+<p>Draws all registered OpenGL components with their set transformation matrix.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.drawPygameSurfaces" name="symbol-OpenGLDisplay.drawPygameSurfaces">drawPygameSurfaces(self)</a></h4>
+<p>Draws all surfaces of registered pygame components on top of everything else.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.genIdentifier" name="symbol-OpenGLDisplay.genIdentifier">genIdentifier(self)</a></h4>
+<p>Returns a unique number.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleEvents" name="symbol-OpenGLDisplay.handleEvents">handleEvents(self)</a></h4>
+<p>Handles pygame input events.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleOGLComponentEvents" name="symbol-OpenGLDisplay.handleOGLComponentEvents">handleOGLComponentEvents(self, events)</a></h4>
+<p>Prepare and send input events for OpenGL components.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handlePygameComponentEvents" name="symbol-OpenGLDisplay.handlePygameComponentEvents">handlePygameComponentEvents(self, events)</a></h4>
+<p>Prepare and send input events for pygame components.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequest_DISPLAYREQUEST" name="symbol-OpenGLDisplay.handleRequest_DISPLAYREQUEST">handleRequest_DISPLAYREQUEST(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequest_EVENTSPYREQUEST" name="symbol-OpenGLDisplay.handleRequest_EVENTSPYREQUEST">handleRequest_EVENTSPYREQUEST(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequest_OGL_DISPLAYREQUEST" name="symbol-OpenGLDisplay.handleRequest_OGL_DISPLAYREQUEST">handleRequest_OGL_DISPLAYREQUEST(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequest_WRAPPERREQUEST" name="symbol-OpenGLDisplay.handleRequest_WRAPPERREQUEST">handleRequest_WRAPPERREQUEST(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequests" name="symbol-OpenGLDisplay.handleRequests">handleRequests(self)</a></h4>
+<p>Handles service requests.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.main" name="symbol-OpenGLDisplay.main">main(self)</a></h4>
+<p>Main loop.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.setProjection" name="symbol-OpenGLDisplay.setProjection">setProjection(self)</a></h4>
+<p>Sets projection matrix.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.surfacePosition" name="symbol-OpenGLDisplay.surfacePosition">surfacePosition(self, surface)</a></h4>
+<p>Returns a suggested position for a surface. No guarantees its any good!</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.updateDisplay" name="symbol-OpenGLDisplay.updateDisplay">updateDisplay(self)</a></h4>
+<p>Draws all components, updates screen, clears the backbuffer and depthbuffer .</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.updatePygameTexture" name="symbol-OpenGLDisplay.updatePygameTexture">updatePygameTexture(self, surface, pow2surface, texname)</a></h4>
+<p>Converts the surface of a pygame component to an OpenGL texture.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,140 @@
+<html><body><table>
+            <tr><td>[04:47] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[05:42] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:02] *** PJ_Coudert_work has joined #kamaelia</td></tr>
+            <tr><td>[06:08] *** PJ_Coudert_work is now known as PJ_Coudert</td></tr>
+            <tr><td>[07:13] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:00] *** Patrick` has joined #kamaelia</td></tr>
+            <tr><td>[09:17] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[11:09] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:07] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt hi guys</td></tr>
+            <tr><td>[12:52] *** dweebster has joined #kamaelia</td></tr>
+            <tr><td>[12:53] &lt dweebster&gt i need some help plz :)</td></tr>
+            <tr><td>[12:54] &lt dweebster&gt I get this error when trying to run a Graphline, I am totally new to kamaelia</td></tr>
+            <tr><td>[12:54] &lt dweebster&gt the error is : Graphline( reader = ConsoleReader(prompt=''),</td></tr>
+            <tr><td>[12:54] &lt dweebster&gt NameError: name 'Graphline' is not defined</td></tr>
+            <tr><td>[12:54] &lt dweebster&gt can someone give me a pointer plz ?</td></tr>
+            <tr><td>[12:58] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[12:58] &lt MS-&gt dweebster:</td></tr>
+            <tr><td>[12:58] &lt MS-&gt from Kamaelia.Chassis.Graphline import Graphline</td></tr>
+            <tr><td>[12:59] &lt MS-&gt needs to happen, otherwise you will get:</td></tr>
+            <tr><td>[12:59] &lt MS-&gt NameError: name 'Graphline' is not defined</td></tr>
+            <tr><td>[12:59] &lt MS-&gt eg</td></tr>
+            <tr><td>[12:59] &lt MS-&gt &gt&gt&gt Graphline</td></tr>
+            <tr><td>[12:59] &lt MS-&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[12:59] &lt MS-&gt  File "&lt stdin&gt", line 1, in &lt module&gt</td></tr>
+            <tr><td>[12:59] &lt MS-&gt NameError: name 'Graphline' is not defined</td></tr>
+            <tr><td>[12:59] &lt MS-&gt &gt&gt&gt from Kamaelia.Chassis.Graphline import Graphline</td></tr>
+            <tr><td>[12:59] &lt MS-&gt &gt&gt&gt Graphline</td></tr>
+            <tr><td>[12:59] &lt MS-&gt &lt class 'Kamaelia.Chassis.Graphline.Graphline'&gt</td></tr>
+            <tr><td>[12:59] &lt MS-&gt &gt&gt&gt</td></tr>
+            <tr><td>[12:59] &lt dweebster&gt k</td></tr>
+            <tr><td>[13:00] &lt dweebster&gt i noticed that in the Util the Graphline.py is depracated</td></tr>
+            <tr><td>[13:00] &lt dweebster&gt do i have to edit the graphline in the Chassis folder to my needs</td></tr>
+            <tr><td>[13:00] &lt MS-&gt Yep - we moved it to somewhere that makes more sense</td></tr>
+            <tr><td>[13:01] &lt MS-&gt This is what happens if you try and use the Graphline in Util:</td></tr>
+            <tr><td>[13:01] &lt MS-&gt &gt&gt&gt from Kamaelia.Util.Graphline import Graphline</td></tr>
+            <tr><td>[13:01] &lt MS-&gt &gt&gt&gt Graphline</td></tr>
+            <tr><td>[13:01] &lt MS-&gt &lt class 'Kamaelia.Support.Deprecate.stub'&gt</td></tr>
+            <tr><td>[13:01] &lt MS-&gt &gt&gt&gt Graphline()</td></tr>
+            <tr><td>[13:01] &lt MS-&gt DEPRECATED: Use Kamaelia.Chassis.Graphline:Graphline instead of Kamaelia.Util.Graphline:Graphline</td></tr>
+            <tr><td>[13:01] &lt dweebster&gt do i have to move all the py scripts i want run into the chassis folder as well?</td></tr>
+            <tr><td>[13:01] &lt MS-&gt No.</td></tr>
+            <tr><td>[13:01] &lt dweebster&gt just edit the graphline in the chassis folder</td></tr>
+            <tr><td>[13:01] &lt MS-&gt no, you just install kamaelia</td></tr>
+            <tr><td>[13:02] &lt MS-&gt and the in your python code just import it</td></tr>
+            <tr><td>[13:02] &lt MS-&gt I'm guessing you haven't written much python code at all</td></tr>
+            <tr><td>[13:02] &lt dweebster&gt import it to the chassis filder</td></tr>
+            <tr><td>[13:02] &lt dweebster&gt no</td></tr>
+            <tr><td>[13:02] *** MS- nods</td></tr>
+            <tr><td>[13:02] &lt dweebster&gt this is my first attempt</td></tr>
+            <tr><td>[13:02] &lt dweebster&gt :(</td></tr>
+            <tr><td>[13:02] &lt MS-&gt np</td></tr>
+            <tr><td>[13:03] &lt MS-&gt have you programmed in any other languages ?</td></tr>
+            <tr><td>[13:03] &lt MS-&gt (which I can use as a possible reference point)</td></tr>
+            <tr><td>[13:03] &lt dweebster&gt no</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Ah OK</td></tr>
+            <tr><td>[13:03] &lt dweebster&gt i'm sorry</td></tr>
+            <tr><td>[13:03] &lt MS-&gt np</td></tr>
+            <tr><td>[13:03] &lt MS-&gt I think you ought to look at a simple tutorial focussed on python initially in that case</td></tr>
+            <tr><td>[13:03] &lt dweebster&gt can you bear with me plz</td></tr>
+            <tr><td>[13:04] &lt MS-&gt Sure</td></tr>
+            <tr><td>[13:04] &lt MS-&gt Short summary:</td></tr>
+            <tr><td>[13:04] &lt dweebster&gt i'm in my chassis folder</td></tr>
+            <tr><td>[13:04] &lt MS-&gt Kamaelia is a library</td></tr>
+            <tr><td>[13:04] &lt dweebster&gt aye</td></tr>
+            <tr><td>[13:04] &lt MS-&gt You install the library using the setup.py file, which puts it into a standard location - called "site-packages"</td></tr>
+            <tr><td>[13:05] &lt dweebster&gt yep</td></tr>
+            <tr><td>[13:05] &lt MS-&gt Then any python program - anywhere on the system - can find the library and use it</td></tr>
+            <tr><td>[13:05] &lt dweebster&gt i followed all that install</td></tr>
+            <tr><td>[13:05] &lt MS-&gt even just the python shell</td></tr>
+            <tr><td>[13:05] &lt dweebster&gt i am running python 2.6 which i installed</td></tr>
+            <tr><td>[13:05] &lt MS-&gt as a result, you don't need to be in any particular directory - and in particular you shouldn't be trying to put code into the library directory</td></tr>
+            <tr><td>[13:06] &lt dweebster&gt ah ok</td></tr>
+            <tr><td>[13:06] &lt dweebster&gt so to run the graphline i have , what cmd do i input</td></tr>
+            <tr><td>[13:07] &lt dweebster&gt i input python Graphline.py</td></tr>
+            <tr><td>[13:07] &lt dweebster&gt and it comes up t=with the error</td></tr>
+            <tr><td>[13:07] &lt MS-&gt You put the graphline you're writing in it's own file</td></tr>
+            <tr><td>[13:07] &lt MS-&gt Then</td></tr>
+            <tr><td>[13:07] &lt MS-&gt Along with all the necessary import statements</td></tr>
+            <tr><td>[13:07] &lt MS-&gt and then just get python to run it</td></tr>
+            <tr><td>[13:08] &lt MS-&gt on linux for example you type:</td></tr>
+            <tr><td>[13:08] &lt MS-&gt python MyFile.py</td></tr>
+            <tr><td>[13:08] &lt MS-&gt (where MyFile.py contains your script)</td></tr>
+            <tr><td>[13:08] &lt dweebster&gt k</td></tr>
+            <tr><td>[13:08] &lt MS-&gt Please take a look at the examples in the Examples directory</td></tr>
+            <tr><td>[13:08] &lt dweebster&gt ok</td></tr>
+            <tr><td>[13:08] &lt dweebster&gt will do</td></tr>
+            <tr><td>[13:09] &lt MS-&gt I'd suggest starting there and playing with those first, since that's probably a good starting point :)</td></tr>
+            <tr><td>[13:09] &lt dweebster&gt ty for your help</td></tr>
+            <tr><td>[13:09] &lt MS-&gt That, and a good (basic) python tutorial ;)</td></tr>
+            <tr><td>[13:09] &lt MS-&gt You're welcome :)</td></tr>
+            <tr><td>[13:09] &lt dweebster&gt :)</td></tr>
+            <tr><td>[13:09] *** dweebster goes off to study</td></tr>
+            <tr><td>[13:47] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[13:53] &lt Lawouach_&gt oh people alive :)</td></tr>
+            <tr><td>[15:08] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:17] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:25] *** vmlemon_ has parted #kamaelia</td></tr>
+            <tr><td>[16:55] &lt dweebster&gt anyone about?</td></tr>
+            <tr><td>[16:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:04] &lt Lawouach&gt dweebster: yeap</td></tr>
+            <tr><td>[17:04] &lt dweebster&gt :)</td></tr>
+            <tr><td>[17:04] &lt dweebster&gt i keep getting an error with the consolereader</td></tr>
+            <tr><td>[17:05] &lt dweebster&gt NameError: name 'ConsoleReader' is not defined</td></tr>
+            <tr><td>[17:05] &lt dweebster&gt i've added this to my graphline : from Axon.ThreadedComponent import threadedcomponent</td></tr>
+            <tr><td>[17:06] &lt dweebster&gt but it errors</td></tr>
+            <tr><td>[17:06] &lt dweebster&gt can you help</td></tr>
+            <tr><td>[17:08] &lt Lawouach&gt could you paste the code?</td></tr>
+            <tr><td>[17:08] &lt Lawouach&gt in a pastebin somewhere?</td></tr>
+            <tr><td>[17:09] &lt dweebster&gt gimme a sec</td></tr>
+            <tr><td>[17:13] &lt dweebster&gt http://pastebin.ca/1379190</td></tr>
+            <tr><td>[17:13] &lt dweebster&gt thats part of it</td></tr>
+            <tr><td>[17:15] &lt dweebster&gt i imprted the other components successfully, apart from the consolereader which gives me the error :)</td></tr>
+            <tr><td>[17:15] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[17:15] &lt Lawouach&gt what's the line you're using for the ConsoleReader import?</td></tr>
+            <tr><td>[17:16] &lt dweebster&gt from Axon.ThreadedComponent import threadedcomponent</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt oh</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt you forgot to import the ConsoleReader class</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt hence the NameError error</td></tr>
+            <tr><td>[17:18] &lt Lawouach&gt try something like</td></tr>
+            <tr><td>[17:18] &lt Lawouach&gt from Kamaelia.Util.Console import ConsoleReader</td></tr>
+            <tr><td>[17:18] &lt dweebster&gt from Kamaelia.Util.Console.ConsoleReader import ConsoleReader</td></tr>
+            <tr><td>[17:18] &lt dweebster&gt something like that</td></tr>
+            <tr><td>[17:19] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[17:19] &lt dweebster&gt lol</td></tr>
+            <tr><td>[17:19] &lt Lawouach&gt one of the two :)</td></tr>
+            <tr><td>[17:19] &lt dweebster&gt kk</td></tr>
+            <tr><td>[17:21] &lt dweebster&gt :)</td></tr>
+            <tr><td>[17:21] &lt dweebster&gt from Kamaelia.Util.Console import ConsoleReader &lt &lt &lt  that worked :)</td></tr>
+            <tr><td>[17:21] &lt dweebster&gt ty</td></tr>
+            <tr><td>[17:22] &lt dweebster&gt now onto the next one...:)</td></tr>
+            <tr><td>[17:22] &lt dweebster&gt ty for your help :)</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:16] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[18:39] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:41] *** dweebster has parted #kamaelia</td></tr>
+            <tr><td>[21:15] *** MS- has joined #kamaelia</td></tr>

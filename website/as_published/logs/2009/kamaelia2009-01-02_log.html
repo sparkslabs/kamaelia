@@ -1,0 +1,206 @@
+<html><body><table>
+            <tr><td>[03:46] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[03:47] *** Patrick` has joined #kamaelia</td></tr>
+            <tr><td>[03:53] *** Patrick` has joined #kamaelia</td></tr>
+            <tr><td>[03:53] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[03:54] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[08:59] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:20] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:33] *** liwp has joined #kamaelia</td></tr>
+            <tr><td>[09:34] &lt liwp&gt I've been playing around with kamaelia writing a tcp-based server app with simpleserver and I noticed that the server dies whenever a client disconnects</td></tr>
+            <tr><td>[09:34] &lt liwp&gt I tracked the problem down to the stop method in the ConnectedSocketAdapter which calls shutdown() on the socket</td></tr>
+            <tr><td>[09:35] &lt liwp&gt and the shutdown call fails because the socket has already been closed by the client</td></tr>
+            <tr><td>[09:36] &lt liwp&gt The weird thing is that the stop() also call close() on the socket after the shutdown() call. Wouldn't it be enough to just call close()?</td></tr>
+            <tr><td>[09:37] &lt liwp&gt I should also add that commenting out the shutdown() call fixes things for me (the server stays up and happily handles multiple clients), but I haven't done enough testing to see if I'm leaking any resources...</td></tr>
+            <tr><td>[09:38] &lt liwp&gt This same issue has been mentioned on the mailing list some time ago once, but the fix was more of a hack and it hasn't made it's way to SVN either</td></tr>
+            <tr><td>[09:40] &lt liwp&gt I'll try the mailinglist if no one is around here</td></tr>
+            <tr><td>[11:07] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[11:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:35] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:47] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:55] &lt Davbo&gt Anyone use an ergo keyboard? just got one today, think it's going to take a while to get used to</td></tr>
+            <tr><td>[11:56] &lt vmlemon_&gt Nah, I've found them to be a PITA to use, although they probably take a while to get used to</td></tr>
+            <tr><td>[12:16] &lt Davbo&gt it's damn comfy though :)</td></tr>
+            <tr><td>[12:16] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[12:19] &lt vmlemon_&gt Hah, I've just found http://www.superawesomebroadband.com/</td></tr>
+            <tr><td>[12:19] &lt vmlemon_&gt Amused to see that they're supposedly a real company with a VAT registration number</td></tr>
+            <tr><td>[12:21] &lt Davbo&gt hah cool</td></tr>
+            <tr><td>[12:23] &lt Davbo&gt Q: You know that your website sucks?</td></tr>
+            <tr><td>[12:23] &lt Davbo&gt A: People with macs have told us that actually it doesn't.</td></tr>
+            <tr><td>[12:23] &lt vmlemon_&gt Meh, no free calls to the moon, what a rip-off ;)</td></tr>
+            <tr><td>[12:24] &lt Davbo&gt shame it's so expensive</td></tr>
+            <tr><td>[13:44] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[14:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:16] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:34] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[16:28] &lt Patrick`&gt happy new year!</td></tr>
+            <tr><td>[16:29] &lt vmlemon_&gt Happy New Year to you too, Patrick`</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt (and tdobson, orphans, aa_ and Lawouach)</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt And kamlogbot ;)</td></tr>
+            <tr><td>[16:46] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:03] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[17:19] &lt MS-&gt vmlemon_: Hiya</td></tr>
+            <tr><td>[17:27] &lt MS-&gt Hmm. No Dave. Not sure why he's modifying things on his branch at the moment really. I thought that it was ready for merge, just without any statement of what's changed or what's put up for merge.</td></tr>
+            <tr><td>[17:28] *** MS- carries on documenting TPipe</td></tr>
+            <tr><td>[17:35] &lt vmlemon_&gt Heh, I finally got to the bottom of my Bluetooth problem (or sort-of)</td></tr>
+            <tr><td>[17:38] &lt vmlemon_&gt Turns out that Fedora 10 not only ships with KDE 4, but they also ship an updated version of the Bluetooth stack that's incompatible with the KDE4 Bluetooth framework right now</td></tr>
+            <tr><td>[17:38] &lt MS-&gt woo</td></tr>
+            <tr><td>[17:39] &lt vmlemon_&gt Classy</td></tr>
+            <tr><td>[17:40] &lt MS-&gt indeed</td></tr>
+            <tr><td>[17:40] &lt vmlemon_&gt Doesn't help that there was nothing in the errata at the time of installation, and the folks in their IRC channel didn't tell me anything when I asked</td></tr>
+            <tr><td>[17:42] &lt MS-&gt Maybe they didn't even know?</td></tr>
+            <tr><td>[17:42] &lt MS-&gt tis possible after all</td></tr>
+            <tr><td>[17:43] &lt vmlemon_&gt I only found that out by Googling the error message (related to D-BUS), and finding the answer on a Slackware or Ubuntu related forum of all things, and then comparing versions</td></tr>
+            <tr><td>[17:44] *** MS- nods</td></tr>
+            <tr><td>[17:44] &lt MS-&gt I must admit I never bothered with fedora</td></tr>
+            <tr><td>[17:44] &lt vmlemon_&gt It's great when it works</td></tr>
+            <tr><td>[17:45] &lt MS-&gt I used redhat back when it was on the 3.X and 4.X cusp but when they went "OK, you can just buy an expensive supported version or use an unsupported version"</td></tr>
+            <tr><td>[17:45] &lt MS-&gt and also I'd found SuSE's hardware support to be generally better I just never bothered with redhat or fedora again</td></tr>
+            <tr><td>[17:50] &lt vmlemon_&gt I've never really been impressed with *buntu, despite it being the Hype Queen of Linux(TM)</td></tr>
+            <tr><td>[17:51] &lt MS-&gt I've always had hardware issues with Ubuntu, which is why I've never bothered with it beyond testing periodically</td></tr>
+            <tr><td>[17:55] &lt vmlemon_&gt Other than the Bluetooth problem, some strange issue with the ported version of apt always SegFaulting, and relatively dire Atheros Wi-Fi drivers, it's been solid</td></tr>
+            <tr><td>[17:56] &lt vmlemon_&gt Could always try and compile the same version of apt from source, and then install the result on top</td></tr>
+            <tr><td>[17:57] &lt vmlemon_&gt As for Wi-Fi, I blame it on a very new and unfinished driver</td></tr>
+            <tr><td>[18:02] &lt vmlemon_&gt Hah, http://www.brendangregg.com/specials.html</td></tr>
+            <tr><td>[18:16] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:32] *** davbop has joined #kamaelia</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Heya davbop - happy new year</td></tr>
+            <tr><td>[19:17] &lt MS-&gt how was christmas ?</td></tr>
+            <tr><td>[19:19] &lt davbop&gt Hey MS-, it was great thanks, how was yours?</td></tr>
+            <tr><td>[19:20] &lt MS-&gt Pretty good. Busy afk for much of it (hence not around), but good :)</td></tr>
+            <tr><td>[19:20] &lt davbop&gt nice and quiet actually, which makes a change (a welcome one!)</td></tr>
+            <tr><td>[19:20] &lt orphans&gt hey folks</td></tr>
+            <tr><td>[19:20] &lt vmlemon_&gt Hi orphans</td></tr>
+            <tr><td>[19:20] &lt MS-&gt Grabbed enough time to eradicate my bits of nastiness from /branches though - specifically getting rid of private_MPS_Scratch and making it mergeable - whether by me or someone else.</td></tr>
+            <tr><td>[19:21] &lt MS-&gt I like the decoupling of getting something ready and then reviewing even a few days later since it catches a bit of stuff even if it's just me it seems :)</td></tr>
+            <tr><td>[19:21] &lt MS-&gt Hi orphans</td></tr>
+            <tr><td>[19:21] &lt MS-&gt orphans: Happy new year</td></tr>
+            <tr><td>[19:22] &lt orphans&gt MS-, you too. Good to have a bit of time to lurk over the holidays :D</td></tr>
+            <tr><td>[19:23] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:23] &lt orphans&gt (albeit when I'm supposed to be writing essays...)</td></tr>
+            <tr><td>[19:25] *** davbop has been tinkering with his branch</td></tr>
+            <tr><td>[19:27] &lt MS-&gt I noticed that - rather surprised tbh - I thought it was done and dusted. BTW the purpose behind Kamaelia.Apps is in a way to provide a incubator type space for new components</td></tr>
+            <tr><td>[19:27] &lt MS-&gt Which is why I was a little surprised at the move :)</td></tr>
+            <tr><td>[19:30] &lt davbop&gt ahh</td></tr>
+            <tr><td>[19:30] &lt davbop&gt Have I read something out of context</td></tr>
+            <tr><td>[19:32] &lt davbop&gt I think I've moved the wrong code, I moved component code, when I think I wanted to move 'app' code.</td></tr>
+            <tr><td>[19:33] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[19:33] &lt davbop&gt 20 second fix if i have vmlemon_ :)</td></tr>
+            <tr><td>[19:34] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[19:34] &lt davbop&gt What do you think MS-?</td></tr>
+            <tr><td>[19:35] &lt vmlemon_&gt Shame the TwitterIM Pidgin plug-in doesn't display following/follower users in the contacts list</td></tr>
+            <tr><td>[19:59] &lt MS-&gt davbop: Dunno off the top of my head. Apparently we find out who the new doctor is tomorrow so I'm currently playing "search the web for a decent lead"</td></tr>
+            <tr><td>[19:59] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:00] &lt MS-&gt (5:35pm BBC One - Doctor Who Confidential Special)</td></tr>
+            <tr><td>[20:03] &lt davbop&gt Ah cool. I don't like the current guy. I could see the BBC going for the first black and/or female doctor</td></tr>
+            <tr><td>[20:04] &lt aa_&gt MS-: did you enjoy the christmas doctor?</td></tr>
+            <tr><td>[20:04] &lt MS-&gt davbop: female doctor would make no sense - they've made it clear before (romana, doctor's daughter, etc) that time lords don't just regenerate into time ladies</td></tr>
+            <tr><td>[20:05] &lt MS-&gt Though time laydee's is possible I guess (little britain style)</td></tr>
+            <tr><td>[20:05] &lt MS-&gt aa_: Yep</td></tr>
+            <tr><td>[20:05] &lt MS-&gt Liked it</td></tr>
+            <tr><td>[20:05] &lt aa_&gt me too, was fun</td></tr>
+            <tr><td>[20:05] &lt MS-&gt Twas fun</td></tr>
+            <tr><td>[20:05] &lt MS-&gt Would've preferred it to have ended in a different way though</td></tr>
+            <tr><td>[20:05] &lt MS-&gt Cyber's keep on getting twatted too much</td></tr>
+            <tr><td>[20:06] &lt MS-&gt Mind you they're not real cybermen anyway</td></tr>
+            <tr><td>[20:06] &lt aa_&gt perhaps it has run its course this time around...</td></tr>
+            <tr><td>[20:06] &lt aa_&gt yeah, what are those weird monkey-cyber-men things?</td></tr>
+            <tr><td>[20:06] &lt MS-&gt I'd rather see the metal men from Mondas kill their shiny metal butts back to where they came from - that'd be fun</td></tr>
+            <tr><td>[20:06] &lt MS-&gt cyber-shades</td></tr>
+            <tr><td>[20:07] &lt aa_&gt I think they should jsut do the Time War with Tennant, then take a 10-year sabbatical</td></tr>
+            <tr><td>[20:07] &lt MS-&gt Tell you what - they do the Time War with Tennant, and then we just don't let you watch it for the next 10 years? ;-) :-) :-D</td></tr>
+            <tr><td>[20:08] &lt aa_&gt ahah</td></tr>
+            <tr><td>[20:08] &lt MS-&gt \o\ \o/ /o/</td></tr>
+            <tr><td>[20:08] &lt aa_&gt ooh david walliams!</td></tr>
+            <tr><td>[20:09] &lt aa_&gt MS-: are you sure you don't have any scoops, I mean come on!</td></tr>
+            <tr><td>[20:09] &lt aa_&gt you must know someone in cardiff</td></tr>
+            <tr><td>[20:10] &lt aa_&gt ooh Jennifer Saunders would be great</td></tr>
+            <tr><td>[20:12] &lt MS-&gt aa_: If I knew I'd say, so they probably wouldn't trust me with knowing</td></tr>
+            <tr><td>[20:12] &lt MS-&gt I'm searching quite hard</td></tr>
+            <tr><td>[20:12] &lt MS-&gt Jennifer Saunders would make a great Romana</td></tr>
+            <tr><td>[20:12] &lt MS-&gt (they could easily bring back romana btw since the last time we saw her she was trapped inside e-space which is outside the usual time-space continuum - a bit like the void)</td></tr>
+            <tr><td>[20:14] &lt davbop&gt I seem to only watch the Christmas specials and am always left disappointed. The special effects on the one this year were so awful, I don't see any quirky charm either</td></tr>
+            <tr><td>[20:14] *** davbop feels like he doesn't "get it"</td></tr>
+            <tr><td>[20:14] &lt aa_&gt davbop: the christmas specials are um only good because we haven't seena real episode for months</td></tr>
+            <tr><td>[20:14] &lt aa_&gt same reason torchwood is even barely watchable</td></tr>
+            <tr><td>[20:15] &lt aa_&gt MS-: oooh ooh and I guess "Last of the Time Lords" does not imply that there are no Time Ladies</td></tr>
+            <tr><td>[20:15] &lt davbop&gt hah, I've seen a bit of that too</td></tr>
+            <tr><td>[20:15] &lt aa_&gt but like "last of your kind" does, I guess</td></tr>
+            <tr><td>[20:16] &lt MS-&gt aa_: I always wonder why people assume 4 or 5 dimensional systems, when string theory (and the show itself through storylines) says there's at minimum 6</td></tr>
+            <tr><td>[20:16] &lt MS-&gt String theory implies 10</td></tr>
+            <tr><td>[20:16] &lt aa_&gt oh I see..</td></tr>
+            <tr><td>[20:16] &lt aa_&gt well, basically they can do what they like...</td></tr>
+            <tr><td>[20:17] &lt MS-&gt As long as you can find a logical justification, then yes</td></tr>
+            <tr><td>[20:17] &lt MS-&gt Also it's not defined as science fiction really</td></tr>
+            <tr><td>[20:17] &lt MS-&gt more science fantasy</td></tr>
+            <tr><td>[20:18] &lt MS-&gt The best decent science fiction on TV at the moment IMO is the Sarah Connor Chronicles (bizarrely)</td></tr>
+            <tr><td>[20:18] &lt MS-&gt since it keeps on showing that the writers actually appear to have a brain and understand the implications of at least a 5 dimensional universe</td></tr>
+            <tr><td>[20:18] &lt MS-&gt http://www.youtube.com/watch?v=HvgwR9ERCBo</td></tr>
+            <tr><td>[20:19] &lt MS-&gt is particularly good imo, and I suspect steven moffat (the new guy) understands it given he wrote blink :-)</td></tr>
+            <tr><td>[20:20] &lt MS-&gt That said Doctor Who is more mornington crescent than it is new scientist</td></tr>
+            <tr><td>[20:20] &lt MS-&gt The fact that Sek was able to go back and get davros out implies a get out of time lock jail free card for the gallifreyans</td></tr>
+            <tr><td>[20:20] &lt MS-&gt (who incidentally aren't all time lords according to canon :) )</td></tr>
+            <tr><td>[20:21] &lt MS-&gt Yes I know how sad this all sounds :)</td></tr>
+            <tr><td>[20:21] &lt davbop&gt LOST starts again soon, you should give it a chance MS-</td></tr>
+            <tr><td>[20:23] &lt MS-&gt I've seen bits of it and come to the conclusion that the episodes I'll watch in it are likely to be the ones matching an inverse fibbonacci sequence starting at the end of season 6 (since I think it's slated for 6 seasons IIRC)</td></tr>
+            <tr><td>[20:24] &lt aa_&gt LOST is class</td></tr>
+            <tr><td>[20:24] &lt MS-&gt So assuming ending at 120 episodes that sequence ends with episodes ... 100, 108, 113, 116, 118, 119, 120</td></tr>
+            <tr><td>[20:25] &lt MS-&gt aa_: LOST misses something quite badly</td></tr>
+            <tr><td>[20:25] &lt aa_&gt british sense of humour, right</td></tr>
+            <tr><td>[20:25] &lt MS-&gt aa_: a plot</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[20:26] &lt vmlemon_&gt Am I the only one who hasn't seen Lost?</td></tr>
+            <tr><td>[20:27] &lt aa_&gt MS-: no, that's the thing, ithas a plot</td></tr>
+            <tr><td>[20:27] &lt MS-&gt vmlemon_: I've seen enough episodes to know that it's likely to actually become worth watching when they decide to actually have a plot</td></tr>
+            <tr><td>[20:27] &lt aa_&gt MS-: they announced last year it will end after 32 more episodes</td></tr>
+            <tr><td>[20:27] *** vmlemon_ assumes it's like Castaway, or something like that</td></tr>
+            <tr><td>[20:27] &lt MS-&gt aa_: They claimed the same thing about twin peaks</td></tr>
+            <tr><td>[20:27] &lt aa_&gt yeah but twin peaks was um, just crazy</td></tr>
+            <tr><td>[20:27] &lt MS-&gt aa_: They then revealed after it finished they they had lied all along, and were just on a trip</td></tr>
+            <tr><td>[20:27] &lt aa_&gt I *still* have nightmares about Killer Bob!</td></tr>
+            <tr><td>[20:28] &lt davbop&gt twin peaks is my favourite TV show :)</td></tr>
+            <tr><td>[20:28] &lt davbop&gt this probably helps me liking lost.</td></tr>
+            <tr><td>[20:28] &lt aa_&gt MS-: well, Lost claims that it has a plot, and to be honest, we have a hint where it is heading</td></tr>
+            <tr><td>[20:28] &lt aa_&gt MS-: you can still download the first four series in time to watch them all ready for the next series to start :)</td></tr>
+            <tr><td>[20:28] &lt aa_&gt don't delay!</td></tr>
+            <tr><td>[20:29] &lt MS-&gt aa_: Right 80 episodes of looking for a plot. I'm sorry, some entrails are calling :)</td></tr>
+            <tr><td>[20:30] &lt vmlemon_&gt They've Lost the plot? ;)</td></tr>
+            <tr><td>[20:30] *** vmlemon_ ducks</td></tr>
+            <tr><td>[20:30] &lt davbop&gt This discussion has brought me to the conclusion that Cooper should be in LOST.</td></tr>
+            <tr><td>[20:30] &lt MS-&gt vmlemon_: It's probably just going to turn out it's just Dark City really</td></tr>
+            <tr><td>[20:30] &lt MS-&gt Who?</td></tr>
+            <tr><td>[20:31] &lt vmlemon_&gt Urgh, I'm now reminded of why I prefer to use a pop-up blocker - I just saw a very trippy Flash advert for IM smilies...</td></tr>
+            <tr><td>[20:32] &lt vmlemon_&gt (In Konqueror)</td></tr>
+            <tr><td>[20:32] &lt davbop&gt "Diane, there appears to be some kind of hatch and these numbers"</td></tr>
+            <tr><td>[20:32] &lt MS-&gt cooper ?</td></tr>
+            <tr><td>[20:32] &lt davbop&gt Agent Cooper, from Twin Peaks</td></tr>
+            <tr><td>[20:33] &lt davbop&gt he'd be excellent in LOST</td></tr>
+            <tr><td>[20:33] &lt MS-&gt Oh, him</td></tr>
+            <tr><td>[20:33] &lt aa_&gt yeah he would</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Yeah. *as* agent cooper</td></tr>
+            <tr><td>[20:34] &lt aa_&gt but it would just get too trippy</td></tr>
+            <tr><td>[20:34] &lt aa_&gt exactly</td></tr>
+            <tr><td>[20:34] &lt MS-&gt I'd probably watch it then</td></tr>
+            <tr><td>[20:34] &lt davbop&gt That hatch could contain the "Red Room" ;)</td></tr>
+            <tr><td>[20:34] &lt aa_&gt ahahahaha</td></tr>
+            <tr><td>[20:35] &lt MS-&gt No. Far too simple. It's entered by opening a secret panel in the shower of one of the oceanic 5</td></tr>
+            <tr><td>[20:35] &lt MS-&gt and another part only opens when the trees sway in an appropriate way by that invisible monster on the island</td></tr>
+            <tr><td>[20:35] &lt vmlemon_&gt WTF, "Some required postal address information is missing or incomplete. Please select or add a postal address to continue."</td></tr>
+            <tr><td>[20:36] &lt davbop&gt Hey I just said Cooper should be in it, David Lynch doesn't need to direct it :P</td></tr>
+            <tr><td>[20:36] &lt aa_&gt to be honest, it would be much better with Lynch</td></tr>
+            <tr><td>[20:36] &lt davbop&gt hehe</td></tr>
+            <tr><td>[20:37] *** vmlemon_ hates PayPal's stupid series of hoops and blockades they present whilst trying to pay for an item...</td></tr>
+            <tr><td>[20:38] &lt MS-&gt Oh now that's a nice idea - they're putting that confidential out on the big screens as well</td></tr>
+            <tr><td>[20:39] &lt MS-&gt Someone in Manchester or Bradford will know who the doctor is in that case</td></tr>
+            <tr><td>[20:39] &lt MS-&gt given the way those screens are operated</td></tr>
+            <tr><td>[20:40] &lt MS-&gt (they'd need the content by now in order for that to happen)</td></tr>
+            <tr><td>[20:41] &lt MS-&gt http://io9.com/5122010/back-to-the-future-bollywood-style</td></tr>
+            <tr><td>[21:28] &lt vmlemon_&gt Haha, http://i.friendfeed.com/885be6f573251f73ac186dfb913251710ff10809</td></tr>
+            <tr><td>[21:30] &lt MS-&gt heh</td></tr>
+            <tr><td>[21:30] *** MS- has not had any coffee all day</td></tr>
+            <tr><td>[21:31] &lt vmlemon_&gt Meh, how can you go without? ;)</td></tr>
+            <tr><td>[21:38] &lt MS-&gt I've been having tea</td></tr>
+            <tr><td>[21:38] &lt MS-&gt it's not the same though</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[21:58] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[23:37] *** wyleu has joined #kamaelia</td></tr>

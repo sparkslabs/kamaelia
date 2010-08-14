@@ -1,0 +1,206 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060831 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 A few website improvements [Matt]
+5. Date/Time of next meeting
+Proposed: Thu 7th September 2006, 11am BST (GMT+0100)
+
+
+
+2. Participants
+
+Participating: MS- (Michael), mhrd (Matt), c-ryan (Ryan)
+Also attending: G0SUB, tav
+
+
+
+3. Activity Reports
+
+Ryan:
+    DONE - Simple SMTP server
+           Local message delivery
+
+    TODO - Guaranteed mail delivery (even if it loses power)
+           DNS MX record retrieval for remote mail delivery
+           Memory efficiency of mail server - 'streaming' messages in and out of
+               TCP connections
+           SMTP client
+
+    BLOCKED - Away next week
+
+Michael:
+    DONE - 2/3 way through untangling deprecations (21 changes untangled so far)
+           Foo camp
+           Added in matt's deprecation framework
+           changed the deprecation levels
+
+    TODO - carry on and finish deprecations
+           detangle the axon visualiser
+           switch the axon visualiser for the topology visualiser in Compose
+
+    BLOCKED - Foo camp, travelling, stuck in chicago
+
+Matt:
+    DONE - Rewrote RawAudioMixer tests
+           documenting RawAudioMixer, Entuple, and other components
+           documenting and tidying pymedia components - making ready for main
+               codebase
+
+    BLOCKED - bbc managementy stuff
+
+    TODO - finish 'readying' pymedia components
+           reduce whiteboard audio latency
+           website/docs (see 4.1)
+           make more pymedia wrappers (video)
+           continue with DVB components
+           review/revisit experimental Timer component
+           Improve box destruction to handle when a box is still linked
+           review/merge sync boxes support for threaded component
+           experiment with pausing when waiting to deliver to a full inbox
+
+
+Both Michael and Matt commented that Ryan's simple mail server was very cool.
+Michael praised the "even if it loses power" robustness and suggested Ryan
+google for approaches to programming based around crashing as they were probably
+highly appropriate reading.
+
+Tav suggested looking at:
+http://blog.espnow.com/archive/2005/01/08/evolution-of-software-design/
+in relation to "crash first programming".
+
+
+
+4. Discussion items (max 3 or 4)
+
+4.1 A few website improvements
+
+Matt explained that he'd like to do a little tidying of the website before
+EuroOSCON. He felt it would be good if people find it easier to find out whats
+going on etc...
+
+Matt explained that what he had in mind was not major, and wouldn't happen all
+in one go. Specifically, he expressed the intention to:
+
+    * build/revise a "project admin" style page
+      bringing together a link to monthy/weekly reports, the fact that we have
+      an irc channel etc
+         * including moving: "/Website/t/reports/" to "/Website/reports"
+
+    * find an appropriate places to link in some dangling pages
+      eg. Documentation Guidelines etc
+
+    * freshen the axon documentation (slightly longer term)
+      Matt suspected that needs more careful thought
+
+Michael felt a project admin page would be a good idea and suggested it should
+be linked in the left sidebar. He pointed out that the filename for the sidebar
+matched the pattern "*sidebar*"
+
+Michael pointed out that the contacts/lists page already refers to the IRC
+channel.
+
+Matt explained that considering that Michael has expressed plans for improving
+auto generating kamaelia docs, that maye that can be re-used for Axon docs too.
+
+He also suggested that that would probably be a post EuroOSCON task.
+
+Ryan said he would "like to be able to modernise kamaelia website", commenting
+that "a lot of it is out of date". Michael asked him to be more specific.
+
+Michael commented that he was well aware that lots of pages were out of date,
+and pointed out that if someone identifies an issue, they should simply edit the
+content and sort it out.
+
+Matt suggested that he and c-ryan "trawl over it together, compare
+notes/thoughts, come up with a plan of action". Michael said this sounded
+sensible.
+
+Ryan commented that he felt that "most of it" needed improvement, but then
+listed some parts in particular:
+
+    * summer of code page
+    * news (last update was october 2005 for Kamaelia 0.3.0)
+
+Michael asked Ryan to suggest some parts he felt didn't need modifying. Ryan
+listed:
+
+    * project blog
+    * "project goals stuff"
+    * Mini axon tutorial
+
+Matt added to the list:
+    * Systems
+    * ToolsForTimeshifting
+    * Tools
+    * Macro related pages
+    * Kamaelia-0.*.0-ReleaseNotes.html
+
+Michael asked Ryan to update what he could.
+
+
+Michael pointed out that he does intend to update much of the website
+
+Matt suggested creating a screenshots page - "always good to give people
+something pretty to look at". Ryan and Michael agreed this was a good idea.
+
+Michael suggested using Thomas's code to tilt the images "30 degrees around the
+y axis" before putting them up on the website. He also suggested putting them
+in a frame and with a short description next to them.
+
+Michael said that he has wanted for a while to do that for Compose, Show and
+Whiteboard (as individual pages)
+
+Matt also suggested adding a 'stuff in the pipeline' style news page too - eg.
+mentioning c-ryan's mail server.
+
+Ryan inquired as to when the website would become wiki-ised. Michael said that
+he'd love to do this as soon as he can.
+
+Ryan explained that he felt the process for updating the website was a little
+tortuous - "changing the website involves editing a page in SVN, using some odd
+markup I don't really know then waiting for the server to be updated to use it"
+
+Compared to, for example, wikipedia, Ryan felt this was a slow arduous process.
+
+Michael explained the 'odd markup' was purely structural includes (eg. sidebars)
+and that the rest is HTML.
+
+Ryan also lamented the inability to get instant feedback (previews). He also
+didn't like to do stuff in case Michael didn't like it.
+
+Matt suggested creating a /testing/ subdirectory for the website, which could
+run a simultaneous copy (minus the bloggy stuff) ...
+
+Michael commented that running a second copy should be trivial.
+
+Matt also suggested having a special svn user for that area, so it can be used
+for instant testing and commits.
+
+Michael commented that the biggest problem is that the website is on sourceforge
+
+Ryan added that it "would be nice if you could have a community section for the
+website". Michael responded that he'd prefer the whole site to be community - he
+hates division.
+
+Michael pointed out that Ryan, and others, should make good use of the blog
+space, pointing out that anyone can create posts and comment there.
+
+Ryan lamented that there isn't info about any of his Google SoC work on the
+website. Michael responded that this is because Ryan hasn't put it there.
+
+Matt agreed it would be good to have pages documenting the bittorrent and
+systems work as soon as possible.
+
+
+
+5. Date/Time of next meeting
+Fri 8th September 2006, 11am BST (GMT+0100)
+
+Michael requested it be changed to Friday (was thursday 7th).
+
+Matt was happy with this. Ryan will not be around all week, so didn't care.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060831 ======

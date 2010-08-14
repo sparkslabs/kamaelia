@@ -1,0 +1,92 @@
+<html><body><table>
+            <tr><td>[06:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:22] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:51] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[08:53] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:53] &lt MS-&gt morning</td></tr>
+            <tr><td>[08:54] &lt Davbo&gt Morning MS-</td></tr>
+            <tr><td>[08:56] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:23] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:03] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:06] &lt MS-&gt hi</td></tr>
+            <tr><td>[10:55] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[11:48] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:01] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[12:14] *** ben017f has joined #kamaelia</td></tr>
+            <tr><td>[12:14] &lt ben017f&gt anyone about?</td></tr>
+            <tr><td>[12:14] &lt MS-&gt yep</td></tr>
+            <tr><td>[12:38] &lt ben017f&gt hi :-)</td></tr>
+            <tr><td>[12:38] &lt ben017f&gt i've just started building a simple queue service and ec2 based app and I'm using Kamaelia, can I ask a couple of questions about polling?</td></tr>
+            <tr><td>[12:51] &lt MS-&gt Sure, I'm personally a little vague at this moment, so you may get a delayed reaction.</td></tr>
+            <tr><td>[12:54] &lt ben017f&gt ok, no worries, i have six month old to look after - isn't concurrency great?!</td></tr>
+            <tr><td>[12:55] &lt ben017f&gt I need a way to not poll the SQS queue every time through the loop, i'd like to set a limit of polling for new messages every 5 or 10 seconds.</td></tr>
+            <tr><td>[12:56] &lt ben017f&gt I'm guessing the answer lies in the Ipc module, but google hasn't really helped me find someone who's done it before...</td></tr>
+            <tr><td>[12:59] &lt MS-&gt if rather than using a Axon.Component.component, you use an Axon.ThreadedComponent.threadedcomponent , then...</td></tr>
+            <tr><td>[12:59] &lt MS-&gt a) remove the yields from the main()</td></tr>
+            <tr><td>[12:59] &lt MS-&gt b) you can just put a time.sleep(5) in</td></tr>
+            <tr><td>[13:00] &lt MS-&gt FWIW, Lawouach has written something very similar to SQS in the past, so may be able to help but simply not here</td></tr>
+            <tr><td>[13:00] &lt MS-&gt If that time.sleep(5) seems to simplistic, it's kind of the point of threadedcomponent - to make it trivial to use blocking code</td></tr>
+            <tr><td>[13:01] &lt MS-&gt Alternatively you can make something that will send out a message every 5 seconds, and then have your polling code wait to recieve a message telling it to poll</td></tr>
+            <tr><td>[13:01] &lt MS-&gt That's actually probably the better / more general approach, but makes using your component potentially slightly harder</td></tr>
+            <tr><td>[13:02] &lt ben017f&gt so you don't the yeild statements in main then..?</td></tr>
+            <tr><td>[13:02] &lt ben017f&gt could you repeat the 2nd to last message? i didn't get it all..</td></tr>
+            <tr><td>[13:03] &lt MS-&gt sorry, I'll pastebin it</td></tr>
+            <tr><td>[13:04] &lt ben017f&gt it's ok, i got it now, something up with my KDE and X drivers, the screen didn't update!</td></tr>
+            <tr><td>[13:05] &lt MS-&gt http://pastebin.com/m48fca5fc</td></tr>
+            <tr><td>[13:06] &lt ben017f&gt the thing that will send a message every 5 secs sounds good, that would be a component too i assume? if i gave my SQSReciever class a child that sent a control message every x seconds would that work, or does pausing a component pause its children too?</td></tr>
+            <tr><td>[13:07] &lt MS-&gt self.pause()</td></tr>
+            <tr><td>[13:07] &lt MS-&gt yield 1</td></tr>
+            <tr><td>[13:07] &lt MS-&gt Will make just the current component pause</td></tr>
+            <tr><td>[13:08] &lt MS-&gt It pauses until a message is either taken from an outbox or delivered to an inbox</td></tr>
+            <tr><td>[13:08] &lt ben017f&gt ok, so a child component that send a message to the parent's inbox to tell it to poll every x seconds and a self.pause() in the parent's main method should work then..?</td></tr>
+            <tr><td>[13:09] &lt MS-&gt yep</td></tr>
+            <tr><td>[13:09] &lt MS-&gt just creating a pastebin example :)</td></tr>
+            <tr><td>[13:10] &lt ben017f&gt brilliant, thanks very much! I saw your pyconuk talk by the way, very nice :-)</td></tr>
+            <tr><td>[13:10] &lt ben017f&gt s/talk/talks/</td></tr>
+            <tr><td>[13:11] &lt Lawouach_&gt a fan :)</td></tr>
+            <tr><td>[13:11] &lt Lawouach_&gt at last!</td></tr>
+            <tr><td>[13:12] &lt MS-&gt ben017f: Untested: http://pastebin.com/m3f00a8dc</td></tr>
+            <tr><td>[13:12] &lt ben017f&gt how about the WaitComplete class is that an option?</td></tr>
+            <tr><td>[13:12] &lt MS-&gt ben017f: Very much appreciated</td></tr>
+            <tr><td>[13:12] &lt ben017f&gt cheers</td></tr>
+            <tr><td>[13:12] &lt MS-&gt ben017f: Yes, waitcomplete is a good option too</td></tr>
+            <tr><td>[13:12] &lt ben017f&gt thanks very much for your help :-)</td></tr>
+            <tr><td>[13:12] &lt MS-&gt you're welcome :)</td></tr>
+            <tr><td>[13:13] &lt MS-&gt Oh, didn't join those two things together did I ? :)</td></tr>
+            <tr><td>[13:13] &lt MS-&gt http://pastebin.com/m38121714</td></tr>
+            <tr><td>[13:14] &lt ben017f&gt what's the rationale in using PipeLine instead of self.link from the Poller?</td></tr>
+            <tr><td>[13:20] &lt MS-&gt ben017f: First thing I thought of really.</td></tr>
+            <tr><td>[13:20] &lt MS-&gt self.link is equally OK/valid</td></tr>
+            <tr><td>[13:20] &lt MS-&gt One thing which you do get by allowing the external thing to do the linkages though is that it can simplify testing</td></tr>
+            <tr><td>[13:22] &lt ben017f&gt ah ok, thanks, sorry for the delay, had some fairly persistent messages hitting my inbox from the little one!!</td></tr>
+            <tr><td>[13:22] &lt MS-&gt For example you can do this: http://pastebin.com/mb5c6dec</td></tr>
+            <tr><td>[13:22] &lt MS-&gt ie the backplane stuff is equivalent to the Pipeline</td></tr>
+            <tr><td>[13:22] &lt MS-&gt But...</td></tr>
+            <tr><td>[13:24] &lt MS-&gt That latter version also allows this: http://pastebin.com/m313fd51b</td></tr>
+            <tr><td>[13:24] &lt MS-&gt meaning you could force manual polling is as well</td></tr>
+            <tr><td>[13:25] &lt ben017f&gt wow, that's a good way to get my head spinning... this kind of thing really requires a paradigm shift doesn't it?!</td></tr>
+            <tr><td>[13:28] &lt MS-&gt You might say that. If I said that it'd sound like hype :)</td></tr>
+            <tr><td>[13:31] &lt ben017f&gt he he, well this should all help me learn erlang :-)</td></tr>
+            <tr><td>[13:36] &lt MS-&gt indeed - personally I don't feel a need to learn erlang :)</td></tr>
+            <tr><td>[13:37] &lt MS-&gt But then parts of kamaelia's concepts are based on occam (among other things) - which did low level concurrency in this kind of way a long time back</td></tr>
+            <tr><td>[13:38] &lt ben017f&gt well i am a fan, i've been aware of kamaelia for a while and I'm thrilled to finally have something to use it for!</td></tr>
+            <tr><td>[13:38] &lt MS-&gt :-)</td></tr>
+            <tr><td>[13:38] &lt MS-&gt cool</td></tr>
+            <tr><td>[13:39] &lt MS-&gt please let us know how you get on - many component actually end up being generally applicable & useful, and if it turns out your code is like that it'd be great to merge whatever you feel able to contribute back</td></tr>
+            <tr><td>[13:39] &lt MS-&gt If you don't, you don't :)</td></tr>
+            <tr><td>[13:39] &lt MS-&gt Still very interested either way :)</td></tr>
+            <tr><td>[13:46] &lt ben017f&gt ok, will do... thanks very much for a great library!</td></tr>
+            <tr><td>[15:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:40] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:24] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:46] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:50] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[17:39] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[17:39] *** GabeW has joined #kamaelia</td></tr>
+            <tr><td>[17:39] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[17:42] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:59] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[18:00] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:07] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:08] &lt Davbo&gt Evenin' all</td></tr>

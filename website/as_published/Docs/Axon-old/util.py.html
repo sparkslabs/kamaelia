@@ -1,0 +1,154 @@
+<html>
+<head>
+<title> Docs/Axon-old/util.py </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon-old/util.py">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt">Axon.</span><span style="font-size:24pt;font-weight:600">util.py</span></p>
+<p>Version: Axon 1.0</p>
+<p>Selection of utility functions and classes. (All highly trivial)</p>
+<p><span style="font-weight:600">TODO:</span> Fix test suite doc strings for auto testdocs</p>
+<p></p>
+<p><span style="font-size:14pt;font-weight:600">Pydoc Style Documentation</span></p>
+<p><span style="font-weight:600">CLASSES</span></p>
+<p>class Finality(exceptions.Exception)</p>
+<ul type="disc"><li>Used for implementing try...finally... inside a generator</li></ul>
+<p><span style="font-weight:600">FUNCTIONS</span></p>
+<p><span style="font-weight:600">axonRaise(someException, *args)</span></p>
+<p></p>
+<p><span style="font-weight:600">listSubset(requiredList, suppliedList)</span></p>
+<p></p>
+<p><span style="font-weight:600">logError(someException, *args)</span></p>
+<ul type="disc"><li>Currently does nothing but can be rewritten to log ignored errors if the production value is true.</li></ul>
+<p></p>
+<p><span style="font-weight:600">removeAll(xs, y)</span></p>
+<ul type="disc"><li>Very simplistic method of removing all occurances of y in list xs.</li></ul>
+<p></p>
+<p><span style="font-weight:600">safeList(arg=None)</span></p>
+<p></p>
+<p><span style="font-weight:600">testInterface(theComponent, interface)</span></p>
+<p>        Look for a minimal match interface for the component</p>
+<p></p>
+<p><span style="font-weight:600">DATA</span></p>
+<p>    production = False</p>
+<p></p>
+<p><span style="font-size:14pt;font-weight:600">Testdoc Documentation</span></p>
+<p><span style="font-weight:600">Finality</span></p>
+<ul type="disc"><li>dummy class deriving from Exception - used for implementing try...finally in a generator</li></ul>
+<p></p>
+<p><span style="font-weight:600">axonRaise</span></p>
+<ul type="disc"><li>behaviour depends on the value of production.  If true it will simply return False.  Otherwise it will throw an exception of the type passed to it with the other arguments passed to the constructor.</li></ul>
+<p><span style="font-weight:600">listSubset</span></p>
+<ul type="disc"><li>returns true if the first list argument is a subset of the second list argument</li></ul>
+<p><span style="font-weight:600">logError</span></p>
+<ul type="disc"><li>At the moment this function does nothing but can be rewritten to log ignored exception data.  Equally the test does nothing.</li></ul>
+<p><span style="font-weight:600">production</span></p>
+<ul type="disc"><li>Is a module value that turns off some exception to make the system tolerant of failure when running in production. For development and testing it should be False to allow uncaught exceptions to bring down the system.</li></ul>
+<p><span style="font-weight:600">removeAll - (xs:list,y)</span></p>
+<ul type="disc"><li>removes all occurances of y from the list xs.</li></ul>
+<p><span style="font-weight:600">safeList</span></p>
+<ul type="disc"><li>always returns a list even if the arg for constructing the list would normally cause a typeerror.</li></ul>
+<p><span style="font-weight:600">safeList</span></p>
+<ul type="disc"><li>Like list it returns an empty list when called without an argument.</li></ul>
+<p><span style="font-weight:600">safeList</span></p>
+<ul type="disc"><li>Returns an empty list if the argument would cause a TypeError if passed to list().  That is anything without an iterator method.</li></ul>
+<p><span style="font-weight:600">testInterface</span></p>
+<ul type="disc"><li>returns true for a _minimal match_ on the interface of the component</li>
+<li>In production mode failed tests will return false.  Otherwise they will throw an exception that is likely to stop the system.</li></ul>
+<p></p>
+<p>Michael, December 2004</p>
+<p></p>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,160 @@
+<html><body><table>
+            <tr><td>[02:20] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[04:01] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[04:46] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[07:21] *** tdobson has joined #kamaelia</td></tr>
+            <tr><td>[07:59] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:55] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:08] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[12:29] *** VanL has joined #kamaelia</td></tr>
+            <tr><td>[12:44] *** VanL has parted #kamaelia</td></tr>
+            <tr><td>[17:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:53] &lt Lawouach&gt hi</td></tr>
+            <tr><td>[18:04] *** VanL has joined #kamaelia</td></tr>
+            <tr><td>[18:06] &lt vmlemon_&gt Hi VanL</td></tr>
+            <tr><td>[18:06] &lt VanL&gt Hi</td></tr>
+            <tr><td>[18:06] &lt VanL&gt I am working on an IMAP server. Most times I need to buffer my input until I receive an entire line, but occasionally I need to buffer (size) bytes.</td></tr>
+            <tr><td>[18:06] &lt VanL&gt I wrote a BufferedReceiver (http://pastebin.com/m41eaf698) that changes its mode based on control messages</td></tr>
+            <tr><td>[18:07] &lt VanL&gt Any comments as to style? Is this the best way to do it? How would this be best wired up - just in a pipeline, and I can send signals to it from further down?</td></tr>
+            <tr><td>[18:12] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:12] &lt MS-&gt evening</td></tr>
+            <tr><td>[18:12] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[18:13] &lt VanL&gt Hi MS-</td></tr>
+            <tr><td>[18:13] &lt MS-&gt Hiya</td></tr>
+            <tr><td>[18:14] &lt VanL&gt MS-: I think I chatted with you a day or two ago about building an IMAP server in the style of the greylisting server. Is that right?</td></tr>
+            <tr><td>[18:14] *** MS- reading logs (& cleared pending messages on mailing list :) )</td></tr>
+            <tr><td>[18:14] *** MS- nods</td></tr>
+            <tr><td>[18:15] &lt VanL&gt oh, can you see the pastebin post above? (http://pastebin.com/m41eaf698). Either way, any comment?</td></tr>
+            <tr><td>[18:16] *** MS- taking a look :)</td></tr>
+            <tr><td>[18:16] &lt MS-&gt logs btw are here: http://www.kamaelia.org/logs/</td></tr>
+            <tr><td>[18:18] &lt MS-&gt Looking at it, there's somethings that I wouldn't do</td></tr>
+            <tr><td>[18:19] &lt MS-&gt this:</td></tr>
+            <tr><td>[18:19] &lt MS-&gt  while self.dataReady('control'):</td></tr>
+            <tr><td>[18:19] &lt MS-&gt  self.controlbuffer.append(self.recv('control'))</td></tr>
+            <tr><td>[18:19] &lt MS-&gt</td></tr>
+            <tr><td>[18:19] &lt MS-&gt  self.handle_control()</td></tr>
+            <tr><td>[18:19] &lt MS-&gt along with the code in handle_control()</td></tr>
+            <tr><td>[18:19] &lt MS-&gt is a little redundant</td></tr>
+            <tr><td>[18:19] &lt MS-&gt if you change:</td></tr>
+            <tr><td>[18:19] &lt MS-&gt for msg in self.controlbuffer:</td></tr>
+            <tr><td>[18:19] &lt MS-&gt to</td></tr>
+            <tr><td>[18:19] &lt MS-&gt for msg in self.Inbox("control"):</td></tr>
+            <tr><td>[18:20] &lt MS-&gt and get rid of:</td></tr>
+            <tr><td>[18:20] &lt MS-&gt  while self.dataReady('control'):</td></tr>
+            <tr><td>[18:20] &lt MS-&gt  self.controlbuffer.append(self.recv('control'))</td></tr>
+            <tr><td>[18:20] &lt MS-&gt</td></tr>
+            <tr><td>[18:20] &lt MS-&gt Then that will perform the same way</td></tr>
+            <tr><td>[18:21] &lt MS-&gt Also, I'd probably write handle_data non recursively.</td></tr>
+            <tr><td>[18:21] &lt MS-&gt These are largely stylistic things I must admit :)</td></tr>
+            <tr><td>[18:22] &lt VanL&gt Thats fine, I think idiomatic code is important</td></tr>
+            <tr><td>[18:23] &lt VanL&gt would you keep the separate handle_control/handle_data/handle_shutdown? Or put in in main?</td></tr>
+            <tr><td>[18:24] &lt MS-&gt SInce you're using custom control messages (eg BufferUntil) I would keep handle_control</td></tr>
+            <tr><td>[18:25] &lt MS-&gt I'd do the handle_shutdown() outside the loop as well</td></tr>
+            <tr><td>[18:26] &lt MS-&gt Ah, it has two modes of operation as well</td></tr>
+            <tr><td>[18:27] &lt MS-&gt I think these days, I'd actually write that as two different components</td></tr>
+            <tr><td>[18:27] &lt MS-&gt one for size delimiting and one for line delimiting</td></tr>
+            <tr><td>[18:27] &lt MS-&gt and then have it work slightly differently, but that's something which isn't idiomatic at present</td></tr>
+            <tr><td>[18:28] &lt VanL&gt I have that. My concern was with extra data</td></tr>
+            <tr><td>[18:28] &lt MS-&gt (just something I'd do, to see if it looked better)</td></tr>
+            <tr><td>[18:28] &lt VanL&gt This was my second try.</td></tr>
+            <tr><td>[18:28] *** MS- nods</td></tr>
+            <tr><td>[18:29] &lt VanL&gt if we had data pending in the buffer but then needed to switch modes, I would have to send the extra data over as initial_data to the new component</td></tr>
+            <tr><td>[18:29] &lt VanL&gt possible, but seemed... less ideal.</td></tr>
+            <tr><td>[18:29] &lt MS-&gt I see</td></tr>
+            <tr><td>[18:31] &lt MS-&gt My personal approach was to create a "getline" generator instead here:</td></tr>
+            <tr><td>[18:31] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Kamaelia/Kamaelia/Apps/Grey/MailHandler.py</td></tr>
+            <tr><td>[18:32] &lt MS-&gt The way that works is to use WaitComplete - which effectively tells the system "run this other function instead of main, and when it finishes come back here"</td></tr>
+            <tr><td>[18:33] &lt MS-&gt It's not as nice/composable as your component, but it can simplify code sometimes</td></tr>
+            <tr><td>[18:33] &lt VanL&gt My plan was actually to use it with WaitComplete</td></tr>
+            <tr><td>[18:33] &lt VanL&gt similarly to your code</td></tr>
+            <tr><td>[18:33] &lt MS-&gt That would be interesting to see</td></tr>
+            <tr><td>[18:34] &lt VanL&gt Updated here: http://pastebin.com/m7ff0223f</td></tr>
+            <tr><td>[18:36] &lt VanL&gt oops, actually http://pastebin.com/m421623f (moved handle_shutdown out of loop)</td></tr>
+            <tr><td>[18:38] &lt MS-&gt Ah the shutdown needs a little more as well</td></tr>
+            <tr><td>[18:39] &lt MS-&gt your component can shutdown and send "false" to the next component</td></tr>
+            <tr><td>[18:39] &lt VanL&gt I don't understand</td></tr>
+            <tr><td>[18:39] &lt MS-&gt Oh scratch that</td></tr>
+            <tr><td>[18:39] &lt MS-&gt sorry</td></tr>
+            <tr><td>[18:40] &lt MS-&gt missed the conditions for self.shutdown</td></tr>
+            <tr><td>[18:40] &lt MS-&gt if it's not set to an instance of either producerFinished, shutdownMicroprocess it doesn't get shutdown</td></tr>
+            <tr><td>[18:40] &lt MS-&gt which is fine</td></tr>
+            <tr><td>[18:41] &lt VanL&gt Are there any other shutdown conditions? Those were the only ones I saw when poking around various codebases</td></tr>
+            <tr><td>[18:41] &lt VanL&gt (any other standard shutdown conditions)</td></tr>
+            <tr><td>[18:41] &lt MS-&gt Those are the two most common</td></tr>
+            <tr><td>[18:41] &lt MS-&gt Over time it's become idiomatic for producerFInished() to mean</td></tr>
+            <tr><td>[18:42] &lt MS-&gt "I'm done, and I'm not going to send you any more data"</td></tr>
+            <tr><td>[18:42] &lt MS-&gt Which for many components means it's time for them to stop as well</td></tr>
+            <tr><td>[18:42] &lt VanL&gt That would make sense here</td></tr>
+            <tr><td>[18:42] &lt MS-&gt Whereas shutdownMicroprocess means "Shutdown ASAP"</td></tr>
+            <tr><td>[18:43] &lt VanL&gt Regarding WaitComplete - isn't an Axon component also a generator? The way IMAP works is that I receive a message crom the client saying "Expect X number of octets"; the server says, "ok to send X number of octets"; and then wait until I have received that many bytes.</td></tr>
+            <tr><td>[18:44] &lt VanL&gt My thought was that if I needed to do that, I could send the control message (BufferUntil(size)); and then WaitComplete on self.Inbox('inbox')</td></tr>
+            <tr><td>[18:46] &lt MS-&gt You could do that - I can see why you'd want to as well</td></tr>
+            <tr><td>[18:47] &lt MS-&gt An Axon component isn't just a generator really. The vast majority are implemented using generators, but I wouldn't say that an Axon component is also a generator</td></tr>
+            <tr><td>[18:50] &lt MS-&gt fwiw, it looks like the right sort of approach overall - especially given the fact you have to mode switch</td></tr>
+            <tr><td>[18:50] &lt MS-&gt The proof of the pudding is in the doing of course :)</td></tr>
+            <tr><td>[18:51] &lt VanL&gt Well, thats true. I appreciate your input and time.</td></tr>
+            <tr><td>[18:51] &lt VanL&gt Hmm, while I am at it, is there a good way to test these at the prompt?</td></tr>
+            <tr><td>[18:52] &lt VanL&gt I have been wiring up little echo servers</td></tr>
+            <tr><td>[18:53] &lt MS-&gt I tend to use a small pipeline or graphline and then either connect a file reader or a another component as a source (ala "cat" on unix)</td></tr>
+            <tr><td>[18:53] &lt MS-&gt and then dump the output through a ConsoleEchoer</td></tr>
+            <tr><td>[18:54] &lt MS-&gt eg http://www.kamaelia.org/Components/pydoc/Kamaelia.Util.DataSource.html</td></tr>
+            <tr><td>[18:54] &lt MS-&gt You can also use "Handle" from a python prompt, thinking about it</td></tr>
+            <tr><td>[18:55] &lt MS-&gt http://www.kamaelia.org/AxonHandle</td></tr>
+            <tr><td>[18:55] &lt MS-&gt doing:</td></tr>
+            <tr><td>[18:55] &lt MS-&gt from Axon.background import background</td></tr>
+            <tr><td>[18:55] &lt MS-&gt background().start()</td></tr>
+            <tr><td>[18:55] &lt MS-&gt starts a scheduler in the background</td></tr>
+            <tr><td>[18:56] &lt MS-&gt which means that works happily inside a python console</td></tr>
+            <tr><td>[20:14] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:24] &lt VanL&gt MS-: FWIW, here is the little interact() snippet that I worked up based on Handle: http://pastebin.com/f1ecb5052</td></tr>
+            <tr><td>[20:25] &lt VanL&gt Thanks for the tip</td></tr>
+            <tr><td>[20:26] &lt mhrd-home&gt VanL: hi, reading scrollback :-)</td></tr>
+            <tr><td>[20:26] &lt mhrd-home&gt MS-: hi :-)</td></tr>
+            <tr><td>[20:28] &lt VanL&gt mhrd-home: Thanks for the help yesterday. Here is my final BufferedReceiver: http://pastebin.com/f16cb0117. Inspired by yours, but with the changes I needed for IMAP.</td></tr>
+            <tr><td>[20:29] &lt mhrd-home&gt hi VanL: it was a pleasure</td></tr>
+            <tr><td>[20:29] &lt mhrd-home&gt Stylistically, looks pretty good for a 1st/2nd attempt - has shutdown handling in it which always makes me happy :-)</td></tr>
+            <tr><td>[20:32] &lt mhrd-home&gt looking at what you're trying to do (switch chunking/splitting mode dynamically), and assuming I understand correctly ...</td></tr>
+            <tr><td>[20:33] &lt mhrd-home&gt the current design might suffer from a problem where you can't control the precise point at which it switches mode ...</td></tr>
+            <tr><td>[20:33] &lt mhrd-home&gt because the BufferedReceiver component could well be several lines/n-byte-chunks ahead of the next component in the pipeline which is parsing the messages and making the mode switching decisions?</td></tr>
+            <tr><td>[20:34] &lt VanL&gt I thought about that, but I wasn't sure I could fix it. I can receive stuff at any time.</td></tr>
+            <tr><td>[20:35] &lt VanL&gt Thats part of why I have the mode as a list</td></tr>
+            <tr><td>[20:35] &lt mhrd-home&gt aah, didn't spot that</td></tr>
+            <tr><td>[20:35] *** mhrd-home looks</td></tr>
+            <tr><td>[20:35] &lt VanL&gt so if I only want one message received the different way, I can send two successive BufferUntil messages</td></tr>
+            <tr><td>[20:35] *** vmlemon_ is really hating C++ right now</td></tr>
+            <tr><td>[20:36] &lt mhrd-home&gt the BufferUntil message gets sent to the "inbox" inbox?</td></tr>
+            <tr><td>[20:36] *** mhrd-home sympathises with vmlemon_</td></tr>
+            <tr><td>[20:36] &lt VanL&gt no, it gets sent to 'control'</td></tr>
+            <tr><td>[20:37] &lt vmlemon_&gt I've been trying to compile a stupid header file based on some code that I found, and there's a load of types that are used, but are undefined, and I have no idea what they're supposed to be</td></tr>
+            <tr><td>[20:37] *** VanL feels vmlemon_'s pain</td></tr>
+            <tr><td>[20:38] &lt mhrd-home&gt VanL: ah, ok, I see</td></tr>
+            <tr><td>[20:39] &lt VanL&gt see update_mode</td></tr>
+            <tr><td>[20:39] &lt mhrd-home&gt MS 's "getline generator" approach avoids the issue</td></tr>
+            <tr><td>[20:39] &lt mhrd-home&gt another option you can take is a similar kind of approach (albeit a bit less concise) whilst keeping it as a separate component ...</td></tr>
+            <tr><td>[20:41] &lt mhrd-home&gt eg. you can build a component with an additional inbox. whenever you want another chunk of data, you send a kind of "next-please" message to that additional inbox</td></tr>
+            <tr><td>[20:41] &lt mhrd-home&gt this component is a little like that: http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Kamaelia/Kamaelia/Util/PromptedTurnstile.py</td></tr>
+            <tr><td>[20:42] &lt mhrd-home&gt so for your case you could have two kinds of "next-please" message - one is a number of bytes, the other is a delimiter</td></tr>
+            <tr><td>[20:43] &lt VanL&gt I see</td></tr>
+            <tr><td>[20:44] &lt VanL&gt I considered this sort of design as well - although this is better than what I was thinking. My concern was that normally, we didn't want to have to say "Next!" for every single command</td></tr>
+            <tr><td>[20:44] &lt mhrd-home&gt it is alot more verbose</td></tr>
+            <tr><td>[20:44] &lt VanL&gt Although in practice, it probably wouldn't be a big deal, just hidden in a function I guess</td></tr>
+            <tr><td>[20:45] &lt mhrd-home&gt you can use the WaitComplete approach to hide that "next-please, then wait for response" process</td></tr>
+            <tr><td>[20:46] &lt mhrd-home&gt I reckon the thing is to try it and see if your component does the job. if it does then there's no need to change anything</td></tr>
+            <tr><td>[20:49] &lt VanL&gt Yes, true.</td></tr>
+            <tr><td>[20:49] &lt VanL&gt Now, however, unfortunately back to less interesting billable work :(</td></tr>
+            <tr><td>[20:50] &lt VanL&gt bye everyone</td></tr>
+            <tr><td>[20:51] &lt mhrd-home&gt another component, I've just remembered, that contains something close to what you need is the WAV codec implementation I did a while ago ...</td></tr>
+            <tr><td>[20:51] &lt mhrd-home&gt http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Kamaelia/Kamaelia/Codec/WAV.py</td></tr>
+            <tr><td>[20:52] &lt mhrd-home&gt it is done in a style similar to MS- 's getline() approach - with generators called readBytes() and readLine()</td></tr>
+            <tr><td>[20:52] &lt mhrd-home&gt however 1) it is more complicated that you need it to be, since I was experimenting with making it intelligently cope with outboxes which could overflow (due to a finite size limit being imposed onthem)</td></tr>
+            <tr><td>[20:53] &lt VanL&gt ooh, very nice</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt 2) iirc WaitComplete() was broken at that time (at least that is my excuse!) so I used "for _ in self.readBytes(n): yield _"</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt which kinda achieves the same effect</td></tr>
+            <tr><td>[20:54] &lt mhrd-home&gt hmm, I can't see why I left the readLine() generator in there - it doesn't appear to be used(!)</td></tr>
+            <tr><td>[20:54] &lt mhrd-home&gt ah well</td></tr>
+            <tr><td>[20:55] &lt VanL&gt still, this is worth knowing about, especially if my component doesn't work like I hope it will</td></tr>
+            <tr><td>[20:56] &lt VanL&gt ok, now really going. Thanks, mhrd-home</td></tr>
+            <tr><td>[20:56] *** VanL has parted #kamaelia</td></tr>
+            <tr><td>[20:57] &lt mhrd-home&gt np</td></tr>
+            <tr><td>[22:55] *** mhrd-home has parted #kamaelia</td></tr>

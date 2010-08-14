@@ -1,0 +1,8 @@
+@media screen, print, handheld {
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+
+}

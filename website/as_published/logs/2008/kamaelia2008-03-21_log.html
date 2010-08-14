@@ -1,0 +1,471 @@
+<html><body><table>
+            <tr><td>[00:01] &lt Davbo&gt Hello, didn't go to the pub quiz in the end</td></tr>
+            <tr><td>[00:04] &lt Davbo&gt girlfriend didn't want to go, so we played Smash Bros. Brawl lol</td></tr>
+            <tr><td>[00:08] &lt vmlemon_&gt Yay for crap sounding "320 kbps" MP3s converted from 120 kbps MP3s to 64 kbps WMAs and then converted to artificially high bitrate MP37</td></tr>
+            <tr><td>[00:08] &lt vmlemon_&gt *MP3s</td></tr>
+            <tr><td>[00:11] &lt vmlemon_&gt Naturally, the files started life on Gnutella...</td></tr>
+            <tr><td>[00:12] &lt Davbo&gt hmm Gnutella? that a p2p network?</td></tr>
+            <tr><td>[00:13] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[00:14] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[00:16] &lt vmlemon__&gt Damn phone battery (running a Java-based IRC client on GPRS saps it fast)</td></tr>
+            <tr><td>[00:18] &lt vmlemon__&gt Only 23p left, thanks to Orange's cheap-looking extortionate data costs (Penny/KB)</td></tr>
+            <tr><td>[00:19] &lt Davbo&gt lol ouch</td></tr>
+            <tr><td>[00:20] &lt vmlemon__&gt Give me 3 again, any day :(</td></tr>
+            <tr><td>[00:21] &lt vmlemon__&gt (the UMTS network, that is)</td></tr>
+            <tr><td>[00:24] &lt vmlemon__&gt Orange - The First Hit's Nearly Free!</td></tr>
+            <tr><td>[00:25] &lt vmlemon__&gt I bet Vodafone are pricier</td></tr>
+            <tr><td>[00:30] &lt Davbo&gt Yeah i think Vodafone has a terrible data plan</td></tr>
+            <tr><td>[00:33] &lt vmlemon__&gt I once used T-Mobile back when they were One2One, and can still remember the giant green Nortel brick that they provided</td></tr>
+            <tr><td>[00:35] &lt vmlemon__&gt Took full size SIM cards with a slot in the bottom, and had no SMS feature</td></tr>
+            <tr><td>[00:38] &lt vmlemon__&gt The GSM EMR speech codec was touted as the best thing since sliced bread then, too (Circa 1996/1998)</td></tr>
+            <tr><td>[00:40] &lt vmlemon__&gt Although it sounds awful to me now, probably since I'm used to UMTS</td></tr>
+            <tr><td>[01:17] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[01:53] &lt Davbo&gt am i okay to just edit the wiki</td></tr>
+            <tr><td>[01:53] &lt Davbo&gt well i have anyway made http://kamaelia.sourceforge.net/SummerOfCode point people to 2008 and not 2007</td></tr>
+            <tr><td>[01:53] &lt Davbo&gt lol</td></tr>
+            <tr><td>[08:21] *** imsameer_in has joined #kamaelia</td></tr>
+            <tr><td>[08:23] &lt imsameer_in&gt um does anyone here has some idea what a project proposal for kamaelia look like</td></tr>
+            <tr><td>[08:23] &lt imsameer_in&gt ?</td></tr>
+            <tr><td>[08:23] &lt imsameer_in&gt i mean for the GSoC 2008 projects</td></tr>
+            <tr><td>[10:21] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:31] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[12:31] &lt MS-&gt hm, I should get kamaeliabot to respond to simple queries</td></tr>
+            <tr><td>[12:41] *** MS- notes Davbo updated the GSOC page - appreciated</td></tr>
+            <tr><td>[13:02] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[13:11] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:17] &lt vmlemon__&gt Anyone familiar with Linux network bridging?</td></tr>
+            <tr><td>[13:26] &lt Davbo&gt My experiences with Linux networking has all been hocus pocus as far as i'm concerned</td></tr>
+            <tr><td>[13:26] &lt Davbo&gt mostly due to poor driver support and a bad choice of network cards though</td></tr>
+            <tr><td>[13:28] &lt Davbo&gt non-brand oem wireless cards ftw.</td></tr>
+            <tr><td>[13:32] &lt vmlemon__&gt I can bridge my Ethernet and WLAN interfaces, and get a wireless device to obtain an IP address from the Ethernet-connected router, but I can't ping the damn router directly from the Ethernet interface</td></tr>
+            <tr><td>[13:34] &lt Davbo&gt you sure the router can "see" the device - I know you say it's getting an ip but just as troubleshooting?</td></tr>
+            <tr><td>[13:36] &lt Davbo&gt I guess the wlan can't ping the router?</td></tr>
+            <tr><td>[13:36] &lt MS-&gt vmlemon__: really?</td></tr>
+            <tr><td>[13:37] &lt MS-&gt odd</td></tr>
+            <tr><td>[13:37] &lt MS-&gt Oh, you mean you have a single device (laptop for eg) which 2 NICs</td></tr>
+            <tr><td>[13:37] &lt MS-&gt both of which are connected to the same router</td></tr>
+            <tr><td>[13:37] &lt MS-&gt one by wireless, one wired?</td></tr>
+            <tr><td>[13:38] &lt Davbo&gt oh is that what he has?</td></tr>
+            <tr><td>[13:38] &lt MS-&gt In which case, yes, only one of them will be picked normally</td></tr>
+            <tr><td>[13:38] &lt MS-&gt Davbo: that's what it sounds like, bicbw</td></tr>
+            <tr><td>[13:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:38] &lt Davbo&gt i thought there was a bridge from a laptop or something to a pc which was wired to the router</td></tr>
+            <tr><td>[13:39] &lt MS-&gt vmlemon_: cf http://yeoldeclue.com/logs/kamaelia2008-03-21_log.html</td></tr>
+            <tr><td>[13:39] &lt MS-&gt in case you missed it</td></tr>
+            <tr><td>[13:39] &lt vmlemon_&gt The laptop is the bridge</td></tr>
+            <tr><td>[13:39] &lt vmlemon_&gt Argh, ran out of credit at the wrong moment</td></tr>
+            <tr><td>[13:39] &lt MS-&gt router ----&gt e0 laptop e1 -----&gt other thing</td></tr>
+            <tr><td>[13:39] &lt Davbo&gt i see!</td></tr>
+            <tr><td>[13:40] &lt MS-&gt laptop will only ping router from e1 or e0</td></tr>
+            <tr><td>[13:40] &lt Davbo&gt i had a similar problem before (which was what i was trying to troubleshoot there - but mine never resolved due to driver issues)</td></tr>
+            <tr><td>[13:40] &lt MS-&gt even if other thing can ping by using other-thing as a gateway</td></tr>
+            <tr><td>[13:40] &lt MS-&gt laptop needs to have forwarding switched on</td></tr>
+            <tr><td>[13:43] &lt vmlemon_&gt Router (on eth0) -&gt Bridge (ibr0) &lt -&gt WLAN (ath1) &lt - NDS</td></tr>
+            <tr><td>[13:43] &lt MS-&gt updated http://kamaelia.sourceforge.net/SummerOfCode - thanks for prompting by updating the link Davbo</td></tr>
+            <tr><td>[13:43] &lt MS-&gt NDS ?</td></tr>
+            <tr><td>[13:43] &lt vmlemon_&gt a Nintendo DS</td></tr>
+            <tr><td>[13:44] &lt MS-&gt do you mean</td></tr>
+            <tr><td>[13:44] &lt MS-&gt router eth0) ------------------( ibr0 BRIDGE ath1 )-------------------NDS</td></tr>
+            <tr><td>[13:44] &lt MS-&gt ?</td></tr>
+            <tr><td>[13:44] &lt MS-&gt where ( ....) is a both with NICs inside</td></tr>
+            <tr><td>[13:44] &lt vmlemon_&gt Which can ping the router and get an address</td></tr>
+            <tr><td>[13:44] &lt MS-&gt is a box rather</td></tr>
+            <tr><td>[13:45] &lt MS-&gt I would expect only ibr0 to be able to ping the router</td></tr>
+            <tr><td>[13:45] &lt MS-&gt if my diagram is right</td></tr>
+            <tr><td>[13:48] &lt vmlemon_&gt The laptop contains the ath1 interface, which is bridged to ibr0 with brctl, and the router is connected the ethernet port on the laptop</td></tr>
+            <tr><td>[13:49] &lt vmlemon_&gt * to the</td></tr>
+            <tr><td>[13:50] &lt MS-&gt Personally, I would have NAT'd the NDS, which makes life really simple :)</td></tr>
+            <tr><td>[13:50] &lt Davbo&gt no problem MS-</td></tr>
+            <tr><td>[13:51] &lt vmlemon_&gt ath1 has no IP address, eth0 has DHCP assigned 192.168.1.3</td></tr>
+            <tr><td>[13:51] &lt MS-&gt Davbo: What do you think of the updated page ? (asking since you're a fresh set of eyes :)</td></tr>
+            <tr><td>[13:51] &lt MS-&gt )</td></tr>
+            <tr><td>[13:51] &lt MS-&gt vmlemon_: Ah, I see</td></tr>
+            <tr><td>[13:52] &lt vmlemon_&gt The router has no wireless radio, which would have made it easier</td></tr>
+            <tr><td>[13:52] &lt MS-&gt So you're saying that ibr0 is a wired ethernet device and can't ping the router ?</td></tr>
+            <tr><td>[13:52] &lt MS-&gt I would agree that's most odd</td></tr>
+            <tr><td>[13:52] &lt MS-&gt Have you tried putting a device based route in?</td></tr>
+            <tr><td>[13:52] &lt MS-&gt route add -net default dev ibr0 (or similar) ?</td></tr>
+            <tr><td>[13:53] &lt MS-&gt And see if that changes things?</td></tr>
+            <tr><td>[13:53] &lt Davbo&gt the "Students we're looking for" section makes me feel a lot better about applying!</td></tr>
+            <tr><td>[13:53] &lt vmlemon_&gt Still, it is only an experiment</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt you could always try the proprietary nintendo wireless dongle if you get stuck vmlemon_</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt not sure if that has support on linux though</td></tr>
+            <tr><td>[13:56] &lt vmlemon_&gt eth0 can't ping it whilst bonded to ibr0, and ibr0 can't ping it either</td></tr>
+            <tr><td>[13:58] &lt MS-&gt Davbo: Cool :)</td></tr>
+            <tr><td>[13:58] &lt vmlemon_&gt Probably a gateway or route problem, although the route utility is a pain to use, and doesn't let you switch routes easilly</td></tr>
+            <tr><td>[13:59] &lt vmlemon_&gt MS-, I'll try that later</td></tr>
+            <tr><td>[14:01] &lt vmlemon_&gt Looks like when it semi-works, the Nintendo steals the laptop's IP address for some reason</td></tr>
+            <tr><td>[14:01] &lt MS-&gt route del -net ....</td></tr>
+            <tr><td>[14:01] &lt MS-&gt route add -net ...</td></tr>
+            <tr><td>[14:02] &lt MS-&gt you put your left route in, your left route out...</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt Do you have no shame MS- ;)</td></tr>
+            <tr><td>[14:05] &lt vmlemon_&gt If I had proper 'net access here, I'd provide some dump files of what it's doing</td></tr>
+            <tr><td>[14:07] &lt MS-&gt Davbo: Not particularly no</td></tr>
+            <tr><td>[14:07] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:08] &lt vmlemon_&gt Thanks, though</td></tr>
+            <tr><td>[14:08] &lt MS-&gt I suspect that if you look at packet traces that the DHCP requests form the nintendo</td></tr>
+            <tr><td>[14:09] &lt MS-&gt are having their mac addresses changed on the way to the router causing confusion</td></tr>
+            <tr><td>[14:09] &lt MS-&gt rather than acting transparently</td></tr>
+            <tr><td>[14:09] &lt MS-&gt that could account for the odd behaviour</td></tr>
+            <tr><td>[14:10] &lt vmlemon_&gt I did try manually chosen IPs, but it created some weird conflicts with the router's ARP table</td></tr>
+            <tr><td>[14:11] &lt vmlemon_&gt Since both the router and the laptop managed to get 192.168.1.1</td></tr>
+            <tr><td>[14:14] &lt MS-&gt That could be confusing</td></tr>
+            <tr><td>[14:19] &lt vmlemon_&gt Wireshark reckons "Ethernet II, Src: Sapporo.local (00:16:e3:19:27:15) , Dst: Sapporo.local (00:16:e3:19:27:17)"</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt Given by the relationships it implied from other packets</td></tr>
+            <tr><td>[14:23] &lt vmlemon_&gt The Nintendo's MAC is constantly stable, it seems</td></tr>
+            <tr><td>[14:52] *** imsameer_in has joined #kamaelia</td></tr>
+            <tr><td>[14:57] *** MS- changed the topic to Updated GSOC Landing page: http://kamaelia.sourceforge.net/SummerOfCode | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/)| Multicore Kamaelia : http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1205626569</td></tr>
+            <tr><td>[14:58] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[15:02] &lt imsameer_in&gt hello</td></tr>
+            <tr><td>[15:02] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:02] &lt imsameer_in&gt um i am new to kamaelia</td></tr>
+            <tr><td>[15:03] &lt imsameer_in&gt i started working on it a few weeks back</td></tr>
+            <tr><td>[15:03] &lt MS-&gt Hi</td></tr>
+            <tr><td>[15:03] &lt imsameer_in&gt i was wondering if i could get an idea what would a GSoC app. for kamaelia look like</td></tr>
+            <tr><td>[15:04] &lt MS-&gt we've got a template - here...</td></tr>
+            <tr><td>[15:04] &lt MS-&gt http://kamaelia.sourceforge.net/SummerOfCode2006Template</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Also, since you last asked last night, I've updated the GSOC landing page: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[15:05] &lt imsameer_in&gt thnx</td></tr>
+            <tr><td>[15:05] &lt MS-&gt you're welcome</td></tr>
+            <tr><td>[15:06] &lt MS-&gt The more questions you ask, the better your app will be (applies to most orgs). Best q's refer to "where can I read up on" though :)</td></tr>
+            <tr><td>[15:07] &lt MS-&gt What are you interests?</td></tr>
+            <tr><td>[15:07] &lt MS-&gt (in terms of the sort of thing you'd like to do?)</td></tr>
+            <tr><td>[15:07] &lt imsameer_in&gt um i am particularly bent on two ideas</td></tr>
+            <tr><td>[15:07] &lt imsameer_in&gt one kinda my own , other on the</td></tr>
+            <tr><td>[15:08] &lt imsameer_in&gt project list on kamaelia GSoC page</td></tr>
+            <tr><td>[15:08] &lt MS-&gt cool</td></tr>
+            <tr><td>[15:08] &lt imsameer_in&gt i was thinking in terms of massively multilayer games</td></tr>
+            <tr><td>[15:10] &lt imsameer_in&gt that sort of things require lots of concurrent processing on the server side</td></tr>
+            <tr><td>[15:10] &lt MS-&gt indeed</td></tr>
+            <tr><td>[15:11] &lt MS-&gt However a distributed one could be even cooler :)</td></tr>
+            <tr><td>[15:11] &lt MS-&gt (but carry on with your ideas :) )</td></tr>
+            <tr><td>[15:11] &lt imsameer_in&gt last year during a techfest at a college i saw the people organising a Mars Exploring Competition</td></tr>
+            <tr><td>[15:12] &lt imsameer_in&gt in which the participants had to write codes to create self controlling bots</td></tr>
+            <tr><td>[15:12] &lt MS-&gt go on</td></tr>
+            <tr><td>[15:13] &lt imsameer_in&gt 100 copies of the code were ran on the server</td></tr>
+            <tr><td>[15:13] &lt imsameer_in&gt for each participant</td></tr>
+            <tr><td>[15:14] &lt imsameer_in&gt and the bot group which covered max area at the end of time won</td></tr>
+            <tr><td>[15:14] &lt MS-&gt sounds fun :)</td></tr>
+            <tr><td>[15:14] &lt imsameer_in&gt of courese all this had lots of constraints on the bot side as well as the terrain was concerned</td></tr>
+            <tr><td>[15:15] &lt imsameer_in&gt to make it more difficult to work out</td></tr>
+            <tr><td>[15:15] &lt imsameer_in&gt so waht i had in my mind ws if i could create a similar system in which players accross the globe</td></tr>
+            <tr><td>[15:17] &lt imsameer_in&gt could control there bots and managed how they moved then i could take a step towards</td></tr>
+            <tr><td>[15:18] &lt imsameer_in&gt creting a strategy game in line with games as WoW and AOE</td></tr>
+            <tr><td>[15:19] &lt imsameer_in&gt i have liitle idea on how to about it , but im still working</td></tr>
+            <tr><td>[15:19] &lt imsameer_in&gt *go</td></tr>
+            <tr><td>[15:20] &lt MS-&gt OK</td></tr>
+            <tr><td>[15:20] &lt imsameer_in&gt i have a fairpicture of what im talking about</td></tr>
+            <tr><td>[15:21] &lt MS-&gt That's actually the most important thing in an application, since if you don't have that you can't break it down</td></tr>
+            <tr><td>[15:22] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:23] &lt imsameer_in&gt i can figure how the components would look like , what i'm finding a little tough</td></tr>
+            <tr><td>[15:23] &lt imsameer_in&gt is how to integrate all that im saying in to kamaelia</td></tr>
+            <tr><td>[15:24] &lt imsameer_in&gt since i've only started on kamaelia</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Have you done the MiniAxon tutorial?</td></tr>
+            <tr><td>[15:24] &lt imsameer_in&gt i already completed the miniaxon tutorial that gives me a fair idea behind</td></tr>
+            <tr><td>[15:24] &lt MS-&gt k</td></tr>
+            <tr><td>[15:25] &lt MS-&gt My suggestion would be to write up a description of what you've already thought of and post it up on a webpage that we can see.</td></tr>
+            <tr><td>[15:25] &lt MS-&gt in terms of your main components etc</td></tr>
+            <tr><td>[15:25] &lt MS-&gt it's much easier to talk about things that way</td></tr>
+            <tr><td>[15:25] &lt MS-&gt since we get down to brass tacks (this & that) rather than vague ideas ("like this", "like that") :)</td></tr>
+            <tr><td>[15:25] &lt imsameer_in&gt ok i guess so</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt interesting project imsameer_in! i'd highly recommend you take a look at the things in the cookbook particularly the Graphlines and Pipelines they'll help you think how you're going to construct something like that using Kamaelia</td></tr>
+            <tr><td>[15:35] &lt imsameer_in&gt thnx Davbo , i'm putting all my time on this</td></tr>
+            <tr><td>[15:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:40] &lt Davbo&gt :)</td></tr>
+            <tr><td>[15:42] &lt MS-&gt imsameer_in: Just a suggestion - don't put all your eggs in one basket :)</td></tr>
+            <tr><td>[15:43] &lt MS-&gt Every org gets around 10 times as many applications as they have spaces (or so)</td></tr>
+            <tr><td>[15:43] &lt MS-&gt But most students have a 50:50 chance of getting in to work on a project</td></tr>
+            <tr><td>[15:43] &lt MS-&gt (overall)</td></tr>
+            <tr><td>[15:43] &lt MS-&gt ie about twice as many students applied last year as places for GSOC overall</td></tr>
+            <tr><td>[15:44] &lt MS-&gt Which is pretty good odds really.</td></tr>
+            <tr><td>[15:44] &lt MS-&gt (better than the employment market IMO :) )</td></tr>
+            <tr><td>[15:44] &lt imsameer_in&gt ha</td></tr>
+            <tr><td>[15:44] &lt imsameer_in&gt :-)</td></tr>
+            <tr><td>[15:44] &lt vmlemon_&gt Buy a few plastic ones, and some wicker ones ;)</td></tr>
+            <tr><td>[15:44] &lt MS-&gt heh</td></tr>
+            <tr><td>[15:45] &lt vmlemon_&gt Some for chocolate eggs, and some for hen eggs</td></tr>
+            <tr><td>[15:46] &lt imsameer_in&gt more the eggs bigger the omlette</td></tr>
+            <tr><td>[15:47] &lt imsameer_in&gt also i was thinking about the Kamaelia support for Dirac</td></tr>
+            <tr><td>[15:48] &lt MS-&gt imsameer_in: You mean the schroedinger implementation you mean?</td></tr>
+            <tr><td>[15:48] &lt imsameer_in&gt exactly Yea</td></tr>
+            <tr><td>[15:49] &lt imsameer_in&gt i visited schroendinger page on sourceforge</td></tr>
+            <tr><td>[15:49] &lt imsameer_in&gt also</td></tr>
+            <tr><td>[15:49] &lt vmlemon_&gt Hmm, how well does Kamaelia cope with Japanese/other Unicode text?</td></tr>
+            <tr><td>[15:53] &lt imsameer_in&gt well for one thing schroedinger page really emphasizes on</td></tr>
+            <tr><td>[15:53] &lt imsameer_in&gt getting it up on all the more applications as son as possible</td></tr>
+            <tr><td>[15:55] &lt vmlemon_&gt I wonder if they'll make a RealPlayer/Helix Player plug-in for it</td></tr>
+            <tr><td>[15:55] &lt imsameer_in&gt again i'm not sure wht particularly its there to do since i havent worked on the components for dirac support on kamaelia</td></tr>
+            <tr><td>[15:56] &lt imsameer_in&gt but i'm really interested</td></tr>
+            <tr><td>[15:56] *** MS- goes afk. will read logs :)</td></tr>
+            <tr><td>[15:56] &lt imsameer_in&gt so it would be a few days untill i make a proposition</td></tr>
+            <tr><td>[15:56] &lt MS-&gt cya</td></tr>
+            <tr><td>[15:56] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[15:57] &lt imsameer_in&gt no i dont think they would mind if they wanted</td></tr>
+            <tr><td>[16:00] &lt Davbo&gt imsameer_in, this component is the current support for Dirac</td></tr>
+            <tr><td>[16:00] &lt Davbo&gt &lt imsameer_in&gt again i'm not sure wht particularly its there to do since i havent worked on the components for dirac support on kamaelia</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt oops</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Codec.Dirac.html</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt there :)</td></tr>
+            <tr><td>[16:01] &lt imsameer_in&gt cool</td></tr>
+            <tr><td>[16:02] &lt vmlemon_&gt Bleugh, the cat just stuck it's paw in my mouth</td></tr>
+            <tr><td>[16:02] &lt Davbo&gt that's where you find the current Kamaelia codec for Dirac. As far as i understand the project involves extending this to the recent Schrodinger project</td></tr>
+            <tr><td>[16:02] &lt Davbo&gt which can be found : http://sourceforge.net/projects/schrodinger</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt lol</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt Get a drink vmlemon_ :p</td></tr>
+            <tr><td>[16:03] &lt vmlemon_&gt Mmm floor muck, tasty</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt Good luck with your project proposals imsameer_in :)</td></tr>
+            <tr><td>[16:04] &lt imsameer_in&gt thanks</td></tr>
+            <tr><td>[16:04] &lt imsameer_in&gt :)</td></tr>
+            <tr><td>[16:06] *** vmlemon_ uploaded the photo of the brokenpram hanging on the station to Flickr...</td></tr>
+            <tr><td>[16:07] &lt vmlemon_&gt I was bored when I took it</td></tr>
+            <tr><td>[16:10] &lt Davbo&gt can i get a link vmlemon_</td></tr>
+            <tr><td>[16:12] &lt vmlemon_&gt I can't get to the URL from my phone, but my username is vmlemon on it</td></tr>
+            <tr><td>[16:15] &lt robertofaga&gt hey guys! About GSOC, students are expected to work 35 to 40hours on the three months?</td></tr>
+            <tr><td>[16:15] &lt vmlemon_&gt Meh, nothing to eat but field polystyrene (rice crackers)</td></tr>
+            <tr><td>[16:15] &lt Davbo&gt lmao vmlemon_ i see it</td></tr>
+            <tr><td>[16:20] &lt Davbo&gt it's difficult to say robertofaga i don't believe there are any stipulations put out by Google - A fair amount of time for the scope of the project. I suppose it could be upwards of 40 hours a week</td></tr>
+            <tr><td>[16:21] &lt Davbo&gt best idea to ask someone is #gsoc</td></tr>
+            <tr><td>[16:21] &lt vmlemon_&gt It was there just over a month, until either some kids nicked it again, or NoRa folk removed it</td></tr>
+            <tr><td>[16:21] &lt robertofaga&gt I said it because is written in http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[16:22] &lt robertofaga&gt Google let mentor organizations decide it</td></tr>
+            <tr><td>[16:23] &lt vmlemon_&gt Do you go somewhere for SoC?</td></tr>
+            <tr><td>[16:23] &lt vmlemon_&gt Or is it all online?</td></tr>
+            <tr><td>[16:23] &lt Davbo&gt Whatever is reasonable to complete your project robertofaga, better asking MS- later</td></tr>
+            <tr><td>[16:24] &lt robertofaga&gt and as I'm in south hemisphere I have classes in June, I only don't have classes only in July</td></tr>
+            <tr><td>[16:24] &lt Davbo&gt i'm sure he'll see this in the logs</td></tr>
+            <tr><td>[16:24] &lt robertofaga&gt right</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt Most mentors will be understanding of that - although SoC is organised to coincide with many students holidays</td></tr>
+            <tr><td>[16:25] &lt robertofaga&gt vmlemon_: this depends what org you will participate, I think here you work only online</td></tr>
+            <tr><td>[16:26] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[16:27] &lt robertofaga&gt most of organizations let the work only online</td></tr>
+            <tr><td>[16:28] &lt robertofaga&gt there are only some in US, like research centers, which prefer local students, who can work in place</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt I assumed that they had some sort of field day at the host</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt Although I've never been involved in SoC</td></tr>
+            <tr><td>[16:32] &lt vmlemon_&gt Yay, KWord Krashed</td></tr>
+            <tr><td>[16:35] &lt Davbo&gt well going to the Organisation can't really be a requirement for GSoC as it's not really in the spirit of Open Source, ie. being able to contribute from anywhere</td></tr>
+            <tr><td>[16:36] &lt robertofaga&gt to be honest I just saw 1 organization last year that preferred students to work in site</td></tr>
+            <tr><td>[16:36] &lt robertofaga&gt and it was a research lab, not an open source community</td></tr>
+            <tr><td>[16:38] &lt imsameer_in&gt ok ppl i need to go, it was nice discussing my mind</td></tr>
+            <tr><td>[16:38] &lt imsameer_in&gt c u all soon</td></tr>
+            <tr><td>[16:38] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[16:39] &lt vmlemon_&gt See you</td></tr>
+            <tr><td>[16:40] *** vmlemon_ has been trying to get a project off the ground for a while, but sucks as a coder :(</td></tr>
+            <tr><td>[16:40] &lt Davbo&gt Yeah it's certainly unusual robertofaga - wonder what they wanted you there for</td></tr>
+            <tr><td>[16:51] &lt vmlemon_&gt Hah, "A Japanese manufacturing town renamed itself "Usa". Then the manufacturers in that town put stickers on their products saying "Made in usa""</td></tr>
+            <tr><td>[16:55] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[16:56] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[16:56] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:56] &lt bcarlyon|ubuntu&gt greetings</td></tr>
+            <tr><td>[17:09] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:09] &lt MS-&gt hi</td></tr>
+            <tr><td>[17:09] *** MS- reads logs</td></tr>
+            <tr><td>[17:09] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:10] &lt MS-&gt robertofaga: We don't expect students to work onsite. In fact it'd be next to impossible given we've had students in India, Austria & USA in the past. Also there's all sorts of concerns the BBC would have about that which would probably make you boggle :)</td></tr>
+            <tr><td>[17:10] &lt MS-&gt Regarding the 35-40 hours thing - it's just indicative of the fact that Google expect you to work on GSOC only over the summer</td></tr>
+            <tr><td>[17:11] &lt MS-&gt it's intended (to be brutally honest) to be a more interesting alternative to flipping burgers :-)</td></tr>
+            <tr><td>[17:11] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[17:12] &lt MS-&gt That number of hours is kinda saying "if you're working on this as your primary work, that's what we'd expect to see"</td></tr>
+            <tr><td>[17:12] &lt MS-&gt Also it means "if you're working massively over that, that would worry us"</td></tr>
+            <tr><td>[17:12] &lt Davbo&gt MS-, what tool do you use for your diagrams in the slides and the cookbook pages?</td></tr>
+            <tr><td>[17:12] &lt Davbo&gt sorry to go off topic</td></tr>
+            <tr><td>[17:13] &lt MS-&gt np - for slides I use open office.</td></tr>
+            <tr><td>[17:13] &lt Davbo&gt Thanks</td></tr>
+            <tr><td>[17:13] &lt MS-&gt generally I use that for most things. Some are drawn by others and they use other tools</td></tr>
+            <tr><td>[17:13] &lt MS-&gt I like OOo though, it's really a nice tool</td></tr>
+            <tr><td>[17:13] &lt Davbo&gt I was using Dia and it's too UML based</td></tr>
+            <tr><td>[17:15] &lt MS-&gt I used to like Dia - but never used the UML stuff - UML doesn't really use shape well to convey information IMO</td></tr>
+            <tr><td>[17:15] &lt MS-&gt Nor colour</td></tr>
+            <tr><td>[17:15] &lt vmlemon_&gt Anyone know of an OneNote-like tool for *nix that isn't basKet?</td></tr>
+            <tr><td>[17:16] &lt MS-&gt Davbo: I think Matt uses Xara - http://www.xaraxtreme.org/</td></tr>
+            <tr><td>[17:17] &lt Davbo&gt Yeah i use Dia for Uni work where i unfortunately need UML diagrams</td></tr>
+            <tr><td>[17:17] &lt Davbo&gt but i just want to show component layout for my project proposal which i'd like to talk to you about too</td></tr>
+            <tr><td>[17:17] &lt MS-&gt vmlemon_: Sorry, nope</td></tr>
+            <tr><td>[17:18] &lt MS-&gt Um, silly comment - but the Axon Visualiser can be manually driven and you can do screenshots - or even just pass over the text file :)</td></tr>
+            <tr><td>[17:19] &lt MS-&gt Or just drive the topology visualiser</td></tr>
+            <tr><td>[17:19] &lt Davbo&gt this is really to help me get a feel for what i should be looking at implementing</td></tr>
+            <tr><td>[17:20] &lt MS-&gt http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.html or example</td></tr>
+            <tr><td>[17:20] &lt Davbo&gt i'll put it on my project proposal page though</td></tr>
+            <tr><td>[17:20] *** MS- nods</td></tr>
+            <tr><td>[17:22] &lt vmlemon_&gt Surprised that no-one made a DIYplayer based on the supposed iPlayer "hack"</td></tr>
+            <tr><td>[17:22] &lt Davbo&gt Going to grab something to eat, back later</td></tr>
+            <tr><td>[17:23] &lt MS-&gt robertofaga: Oh, the other thing of course about the 35-40 hours thing - we obviously can't actually monitor that - we just see results really.</td></tr>
+            <tr><td>[17:23] &lt MS-&gt If you're not putting in enough hours it'll show. If you are and you're finding it difficult that's useful to know as well.</td></tr>
+            <tr><td>[17:23] &lt MS-&gt  The numbers are really nabbed from the python people as well as reasonable. (Though they (scarily) say "at least 40 hours", by that implies more than 40, which seems rather odd. Feel free to do that, but I'd be careful to avoid burnout)</td></tr>
+            <tr><td>[17:23] &lt MS-&gt vmlemon_: I'm surprised no-one has suggested it as a GSOC project myself</td></tr>
+            <tr><td>[17:24] &lt MS-&gt It'd cause interesting .. issues :-D</td></tr>
+            <tr><td>[17:27] &lt vmlemon_&gt Could have it transcode the files to Theora with OggS and remove the originals</td></tr>
+            <tr><td>[17:28] &lt vmlemon_&gt Although it is "toy" DRM to put it lightly</td></tr>
+            <tr><td>[17:34] &lt MS-&gt User agent string content selection isn't DRM</td></tr>
+            <tr><td>[17:35] &lt MS-&gt And all that people have been doing is reverse engineering interoperable clients</td></tr>
+            <tr><td>[17:35] &lt MS-&gt almost in textbook form</td></tr>
+            <tr><td>[17:35] &lt MS-&gt Oh, you're suggesting getting it to transcode to OggS ?</td></tr>
+            <tr><td>[17:35] &lt MS-&gt That would be even more amusing :)</td></tr>
+            <tr><td>[17:36] &lt vmlemon_&gt True, but OggS claimed to be, if memory serves correct</td></tr>
+            <tr><td>[17:36] &lt MS-&gt I agree about OggS being a toy DRM</td></tr>
+            <tr><td>[17:36] &lt MS-&gt it did, and claimed to only work for vorbis</td></tr>
+            <tr><td>[17:38] &lt vmlemon_&gt I reckon that Helix DRM would work, if they still made the Linux client, that is</td></tr>
+            <tr><td>[17:38] &lt MS-&gt You can't work on (an effective) DRM as part of summer of code IMO</td></tr>
+            <tr><td>[17:38] &lt MS-&gt Since you can't have an effective open source DRM</td></tr>
+            <tr><td>[17:38] &lt robertofaga&gt MS-: I was away, thanks for information. In fact, if there isn't fix hours to accomplish, I have weekends for this :)</td></tr>
+            <tr><td>[17:39] &lt MS-&gt robertofaga: You'd be expected to work during the week</td></tr>
+            <tr><td>[17:39] &lt MS-&gt Its in the faq</td></tr>
+            <tr><td>[17:39] &lt MS-&gt just like with a summer job</td></tr>
+            <tr><td>[17:39] &lt MS-&gt (which is what it is)</td></tr>
+            <tr><td>[17:39] &lt MS-&gt vmlemon_: After all DRM works by obfuscation of hiding the keys. If you have the source you know where the keys are and how they're protected</td></tr>
+            <tr><td>[17:40] &lt robertofaga&gt MS-: I mean to do 40hours when I'm having classes</td></tr>
+            <tr><td>[17:40] &lt MS-&gt robertofaga: I think you need to read the faq</td></tr>
+            <tr><td>[17:41] &lt MS-&gt http://code.google.com/opensource/gsoc/2008/faqs.html#0.1_student_time</td></tr>
+            <tr><td>[17:41] &lt MS-&gt 10. How much time is required to participate as a student in Google Summer of Code?</td></tr>
+            <tr><td>[17:41] &lt MS-&gt you should expect your project to be your primary focus this summer.</td></tr>
+            <tr><td>[17:41] &lt MS-&gt &lt /endquote&gt</td></tr>
+            <tr><td>[17:41] &lt robertofaga&gt "Since you're being paid to do this, we expect you to treat it like a full time job. Generally speaking that means 35-40 hours a week, though cultures round the world vary."</td></tr>
+            <tr><td>[17:41] &lt MS-&gt yes, full time job</td></tr>
+            <tr><td>[17:42] &lt MS-&gt a weekend job is not a full time job</td></tr>
+            <tr><td>[17:42] &lt MS-&gt Also, 40 hours in a weekend isn't tenable</td></tr>
+            <tr><td>[17:42] &lt robertofaga&gt ah hehe</td></tr>
+            <tr><td>[17:42] &lt MS-&gt Neither is 35</td></tr>
+            <tr><td>[17:43] &lt vmlemon_&gt You may as well say "Here folks, take this file, and the key too. Oh, before you go, forget the key, and take this source to work around"</td></tr>
+            <tr><td>[17:43] &lt robertofaga&gt not 40 hours on weekend, but something like (during the classes) 25h to 30h in week days and the rest in weekend</td></tr>
+            <tr><td>[17:43] &lt robertofaga&gt I agree is impossible to work only in weekends :)</td></tr>
+            <tr><td>[17:43] &lt MS-&gt When do you have classes during summer</td></tr>
+            <tr><td>[17:43] &lt MS-&gt ?</td></tr>
+            <tr><td>[17:43] &lt robertofaga&gt Winter to me, June and August - most June, August are very few classes</td></tr>
+            <tr><td>[17:44] &lt robertofaga&gt in August I think I'll have 2 classes only</td></tr>
+            <tr><td>[17:44] &lt MS-&gt Hm. Brazil</td></tr>
+            <tr><td>[17:44] &lt robertofaga&gt yes</td></tr>
+            <tr><td>[17:44] &lt MS-&gt When is the usual academic year in brazil?</td></tr>
+            <tr><td>[17:45] &lt robertofaga&gt starts on March to the end of June and second semester starts on August and finish on the end of November - so starts three months of summer vacation</td></tr>
+            <tr><td>[17:45] &lt MS-&gt Is it 6 months out of sync with the northern hemisphere?</td></tr>
+            <tr><td>[17:45] &lt MS-&gt yes, it is</td></tr>
+            <tr><td>[17:45] &lt MS-&gt Ahhhhh</td></tr>
+            <tr><td>[17:45] &lt robertofaga&gt yes</td></tr>
+            <tr><td>[17:45] &lt robertofaga&gt hehe</td></tr>
+            <tr><td>[17:45] &lt MS-&gt  I see</td></tr>
+            <tr><td>[17:46] &lt MS-&gt I've seen the query raised by aussies but didn't think checking for yourself</td></tr>
+            <tr><td>[17:46] &lt MS-&gt Hm. You'll need to give very careful thought about how you're actually going to plan your time then, and make that clear.</td></tr>
+            <tr><td>[17:46] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:47] &lt MS-&gt For what it's worth we tend to look to ensure that students balance their academic commitments carefully against GSOC</td></tr>
+            <tr><td>[17:47] &lt robertofaga&gt yes I know - actually I already participated in GSoC last year, and I done my work in time :)</td></tr>
+            <tr><td>[17:47] &lt MS-&gt Do you have a link to your work from last year?</td></tr>
+            <tr><td>[17:47] &lt robertofaga&gt of the work or about in the Google's page?</td></tr>
+            <tr><td>[17:48] &lt robertofaga&gt ops, or in Google's page</td></tr>
+            <tr><td>[17:48] &lt MS-&gt ?</td></tr>
+            <tr><td>[17:48] &lt robertofaga&gt here is my project's wiki, at OLPC:</td></tr>
+            <tr><td>[17:48] &lt robertofaga&gt http://wiki.laptop.org/go/ISIS</td></tr>
+            <tr><td>[17:49] &lt robertofaga&gt Now let me find the Google's link to what I delivered in the end of 'summer'</td></tr>
+            <tr><td>[17:50] &lt robertofaga&gt (it's because I coded a lot more after SoC)</td></tr>
+            <tr><td>[17:52] &lt robertofaga&gt I'm not finding in any GSoC07 page, do you know where are the packages delivered?</td></tr>
+            <tr><td>[17:53] &lt MS-&gt I believe that was your responsibility last year :-)</td></tr>
+            <tr><td>[17:53] &lt MS-&gt ;-)</td></tr>
+            <tr><td>[17:54] &lt MS-&gt I'm doing a git-clone now though :)</td></tr>
+            <tr><td>[17:54] &lt robertofaga&gt hehe, I mean Google sent a link to we upload the projects, I don't know now where it is</td></tr>
+            <tr><td>[17:54] &lt robertofaga&gt yes, I think this is much better hehe</td></tr>
+            <tr><td>[17:54] &lt MS-&gt ahhh I had no idea about that</td></tr>
+            <tr><td>[17:54] &lt MS-&gt OK, I'm going afk again (food)</td></tr>
+            <tr><td>[17:54] &lt MS-&gt back later :)</td></tr>
+            <tr><td>[17:54] &lt MS-&gt cya</td></tr>
+            <tr><td>[17:54] &lt robertofaga&gt ok, cya</td></tr>
+            <tr><td>[17:54] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[18:33] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:48] *** vmlemon__ wonders why people are temporarily switching their Wi-Fi APs from WEP to unsecured and back here</td></tr>
+            <tr><td>[18:49] &lt robertofaga&gt because WEP is easy to break?</td></tr>
+            <tr><td>[18:50] &lt vmlemon__&gt It's a trend that's been going on for a while, now</td></tr>
+            <tr><td>[18:50] &lt vmlemon__&gt Some of them did use WPA</td></tr>
+            <tr><td>[18:50] &lt robertofaga&gt I think the only really secure wireless access is using in a https channel or any SSL layer</td></tr>
+            <tr><td>[18:51] &lt vmlemon__&gt But now use WEP and even unsecure them...</td></tr>
+            <tr><td>[18:51] &lt robertofaga&gt all other methods (WPA, WEP, using mac address to authentication) can be broken</td></tr>
+            <tr><td>[18:51] &lt robertofaga&gt hehe</td></tr>
+            <tr><td>[18:52] &lt vmlemon__&gt Boggles me, even though I run an experimental dead-end unsecured AP</td></tr>
+            <tr><td>[18:54] &lt vmlemon__&gt Never seen SMB or IGMP traffic on Wi-Fi until today</td></tr>
+            <tr><td>[18:54] &lt vmlemon__&gt Although I ran AppleTalk for a while</td></tr>
+            <tr><td>[18:55] *** vmlemon__ has nearly a gigabyte of traffic dumps</td></tr>
+            <tr><td>[20:32] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[20:35] *** simon___1 has joined #kamaelia</td></tr>
+            <tr><td>[20:41] &lt Lawouach&gt heya</td></tr>
+            <tr><td>[20:42] &lt Davbo&gt hi</td></tr>
+            <tr><td>[20:47] &lt vmlemon__&gt Meh, it's just started snowing, here</td></tr>
+            <tr><td>[20:55] &lt ms-away&gt Lawouach: heya</td></tr>
+            <tr><td>[20:55] &lt ms-away&gt vmlemon__: feels cold enough to do that here</td></tr>
+            <tr><td>[20:55] &lt Lawouach&gt hi mate</td></tr>
+            <tr><td>[20:55] *** ms-away is now known as MS-</td></tr>
+            <tr><td>[20:55] &lt MS-&gt How goes?</td></tr>
+            <tr><td>[20:56] &lt Lawouach&gt good good</td></tr>
+            <tr><td>[20:56] &lt Lawouach&gt I saw you posted on your blog about GSoC</td></tr>
+            <tr><td>[20:56] &lt Lawouach&gt that's cool :)</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Indeed - I figure that if I'm now on planetpython.org that it would be a good idea :)</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Also I revamped the main landing page slightly</td></tr>
+            <tr><td>[20:57] &lt vmlemon__&gt Just stopped - for now</td></tr>
+            <tr><td>[20:58] &lt MS-&gt "I'm dreaming of a white easter"</td></tr>
+            <tr><td>[20:58] &lt vmlemon__&gt Hah</td></tr>
+            <tr><td>[21:02] &lt vmlemon__&gt There's always delightful(ly) cold/wet Scarbados ;)</td></tr>
+            <tr><td>[21:02] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:06] &lt vmlemon__&gt I can always remember Redcar as being cold, wet and windy...</td></tr>
+            <tr><td>[21:06] &lt vmlemon__&gt Doubt the weather ever changes, there</td></tr>
+            <tr><td>[21:06] &lt MS-&gt Never been there - but I remember York being cold. But then I did go there when it was the middle of winter</td></tr>
+            <tr><td>[21:09] &lt Davbo&gt My image of weston super mare is one of a permanently damp windy 'orrible place, i've been 3 times and my image has never swayed</td></tr>
+            <tr><td>[21:09] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:09] *** Davbo remembers childhood camping holidays</td></tr>
+            <tr><td>[21:09] *** vmlemon__ finds that Stockton-on-Tees is usually bearable, at least from the few times he's been</td></tr>
+            <tr><td>[21:09] *** Davbo shudders</td></tr>
+            <tr><td>[21:10] &lt Davbo&gt MS-, can i PM you about my project proposal?</td></tr>
+            <tr><td>[21:10] &lt MS-&gt Sure</td></tr>
+            <tr><td>[21:12] *** MS- wonders idly how students are going to cope with the fact that I'll be disappearing on holiday on the 29th March for a week, meaning the last minute panic people will be in a vacuum...</td></tr>
+            <tr><td>[21:12] &lt vmlemon__&gt "Try Yorkshire - We're not all middle-aged farmers and little old ladies supping tea" ;)</td></tr>
+            <tr><td>[21:12] &lt MS-&gt Probably even bigger panic given they won't get any feedback until the 6th april</td></tr>
+            <tr><td>[21:12] &lt MS-&gt But then people asking for detailed suggestions and ideas in the last 2 days have missed the boat/point really :)</td></tr>
+            <tr><td>[21:19] &lt Lawouach&gt MS-, what is the process after that date BTW?</td></tr>
+            <tr><td>[21:19] &lt MS-&gt 31st is the deadline</td></tr>
+            <tr><td>[21:19] &lt MS-&gt At that point we'll have all the apps in the system</td></tr>
+            <tr><td>[21:20] &lt MS-&gt We then have until 11th April IIRC to rank and rate applications in the order we find interesting</td></tr>
+            <tr><td>[21:20] &lt MS-&gt and realistic/doable</td></tr>
+            <tr><td>[21:20] &lt Lawouach&gt k</td></tr>
+            <tr><td>[21:21] &lt MS-&gt We then say how many slots we'd like</td></tr>
+            <tr><td>[21:21] &lt Lawouach&gt How many applications are we allowed?</td></tr>
+            <tr><td>[21:21] &lt Lawouach&gt ah</td></tr>
+            <tr><td>[21:21] &lt MS-&gt We then get given a number of slots</td></tr>
+            <tr><td>[21:21] &lt MS-&gt and then that's who is accepted</td></tr>
+            <tr><td>[21:26] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[21:26] &lt Lawouach&gt Thanks for the info</td></tr>
+            <tr><td>[21:27] &lt MS-&gt np. It's a relatively simple process, but I suspect the lack of feedback during that week may worry some. I'll ask Matt to keep people happy whilst I'm out - since he'll know my priorities :)</td></tr>
+            <tr><td>[21:35] &lt Lawouach&gt That seems alright</td></tr>
+            <tr><td>[21:39] &lt MS-&gt The thing I've noted from previous years though is that the people who put in the best applications and therefore have the best chance of selection are those who chat to us well before the application period opens</td></tr>
+            <tr><td>[21:40] &lt MS-&gt So, to be frank, I'm not really too worried about anyone who jumps in with a "hey I look amazing" application in the last 2 days, since one of the key things about GSOC is communication.</td></tr>
+            <tr><td>[21:40] &lt Lawouach&gt very true</td></tr>
+            <tr><td>[21:40] &lt Lawouach&gt I'm quite excited about the ideas we may see poping up until then</td></tr>
+            <tr><td>[21:40] &lt MS-&gt Indeed :)</td></tr>
+            <tr><td>[21:57] &lt Davbo&gt Can you believe my university could give a (graded) assignment where the solution is the 3rd result from Google :/</td></tr>
+            <tr><td>[21:58] &lt Davbo&gt we have to solve the "n Queens problem" in java and you can just stick it into Google</td></tr>
+            <tr><td>[21:59] &lt Davbo&gt that's what happens when a ~60 year old academic comes up with an assignment</td></tr>
+            <tr><td>[22:01] &lt MS-&gt Yes, and code fragments are very googlable</td></tr>
+            <tr><td>[22:02] &lt MS-&gt There's a piece of code created for GSOC 2 years ago which hasn't been merged because we can't be sure of the entire codebase's history</td></tr>
+            <tr><td>[22:02] &lt MS-&gt since I discovered quite by accident that a piece of code that looked original, wasn't and hadn't creditted the original, calling into question the origins of other chunks of code</td></tr>
+            <tr><td>[22:03] &lt MS-&gt I've been meaning to google the rest of their code</td></tr>
+            <tr><td>[22:03] &lt Davbo&gt The sad thing is, I'm not going to even copy that lol I'll write my own and struggle for hours *rolls eyes*</td></tr>
+            <tr><td>[22:04] &lt MS-&gt heh</td></tr>
+            <tr><td>[22:04] &lt Davbo&gt Anyway, i'm off. Night all</td></tr>
+            <tr><td>[22:04] &lt MS-&gt cya :)</td></tr>
+            <tr><td>[22:13] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:23] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:27] &lt vmlemon__&gt Ach, it'll take over half an hour, just to build the protocol hierarchy from it</td></tr>
+            <tr><td>[23:29] &lt vmlemon__&gt So much for progress</td></tr>
+            <tr><td>[23:45] &lt MS-&gt ?</td></tr>
+            <tr><td>[23:53] &lt vmlemon__&gt Brought my dual-core box with 1GB RAM, and 2GB of swap to a crawl for almost half an hour, and burnt 99% RAM and swap loading a 830+MB file into Wireshark</td></tr>
+            <tr><td>[23:56] &lt MS-&gt I see</td></tr>
+            <tr><td>[23:57] &lt MS-&gt kamaeliabot help</td></tr>
+            <tr><td>[23:57] &lt MS-&gt kamaeliabot: help</td></tr>
+            <tr><td>[23:57] Reply: Name: kamaeliabot   Channel: #kamaelia</td></tr>
+            <tr><td>[23:57] Reply: I do a simple job -- recording all channel traffic.</td></tr>
+            <tr><td>[23:57] Reply: Lines prefixed by [off] won't get recorded</td></tr>
+            <tr><td>[23:57] Reply: I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', 'boo', and 'reload {modulename}'.</td></tr>
+            <tr><td>[23:57] &lt MS-&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[23:57] 'Kamaelia.Apps.IRCLogger.Support' reloaded</td></tr>
+            <tr><td>[23:57] &lt MS-&gt help</td></tr>
+            <tr><td>[23:57] &lt MS-&gt kamaeliabot: help</td></tr>
+            <tr><td>[23:57] Reply: Name: kamaeliabot   Channel: #kamaelia</td></tr>
+            <tr><td>[23:57] Reply: I do a simple job -- recording all channel traffic.</td></tr>
+            <tr><td>[23:57] Reply: Lines prefixed by [off] won't get recorded</td></tr>
+            <tr><td>[23:57] Reply: I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', 'boo', and 'reload {modulename}'.</td></tr>
+            <tr><td>[23:57] &lt MS-&gt kamaeliabot: learn</td></tr>
+            <tr><td>[23:57] Reply: OK, trying, but not ready to do that yet - I will though2</td></tr>
+            <tr><td>[23:57] &lt MS-&gt cool</td></tr>
+            <tr><td>[23:59] &lt vmlemon__&gt All I need now is for the system janitorial tasks to start, and the box'll lock-up/crash since it can't flush/cleanse swap fast enough</td></tr>

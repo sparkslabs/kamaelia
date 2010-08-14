@@ -1,0 +1,149 @@
+<html><body><table>
+            <tr><td>[00:04] *** petruccigp has joined #kamaelia</td></tr>
+            <tr><td>[01:07] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[06:49] *** simon89 has joined #kamaelia</td></tr>
+            <tr><td>[07:56] *** simon89 is now known as simon89-afk</td></tr>
+            <tr><td>[08:58] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[09:45] &lt Lawouach&gt  morning folks</td></tr>
+            <tr><td>[09:46] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[11:39] *** orphans_ has joined #kamaelia</td></tr>
+            <tr><td>[11:41] *** orphans_ is now known as orphans</td></tr>
+            <tr><td>[11:58] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:59] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:01] &lt orphans&gt afternoon</td></tr>
+            <tr><td>[13:17] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[13:19] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[13:21] *** vmlemon_ wonders if Ingex will support Dirac, eventually...</td></tr>
+            <tr><td>[13:36] *** petruccigp has joined #kamaelia</td></tr>
+            <tr><td>[14:14] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:16] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[14:16] Reply: does the macarena</td></tr>
+            <tr><td>[14:18] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt Good afternoon all</td></tr>
+            <tr><td>[14:19] &lt orphans&gt afternoon Davbo</td></tr>
+            <tr><td>[14:19] &lt Davbo&gt y'alright orphans ?</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[14:20] &lt orphans&gt sigh, no - I'm battling with Processing atm</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt Agh :(</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt How's vmlemon_ ?</td></tr>
+            <tr><td>[14:20] &lt orphans&gt can't get it to output a video at any sort of sensible speed</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt I'm OK, although latency here sucks at the moment</td></tr>
+            <tr><td>[14:21] &lt vmlemon_&gt (70-80 seconds :|)</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt What you trying to do orphans ?</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt ouch.</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt where you at vmlemon_ ?</td></tr>
+            <tr><td>[14:21] &lt vmlemon_&gt At home, at the moment</td></tr>
+            <tr><td>[14:22] &lt Davbo&gt ah thought you might have been on a train or something. I always have a horrible lag on those connections</td></tr>
+            <tr><td>[14:22] &lt vmlemon_&gt It's at 862 ms, now</td></tr>
+            <tr><td>[14:23] &lt vmlemon_&gt Probably since I only have 2 bars for reception on my phone</td></tr>
+            <tr><td>[14:23] &lt orphans&gt Davbo, it's something I had to do for my final project at uni - it's like an animation which is synced with a video, but when you try to save the output to another video the framerate drops to about half an fps or something</td></tr>
+            <tr><td>[14:23] &lt orphans&gt jerk-o-vision</td></tr>
+            <tr><td>[14:24] &lt Davbo&gt hmm :s</td></tr>
+            <tr><td>[14:24] &lt vmlemon_&gt Sounds fun</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt you could save the output to a load of images and compile them into a video</td></tr>
+            <tr><td>[14:25] &lt orphans&gt that's what I've been trying - it's slowwww</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt :(</td></tr>
+            <tr><td>[14:25] &lt orphans&gt problem is it writes to disc between each frame</td></tr>
+            <tr><td>[14:25] &lt vmlemon_&gt How powerful is the box you're trying to do this on?</td></tr>
+            <tr><td>[14:25] &lt orphans&gt new-ish P4</td></tr>
+            <tr><td>[14:25] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[14:26] &lt orphans&gt it not the processor, it's the hd write speed, but I really don't want to have to hack the hell out of the thing to get it to save to ram, then write to disc later</td></tr>
+            <tr><td>[14:26] &lt Davbo&gt I see</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt Let me guess, slow HDDs on a P-ATA bus?</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt Although there isn't much you can do about it</td></tr>
+            <tr><td>[14:27] &lt orphans&gt it wouldn't be a problem normally, but I need to give a presentation on it on an unknown box - I'm 99% sure it won't have at least one of the deps on it</td></tr>
+            <tr><td>[14:27] &lt Davbo&gt You could have a look at something like Virtualdub and see how that does it</td></tr>
+            <tr><td>[14:28] &lt Davbo&gt that's a windows app, but i'm sure there are many similar applications</td></tr>
+            <tr><td>[14:28] &lt orphans&gt its an idea actually - I've been using VD to edit the videos before syncing them</td></tr>
+            <tr><td>[14:29] &lt orphans&gt the only other thing which might work is if I go into uni and try out some horrible gstreamer =&gt processing =&gt quicktime =&gt file hack, but looking at the flow of that I'm guessing it'll be just as slow</td></tr>
+            <tr><td>[14:29] &lt vmlemon_&gt There's always trying to do a lot of aggressive caching, although I can see performance plummeting even lower</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[14:29] &lt vmlemon_&gt You could always throw more RAM at it ;)</td></tr>
+            <tr><td>[14:30] &lt Davbo&gt what's it coded in? you handling the memory yourself?</td></tr>
+            <tr><td>[14:30] &lt orphans&gt processing (it's kinda java) and no :)</td></tr>
+            <tr><td>[14:31] &lt Davbo&gt Yeah anything that works with garbage collection + video processing</td></tr>
+            <tr><td>[14:31] &lt Davbo&gt not good.</td></tr>
+            <tr><td>[14:31] &lt Davbo&gt :P</td></tr>
+            <tr><td>[14:31] &lt orphans&gt http://processing.org/</td></tr>
+            <tr><td>[14:31] &lt Davbo&gt ooo never seen this</td></tr>
+            <tr><td>[14:31] &lt orphans&gt it's cool, but giving me major headaches atm</td></tr>
+            <tr><td>[14:32] *** vmlemon_ can see an app stuck displaying a dialogue box with "Processing... Please Wait" for hours, for some reason ;)</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt brb gonna get something to eat - I just got up</td></tr>
+            <tr><td>[14:34] &lt vmlemon_&gt Hah, "Processing is not yet 1.0 software.. It's buggy and may kill people.* That's part of why we used to make everyone sign up to download, so that we know that you care enough to bother and have more of an inkling of what you're getting into."</td></tr>
+            <tr><td>[14:34] &lt vmlemon_&gt "* Please note that Processing is not yet known to be responsible for any confirmed deaths."</td></tr>
+            <tr><td>[14:35] &lt orphans&gt heh, it's pretty stable tbh</td></tr>
+            <tr><td>[14:35] &lt vmlemon_&gt I ought to use it in the firmware for a nuclear reactor or an aircraft control system, then ;)</td></tr>
+            <tr><td>[14:36] &lt orphans&gt heh, best solution I've seen so far: hook up your video out to a dvd recorder, then rip that back in</td></tr>
+            <tr><td>[14:37] &lt orphans&gt think I might have to take a trip to uni</td></tr>
+            <tr><td>[14:37] &lt vmlemon_&gt Then just dub the audio over it</td></tr>
+            <tr><td>[14:40] &lt Davbo&gt #processing orphans ? :P</td></tr>
+            <tr><td>[14:42] &lt orphans&gt dunno whether it exists...</td></tr>
+            <tr><td>[14:42] *** orphans checks</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt i just did</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt and it does :P</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt processing == open source =&gt IRC Channel and most likely on Freenode</td></tr>
+            <tr><td>[14:43] &lt vmlemon_&gt Only 3/4 people...</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt they probably know the most about it though vmlemon_</td></tr>
+            <tr><td>[14:43] &lt vmlemon_&gt True</td></tr>
+            <tr><td>[14:44] &lt vmlemon_&gt You could always start an unofficial channel for various projects, if there's enough interest, and one doesn't already exist...</td></tr>
+            <tr><td>[14:46] &lt vmlemon_&gt Although you then have to stay on top of managing the channel</td></tr>
+            <tr><td>[14:46] &lt Davbo&gt http://www.flickr.com/photos/yesyesnono/2425448056/in/pool-processing</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt I like how they attach the source for the image</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt Very cool.</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt I think MATLAB does similar things to this</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt i don't know enough about it yet though</td></tr>
+            <tr><td>[15:05] &lt orphans&gt humm, I'm close...</td></tr>
+            <tr><td>[15:06] &lt orphans&gt output to tga gets me up to ~30fps, but it's still a little jerky</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt :)</td></tr>
+            <tr><td>[15:08] &lt orphans&gt think I might need to do some image magick (see what I did there) using timestamps...</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt :P</td></tr>
+            <tr><td>[15:10] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt back later</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt Good luck with Processing orphans</td></tr>
+            <tr><td>[16:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:09] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:11] &lt Davbo&gt kamaeliabot: dance</td></tr>
+            <tr><td>[16:11] Reply: does the macarena</td></tr>
+            <tr><td>[16:13] &lt vmlemon_&gt How fun, it seems as if stuff is being corrupted when trying to download it with wget, and the continue switch doesn't seem to help</td></tr>
+            <tr><td>[16:22] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[18:13] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:35] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:59] &lt vmlemon_&gt o.O http://www.theregister.co.uk/2007/05/29/dettol_man/</td></tr>
+            <tr><td>[19:17] &lt vmlemon_&gt Hah, http://www.theregister.co.uk/2008/04/11/cab_innit/</td></tr>
+            <tr><td>[21:37] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[21:37] &lt Chong-&gt Evening, everyone.</td></tr>
+            <tr><td>[21:37] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[21:41] &lt Chong-&gt Hi, vmlemon_.</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt Hah, "So let's try the new creative marketing ploy -- "a work in progress" -- on other products: HDTV -- We've got the sound working real good now but, because this is "a work in progress" the picture can only display green hues.Car -- This new model is still "a work in progress" so the airbags sometimes deploy when you slam the doors. Airliner -- We've got the going up bit nailed but because this is a "a work in progress" getting down is a</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt problem."</td></tr>
+            <tr><td>[21:44] &lt Chong-&gt heh:-)</td></tr>
+            <tr><td>[21:46] &lt vmlemon_&gt Seen http://www.theregister.co.uk/2008/04/04/t5_complaints_handling/?</td></tr>
+            <tr><td>[21:46] &lt Chong-&gt The wise thing is to avoid those "a work in progress" .</td></tr>
+            <tr><td>[21:47] *** Chong- is seeing</td></tr>
+            <tr><td>[21:48] &lt Chong-&gt I see your points:-). it's really a shame for BA.</td></tr>
+            <tr><td>[21:49] &lt vmlemon_&gt Hah, http://www.theregister.co.uk/2008/04/11/cab_innit/</td></tr>
+            <tr><td>[21:50] &lt Chong-&gt They give the excuse that new terminals in other airports also have similar baggage problem at the beginning.</td></tr>
+            <tr><td>[21:51] &lt Chong-&gt If they know this (baggage could become a problem) in advance, why not do more to avoid the problem before opening the terminal?</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt Probably so that they could inconvenience people later, and (hopefully in the eyes of the people running the whole scam) gouge people on having to pay for new tickets for when their flight ends up being delayed/canceled</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt Although I've never left the country, or visited an airport</td></tr>
+            <tr><td>[21:55] &lt Chong-&gt very funny. These customer service leaves too much to improve.</td></tr>
+            <tr><td>[21:56] &lt Chong-&gt that cannot be true. I think BA has lost millions because the mess.</td></tr>
+            <tr><td>[21:58] &lt vmlemon_&gt Mmm, lovely "It says its hydrogen is produced by water electrolysis - and the electric power isn't nasty carbo-nuclear grid 'leccy. Rather, it's made by burning methane in a generator; and the methane comes from anaerobically digested cowpats."</td></tr>
+            <tr><td>[22:03] *** vmlemon_ is looking for a new OS or app to try, out of boredom...</td></tr>
+            <tr><td>[22:04] &lt Chong-&gt methane is more environment friendly than coal or petro</td></tr>
+            <tr><td>[22:05] &lt vmlemon_&gt I hate to think about the odour from the cow faeces whilst burning the stuff...</td></tr>
+            <tr><td>[22:08] &lt Chong-&gt methane is a digested gas, there would be no odour of the cow faeces</td></tr>
+            <tr><td>[22:08] &lt vmlemon_&gt Hmm, isn't methane (regardless of source) used as cooking gas here, anyway?</td></tr>
+            <tr><td>[22:08] &lt vmlemon_&gt Albeit with various chemicals added for leak detection</td></tr>
+            <tr><td>[22:09] &lt Chong-&gt yes. I think it's also called natural gas.</td></tr>
+            <tr><td>[22:19] &lt vmlemon_&gt o.O http://www.theregister.co.uk/2008/04/17/vista_video_mocks_bruce/</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt I can't view it here, though since I can't get YouTube to play more than 3 seconds of video without conking out for some reason</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt Although I don't think I'd want to, given by the article's take on it</td></tr>
+            <tr><td>[22:35] &lt Chong-&gt 'When they saw improvements on security, no more hesitating.'</td></tr>
+            <tr><td>[22:35] &lt Chong-&gt Usually microsoft fixes one bug and make two or even more bugs at the same time.</td></tr>
+            <tr><td>[22:36] &lt Chong-&gt The song is very funny:-)</td></tr>
+            <tr><td>[23:15] &lt vmlemon_&gt Yay great, I narrowly avoided my laptop being filled with coffee whilst the cat kept nudging my arm...</td></tr>
+            <tr><td>[23:28] &lt Davbo&gt lol</td></tr>
+            <tr><td>[23:35] &lt vmlemon_&gt Hah, "Hourglass: 'Hour' being the operative word. Try timing eggs by one of those and they'd be inedible."</td></tr>
+            <tr><td>[23:40] *** vmlemon_ has joined #kamaelia</td></tr>

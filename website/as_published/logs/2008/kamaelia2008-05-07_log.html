@@ -1,0 +1,371 @@
+<html><body><table>
+            <tr><td>[01:03] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[01:07] &lt j_baker&gt You still up Davbo? It's like 2AM there isn't it?</td></tr>
+            <tr><td>[02:00] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[07:21] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:21] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:57] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[08:18] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:34] &lt Lawouach_&gt As i was saying on the #cherrypy channel</td></tr>
+            <tr><td>[08:34] &lt Lawouach_&gt I've recently been told to look at Redmine</td></tr>
+            <tr><td>[08:34] &lt Lawouach_&gt a competitor to Trac</td></tr>
+            <tr><td>[08:34] &lt Lawouach_&gt and boy!</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt This looks like it beats Trac in every respect</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt http://www.redmine.org/wiki/redmine/Features</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt Multi-projects, gantt chart, calendar, built-in forum, fast...</td></tr>
+            <tr><td>[08:35] &lt Lawouach_&gt mhrd: might be an idea to ask MS- to check it out</td></tr>
+            <tr><td>[08:36] &lt mhrd&gt was about to ask you to justify your assertion; but "fast" is indeed a good thing :-)</td></tr>
+            <tr><td>[08:37] &lt mhrd&gt if you don't mention it to him, I will</td></tr>
+            <tr><td>[08:37] &lt mhrd&gt that said, I have not much more contact with him that you guys do atm (based in different locations)</td></tr>
+            <tr><td>[08:38] &lt mhrd&gt in what ways do you feel it would give us a superior setup to what we have now?</td></tr>
+            <tr><td>[08:38] &lt Lawouach_&gt That's a good question :)</td></tr>
+            <tr><td>[08:38] &lt Lawouach_&gt I guess it's just the habit to see most OSS projects now being handled with such products</td></tr>
+            <tr><td>[08:38] &lt mhrd&gt I'm not suggesting what we have now is worse or better; but am interested to elucidate some specific benefits</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt It would mainly be interesting if we were hosting the entire project ourselves</td></tr>
+            <tr><td>[08:39] &lt mhrd&gt yep</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt Which is not and will probably never be the case</td></tr>
+            <tr><td>[08:39] &lt Lawouach_&gt I guess it feeds the discussion about "leaving SF? ok but for what?"</td></tr>
+            <tr><td>[08:41] &lt mhrd&gt indeed. fwiw, I'd probably prefer "such products" - purely on the basis that someone else will have been able to spend more time fleshing them out, smoothing the rough edges etc ... but that still leave the issues of hosting (as you've identified) and integration of externally generated docs</td></tr>
+            <tr><td>[08:41] &lt mhrd&gt plus there's always the fun of porting existing content ;-)</td></tr>
+            <tr><td>[08:43] &lt Lawouach_&gt indeed :)</td></tr>
+            <tr><td>[08:43] &lt mhrd&gt one thing that I really appreciate is RSS feeds of wiki changes - which afaik the current setup doesn't have</td></tr>
+            <tr><td>[08:44] &lt mhrd&gt RSS and email notifications has become a key tool for me managing my workload and time these days</td></tr>
+            <tr><td>[08:45] *** mhrd has to boot his laptop into winxp and fire up visual studio :-(</td></tr>
+            <tr><td>[08:46] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:53] &lt mhrd&gt interesting alt opinion: http://changelog.complete.org/posts/696-Thoughts-on-Redmine.html</td></tr>
+            <tr><td>[09:03] &lt Lawouach_&gt reading</td></tr>
+            <tr><td>[09:05] &lt Lawouach_&gt thanks for that</td></tr>
+            <tr><td>[09:08] &lt mhrd&gt np</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt mhrd: do you have a blog or a home page?</td></tr>
+            <tr><td>[09:10] &lt Lawouach_&gt I'm writing a blog post on this and would like to give you credit for the links :)</td></tr>
+            <tr><td>[09:19] &lt mhrd&gt thats very kind; but (unbelievably) I don't</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt good for you :)</td></tr>
+            <tr><td>[09:20] &lt mhrd&gt don't worry about linking to me - just saying Matt and Kamaelia/whatever-is-appropriate is more than sufficient</td></tr>
+            <tr><td>[09:20] &lt mhrd&gt I decided I didn't have anything interesting to say :-)</td></tr>
+            <tr><td>[09:28] &lt Lawouach_&gt It's hard to find topics indeed</td></tr>
+            <tr><td>[09:28] &lt Lawouach_&gt Plus so many times do i read blog posts and i realize some people speak more than they do :)</td></tr>
+            <tr><td>[09:28] &lt Lawouach_&gt Anyway http://www.defuze.org/archives/13-Redmine-vs-Trac.html</td></tr>
+            <tr><td>[09:34] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:53] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:54] &lt MS-&gt greetings</td></tr>
+            <tr><td>[09:55] &lt Lawouach_&gt hi MS-</td></tr>
+            <tr><td>[09:55] &lt Lawouach_&gt read the chat log :)</td></tr>
+            <tr><td>[09:55] &lt MS-&gt have done.</td></tr>
+            <tr><td>[09:55] &lt MS-&gt don't really have the spare cycles at the moment :-/</td></tr>
+            <tr><td>[09:56] &lt Lawouach_&gt np :)</td></tr>
+            <tr><td>[09:56] &lt MS-&gt Interesting link though</td></tr>
+            <tr><td>[09:57] &lt MS-&gt Could've done without seeing that license file in /Sketches though.</td></tr>
+            <tr><td>[09:57] &lt MS-&gt Though I realise that's 99.9999% certain due to kdevelop rather than anything else</td></tr>
+            <tr><td>[09:57] *** Lawouach_ doesn't quite follow MS- </td></tr>
+            <tr><td>[09:58] &lt MS-&gt j_baker's code is listed as GPL only at present</td></tr>
+            <tr><td>[09:58] &lt MS-&gt Which isn't really appropriate if it's ever to be used (since Kamaelia is a library after all)</td></tr>
+            <tr><td>[09:58] &lt Lawouach_&gt Indeed. He should know since it was part of the agreement :)</td></tr>
+            <tr><td>[09:59] &lt MS-&gt I reckon as a result it's just kdevelop doing stuff he doesn't expect</td></tr>
+            <tr><td>[09:59] &lt MS-&gt since it slaps those sorts of notices in by default</td></tr>
+            <tr><td>[09:59] &lt Lawouach_&gt I see.</td></tr>
+            <tr><td>[09:59] &lt MS-&gt ho hum</td></tr>
+            <tr><td>[10:00] &lt MS-&gt (Since RMS's visit to manchester there's been a flame war of BSD vs GPL flaring on a local mailing list, and my preference is the license with the least arguments</td></tr>
+            <tr><td>[10:00] &lt MS-&gt which would be BSD, but I couldn't get that through)</td></tr>
+            <tr><td>[10:01] &lt mhrd&gt yeah- noticed the licence file too ...</td></tr>
+            <tr><td>[10:01] &lt mhrd&gt at least there's no pre-amble in the sources, so I guess that means the licence isn't actually applied to any of them (?)</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt People are still flaming around those things?</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt sigh</td></tr>
+            <tr><td>[10:02] &lt MS-&gt Lawouach_: yes, sadly</td></tr>
+            <tr><td>[10:26] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[11:24] *** MS- writes a post about contributor agreements</td></tr>
+            <tr><td>[11:24] *** MS- has browser crash whilst writing it.</td></tr>
+            <tr><td>[11:24] *** MS- screams</td></tr>
+            <tr><td>[11:24] *** MS- runs "strings /proc/kcore"</td></tr>
+            <tr><td>[11:24] *** MS- searches for what he was typing</td></tr>
+            <tr><td>[11:25] *** MS- decides it's time for lunch since someone has also started playing silly b's on the phone with me.</td></tr>
+            <tr><td>[11:36] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[11:47] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:48] &lt Davbo&gt Afternoon folks</td></tr>
+            <tr><td>[12:01] &lt Davbo&gt MS-: fyi, just got the final exam timetable. No clashes with GSoC meetings</td></tr>
+            <tr><td>[12:02] &lt Davbo&gt last exam is on June 6th</td></tr>
+            <tr><td>[12:40] *** Davbo wonders why Kdevelop trys to put a license on your code.</td></tr>
+            <tr><td>[12:42] &lt mhrd&gt whoever said GPL wasn't viral ;-P</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt s/trys/tries *sigh* can't speel today (intentional ;))</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt Good idea mhrd, we make a GPL'd word processor and anything people write in there is GPL ¬.¬</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[12:46] &lt Davbo&gt The smiley faces in Mibbit creep me out.</td></tr>
+            <tr><td>[12:47] &lt MS-&gt Kdevelop does it because it's *trying* to be helpful</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt I've never used it to be honest - is it like Eclipse?</td></tr>
+            <tr><td>[12:48] &lt Lawouach_&gt I thought one could choose the license it'd add</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt ie. handles some things for you (for example, imports) and then but has a habbit of messing it all up?</td></tr>
+            <tr><td>[12:51] &lt MS-&gt Lawouach_: You can set it, but IME it's not reliable</td></tr>
+            <tr><td>[12:51] &lt MS-&gt (well, unless you want GPL ;) )</td></tr>
+            <tr><td>[12:51] &lt MS-&gt GPL is its default as well</td></tr>
+            <tr><td>[12:51] &lt MS-&gt Davbo: re exams - cool</td></tr>
+            <tr><td>[12:52] &lt Davbo&gt I don't think j_baker was about when we had that discussion about licenses last time. I wouldn't have been sure what to license my code as if you hadn't explained it to me then MS-</td></tr>
+            <tr><td>[12:52] &lt Lawouach_&gt Davbo: it was part of one of the first email MS- sent ;)</td></tr>
+            <tr><td>[12:52] &lt Lawouach_&gt nope</td></tr>
+            <tr><td>[12:53] &lt MS-&gt Didn't think so, ta</td></tr>
+            <tr><td>[12:53] &lt Lawouach_&gt so do I</td></tr>
+            <tr><td>[12:53] &lt Davbo&gt Oh yeah, forgot about that Lawouach_.</td></tr>
+            <tr><td>[12:54] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:05] &lt vmlemon&gt "Please leave a message after the tone"? ;)</td></tr>
+            <tr><td>[13:06] &lt MS-&gt vmlemon: Um, no. Definitely not.</td></tr>
+            <tr><td>[13:07] &lt vmlemon&gt Hah, "Well, what can I say KamConnect? We had a nice little run there didn.t we? But it was all a relationship of convenience. I mean, I needed a project title and you were just so. available. But really, I just want to be friends. It.s not you, it.s me. There.s someone else, this other software title called Kamaelia Publish."</td></tr>
+            <tr><td>[13:08] &lt MS-&gt heh</td></tr>
+            <tr><td>[13:08] &lt MS-&gt where's that from?</td></tr>
+            <tr><td>[13:08] &lt MS-&gt I like that</td></tr>
+            <tr><td>[13:08] &lt Davbo&gt His blog i think</td></tr>
+            <tr><td>[13:09] &lt Davbo&gt Lets hope his analogy doesn't go further than that joke, he might be divorcing from his project mid-GSoC ;)</td></tr>
+            <tr><td>[13:10] &lt vmlemon&gt Shame that MSIE mangles apostrophes</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt They might end up in legal procedings for who gets owner privilages on the repositories</td></tr>
+            <tr><td>[13:11] &lt Lawouach_&gt :D</td></tr>
+            <tr><td>[13:12] &lt Lawouach_&gt It's quite cool indeed.</td></tr>
+            <tr><td>[13:14] *** Lawouach_ is listening to Iron Maiden - be quick or be dead</td></tr>
+            <tr><td>[13:16] *** MS- notices that Lawouach isn't Lawouach_</td></tr>
+            <tr><td>[13:18] &lt orphans&gt hey all</td></tr>
+            <tr><td>[13:21] &lt MS-&gt orphans: Hiya</td></tr>
+            <tr><td>[13:21] &lt orphans&gt how it going?</td></tr>
+            <tr><td>[13:21] &lt orphans&gt *how's</td></tr>
+            <tr><td>[13:21] &lt MS-&gt It's sunny here</td></tr>
+            <tr><td>[13:22] &lt orphans&gt here too - stuck inside though. *sigh*</td></tr>
+            <tr><td>[13:23] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:24] &lt orphans&gt heh, I got a priceless email from my department today. "The rescheduled (but we haven't told you about it being rescheduled) 3657 revision lecture (where they tell you what's in the exam) is NOW. Sorry for late (??!?!?!) notice."</td></tr>
+            <tr><td>[13:25] &lt orphans&gt unsurprisingly I didn't make it...</td></tr>
+            <tr><td>[13:25] &lt MS-&gt crikey</td></tr>
+            <tr><td>[13:26] &lt orphans&gt there's been less important ones where we've got the email an hour in to whatever we were supposed to be attending. This one's pretty annoying though</td></tr>
+            <tr><td>[13:28] &lt MS-&gt Didn't they try something a bit retro like telling people?</td></tr>
+            <tr><td>[13:28] &lt orphans&gt nah, that's not how it generally works :) I'd quite like to know how many people made it</td></tr>
+            <tr><td>[13:29] &lt MS-&gt 42</td></tr>
+            <tr><td>[13:29] &lt orphans&gt 4/2 and you might be close</td></tr>
+            <tr><td>[13:34] &lt orphans&gt meh, at least theres a good wtf today =&gt http://img.thedailywtf.com/images/200805/errord/fatal.gif</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt damn I need a food logo for defuze</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt Can't stand that Trac logo anymore</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt If anyone has an idea and can draw :)</td></tr>
+            <tr><td>[16:20] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:28] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:48] &lt j_baker&gt Does anybody know if there's an example for the SimpleHttp server anywhere other than what's in the cookbook?</td></tr>
+            <tr><td>[16:56] &lt mhrd&gt cookbook page url?</td></tr>
+            <tr><td>[16:57] &lt j_baker&gt http://kamaelia.sourceforge.net/Cookbook/HTTPServer</td></tr>
+            <tr><td>[17:11] &lt mhrd&gt MS- has done some experiments with it (see his Sketches folder in svn)</td></tr>
+            <tr><td>[17:12] &lt mhrd&gt iirc Ryan Lothian (previous GSoCer) wrote it to use as part of his integration of a bittorrent client (?to serve torrents?)</td></tr>
+            <tr><td>[17:13] &lt mhrd&gt Code/Python/Kamaelia/Kamaelia/Protocol/HTTP/Handlers/UploadTorrents.py</td></tr>
+            <tr><td>[17:14] &lt j_baker&gt Ok, will check it out</td></tr>
+            <tr><td>[17:45] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[17:54] &lt Lawouach&gt kabooooooooooooooooom!!!!!!!!!!</td></tr>
+            <tr><td>[17:55] &lt Lawouach&gt damn it</td></tr>
+            <tr><td>[17:55] &lt Lawouach&gt ssl drove me nuts</td></tr>
+            <tr><td>[17:55] &lt Lawouach&gt note the past tense :)</td></tr>
+            <tr><td>[17:55] &lt Lawouach&gt I can read the matrix</td></tr>
+            <tr><td>[17:57] &lt bcarlyon|laptop&gt i own the matrix....</td></tr>
+            <tr><td>[17:58] &lt Lawouach&gt I can read you then.</td></tr>
+            <tr><td>[17:59] &lt Lawouach&gt awesome, I know have SSL working with Kamealia :)</td></tr>
+            <tr><td>[17:59] &lt Lawouach&gt I beat you machine!</td></tr>
+            <tr><td>[18:00] *** bcarlyon|laptop deletes ssl from the matrix</td></tr>
+            <tr><td>[18:00] &lt bcarlyon|laptop&gt muhahahahahahahaha</td></tr>
+            <tr><td>[18:01] *** Lawouach turns the page back and reads it again!</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt now take that you 1 & 0</td></tr>
+            <tr><td>[18:03] *** bcarlyon|laptop swaps your 0 for a 1 and your 1 for a 0</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt now that's just an unfair thing to do</td></tr>
+            <tr><td>[18:05] &lt Lawouach&gt do you think you're like some quantum computer or what?</td></tr>
+            <tr><td>[18:05] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[18:05] &lt bcarlyon|laptop&gt well I am the matrix</td></tr>
+            <tr><td>[18:06] &lt j_baker&gt ...interesting first line to see whenever I join the room. :P</td></tr>
+            <tr><td>[18:06] *** bcarlyon|laptop prepares to remove j_baker from the room</td></tr>
+            <tr><td>[18:06] &lt j_baker&gt lol</td></tr>
+            <tr><td>[18:07] *** bcarlyon|laptop wonders where MS- (the Oracle) is....</td></tr>
+            <tr><td>[18:08] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt j_baker: bcarlyon|laptop seems to believe he can out powered me. Sadly mistaken.</td></tr>
+            <tr><td>[18:10] &lt j_baker&gt :o Lawouach is the one.</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt Well I don't want to show off but heck yeah.</td></tr>
+            <tr><td>[18:11] &lt bcarlyon|laptop&gt You may destroy the Agent Smith Programme and we shall be at Truce, One</td></tr>
+            <tr><td>[18:13] *** bcarlyon|laptop may have watched the Matrix Trilogy recently......</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt one too many indeed</td></tr>
+            <tr><td>[18:14] *** bcarlyon|laptop will now reject ITV and subsitute other channels</td></tr>
+            <tr><td>[18:14] &lt j_baker&gt I &lt 3 the Matrix</td></tr>
+            <tr><td>[18:17] *** bcarlyon|laptop raises a hand tidly, "What does &lt 3 mean, sir?"</td></tr>
+            <tr><td>[18:17] &lt bcarlyon|laptop&gt s/tidly/timidly</td></tr>
+            <tr><td>[18:23] &lt j_baker&gt It's a heart.</td></tr>
+            <tr><td>[18:25] &lt bcarlyon|laptop&gt ah yes</td></tr>
+            <tr><td>[19:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:48] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:48] &lt MS-&gt evening</td></tr>
+            <tr><td>[20:53] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[20:54] &lt bcarlyon|laptop&gt The Oracle is here YAY!</td></tr>
+            <tr><td>[20:54] &lt Chong-&gt Evening, everyone.</td></tr>
+            <tr><td>[20:54] *** MS- looks around</td></tr>
+            <tr><td>[20:54] &lt bcarlyon|laptop&gt hi chong ( MS- is the oracle btw)</td></tr>
+            <tr><td>[20:54] &lt MS-&gt um. O. K.</td></tr>
+            <tr><td>[20:55] &lt MS-&gt I'd be worried if that was the case myself :)</td></tr>
+            <tr><td>[20:55] &lt bcarlyon|laptop&gt MS- read logs ;-)</td></tr>
+            <tr><td>[20:55] &lt MS-&gt I wouldn't have anyone to ask questions</td></tr>
+            <tr><td>[20:55] &lt MS-&gt aside from anything else</td></tr>
+            <tr><td>[20:55] *** MS- looks at logs</td></tr>
+            <tr><td>[20:55] &lt Chong-&gt bcarlyon|laptop: I could not agree more :-)</td></tr>
+            <tr><td>[20:55] &lt MS-&gt Ah I see</td></tr>
+            <tr><td>[20:55] &lt MS-&gt No, you misunderstand</td></tr>
+            <tr><td>[20:55] &lt MS-&gt I'm the spoon</td></tr>
+            <tr><td>[20:56] &lt bcarlyon|laptop&gt haha</td></tr>
+            <tr><td>[20:58] &lt Chong-&gt MS-: So, our meeting time has been set?</td></tr>
+            <tr><td>[20:58] &lt MS-&gt As per the mails, yes</td></tr>
+            <tr><td>[20:59] &lt Chong-&gt Our mentor meeting time is 3pm every Monday and group meeting is 4pm every Thursday?</td></tr>
+            <tr><td>[21:00] &lt MS-&gt Yep - the screams stopped at that point, so that seemed right :)</td></tr>
+            <tr><td>[21:00] &lt Chong-&gt And the time is BST not GMT?</td></tr>
+            <tr><td>[21:00] &lt MS-&gt It's 3pm UK time</td></tr>
+            <tr><td>[21:00] &lt Chong-&gt That's great.</td></tr>
+            <tr><td>[21:01] &lt Chong-&gt Thanks:-)</td></tr>
+            <tr><td>[21:01] &lt MS-&gt I do everything based on saying "Xpm &lt local time&gt" since then everyone knows what you mean and can deal with it</td></tr>
+            <tr><td>[21:01] &lt MS-&gt Otherwise you run in "UTC?, GMT? BST"</td></tr>
+            <tr><td>[21:02] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[21:02] &lt MS-&gt "3pm for me" kinda gets down to brass tacks :)</td></tr>
+            <tr><td>[21:02] &lt MS-&gt For example if j_baker says "3pm for me", OK I have to do a conversion, but that's one that can be done easily</td></tr>
+            <tr><td>[21:03] &lt Chong-&gt hehe</td></tr>
+            <tr><td>[21:10] *** MS- comes across svn2cl</td></tr>
+            <tr><td>[21:14] &lt Chong-&gt MS-, nothing new is there :-)</td></tr>
+            <tr><td>[21:14] &lt MS-&gt what do you mean?</td></tr>
+            <tr><td>[21:15] &lt Chong-&gt I mean in my svn sketch directory cl</td></tr>
+            <tr><td>[21:15] &lt MS-&gt oh, no</td></tr>
+            <tr><td>[21:15] &lt MS-&gt I didn't mean that</td></tr>
+            <tr><td>[21:16] &lt Chong-&gt Then what do you mean svn2cl?</td></tr>
+            <tr><td>[21:16] &lt MS-&gt This: http://ch.tudelft.nl/~arthur/svn2cl/</td></tr>
+            <tr><td>[21:17] &lt Chong-&gt I see. Sorry for the misunderstanding. :-)</td></tr>
+            <tr><td>[21:18] *** MS- changed the topic to Next weekly meeting 4pm 15th May 2008 (first of restart) | http://www.bbc.co.uk/blogs/bbcinternet/2008/05/google_summer_of_code.html | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[21:18] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[21:18] *** MS- greets j_baker :)</td></tr>
+            <tr><td>[21:19] &lt j_baker&gt hello</td></tr>
+            <tr><td>[21:19] &lt MS-&gt heya</td></tr>
+            <tr><td>[21:19] &lt bcarlyon|laptop&gt Hello</td></tr>
+            <tr><td>[21:19] &lt Chong-&gt evening, j_baker</td></tr>
+            <tr><td>[21:19] &lt j_baker&gt Hey MS-, where is the MoreComplexServer?</td></tr>
+            <tr><td>[21:19] &lt MS-&gt hiding</td></tr>
+            <tr><td>[21:19] &lt MS-&gt sorry</td></tr>
+            <tr><td>[21:19] &lt MS-&gt it's in my branch</td></tr>
+            <tr><td>[21:19] &lt MS-&gt  /branches/private_MPS_Scratch/</td></tr>
+            <tr><td>[21:20] &lt MS-&gt You need to install the Axon from there & Kamaelia from theer</td></tr>
+            <tr><td>[21:20] &lt j_baker&gt Ah, I see.</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Or use the ER Modeller tarball</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Which is I think the most recent snapshot available (beyond just using that branch)</td></tr>
+            <tr><td>[21:20] &lt MS-&gt It really needs to get merged at some point</td></tr>
+            <tr><td>[21:21] &lt j_baker&gt One other question: is there a version of the code from the HTTPServer code from the cookbook that I can download?</td></tr>
+            <tr><td>[21:21] &lt j_baker&gt I built one, but I can't seem to get it to return anything but a 404.</td></tr>
+            <tr><td>[21:21] &lt MS-&gt I see</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Yes, Ryan's code is a pain to get started</td></tr>
+            <tr><td>[21:23] &lt j_baker&gt I tried copying it and pasting it, but it did the same thing (although I did have to fix the indentation to get it working).</td></tr>
+            <tr><td>[21:26] &lt MS-&gt OK, I've installed</td></tr>
+            <tr><td>[21:26] &lt MS-&gt From trunk</td></tr>
+            <tr><td>[21:26] &lt MS-&gt Axon</td></tr>
+            <tr><td>[21:26] &lt MS-&gt Kamaelia</td></tr>
+            <tr><td>[21:26] &lt MS-&gt both using</td></tr>
+            <tr><td>[21:26] &lt MS-&gt sudo python setup.py install --force</td></tr>
+            <tr><td>[21:26] &lt MS-&gt (so I know they're from trunk)</td></tr>
+            <tr><td>[21:27] &lt MS-&gt I've copied & pasted the example from the cookbos</td></tr>
+            <tr><td>[21:27] &lt MS-&gt cookbook</td></tr>
+            <tr><td>[21:27] &lt MS-&gt and made this edit:</td></tr>
+            <tr><td>[21:27] &lt MS-&gt diff cookbook_1.py~ cookbook_1.py</td></tr>
+            <tr><td>[21:27] &lt MS-&gt 16c16</td></tr>
+            <tr><td>[21:27] &lt MS-&gt &lt  homedirectory = "/srv/www/htdocs"</td></tr>
+            <tr><td>[21:27] &lt MS-&gt ---</td></tr>
+            <tr><td>[21:27] &lt MS-&gt &gt homedirectory = "/srv/www/htdocs/"</td></tr>
+            <tr><td>[21:27] &lt MS-&gt and it now works</td></tr>
+            <tr><td>[21:27] &lt MS-&gt I'll check in</td></tr>
+            <tr><td>[21:28] &lt j_baker&gt sweet</td></tr>
+            <tr><td>[21:29] &lt j_baker&gt I'm assuming that there's not any kind of restriction on what home directory can be is there?</td></tr>
+            <tr><td>[21:29] &lt MS-&gt There isn't.</td></tr>
+            <tr><td>[21:29] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/HTTP/cookbook_1.py</td></tr>
+            <tr><td>[21:30] &lt MS-&gt Also, you could easily create your own handler to serve from anything anyway</td></tr>
+            <tr><td>[21:30] &lt MS-&gt That's how I did that peer proxy so quickly</td></tr>
+            <tr><td>[21:31] &lt j_baker&gt Is there any reason why you have to use the requestHandlers function instead of a Carousel?</td></tr>
+            <tr><td>[21:31] &lt MS-&gt To be fair, Ryan's code is IMO rather overly complex</td></tr>
+            <tr><td>[21:32] &lt MS-&gt You may well be able to use a Carousel</td></tr>
+            <tr><td>[21:33] &lt MS-&gt Hold on, methinks</td></tr>
+            <tr><td>[21:33] &lt MS-&gt Yes, you do have to use something like requestHandlers</td></tr>
+            <tr><td>[21:34] *** MS- explains</td></tr>
+            <tr><td>[21:34] &lt MS-&gt When</td></tr>
+            <tr><td>[21:34] &lt MS-&gt SimpleServer(protocol=HTTPProtocol,</td></tr>
+            <tr><td>[21:34] &lt MS-&gt  port=8082,</td></tr>
+            <tr><td>[21:34] &lt MS-&gt  socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) ).run()</td></tr>
+            <tr><td>[21:34] &lt MS-&gt runs</td></tr>
+            <tr><td>[21:35] &lt MS-&gt you get the behaviour you see here:</td></tr>
+            <tr><td>[21:35] &lt MS-&gt http://kamaelia.sourceforge.net/Docs/NotationForVisualisingAxon</td></tr>
+            <tr><td>[21:35] &lt MS-&gt ie simple server accepts a connection</td></tr>
+            <tr><td>[21:35] &lt MS-&gt and creates an component to handle the data on the connection</td></tr>
+            <tr><td>[21:36] &lt MS-&gt In this case using HTTPProtocol as a factory function</td></tr>
+            <tr><td>[21:36] &lt MS-&gt which gives us HTTPProtocol objects</td></tr>
+            <tr><td>[21:36] &lt MS-&gt That's all well and good, but a little low level.</td></tr>
+            <tr><td>[21:36] &lt MS-&gt But what does HTTPProtocol actually return</td></tr>
+            <tr><td>[21:36] &lt MS-&gt Well it's a factory function:</td></tr>
+            <tr><td>[21:36] &lt MS-&gt def HTTPProtocol():</td></tr>
+            <tr><td>[21:36] &lt MS-&gt  return HTTPServer(requestHandlers([</td></tr>
+            <tr><td>[21:36] &lt MS-&gt  ["/echo", EchoHandler ],</td></tr>
+            <tr><td>[21:36] &lt MS-&gt  ["/hello", HelloHandler ],</td></tr>
+            <tr><td>[21:36] &lt MS-&gt  ["/", servePage ],</td></tr>
+            <tr><td>[21:36] &lt MS-&gt  ]))</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Which returns objects of the badly named "HTTPServer"</td></tr>
+            <tr><td>[21:37] &lt MS-&gt (Protocol.HTTP.Serverside might be better)</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Anyway</td></tr>
+            <tr><td>[21:38] &lt MS-&gt That component does several things</td></tr>
+            <tr><td>[21:38] &lt MS-&gt One important one though is parsing the request line</td></tr>
+            <tr><td>[21:38] &lt MS-&gt ie this:</td></tr>
+            <tr><td>[21:38] &lt MS-&gt GET /echo HTTP/1.0</td></tr>
+            <tr><td>[21:38] &lt MS-&gt GET /foo HTTP/1.0</td></tr>
+            <tr><td>[21:38] &lt MS-&gt etc</td></tr>
+            <tr><td>[21:39] &lt MS-&gt In this case this would be clearer to split into two sections</td></tr>
+            <tr><td>[21:40] &lt MS-&gt def HTTPProtocol():</td></tr>
+            <tr><td>[21:40] &lt MS-&gt  handler_factory = requestHandlers([ ["/echo", EchoHandler ],</td></tr>
+            <tr><td>[21:40] &lt MS-&gt  ["/hello", HelloHandler ],</td></tr>
+            <tr><td>[21:40] &lt MS-&gt  ["/", servePage ],</td></tr>
+            <tr><td>[21:40] &lt MS-&gt  ])</td></tr>
+            <tr><td>[21:40] &lt MS-&gt  return HTTPServer(handler_factory)</td></tr>
+            <tr><td>[21:40] &lt j_baker&gt Yeah, that definitely makes a lot more sense.</td></tr>
+            <tr><td>[21:40] &lt MS-&gt so requestHandlers( ...args... )</td></tr>
+            <tr><td>[21:41] &lt MS-&gt itself returns a factory</td></tr>
+            <tr><td>[21:41] &lt MS-&gt and depending on the path asked for returns a component to handle it</td></tr>
+            <tr><td>[21:42] &lt MS-&gt So, using a carousel here could be done</td></tr>
+            <tr><td>[21:42] &lt MS-&gt esp given the example on http://kamaelia.sourceforge.net/Cookbook/Carousels</td></tr>
+            <tr><td>[21:42] &lt MS-&gt But it's not the first thing I'd think of personally</td></tr>
+            <tr><td>[21:42] &lt MS-&gt Since HTTPServer itself is actually doing some work</td></tr>
+            <tr><td>[21:43] &lt MS-&gt It's an interesting thought though</td></tr>
+            <tr><td>[21:44] &lt j_baker&gt So then say I want to make the server able to use XMPP...</td></tr>
+            <tr><td>[21:45] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/HTTP/michael.py - this appears to be my code from when I was writing that cookbook entry</td></tr>
+            <tr><td>[21:46] &lt j_baker&gt I would change the protocol function to return either an XMPPServer (theoretically) or an HTTP server depending on the context?</td></tr>
+            <tr><td>[21:47] &lt MS-&gt I'm not sure what you want to do, so can't really comment sensibly I think</td></tr>
+            <tr><td>[21:48] &lt MS-&gt Would I be right in guessing that at present you're (for want of a better phrase) primarily exploring the problem space?</td></tr>
+            <tr><td>[21:48] &lt j_baker&gt Well, perhaps XMPP was a bad example.</td></tr>
+            <tr><td>[21:48] &lt j_baker&gt Yeah</td></tr>
+            <tr><td>[21:48] &lt MS-&gt and what the tools do now/can do/potential?</td></tr>
+            <tr><td>[21:48] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:48] &lt MS-&gt Was beginning to wonder, and then I realised :)</td></tr>
+            <tr><td>[21:49] &lt j_baker&gt But suppose I want to use some other low level protocol instead of HTTP.</td></tr>
+            <tr><td>[21:49] &lt MS-&gt SimpleServer(protocol=SomethingElse, port=1234).run()</td></tr>
+            <tr><td>[21:49] &lt j_baker&gt Ok. That makes sense.</td></tr>
+            <tr><td>[21:50] &lt j_baker&gt One last question: I keep seeing a request variable everywhere. Is that basically just a dictionary that contains the info from the HTTP request?</td></tr>
+            <tr><td>[21:50] &lt MS-&gt This page is probably quite useful for figuring out/understanding SimpleServer</td></tr>
+            <tr><td>[21:51] &lt MS-&gt http://kamaelia.sourceforge.net/Docs/NotationForVisualisingAxon</td></tr>
+            <tr><td>[21:51] &lt MS-&gt Dump it to the console & find out :)</td></tr>
+            <tr><td>[21:52] &lt MS-&gt type(request), dir(request) are very useful when tracing through code that you're not familiar with</td></tr>
+            <tr><td>[21:52] &lt j_baker&gt Ok. I'll just have to play with it and skim through the documentation then.</td></tr>
+            <tr><td>[21:53] &lt MS-&gt Also, I tend to use print for debugging stuff extensively</td></tr>
+            <tr><td>[21:53] &lt j_baker&gt probably a good idea.</td></tr>
+            <tr><td>[21:53] &lt MS-&gt "Axon.debug" should be better than it is, and in the early days (pre release as open source) it was extremely useful</td></tr>
+            <tr><td>[21:53] *** j_baker hates pdb for debugging kamaelia code</td></tr>
+            <tr><td>[21:53] &lt MS-&gt But the pre-release model for debugging doesn't really fit with a shared model very well</td></tr>
+            <tr><td>[21:54] &lt MS-&gt I've never used pdb for that purpose and would be surprised if it worked</td></tr>
+            <tr><td>[21:54] &lt MS-&gt Feel free to say what's bad about code btw</td></tr>
+            <tr><td>[21:54] &lt j_baker&gt Heh... well, it certainly demonstrates just how much work kamaelia automates for you.</td></tr>
+            <tr><td>[21:55] &lt MS-&gt Whilst I like to give negative feedback to people in private, I'm more than happily with public humilation :)</td></tr>
+            <tr><td>[21:55] &lt MS-&gt I actively encouraged Matt to put ### VOMIT on code that I'd written :)</td></tr>
+            <tr><td>[21:56] &lt j_baker&gt lol</td></tr>
+            <tr><td>[21:56] &lt MS-&gt OK, I need to afk for a bit :)</td></tr>
+            <tr><td>[21:56] &lt MS-&gt biab</td></tr>
+            <tr><td>[21:56] &lt j_baker&gt thanks for your help</td></tr>
+            <tr><td>[21:56] &lt MS-&gt you're welcome :)</td></tr>
+            <tr><td>[23:28] &lt j_baker&gt MS- one question: Why is it that some components have a default argument set to None and then throw an error if that argument is None? It seems like it makes more sense just to not give a default argument.</td></tr>
+            <tr><td>[23:28] &lt j_baker&gt (ex: SimpleServer's __init__ method)</td></tr>
+            <tr><td>[23:32] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[23:33] &lt j_baker&gt hi Davbo</td></tr>
+            <tr><td>[23:33] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[23:40] *** Davbo just reinstalled openSUSE and is having problems :(</td></tr>
+            <tr><td>[23:42] &lt j_baker&gt What's wrong?</td></tr>
+            <tr><td>[23:43] &lt Davbo&gt I don't know how but i installed it and there are none of the default software repositories in there</td></tr>
+            <tr><td>[23:43] &lt Davbo&gt so i'm adding them</td></tr>
+            <tr><td>[23:43] &lt Davbo&gt but get errors :/</td></tr>
+            <tr><td>[23:44] &lt j_baker&gt brb</td></tr>
+            <tr><td>[23:44] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[23:46] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[23:46] &lt j_baker&gt Ok, back</td></tr>
+            <tr><td>[23:49] &lt j_baker&gt Anyway, I just used the DVD for the software repositories...</td></tr>

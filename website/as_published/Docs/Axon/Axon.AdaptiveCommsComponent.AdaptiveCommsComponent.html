@@ -1,0 +1,213 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html">AdaptiveCommsComponent</a>.<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">AdaptiveCommsComponent</a></h2>
+</div>
+<p>For examples and more explanations, see the <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-AdaptiveCommsComponent">class AdaptiveCommsComponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>, _AdaptiveCommsable)</h2>
+<div class="section">
+<p>Base class for a component that works just like an ordinary component but can
+also 'adapt' its comms by adding or removing inboxes and outboxes whilst it
+is running.</p>
+<p>Subclass to make your own.</p>
+<p>See <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent._AdaptiveCommsable.html">Axon.AdaptiveCommsComponent._AdaptiveCommsable</a> for the extra methods that
+this subclass of component has.</p>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-AdaptiveCommsComponent.__init__" name="symbol-AdaptiveCommsComponent.__init__">__init__(self, *args, **argd)</a></h4>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.mainBody">mainBody</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__str__">__str__</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents">childComponents</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize">setInboxSize</a>(self, boxname, size)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.send">send</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.main">main</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.dataReady">dataReady</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.initialiseComponent">initialiseComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady">anyReady</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild">__addChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.closeDownComponent">closeDownComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess">_closeDownMicroprocess</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.link">link</a>(self, source, sink, *optionalargs, **kwoptionalargs)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.unlink">unlink</a>(self[, thecomponent][, thelinkage])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.recv">recv</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._deliver">_deliver</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild">removeChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox">Inbox</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren">addChildren</a>(self, *children)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.pause">pause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop">stop</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.activate">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent._AdaptiveCommsable.html">Axon.AdaptiveCommsComponent._AdaptiveCommsable</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.retrieveTrackedResource">retrieveTrackedResource</a>(self, inbox)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.deleteOutbox">deleteOutbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable._newOutboxName">_newOutboxName</a>(self[, name])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.ceaseTrackingResource">ceaseTrackingResource</a>(self, resource)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.addInbox">addInbox</a>(self, *args)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.trackResource">trackResource</a>(self, resource, inbox)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.retrieveTrackedResourceInformation">retrieveTrackedResourceInformation</a>(self, resource)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.deleteInbox">deleteInbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable._newInboxName">_newInboxName</a>(self[, name])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.trackResourceInformation">trackResourceInformation</a>(self, resource, inboxes, outboxes, information)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.addOutbox">addOutbox</a>(self, *args)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

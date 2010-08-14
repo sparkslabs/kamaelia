@@ -1,0 +1,125 @@
+<html>
+<head>
+<title> Developers/Projects/KamaeliaPublish/OpenIssues </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/KamaeliaPublish/OpenIssues">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Kamaelia Publish Open Issues</h2>This page is intended to be a big "todo" list for Kamaelia Publish.&nbsp; It may or may not a lot of items that I would like to get done but may not have time for.&nbsp; So this page shouldn't be construed as being a part of my GSoC work (but some of it will be).<br><br><h3>Bugs</h3>The software still needs much more testing, so this really only represents a list of known bugs:<br><br><ul><li>When the gateway logs in, sometimes it receives messages indicating which users are online, sometimes it doesn't.&nbsp; The gateway should check a user's online status with the server before assuming they are offline.<br></li></ul><h3>Enhancements</h3><ul><li><strike>Make static content able to be served.</strike></li><ul><li>Static content is now served by the gateway.&nbsp; The peer is capable of serving such files, but such would be REALLY slow and somewhat more complicated.<br></li></ul><li>Add the capability to look up registered and possibly logged in users in a database.</li><ul><li>Partially completed:&nbsp; Registered users and whether they are logged in or not can be stored in a SQLite database.</li><li>sub-issue:&nbsp; Get the gateway able to use more different kinds of databases like MySQL, PostgreSQL, etc.</li><li>sub-issue:&nbsp; Having to look up whether or not a user is online EVERY time will probably affect performance.&nbsp; Some kind of caching system should be in place. <br></li></ul><li>Add the capability to send data between the Gateway and serving peer directly.&nbsp; This can be done by either doing an XMPP file transfer or possibly bypassing XMPP altogether.</li><li>Look into getting the Peer to work on Python 2.2.&nbsp; Being able to run a webserver on Symbian would be Pretty Damn Cool (tm).</li><ul><li>This is definitely a "would be nifty" idea.&nbsp; I have no idea if this is even feasible or how much work would be involved in this.<br></li></ul></ul>
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

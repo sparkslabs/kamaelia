@@ -1,0 +1,266 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Protocol.IRC.IRCClient </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Protocol.IRC.IRCClient</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.IRC.html">IRC</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.IRC.IRCClient.html">IRCClient</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#644">Kamaelia IRC Interface</a><ul>
+<li><a class="reference" href="#645">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#646">How does it work?</a><ul>
+<li><a class="reference" href="#647">Sending messages over IRC</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#648">Sending CTCP commands</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#649">Receiving messages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#650">Known Issues</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="644">Kamaelia IRC Interface</h1>
+<p>IRC_Client provides an IRC interface for Kamaelia components.</p>
+<p>SimpleIRCClientPrefab is a handy prefab that links IRC_Client and TCPClient to
+each other and IRC_Client's &quot;talk&quot; and &quot;heard&quot; boxes to the prefab's &quot;inbox&quot;
+and &quot;outbox&quot; boxes, respectively. SimpleIRCClientPrefab does not terminate.</p>
+<p>The functions informat, outformat, channelInformat, and channelOutformat can be
+used to format incoming and outgoing messages.</p>
+<div class="section">
+<h2 id="645"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>To link IRC_Client to the web with console input and output:</p>
+<pre class="literal-block">
+client = Graphline(irc = IRC_Client(),
+              tcp = TCPClient(host, port),
+              linkages = {(&quot;self&quot;, &quot;inbox&quot;) : (&quot;irc&quot; , &quot;talk&quot;),
+                          (&quot;irc&quot;, &quot;outbox&quot;) : (&quot;tcp&quot; , &quot;inbox&quot;),
+                          (&quot;tcp&quot;, &quot;outbox&quot;) : (&quot;irc&quot;, &quot;inbox&quot;),
+                          (&quot;irc&quot;, &quot;heard&quot;) : (&quot;self&quot;, &quot;outbox&quot;),
+                          })
+Pipeline(ConsoleReader(),
+         PureTransformer(channelInformat(&quot;#kamtest&quot;)),
+         client,
+         PureTransformer(channelOutformat(&quot;#kamtest&quot;)),
+         ConsoleEchoer(),
+).run()
+</pre>
+<p>Note:
+The user needs to enter:</p>
+<pre class="literal-block">
+/nick aNickName
+/user uname server host realname
+</pre>
+<p>into the console before doing anything else in the above example. Be quick
+before the connection times out.</p>
+<p>Then try IRC commands preceded by a slash. Messages to the channel need not
+be preceded by anything:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; /join #kamtest
+&gt;&gt;&gt; /msg nickserv identify secretpassword
+&gt;&gt;&gt; /topic #kamtest Testing IRC client
+&gt;&gt;&gt; Hello everyone.
+&gt;&gt;&gt; /part #kamtest
+&gt;&gt;&gt; /quit
+</pre>
+<p>This example sends all plaintext to #kamtest by default. To send to another
+channel by default, change the arguments of channelInformat and
+channelOutformat to the name of a different channel. (E.g. &quot;#python&quot;)</p>
+<p>For a more comprehensive example, see Logger.py in Tools.</p>
+</div>
+<div class="section">
+<h2 id="646"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<div class="section">
+<h3 id="647"><a id="sending-messages-over-irc" name="sending-messages-over-irc">Sending messages over IRC</a></h3>
+<p>IRC_Client accepts commands arriving at its &quot;talk&quot; inbox. A command is a
+list/tuple and is in the form ('cmd', [arg1] [,arg2] [,arg3...]). IRC_Client
+retransmits these as full-fledged IRC commands to its &quot;outbox&quot;. Arguments
+following the command are per RFC 1459 and RFC 2812.</p>
+<p>For example,</p>
+<ul class="simple">
+<li>('NICK', 'Zorknpals')</li>
+<li>('USER', 'jlei', 'nohost', 'noserver', 'Kamaelia IRC Client')</li>
+<li>('JOIN', '#kamaelia')</li>
+<li>('PRIVMSG', '#kamtest', 'hey, how's it going?')</li>
+<li>('TOPIC', '#cheese', &quot;Mozzerella vs. Parmesan&quot;)</li>
+<li>('QUIT')</li>
+<li>('QUIT', &quot;Konversation terminated!&quot;)</li>
+<li>('BERSERKER', &quot;Lvl. 10&quot;)</li>
+</ul>
+<p>Note that &quot;BERSERKER&quot; is not a recognized IRC command. IRC_Client will not
+complain about this, as it treats commands uniformly, but you might get
+an error 421, &quot;ERR_UNKNOWNCOMMAND&quot; back from the server.</p>
+</div>
+<div class="section">
+<h3 id="648"><a id="sending-ctcp-commands" name="sending-ctcp-commands">Sending CTCP commands</a></h3>
+<p>IRC_Client also handles a few CTCP commands:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">ACTION:</th><td class="field-body">(&quot;ME&quot;, channel-or-user, the-action-that-you-do).</td>
+</tr>
+<tr class="field"><th class="field-name">MSG:</th><td class="field-body">If you use the outformat function defined here, 'MSG' commands are
+treated as 'PRIVMSGs'.</td>
+</tr>
+</tbody>
+</table>
+<p>No other CTCP commands are implemented.</p>
+</div>
+<div class="section">
+<h3 id="649"><a id="receiving-messages" name="receiving-messages">Receiving messages</a></h3>
+<p>IRC_Client's &quot;inbox&quot; takes messages from an IRC server and retransmits them to
+its &quot;heard&quot; outbox in tuple format. Currently each tuple has fields (command,
+sender, receiver, rest). This method has worked well so far.</p>
+<p>Example output:</p>
+<div class="line-block">
+<div class="line">('001', 'heinlein.freenode.net', 'jinnaslogbot', ' Welcome to the freenode IRC Network jinnaslogbot')</div>
+<div class="line">('NOTICE', '', 'jinnaslogbot', '***Checking ident')</div>
+<div class="line">('PRIVMSG', 'jlei', '#kamtest', 'stuff')</div>
+<div class="line">('PART', 'kambot', '#kamtest', 'see you later)</div>
+<div class="line">('ACTION', 'jinnaslogbot',  '#kamtest', 'does the macarena')</div>
+</div>
+<p>To stop IRC_Client, send a shutdownMicroprocess or a producerFinished to its
+&quot;control&quot; box. The higher-level client must send a login itself and respond to
+pings. IRC_Client will not do this automatically.</p>
+</div>
+</div>
+<div class="section">
+<h2 id="650"><a id="known-issues" name="known-issues">Known Issues</a></h2>
+<p>The prefab does not terminate. (?)
+Sometimes messages from the server are split up. IRC_Client does not recognize
+these messages and flags them as errors.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

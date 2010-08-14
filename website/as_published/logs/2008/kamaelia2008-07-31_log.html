@@ -1,0 +1,667 @@
+<html><body><table>
+            <tr><td>[00:05] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[02:51] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[05:41] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:41] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:18] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[07:18] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[07:19] &lt ms-afk&gt (morning)</td></tr>
+            <tr><td>[07:33] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:37] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[08:46] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:00] &lt wyleu&gt morning all... How's tricks?</td></tr>
+            <tr><td>[09:01] &lt ms-afk&gt morning</td></tr>
+            <tr><td>[09:01] &lt ms-afk&gt I'm busy (as seems usual :) )</td></tr>
+            <tr><td>[09:01] &lt ms-afk&gt yourself?</td></tr>
+            <tr><td>[09:06] &lt wyleu&gt Being driven irritabl by X-10</td></tr>
+            <tr><td>[09:07] &lt wyleu&gt is there a delay module in kamaelia, I've not found one listed as delay but I can imagine one hasn't been done.</td></tr>
+            <tr><td>[09:14] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:14] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[09:15] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:16] &lt ms-afk&gt What do you want a "delay" module to do?</td></tr>
+            <tr><td>[09:16] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:21] &lt vmlemon_&gt Hmm, any components to use Xine or GStreamer with Kamaelia, to take advantage of additional codec support? (e.g. TwinVQ, FLAC or AMR)</td></tr>
+            <tr><td>[09:40] &lt Lawouach&gt http://glumbert.com/media/swimmerstory &lt -- brilliant :)</td></tr>
+            <tr><td>[09:41] &lt Lawouach&gt not the commentary BTW</td></tr>
+            <tr><td>[09:41] &lt Lawouach&gt but what the swimmer does, it's quite a funny situation</td></tr>
+            <tr><td>[09:45] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[09:45] Reply: does the macarena</td></tr>
+            <tr><td>[09:48] *** BCarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[09:54] &lt vmlemon_&gt kamlogbot: poke</td></tr>
+            <tr><td>[09:54] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[09:55] &lt vmlemon_&gt What happens if you get the eye? ;)</td></tr>
+            <tr><td>[09:56] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:43] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:49] &lt vmlemon_&gt Hmm, anyone know of a good Jabber client that supports the x:data extension?</td></tr>
+            <tr><td>[10:49] Reply: Hm?</td></tr>
+            <tr><td>[11:06] &lt Lawouach_&gt vmlemon_: that doesn't mean much really</td></tr>
+            <tr><td>[11:06] &lt Lawouach_&gt x:data is just a way to put extra meta-data</td></tr>
+            <tr><td>[11:06] &lt Lawouach_&gt it's not a service on its own</td></tr>
+            <tr><td>[11:06] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[11:07] *** ms-afk wonders what x(very big grin smiley)ata is</td></tr>
+            <tr><td>[11:07] &lt vmlemon_&gt o.O</td></tr>
+            <tr><td>[11:07] &lt vmlemon_&gt Nay for mangling</td></tr>
+            <tr><td>[11:07] &lt vmlemon_&gt Looks like my client doesn't support it, or at least services claim it doesn't</td></tr>
+            <tr><td>[11:07] &lt Davbo&gt Hah, same here ms-afk :P</td></tr>
+            <tr><td>[11:07] &lt Davbo&gt Good ol' Pidgin</td></tr>
+            <tr><td>[11:08] &lt Lawouach_&gt vmlemon_: could you expand a bit?</td></tr>
+            <tr><td>[11:08] &lt vmlemon_&gt Just going to try something</td></tr>
+            <tr><td>[11:09] &lt ms-afk&gt H m m , a n y o n e k n o w o f a g o o d J a b b e r c l i e n t t h a t s u p p o r t s t h e x : D a t a e x t e n s i o n ?</td></tr>
+            <tr><td>[11:10] &lt ms-afk&gt H m m , a n y o n e k n o w o f a g o o d J a b b e r c l i e n t t h a t s u p p o r t s t h e x : D a t a e x t e n s i o n ?</td></tr>
+            <tr><td>[11:11] *** Lawouach_ withdraws ms-afk his beer.</td></tr>
+            <tr><td>[11:11] &lt vmlemon_&gt "Yay", it looks like the server with the transport I was going to use is now broken...</td></tr>
+            <tr><td>[11:12] &lt vmlemon_&gt Unless it's just Kopete being a broken piece of junk</td></tr>
+            <tr><td>[11:16] &lt ms-afk&gt H m m , a n y o n e k n o w o f a g o o d</td></tr>
+            <tr><td>[11:16] &lt ms-afk&gt  J a b b e r c l i e n t t h a t s u p p o r t s t h e x : D a t a e x t e n s i o n ?</td></tr>
+            <tr><td>[11:16] &lt Lawouach_&gt I still don't have a clue what you're doing vmlemon_ :)</td></tr>
+            <tr><td>[11:17] &lt vmlemon_&gt Essentially, when trying to register for certain transports (the IRC one in currently), I get a message from the module/server running the transport ("mod_irc") stating that my client doesn't support x:data, or words to that effect</td></tr>
+            <tr><td>[11:17] &lt vmlemon_&gt (albeit in Spanish or Polish, at least from the servers I've tested)</td></tr>
+            <tr><td>[11:18] &lt vmlemon_&gt Trying to click Register gives "The server denied the registration form."</td></tr>
+            <tr><td>[11:18] &lt Lawouach_&gt Strange</td></tr>
+            <tr><td>[11:18] &lt vmlemon_&gt ("Reason: "" )</td></tr>
+            <tr><td>[11:19] &lt vmlemon_&gt Aah, I've found a server that seems to have a working IRC transport to test</td></tr>
+            <tr><td>[11:20] &lt vmlemon_&gt Probably either buggy servers, a client issue, or something is horribly wrong with the transports</td></tr>
+            <tr><td>[11:23] *** bcarlyon|laptop is now known as BarryCarlyon</td></tr>
+            <tr><td>[11:23] &lt vmlemon_&gt I now have a registration form, but trying to submit anything results in "The server denied the registration form. Reason: " " "</td></tr>
+            <tr><td>[11:25] &lt vmlemon_&gt Trying another server gives "You need an x:data capable client to configure mod_irc settings"</td></tr>
+            <tr><td>[11:32] &lt Lawouach_&gt hey use headstock and kamaelia :)</td></tr>
+            <tr><td>[11:32] &lt Lawouach_&gt and roll with it ;)</td></tr>
+            <tr><td>[11:32] &lt vmlemon_&gt Hehe</td></tr>
+            <tr><td>[11:35] &lt vmlemon_&gt If I knew Kamaelia and Python better, I'd probably try and hack up some sort of frontend...</td></tr>
+            <tr><td>[11:39] &lt Davbo&gt I'm sure it isn't a problem with your Python skills, Python doesn't work that way IMO</td></tr>
+            <tr><td>[11:39] &lt Davbo&gt you can't really go "horribly wrong"</td></tr>
+            <tr><td>[11:39] &lt vmlemon_&gt I don't know much of it at the moment, that said</td></tr>
+            <tr><td>[11:39] &lt vmlemon_&gt (So I'm bound to get stuck quickly :( )</td></tr>
+            <tr><td>[11:40] &lt Davbo&gt then it's just a case of practise :D</td></tr>
+            <tr><td>[11:42] &lt Davbo&gt kamaelian: building rules system now - You writing Prolog? ;)</td></tr>
+            <tr><td>[11:43] *** Davbo isn't looking forward to Prolog and Haskell next year</td></tr>
+            <tr><td>[11:44] *** vmlemon_ remembers seeing a web server written in PostScript, of all things a while ago</td></tr>
+            <tr><td>[11:45] &lt Lawouach_&gt Prolog is powerful</td></tr>
+            <tr><td>[11:45] &lt Lawouach_&gt syntax isn't pretty but well</td></tr>
+            <tr><td>[11:46] &lt Davbo&gt So is Assembly Lawouach_</td></tr>
+            <tr><td>[11:47] &lt orphans&gt it's now 100% official. I hate c++ more than life itself</td></tr>
+            <tr><td>[11:48] &lt orphans&gt or erm, afternoon all</td></tr>
+            <tr><td>[11:48] &lt Lawouach_&gt lol hi mate</td></tr>
+            <tr><td>[11:48] &lt vmlemon_&gt I thought Java was the one that was Made To Hate®, here ;)</td></tr>
+            <tr><td>[11:48] &lt Davbo&gt Afternoon orphans lol</td></tr>
+            <tr><td>[11:48] &lt vmlemon_&gt Hi orphans</td></tr>
+            <tr><td>[11:49] &lt vmlemon_&gt http://cbbrowne.com/info/postscript.html has the web server, if I remember correctly</td></tr>
+            <tr><td>[11:49] &lt Davbo&gt if x != python:</td></tr>
+            <tr><td>[11:49] &lt Davbo&gt  hate(x)</td></tr>
+            <tr><td>[11:49] &lt vmlemon_&gt There's a snake!</td></tr>
+            <tr><td>[11:49] &lt orphans&gt seriously, now it does what I want it to, just very very badly, and for no particular reason</td></tr>
+            <tr><td>[11:57] &lt Davbo&gt :-(</td></tr>
+            <tr><td>[12:18] &lt ms-afk&gt Davbo: "you can't really go "horribly wrong"" - Oh I don't know. It's possible to make it segfault/core dump if you try hard to do something dumb</td></tr>
+            <tr><td>[12:18] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[12:19] &lt ms-afk&gt "kamaelian: building rules system now - You writing Prolog? "</td></tr>
+            <tr><td>[12:19] &lt ms-afk&gt Sssh. mhrd-afk will hear</td></tr>
+            <tr><td>[12:19] &lt Davbo&gt You shouldn't twitter it then :p</td></tr>
+            <tr><td>[12:20] &lt ms-afk&gt No.</td></tr>
+            <tr><td>[12:20] &lt ms-afk&gt &lt /ambigious&gt</td></tr>
+            <tr><td>[12:21] &lt ms-afk&gt Woo:</td></tr>
+            <tr><td>[12:21] &lt ms-afk&gt &gt&gt&gt &gt&gt&gt Fatal Python error: PyEval_RestoreThread: NULL tstate</td></tr>
+            <tr><td>[12:21] &lt ms-afk&gt Just using the command line interpreter</td></tr>
+            <tr><td>[12:21] &lt ms-afk&gt I'm good at breaking things</td></tr>
+            <tr><td>[12:21] &lt mhrd-afk&gt Prolog is fun</td></tr>
+            <tr><td>[12:23] &lt orphans&gt ms-afk, I see you've been trying out my latest version of the bindings :D</td></tr>
+            <tr><td>[12:23] &lt ms-afk&gt heh</td></tr>
+            <tr><td>[12:23] &lt ms-afk&gt No, I can do that just using python</td></tr>
+            <tr><td>[12:24] &lt Davbo&gt I'm just scared of the module really mhrd-afk: http://www.dcs.shef.ac.uk/intranet/teaching/modules/level2/com3290.html</td></tr>
+            <tr><td>[12:24] &lt vmlemon_&gt ms-afk: I've just put the CA in the post</td></tr>
+            <tr><td>[12:25] &lt vmlemon_&gt Of course, it's up to Royal Snail to get it to you now ;)</td></tr>
+            <tr><td>[12:25] &lt mhrd-afk&gt Davbo: lots of complicated sounding words for stuff thats not actually too bad. I never did file i/o in prolog though</td></tr>
+            <tr><td>[12:25] &lt mhrd-afk&gt its all a bit abstract, so is of arguable use in Real Life; however whats important is that it makes you think differently about how you can approach some kinds of problems</td></tr>
+            <tr><td>[12:25] &lt ms-afk&gt Davbo: Probably not time to point this out: http://www.pyconuk.org/talk_abstracts.html#1015</td></tr>
+            <tr><td>[12:26] &lt ms-afk&gt Oh, it's one of those "summaries"</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt Heh, I'd hate that ms-afk.</td></tr>
+            <tr><td>[12:27] &lt ms-afk&gt Davbo: It's probably worth mentioning that alot of CS papers are obtuse to the point of unreadability because the more unreadable it is, the more likely it is to obtain funding</td></tr>
+            <tr><td>[12:27] &lt mhrd-afk&gt yep</td></tr>
+            <tr><td>[12:27] &lt ms-afk&gt People get stuck in that mode and make it hard to read</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt one of the reasons i dislike Java so much is the teaching of it, I'd much rather self teach myself Python and enjoy it</td></tr>
+            <tr><td>[12:28] &lt mhrd-afk&gt I remember reading a paper about something someone was doing in symbolic logic AI stuff and you could boil down teh inpenetrable language and equations to a neat summary on the back of an envelope (eventually)</td></tr>
+            <tr><td>[12:28] &lt ms-afk&gt mhrd-afk: That density biased sampling paper spings to mind springs</td></tr>
+            <tr><td>[12:28] &lt vmlemon_&gt Java == 0xBADCAFE ;)</td></tr>
+            <tr><td>[12:28] &lt mhrd-afk&gt ms-afk: so long ago, I've forgotten it. I suspect I saw worse when doing prologgy stuff for my 3rd year project tho ;-)</td></tr>
+            <tr><td>[12:29] *** Davbo mostly hates academics.</td></tr>
+            <tr><td>[12:29] &lt mhrd-afk&gt all that said - being able to express an idea in formal notation has its uses sometimes - to help clarify it for yourself ... but its no excuse for missing out the intelligible explanation :-)</td></tr>
+            <tr><td>[12:29] &lt Davbo&gt Agreed mhrd-afk</td></tr>
+            <tr><td>[12:30] &lt ms-afk&gt Davbo: In manchester the prolog & lisp course taught much the same things, but the labs were fun</td></tr>
+            <tr><td>[12:31] &lt ms-afk&gt Since they used the tools given to answer such questions as "I have these bills due on these dates, these people sharing a house, and the likelihood of eviction, water/electricity/gas being cut off is X - What order should I pay the bills in and when, and how much"</td></tr>
+            <tr><td>[12:31] &lt ms-afk&gt Remarkably practical :)</td></tr>
+            <tr><td>[12:31] &lt mhrd-afk&gt heh, cunning motivation :)</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt Anyway ms-afk, learning Python simply isn't enough for having to live in Leeds ;-)</td></tr>
+            <tr><td>[12:34] &lt Davbo&gt (local rivalry)</td></tr>
+            <tr><td>[12:34] &lt mhrd-afk&gt besides, interacting with the prolog interpreter is kinda amusing: it answers the declarations or queries you make by responding: "yes" or "no" which is a nice change from "NoClassDefFoundError" or "Traceback ... NameError: ...." :)</td></tr>
+            <tr><td>[12:35] &lt mhrd-afk&gt s/declarations// s/queries/assertions/</td></tr>
+            <tr><td>[12:36] &lt ms-afk&gt mhrd-afk: no</td></tr>
+            <tr><td>[12:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:36] &lt Davbo&gt it's this module which i fear the most though: http://www.dcs.shef.ac.uk/intranet/teaching/modules/level2/com3400.html</td></tr>
+            <tr><td>[12:37] &lt Davbo&gt More MATLAB too :-(</td></tr>
+            <tr><td>[12:39] &lt ms-afk&gt Davbo: you want a translation of that abstract&gt</td></tr>
+            <tr><td>[12:39] &lt ms-afk&gt ?</td></tr>
+            <tr><td>[12:40] &lt Davbo&gt is the translation, "More maths" ?</td></tr>
+            <tr><td>[12:40] &lt ms-afk&gt http://pastebin.org/60231</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[12:43] &lt ms-afk&gt Seriously that's the way I read it</td></tr>
+            <tr><td>[12:43] &lt ms-afk&gt except they use more complicated words really</td></tr>
+            <tr><td>[12:45] *** ms-afk watches : http://blip.tv/file/1108217/</td></tr>
+            <tr><td>[12:45] &lt ms-afk&gt Worth listening to</td></tr>
+            <tr><td>[12:45] &lt orphans&gt argh</td></tr>
+            <tr><td>[12:45] &lt ms-afk&gt r0ml's a nice guy, went for lunch with him at OSCON 2 years ago on the last day, and he's a really interesting guy</td></tr>
+            <tr><td>[12:45] *** orphans has problems</td></tr>
+            <tr><td>[12:46] &lt ms-afk&gt orphans: watch the video then, it will answer all your questions :-D</td></tr>
+            <tr><td>[12:46] &lt ms-afk&gt (may not be true)</td></tr>
+            <tr><td>[12:46] &lt orphans&gt heh, embrace error :)</td></tr>
+            <tr><td>[12:47] &lt vmlemon_&gt kamlogbot: ecky</td></tr>
+            <tr><td>[12:47] Reply: Ptang!</td></tr>
+            <tr><td>[12:47] &lt orphans&gt I have a feeling I might have come up against a fairly fundamental limitation in python</td></tr>
+            <tr><td>[12:47] &lt ms-afk&gt  orphans - what's the problem?</td></tr>
+            <tr><td>[12:47] &lt ms-afk&gt the gil?</td></tr>
+            <tr><td>[12:47] &lt orphans&gt got it in one :)</td></tr>
+            <tr><td>[12:47] &lt ms-afk&gt That's probably the only one I can think of</td></tr>
+            <tr><td>[12:47] &lt ms-afk&gt why is that a problem for you?</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[12:48] &lt orphans&gt I think that it's taking too long to acquire it so I can call into python and return audio data</td></tr>
+            <tr><td>[12:49] &lt orphans&gt meaning I get pops in the output where it can't call the function quick enough</td></tr>
+            <tr><td>[13:00] &lt ms-afk&gt Maybe you're grabbing data in the wrong way then/</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt As a general design principle</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt Something calling *into* python is often IMO a bad design</td></tr>
+            <tr><td>[13:02] &lt orphans&gt mhm. I was just mirroring the c++ api which used callbacks in a seperate thread, but it looks like I might have to go at it the other way</td></tr>
+            <tr><td>[13:03] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[13:08] *** ms-afk is tired</td></tr>
+            <tr><td>[13:08] *** ms-afk just can't concentrate today either</td></tr>
+            <tr><td>[13:09] &lt Chong-&gt ms-afk: hehe, you need a good rest :-)</td></tr>
+            <tr><td>[13:09] &lt vmlemon_&gt Hi Chong-</td></tr>
+            <tr><td>[13:12] &lt Chong-&gt afternoon, vmlemon_</td></tr>
+            <tr><td>[13:18] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[13:18] &lt vmlemon_&gt Hi wyleu</td></tr>
+            <tr><td>[13:19] &lt wyleu&gt Hi vm, I wish I had the literary skills to be able to express my full total and complete loathing for all involved with trying to load linux based software!!! GGrrrrrrr</td></tr>
+            <tr><td>[13:21] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[13:21] &lt wyleu&gt pymedia on to debian is a nightmare, I don't care what faad is, I'm beyond caring if I have version 0 or 2.0 ( I won't bother to ask what happened to version 1).</td></tr>
+            <tr><td>[13:21] &lt wyleu&gt picks up virtual spode china tea set and hurls it at wall ....</td></tr>
+            <tr><td>[13:22] &lt wyleu&gt ....and relax ....</td></tr>
+            <tr><td>[13:22] &lt wyleu&gt How is everybody ? :D</td></tr>
+            <tr><td>[13:26] &lt Chong-&gt wyleu: hi, I also found that not all open source software are well maintained and documented. for some, it is even hard to get them installed.</td></tr>
+            <tr><td>[13:27] &lt wyleu&gt It's a pain. You start out with a fairly simple objective in mind and before you know it your chasing down obscure command line options on 'easy to use' install programmes and inpenitrable libraries with outlandish names and versions, generally with .so on the end</td></tr>
+            <tr><td>[13:28] &lt wyleu&gt I can understand why and how it's ended up like that but when you get to the point of switching istributions to loa stuff it really does get too much.</td></tr>
+            <tr><td>[13:28] *** Chong- also found not all freenode channels are as friendly as #kamaelia, ask #redfoot rdblib questions, no one even bother to answer.</td></tr>
+            <tr><td>[13:29] &lt ms-afk&gt groups vary</td></tr>
+            <tr><td>[13:29] *** vmlemon_ tends to install stuff from source</td></tr>
+            <tr><td>[13:29] &lt vmlemon_&gt (usually from SVN/CVS)</td></tr>
+            <tr><td>[13:29] &lt ms-afk&gt projects vary</td></tr>
+            <tr><td>[13:29] &lt vmlemon_&gt I've seen some things that are almost impossible to install</td></tr>
+            <tr><td>[13:29] &lt vmlemon_&gt (Certain binary-only applications come to mind)</td></tr>
+            <tr><td>[13:30] &lt wyleu&gt Oh yes, again it's perfectly understandable I'm quite convinced that the Debian gur's who float, cross legged two metres off the ground must get sick to the back teeth of answering the self same questions and delight in the freedom as they understan it, but some consensus about presenting help must emerge before this is useable by the majority.</td></tr>
+            <tr><td>[13:30] &lt ms-afk&gt Ubuntu was started because of that issue with debian</td></tr>
+            <tr><td>[13:30] &lt Chong-&gt ms-afk: yes. though there are several people on the channel, I have never seen them talking :p</td></tr>
+            <tr><td>[13:30] &lt ms-afk&gt so?</td></tr>
+            <tr><td>[13:30] &lt ms-afk&gt People listen on lots of channels</td></tr>
+            <tr><td>[13:31] &lt vmlemon_&gt I remember the pain of trying to install a certain Apache2 module and application framework (Lasso Professional)</td></tr>
+            <tr><td>[13:31] &lt ms-afk&gt I'm sure there's times when people have hoped that I could answer *their* question but I've simply not had time</td></tr>
+            <tr><td>[13:31] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[13:31] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[13:31] &lt vmlemon_&gt I got it semi-installed, but no matter what I did, it choked on library errors, and had all sorts of other nasty problems that prevented it from working</td></tr>
+            <tr><td>[13:31] &lt ms-afk&gt kamlogbot: be quiet</td></tr>
+            <tr><td>[13:32] &lt ms-afk&gt DIfferent groups have very different motivations for release as well</td></tr>
+            <tr><td>[13:32] &lt vmlemon_&gt kamlogbot: poke</td></tr>
+            <tr><td>[13:32] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[13:32] &lt ms-afk&gt I know of at least one BBC Research project which was just dumped on SF and has been left alone</td></tr>
+            <tr><td>[13:32] &lt vmlemon_&gt kamlogbot: Can you make us a cup of tea? ;)</td></tr>
+            <tr><td>[13:32] &lt vmlemon_&gt Which one?</td></tr>
+            <tr><td>[13:33] &lt wyleu&gt Yes their is a strange false dawn effect, You start on Suse and it all goes swimmingly till you have python dev system that can't ruun idle cos of some dependancy, you switch to Mandriva which seems better supported until it grinds to a halt with incompatabilities, you switch to debian cos' that's what people you respect use, and then you start to hear you should have chosen Ubutnu.... I...</td></tr>
+            <tr><td>[13:33] &lt wyleu&gt ...think I'm going to take up heroin............... Again :D</td></tr>
+            <tr><td>[13:33] &lt ms-afk&gt The reason I believe is because it's then available. Though some may view it as dumped</td></tr>
+            <tr><td>[13:33] &lt vmlemon_&gt Unless they thought "that was cool, we're done now though, enjoy"</td></tr>
+            <tr><td>[13:33] &lt vmlemon_&gt and left it be since</td></tr>
+            <tr><td>[13:33] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[13:34] &lt ms-afk&gt I've been using SuSE happily for the past 10 years or so. Personally I find it works well. IDLE sucks at the best of times IMO anyway. The only OS its half usable on is Windows, and even then IDLE is still quite nasty.</td></tr>
+            <tr><td>[13:34] &lt wyleu&gt I would love their to be a mechanism that would date webpages last altered date. It's such a pain delving down into a seemingly relevent page only to discover your dealling with something that hasn't been touched in five years.</td></tr>
+            <tr><td>[13:34] &lt ms-afk&gt That's why people normally use wikis</td></tr>
+            <tr><td>[13:35] &lt ms-afk&gt or have shifted over</td></tr>
+            <tr><td>[13:35] &lt ms-afk&gt Oh, you can also ask firefox to give you the last modified time</td></tr>
+            <tr><td>[13:35] &lt ms-afk&gt if it's valid</td></tr>
+            <tr><td>[13:35] *** vmlemon_ wants a decent web caching proxy that "really works"...</td></tr>
+            <tr><td>[13:35] &lt wyleu&gt I quite liked pythonwin, but of course that was win only. I KNOW I should be on EMACS ( Guido told me personally :D) but IT just feels like vi and vi and I have agreed to seperate and vi got the kids.</td></tr>
+            <tr><td>[13:35] &lt vmlemon_&gt I've tried WWWOFFLE, but it seems better suited to downloading into the cache, and going into Offline Mode</td></tr>
+            <tr><td>[13:36] &lt vmlemon_&gt Apache's modules seem non-effective, and Squid is a pain to set up</td></tr>
+            <tr><td>[13:36] &lt j_baker&gt emacs and vi....</td></tr>
+            <tr><td>[13:36] *** j_baker shivers</td></tr>
+            <tr><td>[13:36] *** ms-afk wonders why this has turned into the bitching channel</td></tr>
+            <tr><td>[13:36] &lt ms-afk&gt If people want to bitch, please bitch about kamaelia.</td></tr>
+            <tr><td>[13:36] &lt ms-afk&gt (at least its then on topic :) )</td></tr>
+            <tr><td>[13:36] &lt orphans&gt god, that Kamaelia. Rubbish innit :D</td></tr>
+            <tr><td>[13:37] &lt vmlemon_&gt But, but, it's full of rainbows and kittens</td></tr>
+            <tr><td>[13:37] &lt vmlemon_&gt it can't be rubbish...</td></tr>
+            <tr><td>[13:37] *** orphans apologises and gets back to work - I love Kamaelia really</td></tr>
+            <tr><td>[13:38] &lt ms-afk&gt (no, I find bitching about K useful, the rest I've heard 100 times already and use SuSE to avoid)</td></tr>
+            <tr><td>[13:39] &lt wyleu&gt Sorry ms-afk it is a kamaelia bitch since I'm trying to get pymedia up so I can run oprhans simple synth stuff to just make a beep I can control the volume off. It's galling because I had pymedia runnig under mandriva and cleaned that off cos I ran out of /usr space and replaced it with debian, and nobody understands that sentance except you guys.</td></tr>
+            <tr><td>[13:39] &lt ms-afk&gt No, it's a pymedia bitch</td></tr>
+            <tr><td>[13:39] &lt vmlemon_&gt Deep breath, and ahh</td></tr>
+            <tr><td>[13:40] &lt wyleu&gt Probably true ( that's funny they say its a faad2. bitch, and he isn't doesn't seem to be there right now)</td></tr>
+            <tr><td>[13:40] &lt ms-afk&gt OK, meeting time in 5 or 10 minutes or so.</td></tr>
+            <tr><td>[13:40] &lt wyleu&gt Ogf course it's Thursday isn't it... I forgot apologies.</td></tr>
+            <tr><td>[13:41] &lt orphans&gt ooh, forgot also</td></tr>
+            <tr><td>[13:47] *** ms-afk just grabs a coffee before starting</td></tr>
+            <tr><td>[13:47] *** Davbo pauses his episode of The Wire</td></tr>
+            <tr><td>[13:48] &lt wyleu&gt shouts 'WALLY'</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt OK, everyone ready?</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt I'm here</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt that's enough for me</td></tr>
+            <tr><td>[13:52] &lt vmlemon_&gt Ready... Steady... Go? ;)</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt ==============================================</td></tr>
+            <tr><td>[13:53] &lt Chong-&gt Go Go Go :-)</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt START OF WEEKLY IRC KAMAELIA MEETING, 20080731</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt ==============================================</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 1. Note of Agenda</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt -----------------</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 1. Note of Agenda</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 2. Participants</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 3. Activity Reports</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 4.1 Development tools (code.google vs sourceforge, website, etc)</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 4.2 GSOC Issues, Expectations for next week.</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt Thursday 7th August 2008, 4pm UK time</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt Any other discussion items?</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt Those struck me as things that are arising at the moment</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt OK, moving on</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt 2. Participants</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt ---------------</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt Present:</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt Lawouach, aa_, BarryCarlyon, Chong-, Davbo, j_baker, kamlogbot, mhrd-afk, ms-afk, orphans, Uraeus, vmlemon, wyleu</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt 3. Activity Reports</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt -------------------</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt Ready?</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt Set?</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt Go!</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[13:54] &lt orphans&gt DONE: Written binding for RtAudio, tested it, found out it doesn't work because</td></tr>
+            <tr><td>[13:54] &lt orphans&gt of GIL fun.</td></tr>
+            <tr><td>[13:54] &lt orphans&gt TODO: Change the binding so it doesn't call into python. Test it, and put audio</td></tr>
+            <tr><td>[13:54] &lt orphans&gt  components into Jam. Test, document and clean up anything which moves.</td></tr>
+            <tr><td>[13:54] &lt orphans&gt BLOCKED: None</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt DONE: Finished up merging layers and saving them as images. Got simple animations using layers as frames with 1 layer background.</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt TODO: Need to implement loading images, saving images and animation into the ToolBox. Perhaps using a widget from OcempGUI. Refine the animation tools and look at ways for saving an animation.</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt BLOCKED: None.</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt BLOCKED: Largely blocked by work (meetings away from base)</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt  DONE: Primarily answered questions, wrote small game/example using pygame sprite code</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt  TODO: Release (probably this weekend. I know it's a slip, but for practical reasons)</td></tr>
+            <tr><td>[13:55] &lt j_baker&gt DONE: Added buffering capabilities to minimal, got MoinMoin to (mostly) work with Kamaelia Publish, made a WSGI-like request translator, fixed various URL routing and path handling issues.</td></tr>
+            <tr><td>[13:55] &lt j_baker&gt TODO: Figure something out with static content, Add some database capabilities to the gateway, test KP with more WSGI software</td></tr>
+            <tr><td>[13:55] &lt j_baker&gt BLOCKED: Work</td></tr>
+            <tr><td>[13:55] &lt Chong-&gt DONE: Experiment on SPARQL, rdflib and librdf, find foaf data uri, fetch N layers' FOAF data from a uri</td></tr>
+            <tr><td>[13:55] &lt Chong-&gt TODO: Transform the FOAF parser to Kamaelia component and send data to TopologyViewer3D, finish up FOAF application coding, clean up code and start another application coding hopefully</td></tr>
+            <tr><td>[13:55] &lt Chong-&gt n coding hopefully BLOCKED: None</td></tr>
+            <tr><td>[13:55] &lt Chong-&gt BLOCKED: None</td></tr>
+            <tr><td>[13:56] &lt ms-afk&gt j_baker: Looks like you're still making good progress desite BLOCKED :)</td></tr>
+            <tr><td>[13:56] &lt j_baker&gt Yeah, I feel so. It's not as much as I would make otherwise though</td></tr>
+            <tr><td>[13:56] &lt ms-afk&gt Hope that's not overloading you though (I'm guessing you wouldn't, but just noting that it'd concern me ) :)</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt Chong- that's a disgusting amount of acronyms</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt Chong-: Could I add a todo - post an explanation of what your todo, and done *means* to the list ?</td></tr>
+            <tr><td>[13:57] &lt Chong-&gt Davbo: yep, sorry :-)</td></tr>
+            <tr><td>[13:57] *** orphans notes that his done for this week = epic fail :)</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt Probably a paragraph for each bit perhaps :-)</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt orphans: Nah, it's progress.</td></tr>
+            <tr><td>[13:57] &lt Chong-&gt ms-afk: sure, I'll</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt You now know what doesn't work</td></tr>
+            <tr><td>[13:58] &lt ms-afk&gt That's something you didn't know last week</td></tr>
+            <tr><td>[13:58] &lt Chong-&gt Davbo: I'll also explain the acronyms in my post :-)</td></tr>
+            <tr><td>[13:58] &lt orphans&gt true - it's been an adventure too :)</td></tr>
+            <tr><td>[13:58] &lt ms-afk&gt cool</td></tr>
+            <tr><td>[13:58] &lt Davbo&gt Thanks Chong-</td></tr>
+            <tr><td>[13:58] &lt ms-afk&gt OK, moving on</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt --------------------------------</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt 4.1 Development tools (code.google vs sourceforge, website, etc)</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt Speaking of epic fail - what's the general view of code.google by most people?</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt Good enough?</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt Better? Worse ?</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt (than SF has seemed in general)</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt I'm personally concerned that /branches seems a bit of an epic fail</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt Yeah, what's up with branches?</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt when you co it stalls several times, atleast it did for me</td></tr>
+            <tr><td>[14:00] &lt j_baker&gt I agree. It took me 4 or 5 svn updates and cleanups to get davbo's branch out. *glares at Davbo*</td></tr>
+            <tr><td>[14:00] &lt j_baker&gt :P</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[14:01] &lt orphans&gt probably less important, but ci seems noticeably quicker to me</td></tr>
+            <tr><td>[14:01] *** ms-afk just checks the svn update of Davbo's branch</td></tr>
+            <tr><td>[14:01] &lt orphans&gt and when it works the webterface (eugh, horrible word) is a lot nicer</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt you came up with that word</td></tr>
+            <tr><td>[14:02] &lt j_baker&gt One thing that I find about google that I like is the code browser (when it works). And I also don't know if anyone else has seen it, but code.google has a code review system. You can add comments to other people's code from the code browser.</td></tr>
+            <tr><td>[14:02] Reply: Hm?</td></tr>
+            <tr><td>[14:02] *** ms-afk boggles</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt Their are some weird bugs with that browser</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt That I do like - the idea of a code review system there</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt what I've not tried is who it sends the reviews to</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt Unless they're sent to the list that seems a possible problem</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt I agree but it's unusable when you can't traverse the file tree</td></tr>
+            <tr><td>[14:02] &lt Chong-&gt just second j_baker, I also found the browser and review system nice</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt (svn co of Davbo's branch complete)</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt Davbo: There is that</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt I find it annoying not being able to go into the Code/Python/Kamaelia directory for example</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt Kinda useful to be able to get at</td></tr>
+            <tr><td>[14:03] &lt orphans&gt you'd hope/imagine there's some google goons working on that wouldn't you?</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt Has it fixed itself ?</td></tr>
+            <tr><td>[14:03] &lt j_baker&gt There's this thing called typing. :P You can type the path in on the URL bar if nothing else.</td></tr>
+            <tr><td>[14:04] &lt ms-afk&gt No, it hasn't fixed</td></tr>
+            <tr><td>[14:04] &lt ms-afk&gt j_baker: yeah, defeats the pretty interface thing though :)</td></tr>
+            <tr><td>[14:04] &lt wyleu&gt Typing url's is a bit like trying to remember 20 character telephone numbers.</td></tr>
+            <tr><td>[14:04] &lt j_baker&gt My guess is that it's a Firefox 3 issue. I've had some javascript issues on other webpages.</td></tr>
+            <tr><td>[14:04] &lt j_baker&gt Yeah, I agree ms-afk</td></tr>
+            <tr><td>[14:04] &lt orphans&gt I get it on ff2 fwiw</td></tr>
+            <tr><td>[14:04] &lt vmlemon_&gt As if 11/12 digit ones aren't tricky enough to remember? ;)</td></tr>
+            <tr><td>[14:05] &lt orphans&gt (get it as in get the problem)]</td></tr>
+            <tr><td>[14:05] &lt ms-afk&gt j_baker: I'm using FF2</td></tr>
+            <tr><td>[14:05] &lt j_baker&gt Well there goes that theory then. :P</td></tr>
+            <tr><td>[14:05] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[14:06] &lt j_baker&gt Are there any other alternatives that we can try? I know there's launchpad, but I think switching to bazaar could be too big a step.</td></tr>
+            <tr><td>[14:06] &lt vmlemon_&gt Anyone tried Konqueror or Opera?</td></tr>
+            <tr><td>[14:06] &lt ms-afk&gt I wouldn't want to switch to bazaar or similar until after Pycon UK</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt I tried IE. It also does not work</td></tr>
+            <tr><td>[14:06] &lt vmlemon_&gt (With the Google Code issues)</td></tr>
+            <tr><td>[14:07] &lt wyleu&gt IT's good to see something that doesn't work on all browsers ...</td></tr>
+            <tr><td>[14:07] &lt ms-afk&gt http://code.google.com/p/kamaelia/source/browse/ in Konqueror == epic fail</td></tr>
+            <tr><td>[14:07] *** Davbo wonders where to report the bug</td></tr>
+            <tr><td>[14:07] *** vmlemon_ tries it in Opera</td></tr>
+            <tr><td>[14:07] &lt vmlemon_&gt /dev/null?</td></tr>
+            <tr><td>[14:08] &lt vmlemon_&gt I guess it's smashed up in Konqueror?</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt Anyone tried sf since we switched to code.google?</td></tr>
+            <tr><td>[14:08] &lt ms-afk&gt OK, so the question was better or worse than sf ?</td></tr>
+            <tr><td>[14:09] &lt ms-afk&gt Davbo: SF seemed about 6 times quicker for a full checkout the other day</td></tr>
+            <tr><td>[14:09] &lt ms-afk&gt (quicker than code.google)</td></tr>
+            <tr><td>[14:09] &lt j_baker&gt I'd be ok with either one.</td></tr>
+            <tr><td>[14:09] &lt Davbo&gt I don't mind really</td></tr>
+            <tr><td>[14:09] &lt wyleu&gt Subversion is what your documentation says you develop on.</td></tr>
+            <tr><td>[14:09] &lt Davbo&gt Full checkouts being slow I can deal with tbh</td></tr>
+            <tr><td>[14:10] &lt orphans&gt I'll stick my neck on the line and say google if the fix the web thing</td></tr>
+            <tr><td>[14:10] &lt vmlemon_&gt Anyone get the e-mail from SourceForge saying that they supposedly fixed the issues/done all the migration?</td></tr>
+            <tr><td>[14:10] &lt j_baker&gt I agree with orphans. And also if updating wouldn't be such a PITA</td></tr>
+            <tr><td>[14:10] &lt orphans&gt but only just, and partly due to years of slowness from sourceforge for me</td></tr>
+            <tr><td>[14:11] &lt vmlemon_&gt What am I supposed to see in the code browser?</td></tr>
+            <tr><td>[14:11] &lt ms-afk&gt I didn't see anything better or not</td></tr>
+            <tr><td>[14:11] &lt vmlemon_&gt Although it's a little slow, I can look through directories OK in Opera</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt We should setup a cronjob to sync them every day so orphans can use the code browser ;-)</td></tr>
+            <tr><td>[14:11] &lt vmlemon_&gt Anyone have a "Bad URL"/directory?</td></tr>
+            <tr><td>[14:11] &lt wyleu&gt it's all there for me using IceWeasel...</td></tr>
+            <tr><td>[14:11] &lt ms-afk&gt I've just branched on sf</td></tr>
+            <tr><td>[14:11] &lt j_baker&gt Maybe iceweasel is good for something after all...</td></tr>
+            <tr><td>[14:12] &lt ms-afk&gt and checked in</td></tr>
+            <tr><td>[14:12] &lt ms-afk&gt vmlemon_: Nope</td></tr>
+            <tr><td>[14:12] &lt Chong-&gt vmlemon_: click trunk/Code/Python/Kamaelia</td></tr>
+            <tr><td>[14:12] &lt Davbo&gt The bug appears when trying to traverse through Code/Python/Kamaelia vmlemon_ & wyleu</td></tr>
+            <tr><td>[14:13] &lt Chong-&gt vmlemon_: to see if it shows apps or Kamaelia directory</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt It's trying to load the directory list at the moment</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt It takes me to Apps, in Opera</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt and clicking it again does nothing</td></tr>
+            <tr><td>[14:14] &lt wyleu&gt I'm down in KAmaelia-Logger DistBuild and lookiing at setup.py... or am I misunderstanding again?</td></tr>
+            <tr><td>[14:14] &lt Chong-&gt vmlemon_: That's it :-)</td></tr>
+            <tr><td>[14:14] &lt ms-afk&gt That checked in fine</td></tr>
+            <tr><td>[14:14] *** vmlemon_ is puzzled</td></tr>
+            <tr><td>[14:14] &lt ms-afk&gt So branching is quicker on SF</td></tr>
+            <tr><td>[14:15] &lt ms-afk&gt My view is we trial it properly for a month</td></tr>
+            <tr><td>[14:15] &lt ms-afk&gt If it turns out to suck big time we completely re-evaluate in mid-september</td></tr>
+            <tr><td>[14:15] &lt ms-afk&gt I suspect it will stay functional but slow</td></tr>
+            <tr><td>[14:15] &lt Davbo&gt Good idea, I don't want to say either way right now</td></tr>
+            <tr><td>[14:15] &lt j_baker&gt I may also open up a ticket on the subject. I don't see any relevant ones on the code.google tracker</td></tr>
+            <tr><td>[14:16] &lt j_baker&gt (regarding the code browser)</td></tr>
+            <tr><td>[14:16] &lt orphans&gt sounds good to me</td></tr>
+            <tr><td>[14:16] &lt ms-afk&gt It would be a real pain to lose a month's worth of checkins (the "why") from the checkin logs</td></tr>
+            <tr><td>[14:16] &lt ms-afk&gt but at least it'll be somewhere we can find it</td></tr>
+            <tr><td>[14:16] &lt ms-afk&gt If it works out OK, we stay with it</td></tr>
+            <tr><td>[14:16] &lt Chong-&gt it's a good plan</td></tr>
+            <tr><td>[14:17] &lt ms-afk&gt So conclusion: keep using it in earnest and review again 18th sept. (thursday after pycon uk)</td></tr>
+            <tr><td>[14:17] &lt ms-afk&gt If we remember to review that is :)</td></tr>
+            <tr><td>[14:17] &lt ms-afk&gt If we don't that'll mean it's going OK</td></tr>
+            <tr><td>[14:17] &lt ms-afk&gt done</td></tr>
+            <tr><td>[14:17] &lt ms-afk&gt 4.2 GSOC Issues, Expectations for next week, immediate Requests</td></tr>
+            <tr><td>[14:17] &lt ms-afk&gt ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[14:17] &lt ms-afk&gt The suggested GSOC "pencils down" date is August 11th - just under 2 weeks</td></tr>
+            <tr><td>[14:17] &lt ms-afk&gt away, with real "pencils down" the week after.</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt My suggestion is for everyone to aim to be feature complete by next friday</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt if not feature-pretty or feature-nice</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt I think everyone's on track for something that would be that</td></tr>
+            <tr><td>[14:19] &lt Davbo&gt ms-afk: fwiw I wrote a little on my project page the other day when you asked about the recent changes.</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt And then spend the rest polishing web pages aimed at "someone who knows kamaelia and interested in your project, someone who doesn't know kamaelia and interested in your project, someone who is a developer, doesn't know your project or kamaelia but is interested, and someone who isn't but is interested, and then someone who isn't)</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt cool</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt ms-afk: Not sure if you saw my comment earlier, but I put the Agreement in the post, earlier</td></tr>
+            <tr><td>[14:20] *** ms-afk notes that it'd be nice if the recent changes stuff sent out a mail nightly when there were changes</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt open issues, and "future direction stuff" is also worth adding to the project pages themselves</td></tr>
+            <tr><td>[14:21] &lt vmlemon_&gt Still on track for release?</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt Though this is fine http://edit.kamaelia.org/Developers/Projects/KamaeliaPublish/OpenIssues</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt vmlemon_ thanksfor the agreement :-) Regarding release I think planning it for a weekday was silly</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt so I'm taking it as meaning weekend</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt but other than that detail I would say yes*</td></tr>
+            <tr><td>[14:22] &lt ms-afk&gt * with the obvious caveat of "actually weekend)</td></tr>
+            <tr><td>[14:22] &lt ms-afk&gt "</td></tr>
+            <tr><td>[14:22] &lt j_baker&gt Just don't release it on a Friday. We don't want another backronym. :P</td></tr>
+            <tr><td>[14:22] &lt orphans&gt is there anything big which is new since the last RC?</td></tr>
+            <tr><td>[14:22] *** orphans has lost track of what's in trunk a little recently</td></tr>
+            <tr><td>[14:23] &lt ms-afk&gt Probably going to merge the games4kids code (since it'll simplify/clean up some examples), and merge KamaeliaGrey as well</td></tr>
+            <tr><td>[14:23] &lt ms-afk&gt Grey is ready to merge</td></tr>
+            <tr><td>[14:23] &lt ms-afk&gt trunk itself hasn't changed much recently</td></tr>
+            <tr><td>[14:23] &lt orphans&gt k, cool :)</td></tr>
+            <tr><td>[14:24] &lt ms-afk&gt I think the hope of merging GSOC stuff at this stage was rather premature - even the webserver stuff</td></tr>
+            <tr><td>[14:24] &lt ms-afk&gt But aiming towards that has pushed things such that I'm confident we can do a post-gsoc release before/for pycon :)</td></tr>
+            <tr><td>[14:24] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt With that in mind, the todos that people have posted are what I would expect people to have done in their "final" gsoc iteration</td></tr>
+            <tr><td>[14:25] &lt vmlemon_&gt Meh, this year's Bar Camp is sold out</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt You are welcome to continue working on your projects after August 18th</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt More than welcome :)</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt But we will need to tag your code on the 18th</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt mhrd-afk: you there?</td></tr>
+            <tr><td>[14:26] &lt orphans&gt ms-afk, how does that work?</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt Boils down to an "svn cp" :-)</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt The core thing though is this:</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt You need all your code in one place</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt (say in a branch)</td></tr>
+            <tr><td>[14:27] &lt ms-afk&gt then do an "svn cp branch tags/tag_name"</td></tr>
+            <tr><td>[14:27] &lt ms-afk&gt IIRC</td></tr>
+            <tr><td>[14:27] &lt ms-afk&gt I need to double check</td></tr>
+            <tr><td>[14:27] &lt orphans&gt k, sounds simple enough</td></tr>
+            <tr><td>[14:27] &lt ms-afk&gt That then snapshots your code, meaning you can carry on</td></tr>
+            <tr><td>[14:28] &lt ms-afk&gt Same goes for your /Sketches directory</td></tr>
+            <tr><td>[14:28] &lt ms-afk&gt It does mean that there has to be a break for developing on the 18th though :)</td></tr>
+            <tr><td>[14:29] &lt ms-afk&gt so treat the 17th as "last day for GSOC".</td></tr>
+            <tr><td>[14:29] &lt ms-afk&gt Hopefully you all want to continue what you've been doing though, since it's all cool stuff.</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt OOI orphans you got a branch setup?</td></tr>
+            <tr><td>[14:29] &lt orphans&gt Davbo, just for my stuff?</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt Yeah for Jam</td></tr>
+            <tr><td>[14:30] &lt orphans&gt nah, I'm a sketches man :)</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt we'll need to discuss that - but not in the meeting]</td></tr>
+            <tr><td>[14:30] &lt Davbo&gt shouldn't you be moving to a branch for packaging stuff ?</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt Chong-: I'll need to help you as well</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt Davbo: Yes, he will</td></tr>
+            <tr><td>[14:30] &lt Davbo&gt right, was just a reminder since I recall he said he might need a hand</td></tr>
+            <tr><td>[14:31] &lt Chong-&gt ms-afk: thanks :-)</td></tr>
+            <tr><td>[14:31] &lt orphans&gt :)</td></tr>
+            <tr><td>[14:31] &lt ms-afk&gt OK, Chong- let's plan on using your mentor time next week (monday 3pm) to discuss branching if you haven't branched before then</td></tr>
+            <tr><td>[14:31] &lt ms-afk&gt You should be able to though IMO</td></tr>
+            <tr><td>[14:32] &lt ms-afk&gt boils down to</td></tr>
+            <tr><td>[14:32] &lt ms-afk&gt cd branches</td></tr>
+            <tr><td>[14:32] &lt ms-afk&gt svn cp ../trunk/Code/Python private_CL_&lt whatever you like&gt</td></tr>
+            <tr><td>[14:32] &lt ms-afk&gt svn ci private_CL_&lt whatever you like&gt</td></tr>
+            <tr><td>[14:32] &lt Chong-&gt ms-afk: cool. I'll try it first. If any problem, I'll ask for help during next mentor time</td></tr>
+            <tr><td>[14:32] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[14:32] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[14:32] &lt ms-afk&gt Then moving all your code into places in private_CL_&lt whatever you like&gt where you think it makes sense :)</td></tr>
+            <tr><td>[14:33] &lt ms-afk&gt OK, anyone have any specific questions ?</td></tr>
+            <tr><td>[14:33] *** ms-afk waits for people who don't type fast</td></tr>
+            <tr><td>[14:34] &lt ms-afk&gt OK, cool</td></tr>
+            <tr><td>[14:34] &lt ms-afk&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[14:34] &lt ms-afk&gt -----------------------------------</td></tr>
+            <tr><td>[14:34] &lt ms-afk&gt Thursday 7th August 2008, 4pm UK time</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt Hurrah! :-)</td></tr>
+            <tr><td>[14:35] &lt ms-afk&gt I'm assuming that everyone can make that - that's the last meeting I can make before the end of GSOC</td></tr>
+            <tr><td>[14:35] &lt orphans&gt good for me</td></tr>
+            <tr><td>[14:35] &lt j_baker&gt :(</td></tr>
+            <tr><td>[14:35] &lt j_baker&gt I can do it.</td></tr>
+            <tr><td>[14:35] &lt ms-afk&gt j_baker: We can move it if its problematic?</td></tr>
+            <tr><td>[14:36] &lt j_baker&gt No, it's not problematic. I was doing the frown thing because it's the last meeting of GSOC.</td></tr>
+            <tr><td>[14:36] &lt ms-afk&gt It's not a sad thing though, it's a really cool thing :)</td></tr>
+            <tr><td>[14:36] &lt ms-afk&gt This has probably been the most productive GSOC so far IMO :)</td></tr>
+            <tr><td>[14:37] &lt orphans&gt despite our best efforts :</td></tr>
+            <tr><td>[14:37] &lt orphans&gt s/:/:)</td></tr>
+            <tr><td>[14:37] &lt ms-afk&gt I know mhrd-afk has found it harder to keep up this yearwhich is a good sign :)</td></tr>
+            <tr><td>[14:38] &lt ms-afk&gt Anyway, it'd be really nice to schedule another meeting as well for week containing tuesday 26th</td></tr>
+            <tr><td>[14:38] &lt ms-afk&gt Which I'll suggest on the list</td></tr>
+            <tr><td>[14:39] &lt ms-afk&gt Largely because I'm away when GSOC actually will be done, and to get a feeling as to who is going to continue with their project :)</td></tr>
+            <tr><td>[14:39] &lt ms-afk&gt (albeit I would expect with a slower intensity :) )</td></tr>
+            <tr><td>[14:40] &lt ms-afk&gt OK, I'll call the meeting done then :)</td></tr>
+            <tr><td>[14:40] &lt ms-afk&gt ============================================</td></tr>
+            <tr><td>[14:40] &lt ms-afk&gt END OF WEEKLY IRC KAMAELIA MEETING, 20080731</td></tr>
+            <tr><td>[14:40] &lt ms-afk&gt ============================================</td></tr>
+            <tr><td>[14:40] &lt ms-afk&gt Thanks everyone!</td></tr>
+            <tr><td>[14:40] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[14:41] &lt Chong-&gt cheers :-)</td></tr>
+            <tr><td>[14:41] &lt orphans&gt ms-afk, ooi why the need for me to branch (other than for tagging the code etc). I thought it was only really necessary if I was making changes to existing bits of Kamaelia and for merging stuff?</td></tr>
+            <tr><td>[14:43] &lt ms-afk&gt It's because Kamaelia.Apps actually has a purpose behind it :)</td></tr>
+            <tr><td>[14:43] &lt ms-afk&gt The purpose is to enable a path to moving code from Kamaelia.Apps into the rest of the tree</td></tr>
+            <tr><td>[14:43] &lt ms-afk&gt It's a better name for Kamaelia.Experimental</td></tr>
+            <tr><td>[14:43] &lt orphans&gt ohh, I forgot about Kamaelia.Apps :)</td></tr>
+            <tr><td>[14:44] &lt ms-afk&gt Also anything going in Kamaelia.Apps has a definite reason for existence since it has an app</td></tr>
+            <tr><td>[14:45] &lt ms-afk&gt Which guarantees it's useful for *something*</td></tr>
+            <tr><td>[14:45] &lt ms-afk&gt But doesn't guarantee it's useful for anything else</td></tr>
+            <tr><td>[14:45] &lt orphans&gt yeah, cool. reminded me why I have to type /apps/ to get to stuff too - it just became second nature :)</td></tr>
+            <tr><td>[14:45] &lt ms-afk&gt But it does make it available for anything else</td></tr>
+            <tr><td>[14:45] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[14:47] &lt j_baker&gt ms-afk: I have a question for you. In the case of Minimal, does buffering output make any sense? Or is it best to send anything the file reader gets to the HTTPServer as soon as possible?</td></tr>
+            <tr><td>[14:47] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[14:47] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[14:47] &lt ms-afk&gt j_baker: I'd just send it</td></tr>
+            <tr><td>[14:47] &lt j_baker&gt Ok, I made a fix to allow output buffering, which makes sense in the context of sending static content from the peer.</td></tr>
+            <tr><td>[14:47] &lt ms-afk&gt Oh, btw if people want to give kamlogbot extra functionality or change stuff, update Kamaelia.Apps.KamaeliaLogger.Support.py check in and I'll review</td></tr>
+            <tr><td>[14:47] &lt j_baker&gt But I think I've decided to just host the static content on the gateway.</td></tr>
+            <tr><td>[14:48] &lt ms-afk&gt Then if ok merge, update and setup.py install and we can reload the bot</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt Hmm, any limitations on what features can be added?</td></tr>
+            <tr><td>[15:14] &lt ms-afk&gt I'll vet stuff before I run it :)</td></tr>
+            <tr><td>[15:14] &lt ms-afk&gt Mainly because of two things:</td></tr>
+            <tr><td>[15:14] &lt ms-afk&gt 1) Nothing that breaches the security of the server (naturally)</td></tr>
+            <tr><td>[15:15] &lt ms-afk&gt (or users...)</td></tr>
+            <tr><td>[15:15] &lt vmlemon_&gt Dependencies are obviously an issue?</td></tr>
+            <tr><td>[15:15] &lt ms-afk&gt 2) Nothing that causes it to over use CPU</td></tr>
+            <tr><td>[15:15] &lt ms-afk&gt Maybe, depends how painful they are to install</td></tr>
+            <tr><td>[15:15] &lt j_baker&gt Well, there goes my JavaKamaeliaBot idea. :P</td></tr>
+            <tr><td>[15:15] &lt ms-afk&gt heh</td></tr>
+            <tr><td>[15:16] *** vmlemon_ assumes that The Annoyance Factor® should be kept to a minimum ;)</td></tr>
+            <tr><td>[15:18] &lt j_baker&gt Oh. I suppose that rules out my John Tesh quotes plugin idea as well.</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt Hehe</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt MegaHAL plugin?</td></tr>
+            <tr><td>[15:22] &lt vmlemon_&gt Twitter plugin?</td></tr>
+            <tr><td>[15:25] &lt ms-afk&gt John Tesh ?</td></tr>
+            <tr><td>[15:25] &lt ms-afk&gt I'll consider most things within reason.</td></tr>
+            <tr><td>[15:26] &lt ms-afk&gt If someone's desperate for something that I don't like they can always run their own remember :)</td></tr>
+            <tr><td>[15:26] &lt j_baker&gt i dunno, the MegaHAL plugin could be pretty cool if we're talking about the HAL 9000. Imagine if it responded to commands with "I'm sorry, I'm afraid I can't do that, vmlemon_"</td></tr>
+            <tr><td>[15:26] *** j_baker had to google to remember the exact HAL 9000 quote.</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:32] &lt vmlemon_&gt You could just train it's "brain" to spit and mangle those sorts of responses</td></tr>
+            <tr><td>[15:33] &lt vmlemon_&gt Some sort of check-in notification thing?</td></tr>
+            <tr><td>[15:36] &lt j_baker&gt I'd be afraid it would program Kamaelia to become a malevolent computer entity.</td></tr>
+            <tr><td>[15:37] &lt j_baker&gt To be honest though, I think that would be kinda cool.</td></tr>
+            <tr><td>[15:40] &lt j_baker&gt BTW, one thing I suppose I should ask Lawouach and ms-afk both: I've based my project off of Lawouach's simplechat example. Will there be any problem with putting the modified code under the Kamaelia tree (I think the code is originally licensed under a BSD license).</td></tr>
+            <tr><td>[15:45] &lt ms-afk&gt Nope, no problem at all</td></tr>
+            <tr><td>[15:46] &lt ms-afk&gt BSD license == no pain</td></tr>
+            <tr><td>[15:47] &lt j_baker&gt Ok, just checking. :)</td></tr>
+            <tr><td>[15:49] *** vmlemon_ wonders how easy it would be to make a Kamaelia component/wrapper around http://dbus.freedesktop.org/doc/dbus-python/doc/tutorial.html</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt I actually think such a thing would be pretty interesting.</td></tr>
+            <tr><td>[15:50] &lt vmlemon_&gt Integrating Kamaelia with D-BUS? Or Making an evil IRC bot?</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt The dbus integration.</td></tr>
+            <tr><td>[15:51] &lt vmlemon_&gt (The latter could be fun with the KamaeliaNXT sample code that Davbo(?) did though) ;)</td></tr>
+            <tr><td>[15:51] &lt j_baker&gt I think the problem right now is that even if I implemented Kamaelia in say, Ruby, I'd have to do either all or nothing.</td></tr>
+            <tr><td>[15:51] &lt j_baker&gt I couldn't do something like design one component in Python and one component in Ruby.</td></tr>
+            <tr><td>[15:52] &lt vmlemon_&gt Never hurts to have more components in the bag, though#</td></tr>
+            <tr><td>[15:52] &lt j_baker&gt At least not easily.</td></tr>
+            <tr><td>[15:52] &lt vmlemon_&gt I think there was a primative version of Axon done in Ruby</td></tr>
+            <tr><td>[15:52] &lt vmlemon_&gt unless it was only in C++</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt Yup. And one in Java too, I believe.</td></tr>
+            <tr><td>[15:53] *** vmlemon_ checks the repository</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt I'll be satisfied when there's an Axon port to brainfuck. :P</td></tr>
+            <tr><td>[15:57] *** vmlemon_ contemplates trying to install Kamaelia on NetBSD</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt I only tried NetBSD once, and it wasn't pretty.</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt With them, a minimal install is a MINIMAL install.</td></tr>
+            <tr><td>[15:58] &lt vmlemon_&gt QNX was an exercise in pain, last time I tried installing Kamaelia on it, if I remember correctly</td></tr>
+            <tr><td>[15:59] &lt j_baker&gt Can't say I've ever tried QNX.</td></tr>
+            <tr><td>[16:00] &lt vmlemon_&gt The OS itself is nice, as is the Photon GUI, although it's fairly tricky to install certain things on it</td></tr>
+            <tr><td>[16:07] &lt vmlemon_&gt (Try installing D-BUS on it, without the configure scripts/Makefiles doing weird things to the terminal, and crashing in strange ways)</td></tr>
+            <tr><td>[16:53] &lt ms-afk&gt I'd forgotten how bizarre this was:</td></tr>
+            <tr><td>[16:53] &lt ms-afk&gt http://www.youtube.com/watch?v=ZEIjpZbvNw8</td></tr>
+            <tr><td>[16:53] &lt ms-afk&gt 4 minutes 50 seconds in</td></tr>
+            <tr><td>[16:53] &lt ms-afk&gt Name the TV show</td></tr>
+            <tr><td>[16:57] *** ms-afk has parted #kamaelia</td></tr>
+            <tr><td>[16:57] *** ms-afk has joined #kamaelia</td></tr>
+            <tr><td>[17:06] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[17:36] &lt ms-afk&gt Fantastic: http://www.youtube.com/watch?v=PO5ifLzLYiU</td></tr>
+            <tr><td>[17:43] &lt Lawouach&gt evening</td></tr>
+            <tr><td>[17:53] &lt ms-afk&gt evening</td></tr>
+            <tr><td>[17:54] &lt ms-afk&gt Not sure if you followed it earlier - decided to properly trial code.google until after pycon uk and see how it goes</td></tr>
+            <tr><td>[17:55] &lt ms-afk&gt If it sucks completely, we could shift off svn completely after that (maybe) in favour of bzr & launchpad. I'm *extremely* wary of too many changes since it's just overhead</td></tr>
+            <tr><td>[17:59] &lt j_baker&gt I agree. Bazaar seems to be a better fit for the way that we're doing development, but subversion does work well enough that it would kinda suck to change.</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt I'd go for mercurial probably</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt being Python it opens many doors for cool stuff I think</td></tr>
+            <tr><td>[18:04] &lt j_baker&gt Are there any major hosts that work with mercurial?</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt well you can easily set it up on any that supports python</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt say webfaction :)</td></tr>
+            <tr><td>[18:05] &lt j_baker&gt webfaction = awesome</td></tr>
+            <tr><td>[18:05] &lt j_baker&gt It's almost like getting a VPS for shared hosting prices.</td></tr>
+            <tr><td>[18:07] &lt j_baker&gt Except for the fact of course that you don't get root access and can't choose your own OS. But that's not that big a deal.</td></tr>
+            <tr><td>[18:08] &lt vmlemon_&gt Essentially "pooled hosting"?</td></tr>
+            <tr><td>[18:08] &lt vmlemon_&gt (i.e. "We give you (and everyone else) all this stuff preconfigured, and a shell. If you want more, just ask")</td></tr>
+            <tr><td>[18:09] &lt j_baker&gt Nope, you don't even have to ask.</td></tr>
+            <tr><td>[18:09] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[18:10] &lt j_baker&gt You're allocated a certain amount of memory to have long-running processes.</td></tr>
+            <tr><td>[18:11] &lt j_baker&gt So you can even run your own instance of Apache if you want to (really nice to have).</td></tr>
+            <tr><td>[18:11] &lt vmlemon_&gt Hmm, they deal with custom DNS and port mapping, too?</td></tr>
+            <tr><td>[18:13] &lt j_baker&gt They assign you a random port to connect to. I haven't tried anything with custom DNS, so I don't know.</td></tr>
+            <tr><td>[18:15] &lt j_baker&gt ms-afk: If you get a chance, can you tell me what I'm doing wrong here? http://edit.kamaelia.org/cgi-bin/Wiki/edit/Developers/Projects/KamaeliaPublish/index?mode=edit</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt DNS works just fine</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt WF really offers a good service at a decent price</td></tr>
+            <tr><td>[18:19] &lt vmlemon_&gt Essentially an account in a giant Xen partition, for all extents and purposes? Or am I missing something?</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt Interesting looking service, though</td></tr>
+            <tr><td>[18:20] &lt j_baker&gt Well, in a Xen partition, you can have root access and install whatever OS you want.</td></tr>
+            <tr><td>[18:21] &lt j_baker&gt Granted, the way webfaction has it set up, I don't need root access.</td></tr>
+            <tr><td>[18:21] &lt j_baker&gt And CentOS works well enough for me.</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[18:21] &lt j_baker&gt But I could see how some more advanced stuff could benefit from that.</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt j_baker: you could look at EC2 for lowering the price of using a VPS until your rise your usage</td></tr>
+            <tr><td>[18:22] &lt vmlemon_&gt I see</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt They are based in London</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt The funder is Rémi Delon who created CherryPy originally</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt He was quickly joined by Richard.</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt I worked for them for a very short while in 2006</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt They are great to hang out with and often go to the London Python meetup</td></tr>
+            <tr><td>[18:25] &lt j_baker&gt Meh, webfaction works for me.</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:25] &lt j_baker&gt Richard as in Richard Brewer?</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt no</td></tr>
+            <tr><td>[18:27] &lt j_baker&gt Oh, it's Robert Brewer that's in charge of CherryPy. I thought his name was Richard. :P</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt yeap :)</td></tr>
+            <tr><td>[18:57] &lt ms-afk&gt """ms-afk: If you get a chance, can you tell me what I'm doing wrong here? http://edit.kamaelia.org/cgi-bin/Wiki/edit/Developers/Projects/KamaeliaPublish/index?mode=edit""</td></tr>
+            <tr><td>[18:57] &lt ms-afk&gt Ah, I see</td></tr>
+            <tr><td>[18:57] *** ms-afk fixes</td></tr>
+            <tr><td>[18:57] &lt ms-afk&gt [[include][file=Developers/Projects/KamaeliaPublish]] &lt --- was</td></tr>
+            <tr><td>[18:57] &lt ms-afk&gt [[include][file=Developers/Projects/KamaeliaPublish.html]] &lt -- should be</td></tr>
+            <tr><td>[18:57] &lt j_baker&gt Ah. I see.</td></tr>
+            <tr><td>[18:58] &lt j_baker&gt Sweet. Works perfectly now.</td></tr>
+            <tr><td>[19:44] &lt j_baker&gt http://code.google.com/p/support/issues/detail?id=1314</td></tr>
+            <tr><td>[19:44] &lt j_baker&gt Apparently, a fix is on the way for the code browser issue.</td></tr>
+            <tr><td>[19:53] &lt vmlemon_&gt "Will They Fix It? No They Won't!" ;)</td></tr>
+            <tr><td>[20:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:56] &lt ms-afk&gt http://www.royalcoffeemaker.com/deluxe-gold.html</td></tr>
+            <tr><td>[20:56] &lt ms-afk&gt love the bit at the end</td></tr>
+            <tr><td>[20:57] &lt ms-afk&gt deluxe-goldList Price: $2,545.00</td></tr>
+            <tr><td>[20:57] &lt ms-afk&gt Our Price: $2,295.00</td></tr>
+            <tr><td>[20:57] &lt ms-afk&gt ...followed by:</td></tr>
+            <tr><td>[20:57] &lt ms-afk&gt """You May Also Like: </td></tr>
+            <tr><td>[20:57] &lt ms-afk&gt  Aqua Express Electric Kettle</td></tr>
+            <tr><td>[20:57] &lt ms-afk&gt  Great for boiling water for your Royal Coffeemaker, One Cup Coffee Makers, or tea"""</td></tr>
+            <tr><td>[20:57] &lt ms-afk&gt (plastic kettle, probably a tenner)</td></tr>
+            <tr><td>[20:58] &lt vmlemon_&gt What is it?</td></tr>
+            <tr><td>[20:58] &lt vmlemon_&gt An extremely expensive coffee machine?</td></tr>
+            <tr><td>[20:59] &lt vmlemon_&gt Wow, I hope the coffee it makes is decent, for the price</td></tr>
+            <tr><td>[21:01] &lt vmlemon_&gt Pricey kettle</td></tr>
+            <tr><td>[21:01] &lt vmlemon_&gt ($67.95)</td></tr>
+            <tr><td>[21:02] &lt vmlemon_&gt Because you don't want to spoil your 3 grand coffee making contraption with a naff £10 Value kettle ;)</td></tr>
+            <tr><td>[22:22] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:33] *** Lawouach_ has joined #kamaelia</td></tr>

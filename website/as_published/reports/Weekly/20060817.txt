@@ -1,0 +1,215 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060817 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 Summer of Code Wrap-up
+5. Date/Time of next meeting
+Proposed: Fri 25th August 2006, 11am BST (GMT+0100)
+
+
+
+2. Participants
+
+Participating: mhrd (Matt), anagha (Anagha), thomasFx (Thomas)
+Also attending: G0SUB, ifelipe
+
+ifelipe expresssed the intention to leave shortly, which he then did after the
+activity reports
+
+
+
+3. Activity Reports
+ 
+Michael is on holiday
+Ryan is in Mexico
+  
+Thomas:
+    DONE - Bittorrent GUI 
+           Added fog support 
+           Updated event processing 
+           Added support for time based movement 
+           Changed PygameWrapper functionality/appearance 
+           Packaging 
+           Documentation 
+           Component shutdown handling 
+
+    TODO - Polish Examples and add documentation 
+           Polish documentation 
+           Document MagnaDoodle.py 
+           Create HTML documentation 
+
+    BLOCKED - None
+
+Anagha:
+    DONE - Added Text based examples
+           Incorporated most recent comments from Matt. 
+
+    TODO - Add docstring comments to 
+           simulator.py 
+           KPIServer.py 
+           Encryptor.py 
+           SessionKeyController.py 
+           DataTx.py 
+           Decryptor.py 
+           KPIClient.py 
+           kpitextclient.py 
+           kpitextserver.py
+
+    BLOCKED - None
+
+Matt:
+    DONE - fixed crashing simplegame (corrupt image) 
+           deprecations branch complete (Kamaelia, Examples, Tools) 
+           change whiteboard from base64 to escaping 
+           fixed high high processor usage issue in Whiteboard 
+           check who should submit SoC work 
+           whiteboard now multiplexes audio and drawing data over a single
+               single TCP connection 
+           recorder/player (clerk) for whiteboard 
+           got pymedia working (kinda, audio only) on 64bit linux 
+           gave feedback on thomas and anagha's docs 
+           completed sync boxes support for threadedcomponent (in branch) 
+
+    TODO - last minute feedback/advice for SoC work 
+           submit final SoC work to google 
+           sort google soc tax forms :-( 
+           reduce whiteboard audio latency 
+           make more pymedia wrappers (video) 
+           continue with DVB components 
+           review/revisit experimental Timer component 
+           Improve box destruction to handle when a box is still linked to 
+               another 
+           experiment with pausing when waiting to deliver to a full inbox
+
+    BLOCKED - deprecation branch merge to be done by Michael 
+
+Thomas clarified (at Matt's request) that by "HTML" documentation he meant
+web based docs similar to those produced by Ryan.
+
+Matt explained he did not know how Michael or Ryan did this - eg. how they
+automated the conversion from reSTructuredText to HTML.
+
+Matt pointed out that Michael intends eventually to automate the creation of
+website based documentation.
+
+Anagha asked about docutils. Everyone agreed that the output was not very 
+pretty!
+
+
+
+4. Discussion items (max 3 or 4)
+ 
+4.1 SoC progress & wrap up
+ 
+Matt explained that he needed to sort "tax stuff for the BBC and google". Anagha
+confirmed, when asked, that she lives in NY in the US.
+
+Matt reminded everyone that the deadline for SoC is Monday 21st, so all SoC
+students would have to finish their code before then, so he can put tarballs of
+their code somewhere for google to retrieve.
+
+Matt asked for estimates of when Anagha and Thomas would finish.
+
+Anagha
+    * Has finished coding, and will finish documentation by tomorrow (Fri 18th)
+Thomas
+    * hoped to have mine finished today (Thu 17th) midnight
+
+Matt explained that he intends to create the tarballs on Sunday.
+
+He explained that finishing on Friday (if possible) would be good as it gives
+time in case you suddenly realise you need to make a last minute change
+
+Thomas said that his code will be finished for SoC but he then has other ideas
+he would like to play with after Soc. 
+
+Matt asked anagha and Thomas to email ms_soc@... **and** me@matthammond...
+when they are both happy with their code. He asked them to include a list of the
+directories they want included in their tarballs.
+
+Matt said he would not be:
+    * offline: Friday evening or all day Saturday 
+    * online:  Friday daytime, and most of Sunday
+
+
+If SoC students need to contact him, use both his email addresses
+
+Matt confirmed with Anagha, that despite falling into Anagha's email spam
+filter, she was able to read his comments.
+
+Matt commented that he had seen Anagha checking in KPITextClient.py and 
+KPITextServer.py
+    * Anagha confirmed that these work under win32 using pymedia 1.3.7.2
+
+Matt asked what Anagha intended to do with AudioClient.py, AudioServer.py and
+AudioLib.py
+
+Matt asked if Anagha still wished to include them (Matt's email comments to
+Anagha has suggested she may wish to remove them). Matt said it was up to her.
+
+Anagha said she was still thinking about it, but would decide tomorrow. She also
+said she would check it on Linux after she was done documenting.
+
+Matt asked in AudioLib.py was her own code. Anagha said it was mostly, but that
+she had taken AudioDecoder and SoundOutput components from Sketches/MH/pymedia.
+She said she modified them to cope with pymedia API changes.
+
+Matt pointed out that Anagha should have left the Kamaelia/BBC attribution 
+comment block on the parts of the code written by Matt. Anagha agreed to add it
+in.
+
+Matt explained that she should have talked to him first:
+    * that code is now out of date
+    * Matt has been working recently on newer code (that doesn't crash in Linux)
+
+Matt also explained that code in /Sketches is rough and experimental. People
+should therefore not use code in people's directories without talking to them:
+    * it might be broken, or out of date (Anagha did not realise this)
+    * someone reading the svn logs, might think it looked like she was claiming 
+      to have written that code herself
+
+Matt reiterated that this is one of many reasons why it is important to stay in 
+contact (email, IRC, etc) and talk to others about what you're doing.
+
+Matt pointed out that things are also in /Sketches because they are not yet
+ready to be in the main distribution. If the pymedia code was ready, it would
+be in /Code/Python/Kamaelia or someone's Community directory.
+
+Matt reiterated that if Anagha chooses to leave this code in her packages then
+should add appropriate attributions for SoundOutput and AudioDecoder components.
+
+Matt also expressed his personal opinion that they should be removed (because
+pymedia support in Kamaelia is not ready yet)
+
+Anagha explained that she was "just trying something and so checked it in.
+it's fine if it's not included."
+
+Matt pointed out that it would have been better to place it outside of the
+KPIPackages directory - as Matt thought that anything in those directories is
+considered part of her final distribution.
+
+Matt thanked both Anagha and Thomas for their hard work over the summer. He
+commented that their work was helping *alot* to push forward the project (by
+adding new facilities etc). He also commented that it is great to have new
+people around and contributing.
+
+Anagha and Thomas thanked Matt and Michael for the support they have provided.
+
+Matt hoped that Anagha and Thomas would still be around post SoC.
+
+
+
+5. Date/Time of next meeting 
+Proposed: Fri 25th August 2006, 11am BST (GMT+0100) 
+
+Matt explained he couldn't make next Thursday (hence Friday).
+Matt pointed out Michael would be back by then.
+
+Anagha said she wouldn't be able to attend an 11am BST session.
+
+Thomas pointed out he would be at work (but that evening meetings (~6pm) might
+be possble to attend)
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060817 ======

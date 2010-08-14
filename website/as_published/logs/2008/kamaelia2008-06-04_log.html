@@ -1,0 +1,737 @@
+<html><body><table>
+            <tr><td>[04:46] *** jlei_ has joined #kamaelia</td></tr>
+            <tr><td>[06:10] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:10] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:30] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[06:30] &lt jlei_&gt hi</td></tr>
+            <tr><td>[08:21] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:21] &lt mhrd&gt morning</td></tr>
+            <tr><td>[08:30] &lt mhrd&gt wrt multicast bind-vs-connect; I'm actually not entirely clear myself ... I based my code on some by MS- ... he's your man on this :)</td></tr>
+            <tr><td>[08:36] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[08:43] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[09:17] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:17] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[09:20] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:31] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:39] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:39] &lt Davbo&gt Another exam done</td></tr>
+            <tr><td>[10:39] &lt Davbo&gt 1 more to go</td></tr>
+            <tr><td>[10:50] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[11:05] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:05] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:20] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:33] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[11:56] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:56] &lt MS-&gt (back)</td></tr>
+            <tr><td>[11:57] &lt MS-&gt (for a bit)</td></tr>
+            <tr><td>[11:57] &lt MS-&gt 900 spams due to a day out for work.</td></tr>
+            <tr><td>[11:57] &lt MS-&gt 10/11 hours travelling on trains</td></tr>
+            <tr><td>[11:57] &lt MS-&gt &lt /grumble&gt</td></tr>
+            <tr><td>[12:01] &lt orphans&gt hey MS-</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt 'lo</td></tr>
+            <tr><td>[12:06] &lt orphans&gt afternoon Lawouach</td></tr>
+            <tr><td>[12:16] &lt orphans&gt hum, pretty sure the answer to this is going to be no: is there any way to have a passthrough link where you get to mess around with the data before it gets passed on?</td></tr>
+            <tr><td>[12:16] &lt orphans&gt or is it an extra inboxes and outboxes job?</td></tr>
+            <tr><td>[12:17] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[12:19] &lt orphans&gt hey Davbo</td></tr>
+            <tr><td>[12:25] &lt Davbo&gt Got a bit of free time today between revision MS-, trying to draw from second window onto the second</td></tr>
+            <tr><td>[12:25] &lt Davbo&gt not sure what's going on though</td></tr>
+            <tr><td>[12:25] &lt Davbo&gt commited if you could have a look sometime :-)</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt orphans: you got it right</td></tr>
+            <tr><td>[12:31] &lt Lawouach_&gt you can't have both at the same time</td></tr>
+            <tr><td>[12:31] &lt Lawouach_&gt passthrough earns its name :)</td></tr>
+            <tr><td>[12:32] &lt orphans&gt k, cool. bah, lack of def link(in, out, kindaSortaPassThroughWithABitOfFudgingAround):</td></tr>
+            <tr><td>[12:32] &lt orphans&gt :)</td></tr>
+            <tr><td>[12:33] *** orphans breaks paradigms</td></tr>
+            <tr><td>[12:34] &lt mhrd&gt There's also Kamaelia.Util.PureTransformer if you just want to apply a function to data going through</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt PureTransformer, hmm, does it come with the pretty lady like in the movie?</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt if not just move along</td></tr>
+            <tr><td>[12:36] &lt orphans&gt tbh more inboxes and outboxes make more sense</td></tr>
+            <tr><td>[12:40] &lt mhrd&gt orphans: ooi whats the context here?</td></tr>
+            <tr><td>[12:42] &lt orphans&gt getting the UDP stuff working with CSA (slightly different to your version)</td></tr>
+            <tr><td>[12:43] &lt orphans&gt I've altered it so that if you're doing sendto you give CSA a (msg, (address, port)) tuple - it lets you do stuff like TargettedPeer where you don't know the address and port before you make the CSA</td></tr>
+            <tr><td>[12:45] &lt orphans&gt but for PostboxPeer you need to be able to append the (address, port) tuple to the message somehow - hence fudging with the message on it's way through</td></tr>
+            <tr><td>[12:48] &lt orphans&gt I'm also making some of the code a bit more generic - it seems crazy having the same 300 loc in TCPClient, MulticastTransceiver and all of the UDP components</td></tr>
+            <tr><td>[12:48] *** Lawouach_ can only welcome such idea :)</td></tr>
+            <tr><td>[12:49] &lt orphans&gt so yeah, I'm knee deep in code :)</td></tr>
+            <tr><td>[12:49] &lt orphans&gt think I'm over the worst of it though...</td></tr>
+            <tr><td>[12:50] &lt orphans&gt &lt = lunch</td></tr>
+            <tr><td>[13:02] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[13:03] &lt MS-&gt "is there any way to have a passthrough link where you get to mess around with the data before it gets passed on?"</td></tr>
+            <tr><td>[13:03] &lt MS-&gt No, you need a component for that.</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Kamaelia.Util.PureTransformer might be what you want though</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Davbo: (for logs) I'll take a look later today</td></tr>
+            <tr><td>[13:04] &lt MS-&gt Probably worth mentioning that passthrough these days actually collapses the boxes into one</td></tr>
+            <tr><td>[13:04] &lt MS-&gt And given the underlying implementation of normal components uses a list as the concrete storage</td></tr>
+            <tr><td>[13:04] &lt MS-&gt As soon as you send() the message it's instantly recv()able</td></tr>
+            <tr><td>[13:05] &lt MS-&gt "but for PostboxPeer you need to be able to append the (address, port) tuple to the message somehow"</td></tr>
+            <tr><td>[13:06] &lt MS-&gt Pipeline(</td></tr>
+            <tr><td>[13:06] &lt MS-&gt Datasource(),</td></tr>
+            <tr><td>[13:06] &lt MS-&gt PureTransformer(lambda X: (X, (address,port))),</td></tr>
+            <tr><td>[13:06] &lt MS-&gt dataSink()</td></tr>
+            <tr><td>[13:06] &lt MS-&gt )</td></tr>
+            <tr><td>[13:06] &lt MS-&gt "I'm also making some of the code a bit more generic - it seems crazy having the same 300 loc in TCPClient, MulticastTransceiver and all of the UDP components"</td></tr>
+            <tr><td>[13:07] &lt MS-&gt If you have the functionality known to work correctly in all cases in all 3 components, then it makes sense to consolidate (if the consolidation makes sense)</td></tr>
+            <tr><td>[13:07] &lt MS-&gt If you don't know if it works correctly, then doing that before you know it does is unwise</td></tr>
+            <tr><td>[13:07] &lt MS-&gt Since otherwise you have 3 different areas where a bug will show itself up if you consolidate</td></tr>
+            <tr><td>[13:07] &lt MS-&gt Which means 3 completely different sets of symptoms</td></tr>
+            <tr><td>[13:07] &lt MS-&gt for the same cause</td></tr>
+            <tr><td>[13:08] &lt MS-&gt (kinda the problem with unrestricted use or overuse of inheritance in general)</td></tr>
+            <tr><td>[13:08] &lt MS-&gt (and a risk for something like Kamaelia by definition too)</td></tr>
+            <tr><td>[13:09] &lt MS-&gt in other news, I have a working webcam component</td></tr>
+            <tr><td>[13:10] &lt MS-&gt Which is quite neat :)</td></tr>
+            <tr><td>[13:11] &lt MS-&gt Currently spits out only RGB pygame surfaces, since that what the underlying lib does.</td></tr>
+            <tr><td>[13:11] &lt MS-&gt So I've put in a request for YUV (or will extend the bindings to dump that)</td></tr>
+            <tr><td>[13:11] &lt MS-&gt so that the dirac components can be used there</td></tr>
+            <tr><td>[13:11] &lt Lawouach_&gt cool</td></tr>
+            <tr><td>[13:13] &lt vmlemon&gt o.O http://www.newscientist.com/article/mg15420771.600-frog-defies-gravity.html</td></tr>
+            <tr><td>[13:17] &lt MS-&gt http://news.bbc.co.uk/1/hi/sci/tech/959453.stm</td></tr>
+            <tr><td>[13:18] &lt MS-&gt http://www.hfml.science.ru.nl/froglev.html</td></tr>
+            <tr><td>[13:18] &lt MS-&gt http://www.hfml.ru.nl/pics/Movies/frog.mpg</td></tr>
+            <tr><td>[13:19] &lt vmlemon&gt Hah, "Three accident and emergency doctors from Glasgow picked up an Ig for their work on the dangers posed by collapsing toilets."</td></tr>
+            <tr><td>[13:21] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[13:21] &lt Chong-&gt Afternoon, all</td></tr>
+            <tr><td>[13:22] &lt vmlemon&gt Hi Chong-</td></tr>
+            <tr><td>[13:22] &lt Chong-&gt hey vmlemon</td></tr>
+            <tr><td>[13:24] &lt Chong-&gt vmlemon : have you tried Fedora 9?</td></tr>
+            <tr><td>[13:24] &lt vmlemon&gt Not yet</td></tr>
+            <tr><td>[13:24] &lt vmlemon&gt Is it any good?</td></tr>
+            <tr><td>[13:24] &lt Chong-&gt I have not too :-) so not sure</td></tr>
+            <tr><td>[13:25] &lt mhrd&gt orphans: if I understand what you're trying to achieve: rather than fiddling with inboxes and outboxes, the solution I've found works well is to make a wrapper; for example:</td></tr>
+            <tr><td>[13:25] &lt mhrd&gt suppose NewCSA is a CSA that accepts (dest,payload) tuples:</td></tr>
+            <tr><td>[13:26] &lt mhrd&gt def FixedDestCSA(dest):</td></tr>
+            <tr><td>[13:26] &lt mhrd&gt .. return Pipeline(</td></tr>
+            <tr><td>[13:26] &lt mhrd&gt .. PureTransformer(lambda: payload: (dest, payload)),</td></tr>
+            <tr><td>[13:26] &lt mhrd&gt .. NewCSA(),</td></tr>
+            <tr><td>[13:26] &lt mhrd&gt .. )</td></tr>
+            <tr><td>[13:27] &lt mhrd&gt Iirc we named that kind of thing a Prefab</td></tr>
+            <tr><td>[13:27] &lt mhrd&gt def NonFixedDestCSA(): return NewCSA()</td></tr>
+            <tr><td>[13:39] &lt MS-&gt Yep, prefab</td></tr>
+            <tr><td>[13:55] &lt orphans&gt cheers MS- and mhrd, all looks interesting and good. I've gotta go out for a couple of hours, but this evening I'll post something up the the list about the changes and commit it so you can see whether I'm horribly abusing inheritance.</td></tr>
+            <tr><td>[13:55] &lt orphans&gt (it's quite possible...)</td></tr>
+            <tr><td>[14:09] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:11] *** Davbo reads logs</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt thanks MS- :-)</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt Just come back to it now</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt maybe i can work it out</td></tr>
+            <tr><td>[14:17] &lt Davbo&gt ah</td></tr>
+            <tr><td>[14:17] &lt Davbo&gt tuples are breaking when I send them through the ProcessGraphline MS-</td></tr>
+            <tr><td>[14:18] &lt MS-&gt "commit it so you can see whether I'm horribly abusing inheritance." - if you think you may be, you probably are</td></tr>
+            <tr><td>[14:18] &lt MS-&gt in what way?</td></tr>
+            <tr><td>[14:18] &lt MS-&gt Do you have a trivial example/testcase ?</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt passing through ('circle',) then getting it to print it simply prints circle</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt &gt&gt&gt x = ("test",)</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt &gt&gt&gt print x</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt ('test',)</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt not like that</td></tr>
+            <tr><td>[14:19] &lt Davbo&gt it's breaking them up, if that makes sense</td></tr>
+            <tr><td>[14:19] &lt MS-&gt No, not really. Need a test case :-)</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt circle = ("circle",)</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt self.send(circle, "outbox")</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt Which arrives in WINDOW2's inbox and it prints it but just prints "circle", seemingly going tuple -&gt string</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt so I can't catch it with if isinstance(event, tuple): - I don't like this method but I'm testing things out still as you know</td></tr>
+            <tr><td>[14:23] &lt MS-&gt No, that's not a test case</td></tr>
+            <tr><td>[14:28] &lt mhrd&gt Davbo: can you commit a piece of code and tell us what to type and what output it will generate?</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt Yes, of course</td></tr>
+            <tr><td>[14:30] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/pprocess/dk_bug_report_maybe.py</td></tr>
+            <tr><td>[14:30] &lt MS-&gt All the tests in that work</td></tr>
+            <tr><td>[14:33] &lt MS-&gt  WINDOW1 = MagnaDoodle(bgcolour=(100,100,172),position=(0,0) ),</td></tr>
+            <tr><td>[14:33] &lt MS-&gt  WINDOW2 = MagnaDoodle(bgcolour=(172,100,100),position=(200,0) ),</td></tr>
+            <tr><td>[14:33] &lt MS-&gt  ("WINDOW1", "outbox") : ("WINDOW2", "inbox")</td></tr>
+            <tr><td>[14:33] &lt MS-&gt window1 forwards events to window2</td></tr>
+            <tr><td>[14:33] &lt MS-&gt window 1 is blue</td></tr>
+            <tr><td>[14:33] &lt MS-&gt window 2 is red</td></tr>
+            <tr><td>[14:33] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[14:34] &lt MS-&gt In window 1, type "c"</td></tr>
+            <tr><td>[14:34] &lt MS-&gt Then draw</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt Sorry I'm back</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt let me just commit</td></tr>
+            <tr><td>[14:34] &lt MS-&gt In window 2, I get an error</td></tr>
+            <tr><td>[14:34] &lt MS-&gt  if event.type == pygame.MOUSEBUTTONDOWN:</td></tr>
+            <tr><td>[14:34] &lt MS-&gt AttributeError: 'str' object has no attribute 'type'</td></tr>
+            <tr><td>[14:34] &lt MS-&gt However, I've got loads of tracing going</td></tr>
+            <tr><td>[14:34] &lt MS-&gt which shows this:</td></tr>
+            <tr><td>[14:34] &lt MS-&gt pwc:- SEND (('circle', (90, 95), 47.507894080878813), 'inbox') TO __main__.MagnaDoodle_6 . . self.put msg ('circle', (90, 95), 47.507894080878813) boxname inbox</td></tr>
+            <tr><td>[14:35] &lt MS-&gt Which is inside the processwrap component as it's in the process of being slung into the thread</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt Okay, so: as MS- says if you press "c" in window1 (blue) and draw a circle</td></tr>
+            <tr><td>[14:36] &lt MS-&gt Davbo: this isn't really the best of test cases</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt it'll complain and not do what's inside the block for handling tuples</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt I'll just make a test component to clarify</td></tr>
+            <tr><td>[14:37] &lt MS-&gt pwc:- SEND (('circle', (69, 80), 79.649231006959511), 'inbox') TO __main__.MagnaDoodle_6 . . self.put msg ('circle', (69, 80), 79.649231006959511) boxname inbox</td></tr>
+            <tr><td>[14:37] &lt MS-&gt . SENT</td></tr>
+            <tr><td>[14:37] &lt MS-&gt HERE 'circle'</td></tr>
+            <tr><td>[14:37] &lt MS-&gt Is very strange</td></tr>
+            <tr><td>[14:38] &lt MS-&gt Since it's clearly showing ('circle', (69, 80), 79.649231006959511) to be sent</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt I have a theory though MS-</td></tr>
+            <tr><td>[14:39] &lt MS-&gt I have a better one</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt oh</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt k</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt :(</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt Go ahead.</td></tr>
+            <tr><td>[14:39] &lt MS-&gt oh hold on</td></tr>
+            <tr><td>[14:39] &lt MS-&gt you go ahead first</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt lol</td></tr>
+            <tr><td>[14:39] &lt MS-&gt I'm not so sure</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt Well I had the problem with strings where the first letter was only being sent</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt and now this with tuples</td></tr>
+            <tr><td>[14:40] &lt Davbo&gt that would mean only variable[0] is being sent, right?</td></tr>
+            <tr><td>[14:40] &lt MS-&gt close</td></tr>
+            <tr><td>[14:40] &lt MS-&gt I think it's to do with something else</td></tr>
+            <tr><td>[14:40] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:40] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:41] &lt Davbo&gt &gt&gt&gt x = "this"</td></tr>
+            <tr><td>[14:41] &lt Davbo&gt &gt&gt&gt x[0]</td></tr>
+            <tr><td>[14:41] &lt Davbo&gt 't'</td></tr>
+            <tr><td>[14:41] &lt Davbo&gt &gt&gt&gt x= (1,5,3)</td></tr>
+            <tr><td>[14:41] &lt Davbo&gt &gt&gt&gt x[0]</td></tr>
+            <tr><td>[14:41] &lt Davbo&gt 1</td></tr>
+            <tr><td>[14:41] &lt Davbo&gt surely not coincidental</td></tr>
+            <tr><td>[14:41] &lt MS-&gt No, it's not</td></tr>
+            <tr><td>[14:41] &lt MS-&gt I completely and utterly missed it because I'm blind</td></tr>
+            <tr><td>[14:41] &lt MS-&gt It's to do with an optimisation of events handling in pygame</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt hmm?</td></tr>
+            <tr><td>[14:42] &lt MS-&gt The event handler in pygame doesn't just send on event at a time</td></tr>
+            <tr><td>[14:42] &lt MS-&gt it sends a list of them</td></tr>
+            <tr><td>[14:42] &lt MS-&gt eg bunchs (lists) of mouse move events in one go</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt I see</td></tr>
+            <tr><td>[14:42] &lt MS-&gt as a result that's why it has the following:</td></tr>
+            <tr><td>[14:42] &lt MS-&gt  for event in self.recv("inbox"):</td></tr>
+            <tr><td>[14:43] &lt MS-&gt And *that's* where you code is going wrong :-)</td></tr>
+            <tr><td>[14:43] *** Davbo thought that was strange</td></tr>
+            <tr><td>[14:43] &lt MS-&gt It's shorthand for</td></tr>
+            <tr><td>[14:43] &lt MS-&gt Or rather this:</td></tr>
+            <tr><td>[14:43] &lt MS-&gt  while self.dataReady("inbox"):</td></tr>
+            <tr><td>[14:43] &lt MS-&gt  for event in self.recv("inbox"):</td></tr>
+            <tr><td>[14:43] &lt MS-&gt is shorthand for</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt ahhh</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt I get it</td></tr>
+            <tr><td>[14:44] &lt MS-&gt  while self.dataReady("inbox"):</td></tr>
+            <tr><td>[14:44] &lt MS-&gt  events = self.recv("inbox")</td></tr>
+            <tr><td>[14:44] &lt MS-&gt  for event in events:</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt Argh</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[14:44] &lt MS-&gt problem is "events" isn't what you want there</td></tr>
+            <tr><td>[14:44] &lt MS-&gt simplest solution:</td></tr>
+            <tr><td>[14:44] &lt MS-&gt doublebracket</td></tr>
+            <tr><td>[14:44] &lt MS-&gt ["clear"] --&gt [["clear"]]</td></tr>
+            <tr><td>[14:45] &lt MS-&gt Better solution: different inbox</td></tr>
+            <tr><td>[14:45] &lt Davbo&gt other boxes working now?</td></tr>
+            <tr><td>[14:45] &lt MS-&gt oh yes that</td></tr>
+            <tr><td>[14:45] &lt MS-&gt No</td></tr>
+            <tr><td>[14:45] &lt MS-&gt current solution would be to double bracket then</td></tr>
+            <tr><td>[14:46] &lt MS-&gt (I can't believe its this late in the day - been exhausted all day)</td></tr>
+            <tr><td>[14:46] &lt MS-&gt Stupid amounts of travelling yesterday</td></tr>
+            <tr><td>[14:46] &lt Davbo&gt Where you go?</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt I had an exam at 9am this morning was up at 7:30 for the first time in moths</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt s/moths/months</td></tr>
+            <tr><td>[14:47] &lt MS-&gt London & back yesterday. Wasn't worth it IMO, but they said it was mandatory at the last minute so I went</td></tr>
+            <tr><td>[14:47] &lt MS-&gt Trains were completely bust yesterday though</td></tr>
+            <tr><td>[14:48] &lt MS-&gt I left early and didn't get home until midnight</td></tr>
+            <tr><td>[14:48] &lt MS-&gt (6 hours of so for a 2-3 hour journey, more changes than normal etc)</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt Ouch.</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt On the bright-side (for me) there was a question on Pipelining in my exam</td></tr>
+            <tr><td>[14:49] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[14:50] &lt Davbo&gt (Instruction Pipelining though :-))</td></tr>
+            <tr><td>[14:50] &lt MS-&gt I remember one of my exam networking exam questions back from when I was at uni, which is still rather amusing (esp given where I work now)</td></tr>
+            <tr><td>[14:51] &lt MS-&gt "Imagine you are designing a system for putting Radio on the internet, outline the protocols and approach you would take, and what practical considerations you would take into account."</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt What was the question?</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[14:51] &lt MS-&gt Or something like that</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt Hehehe</td></tr>
+            <tr><td>[14:52] &lt MS-&gt I remember saying then that multicast wasn't really an option because it wouldn't get deployed</td></tr>
+            <tr><td>[14:52] &lt MS-&gt And it still isn't</td></tr>
+            <tr><td>[14:52] &lt MS-&gt So I suggested a self splitting distributed system</td></tr>
+            <tr><td>[14:52] &lt vmlemon_&gt The answer being "Write Kamaelia"? ;)</td></tr>
+            <tr><td>[14:53] &lt MS-&gt Something like this: https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/LUGRadio/SimpleSwarm.py</td></tr>
+            <tr><td>[14:53] &lt MS-&gt vmlemon_: turns out to be the answer ;)</td></tr>
+            <tr><td>[14:53] &lt MS-&gt Didn't know that then :)</td></tr>
+            <tr><td>[14:54] &lt MS-&gt Though then I still had the goal that kamaelia _currently_ looks like the best bet of answering</td></tr>
+            <tr><td>[14:54] &lt Davbo&gt Thanks for helping me out with that problem btw MS-</td></tr>
+            <tr><td>[14:55] &lt Davbo&gt I'll try doublebracketing now</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt YAY :D</td></tr>
+            <tr><td>[14:59] &lt j_baker&gt MS-: There's a section in the python cookbook about zipping python files into a single executable on Unix using a shell script. Have you tried that? It seems kinda hackish to me.</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt j_baker: why?</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt I mean what are you doing?</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt just curious :)</td></tr>
+            <tr><td>[15:03] &lt j_baker&gt Just trying to package my app up. It would be nice to have a toolchain that will work for Linux and OS X instead of using py2app and something else for Linux.</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt MS-: Check the latest commit when you get chance :-)</td></tr>
+            <tr><td>[15:05] &lt Davbo&gt (and anyone else, just draw on the blue magnadoodle :-))</td></tr>
+            <tr><td>[15:07] &lt vmlemon_&gt Sounds exciting ;)</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt It probably isn't, i'm just overly enthusiastic about my project ;-)</td></tr>
+            <tr><td>[15:08] &lt MS-&gt j_baker: I actually quite like that idea for distribution of code which has plugins on adesktop</td></tr>
+            <tr><td>[15:08] &lt MS-&gt Oh hold on, I've chatted about that before AAAAAAAAAAAAAAAAAAAAges back</td></tr>
+            <tr><td>[15:08] &lt MS-&gt It was based on reading something by effbot</td></tr>
+            <tr><td>[15:09] &lt MS-&gt It's something he's been doing for a while</td></tr>
+            <tr><td>[15:09] &lt vmlemon_&gt "Kamaelia Speak and Spell", anyone?</td></tr>
+            <tr><td>[15:10] &lt j_baker&gt I hadn't thought about that. It would be pretty easy to add code to it, wouldn't it?</td></tr>
+            <tr><td>[15:11] &lt MS-&gt Davbo: Looks alive</td></tr>
+            <tr><td>[15:11] &lt j_baker&gt Hold on, got to reboot.</td></tr>
+            <tr><td>[15:11] &lt MS-&gt vmlemon_: Oh that's not a bad idea actually</td></tr>
+            <tr><td>[15:12] &lt MS-&gt Oh, that's really tempting</td></tr>
+            <tr><td>[15:12] &lt MS-&gt That's quite simle to do as well</td></tr>
+            <tr><td>[15:12] &lt MS-&gt (I already have speech synthesis on two platforms you see)</td></tr>
+            <tr><td>[15:16] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt I'm really happy with how well this works MS-</td></tr>
+            <tr><td>[15:16] &lt MS-&gt Davbo: Cool :-)</td></tr>
+            <tr><td>[15:16] &lt MS-&gt You've also written a multiprocess/multicore friendly desktop application</td></tr>
+            <tr><td>[15:17] &lt MS-&gt That's pretty rare at the moment :)</td></tr>
+            <tr><td>[15:17] &lt MS-&gt The hard part had nothing to do with multicore/multiprocess either</td></tr>
+            <tr><td>[15:17] &lt MS-&gt j_baker: http://tinyurl.com/47oaqt</td></tr>
+            <tr><td>[15:17] &lt MS-&gt From this thread : http://groups.google.com/group/comp.lang.python/browse_frm/thread/9b1d2e3780c2322c/0dcdc1d26fd64335?lnk=st&q=Python+Webstart+%3F#0dcdc1d26fd64335</td></tr>
+            <tr><td>[15:18] &lt MS-&gt I took a copy of effbot's mail message back then, but hadn't done anything with it and had nearly forgotten about it</td></tr>
+            <tr><td>[15:22] &lt j_baker&gt I'll have to try it out. It would be very helpful to be able to make just one executable for both Linux and the Mac. And that could also make installing wsgi apps fairly easy.</td></tr>
+            <tr><td>[15:22] *** Lawouach_ doesn't understand the concept of executable for Python usually</td></tr>
+            <tr><td>[15:22] &lt j_baker&gt Now I just have to worry about windows.</td></tr>
+            <tr><td>[15:23] &lt Lawouach_&gt I think I'm missing entirely what j_baker is doing and I should shut it :)</td></tr>
+            <tr><td>[15:24] &lt j_baker&gt Basically, you zip all your python files up and your pycs, then concatenate it with a shell script that runs python, unzips the code, and then runs a module within it as the main file.</td></tr>
+            <tr><td>[15:25] &lt j_baker&gt Now that I read that, that sounds a lot like cx_freeze.</td></tr>
+            <tr><td>[15:28] &lt Davbo&gt MS-: I might come back to it later, and make a start with another window / tool / colour selector. My exam on Friday is "the big Maths exam" so need to do plenty revisin'</td></tr>
+            <tr><td>[15:37] &lt Davbo&gt So i'll leave it at that for now, and go back to revising hyperbolics, imaginary numbers and all that fun stuff</td></tr>
+            <tr><td>[15:38] &lt j_baker&gt Wow... I am so glad I'm not you. What math class is that for?</td></tr>
+            <tr><td>[15:39] *** j_baker isn't good at "real" math</td></tr>
+            <tr><td>[15:40] &lt Davbo&gt They call it "Continuous Foundations" basically, what they want us to know before the second year</td></tr>
+            <tr><td>[15:40] &lt Davbo&gt There is a load of stuff in it though</td></tr>
+            <tr><td>[15:42] &lt Davbo&gt It's all pure maths then suddenly changes to probability and statistical stuff, like Gaussian distribution :-(</td></tr>
+            <tr><td>[15:46] &lt MS-&gt """Lawouach_ doesn't understand the concept of executable for Python usually</td></tr>
+            <tr><td>[15:46] &lt MS-&gt I think I'm missing entirely what j_baker is doing and I should shut it :)"""</td></tr>
+            <tr><td>[15:46] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:46] &lt j_baker&gt Hmmmm... so it's kind of like calculus meets statistics meets discrete math? I kind of like that idea. Just get it all out of the way in one class, Davbo.</td></tr>
+            <tr><td>[15:47] &lt MS-&gt AIUI, the aim is an application that joe blogs can download and install, and run like they can any P2P or IM client</td></tr>
+            <tr><td>[15:47] &lt MS-&gt It then acts as their personal webserver which integrates with intermediaries to help them serve their local stuff to the world</td></tr>
+            <tr><td>[15:47] &lt MS-&gt even if they're behind a NAT and couldn't open a port if they tried</td></tr>
+            <tr><td>[15:47] &lt MS-&gt essentially</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt crazy stuff</td></tr>
+            <tr><td>[15:48] &lt MS-&gt as well as able to download and install/run widgets locally</td></tr>
+            <tr><td>[15:48] &lt MS-&gt The widgets being essentially wsgi apps</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt The upshot of it all is, we end up with a huge amount of stuff to remember. but the actual questions on the exam are never as difficult as the more focused exams (although they cover the whole syllabus )</td></tr>
+            <tr><td>[15:49] &lt MS-&gt I'd be amused if we could provide a hosting facility for google appengine apps, to allow them to be downloaded and run locally</td></tr>
+            <tr><td>[15:49] &lt MS-&gt But I think walking might be a good idea first</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt That sounds cool though MS-</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt Yeah, what MS- said. :) There's also a lead in to Prism there as well.</td></tr>
+            <tr><td>[15:50] &lt vmlemon_&gt Didn't someone do a similar thing with the official SD, ages ago?</td></tr>
+            <tr><td>[15:50] &lt vmlemon_&gt *SDK</td></tr>
+            <tr><td>[15:51] &lt j_baker&gt Which official SDK?</td></tr>
+            <tr><td>[15:51] &lt MS-&gt google gears</td></tr>
+            <tr><td>[15:51] &lt MS-&gt Not the same though</td></tr>
+            <tr><td>[15:51] &lt vmlemon_&gt The actual GAE one</td></tr>
+            <tr><td>[15:52] &lt MS-&gt Oh, I see</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt MS- is there a place in the Kamaelia tree that I should put any WSGI apps that I write? Or should they stay outside the tree?</td></tr>
+            <tr><td>[15:58] &lt j_baker&gt Like should I put them under support, or just leave them in my sketches directory or under Apps? Or does it matter? :)</td></tr>
+            <tr><td>[15:59] &lt MS-&gt For the moment I would leave them under Apps until you have stuff working</td></tr>
+            <tr><td>[15:59] &lt MS-&gt under /Sketches rather</td></tr>
+            <tr><td>[15:59] &lt MS-&gt then migrate them to /Apps when you've got a clear idea of the requirements you'll have for them</td></tr>
+            <tr><td>[16:00] &lt MS-&gt I suspect that a common structure would be</td></tr>
+            <tr><td>[16:00] &lt MS-&gt moin.d</td></tr>
+            <tr><td>[16:00] &lt MS-&gt django.d</td></tr>
+            <tr><td>[16:00] &lt MS-&gt another.d</td></tr>
+            <tr><td>[16:00] &lt MS-&gt and inside each .d directory</td></tr>
+            <tr><td>[16:00] &lt MS-&gt put their required things</td></tr>
+            <tr><td>[16:00] &lt MS-&gt (perhaps)</td></tr>
+            <tr><td>[16:00] &lt MS-&gt Putting them in .d's as well means that you can zip them up etc and then figure out how you want that to work</td></tr>
+            <tr><td>[16:02] &lt j_baker&gt Oh, I see. That's a pretty good idea. It eliminates all the having to put stuff in site-packages.</td></tr>
+            <tr><td>[16:19] &lt MS-&gt OK,</td></tr>
+            <tr><td>[16:19] &lt MS-&gt j_baker:</td></tr>
+            <tr><td>[16:19] &lt MS-&gt ~/tmp&gt find</td></tr>
+            <tr><td>[16:19] &lt MS-&gt .</td></tr>
+            <tr><td>[16:19] &lt MS-&gt ./demo</td></tr>
+            <tr><td>[16:19] &lt MS-&gt ./demo/gameover.py</td></tr>
+            <tr><td>[16:19] &lt MS-&gt ./demo/greet.py</td></tr>
+            <tr><td>[16:19] &lt MS-&gt ./demo/__init__.py</td></tr>
+            <tr><td>[16:19] &lt MS-&gt ~/tmp&gt more demo/__init__.py</td></tr>
+            <tr><td>[16:19] &lt MS-&gt print "Hello"</td></tr>
+            <tr><td>[16:19] &lt MS-&gt ~/tmp&gt more demo/greet.py</td></tr>
+            <tr><td>[16:19] &lt MS-&gt def greet():</td></tr>
+            <tr><td>[16:19] &lt MS-&gt  print "hello world"</td></tr>
+            <tr><td>[16:19] &lt MS-&gt ~/tmp&gt more demo/gameover.py</td></tr>
+            <tr><td>[16:19] &lt MS-&gt def gameover():</td></tr>
+            <tr><td>[16:19] &lt MS-&gt  print "game over"</td></tr>
+            <tr><td>[16:20] &lt MS-&gt ~/tmp&gt zip -r demo.zip demo/</td></tr>
+            <tr><td>[16:20] &lt MS-&gt  adding: demo/ (stored 0%)</td></tr>
+            <tr><td>[16:20] &lt MS-&gt  adding: demo/gameover.py (deflated 8%)</td></tr>
+            <tr><td>[16:20] &lt MS-&gt  adding: demo/greet.py (stored 0%)</td></tr>
+            <tr><td>[16:20] &lt MS-&gt  adding: demo/__init__.py (stored 0%)</td></tr>
+            <tr><td>[16:20] &lt MS-&gt ~/tmp&gt mv demo X</td></tr>
+            <tr><td>[16:20] &lt MS-&gt ~/tmp&gt ls</td></tr>
+            <tr><td>[16:20] &lt MS-&gt X/ demo.zip</td></tr>
+            <tr><td>[16:20] &lt MS-&gt ~/tmp&gt python</td></tr>
+            <tr><td>[16:20] &lt MS-&gt Python 2.5.1 (r251:54863, Jan 10 2008, 18:01:57)</td></tr>
+            <tr><td>[16:20] &lt MS-&gt [GCC 4.2.1 (SUSE Linux)] on linux2</td></tr>
+            <tr><td>[16:20] &lt MS-&gt Type "help", "copyright", "credits" or "license" for more information.</td></tr>
+            <tr><td>[16:20] &lt MS-&gt &gt&gt&gt import sys</td></tr>
+            <tr><td>[16:20] &lt MS-&gt &gt&gt&gt sys.path.append("demo.zip")</td></tr>
+            <tr><td>[16:20] &lt MS-&gt &gt&gt&gt import demo</td></tr>
+            <tr><td>[16:20] &lt MS-&gt Hello</td></tr>
+            <tr><td>[16:20] &lt MS-&gt &gt&gt&gt demo</td></tr>
+            <tr><td>[16:20] &lt MS-&gt &lt module 'demo' from 'demo.zip/demo/__init__.py'&gt</td></tr>
+            <tr><td>[16:21] &lt MS-&gt &gt&gt&gt demo.greet.greet()</td></tr>
+            <tr><td>[16:21] &lt MS-&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[16:21] &lt MS-&gt  File "&lt stdin&gt", line 1, in &lt module&gt</td></tr>
+            <tr><td>[16:21] &lt MS-&gt AttributeError: 'module' object has no attribute 'greet'</td></tr>
+            <tr><td>[16:21] &lt MS-&gt &gt&gt&gt import demo.greet</td></tr>
+            <tr><td>[16:21] &lt MS-&gt &gt&gt&gt demo.greet.greet()</td></tr>
+            <tr><td>[16:21] &lt MS-&gt hello world</td></tr>
+            <tr><td>[16:21] &lt MS-&gt &gt&gt&gt demo.gameover</td></tr>
+            <tr><td>[16:21] &lt MS-&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[16:21] &lt MS-&gt  File "&lt stdin&gt", line 1, in &lt module&gt</td></tr>
+            <tr><td>[16:21] &lt MS-&gt AttributeError: 'module' object has no attribute 'gameover'</td></tr>
+            <tr><td>[16:21] &lt MS-&gt &gt&gt&gt import demo.gameover</td></tr>
+            <tr><td>[16:21] &lt MS-&gt &gt&gt&gt demo.gameover</td></tr>
+            <tr><td>[16:21] &lt MS-&gt &lt module 'demo.gameover' from 'demo.zip/demo/gameover.py'&gt</td></tr>
+            <tr><td>[16:21] &lt MS-&gt &gt&gt&gt demo.gameover.gameover()</td></tr>
+            <tr><td>[16:21] &lt MS-&gt game over</td></tr>
+            <tr><td>[16:21] &lt MS-&gt Should be sufficient to see usage</td></tr>
+            <tr><td>[16:21] &lt MS-&gt and limitations</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt That's seriously awesome. I'd have never guessed that python would be able to unzip a file then import it automagically.</td></tr>
+            <tr><td>[16:23] &lt MS-&gt Also:</td></tr>
+            <tr><td>[16:23] &lt MS-&gt &gt&gt&gt import sys</td></tr>
+            <tr><td>[16:23] &lt MS-&gt &gt&gt&gt sys.path.append("demo.zip")</td></tr>
+            <tr><td>[16:23] &lt MS-&gt &gt&gt&gt import demo</td></tr>
+            <tr><td>[16:23] &lt MS-&gt Hello</td></tr>
+            <tr><td>[16:23] &lt MS-&gt hello world</td></tr>
+            <tr><td>[16:23] &lt MS-&gt (if you change the __init__.py to:</td></tr>
+            <tr><td>[16:23] &lt MS-&gt ~/tmp/demo&gt more __init__.py</td></tr>
+            <tr><td>[16:23] &lt MS-&gt print "Hello"</td></tr>
+            <tr><td>[16:23] &lt MS-&gt import greet</td></tr>
+            <tr><td>[16:23] &lt MS-&gt greet.greet()</td></tr>
+            <tr><td>[16:24] &lt MS-&gt Inside the zipfile it can find stuff :)</td></tr>
+            <tr><td>[16:25] &lt MS-&gt I did wonder if you'd realised that detail :)</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt that's cool.</td></tr>
+            <tr><td>[16:25] &lt j_baker&gt And then all you have to do is concatenate it with a shell script that will run python with one of the modules within as __main__.</td></tr>
+            <tr><td>[16:26] &lt j_baker&gt I saw the code to build the shell script, but I wasn't sure exactly how it was importing things within the shell script without explicitly unzipping it first.</td></tr>
+            <tr><td>[16:26] &lt MS-&gt ~/tmp&gt env PYTHONPATH=demo.zip python -c "import demo"</td></tr>
+            <tr><td>[16:26] &lt MS-&gt Hello</td></tr>
+            <tr><td>[16:26] &lt MS-&gt hello world</td></tr>
+            <tr><td>[16:29] &lt MS-&gt Discovery of the day - largish is in the OED</td></tr>
+            <tr><td>[16:29] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[16:30] &lt MS-&gt That makes me happy, since that means one could cake a largish cake whilst beering beer, which is zactly correct.</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt o.O</td></tr>
+            <tr><td>[16:30] &lt MS-&gt and they're all valid words & usages</td></tr>
+            <tr><td>[16:31] &lt MS-&gt And would drive many pedants nuts :-D</td></tr>
+            <tr><td>[16:31] &lt j_baker&gt English is such a weird language.</td></tr>
+            <tr><td>[16:31] &lt Davbo&gt Like: Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo</td></tr>
+            <tr><td>[16:31] &lt Davbo&gt Always confuses me</td></tr>
+            <tr><td>[16:32] &lt MS-&gt orphans: connecting and binding are not the same thing at all</td></tr>
+            <tr><td>[16:32] &lt MS-&gt a connect on a UDP socket also means something like odd</td></tr>
+            <tr><td>[16:32] &lt MS-&gt (multicast is a mode for a UDP socket)</td></tr>
+            <tr><td>[16:39] *** MS- finds the layout being used by orphans confusing</td></tr>
+            <tr><td>[16:39] &lt Davbo&gt I'm off to get something to eat, back later. Thanks for the help earlier MS-</td></tr>
+            <tr><td>[16:40] &lt MS-&gt yw</td></tr>
+            <tr><td>[16:42] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:59] &lt Lawouach&gt MS-: in which way do you find his layout confusing?</td></tr>
+            <tr><td>[17:04] &lt MS-&gt I'm creating a branch to show more what I was expecting</td></tr>
+            <tr><td>[17:05] &lt MS-&gt I think what's probably confusing is that it creates local trunk/branch/tags areas</td></tr>
+            <tr><td>[17:05] &lt MS-&gt when in fact there's carte blanche to use /branches for that</td></tr>
+            <tr><td>[17:06] &lt MS-&gt you'll see the difference in a mo</td></tr>
+            <tr><td>[17:06] &lt MS-&gt lots of checkin messages along the lines of "for discussion"</td></tr>
+            <tr><td>[17:06] &lt MS-&gt I intend to delete the branch later</td></tr>
+            <tr><td>[17:07] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[17:07] &lt Lawouach&gt I understand</td></tr>
+            <tr><td>[17:07] &lt Lawouach&gt It wasn't clear for me neither whether we could use it</td></tr>
+            <tr><td>[17:07] &lt Lawouach&gt thanks for clarifying</td></tr>
+            <tr><td>[17:09] &lt MS-&gt Please assume that anything except /trunk/Code is _probably_ fair game</td></tr>
+            <tr><td>[17:09] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[17:09] &lt MS-&gt  /branches/private_&lt your initials&gt&lt anything&gt and /trunk/Sketches/&lt your initials&gt *especially* so</td></tr>
+            <tr><td>[17:09] &lt MS-&gt :)</td></tr>
+            <tr><td>[17:11] &lt MS-&gt The approach taken by orphans though is easier to integrate with already running/installed kamaelia code bases of course</td></tr>
+            <tr><td>[17:11] &lt MS-&gt So that's why I view as "for discussion" :-)</td></tr>
+            <tr><td>[17:11] &lt MS-&gt both approaches have advantages</td></tr>
+            <tr><td>[17:13] &lt Lawouach&gt Yeah I had suggested he'd followed that layout but didn't consider using the overall repository :)</td></tr>
+            <tr><td>[17:17] &lt MS-&gt It is unusual I admit</td></tr>
+            <tr><td>[17:18] &lt MS-&gt Or rather uncommon, though v useful to be able to have carte blanche</td></tr>
+            <tr><td>[17:18] &lt MS-&gt When I spoke about working this way at pycon uk last year, someone pointed out that this was a way of hacking subversion to be useable in a way similar to a distributed version control systems</td></tr>
+            <tr><td>[17:18] &lt MS-&gt hmm, which version of pyrex are you using orphans?</td></tr>
+            <tr><td>[17:19] &lt MS-&gt Gah, the pyportmidi people don't say</td></tr>
+            <tr><td>[17:21] &lt MS-&gt Ah, missing dependency: -lporttime</td></tr>
+            <tr><td>[17:22] &lt j_baker&gt http://jason.baker.pastebin.com/m461c36f0 &lt - Could someone tell me why line 5 isn't working or even what it does exactly? I'm guessing it's checking the python version somehow, but sh is sheer gibberish to me sometimes. :)</td></tr>
+            <tr><td>[17:24] &lt j_baker&gt (other than that it works perfectly though)</td></tr>
+            <tr><td>[17:25] &lt j_baker&gt Or better yet, tell me where I can find it out on my own. :)</td></tr>
+            <tr><td>[17:26] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[17:28] &lt orphans&gt euargh</td></tr>
+            <tr><td>[17:28] *** orphans catches up</td></tr>
+            <tr><td>[17:30] *** MS- finds http://portmedia.wiki.sourceforge.net/portmidi</td></tr>
+            <tr><td>[17:31] &lt orphans&gt MS-, connecting vs binding - yeah, I understand the difference OK now, just wondering why mhrd's code used the safeConnect method to bind. I think it's just a convenient quick hack, but I'm not certain. Would the socket errors from both be the same?</td></tr>
+            <tr><td>[17:31] &lt MS-&gt where's the code?</td></tr>
+            <tr><td>[17:32] &lt orphans&gt Sketches/MH/RTP/MultiCastTransceiver.py</td></tr>
+            <tr><td>[17:34] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MH/RTP/Multicast_transceiver.py ?</td></tr>
+            <tr><td>[17:35] &lt orphans&gt yeah, sorry</td></tr>
+            <tr><td>[17:35] &lt orphans&gt was doing it from memory</td></tr>
+            <tr><td>[17:35] &lt orphans&gt line 223</td></tr>
+            <tr><td>[17:36] &lt MS-&gt Ah, I see that's a hack of the TCPClient code</td></tr>
+            <tr><td>[17:36] &lt orphans&gt yeah - that's what I though</td></tr>
+            <tr><td>[17:36] &lt orphans&gt s/though/thought</td></tr>
+            <tr><td>[17:37] &lt orphans&gt would the right way be to run safeConnect, then safeBind (non-existant at the moment afaik), then get the CSA and link it all up?</td></tr>
+            <tr><td>[17:37] &lt MS-&gt I think many of the exceptions caught and handled there aren't relevant</td></tr>
+            <tr><td>[17:38] &lt MS-&gt Well, the difference between bind and connect on UDP and bind and connect on TCP is worth noting</td></tr>
+            <tr><td>[17:38] &lt orphans&gt ok, I thought that might be the case</td></tr>
+            <tr><td>[17:38] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[17:38] &lt MS-&gt bind on both means "I'm listening for messages on this port"</td></tr>
+            <tr><td>[17:38] &lt orphans&gt yup</td></tr>
+            <tr><td>[17:38] &lt MS-&gt You can actually do this with TCP as well, it's just very rare</td></tr>
+            <tr><td>[17:39] &lt MS-&gt (on a client that is)</td></tr>
+            <tr><td>[17:39] &lt MS-&gt ie define your client to make an outgoing connection _from_ port &lt some number&gt</td></tr>
+            <tr><td>[17:39] &lt MS-&gt But with UDP, being connectionless</td></tr>
+            <tr><td>[17:40] &lt MS-&gt You don't have that - so when you send messages, defining where they're coming from is really useful if you want a reply :)</td></tr>
+            <tr><td>[17:40] &lt MS-&gt With TCP, you just connect</td></tr>
+            <tr><td>[17:40] &lt MS-&gt Which gives the same effect</td></tr>
+            <tr><td>[17:40] &lt orphans&gt yeah, cool</td></tr>
+            <tr><td>[17:40] &lt MS-&gt in a way from a *client* perspective tcp's connect and udp's bind are very very similar</td></tr>
+            <tr><td>[17:41] &lt MS-&gt a .connect for a udp socket just says "use these default parameters for who to sent to"</td></tr>
+            <tr><td>[17:41] &lt MS-&gt rather than anything going out the network</td></tr>
+            <tr><td>[17:41] &lt MS-&gt it's very rarely used IME</td></tr>
+            <tr><td>[17:41] &lt orphans&gt people just use sendto</td></tr>
+            <tr><td>[17:41] &lt MS-&gt Generally</td></tr>
+            <tr><td>[17:42] &lt MS-&gt My guess is that matt kept that structure to encourage the likelihood of refactoring later on</td></tr>
+            <tr><td>[17:42] &lt MS-&gt If it became appropriate</td></tr>
+            <tr><td>[17:42] &lt orphans&gt Matt is actually using sendto in that</td></tr>
+            <tr><td>[17:42] &lt MS-&gt (which is after all actually where the CSA came from)</td></tr>
+            <tr><td>[17:43] &lt MS-&gt Yes, I also note that matt doesn't use connect for UDP either, which is cool :)</td></tr>
+            <tr><td>[17:43] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:43] &lt orphans&gt ok, so do you think it'd be overkill to have TCPClient, UDP and Multicast all inheriting from a base class?</td></tr>
+            <tr><td>[17:44] &lt orphans&gt 'cause it seems to me that the code would be pretty similar in all cases (althought that might be because they are all based upon TCPClient)</td></tr>
+            <tr><td>[17:44] &lt MS-&gt I think for the moment, don't merge them</td></tr>
+            <tr><td>[17:45] &lt MS-&gt The UDP code looks more complex than it has to be .</td></tr>
+            <tr><td>[17:45] &lt orphans&gt in what way?</td></tr>
+            <tr><td>[17:45] &lt MS-&gt Multicast at present is also alot simpler</td></tr>
+            <tr><td>[17:45] &lt MS-&gt well compare it with the current code</td></tr>
+            <tr><td>[17:45] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Internet/UDP.py</td></tr>
+            <tr><td>[17:45] &lt MS-&gt And also: https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Internet/Multicast_transceiver.py</td></tr>
+            <tr><td>[17:45] &lt orphans&gt from what I understand the problem with that is on recv you use 100% CPU</td></tr>
+            <tr><td>[17:46] &lt orphans&gt I thought that was why mhrd changed Multicast to use the CSA</td></tr>
+            <tr><td>[17:46] &lt MS-&gt Yes, but that's more a matter of the fact that those don't use the selctor service</td></tr>
+            <tr><td>[17:46] &lt MS-&gt No, I think it was an *easy* way for Matt to use the selector service</td></tr>
+            <tr><td>[17:46] &lt MS-&gt Not quite the same thing :)</td></tr>
+            <tr><td>[17:46] &lt orphans&gt ahh, right</td></tr>
+            <tr><td>[17:47] &lt orphans&gt so really the UDP code shouldn't use CSA, and go direct to the selector service?</td></tr>
+            <tr><td>[17:47] &lt MS-&gt Yes</td></tr>
+            <tr><td>[17:47] &lt orphans&gt or is that still up for grabs?</td></tr>
+            <tr><td>[17:47] &lt mhrd&gt yep - I cannabalised existing code to get there quick; plus it provided some assurance of having vaguely decent error condition handling from the outset</td></tr>
+            <tr><td>[17:47] &lt orphans&gt ok, I didn't really get that up til now :)</td></tr>
+            <tr><td>[17:47] &lt MS-&gt mhrd: Because you knew it'd been used/tested extensively :)</td></tr>
+            <tr><td>[17:47] &lt mhrd&gt indeed :)</td></tr>
+            <tr><td>[17:47] &lt orphans&gt I now see why it'd be bad to just merge the three</td></tr>
+            <tr><td>[17:48] &lt mhrd&gt MS-: a UDP sender I can see has no need to use the selector; but a UDP receiver/transciever surely has a good case for doing so?</td></tr>
+            <tr><td>[17:48] &lt orphans&gt :)</td></tr>
+            <tr><td>[17:48] &lt MS-&gt mhrd: All 3 have a good case for doing so</td></tr>
+            <tr><td>[17:49] &lt MS-&gt I just think it may be simpler just to do it inside the UDP sender/reciever/transcievers themselves</td></tr>
+            <tr><td>[17:49] &lt MS-&gt And then make multicast a toggle</td></tr>
+            <tr><td>[17:49] &lt MS-&gt You'd probably just end up with a UDP transceiver with a multicast toggle at a guess</td></tr>
+            <tr><td>[17:49] *** mhrd looks up "java ini file parser" on google and has to sift through hits mostly consisting of people saying "use this thing that doesn't quite work; or google for it"</td></tr>
+            <tr><td>[17:50] &lt orphans&gt so my next move should be making a simple UDP receiver using the selector service, expand that into a seperate transceiver, and whack in a toggle to set the multicast options?</td></tr>
+            <tr><td>[17:50] &lt MS-&gt orphans: What library is porttime from, and where can I download a version that will install?</td></tr>
+            <tr><td>[17:51] &lt MS-&gt Yes - also derive from the existing UDP & multicast code</td></tr>
+            <tr><td>[17:51] &lt orphans&gt it's from portaudio/midi - is there a suse package?</td></tr>
+            <tr><td>[17:51] &lt orphans&gt MS-, yeah, cool</td></tr>
+            <tr><td>[17:51] &lt MS-&gt rpm -qa|grep portaudio</td></tr>
+            <tr><td>[17:51] &lt MS-&gt portaudio20-20.0-0.pm.1</td></tr>
+            <tr><td>[17:51] &lt MS-&gt portaudio-19-175</td></tr>
+            <tr><td>[17:51] &lt MS-&gt portaudio-devel-19-222.pm.1</td></tr>
+            <tr><td>[17:51] &lt MS-&gt portaudio20-devel-20.0-0.pm.1</td></tr>
+            <tr><td>[17:52] &lt MS-&gt ~&gt rpm -ql portaudio20-20.0-0.pm.1|grep porttime</td></tr>
+            <tr><td>[17:52] &lt MS-&gt ~&gt rpm -ql portaudio-19-175|grep porttime</td></tr>
+            <tr><td>[17:52] &lt orphans&gt man I wish they did sensible releases</td></tr>
+            <tr><td>[17:52] &lt orphans&gt eww, perhaps not...</td></tr>
+            <tr><td>[17:53] &lt orphans&gt I really don'l like having to use pyportmidi much</td></tr>
+            <tr><td>[17:53] &lt orphans&gt can you try rpm -ql portaudio20-20.0-0.pm.1|grep ptlinux?</td></tr>
+            <tr><td>[17:54] &lt MS-&gt empty</td></tr>
+            <tr><td>[17:54] &lt orphans&gt eesh</td></tr>
+            <tr><td>[17:55] &lt MS-&gt found a 3 versions (3 distros back) old version of portmidi</td></tr>
+            <tr><td>[17:56] &lt orphans&gt fwiw this is why I prefer OSC</td></tr>
+            <tr><td>[17:56] &lt orphans&gt partly</td></tr>
+            <tr><td>[17:58] &lt orphans&gt erm, I'm not really sure what to suggest</td></tr>
+            <tr><td>[17:58] &lt orphans&gt I think the pyportmidi tarball has a compiled version in, but that's really really ugly I know</td></tr>
+            <tr><td>[17:58] &lt MS-&gt oh, now it just hates me</td></tr>
+            <tr><td>[17:59] &lt MS-&gt # ls /usr/lib/libporttime.so.0*</td></tr>
+            <tr><td>[17:59] &lt MS-&gt /usr/lib/libporttime.so.0 /usr/lib/libporttime.so.0.0.0</td></tr>
+            <tr><td>[17:59] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:59] &lt MS-&gt python setup.py build</td></tr>
+            <tr><td>[17:59] &lt MS-&gt ...</td></tr>
+            <tr><td>[17:59] &lt MS-&gt gcc -pthread -shared build/temp.linux-i686-2.5/pypm.o -L./linux -L/usr/lib -lportmidi -lporttime -lasound -lpthread -lpython2.5 -o build/lib.linux-i686-2.5/pypm.so</td></tr>
+            <tr><td>[17:59] &lt MS-&gt /usr/lib/gcc/i586-suse-linux/4.2.1/../../../../i586-suse-linux/bin/ld: cannot find -lporttime</td></tr>
+            <tr><td>[17:59] &lt MS-&gt IT'S LYING</td></tr>
+            <tr><td>[17:59] &lt orphans&gt symlink to libporttime.so?</td></tr>
+            <tr><td>[17:59] &lt MS-&gt (I have run ldconfig btw)</td></tr>
+            <tr><td>[18:00] &lt MS-&gt oh that's a thought</td></tr>
+            <tr><td>[18:00] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:01] &lt MS-&gt Yay</td></tr>
+            <tr><td>[18:01] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:02] &lt MS-&gt Ohh, you can throw the ball around</td></tr>
+            <tr><td>[18:02] &lt MS-&gt That's fun</td></tr>
+            <tr><td>[18:02] &lt MS-&gt :)</td></tr>
+            <tr><td>[18:02] &lt MS-&gt Is that all it does right now?</td></tr>
+            <tr><td>[18:03] &lt MS-&gt (just checking)</td></tr>
+            <tr><td>[18:03] &lt MS-&gt (I don't have an appropriate midi device atm)</td></tr>
+            <tr><td>[18:03] &lt orphans&gt it does that and sends out OSC messages as you go</td></tr>
+            <tr><td>[18:04] &lt orphans&gt that's one of the things on my todo list - I need to write a doc to say how you get sound out to test it easily</td></tr>
+            <tr><td>[18:07] &lt orphans&gt mm, seems the music gods really don't like suse - might be a bit more installing from tarballs for you I'm afraid MS-</td></tr>
+            <tr><td>[18:07] &lt MS-&gt I've got most stuff installed BTW</td></tr>
+            <tr><td>[18:07] &lt MS-&gt "packman" is really good for most thigs</td></tr>
+            <tr><td>[18:07] &lt MS-&gt and I've got that set up as a repository</td></tr>
+            <tr><td>[18:08] &lt MS-&gt Most things are just point and click (For *once* that was also the case with vlc & mplayer after moving to 10.3)</td></tr>
+            <tr><td>[18:08] &lt MS-&gt OK, I've created a branch:</td></tr>
+            <tr><td>[18:08] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_JT</td></tr>
+            <tr><td>[18:08] &lt MS-&gt which is primarily so that I can say. "i was thinking something more like this"</td></tr>
+            <tr><td>[18:09] &lt MS-&gt as opposed to "use this branch" since I do intend deleting it</td></tr>
+            <tr><td>[18:09] &lt MS-&gt You can find out what's where by doing svn diff -r4168:HEAD</td></tr>
+            <tr><td>[18:09] &lt MS-&gt svn diff -r4168:HEAD |grep Index</td></tr>
+            <tr><td>[18:09] &lt MS-&gt is perhaps more human friendly</td></tr>
+            <tr><td>[18:09] &lt MS-&gt Index: Apps/Kamaelia-Jam/App/Jam.py</td></tr>
+            <tr><td>[18:09] &lt MS-&gt Index: Apps/Kamaelia-Jam/DistBuild/setup.py.src</td></tr>
+            <tr><td>[18:09] &lt MS-&gt Index: Apps/Kamaelia-Jam/DistBuild/Jam.build.sh</td></tr>
+            <tr><td>[18:09] &lt MS-&gt Index: Apps/Kamaelia-Jam/Doc/INSTALL</td></tr>
+            <tr><td>[18:09] &lt MS-&gt Index: Apps/Kamaelia-Jam/Doc/README</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Apps/Kamaelia-Jam/Dependencies/pyportmidi-0.0.4-2.5.zip</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Apps/Kamaelia-Jam/Dependencies/portmidi-20041117-0.pm.1.i586.rpm</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Apps/Kamaelia-Jam/Dependencies/InstallingPortmidi</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Apps/Kamaelia-Jam/Dependencies/pyOSC-0.3.4b-4996.tar.gz</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Apps/Kamaelia-Jam/Dependencies/README</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Apps/Kamaelia-Jam/MANIFEST.in</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/__init__.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Protocol/__init__.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Protocol/Osc.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/__init__.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Internet/UDP.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Internet/__init__.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/UI/__init__.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/UI/XYPad.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/UI/StepSequencer.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Util/MusicTiming.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Util/SendQuantizer.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Util/__init__.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Index: Kamaelia/setup.py</td></tr>
+            <tr><td>[18:10] &lt MS-&gt To use that to build a packaged distribution</td></tr>
+            <tr><td>[18:10] &lt MS-&gt cd to : Apps/Kamaelia-Jam/DistBuild/</td></tr>
+            <tr><td>[18:11] &lt MS-&gt and run Jam.build.sh</td></tr>
+            <tr><td>[18:11] &lt MS-&gt That'll create a tarball, including the external dependencies</td></tr>
+            <tr><td>[18:11] &lt MS-&gt (may or may not be what you want)</td></tr>
+            <tr><td>[18:11] &lt MS-&gt That can install the axon, kamaelia, jam parts using python setup.py install</td></tr>
+            <tr><td>[18:12] &lt orphans&gt ok, cool. Is that definitely preferred to Lawouach's suggested layout then?</td></tr>
+            <tr><td>[18:12] &lt MS-&gt Not sure, depends on you guys really</td></tr>
+            <tr><td>[18:13] &lt MS-&gt I'd like to be able to do this approach for packaging for all apps labelled "Kamaelia : Foo"</td></tr>
+            <tr><td>[18:13] &lt MS-&gt But that's to do with packaging, not dev</td></tr>
+            <tr><td>[18:13] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:14] &lt MS-&gt It may be that you find it easier to do what you're doing and then use that to patch the Kamaelia distro at DistBuild time</td></tr>
+            <tr><td>[18:14] &lt MS-&gt So that you can distribute without including Axon & Kamaelia easily</td></tr>
+            <tr><td>[18:14] &lt MS-&gt The currently approach is "nice" to the extent it's easy</td></tr>
+            <tr><td>[18:14] &lt MS-&gt but nasty in that it clobbers someone's kamaelia install</td></tr>
+            <tr><td>[18:15] &lt MS-&gt In a way, the ideal is to have an automated way of going from what you have</td></tr>
+            <tr><td>[18:15] &lt MS-&gt to the list of files/mappings above</td></tr>
+            <tr><td>[18:15] &lt MS-&gt and then to automate that</td></tr>
+            <tr><td>[18:15] &lt MS-&gt since it's easier to add extra stuff automatically than it is to pick stuff out</td></tr>
+            <tr><td>[18:16] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:16] &lt MS-&gt So it's for thought/discussion really</td></tr>
+            <tr><td>[18:16] &lt orphans&gt thoughts: packaging is hard :)</td></tr>
+            <tr><td>[18:17] &lt MS-&gt I can see 3 levels of download myself:</td></tr>
+            <tr><td>[18:17] &lt MS-&gt  * "Just the stuff I wrote for this App"</td></tr>
+            <tr><td>[18:17] &lt MS-&gt  * "The stuff I wrote for this App, and the rest of Kamaelia/Axon"</td></tr>
+            <tr><td>[18:17] &lt MS-&gt  * Everything in 2 + most obvious dependencies</td></tr>
+            <tr><td>[18:17] &lt MS-&gt Yeah, packaging isn't simple</td></tr>
+            <tr><td>[18:17] &lt MS-&gt OK, I have to go afk</td></tr>
+            <tr><td>[18:17] &lt MS-&gt biab</td></tr>
+            <tr><td>[18:17] &lt orphans&gt k, ta for all that MS-</td></tr>
+            <tr><td>[18:36] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:43] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt MS-: why Kamaelia/Kamaelia/Apps/ Vs Apps/Kamaelia-Jam/App/</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt I don't understand the layout above</td></tr>
+            <tr><td>[18:48] &lt j_baker&gt Using that method for making an executable that MS- and I discussed, I got an executable that's 5 kb. And that's WITH the .pycs and .svns and the entire Kamaelia and Axon libraries.</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt not bad :)</td></tr>
+            <tr><td>[18:49] &lt j_baker&gt Plus it should work without any installation on any unix.</td></tr>
+            <tr><td>[19:15] &lt MS-&gt Lawouach_: You mean whats the rationale for:</td></tr>
+            <tr><td>[19:15] &lt MS-&gt Kamaelia/Kamaelia/Apps/</td></tr>
+            <tr><td>[19:15] &lt MS-&gt Apps/Kamaelia-Jam/</td></tr>
+            <tr><td>[19:15] &lt MS-&gt on the branch ?</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt I don't see what they represent</td></tr>
+            <tr><td>[19:16] &lt MS-&gt Apps/Kamaelia-Jam/ revolves around the packaging essentially of the non-component bits</td></tr>
+            <tr><td>[19:16] &lt MS-&gt Whereas Kamaelia/Kamaelia/Apps/ contains components</td></tr>
+            <tr><td>[19:16] &lt MS-&gt Excluding dependencies, Apps/Kamaelia-Jam contains this:</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Index: Apps/Kamaelia-Jam/App/Jam.py</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Index: Apps/Kamaelia-Jam/DistBuild/setup.py.src</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Index: Apps/Kamaelia-Jam/DistBuild/Jam.build.sh</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Index: Apps/Kamaelia-Jam/Doc/INSTALL</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Index: Apps/Kamaelia-Jam/Doc/README</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Index: Apps/Kamaelia-Jam/MANIFEST.in</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Out of these, Apps/Kamaelia-Jam/DistBuild/Jam.build.sh is used for building a correct setup.py file, so that python setup.py sdist works</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Whereas the other files, excluding __init__.py files are these:</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Protocol/Osc.py</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Internet/UDP.py</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/UI/XYPad.py</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/UI/StepSequencer.py</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Util/MusicTiming.py</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Index: Kamaelia/Kamaelia/Apps/Jam/Util/SendQuantizer.py</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Which are all components</td></tr>
+            <tr><td>[19:18] &lt Lawouach&gt Okay although I've usually seen mainly configure.py as a name rather than a .sh</td></tr>
+            <tr><td>[19:18] &lt MS-&gt You're lucky it wasn't a perl script :-)</td></tr>
+            <tr><td>[19:18] &lt MS-&gt ;)</td></tr>
+            <tr><td>[19:18] &lt Lawouach&gt true :)</td></tr>
+            <tr><td>[19:19] &lt MS-&gt (I think the one perl script there was went a long time ago (!) :-) )</td></tr>
+            <tr><td>[19:19] &lt Lawouach&gt I'll be honest I'm still confused but I'll be interested in seeing it working just to clarify things in my head.</td></tr>
+            <tr><td>[19:19] &lt MS-&gt Well, it means that orphans code is automatically scavengable by everyone else</td></tr>
+            <tr><td>[19:20] &lt MS-&gt eg, in some other random code I could write</td></tr>
+            <tr><td>[19:20] &lt MS-&gt import Kamaelia.Apps.Jam.UI,XYPad</td></tr>
+            <tr><td>[19:20] &lt MS-&gt because it defaults to working together</td></tr>
+            <tr><td>[19:20] &lt MS-&gt rather than apart</td></tr>
+            <tr><td>[19:21] &lt Lawouach&gt how's that different from the layout he had put in place?</td></tr>
+            <tr><td>[19:21] &lt Lawouach&gt AFAIK I could do that import too</td></tr>
+            <tr><td>[19:21] &lt MS-&gt Yes, you could, but it relates to packaging - this will mean that Kamaelia &lt apps&gt really are a part of kamaelia</td></tr>
+            <tr><td>[19:22] &lt MS-&gt After all from my perspective, these apps are really just a sneaky way of getting lots of components to scavenge into the main tree</td></tr>
+            <tr><td>[19:22] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[19:22] &lt MS-&gt :-)</td></tr>
+            <tr><td>[19:23] &lt MS-&gt Which you guys do is up to you BTW, I'm just looking to try and find a way of doing things such that we get the benefits that CPAN have had for years</td></tr>
+            <tr><td>[19:23] &lt MS-&gt And I think one way of managing that is to have this altenate namespace of Kamaelia.Apps</td></tr>
+            <tr><td>[19:23] &lt MS-&gt which is either inside the tree or outside</td></tr>
+            <tr><td>[19:23] &lt MS-&gt in terms of dev</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt I'm not against your layout as I can understand the rational</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt It's just rather uncommon in the Python world</td></tr>
+            <tr><td>[19:24] &lt MS-&gt Yeah, one part is very clearly packaging, the other is library</td></tr>
+            <tr><td>[19:24] &lt MS-&gt Yes, I know.</td></tr>
+            <tr><td>[19:25] &lt MS-&gt I've probably worth with Perl as long as I worked with python, and I do still like perl, and like the way it handles packaging far better than python packages do</td></tr>
+            <tr><td>[19:25] &lt MS-&gt s/worth/worked/</td></tr>
+            <tr><td>[19:25] &lt MS-&gt The *result* when it comes to distribution will currently be this:</td></tr>
+            <tr><td>[19:26] &lt MS-&gt ~/kamaelia/branches/private_MPS_JT/Apps/Kamaelia-Jam/dist&gt tar zxf Kamaelia-Jam-0.0.0.tar.gz</td></tr>
+            <tr><td>[19:26] &lt MS-&gt ~/kamaelia/branches/private_MPS_JT/Apps/Kamaelia-Jam/dist&gt cd Kamaelia-Jam-0.0.0/</td></tr>
+            <tr><td>[19:26] &lt MS-&gt ~/kamaelia/branches/private_MPS_JT/Apps/Kamaelia-Jam/dist/Kamaelia-Jam-0.0.0&gt python setup.py install</td></tr>
+            <tr><td>[19:26] &lt MS-&gt Which is the usual python dance</td></tr>
+            <tr><td>[19:26] &lt MS-&gt It's just how to get there is slightly different</td></tr>
+            <tr><td>[19:27] &lt MS-&gt I think that it can be improved further though, based on the ideas you asked orphans to work on</td></tr>
+            <tr><td>[19:27] &lt MS-&gt ie such that we could have 3 levels of package</td></tr>
+            <tr><td>[19:27] &lt MS-&gt "just the app please, I have Kamaelia, Axon & everything else"</td></tr>
+            <tr><td>[19:28] &lt MS-&gt "The app, Axon & Kamaelia please, I'll figure out the rest"</td></tr>
+            <tr><td>[19:28] &lt MS-&gt "Oh, just give me as many dependencies as you can, I'm a lazy goit and just want it to work"</td></tr>
+            <tr><td>[19:28] &lt MS-&gt This packaging defaults to the second</td></tr>
+            <tr><td>[19:29] &lt MS-&gt Much of the python world does "here's just the app, you figure the rest out", and that strikes me as a little odd in our case</td></tr>
+            <tr><td>[19:29] &lt MS-&gt *shrug* It's just the latest iteration</td></tr>
+            <tr><td>[19:30] &lt MS-&gt I'm sure I'll look back at this approach at some point and cringe</td></tr>
+            <tr><td>[19:30] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:35] &lt MS-&gt It'd be interesting to see what a half way house might look like</td></tr>
+            <tr><td>[19:44] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:50] &lt MS-&gt Anyone want to build a simulator ? http://www.computer50.org/mark1/prog98/ssemref.html</td></tr>
+            <tr><td>[20:54] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[21:09] *** j_baker_ is now known as j_baker</td></tr>
+            <tr><td>[21:17] &lt j_baker&gt MS- or mhrd-afk: I'm trying to understand the WaitComplete message. If I understand what's happening properly, when the scheduler receives a WaitComplete, it creates a new microprocess?</td></tr>
+            <tr><td>[21:18] &lt j_baker&gt If that's what is happening, does the new microprocess have access to the old microprocess's boxes (since this seems to be happening at the microprocess level rather than the component level).</td></tr>
+            <tr><td>[21:23] &lt MS-&gt j_baker: Look at Kamaelia-Grey</td></tr>
+            <tr><td>[21:23] &lt MS-&gt What you pass in is a generator.</td></tr>
+            <tr><td>[21:23] &lt MS-&gt That is then used as the generator for the microprcess rather than a new main() being started</td></tr>
+            <tr><td>[21:23] &lt MS-&gt That means whatever generator you pass in has access to whatever that generator has access to</td></tr>
+            <tr><td>[21:23] &lt MS-&gt if that generator looks like</td></tr>
+            <tr><td>[21:23] &lt MS-&gt def foo(self):</td></tr>
+            <tr><td>[21:23] &lt MS-&gt  ...</td></tr>
+            <tr><td>[21:24] &lt MS-&gt then that generator foo has access to self</td></tr>
+            <tr><td>[21:24] &lt MS-&gt which is the component, and hence has access to the same attributes</td></tr>
+            <tr><td>[21:24] &lt MS-&gt ie the generator may change, but the object remains the same</td></tr>
+            <tr><td>[21:25] &lt MS-&gt Too many waitcompletes in a piece of code tend to imply the code needs changing BTW, IMO</td></tr>
+            <tr><td>[21:25] &lt MS-&gt Though it can be very useful for getting something going</td></tr>
+            <tr><td>[21:25] &lt j_baker&gt Well, there are a lot of them in the AIM code. I was wondering if that was what was causing it to lock up.</td></tr>
+            <tr><td>[21:26] &lt j_baker&gt I'll have to play around with it. It would at least be nice to have a timeout if it doesn't connect.</td></tr>
+            <tr><td>[21:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:56] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:13] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[23:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:33] &lt MS-&gt Interesting: http://basiscraft.com/</td></tr>
+            <tr><td>[23:50] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>

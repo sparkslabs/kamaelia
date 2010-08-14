@@ -1,0 +1,163 @@
+<html><body><table>
+            <tr><td>[06:17] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:17] &lt Lawouach_&gt kaboom!</td></tr>
+            <tr><td>[07:16] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[07:16] &lt Lawouach_&gt morning MS-</td></tr>
+            <tr><td>[07:16] &lt MS-&gt morning</td></tr>
+            <tr><td>[07:20] &lt MS-&gt Odd, interesting: http://yieldprolog.sourceforge.net/</td></tr>
+            <tr><td>[07:21] &lt Lawouach_&gt nice</td></tr>
+            <tr><td>[07:23] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[07:24] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:35] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:35] &lt MS-&gt morning</td></tr>
+            <tr><td>[07:40] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[07:40] Reply: does the macarena</td></tr>
+            <tr><td>[07:47] &lt MS-&gt http://yieldprolog.sourceforge.net/tutorial1.html is making my head hurt</td></tr>
+            <tr><td>[08:38] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[08:46] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:54] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[09:18] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:26] *** aa__ has joined #kamaelia</td></tr>
+            <tr><td>[09:31] *** aa__ is now known as aa_</td></tr>
+            <tr><td>[09:35] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[10:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:19] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:26] &lt MS-&gt hi</td></tr>
+            <tr><td>[10:52] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[11:59] &lt aa_&gt MS-: that example on your blog is really nice</td></tr>
+            <tr><td>[12:00] &lt aa_&gt MS-: see, the last 3 bits of the pipeline would be obvious to me, but not the TCPClient, DataDeChunker bit</td></tr>
+            <tr><td>[12:28] &lt MS-&gt aa_: which pipeline?</td></tr>
+            <tr><td>[12:29] &lt MS-&gt Oh, do you mean that because this works:</td></tr>
+            <tr><td>[12:29] &lt MS-&gt  return Pipeline(</td></tr>
+            <tr><td>[12:29] &lt MS-&gt  TCPClient(ip, port=port),</td></tr>
+            <tr><td>[12:29] &lt MS-&gt  Decrypter(), # Decrypt on the way in</td></tr>
+            <tr><td>[12:29] &lt MS-&gt  DeMarshallJSON(),</td></tr>
+            <tr><td>[12:29] &lt MS-&gt at least for small data</td></tr>
+            <tr><td>[12:30] &lt MS-&gt that this is less obvious:</td></tr>
+            <tr><td>[12:30] &lt MS-&gt  return Pipeline(</td></tr>
+            <tr><td>[12:30] &lt MS-&gt  TCPClient(ip, port=port),</td></tr>
+            <tr><td>[12:30] &lt MS-&gt  DataDeChunker(),</td></tr>
+            <tr><td>[12:30] &lt MS-&gt  Decrypter(), # Decrypt on the way in</td></tr>
+            <tr><td>[12:30] &lt MS-&gt  DeMarshallJSON(),</td></tr>
+            <tr><td>[12:30] &lt MS-&gt ie to capture entire frames of messages?</td></tr>
+            <tr><td>[12:30] &lt MS-&gt It's a bit heavy handed way of doing it, given what's sent across the wire, but I was aiming to show nesting of things</td></tr>
+            <tr><td>[12:31] &lt MS-&gt It becomes more obvious that you need to capture entire message frames if you're sending things larger than the network MTU</td></tr>
+            <tr><td>[12:32] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[12:32] &lt MS-&gt You could have a more intelligent JSON demarshaller, but framing messages is generally cleaner</td></tr>
+            <tr><td>[12:32] &lt aa_&gt MS-: right framing is the bit I would miss out I guess</td></tr>
+            <tr><td>[12:33] &lt MS-&gt Would be nicer for the framing I use there to indicate the size of the frame - since that would allow better throughput</td></tr>
+            <tr><td>[12:33] *** MS- nods</td></tr>
+            <tr><td>[12:33] &lt aa_&gt MS-: but us high-level programmers tend to forget that streams need to be chunked</td></tr>
+            <tr><td>[12:33] &lt aa_&gt and all that other stuffs</td></tr>
+            <tr><td>[12:33] *** MS- nods</td></tr>
+            <tr><td>[12:35] &lt aa_&gt MS-: on a totally different note, I see that Kamaelia is copright to "All the contributors"</td></tr>
+            <tr><td>[12:36] &lt aa_&gt MS-: how does that work for you? I am having some minor issues with PIDA's copyrighting</td></tr>
+            <tr><td>[12:36] &lt MS-&gt http://www.kamaelia.org/Developers/SampleContributorAgreement</td></tr>
+            <tr><td>[12:36] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:37] &lt MS-&gt We ask for a BSD licence on contributors code, with the specific ability to also just release under the standard Kamaelia license.</td></tr>
+            <tr><td>[12:37] &lt aa_&gt oh hmm..</td></tr>
+            <tr><td>[12:37] &lt MS-&gt As a result if we needed to relicense, we could just do that - there's a few possible scenarios that make sense there.</td></tr>
+            <tr><td>[12:37] &lt aa_&gt right, relicensing is our sisue</td></tr>
+            <tr><td>[12:38] &lt MS-&gt But the core thing there is that it means that all contributors own their code.</td></tr>
+            <tr><td>[12:38] &lt aa_&gt right</td></tr>
+            <tr><td>[12:38] &lt MS-&gt So that's why it says Copyright Kamaelia Contributors</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Since it is :)</td></tr>
+            <tr><td>[12:38] &lt aa_&gt and can use it prorietarily in non-kamaelia projects</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Avoids the fact that copyright assignment can't happen in some things</td></tr>
+            <tr><td>[12:38] &lt aa_&gt proprietarily</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Yep - that's possible, but not likely</td></tr>
+            <tr><td>[12:39] &lt MS-&gt Also the BBC is a wierd case. If it was proprietary, then the only case I can think of is licensing to a third party (eg a set top box manufacturer)</td></tr>
+            <tr><td>[12:39] &lt MS-&gt which would be (at most) a nominal sum.</td></tr>
+            <tr><td>[12:40] &lt aa_&gt right</td></tr>
+            <tr><td>[12:40] &lt MS-&gt But, seeing as it's the BBC, what that would actually mean is it would end up going to fund more TV stuff</td></tr>
+            <tr><td>[12:40] &lt aa_&gt yes</td></tr>
+            <tr><td>[12:40] &lt MS-&gt Which isn't actually a bad thing - and benefits everyone - unlike private company which would just profit</td></tr>
+            <tr><td>[12:40] &lt MS-&gt (eg Sun & Open Office vs Star Office)</td></tr>
+            <tr><td>[12:41] &lt MS-&gt Also, chances of it happening are slim</td></tr>
+            <tr><td>[12:41] &lt MS-&gt at best</td></tr>
+            <tr><td>[12:41] &lt MS-&gt (BBC is pretty bad at licensing tech IMO0</td></tr>
+            <tr><td>[12:41] &lt MS-&gt When it's done it, it's done well. Most of the time it's been pain.</td></tr>
+            <tr><td>[12:42] &lt MS-&gt eg good examples: Nicam & the LSI/BBC R&D DVB chip</td></tr>
+            <tr><td>[12:42] &lt MS-&gt also some 3D systems that lots of general public won't've heard of</td></tr>
+            <tr><td>[12:42] &lt MS-&gt etc</td></tr>
+            <tr><td>[12:43] &lt MS-&gt NICAM however is an oddity because it was 5-10 years old *at least* before it became useful</td></tr>
+            <tr><td>[12:43] &lt MS-&gt since it was invented as a mechanism for 12 bit sampling (IIRC) digital radio</td></tr>
+            <tr><td>[12:43] &lt MS-&gt (could be wrong on the number of bits :) )</td></tr>
+            <tr><td>[12:44] &lt MS-&gt Wasn't good enough, so scrapped until someone realised that it was good enough for TV and could get sent out</td></tr>
+            <tr><td>[12:44] &lt MS-&gt ie the tech failed and languished for many years before finding an application</td></tr>
+            <tr><td>[12:45] &lt MS-&gt indirectly it drove the mass acceptance of timeshifting though, since most people got NICAM stereo by buying a VCR, rather than a new TV</td></tr>
+            <tr><td>[12:47] &lt aa_&gt hmm, yeah I remember a time when you could get a non-nicam steroe vcr</td></tr>
+            <tr><td>[12:47] &lt aa_&gt I in fact was tricked into buying one</td></tr>
+            <tr><td>[12:47] &lt aa_&gt anyway here's to kamaelia being bigger than Nicam :D</td></tr>
+            <tr><td>[12:55] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:56] &lt MS-&gt I'm after useful TBH rather than anything else. Useful strikes me as an easy goal to achieve, since it already is that, and so it just ought to get usefuller.</td></tr>
+            <tr><td>[12:56] &lt MS-&gt which is perhaps not a very good aim</td></tr>
+            <tr><td>[12:56] &lt MS-&gt since that's not a very good word</td></tr>
+            <tr><td>[12:56] &lt MS-&gt I ought to learn a bit more hyperbole I guess</td></tr>
+            <tr><td>[12:57] &lt aa_&gt MS-: just use the prefix uber- and the suffix -issimo</td></tr>
+            <tr><td>[12:57] &lt aa_&gt uberusefulissimo</td></tr>
+            <tr><td>[12:58] &lt MS-&gt Something to do with the Singularity would be good. and if singularities == black holes, then we could come up with mini-singularities,</td></tr>
+            <tr><td>[12:58] &lt MS-&gt and be a software LHC, threaten to destroy the world (or perhaps worse just icanhazcheeseburger), and get hate videos on youtube from whackjobs.</td></tr>
+            <tr><td>[12:58] &lt MS-&gt or something</td></tr>
+            <tr><td>[12:58] &lt MS-&gt I probably need coffee :)</td></tr>
+            <tr><td>[12:58] &lt aa_&gt ok, step away from the Pipe</td></tr>
+            <tr><td>[12:59] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:09] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:01] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[15:15] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:30] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[15:30] Reply: does the macarena</td></tr>
+            <tr><td>[16:01] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:56] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:22] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:23] *** Davbo grumbles</td></tr>
+            <tr><td>[17:23] &lt Davbo&gt Stupid Iceland.</td></tr>
+            <tr><td>[17:24] *** Davbo has an ISA with Icesave</td></tr>
+            <tr><td>[17:24] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:24] &lt vmlemon_&gt They've frozen the interest on it? ;)</td></tr>
+            <tr><td>[17:24] *** vmlemon_ ducks</td></tr>
+            <tr><td>[17:24] &lt Davbo&gt lol</td></tr>
+            <tr><td>[17:25] &lt Davbo&gt it was the headline on the 6 o'clock news :-(</td></tr>
+            <tr><td>[17:26] &lt Davbo&gt it's only a problem if you have over £50k really, (un)fortunately i don't</td></tr>
+            <tr><td>[17:26] &lt vmlemon_&gt Not sure if you saw my musing on Twitter, but I'm still bemused about people putting money in NoRo, given that it was a sinking ship</td></tr>
+            <tr><td>[17:27] &lt vmlemon_&gt Hmm, maybe they'll just find all the dying banks and merge them into one big one...</td></tr>
+            <tr><td>[17:27] &lt vmlemon_&gt The Bank(TM)...</td></tr>
+            <tr><td>[17:30] *** vmlemon_ wonders what they'll call the merged Lloyds TSB and Halifax Bank of Scotland, if it gets the go-ahead...</td></tr>
+            <tr><td>[17:30] &lt vmlemon_&gt (Given that they're both mouthfulls right now) ;)</td></tr>
+            <tr><td>[17:42] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:42] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:13] &lt Davbo&gt Sorry for making you jealous btw Lawouach ;-)</td></tr>
+            <tr><td>[18:28] *** aa_ is with HSBC</td></tr>
+            <tr><td>[18:28] &lt aa_&gt who's shares actually rose today</td></tr>
+            <tr><td>[18:29] &lt aa_&gt probably just on the back of my heinously large mortgage</td></tr>
+            <tr><td>[18:29] &lt Davbo&gt heh</td></tr>
+            <tr><td>[18:29] &lt Davbo&gt it's not nice to wake up to your radio alarm clock talking about your bank</td></tr>
+            <tr><td>[18:29] &lt aa_&gt man, I can imagine</td></tr>
+            <tr><td>[18:30] &lt Davbo&gt it would really suck, but i'm a student</td></tr>
+            <tr><td>[18:30] &lt aa_&gt the radio alarm is doing groundhog day at the moment with those banks</td></tr>
+            <tr><td>[18:30] &lt Davbo&gt and therefore poor.</td></tr>
+            <tr><td>[18:30] &lt aa_&gt Davbo: ah, right so that's the 12 o'clock news then ;)</td></tr>
+            <tr><td>[18:30] &lt Davbo&gt Hah 11 o'clock i'll have you know!</td></tr>
+            <tr><td>[18:31] &lt aa_&gt wow, you must be a 1st/2.1 student</td></tr>
+            <tr><td>[18:31] &lt Davbo&gt lol! :-)</td></tr>
+            <tr><td>[18:32] &lt aa_&gt I shouldn't poke fun, I did 2 undergraduate degrees,a nd one of them lasted 5 years</td></tr>
+            <tr><td>[18:32] &lt aa_&gt but the second one I was the nerdy mature student</td></tr>
+            <tr><td>[18:32] &lt aa_&gt Davbo: what are you studying, and where? (if that not too nosy)</td></tr>
+            <tr><td>[18:33] &lt Davbo&gt Comp Sci at Sheffield</td></tr>
+            <tr><td>[18:33] &lt aa_&gt oh, proper</td></tr>
+            <tr><td>[18:33] &lt Davbo&gt (Uni of)</td></tr>
+            <tr><td>[18:33] &lt aa_&gt well, its a cliche, but "best days of your life"</td></tr>
+            <tr><td>[18:35] &lt Davbo&gt Yeah it's great fun</td></tr>
+            <tr><td>[18:36] &lt aa_&gt oh god I am showing my age now</td></tr>
+            <tr><td>[18:37] &lt aa_&gt scrap all that.</td></tr>
+            <tr><td>[18:37] &lt aa_&gt I can't wait to go to university!</td></tr>
+            <tr><td>[18:37] &lt aa_&gt just deciding what A-Levels to do</td></tr>
+            <tr><td>[18:39] *** vmlemon_ is also with HSBC</td></tr>
+            <tr><td>[18:40] &lt vmlemon_&gt My 4p in the bank is probably the only thing propping them up ;)</td></tr>
+            <tr><td>[18:40] &lt aa_&gt vmlemon_: see, all those extra charges, ridiculous rules about money withdrawal, pathetic savings interest</td></tr>
+            <tr><td>[18:40] &lt vmlemon_&gt *48p</td></tr>
+            <tr><td>[18:40] &lt aa_&gt that's propping them up</td></tr>
+            <tr><td>[18:40] &lt vmlemon_&gt Aye</td></tr>
+            <tr><td>[18:55] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:10] *** ian_brasil has joined #kamaelia</td></tr>

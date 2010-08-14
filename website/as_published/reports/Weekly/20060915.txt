@@ -1,0 +1,202 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060915 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 Taking stock: What is there to merge?
+5. Date/Time of next meeting
+Proposed: Fri 29th September 2006, 11am BST (GMT+0100)
+
+
+
+2. Participants
+
+Participating: MS- (Michael), mhrd (Matt), c-ryan (Ryan)
+Also attending: Ifelipe, tav, Uraeus
+
+
+
+3. Activity Reports
+
+Michael:
+    DONE:
+        Contributor agreement finalised, agreed and dusted,
+        Axon Visualiser extracted and tidied
+            bugfixed deprecations
+            fixed component declarations
+        started branch of Compose to allow graph editting
+            looking to replace the topology visualiser with the axon visualiser 
+        agreed merge of threading work after basic review
+
+    TODO:
+        Finish graph editor
+        merge Ryan & Thomas's code
+        see if contributors agree to the agreement
+        Euro FOO Camp
+        EuroOSCON
+        Kamaelia Open Space
+
+    BLOCKED:
+        Lots of little things interrupting time eating productivity
+        replacing topology viewer more complex than expected
+        next week blocked by conference
+
+Ryan:
+    DONE:
+        Mail server memory efficiency improvements:
+            processes a message as a stream instead of as a whole message
+        Got bliki login
+        Announced my BitTorrent components on bliki
+        Very simple LOGO clone
+
+    TODO:
+        Finish tagging files for Kamaelia Contributor agreement
+        SMTP client
+        DNS MX record retrieval for remote mail delivery
+        Make a (not-so-)MiniAxon to try out pause-by-default & wake cond. ideas
+        Pygame BlitScheduler (alt. to using lots of surfaces with PygameDisplay)
+        Rewrite LOGO clone to use BlitScheduler
+        Write a compiler for fun
+
+    BLOCKED:
+        New laptop, old games :)
+
+Matt:
+    DONE:
+        Digital TV (DVB-T) PVR Demo App
+        Documenting DVB components
+        Merged Axon threaded compnoent synchronous boxes support
+
+    BLOCKED:
+        bbc stuff
+
+    TODO
+        pymedia audio components docs
+        finish tidying and rename DVB components
+        incorporate DVB components into codebase
+        make more pymedia wrappers (video)
+        review/revisit experimental Timer component
+        Improve box destruction to handle when a box is still linked to another
+        review/merge sync boxes support for threaded component
+        experiment with pausing when waiting to deliver to a full inbox
+
+
+Matt and Michael complimented Ryan on his SMTP server improvements and Logo
+idea. Matt asked Ryan to check that he had put these changes into the
+repository.
+
+Matt also asked Ryan if he could commit his Logo work into the repository. Ryan
+was worried that "it's naff", but both Matt and Michael said that they were
+still interested in seeing it anyway.
+
+
+
+4. Discussion items (max 3 or 4)
+
+4.1 Taking stock: What is there to merge?
+
+Matt suggested that what he was really asking was what Michael planned to
+include in the imminent EuroOSCON release.
+
+Michael listed: (authorship in brackets)
+    * BitTorrent                                          (Ryan, Google SoC)
+    * HTTP                                                (Ryan, Google SoC)
+    * OpenGL                                              (Thomas, Google SoC)
+    * self.pause() implementation for threaded components (Matt)
+    * New DVB components                                  (Matt)
+    * Whiteboard with audio                               (Matt)
+    * Graphline version of Tools/Compose.py (if finished) (Michael)
+
+Michael explained that anything by Thomas and Ryan that had been 'packaged' for
+Summer of Code would be included.
+
+Michael explained that he didn't want to include any more than this in order to
+give Thomas and Ryan's work suitable emphasis. He commented that these were "the
+biggest bits of new functionality and rather nice too :)"
+
+Matt agreed to get his DVB components tidied up as quickly as possible.
+
+Matt pointed out dependancies for the whiteboard with audio:
+    * speex component (Matt/Devendra)
+    * pymedia components (Matt)
+    * self.pause() implementation (Matt)
+
+Matt expressed concern that Michael had given himself a lot of code to merge in
+not very much time. Michael responded that most of it should be relatively easy
+to merge.
+
+At Michael's suggestion, Matt and Ryan agreed to do a quick review of Matt's
+changes to threaded component; after which Matt would merge it himself.
+
+Michael justified this by commenting that these changes had had a long soaktest.
+Matt agreed pointing out the lack of formal unittests, but that some components
+in the audio whiteboard had used these changes for a while now.
+
+Michael explained to Ryan that it was too soon to merge Ryan's SMTP code. Ryan
+agreed with this.
+
+Matt expressed the hope that another release could be made after EuroOSCON,
+perhaps incorporating code such as Ryan's SMTP components, if appropriate. Matt
+suggested that, "if nothing else, documentation needs fleshing out :)"
+
+Michael asked to be told about any other dependancies that Matt or Ryan can
+think of for their, or others' code.
+
+   * Matt agreed to email Michael/kamaelia-list on this in detail later
+   * Ryan pointed Michael at the READMEs in his packages
+
+Michael also asked if someone could do a fresh install or testing. In particular
+Michael wanted to know what Thomas's Torrent GUI didn't work for him.
+
+Matt and Ryan explained that this sounded like the bug identified right at the
+end of SoC, which Ryan has fixed after SoC finished. They suggested Michael
+should update his working copy and rerun setup.py for Ryan's packages.
+
+Michael said he had done this last night; and was really after diffs to help
+identify where the problem might be. Michael decided to follow this up later.
+
+Matt confirmed with Michael that he was happy for Matt to move his DVB and
+experimental services related components direct into the main codebase.
+
+Michael suggested Ryan might want to look at the experimental components for
+possible ideas, or to provide constructive criticism. They are experimental,
+but are needed for some of Matt's DVB components and examples (such as the PVR).
+
+Ryan confirmed that there was nothing else he wanted incorporated in this
+release.
+
+Side issues that arose:
+
+   * Ryan commented that the project website appeared to be down.
+
+     Matt and Michael confirmed that they had had timeouts/slow response issues
+     recently too.
+
+   * Lfelipe asked Michael to explain what he meant by a graphline editor.
+
+     Michael explained that it is a "visual system builder" - a point and click
+     interface for wiring up any arrangement of components. The output would be
+     the code needed to do that wiring.
+
+     Lfelipe thought it was something similar to Gobby or Subetha and suggested
+     that kamaelia could be "a nice backend for such an editor ?"
+
+     Michael agreed, and pointed out the whiteboard provides some of that.
+
+
+
+
+5. Date/Time of next meeting
+
+Thu 28th September 2006, 11am BST (GMT+0100)
+
+
+
+It was agreed to skip having a meeting next week because Matt and Michael would
+both be at EuroOSCON / bi-monthly meetings.
+
+Moved forwards from the Friday because Michael explained he would likely be
+travelling.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060915 ======

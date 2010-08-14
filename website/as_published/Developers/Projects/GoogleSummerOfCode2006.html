@@ -1,0 +1,104 @@
+<html>
+<head>
+<title> Developers/Projects/GoogleSummerOfCode2006 </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/GoogleSummerOfCode2006">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Project Task Page: GoogleSummerOfCode2006</h1>
+<p><i>To be filled in now. (The template form for this was created after GSOC finished. Why? This template form was invented some months later!)</i><br>
+</p>
+<h2><b>Description<br></b></h2><div style="float: right; border: solid;" class="twoC"><b> Status:</b> Completed<br><b>Current Developers: </b> Michael Sparks<br><b>Current "inflight" dev location:</b> /Sketches/{RJL|THF|AM|DL}<br><b>Start Date:</b> May 2006<br><b>Expected End Date:</b> Aug 2006<br><b>End Date:</b> Aug 2006<br><b>Date this page last updated:</b> 31 December 2006<br><b>Estimated effort so far:</b> 9 man months<br></div>Kamaelia &amp; Dirac were involved with Google's summer of code this year - the core aims of this task were to introduce students to open source in the context of useful Kamaelia &amp; Dirac based projects.<br><br><b>NB, this page largely discusses Kamaelia's involvement in SoC.</b><br><br>The end result of involvement is twofold. For the students, there is a general aim in becoming a better software engineer rather than "just" a coder). For Kamaelia &amp; Dirac there is an aim to generate a collection of useful  code, &amp; documentation increasing the usefulness of Kamaelia &amp; Dirac overall, increasing the project's utility and toolset. Ideally, a good outcome would be for the students to become fully fledged developers taking part in directing development of the project and taking ownership of their code. (This is an ideal however, not an expectation!) <br> <br>Google have now run summer of code now for 2 years.  This year, google invited organisations running open source projects to apply to be mentor organisations. BBC Research applied and was accepted. We were granted 6 student slots for Summer of Code. 4 of which were allocated to Kamaelia and 2 to Dirac. This split represented the fact that the bulk of applications were for Kamaelia rather than Dirac.<br><br>Historically, BBC research has mentored summer/pre-university students in the past. Furthermore, Kamaelia has an aim of being usable and useful to the average novice developer - as a result having relatively inexperienced developers is useful (in practice there was a range of experience).<br><i><br></i>Benefits:<br><ul><li>Students gain experience of participation in an open source project and seeing how an open source project can be run.</li><li>Students learn the difference/discipline of software engineering, rather than just coding.<br></li><li>Increased understanding of aims &amp; ways of working between Google &amp; BBC Research. (I seriously think this is something that has happened - so far perhaps only between the two teams on either side, but that's a good start!)</li><li>An increased set of components for Kamaelia, increasing it's attractiveness to all users</li><li>An opportunity to test the ease of use (vs learn) for Kamaelia by relative novices.</li><ul><li>Hypothesis appears confirmed. Novices seem to find Kamaelia easier to pick up and develop than traditional approaches, whereas experienced developers (<i>except</i> those used to piping data around) find it slightly harder, but useful.</li></ul><li>An expansion of the problem space which Kamaelia can be used for.</li><li>Further development of lightweight project management processes/crossed with open source best practice. (these project task pages are in a way a direct descendant of our way of working, combined with the way we asked students to detail their work)<br></li></ul><h2>Inputs</h2><ul><li>Task Sponsor: Michael Sparks</li><li>Task Owner: Michael Sparks</li><li>Developers involved in the task at some point<br></li><ul><li>Michael Sparks (primary Kamaelia Mentor)</li><li>Matt Hammond (backup/secondary Kamaelia Mentor)</li><li>Ryan Lothian (Significant amount of useful code now included in distribution)</li><li>Thomas Flanitzer (Significant amount of useful code now included in distribution)</li><li>Devendra Laulkar (Useful code now included in distribution, proof of concept for inter component trusted comms)</li><li>Anagha Mudigonda (proof of concept for trusted comms infrastructure)</li></ul><li>Users:</li><ul><li>Developers above (however since there have been users for the bit torrent, webserving &amp; web client code)<br></li></ul><li>Interested third parties</li><ul><li>Google</li></ul><li>Requirements</li><ul><li>See below.<br></li></ul></ul>The following is the student's own synopsis of their work prior to starting.<br><br><b>Creation of an integrated BitTorrent component for Kamaelia</b><br><div align="right"><i>Ryan Lothian</i><br></div>Kamaelia currently lacks a P2P toolset for content delivery. Adding BitTorrent client functionality to Kamaelia would allow BitTorrent to act as an end-point for a component chain.<br><br>Eventually this could lead to the BBC being able to distribute many terabytes of its TV and radio archive without incurring massive bandwidth requisites.<br><br><b>3D widget framework</b><br><div align="right"><i>Thomas Flanitzer</i><br></div>The project will provide a framework for a 3D user interface for Kamaelia. Several 3D widgets as well as a space manager will be implemented as components. Using these, a basic 3D user interface will be easy to create. If there is sufficient time, I will also experiment with more advanced components, to see in what direction the whole idea could develop.<br><br>An example application that uses all developed components will also be written. This will most likely be an image browser or video viewer, dependent on which components will be realized. It will help to collect experience with 3D interfaces and their use for Kamaelia.<br><br><b>Trusted Communications for Kamaelia Components</b><br><div align="right"><i>Devendra Laulkar</i><br></div>The aim of the project is to provide a Security Framework for Kamaelia components. Specifically to build a security component to provide services like Authentication and Integrity to Kamaelia components. This can help ensure the privacy of the users of the system. Ensuring privacy would result in an increased trust in the system.<br><br><b>Key Predistribution Infrastructure (KPI) base trusted communication framework for Kamaelia</b><br><div align="right"><i>Anagha Mudigonda</i><br></div>Kamaelia is set of components that can be assembled to create media/network apps. However there are no components that address trusted communication. By developing KPI based trusted communication framework, BBC Research team can easily enable secure communication for online or offline media transfers.<br><br>Trusted communications project requires a set of components that address authentication, integrity and privacy. These components will be built using Kamaelia component architecture principles. These components would expose high level security abstractions to applications like video multicast, video mail, whiteboard messaging etc.<br><h2>Outputs</h2>This section is largely about WHAT has been produced, normally by WHO (in order to provide a point of contact)<br><h3>Expected</h3><i>In the student's own words...<br><br></i><b>Creation of an integrated BitTorrent component for Kamaelia</b><br><ol><li>Creation of an Kamaelia component or components able to</li><ol><li>Be controlled by other Kamaelia components</li><li>Download data using the BitTorrent protocol</li><li>Upload data using the BitTorrent protocol</li><li>Create .torrent files for serving based on messages from other components</li></ol><li>Documentation for the new components /ongoing until end of project/<br><br>Given sufficient time the following extra features will also be implemented<br><br></li><li>Tracker interaction</li><ol><li>Automatic upload of .torrent files to a webserver for distribution</li><li>Automatic download of new .torrent files from a webserver</li></ol><li>...</li><ol><li>Deconstruction of a data stream into separate blocks</li><li>Reconstruction of downloaded blocks a single logical stream</li></ol><li>User interface that abstracts the process from users, presenting a simple stream/programme selection, reconstructed the stream as the earlier parts are played<br></li></ol><br><b>3D widget framework</b><br>Will deliver<br><ul><li>A framework for a 3D user interface</li><li>Component for managing an amount of space</li><li>Interactive component (like a button)</li><li>Component that is capable of displaying text on a surface in 3D</li><li>Component that is capable of displaying images on a surface in 3D</li><li>An example application for the created components</li></ul>given sufficient time<br><ul><li>Translucency and other nice looking effects</li><li>Component that is capable of displaying moving images on a surface in 3D</li><li>Interaction with existing 2d pygame components</li><li>More interactive widgets (text entry, scrollbar, checkboxes, ...)</li><li>Component that handles complex 3D meshes</li></ul><b>Trusted Communications for Kamaelia Components</b><br><ul><li>A collection of components that will provide security services to other components.</li><li>A security framework for Kamaelia.</li><li>Sample code and tutorial on using the security framework.</li><li>A blog on the progress and experiences of working with Kamaelia project.</li></ul>Core Deliverables:<br><ul><li>Security component providing at least authentication and integrity services.</li><li>Documentation on above component.</li></ul><b>Key Predistribution Infrastructure (KPI) base trusted communication framework for Kamaelia</b><br><ul><li>Overall Architecture document</li><li>Three fully tested <i>(high level)</i> components (1 authentication, 2 encryption)</li><li>Developer guide and sample apps using the components.</li><li>The student also proposed to work on this project till the year end during which they would provide the complete set of KPI framework components. <i>(this did not happen)</i></li></ul><h3><i>Actual</i></h3><i>To be filled in.</i><i></i><h3><i>Realistic possibilities arising as a result of activity on this task</i></h3><p><i>To be filled in.</i></p><h2><i>Related Tasks</i></h2><h3><i>Tasks that directly enable this task (dependencies)<br></i></h3><ul><li><i>To be filled in.</i></li></ul><h3><i>Sub Tasks</i></h3><ul><li><i>To be filled in.</i></li></ul><h2><i>Task Log</i></h2><p><i>To be filled in.</i><i> Probably cadge the data from the weekly "done" reports.<br></i></p><ul><li><i>Created the PTP page for the project,Michael. December 31st 2006.</i></li></ul><i></i><h2><i>Discussion</i></h2><i>This page is a work in progress to capture work on Kamaelia over the past 12 months. It's difficult to ignore GSOC, but this page was missing, hence why its been added.<br></i><p><i>-- Michael Sparks, December 31st 2006</i></p><p><br></p>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

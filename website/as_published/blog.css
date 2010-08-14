@@ -1,0 +1,101 @@
+:link:focus,
+:link,
+:link:active {
+        text-decoration:none;
+        color:#4444dd;
+        background-color:transparent;
+}
+
+:visited:focus,
+:visited,
+:visited:active {
+        text-decoration:none;
+        color:#000088;
+        background-color:transparent;
+}
+
+:link:hover {
+   text-decoration:underline;
+   background-color:#ffe0e0;
+   color:#dd4444;
+} 
+
+:visited:hover {
+   text-decoration:underline;
+        background-color:#ffe0e0;
+   color:#880000;
+}
+
+.picback { }        
+.navblock {
+   margin-top: 0em;
+   font-family: "Trebuchet MS", verdana, Arial, Helvetica, sans-serif;
+   font-size: 0.8em;
+   text-align: right;
+   margin-bottom: 0em;
+}
+body {
+   font-size: 10pt;
+}
+
+.pagebody {
+   margin-left: 5em;
+   margin-right: 5em;
+}
+@media print {
+body {
+   font-size: 10pt;
+}
+.pagebody {
+   margin-left: 8em;
+   margin-right: 6em;
+}
+}
+h1 {
+   font-family: Georgia, Bookman, "Times New Roman", times, serif;
+   font-weight: heavy;
+   font-style: italic;
+   margin-bottom: 0;
+}
+h2 {
+   margin-left: -1.5em;
+   font-family: Georgia, Bookman, "Times New Roman", times, serif;
+   font-weight: heavy;
+   font-style: italic;
+   margin-bottom: 0;
+}
+h3 {
+   margin-left: -0.9em;	
+   font-family: Georgia, Bookman, "Times New Roman", times, serif;
+   font-weight: heavy;
+   font-style: italic;
+   margin-bottom: 0;
+}
+.postbody {
+   margin-top: 0;
+   font-family: trebuch"Trebuchet MS", Arial, Helvetica, san-serif;
+}
+.trailer {
+   font-family: trebuch"Trebuchet MS", Arial, Helvetica, san-serif;
+}
+.date {
+   font-family: trebuch"Trebuchet MS", Arial, Helvetica, san-serif;
+   text-align: right;
+   font-size: 0.8em;
+}
+.postinfo {
+   margin-top: 10px;
+   margin-left: 2em;
+   font-style: italic;
+}
+.replyinfo {
+   margin-top: 8px;
+   margin-left: 2em;
+   font-style: italic;
+}
+p {
+   margin-bottom: 0;
+}
+.reply {
+   margin-left: 2em;
+}

@@ -1,0 +1,101 @@
+<html><body><table>
+            <tr><td>[04:35] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[04:43] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:58] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:40] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:40] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:40] &lt MS-&gt Morning</td></tr>
+            <tr><td>[09:26] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[09:26] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[09:38] &lt Lawouach_&gt hi MS-</td></tr>
+            <tr><td>[09:38] &lt MS-&gt hiya</td></tr>
+            <tr><td>[09:47] &lt Lawouach_&gt now that you're back, where are things heading with Axon? Will more work happen on the Axon refactoring?</td></tr>
+            <tr><td>[09:48] &lt MS-&gt Yes, there will</td></tr>
+            <tr><td>[09:48] &lt MS-&gt I figured that I wanted to get contributions merged and streamlined before pushing on with those, but I'm pretty happy with the way those changes are going</td></tr>
+            <tr><td>[09:49] &lt MS-&gt Simon Wittber's also been in touch off list and suggested working closer between Axon & Fiber which strikes me as a good idea.</td></tr>
+            <tr><td>[09:49] &lt Lawouach_&gt Fiber?</td></tr>
+            <tr><td>[09:49] &lt Lawouach_&gt never heard of it</td></tr>
+            <tr><td>[09:49] &lt MS-&gt Fibra rather</td></tr>
+            <tr><td>[09:49] &lt Lawouach_&gt ah right</td></tr>
+            <tr><td>[09:49] &lt Lawouach_&gt rings a bell</td></tr>
+            <tr><td>[09:50] &lt MS-&gt The source of the benchmarks/motivation for doing the core of Axon :)</td></tr>
+            <tr><td>[09:51] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:52] &lt Lawouach_&gt I'm trying to find a way of using Kamaelia at work, since we're heavily centered around XMPP, I might use my libs to write test beds</td></tr>
+            <tr><td>[09:52] &lt Lawouach_&gt But I'm being careful at the same time because I will have to motivate my choices</td></tr>
+            <tr><td>[09:52] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:59] *** MS- nods</td></tr>
+            <tr><td>[09:59] &lt MS-&gt I'm going to be shifting over to a new project here at work in about 2-3 weeks as well, and will hopefully be able to use Kamaelia in that</td></tr>
+            <tr><td>[09:59] &lt Lawouach_&gt I've found that one of the most complicated aspect of integrating Kamaelia was its... er... difference</td></tr>
+            <tr><td>[09:59] *** MS- nods</td></tr>
+            <tr><td>[10:00] &lt Lawouach_&gt It doesn't have an OOP API for instance</td></tr>
+            <tr><td>[10:00] &lt MS-&gt In a way that's the idea behind the Handle aspect - since it should allow people to build OOP APIs to components</td></tr>
+            <tr><td>[10:00] &lt Lawouach_&gt and sometimes it's hard to explain why there is so much verbosity in complex graphlines</td></tr>
+            <tr><td>[10:00] &lt Lawouach_&gt yeap</td></tr>
+            <tr><td>[10:00] &lt Lawouach_&gt and I should really add Handle support to headtsock</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt my boss usually cares more about readability and maintenability than pure awesomeness</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[10:02] *** MS- nods</td></tr>
+            <tr><td>[10:03] &lt MS-&gt In a way though those are both driving aspects of kamaelia - as a reaction against the less readable approach you get with something thats more reactor based</td></tr>
+            <tr><td>[10:04] &lt MS-&gt But Gloria's talk was interesting for emphasising that there is a difference about K which people find difficult initially to grasp</td></tr>
+            <tr><td>[10:04] &lt MS-&gt more so if they're experienced devs, which tracks</td></tr>
+            <tr><td>[10:04] &lt MS-&gt That ties into the other plans I've got - to split the website up much better</td></tr>
+            <tr><td>[10:05] &lt MS-&gt split out Axon, Kamaelia & Apps in a much cleaner way</td></tr>
+            <tr><td>[10:05] &lt Lawouach_&gt that sounds sensible to me</td></tr>
+            <tr><td>[10:05] &lt MS-&gt To enable also having a better set of docs for each part</td></tr>
+            <tr><td>[10:06] &lt MS-&gt "this is how you build a miniaxon" -- already clear</td></tr>
+            <tr><td>[10:06] &lt MS-&gt "this is how you build components" -- could be better</td></tr>
+            <tr><td>[10:06] &lt MS-&gt "this is how you build applications" -- not clear enough by far</td></tr>
+            <tr><td>[10:06] &lt Lawouach_&gt and afterall, allow people to Axon on its own outside of Kamaelia. It's already possible but I doubt anyone makes the distinction.</td></tr>
+            <tr><td>[10:06] &lt MS-&gt Yep. Jesse picked up on that, which I found useful</td></tr>
+            <tr><td>[10:06] &lt MS-&gt Also, I want to push into Axon a collection of base components that seem to be useful in lots of code</td></tr>
+            <tr><td>[10:07] &lt MS-&gt ie which form a DSL for kamaelia systems - with the obvious ones being Pipeline & Graphline</td></tr>
+            <tr><td>[10:08] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[10:10] &lt MS-&gt It also makes Axon more useful out of the box.</td></tr>
+            <tr><td>[10:18] *** PJ_Coudert_ has joined #kamaelia</td></tr>
+            <tr><td>[10:24] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:51] &lt Lawouach_&gt hmm Kamaelia isn't "pip+virtualenv" friendly when trying to install as a regular user</td></tr>
+            <tr><td>[10:52] &lt Lawouach_&gt It tries to write to /usr/local anyway</td></tr>
+            <tr><td>[11:53] &lt MS-&gt What error do you get?</td></tr>
+            <tr><td>[11:54] &lt MS-&gt My guess is pip+virtualenv+setuptools hate it when you have data files</td></tr>
+            <tr><td>[11:54] &lt Lawouach_&gt good guess</td></tr>
+            <tr><td>[11:54] &lt Lawouach_&gt it isn't a blocker for me anyhow</td></tr>
+            <tr><td>[11:57] &lt MS-&gt I've been thinking about these things btw.</td></tr>
+            <tr><td>[11:57] &lt MS-&gt Data files are useful if you use the "full distribution"</td></tr>
+            <tr><td>[11:57] &lt MS-&gt however if someone is doing something like</td></tr>
+            <tr><td>[11:57] &lt MS-&gt easy_install Kamaelia</td></tr>
+            <tr><td>[11:57] &lt MS-&gt then they're really "just" interested in downloading the library elements</td></tr>
+            <tr><td>[11:58] &lt MS-&gt ie the contents of Axon/ and Kamaelia/</td></tr>
+            <tr><td>[11:58] &lt MS-&gt So I'm likely to change the packaging a small variety of packages</td></tr>
+            <tr><td>[11:58] &lt MS-&gt ones with everything that's there at present</td></tr>
+            <tr><td>[11:58] &lt MS-&gt and ones which setuptools/easy_install/etc are happy with</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt Sounds good to me</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt and would reduce dramatically the size of the packages</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt 'cos right now it's rather chubby</td></tr>
+            <tr><td>[12:00] &lt MS-&gt It's that sort of thing I'm thinking of</td></tr>
+            <tr><td>[12:00] *** Lawouach_ replaces Backplanes with Fanout components</td></tr>
+            <tr><td>[12:00] &lt Lawouach_&gt tedious work :p</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Could be worse :)</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt true</td></tr>
+            <tr><td>[14:25] &lt MS-&gt back later</td></tr>
+            <tr><td>[14:26] &lt MS-&gt cya</td></tr>
+            <tr><td>[14:26] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[15:51] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:53] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:53] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:50] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:53] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[16:54] &lt wyleu&gt I have a confession to make...</td></tr>
+            <tr><td>[17:00] &lt vmlemon_&gt Eh?</td></tr>
+            <tr><td>[17:00] &lt vmlemon_&gt That was a short confession ;)</td></tr>
+            <tr><td>[17:39] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[18:02] *** vmlemon_2 has joined #kamaelia</td></tr>
+            <tr><td>[18:05] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[18:06] *** Uraeus is now known as Ura_gym</td></tr>
+            <tr><td>[18:18] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:18] &lt MS-&gt evening</td></tr>
+            <tr><td>[18:30] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:42] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:57] *** Ura_gym is now known as Uraeus</td></tr>
+            <tr><td>[22:01] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[22:36] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[22:36] &lt SamHasler&gt I didn't know the Kamaelia cat had made an appearance on dilbert http://www.babelgum.com/browser.php#play|SEARCH,queryString:dilbert,order:TOP_RATED|18,3014818</td></tr>

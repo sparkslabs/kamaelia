@@ -1,0 +1,114 @@
+<html>
+<head>
+<title> Cookbook/DVB/TransportStreamDemuxer </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/DVB/TransportStreamDemuxer">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Cookbook : Separating out lots of channels from a recorded DVB broadcast<br></h1>
+<p>Find this code here:<br><a href="http://svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Examples/DVB_Systems/TransportStreamDemuxer.py?view=markup">/Code/Python/Kamaelia/Examples/DVB_Systems/TransportStreamDemuxer.py</a></p><p>This simple example shows how to read back in a recorded transport stream from a file and separate out (demultiplex) several channels from it:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><blockquote><pre><span style="color: rgb(255, 0, 255);">from</span> Kamaelia.Device.DVB.Core <span style="color: rgb(255, 0, 255);">import</span> DVB_Demuxer<br><span style="color: rgb(255, 0, 255);">from</span> Kamaelia.File.ReadFileAdaptor <span style="color: rgb(255, 0, 255);">import</span> ReadFileAdaptor<br><span style="color: rgb(255, 0, 255);">from</span> Kamaelia.Chassis.Graphline <span style="color: rgb(255, 0, 255);">import</span> Graphline<br><span style="color: rgb(255, 0, 255);">from</span> Kamaelia.File.Writing <span style="color: rgb(255, 0, 255);">import</span> SimpleFileWriter<br><br>Graphline<span style="color: rgb(255, 0, 255);">(</span>
+    SOURCE<span style="color: rgb(255, 0, 255);">=</span>ReadFileAdaptor<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"BBC_MUX_1.ts"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>    DEMUX<span style="color: rgb(255, 0, 255);">=</span>DVB_Demuxer<span style="color: rgb(255, 0, 255);">({</span>
+        <span style="color: rgb(0, 0, 255);">640</span><span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">"NEWS24"</span><span style="color: rgb(255, 0, 255);">]</span>,<br>        <span style="color: rgb(0, 0, 255);">641</span><span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">"NEWS24"</span><span style="color: rgb(255, 0, 255);">]</span>,<br>        <span style="color: rgb(0, 0, 255);">600</span><span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 255);"></span><span style="color: rgb(255, 0, 0);">"BBCONE"</span><span style="color: rgb(255, 0, 255);">]</span>,<br>        <span style="color: rgb(0, 0, 255);">601</span><span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">"BBCONE"</span><span style="color: rgb(255, 0, 255);">]</span>,<br>        <span style="color: rgb(0, 0, 255);">610</span><span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">"BBCTWO"</span><span style="color: rgb(255, 0, 255);">]</span>,<br>        <span style="color: rgb(0, 0, 255);">611</span><span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">"BBCTWO"</span><span style="color: rgb(255, 0, 255);">]</span>,<br>        <span style="color: rgb(0, 0, 255);">620</span><span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">"CBBC"</span><span style="color: rgb(255, 0, 255);">]</span>,<br>        <span style="color: rgb(0, 0, 255);">621</span><span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">"CBBC"</span><span style="color: rgb(255, 0, 255);">]</span>,<br>        <span style="color: rgb(0, 0, 255);">18</span><span style="color: rgb(255, 0, 255);">:</span>  <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">"NEWS24"</span>, <span style="color: rgb(255, 0, 0);">"BBCONE"</span><span style="color: rgb(255, 0, 255);">]</span>,<span style="color: rgb(0, 128, 2);"><i># "BBCTWO", "CBBC"],</i></span>
+    <span style="color: rgb(255, 0, 255);">})</span>,<br>    NEWS24<span style="color: rgb(255, 0, 255);">=</span>SimpleFileWriter<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"news24.data"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>    BBCONE<span style="color: rgb(255, 0, 255);">=</span>SimpleFileWriter<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"bbcone.data"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>    BBCTWO<span style="color: rgb(255, 0, 255);">=</span>SimpleFileWriter<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"bbctwo.data"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>    CBBC<span style="color: rgb(255, 0, 255);">=</span>SimpleFileWriter<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"cbbc.data"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>    linkages<span style="color: rgb(255, 0, 255);">={</span>
+       <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"SOURCE"</span>, <span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">):(</span><span style="color: rgb(255, 0, 0);">"DEMUX"</span>,<span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>       <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"DEMUX"</span>, <span style="color: rgb(255, 0, 0);">"NEWS24"</span><span style="color: rgb(255, 0, 255);">):</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"NEWS24"</span>, <span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>       <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"DEMUX"</span>, <span style="color: rgb(255, 0, 0);">"BBCONE"</span><span style="color: rgb(255, 0, 255);">):</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"BBCONE"</span>, <span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>       <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"DEMUX"</span>, <span style="color: rgb(255, 0, 0);">"BBCTWO"</span><span style="color: rgb(255, 0, 255);">):</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"BBCTWO"</span>, <span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>       <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"DEMUX"</span>, <span style="color: rgb(255, 0, 0);">"CBBC"</span><span style="color: rgb(255, 0, 255);">):</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"CBBC"</span>, <span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>    <span style="color: rgb(255, 0, 255);">}</span>
+<span style="color: rgb(255, 0, 255);">)</span>.run<span style="color: rgb(255, 0, 255);">()</span></pre></blockquote><p>
+</p><p>The <i>DVB_Demuxer</i> component takes, at initialization, a dictionary mapping packet IDs (PIDs) to outbox names. Each of those outboxes has been linked to a <i>SimpleFileWriter</i> component to write it to a file.<br></p><p>For all the channels there are two PIDs - one for the audio and one for the video. For two of them, we also include PID 18 which carries Event Information Tables (tables containing now &amp; next and EPG data)<br></p>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,423 @@
+<html><body><table>
+            <tr><td>[02:22] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[02:28] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[04:42] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[06:45] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[06:58] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[07:21] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:31] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:36] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[07:37] &lt wyleu&gt Anyone running Version 7.1 of Visual Studio?</td></tr>
+            <tr><td>[07:38] &lt mhrd-afk&gt sorry, I'm 8.0</td></tr>
+            <tr><td>[07:38] &lt wyleu&gt I'm trying to compile rtpymidi of windowsXP and guess what it's asking for :(</td></tr>
+            <tr><td>[07:39] &lt mhrd-afk&gt rings a bell - isn't it something to do with python being compiled with VS 2003 and therefore anything built for it has to be built using teh same?</td></tr>
+            <tr><td>[07:46] &lt wyleu&gt Yep python2.4 requires 7.1 I don't use it so it's a bit of a pain.</td></tr>
+            <tr><td>[08:21] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:32] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:51] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:21] &lt Davbo&gt Morning all</td></tr>
+            <tr><td>[09:21] &lt wyleu&gt hello Davbo</td></tr>
+            <tr><td>[09:22] &lt wyleu&gt You don't use Visual Studio .1 do you?</td></tr>
+            <tr><td>[09:22] &lt wyleu&gt 7.1</td></tr>
+            <tr><td>[09:22] &lt Davbo&gt Afraid not</td></tr>
+            <tr><td>[09:26] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:28] &lt Lawouach&gt can't you build against mingw?</td></tr>
+            <tr><td>[09:39] &lt wyleu&gt Probably not without recompiling python, which is not something I've tried before. How much pain is involved?</td></tr>
+            <tr><td>[09:49] &lt Lawouach&gt I don't think you would have</td></tr>
+            <tr><td>[09:49] &lt wyleu&gt I'll go away and have a read</td></tr>
+            <tr><td>[09:55] &lt orphans&gt Davbo, ping?</td></tr>
+            <tr><td>[09:55] &lt Davbo&gt pong, but i'm just going afk for 2 minutes :-)</td></tr>
+            <tr><td>[09:56] &lt orphans&gt k, just the regular if you wouldn't mind, have a go at the latest svn when you have a moment</td></tr>
+            <tr><td>[09:56] &lt orphans&gt I'm pretty confident on this one, despite it being ugly as anything :)</td></tr>
+            <tr><td>[10:08] &lt Davbo&gt installed library and application again</td></tr>
+            <tr><td>[10:08] &lt Davbo&gt and it still seems to be doing it</td></tr>
+            <tr><td>[10:09] &lt orphans&gt really?</td></tr>
+            <tr><td>[10:09] &lt Davbo&gt running "jam --no-midi"</td></tr>
+            <tr><td>[10:09] &lt Davbo&gt SineSynth.py was the only thing which updated</td></tr>
+            <tr><td>[10:09] &lt orphans&gt yeah, that's right</td></tr>
+            <tr><td>[10:10] &lt orphans&gt strange though - I don't really see how that could be happening now?</td></tr>
+            <tr><td>[10:10] &lt orphans&gt I don't spose there's any way you could record a bit of it and post it somewhere could you?</td></tr>
+            <tr><td>[10:11] &lt Davbo&gt Maybe it's a problem on my end</td></tr>
+            <tr><td>[10:11] &lt Davbo&gt sure, what's good capture software?</td></tr>
+            <tr><td>[10:11] &lt orphans&gt err, not sure really - it's a bit hit and miss generally</td></tr>
+            <tr><td>[10:12] &lt orphans&gt maybe something like recordmydesktop - that way I can see it too?</td></tr>
+            <tr><td>[10:12] &lt orphans&gt basically in that last change I synthesise everything beforehand, so it shouldn't be dropouts where it can't play samples fast enough</td></tr>
+            <tr><td>[10:13] &lt orphans&gt actually, try it quickly with a bigger buffer size - something like jam --no-midi --buffer-size=8192</td></tr>
+            <tr><td>[10:15] &lt Davbo&gt same thing</td></tr>
+            <tr><td>[10:16] &lt orphans&gt mm, that's really strange</td></tr>
+            <tr><td>[10:18] *** orphans makes a small testcase</td></tr>
+            <tr><td>[10:19] &lt Davbo&gt audiocapture didn't work with recordmydesktop just playing with it now</td></tr>
+            <tr><td>[10:25] &lt orphans&gt Davbo: try that - http://orphans.pastebin.com/d72d5f75c</td></tr>
+            <tr><td>[10:27] &lt Lawouach_&gt burp</td></tr>
+            <tr><td>[10:27] *** Lawouach_ wants to run Jam on Windows too</td></tr>
+            <tr><td>[10:27] &lt Lawouach_&gt let's go crazy</td></tr>
+            <tr><td>[10:27] &lt orphans&gt :)</td></tr>
+            <tr><td>[10:28] &lt orphans&gt Lawouach_, afaik it should work without too much hassle</td></tr>
+            <tr><td>[10:29] &lt orphans&gt probably not bothering with midi is better atm - that'll be easier for me to do then yank it in with py2exe</td></tr>
+            <tr><td>[10:31] &lt Lawouach_&gt This evening I hope you'll clarify precisely what's working and what's not so much</td></tr>
+            <tr><td>[10:31] &lt Lawouach_&gt I'm lost tbh</td></tr>
+            <tr><td>[10:31] &lt orphans&gt uh huh, will do</td></tr>
+            <tr><td>[10:32] &lt orphans&gt short version=not much is working :(</td></tr>
+            <tr><td>[10:32] &lt orphans&gt longer version=everything works for me, and nothing works for anyone else</td></tr>
+            <tr><td>[10:32] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[10:33] &lt Lawouach_&gt That's rather common :)</td></tr>
+            <tr><td>[10:33] &lt orphans&gt yeah :)</td></tr>
+            <tr><td>[10:36] &lt Davbo&gt Hahah Ubuntu Forums are hilarious</td></tr>
+            <tr><td>[10:36] &lt Davbo&gt Sorry, I got side-tracked orphans</td></tr>
+            <tr><td>[10:36] &lt Davbo&gt http://ubuntuforums.org/showpost.php?p=4976473&postcount=6</td></tr>
+            <tr><td>[10:37] &lt orphans&gt :)</td></tr>
+            <tr><td>[10:37] &lt Davbo&gt Every other post seems to be a troll</td></tr>
+            <tr><td>[10:39] &lt Davbo&gt orphans: That pastebin also sounds staticy/crackly</td></tr>
+            <tr><td>[10:40] &lt orphans&gt Davbo, try changing line 15 to sample *= 0.1</td></tr>
+            <tr><td>[10:41] &lt Davbo&gt still does it</td></tr>
+            <tr><td>[10:42] *** orphans is baffled</td></tr>
+            <tr><td>[10:45] &lt orphans&gt http://orphans.pastebin.com/d3b690732 - Davbo how about that one?</td></tr>
+            <tr><td>[10:45] &lt Davbo&gt same :(</td></tr>
+            <tr><td>[10:48] &lt Davbo&gt ooo interesting</td></tr>
+            <tr><td>[10:48] &lt Davbo&gt gimme a second orphans</td></tr>
+            <tr><td>[10:48] &lt Davbo&gt What Pygame version you using?</td></tr>
+            <tr><td>[10:49] &lt orphans&gt 1.7.1</td></tr>
+            <tr><td>[10:49] &lt Davbo&gt http://www.pyweek.org/d/1500/</td></tr>
+            <tr><td>[10:49] &lt Davbo&gt I'm on 1.8</td></tr>
+            <tr><td>[10:49] &lt orphans&gt ahh. I assumed you were on 1.7.1 cause you were on ubuntu</td></tr>
+            <tr><td>[10:50] &lt Davbo&gt I needed 1.8 for Paint</td></tr>
+            <tr><td>[10:50] &lt Davbo&gt I use some things which are new to Pygame :)</td></tr>
+            <tr><td>[10:53] &lt orphans&gt Davbo, bug in 1.8 which is fixed in 1.8.1 apparently</td></tr>
+            <tr><td>[10:54] &lt orphans&gt from http://code.google.com/p/pyglet/issues/detail?id=203 - "...However pygame 1.8.0 has a fairly serious bug where the mixer settings are always clobbered to values that</td></tr>
+            <tr><td>[10:54] &lt orphans&gt are likely to produce crackle and pop problems on systems that are suceptible to the problem, and no init</td></tr>
+            <tr><td>[10:54] &lt orphans&gt setting tweaking can fix that."</td></tr>
+            <tr><td>[10:55] *** Davbo sighs</td></tr>
+            <tr><td>[10:56] &lt orphans&gt my bad - shouldn't have just assumed you were on 1.7.1</td></tr>
+            <tr><td>[10:56] &lt orphans&gt also probably means I don't need to use such a huge hack as what I was doing, which is good :)</td></tr>
+            <tr><td>[10:57] *** Davbo has broke Pygame</td></tr>
+            <tr><td>[10:58] &lt Lawouach_&gt orphans: http://bugs.python.org/issue2234 &lt -- I'm running into this issue to build RtAudioMidi with Mingw32</td></tr>
+            <tr><td>[10:58] &lt Lawouach_&gt the joy of windows development</td></tr>
+            <tr><td>[10:59] &lt orphans&gt fun :)</td></tr>
+            <tr><td>[11:00] &lt orphans&gt I haven't tried building it on windows yet - was saving that for a rainy day :)</td></tr>
+            <tr><td>[11:01] &lt orphans&gt Lawouach_, it'll work without if you can't be bothered atm</td></tr>
+            <tr><td>[11:02] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[11:02] &lt orphans&gt you just have to launch it with the --no-midi switch</td></tr>
+            <tr><td>[11:03] &lt Davbo&gt lol</td></tr>
+            <tr><td>[11:03] &lt Davbo&gt I can't get anything working now</td></tr>
+            <tr><td>[11:03] &lt Davbo&gt package management is fun</td></tr>
+            <tr><td>[11:03] &lt orphans&gt Davbo, trying to install 1.8.1 or 1.7.1?</td></tr>
+            <tr><td>[11:04] &lt Davbo&gt installed 1.8.1 now mixer wont work</td></tr>
+            <tr><td>[11:04] &lt Davbo&gt NotImplementedError: mixer module not available</td></tr>
+            <tr><td>[11:04] &lt orphans&gt beautiful</td></tr>
+            <tr><td>[11:04] *** bcarlyon|laptop is now known as BCarlyon|Laptop</td></tr>
+            <tr><td>[11:07] &lt Lawouach_&gt it runs on windows... PureData doesn't exist for Windows does it?</td></tr>
+            <tr><td>[11:08] &lt orphans&gt Lawouach_, yeah, it does</td></tr>
+            <tr><td>[11:08] &lt Lawouach_&gt ok</td></tr>
+            <tr><td>[11:08] &lt Lawouach_&gt let me look then</td></tr>
+            <tr><td>[11:08] &lt orphans&gt Lawouach_, but try out the audio if you can</td></tr>
+            <tr><td>[11:08] &lt orphans&gt (without PD)</td></tr>
+            <tr><td>[11:08] &lt orphans&gt latest revision should hopefully give you sound by default</td></tr>
+            <tr><td>[11:08] &lt orphans&gt (although a pretty ugly version of sound)</td></tr>
+            <tr><td>[11:08] *** Lawouach_ reads the readme to understand how to do that</td></tr>
+            <tr><td>[11:09] &lt orphans&gt Lawouach_, readme=a bit out of data</td></tr>
+            <tr><td>[11:09] &lt orphans&gt on my TODO list</td></tr>
+            <tr><td>[11:09] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[11:09] &lt Lawouach_&gt then would you mind letting me know how? :)</td></tr>
+            <tr><td>[11:10] &lt orphans&gt should just work (in theory)</td></tr>
+            <tr><td>[11:10] &lt Lawouach_&gt ok</td></tr>
+            <tr><td>[11:10] &lt orphans&gt what happens if you turn on a square in the step sequencer</td></tr>
+            <tr><td>[11:10] &lt Lawouach_&gt it crashes when the beat reachs it</td></tr>
+            <tr><td>[11:11] &lt Lawouach_&gt Fatal Python error: (pygame parachute) Segmentation Fault</td></tr>
+            <tr><td>[11:11] &lt orphans&gt :)</td></tr>
+            <tr><td>[11:11] &lt Lawouach_&gt nice :)</td></tr>
+            <tr><td>[11:11] *** orphans forgot to change something - I know why that is</td></tr>
+            <tr><td>[11:11] &lt Lawouach_&gt Also: pygame.error: Mixer not initialized</td></tr>
+            <tr><td>[11:12] &lt Lawouach_&gt when using the piano roll below</td></tr>
+            <tr><td>[11:12] &lt orphans&gt yeah - it's the pygame display turning off the mixer</td></tr>
+            <tr><td>[11:12] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[11:12] &lt orphans&gt I need to talk to MS- about what to do about it when he gets back, for now you can just comment out the lines in the pygame display</td></tr>
+            <tr><td>[11:13] &lt Lawouach_&gt I'll wait :)</td></tr>
+            <tr><td>[11:13] &lt Lawouach_&gt have fun fixing bugs</td></tr>
+            <tr><td>[11:13] &lt orphans&gt oh I will :)</td></tr>
+            <tr><td>[11:14] &lt orphans&gt Lawouach_, I can switch it over to a local version for now if you want to hear it working - won't take a second</td></tr>
+            <tr><td>[11:14] &lt Davbo&gt orphans: that sounds like it's time for you to be Branching</td></tr>
+            <tr><td>[11:15] &lt Davbo&gt and making those changes in your branch</td></tr>
+            <tr><td>[11:15] &lt orphans&gt Davbo, true true</td></tr>
+            <tr><td>[11:15] &lt Davbo&gt then Lawouach_ will be able to install from there</td></tr>
+            <tr><td>[11:15] &lt orphans&gt mhm, will do that post-lunch</td></tr>
+            <tr><td>[11:16] *** orphans grabs food. cheers for the help Lawouach_ and Davbo </td></tr>
+            <tr><td>[11:17] *** Davbo tries to fix Pygame :)</td></tr>
+            <tr><td>[11:25] &lt Lawouach_&gt I'm not that eager to hear noise :)</td></tr>
+            <tr><td>[11:25] &lt Lawouach_&gt I can wait ;)</td></tr>
+            <tr><td>[11:26] *** orphans is very eager for someone who isn't me to hear noise</td></tr>
+            <tr><td>[11:26] &lt orphans&gt been far too long now</td></tr>
+            <tr><td>[11:26] &lt Lawouach_&gt I'd rather hear sound than nosie to be honest :)</td></tr>
+            <tr><td>[11:27] &lt orphans&gt :)</td></tr>
+            <tr><td>[11:27] *** orphans puts away his merzbow link</td></tr>
+            <tr><td>[11:27] &lt Lawouach_&gt ah:)</td></tr>
+            <tr><td>[11:51] *** lightyear has joined #kamaelia</td></tr>
+            <tr><td>[12:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:45] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:48] *** Davbo regrets "rm -rf site-packages"</td></tr>
+            <tr><td>[13:48] &lt Davbo&gt Synaptic still thinks everything is installed</td></tr>
+            <tr><td>[13:55] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[14:02] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[14:02] &lt aa_&gt Davbo: apt-get --reinstall is your friend</td></tr>
+            <tr><td>[14:03] &lt aa_&gt I speak from this same experience</td></tr>
+            <tr><td>[14:07] &lt Davbo&gt thanks aa_, just been through reinstalling somethings</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt I'm just forgetful of what I had installed :-)</td></tr>
+            <tr><td>[14:24] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:29] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[14:30] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:31] &lt j_baker&gt Hey Davbo, are you going to be ready to start reviewing my stuff or do you still have things to do with your code?</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt I've got time for both :)</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt Mostly UI stuff todo on my end anyways j_baker</td></tr>
+            <tr><td>[14:33] &lt j_baker&gt Alright. I'm asking because I still need to do a little touching up on the documentation in some parts, but I have some stuff you can start looking at if you want.</td></tr>
+            <tr><td>[14:33] &lt j_baker&gt Or if you'd rather finish up with what you have and review mine in one chunk, you can do that too.'</td></tr>
+            <tr><td>[14:33] &lt Davbo&gt Sure where would you recommend I start?</td></tr>
+            <tr><td>[14:34] &lt j_baker&gt I'll post it to the list. I have to find the exact files that I've changed.</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt alright cool</td></tr>
+            <tr><td>[14:34] &lt j_baker&gt Speaking of which, does anyone know of a way in subversion to view only the files that have changed from the trunk without doing a full diff?</td></tr>
+            <tr><td>[14:34] Reply: Hm?</td></tr>
+            <tr><td>[14:41] &lt orphans&gt j_baker, on the subject of code review :)</td></tr>
+            <tr><td>[14:42] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:43] &lt orphans&gt I'm in the process of moving my code into a branch, and documenting what isn't done already, but the majority of stuff isn't likely to change too much now, so I'll ping you later today/tomorrow when there's a bit more docs up and it's all sorted in the branch if that's ok</td></tr>
+            <tr><td>[14:44] &lt j_baker&gt np... I've got stuff to work on with my branch as well.</td></tr>
+            <tr><td>[14:44] &lt orphans&gt uh huh. Last minute scramble to get stuff done is fun :)</td></tr>
+            <tr><td>[14:47] &lt j_baker&gt Yeah. It's almost beginning to remind me of school.</td></tr>
+            <tr><td>[14:47] &lt j_baker&gt I suppose deadlines are universal.</td></tr>
+            <tr><td>[14:49] &lt orphans&gt yeah</td></tr>
+            <tr><td>[15:03] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:13] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:22] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:48] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt orphans: ping?</td></tr>
+            <tr><td>[16:05] &lt orphans&gt pong</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt Could you do me a favour please, "echo $PYTHONPATH" into a terminal</td></tr>
+            <tr><td>[16:07] &lt orphans&gt I don't have it set</td></tr>
+            <tr><td>[16:07] &lt mhrd-afk&gt I get nowt too</td></tr>
+            <tr><td>[16:07] &lt Davbo&gt Okay</td></tr>
+            <tr><td>[16:08] &lt orphans&gt what should I get?</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt no idea, I don't get anything and I was wondering if that was correct</td></tr>
+            <tr><td>[16:09] &lt orphans&gt :)</td></tr>
+            <tr><td>[16:10] &lt Davbo&gt Trying to work out what's going on with my computer :P</td></tr>
+            <tr><td>[16:10] &lt Davbo&gt update-manager refuses to start, seems odd</td></tr>
+            <tr><td>[16:11] &lt orphans&gt you got any other package managers running?</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt nope</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt dave@KING-2:~$ update-manager</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt  File "/usr/bin/update-manager", line 28, in &lt module&gt</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt  import gtk</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt ImportError: No module named gtk</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt all the gtk stuff seems to be installed fine</td></tr>
+            <tr><td>[16:13] &lt orphans&gt ew, that looks pretty nasty</td></tr>
+            <tr><td>[16:13] &lt Davbo&gt indeed!</td></tr>
+            <tr><td>[16:19] &lt j_baker&gt Davbo, just to get an idea of how much explanation I'll have to go into in my mailing list post, answer me one thing: do you know what WSGI is?</td></tr>
+            <tr><td>[16:20] &lt j_baker&gt BTW, $PYTHONPATH usually is empty by default on the linux distros I've used.</td></tr>
+            <tr><td>[16:21] &lt Davbo&gt I know *of* WSGI I don't know the details of the standard having never used it</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt Ok. That you at least have a rough idea of what it is (or at least that you know that it exists) will make things easier. :)</td></tr>
+            <tr><td>[16:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt OOI I read this http://osdcpapers.cgpublisher.com/product/pub.84/prod.21/m.1 when you started your project</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt "WSGI - Gateway or Glue?"</td></tr>
+            <tr><td>[16:28] &lt j_baker&gt I just skimmed over that quickly, but it looks like that would be a decent introduction to the concept of WSGI.</td></tr>
+            <tr><td>[16:28] &lt j_baker&gt I'll post a couple other links in case you need them, though.</td></tr>
+            <tr><td>[16:36] *** Davbo goes to cry in #ubuntu about his gtk problem</td></tr>
+            <tr><td>[16:50] &lt Davbo&gt I'm pretty sure it's going to be faster to reinstall, back later. :)</td></tr>
+            <tr><td>[16:58] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[17:21] &lt Lawouach&gt orphans,ping</td></tr>
+            <tr><td>[17:23] &lt j_baker&gt Lawouach: I have a question when you get a moment. :)</td></tr>
+            <tr><td>[17:23] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[17:23] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[17:23] &lt Lawouach&gt j_baker,shoot mate</td></tr>
+            <tr><td>[17:23] &lt orphans&gt Lawouach, pong</td></tr>
+            <tr><td>[17:24] &lt orphans&gt argh, sorry, forgotted</td></tr>
+            <tr><td>[17:24] &lt Lawouach&gt orphans,no worries</td></tr>
+            <tr><td>[17:24] &lt Lawouach&gt do you want to postpone to later on this week?</td></tr>
+            <tr><td>[17:24] &lt Lawouach&gt probably best earlier than later though</td></tr>
+            <tr><td>[17:24] &lt orphans&gt I can do it now if you have time, but if you'd rather do it later then that's cool</td></tr>
+            <tr><td>[17:25] &lt j_baker&gt What's the best way to describe how data is formatted in JSON? If you can think of any good examples, it would be helpful.</td></tr>
+            <tr><td>[17:25] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:25] &lt j_baker&gt (deal with orphans before you answer my question first though)</td></tr>
+            <tr><td>[17:25] &lt j_baker&gt (it's not something I need answered immediately)</td></tr>
+            <tr><td>[17:25] &lt orphans&gt deal with me :)</td></tr>
+            <tr><td>[17:26] &lt j_baker&gt Heh... That came off wrong. :P</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt orphans,I'm good now. Please go ahead.</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt j_baker, serialization?</td></tr>
+            <tr><td>[17:26] &lt orphans&gt Lawouach, ok, so probably good to start with where I'm at now</td></tr>
+            <tr><td>[17:27] &lt orphans&gt on my never ending quest to get sensible audio working I'm back at pygame, slightly ironically</td></tr>
+            <tr><td>[17:28] &lt Lawouach&gt how come?</td></tr>
+            <tr><td>[17:28] &lt orphans&gt and although it's not without issues I think it's about as good as it's going to get now (unless everyone tells me otherwise)</td></tr>
+            <tr><td>[17:28] &lt vmlemon_&gt AudioQuest!</td></tr>
+            <tr><td>[17:28] &lt j_baker&gt Yes. I'm serializing the data from the HTTP request that was generated by the HTTPParser and then serializing the data needed to form the response. I'm just looking for a way to document how that data is transmitted back and forth.</td></tr>
+            <tr><td>[17:29] &lt orphans&gt kind of a combination of things. Firstly the RtAudio bindings were hard to install - almost as hard as something like PD. I only realised that after a while, cause I'd been doing the steps gradually</td></tr>
+            <tr><td>[17:29] &lt Lawouach&gt j_baker, it's a web service then, isn't it?</td></tr>
+            <tr><td>[17:29] &lt j_baker&gt Yes.</td></tr>
+            <tr><td>[17:29] &lt Lawouach&gt orphans, I gathered :)</td></tr>
+            <tr><td>[17:30] &lt orphans&gt secondly kamaelia doesn't really have the really tight scheduling you need to get it working really nicely - it's one of those things which kinda would need engineering from scratch imo</td></tr>
+            <tr><td>[17:30] &lt orphans&gt I tried a load of different routes around it and just couldn't get the combination of latency and not over/underrunning</td></tr>
+            <tr><td>[17:31] &lt orphans&gt and thirdly I found a (slightly awkward) way of getting pygame to do what I want</td></tr>
+            <tr><td>[17:31] &lt Lawouach&gt ok</td></tr>
+            <tr><td>[17:31] &lt orphans&gt which I didn't think was possible a few weeks ago, and still looks a bit ropey now tbh, but seems to work</td></tr>
+            <tr><td>[17:32] &lt Lawouach&gt What I really really really (I mean really) wish from you then is to document all those roads you took and pitfalls you met</td></tr>
+            <tr><td>[17:32] &lt Lawouach&gt This is probably more useful than having the audio working fine :)</td></tr>
+            <tr><td>[17:32] &lt orphans&gt ok, yeah. I can follow it back through the logs nicely, cause I've been forever breaking everything and starting stuff again</td></tr>
+            <tr><td>[17:32] &lt Lawouach&gt and by documenting, I mean something quite thorough</td></tr>
+            <tr><td>[17:33] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[17:33] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:33] &lt Lawouach&gt This is beyond your project</td></tr>
+            <tr><td>[17:33] &lt Lawouach&gt so you don't have to oblige</td></tr>
+            <tr><td>[17:33] &lt Lawouach&gt But, this will be more valuable than the code in itself.</td></tr>
+            <tr><td>[17:34] &lt Lawouach&gt so please think aboutit</td></tr>
+            <tr><td>[17:34] &lt orphans&gt yeah sure. mean someone else won't have to do what I have</td></tr>
+            <tr><td>[17:34] &lt Lawouach&gt This goes beyond Kamaelia too</td></tr>
+            <tr><td>[17:34] &lt Lawouach&gt Don't hesitate to consider it as some kind of small essay for the community :</td></tr>
+            <tr><td>[17:34] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:35] &lt orphans&gt I'll try my very bestest not to rant :)</td></tr>
+            <tr><td>[17:35] &lt Lawouach&gt j_baker, was my last reply the one you were after?</td></tr>
+            <tr><td>[17:35] &lt Lawouach&gt orphans, ranting is ok provided you supply good support of your rant :)</td></tr>
+            <tr><td>[17:35] &lt Lawouach&gt But not ranting is better ;)</td></tr>
+            <tr><td>[17:36] &lt orphans&gt yup</td></tr>
+            <tr><td>[17:36] &lt j_baker&gt Which one, Lawouach?</td></tr>
+            <tr><td>[17:38] &lt Lawouach&gt j_baker,could you rephrase the question you initially asked?</td></tr>
+            <tr><td>[17:38] &lt orphans&gt Lawouach, so this week I have a lot of documenting and fixing upping and packaging and reviewing to do</td></tr>
+            <tr><td>[17:39] &lt orphans&gt In a lovely last minute rush (as always :))</td></tr>
+            <tr><td>[17:39] &lt Lawouach&gt Remember that no code will be taken into account by Google for review after the 18th</td></tr>
+            <tr><td>[17:39] &lt Lawouach&gt You'll be able to commit code after that date</td></tr>
+            <tr><td>[17:39] &lt Lawouach&gt but it will not count</td></tr>
+            <tr><td>[17:39] &lt j_baker&gt I'll wait until you and orphans are done. I don't want to interrupt (since it may take a bit of an explanation).</td></tr>
+            <tr><td>[17:40] &lt Lawouach&gt so prioritize to what does make sense for the project success in regards of what Google may expect frm you</td></tr>
+            <tr><td>[17:40] &lt Lawouach&gt You'll be able to resume fun after that date</td></tr>
+            <tr><td>[17:40] &lt Lawouach&gt j_baker, thanks</td></tr>
+            <tr><td>[17:40] &lt orphans&gt ooi what is it that they'd expect - that bit hasn't been very clear for me?</td></tr>
+            <tr><td>[17:41] &lt Lawouach&gt Nothing in particular but I assume having a packaged, documented project is number one</td></tr>
+            <tr><td>[17:41] &lt vmlemon_&gt Wow, only 7 days left?</td></tr>
+            <tr><td>[17:41] &lt orphans&gt yeah, I was hoping to get a kinda pre-release tarball sorted by that date for my own satisfaction really</td></tr>
+            <tr><td>[17:42] &lt orphans&gt and the leftover docs I'm doing now - it's not too bad cause I've done a fair bit as I've gone</td></tr>
+            <tr><td>[17:42] &lt Lawouach&gt vmlemon, the project officially terminates at the end of the month</td></tr>
+            <tr><td>[17:42] *** bcarlyon|laptop is now known as BCarlyon|Laptop</td></tr>
+            <tr><td>[17:42] &lt Lawouach&gt orphans, if you don't have audio working as you wish, it's okay. Just document it</td></tr>
+            <tr><td>[17:42] &lt Lawouach&gt release the project as alpha</td></tr>
+            <tr><td>[17:42] &lt Davbo&gt Lawouach, quote from SoC mailing list by LH "as we do not begin collecting code samples until 3 September (instructions forthcoming). It's perfectly fine to include code written post-deadline in the code sample, but all evaluations are to be based on work done up until 18 August, not afterwards. "</td></tr>
+            <tr><td>[17:42] &lt Lawouach&gt documenting what's not working on time is more important than trying to fix it</td></tr>
+            <tr><td>[17:43] &lt Davbo&gt Just FYI</td></tr>
+            <tr><td>[17:43] &lt Davbo&gt see: http://groups.google.com/group/google-summer-of-code-announce/browse_thread/thread/df7278c6e027dee1</td></tr>
+            <tr><td>[17:43] &lt Lawouach&gt Davbo, that's what I said :)</td></tr>
+            <tr><td>[17:43] &lt orphans&gt yeah. It should be working to alpha quality I think, but if I have any more problems I'll do that</td></tr>
+            <tr><td>[17:43] &lt Davbo&gt ah</td></tr>
+            <tr><td>[17:43] &lt Lawouach&gt Davbo, code comitted after next week is allowed but not taken into account</td></tr>
+            <tr><td>[17:43] *** Davbo whistles, wanders off</td></tr>
+            <tr><td>[17:43] &lt Lawouach&gt hee hee</td></tr>
+            <tr><td>[17:43] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[17:46] &lt Lawouach&gt orphans, okay cool. Lots of work this week hey :)</td></tr>
+            <tr><td>[17:46] &lt orphans&gt Lawouach, yeah, for sure</td></tr>
+            <tr><td>[17:47] &lt orphans&gt going to be a busy scribe for quite a bit of it methinks :)</td></tr>
+            <tr><td>[17:47] &lt Lawouach&gt it's all about your first initial release. There's no worry in my book that you've succeeded to your project but I do not know what Google will evaluate precisely</td></tr>
+            <tr><td>[17:47] &lt Lawouach&gt so, do document and package up</td></tr>
+            <tr><td>[17:47] &lt Lawouach&gt and try to make it available for Linux, Windows and Mac OSX</td></tr>
+            <tr><td>[17:48] &lt Lawouach&gt right</td></tr>
+            <tr><td>[17:48] &lt Lawouach&gt have you got any questions?</td></tr>
+            <tr><td>[17:48] &lt orphans&gt ok, I will do - might try and get packages together tomorrow so I know it's a matter of pressing a button</td></tr>
+            <tr><td>[17:48] &lt Lawouach&gt good and help each other as you guys have been doing</td></tr>
+            <tr><td>[17:48] &lt Lawouach&gt help as you'd like to be helped</td></tr>
+            <tr><td>[17:48] &lt orphans&gt do you want a meeting next week?</td></tr>
+            <tr><td>[17:49] &lt orphans&gt yeah, Davbo has been my testing lifesaver :)</td></tr>
+            <tr><td>[17:50] &lt Lawouach&gt yes for the next week meeting</td></tr>
+            <tr><td>[17:50] &lt Lawouach&gt we'll have one until the end :)</td></tr>
+            <tr><td>[17:50] &lt orphans&gt k, cool. In it to the bitter end :)</td></tr>
+            <tr><td>[17:50] &lt Lawouach&gt then you'll be free to do whatever you want mate :)</td></tr>
+            <tr><td>[17:50] &lt Lawouach&gt orphans, so to speak</td></tr>
+            <tr><td>[17:50] &lt orphans&gt heh</td></tr>
+            <tr><td>[17:50] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:51] &lt orphans&gt ok, cool. cheers Lawouach</td></tr>
+            <tr><td>[17:51] &lt Lawouach&gt thanks and keep up the good work</td></tr>
+            <tr><td>[17:51] &lt orphans&gt :)</td></tr>
+            <tr><td>[17:51] *** orphans keeps up the good work and migrates to the pub</td></tr>
+            <tr><td>[17:52] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:52] &lt Lawouach&gt I see :)</td></tr>
+            <tr><td>[17:52] &lt Lawouach&gt j_baker, that means I'm free ;)</td></tr>
+            <tr><td>[17:52] &lt orphans&gt pub quiz you see, otherwise I'd be working real hard... :D</td></tr>
+            <tr><td>[17:53] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:53] *** Davbo is now known as Dav-afk</td></tr>
+            <tr><td>[17:53] &lt Lawouach&gt drink one for me</td></tr>
+            <tr><td>[17:53] &lt orphans&gt will do</td></tr>
+            <tr><td>[17:53] &lt Dav-afk&gt me too, we'll soon make him an alcoholic Lawouach</td></tr>
+            <tr><td>[17:53] &lt Dav-afk&gt back in a bit :P</td></tr>
+            <tr><td>[17:56] &lt j_baker&gt Ok, I suppose what I'm looking to do moreso than describe the JSON is to describe the protocol I'm using to transmit data back and forth between the Gateway and the Serving Peer (the person that's serving the webpage)</td></tr>
+            <tr><td>[17:56] &lt j_baker&gt (I'm calling the protocol CrossTalk for now just because I'm getting tired of saying "HTTP over XMPP" :) )</td></tr>
+            <tr><td>[18:00] &lt j_baker&gt Here's what I have so far (which is grossly out of date and in need of updating): http://edit.kamaelia.org/Developers/Projects/KamaeliaPublish/CrossTalk</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt give me 5 more mns</td></tr>
+            <tr><td>[18:07] &lt j_baker&gt np :)</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt back</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt I'm reading your crosstalk page</td></tr>
+            <tr><td>[18:17] &lt j_baker&gt Alright.</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt why json?</td></tr>
+            <tr><td>[18:24] &lt j_baker&gt I chose it because it's terse, human readable, and simpler than XML (in my opinion).</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt that's fair and probably make more sense considering your HTTP request is more straightforwadly viewed as a dict than a XML document</td></tr>
+            <tr><td>[18:26] &lt j_baker&gt Yup. :)</td></tr>
+            <tr><td>[18:26] &lt j_baker&gt I also considered pickle and protocol buffers, but decided against them for a variety of reasons.</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt CrossTalk doesn't mean much to me but it might that I'm lost in translation. I do understand both words but the concept escaps me. The page you wrote clarified that however.</td></tr>
+            <tr><td>[18:28] &lt j_baker&gt No, the name really doesn't make sense in the context of what it actually does, so you're not missing anything. :)</td></tr>
+            <tr><td>[18:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:28] &lt j_baker&gt It was just created for want of a better name and a desire not to use an acronym for a name.</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt that's okay</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:30] &lt vmlemon_&gt YAKBPA!</td></tr>
+            <tr><td>[18:30] &lt j_baker&gt So then is what I have thus far a good start? Or is there a better way to do it? (I do know that it could use more examples)</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt what are you talking about specifically? the CrossTalk page?</td></tr>
+            <tr><td>[18:33] &lt j_baker&gt Yes.</td></tr>
+            <tr><td>[18:34] &lt vmlemon_&gt Hah, [Sun Aug 10 2008] [23:06:22] &lt Mathis&gt why is it called United Kingdom? dont they have a queen? shouldnt it be called United Queendom then?</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt I think that's highlevel and that's probably good</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt if some day you wanted to make something more "specification" like: http://www.xmpp.org/extensions/xep-0072.html</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt something like that</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:36] &lt j_baker&gt Yeah. I looked at that and ultimately decided I'm not quite ready to go into THAT much detail (considering it's still a work in progress).</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt that's understable</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt that's why your page is okay for now</td></tr>
+            <tr><td>[18:37] &lt j_baker&gt But I did want to be able to document it in the source code and be able to describe it to someone that's at least vaguely interested in the protocol, so I suppose what I have thus far is what I'll build on.</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt probably one single stanza</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt with a request and one with a response</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt just for illustration purpose</td></tr>
+            <tr><td>[18:39] &lt j_baker&gt Ok, that will work. BTW, did you review those diffs that I submitted? Does headstock 0.2.0 implement any of that (or at least similar functionality)?</td></tr>
+            <tr><td>[18:40] &lt j_baker&gt I'm asking because that's what I've been basing Kamaelia Publish off of and wanted to make sure I could make it easy for Davbo to review.</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt damn</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt trac doesn't send the emails on ticket as I want</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt let me look</td></tr>
+            <tr><td>[18:48] *** robertofaga has parted #kamaelia</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt I'll fix them tomorrow</td></tr>
+            <tr><td>[19:10] &lt j_baker&gt Ok. Do all of those look sensible?</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[19:11] &lt j_baker&gt Awesome. That will make setting everything up for Davbo much easier. :)</td></tr>
+            <tr><td>[19:13] &lt Lawouach&gt which ones need to be fixed first?</td></tr>
+            <tr><td>[19:15] &lt j_baker&gt I'd say they're both of equal importance.</td></tr>
+            <tr><td>[19:15] &lt j_baker&gt So "whichever one you get around to first" :)</td></tr>
+            <tr><td>[19:16] &lt j_baker&gt Although there is one thing that may need to be changed in my patches that just struck me in the last few days.</td></tr>
+            <tr><td>[19:17] &lt j_baker&gt I set it so that presence messages get sent in on separate inboxes.</td></tr>
+            <tr><td>[19:17] &lt j_baker&gt Or rather will get sent out on separate outboxes.</td></tr>
+            <tr><td>[19:17] &lt j_baker&gt Perhaps it would be a better idea to send them out on the same outbox.</td></tr>
+            <tr><td>[19:18] &lt j_baker&gt The reason being: what happens if a user logs out and then logs back in before the presence handler can process the message that it logged out?</td></tr>
+            <tr><td>[19:18] &lt Lawouach&gt please comment the ticket to that effect :)</td></tr>
+            <tr><td>[19:18] &lt j_baker&gt Alright, will do. :)</td></tr>
+            <tr><td>[19:18] &lt Lawouach&gt ta</td></tr>
+            <tr><td>[19:19] &lt j_baker&gt Dumb question time: How do I comment a ticket? :/</td></tr>
+            <tr><td>[19:22] &lt Lawouach&gt login and just add a message :)</td></tr>
+            <tr><td>[19:22] &lt Lawouach&gt gues/defuze</td></tr>
+            <tr><td>[19:22] &lt Lawouach&gt guest</td></tr>
+            <tr><td>[19:23] &lt j_baker&gt I logged in and I don't see a comment button or link or anything (unless I'm missing it)</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt no you're not crazy</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt I'll have to update the permissions</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt well just send me an email for now :)</td></tr>
+            <tr><td>[19:25] &lt j_baker&gt Will do.</td></tr>
+            <tr><td>[19:26] &lt Lawouach&gt ta</td></tr>
+            <tr><td>[19:42] &lt aa_&gt toodle pip</td></tr>
+            <tr><td>[19:42] &lt aa_&gt anyone hacking on anything fun?</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt Hi aa_</td></tr>
+            <tr><td>[19:47] &lt j_baker&gt Code cleanup and documentation. :/</td></tr>
+            <tr><td>[19:47] &lt j_baker&gt Not always the most fun thing to do, but very necessary.</td></tr>
+            <tr><td>[19:50] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:25] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[22:25] &lt MS-&gt evening</td></tr>
+            <tr><td>[22:25] &lt MS-&gt just logging on, admittedly rather late, to say that this is probably the last message here until next week</td></tr>
+            <tr><td>[22:26] &lt MS-&gt If there is something very urgent the best way to get to me will be to send me a direct message via twitter. Bear in mind I won't be able to /do/ anything other than reply with a 140 char reply (at most) though!</td></tr>
+            <tr><td>[23:08] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:24] *** robertofaga has joined #kamaelia</td></tr>

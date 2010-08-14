@@ -1,0 +1,237 @@
+<html><body><table>
+            <tr><td>[05:35] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[05:36] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[05:49] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[06:16] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:14] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:14] &lt orphans&gt morning all</td></tr>
+            <tr><td>[08:16] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:47] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:05] &lt Lawouach&gt hi orphans</td></tr>
+            <tr><td>[09:09] &lt orphans&gt hey Lawouach</td></tr>
+            <tr><td>[09:09] &lt orphans&gt how's it going</td></tr>
+            <tr><td>[09:12] &lt Lawouach&gt good</td></tr>
+            <tr><td>[09:12] &lt Lawouach&gt could use more sleep but good :)</td></tr>
+            <tr><td>[09:13] &lt orphans&gt cool cool. Was just about to ping you to complain about things not working actually :)</td></tr>
+            <tr><td>[09:20] &lt orphans&gt oh oh, but I think I've sorted it :D</td></tr>
+            <tr><td>[09:20] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[09:22] &lt orphans&gt yay! Only took me about four hours to work out that I was calling a function with the wrong number of args :)</td></tr>
+            <tr><td>[09:23] &lt Lawouach&gt where in the C code</td></tr>
+            <tr><td>[09:23] &lt Lawouach&gt ?</td></tr>
+            <tr><td>[09:23] &lt Lawouach&gt isn't it what I asked you yesterday?</td></tr>
+            <tr><td>[09:24] &lt orphans&gt it was the C code calling the python code - I was chucking python the wrong number of args</td></tr>
+            <tr><td>[09:24] &lt orphans&gt thought it'd error out explicitly, but it just returns none and sets a flag</td></tr>
+            <tr><td>[09:25] &lt orphans&gt if that's what you said yesterday then sorry, I thought you were talking about a different bit of code</td></tr>
+            <tr><td>[09:25] &lt mhrd-afk&gt "thought it'd error out explicitly, but it just returns none and sets a flag" ... it is a dynamically typed interpreted language</td></tr>
+            <tr><td>[09:25] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[09:26] &lt orphans&gt when I said error out, I really meant segfault horribly :)</td></tr>
+            <tr><td>[09:26] &lt mhrd-afk&gt did you consider pyrex?</td></tr>
+            <tr><td>[09:26] &lt orphans&gt which to be fair it does if I use a different function which does the same thing</td></tr>
+            <tr><td>[09:27] &lt mhrd-afk&gt heh</td></tr>
+            <tr><td>[09:27] &lt Lawouach&gt mhrd-afk: pyrex doesn't do binding does it?</td></tr>
+            <tr><td>[09:27] &lt mhrd-afk&gt I used pyrex to write the dirac bindings; plus the dvb bindings are pyrex too</td></tr>
+            <tr><td>[09:28] &lt mhrd-afk&gt I believe its what it was written for</td></tr>
+            <tr><td>[09:29] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[09:30] &lt mhrd-afk&gt if you're getting on okay with writing directly in c/c++ then I guess probably stick with that :)</td></tr>
+            <tr><td>[09:30] *** mhrd-afk shuts up now and goes back to being afk</td></tr>
+            <tr><td>[09:30] &lt orphans&gt mhrd-afk, I'm using sip which takes some of the pain out of it</td></tr>
+            <tr><td>[09:30] &lt mhrd-afk&gt sip?</td></tr>
+            <tr><td>[09:30] &lt orphans&gt it's the bit's I'd have to manually write anyway which are fun</td></tr>
+            <tr><td>[09:30] &lt orphans&gt http://www.riverbankcomputing.co.uk/software/sip/intro</td></tr>
+            <tr><td>[09:31] &lt orphans&gt I'd never heard of it before Lawouach said about it either :)</td></tr>
+            <tr><td>[09:31] &lt Lawouach&gt I know sip because I'm using PyQt4 which is built using sip. I gather it's pretty good :)</td></tr>
+            <tr><td>[09:32] &lt mhrd-afk&gt cool. I've not seen it before either</td></tr>
+            <tr><td>[09:32] &lt Lawouach&gt The nice aspect is that it's a very small dependency for a project which is important.</td></tr>
+            <tr><td>[09:32] &lt Lawouach&gt When consider how painful SWIG may be to deploy correctly</td></tr>
+            <tr><td>[09:33] &lt orphans&gt aside from me being an idiot it's surprisingly nice to work with - for simple stuff it's really easy to get it up and running</td></tr>
+            <tr><td>[09:34] &lt mhrd-afk&gt looks to be quicker than pyrex :-) what I liked about pyrex was that it let me easily write glue code to convert a C API into something more pythonic</td></tr>
+            <tr><td>[09:34] &lt orphans&gt yeah, the glue stuff is I guess a bit more manual in sip</td></tr>
+            <tr><td>[09:35] &lt orphans&gt so for example if a function takes a std::vector you have to do the grunt work of converting a list into it before calling the function</td></tr>
+            <tr><td>[09:36] &lt Lawouach&gt I tend to prefer explicit over implicit so I'm fine with it :)</td></tr>
+            <tr><td>[09:36] &lt Lawouach&gt funny I say that in the context of a dynamic language :)</td></tr>
+            <tr><td>[09:36] &lt mhrd-afk&gt ah, ok, same in pyrex</td></tr>
+            <tr><td>[09:37] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[10:21] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[10:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:27] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:38] &lt Lawouach_&gt hi</td></tr>
+            <tr><td>[10:40] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:41] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[12:01] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[12:05] &lt Lawouach_&gt pong</td></tr>
+            <tr><td>[12:05] &lt orphans&gt you got a moment?</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt yes</td></tr>
+            <tr><td>[12:07] &lt orphans&gt ok, I think I'm kinda close with getting sound out, but am lost a bit in where the memory is allocated and deallocated</td></tr>
+            <tr><td>[12:08] &lt orphans&gt hang on, and I'll svn ci - should make it a bit clearer</td></tr>
+            <tr><td>[12:09] &lt Lawouach_&gt I won't be able to svn up at work though but I'll be able to read through the code online</td></tr>
+            <tr><td>[12:09] &lt orphans&gt mhm, just getting links for you</td></tr>
+            <tr><td>[12:10] &lt orphans&gt http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/JT/RtAudioBindings/RtAudio.sip - the function streamCallback is the important bit</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt k</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt what about it?</td></tr>
+            <tr><td>[12:11] &lt orphans&gt so for the output basically it gets a pointer to a buffer</td></tr>
+            <tr><td>[12:12] &lt orphans&gt then it gets a pointer to another buffer (which was a numpy array) from python in the PyEval_CallFunction bit</td></tr>
+            <tr><td>[12:13] &lt orphans&gt and then it sets the pointer which it got at the start to be equal to the pointer to the buffer created in python</td></tr>
+            <tr><td>[12:14] &lt orphans&gt but after the function has been called the original pointer just gives zeros</td></tr>
+            <tr><td>[12:14] &lt orphans&gt so I think what happens is the buffer created in python get's deallocated - does that sound sensible?</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt possible, you could look at the gc module for getting more feedback about that</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt careful as it is really verbose :)</td></tr>
+            <tr><td>[12:15] &lt orphans&gt ok, didn't know I could do that :)</td></tr>
+            <tr><td>[12:16] &lt orphans&gt if that was the case what would be the right thing to do? Would I have to do something like memcpy the data in the python buffer over to the original buffer?</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt I'm not sure to be honest. I don't do bindings :)</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt Either that or increase the refcount on the original object</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt so that it isn't deallocated</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt Not sure really</td></tr>
+            <tr><td>[12:17] &lt orphans&gt ok, I'll carry on playing :)</td></tr>
+            <tr><td>[12:17] &lt orphans&gt the ideas sound good though :)</td></tr>
+            <tr><td>[12:18] &lt Lawouach_&gt you learn the inside of Python there :)</td></tr>
+            <tr><td>[12:18] &lt Davbo&gt Woo! code.google checkout finished on all the Branches, it only stalled 4 times.</td></tr>
+            <tr><td>[12:19] &lt Davbo&gt Memory allocation fun orphans?</td></tr>
+            <tr><td>[12:20] &lt orphans&gt of course :)</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt Could be worse...</td></tr>
+            <tr><td>[12:21] &lt Davbo&gt could be ASM</td></tr>
+            <tr><td>[12:21] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[12:22] *** orphans doesn't laugh :D</td></tr>
+            <tr><td>[12:28] &lt orphans&gt I hear noise! The wrong noise, but noise none the less :D</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt it's all good</td></tr>
+            <tr><td>[12:34] *** mhrd-afk congratulates orphans</td></tr>
+            <tr><td>[12:34] &lt Davbo&gt Right I have one svn thing for branches and one for the trunk, can I svn cp between them?</td></tr>
+            <tr><td>[12:35] &lt Davbo&gt I'll just try and see what happens</td></tr>
+            <tr><td>[12:37] *** mhrd-afk thinks it'll probably work</td></tr>
+            <tr><td>[12:38] &lt Davbo&gt looks like it worked</td></tr>
+            <tr><td>[12:42] &lt Lawouach_&gt orphans: nice job mate</td></tr>
+            <tr><td>[12:44] &lt orphans&gt now to make it make the sound I want :D</td></tr>
+            <tr><td>[12:47] &lt vmlemon_&gt It comes pre-circuit bent? ;)</td></tr>
+            <tr><td>[13:39] &lt vmlemon_&gt Hah, just got the e-mail pasted to http://pastebin.org/58183 a few moments ago...</td></tr>
+            <tr><td>[13:39] *** vmlemon_ wonders how that scheme will turn out</td></tr>
+            <tr><td>[14:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:12] &lt vmlemon_&gt Hmm, http://joi.ito.com/weblog/2003/05/13/sputniks-rock.html, a Wi-Fi router with Jabber/XMPP support...</td></tr>
+            <tr><td>[15:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:40] *** Lawouach has put on the fantastic Urban Dance Squad - Persona non grata </td></tr>
+            <tr><td>[15:40] &lt Lawouach&gt great rock album</td></tr>
+            <tr><td>[15:41] &lt Lawouach&gt vmlemon_: interesting</td></tr>
+            <tr><td>[15:51] *** Davbo is listening to Led Zeppelin IV (again :-))</td></tr>
+            <tr><td>[15:58] &lt Davbo&gt via reddit: http://ubuntuforums.org/showthread.php?t=863049 the employer who set the questions replies on the second page</td></tr>
+            <tr><td>[16:15] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:40] &lt vmlemon_&gt Hmm, anyone thought of building a speech-to-text system, or a binding to one with Kamaelia?</td></tr>
+            <tr><td>[19:07] &lt j_baker&gt I think Michael was working on one.</td></tr>
+            <tr><td>[19:08] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[19:20] &lt Lawouach&gt copying files over network using Nautilus is so frustrating</td></tr>
+            <tr><td>[19:20] &lt Lawouach&gt file transfers just stop randomly</td></tr>
+            <tr><td>[19:21] &lt Lawouach&gt so KDE4 is buggy and Gnome is not getting any better</td></tr>
+            <tr><td>[19:21] &lt Lawouach&gt time for some Window Maker fu!</td></tr>
+            <tr><td>[19:22] &lt vmlemon_&gt smbmount and cp -v is so much nicer, sometimes...</td></tr>
+            <tr><td>[19:22] &lt vmlemon_&gt That, or KDE 3.5.x's NFS and SMB stuff</td></tr>
+            <tr><td>[19:22] &lt Lawouach&gt it's a ftp server</td></tr>
+            <tr><td>[19:22] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[19:23] &lt vmlemon_&gt Haven't tried the client in Nautilus or KDE 4 :|</td></tr>
+            <tr><td>[19:39] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:39] &lt MS-&gt evening</td></tr>
+            <tr><td>[19:39] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[19:41] &lt MS-&gt Thanks for the posts on the list. Regarding the file appender, the idea situation is to have a contributor agreement in place, since they tend to eradicate potential problems later on (in the case of a license breach primarily). It'll also mean I can add you to the contributors list :-)</td></tr>
+            <tr><td>[19:41] &lt MS-&gt s/idea/ideal/</td></tr>
+            <tr><td>[19:41] &lt vmlemon_&gt No problem</td></tr>
+            <tr><td>[19:41] &lt vmlemon_&gt I take it that the code is pretty much sane, as far as being a component is concerned?</td></tr>
+            <tr><td>[19:42] &lt vmlemon_&gt (i.e. doesn't need any additional 'imports' or cleanup code)</td></tr>
+            <tr><td>[19:42] &lt vmlemon_&gt Although that's my 2p</td></tr>
+            <tr><td>[19:43] &lt MS-&gt Yep, it looks pretty good. I'll probably edit it slightly once it's in, since there's almost always improvements that can be made, but I'll ensure the behaviour remains as you'd expect.</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt It does have some bugs, although I'm not sure how I can fix them :(</td></tr>
+            <tr><td>[19:43] &lt MS-&gt One way is to declare what you think the bugs are and request solutions :-)</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt Mostly relating to the order stuff gets written in, if you attach it to an inbox and an outbox</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt The code looks too simple to me though to have any sorts of visible problems...</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt Although I don't know much Python</td></tr>
+            <tr><td>[19:44] &lt MS-&gt In which case it's probably a behavioural thing which is more high level</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt (So there's probably stuff that's glaringly obvious to others as faults)</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt It has served me fairly well, though</td></tr>
+            <tr><td>[19:44] &lt MS-&gt Explaining what you think should happen clearly, and what actually happens generally solves 90-99% of problems IME</td></tr>
+            <tr><td>[19:45] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:45] &lt vmlemon_&gt Considering that it's based on sample code wrapped in how I thought a Kamaelia component would look...</td></tr>
+            <tr><td>[19:48] &lt vmlemon_&gt Not sure about the state of it licensing wise, though</td></tr>
+            <tr><td>[19:48] &lt vmlemon_&gt (Since it was lumped into a directory with a MIT-licensed file I wrote, and has no headers itself)</td></tr>
+            <tr><td>[19:48] &lt vmlemon_&gt I consider it to be unlicensed/BSD licensed, though</td></tr>
+            <tr><td>[19:48] &lt vmlemon_&gt for all extents and purposes</td></tr>
+            <tr><td>[19:48] &lt vmlemon_&gt Although it's better for everyone (as I mentioned in my 'mails), that I go through the motions and have it properly licensed</td></tr>
+            <tr><td>[19:48] &lt vmlemon_&gt (Seeing as signing the CA is presumably a once-in-a-lifetime event)</td></tr>
+            <tr><td>[19:50] &lt MS-&gt Signing the CA is a one off, however, you apply it to code by explicitly declaring it to be covered by that CA. eg something like:</td></tr>
+            <tr><td>[19:50] &lt MS-&gt # Licensed to the BBC under a Contributor Agreement: RJL</td></tr>
+            <tr><td>[19:50] &lt MS-&gt It's the most lightweight thing I could think of/get the legal people to agree to :)</td></tr>
+            <tr><td>[19:52] &lt MS-&gt Unlike many contributor agreements, but identically to Python's the code remains yours. It's just an explicit grant of usage</td></tr>
+            <tr><td>[19:57] &lt vmlemon_&gt Hmm, the 2 or 3 letter "tag" is the same as used on CVS/SVN?</td></tr>
+            <tr><td>[19:57] &lt vmlemon_&gt (Assuming you have access to it/a working area)</td></tr>
+            <tr><td>[20:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:02] &lt vmlemon_&gt Damn, just knocked the USB cable out my phone and got disconnected</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt It's essentially a "cover our backs"/co-ownership thing, I take it?</td></tr>
+            <tr><td>[20:07] &lt MS-&gt "2 or 3 letter "tag" is the same as used on CVS/SVN" - yep - it also landgrabs you Kamaelia.Community.tag. The tag is usually initials.</td></tr>
+            <tr><td>[20:07] &lt MS-&gt It's primarily a cover everyone's backs thing</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt Looking at the contributing page now</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt I take it that the next step is to ask on the Group for a form?</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt Argh, stupid Firefox</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt It'd be nice if it could render a page without locking up and blanking the window :|</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Or do I use the one on /Developers/ContributorAgreement or /Developers/SampleContributorAgreement, after changing the bits specified?</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt Meh, looks like /Developers/ContributorAgreement has no content</td></tr>
+            <tr><td>[20:19] &lt MS-&gt "Or do I use the one on /Developers/ContributorAgreement or /Developers/SampleContributorAgreement, after changing the bits specified?"</td></tr>
+            <tr><td>[20:19] &lt MS-&gt You use the one on /Developers/SampleContributorAgreement after changing the obvious bits :)</td></tr>
+            <tr><td>[20:20] &lt vmlemon_&gt I can do that with a text editor and then print it and sign it? Or do I need to handwrite those bits for any particular legal reason? (Excepting my signature)</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt I fill the green bits in?</td></tr>
+            <tr><td>[20:23] &lt MS-&gt If you want to handwrite it in copperplate, be my guest, but the thing that matters is the signature should be handwritten - the rest is normally printed/typed/etc :)</td></tr>
+            <tr><td>[20:23] &lt MS-&gt essentially yes</td></tr>
+            <tr><td>[20:23] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[20:23] &lt vmlemon_&gt Excepting the tag, the purple bits are OK as-is?</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt Or is that just an example, even in the appended version?</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt (the '"Licensed to the BBC under a Contributor Agreement: JLB"' bit)</td></tr>
+            <tr><td>[20:26] &lt vmlemon_&gt Seeing as JLB is Joe in the example...</td></tr>
+            <tr><td>[20:26] &lt aa_&gt MS-: yay! http://www.pyconuk.org/talk_abstracts.html#999</td></tr>
+            <tr><td>[20:28] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[20:28] &lt vmlemon_&gt You got accepted to do a talk?</td></tr>
+            <tr><td>[20:30] &lt MS-&gt aa_: :-)</td></tr>
+            <tr><td>[20:31] &lt aa_&gt vmlemon_: yeah</td></tr>
+            <tr><td>[20:31] &lt aa_&gt I think MS here is one of the bosses of pyconuk</td></tr>
+            <tr><td>[20:31] &lt vmlemon_&gt So I read on the talks page...</td></tr>
+            <tr><td>[20:33] &lt aa_&gt vmlemon_: you going to be there?</td></tr>
+            <tr><td>[20:33] &lt vmlemon_&gt Unfortunately not :(</td></tr>
+            <tr><td>[20:34] &lt aa_&gt aww, it's so good</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt I'd like to go though... one day</td></tr>
+            <tr><td>[20:34] &lt aa_&gt it's like returning to the mothership</td></tr>
+            <tr><td>[20:35] &lt vmlemon_&gt It sounds interesting though</td></tr>
+            <tr><td>[20:35] *** vmlemon_ wonders if there's going to be another Mashed or similar, next year</td></tr>
+            <tr><td>[20:37] &lt MS-&gt aa_: Yep, I'm on the committee for Pycon UK - I've known John for many years now, so when he was first looking for help I offered :)</td></tr>
+            <tr><td>[20:37] &lt MS-&gt vmlemon_: It wouldn't surprise me, this year went really well</td></tr>
+            <tr><td>[20:37] &lt MS-&gt But dunno yet :)</td></tr>
+            <tr><td>[20:38] &lt vmlemon_&gt Hmm, wasn't there another event? Although it's name escapes me now</td></tr>
+            <tr><td>[20:38] &lt MS-&gt new boss and all that - but this new boss seems to really get the things that are seem to be important from a devs perspective at present - open source, open standards, developer communities/events etc</td></tr>
+            <tr><td>[20:40] &lt aa_&gt MS-: good for you, it was organized beautifully last year</td></tr>
+            <tr><td>[20:41] &lt vmlemon_&gt Shame PyCon is so expensive, although you do get a fair amount of stuff included in the price...</td></tr>
+            <tr><td>[20:41] &lt aa_&gt vmlemon_: our pycon or the big pycon?</td></tr>
+            <tr><td>[20:41] &lt vmlemon_&gt (Although that's just my view, as a currently unemployed ex-college student at the moment)</td></tr>
+            <tr><td>[20:41] &lt vmlemon_&gt the UK one</td></tr>
+            <tr><td>[20:42] &lt aa_&gt vmlemon_: to be honest, I think 65£ early-bird rate is an absolute bargain</td></tr>
+            <tr><td>[20:42] &lt aa_&gt costs more to fill my bloody car up with petrol</td></tr>
+            <tr><td>[20:42] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[20:42] &lt aa_&gt but yeah, unemplyed ex-college I might think differently</td></tr>
+            <tr><td>[20:43] &lt MS-&gt vmlemon_: It's about the lowest break even cost tbh</td></tr>
+            <tr><td>[20:43] &lt vmlemon_&gt I'm sure getting a train to Birmingham or wherever it is might be fun, that said</td></tr>
+            <tr><td>[20:43] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:43] &lt MS-&gt The £65 includes meals</td></tr>
+            <tr><td>[20:44] &lt MS-&gt Lunch on sat/sun, evening dinner on saturday. The etap is pretty basic, but nice, and the bookings through that last year went flawlessly</td></tr>
+            <tr><td>[20:44] &lt vmlemon_&gt Didn't it include a subsidised hotel room or something like that, for those that booked early enough?</td></tr>
+            <tr><td>[20:45] &lt vmlemon_&gt (At least for those that paid a little extra for the privilege)</td></tr>
+            <tr><td>[20:45] *** vmlemon_ can never seem to spell that word, for some reason </td></tr>
+            <tr><td>[20:46] &lt vmlemon_&gt Of course, I'm not complaining, or yelling "give us a free conference", since that would be pointless...</td></tr>
+            <tr><td>[20:46] &lt vmlemon_&gt (Not to mention that it does cost to provide the thing in the first place)</td></tr>
+            <tr><td>[20:47] &lt MS-&gt John foraged round Birmingham and found the etap, and I think it's a negotiated rate</td></tr>
+            <tr><td>[20:47] &lt vmlemon_&gt Aha, £11.67 gets you a room shared between two others...</td></tr>
+            <tr><td>[20:47] &lt vmlemon_&gt So the FAQ reckons</td></tr>
+            <tr><td>[20:48] &lt MS-&gt You can never please everyone really - the closest you get to completely gratis is bar camps, but even then people have travel & accommodation</td></tr>
+            <tr><td>[20:48] &lt vmlemon_&gt Although I don't know if that's a rotation of any 2/3 people, or 3 people in a group</td></tr>
+            <tr><td>[20:48] &lt vmlemon_&gt Aha, that's the one I was thinking of</td></tr>
+            <tr><td>[20:48] &lt MS-&gt mashed tried to deal with that with buses & stuff, but the busses were insane times</td></tr>
+            <tr><td>[20:51] &lt vmlemon_&gt Still, it's a long way off yet</td></tr>
+            <tr><td>[20:51] &lt vmlemon_&gt (September)</td></tr>
+            <tr><td>[20:51] &lt aa_&gt MS-: I really plan to use the open space this year</td></tr>
+            <tr><td>[20:55] &lt aa_&gt MS-: I think something like "bring your cool dev tools, and we'll plug them into an IDE"</td></tr>
+            <tr><td>[20:55] &lt aa_&gt not sure if that is the right theme</td></tr>
+            <tr><td>[21:02] &lt MS-&gt That's a good use of open space IMO :)</td></tr>
+            <tr><td>[21:39] *** vmlemon_ registers for the Backstage mailing list</td></tr>
+            <tr><td>[21:40] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[21:40] Reply: does the macarena</td></tr>
+            <tr><td>[22:17] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[22:51] *** vmlemon_ has joined #kamaelia</td></tr>

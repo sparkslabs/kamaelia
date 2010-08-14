@@ -1,0 +1,173 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060629 ======
+
+1. Note of Agenda
+
+2. Participants
+
+Participants: Ryan, Michael, Matt, Devendra, kambot
+
+Attending: Oliver
+
+3. Activity Reports
+
+Matt:
+
+    DONE:
+        DVB: PSI/SI parsing (PAT,PMT,SDT,NIT -- Program Association Table,
+            Program Map Table, Service Descriptor Table, Network Information
+            Table
+        ie main core ones: facilitate discovery of available streams, finding
+            out what PIDs their audio/video are in, getting names, mapping to
+            events, finding out about other multiplexes available and how to
+            tune to them
+        SoC: emailed comment to thomasfx
+        Axon/Kamaelia: minor misc. bug fixes
+        oh, and rewritten EIT (Event Info Table) - just started working
+            last night :)
+    BLOCKED:
+        none
+    TODO:
+        better DVB Now and Next change detection
+        combining new PSI/SI components for auto channel finding
+        Improve box destruction to handle when a box is still linked to
+            another
+        review/merge sync boxes support for threaded component
+        Mod various components to utilise inversion
+        complete sync boxes support for threaded components
+
+Michael:
+
+    DONE:
+        Released Kamaelia Bundles
+        Fixed multicast of DVB
+        Investigated issues of consequence of new pygame code under windows
+        Continued experiments with exogenous style components
+        Looked into moving alsa components into Kamaelia.Devices
+    TODO:
+        Fix the win32 pygame issues,
+        Test release on GP2X, Mac OS X
+        On the bliki: Describe the requirement for the Database component
+        Write detailed design document for Proper Macro
+        Fix throughput & capture issues for Alsa
+        Write up what we want from the website & release going forward.
+        Write up monthly notes and meeting notes from the day HDD drive died.
+    BLOCKED:
+        Hard drive scragged, awaiting results from disk recovery firm
+        Macro stalled
+
+Devendra:
+
+    DONE:
+        Added MAC Component
+        Added basic Encryption Component
+        Created initial version of secure phone
+    TODO:
+        Investigate Alsa components
+        Add support for more algorithms to Encryption Module
+        Add Stream Cipher component to Encryption module
+    BLOCKED:
+        none
+
+Ryan:
+
+    DONE:
+        TorrentService, TorrentPatron (sharing a single instance of MainLine
+            between multiple components),
+        TorrentClient works with & requires latest MainLine release
+    TODO:
+        tests for TorrentClient, TorrentService/TorrentPatron,
+        uploading support in HTTPClient
+        check/add resuming support in TorrentClient
+        reconnecting TCP client or similar for kambot
+    BLOCKED:
+        exams/revision,
+        away on programming weekend (last weekend)
+
+4. Discussion items (max 3 or 4)
+
+4.1 SoC progress check
+
+Michael continues to be happy with where things are going, now that he's discussed progress with everyone. Everyone's had a review of their work, all in ways hopefully appropriate to their work. Michael noted that we have to do the mentor evals this week (before July 5th), and asked people to bug him on *monday* or *tuesday*to check that he'd done theirs.
+
+Michael noted that if anyone needed an incentive to bug him - if he doesn't do your eval, you a) don't get paid b) get booted from the programme c) therefore can't get paid the other half.
+
+The bottom line part of the evals for everyone is this: there's a tick box that says (essentially) "should the student be booted from Summer of Code", and then answer in all cases for Kamaelia students will be "no".
+
+Michael also noted that he hoped everyone was enjoying their projects, and that it would be nice to see a bit more discussion/update on both your project blogs, and on the mailing list, """because you're all doing cool stuff, and one of the issues people seem to have with Kamaelia is "what can I do with it", and you're all doing interesting things."""
+
+4.2 Time to migrate to SVN?
+
+"Yes"
+
+"before 1.5.1 / 0.4.1 ?"
+
+"Yes, Absolutely"
+
+General discussion about subversion vs CVS. Decision was taken to move
+to sourceforge's subversion service and see how things go. Matt also
+suggested turning off CVS developer access once the change over
+started.
+
+4.3 Next bimonthy meeting
+
+When?
+Where?
+Who?
+What?!
+
+What: Focus for Kamaelia 1.0 (Which I suspect is a year away)
+& Macro & post-Macro ?
+
+Michael noted that Macro is stalled completely - no feedback from the
+project owner & no access to the kit. We're still doing the code for it
+in the hope the kit turns up but without the kit, it's just a set of
+very useful components for people to build PVRs.
+
+When: this one ought to be mid July
+
+Michael noted that we move the weekly meeting that week to a Thursday,
+Matt suggested perhaps thursday is better generally? we've had lots of
+thursday meetings. Murmerings of agreement.
+
+Date decided was Friday 14th - ie prior to OSCON.
+    [ Later note, this moved to the following week ]
+
+Made the offer to Ryan to attend. Ryan: "thanks but no thanks".
+
+Location decided upon was central london.
+
+Ryan noted a good GUI would be good for Kamaelia - Michael asked Ryan to
+write up outside the meaning what he meant by that. Devendra noted that
+a complete app would be a great way of showcasing Kamaelia. (examples -
+audio player with a GUI)
+
+Michael & Matt asked for discussion suggestions to be sent to the mailing
+list and/or bliki.
+
+We agreed that the focus would be a Kamaelia 1.0 brainstorm day? Other random
+related comments:
+   * That in itself needs a little focus since a brainstorm that's longer
+     than an hour is heavily draining.
+   * Break down into some subtopics/activites
+   * Maybe a tool that could be useful would be a long distance
+     brainstorming tool
+        ie 6 participants able to draw, type and talk
+        my rationale is simple enough - brainstorming is limited in open
+        source by the sheer distances involved. We *can't* involve devendra,
+        anagha or Thomas realistically at the moment - and that's just a
+        problem cause by distance
+
+        Using a combination of existing code we should be able to destroy
+        that
+
+   * Might also be worth us inviting a few other BBC people too
+   * For the record (before I forget), the speex codec comes to mind
+
+5. Date/Time of next meeting
+
+We decided that thursdays are generally a better option now. (Due to the
+way things had worked out)
+
+Date/Time : Thursday 6h July, 11:00am BST
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060629 ======

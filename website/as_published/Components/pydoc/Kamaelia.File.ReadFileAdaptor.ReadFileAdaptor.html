@@ -1,0 +1,226 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.html">File</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.ReadFileAdaptor.html">ReadFileAdaptor</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.ReadFileAdaptor.ReadFileAdaptor.html">ReadFileAdaptor</a></h1>
+<p>For examples and more explanations, see the <a class="reference" href="/Components/pydoc/Kamaelia.File.ReadFileAdaptor.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-ReadFileAdaptor">class ReadFileAdaptor(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>An instance of this class is a read file adaptor component. It's
+constructor arguments are all optional. If no arguments are provided,
+then the default is to read from stdin, one line at a time, as fast as
+possible. Note that this will cause the outbox to fill at the same rate
+as stdin can provide data. (Be wary of memory constraints this will
+cause!)</p>
+<dl class="docutils">
+<dt>Arguments &amp; meaning:</dt>
+<dd><ul class="first last">
+<li><p class="first">filename=&quot;filename&quot; - the name of the file to read. If you want stdin,
+do not provide a filename! If you want the output from a command,
+also leave this blank...</p>
+</li>
+<li><p class="first">command=&quot;command&quot; - the name of the command you want the
+output from. Leave the filename blank if you use this!</p>
+</li>
+<li><dl class="first docutils">
+<dt>readmode - possible values:</dt>
+<dd><ul class="first last simple">
+<li>&quot;bitrate&quot; - read at a specified bitrate.</li>
+<li>&quot;line&quot;    - read on a line by line basis</li>
+<li>&quot;block&quot;   - read the file on a block by block basis.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">If bitrate mode is set, you should set bitrate= to your
+desired bitrate (unless you want 64Kbit/s), and chunkrate=
+to your desired chunkrate (unless you want 24 fps). You are
+expected to be able to handle the bit rate you request!</p>
+</li>
+<li><p class="first">If block mode is set then you should set readsize (size of the
+block in bytes), and steptime (how often you want bytes). If
+steptime is set to zero, you will read blocks at the speed the
+source device can provide them. (be wary of memory constraints)</p>
+</li>
+</ul>
+</dd>
+</dl>
+<p>After setting the ReadFileAdaptor in motion, you can then hook it into
+your linkages like any other component.</p>
+<div class="section">
+<h3><a id="symbol-ReadFileAdaptor.Inboxes" name="symbol-ReadFileAdaptor.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : NOT USED</li>
+<li><strong>inbox</strong> : NOT USED</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-ReadFileAdaptor.Outboxes" name="symbol-ReadFileAdaptor.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : When data is read, it is made available here.</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-ReadFileAdaptor.__init__" name="symbol-ReadFileAdaptor.__init__">__init__(self[, filename][, command][, readmode][, readsize][, steptime][, bitrate][, chunkrate][, debug])</a></h4>
+<p>Standard constructor, see class docs for details</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ReadFileAdaptor.closeDownComponent" name="symbol-ReadFileAdaptor.closeDownComponent">closeDownComponent(self)</a></h4>
+<p>#!!!! Called at component exit...
+Closes the file handle</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ReadFileAdaptor.getDataByteLen" name="symbol-ReadFileAdaptor.getDataByteLen">getDataByteLen(self)</a></h4>
+<p>This method attempts to read data of a specific block size from
+the file handle. If null, the file is EOF. This method is never called
+directly. If the readmode is block or bitrate, then the attribute self.getData
+is set to this function, and then this function is called using self.getData().
+The reason for this indirection is to make it so that the check for
+which readmode we are in is done once, and once only</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ReadFileAdaptor.getDataReadline" name="symbol-ReadFileAdaptor.getDataReadline">getDataReadline(self)</a></h4>
+<p>This method attempts to read a line of data from the file handle.
+If null, the file is EOF. As with getDataByteLen, this method is never called
+directly. If the readmode is readline (or &quot;&quot;), then the attribute self.getData
+is set to this function, and then this function is called using self.getData().
+Same reason for indirection as above.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ReadFileAdaptor.initialiseComponent" name="symbol-ReadFileAdaptor.initialiseComponent">initialiseComponent(self)</a></h4>
+<p>Opens the appropriate file handle</p>
+</div>
+<div class="section">
+<h4><a id="symbol-ReadFileAdaptor.mainBody" name="symbol-ReadFileAdaptor.mainBody">mainBody(self)</a></h4>
+<p>We check whether it's time to perform a new read, if it is, we
+read some data. If we get some data, we put it in out outbox
+&quot;outbox&quot;, and to stdout (if debugging).
+If we had an error state (eg EOF), we return 0, stopping this component, otherwise
+we return 1 to live for another line/block.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

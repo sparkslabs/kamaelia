@@ -1,0 +1,131 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060810 ======
+
+1. Note of Agenda
+
+
+2. Participants
+Participating: mhrd (Matt), c-ryan (Ryan)
+Also attending: G0SUB, ifelipe, Uraeus
+Apologies: Thomas, Anagha
+
+
+3. Activity Reports
+
+Michael is on holiday
+
+
+Ryan:
+    DONE - online documentation
+           READMEs
+
+    TODO - get constructive criticism from Matt,
+           component test scripts
+
+    BLOCKED - Will hopefully be away in Mexico from 12th August
+
+
+Matt:
+    DONE - integrating speex audio into the whiteboard
+           adding support for audio >2 peers to whiteboard
+           pymedia audio resampler component
+           wrote audio mix components
+           more deprecations
+           experimented with controllable warning levels for deprecations
+           looking over anagha and c-ryan's code/docs
+
+    BLOCKED - deprecation branch merge to be done by Michael
+
+    TODO - finish deprecation checks of /Code/Python/Kamaelia/Examples/
+           reduce whiteboard audio latency
+           change whiteboard from base64 to escaping
+           find high processor usage issue
+           make more pymedia wrappers (video)
+           continue with DVB components
+           review/revisit experimental Timer component
+           Improve box destruction to handle when a box is still linked to another
+           review/merge sync boxes support for threaded component
+
+Anagha (submitted earlier by email):
+    DONE - KPI Framework. 
+    
+    TODO - Integrate with networked components. (Simple Streaming
+           Server)
+           Update code with comments.
+           Update Documentation.
+           Incorporate comments from Matt.
+ 
+Thomas (submitted earlier by email):
+    DONE - Reimplemented pygame component support
+           Reimplemented pygame wrapper
+           Added support for costum viewport
+           Packaged files
+           Interactor base class + lift interactor
+           Started checkers boardgame
+           Container component
+           Started documenting
+
+    TODO - 3D GUI for Ryans bittorrent package
+           Finish checkers boardgame
+           Documentation
+           Packaging
+
+Matt commented that he really needs to make a dent into some of those old TODOs instead of adding new "just-jobs" all the time 
+
+
+4. Discussion items (max 3 or 4)
+
+4.1 SoC progress & wrap up
+
+Matt noted that the deadline for submitting code to google is the 21st.
+   * code has to be ready before then.
+
+Matt suggests:
+   * in Ryan's case that's before he goes on holiday! Today if possible - good to have a day or so breather
+   * thomas & anagha (if you're reading logs): suggest aiming to finish on Friday 18th
+   * that gives time for any last minute checking you might want to do
+   * and gives Matt/student/Michael time to be incompetent about submitting the code 
+
+Ryan said he'd try to achieve that.
+
+Ryan asked if the students have to submit code themselves.
+   * Matt doesn't know but will find out
+
+Matt commented that he'd probably be really extremely pleased to send what Ryan has done so far to google, right now
+   * Ryan agreed.
+
+Ryan said he'd probably remove the TorrentSeeder example. Matt asked why, and Ryan explained because it doesn't work:
+   * it's a question of information
+   * it doesn't support a nice pipeline model very well
+   * FWIW its not working isn't the fault of the components it uses
+
+Matt suggested discussing it further after the meeting. Ryan agreed.
+
+Matt asked Ryan why he put down "component test scripts" as a TODO. Ryan explained he wanted to do basic (smoke) tests before the code is submitted.
+   
+Matt asked how that was different from the examples, or whether he was actually talking about full unittests. Ryan explained that
+   * a few components don't yet have an 'if __name__=...' bit at the bottom
+   * and that he wasn't going to be doing unittests - not enough - would take to long
+      * Matt agreed.
+   * "I just don't want to submit code that dies when run"
+
+Matt responded that
+   * google want the code primarily to do some statistical profiling/data mining
+   * we (kamaelia) will get the most short term benefit out of there being working examples and docs so we and other people can pick up your stuff and incorporate it into their systems
+   * he fully understood a desire to not give them broken code! (pride in code is a Good Thing)
+
+Matt expressed the hope that  we can get the contributor licencing sorted at a later (not too later I hope) stage and roll Ryan and the other's work into the main codebase ... as it adds huge swathes of functionality
+
+Matt comment he's also very pleased with what Thomas and Anagha have achieved too
+
+Matt confirmed with Ryan that everything for google / Kamaelia.community is in RJL/packages.
+
+5. Date/Time of next weekly meeting
+Thu 17th August 2006, 11am BST (GMT+0100)
+
+Ryan is on holiday!
+
+Matt hopes Anagha and or Thomas can attend the next meeting.
+
+Matt is very happy to change the time next week if it means we can have both of you in the meeting together
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060810 ======

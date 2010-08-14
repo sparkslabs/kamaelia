@@ -1,0 +1,288 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.html">Visualisation</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.html">PhysicsGraph3D</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams.html">TopologyViewer3DWithParams</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams.TopologyViewer3DWithParams.html">TopologyViewer3DWithParams</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#410">Generic 3D Topology Viewer With more Parameters supports</a><ul>
+<li><a class="reference" href="#411">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#412">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="410">Generic 3D Topology Viewer With more Parameters supports</h1>
+<p>Extend TopologyViewer3D by supporting additional parameters of &quot;ADD&quot; and &quot;UPDATE&quot; commands.</p>
+<div class="section">
+<h2 id="411"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>A simple console driven topology viewer:</p>
+<pre class="literal-block">
+Pipeline( ConsoleReader(),
+          lines_to_tokenlists(),
+          TopologyViewer3DWithParams(),
+        ).run()
+</pre>
+<p>Then at runtime try typing these commands to change the topology in real time:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; DEL ALL
+&gt;&gt;&gt; ADD NODE 1 &quot;1st node&quot; (0,0,-10) teapot
+&gt;&gt;&gt; ADD NODE 2 &quot;2nd node&quot; randompos sphere image=../../../Docs/cat.gif
+&gt;&gt;&gt; ADD NODE 3 &quot;3rd node&quot; randompos - bgcolour=(255,255,0);bgcolour=(0,255,255)
+&gt;&gt;&gt; UPDATE NODE 1 name=1st;bgcolour=(0,255,0)
+&gt;&gt;&gt; UPDATE NODE 3 name=3rd;bgcolour=(255,0,0);fgcolour=(0,0,255);fontsize=100
+&gt;&gt;&gt; ADD NODE 1:1 &quot;1st child node of the 1st node&quot; &quot; ( 0 , 0 , -10 ) &quot; -
+&gt;&gt;&gt; ADD NODE 1:2 &quot;2nd child node of the 1st node&quot; randompos - &quot;fontsize = 20&quot;
+&gt;&gt;&gt; ADD LINK 1 2
+&gt;&gt;&gt; ADD LINK 3 2
+&gt;&gt;&gt; DEL LINK 1 2
+&gt;&gt;&gt; ADD LINK 1:1 1:2
+&gt;&gt;&gt; DEL NODE 1
+</pre>
+</div>
+<div class="section">
+<h2 id="412"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>Extend TopologyViewer3D by supporting additional parameters of &quot;ADD&quot; and &quot;UPDATE&quot; commands.</p>
+<p>The format of &quot;ADD&quot; commands:
+[ &quot;ADD&quot;, &quot;NODE&quot;, &lt;id&gt;, &lt;name&gt;, &lt;positionSpec&gt;, &lt;particle type&gt;, &lt;parameters&gt; ]</p>
+<p>The format of &quot;UPDATE&quot; commands:
+[ &quot;UPDATE&quot;, &quot;NODE&quot;, &lt;id&gt;, &lt;parameters&gt; ]</p>
+<p>The format of parameters: pa=pa_value;pb=pb_value</p>
+<p>Add quotation if there are spaces within parameters.</p>
+<p>Available parameters:</p>
+<blockquote>
+<ul class="simple">
+<li>bgcolour  -- Colour of surfaces behind text label (default=(230,230,230)), only apply to label texture</li>
+<li>fgcolour  -- Colour of the text label (default=(0,0,0), only apply to label texture</li>
+<li>sidecolour -- Colour of side planes (default=(200,200,244)), only apply to CuboidParticle3D</li>
+<li>bgcolourselected  -- Background colour when the particle is selected (default=(0,0,0)</li>
+<li>bgcolourselected  -- Frontground colour when the particle is selected (default=(244,244,244))</li>
+<li>sidecolourselected -- Side colour when the particle is selected (default=(0,0,100))</li>
+<li>margin       -- Margin size in pixels (default=8)</li>
+<li>fontsize     -- Font size for label text (default=50)</li>
+<li>pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)</li>
+<li>thickness    -- Thickness of button widget, ignored if size is specified (default=0.3)</li>
+<li>image        -- The uri of image, image texture instead of label texture is used if specified</li>
+</ul>
+</blockquote>
+<p>See Kamaelia.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D for more information.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.html">Visualisation</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.html">PhysicsGraph3D</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams.html">TopologyViewer3DWithParams</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams.TopologyViewer3DWithParams.html">TopologyViewer3DWithParams</a></h1>
+<div class="section">
+<h2 id="symbol-TopologyViewer3DWithParams">class TopologyViewer3DWithParams(<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D.html">Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D</a>)</h2>
+<p>TopologyViewer3DWithParams(...) -&gt; new TopologyViewer3DWithParams component.</p>
+<p>A component that takes incoming topology (change) data and displays it live
+using pygame OpenGL. A simple physics model assists with visual layout. Particle
+types, appearance and physics interactions can be customised.</p>
+<p>It extends TopologyViewer3D by supporting additional parameters of &quot;ADD&quot; commands.</p>
+<p>Keyword arguments (in order):</p>
+<ul class="simple">
+<li>screensize          -- (width,height) of the display area (default = (800,600))</li>
+<li>fullscreen          -- True to start up in fullscreen mode (default = False)</li>
+<li>caption             -- Caption for the pygame window (default = &quot;Topology Viewer&quot;)</li>
+<li>particleTypes       -- dict(&quot;type&quot; -&gt; klass) mapping types of particle to classes used to render them (default = {&quot;-&quot;:RenderingParticle})</li>
+<li>initialTopology     -- (nodes,bonds) where bonds=list((src,dst)) starting state for the topology  (default=([],[]))</li>
+<li>laws                -- Physics laws to apply between particles (default = SimpleLaws(bondlength=100))</li>
+<li>simCyclesPerRedraw  -- number of physics sim cycles to run between each redraw (default=1)</li>
+<li>border              -- Minimum distance from edge of display area that new particles appear (default=100)</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-TopologyViewer3DWithParams.Inboxes" name="symbol-TopologyViewer3DWithParams.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-TopologyViewer3DWithParams.Outboxes" name="symbol-TopologyViewer3DWithParams.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3DWithParams.__init__" name="symbol-TopologyViewer3DWithParams.__init__">__init__(self, **argd)</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3DWithParams.doCommand" name="symbol-TopologyViewer3DWithParams.doCommand">doCommand(self, msg)</a></h4>
+<p>Proceses a topology command tuple:
+[ &quot;ADD&quot;, &quot;NODE&quot;, &lt;id&gt;, &lt;name&gt;, &lt;positionSpec&gt;, &lt;particle type&gt; ]
+[ &quot;DEL&quot;, &quot;NODE&quot;, &lt;id&gt; ]
+[ &quot;ADD&quot;, &quot;LINK&quot;, &lt;id from&gt;, &lt;id to&gt; ]
+[ &quot;DEL&quot;, &quot;LINK&quot;, &lt;id from&gt;, &lt;id to&gt; ]
+[ &quot;DEL&quot;, &quot;ALL&quot; ]
+[ &quot;GET&quot;, &quot;ALL&quot; ]</p>
+</div>
+<div class="section">
+<h4><a id="symbol-TopologyViewer3DWithParams.updateParticle" name="symbol-TopologyViewer3DWithParams.updateParticle">updateParticle(self, node_id, **params)</a></h4>
+<p>updateParticle(node_id, **params) -&gt; updates the given node's parameters/attributes if it exists</p>
+<ul class="simple">
+<li>node_id  -- an id for an already existing node</li>
+<li>params   -- the updated parameters/attributes dictionary of the particle, e.g. name, texture, colour and size</li>
+</ul>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D.html">Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.TopologyViewer3D</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.makeBond">makeBond</a>(self, source, dest)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.removeParticle">removeParticle</a>(self, *ids)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.handleKeyEvents">handleKeyEvents</a>(self, event)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.quit">quit</a>(self[, msg])</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.drawParticles">drawParticles</a>(self, *particles)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.addParticle">addParticle</a>(self, *particles)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.addListenEvents">addListenEvents</a>(self, events)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.updateParticleLabel">updateParticleLabel</a>(self, node_id, new_name)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.main">main</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.rotateParticles">rotateParticles</a>(self, particles, dAngle)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.initialiseComponent">initialiseComponent</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.draw">draw</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.removeListenEvents">removeListenEvents</a>(self, events)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.breakBond">breakBond</a>(self, source, dest)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.getTopology">getTopology</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.deselectAll">deselectAll</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.selectParticle">selectParticle</a>(self, particle)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D._generatePos">_generatePos</a>(self, posSpec)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.handleEvents">handleEvents</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.gotoDisplayLevel">gotoDisplayLevel</a>(self, dlevel)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.handleMouseEvents">handleMouseEvents</a>(self, event)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.getParticleLabel">getParticleLabel</a>(self, node_id)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3D.html#symbol-TopologyViewer3D.scroll">scroll</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

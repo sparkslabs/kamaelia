@@ -1,0 +1,878 @@
+<html><body><table>
+            <tr><td>[02:25] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[02:25] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:39] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:39] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:34] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[07:44] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[07:50] &lt Lawouach_&gt http://www.dehora.net/journal/2008/07/06/3-12-minutes-to-sort-a-terabyte-hadoops-code-structure/ &lt -- fascinating :)</td></tr>
+            <tr><td>[08:20] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:21] &lt MS-&gt morning</td></tr>
+            <tr><td>[08:22] &lt orphans&gt morning MS-</td></tr>
+            <tr><td>[08:22] &lt orphans&gt how's it going?</td></tr>
+            <tr><td>[08:22] &lt MS-&gt Just reading an annoying message from Pablo</td></tr>
+            <tr><td>[08:22] &lt orphans&gt :(</td></tr>
+            <tr><td>[08:23] &lt MS-&gt Anything I'd say here would be a moan, and that's unproductive</td></tr>
+            <tr><td>[08:24] &lt MS-&gt Suffice to say, it would be less of a resource drain for me to sit down and write the test framework that would be useful than the chasing I've had to do with pablo</td></tr>
+            <tr><td>[08:24] &lt MS-&gt and I'm still not getting the information I need from him</td></tr>
+            <tr><td>[08:24] &lt MS-&gt And he's still not asking what is actually needed</td></tr>
+            <tr><td>[08:24] &lt MS-&gt He's also not even trying to listen and take on board criticism</td></tr>
+            <tr><td>[08:25] &lt MS-&gt Heck at initially for the first few weeks it was mainly requests really</td></tr>
+            <tr><td>[08:26] &lt orphans&gt mhm. I know I would have found it very difficult if I wasn't on-channel and asking annoying questions as much as I am</td></tr>
+            <tr><td>[08:26] &lt MS-&gt heh, you call it annoying questions.</td></tr>
+            <tr><td>[08:26] &lt MS-&gt It actually means that we have a better idea of what you're doing</td></tr>
+            <tr><td>[08:27] &lt MS-&gt :)</td></tr>
+            <tr><td>[08:27] &lt MS-&gt Along with checkin messages etc, they form a part of the mental picture that we all naturally form around each others work.</td></tr>
+            <tr><td>[08:28] &lt orphans&gt yeah, it's definitely easier to see what people are up to after a few questions back and forth</td></tr>
+            <tr><td>[08:29] &lt MS-&gt absolutely</td></tr>
+            <tr><td>[08:29] &lt mhrd&gt MS- : hi, thanks for advice :)</td></tr>
+            <tr><td>[08:30] &lt MS-&gt orphans: heck, even I'll post random questions about what I'm doing, partly for that sort of reason</td></tr>
+            <tr><td>[08:30] &lt MS-&gt mhrd: You're welcome</td></tr>
+            <tr><td>[08:30] &lt orphans&gt MS-, yeah, plus it's interesting to see what you get paid to do :)</td></tr>
+            <tr><td>[08:31] &lt MS-&gt heh</td></tr>
+            <tr><td>[08:31] &lt MS-&gt Currently I'm being paid for this:</td></tr>
+            <tr><td>[08:31] &lt MS-&gt http://code.google.com/p/facilitate/source/list</td></tr>
+            <tr><td>[08:31] &lt MS-&gt and for this:</td></tr>
+            <tr><td>[08:32] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/branches/private_MPS_Participate/Apps/FileProcessor/App/BatchFileProcessor.py?revision=4819&view=markup</td></tr>
+            <tr><td>[08:33] &lt orphans&gt do they just allow you to work open source as standard now for stuff which isn't top secret?</td></tr>
+            <tr><td>[08:33] &lt MS-&gt Nope</td></tr>
+            <tr><td>[08:33] &lt MS-&gt Though I've discovered the rule</td></tr>
+            <tr><td>[08:33] &lt MS-&gt "find someone who feels able to say yes"</td></tr>
+            <tr><td>[08:33] &lt MS-&gt If it contributes to an existing project, there's a standing rule that it can be open as well</td></tr>
+            <tr><td>[08:34] &lt MS-&gt hence the FileProcessor can be open, since it contributes to kamaelia</td></tr>
+            <tr><td>[08:34] &lt MS-&gt (yes, I'm aware of the double think there)</td></tr>
+            <tr><td>[08:34] &lt Lawouach_&gt hi MS-</td></tr>
+            <tr><td>[08:34] &lt orphans&gt :)</td></tr>
+            <tr><td>[08:34] &lt MS-&gt Lawouach_: Hiya</td></tr>
+            <tr><td>[08:35] &lt orphans&gt &lt = coffee</td></tr>
+            <tr><td>[08:38] &lt Lawouach_&gt You're inferior to coffee mate?</td></tr>
+            <tr><td>[08:38] &lt Lawouach_&gt don't be so hard on yourself</td></tr>
+            <tr><td>[08:39] &lt MS-&gt He didn't assert whether it's true or false :-)</td></tr>
+            <tr><td>[08:39] &lt MS-&gt I thought he was somehow realising where my coffee was since it is &lt ---- thataway</td></tr>
+            <tr><td>[08:40] &lt orphans&gt :)</td></tr>
+            <tr><td>[08:41] &lt orphans&gt I am indeed quite severely inferior to coffee, but I'm afraid that it's -------------&gt thataway</td></tr>
+            <tr><td>[08:43] &lt mhrd&gt Chong-: sounds like you've made some cool progress with the 3d topology viewer - will try to take a look later today - unfortunately had a small cascade of emergencies of various kinds to deal with over the weekend - hence I didn't get back to you.</td></tr>
+            <tr><td>[08:44] &lt MS-&gt mhrd: It's quite a bit of progress</td></tr>
+            <tr><td>[08:45] &lt MS-&gt He's got some minor issues regarding rotations (local transform vs global)</td></tr>
+            <tr><td>[08:45] &lt MS-&gt Essentially due to rotating only around local axes rather than global. But it's definitely cool progress :)</td></tr>
+            <tr><td>[08:46] &lt mhrd&gt I saw your discussion on that - I take it the code is currently just modifying the X,Y,Z rotiation terms in the rotation matrix - whereas you were after "pressing the rotate about X key rotates about the X axis from my viewpoint, not the transformed X axis of the rotated object"?</td></tr>
+            <tr><td>[08:46] &lt mhrd&gt cool</td></tr>
+            <tr><td>[08:48] &lt MS-&gt I'm expecting the rotation of the system to make sense...</td></tr>
+            <tr><td>[08:48] &lt MS-&gt :)</td></tr>
+            <tr><td>[08:49] &lt MS-&gt If you run it</td></tr>
+            <tr><td>[08:49] &lt MS-&gt press left 4 times</td></tr>
+            <tr><td>[08:49] &lt MS-&gt and then rotate by pressing "up"</td></tr>
+            <tr><td>[08:49] &lt MS-&gt you'll see that the collection of objects correctly rotate around the global x axis</td></tr>
+            <tr><td>[08:49] &lt MS-&gt But the actual objects themselves rotate around a local X axis, which is parallel now with the global z axis</td></tr>
+            <tr><td>[08:50] &lt mhrd&gt as opposed to around the local X axis that has been transformed by the previous "press left 4 times"</td></tr>
+            <tr><td>[08:50] &lt MS-&gt it looks very broken :-)</td></tr>
+            <tr><td>[08:50] &lt MS-&gt Far easier to show than explain with text really</td></tr>
+            <tr><td>[08:50] &lt MS-&gt :)</td></tr>
+            <tr><td>[08:50] &lt MS-&gt It's most obvious if you look at Node1 in the middle</td></tr>
+            <tr><td>[08:50] &lt MS-&gt :)</td></tr>
+            <tr><td>[08:51] *** mhrd not run the code yet - preparing for a meeting in 20 mins :)</td></tr>
+            <tr><td>[08:51] &lt MS-&gt :)</td></tr>
+            <tr><td>[08:51] &lt mhrd&gt I'm pretty confident I understand what you're getting at now though :)</td></tr>
+            <tr><td>[08:51] &lt MS-&gt It's the sort of bug that the first time you come across it drives you barmy</td></tr>
+            <tr><td>[08:51] &lt MS-&gt and can spend hours or days chasing until you find the "right" answer</td></tr>
+            <tr><td>[08:51] &lt MS-&gt But to someone who knows what's going on its a 2 second fix</td></tr>
+            <tr><td>[08:52] &lt MS-&gt Been too long since I did any open GL for it to be the latter for me at the moment, so focussing on the "what's borked"</td></tr>
+            <tr><td>[08:56] &lt MS-&gt orphans: No the think about wtf is that is reality for most jobs</td></tr>
+            <tr><td>[08:56] &lt MS-&gt s/think/thing/</td></tr>
+            <tr><td>[08:57] &lt MS-&gt It's why I tend not to read the daily wtf myself</td></tr>
+            <tr><td>[08:57] &lt MS-&gt It's kinda a big part of GSOC in teaching people where their WTF's are</td></tr>
+            <tr><td>[08:57] &lt MS-&gt so that you hope your code never makes it up there :-)</td></tr>
+            <tr><td>[08:57] &lt orphans&gt :)</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:01] *** Lawouach_ wonders if Jason wasn't unconsciensly refering to meta-class in his message to the list MS- just reponded to</td></tr>
+            <tr><td>[09:02] &lt MS-&gt It's the sort of thing that could be solved with a meta-class.</td></tr>
+            <tr><td>[09:02] &lt MS-&gt Problem I have with meta-classes is that they sprinkle magic across code, making it harder in the end to maintain (IMO)</td></tr>
+            <tr><td>[09:03] &lt MS-&gt (generally speaking that is, not always true I guess)</td></tr>
+            <tr><td>[09:06] &lt Lawouach_&gt I'm not a big fan of them</td></tr>
+            <tr><td>[09:06] &lt Lawouach_&gt Everytime I met them I had to re-read the documentation to fully appreciate their impact</td></tr>
+            <tr><td>[09:07] &lt MS-&gt I started off thinking that metaclasses would be useful in kamaelia</td></tr>
+            <tr><td>[09:07] &lt MS-&gt Then it shrank and shrank and shrank and shrank</td></tr>
+            <tr><td>[09:07] &lt MS-&gt All it does now is implement __super</td></tr>
+            <tr><td>[09:08] &lt MS-&gt which is a mistake, and will be removed in Axon 2.0</td></tr>
+            <tr><td>[09:08] &lt MS-&gt Which is a "release date and feature list yet to be decided"</td></tr>
+            <tr><td>[09:08] &lt MS-&gt kind of thing</td></tr>
+            <tr><td>[09:08] &lt MS-&gt But probably around the same time as Kamaelia 1.0</td></tr>
+            <tr><td>[09:09] &lt MS-&gt which I've decided is 2010 (10 --&gt 1.0)</td></tr>
+            <tr><td>[09:09] &lt MS-&gt I probably ought to post that versioning idea to the list</td></tr>
+            <tr><td>[09:09] &lt MS-&gt essentially want to get to version 0.8 this year</td></tr>
+            <tr><td>[09:10] &lt MS-&gt so that we have 2008 -&gt 08 --&gt 0.8</td></tr>
+            <tr><td>[09:10] &lt MS-&gt Then next year move to 0.9, with point releases through the year as 0.9.2 (2009/2), 0.9.6 (2009/June) etc</td></tr>
+            <tr><td>[09:13] &lt Lawouach_&gt Interesting way of releasing software :)</td></tr>
+            <tr><td>[09:13] &lt MS-&gt Well, it strikes me as a one off opportunity really :)</td></tr>
+            <tr><td>[09:14] &lt MS-&gt Ubuntu started it really with the 8.4 type numbering, and twisted have decided to copy them, but they get complaints on their list about people wondering what's happened between 2.5 and 8.x</td></tr>
+            <tr><td>[09:14] &lt MS-&gt Whereas we're coincidentally at a much nicer place :-)</td></tr>
+            <tr><td>[09:16] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:17] &lt MS-&gt Also, gives an implicit definite date/target for a 1.0 release</td></tr>
+            <tr><td>[09:17] &lt MS-&gt And hence a way of building back a timeline</td></tr>
+            <tr><td>[09:17] &lt MS-&gt which is important IMO</td></tr>
+            <tr><td>[09:19] &lt MS-&gt Currently rewriting and documenting one of pablo's "examples"</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt hmm</td></tr>
+            <tr><td>[09:20] &lt MS-&gt It's taking longer than I thought so will probably just do one, and then ask him to do the other 3, largely as an exercise in showing him the sort of thing his examples need to have</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt He just sent an email that he ought to have sent in his first week :)</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt But better later than nevre :)</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt never</td></tr>
+            <tr><td>[09:20] &lt MS-&gt indeed</td></tr>
+            <tr><td>[09:21] &lt MS-&gt Chong-, orphans - I expect you to answer pablo :-)</td></tr>
+            <tr><td>[09:21] &lt MS-&gt I will as well, but just noting that I kinda expect it</td></tr>
+            <tr><td>[09:21] &lt MS-&gt I know you don't have to, but he's trying to help you :)</td></tr>
+            <tr><td>[09:24] &lt orphans&gt quick "how should I do this" question - I'm working out how to store notes in the piano roll - basically a series of pygame Rects with an associated start and end time, note number, velocity etc. The hard bit is I need to work out whether I have clicked in a note, and don't particularly want to be looping over all of the notes using collidepoint(), but could also do with being able to access them by id for scheduling</td></tr>
+            <tr><td>[09:24] &lt orphans&gt MS-, will reply in a min</td></tr>
+            <tr><td>[09:25] &lt MS-&gt orphans: ta :)</td></tr>
+            <tr><td>[09:25] &lt MS-&gt orphans: IRC has a 256 char limit...</td></tr>
+            <tr><td>[09:25] &lt orphans&gt gah</td></tr>
+            <tr><td>[09:25] &lt MS-&gt cf http://yeoldeclue.com/logs/kamaelia2008-07-07_log.html</td></tr>
+            <tr><td>[09:25] *** mhrd is now known as mhrd-mtgs</td></tr>
+            <tr><td>[09:26] &lt orphans&gt ah, that's all you got, was about to expand a bit :)</td></tr>
+            <tr><td>[09:27] &lt orphans&gt I was thinking of maybe doing something to do with overwriting __in__ so I can do if thisTime in thisListOfNotes:</td></tr>
+            <tr><td>[09:27] &lt orphans&gt but that seems kinda ugly, and possibly not particularly helpful wrt looping</td></tr>
+            <tr><td>[09:29] &lt orphans&gt or maybe some mammoth list of lists of dicts</td></tr>
+            <tr><td>[09:30] &lt MS-&gt Oh, you want to know if a button was clicked inside a rect?</td></tr>
+            <tr><td>[09:30] &lt MS-&gt That's a standard sort of question on the pygame list.</td></tr>
+            <tr><td>[09:30] &lt orphans&gt I kinda need to know which rect it's clicked inside</td></tr>
+            <tr><td>[09:30] &lt MS-&gt Judicious use of google may give you a nice solution</td></tr>
+            <tr><td>[09:30] &lt MS-&gt My suggestion though initially is this:</td></tr>
+            <tr><td>[09:31] &lt MS-&gt *pick a simple solution*</td></tr>
+            <tr><td>[09:31] &lt MS-&gt Implement that, then find the better way of doing it</td></tr>
+            <tr><td>[09:31] &lt Lawouach_&gt I agree with MS-</td></tr>
+            <tr><td>[09:31] &lt Lawouach_&gt What matters is that your "API" doesn't change based on its implementation :)</td></tr>
+            <tr><td>[09:31] &lt MS-&gt Aside from anything else, the simple solution helps explain in more detail what you want to do</td></tr>
+            <tr><td>[09:32] &lt Lawouach_&gt In other words, for now don't worry about the inside, worry about the outside and what information you need in and out</td></tr>
+            <tr><td>[09:32] &lt orphans&gt ok, in that case it's not too bad - yeah, the api should stay constant</td></tr>
+            <tr><td>[09:32] &lt orphans&gt well, not too bad for now :)</td></tr>
+            <tr><td>[09:33] &lt Lawouach_&gt I'll give you an example, headstock relies entirely on bridge to parse a XML stream. I've known for a while that bridge isn't as fast nor light as it ought to be but I haven't cared either so much that it would prevent me from making headstock a reality.</td></tr>
+            <tr><td>[09:33] &lt Lawouach_&gt Once headstock is stable enough, I'll improve bridge's performance.</td></tr>
+            <tr><td>[09:34] &lt orphans&gt ok, cool</td></tr>
+            <tr><td>[09:48] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:48] &lt MS-&gt Heya Davbo</td></tr>
+            <tr><td>[09:51] &lt MS-&gt How goes?</td></tr>
+            <tr><td>[09:52] &lt Davbo&gt Hey MS-, i'm good. Yourself?</td></tr>
+            <tr><td>[09:52] &lt MS-&gt Not bad.</td></tr>
+            <tr><td>[09:53] &lt MS-&gt Getting there, you know :)</td></tr>
+            <tr><td>[09:57] &lt Chong-&gt mhrd: np. Thanks in advance. BTW, I have just fixed one buy MS- had found, so it should be more enjoyable :-). Any comments are welcome :-)</td></tr>
+            <tr><td>[09:57] &lt MS-&gt Chong-: ta</td></tr>
+            <tr><td>[09:57] &lt MS-&gt Davbo: Since we've been keeping up to date - I'm pretty happy that you're on track etc</td></tr>
+            <tr><td>[09:57] &lt MS-&gt unless there's anything you want to raise at the moment?</td></tr>
+            <tr><td>[09:58] &lt Chong-&gt MS-: sorry for missing your message. I was just busy with fixing the rotation problem. but the good news is that it has been fixed, Please have a look when you get time. Thanks.</td></tr>
+            <tr><td>[09:58] &lt Davbo&gt Not really, are mid-terms today?</td></tr>
+            <tr><td>[09:58] &lt Chong-&gt MS-: morning :-)</td></tr>
+            <tr><td>[10:00] &lt MS-&gt Chong-: Much better</td></tr>
+            <tr><td>[10:00] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:00] &lt MS-&gt One interesting little issue at the moment:</td></tr>
+            <tr><td>[10:00] &lt MS-&gt if you rotate it *LOTS*</td></tr>
+            <tr><td>[10:00] &lt MS-&gt and LOTS</td></tr>
+            <tr><td>[10:00] &lt Chong-&gt MS-: thanks :-). Any more comments?</td></tr>
+            <tr><td>[10:00] &lt MS-&gt then the whole thing slows down !</td></tr>
+            <tr><td>[10:00] &lt MS-&gt I can guess why :)</td></tr>
+            <tr><td>[10:01] *** Chong- trying</td></tr>
+            <tr><td>[10:01] &lt MS-&gt Initially very responsive</td></tr>
+            <tr><td>[10:01] &lt MS-&gt (very)</td></tr>
+            <tr><td>[10:01] *** Davbo sees we have a week to do the Mid-term survey</td></tr>
+            <tr><td>[10:02] &lt Chong-&gt MS-: I think I know too :-) becuase...</td></tr>
+            <tr><td>[10:02] &lt MS-&gt eg rotate 40 times left :)</td></tr>
+            <tr><td>[10:02] &lt MS-&gt You just append the rotations or something at a guess</td></tr>
+            <tr><td>[10:02] &lt Chong-&gt the rotationList keep increasing, so it becomes slow</td></tr>
+            <tr><td>[10:02] &lt MS-&gt But, it works</td></tr>
+            <tr><td>[10:02] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[10:02] &lt MS-&gt That's the first most important step :)</td></tr>
+            <tr><td>[10:02] &lt MS-&gt congrats :)</td></tr>
+            <tr><td>[10:02] &lt MS-&gt very nice :)</td></tr>
+            <tr><td>[10:03] &lt MS-&gt You do realise the wish list will just grow now ?</td></tr>
+            <tr><td>[10:03] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:03] &lt Chong-&gt MS-: thanks. because the rotation order matters, so I have to remember every rotation operation.</td></tr>
+            <tr><td>[10:03] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[10:03] &lt Davbo&gt Can't you just add up all the last rotations?</td></tr>
+            <tr><td>[10:04] &lt Chong-&gt MS-: the next one should be able to rotate selected particles</td></tr>
+            <tr><td>[10:04] &lt MS-&gt I think your next step should be optimisation before that</td></tr>
+            <tr><td>[10:05] &lt MS-&gt Largely because you don't *really* have to remember every rotation</td></tr>
+            <tr><td>[10:05] &lt Davbo&gt and just store the sum of rotations (speculation)</td></tr>
+            <tr><td>[10:05] &lt Chong-&gt Davbo: no. I did it before. because the rotation order matters</td></tr>
+            <tr><td>[10:05] &lt MS-&gt Just that you have a total of rotation about X and total rotation about Y for the global system</td></tr>
+            <tr><td>[10:06] &lt Davbo&gt order shouldn't matter really Chong-</td></tr>
+            <tr><td>[10:06] &lt MS-&gt Chong-: You can do it. (after all, if you think about it, Open GL *has* to do it for the global viewing transform)</td></tr>
+            <tr><td>[10:06] &lt MS-&gt Davbo: It matters due to Chong's been using local rather than global rotations</td></tr>
+            <tr><td>[10:06] &lt MS-&gt If you're tracking global (which this should be...), then the order doesn't matter</td></tr>
+            <tr><td>[10:07] &lt Davbo&gt if someone is there tapping left then right repeatedly it'd make sense to store 0 rather than +90 -90 +90 -90</td></tr>
+            <tr><td>[10:07] &lt MS-&gt But it works - it does need optimisation :)</td></tr>
+            <tr><td>[10:07] &lt Davbo&gt oh fair enough</td></tr>
+            <tr><td>[10:07] &lt Chong-&gt MS-: I have thought about it. But if you rotate around x first, and then y, then x, then y, accumulate x, y, z would fail.</td></tr>
+            <tr><td>[10:07] &lt MS-&gt If you pick up a book</td></tr>
+            <tr><td>[10:07] &lt MS-&gt you'll see</td></tr>
+            <tr><td>[10:07] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:08] &lt MS-&gt or a cat</td></tr>
+            <tr><td>[10:08] &lt MS-&gt though I suspect that's harder to get a hold of</td></tr>
+            <tr><td>[10:08] &lt Chong-&gt :D</td></tr>
+            <tr><td>[10:09] &lt MS-&gt Davbo: I take it you're happy at the moment then?</td></tr>
+            <tr><td>[10:09] &lt MS-&gt (re mentor time stuff)</td></tr>
+            <tr><td>[10:10] &lt Davbo&gt Yep!</td></tr>
+            <tr><td>[10:11] &lt Chong-&gt Davbo: OpenGL apply the last transformation operation first, which is equal to transform around their local axis rather than the global one.</td></tr>
+            <tr><td>[10:15] &lt MS-&gt Davbo: cool :)</td></tr>
+            <tr><td>[10:15] &lt MS-&gt Chong-: I absolutely guarantee you that you can sum things</td></tr>
+            <tr><td>[10:16] &lt MS-&gt And do it correctly</td></tr>
+            <tr><td>[10:16] &lt MS-&gt rather than store every single rotation separately</td></tr>
+            <tr><td>[10:17] &lt Chong-&gt MS-: I can see if rotating around the same axis continuously, the operation can be summed.</td></tr>
+            <tr><td>[10:18] &lt MS-&gt Chong-: If you stop and play for a moment by picking up an object</td></tr>
+            <tr><td>[10:19] &lt MS-&gt you'll see that I'm right here</td></tr>
+            <tr><td>[10:20] &lt Chong-&gt MS-: I'll think about it.</td></tr>
+            <tr><td>[10:21] &lt MS-&gt better to play with an object</td></tr>
+            <tr><td>[10:21] &lt MS-&gt and rotate it by 45 degrees about the global x/y axis</td></tr>
+            <tr><td>[10:21] &lt MS-&gt first completely independently</td></tr>
+            <tr><td>[10:21] &lt MS-&gt then randomly</td></tr>
+            <tr><td>[10:21] &lt MS-&gt with a real object</td></tr>
+            <tr><td>[10:21] &lt MS-&gt you'll see</td></tr>
+            <tr><td>[10:23] &lt Chong-&gt MS-: do you mean rotation order doesn't matter if rotating around global axis?</td></tr>
+            <tr><td>[10:23] &lt MS-&gt correct</td></tr>
+            <tr><td>[10:24] &lt Chong-&gt I think it depends the object's position.</td></tr>
+            <tr><td>[10:24] &lt Chong-&gt For example, suppose a point is in (1,0,0). [rotate around x 90 degree frist and then rotate around y 90 degree] leads to (0,0,-1); but [rotate around y 90 degree frist and then rotate around x 90 degree] leads to (0,1,0)</td></tr>
+            <tr><td>[10:26] &lt MS-&gt I'm assuming rotation around the origin</td></tr>
+            <tr><td>[10:26] &lt MS-&gt (rotation of an object around the origin)</td></tr>
+            <tr><td>[10:26] &lt MS-&gt You really have to pick up a physical object</td></tr>
+            <tr><td>[10:26] &lt MS-&gt and look at it</td></tr>
+            <tr><td>[10:26] &lt MS-&gt you will see what I mean</td></tr>
+            <tr><td>[10:27] &lt Chong-&gt MS-: I see what you mean. I agree that rotating order around the origin doesn't matter.</td></tr>
+            <tr><td>[10:28] *** MS- wonders</td></tr>
+            <tr><td>[10:28] &lt MS-&gt did you do 3D graphics formally?</td></tr>
+            <tr><td>[10:28] &lt MS-&gt Or just learn by playing/fiddling with examples (ie self taught)</td></tr>
+            <tr><td>[10:28] &lt MS-&gt The former assists dramatically</td></tr>
+            <tr><td>[10:28] &lt Chong-&gt MS-: self taught :-)</td></tr>
+            <tr><td>[10:28] &lt MS-&gt I ask because it looks like you're hitting "3D graphics 101 problems"</td></tr>
+            <tr><td>[10:29] &lt MS-&gt k</td></tr>
+            <tr><td>[10:29] &lt MS-&gt That's where your problems are coming from then</td></tr>
+            <tr><td>[10:29] &lt MS-&gt k</td></tr>
+            <tr><td>[10:29] *** MS- will have a think of a decent tutorial</td></tr>
+            <tr><td>[10:29] &lt Chong-&gt MS-: thanks :-)</td></tr>
+            <tr><td>[10:30] &lt MS-&gt (try to find one that is :) )</td></tr>
+            <tr><td>[10:30] &lt MS-&gt My third year project involved using open gl extensively you see</td></tr>
+            <tr><td>[10:30] &lt MS-&gt and there's no way it would've been doable I think without the formal background from the dept you're in</td></tr>
+            <tr><td>[10:30] *** aa_ hasn't played with 3d graphics since the last bbc's</td></tr>
+            <tr><td>[10:30] &lt MS-&gt you may want to consider asking the graphics people if they have any current notes they give to students :)</td></tr>
+            <tr><td>[10:31] *** MS- wishes he'd documented his scans better now</td></tr>
+            <tr><td>[10:32] &lt MS-&gt (I took photos, using my camera in macro mode, of all my uni notes before throwing the paper copies away)</td></tr>
+            <tr><td>[10:32] &lt aa_&gt ahahaha</td></tr>
+            <tr><td>[10:32] &lt aa_&gt funny, I got out of uni (twice!) without a single line of notes</td></tr>
+            <tr><td>[10:32] &lt MS-&gt heh</td></tr>
+            <tr><td>[10:32] &lt aa_&gt and I graduated both degrees</td></tr>
+            <tr><td>[10:33] &lt Chong-&gt MS-: I would have a try. but I have some 3D graph books in hand, say the red book, interactive computer graph</td></tr>
+            <tr><td>[10:33] &lt MS-&gt I tend to not like throwing things away :)</td></tr>
+            <tr><td>[10:33] &lt MS-&gt By interactive computer graph do you mean the foley, van dam, feiner & hughes one?</td></tr>
+            <tr><td>[10:34] &lt MS-&gt It's a good book, but I think you need something a little more specific about the rotations - specifically the relationship of current modelling transform relative to local and global transforms</td></tr>
+            <tr><td>[10:36] &lt Chong-&gt the author maybe Edward Angel. The full name is interactive computer graph, a top-down approach using openGL</td></tr>
+            <tr><td>[10:36] &lt MS-&gt Not come across that one</td></tr>
+            <tr><td>[10:37] *** Davbo finds he remembers things better after writing them down.</td></tr>
+            <tr><td>[10:37] &lt MS-&gt There's a wiki for that ..</td></tr>
+            <tr><td>[10:45] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:45] &lt MS-&gt Oh you mean notes?</td></tr>
+            <tr><td>[10:45] &lt MS-&gt Yes, me too</td></tr>
+            <tr><td>[10:46] &lt Davbo&gt indeed :)</td></tr>
+            <tr><td>[10:46] *** MS- finishes documenting *one* of Pablo's examples</td></tr>
+            <tr><td>[10:46] &lt MS-&gt I've spent far too long on that</td></tr>
+            <tr><td>[10:46] &lt MS-&gt nearly 3 hours</td></tr>
+            <tr><td>[10:46] &lt MS-&gt Original example:</td></tr>
+            <tr><td>[10:46] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/PO/test_examples/example1.py?revision=4798&view=markup</td></tr>
+            <tr><td>[10:47] &lt MS-&gt First improvement after reformatting:</td></tr>
+            <tr><td>[10:47] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/PO/test_examples/example1.mps.py?revision=4824&view=markup</td></tr>
+            <tr><td>[10:47] &lt MS-&gt Second improvement - after actually documenting what's going on:</td></tr>
+            <tr><td>[10:47] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/PO/test_examples/example1.mps.py?revision=4826&view=markup</td></tr>
+            <tr><td>[10:47] &lt MS-&gt as far as I can though, there's some gaping holes I can't fill in</td></tr>
+            <tr><td>[10:49] &lt Davbo&gt looks like he didn't know about python docstrings</td></tr>
+            <tr><td>[10:56] &lt MS-&gt No-one checks in *thousands* of lines of code and doesn't find out about that</td></tr>
+            <tr><td>[10:56] &lt MS-&gt He also doesn't appear to know about the "enter" key</td></tr>
+            <tr><td>[10:56] *** MS- is not in a good mood with pablo</td></tr>
+            <tr><td>[11:00] *** Davbo has a headache</td></tr>
+            <tr><td>[11:00] &lt Davbo&gt back in a bit</td></tr>
+            <tr><td>[11:01] *** Davbo is now known as Davbo-afk</td></tr>
+            <tr><td>[11:33] &lt MS-&gt Lawouach* : can you let me know when would be good for a meeting between you, me and Matt?</td></tr>
+            <tr><td>[11:33] &lt MS-&gt I'd like to discuss certain emails that've been flying around recently with the pair of you</td></tr>
+            <tr><td>[11:38] &lt Lawouach_&gt 'lo</td></tr>
+            <tr><td>[11:38] &lt MS-&gt heya</td></tr>
+            <tr><td>[11:38] &lt Lawouach_&gt Any time this afternoon is good for me</td></tr>
+            <tr><td>[11:38] &lt MS-&gt cool</td></tr>
+            <tr><td>[11:39] &lt MS-&gt I don't know how long matt's going to be tied up for</td></tr>
+            <tr><td>[11:39] &lt MS-&gt (I know he's in meetings but not for how long. I know he'll be driven mad by them probably if they're too long though, so hopefully not too long)</td></tr>
+            <tr><td>[11:40] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:41] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[11:42] &lt Davbo&gt Hi Lawouach_</td></tr>
+            <tr><td>[11:44] &lt Lawouach_&gt hello Davbo</td></tr>
+            <tr><td>[11:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt Interestingly, though Pablo's test question arrives late in his project, it might attract more relevant answers because others have had the chance to dig into Kamaelia and Axon for a few months now.</td></tr>
+            <tr><td>[12:10] &lt Davbo&gt Yeah, I just replied</td></tr>
+            <tr><td>[12:11] &lt MS-&gt indeed</td></tr>
+            <tr><td>[12:11] &lt MS-&gt Davbo: Much appreciated</td></tr>
+            <tr><td>[12:12] &lt Davbo&gt I'll reply again if i think of anything else but I've got a horrible headache today</td></tr>
+            <tr><td>[12:12] &lt orphans&gt being asked it straight makes me realise how little I do too :(</td></tr>
+            <tr><td>[12:13] &lt MS-&gt So say it</td></tr>
+            <tr><td>[12:13] &lt MS-&gt saying that is useful</td></tr>
+            <tr><td>[12:13] &lt MS-&gt explain what you DO do</td></tr>
+            <tr><td>[12:13] &lt MS-&gt We all tend to write small stubs to test things</td></tr>
+            <tr><td>[12:13] &lt MS-&gt I'm sure you do too</td></tr>
+            <tr><td>[12:13] &lt MS-&gt just to try out "how does this work</td></tr>
+            <tr><td>[12:13] &lt MS-&gt "</td></tr>
+            <tr><td>[12:13] &lt MS-&gt "how does that work"</td></tr>
+            <tr><td>[12:14] &lt MS-&gt "can I get this to work"</td></tr>
+            <tr><td>[12:14] &lt MS-&gt All that Test Driven Development is *really*</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt I'm terrible at tests</td></tr>
+            <tr><td>[12:14] &lt MS-&gt is about capturing those stubs in a way</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt Shame shame but it's hard habit to take</td></tr>
+            <tr><td>[12:14] &lt MS-&gt that makes it possible to check you've not broken anything</td></tr>
+            <tr><td>[12:14] &lt MS-&gt Lawouach_: I'd do more tests if we had a test suite that suited kamaelia more really</td></tr>
+            <tr><td>[12:15] &lt MS-&gt You can use unittest, but its a high overhead for kamaelia at present</td></tr>
+            <tr><td>[12:15] &lt Davbo&gt well imo I'm not at the point for robust testing. in terms of TDD i go through getting things to "work"</td></tr>
+            <tr><td>[12:15] &lt Davbo&gt you can always come back to test more robustly later once you've got things done</td></tr>
+            <tr><td>[12:16] &lt orphans&gt heh, I'd really like some way to make sure I'm not sending garbage into components in Jam - I keep doing that and wondering why it doesn't work :)</td></tr>
+            <tr><td>[12:16] &lt orphans&gt perhaps I should invest some time and do that :)</td></tr>
+            <tr><td>[12:17] &lt MS-&gt Davbo: Agreed - testing is useful in different ways at different stages</td></tr>
+            <tr><td>[12:17] &lt MS-&gt At the "exploring the problem space" stage it's less helpful than it could be</td></tr>
+            <tr><td>[12:21] &lt Lawouach_&gt what I think I would appreciate as well is a memory leak finder</td></tr>
+            <tr><td>[12:22] &lt Lawouach_&gt Currently if you send data to a box without ever receiving from it</td></tr>
+            <tr><td>[12:22] &lt Lawouach_&gt it adds up</td></tr>
+            <tr><td>[12:22] &lt Lawouach_&gt until the box is full</td></tr>
+            <tr><td>[12:22] &lt Lawouach_&gt That can create some memory leak considering the box limit is rather large.</td></tr>
+            <tr><td>[12:23] &lt orphans&gt done that before :)</td></tr>
+            <tr><td>[12:23] &lt Lawouach_&gt With headstock I have so many boxes that I know some are just left being filled up</td></tr>
+            <tr><td>[12:23] &lt MS-&gt That information could be introspected by the way</td></tr>
+            <tr><td>[12:24] &lt Lawouach_&gt I'm sure it can, I just haven't looked at it yet :)</td></tr>
+            <tr><td>[12:24] &lt MS-&gt So that would be worth slighting out as a requirement IMO</td></tr>
+            <tr><td>[12:24] &lt MS-&gt After all you can declare that it needs testing :)</td></tr>
+            <tr><td>[12:24] &lt MS-&gt (and it does in practice as well anyway)</td></tr>
+            <tr><td>[12:45] *** Lawouach_ learnt a new word today. Quandry.</td></tr>
+            <tr><td>[12:49] &lt MS-&gt heh</td></tr>
+            <tr><td>[12:49] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt ;)</td></tr>
+            <tr><td>[12:54] *** orphans learnt a new bit of python today</td></tr>
+            <tr><td>[12:54] &lt orphans&gt sum([[1, 2, 3],[2, 3,4]]) = [1, 2, 3, 2, 3, 4]</td></tr>
+            <tr><td>[12:55] &lt orphans&gt crap</td></tr>
+            <tr><td>[12:55] &lt orphans&gt didn't learn</td></tr>
+            <tr><td>[12:55] &lt orphans&gt sum([[1, 2, 3],[2, 3,4]], []) = [1, 2, 3, 2, 3, 4]</td></tr>
+            <tr><td>[12:55] &lt orphans&gt :)</td></tr>
+            <tr><td>[12:55] &lt MS-&gt &gt&gt&gt [1, 2, 3]+[2, 3,4]</td></tr>
+            <tr><td>[12:55] &lt MS-&gt [1, 2, 3, 2, 3, 4]</td></tr>
+            <tr><td>[12:56] &lt orphans&gt knew you could do that, just never applied it to sum</td></tr>
+            <tr><td>[12:56] &lt orphans&gt tis pretty clever :)</td></tr>
+            <tr><td>[12:57] &lt MS-&gt beware, down that path leads straight to the carousel</td></tr>
+            <tr><td>[12:58] &lt orphans&gt just using it to flatten a list :)</td></tr>
+            <tr><td>[12:58] *** Lawouach_ is happy to notice that jlib works just as well on Windows as it does on Linux. PyQt is trully portable.</td></tr>
+            <tr><td>[12:59] &lt MS-&gt cool</td></tr>
+            <tr><td>[12:59] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:59] *** MS- is now known as ms-lunch</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt Yeah that's awesome to use an american colloquialism</td></tr>
+            <tr><td>[13:00] &lt Davbo&gt indeed, it would be a quandary if jlib didn't work on Windows as well as Linux ;-)</td></tr>
+            <tr><td>[13:03] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[13:03] &lt orphans&gt Lawouach_, what does jlib do?</td></tr>
+            <tr><td>[13:03] &lt Lawouach_&gt It makes the World go round.</td></tr>
+            <tr><td>[13:03] &lt Lawouach_&gt ;)</td></tr>
+            <tr><td>[13:03] &lt orphans&gt sounds awesome :)</td></tr>
+            <tr><td>[13:03] &lt Lawouach_&gt it is</td></tr>
+            <tr><td>[13:03] &lt Lawouach_&gt I can spin faster</td></tr>
+            <tr><td>[13:04] &lt Lawouach_&gt More seriously (I'm not kidding) it's a library of PyQt objects and widgets that put a GUI atop headstock to write XMPP applications</td></tr>
+            <tr><td>[13:04] &lt Lawouach_&gt http://www.defuze.org/oss/jlib/jlibscreen.png</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt that's just a showcase of the first widgets I was working on yesterday</td></tr>
+            <tr><td>[13:05] &lt orphans&gt so what, are they custom widgets automagically linked to the XMPP stuff?</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt The code running that application is as short as:</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt http://trac.defuze.org/browser/oss/jlib/examples/basic/client.py</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt yes</td></tr>
+            <tr><td>[13:06] &lt orphans&gt mhm, I get it :)</td></tr>
+            <tr><td>[13:12] *** ms-lunch is now known as ms-</td></tr>
+            <tr><td>[13:12] *** mhrd-mtgs is now known as mhrd</td></tr>
+            <tr><td>[13:24] &lt Chong-&gt ms-: just replace rotationList with oldrotMatrix and linkTransform in order to solve the problem of rotationList becoming very large after many rotation operations</td></tr>
+            <tr><td>[13:24] &lt Chong-&gt Please check if it's ok now when you get time. thanks.</td></tr>
+            <tr><td>[13:25] &lt ms-&gt much more responsive :)</td></tr>
+            <tr><td>[13:27] &lt Chong-&gt ms-: glad to hear it :-)</td></tr>
+            <tr><td>[13:27] &lt ms-&gt I'll have a proper play later</td></tr>
+            <tr><td>[13:27] &lt ms-&gt see if I can break anything else ;-)</td></tr>
+            <tr><td>[13:27] &lt ms-&gt Does look really good though</td></tr>
+            <tr><td>[13:28] &lt Chong-&gt ms-: thanks. I have to admit that you are so good at catching bugs :D</td></tr>
+            <tr><td>[13:30] &lt ms-&gt I break everyone's code</td></tr>
+            <tr><td>[13:30] &lt ms-&gt Does make mine somewhat better as well though since it cuts that way for me too :)</td></tr>
+            <tr><td>[13:31] &lt Chong-&gt ms-: yes. there are a lot for me to learn from you.</td></tr>
+            <tr><td>[13:34] &lt Davbo&gt Hah Chong, you sound like you're ms-'s Jedi Apprentice (are you?) ;-)</td></tr>
+            <tr><td>[13:34] &lt ms-&gt Sith</td></tr>
+            <tr><td>[13:34] &lt Chong-&gt Davbo: :p</td></tr>
+            <tr><td>[13:35] &lt Davbo&gt 'course. Sorry Lord ms- :p &lt /kills this joke now&gt</td></tr>
+            <tr><td>[13:36] &lt ms-&gt Please do :)</td></tr>
+            <tr><td>[13:36] &lt Davbo&gt before ms- starts trying to strangle people over IRC (although from what i've seen he's probably tried that before)</td></tr>
+            <tr><td>[13:36] &lt ms-&gt (kill the joke that is)</td></tr>
+            <tr><td>[13:36] &lt ms-&gt heheheh</td></tr>
+            <tr><td>[13:36] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[13:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:45] &lt ms-&gt " In addition it bestows powers on governments to decide which programs can be "lawfully" used on the internet. "</td></tr>
+            <tr><td>[13:45] &lt ms-&gt That's astounding - http://news.bbc.co.uk/1/hi/technology/7492907.stm</td></tr>
+            <tr><td>[13:58] &lt orphans&gt woop, can draw notes :)</td></tr>
+            <tr><td>[14:00] &lt ms-&gt orphans: cool</td></tr>
+            <tr><td>[14:00] &lt Chong-&gt orphans: congrats :-)</td></tr>
+            <tr><td>[14:02] &lt Chong-&gt ms-: do you have anything to raise during our meeting?</td></tr>
+            <tr><td>[14:02] &lt ms-&gt I think we said it all earlier really</td></tr>
+            <tr><td>[14:03] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[14:03] &lt Chong-&gt cool</td></tr>
+            <tr><td>[14:06] &lt ms-&gt Trun: Afternoon Pablo. Glad to see you're getting some answers - hopefully you can mould the discussion to get the information you need :)</td></tr>
+            <tr><td>[14:07] &lt Trun&gt yep, thank you very much for the answers, I'm answering them</td></tr>
+            <tr><td>[14:09] &lt ms-&gt Regarding : http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/PO/test_examples/example1.mps.py?revision=4826&view=markup</td></tr>
+            <tr><td>[14:09] &lt ms-&gt I would suggest that you treat the existing code that you've written as an *exploratory* thing. You should not treat it as the definitive thing. (In my opinion)</td></tr>
+            <tr><td>[14:09] &lt Trun&gt ok</td></tr>
+            <tr><td>[14:10] &lt ms-&gt But I would suggest picking something *real* to work with</td></tr>
+            <tr><td>[14:10] &lt ms-&gt After all, the point behind test driven development is simple -</td></tr>
+            <tr><td>[14:10] &lt ms-&gt to capture all the things that you would do manually to ensure the code works</td></tr>
+            <tr><td>[14:10] &lt ms-&gt and to automate them so you can find out if you've broken anything</td></tr>
+            <tr><td>[14:11] &lt ms-&gt Going through that example though (even though it took FAR FAR too long to do so) has given</td></tr>
+            <tr><td>[14:12] &lt ms-&gt me an insight as to where you're coming from, and despite your currently goals, it's still very much a unittest approach</td></tr>
+            <tr><td>[14:12] &lt ms-&gt rather than the sort of testing needed for kamaelia systems.</td></tr>
+            <tr><td>[14:13] &lt Trun&gt I thought that maybe the put/get interface would be quite similar to the Source/Expecter way you showed me with MultiPipeTest.py</td></tr>
+            <tr><td>[14:14] &lt Trun&gt what kind of interface you prefer? you mean nothing related with "a testcase" at all?</td></tr>
+            <tr><td>[14:14] &lt ms-&gt yeah, but that's just one aspect of things and I requested source/expecter stuff weeks ago</td></tr>
+            <tr><td>[14:14] &lt ms-&gt and that's the first comment</td></tr>
+            <tr><td>[14:14] &lt Trun&gt ok</td></tr>
+            <tr><td>[14:14] &lt ms-&gt anyway, I've spent long enough on back and forths today, there's something else that needs discussing</td></tr>
+            <tr><td>[14:14] &lt ms-&gt could you /join #kamaelia-mentors</td></tr>
+            <tr><td>[14:14] &lt ms-&gt ?</td></tr>
+            <tr><td>[14:15] &lt Trun&gt sure</td></tr>
+            <tr><td>[14:15] &lt ms-&gt (just Trun)</td></tr>
+            <tr><td>[14:15] &lt ms-&gt ta</td></tr>
+            <tr><td>[14:23] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:27] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[14:42] *** matthew-p has joined #kamaelia</td></tr>
+            <tr><td>[14:48] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[14:59] &lt j_baker&gt Hey Lawouach, suppose I want to send a message with a data attribute (like in XEP-0231). I notice that there is a Data class in headstock.api. Is that what I would use if I wanted to do this?</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt Nope</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt headstock.api.data is for XEP-0004</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt I haven't done anything with XEP-0231 yet</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt didn't know about it but looks good :)</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt lol</td></tr>
+            <tr><td>[15:07] &lt j_baker&gt Hmmm... Eventually I'm going to have to find a simple way to send binary data with headstock. But that's not quite necessary just yet.</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt ms- speaks too much</td></tr>
+            <tr><td>[15:07] &lt j_baker&gt ms- is a spammer.</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt j_baker: out of band exchange</td></tr>
+            <tr><td>[15:07] &lt j_baker&gt Can you do that with headstock?</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt http://www.xmpp.org/extensions/xep-0066.html</td></tr>
+            <tr><td>[15:07] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt Not yet sadly, it wouldn't be too hard to support it but I currently don't</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt j_baker: Please read that extension to ensure it is what you need</td></tr>
+            <tr><td>[15:08] &lt vmlemon_&gt Hmm, can't you just Base64 encode the file and stuff it into a "regular" message?</td></tr>
+            <tr><td>[15:08] &lt vmlemon_&gt Although I've probably missed something important...</td></tr>
+            <tr><td>[15:10] &lt j_baker&gt Well, that would be helpful Lawouach. I could use that to exchange data with the gateway directly and bypass the server.</td></tr>
+            <tr><td>[15:11] &lt Lawouach_&gt I will have a look but can't promise anything quickly</td></tr>
+            <tr><td>[15:11] &lt Lawouach_&gt It'd be useful no matter what so I'm enclined doing it anyway :)</td></tr>
+            <tr><td>[15:12] &lt j_baker&gt What would be REALLY cool is if I could use jingle. But that seems like it would be a GSOC project unto itself. :)</td></tr>
+            <tr><td>[15:13] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[15:19] &lt Davbo&gt Hah, j_baker: http://www.reghardware.co.uk/2008/07/07/cw_payg_iphone_launch/ (i think it was you i mentioned it to)</td></tr>
+            <tr><td>[15:21] &lt j_baker&gt That kinda sucks.</td></tr>
+            <tr><td>[15:22] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt hardly surprising though</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt I officially hate the Microsoft Outlook web interface.</td></tr>
+            <tr><td>[15:55] &lt MS-&gt ditto</td></tr>
+            <tr><td>[15:55] &lt MS-&gt guess what I have to use for work mail</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt Eudora?</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt (joke)</td></tr>
+            <tr><td>[15:56] *** Davbo has never understood why people love Eudora</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt Eudora still exists?</td></tr>
+            <tr><td>[15:58] &lt mhrd&gt yep</td></tr>
+            <tr><td>[15:58] &lt j_baker&gt I haven't seen Eudora since netscape was popular.</td></tr>
+            <tr><td>[15:59] &lt Davbo&gt mhrd "yep" is a bit much, i don't think they've updated in years</td></tr>
+            <tr><td>[16:00] *** mhrd has a few (stress the relative quantifier there) colleagues who still use it</td></tr>
+            <tr><td>[16:00] &lt mhrd&gt most are migrating to thunderbird, or official BBC outlook based mail now though</td></tr>
+            <tr><td>[16:01] &lt MS-&gt I have to use Microsoft Outlook web interface if I'm working away from the office (in practical terms)</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt I think most Eudora users like Thunderbird. I like GMail :-)</td></tr>
+            <tr><td>[16:01] &lt j_baker&gt Me too. And there's not an option to forward my school's email anywhere else anymore. :(</td></tr>
+            <tr><td>[16:01] &lt MS-&gt And if I don't use it the rest of the time, It's pain because otherwise mail gets stuck in silos</td></tr>
+            <tr><td>[16:01] &lt MS-&gt (kmails' imap support could be *alot* better)</td></tr>
+            <tr><td>[16:02] *** mhrd likes Opera M2</td></tr>
+            <tr><td>[16:02] &lt j_baker&gt Opera has a mail client? I'll have to try it out.</td></tr>
+            <tr><td>[16:03] &lt mhrd&gt its folders concept takes a bit getting used to but it quite powerful</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt can't you get GMail to check your Schools email j_baker, that's what mine does</td></tr>
+            <tr><td>[16:03] &lt j_baker&gt I like Opera a lot. And I'd use it as my main browser if it would render stuff properly.</td></tr>
+            <tr><td>[16:03] &lt j_baker&gt How do you do that Davbo? I was looking for a way to do it, but couldn't find it.</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt Settings -&gt Accounts -&gt Get mail from other accounts:</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt it downloads with POP3</td></tr>
+            <tr><td>[16:05] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt problem being this: Last checked: 55 minutes ago</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt think it does it every hours</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt s/hours/hour</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt probably wouldn't be regular enough for some</td></tr>
+            <tr><td>[16:07] &lt j_baker&gt Meh. It's fine for what I want to do.</td></tr>
+            <tr><td>[16:08] &lt j_baker&gt If I need to receive a message sooner, I can tolerate online outlook.</td></tr>
+            <tr><td>[16:10] &lt j_baker&gt Bah. I may not be able to do this. Gmail won't let you use a username that contains backslashes (which my school email's POP3 username uses).</td></tr>
+            <tr><td>[16:11] &lt j_baker&gt Well, actually it worked with forward slashes.</td></tr>
+            <tr><td>[16:11] &lt Davbo&gt Why would you allow backslashes of all the characters ?</td></tr>
+            <tr><td>[16:11] &lt Davbo&gt probably escape char j_baker</td></tr>
+            <tr><td>[16:12] &lt j_baker&gt It's an exchange thing, Davbo.</td></tr>
+            <tr><td>[16:14] &lt j_baker&gt That sucks.</td></tr>
+            <tr><td>[16:14] &lt Davbo&gt trust the Americans to use .edu</td></tr>
+            <tr><td>[16:14] &lt Davbo&gt :P</td></tr>
+            <tr><td>[16:15] *** Davbo will one day trick the Bolivians into giving him dav.bo</td></tr>
+            <tr><td>[16:16] &lt j_baker&gt Try talking to the MoinMoin team. They somehow got the URL MoinMo.in and I know that Moin isn't an Indian project.</td></tr>
+            <tr><td>[16:18] &lt Davbo&gt What's this ? www.sheffield.edu :-(</td></tr>
+            <tr><td>[16:20] *** j_baker wonders when he'll be able to use twitter with IM again.</td></tr>
+            <tr><td>[16:23] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:23] &lt MS-&gt j_baker: Just hook up the TCP_Client code with the aim or IRC code if you're worried about it...</td></tr>
+            <tr><td>[16:24] &lt MS-&gt Looks trivial</td></tr>
+            <tr><td>[16:24] &lt j_baker&gt As far as the twitter IM?</td></tr>
+            <tr><td>[16:24] &lt Davbo&gt Has the Twitter bot died j_baker?</td></tr>
+            <tr><td>[16:25] &lt j_baker&gt I think they took it down temporarily.</td></tr>
+            <tr><td>[16:25] &lt MS-&gt Sorry HTTPClient</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt Those guys need to sort out a way to get some cash, and get some proper servers.</td></tr>
+            <tr><td>[16:25] &lt MS-&gt You talk to the ircbot, it talks to twtter, twitter talks to bot, bot to you</td></tr>
+            <tr><td>[16:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:26] &lt j_baker&gt Interesting. I hadn't thought of that.</td></tr>
+            <tr><td>[16:27] &lt MS-&gt You have to remember it's all just lego really. If you can talk to it, you can write a component that can talk to it, meaning you can then choose how you want to talk to the thing</td></tr>
+            <tr><td>[16:27] &lt MS-&gt rather than on its terms</td></tr>
+            <tr><td>[16:27] &lt MS-&gt Does require the big "do I really care" box to be checked though :-)</td></tr>
+            <tr><td>[16:28] *** MS- suspects that he probably could've gotten an award at mashed for simply getting now-and-next changes forwarded to twitter</td></tr>
+            <tr><td>[16:28] &lt j_baker&gt That's one of the things I like about Kamaelia. I was surprised at how easy it was to connect an HTTP server to Lawouach's code.</td></tr>
+            <tr><td>[16:28] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:30] &lt j_baker&gt Oh Lawouach (before I forget): I left you a ticket on defuze. One thing I should ask you though: before I send anything out on my message handler, are there any characters that are my responsibility to escape?</td></tr>
+            <tr><td>[16:31] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:31] &lt Lawouach&gt j_baker: off the top of my head I don't think so</td></tr>
+            <tr><td>[16:32] &lt j_baker&gt Alright. Just checking to make sure. The simplechat example doesn't seem to like the characters &lt &gt.</td></tr>
+            <tr><td>[16:32] &lt Lawouach&gt but seeing your ticket you migh do then :)</td></tr>
+            <tr><td>[16:32] &lt Lawouach&gt from xml.sax.saxutils import escape</td></tr>
+            <tr><td>[16:35] &lt j_baker&gt I'll do that.</td></tr>
+            <tr><td>[16:36] &lt Lawouach&gt make sure your content is unicode BTW</td></tr>
+            <tr><td>[16:37] &lt Lawouach&gt bridge expects unicode only</td></tr>
+            <tr><td>[16:38] &lt j_baker&gt Ok. Will do.</td></tr>
+            <tr><td>[16:45] &lt Lawouach&gt orphans: you're missing __init__.py in Axon/__init__.py in your library/trunk directory</td></tr>
+            <tr><td>[16:46] &lt orphans&gt f$^£ing things :D</td></tr>
+            <tr><td>[16:47] &lt orphans&gt cheers Lawouach, should be fixed now</td></tr>
+            <tr><td>[16:47] &lt j_baker&gt Heh... I do that all the time. :P</td></tr>
+            <tr><td>[16:47] &lt Lawouach&gt that ought to become an habit guys. I create a directory, I create a __init__.py</td></tr>
+            <tr><td>[16:47] &lt orphans&gt I do that then forget to commit them. *sigh*</td></tr>
+            <tr><td>[16:48] &lt MS-&gt I do it habitually as well</td></tr>
+            <tr><td>[16:48] &lt MS-&gt echo &gt__init__.py is sufficient after all</td></tr>
+            <tr><td>[16:48] &lt Lawouach&gt I use</td></tr>
+            <tr><td>[16:48] &lt Lawouach&gt touch __init__.py</td></tr>
+            <tr><td>[16:48] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[16:48] &lt Lawouach&gt Hmm</td></tr>
+            <tr><td>[16:49] &lt orphans&gt touch man myself - I think it sounds funny :)</td></tr>
+            <tr><td>[16:49] &lt Lawouach&gt Graphline raises an error on</td></tr>
+            <tr><td>[16:49] &lt Lawouach&gt  component = _Axon.Component.component</td></tr>
+            <tr><td>[16:49] &lt Lawouach&gt right</td></tr>
+            <tr><td>[16:49] &lt Lawouach&gt I wonder if your Axon subdirectory doesn't conflict orphans</td></tr>
+            <tr><td>[16:51] &lt MS-&gt I used to use touch, but there was a version control system that wouldn't handle empty files (I forget which) so I moved to 1 byte files</td></tr>
+            <tr><td>[16:51] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[16:51] &lt Lawouach&gt fair enough</td></tr>
+            <tr><td>[16:54] &lt orphans&gt Lawouach, could be - I'm running everything through an elaborate system of symlinks</td></tr>
+            <tr><td>[16:54] &lt orphans&gt try running it from the directory below?</td></tr>
+            <tr><td>[16:54] &lt orphans&gt or above</td></tr>
+            <tr><td>[16:54] &lt orphans&gt (not a long-term solution I know)</td></tr>
+            <tr><td>[16:55] &lt Lawouach&gt I'm running the "jam" command exported system wide</td></tr>
+            <tr><td>[16:55] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[16:56] &lt Lawouach&gt meh</td></tr>
+            <tr><td>[16:57] &lt Lawouach&gt may I ask why you have created that Axon directory?</td></tr>
+            <tr><td>[16:57] &lt Lawouach&gt your setup.py is mixing my installation :)</td></tr>
+            <tr><td>[16:58] &lt orphans&gt to keep the SchedulingComponent in - the same as I have library/trunk/Kamaelia/TypeOfComponent/Component.py, but for Axon</td></tr>
+            <tr><td>[16:58] &lt Lawouach&gt wondering why, it worked this weekend</td></tr>
+            <tr><td>[16:58] &lt Lawouach&gt yeah but currently that creats two Axon package in my site-packages</td></tr>
+            <tr><td>[16:59] &lt orphans&gt what happens if you don't have the __init__.py there?</td></tr>
+            <tr><td>[16:59] &lt orphans&gt 'cause otherwise aren't you overwriting the system wide axon __init__.py?</td></tr>
+            <tr><td>[16:59] &lt Lawouach&gt I guess but in that case without the __init__.py the setup.py command issues a warning</td></tr>
+            <tr><td>[16:59] &lt Lawouach&gt alright let me start again and see</td></tr>
+            <tr><td>[17:00] &lt orphans&gt as a complete side note my installation is pretty borked at the moment, and I have to do all sorts of gubbins with py_modules to get the __init__.py to even try to install</td></tr>
+            <tr><td>[17:00] *** MS- wanders off for a bit, back later</td></tr>
+            <tr><td>[17:00] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[17:00] *** orphans also tries again with a nice clean site-packages</td></tr>
+            <tr><td>[17:00] &lt orphans&gt nothing like a bit of hand-cleaning</td></tr>
+            <tr><td>[17:02] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[17:03] &lt Lawouach&gt that isn't good to mix with people's installation :)</td></tr>
+            <tr><td>[17:04] &lt Lawouach&gt well I can't install your library any longer without mixing my installation</td></tr>
+            <tr><td>[17:04] &lt orphans&gt  component = _Axon.Component.component</td></tr>
+            <tr><td>[17:04] &lt orphans&gt AttributeError: 'module' object has no attribute 'Component'</td></tr>
+            <tr><td>[17:04] &lt Lawouach&gt um :/</td></tr>
+            <tr><td>[17:04] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[17:04] &lt orphans&gt sorry abt this</td></tr>
+            <tr><td>[17:06] &lt Lawouach&gt no worries but I hope you'll find a way to fix this some time soon ;)</td></tr>
+            <tr><td>[17:06] &lt Lawouach&gt I don't understand because it was working this weekend</td></tr>
+            <tr><td>[17:06] &lt orphans&gt mm, it's very strange</td></tr>
+            <tr><td>[17:07] &lt orphans&gt I don't suppose it works from an sdist version?</td></tr>
+            <tr><td>[17:07] *** orphans test</td></tr>
+            <tr><td>[17:07] &lt orphans&gt s/test/tests</td></tr>
+            <tr><td>[17:07] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[17:07] &lt Lawouach&gt let me try somethin'</td></tr>
+            <tr><td>[17:11] &lt orphans&gt sdist version doesn't work</td></tr>
+            <tr><td>[17:11] &lt Lawouach&gt nope</td></tr>
+            <tr><td>[17:12] &lt Lawouach&gt I have no idea what has changed but currently I can't deploy nor use your application</td></tr>
+            <tr><td>[17:12] &lt orphans&gt yeah, I've got it</td></tr>
+            <tr><td>[17:13] &lt orphans&gt I shouldn't have that __init__.py in the axon dir because it overwrites the installed copy</td></tr>
+            <tr><td>[17:13] &lt orphans&gt and Axons __init__.py does clever stuff like start the scheduler, the CAT etc</td></tr>
+            <tr><td>[17:13] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[17:13] &lt orphans&gt so I can either copy that into my dir, or leave it without, whichever you think is best</td></tr>
+            <tr><td>[17:14] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[17:14] &lt Lawouach&gt okay that's back to normal</td></tr>
+            <tr><td>[17:15] &lt Lawouach&gt the __init__.py had screwed my system</td></tr>
+            <tr><td>[17:15] &lt Lawouach&gt back to normal</td></tr>
+            <tr><td>[17:15] &lt Lawouach&gt my bad</td></tr>
+            <tr><td>[17:15] &lt Lawouach&gt shall we proceed with our meeting while we're here?</td></tr>
+            <tr><td>[17:15] &lt orphans&gt np - I know something I didn't know about Axon :)</td></tr>
+            <tr><td>[17:15] &lt orphans&gt yeah, sure</td></tr>
+            <tr><td>[17:16] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:16] &lt Lawouach&gt okay well</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt What have you achieved this week?</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt Your schedule marked you'd have PianoRoll in</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt I saw it was comitted</td></tr>
+            <tr><td>[17:17] &lt orphans&gt yeah, it's not quite where I wanted it by now, but a bit more of the infrastructure is in than I thought (due to working from StepSequencer), so I think I'm pretty much level there</td></tr>
+            <tr><td>[17:18] &lt orphans&gt at the moment all you can really do is add notes to the graph, and it puts them in the scheduler</td></tr>
+            <tr><td>[17:18] &lt orphans&gt but the next few bits should come a bit easier</td></tr>
+            <tr><td>[17:19] &lt orphans&gt although I have a bad feeling about the speed of this one :)</td></tr>
+            <tr><td>[17:19] &lt Lawouach&gt alright so let me respond to that :)</td></tr>
+            <tr><td>[17:20] &lt Lawouach&gt 1. I assume you'll expand the PianoRoll documentation as well. Currently I don't know how to use it nor why I would want to. What's the purpose? :)</td></tr>
+            <tr><td>[17:20] &lt Lawouach&gt 2. What might be the problem with the speed?</td></tr>
+            <tr><td>[17:20] &lt Lawouach&gt 3. How do I add note?</td></tr>
+            <tr><td>[17:20] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[17:20] &lt Lawouach&gt Go! :D</td></tr>
+            <tr><td>[17:21] &lt orphans&gt 1) yeah, the piano roll docs is a one to one copy of step sequencer atm, that's next on my list of stuff to do after get it vaguely working</td></tr>
+            <tr><td>[17:21] &lt orphans&gt 2) too much looping, and looping is bad :)</td></tr>
+            <tr><td>[17:21] &lt orphans&gt 3) Run PianoRoll.py and click places :D</td></tr>
+            <tr><td>[17:22] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[17:23] &lt orphans&gt oh, and 1) b) so you can play melodies along with your drums</td></tr>
+            <tr><td>[17:23] &lt Lawouach&gt ah</td></tr>
+            <tr><td>[17:23] &lt Lawouach&gt that's what I was wondering still</td></tr>
+            <tr><td>[17:23] &lt Lawouach&gt that's really cool</td></tr>
+            <tr><td>[17:24] &lt orphans&gt it's not particularly impressive at the moment, but shouldn't be too hard to add stuff in now I've got to this stage</td></tr>
+            <tr><td>[17:24] &lt orphans&gt except if you try and run it it won't work because I've forgotten to check some stuff in</td></tr>
+            <tr><td>[17:24] &lt orphans&gt gah</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt python PianoRoll.py</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt  File "PianoRoll.py", line 15, in &lt module&gt</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt  from Kamaelia.Apps.Jam.Support.Data.Notes import noteList</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt ImportError: No module named Support.Data.Notes</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt have you checked in the entire code?</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt  :)</td></tr>
+            <tr><td>[17:26] &lt orphans&gt committing now</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt ah</td></tr>
+            <tr><td>[17:27] &lt orphans&gt I'm an idiot :)</td></tr>
+            <tr><td>[17:27] &lt Lawouach&gt you just said it</td></tr>
+            <tr><td>[17:27] &lt orphans&gt should be there now</td></tr>
+            <tr><td>[17:27] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[17:28] &lt Lawouach&gt update your setup.py :)</td></tr>
+            <tr><td>[17:29] &lt Lawouach&gt You forgot to add the package</td></tr>
+            <tr><td>[17:29] &lt orphans&gt heh, sorry, my sketches directory is a mess - you've caught me at a bad time</td></tr>
+            <tr><td>[17:30] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[17:31] &lt orphans&gt ok, how's that?</td></tr>
+            <tr><td>[17:32] &lt orphans&gt good job we started the meeting early the rate I'm going :)</td></tr>
+            <tr><td>[17:36] &lt Lawouach&gt I had never used the py_modules</td></tr>
+            <tr><td>[17:36] &lt Lawouach&gt usage</td></tr>
+            <tr><td>[17:37] &lt orphans&gt I don't really know what it is - I was having trouble getting __init__.pys them to install</td></tr>
+            <tr><td>[17:37] &lt Lawouach&gt you shouldn't have to do anything</td></tr>
+            <tr><td>[17:37] &lt orphans&gt yeah, I know</td></tr>
+            <tr><td>[17:37] &lt orphans&gt I read that somewhere on the internet and it worked, so I left it</td></tr>
+            <tr><td>[17:38] &lt orphans&gt I think maybe it's just that my Kamaelia install was in a bit of disarray - I'll test out whether I actually need them later on</td></tr>
+            <tr><td>[17:39] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[17:39] &lt Lawouach&gt setup fixed</td></tr>
+            <tr><td>[17:39] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[17:39] &lt Lawouach&gt http://rafb.net/p/TAeDqk80.html</td></tr>
+            <tr><td>[17:40] &lt Lawouach&gt You have to provide *each* package and sub-package</td></tr>
+            <tr><td>[17:40] &lt Lawouach&gt whether or not they only consist only of __init__.py</td></tr>
+            <tr><td>[17:40] &lt Lawouach&gt now the setup works and PianRoll too :)</td></tr>
+            <tr><td>[17:40] &lt Lawouach&gt I'll let you update your code ;)</td></tr>
+            <tr><td>[17:40] &lt orphans&gt ahh, I didn't know that - thought it did the recursive bit for you</td></tr>
+            <tr><td>[17:41] &lt orphans&gt thanks Lawouach</td></tr>
+            <tr><td>[17:41] &lt Lawouach&gt np</td></tr>
+            <tr><td>[17:41] &lt Lawouach&gt I assume that when a note is added/removed you send a Osc message right?</td></tr>
+            <tr><td>[17:43] &lt orphans&gt yeah, although that isn't working yet</td></tr>
+            <tr><td>[17:43] &lt orphans&gt on the step sequencer you can see how it works though - it'll be exactly the same with piano roll</td></tr>
+            <tr><td>[17:44] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[17:44] &lt Lawouach&gt looks cool</td></tr>
+            <tr><td>[17:45] &lt orphans&gt cool :)</td></tr>
+            <tr><td>[17:46] &lt Lawouach&gt so</td></tr>
+            <tr><td>[17:46] &lt Lawouach&gt does "the check which note was clicked based on rectangles" algorithm was good enough for now?</td></tr>
+            <tr><td>[17:47] &lt Lawouach&gt okay I'll rephrase</td></tr>
+            <tr><td>[17:47] &lt Lawouach&gt my question wasn't even english</td></tr>
+            <tr><td>[17:47] &lt Lawouach&gt meh</td></tr>
+            <tr><td>[17:47] &lt orphans&gt I've done it slightly differently actually, I work from the mouse position to get to the note, then check against the start and end positions</td></tr>
+            <tr><td>[17:48] &lt Lawouach&gt which start and end?</td></tr>
+            <tr><td>[17:48] &lt orphans&gt of all of the notes in a certain 'channel'</td></tr>
+            <tr><td>[17:48] &lt Lawouach&gt ah okay</td></tr>
+            <tr><td>[17:48] &lt Lawouach&gt good idea</td></tr>
+            <tr><td>[17:49] &lt Lawouach&gt what were you other challenges this week?</td></tr>
+            <tr><td>[17:49] &lt orphans&gt it's the "list of dict of dicts" solution</td></tr>
+            <tr><td>[17:49] &lt orphans&gt getting the sdist build system looking vaguely sensible, which I did with some considerable help from Michael</td></tr>
+            <tr><td>[17:50] &lt orphans&gt I officially hate regex :)</td></tr>
+            <tr><td>[17:51] &lt orphans&gt and although it means very little to you the jam =&gt pure data thing works well and sounds nice if you can get sound out</td></tr>
+            <tr><td>[17:51] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:51] &lt Lawouach&gt lol</td></tr>
+            <tr><td>[17:51] &lt Lawouach&gt I'll wait for next week</td></tr>
+            <tr><td>[17:51] &lt Lawouach&gt MIDI support</td></tr>
+            <tr><td>[17:51] &lt Lawouach&gt yeah!</td></tr>
+            <tr><td>[17:51] &lt orphans&gt :)</td></tr>
+            <tr><td>[17:51] &lt Lawouach&gt At least that's what your schedule says</td></tr>
+            <tr><td>[17:51] &lt Lawouach&gt How do you feel about it?</td></tr>
+            <tr><td>[17:52] &lt orphans&gt the schedule?</td></tr>
+            <tr><td>[17:52] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[17:52] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[17:53] &lt orphans&gt I think it's pretty much right - could do with a day maybe where the piano roll comes together nicely, then I should be good</td></tr>
+            <tr><td>[17:53] &lt Lawouach&gt Okay</td></tr>
+            <tr><td>[17:54] &lt Lawouach&gt I think I much prefer that you ensure PianoRoll and StepSequencer to work well with Osc and MIDI rather than worrying about the week after that and UI niceties</td></tr>
+            <tr><td>[17:54] &lt Lawouach&gt Just in case you feel short in time</td></tr>
+            <tr><td>[17:54] &lt orphans&gt yeah, sure</td></tr>
+            <tr><td>[17:55] &lt Lawouach&gt If you keep up with your documentation as you've done until now you should have more time towards the end regarding tests</td></tr>
+            <tr><td>[17:55] &lt Lawouach&gt I do expect quite good tests cases because you can test Osc messages without UI</td></tr>
+            <tr><td>[17:56] &lt Lawouach&gt so your application is fairly easily testable outside of a UI</td></tr>
+            <tr><td>[17:56] &lt orphans&gt yeah, definitely</td></tr>
+            <tr><td>[17:57] &lt Lawouach&gt That's why I hope Pablo will have a workable framework by then :)</td></tr>
+            <tr><td>[17:57] &lt orphans&gt having all the filters decently tested will be nice too - that's where I tend to either throw the wrong thing in or get the wrong thing out</td></tr>
+            <tr><td>[17:57] &lt Lawouach&gt So make sure you communicate your requirements with him</td></tr>
+            <tr><td>[17:57] &lt orphans&gt yeah, I will do</td></tr>
+            <tr><td>[17:57] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:57] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[17:58] &lt Lawouach&gt I will try to have Pd working well on my machine</td></tr>
+            <tr><td>[17:58] &lt Lawouach&gt I want sound! :)</td></tr>
+            <tr><td>[17:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:59] &lt orphans&gt even if it's not a nice fix you will have MIDI soon</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt Right.</td></tr>
+            <tr><td>[18:00] &lt orphans&gt (although I have to warn you MIDI in python is possibly even less nice than PD and Chuck combined)</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt ouch</td></tr>
+            <tr><td>[18:00] &lt orphans&gt imo of course - it's doable, just a bit of a mess</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt well then</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt There are a discussion to have here.</td></tr>
+            <tr><td>[18:01] &lt orphans&gt all it takes is copying a couple of precompiled binaries - it's not pretty but it works :)</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt Your project was more about musicians interacting over a network</td></tr>
+            <tr><td>[18:02] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:02] &lt Lawouach&gt Considering that MIDI output means quite the opposite</td></tr>
+            <tr><td>[18:02] &lt Lawouach&gt I wonder if there is a reason to actually have MIDI support.</td></tr>
+            <tr><td>[18:02] &lt orphans&gt ahh, no - the MIDI won't touch the network stuff</td></tr>
+            <tr><td>[18:02] &lt Lawouach&gt yeah that's what I meant by "opposite" :)</td></tr>
+            <tr><td>[18:02] &lt orphans&gt ah, yeah :)</td></tr>
+            <tr><td>[18:03] &lt Lawouach&gt Alright</td></tr>
+            <tr><td>[18:03] &lt Lawouach&gt It's your project but I'd like your opinion on that matter</td></tr>
+            <tr><td>[18:03] *** Davbo will be back tomorrow</td></tr>
+            <tr><td>[18:03] &lt Davbo&gt Cya all</td></tr>
+            <tr><td>[18:03] &lt Lawouach&gt bye mate</td></tr>
+            <tr><td>[18:03] &lt Lawouach&gt orphans: should we support MIDI?</td></tr>
+            <tr><td>[18:03] &lt orphans&gt well, personally I really don't like MIDI - I don't like working with it, and I don't like the tools to work with it</td></tr>
+            <tr><td>[18:04] &lt orphans&gt but it is a standard, and is very widespread</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt but it doesn't actually add any value to your project</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt does it?</td></tr>
+            <tr><td>[18:05] &lt orphans&gt in a way it does because it will be interoperable with more programs</td></tr>
+            <tr><td>[18:05] &lt Lawouach&gt how?</td></tr>
+            <tr><td>[18:06] &lt orphans&gt so whereas now you can only use apps with OSC support to make your sound, if you had MIDI support you could use anything with MIDI or OSC support</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt I see.</td></tr>
+            <tr><td>[18:07] &lt Lawouach&gt Okay well I'll let you make the decision, just let me know tomorrow please.</td></tr>
+            <tr><td>[18:07] &lt orphans&gt although there are things like occam (http://www.mat.ucsb.edu/~c.ramakr/illposed/occam.html)</td></tr>
+            <tr><td>[18:07] &lt orphans&gt which will convert for you</td></tr>
+            <tr><td>[18:07] &lt Lawouach&gt If you feel you could use that time for enhancing the existing application, starting on tests, etc</td></tr>
+            <tr><td>[18:07] &lt Lawouach&gt I would be okay with dropping MIDI support</td></tr>
+            <tr><td>[18:07] &lt Lawouach&gt If you feel it's better to keep it, I'll be okay too</td></tr>
+            <tr><td>[18:08] &lt orphans&gt ok, I'll have a bit of a look and a think and let you know tomorrow it that's ok</td></tr>
+            <tr><td>[18:08] &lt orphans&gt see what I will/won't be able to use with it</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt that's cool with me.</td></tr>
+            <tr><td>[18:09] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:10] &lt orphans&gt ok, cool</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt My point is that from what I've seen, your application is well undergone and MIDI support wouldn't actually add much value from a GSoC perspective. Whereas being able to start working on important OSS aspects like tests, packaging, ensuring it works everywhere, etc. is more approriate IMO.</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt I don't want to sound like I want you to drop MIDI</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt But just to make sure you know you may if you can explain why</td></tr>
+            <tr><td>[18:11] &lt orphans&gt yeah, OK</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:12] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt Before we part for this evening, have you thought about what GSoC has brought to you so far?</td></tr>
+            <tr><td>[18:13] &lt orphans&gt I think the biggest thing has been learning about setting up a project in a way, how good practice there serves you well further down the line</td></tr>
+            <tr><td>[18:13] &lt Lawouach&gt Cool.</td></tr>
+            <tr><td>[18:13] &lt orphans&gt I tended to be pretty slapdash about stuff like that, but having it all set up nicely has made a really big difference to how I work</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt That's what we had discussed a few weeks ago that the project layout was self-describing</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt It helps other developers to enter your project's design already.</td></tr>
+            <tr><td>[18:15] &lt orphans&gt probably the other major thing has been being a bit more systematic with design decisions - laying out the options and working through the strengths and weaknesses before diving in and trying them out</td></tr>
+            <tr><td>[18:15] &lt orphans&gt yeah, I can see how much easier it's been for you being able (theoretically) to just check it out, run the setup and be away</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt Right well</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt I'm happy to hear that you've learnt and improved skills that are not directly related to coding</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt I think that's what GSoC is mainly about.</td></tr>
+            <tr><td>[18:17] &lt orphans&gt sadly the decline of the little grey cells probably means that the code is getting worse on a day by day basis :)</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt stop drinking beer then ;)</td></tr>
+            <tr><td>[18:18] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt But really it's the opposite</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt Your mind won't be as fast as it once was but the remaining cells are connected sensibly</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt Meaning you compensate with experience ;)</td></tr>
+            <tr><td>[18:19] &lt orphans&gt yeah - I'm hoping to store the zen of Lawouach in what remaining grey matter there is</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt ah</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt thanks</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt well then go grab a beer :)</td></tr>
+            <tr><td>[18:20] &lt orphans&gt mm, I will</td></tr>
+            <tr><td>[18:20] &lt orphans&gt I never liked them grey cells anyway</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt ;)</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt don't drain them all tonight though</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt You want brown or green ones, instead? ;)</td></tr>
+            <tr><td>[18:21] &lt orphans&gt Lawouach, I won't :)</td></tr>
+            <tr><td>[18:21] &lt orphans&gt vmlemon, orange</td></tr>
+            <tr><td>[18:21] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:21] &lt vmlemon_&gt With blue stripes and pink zig-zags? ;)</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt gonna grab some food guys</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt brb</td></tr>
+            <tr><td>[18:21] &lt orphans&gt yes, on that note of very sillyness I may well go and indulge in some food and drink</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt orphans: tomorrow let me know your decision and your new schedule if you change anything</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt ta</td></tr>
+            <tr><td>[18:30] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:52] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[20:12] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:24] *** MS- changed the topic to Don't forget you can ask questions on the mailing list as well | Project Wiki here: http://edit.kamaelia.org/RecentChanges u/p : wiki/wiki | Next weekly meeting 4pm 10th July 2008 | Don't ask to ask, just ask | channel is logged: http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[20:37] *** MS- reads log from earlier</td></tr>
+            <tr><td>[20:38] &lt MS-&gt j_baker: I'd agree with the suggestion of base64 encoding binary blobs initially - when you find you need to</td></tr>
+            <tr><td>[20:38] &lt MS-&gt though there are some more efficient encodings that get used on usenet which would be looking at later</td></tr>
+            <tr><td>[20:39] &lt j_baker&gt I don't know if I quite understand the concept of base64 encoding...</td></tr>
+            <tr><td>[20:46] &lt j_baker&gt Oh, I see what you're saying. I'm not too concerned about the format that the data gets stored in so much as how it gets sent. The problem with just putting the base64 in the message is what happens if the binary data contains a &lt  or a &gt?</td></tr>
+            <tr><td>[20:48] &lt j_baker&gt Although actually, now that I've read a little more on the subject, it appears that that actually does account for that. :)</td></tr>
+            <tr><td>[21:12] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:40] &lt vmlemon&gt Hah, "Greco: It's funny and all, but someone REALLY needs to do a Windows Haters' Handbook."</td></tr>
+            <tr><td>[22:09] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[22:22] &lt MS-&gt j_baker: yes, I thought that looking at base64 encoding might answer a few q's</td></tr>
+            <tr><td>[22:22] &lt MS-&gt It's also used alot in email, specifically for sending binary blbs</td></tr>
+            <tr><td>[22:23] &lt MS-&gt but I've also seen it used to sidestep issues with unicode and encoding html emails</td></tr>
+            <tr><td>[22:23] &lt MS-&gt There's one bug tracker that sends all mails as base64 though, which is really annoying</td></tr>
+            <tr><td>[22:23] &lt MS-&gt (a pain for naive filtering on content)</td></tr>
+            <tr><td>[22:23] &lt j_baker&gt So can base64 be encoded as unicode?</td></tr>
+            <tr><td>[22:24] &lt j_baker&gt Lawouach said that's a requirement for headstock.</td></tr>
+            <tr><td>[22:24] &lt j_baker&gt (I understand that it's encoded as ASCII characters)</td></tr>
+            <tr><td>[22:24] &lt MS-&gt No, the other way round</td></tr>
+            <tr><td>[22:25] &lt MS-&gt you can encode unicode in base64</td></tr>
+            <tr><td>[22:25] &lt MS-&gt though base64 goes in ascii and hence will sit inside unicode fine</td></tr>
+            <tr><td>[22:25] &lt MS-&gt It's 7bit clean if my memory serves correctly</td></tr>
+            <tr><td>[22:25] &lt MS-&gt Part of the point of it :)</td></tr>
+            <tr><td>[22:26] &lt vmlemon&gt Won't Base64 encode any data?</td></tr>
+            <tr><td>[22:27] &lt MS-&gt vmlemon: yep</td></tr>
+            <tr><td>[22:27] &lt MS-&gt That's kinda what I was trying to say :)</td></tr>
+            <tr><td>[22:27] &lt vmlemon&gt Aah, OK</td></tr>
+            <tr><td>[22:27] &lt MS-&gt j_baker: it's pretty easy to work with too:</td></tr>
+            <tr><td>[22:28] &lt MS-&gt &gt&gt&gt import base64</td></tr>
+            <tr><td>[22:28] &lt MS-&gt &gt&gt&gt base64.encodestring(u"Hello")</td></tr>
+            <tr><td>[22:28] &lt MS-&gt 'SGVsbG8=\n'</td></tr>
+            <tr><td>[22:28] &lt MS-&gt &gt&gt&gt base64.decodestring("SGVsbG8=\n")</td></tr>
+            <tr><td>[22:28] &lt MS-&gt 'Hello'</td></tr>
+            <tr><td>[22:28] &lt vmlemon&gt Next stop: a Kamaelia Base64 Module ;)</td></tr>
+            <tr><td>[22:28] &lt MS-&gt I think we've done that at least once</td></tr>
+            <tr><td>[22:29] &lt j_baker&gt That's not difficult.</td></tr>
+            <tr><td>[22:29] &lt MS-&gt I think that's one a filter module got created</td></tr>
+            <tr><td>[22:29] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[22:29] &lt MS-&gt encoder is simply</td></tr>
+            <tr><td>[22:29] &lt MS-&gt PureTransformer(lambda x: base64.encodestring(x))</td></tr>
+            <tr><td>[22:29] &lt MS-&gt decoder is</td></tr>
+            <tr><td>[22:29] &lt MS-&gt PureTransformer(lambda x: base64.decodestring(x))</td></tr>
+            <tr><td>[22:30] &lt vmlemon&gt Simple enough</td></tr>
+            <tr><td>[22:30] &lt MS-&gt Used in two places:</td></tr>
+            <tr><td>[22:30] &lt MS-&gt Util/Tokenisation/Simple.py</td></tr>
+            <tr><td>[22:30] &lt MS-&gt Apps/Whiteboard/Tokenisation.py</td></tr>
+            <tr><td>[22:30] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:31] &lt MS-&gt hmm, the code for those two looks suspiciously similar :)</td></tr>
+            <tr><td>[22:31] &lt MS-&gt Oh, one of them is a refinement/extension of the other IIRC</td></tr>
+            <tr><td>[22:31] &lt MS-&gt Matt extended it for the whiteboard</td></tr>
+            <tr><td>[22:32] &lt vmlemon&gt Wow, Google Translate is the most pointless use of AJAX I've ever seen</td></tr>
+            <tr><td>[22:32] &lt vmlemon&gt Considering that HTML form objects already existfor pop-up menus and buttons</td></tr>
+            <tr><td>[22:33] &lt vmlemon&gt It's broken in Konqueror, too</td></tr>
+            <tr><td>[22:34] &lt MS-&gt You've not seen the server side blink tag then I take it?</td></tr>
+            <tr><td>[22:34] &lt MS-&gt That's quite possibly the most pointless use of ajax I've seen :)</td></tr>
+            <tr><td>[22:35] &lt vmlemon&gt Haha</td></tr>
+            <tr><td>[22:35] &lt aa_&gt think of all that entropy</td></tr>
+            <tr><td>[22:35] &lt j_baker&gt I think the world would be a better place if the blink tag was never invented.</td></tr>
+            <tr><td>[22:35] &lt vmlemon&gt Server-side CSS?</td></tr>
+            <tr><td>[22:36] &lt vmlemon&gt &lt MARQUEE&gt?</td></tr>
+            <tr><td>[22:37] &lt vmlemon&gt "The War on Blink Tags" ;)</td></tr>
+            <tr><td>[22:39] &lt vmlemon&gt Seeing as it worked in Konqueror pre-AJAXification, they probably changed it to make people use other browsers ;)</td></tr>
+            <tr><td>[22:42] *** MS- calls it a night</td></tr>
+            <tr><td>[22:42] &lt MS-&gt night</td></tr>
+            <tr><td>[22:42] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:42] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[22:43] &lt vmlemon&gt Meh, "We regret that we currently cannot accept replies to 447_REDACTED_5@orangemms.net."</td></tr>

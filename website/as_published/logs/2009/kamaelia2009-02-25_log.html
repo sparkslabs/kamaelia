@@ -1,0 +1,229 @@
+<html><body><table>
+            <tr><td>[00:29] &lt TheBashar&gt @ms: I'm really hitting my head against the wall. I send a shutdownMicroprocess to a ServerCore's control channel, but it keeps answering new connections. Any idea why it might not be shutting down?</td></tr>
+            <tr><td>[00:30] *** eikenberry has parted #kamaelia</td></tr>
+            <tr><td>[01:18] *** TheBashar has parted #kamaelia</td></tr>
+            <tr><td>[08:47] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:11] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:03] *** TheBashar_web has joined #kamaelia</td></tr>
+            <tr><td>[13:24] &lt TheBashar_web&gt @ms - I boiled my program down to a small test case. Could you please take a look and tell me if you have any idea why the port listener is not shutting down?</td></tr>
+            <tr><td>[13:24] &lt TheBashar_web&gt http://pastebin.com/m46e39336</td></tr>
+            <tr><td>[13:40] &lt ms-afk&gt hiya</td></tr>
+            <tr><td>[13:40] &lt ms-afk&gt just taken a look</td></tr>
+            <tr><td>[13:41] &lt ms-afk&gt Turns out we used a different message there: serverShutdown</td></tr>
+            <tr><td>[13:42] &lt ms-afk&gt Which makes sense logically speaking, but as time has gone on we decided that what you've written should also work.</td></tr>
+            <tr><td>[13:42] &lt ms-afk&gt (part of the issue of an evolving project I guess)</td></tr>
+            <tr><td>[13:42] &lt ms-afk&gt What you want is:</td></tr>
+            <tr><td>[13:42] &lt ms-afk&gt from Kamaelia.IPC import serverShutdown</td></tr>
+            <tr><td>[13:42] &lt ms-afk&gt self.send(serverShutdown(),'sigkill')</td></tr>
+            <tr><td>[13:44] &lt ms-afk&gt I think I'll change the definition of serverShutdown though</td></tr>
+            <tr><td>[13:44] &lt ms-afk&gt (in a way that won't change behaviour, but make it more consistent with what you expected)</td></tr>
+            <tr><td>[13:50] &lt TheBashar_web&gt Thank you! Do I understand correctly that in the future shutdownMicroprocess will work similarly to serverShutdown? Or is there a subtle difference that I should understand so that I know when I _should_ use shutdownMicroprocess?</td></tr>
+            <tr><td>[13:54] &lt TheBashar_web&gt Also, I cannot import serverShutdown(). Did you mean simply the Axon.Ipc.shutdown() ?</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt &gt&gt&gt from Kamaelia.IPC import serverShutdown</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt &gt&gt&gt</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt In the future ServerCore will understand shutdownMicroprocess to mean serverShutdown</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt Basically at time T, we needed a means to shutdown the server, so created a message for that</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt At some later time T' we decided on some reusable meanings for producerFinished and shutdownMicroprocess</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt Since T' was later than T, it means that there are probably some places we need to go back to to ensure components understand this</td></tr>
+            <tr><td>[14:00] &lt ms-afk&gt But in a way that doesn't break current code.</td></tr>
+            <tr><td>[14:01] &lt TheBashar_web&gt :) Great, thank you, again! This worked. And I was going to ask about Axon.Ipc vs Kamaelia.IPC. But I take it that Axon are the common parts you've factored out of Kamaelia? Like the now almost common shutdownMicroprocess.</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt Essentially yes. The idea is to keep all the concurrency / core bits inside Axon, and the application or library specific stuff in Kamaelia.</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt As time has gone on it's become clearer where divisions lie</td></tr>
+            <tr><td>[14:02] &lt TheBashar_web&gt Ahh, I understad the state of the world again. Thanks for clearing that up.</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt you're welcome</td></tr>
+            <tr><td>[14:48] &lt TheBashar_web&gt I'm doing a little refactoring of my code. Is there any danger in giving a regular component a threaded component child?</td></tr>
+            <tr><td>[14:50] &lt ms-afk&gt Nope :)</td></tr>
+            <tr><td>[14:50] &lt ms-afk&gt A lot of thought has gone into making that sort of thing safe to do</td></tr>
+            <tr><td>[14:52] &lt TheBashar_web&gt Thanks. Multi-threaded can be very confusing especially when you're not real familiar with the framework.</td></tr>
+            <tr><td>[14:52] &lt TheBashar_web&gt Glad that most of that has been padded already.</td></tr>
+            <tr><td>[14:53] &lt ms-afk&gt That's the idea really - in many respects its just like working with pipelines on the unix shell</td></tr>
+            <tr><td>[14:54] &lt ms-afk&gt except rather than just linear shapes (stdout-&gtstdin) you can have arbitrary shapes and rather than serialised data you pass any python object</td></tr>
+            <tr><td>[14:54] &lt ms-afk&gt The idea really to get back to the stage that people have with unix - after all people don't tend to think of pipelines as concurrency - just as a bunch of connected tools</td></tr>
+            <tr><td>[14:55] &lt TheBashar_web&gt If one can achieve that simplicity and flexibillity without sacrificing performance, than great! Sadly, it's usualy a pick 2 out of 3 thing.</td></tr>
+            <tr><td>[14:56] &lt ms-afk&gt Indeed.</td></tr>
+            <tr><td>[14:57] &lt ms-afk&gt kamaelia's model is equivalent in many respects to something like twisted, except that we use generators rather than deferreds</td></tr>
+            <tr><td>[14:57] &lt ms-afk&gt and that we have explicit buffers between things</td></tr>
+            <tr><td>[14:57] &lt ms-afk&gt Inboxes/outboxes have zero copy for delivery btw</td></tr>
+            <tr><td>[14:58] &lt ms-afk&gt Since when you link an inbox to an outbox, that gives the outbox storage space</td></tr>
+            <tr><td>[14:58] &lt TheBashar_web&gt zero copy even with threaded components, or just non-threaded?</td></tr>
+            <tr><td>[14:58] &lt ms-afk&gt Just non-threaded</td></tr>
+            <tr><td>[14:59] &lt TheBashar_web&gt Generators fit my mind a lot closer than deffereds.</td></tr>
+            <tr><td>[14:59] &lt ms-afk&gt There's an extra copy in the case of non-threaded-&gtthreaded</td></tr>
+            <tr><td>[14:59] &lt ms-afk&gt me too. I understand deferreds and have worked on a large scale piece of network software that operated that way (C++ rather than python), but I still prefer the generator approach</td></tr>
+            <tr><td>[15:00] &lt ms-afk&gt The explicit inboxes/outboxes thing makes it relatively easy to trace through someone else's code as well, which helps alot IMO</td></tr>
+            <tr><td>[15:00] &lt TheBashar_web&gt Agreed.</td></tr>
+            <tr><td>[15:01] &lt TheBashar_web&gt Are you enthusiastic about expanding Kamaelia with multiprocess support?</td></tr>
+            <tr><td>[15:01] &lt TheBashar_web&gt Or is that not something as interesting for you?</td></tr>
+            <tr><td>[15:02] &lt ms-afk&gt Interested yes. Not sure about enthusiastic, but definitely planning it - we do have a process based component already in experimental form for example</td></tr>
+            <tr><td>[15:02] &lt ms-afk&gt but that's based on Paul Boddie's pprocess library</td></tr>
+            <tr><td>[15:02] &lt ms-afk&gt It's sufficiently complete to work within certain constraints though</td></tr>
+            <tr><td>[15:02] &lt TheBashar_web&gt I'm really excited to start working with the new multiprocess library.</td></tr>
+            <tr><td>[15:03] &lt TheBashar_web&gt It seems straght-forward, similar to Kamaelia, and able to take advantage of multi-core more than multithreaded components.</td></tr>
+            <tr><td>[15:03] &lt TheBashar_web&gt I looked at pprocess before, but it didn't really fit my head as well.</td></tr>
+            <tr><td>[15:04] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[15:04] &lt ms-afk&gt I picked it because it was pretty small, and because Jesse's code wasn't in the core at that point</td></tr>
+            <tr><td>[15:04] &lt ms-afk&gt It allows things like multi-window pygame apps which is quite fun:</td></tr>
+            <tr><td>[15:04] &lt ms-afk&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1205626569</td></tr>
+            <tr><td>[15:05] &lt ms-afk&gt (title is a little over enthusiastic :) )</td></tr>
+            <tr><td>[15:06] &lt ms-afk&gt The nice thing from a kamaelia perspective though is that once you componentise it, which library is used under the hood is largely irrelevant</td></tr>
+            <tr><td>[15:06] &lt TheBashar_web&gt I worked with the multiprocessing library before Jesse championed it into the stdlib.</td></tr>
+            <tr><td>[15:06] &lt ms-afk&gt Cool</td></tr>
+            <tr><td>[15:06] &lt TheBashar_web&gt Are you planning to continue with pprocessing for the default kamaelia mp?</td></tr>
+            <tr><td>[15:07] &lt ms-afk&gt I'd prefer to move over to multiprocessing</td></tr>
+            <tr><td>[15:07] &lt ms-afk&gt For probably obvious reasons</td></tr>
+            <tr><td>[15:07] &lt ms-afk&gt pprocess was very good to get to a proof of concept stage - something which is reliable and nice</td></tr>
+            <tr><td>[15:07] &lt TheBashar_web&gt I may not be knowledgable enough to help, but I'd sure be happy to help test.</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt That'd be useful :)</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt The way we implemented usage last time was to create 2 new chassis components</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt Rather than have just Pipeline & Graphline</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt I created ProcessPipeline and ProcessGraphline</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt Which you used in an identical fashion</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt But ran all the sub components in separate processes.</td></tr>
+            <tr><td>[15:10] &lt TheBashar_web&gt Makes sense. So the components stay the same. It's just what managing process (pipe / graph) they are loaded into.</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt Yep</td></tr>
+            <tr><td>[15:10] &lt TheBashar_web&gt Would all sub-components in a PorcessPipeline be run in different process?</td></tr>
+            <tr><td>[15:11] &lt ms-afk&gt Yes</td></tr>
+            <tr><td>[15:11] &lt TheBashar_web&gt Or would all components in s ProcessPipeline be run in the same process. But different ProcessPipelines would be run in different processes?</td></tr>
+            <tr><td>[15:11] &lt ms-afk&gt You can mix and match</td></tr>
+            <tr><td>[15:11] &lt ms-afk&gt since a Pipeline is a component</td></tr>
+            <tr><td>[15:12] &lt ms-afk&gt so you can put pipelines in processpipelines and vice versa</td></tr>
+            <tr><td>[15:13] &lt TheBashar_web&gt So for two independant school buses with kids all in the same process, it would be like ProcessPipeline(Pipeline(kid1, kid2, kid3), Pipeline(kid4, kid5, kid6))?</td></tr>
+            <tr><td>[15:13] &lt TheBashar_web&gt I guess that makes sense.</td></tr>
+            <tr><td>[15:14] &lt TheBashar_web&gt But that example makes it seem like bus1 would talk to bus2</td></tr>
+            <tr><td>[15:14] &lt TheBashar_web&gt For completely independant buses, how would you run two completely independant pipelines in separate processes?</td></tr>
+            <tr><td>[15:19] &lt ms-afk&gt ProcessPipeline( A )</td></tr>
+            <tr><td>[15:19] &lt ms-afk&gt ProcessPipeline( B )</td></tr>
+            <tr><td>[15:19] &lt ms-afk&gt ProcessPipeline( C )</td></tr>
+            <tr><td>[15:19] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[15:20] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:21] &lt TheBashar_web&gt D'oh</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt Could anyone recommend a library for working with an excel spreadsheet from Python?</td></tr>
+            <tr><td>[15:26] &lt ms-afk&gt pyExcelerator</td></tr>
+            <tr><td>[15:26] &lt Davbo&gt cheers ms-afk</td></tr>
+            <tr><td>[15:27] &lt ms-afk&gt TheBashar_web: It would be nice to be able to do this though:</td></tr>
+            <tr><td>[15:27] &lt ms-afk&gt ProcessPar( A, B, C )</td></tr>
+            <tr><td>[15:27] &lt ms-afk&gt for the same thing</td></tr>
+            <tr><td>[15:28] &lt ms-afk&gt I've been considering implementing some occam style language constructs as components</td></tr>
+            <tr><td>[15:28] &lt ms-afk&gt Which has the 3 main constucts of SEQ, PAR, and ALT</td></tr>
+            <tr><td>[15:29] &lt ms-afk&gt We already have Seq, Alt partially exists in the form of TPipe, and PAR is like a Graphline with no linkages.</td></tr>
+            <tr><td>[15:29] &lt ms-afk&gt But picking up those 3 forms properly would enable people to pick up a large body of knowledge from the past as well</td></tr>
+            <tr><td>[15:30] &lt ms-afk&gt (I always quite liked occam, but never had a good use/need for it/system for using it)</td></tr>
+            <tr><td>[15:31] &lt TheBashar_web&gt ProcessParallel(A, B, C) makes sense to me.</td></tr>
+            <tr><td>[15:32] &lt TheBashar_web&gt Not knowing occaml though, the abbreviations are a little confusing at first.</td></tr>
+            <tr><td>[15:32] *** ms-afk nods</td></tr>
+            <tr><td>[15:34] &lt TheBashar_web&gt What is ALT? Like a round-robin?</td></tr>
+            <tr><td>[15:35] &lt ms-afk&gt It's like a parallel if</td></tr>
+            <tr><td>[15:35] &lt Davbo&gt IIRC ALT is like a guarded statement you'd see in haskell or something similar</td></tr>
+            <tr><td>[15:35] &lt TheBashar_web&gt alternative - d'oh</td></tr>
+            <tr><td>[15:36] &lt ms-afk&gt You set a bunch of conditions and code - one bit of code per condition</td></tr>
+            <tr><td>[15:36] &lt ms-afk&gt and when a condition is ready, it fires</td></tr>
+            <tr><td>[15:36] &lt Davbo&gt alternative / parallel / sequence /me can remember looking them up during gsoc :)</td></tr>
+            <tr><td>[15:37] &lt TheBashar_web&gt I don't work with our low level software, but my company has a programming package that translates graphical sequential function charts into programmable logic controller code.</td></tr>
+            <tr><td>[15:37] *** ms-afk nods</td></tr>
+            <tr><td>[15:37] &lt TheBashar_web&gt With alt, par, and seq you could almost make a graphical programmer for kamaelia systems.</td></tr>
+            <tr><td>[15:38] &lt ms-afk&gt There is a nascent Compose application...</td></tr>
+            <tr><td>[15:38] &lt ms-afk&gt but it needs TLC</td></tr>
+            <tr><td>[15:38] *** Davbo goes back to pulling his hair out over parsing this excel file</td></tr>
+            <tr><td>[15:38] &lt ms-afk&gt Alt, par and seq could probably simplify things somewhat</td></tr>
+            <tr><td>[15:39] &lt TheBashar_web&gt It would be great to have, no doubt. It would just be a shame to lose any apparent simplicity.</td></tr>
+            <tr><td>[15:39] &lt ms-afk&gt It's in the Tools directory. Along with the AxonVisualiser</td></tr>
+            <tr><td>[15:40] &lt ms-afk&gt Largely as a "I want to be able to do this graphically too please" view from my perspective</td></tr>
+            <tr><td>[15:41] &lt ms-afk&gt I did this as a test to see if doing a more natural front end was doable:</td></tr>
+            <tr><td>[15:41] &lt ms-afk&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1214609362</td></tr>
+            <tr><td>[15:41] &lt TheBashar_web&gt I meant the alt and par constructs would be great to have. But I'd hate to see Axon appear to get twisted in complexity.</td></tr>
+            <tr><td>[15:41] &lt ms-afk&gt Which uses some gesture recognition code for links</td></tr>
+            <tr><td>[15:41] *** ms-afk nods</td></tr>
+            <tr><td>[15:42] &lt ms-afk&gt I'm always very reticent when it comes to extending Axon for that very reason</td></tr>
+            <tr><td>[15:42] &lt TheBashar_web&gt Sweet screenshot.</td></tr>
+            <tr><td>[15:43] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[15:44] &lt TheBashar_web&gt When I said it looks like our graphical sequential function chart designer I misspoke.</td></tr>
+            <tr><td>[15:44] &lt TheBashar_web&gt It looks exactly like our function block diagram programmer.</td></tr>
+            <tr><td>[15:45] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[15:45] &lt ms-afk&gt Many moons ago, as a student between my second and third years I worked with manchester Uni's CS department on a hardware compiler</td></tr>
+            <tr><td>[15:46] &lt ms-afk&gt something for taking essentially a parse tree of an HDL and generating the netlist</td></tr>
+            <tr><td>[15:46] &lt ms-afk&gt The thing that stuck with me was that the parse tree was part of a language that had both textual form and graphical forms which were equivalent</td></tr>
+            <tr><td>[15:46] &lt ms-afk&gt I've wanted something like that, which is efficient, for software for a long time :)</td></tr>
+            <tr><td>[15:47] &lt TheBashar_web&gt I still would prefer using a structured text representation, but the graphical visualizer/composer would be great for teaching young kids or for higher-level WBI type integration software people.</td></tr>
+            <tr><td>[15:47] *** ms-afk nods</td></tr>
+            <tr><td>[15:48] &lt ms-afk&gt It's also useful for showing managers, since you can do this:</td></tr>
+            <tr><td>[15:48] &lt ms-afk&gt ./AxonVisualiser.py --navelgaze</td></tr>
+            <tr><td>[15:48] &lt ms-afk&gt And show what's going on inside a running system</td></tr>
+            <tr><td>[15:48] &lt ms-afk&gt (in Tools)</td></tr>
+            <tr><td>[15:48] &lt TheBashar_web&gt LOL</td></tr>
+            <tr><td>[15:48] &lt ms-afk&gt http://www.kamaelia.org/AxonVisualiser</td></tr>
+            <tr><td>[15:51] &lt TheBashar_web&gt I was having some trouble understanding how things worked yesterday evening.</td></tr>
+            <tr><td>[15:51] &lt TheBashar_web&gt I'd like to suggest bumping up in prominence his particular page on the documentation list on the Kamaelia front-page:</td></tr>
+            <tr><td>[15:52] &lt TheBashar_web&gt http://www.kamaelia.org/Docs/Axon/Axon.Component.html</td></tr>
+            <tr><td>[15:57] &lt ms-afk&gt Where, specifically, would you find it better ?</td></tr>
+            <tr><td>[15:59] &lt TheBashar_web&gt Under Documentation, you have 1 - Tuturials, 2 - Cookbook, 3 - Comp Ref, 4 - Axon Ref</td></tr>
+            <tr><td>[15:59] &lt TheBashar_web&gt For writing new Kamaelia software, the tutorials don't help so much.</td></tr>
+            <tr><td>[16:00] &lt TheBashar_web&gt They're good for adapting existing non K* software.</td></tr>
+            <tr><td>[16:00] &lt TheBashar_web&gt For people trying to write new learn the system programs, I would order it:</td></tr>
+            <tr><td>[16:00] &lt TheBashar_web&gt 1 - Cookbook, 2 - Tutorials, 3 - Axon Ref, 4 - Comp Ref</td></tr>
+            <tr><td>[16:01] &lt TheBashar_web&gt And I would put the Axon.Component page near the very top of the cookbook page.</td></tr>
+            <tr><td>[16:01] &lt TheBashar_web&gt Here's how to write a component.</td></tr>
+            <tr><td>[16:01] &lt TheBashar_web&gt Then, here's how to wire a couple components together.</td></tr>
+            <tr><td>[16:02] &lt ms-afk&gt Interesting.</td></tr>
+            <tr><td>[16:02] &lt TheBashar_web&gt Just two cents obviosuly.</td></tr>
+            <tr><td>[16:02] &lt TheBashar_web&gt grain of salt and all that</td></tr>
+            <tr><td>[16:03] &lt ms-afk&gt It does make sense though</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt the source & SVN bit on the front page still has loren ipsum fwiw ms-afk</td></tr>
+            <tr><td>[16:04] &lt ms-afk&gt It's very hard for me to be able to accurately judge what's better/worse for someone new, simply because to me it's not new :) As a result each new set of eyes is useful</td></tr>
+            <tr><td>[16:05] &lt TheBashar_web&gt The first cookbooks receipes were the best tutorials I could find for starting out new. But then once I needed to go outside the small box, going down the cookbook list got into the deep end of the pool.</td></tr>
+            <tr><td>[16:05] &lt TheBashar_web&gt The component ref was good to know what a component could and couldn't do.</td></tr>
+            <tr><td>[16:06] &lt ms-afk&gt It's an interesting point.</td></tr>
+            <tr><td>[17:16] &lt TheBashar_web&gt Are there any automated docs generated that would show the return types of functions?</td></tr>
+            <tr><td>[17:16] &lt TheBashar_web&gt For instance, does microprocess.activate() return anything?</td></tr>
+            <tr><td>[17:38] &lt Lawouach&gt it returns self</td></tr>
+            <tr><td>[17:38] &lt Lawouach&gt if I'm not mistaken :p</td></tr>
+            <tr><td>[18:24] &lt ms-afk&gt yep</td></tr>
+            <tr><td>[18:25] &lt ms-afk&gt Should probably be in the docs mind</td></tr>
+            <tr><td>[18:26] &lt ms-afk&gt (It's not mentioned on http://www.kamaelia.org/Docs/Axon/Axon.Microprocess.html)</td></tr>
+            <tr><td>[18:26] &lt ms-afk&gt fwiw, In the Axon docs...</td></tr>
+            <tr><td>[18:26] &lt ms-afk&gt The section labelled Test documentation</td></tr>
+            <tr><td>[18:26] &lt ms-afk&gt is generated from the test suite</td></tr>
+            <tr><td>[18:27] &lt ms-afk&gt each line - eg</td></tr>
+            <tr><td>[18:27] &lt TheBashar_web&gt I had been looking there, but it didn't seem to contain return types except for functions explictly made to return stuff (like recv)</td></tr>
+            <tr><td>[18:27] &lt ms-afk&gt "After being stopped a microprocess returns true to _isStopped and false to _isRunnable."</td></tr>
+            <tr><td>[18:27] &lt ms-afk&gt Is the docstring from the test</td></tr>
+            <tr><td>[18:27] &lt ms-afk&gt which details precisely what the test covers</td></tr>
+            <tr><td>[18:29] &lt ms-afk&gt Means we probably don't have a test to say ".activate() when called returns the same microprocess"</td></tr>
+            <tr><td>[18:29] &lt TheBashar_web&gt Ahh... I see.</td></tr>
+            <tr><td>[18:29] &lt TheBashar_web&gt I guess I should really browse the source to find that stuff.</td></tr>
+            <tr><td>[18:31] &lt ms-afk&gt I admit that's not the best way to find stuff.</td></tr>
+            <tr><td>[18:44] &lt TheBashar_web&gt The component doc shows addChildren before child.activate(). Is there any reason why I cant activate first? So just parent.addChildren(Child().activate())</td></tr>
+            <tr><td>[18:57] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:58] &lt ms-afk&gt These days most components don't tend to use addChildren at all</td></tr>
+            <tr><td>[18:58] &lt ms-afk&gt addChildren tends to be used by components like Pipeline and Graphline whose primary purpose</td></tr>
+            <tr><td>[18:59] &lt ms-afk&gt is to create a bunch of linkages, activate the children and then go to sleep</td></tr>
+            <tr><td>[18:59] &lt ms-afk&gt ... and are awoken (due to the addChildren...) when one of the children shuts down</td></tr>
+            <tr><td>[19:00] &lt TheBashar_web&gt So I want to embed my TimedPump component inside my PortManager (which TimedPump triggers).</td></tr>
+            <tr><td>[19:00] &lt TheBashar_web&gt I could just embed it with regular encapsulation. But I thought addChildren might be more elegant.</td></tr>
+            <tr><td>[19:01] &lt ms-afk&gt You could do that as well. The child stuff was really put in place because we originally thought it might be useful for capturing topology information</td></tr>
+            <tr><td>[19:01] &lt ms-afk&gt cf the visualiser</td></tr>
+            <tr><td>[19:03] &lt TheBashar_web&gt I see. I'll keep it for encapsulation for now because it automates cleanup a bit.</td></tr>
+            <tr><td>[19:15] &lt TheBashar_web&gt Sorry, stupid question. How do I cleanly terminate everything based on some keyboard input?</td></tr>
+            <tr><td>[19:16] &lt TheBashar_web&gt I hooked a ConsoleReader outbox to my main component's control inbox, and that stop's it.</td></tr>
+            <tr><td>[19:16] &lt TheBashar_web&gt But as the docs note, console reader doesn't terminate. I even routed a shutdownMicroprocess message back to the reader's control box.</td></tr>
+            <tr><td>[19:17] &lt TheBashar_web&gt How do I shutdown the whol shebang (cleanly)?</td></tr>
+            <tr><td>[19:21] &lt ms-afk&gt If you want to shutdown the entire system, the easiest way is to ask the scheduler to shutdown.</td></tr>
+            <tr><td>[19:21] &lt ms-afk&gt which you can do using</td></tr>
+            <tr><td>[19:21] &lt ms-afk&gt self.scheduler.stop()</td></tr>
+            <tr><td>[19:24] &lt TheBashar_web&gt Ahh, yes! Thank you! It shutdown cleanly for the first time ever. A beautiful thing.</td></tr>
+            <tr><td>[19:26] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[19:27] &lt ms-afk&gt When all the components exit, the scheduler also stops of course, but it's also handy to be able to just say "stop"</td></tr>
+            <tr><td>[19:27] &lt TheBashar_web&gt Yes, easier than trying to track down all the components.</td></tr>
+            <tr><td>[19:33] &lt ms-afk&gt There is some work slowly happening there (kinda led to the ALT, Seq, etc ideas)</td></tr>
+            <tr><td>[19:33] &lt ms-afk&gt specifically if a message reaches the "control" inbox of a graphline</td></tr>
+            <tr><td>[19:34] &lt ms-afk&gt then it's assumed to be a control message, rather than something that gets changed</td></tr>
+            <tr><td>[19:34] &lt ms-afk&gt and passed on to all the subcomponents of the graphline</td></tr>
+            <tr><td>[19:34] &lt ms-afk&gt (unless the graphlines control inbox has been rewired somewhere else)</td></tr>
+            <tr><td>[19:35] &lt ms-afk&gt So for those tracking where shutdown messages go is handled by the chassis</td></tr>
+            <tr><td>[19:36] &lt ms-afk&gt It's tempting to extend that further to see what gets made simpler</td></tr>
+            <tr><td>[19:37] &lt TheBashar_web&gt It would be nice if there was a PAR you could register all the disparate chains with. Then send shutdown to the PAR and watch everything cleanly cascade to a stop.</td></tr>
+            <tr><td>[19:37] &lt ms-afk&gt interesting idea</td></tr>
+            <tr><td>[20:40] &lt Davbo&gt sqlalchemy is nice</td></tr>
+            <tr><td>[21:01] *** TheBashar has joined #kamaelia</td></tr>
+            <tr><td>[21:54] &lt TheBashar&gt @ms: The TCPClient doesn't seem to have any connection timeout capability built in.</td></tr>
+            <tr><td>[21:54] &lt TheBashar&gt Would you recommend adding that with a cooperating timer component, or by subclassing the existing tcpclient.</td></tr>

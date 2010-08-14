@@ -1,0 +1,378 @@
+<html><body><table>
+            <tr><td>[01:06] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[01:07] *** sadrul1 has joined #kamaelia</td></tr>
+            <tr><td>[12:27] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[12:28] &lt ms-&gt that's better</td></tr>
+            <tr><td>[12:28] &lt ms-&gt Did I miss anything?</td></tr>
+            <tr><td>[12:29] *** ms- guesses not based on the tumbleweek</td></tr>
+            <tr><td>[12:29] &lt ms-&gt tumbleweed even</td></tr>
+            <tr><td>[12:30] &lt Chong-&gt hey ms-</td></tr>
+            <tr><td>[12:31] &lt ms-&gt hm. odd. In this browser I can see the top of the bottom line</td></tr>
+            <tr><td>[12:31] &lt ms-&gt ...</td></tr>
+            <tr><td>[12:31] &lt ms-&gt but can't see the line unless I hit return a couple of times</td></tr>
+            <tr><td>[12:31] &lt ms-&gt heya chong</td></tr>
+            <tr><td>[12:32] &lt Chong-&gt interesting :-)</td></tr>
+            <tr><td>[12:32] &lt Chong-&gt ms-: have you found any new bugs of TopologyViewer3D? :-)</td></tr>
+            <tr><td>[12:33] &lt ms-&gt Nope, not had a chance I'm afraid</td></tr>
+            <tr><td>[12:33] &lt ms-&gt Would be nice to have the equivalent of key repeat though</td></tr>
+            <tr><td>[12:34] &lt ms-&gt Perhaps also the idea of a quasi-key</td></tr>
+            <tr><td>[12:34] &lt ms-&gt ie when you (say) hold down shift or control, that then clicking and draging either rotates the object or moves it in space</td></tr>
+            <tr><td>[12:34] &lt ms-&gt a bit like some of thf's examples do</td></tr>
+            <tr><td>[12:35] &lt ms-&gt That's less of a bug report and more of a feature request</td></tr>
+            <tr><td>[12:35] &lt Davbo&gt Stupid Python being too clever, letting me address x[-1] in a list where len(x) == 2</td></tr>
+            <tr><td>[12:36] &lt ms-&gt ...</td></tr>
+            <tr><td>[12:36] &lt ms-&gt heh</td></tr>
+            <tr><td>[12:36] &lt Chong-&gt ms-: do you mean the behaviour like thf's button example?</td></tr>
+            <tr><td>[12:36] &lt ms-&gt cool</td></tr>
+            <tr><td>[12:36] &lt ms-&gt ...</td></tr>
+            <tr><td>[12:36] &lt ms-&gt There's a few examples he does like that</td></tr>
+            <tr><td>[12:36] &lt Davbo&gt didn't you know that ms-? :-)</td></tr>
+            <tr><td>[12:36] &lt ms-&gt There's a particular fun one in scratch that I don't remember</td></tr>
+            <tr><td>[12:37] &lt ms-&gt Davbo: I know about negative indices</td></tr>
+            <tr><td>[12:37] &lt ms-&gt ...</td></tr>
+            <tr><td>[12:37] &lt ms-&gt also stuff like X[-3:] is really useful</td></tr>
+            <tr><td>[12:38] &lt ms-&gt since it tends to work even with empty lists :)</td></tr>
+            <tr><td>[12:38] &lt Davbo&gt Yeah, i see it's useful. Just not here :-) (﻿"ms-: cool" - assumed it was new to you)</td></tr>
+            <tr><td>[12:40] &lt Chong-&gt ms-: how can -3 work with empty lists? :-)</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt &gt&gt&gt x = [4,4,4,4,4,4,4]</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt &gt&gt&gt x[-3:]</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt [4, 4, 4]</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt &gt&gt&gt x = []</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt &gt&gt&gt x[-3:]</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt []</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt doesn't throw an error when it's empty Chong-</td></tr>
+            <tr><td>[12:43] &lt Chong-&gt I see, X[-3] doesn't work, but X[-3:] does work :-)</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt Yeah, because it returns a list of things from -3 to the end of the list. which is == []</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt iirc</td></tr>
+            <tr><td>[12:44] &lt Chong-&gt yes, on the other hannd, X[3:] also works :-)</td></tr>
+            <tr><td>[12:44] *** Davbo nods</td></tr>
+            <tr><td>[12:44] *** ms- types something to see next line...</td></tr>
+            <tr><td>[12:45] &lt Davbo&gt what's up ms-?</td></tr>
+            <tr><td>[12:45] &lt ms-&gt ?</td></tr>
+            <tr><td>[12:45] &lt ms-&gt Ah</td></tr>
+            <tr><td>[12:45] &lt ms-&gt using mibbit since somewhere I'm usually not</td></tr>
+            <tr><td>[12:45] &lt ms-&gt and only around for a bit</td></tr>
+            <tr><td>[12:45] &lt ms-&gt this type in box at the bottom,</td></tr>
+            <tr><td>[12:45] &lt Davbo&gt ah, it's a bit rubbish at times</td></tr>
+            <tr><td>[12:45] &lt ms-&gt actually covers up the last line typed</td></tr>
+            <tr><td>[12:45] &lt ms-&gt which is a bit naff</td></tr>
+            <tr><td>[12:46] &lt Davbo&gt Heh.</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt afternoon boys</td></tr>
+            <tr><td>[12:51] &lt Chong-&gt hey Lawouach_</td></tr>
+            <tr><td>[12:53] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[12:53] &lt Davbo&gt Hey Lawouach_</td></tr>
+            <tr><td>[12:57] &lt ms-&gt Lawouach_: afternoon</td></tr>
+            <tr><td>[12:57] &lt ms-&gt .</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt Pablo's latest messages give a lot to think about</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt shame he didn't do that from the start but it's very positive nonetheless</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt He has good ideas.</td></tr>
+            <tr><td>[13:01] &lt ms-&gt ..</td></tr>
+            <tr><td>[13:02] &lt ms-&gt He has some interesting ideas, but I'm concerned at the comment (which I don't have to hand) where he says "and this is what I'm going to do"</td></tr>
+            <tr><td>[13:02] &lt ms-&gt since there's been nowhere near enough requirements gathering yet</td></tr>
+            <tr><td>[13:02] &lt ms-&gt that said, I've not seen email today</td></tr>
+            <tr><td>[13:04] &lt Lawouach_&gt He replied to the private email rather than to the list to get approval. Regarding the this is what "I'm going to do" bit, I think that's safe to assume we need code and showcase to discuss the options further anyway.</td></tr>
+            <tr><td>[13:04] &lt Lawouach_&gt We can't keep it theorotical.</td></tr>
+            <tr><td>[13:04] &lt Lawouach_&gt His wording probably needs just a reminder from your part that we are still under discussion.</td></tr>
+            <tr><td>[13:05] &lt ms-&gt No, we can't keep it theoretical</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt His samples have helped me so far in understanding about his "HOW". :)</td></tr>
+            <tr><td>[13:05] &lt ms-&gt But the problem I have is that I've still not seen an example which I can actually digest quickly</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt I'm nopt a big fan about Mock objects for instance :)</td></tr>
+            <tr><td>[13:05] &lt ms-&gt At.</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt Very true</td></tr>
+            <tr><td>[13:06] &lt ms-&gt No, mock objects don't actually make any sense in kamaelia really as far as I'm concerned</td></tr>
+            <tr><td>[13:06] &lt Lawouach_&gt He's verbose to say the list. But it's more readable now :)</td></tr>
+            <tr><td>[13:06] &lt ms-&gt except in some very limited circumstances</td></tr>
+            <tr><td>[13:06] &lt ms-&gt .</td></tr>
+            <tr><td>[13:07] &lt ms-&gt The problem with long mails like that is you're likely to get "colour of the bikeshed discussions" really</td></tr>
+            <tr><td>[13:07] &lt Lawouach_&gt Yeah :(</td></tr>
+            <tr><td>[13:07] &lt ms-&gt There's also an implicit assumption that any particular syntax is better than another, which I don't agree with</td></tr>
+            <tr><td>[13:07] &lt ms-&gt The real thing shuold be</td></tr>
+            <tr><td>[13:07] &lt mhrd&gt would be good to see some short rapid iterations and some shorter less formal emails/chats - eg. "how about this?"</td></tr>
+            <tr><td>[13:08] &lt ms-&gt Build something that doesn't depend on anyutyhing else to test the echoer, and start from there</td></tr>
+            <tr><td>[13:08] &lt ms-&gt mhrd: precisely</td></tr>
+            <tr><td>[13:08] &lt mhrd&gt rather than "gathering requirements ... thanks for your feedback etc"</td></tr>
+            <tr><td>[13:08] &lt mhrd&gt however, its still *good* that he's doing stuff</td></tr>
+            <tr><td>[13:08] &lt ms-&gt actually discuss the issues rather than capture the first words spoken as formal requiremnts...</td></tr>
+            <tr><td>[13:08] &lt ms-&gt But it is progress :-)</td></tr>
+            <tr><td>[13:08] &lt ms-&gt Which is reassuring :)</td></tr>
+            <tr><td>[13:09] &lt mhrd&gt yep - definitely. Good progress, but perhaps still a little too formal :-)</td></tr>
+            <tr><td>[13:09] &lt Lawouach_&gt Fair point but I think 1) he is really careful now considering how we pushed back recently and 2) it's not his "style" and we have to teach him that. I can appreciate it being tough on him.</td></tr>
+            <tr><td>[13:09] &lt ms-&gt .</td></tr>
+            <tr><td>[13:09] &lt ms-&gt .</td></tr>
+            <tr><td>[13:09] &lt mhrd&gt Lawouach_ : indeed</td></tr>
+            <tr><td>[13:09] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[13:09] &lt ms-&gt Likewise, it's a good start. Any comments I'm saying are intended to be taken as maybe useful. If it's useful, use it, if it isn't don't</td></tr>
+            <tr><td>[13:09] &lt ms-&gt .</td></tr>
+            <tr><td>[13:10] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:11] &lt ms-&gt If the examples had been brief enough to put in a mail and discussed there I'd've been able to read and think about them on trains today</td></tr>
+            <tr><td>[13:11] &lt ms-&gt but they weren't so I can't</td></tr>
+            <tr><td>[13:11] &lt ms-&gt also, I'm not fighting networks & machines here to get them off today</td></tr>
+            <tr><td>[13:12] &lt ms-&gt largely because that's more pain that I want right this instant, and that's not pablo's fault :)</td></tr>
+            <tr><td>[13:12] &lt ms-&gt .</td></tr>
+            <tr><td>[13:17] &lt Chong-&gt ms-: I think I have found the one you think particular fun in thf's scratch :-)</td></tr>
+            <tr><td>[13:17] &lt Chong-&gt Is it simplecube_controlled.py?</td></tr>
+            <tr><td>[13:17] &lt Chong-&gt That's pretty cool :-)</td></tr>
+            <tr><td>[13:36] &lt ms-&gt Chong-: Maybe</td></tr>
+            <tr><td>[13:36] &lt ms-&gt there's one with a cube</td></tr>
+            <tr><td>[13:36] &lt ms-&gt a magnadoodle</td></tr>
+            <tr><td>[13:36] &lt ms-&gt a cat</td></tr>
+            <tr><td>[13:36] &lt ms-&gt a sky/grass background</td></tr>
+            <tr><td>[13:36] &lt ms-&gt and stuff</td></tr>
+            <tr><td>[13:36] &lt ms-&gt oh and a ticker</td></tr>
+            <tr><td>[13:36] &lt ms-&gt (could be called something like pygame test)</td></tr>
+            <tr><td>[13:37] &lt ms-&gt but the one you point at may be simialr</td></tr>
+            <tr><td>[13:37] &lt ms-&gt anyway, that's probably OK</td></tr>
+            <tr><td>[13:37] &lt ms-&gt Trun: I've replied to one mail of yours</td></tr>
+            <tr><td>[13:37] &lt ms-&gt hopefully useful</td></tr>
+            <tr><td>[13:37] &lt ms-&gt summary: your requirements from people are a good start, but nowhere near what you need</td></tr>
+            <tr><td>[13:38] &lt ms-&gt largely because people are still asking you for what they think is possible</td></tr>
+            <tr><td>[13:38] &lt ms-&gt rather than what they need</td></tr>
+            <tr><td>[13:38] &lt ms-&gt (which isn't your fault, but you need to know it)</td></tr>
+            <tr><td>[13:38] &lt ms-&gt You also need to push for better requirements</td></tr>
+            <tr><td>[13:39] &lt ms-&gt The other aspect is to point at/agree with the last thing you listed to do - ie write something small and simple</td></tr>
+            <tr><td>[13:39] &lt ms-&gt which doesn't use a framework</td></tr>
+            <tr><td>[13:39] &lt ms-&gt etc</td></tr>
+            <tr><td>[13:39] *** Lawouach_ sees that ms- uses Twitter to track Jason's work. Rather trendy are ya?</td></tr>
+            <tr><td>[13:39] &lt ms-&gt .</td></tr>
+            <tr><td>[13:39] &lt ms-&gt heh</td></tr>
+            <tr><td>[13:39] &lt ms-&gt he added me as a follower</td></tr>
+            <tr><td>[13:39] &lt ms-&gt and he mentioned something about HTTP being easier to debug in XMPP</td></tr>
+            <tr><td>[13:39] &lt ms-&gt so it seemed relevant</td></tr>
+            <tr><td>[13:40] &lt ms-&gt probably one of the few relevant things I've seen on twitter so far :-P</td></tr>
+            <tr><td>[13:40] &lt Chong-&gt ms-: yes. I just saw other examples. It would be interesting to add to Topology3D. Thanks for your suggestion :-).</td></tr>
+            <tr><td>[13:44] *** ms- heads off</td></tr>
+            <tr><td>[13:44] &lt ms-&gt back later</td></tr>
+            <tr><td>[13:44] &lt ms-&gt cya all :)</td></tr>
+            <tr><td>[13:44] &lt mhrd&gt "one of the few relevant things I've seen on twitter" ... something relevant/useful to do with twitter? I'll believe it when I see it :-P</td></tr>
+            <tr><td>[13:48] &lt Lawouach_&gt hah!</td></tr>
+            <tr><td>[13:49] &lt mhrd&gt :-P</td></tr>
+            <tr><td>[14:26] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[15:22] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:22] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:45] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:01] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[16:10] &lt j_baker&gt You know, when I signed up for the Web SIG, I seemed to figure that I would be receiving lots of great technical discussion. Instead, I get days and days of pointless arguing.</td></tr>
+            <tr><td>[16:11] &lt vmlemon&gt Wow, it looks like we've got our first piece of spam on kamaelia-list</td></tr>
+            <tr><td>[16:12] &lt vmlemon&gt from "Nice Guy" (royalkings.9@rediffmail.com)</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[16:13] *** vmlemon is tempted to sign that address up for crap, but assumes that it's a spoofed address</td></tr>
+            <tr><td>[16:13] &lt Davbo&gt he's not a nice guy at all. :-(</td></tr>
+            <tr><td>[16:13] &lt vmlemon&gt Hehe</td></tr>
+            <tr><td>[16:15] &lt Davbo&gt Must be some kind of Google Groups bot because you can't just post without joining right?</td></tr>
+            <tr><td>[16:15] &lt Davbo&gt Actually I'm not sure..</td></tr>
+            <tr><td>[16:15] &lt vmlemon&gt Good question :(</td></tr>
+            <tr><td>[16:15] &lt Davbo&gt http://groups.google.com/groups/profile?hl=en&enc_user=fAgaCRsAAADJbOw646VcXZhmMrqJJ6No4Yo_GiaV5qePtWRRj8U8jg</td></tr>
+            <tr><td>[16:15] &lt Davbo&gt Haha</td></tr>
+            <tr><td>[16:15] &lt Davbo&gt Recent Activity</td></tr>
+            <tr><td>[16:16] &lt Davbo&gt Reported him</td></tr>
+            <tr><td>[16:16] &lt Davbo&gt dunno if it will do anything.</td></tr>
+            <tr><td>[16:17] &lt vmlemon&gt Hah, I like the comment in the reply to Pablo about building an information transmission system</td></tr>
+            <tr><td>[16:18] &lt Davbo&gt Indeed, I believe that was influenced by our friend Nice Guy</td></tr>
+            <tr><td>[16:18] &lt Davbo&gt (I assume you mean the comment about the engineer 100 years ago)</td></tr>
+            <tr><td>[16:19] &lt vmlemon&gt Yes</td></tr>
+            <tr><td>[16:20] &lt Davbo&gt s/influenced/inspired</td></tr>
+            <tr><td>[16:21] &lt vmlemon&gt Shame there isn't a postal address in it (I contemplated signing them up for free AOL CDs or HPUG junk mail) ;)</td></tr>
+            <tr><td>[16:26] &lt vmlemon&gt Free can of everyone's favourite cheap meat when you join today!</td></tr>
+            <tr><td>[16:39] &lt vmlemon&gt Hah, http://www.pcworld.idg.com.au/index.php/id;282200690</td></tr>
+            <tr><td>[16:41] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:57] &lt j_baker&gt That article is seriously awesome vmlemon</td></tr>
+            <tr><td>[17:04] *** vmlemon thinks Windows seems more than overkill for displaying a big, green arrow</td></tr>
+            <tr><td>[17:07] &lt vmlemon&gt Meh, "Your Membership Number is not in our database or is incorrect. Please check with your Chapter to insure it is correct and they have updated us. Sorry for any inconvenience."</td></tr>
+            <tr><td>[17:15] &lt ian_brasil&gt hi..is there some reason (other than 'lots of other things to do') why Kamaelia and Axon don't have .debs to install?</td></tr>
+            <tr><td>[17:16] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[17:19] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:22] &lt j_baker&gt You can actually make a deb, ian_brasil. Hold on a sec and I'll see if I can find it for you.</td></tr>
+            <tr><td>[17:24] &lt ian_brasil&gt j_baker:something just flew past in an svn checkout of the branches so maybe it is in one of these</td></tr>
+            <tr><td>[17:25] &lt j_baker&gt Yeah, there's a script under /trunk/Code/Python/Releases/Support for building an Axon and a Kamaelia deb.</td></tr>
+            <tr><td>[17:25] &lt ian_brasil&gt nice..thx</td></tr>
+            <tr><td>[17:25] &lt j_baker&gt Unfortunately, I don't know how good that script is. It appears to have not been modified in two years. :(</td></tr>
+            <tr><td>[17:26] &lt ian_brasil&gt thats ok..it is a start anyway</td></tr>
+            <tr><td>[17:26] &lt Davbo&gt Hey all.</td></tr>
+            <tr><td>[17:28] &lt j_baker&gt ian_brasil: if you get anything better written, let us know. I'm sure ms- will be more than happy to include any improvements in the trunk.</td></tr>
+            <tr><td>[17:28] &lt j_baker&gt Hello Davbo</td></tr>
+            <tr><td>[17:29] &lt Davbo&gt deb isn't the nicest way to distribute python code most of the time ian_brasil</td></tr>
+            <tr><td>[17:29] &lt ian_brasil&gt j_baker: sure, no problem</td></tr>
+            <tr><td>[17:29] &lt Davbo&gt you can do it but, more trouble than it's worth, IMO.</td></tr>
+            <tr><td>[17:30] &lt Davbo&gt (although i only looked at it for a short time)</td></tr>
+            <tr><td>[17:30] &lt ian_brasil&gt Davbo: i dunno, just a few cdbs rules and call python setup.py install nad you are away :)</td></tr>
+            <tr><td>[17:30] &lt j_baker&gt I think that may change after Python 3.0. I think they're planning on including a bdist_deb command in distutils.</td></tr>
+            <tr><td>[17:31] &lt ian_brasil&gt yeah, i heard something about this too</td></tr>
+            <tr><td>[17:33] &lt j_baker&gt It would be really helpful. As it stands right now, it's just easier for me to make an RPM and alien it into a deb. But that's obviously not a good way to distribute the app.</td></tr>
+            <tr><td>[17:34] &lt Davbo&gt Go for it ian_brasil :-)</td></tr>
+            <tr><td>[17:34] &lt Davbo&gt if that's how easy it is, I was reading the wrong thing ;-)</td></tr>
+            <tr><td>[17:56] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[18:01] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:14] &lt j_baker&gt Nobody would happen to know of any good Gnome VPN software would they?</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt nope</td></tr>
+            <tr><td>[18:20] &lt vmlemon&gt There's supposedly support for several types of VPN in NetworkManager(?), if I remember correctly</td></tr>
+            <tr><td>[18:45] &lt j_baker&gt I'll check that out vmlemon</td></tr>
+            <tr><td>[18:58] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[20:12] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:12] &lt MS-&gt evening</td></tr>
+            <tr><td>[20:13] &lt MS-&gt The reason there's no recent .debs is simple</td></tr>
+            <tr><td>[20:13] &lt MS-&gt I don't use a debian based system</td></tr>
+            <tr><td>[20:13] &lt MS-&gt Tried both debian and ubuntu several times over the past 11 years, and debian just made me wonder "why am I flagellating myself this way, I could use a distribution that just works".</td></tr>
+            <tr><td>[20:14] &lt MS-&gt Ubuntu has been improving, and not tried their most recent version, but having seen people screaming at it trying to do things that I "just do an it works fine" under open suse 10.3, I see *very little* incentive to move</td></tr>
+            <tr><td>[20:16] &lt MS-&gt So it's more than just a "not enough time or tuits", it's actually a "if they sort their shit out, I'll use it, and stuff will appear". If someone else does it and offers to maintain them though that'd be utterly utterly fantastic :)</td></tr>
+            <tr><td>[20:17] &lt MS-&gt as a result this comment:</td></tr>
+            <tr><td>[20:17] &lt MS-&gt [17:28] &lt  j_baker&gt ian_brasil: if you get anything better written, let us know. I'm sure ms- will be more than happy to include any improvements in the trunk.</td></tr>
+            <tr><td>[20:17] &lt MS-&gt Is utterly correct in pretty much every way :)</td></tr>
+            <tr><td>[20:18] *** MS- didn't see the spam before writing that message to pablo fwiw</td></tr>
+            <tr><td>[20:19] &lt MS-&gt (I was using a machine that went ping saying "You have new email" every 2 seconds. Of course in practice it would've been more accurate to say "you have new spam!" :) )</td></tr>
+            <tr><td>[20:26] &lt MS-&gt hmm. I hate it when flash kills my browser</td></tr>
+            <tr><td>[20:27] &lt MS-&gt sucks to be adobe</td></tr>
+            <tr><td>[20:27] &lt j_baker&gt Much as I hate to admit it, Silverlight seems to be a better product. I have yet to try it on Linux though.</td></tr>
+            <tr><td>[20:28] &lt MS-&gt Not seen anything that requires it, nor that would encourage me to seek out whether/if I wanted ti run it</td></tr>
+            <tr><td>[20:31] &lt j_baker&gt Yeah. You'll see uses for it if you ever develop anything in C#. Microsoft's website constantly pesters you to try out the new Silverlight version of i.</td></tr>
+            <tr><td>[20:31] &lt j_baker&gt it even</td></tr>
+            <tr><td>[20:32] &lt MS-&gt I see</td></tr>
+            <tr><td>[20:33] *** MS- has never written a single line of c#</td></tr>
+            <tr><td>[20:33] &lt j_baker&gt You're not missing much.</td></tr>
+            <tr><td>[20:33] &lt MS-&gt Didn't particularly look like it :)</td></tr>
+            <tr><td>[20:33] &lt j_baker&gt Although I should admit, it's actually pulled a lot of features from python.</td></tr>
+            <tr><td>[20:34] &lt j_baker&gt Like the yield statement is almost cut and pasted from python.</td></tr>
+            <tr><td>[20:34] &lt j_baker&gt It's just a matter of how much code it takes to do something in c# versus python.</td></tr>
+            <tr><td>[21:14] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[21:25] *** vmlemon hands MS- the moon on a stick, as requested earlier ;)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt ta</td></tr>
+            <tr><td>[21:42] &lt vmlemon&gt Free bag of tuits, too</td></tr>
+            <tr><td>[21:42] &lt vmlemon&gt ;)</td></tr>
+            <tr><td>[21:42] &lt MS-&gt heh</td></tr>
+            <tr><td>[21:51] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:52] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[21:53] Reply: does the macarena</td></tr>
+            <tr><td>[22:01] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[22:02] &lt Chong-&gt MS-: just added mouse motion rotation function. Do you have time to try it? :-)</td></tr>
+            <tr><td>[22:06] *** MS- does an svn update</td></tr>
+            <tr><td>[22:06] &lt Chong-&gt MS-: cool :-)</td></tr>
+            <tr><td>[22:08] &lt MS-&gt ooh, very shiny</td></tr>
+            <tr><td>[22:08] &lt MS-&gt If you select a thing, the rotation rotates the thing</td></tr>
+            <tr><td>[22:08] &lt Chong-&gt MS-: thanks :-)</td></tr>
+            <tr><td>[22:08] &lt MS-&gt otherwise you rotate the whole thing</td></tr>
+            <tr><td>[22:08] &lt Chong-&gt yes</td></tr>
+            <tr><td>[22:08] &lt MS-&gt That really is nice :)</td></tr>
+            <tr><td>[22:09] &lt Chong-&gt Glad to hear it :-)</td></tr>
+            <tr><td>[22:10] &lt MS-&gt I think the other "obvious" thing to add in regarding this would be "holding down a key that causes rotation, makes the thing continue rotating"</td></tr>
+            <tr><td>[22:10] &lt MS-&gt as well as "zero the rotation angles"</td></tr>
+            <tr><td>[22:10] &lt MS-&gt very nice work though</td></tr>
+            <tr><td>[22:11] &lt Chong-&gt Do you mean just holding keys without mouse motion?</td></tr>
+            <tr><td>[22:11] &lt Chong-&gt thanks :-)</td></tr>
+            <tr><td>[22:11] &lt MS-&gt Well, with the normal topology viewer</td></tr>
+            <tr><td>[22:11] &lt MS-&gt you can scroll around the 2D surface using the cursor keys</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt Musical paint app! ;)</td></tr>
+            <tr><td>[22:11] &lt Chong-&gt got it.</td></tr>
+            <tr><td>[22:12] &lt MS-&gt when you do so, holding down the cursor keys makes the movement continue</td></tr>
+            <tr><td>[22:12] &lt MS-&gt so same principle really</td></tr>
+            <tr><td>[22:12] &lt Chong-&gt orphans had suggested me to do it. I have not got time yet. it would be very nice.</td></tr>
+            <tr><td>[22:12] &lt MS-&gt cool</td></tr>
+            <tr><td>[22:12] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[22:13] &lt MS-&gt Once you're at that stage, my suggestion would be to post to the list, explain what it does, how to get it running and ask for feedback</td></tr>
+            <tr><td>[22:13] &lt MS-&gt especially with regard to a wish list</td></tr>
+            <tr><td>[22:13] &lt MS-&gt I think you should perhaps also start thinking about 2 particular things</td></tr>
+            <tr><td>[22:13] &lt MS-&gt 3 things</td></tr>
+            <tr><td>[22:13] &lt Chong-&gt MS-: yes, good idea. :-)</td></tr>
+            <tr><td>[22:14] &lt MS-&gt 1) how to model hierarchies - do you "dive inside a node" or "example the node inside a box"</td></tr>
+            <tr><td>[22:14] &lt MS-&gt both have advantages</td></tr>
+            <tr><td>[22:15] &lt MS-&gt 2) How to deal with custom particles - in practical terms this means actually showing how to do this</td></tr>
+            <tr><td>[22:15] &lt MS-&gt that should be relatively simple IMO</td></tr>
+            <tr><td>[22:15] &lt MS-&gt eg spheres, stars, teapots (since teapots are easy in open gl :-)</td></tr>
+            <tr><td>[22:15] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[22:16] &lt MS-&gt 3) Looking at the "storing relationships stuff - eg FOAF data - in a database", and what you'd think components that deal with that would spit out</td></tr>
+            <tr><td>[22:16] &lt Chong-&gt What does "example the node inside a box" mean?</td></tr>
+            <tr><td>[22:16] &lt MS-&gt specifically with an aim for visualising those things</td></tr>
+            <tr><td>[22:17] &lt MS-&gt Oh, that's me speaking complete garbage</td></tr>
+            <tr><td>[22:17] &lt MS-&gt sorry</td></tr>
+            <tr><td>[22:17] &lt vmlemon_&gt Hmm, wasn't the teapot the "first" demonstrated OpenGL model?</td></tr>
+            <tr><td>[22:17] &lt MS-&gt vmlemon_: yep - it's history goes waaaaay back :)</td></tr>
+            <tr><td>[22:17] &lt MS-&gt "example the node inside a box" should read</td></tr>
+            <tr><td>[22:17] &lt MS-&gt "example the nodes that logically sit inside the box"</td></tr>
+            <tr><td>[22:18] &lt MS-&gt eg if you have a node that logically has a graph/topology sitting inside it</td></tr>
+            <tr><td>[22:18] &lt Chong-&gt So it should be a classic :-)</td></tr>
+            <tr><td>[22:18] &lt MS-&gt Oh for crying out loud, I really can't type tonight</td></tr>
+            <tr><td>[22:18] &lt MS-&gt "EXPAND the nodes that logically sit inside the box"</td></tr>
+            <tr><td>[22:18] &lt MS-&gt eg if you have a node that logically has a graph/topology sitting inside it</td></tr>
+            <tr><td>[22:18] &lt MS-&gt clicking on it could either:</td></tr>
+            <tr><td>[22:18] &lt MS-&gt replace the entire topology with the contents</td></tr>
+            <tr><td>[22:18] &lt MS-&gt OR</td></tr>
+            <tr><td>[22:19] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:19] &lt MS-&gt replace that single box with another box containing that topology</td></tr>
+            <tr><td>[22:19] &lt MS-&gt there, hopefully that's a bit less like garbage</td></tr>
+            <tr><td>[22:19] &lt vmlemon_&gt The QuickDraw 3D "red, yellow and blue 'Q' with a car window knob on the tail" comes to mind here, for some reason</td></tr>
+            <tr><td>[22:19] &lt Chong-&gt MS-: I see. the difference of the two is in whether all data are produced at the beginning or not. right?</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt (No, it wasn't called that, although it looked like that)</td></tr>
+            <tr><td>[22:20] &lt MS-&gt Chong-: ?</td></tr>
+            <tr><td>[22:20] &lt MS-&gt No</td></tr>
+            <tr><td>[22:21] &lt MS-&gt Let me pretend that IRC == 1D topology vis for a moment...</td></tr>
+            <tr><td>[22:21] &lt Chong-&gt I think I may understand but not very sure :-)</td></tr>
+            <tr><td>[22:21] &lt MS-&gt We could have a pipeline</td></tr>
+            <tr><td>[22:21] &lt MS-&gt [ A --- B --- C ]</td></tr>
+            <tr><td>[22:21] &lt Chong-&gt cool</td></tr>
+            <tr><td>[22:21] &lt MS-&gt B may itself be a pipeline [ X --- Y --- Z ]</td></tr>
+            <tr><td>[22:22] &lt MS-&gt Now, if we click on B in [ A --- B --- C ]</td></tr>
+            <tr><td>[22:22] &lt MS-&gt That could either cause us to "zoom in" and have the display replaced with</td></tr>
+            <tr><td>[22:22] &lt MS-&gt [ X --- Y --- Z ]</td></tr>
+            <tr><td>[22:22] &lt MS-&gt OR</td></tr>
+            <tr><td>[22:22] &lt MS-&gt it could cause B to be replaced, so the display would be</td></tr>
+            <tr><td>[22:22] *** vmlemon_ thinks a Kamaelia VRML client might be interesting</td></tr>
+            <tr><td>[22:23] &lt MS-&gt [ A --- [ X --- Y --- Z ] --- C ]</td></tr>
+            <tr><td>[22:23] &lt Chong-&gt I see what you mean.</td></tr>
+            <tr><td>[22:23] &lt MS-&gt cool</td></tr>
+            <tr><td>[22:23] &lt Chong-&gt Thanks for your explanation :-)</td></tr>
+            <tr><td>[22:23] &lt MS-&gt I'd pick "whichever seems easiest" first</td></tr>
+            <tr><td>[22:23] &lt MS-&gt Which I suspect is the [ A --- B --- C ] replaced by [ X --- Y --- Z ] version</td></tr>
+            <tr><td>[22:24] &lt Chong-&gt I agree.</td></tr>
+            <tr><td>[22:24] &lt Chong-&gt but I think the difference in difficulty may not very big :-)</td></tr>
+            <tr><td>[22:24] &lt MS-&gt However the way you're handling spinning etc, may actually simplify the [ A --- [ X --- Y --- Z ] --- C ] as well</td></tr>
+            <tr><td>[22:24] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[22:25] &lt MS-&gt Other stuff you need to do of course includes cleaning up how it handles parsing</td></tr>
+            <tr><td>[22:25] &lt MS-&gt since the parser is currently very fragile and can easily crash the viewer</td></tr>
+            <tr><td>[22:25] &lt Chong-&gt yep</td></tr>
+            <tr><td>[22:25] &lt MS-&gt But that's a relatively minor detail</td></tr>
+            <tr><td>[22:26] &lt MS-&gt regarding "2" 2 sets of possible particles types to consider (beyond just "shapes")</td></tr>
+            <tr><td>[22:26] &lt MS-&gt would be Axon components and ER components</td></tr>
+            <tr><td>[22:27] *** vmlemon_ wonders what would be involved in writing a wire protocol compatible, drop-in MSN Messenger server in Kamaelia...</td></tr>
+            <tr><td>[22:27] &lt MS-&gt (These don't have to match what we currently have, the idea is to show usecases)</td></tr>
+            <tr><td>[22:27] &lt vmlemon_&gt *drop-in replacement</td></tr>
+            <tr><td>[22:27] &lt MS-&gt vmlemon_: Writing the protocol really</td></tr>
+            <tr><td>[22:27] &lt Chong-&gt yes</td></tr>
+            <tr><td>[22:28] &lt MS-&gt Chong-: However, it'd be really cool for you to come up with the particle types or direction you want for these things</td></tr>
+            <tr><td>[22:28] &lt MS-&gt Since that's far better</td></tr>
+            <tr><td>[22:28] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[22:29] &lt MS-&gt If you want to have little models of people with thumbnails of faces plastered over the "head" for visualising FOAF data, that'd be cool</td></tr>
+            <tr><td>[22:29] &lt MS-&gt Or whatever :)</td></tr>
+            <tr><td>[22:29] &lt MS-&gt you could probably have a fair amount of fun with that :)</td></tr>
+            <tr><td>[22:29] &lt Chong-&gt yes. That would be nice to see hundrends of people on particles :-)</td></tr>
+            <tr><td>[22:30] &lt Chong-&gt yep</td></tr>
+            <tr><td>[22:31] &lt MS-&gt The idea of the axon stuff though (even if you're not matching the visuals) has a very real reason behind it</td></tr>
+            <tr><td>[22:31] &lt MS-&gt It would allow you to test dropping your code into a an existing real system and seeing how it fares with real data</td></tr>
+            <tr><td>[22:31] &lt MS-&gt You'd also be the first person to see a kamaelia system in 3D :)</td></tr>
+            <tr><td>[22:31] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[22:33] &lt Chong-&gt and I hope it could also help people get to know kamaelia system</td></tr>
+            <tr><td>[22:34] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[22:35] &lt MS-&gt Visualisation often helps</td></tr>
+            <tr><td>[22:35] &lt MS-&gt Whether 2D or 3D is better is currently debateable because we don't have the latter</td></tr>
+            <tr><td>[22:35] &lt MS-&gt if we did, we wouldn't need to debate, we could just find out :)</td></tr>
+            <tr><td>[22:36] &lt MS-&gt It would almost certainly make people go OOOOOoooOOOooh *shiny*</td></tr>
+            <tr><td>[22:36] &lt MS-&gt though</td></tr>
+            <tr><td>[22:36] &lt MS-&gt which is always fun :)</td></tr>
+            <tr><td>[22:36] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[22:45] &lt MS-&gt Oh, also, rotation about the z axis would be nice too :)</td></tr>
+            <tr><td>[22:46] &lt MS-&gt x & y get you so far</td></tr>
+            <tr><td>[22:46] &lt MS-&gt but z is handy too</td></tr>
+            <tr><td>[22:46] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:47] &lt MS-&gt Oh, found it</td></tr>
+            <tr><td>[22:47] &lt Chong-&gt MS-: yes :-)</td></tr>
+            <tr><td>[22:47] &lt Chong-&gt , and .</td></tr>
+            <tr><td>[22:47] &lt MS-&gt In which case perhaps ctrl + shift together == x & z or y & z vs x&y ?</td></tr>
+            <tr><td>[22:48] *** MS- leaves you to it - you're making good progress :)</td></tr>
+            <tr><td>[22:49] &lt Chong-&gt MS-: if with mouse motion, they could do together :-)</td></tr>
+            <tr><td>[22:49] &lt Chong-&gt MS-: thanks :-)</td></tr>
+            <tr><td>[23:08] &lt Chong-&gt cannot resist sleepy. have to leave other problems to tomorrow :/</td></tr>
+            <tr><td>[23:08] &lt Chong-&gt Night MS-, vmlemon_ and others.</td></tr>
+            <tr><td>[23:09] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[23:09] &lt vmlemon_&gt Nigh</td></tr>
+            <tr><td>[23:09] &lt vmlemon_&gt *Nighj</td></tr>
+            <tr><td>[23:09] &lt vmlemon_&gt argh, I can't type properly at the moment</td></tr>
+            <tr><td>[23:25] *** MS- sleeps</td></tr>
+            <tr><td>[23:25] *** MS- has parted #kamaelia</td></tr>

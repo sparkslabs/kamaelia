@@ -1,0 +1,97 @@
+<html><body><table>
+            <tr><td>[04:41] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:06] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[05:06] &lt Lawouach_&gt MS-: do you have the name of that cheap RFID reader you had bought a while ago?</td></tr>
+            <tr><td>[05:17] &lt aa_&gt Lawouach_: I got one of these: http://www.phidgets.com/products.php?product_id=1023 not so cheap</td></tr>
+            <tr><td>[05:18] &lt aa_&gt uk supplier is called "active robots" or so</td></tr>
+            <tr><td>[05:18] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[05:18] &lt Lawouach_&gt will look at those as well</td></tr>
+            <tr><td>[05:18] &lt Lawouach_&gt ta</td></tr>
+            <tr><td>[05:18] &lt aa_&gt benefit for me was usb + python drivers</td></tr>
+            <tr><td>[05:22] &lt Lawouach_&gt nice</td></tr>
+            <tr><td>[05:50] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:33] &lt MS-&gt Lawouach_: I have a tikitag reader. Which just a rebranded normal USB RFID reader, but they've since rebranded</td></tr>
+            <tr><td>[06:33] &lt MS-&gt They were selling off their stock due to infringing a trademark</td></tr>
+            <tr><td>[06:34] &lt MS-&gt They're now called "touchatag"</td></tr>
+            <tr><td>[06:34] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[06:34] &lt Lawouach_&gt I'd be interesting in playing with either one of those and see what fun could come of it</td></tr>
+            <tr><td>[06:34] &lt MS-&gt http://www.touchatag.com/</td></tr>
+            <tr><td>[06:35] &lt MS-&gt They're not difficult to work with AFAICT</td></tr>
+            <tr><td>[06:36] &lt MS-&gt The proximity the tags need is about 2-3 centimetres from the reader</td></tr>
+            <tr><td>[06:46] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:51] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[06:51] &lt MS-&gt Hi</td></tr>
+            <tr><td>[07:21] &lt MS-&gt biab</td></tr>
+            <tr><td>[07:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:16] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:54] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:54] &lt MS-&gt back</td></tr>
+            <tr><td>[08:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:10] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:03] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:42] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[11:50] &lt Lawouach_&gt MS-: currently is the new scheduler usable?</td></tr>
+            <tr><td>[11:51] &lt Lawouach_&gt I mean, does it break existing code?</td></tr>
+            <tr><td>[11:51] &lt MS-&gt All sorts of code will break with it. Especially network code.</td></tr>
+            <tr><td>[11:51] &lt MS-&gt why do you ask?</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt fair enough</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt well</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt I'm trying to do some heavy XMPP client work right now</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt starting about 500 clients in one single process</td></tr>
+            <tr><td>[11:52] &lt MS-&gt Ah</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt but I have poor performances</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt it might be many things (my code, Axon, ejabberd)</td></tr>
+            <tr><td>[11:52] *** MS- nods</td></tr>
+            <tr><td>[11:53] &lt Lawouach_&gt so I as curious about that enw scheduler to compare</td></tr>
+            <tr><td>[11:53] &lt MS-&gt But a better scheduler would also almost certainly help</td></tr>
+            <tr><td>[11:53] &lt MS-&gt I see</td></tr>
+            <tr><td>[11:54] &lt Lawouach_&gt it's interesting to see that when at full load, the process is reported to tokae 25% of my CPU but since I have 4 cores in my CPU, I assume it takes 100% of one of them</td></tr>
+            <tr><td>[11:56] &lt MS-&gt I'm not certain of that. It depends on your ps command</td></tr>
+            <tr><td>[11:56] &lt MS-&gt On my machine, which has 2 cores, if I have 2 CPU bound tasks</td></tr>
+            <tr><td>[11:56] &lt MS-&gt it'll say each of them at 99-100% of CPU</td></tr>
+            <tr><td>[11:57] &lt MS-&gt Or even &gt100% of CPU.</td></tr>
+            <tr><td>[12:00] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[12:00] &lt Lawouach_&gt I'm using actually the KDE system monitor GUI</td></tr>
+            <tr><td>[12:00] &lt MS-&gt Ah, OK</td></tr>
+            <tr><td>[12:01] &lt MS-&gt I'm not sure what that shows</td></tr>
+            <tr><td>[12:01] &lt MS-&gt that may show that</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Thought</td></tr>
+            <tr><td>[12:01] &lt MS-&gt If you're CPU bound</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Then unless you're using processes, with python the GIL could be hurting you</td></tr>
+            <tr><td>[12:01] &lt MS-&gt If your code just relies on pure python code, it *may* be worth trying iron python?</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt hmm I can't afford going that road</td></tr>
+            <tr><td>[12:04] &lt MS-&gt k</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt but I doubt it's python the culprit</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt it could be the MySQL driver of ejabberd, or at least my MySQL server being a bottleneck</td></tr>
+            <tr><td>[12:04] &lt MS-&gt me neither but did spring to mind :)</td></tr>
+            <tr><td>[12:07] &lt MS-&gt Slowly I'm working through stuff. But I wish sometimes it was quicker.</td></tr>
+            <tr><td>[12:07] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt I hear you</td></tr>
+            <tr><td>[12:11] &lt vmlemon_&gt Heh, the silence is deathening</td></tr>
+            <tr><td>[12:11] &lt vmlemon_&gt *deafening</td></tr>
+            <tr><td>[12:11] &lt vmlemon_&gt Grr</td></tr>
+            <tr><td>[12:11] &lt vmlemon_&gt I can't type this afternoon :(</td></tr>
+            <tr><td>[12:12] &lt vmlemon_&gt Suppose that's what happens when you haven't been able to sleep for weeks</td></tr>
+            <tr><td>[12:13] &lt vmlemon_&gt Heh, not sure how that typo came to be</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[12:55] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:27] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:29] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[14:54] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[14:58] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:01] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:05] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[16:06] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[16:06] &lt MS-&gt evening</td></tr>
+            <tr><td>[16:52] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[16:56] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:45] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[18:46] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:05] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:34] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[21:58] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:42] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[23:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:54] *** vmlemon_ has joined #kamaelia</td></tr>

@@ -1,0 +1,365 @@
+<html>
+<head>
+<title> index </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - index">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap" class="smallertext">Index</a>, 
+<a href="/RecentChanges" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin">Login</a>/<a href="/UserRegistration">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    <br>
+<!-- <img src="http://www.kamaelia.org/images/cat-trans-medium.png" style="float: left;"> -->
+<img src="http://www.kamaelia.org/images/XmasCat-medium.png" style="float: left;">
+
+<h1>Kamaelia - Concurrency made useful, fun </h1>
+<br>
+In Kamaelia you build systems from <b>simple components that talk to each other</b>.
+This speeds development, massively aids maintenance and also means you
+<b>build naturally concurrent software</b>.
+It's intended to be accessible by <b>any</b> developer, including novices.
+It also makes it fun :)
+<br>
+
+<div class="divide"></div><br>
+
+What sort of systems? Network servers, clients, desktop applications,
+pygame based games, transcode systems and pipelines, digital TV systems,
+<a href="/KamaeliaGrey">spam eradicators</a>, <a href="/SpeakAndWrite">teaching tools</a>,
+and a fair amount more :) <br>
+
+<br>
+<div align="center">
+<b><a href="http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz">Stable Release: 0.6.0 (June '08)</a></b><br>
+<b><a href="http://www.kamaelia.org/release/MonthlyReleases/Kamaelia-0.9.8.0.tar.gz">Testing Release: 0.9.8.0 (August '09)</a></b><br>
+(<a href="/PragmaticConcurrency"> Europython '09 Tutorial Notes </a>, <a href="/GetKamaelia">getting started</a>)
+
+</div>
+
+                    <br>
+                </div>
+                <div class="fourC column">
+                    
+<div align="center">
+    <h2>Use</h2>
+    <h3>Kamaelia based systems</h3>
+&nbsp;<br>
+</div>
+<!-- 5 Kamaelia systems... (<a href="/KamaeliaApplications">more here</a>) -->
+
+<h3><a href="/KamaeliaGrey">Kamaelia Grey</a></h3>
+
+<p>Spam reduction through greylisting. Kamaelia Grey is a SMTP proxy for your inbound email, rejecting email likely to be spam. Mail likely to not be spam is forwarded to your normal mail server.
+
+</p><h3><a href="/ActiveFileProcessor">Batch Transcoder</a></h3>
+<p>This watches directories for new images and videos to transcode to formats suitable for the web. You can think of it as the backend needed for a youtube/flickr type site. PDF support is likely to be added soon.
+
+</p><h3><a href="/Whiteboard">Whiteboard</a></h3>
+<p>A collaborative whiteboard. 2 or more machines share a display you can write on - either can be a server. Whiteboards are paginated, and therefore can also be used for remote presentations. Really cool with a tablet.
+
+</p><h3><a href="/ERModeller">ER Modeller</a></h3>
+<p>Built to allow modelling a database. You describe the entities and their attributes, and relationships. Also allows entities to inherit from each other. Uses a customised topology visualiser to show you your design.
+
+</p><h3><a href="/KamaeliaMacro">Macro</a></h3>
+<p>Records and transcodes digital TV for later viewing (ie timeshifting). It can do this for as many channels at once as you have CPU power and tuners available for it.
+
+<!--
+<h3><a href="/Logger">Logger</a></h3>
+<p>It's an IRC bot, but it's also an IRC channel logger. It's simple, effective, and could easily be extended to do more interesting things. It is however useful and used to log #kamaelia on freenode.
+
+<h3><a href="/Introspector">Introspector</a></h3>
+<p>Kamaelia systems are inherently introspectable. This is a tool you can attach to a Kamaelia system and see what it is doing inside. This enables visual debugging.
+
+<h3><a href="/Compose">Compose</a></h3>
+<p>This is the flipside of the introspector. It uses a visual approach for composing Kamaelia objects into systems.
+--> 
+                </div>
+                <div class="fourC column">
+                    
+<div align="center">
+    <h2>Kamaelia Documentation</h2>
+
+    <h3>Build &amp; improve Kamaelia based systems</h3>
+&nbsp;<br>
+</div><h3>Documentation</h3>
+<p>Documentation is a core asset in Kamaelia. It is continuously being
+extended and improved.
+
+</p><h3><a href="/Tutorials">Tutorials</a></h3>
+<ul>
+<li>Dive into <a href="/Tutorials">Kamaelia tutorials from a variety of perspectives</a>
+</li><li>See the <a href="/Presentations">presentations given publicly</a>
+</li><li>Download and <a href="/Publications">read articles &amp; publications about Kamaelia</a>
+</li></ul>
+
+<h3><a href="/Cookbook">Cookbook</a></h3>
+<p>This section contains a number of recipes showing how to build a variety of different types of Kamaelia systems. Sections include:
+</p><ul>
+<li>Linking components together
+</li><li>Building Network systems, clients, servers, IM, etc
+</li><li>Building Digital TV systems
+</li><li>Building Multimedia systems
+</li><li>Using Kamaelia components &amp; subsystems in non-kamaelia systems.
+</li></ul>
+<p><b>More recipes always welcome.</b>
+
+</p><h3><a href="/Components">Component Reference</a></h3>
+<p>Full component reference. This is automatically generated <b>nightly</b>, and where tests exist, the output of the tests is parsed and included on these pages. <br></p><h3><a href="/Docs/Axon/Axon.html">Axon Reference</a></h3>
+<p>Full reference for Axon - the core of Kamaelia. This is also automatically generated nightly and also includes test output.</p><p>
+                </div>
+                <div class="fourC column last">
+                    <div align="center">
+    <h2>Community</h2>
+<h3>Kamaelia is open source, help us improve it!</h3>
+&nbsp;<br>
+</div>
+<h3><a href="/Developers/">Developer Central</a></h3>
+<p>Interested in helping out? You're more than welcome! In this area you'll find some pages which cover some areas of interest for ongoing dev, our general development process, project management process, guidelines on contributing (eg smart questions, through to code, and contributor agreements)
+
+</p><h3><a href="/Contact">Get Help (Contact)</a></h3>
+<p>Sometimes the best contributions happen when someone asks the right question. Please don't be afraid to ask (or answer!) questions. We'd love to help you, and merely ask that you help others in return. Not much of a community otherwise? :) (OK, not everyone has time to do that) Find us on <a href="/mailinglists">email</a>, <a href="http://groups.google.com/group/kamaelia">google groups</a>, <a href="/irc">irc</a>, etc
+
+</p><h3><a href="/SummerOfCode">Summer of Code</a></h3>
+<p>We've been involved with GSOC now for 3 years, and it's been great. One of the less obvious things about GSOC is that it's generated a wealth of docs and ideas which can be dived into here.
+
+</p><h3><a href="/Repository">Source &amp; SVN</a></h3>
+<P> Kamaelia's source is hosted on <a
+href="http://code.google.com/p/kamaelia/">code.google</a>, and the latest
+release is the <a href="http://www.kamaelia.org/release/MonthlyReleases/Kamaelia-0.9.8.0.tar.gz">0.9.8.0
+release</a>. (Y.Y.M.r). Some <a href="/release/">apps are also available in the release
+directory.
+
+
+</p><h3><a href="/Wiki">Wiki</a></h3>
+<p> This entire site is powered by, essentially, a wiki engine, if you're interested in contributing please get in <a href="/Contact">contact</a> and drop us a line. (It doesn't default to open to avoid wikispam, etc) <b> ie: Think this site could do with improving? Please help! :) </b>
+
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+<h1>A quick overview</h1>
+
+<p> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a> is a Python library by <a href="http://www.bbc.co.uk/opensource/projects/kamaelia/">BBC Research</a>
+for concurrent programming using a simple pattern of components that
+send and receive data from each other. The following is an example of a
+system made by piping the output of one component into another:<br>
+
+<blockquote>
+<pre>
+<b>from</b> Kamaelia.Chassis.Pipeline <b>import</b> Pipeline
+<b>from</b> Kamaelia.Util.Console <b>import</b> ConsoleReader, ConsoleEchoer
+
+Pipeline(
+         ConsoleReader(),
+         ConsoleEchoer(),
+).run()
+</pre>
+</blockquote>
+
+<p>Or maybe you want to build a presentation tool? (imports &amp; setup excluded here - <a href="../../../Examples/SimplestPresentationTool">full example</a>)<br>
+
+<blockquote>
+<pre>Graphline(
+     CHOOSER = Chooser(items = files),
+     IMAGE = Image(size=(800,600), position=(8,48)),
+     NEXT = Button(caption="Next", msg="NEXT", position=(72,8)),
+     PREVIOUS = Button(caption="Previous", msg="PREV",position=(8,8)),
+     FIRST = Button(caption="First", msg="FIRST",position=(256,8)),
+     LAST = Button(caption="Last", msg="LAST",position=(320,8)),
+     linkages = {
+        ("NEXT","outbox") : ("CHOOSER","inbox"),
+        ("PREVIOUS","outbox") : ("CHOOSER","inbox"),
+        ("FIRST","outbox") : ("CHOOSER","inbox"),
+        ("LAST","outbox") : ("CHOOSER","inbox"),
+        ("CHOOSER","outbox") : ("IMAGE","inbox"),
+     }
+).run()
+</pre>
+</blockquote>
+
+<p>That's all well and good, but how is a component written? What's inside it?<br>
+
+<blockquote>
+<pre>
+<b>from</b> Axon.Component <b>import</b> component
+<b>from</b> Axon.Ipc <b>import</b> shutdownMicroprocess, producerFinished
+
+<b>class</b> MyComponent(component):    
+    Inboxes = {<b>"inbox"</b>        : <b>"some data in"</b>,
+               <b>"control"</b>      : <b>"stops the component"</b>}
+    Outboxes = {<b>"outbox"</b>      : <b>"some data out"</b>,
+                <b>"signal"</b>      : <b>"Shutdown signal"</b>}
+
+    <b>def</b> <b>__init__</b>(self, **argd):
+        super(MyComponent, self).__init__(**argd)
+
+    <b>def</b> <b>main</b>(self):
+        <b>while</b> not self.doShutdown():
+            <b>if</b> self.dataReady(<b>"inbox"</b>):
+                data = self.recv(<b>"inbox"</b>)
+                <i># let's echo what we received...</i>
+                self.send(data, <b>'outbox'</b>)
+                
+            <b>if</b> <b>not</b> self.anyReady():
+                self.pause()
+
+            yield 1
+
+    <b>def</b> <b>doShutdown</b>(self):
+        <b>if</b> self.dataReady(<b>"control"</b>):
+            mes = self.recv(<b>"control"</b>)                
+            <b>if</b> isinstance(mes, shutdownMicroprocess) <b>or</b> isinstance(mes, producerFinished):
+                self.send(producerFinished(), <b>"signal"</b>)
+                <b>return True</b>
+        <b>return False</b>
+</pre>
+</blockquote>
+
+<p>This is the simplest form a component can take. A component:
+
+<ul>
+<li>is a class that inherits from <tt>Axon.Component.component</tt>
+<li>has inboxes and outboxes
+</ul>
+
+<p> By inheriting from <tt>Axon.Component.component</tt> you make your class usable by the <a href="/MiniAxon/">Axon</a> library which is at the core of the Kamaelia library. It allows for your class to be used with other components.
+
+<p>Inboxes and outboxes allow your component to be linked to and from by other components.
+
+<p>Then your class defines a main method that simple loop until a
+specific kind of message is put into the "control" inbox of the
+component. During the looping it checks for any inboxes and process
+data read from them. Eventually it yields to the Axon scheduler that
+goes to the next available component. By using a generator we allow the
+shceduler to come back to the component's loop eventually.
+
+<p>Note that inboxes and outboxes are pure Python dictionary hence they
+allow for any Python objects and are not limited to strings. The
+component described above is simple, complex components have many
+inboxes and outboxes to link to and from.
+
+<h2>Kamaelia</h2>
+
+<p> Kamaelia is a library of components for <a href="/Components">all kind of tasks and topics</a>:
+
+<p> For example taking the previous example we could write:
+
+<blockquote>
+<pre>
+<b>from</b> Kamaelia.Chassis.Pipeline <b>import</b> Pipeline
+<b>from</b> Kamaelia.Util.Console <b>import</b> ConsoleReader, ConsoleEchoer
+
+Pipeline(
+         ConsoleReader(),
+         MyComponent(),
+         ConsoleEchoer(),
+).run()
+</pre>
+</blockquote>
+
+<p> <a href="/Components/pydoc/Kamaelia.Experimental.Chassis.Pipeline.html">Pipeline</a>
+is component that automatically links outboxes to inboxes of each
+provided component. The console components allow for reading and
+writing data from and to the command line. Because <tt>Pipeline</tt> is also a component itself it could in turns be used in another component.
+
+
+<p> Note that calling the <tt>run()</tt> method on a component blocks
+the process until it is killed. You can also simply activate a
+component which will then be in an active state but will run only when
+eventually <tt>run</tt> is called on another component.
+
+
+<p> Now that you have the basics of Kamaelia you should dive into the <a href="/Cookbook">documentation</a> and have fun with this library.
+
+
+
+
+
+
+
+
+
+</p>
+
+
+ ...
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

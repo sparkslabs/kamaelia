@@ -1,0 +1,71 @@
+<html><body><table>
+            <tr><td>[05:34] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:07] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:07] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:40] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:01] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:18] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:18] &lt MS-&gt morning</td></tr>
+            <tr><td>[08:40] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[08:53] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:57] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:39] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[09:39] &lt mhrd&gt greetings</td></tr>
+            <tr><td>[09:41] *** mhrd notes r5352 commit - could mean a more compact packaging up of your greylisting server, or possibly my pop3proxy ?</td></tr>
+            <tr><td>[09:48] &lt MS-&gt Could do, but that's note my intent</td></tr>
+            <tr><td>[09:48] &lt MS-&gt s/note/not/</td></tr>
+            <tr><td>[09:49] &lt MS-&gt My intent is just to have an absolutely minimal thing for people to play with.</td></tr>
+            <tr><td>[09:49] &lt MS-&gt Also shows that most components aren't dependent on each other really</td></tr>
+            <tr><td>[09:50] *** mhrd ponders that it might be fun to write a tool that analyses a kamaelia program to work out what components it needs to be bundled with</td></tr>
+            <tr><td>[09:51] &lt MS-&gt Indeed - I was watching a presentation about "what django should learn from where zope went horribly wrong"</td></tr>
+            <tr><td>[09:51] &lt MS-&gt and noted that the dependency graph was the biggest problem</td></tr>
+            <tr><td>[09:51] &lt MS-&gt Whereas for our stuff, we probably have clumps</td></tr>
+            <tr><td>[09:51] &lt mhrd&gt I'm thinking that the doc generation code already contains alot of the hard work needed</td></tr>
+            <tr><td>[09:52] &lt mhrd&gt I might have a play sometime</td></tr>
+            <tr><td>[09:53] &lt MS-&gt That's part of what I was thinking as well :)</td></tr>
+            <tr><td>[09:53] &lt MS-&gt Either that or a liberal sprinkling of metadata :)</td></tr>
+            <tr><td>[09:54] &lt mhrd&gt probably need both - the doc gen analysing code, for example, won't pick up anything within a conditional statement</td></tr>
+            <tr><td>[09:54] &lt mhrd&gt someone is bound to do something like:</td></tr>
+            <tr><td>[09:54] &lt mhrd&gt if 1:</td></tr>
+            <tr><td>[09:54] &lt mhrd&gt . import blah</td></tr>
+            <tr><td>[09:54] &lt mhrd&gt :)</td></tr>
+            <tr><td>[09:57] &lt MS-&gt indeed</td></tr>
+            <tr><td>[09:58] &lt MS-&gt I've got some code that has that sort of structure in places</td></tr>
+            <tr><td>[09:58] &lt MS-&gt Obviously not "if 1" :)</td></tr>
+            <tr><td>[09:59] &lt mhrd&gt at the time I drew the line there because it was an easy clear cut off - rather that having to give detailed explanation of what kind of expressions it would/would-not be able to evaluate :-)</td></tr>
+            <tr><td>[10:02] *** MS- nods</td></tr>
+            <tr><td>[10:05] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:07] &lt MS-&gt vmlemon_: Hi</td></tr>
+            <tr><td>[10:07] &lt MS-&gt mhrd: Storing the deps more machine readably though would be useful from a packaging perspective.</td></tr>
+            <tr><td>[10:08] &lt MS-&gt Especially in the style of Jason's freezing approach</td></tr>
+            <tr><td>[10:08] &lt vmlemon_&gt Out of interest, what's the problem with Zope?</td></tr>
+            <tr><td>[10:11] &lt MS-&gt It's the fact that Zope turned into a closed ecosystem - it was very hard to pull stuff out from it to use in non-zope systems.</td></tr>
+            <tr><td>[10:14] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[10:15] &lt MS-&gt (this is a risk for kamaelia as well - hence why Axon is seperate and useful by itself, and also why Handle exists)</td></tr>
+            <tr><td>[10:15] &lt MS-&gt (the latter specifically designed to allow kamaelia stuff to be useful in non-kamaelia systems</td></tr>
+            <tr><td>[10:16] &lt MS-&gt Also, the former means that when building components it's easier in many cases to pull in code from other libraries rather than reinvent wheels all the time. (As fun as wheel building is)</td></tr>
+            <tr><td>[10:51] *** ntoll has joined #kamaelia</td></tr>
+            <tr><td>[10:52] *** ntoll has parted #kamaelia</td></tr>
+            <tr><td>[11:25] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[11:44] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:47] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[12:06] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[14:04] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[14:13] &lt ian_brasil_&gt MS: I saw that presentation too...very interesting i thought</td></tr>
+            <tr><td>[14:13] &lt ian_brasil_&gt ah, too late</td></tr>
+            <tr><td>[15:35] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:36] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[15:55] *** likefile has joined #kamaelia</td></tr>
+            <tr><td>[15:57] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:02] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:40] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[16:43] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:46] &lt Chong-&gt evening, vmlemon_ and others.</td></tr>
+            <tr><td>[16:57] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[17:25] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[18:08] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:08] &lt MS-&gt evening</td></tr>
+            <tr><td>[18:11] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[18:17] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[21:16] *** Davbo has joined #kamaelia</td></tr>

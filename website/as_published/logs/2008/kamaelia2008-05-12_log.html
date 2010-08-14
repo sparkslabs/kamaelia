@@ -1,0 +1,1106 @@
+<html><body><table>
+            <tr><td>[00:03] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[03:34] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[06:37] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[06:37] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[06:40] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[06:41] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:41] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[06:42] &lt j_baker&gt hello</td></tr>
+            <tr><td>[06:42] &lt j_baker&gt So I installed Yellow Dog linux.</td></tr>
+            <tr><td>[06:42] &lt j_baker&gt So far it seems to be working out pretty well.</td></tr>
+            <tr><td>[06:42] &lt vmlemon_&gt Any good?</td></tr>
+            <tr><td>[06:43] &lt j_baker&gt It seems like it's made a lot more for PPC than OpenSUSE is.</td></tr>
+            <tr><td>[06:43] &lt vmlemon_&gt I'm surprised that they're still around, although they did originate yum</td></tr>
+            <tr><td>[06:43] &lt j_baker&gt Although it isn't a distro for people who have to have the latest and greatest version of every piece of software.</td></tr>
+            <tr><td>[06:44] &lt j_baker&gt Yellow dog does also do the PS3.</td></tr>
+            <tr><td>[06:44] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[06:45] &lt j_baker&gt Plus it's essentially repackaged CentOS</td></tr>
+            <tr><td>[06:45] &lt j_baker&gt (which of course is essentially repackaged redhat)</td></tr>
+            <tr><td>[06:47] *** vmlemon_ wonders how many "degrees of seperation" each distribution has from the others</td></tr>
+            <tr><td>[06:49] &lt vmlemon_&gt Yay, a repackaged repackaging ;)</td></tr>
+            <tr><td>[06:49] &lt j_baker&gt Heh... well, it depends on how you look at it.</td></tr>
+            <tr><td>[06:50] &lt j_baker&gt I mean, Yellowdog is essentially repackaged CentOS which is essentially repackaged RHEL which is essentially repackaged Fedora.</td></tr>
+            <tr><td>[06:51] &lt vmlemon_&gt and to make it more confusing, Fedora's lineage was the original Red Hat Linux...</td></tr>
+            <tr><td>[06:52] &lt j_baker&gt Yup.</td></tr>
+            <tr><td>[06:52] &lt vmlemon_&gt Before they axed or rebranded that product line</td></tr>
+            <tr><td>[06:52] &lt j_baker&gt One other nice part is that I can actually get Java to work correctly though.</td></tr>
+            <tr><td>[06:52] &lt vmlemon_&gt Yay</td></tr>
+            <tr><td>[06:53] &lt j_baker&gt Much as I dislike using eclipse, it's better than the alternatives.</td></tr>
+            <tr><td>[06:53] &lt vmlemon_&gt So much for WORA/WODA and Cross-Platform Runtimes</td></tr>
+            <tr><td>[06:54] &lt j_baker&gt I tried SPE and eric, but they were both PITAs</td></tr>
+            <tr><td>[06:54] &lt j_baker&gt with WAY too many dependencies</td></tr>
+            <tr><td>[06:54] &lt vmlemon_&gt With Sun's JVM?</td></tr>
+            <tr><td>[06:54] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[06:54] &lt j_baker&gt I think I'm actually using gcj.</td></tr>
+            <tr><td>[06:55] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[06:55] &lt j_baker&gt Which is kinda surprising because I hear it's not all that stable.</td></tr>
+            <tr><td>[06:55] &lt vmlemon_&gt It's getting there</td></tr>
+            <tr><td>[06:55] &lt vmlemon_&gt Albeit at a glacial pace</td></tr>
+            <tr><td>[06:56] &lt vmlemon_&gt I prefer the official one on x86, though</td></tr>
+            <tr><td>[06:57] &lt vmlemon_&gt Despite that packaging being "proprietary ane closed-source" to some</td></tr>
+            <tr><td>[06:57] &lt j_baker&gt The Sun JVM?</td></tr>
+            <tr><td>[06:58] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[06:58] &lt vmlemon_&gt *and</td></tr>
+            <tr><td>[06:58] &lt vmlemon_&gt Stupid typo</td></tr>
+            <tr><td>[07:00] &lt vmlemon_&gt Like certain other GNU projects (can you say HURD?), development is extremely slow compared to other projects, but a JVM isn't trivial</td></tr>
+            <tr><td>[07:01] &lt j_baker&gt Indeed</td></tr>
+            <tr><td>[07:01] &lt j_baker&gt I can only imagine what the Mono team must be going through.</td></tr>
+            <tr><td>[07:03] &lt vmlemon_&gt Microsoft only went so far to do their bit, and even now, I'm sure that there's quite a lot of undocumented functionality to wade through</td></tr>
+            <tr><td>[07:04] &lt vmlemon_&gt They're probably in better shape than Gnash, though</td></tr>
+            <tr><td>[07:05] &lt j_baker&gt Meh, I think that there's enough useless DOCUMENTED functionality to wade through with .NET.</td></tr>
+            <tr><td>[07:05] &lt vmlemon_&gt (Progress-wise)</td></tr>
+            <tr><td>[07:05] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[07:05] &lt vmlemon_&gt That's a new one ;)</td></tr>
+            <tr><td>[07:05] &lt j_baker&gt But I think there's one thing we can agree on: they have it better than the Wine team.</td></tr>
+            <tr><td>[07:06] &lt j_baker&gt I couldn't imagine having to deal with Win32 directly.</td></tr>
+            <tr><td>[07:06] &lt vmlemon_&gt It's usally too little documentation, when they're involved</td></tr>
+            <tr><td>[07:06] &lt vmlemon_&gt *usually</td></tr>
+            <tr><td>[07:07] &lt j_baker&gt I don't think that documentation is so much the problem with MS anymore so much as shoddy programming practice.</td></tr>
+            <tr><td>[07:07] &lt j_baker&gt They got in too much trouble a while back with "sekrit" APIs.</td></tr>
+            <tr><td>[07:08] &lt j_baker&gt (and admittedly MSDN is a pretty good documentation site)</td></tr>
+            <tr><td>[07:08] &lt j_baker&gt even if it can be difficult to navigate at times.</td></tr>
+            <tr><td>[07:08] &lt vmlemon_&gt I think Wine have no option but to reverse-engineer as they go, and tread custard going after constant API/syscall and ABI changes</td></tr>
+            <tr><td>[07:09] &lt vmlemon_&gt (Last time I tried, it wasn't possible to run even the most trivial Vista binary)</td></tr>
+            <tr><td>[07:10] &lt j_baker&gt That's strange. Win32 really hasn't changed all that much from Windows 95 all the way to Vista. Although the executable format may have changed.</td></tr>
+            <tr><td>[07:10] &lt vmlemon_&gt I guess it could be quicksand ;)</td></tr>
+            <tr><td>[07:12] &lt vmlemon_&gt I tested Notepad, cmd.exe, mspaint.exe and another binary, and execution failed immediately</td></tr>
+            <tr><td>[07:12] &lt j_baker&gt Or it could just be microsoft sucking. That's always a good place for blame.</td></tr>
+            <tr><td>[07:12] &lt j_baker&gt Really? Wow.</td></tr>
+            <tr><td>[07:13] &lt j_baker&gt I could see cmd.exe, but you wouldn't figure Notepad at least would be that difficult.</td></tr>
+            <tr><td>[07:13] &lt j_baker&gt Although it wouldn't suprise me if microsoft put a few "enhancements" in those things just so they won't run in wine.</td></tr>
+            <tr><td>[07:13] &lt vmlemon_&gt Even when using the Windows Vista setting on Wine</td></tr>
+            <tr><td>[07:15] &lt vmlemon_&gt I know that XP's cmd.exe is functional on it, as is ping.exe</td></tr>
+            <tr><td>[07:16] &lt vmlemon_&gt Dunno about the Vista versions</td></tr>
+            <tr><td>[07:18] &lt vmlemon_&gt Although they've probably been "fixed"</td></tr>
+            <tr><td>[07:20] &lt vmlemon_&gt I bet that they have "Stop this from running on Wine" bug tracker items ;)</td></tr>
+            <tr><td>[07:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:03] *** Matt-afk is now known as mhrd</td></tr>
+            <tr><td>[08:04] &lt mhrd&gt they seem to tend to just add extra options, flags, or a newer version of a call, here and there, every time they do a new release</td></tr>
+            <tr><td>[08:05] &lt mhrd&gt what surprised me was finding that this one: http://msdn.microsoft.com/en-us/library/ms724411(VS.85).aspx ... is only new in Vista ... kinda expended they'd have sorted that by win2000 or winxp</td></tr>
+            <tr><td>[08:33] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:18] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:32] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:32] &lt MS-&gt Morning</td></tr>
+            <tr><td>[09:34] &lt orphans&gt morning MS-</td></tr>
+            <tr><td>[09:36] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:37] &lt MS-&gt orphans: how goes?</td></tr>
+            <tr><td>[09:37] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:37] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:38] &lt orphans&gt not too bad ta, busy :)</td></tr>
+            <tr><td>[09:38] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:39] &lt MS-&gt cool.</td></tr>
+            <tr><td>[09:39] &lt orphans&gt yourself?</td></tr>
+            <tr><td>[09:39] &lt MS-&gt I'm doing the usual thing for a monday morning :-)</td></tr>
+            <tr><td>[09:39] &lt orphans&gt heh, speak in three hours then :)</td></tr>
+            <tr><td>[09:39] &lt MS-&gt heh</td></tr>
+            <tr><td>[09:39] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[09:39] Reply: does the macarena</td></tr>
+            <tr><td>[09:43] &lt Uraeus&gt another warm day in sunny Cambridge</td></tr>
+            <tr><td>[09:44] &lt MS-&gt Hmm. That really sounds nice right now</td></tr>
+            <tr><td>[09:45] &lt vmlemon_&gt Ugh, I mispasted a quote in another channel, and it's started a weird meme</td></tr>
+            <tr><td>[09:45] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[09:45] &lt MS-&gt (unless it's *really* wierd)</td></tr>
+            <tr><td>[09:46] &lt Uraeus&gt MS-: to bad the Camb doesn't exactly come of as inviting for a swim</td></tr>
+            <tr><td>[09:49] &lt vmlemon_&gt I originally pasted something from #opensolaris in here, and wanted to paste the same quote in another channel, but accidentally quoted myself pasting the quote</td></tr>
+            <tr><td>[09:51] &lt vmlemon_&gt So it's started someone off trying to "recycle" the last thing someone said as a quote along with the original quote line :|</td></tr>
+            <tr><td>[09:53] &lt MS-&gt Uraeus: No, I personally wouldn't swim it in.</td></tr>
+            <tr><td>[09:54] &lt MS-&gt Too easy to get caught in the weeds/etc in the bottom of the river. (which is the most common cause of drowning in the Cam)</td></tr>
+            <tr><td>[09:54] &lt MS-&gt vmlemon_: Ahh, I see</td></tr>
+            <tr><td>[09:56] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:57] &lt MS-&gt Davbo: morning</td></tr>
+            <tr><td>[09:57] &lt Davbo&gt morning</td></tr>
+            <tr><td>[09:58] &lt Davbo&gt Agh brb</td></tr>
+            <tr><td>[09:58] *** Davbo feels ill today</td></tr>
+            <tr><td>[10:00] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[10:05] &lt Davbo&gt Hi vmlemon_</td></tr>
+            <tr><td>[10:06] &lt MS-&gt Davbo: So, I guess "how's things" is a bit moot</td></tr>
+            <tr><td>[10:06] &lt MS-&gt hope your deadline went OK</td></tr>
+            <tr><td>[10:07] &lt Davbo&gt I've submitted it online so should be okay</td></tr>
+            <tr><td>[10:07] &lt Davbo&gt i'll take the paper in tomorrow</td></tr>
+            <tr><td>[10:07] &lt MS-&gt cool</td></tr>
+            <tr><td>[10:07] &lt Davbo&gt No way i'm getting on a train like this :(</td></tr>
+            <tr><td>[10:08] *** MS- nods</td></tr>
+            <tr><td>[10:08] &lt Davbo&gt well i feel much better now, it was worse this morning</td></tr>
+            <tr><td>[10:08] &lt MS-&gt i see</td></tr>
+            <tr><td>[10:08] &lt Davbo&gt Anyway sorry, i'm here now. :-)</td></tr>
+            <tr><td>[10:08] &lt MS-&gt cool</td></tr>
+            <tr><td>[10:08] &lt MS-&gt OK to chat then?</td></tr>
+            <tr><td>[10:09] &lt Davbo&gt Yeah should be fine</td></tr>
+            <tr><td>[10:09] &lt MS-&gt OK, cool</td></tr>
+            <tr><td>[10:10] &lt MS-&gt In which case, we ought to discuss what you're doing in this period leading up to the beginning</td></tr>
+            <tr><td>[10:11] &lt MS-&gt Essentially this period should be for getting up to speed with the tools of the project, admin and also exploring ideas related to your project</td></tr>
+            <tr><td>[10:11] &lt Davbo&gt Yeah I've gone through Magnadoodle trying to understand it this week</td></tr>
+            <tr><td>[10:11] &lt Davbo&gt I feel more confident about implementing my own version now</td></tr>
+            <tr><td>[10:11] &lt MS-&gt it's probably worth copying it into your sketches directory, and playing with modifying it</td></tr>
+            <tr><td>[10:12] &lt MS-&gt and checking in the changes as you do</td></tr>
+            <tr><td>[10:12] &lt Davbo&gt Ah right</td></tr>
+            <tr><td>[10:12] &lt MS-&gt The other thing is that since you're doing multiwindow stuff</td></tr>
+            <tr><td>[10:12] &lt MS-&gt You'll want to nab this:</td></tr>
+            <tr><td>[10:12] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/pprocess/MultiPipeline.py?revision=3829&view=markup</td></tr>
+            <tr><td>[10:12] &lt MS-&gt and copy that into your directory and see if you can do something along the lines of</td></tr>
+            <tr><td>[10:12] &lt Davbo&gt Right</td></tr>
+            <tr><td>[10:12] &lt MS-&gt "copy all drawing events to an outbox"</td></tr>
+            <tr><td>[10:13] &lt MS-&gt "pipe them all to a second magnadoodle"</td></tr>
+            <tr><td>[10:13] &lt MS-&gt "and have the second one draw the same thing"</td></tr>
+            <tr><td>[10:13] &lt MS-&gt (probably as something line "draw line x,y,x,y" or "draw path x,y,x,y,x,y,x,y,x,y,x,y"</td></tr>
+            <tr><td>[10:13] &lt Davbo&gt Okay, what's the difference with this and a regular Pipeline?</td></tr>
+            <tr><td>[10:14] &lt MS-&gt Also, in order for this to work, you will *probably* need the version of Axon & Kamaelia that's sitting on my branch</td></tr>
+            <tr><td>[10:14] &lt MS-&gt The difference is that a ProcessPipeline runs then in different processes :)</td></tr>
+            <tr><td>[10:15] &lt MS-&gt The best way of writing this initially</td></tr>
+            <tr><td>[10:15] &lt MS-&gt is probably to just use 2 magnadoodle components placed side by side</td></tr>
+            <tr><td>[10:15] &lt Davbo&gt Oh I see, so the OS can split them between separate cores?</td></tr>
+            <tr><td>[10:15] &lt MS-&gt Correct</td></tr>
+            <tr><td>[10:15] &lt Davbo&gt Ah cool</td></tr>
+            <tr><td>[10:15] &lt MS-&gt It's the simplest most relevant multiprocess/core app I can think of</td></tr>
+            <tr><td>[10:16] &lt Davbo&gt Yeah sounds good</td></tr>
+            <tr><td>[10:16] &lt MS-&gt To get to that stage, you probably need to do the following:</td></tr>
+            <tr><td>[10:16] &lt MS-&gt Pipeline(MagnaDoodle(), MessageFrobber(), MagnaDoodle())</td></tr>
+            <tr><td>[10:16] &lt MS-&gt initialler</td></tr>
+            <tr><td>[10:16] &lt Davbo&gt right</td></tr>
+            <tr><td>[10:17] &lt MS-&gt Once that's working, get to the stage that you can run http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/pprocess/MultiPipeline.py?revision=3829&view=markup</td></tr>
+            <tr><td>[10:17] &lt MS-&gt With no changes</td></tr>
+            <tr><td>[10:17] &lt MS-&gt then change you example to a ProcessPipeline</td></tr>
+            <tr><td>[10:17] &lt MS-&gt That's probably the simplest route</td></tr>
+            <tr><td>[10:17] &lt Davbo&gt hmm right</td></tr>
+            <tr><td>[10:17] &lt MS-&gt That MultiPipeline code isn't in Axon yet</td></tr>
+            <tr><td>[10:17] &lt MS-&gt i suspect the changes needed are pretty minimal FWIW</td></tr>
+            <tr><td>[10:18] &lt Davbo&gt Will there be errors thrown in going from Pipeline to MultiPipeline?</td></tr>
+            <tr><td>[10:18] &lt MS-&gt Shouldn't be, not</td></tr>
+            <tr><td>[10:18] &lt Davbo&gt Okay</td></tr>
+            <tr><td>[10:18] &lt MS-&gt if you scroll down to the bottom of...</td></tr>
+            <tr><td>[10:18] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/pprocess/MultiPipeline.py?revision=3829&view=markup</td></tr>
+            <tr><td>[10:19] &lt MS-&gt you'll see that it mixes Pipelines and ProcessPipelines</td></tr>
+            <tr><td>[10:19] &lt Davbo&gt oh i see</td></tr>
+            <tr><td>[10:20] &lt MS-&gt it's not obvious from that, but you can still sling dictionaries, lists, & tuples between processes</td></tr>
+            <tr><td>[10:20] &lt Davbo&gt is it difficult getting the separate processes to "talk to each other"?</td></tr>
+            <tr><td>[10:20] &lt Davbo&gt or will this handle it</td></tr>
+            <tr><td>[10:20] &lt MS-&gt That handles it</td></tr>
+            <tr><td>[10:20] &lt Davbo&gt Alright sounds good</td></tr>
+            <tr><td>[10:20] &lt MS-&gt It should be completely transparent changing from Pipeline to ProcessPipeline (and from Graphline to ProcessGraphline)</td></tr>
+            <tr><td>[10:21] &lt MS-&gt Note the *ould word :)</td></tr>
+            <tr><td>[10:21] &lt Davbo&gt Yeah it's very beneficial to have it like that</td></tr>
+            <tr><td>[10:21] &lt MS-&gt It does work though :)</td></tr>
+            <tr><td>[10:22] &lt MS-&gt Ok, that's a fairly gentle starting point I think.</td></tr>
+            <tr><td>[10:22] &lt MS-&gt Admin wise, this should get you used to using code from a branch - since you'll need to install Axon & Kamaelia from private_MPS_Scratch</td></tr>
+            <tr><td>[10:22] &lt Davbo&gt Where am i looking for your version of Axon?</td></tr>
+            <tr><td>[10:22] &lt Davbo&gt Heh :)</td></tr>
+            <tr><td>[10:22] &lt MS-&gt Also, it'll get you checking in code as well</td></tr>
+            <tr><td>[10:23] &lt MS-&gt if you do an "svn copy" of the MagnaDoodle code</td></tr>
+            <tr><td>[10:23] &lt MS-&gt rather than a copy, add, checkin, that'll get you used to keeping version histroy</td></tr>
+            <tr><td>[10:23] &lt MS-&gt history even</td></tr>
+            <tr><td>[10:23] &lt MS-&gt make it easier to see your changes</td></tr>
+            <tr><td>[10:24] &lt MS-&gt ala this: http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/UI/Pygame/MagnaDoodle.py?annotate=3882</td></tr>
+            <tr><td>[10:24] &lt Davbo&gt right</td></tr>
+            <tr><td>[10:25] &lt MS-&gt Final thing from my side - contributor agreement -</td></tr>
+            <tr><td>[10:25] &lt Davbo&gt So do it in the fashion you described for making a branch?</td></tr>
+            <tr><td>[10:25] &lt MS-&gt yep</td></tr>
+            <tr><td>[10:25] &lt Davbo&gt righty</td></tr>
+            <tr><td>[10:25] &lt MS-&gt svn copy ../../Code/Python/...MagnaDoodle.py .</td></tr>
+            <tr><td>[10:25] &lt MS-&gt svn ci MagnaDoodle.py</td></tr>
+            <tr><td>[10:25] &lt MS-&gt (you can do individual files :) )</td></tr>
+            <tr><td>[10:26] &lt MS-&gt If you get stuck, just ask as usual :)</td></tr>
+            <tr><td>[10:26] &lt Davbo&gt Will do</td></tr>
+            <tr><td>[10:26] &lt MS-&gt Regarding the contributor agreement, assuming you're happy with it, can copy & paste</td></tr>
+            <tr><td>[10:26] &lt MS-&gt http://kamaelia.sourceforge.net/Developers/SampleContributorAgreement</td></tr>
+            <tr><td>[10:26] &lt MS-&gt into your text editor/word processor of choice</td></tr>
+            <tr><td>[10:27] &lt Davbo&gt Okay</td></tr>
+            <tr><td>[10:27] &lt MS-&gt The bits between the horizontal rules that is</td></tr>
+            <tr><td>[10:27] &lt MS-&gt change the bits in green</td></tr>
+            <tr><td>[10:27] &lt MS-&gt Change the purple bit "JLB" to "DK"</td></tr>
+            <tr><td>[10:28] &lt MS-&gt and leave the purple date empty.</td></tr>
+            <tr><td>[10:28] &lt MS-&gt then print it off.</td></tr>
+            <tr><td>[10:28] &lt MS-&gt and if you could post it to:</td></tr>
+            <tr><td>[10:29] &lt MS-&gt [or]</td></tr>
+            <tr><td>[10:29] &lt Davbo&gt This reminds me I forgot to get that Google thing faxed again, oh well.</td></tr>
+            <tr><td>[10:29] &lt MS-&gt Michael Sparks, Senior Research Engineer, c/o BBC TV Centre, London, W12 7RJ</td></tr>
+            <tr><td>[10:30] &lt Davbo&gt That should be no problem</td></tr>
+            <tr><td>[10:30] &lt MS-&gt cheers</td></tr>
+            <tr><td>[10:30] &lt MS-&gt I did look into an online system for dealing with this, but after talking to BBC lawyers for 4 months solid we came to the conclusion that life was too short :)</td></tr>
+            <tr><td>[10:31] &lt Davbo&gt Agreed, Google is having similar problem with students not liking fax machines hehe</td></tr>
+            <tr><td>[10:31] &lt MS-&gt if you want to cheat, you can actually probably just probably put it into an envelope, go to a BBC building, and ask the nice receptionist if that could put it in their internal mail :-)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt Since I guess there's one near you :)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt probably</td></tr>
+            <tr><td>[10:32] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[10:32] &lt Davbo&gt The ones i know of aren't very near by</td></tr>
+            <tr><td>[10:32] &lt MS-&gt fairy snuff</td></tr>
+            <tr><td>[10:32] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:34] &lt MS-&gt OK, I think that's all from me - I think that covers getting up to speed with the core tools, and exploring the code that's available in a way that's hopefully useful</td></tr>
+            <tr><td>[10:34] &lt MS-&gt as well as the admin stuff</td></tr>
+            <tr><td>[10:34] &lt MS-&gt Do you need to raise anything with me?</td></tr>
+            <tr><td>[10:34] &lt Davbo&gt I'll start this probably on Wednesday fyi. Got some other things to get out of the way</td></tr>
+            <tr><td>[10:34] &lt MS-&gt Cool</td></tr>
+            <tr><td>[10:35] &lt Davbo&gt The exam dates i noted on my application are now official also</td></tr>
+            <tr><td>[10:35] &lt MS-&gt the aim really is to ensure that you're up to speed with the tools you'll need to use essentially - ie pygame based components, multiprocess stuff, and subversion - so you can hit the ground running</td></tr>
+            <tr><td>[10:36] &lt Davbo&gt Yeah, i'm getting used to svn now</td></tr>
+            <tr><td>[10:36] &lt MS-&gt Can you forward me the actual dates again?</td></tr>
+            <tr><td>[10:36] &lt Davbo&gt yeah sec</td></tr>
+            <tr><td>[10:36] &lt MS-&gt I'm *still* getting used to SVN myself</td></tr>
+            <tr><td>[10:37] &lt MS-&gt After a couple of years since we changed. It's better than CVS though - especially for directory based stuff. Actually keeping version history when you move/change/copy files is really nice</td></tr>
+            <tr><td>[10:37] &lt Davbo&gt Thu, May 29, 13:30 – 15:30</td></tr>
+            <tr><td>[10:37] &lt Davbo&gt Wed, June 4, 09:00 – 11:00</td></tr>
+            <tr><td>[10:37] &lt Davbo&gt Fri, June 6, 13:30 – 15:30</td></tr>
+            <tr><td>[10:37] &lt MS-&gt much appreciate</td></tr>
+            <tr><td>[10:37] &lt MS-&gt d</td></tr>
+            <tr><td>[10:38] &lt MS-&gt so, anything you need from me at this stage?</td></tr>
+            <tr><td>[10:39] &lt Davbo&gt Nah, is it okay if we call it a day here? So i can go and lay down lol</td></tr>
+            <tr><td>[10:40] &lt MS-&gt It's fine, you go rest</td></tr>
+            <tr><td>[10:41] &lt MS-&gt Thanks for stopping by :)</td></tr>
+            <tr><td>[10:41] &lt MS-&gt Drink vitamin C :)</td></tr>
+            <tr><td>[10:41] &lt Davbo&gt no problem, I'll be back on later hopefully.</td></tr>
+            <tr><td>[10:41] &lt MS-&gt Only if you're well I hope</td></tr>
+            <tr><td>[10:43] &lt Davbo&gt Alright, cya later all.</td></tr>
+            <tr><td>[10:47] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[11:26] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[11:27] &lt Chong-&gt Afternoon, all.</td></tr>
+            <tr><td>[11:36] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[11:38] &lt vmlemon&gt Hi Chong-</td></tr>
+            <tr><td>[11:50] &lt vmlemon&gt Hi Chong- 5</td></tr>
+            <tr><td>[11:52] &lt Chong-&gt Hello vmlemon</td></tr>
+            <tr><td>[12:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:01] *** Chong- just sorted out the crash problem of eclipse: life is not easy:-)</td></tr>
+            <tr><td>[12:04] &lt vmlemon_&gt Let me guess, the time taken to fix it slowly Eclipses the time spent using it? ;)</td></tr>
+            <tr><td>[12:06] &lt Chong-&gt Indeed :-)</td></tr>
+            <tr><td>[12:21] *** ms-away goes for lunch</td></tr>
+            <tr><td>[12:58] *** ms-away is now known as ms0</td></tr>
+            <tr><td>[12:58] *** ms0 is now known as ms-</td></tr>
+            <tr><td>[12:59] *** ms- notes ms0 is very similar to ms-, except unlike ms-, ms0 can't type proper like wot I can</td></tr>
+            <tr><td>[13:11] *** ms- joins a conference call</td></tr>
+            <tr><td>[13:11] &lt ms-&gt sigh</td></tr>
+            <tr><td>[13:11] &lt Lawouach&gt ?</td></tr>
+            <tr><td>[13:11] &lt ms-&gt work</td></tr>
+            <tr><td>[13:11] &lt ms-&gt it's a similar to</td></tr>
+            <tr><td>[13:11] *** ms- dies quietly</td></tr>
+            <tr><td>[13:12] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[13:29] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[13:42] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:43] &lt orphans&gt Lawouach, we got a meeting tonight?</td></tr>
+            <tr><td>[13:44] &lt Lawouach&gt normally yes.</td></tr>
+            <tr><td>[13:44] &lt Lawouach&gt Unless you can't make it.</td></tr>
+            <tr><td>[13:45] &lt orphans&gt nah, I'm good, just checking you were OK too :)</td></tr>
+            <tr><td>[13:45] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[13:46] &lt orphans&gt cool cool</td></tr>
+            <tr><td>[13:46] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[14:07] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[14:08] &lt Chong-&gt Hi ms-, are you there?</td></tr>
+            <tr><td>[14:15] &lt ms-&gt yep, sorrt</td></tr>
+            <tr><td>[14:15] &lt ms-&gt (was just grabbed here)</td></tr>
+            <tr><td>[14:15] &lt ms-&gt OK, here now</td></tr>
+            <tr><td>[14:16] &lt ms-&gt ready when you are</td></tr>
+            <tr><td>[14:16] &lt ms-&gt sorry about that</td></tr>
+            <tr><td>[14:16] &lt ms-&gt OK, essentially a broken record - same things as I discussed earlier with Davbo.</td></tr>
+            <tr><td>[14:16] &lt Lawouach&gt I've committed the SSL support into my branch</td></tr>
+            <tr><td>[14:16] &lt ms-&gt Lawouach: Cool</td></tr>
+            <tr><td>[14:16] &lt Chong-&gt np</td></tr>
+            <tr><td>[14:17] &lt Lawouach&gt It should allow TCPClient to work with SSL servers</td></tr>
+            <tr><td>[14:17] &lt ms-&gt Lawouach: very cool</td></tr>
+            <tr><td>[14:17] &lt Lawouach&gt It doesn't do SSL handshake</td></tr>
+            <tr><td>[14:17] &lt Lawouach&gt Since the Python socket.ssl built-in function doesn't do that.</td></tr>
+            <tr><td>[14:17] &lt ms-&gt Lawouach: k</td></tr>
+            <tr><td>[14:18] &lt ms-&gt Chong-: OK, this period up to the beginning of the coding period is really about getting up to speed with project processes, admin and getting to know where people need support etc</td></tr>
+            <tr><td>[14:18] &lt Lawouach&gt I'll keep quiet now.</td></tr>
+            <tr><td>[14:18] &lt ms-&gt Lawouach: ta ;)</td></tr>
+            <tr><td>[14:18] &lt ms-&gt j_baker's doing really well with that since he's showing lots of points of pain</td></tr>
+            <tr><td>[14:19] &lt Chong-&gt ms-: good.</td></tr>
+            <tr><td>[14:19] &lt ms-&gt So we need to come up with a plan for your work</td></tr>
+            <tr><td>[14:19] &lt Chong-&gt sure.</td></tr>
+            <tr><td>[14:19] &lt ms-&gt the key points really, are getting up to speed with code, exploring what's there and also with the tools - especially with subversion</td></tr>
+            <tr><td>[14:20] &lt Chong-&gt Now I am going through the existing Kamaelia codes.</td></tr>
+            <tr><td>[14:20] &lt ms-&gt I'll just see what you've already put in svn</td></tr>
+            <tr><td>[14:21] &lt ms-&gt Ah yes, I think the biggest issue you're likely to hit, based on your code, is to deal with the issues of *perspectives* in kamaelia code</td></tr>
+            <tr><td>[14:21] &lt Chong-&gt It's still the codes I did at the very beginning in SVN.</td></tr>
+            <tr><td>[14:21] &lt ms-&gt Chong-: yep</td></tr>
+            <tr><td>[14:21] &lt ms-&gt So my suggestion would be to think of a small project to deal with using the components you're going to extend/modify</td></tr>
+            <tr><td>[14:22] &lt Chong-&gt ms-: the issues of *perspectives* ---need explanation</td></tr>
+            <tr><td>[14:22] &lt ms-&gt Also, we're interested in retrieving the data for your graph from a database, so ideally ought to take that into account</td></tr>
+            <tr><td>[14:22] &lt ms-&gt Chong-: Indeed</td></tr>
+            <tr><td>[14:22] &lt ms-&gt most software isn't written with a perspective in mind</td></tr>
+            <tr><td>[14:22] &lt ms-&gt ie like first/second/third person</td></tr>
+            <tr><td>[14:23] &lt ms-&gt whereas in essence kamaelia code *is*</td></tr>
+            <tr><td>[14:23] &lt ms-&gt When I write</td></tr>
+            <tr><td>[14:23] &lt Chong-&gt so ideally ought to take that into account: np</td></tr>
+            <tr><td>[14:23] &lt ms-&gt self.send("Hello", "outbox")</td></tr>
+            <tr><td>[14:23] &lt ms-&gt That's written from the perspective of the *running* component</td></tr>
+            <tr><td>[14:23] &lt ms-&gt If instead of software, you think of it being like a robot at a desk</td></tr>
+            <tr><td>[14:23] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[14:24] &lt ms-&gt And then that's instructions by the robot</td></tr>
+            <tr><td>[14:24] &lt ms-&gt instructions the robot follows (rather)</td></tr>
+            <tr><td>[14:24] &lt ms-&gt then the robot will go "ahh, I send this piece of data via my 'outbox' "</td></tr>
+            <tr><td>[14:24] &lt Chong-&gt I see. Now I can understand the meaning of send and recv.</td></tr>
+            <tr><td>[14:25] &lt ms-&gt Correct</td></tr>
+            <tr><td>[14:25] &lt ms-&gt That's what your mini-axon showed us - that the issue of perspective is implicit in Kamaelia</td></tr>
+            <tr><td>[14:25] &lt ms-&gt you have "the view from inside the component"</td></tr>
+            <tr><td>[14:25] &lt ms-&gt in which case send/recv make sense</td></tr>
+            <tr><td>[14:26] &lt ms-&gt and you also have "the view from outside" which is why (at least in the past) there was "deliver/collect"</td></tr>
+            <tr><td>[14:26] &lt Chong-&gt got it.</td></tr>
+            <tr><td>[14:26] &lt ms-&gt "I send this data to my outbox" "the postman delivers to my inbox"</td></tr>
+            <tr><td>[14:26] &lt ms-&gt cool</td></tr>
+            <tr><td>[14:26] &lt ms-&gt So we need to get you used to dealing with that</td></tr>
+            <tr><td>[14:27] &lt ms-&gt As well as seeing how the visualisation code works</td></tr>
+            <tr><td>[14:27] &lt Chong-&gt I have checked the source code. it seems that deliver is to Inboxes, send is to Outboxes.</td></tr>
+            <tr><td>[14:27] &lt Chong-&gt So, they are not essentially the same.</td></tr>
+            <tr><td>[14:28] &lt ms-&gt generally speaking kamaelia components always work from the local perspective</td></tr>
+            <tr><td>[14:28] &lt ms-&gt They never use the external perspective</td></tr>
+            <tr><td>[14:28] &lt ms-&gt And if a component wishes to use the facilities of another they always go via in/outboxes</td></tr>
+            <tr><td>[14:28] &lt ms-&gt Ok, pragmatica</td></tr>
+            <tr><td>[14:28] &lt Chong-&gt np. Now I can think in Kamaelia :-)</td></tr>
+            <tr><td>[14:28] &lt ms-&gt pragmatics rather</td></tr>
+            <tr><td>[14:29] &lt ms-&gt My suggestion is you need to build first of all a simple system (eg using the console reader) for adding nodes & links to the visualiser</td></tr>
+            <tr><td>[14:29] &lt ms-&gt ie I type something on a console and stuff appears in the visualiser</td></tr>
+            <tr><td>[14:30] &lt ms-&gt The simplest possible system there</td></tr>
+            <tr><td>[14:30] &lt ms-&gt The next logical step, with regard to your project,</td></tr>
+            <tr><td>[14:30] &lt ms-&gt is to define a simple text file format for defining relationships</td></tr>
+            <tr><td>[14:30] &lt ms-&gt between nodes, and then use that to spit out the nodes and links</td></tr>
+            <tr><td>[14:30] &lt Chong-&gt I think this code is already there, in one of our examples</td></tr>
+            <tr><td>[14:31] &lt ms-&gt Chong-: I'm suggesting simple steps, yes</td></tr>
+            <tr><td>[14:31] *** ms- thinks</td></tr>
+            <tr><td>[14:31] &lt ms-&gt allow the user to define in a text file people</td></tr>
+            <tr><td>[14:32] &lt ms-&gt person mum</td></tr>
+            <tr><td>[14:32] &lt ms-&gt person dad</td></tr>
+            <tr><td>[14:32] &lt ms-&gt person son</td></tr>
+            <tr><td>[14:32] &lt ms-&gt person daughter</td></tr>
+            <tr><td>[14:32] &lt ms-&gt childof(mum, son)</td></tr>
+            <tr><td>[14:32] &lt ms-&gt childof(dad, son)</td></tr>
+            <tr><td>[14:32] &lt ms-&gt for examle</td></tr>
+            <tr><td>[14:32] &lt ms-&gt then use that to generate the nodes and links</td></tr>
+            <tr><td>[14:32] &lt Chong-&gt From Example Usage of TopologyViewer</td></tr>
+            <tr><td>[14:33] &lt ms-&gt I'm more thinking</td></tr>
+            <tr><td>[14:33] &lt ms-&gt start off</td></tr>
+            <tr><td>[14:33] &lt Chong-&gt Pipeline( ConsoleReader(), lines_to_tokenlists(), TopologyViewer(), ).run()</td></tr>
+            <tr><td>[14:33] &lt Chong-&gt I have tried before :-)</td></tr>
+            <tr><td>[14:33] &lt ms-&gt Initially yes</td></tr>
+            <tr><td>[14:34] &lt ms-&gt However, replace console reader with a new component that accepts either interactive input of the above simple social network (which is a family of course)</td></tr>
+            <tr><td>[14:34] &lt ms-&gt ie you need to have a parser that managers local version of the topology to output the links correctly</td></tr>
+            <tr><td>[14:34] &lt Chong-&gt I see. So the job is to extract relations from the file.</td></tr>
+            <tr><td>[14:34] &lt ms-&gt yep</td></tr>
+            <tr><td>[14:34] &lt mhrd&gt - you want to abstract away from the particular syntax of adding/removing nodes/links to something relevant to your problem/app domain</td></tr>
+            <tr><td>[14:35] &lt ms-&gt the next step is to create a custom topology viewer using custom particles</td></tr>
+            <tr><td>[14:35] &lt ms-&gt mhrd: yep</td></tr>
+            <tr><td>[14:35] &lt ms-&gt In this case the custom particles could be a variety of option</td></tr>
+            <tr><td>[14:35] &lt ms-&gt s</td></tr>
+            <tr><td>[14:35] &lt ms-&gt it may be that you pass through an filename</td></tr>
+            <tr><td>[14:35] &lt ms-&gt or simpler start off with simply passing gender through</td></tr>
+            <tr><td>[14:36] &lt ms-&gt allowing colourisation of the particle</td></tr>
+            <tr><td>[14:36] &lt ms-&gt s</td></tr>
+            <tr><td>[14:36] &lt Chong-&gt I see. it's more flexible.</td></tr>
+            <tr><td>[14:36] &lt ms-&gt Yep</td></tr>
+            <tr><td>[14:36] &lt ms-&gt the thing this should exercise is the building of a custom component which maintains a local view (filereader | the parser | modeller)</td></tr>
+            <tr><td>[14:37] &lt Chong-&gt so the rule is: ()-- link; no ()--entity</td></tr>
+            <tr><td>[14:37] &lt ms-&gt And then also a _customisation_ of the topology viewer to support custom nodes</td></tr>
+            <tr><td>[14:37] &lt ms-&gt first of all using colour initially</td></tr>
+            <tr><td>[14:38] &lt ms-&gt but I would actually then suggest using pictures (it's not hard having done that)</td></tr>
+            <tr><td>[14:38] &lt Chong-&gt that's cool</td></tr>
+            <tr><td>[14:38] &lt ms-&gt That should exercise most of the parts of the visualiser you'll need to understand in order to a) extend it to support hierarchies</td></tr>
+            <tr><td>[14:38] &lt ms-&gt b) then extend into 3D.</td></tr>
+            <tr><td>[14:39] &lt ms-&gt The alternative is to look at building 3D components first</td></tr>
+            <tr><td>[14:39] &lt ms-&gt but I suspect that's too many steps and changes before having something working</td></tr>
+            <tr><td>[14:39] &lt Chong-&gt yes. I agree.</td></tr>
+            <tr><td>[14:39] &lt ms-&gt Regarding rules and file format etc</td></tr>
+            <tr><td>[14:40] &lt Chong-&gt It's better to extend the 2D first.</td></tr>
+            <tr><td>[14:40] &lt ms-&gt my suggestion would be to define those first, after having built the basic console reading version</td></tr>
+            <tr><td>[14:40] &lt ms-&gt Also, I would suggest NOT skipping the basic console version first, since you'll be able to reuse that to test your customised visualiser</td></tr>
+            <tr><td>[14:40] &lt Chong-&gt as experiments and learning tools.</td></tr>
+            <tr><td>[14:40] &lt ms-&gt yep</td></tr>
+            <tr><td>[14:41] &lt Chong-&gt np. I'll</td></tr>
+            <tr><td>[14:43] &lt Chong-&gt ms-: one question,</td></tr>
+            <tr><td>[14:43] &lt Chong-&gt when I run b=TopologyViewer(); b.send('ADD NODE TCPClient TCPClient auto -')</td></tr>
+            <tr><td>[14:43] &lt ms-&gt go on</td></tr>
+            <tr><td>[14:43] &lt ms-&gt that should not work</td></tr>
+            <tr><td>[14:43] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[14:43] &lt ms-&gt b.send is from the perspective of the component</td></tr>
+            <tr><td>[14:43] &lt Chong-&gt it does not work.</td></tr>
+            <tr><td>[14:43] &lt ms-&gt Nor *should* it</td></tr>
+            <tr><td>[14:44] &lt Chong-&gt but it's a method of b. So I cannot understand why it doesn't work.</td></tr>
+            <tr><td>[14:44] &lt Chong-&gt no error info, just not work.</td></tr>
+            <tr><td>[14:45] &lt ms-&gt because you are not supposed to use it from OUTSIDE the component</td></tr>
+            <tr><td>[14:45] &lt ms-&gt this is what I meant about perspective that you need to learn :)</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt but b.Outboxes['outbox'] = 'ADD NODE TCPClient TCPClient auto -' works.</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[14:46] &lt ms-&gt yes, but that's called not using the component correctly</td></tr>
+            <tr><td>[14:46] &lt ms-&gt also known as "broken"</td></tr>
+            <tr><td>[14:46] &lt ms-&gt ;)</td></tr>
+            <tr><td>[14:46] &lt ms-&gt You can create a component</td></tr>
+            <tr><td>[14:46] &lt ms-&gt But to talk to it, you need to connect outboxes to it's inboxes</td></tr>
+            <tr><td>[14:46] &lt ms-&gt you can only do *that* inside a component</td></tr>
+            <tr><td>[14:47] &lt Chong-&gt I see, but not very clearly.</td></tr>
+            <tr><td>[14:47] &lt Chong-&gt how can Pipeline link them?</td></tr>
+            <tr><td>[14:49] &lt ms-&gt What do you mean?</td></tr>
+            <tr><td>[14:51] &lt Chong-&gt I mean connect outboxes to it's inboxes</td></tr>
+            <tr><td>[14:51] &lt ms-&gt it uses Axon to link then</td></tr>
+            <tr><td>[14:51] &lt ms-&gt Axon is allowed to know what's going on there</td></tr>
+            <tr><td>[14:51] &lt ms-&gt Components don't</td></tr>
+            <tr><td>[14:51] &lt ms-&gt If you look at the Pipeline component, you'll see that it does this:</td></tr>
+            <tr><td>[14:51] &lt ms-&gt self.link((source,"outbox"), (dest,"inbox"))</td></tr>
+            <tr><td>[14:51] &lt ms-&gt self.link((source,"signal"), (dest,"control"))</td></tr>
+            <tr><td>[14:51] &lt ms-&gt For each part of the system</td></tr>
+            <tr><td>[14:51] &lt ms-&gt self.link is defined inside Axon.Component</td></tr>
+            <tr><td>[14:51] &lt Chong-&gt Now, I know why send doesn't work, because send is to self.outboxes not Outboxes</td></tr>
+            <tr><td>[14:52] &lt ms-&gt self.Outboxes is part of the mechanism for *declaring*</td></tr>
+            <tr><td>[14:52] &lt ms-&gt the API</td></tr>
+            <tr><td>[14:52] &lt ms-&gt This of components like programs on the unix command line?</td></tr>
+            <tr><td>[14:52] &lt ms-&gt eg</td></tr>
+            <tr><td>[14:52] &lt ms-&gt ~&gt ls |wc</td></tr>
+            <tr><td>[14:52] &lt ms-&gt  103 106 1393</td></tr>
+            <tr><td>[14:52] &lt ms-&gt You can't get "inside" ls</td></tr>
+            <tr><td>[14:53] &lt ms-&gt Nor can you get "inside" wc</td></tr>
+            <tr><td>[14:53] &lt Chong-&gt I see. I will double check it.</td></tr>
+            <tr><td>[14:53] &lt ms-&gt All you can do is join their outputs to inputs</td></tr>
+            <tr><td>[14:53] &lt ms-&gt There also aren't any "methods" you can do to operate on "ls" or "wc" once they're started</td></tr>
+            <tr><td>[14:53] &lt ms-&gt though you can send them different data</td></tr>
+            <tr><td>[14:54] &lt ms-&gt and they can send different data out of stdout and stderr</td></tr>
+            <tr><td>[14:54] &lt ms-&gt A component is free to call any of its own methods</td></tr>
+            <tr><td>[14:54] &lt ms-&gt However the *user* of a component MUST use the inbox/outbox API with 2 exceptions</td></tr>
+            <tr><td>[14:54] &lt ms-&gt 1) they may call the __init__ method</td></tr>
+            <tr><td>[14:55] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[14:55] &lt ms-&gt 2) In emergency/restricted scenarios (and I really mean restricted), they can call the .stop() method</td></tr>
+            <tr><td>[14:55] &lt ms-&gt Since there is very good reason for that method</td></tr>
+            <tr><td>[14:56] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[14:56] &lt ms-&gt OK, as you can see, that's why I suggested that you need to have some basic tasks that exercise this aspect of perspective</td></tr>
+            <tr><td>[14:57] &lt ms-&gt since it's the thing that's probably missing</td></tr>
+            <tr><td>[14:57] &lt Chong-&gt You're right. thanks.</td></tr>
+            <tr><td>[14:57] &lt mhrd&gt also not forgetting an axon system doesn't do anything until components are 'activated' and the scheduler is running</td></tr>
+            <tr><td>[14:57] &lt Chong-&gt mhr: thanks. I made this mistake before :-)</td></tr>
+            <tr><td>[14:58] &lt ms-&gt OK, summary:</td></tr>
+            <tr><td>[14:58] &lt ms-&gt basic console-&gt topology visualiser</td></tr>
+            <tr><td>[14:58] &lt ms-&gt file -&gt topology visualiser</td></tr>
+            <tr><td>[14:58] &lt ms-&gt custom file format (eg family tree) -&gt file reader -&gt file parser -&gt local modeller -&gt topology visualiser</td></tr>
+            <tr><td>[14:58] &lt ms-&gt then</td></tr>
+            <tr><td>[14:58] &lt ms-&gt ( custom file format (eg family tree) -&gt file reader -&gt file parser -&gt local modeller) -&gt (basic customised topology visualiser (eg pink/blue for gender))</td></tr>
+            <tr><td>[14:59] &lt ms-&gt then ( custom file format (eg family tree) -&gt file reader -&gt file parser -&gt local modeller) -&gt (extended customised topology visualiser (eg pictures of the person/user))</td></tr>
+            <tr><td>[14:59] &lt ms-&gt that covers the code & tools exploration aspect</td></tr>
+            <tr><td>[15:00] &lt ms-&gt Admin wise, we need to deal with the contributer agreement</td></tr>
+            <tr><td>[15:00] &lt Chong-&gt got it. np.</td></tr>
+            <tr><td>[15:00] &lt ms-&gt As per conversation with davbo earlier</td></tr>
+            <tr><td>[15:00] &lt ms-&gt you need to take this: http://kamaelia.sourceforge.net/Developers/SampleContributorAgreement</td></tr>
+            <tr><td>[15:01] &lt ms-&gt the bits between horizontal rules</td></tr>
+            <tr><td>[15:01] &lt ms-&gt (ie everything between "Contributor Agreement" down to ... "... THE POSSIBILITY OF SUCH DAMAGE.")</td></tr>
+            <tr><td>[15:01] &lt ms-&gt change the bits in green</td></tr>
+            <tr><td>[15:01] &lt ms-&gt to something appropriate</td></tr>
+            <tr><td>[15:02] &lt ms-&gt change the purple "JLB" to "CL"</td></tr>
+            <tr><td>[15:02] &lt ms-&gt and remove all the bits that are in purple</td></tr>
+            <tr><td>[15:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:05] &lt vmlemon_&gt Is the contributor agreement a "once in a lifetime thing"?</td></tr>
+            <tr><td>[15:05] &lt ms-&gt Cool</td></tr>
+            <tr><td>[15:05] &lt ms-&gt vmlemon_: yep</td></tr>
+            <tr><td>[15:05] &lt ms-&gt People then tag their code with</td></tr>
+            <tr><td>[15:05] &lt ms-&gt # Contributed under a contributer agreement : CL</td></tr>
+            <tr><td>[15:05] &lt ms-&gt or whatever the exact phrase is</td></tr>
+            <tr><td>[15:06] &lt ms-&gt meaning its a lightweight process</td></tr>
+            <tr><td>[15:06] &lt ms-&gt If they don't tag the code, the agreement doesn't apply to that code.</td></tr>
+            <tr><td>[15:06] &lt Chong-&gt ms-: another question, why the following doesn't work</td></tr>
+            <tr><td>[15:06] &lt Chong-&gt b=TopologyViewer(); b.Inboxes['inbox'] = 'ADD NODE TCPClient TCPClient auto -'; b.Outboxes['outbox'] = 'ADD NODE TCPClient TCPClient auto -'; b.run()</td></tr>
+            <tr><td>[15:07] &lt ms-&gt because, again, it's breaking the rules of engagement</td></tr>
+            <tr><td>[15:07] &lt ms-&gt In fact what they is doing is just changing the documentation for that inbox and that outbox</td></tr>
+            <tr><td>[15:07] &lt Chong-&gt I know. But it can open PyGame window, but does nothing.</td></tr>
+            <tr><td>[15:07] &lt ms-&gt "what they is doing" what is wrong with me today</td></tr>
+            <tr><td>[15:07] &lt ms-&gt indeed, it would do nothing</td></tr>
+            <tr><td>[15:08] &lt ms-&gt That's because That Is The Wrong Way To Use That Code</td></tr>
+            <tr><td>[15:08] *** ms- wonders if I'm saying something badly</td></tr>
+            <tr><td>[15:08] &lt ms-&gt Please run the examples first</td></tr>
+            <tr><td>[15:08] &lt Chong-&gt np. I know it's not correct. I just want to hack it around. :-)</td></tr>
+            <tr><td>[15:08] &lt ms-&gt Then copy one into your /Sketches directory</td></tr>
+            <tr><td>[15:09] &lt ms-&gt Then modify things there</td></tr>
+            <tr><td>[15:09] &lt ms-&gt Ah</td></tr>
+            <tr><td>[15:09] &lt ms-&gt I see</td></tr>
+            <tr><td>[15:09] &lt ms-&gt Well, please be aware that using things in a broken fashion usually results in non-working code</td></tr>
+            <tr><td>[15:11] &lt ms-&gt OK, any questions about the work you ought to be working on, or is the list of stuff to do (code & paperwork) clear?</td></tr>
+            <tr><td>[15:11] &lt ms-&gt (I have to go do something else)</td></tr>
+            <tr><td>[15:11] &lt Chong-&gt np. I have run almost all existing examples: modeller, Slideshows, Ticker, BouncingCatGame and so on</td></tr>
+            <tr><td>[15:11] &lt ms-&gt If you have more questions, please do ask</td></tr>
+            <tr><td>[15:11] &lt ms-&gt but preferably via email to the google group</td></tr>
+            <tr><td>[15:12] &lt Chong-&gt np. It's clear until now. :-)</td></tr>
+            <tr><td>[15:12] &lt ms-&gt cool</td></tr>
+            <tr><td>[15:12] &lt ms-&gt I'll look forward to seeing your code</td></tr>
+            <tr><td>[15:12] &lt Chong-&gt If any problem, during the process, I will ask you later.</td></tr>
+            <tr><td>[15:12] &lt Chong-&gt np :-)</td></tr>
+            <tr><td>[15:13] &lt ms-&gt cool</td></tr>
+            <tr><td>[15:13] &lt ms-&gt biab</td></tr>
+            <tr><td>[15:13] &lt ms-&gt thanks for coming along, please do idle :)</td></tr>
+            <tr><td>[15:14] &lt Chong-&gt pleasure :-)</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt "Thank you for calling #kamaelia. Your call is in a queue, and one of our advisors will be with you shortly."</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt No Muzak, though ;)</td></tr>
+            <tr><td>[15:24] &lt Chong-&gt hehe</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[15:27] Reply: does the macarena</td></tr>
+            <tr><td>[16:04] &lt mhrd&gt Chong: like MS- said, there is a defined way to write component and communicate with them; anything you do outside of that will likely break when I whimsically change how, for eaxmple, inboxes and outboxes are implemented :-)</td></tr>
+            <tr><td>[16:09] &lt mhrd&gt I find Kamaelia.Util.DataSource and Kamaelia.Util.OneShot are quite useful for testing components - they're convenient components than can be programmed to simply send a piece of data out of their outboxes ... which you can then wire up to another compnoent's inbox using a pipeline or graphline</td></tr>
+            <tr><td>[16:13] &lt orphans&gt very ot but I just stumbled across this. I think it's the best spoof I've seen in years. I'm also 90% sure it's deadly serious - http://www.drumdrums.com/adv002.html</td></tr>
+            <tr><td>[16:18] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:25] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[16:25] &lt j_baker&gt ms- is there any particular version of python we're targetting with Kamaelia?</td></tr>
+            <tr><td>[16:46] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:47] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:50] &lt ms-&gt Hi j_baker good question :-)</td></tr>
+            <tr><td>[16:50] &lt ms-&gt I personally prefer to use functionality that exists in python 2.3</td></tr>
+            <tr><td>[16:51] &lt ms-&gt Rather than more recent</td></tr>
+            <tr><td>[16:51] &lt ms-&gt Even though I tend to use more recent</td></tr>
+            <tr><td>[16:51] &lt ms-&gt There's several reasons to that</td></tr>
+            <tr><td>[16:51] &lt vmlemon_&gt Lowest common denominator factor?</td></tr>
+            <tr><td>[16:52] &lt ms-&gt spot on</td></tr>
+            <tr><td>[16:52] &lt j_baker&gt That makes sense. There are some Linuces that have 2.4 installed.</td></tr>
+            <tr><td>[16:52] &lt ms-&gt one very simple one is that my mac mini that I use as a headless server uses python2.3 and I don't particularly want to change it</td></tr>
+            <tr><td>[16:52] &lt ms-&gt The other one is slightly more obscure</td></tr>
+            <tr><td>[16:52] &lt ms-&gt The functionality we tend to use in 2.3 is actually largely compatible with python 2.2.2 (2.2.3)</td></tr>
+            <tr><td>[16:53] &lt ms-&gt which is the version of python that python on Nokia mobiles derives from</td></tr>
+            <tr><td>[16:53] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:53] &lt ms-&gt ie python on series 60 phones</td></tr>
+            <tr><td>[16:53] &lt ms-&gt And I would like to leave that door open where possible</td></tr>
+            <tr><td>[16:54] &lt ms-&gt or if we break it, to know *where* we break it</td></tr>
+            <tr><td>[16:54] &lt ms-&gt So the biggest difference really there is really "no decorators"</td></tr>
+            <tr><td>[16:54] &lt ms-&gt But then lots of people misunderstand how to use them properly/effectively at the best of times, so I'm not too worried about that ;-0</td></tr>
+            <tr><td>[16:54] &lt ms-&gt ;-)</td></tr>
+            <tr><td>[16:55] &lt j_baker&gt Is there any way to check your code to see what versions of python it will run under?</td></tr>
+            <tr><td>[16:55] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[16:55] Reply: does the macarena</td></tr>
+            <tr><td>[16:55] &lt j_baker&gt Short of actually running it under them</td></tr>
+            <tr><td>[16:55] &lt ms-&gt That's the only decent check.</td></tr>
+            <tr><td>[16:55] &lt ms-&gt there's a good chance that you're not likely to do anything which won't run on 2.3</td></tr>
+            <tr><td>[16:56] &lt ms-&gt The biggest thing that you're more likely to do is use decorators</td></tr>
+            <tr><td>[16:56] &lt vmlemon_&gt Like wallpaper? ;)</td></tr>
+            <tr><td>[16:56] &lt j_baker&gt Those are what you use to make properties, correct?</td></tr>
+            <tr><td>[16:56] &lt ms-&gt personally I would suggest generally speaking don't worry about it too much, but don't be suprised if you hear a yelp. :-)</td></tr>
+            <tr><td>[16:57] &lt ms-&gt the most common use for decorators is something like</td></tr>
+            <tr><td>[16:57] &lt ms-&gt @classmethod</td></tr>
+            <tr><td>[16:57] &lt ms-&gt def somemeth(cls, ...)</td></tr>
+            <tr><td>[16:57] &lt ms-&gt @staticmethod</td></tr>
+            <tr><td>[16:57] &lt ms-&gt def method_that_abuses_a_class_as_a_namespace()</td></tr>
+            <tr><td>[16:58] &lt ms-&gt etc</td></tr>
+            <tr><td>[16:58] &lt ms-&gt In all cases there's a way of doing that without using the decorator syntax</td></tr>
+            <tr><td>[16:58] &lt ms-&gt so if you (think you) need to do that, do it, and we can work around if necessary</td></tr>
+            <tr><td>[16:59] &lt ms-&gt def somemethod(cls,...)</td></tr>
+            <tr><td>[16:59] &lt ms-&gt ....</td></tr>
+            <tr><td>[16:59] &lt ms-&gt somemethod = classmethod(somemethod)</td></tr>
+            <tr><td>[16:59] &lt vmlemon_&gt Ugh, GPRS sucks when in motion at high speed (i.e. 10MPH+), especially if coverage is spotty</td></tr>
+            <tr><td>[17:00] &lt j_baker&gt GPRS sucks altogether (at least here in the US)</td></tr>
+            <tr><td>[17:00] &lt vmlemon_&gt It sucks totally, everywhere</td></tr>
+            <tr><td>[17:01] &lt j_baker&gt Thanks, I'll remember that ms-, but like you said, I doubt I'll use it.</td></tr>
+            <tr><td>[17:01] &lt j_baker&gt But the moral of the story is that Kamaelia should run perfectly well under python 2.4? I'm just making sure because the distro I have ships with 2.4.</td></tr>
+            <tr><td>[17:02] &lt vmlemon_&gt Yup, and they all lived happily ever after ;)</td></tr>
+            <tr><td>[17:03] &lt j_baker&gt Also, are periods ever going to be encountered in a uri other than as an extension?</td></tr>
+            <tr><td>[17:06] &lt ms-&gt j_baker: "the moral of the story is that Kamaelia should run perfectly well under python 2.4?" yes</td></tr>
+            <tr><td>[17:06] &lt ms-&gt j_baker: Do you mean</td></tr>
+            <tr><td>[17:07] &lt ms-&gt urls like http://example.com/foo.bar.baz won't happen?</td></tr>
+            <tr><td>[17:07] &lt j_baker&gt No.</td></tr>
+            <tr><td>[17:07] &lt ms-&gt What's an example that won't happen then?</td></tr>
+            <tr><td>[17:07] &lt ms-&gt :)</td></tr>
+            <tr><td>[17:07] &lt vmlemon_&gt What about dates, and personal names in URIs?</td></tr>
+            <tr><td>[17:07] &lt j_baker&gt I'm asking because the sanitizePath function in Minimal.py deals with periods</td></tr>
+            <tr><td>[17:08] &lt j_baker&gt Like you would a path on a cli</td></tr>
+            <tr><td>[17:08] &lt ms-&gt How would it cope with http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPServer.html ?</td></tr>
+            <tr><td>[17:08] *** ms- goes to look at code</td></tr>
+            <tr><td>[17:08] &lt j_baker&gt so that if you type ../ it will go up a irectory</td></tr>
+            <tr><td>[17:08] &lt ms-&gt Ahh I see</td></tr>
+            <tr><td>[17:09] &lt ms-&gt ../ is generally considered a bad thing</td></tr>
+            <tr><td>[17:09] &lt ms-&gt :)</td></tr>
+            <tr><td>[17:09] &lt ms-&gt But .../ is OK</td></tr>
+            <tr><td>[17:09] &lt ms-&gt as is ./</td></tr>
+            <tr><td>[17:10] &lt j_baker&gt So would it then be ok to remove the part that deals with the periods? I don't see how a URI could contain periods used that way.</td></tr>
+            <tr><td>[17:10] &lt ms-&gt Ah you're referring to the for loop</td></tr>
+            <tr><td>[17:11] &lt ms-&gt http://kamaelia.sourceforge.net/t/./././././LifeCycle1.png is valid</td></tr>
+            <tr><td>[17:12] &lt j_baker&gt Ok. Then I'll leave that part.</td></tr>
+            <tr><td>[17:12] &lt ms-&gt cool</td></tr>
+            <tr><td>[17:12] *** ms- goes to catch tram, back later</td></tr>
+            <tr><td>[17:12] &lt ms-&gt :)</td></tr>
+            <tr><td>[17:12] &lt ms-&gt cya</td></tr>
+            <tr><td>[17:12] *** ms- has parted #kamaelia</td></tr>
+            <tr><td>[17:12] &lt j_baker&gt later</td></tr>
+            <tr><td>[17:39] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:39] &lt Chong-&gt mhrd: just saw your message. Thanks a lot for your suggestion. The two tools you suggested are very handy.:-)</td></tr>
+            <tr><td>[17:39] &lt vmlemon__&gt Yay for out of sync audio and video</td></tr>
+            <tr><td>[18:02] &lt vmlemon__&gt Hah, I've just discovered that MPlayer has a colour ASCII art mode</td></tr>
+            <tr><td>[18:04] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:07] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[18:07] &lt Lawouach&gt pong</td></tr>
+            <tr><td>[18:08] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[18:08] &lt orphans&gt ooh, sorry, suffering funky stuff with my internet</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt sorry I was registerting projects to PyPI</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt anyway</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt so how are you?</td></tr>
+            <tr><td>[18:08] &lt orphans&gt not too bad ta, yourself?</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt good</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt really hot down here</td></tr>
+            <tr><td>[18:09] &lt orphans&gt it's not too bad here, apart from being stuck indoors for most of the day</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt Right</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt So, last week you did two things: 1/ Ensuring there was README and INSTALL files in the repository. 2/ You created a simple example using pygame</td></tr>
+            <tr><td>[18:11] &lt orphans&gt yup</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt Did you get a chance to expand that demo with sound?</td></tr>
+            <tr><td>[18:11] &lt orphans&gt yeah, I have it making noise now (up to a point)</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt Alright, I shall see that :)</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt Is it still UITest.py ?</td></tr>
+            <tr><td>[18:12] &lt orphans&gt yeah, you need a fairly recent version of chuck and a patch which I can fling to you</td></tr>
+            <tr><td>[18:13] &lt orphans&gt and/or anything else which makes funny noises from osc messages :)</td></tr>
+            <tr><td>[18:13] &lt Lawouach&gt a patch for what?</td></tr>
+            <tr><td>[18:14] &lt orphans&gt ahh, chuck - patch as in program thing rather than patch as in apply it to fix some software :)</td></tr>
+            <tr><td>[18:14] &lt orphans&gt sorry, I'm still in bidule/pd/max terminology here</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt Right, now I'm even more confused :)</td></tr>
+            <tr><td>[18:15] &lt orphans&gt sorry, I'll be more sensible here</td></tr>
+            <tr><td>[18:15] &lt orphans&gt UITest.py makes OSC messages which just contain data - a music program interprets them and makes sounds</td></tr>
+            <tr><td>[18:16] &lt orphans&gt I've been using chuck http://chuck.cs.princeton.edu/ to make the sounds</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[18:16] &lt orphans&gt and you need a small bit of chuck code (the patch I was refering to - in things like pure data they call programs patches confusingly) which I can send you</td></tr>
+            <tr><td>[18:17] &lt orphans&gt that was fun :D</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt Installing chuck</td></tr>
+            <tr><td>[18:17] &lt orphans&gt cool - I think you need a newer version than what's packaged for ubuntu</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt How do I use it?</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt really?</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt which version?</td></tr>
+            <tr><td>[18:18] &lt orphans&gt yeah, OSC support was pretty recent - it's a bit of a pita atm</td></tr>
+            <tr><td>[18:19] &lt vmlemon__&gt A bread cash machine? ;)</td></tr>
+            <tr><td>[18:19] &lt orphans&gt vmlemon__, silly :)</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt orphans: which version then? :)</td></tr>
+            <tr><td>[18:20] &lt orphans&gt can't find which version it went in - the latest one seems to work</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt I wish to test your code</td></tr>
+            <tr><td>[18:20] &lt orphans&gt (not svn, the latest tarball) - 1.2.1.1b</td></tr>
+            <tr><td>[18:21] &lt orphans&gt sorry, this is pretty annoying - everything is just starting to get OSC support in so a lot of it is pretty new</td></tr>
+            <tr><td>[18:22] &lt orphans&gt the deps (which are packed in ubuntu) are libsndfile-dev, flex and yacc</td></tr>
+            <tr><td>[18:22] &lt orphans&gt or at least that's what I didn't have :)</td></tr>
+            <tr><td>[18:22] &lt orphans&gt *packaged</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt np</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt Compiling</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt How do I use it then?</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt That'll need to go into the README and INSTALL ;)</td></tr>
+            <tr><td>[18:24] &lt orphans&gt yeah :)</td></tr>
+            <tr><td>[18:24] &lt orphans&gt http://orphans.pastebin.com/d66396df2 - put this into a file (say sound.ck) and run chuck sound.ck</td></tr>
+            <tr><td>[18:24] &lt orphans&gt and run UI test</td></tr>
+            <tr><td>[18:24] &lt orphans&gt and move things :)</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt I have a sound :)</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt let's run UI test</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt python UITest.py</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt ALSA lib pcm_dmix.c:874:(snd_pcm_dmix_open) unable to open slave</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt damn :)</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt I thought ALSA allowed that</td></tr>
+            <tr><td>[18:27] &lt orphans&gt err - what says that?</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt UI test</td></tr>
+            <tr><td>[18:28] &lt orphans&gt http://ubuntuforums.org/showthread.php?t=601522 - looks like that to me - horrible SDL/pulseaudio gubbins</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt pulseaudio really drives me nuts</td></tr>
+            <tr><td>[18:30] &lt orphans&gt I'm still running an old school alsa/*insert a million sound systems here* setup :)</td></tr>
+            <tr><td>[18:30] &lt vmlemon__&gt It seems like a good idea, but in reality, it's broken</td></tr>
+            <tr><td>[18:32] &lt orphans&gt ahh, Lawouach, try disabling ESD maybe</td></tr>
+            <tr><td>[18:32] &lt orphans&gt if you're running it</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt I'm not I think</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt well anyway</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt I'll check that later on.</td></tr>
+            <tr><td>[18:34] &lt orphans&gt k. the joy of linux audio strikes again...</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt Let's try to step back now.</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt Looking at your code.</td></tr>
+            <tr><td>[18:37] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt I assume that everytime the ball bounces against a wall it tells Osc to play a sound</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt Is that correct?</td></tr>
+            <tr><td>[18:38] &lt orphans&gt kind of - theres not really the concept of playing a sound in osc</td></tr>
+            <tr><td>[18:38] &lt orphans&gt it sends a message which says that it's hit the wall for the user to do what they like with</td></tr>
+            <tr><td>[18:39] &lt Lawouach&gt I see. I'm not familiar with Osc enough then. I'll read some doc. about it to be prepared next time.</td></tr>
+            <tr><td>[18:39] &lt vmlemon__&gt It just "emits data"?</td></tr>
+            <tr><td>[18:39] &lt orphans&gt vmlemon__, basically yeah, in a defined format</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt Alright, so what exactly happens once the Osc component receives data in its inbox?</td></tr>
+            <tr><td>[18:40] &lt orphans&gt Lawouach, http://stud3.tuwien.ac.at/~e0725639/OSC-SYN.txt =&gt if that's working it's interesting</td></tr>
+            <tr><td>[18:41] &lt orphans&gt ok, so the Osc component receives data in the form of a tuple (address, arguments)</td></tr>
+            <tr><td>[18:42] &lt orphans&gt it takes the address and appends it to a namespace (if one exists), so you get a string with the complete address - something like "/myprogram/xyposition"</td></tr>
+            <tr><td>[18:42] &lt orphans&gt (where myprogram is the namespace)</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt what does this namespace refer to?</td></tr>
+            <tr><td>[18:43] &lt orphans&gt it's how you relate to the different osc programs (maybe using the wrong terminology here)</td></tr>
+            <tr><td>[18:43] &lt orphans&gt so for example your on-screen keyboard could be /osc/buttonpressed, and your step sequencer could be /stepsequencer/buttonpressed, and you can tell the two apart</td></tr>
+            <tr><td>[18:44] &lt orphans&gt s/osc/osk</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt Where do you define those?</td></tr>
+            <tr><td>[18:44] &lt orphans&gt they go into the addressPrefix in the osc component</td></tr>
+            <tr><td>[18:45] &lt orphans&gt and then you document what all of the different things do, so people can use which parts of them they want</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt I see you use /UITest as the prefix.</td></tr>
+            <tr><td>[18:45] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt I don't fully understand how it works yet. :)</td></tr>
+            <tr><td>[18:46] &lt orphans&gt and when the ui has more elements you'd send something like /UITest/XYPad and /UITest/StepSequencer etc etc</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt You say "you send". Where?</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt I mean, where does OSC send the message?</td></tr>
+            <tr><td>[18:47] &lt orphans&gt that goes as the first part of the UDP packet, which can go to any other program which supports OSC</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt ah</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt Which indeed means that the peer has to be able to understand that address</td></tr>
+            <tr><td>[18:48] &lt orphans&gt yeah, at the moment you tend to write your thing to make the music around the data you're getting in</td></tr>
+            <tr><td>[18:48] &lt orphans&gt there's starting to be a few standards emerging for how to do fairly standard stuff</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt I see so you're using SimplePeer as a dummy OSC message receiver for now</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt is that correct?</td></tr>
+            <tr><td>[18:50] &lt orphans&gt no, it's just the sender at the moment. I'd guess it'd be easier to have seperate sender and receiver components for flow of the graphline</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt Hmm I got confused because Kamaelia uses a backward meaning to SimplePeer's parameters :)</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt Well in line with the perspective aspect MS was discussing earlier.</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt Right</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt I understand your code flow now.</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt I would like to ask you the following things for this week</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt 1. Extensively documenting your code so that someone wouldn't have to ask you the above questions :)</td></tr>
+            <tr><td>[18:54] &lt orphans&gt yup</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt 2. Adding a simple ASCII workflow diagram as documentation</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt This would go into UITest.py</td></tr>
+            <tr><td>[18:54] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt as a module level __doc__ = "..."</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt Why documenting so early in the process?</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt Because documentation is boring</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt And doing it on the go is much better :)</td></tr>
+            <tr><td>[18:55] &lt orphans&gt yup :)</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt I have a spare question</td></tr>
+            <tr><td>[18:55] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[18:55] Reply: or post your idea, you may get a response - either from a mentor or fellow student or from someone reading the logs.</td></tr>
+            <tr><td>[18:55] Reply: Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news</td></tr>
+            <tr><td>[18:55] Reply: Some useful links/tips - use the template : http://kamaelia.sourceforge.net/SummerOfCode2006Template - base page: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[18:55] Reply: Tips for a good application - q's to ask yourself: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783</td></tr>
+            <tr><td>[18:55] &lt orphans&gt was it one of them?</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt sensitive...</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt no no</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt here it is</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt Why in the Osc component do you do:</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt while self.dataReady('inbox':</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt I would have used an "if"</td></tr>
+            <tr><td>[18:58] &lt orphans&gt don't know really - if I understand right the while gets rid of all queued messages, whereas an if means that it does one message, yields, lets other stuff run, does another message</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt that's correct</td></tr>
+            <tr><td>[18:58] &lt orphans&gt I'm not really sure which is better if I'm understanding it right</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt Well it's a bit of experimenting</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt Usually a if is good enough and it's rare you need a while</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt Experimenting will be needed later in the process to decide which is better for this use case :)</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt No worries for now</td></tr>
+            <tr><td>[18:59] &lt orphans&gt ok, I guess while is good for stuff where you get really bursty stuff which needs dealing with fast yes?</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt True but if that happens it may also means you're actually going to fast from the producer</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt That might not be good design either.</td></tr>
+            <tr><td>[19:00] &lt orphans&gt ooh, it's a conundrum :)</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt No ;)</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt It's called tuning</td></tr>
+            <tr><td>[19:01] &lt orphans&gt :)</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt Anyhow, leave it for now.</td></tr>
+            <tr><td>[19:01] &lt orphans&gt k, cool</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt Alright so this week I'd like:</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt 1. documentation as explained above</td></tr>
+            <tr><td>[19:02] &lt Lawouach&gt 2. that you start thinking about the package layout you'll be using for your application</td></tr>
+            <tr><td>[19:02] &lt Lawouach&gt You've been using sub-packages for Osc and UI which is good</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt But that was fine for a demo like UITest</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt We'll be discussing next week about setting up your package layout and you'll have to explain your rational for it :)</td></tr>
+            <tr><td>[19:04] &lt Lawouach&gt Hint: You usually don't get the package layout right the first time ;)</td></tr>
+            <tr><td>[19:04] &lt orphans&gt I thought I might not :)</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt Not just you</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt It's very rare to get it right and that's okay :)</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt Nonetheless I'd like you to give it a shot</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt BUT</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt All of this ONLY if you have the time</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt Until your exams are over we'll be easy on you ;)</td></tr>
+            <tr><td>[19:06] &lt orphans&gt ok, cheers - I'll do what I can</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt Maybe what is more important is the package layout</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt So leave the documentation aside if you don't have the time.</td></tr>
+            <tr><td>[19:07] &lt orphans&gt ok sure - I'll get the old grey cells ticking over on the layout</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt I'd rather you thinking about the package layout as it means you'll be thinking about the actual application</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt good</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt well that's enough for this evening, we're still at the stage of setting things up</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt Go and enjoy the weather :)</td></tr>
+            <tr><td>[19:08] &lt orphans&gt yeah, cool</td></tr>
+            <tr><td>[19:08] &lt orphans&gt hopefully make it to the beer garden for a couple this evening</td></tr>
+            <tr><td>[19:08] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:08] &lt orphans&gt but before that I need to fully understand the mean field theory of magnetism, so I'm afraid it'll have to wait</td></tr>
+            <tr><td>[19:09] &lt orphans&gt *yaawwwwnnn*</td></tr>
+            <tr><td>[19:09] &lt vmlemon__&gt Kamaeliafy it</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:10] &lt orphans&gt I could, domains may well form somewhere, but it would probably make me cry...</td></tr>
+            <tr><td>[19:10] *** orphans goes to sob over difficult maths</td></tr>
+            <tr><td>[19:11] &lt orphans&gt cheers for the help Lawouach</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt np</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt thanks for the explanation</td></tr>
+            <tr><td>[19:16] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:16] &lt MS-&gt evening</td></tr>
+            <tr><td>[19:17] &lt MS-&gt j_baker: sorry for turning up later than I intended - I need to postpone our meeting until 9pm probably</td></tr>
+            <tr><td>[19:17] &lt MS-&gt (9pm local, I guess 3pm for you)</td></tr>
+            <tr><td>[19:18] &lt j_baker&gt np</td></tr>
+            <tr><td>[19:23] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[19:40] &lt j_baker&gt ZOMG!!!!!!</td></tr>
+            <tr><td>[19:40] &lt j_baker&gt I passed the class that I did so horribly on the final</td></tr>
+            <tr><td>[19:42] &lt j_baker&gt (albeit with a C, but at least that means I don't have to re-take it)</td></tr>
+            <tr><td>[19:49] &lt Lawouach&gt congrats!</td></tr>
+            <tr><td>[19:49] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:50] &lt j_baker&gt Modern digital system design. I'll be happy to never touch another Flip Flop or Shift Register in my life.</td></tr>
+            <tr><td>[19:53] &lt Lawouach&gt MS-: http://trac.defuze.org/wiki/KamaeliaQuickWord</td></tr>
+            <tr><td>[19:54] &lt Lawouach&gt Just a quick word so that people interested in my XMPP library can quickly see what Kamaelia is about.</td></tr>
+            <tr><td>[19:55] &lt j_baker&gt That's a pretty good idea. I find it a lot easier to guage if a library or language works for me by seeing sample syntax.</td></tr>
+            <tr><td>[19:57] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:07] &lt MS-&gt back</td></tr>
+            <tr><td>[20:07] &lt MS-&gt congrats on passing the class :-)</td></tr>
+            <tr><td>[20:08] *** MS- likes that "quick word" page.</td></tr>
+            <tr><td>[20:08] &lt MS-&gt It's similar to http://kamaelia.sourceforge.net/Introduction</td></tr>
+            <tr><td>[20:08] &lt MS-&gt But a different sort of angle</td></tr>
+            <tr><td>[20:09] &lt j_baker&gt Did you see my group message MS-?</td></tr>
+            <tr><td>[20:09] *** MS- looks</td></tr>
+            <tr><td>[20:09] &lt j_baker&gt (the ready to merge one)</td></tr>
+            <tr><td>[20:11] &lt MS-&gt I see - I didn't see that - I saw the checkin of the new branch and was checking that out</td></tr>
+            <tr><td>[20:11] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:11] &lt j_baker&gt I mistyped Minimal in the name of the branch. What's the best way to correct that?</td></tr>
+            <tr><td>[20:11] &lt MS-&gt private_JMB_AddedIndexCapabilityToMimimal/diff.txt isn't in the tree</td></tr>
+            <tr><td>[20:12] &lt MS-&gt The best way to correct is to not worry about it</td></tr>
+            <tr><td>[20:12] &lt j_baker&gt Ok. :)]</td></tr>
+            <tr><td>[20:12] &lt MS-&gt renaming it would cause more problems than it's worth :)</td></tr>
+            <tr><td>[20:12] &lt j_baker&gt I'll add the diff file (I probably just forgot to svn add it)</td></tr>
+            <tr><td>[20:13] &lt MS-&gt Don't worry about adding the diff</td></tr>
+            <tr><td>[20:13] &lt j_baker&gt I just did :)</td></tr>
+            <tr><td>[20:13] &lt MS-&gt hm</td></tr>
+            <tr><td>[20:13] &lt MS-&gt You haven't commited yet?</td></tr>
+            <tr><td>[20:13] &lt j_baker&gt I checked it in. Should I have left it out?</td></tr>
+            <tr><td>[20:13] &lt MS-&gt (it's better to only commit things on the branch you actually want there :-) )</td></tr>
+            <tr><td>[20:13] &lt MS-&gt generally, yes</td></tr>
+            <tr><td>[20:14] &lt MS-&gt The aim of the diff really is so you can summarise the changes</td></tr>
+            <tr><td>[20:14] &lt MS-&gt Once you're used to it, it's easier to work through the diff to ensure you've not missed anything</td></tr>
+            <tr><td>[20:14] &lt j_baker&gt Ok. Should I remove it then?</td></tr>
+            <tr><td>[20:14] &lt MS-&gt No, don't worry :)</td></tr>
+            <tr><td>[20:16] &lt j_baker&gt I also posted this to the groups page, but is there any way to do this without checking out the entire repository?</td></tr>
+            <tr><td>[20:17] &lt MS-&gt yes, just checkout the parts you need really</td></tr>
+            <tr><td>[20:17] &lt MS-&gt which probably sounds a bit strange</td></tr>
+            <tr><td>[20:18] &lt MS-&gt This diff looks really wierd</td></tr>
+            <tr><td>[20:18] &lt MS-&gt svn diff -r&lt bp&gt:HEAD that is</td></tr>
+            <tr><td>[20:18] &lt MS-&gt since it now contains a copy of the diff</td></tr>
+            <tr><td>[20:18] &lt MS-&gt so it has a diff within a diff</td></tr>
+            <tr><td>[20:18] &lt MS-&gt I'll get rid of the</td></tr>
+            <tr><td>[20:18] &lt MS-&gt that rather</td></tr>
+            <tr><td>[20:19] &lt j_baker&gt Working with SVN is a bit of a learning experience.</td></tr>
+            <tr><td>[20:20] &lt MS-&gt Regarding this comment though : "Do I necessarily have to go about creating my own branch if I'm just fixing one or two files?" the answer is yes</td></tr>
+            <tr><td>[20:20] &lt MS-&gt It is indeed</td></tr>
+            <tr><td>[20:20] &lt MS-&gt But then you seem to be doing very well with fighting it so far :)</td></tr>
+            <tr><td>[20:21] &lt MS-&gt OK, regarding the things we've been dealing with in other mentor times...</td></tr>
+            <tr><td>[20:21] &lt MS-&gt The set of things I've wanted to cover have been</td></tr>
+            <tr><td>[20:21] &lt MS-&gt getting up to speed with the codebase, exploring it for what you need, and getting up to speed with subversion.</td></tr>
+            <tr><td>[20:22] &lt MS-&gt I don't need to cover those with you, since you're doing all those :)</td></tr>
+            <tr><td>[20:22] &lt MS-&gt So I'll skip straight to the admin/paperwork stuff</td></tr>
+            <tr><td>[20:22] &lt j_baker&gt Ok.</td></tr>
+            <tr><td>[20:22] &lt MS-&gt We've chatted about the contributor agreement specifically.</td></tr>
+            <tr><td>[20:23] &lt MS-&gt Now I've had a chance to chat with uk people so far about this generally, if you're happy with the idea, I'll skip straight to the practicalities</td></tr>
+            <tr><td>[20:23] &lt MS-&gt I was writing this really nice email the other day to the group describing it etc, but my browser crashed</td></tr>
+            <tr><td>[20:24] &lt MS-&gt so it might be easier to answer q's here</td></tr>
+            <tr><td>[20:24] &lt MS-&gt some highlights though - The actual agreement *has* been checked by the BBC lawyers</td></tr>
+            <tr><td>[20:24] &lt MS-&gt and it's based on the PSF's agreement which was also drawn up by lawyers</td></tr>
+            <tr><td>[20:25] &lt MS-&gt It leaves you owning your code, and just (effectively) grants a BSD license on the code, with the option to relicense it under Kamaelia's normal license - ie the MPL/GPL/LGPL trilicense</td></tr>
+            <tr><td>[20:25] &lt MS-&gt (which is the "keep almost everyone happy" license)</td></tr>
+            <tr><td>[20:26] &lt j_baker&gt Heh</td></tr>
+            <tr><td>[20:26] &lt j_baker&gt Yeah. Ok, where is the contributor agreement again?</td></tr>
+            <tr><td>[20:27] *** MS- grabs link</td></tr>
+            <tr><td>[20:27] &lt MS-&gt http://kamaelia.sourceforge.net/Developers/SampleContributorAgreement</td></tr>
+            <tr><td>[20:27] &lt MS-&gt The bit we need is the bit between the horizontal rules</td></tr>
+            <tr><td>[20:27] &lt MS-&gt You change all the bits in green to your information</td></tr>
+            <tr><td>[20:28] &lt MS-&gt You remove the date in purple</td></tr>
+            <tr><td>[20:28] &lt MS-&gt The purple initials "JLB" should be changed to JMB</td></tr>
+            <tr><td>[20:29] &lt MS-&gt and then later on, when there's code you're happy to put under the agreement, you would write in the source "Licensed to the BBC under a Contributor Agreement: JLB"</td></tr>
+            <tr><td>[20:29] &lt MS-&gt JMB rather</td></tr>
+            <tr><td>[20:30] &lt MS-&gt Also, due to reasons FAR too painful to go into, it needs to be a paper copy</td></tr>
+            <tr><td>[20:30] &lt MS-&gt Which needs to be posted to:</td></tr>
+            <tr><td>[20:32] &lt MS-&gt Michael Sparks, Senior Research Engineer, c/o BBC TV Centre, London, W12 7RJ</td></tr>
+            <tr><td>[20:32] &lt MS-&gt (The title is to allow the postal people to ensure it gets routed to the right location)</td></tr>
+            <tr><td>[20:33] &lt j_baker&gt I can do that.</td></tr>
+            <tr><td>[20:33] &lt MS-&gt Cool</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Well in which case, that's about all I really wanted to raise.</td></tr>
+            <tr><td>[20:34] &lt MS-&gt I'm really pleased to see you doing all the things you're doing BTW :)</td></tr>
+            <tr><td>[20:34] &lt j_baker&gt np :)</td></tr>
+            <tr><td>[20:35] &lt MS-&gt Asking q's on the list is also really appreciated - answers on the list also mean that people can google for q's and a's when they arise</td></tr>
+            <tr><td>[20:35] &lt MS-&gt Which means answering there actually means it reduces the chances of needing to answer it a second time :)</td></tr>
+            <tr><td>[20:36] &lt j_baker&gt I'll keep that in mind for any general questions.</td></tr>
+            <tr><td>[20:36] &lt j_baker&gt I haven't gotten much of a chance to look at the MoreComplexServer though. Is there any major functional difference I should be aware of?</td></tr>
+            <tr><td>[20:37] &lt MS-&gt It's more capable than SimpleServer essentially</td></tr>
+            <tr><td>[20:37] &lt MS-&gt It also does things like forward connection details</td></tr>
+            <tr><td>[20:37] &lt MS-&gt Designed to allow drop in replacement of the TCPServer class etc</td></tr>
+            <tr><td>[20:39] &lt j_baker&gt I see.</td></tr>
+            <tr><td>[20:39] &lt MS-&gt The changes were really created originally to allow passing through the remote ip address</td></tr>
+            <tr><td>[20:39] &lt MS-&gt of a web client to a web serving protocol</td></tr>
+            <tr><td>[20:40] &lt MS-&gt It's also turned out to be used in the greylisting code though</td></tr>
+            <tr><td>[20:40] &lt MS-&gt since that *also* needs the same functionality</td></tr>
+            <tr><td>[20:40] &lt j_baker&gt And I'm assuming that my project will need that as well</td></tr>
+            <tr><td>[20:41] &lt j_baker&gt Assuming I do it without XMPP that is and just use the intermediary as a passthrough</td></tr>
+            <tr><td>[20:41] &lt MS-&gt Yep</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  It will</td></tr>
+            <tr><td>[20:41] &lt MS-&gt In the short term you can run your code against my branch (I'll merge you Minimal handler there without worries)</td></tr>
+            <tr><td>[20:42] &lt MS-&gt But in the longer term I'll create a branch to merge more complex server onto trunk</td></tr>
+            <tr><td>[20:42] &lt MS-&gt Better name suggestions welcome</td></tr>
+            <tr><td>[20:43] &lt MS-&gt I was toying with the idea of doing this yesterday for the example branch, but it's a much more substantial change and figured something simipler made a better example</td></tr>
+            <tr><td>[20:43] &lt j_baker&gt Well, for the purposes of my project, I was planning on naming the component "ServerCore" since I think that's a more accurate description of what it does IMO.</td></tr>
+            <tr><td>[20:43] &lt MS-&gt Naming *which* component that?</td></tr>
+            <tr><td>[20:44] &lt j_baker&gt Either SimpleServer or MoreComplexServer</td></tr>
+            <tr><td>[20:44] &lt MS-&gt It may be more appropriate for MoreComplexServer</td></tr>
+            <tr><td>[20:45] &lt j_baker&gt Yeah, that is true since SimpleServer has a couple of standard components.</td></tr>
+            <tr><td>[20:46] &lt MS-&gt I'll have a ponder, since ServerCore does sound OK. I'm not convinced yet, but then it's definitely than "more complex server"</td></tr>
+            <tr><td>[20:46] &lt j_baker&gt Ok, now also say I want to make a log for my server. Do you think it would be more beneficial to use a component for that or to use a set of utility functions?</td></tr>
+            <tr><td>[20:46] &lt MS-&gt Component</td></tr>
+            <tr><td>[20:47] &lt MS-&gt The trick you may want to do</td></tr>
+            <tr><td>[20:47] &lt MS-&gt is to attach a "log" outbox to every component, and send messages to it</td></tr>
+            <tr><td>[20:47] &lt j_baker&gt That's what I was thinking.</td></tr>
+            <tr><td>[20:47] &lt MS-&gt Then leave it to the user of the component to send the log somewhere sensible</td></tr>
+            <tr><td>[20:48] &lt MS-&gt Also, if you *don't* connect anything to that "log" outbox, then data *won't* pile up there</td></tr>
+            <tr><td>[20:49] &lt MS-&gt The nice solution is to connect all the "log" outboxes to PublishTo() components from the backplane</td></tr>
+            <tr><td>[20:49] &lt MS-&gt And have a backplane called "logging"</td></tr>
+            <tr><td>[20:49] &lt j_baker&gt I hadn't thought of that.</td></tr>
+            <tr><td>[20:50] &lt MS-&gt there are issues here - if you do logging "right" (ie able to capture everywhere) but _wrong_ (you *do* actually capture everywhere) then you can bring your code to its knees</td></tr>
+            <tr><td>[20:51] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:51] &lt j_baker&gt Ok.</td></tr>
+            <tr><td>[20:52] &lt j_baker&gt So then I would just want to restrict it to core components that can publish to the log?</td></tr>
+            <tr><td>[20:52] &lt MS-&gt That's an optimisation</td></tr>
+            <tr><td>[20:52] &lt MS-&gt The core thing to think about really is "get it working, make it work *right*, make it work fast"</td></tr>
+            <tr><td>[20:52] &lt MS-&gt optimisation falls into the last category</td></tr>
+            <tr><td>[20:53] &lt j_baker&gt I see. So for now I should focus on making it work "right but wrong"?</td></tr>
+            <tr><td>[20:53] &lt MS-&gt Well, preferably "right but right", but "right but wrong, but right enough to be a good start" is a good idea :)</td></tr>
+            <tr><td>[20:54] &lt MS-&gt If you know clearly enough what you want, you *can* use test driven development with kamaelia</td></tr>
+            <tr><td>[20:55] &lt j_baker&gt Ok. Last question: If I start working on the WSGI adapter, is it going to be easier for me to import the module containing the application object or to exec it?</td></tr>
+            <tr><td>[20:55] &lt MS-&gt which theoretically jumps straight to the second item, but the reality is it really gives you a controlled mechanism for doing thei first such that it moves towards the second</td></tr>
+            <tr><td>[20:56] &lt j_baker&gt (at least to start off with)</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Neither really - it should be the other way round</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Suppose the last line of</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  /Sketches/MPS/KamaeliaWebServer.py</td></tr>
+            <tr><td>[20:56] &lt MS-&gt ie</td></tr>
+            <tr><td>[20:56] &lt MS-&gt WebServer().run()</td></tr>
+            <tr><td>[20:56] &lt MS-&gt said instead:</td></tr>
+            <tr><td>[20:57] &lt MS-&gt if __name__ == "__main__":</td></tr>
+            <tr><td>[20:57] &lt MS-&gt  WebServer().run()</td></tr>
+            <tr><td>[20:57] &lt MS-&gt You could, in another file, write:</td></tr>
+            <tr><td>[20:57] &lt MS-&gt from KamaeliaWebServer import WebServer</td></tr>
+            <tr><td>[20:58] &lt MS-&gt from KamaeliaWebServer import HTML_WRAP, simple_app</td></tr>
+            <tr><td>[20:58] &lt MS-&gt WebServer(</td></tr>
+            <tr><td>[20:58] &lt MS-&gt  routing = [</td></tr>
+            <tr><td>[20:58] &lt MS-&gt  ["/wsgi", WSGIHandler("/wsgi", HTML_WRAP(simple_app)) ],</td></tr>
+            <tr><td>[20:58] &lt MS-&gt  ]</td></tr>
+            <tr><td>[20:58] &lt MS-&gt ).run()</td></tr>
+            <tr><td>[20:58] &lt MS-&gt Note that HTML_WRAP(simple_app) is a simple wsgi application</td></tr>
+            <tr><td>[20:59] &lt MS-&gt Does that make sense?</td></tr>
+            <tr><td>[20:59] &lt MS-&gt The work needed on that code is more "finish off support" rather than have to do lots of stuff :)</td></tr>
+            <tr><td>[21:00] &lt MS-&gt I would hope, anyway</td></tr>
+            <tr><td>[21:00] &lt j_baker&gt Ok, so then I'll worry about that once I get the support finished off.</td></tr>
+            <tr><td>[21:01] &lt MS-&gt It's easy to find the bits that need doing in that file BTW</td></tr>
+            <tr><td>[21:01] &lt MS-&gt it's labelled "required"</td></tr>
+            <tr><td>[21:01] &lt MS-&gt in _WSGIHandler</td></tr>
+            <tr><td>[21:01] &lt MS-&gt in main()</td></tr>
+            <tr><td>[21:01] &lt MS-&gt it has required = "*** REQUIRED FIX THIS ***"</td></tr>
+            <tr><td>[21:01] &lt MS-&gt Then for all the things not done</td></tr>
+            <tr><td>[21:01] &lt MS-&gt it has</td></tr>
+            <tr><td>[21:01] &lt MS-&gt self.environ["REQUEST_METHOD"] = required # Required</td></tr>
+            <tr><td>[21:02] &lt MS-&gt And in a fair number of locations, the description of what's required :)</td></tr>
+            <tr><td>[21:02] &lt MS-&gt There's also:</td></tr>
+            <tr><td>[21:02] &lt MS-&gt consider = " **CONSIDER ADDING THIS -- eg: "</td></tr>
+            <tr><td>[21:02] &lt MS-&gt Which is used to give example values</td></tr>
+            <tr><td>[21:02] &lt MS-&gt for things which I think *don't* come under "MUST"'s</td></tr>
+            <tr><td>[21:03] &lt j_baker&gt Ok, well that gives me some stuff to think about and/or work on this next week.</td></tr>
+            <tr><td>[21:03] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:03] &lt MS-&gt I may actually make that small change</td></tr>
+            <tr><td>[21:04] &lt MS-&gt and put the webserver in a subdir</td></tr>
+            <tr><td>[21:04] &lt MS-&gt Might make things clearer</td></tr>
+            <tr><td>[21:04] *** MS- goes to review two branches</td></tr>
+            <tr><td>[21:04] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[21:04] &lt MS-&gt j_baker: Many thanks for stopping by :)</td></tr>
+            <tr><td>[21:05] &lt MS-&gt mhrd-home: evening</td></tr>
+            <tr><td>[21:05] &lt j_baker&gt np. Thanks for your help.</td></tr>
+            <tr><td>[21:05] &lt MS-&gt j_baker: you're welcome :)</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt hi :)</td></tr>
+            <tr><td>[21:14] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[21:25] *** MS- reads through Lawouach's change, and ponders</td></tr>
+            <tr><td>[21:33] &lt j_baker&gt Interesting. Apparently, you can get Wing's IDE for free if you're using it on an open source project.</td></tr>
+            <tr><td>[21:40] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[21:42] &lt mhrd-home&gt MS-: should be able to look at your branch tomorrow evening</td></tr>
+            <tr><td>[21:42] &lt MS-&gt mhrd-home: Cool :)</td></tr>
+            <tr><td>[21:43] &lt mhrd-home&gt oops, meant to hit del, not enter (just posted something identical to the list) :-)</td></tr>
+            <tr><td>[21:43] &lt MS-&gt heh</td></tr>
+            <tr><td>[21:43] &lt vmlemon_&gt Yay, I finally got Wi-Fi working again</td></tr>
+            <tr><td>[21:44] &lt vmlemon_&gt I think that's now all of the hardware in my laptop functional under Fedora</td></tr>
+            <tr><td>[21:44] &lt vmlemon_&gt Although the useless Wi-Fi/RF killswitch doesn't function</td></tr>
+            <tr><td>[21:45] &lt vmlemon_&gt (I never used it, anyway)</td></tr>
+            <tr><td>[21:50] &lt MS-&gt vmlemon_: cool</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt I haven't had Ethernet functional under Linux at all since I got it, until now</td></tr>
+            <tr><td>[21:51] &lt MS-&gt wow</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt (Rather annoyingly, since Ethernet is one of those things that Just Works® 99.99% of the time for most people)</td></tr>
+            <tr><td>[21:52] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[21:52] &lt MS-&gt indeed</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt I can think of other things that I'd expect to not work immediately</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt (IrDA and audio being two)</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt but never Ethernet</td></tr>
+            <tr><td>[21:54] &lt vmlemon_&gt I got it last December, so it's quite a long time</td></tr>
+            <tr><td>[21:57] &lt vmlemon_&gt 64-bit support is probably the only feature I can't use</td></tr>
+            <tr><td>[21:58] &lt vmlemon_&gt At least not until the stupid AR5007EG driver drama is resolved with Atheros and the MadWifi folks, which is seemingly taking an eternity</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt Unless I didn't want to use use Wi-Fi, I could Just Go 64-Bit</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt although I don't see any advantage to it</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt Hah, "This SF.net email is sponsored by: Microsoft"</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt I'd like to see that tacked to the bottom of a lengthy anti-Microsoft e-mail ;)</td></tr>
+            <tr><td>[22:07] &lt Davbo&gt Running Fedora 9 vmlemon_?</td></tr>
+            <tr><td>[22:07] &lt vmlemon_&gt Fedora 8</td></tr>
+            <tr><td>[22:07] &lt Davbo&gt is 9 even out yet actually?</td></tr>
+            <tr><td>[22:08] *** Davbo sees it comes out tomorrow </td></tr>
+            <tr><td>[22:08] &lt vmlemon_&gt Not sure</td></tr>
+            <tr><td>[22:08] &lt vmlemon_&gt Linux Sapporo.home 2.6.24.5-85.fc8 #1 SMP Sat Apr 19 12:39:34 EDT 2008 i686 i686 i386 GNU/Linux</td></tr>
+            <tr><td>[22:08] &lt Davbo&gt Perhaps you'd have been better waiting for 9</td></tr>
+            <tr><td>[22:08] &lt Davbo&gt good review over at the Reg i was reading earlier</td></tr>
+            <tr><td>[22:08] &lt vmlemon_&gt What a pain in the butt this kernel version has been, although it's been worth it, seeing as I now have working Ethernet for the first time since December 2007</td></tr>
+            <tr><td>[22:09] &lt vmlemon_&gt :|</td></tr>
+            <tr><td>[22:09] &lt Davbo&gt lol yeah i noticed that hehe</td></tr>
+            <tr><td>[22:09] &lt Davbo&gt PCLinuxOS is supposed to be good for things "just working"</td></tr>
+            <tr><td>[22:09] &lt Davbo&gt never used it myself</td></tr>
+            <tr><td>[22:10] &lt vmlemon_&gt I don't know of any other system where it's taken almost a year to get something so straightforward and vital as that working...</td></tr>
+            <tr><td>[22:10] &lt vmlemon_&gt And I've used Linux for nearly 3 years now</td></tr>
+            <tr><td>[22:11] &lt Davbo&gt it's unbelievable really</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt 00:04.0 Ethernet controller: Silicon Integrated Systems [SiS] 191 Gigabit Ethernet Adapter (rev 02) &lt - The evil Ethernet device</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[22:12] &lt vmlemon_&gt It's high up in the ranks of truly awful hardware in my opinion with VIA UniCrap, erm UniChrome video chipsets</td></tr>
+            <tr><td>[22:12] &lt Davbo&gt Can't believe that, it's even SiS not really rare</td></tr>
+            <tr><td>[22:14] &lt vmlemon_&gt I think that The World's Most Common IrDA Chipset (uses the smsc-ircc/smsc-ircc2 driver) can join it too, after the torment it caused me when trying to make it work on Gentoo, and every version of Ubuntu except 2 particular ones, and only when the sun and moon are perfectly aligned...</td></tr>
+            <tr><td>[22:14] &lt MS-&gt Lawouach: Just a note to say that I won't be able to merge your change tonight</td></tr>
+            <tr><td>[22:15] &lt MS-&gt What I'm thinking of doing is to change the code slightly to achieve the same goal, but hopefully with a "better" separation of concerns</td></tr>
+            <tr><td>[22:15] &lt vmlemon_&gt (Or something like that)</td></tr>
+            <tr><td>[22:15] &lt Davbo&gt So glad we log this channel, I was really out of it earlier on MS- just re-reading our chat :)</td></tr>
+            <tr><td>[22:15] &lt MS-&gt I'll have a play and check in a change and see if it makes sense.</td></tr>
+            <tr><td>[22:16] &lt MS-&gt Davbo: Heh</td></tr>
+            <tr><td>[22:16] &lt Davbo&gt I was telling people from my group that i was going to miss the meeting and apologising neglecting to fact the meeting is tomorrow :P</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt I'll add the things we discussed to my "remember the milk" - which i'm vowing to start using now :)</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt (to-do list thing)</td></tr>
+            <tr><td>[22:17] &lt vmlemon_&gt http://paster.dazjorz.com/?a=rawpaste&p=2974 - a dmesg for this machine, if anyone's curious</td></tr>
+            <tr><td>[22:17] &lt vmlemon_&gt What's Remember The Milk?</td></tr>
+            <tr><td>[22:17] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[22:18] &lt Davbo&gt I used it ages ago but stopped last holiday (when i had nothing to do ) :D</td></tr>
+            <tr><td>[22:18] &lt vmlemon_&gt Davbo: Will it go to the shop for you and buy more milk when it runs out? ;)</td></tr>
+            <tr><td>[22:19] &lt MS-&gt vmlemon_:Surely that depends on whether Davbo ever hooks up his NXT component to anything?</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt :D</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[22:20] &lt MS-&gt OK, I need sleep. (really tired for some reason)</td></tr>
+            <tr><td>[22:20] &lt MS-&gt I'm off, night</td></tr>
+            <tr><td>[22:20] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt night ms-away</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt Kamaelia: MilkPurchase? ;(</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[22:21] &lt vmlemon_&gt Just try to stop the cat getting it's paws on the milk, first</td></tr>
+            <tr><td>[22:22] &lt Davbo&gt Anyone used GoogleGears?</td></tr>
+            <tr><td>[22:22] &lt vmlemon_&gt I like the cow... It's certainly "original", to say the least ;)</td></tr>
+            <tr><td>[22:22] &lt vmlemon_&gt Yes, once</td></tr>
+            <tr><td>[22:23] &lt Davbo&gt Try it out vmlemon_ it's great</td></tr>
+            <tr><td>[22:23] &lt vmlemon_&gt Or at least I played with the sample apps</td></tr>
+            <tr><td>[22:23] &lt Davbo&gt (if you're like me and forget what you have to do)</td></tr>
+            <tr><td>[22:23] &lt vmlemon_&gt 'Gears? Or the Milk thing?</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt The GMail integration mentioned on the blog sounds interesting</td></tr>
+            <tr><td>[22:25] &lt Davbo&gt I *just* installed that</td></tr>
+            <tr><td>[22:25] &lt Davbo&gt new since i used it last</td></tr>
+            <tr><td>[22:25] *** vmlemon_ wonders if an S60 client for Remember The Milk exists</td></tr>
+            <tr><td>[22:25] &lt Davbo&gt you get an extension for firefox and presumably it runs a bit like Greasemonkey</td></tr>
+            <tr><td>[22:25] &lt vmlemon_&gt o.O http://blog.rememberthemilk.com/img/bob_closeup.jpg</td></tr>
+            <tr><td>[22:27] &lt vmlemon_&gt Hmm, http://blog.rememberthemilk.com/2007/09/why-monkey-and-not-cow.html</td></tr>
+            <tr><td>[22:27] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[22:27] &lt Davbo&gt http://www.rememberthemilk.com/services/mobile/</td></tr>
+            <tr><td>[22:28] &lt vmlemon_&gt Hah, "After taking the cow to the counter and paying $9.99 to liberate it, the nice post office worker placed it in its own special bag (and told us to be careful not to let it suffocate!)"</td></tr>
+            <tr><td>[22:29] &lt Davbo&gt ooo!</td></tr>
+            <tr><td>[22:29] &lt Davbo&gt it's also now on Twitter</td></tr>
+            <tr><td>[22:29] &lt Davbo&gt another thing i'd like to start using</td></tr>
+            <tr><td>[22:30] &lt Davbo&gt problem with Twitter is you need to convince others to use it</td></tr>
+            <tr><td>[22:30] &lt vmlemon_&gt Hah, "rolypolykitty says: Beta, it says so right next to her!" (response to "What is the RTM cow called?" on http://www.rememberthemilk.com/forums/help/321/)</td></tr>
+            <tr><td>[22:31] *** vmlemon_ doesn't understand the appeal of Twitter</td></tr>
+            <tr><td>[22:31] &lt Davbo&gt I think it's easy to get into really.</td></tr>
+            <tr><td>[22:31] &lt Davbo&gt but it's only good if you get friends to use it</td></tr>
+            <tr><td>[22:36] &lt vmlemon_&gt Hah, "Take over the world" is listed as a To-Do item on http://static.rememberthemilk.com/img/hp_ss_gmail.png</td></tr>
+            <tr><td>[22:37] &lt vmlemon_&gt I don't think Remember The Milk can be much help, there</td></tr>
+            <tr><td>[22:42] &lt vmlemon_&gt Yay, http://www.rememberthemilk.com/upgrade/</td></tr>
+            <tr><td>[22:43] &lt vmlemon_&gt "A warm fuzzy feeling for supporting RTM" and "Making Bob happy" sound like good enough reasons ;)</td></tr>
+            <tr><td>[22:45] *** vmlemon_ signs up for Remember The Milk...</td></tr>
+            <tr><td>[22:47] &lt Davbo&gt yay :)</td></tr>
+            <tr><td>[22:48] &lt Davbo&gt you must admit it's cool to be able to send an sms to update it though :)</td></tr>
+            <tr><td>[22:49] &lt vmlemon_&gt Hmm, "Greasemonkey is an integral part of the web experience for many experienced users. Google acknowledges that some people are going to change their own experience of our web applications regardless of what we do. Resistance, as they say, is futile. It would also be somewhat hypocritical. After all, a Google employee wrote Greasemonkey in the first place, another wrote these scripts to add functionality to Gmail, and a third wrote two books</td></tr>
+            <tr><td>[22:49] &lt vmlemon_&gt on the subject (and these docs)."</td></tr>
+            <tr><td>[22:49] &lt Davbo&gt oh does it use Greasemonkey ?</td></tr>
+            <tr><td>[22:50] &lt vmlemon_&gt Not sure</td></tr>
+            <tr><td>[22:51] &lt vmlemon_&gt Tried 43 Things?</td></tr>
+            <tr><td>[22:51] &lt j_baker&gt Sigh... so YDL is perfect for me thus far aside from being a lot slower than openSUSE</td></tr>
+            <tr><td>[22:52] &lt j_baker&gt Maybe I need to upgrade the RAM on my G5.</td></tr>
+            <tr><td>[22:53] &lt j_baker&gt Running eclipse is painfully slow.</td></tr>
+            <tr><td>[22:53] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[22:54] &lt j_baker&gt night</td></tr>
+            <tr><td>[23:15] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[23:27] *** mhrd-home has parted #kamaelia</td></tr>
+            <tr><td>[23:47] *** bcarlyon|laptop has joined #kamaelia</td></tr>

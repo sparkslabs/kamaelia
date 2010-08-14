@@ -1,0 +1,67 @@
+<html><body><table>
+            <tr><td>[04:22] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:32] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[04:33] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[05:37] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[05:45] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[07:40] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:59] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:00] &lt MS-&gt hi</td></tr>
+            <tr><td>[09:01] &lt vmlemon_&gt Heh, http://www.pcworld.com/article/166992/windows_7_hits_a_new_low.html?loomia_ow=t0:s0:a41:g26:r22:c0.005330:b25911362:z0</td></tr>
+            <tr><td>[09:01] &lt vmlemon_&gt I wonder why anyone would want to install Windows 7 on a Pentium II...</td></tr>
+            <tr><td>[09:01] &lt vmlemon_&gt Other than for some twisted definition of fun, but still</td></tr>
+            <tr><td>[09:03] &lt MS-&gt It's a form of masochism</td></tr>
+            <tr><td>[09:03] &lt MS-&gt I'm certain of it</td></tr>
+            <tr><td>[09:03] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[09:13] &lt Lawouach_&gt hi</td></tr>
+            <tr><td>[09:13] &lt MS-&gt Hiya</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt found a memory leak in my program</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt ouch</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt well found out there is one</td></tr>
+            <tr><td>[10:01] &lt Lawouach_&gt not found the culprit yet</td></tr>
+            <tr><td>[10:04] &lt MS-&gt k</td></tr>
+            <tr><td>[10:05] &lt MS-&gt First thing I do these days is to try and identify what objects I'm leaking tbh</td></tr>
+            <tr><td>[10:05] &lt Lawouach_&gt I have a perpetual timer that restarts my xmpp client and each time it happens I'm getting an increase of memory of 500kb</td></tr>
+            <tr><td>[10:06] &lt Lawouach_&gt My client stops cleanly and I remove the various linkages as far as I can tell</td></tr>
+            <tr><td>[10:06] &lt Lawouach_&gt gonna have to investigate further</td></tr>
+            <tr><td>[10:06] &lt MS-&gt So various approaches of dumping objects from gc.get_objects. tends to help</td></tr>
+            <tr><td>[10:06] &lt Lawouach_&gt yeap</td></tr>
+            <tr><td>[10:07] &lt Lawouach_&gt though since I can run a CherryPy instance at the same time, I might try using dowser first</td></tr>
+            <tr><td>[10:07] &lt Lawouach_&gt http://www.aminus.org/blogs/index.php/2008/06/11/tracking-memory-leaks-with-dowser?blog=2</td></tr>
+            <tr><td>[10:07] &lt Lawouach_&gt It has helped my in a complex Django app where we were wrongly using some XML parser</td></tr>
+            <tr><td>[10:09] &lt MS-&gt I see</td></tr>
+            <tr><td>[10:09] &lt Lawouach_&gt behind the seen it obviously uses the gc</td></tr>
+            <tr><td>[10:10] *** MS- nods</td></tr>
+            <tr><td>[10:10] &lt MS-&gt I'll have to take a look :)</td></tr>
+            <tr><td>[10:33] *** MS- changed the topic to http://www.kamaelia.org/logs/ | http://www.kamaelia.org/release/MonthlyReleases/</td></tr>
+            <tr><td>[11:01] &lt MS-&gt Feedback welcome - esp if I've missed anything</td></tr>
+            <tr><td>[11:01] &lt MS-&gt http://wiki.europython.eu/Kamaelia%20Tutorial</td></tr>
+            <tr><td>[11:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:21] &lt MS-&gt http://www.engadget.com/2009/06/23/uk-folding-plug-concept-could-flatten-that-bulky-british-adapter/</td></tr>
+            <tr><td>[11:21] &lt MS-&gt Odd</td></tr>
+            <tr><td>[11:40] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:50] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:46] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:52] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:58] &lt Davbo&gt tutorial sounds like it will be fun MS-</td></tr>
+            <tr><td>[12:58] &lt MS-&gt hopefully</td></tr>
+            <tr><td>[13:26] &lt Davbo&gt MS-: did you get the email I dropped you about a ref?</td></tr>
+            <tr><td>[13:26] *** Davbo is incredibly subtle</td></tr>
+            <tr><td>[13:28] &lt Davbo&gt fine if you don't want to write one -- just would like to know soonish :)</td></tr>
+            <tr><td>[13:34] &lt Davbo&gt vmlemon_: blockles is awesome ;)</td></tr>
+            <tr><td>[16:05] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[16:10] *** vmlemon_1 is now known as vmlemon_</td></tr>
+            <tr><td>[17:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:33] &lt vmlemon_&gt kamlogbot: time</td></tr>
+            <tr><td>[17:33] Reply: 17:33:15</td></tr>
+            <tr><td>[18:16] *** NottsMancs has joined #kamaelia</td></tr>
+            <tr><td>[18:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:57] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[19:17] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[19:24] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:24] &lt MS-&gt evening</td></tr>
+            <tr><td>[19:32] &lt NottsMancs&gt evening</td></tr>
+            <tr><td>[19:54] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[20:43] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[21:10] *** vmlemon_ has joined #kamaelia</td></tr>

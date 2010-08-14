@@ -1,0 +1,126 @@
+<html>
+<head>
+<title> VideoCutDetector </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - VideoCutDetector">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Video Cut Detector</h1>
+<p><div style="float: right; border: solid;" class="twoC"> For development/status information, see the
+<a href='/Developers/Projects/VideoCutDetector '> project task
+page</a> </div></p><p>This is a simple command line tool to analyse a video file and output a list of (probable) locations of cuts (shot-changes) in the video.<br><br>This
+can serve as useful input data to user controlled video manipulation/editing
+applications where it is useful to be able to precisely identify where shot changes take place.</p><h2>Getting Started</h2>You can find the cut detector itself in <tt> /Sketches/MH/Video/CutDetector</tt> in the trunk of the subversion repository.<br><h3>Pre-requisites</h3><ol><li>You must install Axon from the <tt>
+private_MH_outboxwakeups </tt> branch in the subversion repository. The cut detector requires the new features in this branch to enable it to self
+rate limit without exploding memory usage!<br><br>Install it the usual way using the command line:<br>     <tt> python setup.py install</tt><br><br></li><li>You
+must have an installed copy of the command line ffmpeg tool, which can
+be obtained from <a href='http://ffmpeg.mplayerhq.hu/'> here.</a>
+Make sure you have all the codecs you need of course!<br><br></li><li>You must run <tt> make</tt> in the Cut Detector's directory to build the c support library used to perform the image processing needed. This requires pyrex (<a href='http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/'> get it here </a>).<br></li></ol><h3>Running CutDetector.py</h3>Run ShotChangeDetector.py from the command line and you'll get usage information:<br><blockquote><pre>&gt; ./ShotChangeDetector.py<br><br>Usage:<br><br>    ./ShotChangeDetector.py [--show] [threshold] videofile<br><br>* threshold is a floating point value greater than zero (default=0.9)<br></pre></blockquote><p>So for example, if you run it with the following command line:</p><pre style="margin-left: 40px;">&gt; ./ShotChangeDetector.py myvideofile.avi<br></pre><p>Then as the cut detector runs, XML listing the frame numbers of where probably cuts (shot changes) have been detected will be sent to standard output, for example:<br></p><blockquote><pre>&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;<br><br>&lt;detected_cuts xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"<br>                  xsi:noNamespaceSchemaLocation="DetectedCuts.xsd"&gt;<br>    &lt;cut frame="39" confidence="0.9469" /&gt;<br>    &lt;cut frame="49" confidence="0.9820" /&gt;<br>    &lt;cut frame="76" confidence="0.9009" /&gt;<br>    &lt;cut frame="78" confidence="1.0142" /&gt;<br>    &lt;cut frame="103" confidence="1.0033" /&gt;<br>    &lt;cut frame="110" confidence="0.9777" /&gt;<br>    &lt;cut frame="135" confidence="0.9613" /&gt;<br>    &lt;cut frame="147" confidence="0.9953" /&gt;<i><br></i></pre><blockquote><blockquote><p><i>               .... cut down for succinctness! ...</i></p></blockquote></blockquote><pre>    &lt;cut frame="45167" confidence="0.9209" /&gt;<br>    &lt;cut frame="45168" confidence="0.9209" /&gt;<br>    &lt;cut frame="45169" confidence="0.9209" /&gt;<br>    &lt;cut frame="45170" confidence="0.9210" /&gt;<br>    &lt;cut frame="45171" confidence="1.0389" /&gt;<br>&lt;/detected_cuts&gt;<br><br></pre></blockquote><p>The cuts are listed by frame number, starting from zero for the first frame.<br></p><p>The 'confidence' value is the confidence the algorithm has that what was detected actually is a shot change. It is basically a measure of how much the picture suddenly changed. The higher the value, the more likely it is to be a cut.<br></p><h1>Options</h1><h2>Sensitivity Threshold</h2>You can specify the threshold value used for shot change detection. The default is 0.9, meaning that any possible cuts with a confidence value of less than 0.9 are not output. Sensible values are probably about 0.75 or greater. The cut detector will not accept values less than or equal to zero.<br><br>Specify the threshold as a floating point value immediately before the video filename, for example:<br><pre style="margin-left: 40px;">&gt; ./ShotChangeDetector.py 0.85 myvideofile.avi<br></pre><p>The best choice of threshold value will vary depending of the type of video content. The best way to choose is to experiment. Using 0.9 as the starting point for this is probably a good idea.<br></p>
+<h2>Displaying the video</h2>You can optionally ask to be shown the video live (without sound unfortunately!) as the cut detection takes place. Use the <tt> --show </tt> command line option to do this. For example:<br><pre style="margin-left: 40px;">&gt; ./ShotChangeDetector.py --show myvideofile.avi</pre>
+The video will be rate limited to 25fps, irrespective of the actual frame rate of the video. Detected cuts will be sent to standard output as usual.<br><br>Bear in mind that becuase the detection algorithm needs to compare multiple frames, the detected cuts will be output several frames after they were detected - do not expect them to be displayed the moment the shot change happens in the displayed video!<br><br><br><p>-- Matt, April 2007</p><p><br>
+</p>
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,105 @@
+<html>
+<head>
+<title> Cookbook/PipelinesAndGraphlines </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/PipelinesAndGraphlines">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Cookbook : Pipelines and Graphlines</h1><div style="float: right; border: solid;" class="twoC"> <b> Discussion </b> Please discuss this on <a href='http://www.kamaelia.org/Cookbook/PipelinesAndGraphlinesDiscuss'> the discussion page </a> for this page  </div>Fairly early on you'll want a quick an easy way to link your components together. To actually build a useful system you need to set up linkages to get data from one component's outbox to another component's inbox. <a href='/Cookbook/Pipelines'> <b>Pipelines</b> </a> and <a href='/Cookbook/Graphlines'> <b>Graphlines</b> </a> are the two simplest and most common ways of doing this.<br><br><div style="float: right; border: solid;" class="twoC"> Find out more about using Pipelines <a href='/Cookbook/Pipelines'> here</a> </div> Pipeline and Graphline are, themselves, components. Pipeline wires components together in a long chain. For example:<br>
+<blockquote>
+  <pre>from Kamaelia.Chassis.Pipeline import Pipeline<br><br>from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver<br>from Kamaelia.Protocol.SimpleReliableMulticast import SRM_Sender<br>from Kamaelia.Protocol.Packetise import MaxSizePacketiser<br><br>Pipeline( RateControlledFileReader("myaudio.mp3",readmode="bytes",rate=128000/8),<br>          SRM_Sender(),<br>          MaxSizePacketiser(),<br>          Multicast_transceiver("0.0.0.0", 0, "224.168.2.9", 1600),<br>        ).run()<br></pre>
+</blockquote>
+<div style="float: right; border: solid;" class="twoC"> Find out more about Graphlines <a href='/Cookbook/Graphlines'> here</a> </div> Whereas a Graphline wires components together in any way you want - you specify each individual link. For example:<br><pre style="margin-left: 40px;">from Kamaelia.UI.Pygame.Button import Button<br>from Kamaelia.UI.Pygame.Image import Image<br><br>from Kamaelia.Util.Chooser import Chooser<br><br>from Kamaelia.Chassis.Graphline import Graphline<br><br>files = [ "slide1.gif", "slide2.gif", .... "slide99.gif" ]<br><br>Graphline(<br>     CHOOSER  = Chooser(files),<br>     IMAGE    = Image(size=(800,600), position=(8,48)),<br>     NEXT     = Button(caption="Next",     msg="NEXT", position=(72,8)  ),<br>     PREVIOUS = Button(caption="Previous", msg="PREV" ,position=(8,8)   ),<br>     FIRST    = Button(caption="First",    msg="FIRST",position=(256,8) ),<br>     LAST     = Button(caption="Last",     msg="LAST" ,position=(320,8) ),<br>     linkages = {<br>        ("NEXT",     "outbox") : ("CHOOSER", "inbox"),<br>        ("PREVIOUS", "outbox") : ("CHOOSER", "inbox"),<br>        ("FIRST",    "outbox") : ("CHOOSER", "inbox"),<br>        ("LAST",     "outbox") : ("CHOOSER", "inbox"),<br><br>        ("CHOOSER",  "outbox") : ("IMAGE",   "inbox"),<br>     }<br>).run()<br><br></pre><p>-- 17 Dec 2006 - Matt Hammond<br></p><br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

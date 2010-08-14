@@ -1,0 +1,105 @@
+<html>
+<head>
+<title> Developers/Projects/WebClient </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/WebClient">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Project Task Page: WebClient</h1><h2><b>Description</b></h2><div style="float: right; border: solid;" class="twoC"><b> Status:</b> Running - Looking to add Basic Authentication<br><b>Current Developers: </b>Michael Sparks<br><b>Current "inflight" dev location:</b> Kamaelia.Protocol.HTTP.HTTPClient<br><b>Start Date:</b> July 2006<br><b>Major Milestone date:</b> Met by Ryan (Google Summer of Code deadline - August 2006)<br><b>Expected End Date:</b> na<br><b>End Date:</b> na<br><b>Date this page last updated:</b> December 27th 2006<br><b>Estimated effort so far:</b> X+1/4 </div>The components created by this task are targetted as being the basic of web clients.<br><br>A developer will be able to embed a web client into their application. Specifically this means they will be able to request objects from HTTP Servers for processing/handling and acting upon. <br><br>The original version of this code was developed by Ryan Lothian as part of his work on Google's summer of code 2006. The current context for continuing development (hence this page) is to provide tools for collecting RSS/Atom feeds over HTTP and then doing funky things with the results. Specifically <a href="/Michael">I</a> have a need to publish an authenticated RSS feed of incoming requests on sourceforge, be able to download them, and then send out registration emails from another server. <a href="/Cookbook.html.html/HTTPClient.html">This isn't hard</a> despite how it might sound, except we need authentication adding.<br><br>A key benefit of this work is that it allows Kamaelia systems to publish data to (push) and recieve data from (pull) from the web world. A fun example would be a "publish picture to blog/flickr" from the whiteboard.<br><h2>Inputs</h2><ul><li>Task Sponsor: Michael Sparks</li><li>Task Owner: Michael Sparks</li><li>Developers involved in the task at some point<br></li><ul><li>Ryan Lothian (original developer)<br></li><li>Michael Sparks</li></ul><li>Users:</li><ul><li>Michael Sparks</li></ul><li>Interested third parties</li><ul><li><i>LLUP people ?</i><br></li></ul><li>Requirements</li><ul><li>Ryan Lothian - There MUST be a component that can download a given URL (done by Ryan)</li><li>Ryan Lothian - There MUST  be a component that can download URLs sent to its inbox (done by Ryan)</li><li>Ryan Lothian - It should be possible to make POST based requests  (done by Ryan I believe - needs checking)</li><li>Michael Sparks - It should be possible to make requests to sites with basic authentication<b> - TODO</b><br></li></ul></ul><b>Relevant Influencing factors:</b><br>
+<ul><li><i>Ryan wanted to be able to download and upload bit torrent tracker</i> files from/to a webserver<br></li></ul>
+<h2>Outputs</h2><h3>Expected</h3><ul><li>This page was created after the fact, so it details actual outputs rather than expected.<br></li></ul><h3>Actual</h3><ul><li>Code - /Code/Python/Kamaelia/Kamaelia/Protocol/HTTP/HTTPClient.py<br></li><li><a href="/Cookbook.html.html/HTTPClient.html">Cookbook page</a></li></ul><h3>Realistic possibilities arising as a result of activity on this task</h3><p>The ability to bring in data from HTTP based systems (normally websites) into running Kamaelia systems.<br></p><h2>Related Tasks</h2><h3>Tasks that directly enable this task (dependencies)<br></h3><ul><li>TCP client side of Internet subsystem (inc Selector, CSA, etc)<br></li></ul><h3>Sub Tasks</h3><ul><li><b>TODO:</b> Add in basic authentication (added by Michael, December 2006)<br></li></ul><h2>Task Log</h2><ul><li>Ryan - Google Summer of Code 2006 - Created initial working versions of a useful web client.</li><li><b>Output: </b>September 2006 - Included in Kamaelia 0.5.0 release<br></li><li>Michael - December 27th 2006 - Created the PTP page, added links regarding previous work</li><li><b>Output:</b> Michael - December 27th 2006 - Created the HTTPClient cookbook page.</li><li>Michael - December 27th 2006 - Added subtask (handle basic authentication)<br></li></ul><h2>Discussion</h2><p><i>Anything that doesn't fit above fits in here.</i></p><p>-- Michael Sparks, December 2006</p><p><b>Basic Authentication RFC:</b> <a href="http://www.faqs.org/rfcs/rfc2617.html">http://www.faqs.org/rfcs/rfc2617.html</a></p><p>Basic Authentication seems to be suprisingly trivial, and insecure. Essentially, to create an appropriate basic authentication header, the necessary python is:</p><blockquote><pre>&gt;&gt;&gt; import base64<br>&gt;&gt;&gt; "Authorization: Basic %s" % base64.encodestring("Username:password")<br>'Authorization: Basic VXNlcm5hbWU6cGFzc3dvcmQ=\n'<br></pre></blockquote><p>Figuring out the "best" place to put this in Ryan's code is less than obvious however... (I'll put it somewhere convenient first)<br></p>Later on...<br><br>OK, added a basic initial patch to SingleShotHTTPClient - specifically you can now pass in an "extraheaders" parameter which you can use to define extra headers (shockingly) for adding to the request.<br><br>This allows me to take an application like this:<br><blockquote><pre>Pipeline(<br>    ConsoleReader(eol=""),<br>    SimpleHTTPClient(),<br>    ConsoleEchoer(),<br>).run()</pre></blockquote>
+And create an authenticated request stream as follows:<br><blockquote><pre>def AuthenticatedRequestStream(user, passwd):<br>    auth = "Basic %s" % base64.encodestring("%s:%s" % (user,passwd))[:-1]<br>    def AuthRequest(line):<br>        request = {"url":line,<br>                   "extraheaders": {"Authorization": auth},<br>                  }<br>        return request<br>    return AuthRequest<br><br>Pipeline(<br>    ConsoleReader(eol=""),<br>    PureTransformer(AuthenticatedRequestStream("Username", "password")),<br>    SimpleHTTPClient(),<br>    ConsoleEchoer(),<br>).run()</pre></blockquote>
+There's a lot going on here, so let's step back a second. <br><b><br>What's going into SimpleHTTPClient?<br></b><br>Well, it's getting dictionaries, and they look like this:<br><blockquote><pre>{ "url": "http://some.site.com/bla",<br>  "extraheaders: {<br>           "Authorization" : "Basic VXNlcm5hbWU6cGFzc3dvcmQ="<br>  }<br>}</pre></blockquote>However, what is going into the PureTransformer is simply a string that looks like this:<br><blockquote><pre>"http://some.site.com/bla"</pre></blockquote>PureTransformer takes a function, and applies it to every thing it recieves. So,"clearly" that function is transforming this:<br><blockquote><pre>"http://some.site.com/bla"</pre></blockquote>Into this:<br><blockquote><pre>{ "url": "http://some.site.com/bla",<br>  "extraheaders: {<br>           "Authorization" : "Basic VXNlcm5hbWU6cGFzc3dvcmQ="<br>  }<br>}</pre></blockquote>Based on this, we have to surmise that this function call:<br><blockquote><pre>AuthenticatedRequestStream("Username", "password")</pre></blockquote>Is in fact returning a <i><b>function</b></i> that performs this transform which the PureTransformer can then use.<br><br>In fact what it's doing is just that - it performs the transform that turns the username/password into the authorization code, then returns a function that embeds that value and the supplied value to the user. If we look a the function definition we this is exactly what's happening. At first glance that does (admittedly) look a little hairy!<br><br><br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

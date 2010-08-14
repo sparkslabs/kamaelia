@@ -1,0 +1,108 @@
+<html>
+<head>
+<title> MulticastRtpMpegRemultiplexer </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - MulticastRtpMpegRemultiplexer">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+<h1>Project Task Page: Multicast RTP MPEG Remultiplexer</h1>
+<p><div style="float: right; border: solid;" class="twoC"><b> Status:</b> Blocked <i>- Awaiting hardware purchase authorisation</i> <br><b>Current Developers: </b><i>Matt</i><br><b>Current "inflight" dev location:</b> <i>/Sketches/MH/RTP/</i><br><b>Start Date:</b> ??<br><b>Major Milestone date:</b> n/a<br><b>Expected End Date:</b> 22nd December 2006<br><b>End Date:</b> <i>tbd</i><br><b>Date this page last updated:</b> <i>27th November 2006</i><br><b>Estimated effort so far:</b> <i>??</i><br></div></p><h3>Description</h3>A tool to mix MPEG transport streams received over multicast in RTP format; and rebroadcast as a new multicast RTP stream.<br><br>Internal work on developing live multicast streaming services needs a way to take data from one stream and mix it into another. The streams are multicast RTP packets containing MPEG Transport Stream data. The tool, when deployed should be able to run 24/7, combining a subset of data from 2 or more streams to generate a new one.<br><br>Benefits:<br><ul><li>RTP packetising/depacketising components</li><li>Possibly more MPEG components</li><li>Seleector and multicast component optimisations<br></li></ul><br><h2>Inputs</h2>Task Sponsor: BB (BBC internal)<br>Task Owner: Matt (MH)<br>Developers:<br><ul><li>Matt</li></ul>Users:<br><ul><li>BB</li></ul>Interested Third Parties<br><ul><li>RB (BBC internal)</li></ul>Requirements (non exhaustive):<br><ul><li>Receive multicast RTP containing MPEG Transport Stream containing H264 @ ~1Mbit/s (MUST)</li><li>Simulataneously receive a 2nd multicast RTP containing MPEG Transport Stream containing EIT data and MPEG2 video @ ~5Mbit/s (MUST)</li><li>Combine EIT data from 2nd stream with video from the 1st to form a new stream (MUST)<br></li><li>Transmit the new stream as multicast RTP (MUST)</li><li>Adjust stream timestamps (MPEG Transport Stream level, and possibly MPEG Program Elementary Stream level) if needed (WOULD LIKE)</li><ul><li>uncertain of this until able to test with various clients</li><li>Derived from discussions with RB<br></li></ul></ul><h2>Outputs</h2><h3>Expected</h3><ul><li>Components to parse and create RTP packets</li><li>Command line tool, as described</li><ul><li>/Sketches/MH/RTP/RTPMux.py</li></ul><li>Webpages describing:</li><ul><li>architecture</li><li>usage<br></li></ul></ul><h3>Actual</h3><ul><li>Code</li><ul><li>RTP handling</li><ul><li>/Sketches/MH/RTP/RTPFramer.py</li><li>/Sketches/MH/RTP/RTPDeFramer.py</li></ul><li>Internet components (uprades/modifications)<br></li><ul><li>/Sketches/MH/RTP/Multicast_transceiver.py</li><li>/Sketches/MH/RTP/Selector.py</li><li>/Sketches/MH/RTP/ConnectedSocketAdaptor.py</li></ul><li>DVB/MPEG Transport stream processing</li><ul><li>/Sketches/MH/DVB_Remux/ExtractPCR.py<br></li></ul></ul></ul><p>Realistic possibilities arising as a result of activity on this task</p><ul><li>New/modified components for mainline codebase (RTP, DVB)</li><ul><li>review and merge some or all of the above components</li></ul></ul><h2>Related Tasks</h2><h3>Tasks that directly enable this task (dependencies)</h3><ul><li>n/a<br></li></ul><h3>Subtasks</h3><ul><li>Improved throughput of multicast component and Selector in general</li><ul><li>rewrite multicast_transceiver to use Selector</li><li>modified Selector to be instantly woken if a component requests to add a reader/writer/exceptional</li></ul><li>Develop code<br></li></ul><h2>Task Log</h2><ul><li>05 October 2006 - Matt : Added developer Matt. <b>Task status changed</b> to Running<br></li><li>11 October 2006 - Matt : development to date: Time spent 5 days. <b>Task status changed</b> to stasis<br></li><li>12 November 2006 - Matt : Code modifications: Time spent 1/2 day.</li><li>20 November 2006 - Matt : <b>Task status changed</b> to blocked - requested, and awaiting, hardware &amp; info on streams from BB<br></li></ul><h2>Discussion</h2>Need to determine, experimentally, if timestamp resynchronisation algorithms will be neededIf resynchronisation algorithms are needed. Technically remultiplexing severely jitters the timestamps on the transport stream packets.<br><ul><li>For a traditional Set-top-box style receiver device, these timestamps are used to regenerate the precise bitrate of the original data stream. They do this for the purposes of generating their own timing clocks for video and audio output. (RB)<br></li><li>Computer based video players are probably less likely to use this as they don't have access or control over very accurate clocks, or the precise timing of their local sound and video subsystems. Instead they are more likely to simply buffer data and play it at their own rate. (Matt)</li><li>This may be a substantial
+piece of work, as MPEG PES packets will need decoding from transport
+stream packets and an algorithm would have to be identified or devised to calculate the new timestamps. This may be problematic as the original streams appear to be highly variable bitrate.<br></li></ul>CPU load is higher than anticipated - handling a single 1-2Mbit/s stream takes 50%+ CPU usage on the Mac Mini currently being used for testing. Faster hardware, and possibly further optimisations, are required.<br><br>Selector component has been improved (local copy
+in the working dir) to increase responsiveness. Specifically, instead
+of requests to select on file handles queueing up at its inbox until
+the current select() call timeout fires; a separate filehandle is used
+to wake it immediately if there are pending requests.<br><br>The
+Multicast components have been optimised (local copy in the working
+dir) to sleep when inactive, using the Selector component to wake them.<br><br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,561 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.UI.OpenGL.OpenGLDisplay</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.html">OpenGL</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay.html">OpenGLDisplay</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay.OpenGLDisplay.html">OpenGLDisplay</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#309">OpenGL Display Service</a><ul>
+<li><a class="reference" href="#310">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#311">How does it work?</a><ul>
+<li><a class="reference" href="#312">OpenGL components</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#313">Pygame components</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#314">Pygame wrappers</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#315">Listening to events</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#316">Eventspies</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#317">Shutdown</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="309">OpenGL Display Service</h1>
+<p>This component provides an OpenGL window and manages input events,
+positioning and drawing of other components. It handles both OpenGL and
+Pygame components.</p>
+<p>OpenGLDisplay is a service that registers with the Coordinating
+Assistant Tracker (CAT).</p>
+<div class="section">
+<h2 id="310"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>If you want to change some of the default parameters, like the viewport,
+you first have to create an OpenGLDisplay object and then register it.
+The following would show a simple cube from a slightly changed viewer
+position:</p>
+<pre class="literal-block">
+display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15)).activate()
+OpenGLDisplay.setDisplayService(display)
+
+SimpleCube(position=(0,0,-15)).activate()
+</pre>
+<p>If you want to use pygame components, you have to override the
+PygameDisplay service before creating any pygame components:</p>
+<pre class="literal-block">
+display = OpenGLDisplay.getDisplayService()
+PygameDisplay.setDisplayService(display[0])
+</pre>
+<p>For examples of how components have to interfrere with OpenGLDisplay,
+please have a look at OpenGLComponent.py and Interactor.py.</p>
+</div>
+<div class="section">
+<h2 id="311"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>OpenGLDisplay is a service. obtain it by calling the
+OpenGLDisplay.getDisplayService(...) static method. Any existing instance
+will be returned, otherwise a new one is automatically created.</p>
+<p>Alternatively, if you wish to configure OpenGLDisplay with options other
+than the defaults, create your own instance, then register it as a
+service by calling the PygameDisplay.setDisplayService(...) static
+method. NOTE that it is only advisable to do this at the top level of
+your system, as other components may have already requested and created
+a OpenGLDisplay component!</p>
+<p>When using only OpenGL components and no special display settings have
+to be made, you won't see OpenGLDisplay as it is registered
+automatically when it is first requested (by invoking the
+getDisplayService(...) static method).</p>
+<p>You can also use an instance of OpenGLDisplay to override the
+PygameDisplay service as it implements most of the functionality of
+PygameDisplay. You will want to do this when you want to use Pygame
+components along with OpenGL components.</p>
+<p>pygame only supports one display window at a time, you must not make more than
+one OpenGLDisplay component.</p>
+<p>OpenGLDisplay listens for requests arriving at its &quot;notify&quot; inbox. A request can
+currently be to:</p>
+<ul class="simple">
+<li>register an OpenGL component (OGL_DISPLAYREQUEST)</li>
+<li>register a pygame component (DISPLAYREQUEST)</li>
+<li>register a pygame wrapper  (WRAPPERREQUEST)</li>
+<li>register an eventspy (EVENTSPYREQUEST)</li>
+<li>listen or stop listening to events (ADDLISTENEVENT, REMOVELISTENEVENT)</li>
+<li>update the displaylist of an OpenGL component (UPDATE_DISPLAYLIST)</li>
+<li>update the transform of an OpenGL component (UPDATE_TRANSFORM)</li>
+<li>invoke a redraw of a pygame surface (REDRAW)</li>
+</ul>
+<div class="section">
+<h3 id="312"><a id="opengl-components" name="opengl-components">OpenGL components</a></h3>
+<p>OpenGL components get registered by an OGL_DISPLAYREQUEST. Such a
+request is a dictionary with the following keys:</p>
+<pre class="literal-block">
+{
+    &quot;OGL_DISPLAYREQUEST&quot;: True,     # OpenGL Display request
+    &quot;objectid&quot; : id(object),            # id of requesting object (for identification)
+    &quot;callback&quot; : (component,&quot;inboxname&quot;),   # to send the generated event id to
+
+    &quot;events&quot; : (component, &quot;inboxname&quot;),    # to send event notification (optional)
+    &quot;size&quot;: (x,y,z),                # size of object (not yet used)
+}
+</pre>
+<p>When OpenGLDisplay received such a request it generates an identifier
+and returns it to the box you specify by &quot;callback&quot;. This identifier can
+later be used to determine if a mouse event &quot;hit&quot; the object.</p>
+<p>It is important to note that OpenGL don't draw and transform themselves
+directly but only hand displaylists and Transform objects to the display
+service. After an OpenGL component has been registered, it can send
+displaylist- and transform-updates. These requests are dictionaries of
+the following form:</p>
+<pre class="literal-block">
+{
+    &quot;DISPLAYLIST_UPDATE&quot;: True, # update displaylist
+    &quot;objectid&quot;: id(object),     # id of requesting object
+    &quot;displaylist&quot;: displaylist  # new displaylist
+}
+</pre>
+<p>If an object is static, i.e. does not change its geometry, it only needs
+to send this update one time. Dynamic objects can provide new
+displaylists as often as they need to.:</p>
+<pre class="literal-block">
+{
+    &quot;TRANSFORM_UPDATE&quot;: True,   # update transform
+    &quot;objectid&quot;: id(self),       # id of requesting object
+    &quot;transform&quot;: self.transform # new transform
+}
+</pre>
+<p>A transform update should be sent every time the object transform
+changes, i.e. it is moved.</p>
+<p>OpenGL components can also request listening to events. See &quot;Listening
+to events&quot; below.</p>
+<p>It is generally recommended to use the class OpenGLComponent as base
+class for OpenGL components. It implements all the functionality
+required to create, draw, move OpenGL components and to handle events
+(see OpenGLComponent.py for the class and e.g. SimpleCube.py, Button.py
+and other components for examples).</p>
+</div>
+<div class="section">
+<h3 id="313"><a id="pygame-components" name="pygame-components">Pygame components</a></h3>
+<p>OpenGLDisplay is designed to be compatible with PygameDisplay. After
+overriding the PygameDisplay service, pygame components can be created
+as usual. See the documentation of PygameDisplay
+(Kamaelia/UI/PygameDisplay.py) for how to do this.</p>
+<p>NOTE: Overlays are not supported yet.</p>
+</div>
+<div class="section">
+<h3 id="314"><a id="pygame-wrappers" name="pygame-wrappers">Pygame wrappers</a></h3>
+<p>It is possibly, by sending a WRAPPERREQUEST, to wrap an already
+registered pygame component by a OpenGL component. The surface of the
+pygame component is then excluded from normal drawing and this
+responsibility is handed to the requesting component by giving it the
+texture name corresponding to the surface. The event processing of mouse
+events is then also relinked to be done by the wrapper.</p>
+<p>The wrapper request is a dictionary with the following keys:</p>
+<pre class="literal-block">
+{
+    &quot;WRAPPERREQUEST&quot; : True,                    # wrap a pygame component
+    &quot;wrapcallback&quot; : (object, &quot;inboxname&quot;),     # send response here
+    &quot;eventrequests&quot; : (object, &quot;inboxname&quot;),    # to receive event requests by the wrapped component
+    &quot;wrap_objectid&quot;: id(wrapped_component)      # object id of the component to be wrapped
+}
+</pre>
+<p>When a WRAPPERREQUEST is received for a component which is not
+registered yet, it is stored until the component to be wrapped gets
+registered.</p>
+<p>When a wrapper request was received, the OpenGL display service returns
+a dictionary to the box specified by &quot;wrapcallback&quot; containing the
+following keys:</p>
+<pre class="literal-block">
+{
+    &quot;texname&quot;: texname,             # OpenGL texture name
+    &quot;texsize&quot;: (width, height),     # texture coordinate size
+    &quot;size&quot;: (width, height)         # size of pygame surface in pixels
+}
+</pre>
+<p>See PygameWrapperPlane.py for an example implementation of a wrapper.</p>
+</div>
+<div class="section">
+<h3 id="315"><a id="listening-to-events" name="listening-to-events">Listening to events</a></h3>
+<p>Once your component has been registered, it can request to be notified
+of specific pygame events. The same requests are used for Pygame and
+OpenGL components, only the keys are slightly different.</p>
+<p>To request to listen to a given event, send a dictionary to the &quot;notify&quot;
+inbox, containing the following:</p>
+<pre class="literal-block">
+{
+    &quot;ADDLISTENEVENT&quot; : pygame_eventtype,    # example: pygame.KEYDOWN
+    &quot;surface&quot; : your_surface,               # for pygame components
+    &quot;objectid&quot; : id(object),                # for OpenGL components
+}
+</pre>
+<p>To unsubscribe from a given event, send a dictionary containing:</p>
+<pre class="literal-block">
+{
+    &quot;REMOVELISTENEVENT&quot; : pygame_eventtype,
+    &quot;surface&quot; : your_surface,               # for pygame components
+    &quot;objectid&quot; : id(object),                # for OpenGL components
+}
+</pre>
+<p>Events will be sent to the inbox specified in the &quot;events&quot; key of the
+&quot;DISPLAYREQUEST&quot; or &quot;OGL_DISPLAYREQUEST&quot; message. They arrive as a list
+of pygame event objects.</p>
+<p>The events objects of type Bunch with the following variables:</p>
+<ul class="simple">
+<li>type      -- Pygame event type</li>
+</ul>
+<blockquote>
+For events of type pygame.KEYDOWN, pygame.KEYUP:</blockquote>
+<ul class="simple">
+<li>key       -- Pressed or released key</li>
+</ul>
+<blockquote>
+For events of type pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP:</blockquote>
+<ul class="simple">
+<li>pos       -- Mouse position</li>
+<li>button    -- Pressed or released mouse button number</li>
+</ul>
+<blockquote>
+For events of type pygame.MOUSEMOTION:</blockquote>
+<ul class="simple">
+<li>rel       -- Relative mouse motion.</li>
+<li>buttons   -- Buttons pressed while mousemotion</li>
+</ul>
+<blockquote>
+For events of type pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION when sent to OpenGL components:</blockquote>
+<ul class="simple">
+<li>viewerposition    -- Position of viewer</li>
+<li>dir               -- Direction vector of generated from mouse position</li>
+<li>hitobjects        -- List of hit objects</li>
+</ul>
+<p>NOTE: If the event is MOUSEMOTION, MOUSEBUTTONUP or MOUSEBUTTONDOWN then
+you will instead receive a replacement object, with the same attributes
+as the pygame event. But for pygame components, the 'pos' attribute
+adjusted so that (0,0) is the top left corner of <em>your</em> surface. For
+OpenGL components the origin and direction of the intersection vector
+determined using the mouse position and viewport will be added as well
+as a list of identfiers of objects that has been hit.</p>
+<p>If a component has requested reception of an event type, it gets every
+event that happens of that type, regardless if it is of any concern to
+the component. In the case of mouse events there is a list of hit
+objects included which are determined by using OpenGL picking.</p>
+</div>
+<div class="section">
+<h3 id="316"><a id="eventspies" name="eventspies">Eventspies</a></h3>
+<p>Eventspies are components that basically listen to events for other
+components. They are registered by sending an EVENSPYREQUEST:</p>
+<pre class="literal-block">
+{
+    &quot;EVENTSPYREQUEST&quot; : True,
+    &quot;objectid&quot; : id(object),            # id of requesting object
+    &quot;target&quot;: id(target),               # id of object to be spied
+    &quot;callback&quot; : (object,&quot;inboxname&quot;),  # for sending event identifier
+    &quot;events&quot; : (object, &quot;inboxname&quot;)    # for reception of events
+}
+</pre>
+<p>In return you get the identifier of the target component that can be
+used to determine if the target component has been hit. An evenspy can
+request reception of event types like usual (using ADDLISTENEVENT and
+REMOVELISTENEVENT).  When events are spied this does not affect normal
+event processing.</p>
+</div>
+<div class="section">
+<h3 id="317"><a id="shutdown" name="shutdown">Shutdown</a></h3>
+<p>Upon reception of a pygame.QUIT event, OpenGLDisplay sends an
+<a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a> object out of its signal outbox. The
+service itself does not terminate.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.html">OpenGL</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay.html">OpenGLDisplay</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLDisplay.OpenGLDisplay.html">OpenGLDisplay</a></h1>
+<div class="section">
+<h2 id="symbol-OpenGLDisplay">class OpenGLDisplay(<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</a>)</h2>
+<p>OpenGLDisplay(...) -&gt; new OpenGLDisplay component</p>
+<p>Use OpenGLDisplay.getDisplayService(...) in preference as it returns an
+existing instance, or automatically creates a new one.</p>
+<p>Or create your own and register it with setDisplayService(...)</p>
+<p>Keyword arguments (all optional):</p>
+<ul>
+<li><p class="first">title             -- caption of window (default=http://kamaelia.sourceforge.net)</p>
+</li>
+<li><p class="first">width              -- pixels width (default=800)</p>
+</li>
+<li><p class="first">height             -- pixels height (default=600)</p>
+</li>
+<li><p class="first">background_colour  -- (r,g,b) background colour (default=(255,255,255))</p>
+</li>
+<li><p class="first">fullscreen         -- set to True to start up fullscreen, not windowed   (default=False)</p>
+</li>
+<li><p class="first">show_fps          -- show frames per second in window title (default=True)</p>
+</li>
+<li><dl class="first docutils">
+<dt>limit_fps           -- maximum frame rate (default=60)</dt>
+<dd><p class="first last">Projection parameters</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">near              -- distance to near plane (default=1.0)</p>
+</li>
+<li><p class="first">far               -- distance to far plane (default=100.0)</p>
+</li>
+<li><dl class="first docutils">
+<dt>perspective       -- perspective angle (default=45.0)</dt>
+<dd><p class="first last">Viewer position and orientation</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">viewerposition        -- position of viewer (default=(0,0,0))</p>
+</li>
+<li><p class="first">lookat                -- look at point (default= (0,0,-self.farPlaneDist))</p>
+</li>
+<li><dl class="first docutils">
+<dt>up                    -- up vector (default(0,1,0))</dt>
+<dd><p class="first last">Fog</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">fog           -- tuple of fog distances (start, end). if not set, fog is disabled (default)</p>
+</li>
+<li><p class="first">fog_colour    -- (r,g,b) fog colour (default=(255,255,255) )</p>
+</li>
+<li><dl class="first docutils">
+<dt>fog_density   -- fog density (default=0.35)</dt>
+<dd><p class="first last">Event processing</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">hitall        -- boolean, if false, only the nearest object under the cursor gets activated (default=False)</p>
+</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-OpenGLDisplay.Inboxes" name="symbol-OpenGLDisplay.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : NOT USED</li>
+<li><strong>events</strong> : For reception of pygame events</li>
+<li><strong>inbox</strong> : Default inbox, not currently used</li>
+<li><strong>notify</strong> : For reception of requests for surfaces, overlays and events</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-OpenGLDisplay.Outboxes" name="symbol-OpenGLDisplay.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : NOT USED</li>
+<li><strong>signal</strong> : NOT USED</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.__init__" name="symbol-OpenGLDisplay.__init__">__init__(self, **argd)</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.calcPow2Size" name="symbol-OpenGLDisplay.calcPow2Size">calcPow2Size(self, size)</a></h4>
+<p>Calculates the power of 2 dimensions for a given size.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.doPicking" name="symbol-OpenGLDisplay.doPicking">doPicking(self, pos)</a></h4>
+<p>Uses OpenGL picking to determine objects that have been hit by mouse pointer.
+see e.g. OpenGL Redbook</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.drawOpenGLComponents" name="symbol-OpenGLDisplay.drawOpenGLComponents">drawOpenGLComponents(self)</a></h4>
+<p>Draws all registered OpenGL components with their set transformation matrix.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.drawPygameSurfaces" name="symbol-OpenGLDisplay.drawPygameSurfaces">drawPygameSurfaces(self)</a></h4>
+<p>Draws all surfaces of registered pygame components on top of everything else.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.genIdentifier" name="symbol-OpenGLDisplay.genIdentifier">genIdentifier(self)</a></h4>
+<p>Returns a unique number.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleEvents" name="symbol-OpenGLDisplay.handleEvents">handleEvents(self)</a></h4>
+<p>Handles pygame input events.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleOGLComponentEvents" name="symbol-OpenGLDisplay.handleOGLComponentEvents">handleOGLComponentEvents(self, events)</a></h4>
+<p>Prepare and send input events for OpenGL components.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handlePygameComponentEvents" name="symbol-OpenGLDisplay.handlePygameComponentEvents">handlePygameComponentEvents(self, events)</a></h4>
+<p>Prepare and send input events for pygame components.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequest_DISPLAYREQUEST" name="symbol-OpenGLDisplay.handleRequest_DISPLAYREQUEST">handleRequest_DISPLAYREQUEST(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequest_EVENTSPYREQUEST" name="symbol-OpenGLDisplay.handleRequest_EVENTSPYREQUEST">handleRequest_EVENTSPYREQUEST(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequest_OGL_DISPLAYREQUEST" name="symbol-OpenGLDisplay.handleRequest_OGL_DISPLAYREQUEST">handleRequest_OGL_DISPLAYREQUEST(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequest_WRAPPERREQUEST" name="symbol-OpenGLDisplay.handleRequest_WRAPPERREQUEST">handleRequest_WRAPPERREQUEST(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.handleRequests" name="symbol-OpenGLDisplay.handleRequests">handleRequests(self)</a></h4>
+<p>Handles service requests.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.main" name="symbol-OpenGLDisplay.main">main(self)</a></h4>
+<p>Main loop.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.setProjection" name="symbol-OpenGLDisplay.setProjection">setProjection(self)</a></h4>
+<p>Sets projection matrix.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.surfacePosition" name="symbol-OpenGLDisplay.surfacePosition">surfacePosition(self, surface)</a></h4>
+<p>Returns a suggested position for a surface. No guarantees its any good!</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.updateDisplay" name="symbol-OpenGLDisplay.updateDisplay">updateDisplay(self)</a></h4>
+<p>Draws all components, updates screen, clears the backbuffer and depthbuffer .</p>
+</div>
+<div class="section">
+<h4><a id="symbol-OpenGLDisplay.updatePygameTexture" name="symbol-OpenGLDisplay.updatePygameTexture">updatePygameTexture(self, surface, pow2surface, texname)</a></h4>
+<p>Converts the surface of a pygame component to an OpenGL texture.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,80 @@
+<html><body><table>
+            <tr><td>[00:25] *** MS- berates self for missing something he shouldn'tve missed</td></tr>
+            <tr><td>[00:50] &lt MS-&gt Yay, my application works, and I've now successfully broken the aim components :-/</td></tr>
+            <tr><td>[01:54] &lt MS-&gt Actually looks remarkably easy to break the aim components - just try using them in anger</td></tr>
+            <tr><td>[01:55] &lt MS-&gt Sigh. The problem with GSOC is rarely the work during the programme, but the lack of testing of what they produce, and the lack of hanging around afterwards</td></tr>
+            <tr><td>[01:55] &lt MS-&gt (and the lack of polishing their code to a *good* level)</td></tr>
+            <tr><td>[01:55] &lt MS-&gt rarely better than alpha quality code IMO</td></tr>
+            <tr><td>[10:40] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:00] &lt Lawouach&gt heya</td></tr>
+            <tr><td>[11:08] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[11:11] &lt Lawouach&gt hi Michael</td></tr>
+            <tr><td>[11:13] &lt MS-&gt How's things?</td></tr>
+            <tr><td>[11:14] &lt MS-&gt I was fiddling with the AIM stuff last night and found its rather bust</td></tr>
+            <tr><td>[11:14] &lt MS-&gt ie breaks when you try using it</td></tr>
+            <tr><td>[11:14] &lt MS-&gt With more than 2 clients at a time, which is a pain</td></tr>
+            <tr><td>[11:14] &lt MS-&gt (or 2 or more)</td></tr>
+            <tr><td>[11:15] &lt MS-&gt Not even clients really. Its more "sending messages to two users"</td></tr>
+            <tr><td>[11:15] &lt MS-&gt which is what the code would need to be able to do to really be useful</td></tr>
+            <tr><td>[11:15] &lt MS-&gt can even break it with one user</td></tr>
+            <tr><td>[11:15] &lt MS-&gt :/</td></tr>
+            <tr><td>[11:16] &lt Lawouach&gt damn :/</td></tr>
+            <tr><td>[11:16] &lt Lawouach&gt I'm playing with my XMPP code and twitter this afternoon</td></tr>
+            <tr><td>[11:16] &lt Lawouach&gt relaxing :)</td></tr>
+            <tr><td>[11:17] &lt MS-&gt cool</td></tr>
+            <tr><td>[11:18] &lt MS-&gt It's a pain really, because what I was trying to do works, within the limitations of what the AIM components *do* do</td></tr>
+            <tr><td>[11:18] &lt MS-&gt which is to effectively have:</td></tr>
+            <tr><td>[11:18] &lt MS-&gt USER CONVERSATION &lt ------&gt command line script</td></tr>
+            <tr><td>[11:20] &lt MS-&gt for example UnixProcess("/bin/bash") controllable over a network connection</td></tr>
+            <tr><td>[11:21] &lt MS-&gt over an aim conversation specifically</td></tr>
+            <tr><td>[11:21] &lt MS-&gt which is probably a really really bad idea :)</td></tr>
+            <tr><td>[11:21] &lt MS-&gt but ok for some things :)</td></tr>
+            <tr><td>[11:22] &lt Lawouach&gt Heh :)</td></tr>
+            <tr><td>[11:25] &lt MS-&gt It's annoying really, because the code does work though.</td></tr>
+            <tr><td>[11:26] &lt MS-&gt If I want to rummage around my file system, I can</td></tr>
+            <tr><td>[11:26] &lt MS-&gt If I want to connect a console based bot to AIM then it won't work</td></tr>
+            <tr><td>[11:27] &lt MS-&gt primarily because it *looks* like the aim code ignores AIMs rate limiting messages (at a guess)</td></tr>
+            <tr><td>[11:28] &lt MS-&gt oh well</td></tr>
+            <tr><td>[11:45] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:47] &lt Davbo&gt Hey guys</td></tr>
+            <tr><td>[11:48] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[11:49] *** Davbo was up till 3 playing trivial pursuits. :(</td></tr>
+            <tr><td>[11:49] *** Davbo probably shouldn't have admitted that</td></tr>
+            <tr><td>[11:49] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[11:49] &lt Lawouach&gt I played Civilisation 4 online with my brother till 1am :)</td></tr>
+            <tr><td>[11:50] &lt Davbo&gt Cool, I love the Civ games :-)</td></tr>
+            <tr><td>[11:50] &lt Davbo&gt I brother always beats me though</td></tr>
+            <tr><td>[11:51] &lt Lawouach&gt Usually we get killed by the computer before kicking each other's arse</td></tr>
+            <tr><td>[11:51] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[14:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:18] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:12] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:04] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:18] *** heckj has joined #kamaelia</td></tr>
+            <tr><td>[17:46] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:49] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[17:49] Reply: does the macarena</td></tr>
+            <tr><td>[18:12] *** MS- uploads some usage/installation notes here: http://www.kamaelia.org/ActiveFileProcessor</td></tr>
+            <tr><td>[18:31] *** heckj has joined #kamaelia</td></tr>
+            <tr><td>[18:34] *** heckj_ has joined #kamaelia</td></tr>
+            <tr><td>[18:38] &lt heckj_&gt Question for the Kamaelia general crew: I'm making a little simulation with Kamaelia. In the sim, I've set it up with a "world" component that periodically sends updates to all the actors in the simulation, and expects to receive messages from them. Should I be trying to use something like a Backplane for communicating out, or is just directly linking the mailboxes just as easy?</td></tr>
+            <tr><td>[19:12] *** MS- reads back</td></tr>
+            <tr><td>[19:12] &lt MS-&gt Personally I'd use the backplane, since it's the easiest way of managing things :)</td></tr>
+            <tr><td>[19:13] &lt MS-&gt I'd be tempted to use a backplane for both directions in fact since then it's easier to attach more components to both backplanes as producers/consumers to see what's going on for logging activity</td></tr>
+            <tr><td>[19:14] &lt MS-&gt I must admit I probably over use backplanes these days for that sort of thing, but they do make like alot simpler</td></tr>
+            <tr><td>[19:14] &lt MS-&gt For much the same reason people like most pub/sub architectures</td></tr>
+            <tr><td>[19:19] &lt heckj_&gt I am resurrecting some older code where I was just pushing straight into the inbox (hacking the Axon component for no reason that I can recall) - so now I'm rejiggering the code to do it differently. The backplane seemed like a good solution much along those lines.</td></tr>
+            <tr><td>[19:21] &lt MS-&gt Probably. If you're posting messages to lots of things that's a canonical case where the backplane makes sens</td></tr>
+            <tr><td>[19:21] &lt MS-&gt e</td></tr>
+            <tr><td>[19:21] &lt heckj_&gt thanks</td></tr>
+            <tr><td>[19:21] &lt MS-&gt you're welcome :)</td></tr>
+            <tr><td>[19:23] &lt Lawouach&gt I second that.</td></tr>
+            <tr><td>[19:23] &lt Lawouach&gt Backplanes are handy in those cases</td></tr>
+            <tr><td>[19:45] *** heckj_ has parted #kamaelia</td></tr>
+            <tr><td>[22:47] &lt Davbo&gt My program scores 8/10 on quiz "C" here: http://www.bbc.co.uk/skillswise/words/spelling/recognising/homophones/quiz.shtml</td></tr>
+            <tr><td>[22:47] &lt Davbo&gt Humm</td></tr>
+            <tr><td>[22:47] *** Davbo will see if smoothing helps at all</td></tr>
+            <tr><td>[22:50] *** Davbo could do with a bigger corpus</td></tr>
+            <tr><td>[23:19] &lt Davbo&gt woo 9/10</td></tr>

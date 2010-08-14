@@ -1,0 +1,147 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20061020 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 Clear goals
+4.2 Bugs vs New Features
+5. Date/Time of next weekly meeting
+Tues 31st October 2006, 11am GMT
+
+
+
+2 Participants
+Participating: MS- (Michael), mhrd (Matt), c-ryan (Ryan)
+Also attending: Uraeus tav neuraxon77
+
+
+
+3 Activity Reports
+
+Michael:
+
+    DONE - presentation internally
+           liased with LLUP people
+           wrote basic non-trial protocol demo (markov chainer)
+           updated visualiser
+
+    TODO - No commitment to Kamaelia work this week
+           due to overload, but will probably work on getting website sorted
+
+    BLOCKED - Very blocked BBC Meetings
+              preparing presentations
+              other project work (several days blockage)
+
+    Also blocked next week:
+        more presentations on BBC & Open source needing updating
+        giving at Linux World
+
+Matt:
+
+    DONE - RGB <-> YUV components
+           mpeg4yuv parser/outputter component
+           fixed dirac bindings for dirac 0.6.0
+           video content reframer for internal (BBC) project
+           implement wake on message removal from outboxes (bugfix)
+           investigated into BBC multicast stream bitrate fluctuations
+               (for RTP work)
+
+    TODO - finish, test and check-in wake-on-message-removal
+           make more pymedia wrappers (video)
+           investigate mpeg transport stream remultiplexing issues
+           update kamaelia changelog wrt. recent fixes
+           need to remove default queue size limits on threadedcomponent
+           more website updates
+           continue with DVB components
+           review/revisit experimental Timer component
+           Improve box destruction to handle when a box is still linked
+
+Ryan:
+
+    BLOCKED - degree :)
+
+
+Matt congratulated Michael on an excellent presentation yesterday. He reckoned
+it was extremely well targetted at the audience.
+
+
+
+4. Discussion items (max 3 or 4)
+
+4.1 Clear goals
+
+Michael explained that we, as a project, suffered from problems with getting
+clear direction from outside the team, and that's caused a lack of clarity of
+goals (at least in communicating them).
+
+Matt added that we're left to guess where we should prioritise our resources .
+
+However it's been very clear that if we provide something clear for people to
+latch onto, they can see "ooh, that's cool".
+
+This also related to how we express this on the project website, especially as
+the original project goals are now public (that of building a streaming server).
+
+We've fleshed out the system in other areas and looked for other internal (bbc)
+projects to work on ... which lead to the DVB and Macro work.
+
+The new goal devised 2-3 months agao was to talk about the underlying technology
+aims and have projects spin off from that. Specifically:
+
+"""
+   To do for software systems what IKEA has done for furniture, and spreadsheets
+   have done for traditional business, but for the BBC's business of
+   storytelling and distribution
+"""
+
+Michael suggested this should be adopted for the website, and canvassed for
+people's opinions. He explained that having a big main goal like this, to
+underpin whatever the current work is, is often a useful thing for open source
+projects.
+
+Matt and Ryan were broadly happy with this. Matt suggested that the BBC emphasis
+might at first glance give an exlusionary or closed impression. Michael agreed,
+and explained that he'd be removing "BBC" and making it clearer what that means
+in practical terms.
+
+
+
+4.2 Bugs vs New Features
+
+Michael wanted to follow up on a discussion that occurred yesterday on #kamaelia
+regarding getting producer components to unpause when a consumer takes a message
+from an inbox.
+
+Michael noted that this is a bugfix (restoring a feature originally in Axon 1.0)
+but that yesterday's discussion was useful as it covered possible "new features"
+
+***Ryan left the channel***
+
+Matt agreed, and noted, for reference that the implementation he was doing would
+wake all outbox owners whenever a message is taken from the inbox. This is
+slightly different to the behaviour of Axon 1.0. But the important thing is that
+it will always wake up components in the situations Axon 1.0 would wake them.
+
+Michael expressed support for this position.
+
+Matt reckoned that implementing an exact match to Axon 1.0's semantics looked
+likely to actually be rather difficult and/or messy.
+
+Michael confirmed for Matt that Axon 1.0 would wake components irrespective of
+whether the linkage was synchronous (size limited) or not.
+
+Matt expressed the hope that he'd finish debugging it today and would then
+check it in as a branch, and issue an email explaining it.
+
+
+
+5. Date/Time of next weekly meeting
+Proposed Tues 31st October 2006, 11am GMT
+
+Michael noted that he'd have very little time to actually work on Kamaelia
+during next week, so it would not be worth having a meeting during next week.
+
+He also noted it would be halloween!
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20061020 ======

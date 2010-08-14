@@ -1,0 +1,771 @@
+<html><body><table>
+            <tr><td>[00:06] *** sadrul1 is now known as sadrul</td></tr>
+            <tr><td>[00:51] *** ms-away sleeps</td></tr>
+            <tr><td>[00:51] &lt ms-away&gt (having created 3 branches for merge focussed on specific functionality)</td></tr>
+            <tr><td>[06:30] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:51] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[07:21] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:30] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:39] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[07:39] Reply: does the macarena</td></tr>
+            <tr><td>[07:47] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:00] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[08:00] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[08:36] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:36] &lt mhrd&gt hi Lawouach_, vmlemon_, ...</td></tr>
+            <tr><td>[08:51] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:58] &lt Lawouach_&gt http://mail.python.org/pipermail/web-sig/2008-May/003401.html &lt -- a fairly dense thread regarding WSGI and async' design</td></tr>
+            <tr><td>[08:59] &lt Lawouach_&gt Might be interesting for j_baker's work</td></tr>
+            <tr><td>[09:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:38] *** edh has joined #kamaelia</td></tr>
+            <tr><td>[09:42] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:15] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:15] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:26] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt Anyone know MS's Gmail? I know that gets to him faster, send it in [off] please :)</td></tr>
+            <tr><td>[12:27] Reply: Hm?</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt Shh kamaeliabot</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt oh got it</td></tr>
+            <tr><td>[12:28] &lt Davbo&gt ignore me :)</td></tr>
+            <tr><td>[12:29] &lt Davbo&gt Hopefully I'll be back later in time for the meeting</td></tr>
+            <tr><td>[12:30] &lt Davbo&gt if not i've ignore MS my done/todo/blocked</td></tr>
+            <tr><td>[12:30] &lt Davbo&gt blah</td></tr>
+            <tr><td>[12:30] &lt Davbo&gt emailed</td></tr>
+            <tr><td>[12:30] &lt Davbo&gt s/ignore/emailed - Don't ignore MS :P</td></tr>
+            <tr><td>[12:35] &lt Davbo&gt Got to rush, bye.</td></tr>
+            <tr><td>[12:42] &lt orphans&gt anyone have any idea why Text.py from private_MPS_JL_PygameText doesn't exit? Both components get out of their mainloop, and a shutdownMicroprocess signal is propagated, but it stays resolutely open</td></tr>
+            <tr><td>[13:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:43] &lt j_baker&gt Thank you for posting that Lawouach. That is interesting.</td></tr>
+            <tr><td>[13:43] &lt mhrd&gt orphans: what stays open?</td></tr>
+            <tr><td>[13:43] &lt mhrd&gt the PygameDisplay() component will need to be shut down too if thats what you mean</td></tr>
+            <tr><td>[13:44] &lt mhrd&gt the Axon scheduler only terminates once there are *no* running components left</td></tr>
+            <tr><td>[13:45] &lt mhrd&gt if you want to see whats going on, try plugging in the components in /trunk/Sketches/MH/Introspection/Profiling.py ...</td></tr>
+            <tr><td>[13:45] &lt orphans&gt mhrd, how do you shutdown the pygame display?</td></tr>
+            <tr><td>[13:45] &lt mhrd&gt  pipeline( FormattedProfiler(10.0,1.0), ConsoleEchoer() ).activate()</td></tr>
+            <tr><td>[13:46] *** orphans forgot about the profiler :)</td></tr>
+            <tr><td>[13:46] &lt mhrd&gt hmm ... for most compnoents - you'd have to arrange a way to send a shutdownMicroprocess signal to it ... but I suspect we may have never quite gotten round to adding the necessary code to PygameDisplay to handle those msgs</td></tr>
+            <tr><td>[13:47] &lt mhrd&gt ... you can always try adding it in if you want</td></tr>
+            <tr><td>[13:47] &lt orphans&gt sounds fun :)</td></tr>
+            <tr><td>[13:51] &lt orphans&gt yeah - there's no way out for the pygame display</td></tr>
+            <tr><td>[13:51] &lt orphans&gt I'll give it a go at adding that in when I have a minute</td></tr>
+            <tr><td>[13:51] &lt orphans&gt cheers mhrd</td></tr>
+            <tr><td>[13:52] &lt j_baker&gt mhrd: If a parent component dies, do its children not also die?</td></tr>
+            <tr><td>[13:53] &lt mhrd&gt no</td></tr>
+            <tr><td>[13:53] &lt mhrd&gt the parent-child relationship is not one of strict encapsulation</td></tr>
+            <tr><td>[13:54] &lt j_baker&gt I see. Perhaps that was part of the reason I was having so much problem with getting things to shut down. :)</td></tr>
+            <tr><td>[13:54] &lt mhrd&gt aah! ...</td></tr>
+            <tr><td>[13:54] &lt mhrd&gt it exists mainly as a metaphor to allow you to compartmentalise a system</td></tr>
+            <tr><td>[13:54] &lt mhrd&gt there is, for example, nothing to stop a child component being wired up to another component somewhere else in the system ...</td></tr>
+            <tr><td>[13:55] &lt mhrd&gt from a practical perspective, the only support Axon provides is that it will wake up a parent if one of its children dies (see the internals of Pipeline or Graphline to see that in action)</td></tr>
+            <tr><td>[13:56] &lt mhrd&gt you can also see it if you run an introspection using the Axon visualiser - you can see that, from Axon's perspective, the graph of component linkages is flat ...</td></tr>
+            <tr><td>[13:56] &lt mhrd&gt http://kamaelia.sourceforge.net/AxonVisualiser.html</td></tr>
+            <tr><td>[13:56] &lt j_baker&gt I see. That makes sense.</td></tr>
+            <tr><td>[13:57] &lt mhrd&gt in http://kamaelia.sourceforge.net/screenshots/AxonVisualiser_navelgaze.gif ... K.V.A.AVS.AVS_15 is a Pipeline component. The orange linkages represent where it has forwarded its own inboxes/outboxes to the start and end of the pipeline of components it has instantiated</td></tr>
+            <tr><td>[13:59] &lt mhrd&gt when thinking in parent/child terms, you can represent the same structure like this: http://kamaelia.sourceforge.net/images/pipeline1_inside.gif (from http://kamaelia.sourceforge.net/Cookbook/Pipelines )</td></tr>
+            <tr><td>[13:59] &lt j_baker&gt Ok. That helps out a lot.</td></tr>
+            <tr><td>[14:00] &lt mhrd&gt cool</td></tr>
+            <tr><td>[14:03] &lt mhrd&gt if you run the axon visualiser with the --navelgaze option yourself, the labels on the components should be a little more intelligible, thanks to MS :-)</td></tr>
+            <tr><td>[14:09] &lt mhrd&gt as discussed over the past few days (see logs) shutdown is something we generally don't handle amazingly well (orphans - also answers your mailing list q)</td></tr>
+            <tr><td>[14:14] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[14:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:29] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:34] &lt vmlemon_&gt Yay, trying to enable logging on the IRC client I'm testing crashes it</td></tr>
+            <tr><td>[14:39] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[14:39] Reply: does the macarena</td></tr>
+            <tr><td>[14:40] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[14:43] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[14:43] &lt MS-&gt (afternoon)</td></tr>
+            <tr><td>[14:43] &lt mhrd&gt hi</td></tr>
+            <tr><td>[14:45] &lt vmlemon_&gt Hi, MS-</td></tr>
+            <tr><td>[14:52] &lt j_baker&gt hello MS-</td></tr>
+            <tr><td>[14:52] &lt MS-&gt um, bit of an emergency</td></tr>
+            <tr><td>[14:52] &lt MS-&gt sorry</td></tr>
+            <tr><td>[14:58] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[15:00] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[15:04] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:06] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:06] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:09] &lt MS-&gt RIght back</td></tr>
+            <tr><td>[15:09] &lt MS-&gt Give me a couple of minutes</td></tr>
+            <tr><td>[15:09] &lt MS-&gt Need to sort something out</td></tr>
+            <tr><td>[15:10] &lt MS-&gt (That was a little bit of a drama)</td></tr>
+            <tr><td>[15:10] &lt orphans&gt :o</td></tr>
+            <tr><td>[15:10] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[15:11] *** mhrd gets cup of tea (back in &lt 5mins)</td></tr>
+            <tr><td>[15:11] &lt j_baker&gt Good luck with that MS-.</td></tr>
+            <tr><td>[15:12] &lt vmlemon_&gt Yay</td></tr>
+            <tr><td>[15:12] &lt MS-&gt Ok, just grabbing a coffee to have with meeting - start at 4:20 - we'll be done by 5 anyway :)</td></tr>
+            <tr><td>[15:13] &lt vmlemon_&gt "Next Week on #Kamaelia..." ;)</td></tr>
+            <tr><td>[15:15] *** mhrd back</td></tr>
+            <tr><td>[15:18] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt heya</td></tr>
+            <tr><td>[15:19] &lt MS-&gt heya</td></tr>
+            <tr><td>[15:19] &lt MS-&gt back</td></tr>
+            <tr><td>[15:20] &lt vmlemon_&gt Do you think BBC 1 would screen it? ;)</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt Hi Lawouach</td></tr>
+            <tr><td>[15:21] &lt MS-&gt OK, meeting time :)</td></tr>
+            <tr><td>[15:21] &lt MS-&gt ==============================================</td></tr>
+            <tr><td>[15:21] &lt MS-&gt START OF WEEKLY IRC KAMAELIA MEETING, 20050522</td></tr>
+            <tr><td>[15:21] &lt MS-&gt ==============================================</td></tr>
+            <tr><td>[15:21] &lt MS-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[15:21] &lt MS-&gt -----------------</td></tr>
+            <tr><td>[15:21] &lt MS-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[15:21] &lt MS-&gt 2. Participants</td></tr>
+            <tr><td>[15:21] &lt MS-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:21] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:21] &lt MS-&gt 4.1 Branches & Merging</td></tr>
+            <tr><td>[15:21] &lt MS-&gt 4.2 Website/Tools update</td></tr>
+            <tr><td>[15:21] &lt MS-&gt 4.3 Next Release : June 21st</td></tr>
+            <tr><td>[15:22] &lt MS-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:22] &lt MS-&gt Thursday 29th May 2008, 4pm UK time</td></tr>
+            <tr><td>[15:22] &lt MS-&gt Any extra agenda items?</td></tr>
+            <tr><td>[15:22] &lt mhrd&gt s/20050522/20080522/</td></tr>
+            <tr><td>[15:22] &lt MS-&gt oh yes</td></tr>
+            <tr><td>[15:22] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:22] &lt MS-&gt Thought it looked odd for some reason</td></tr>
+            <tr><td>[15:22] &lt j_baker&gt So this is a retro meeting? :P</td></tr>
+            <tr><td>[15:22] &lt mhrd&gt just a little delayed :)</td></tr>
+            <tr><td>[15:22] *** orphans parties like it's 2005</td></tr>
+            <tr><td>[15:22] &lt MS-&gt I'll take that as no extras</td></tr>
+            <tr><td>[15:23] &lt j_baker&gt none for me</td></tr>
+            <tr><td>[15:23] &lt MS-&gt 2. Participants</td></tr>
+            <tr><td>[15:23] &lt MS-&gt ---------------</td></tr>
+            <tr><td>[15:23] &lt MS-&gt Participants: MS-, mhrd, Lawouach, Chong-, j_baker, orphans, Trun</td></tr>
+            <tr><td>[15:23] &lt MS-&gt AWWL: Davbo</td></tr>
+            <tr><td>[15:23] &lt MS-&gt Also present: vmlemon_, zaheerm, Uraeus, sadrul, jle, edh, bcarlyon|ubuntu_</td></tr>
+            <tr><td>[15:23] &lt MS-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:23] &lt MS-&gt -------------------</td></tr>
+            <tr><td>[15:23] &lt MS-&gt Everyone ready?</td></tr>
+            <tr><td>[15:23] &lt MS-&gt go :)</td></tr>
+            <tr><td>[15:23] &lt MS-&gt DONE: Pruned /branches somewhat, merged various branches, got edit.kamaelia.org up & ran mentoring sessions, confirmed DVB working, answered various q's on list</td></tr>
+            <tr><td>[15:23] &lt MS-&gt TODO: Continue getting website ready, and extracting branches for merge, and cleaning up /branches</td></tr>
+            <tr><td>[15:23] &lt MS-&gt BLOCKED: On leave mon/tue/wed next week, so may be out of contact from Sat-&gt Thur</td></tr>
+            <tr><td>[15:23] &lt mhrd&gt DONE: More DVB stuff (various fixes, enhancements, docs); assisted GSoCers</td></tr>
+            <tr><td>[15:23] &lt mhrd&gt TODO: more DVB stuff (see blocked #2)</td></tr>
+            <tr><td>[15:23] &lt mhrd&gt BLOCKED: project work; "mashed" (bbc backstage) stuff</td></tr>
+            <tr><td>[15:23] &lt orphans&gt DONE: More documentation of components, make xy pad more flexible, fixes to text widgets before merging</td></tr>
+            <tr><td>[15:23] &lt orphans&gt TODO: Yet more documentation, sort out basic timing code, rearrange Sketches/JT to set up program structure</td></tr>
+            <tr><td>[15:23] &lt orphans&gt BLOCKED: Exams</td></tr>
+            <tr><td>[15:23] &lt Trun&gt DONE: Mainly improvements in KamPlanet (especially kamaelia-related problems I had)</td></tr>
+            <tr><td>[15:23] &lt Trun&gt TODO: Complete (finish) KamPlanet; Look at ﻿[/Code/Python/Kamaelia/Tests and /Tests, selector, PygameDisplay]; Closer look more at Backplane; Start KamPlanet tests</td></tr>
+            <tr><td>[15:23] &lt MS-&gt DK:</td></tr>
+            <tr><td>[15:23] &lt Trun&gt BLOCKED: None</td></tr>
+            <tr><td>[15:23] &lt MS-&gt  DONE: Got 2 MagnaDoodle.py working together using</td></tr>
+            <tr><td>[15:23] &lt MS-&gt  ProcessPipeline(), also implemented simple scaling</td></tr>
+            <tr><td>[15:23] &lt MS-&gt  circle tool.</td></tr>
+            <tr><td>[15:23] &lt MS-&gt  TODO: Change the MagnaDoodles to output events onto a Graphline</td></tr>
+            <tr><td>[15:23] &lt MS-&gt  so they communicate with each other, then make a new</td></tr>
+            <tr><td>[15:23] &lt Chong-&gt Done: blue/pink relaiton TopologyView</td></tr>
+            <tr><td>[15:23] &lt j_baker&gt DONE: Added more WSGI support</td></tr>
+            <tr><td>[15:23] &lt MS-&gt  window with 3 button controls for line, circle erase.</td></tr>
+            <tr><td>[15:24] &lt MS-&gt  Make these controls only act on "Window 1", then introduce</td></tr>
+            <tr><td>[15:24] &lt MS-&gt  a 3rd window and get them working on a Backplane.</td></tr>
+            <tr><td>[15:24] &lt MS-&gt  Once this is done, add colour!</td></tr>
+            <tr><td>[15:24] &lt MS-&gt  BLOCKED: None really, apart from exams and revision. :-)</td></tr>
+            <tr><td>[15:24] &lt Chong-&gt To do: picture particles, extend TopologyView (update), Hierarchical Topology</td></tr>
+            <tr><td>[15:24] *** MS- reads</td></tr>
+            <tr><td>[15:24] &lt j_baker&gt TODO: Finish up WSGI support, finish up logger</td></tr>
+            <tr><td>[15:24] &lt Chong-&gt Blocked: none</td></tr>
+            <tr><td>[15:24] &lt j_baker&gt BLOCKED: None atm</td></tr>
+            <tr><td>[15:25] &lt MS-&gt cool</td></tr>
+            <tr><td>[15:25] &lt MS-&gt any q's from anyone to anyone?</td></tr>
+            <tr><td>[15:26] &lt MS-&gt if not moving on in</td></tr>
+            <tr><td>[15:26] &lt MS-&gt 5</td></tr>
+            <tr><td>[15:26] &lt MS-&gt 4</td></tr>
+            <tr><td>[15:26] &lt MS-&gt 3</td></tr>
+            <tr><td>[15:26] &lt MS-&gt k</td></tr>
+            <tr><td>[15:26] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:26] &lt MS-&gt --------------------------------</td></tr>
+            <tr><td>[15:26] &lt MS-&gt 4.1 Branches & Merging</td></tr>
+            <tr><td>[15:26] &lt MS-&gt ^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:26] &lt MS-&gt OK, so there's been a fair few of this this week :)</td></tr>
+            <tr><td>[15:26] &lt MS-&gt Overall, this seems pretty good.</td></tr>
+            <tr><td>[15:27] &lt MS-&gt There will be more branches popping up as I ready stuff for merge - ala the 3 branches from last night</td></tr>
+            <tr><td>[15:27] &lt mhrd&gt I might be able to look at one or two of those, but possibly not until saturday</td></tr>
+            <tr><td>[15:27] &lt MS-&gt It would be really nice to have volunteers to merge as well :)</td></tr>
+            <tr><td>[15:27] &lt MS-&gt mhrd: Cheers</td></tr>
+            <tr><td>[15:28] &lt MS-&gt orphans has offered to review one</td></tr>
+            <tr><td>[15:28] &lt MS-&gt have you offered to merge that branch as well?</td></tr>
+            <tr><td>[15:28] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:28] &lt orphans&gt MS-, yeah, sure - it's pretty much ready I think</td></tr>
+            <tr><td>[15:28] &lt MS-&gt cool</td></tr>
+            <tr><td>[15:28] &lt orphans&gt would someone mind having a very quick look over my changes just to make sure I've not done anything horrible :)</td></tr>
+            <tr><td>[15:29] *** orphans not that confident yet</td></tr>
+            <tr><td>[15:29] &lt MS-&gt You can also do this if you like:</td></tr>
+            <tr><td>[15:29] &lt MS-&gt svn merge --dry-run &lt rest of args&gt</td></tr>
+            <tr><td>[15:29] &lt MS-&gt orphans: Yeah, I understand</td></tr>
+            <tr><td>[15:29] &lt MS-&gt I'll take a look and feedback :)</td></tr>
+            <tr><td>[15:29] *** mhrd confused - orphans reviewing someone else's branch, or merging his own?</td></tr>
+            <tr><td>[15:29] &lt orphans&gt MS-, k, cheers</td></tr>
+            <tr><td>[15:30] &lt MS-&gt mhrd: reviewing the branch I made last night which is merging Jinna's code onto Trunk</td></tr>
+            <tr><td>[15:30] &lt mhrd&gt k</td></tr>
+            <tr><td>[15:30] &lt j_baker&gt Fyi, my branch isn't ready for merge yet. :)</td></tr>
+            <tr><td>[15:30] &lt MS-&gt It's been in my scratch branch for a long while and works nicely/is useful</td></tr>
+            <tr><td>[15:30] &lt MS-&gt j_baker: cool</td></tr>
+            <tr><td>[15:30] &lt MS-&gt One of the things that people tend to not be used to is merging</td></tr>
+            <tr><td>[15:31] &lt MS-&gt so Ideally I'd like merging to be a quid-pro-quo thing rather than a single bottleneck</td></tr>
+            <tr><td>[15:31] &lt MS-&gt ie if someone merges one of yours, you offer to merge one :)</td></tr>
+            <tr><td>[15:31] &lt MS-&gt Seems only fair :)</td></tr>
+            <tr><td>[15:32] &lt MS-&gt Does need to be reviewed by me/matt or Lawouach IMO first though :)</td></tr>
+            <tr><td>[15:32] &lt MS-&gt I'm guessing that silence == consensus</td></tr>
+            <tr><td>[15:32] &lt MS-&gt 4.2 Website/Tools update</td></tr>
+            <tr><td>[15:32] &lt MS-&gt ^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:32] *** mhrd happy</td></tr>
+            <tr><td>[15:32] &lt Chong-&gt yep</td></tr>
+            <tr><td>[15:33] &lt MS-&gt http://edit.kamaelia.org/Developers/ is up</td></tr>
+            <tr><td>[15:33] &lt MS-&gt the edit button works</td></tr>
+            <tr><td>[15:33] &lt MS-&gt So does http://edit.kamaelia.org/UserPreferences</td></tr>
+            <tr><td>[15:33] &lt MS-&gt To set your name</td></tr>
+            <tr><td>[15:33] &lt MS-&gt but for some reason page tags don't - I'll check why</td></tr>
+            <tr><td>[15:34] &lt j_baker&gt I would like to point out the SVN web link still doesn't work. :)</td></tr>
+            <tr><td>[15:34] &lt MS-&gt There's been lots of good comments as to how to improve it, and some of the things you can fix now</td></tr>
+            <tr><td>[15:34] &lt MS-&gt So, please update things you want to</td></tr>
+            <tr><td>[15:35] &lt orphans&gt j_baker, fixed on the SVN page, just not in the sidebar yet :)</td></tr>
+            <tr><td>[15:35] &lt j_baker&gt I see.</td></tr>
+            <tr><td>[15:35] &lt orphans&gt MS-, can we edit the sidebar?</td></tr>
+            <tr><td>[15:35] &lt MS-&gt http://edit.kamaelia.org/WebsiteSuggestions</td></tr>
+            <tr><td>[15:36] &lt MS-&gt orphans: At present no, but asap.</td></tr>
+            <tr><td>[15:36] &lt orphans&gt cool</td></tr>
+            <tr><td>[15:36] &lt Chong-&gt MS-: how can we log in?</td></tr>
+            <tr><td>[15:36] &lt MS-&gt That URL is the best one to edit to add notes about how to improve the website</td></tr>
+            <tr><td>[15:37] &lt Chong-&gt I see. thanks.</td></tr>
+            <tr><td>[15:37] &lt MS-&gt At present you also manually link things</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt The content from edit. is mirrored to the SF Wiki, and vice-versa</td></tr>
+            <tr><td>[15:37] &lt MS-&gt mhrd: Yep, I'll deal with that</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt ?</td></tr>
+            <tr><td>[15:37] &lt MS-&gt The content will be mirrored to SF wiki</td></tr>
+            <tr><td>[15:38] &lt MS-&gt But at present that isn't in place yet</td></tr>
+            <tr><td>[15:38] &lt MS-&gt But will go in</td></tr>
+            <tr><td>[15:38] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[15:38] &lt MS-&gt sooner rather than later</td></tr>
+            <tr><td>[15:39] &lt mhrd&gt cool - thanks for re-enabling editing MS-</td></tr>
+            <tr><td>[15:39] &lt MS-&gt Any questions, suggestions and comments welcome, though preferably on the page mentioned above</td></tr>
+            <tr><td>[15:40] *** MS- wonders if there's anything else on that front at this stage?</td></tr>
+            <tr><td>[15:40] &lt MS-&gt I'm guessing not?</td></tr>
+            <tr><td>[15:40] *** vmlemon_ has changed IRC clients on his phone, and is still getting to grips with the new one :(</td></tr>
+            <tr><td>[15:40] *** mhrd happy</td></tr>
+            <tr><td>[15:40] *** MS- waits for a moment</td></tr>
+            <tr><td>[15:41] *** j_baker has nothing to add</td></tr>
+            <tr><td>[15:41] &lt MS-&gt 4.3 Next Release : June 21st</td></tr>
+            <tr><td>[15:41] &lt MS-&gt ^^^^^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:42] &lt MS-&gt OK, this is pushing on somewhat. For the next release I have the following specific aims at this point:</td></tr>
+            <tr><td>[15:42] &lt MS-&gt * Merge as much of private_MPS_Scratch onto trunk</td></tr>
+            <tr><td>[15:42] &lt Chong-&gt Anything we can help to do, MS-?</td></tr>
+            <tr><td>[15:42] &lt MS-&gt * Website update</td></tr>
+            <tr><td>[15:42] &lt MS-&gt Chong-: review and merge of branches</td></tr>
+            <tr><td>[15:42] &lt MS-&gt (review includes running code if you have the hardware of course)</td></tr>
+            <tr><td>[15:42] &lt Chong-&gt np.</td></tr>
+            <tr><td>[15:42] &lt MS-&gt * Packaging up of all the major Kamaelia apps</td></tr>
+            <tr><td>[15:43] &lt mhrd&gt I'm hoping to have a few more DVB components or example ready before then which I'd hope can make it into the release too (all a bit dependent on how much time I can devote to that tho)</td></tr>
+            <tr><td>[15:43] &lt MS-&gt * Release notes</td></tr>
+            <tr><td>[15:43] &lt MS-&gt * Detailed changelog</td></tr>
+            <tr><td>[15:43] &lt MS-&gt * Documentation review</td></tr>
+            <tr><td>[15:43] &lt MS-&gt mhrd: Yep - The time issue is just one of those things</td></tr>
+            <tr><td>[15:44] &lt mhrd&gt cool. if I can't get things done in time, I just won't put them forward for inclusion.</td></tr>
+            <tr><td>[15:44] &lt MS-&gt k</td></tr>
+            <tr><td>[15:44] &lt MS-&gt Regarding release planning, I'll suggest we use this page: http://edit.kamaelia.org/ReleaseJune2008</td></tr>
+            <tr><td>[15:45] &lt mhrd&gt heh, was about to suggest something like that</td></tr>
+            <tr><td>[15:45] &lt MS-&gt So all the things people were discussing last week which culminated "we really need a wiki for this"... well there it is :)</td></tr>
+            <tr><td>[15:45] &lt Chong-&gt MS-: Any allocation of 'review and merge of branches' to me?</td></tr>
+            <tr><td>[15:46] &lt MS-&gt Chong-: I'd prefer people to take a look at see what's needing merging and taking from there</td></tr>
+            <tr><td>[15:46] &lt MS-&gt At present there's two branches not "owned" for review & merge</td></tr>
+            <tr><td>[15:46] &lt MS-&gt private_MPS_JL_AIMSupport/</td></tr>
+            <tr><td>[15:46] &lt MS-&gt private_MPS_JL_IRCSupport/</td></tr>
+            <tr><td>[15:46] &lt MS-&gt The smaller of the two is the latter</td></tr>
+            <tr><td>[15:47] &lt MS-&gt The former would benefit from testing on a Mac</td></tr>
+            <tr><td>[15:47] &lt MS-&gt since I believe there to be an issue on mac os X with the code there</td></tr>
+            <tr><td>[15:47] &lt MS-&gt But haven't had a chance to review</td></tr>
+            <tr><td>[15:47] &lt Chong-&gt I have no mac so I will take the second one.</td></tr>
+            <tr><td>[15:47] &lt j_baker&gt I'll try my hand at the first one</td></tr>
+            <tr><td>[15:47] &lt vmlemon_&gt Has the new site been tested against the Hype-O-Meter(R), yet? ;)</td></tr>
+            <tr><td>[15:47] &lt MS-&gt j_baker: Much appreciated :)</td></tr>
+            <tr><td>[15:47] &lt mhrd&gt yay, no merging for me :)</td></tr>
+            <tr><td>[15:47] &lt MS-&gt vmlemon_: I have some plans :)</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt meh a colleague had written his own command line parser rather than using optparse</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt and guess what</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt it's buggy</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt sigh</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt how do I tell him it was a bad move?</td></tr>
+            <tr><td>[15:48] &lt mhrd&gt ooh, never knew that existed!</td></tr>
+            <tr><td>[15:49] &lt MS-&gt svn rm &lt hiscode.py&gt</td></tr>
+            <tr><td>[15:49] &lt MS-&gt svn ci &lt hiscode.py&gt</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt But what if he's using git?!</td></tr>
+            <tr><td>[15:50] &lt MS-&gt j_baker: In which case you revert to the baseball bat</td></tr>
+            <tr><td>[15:50] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[15:51] &lt Lawouach_&gt svn kha</td></tr>
+            <tr><td>[15:51] &lt Lawouach_&gt which stands for Kick His Ass</td></tr>
+            <tr><td>[15:51] &lt MS-&gt OK, I think we're happy there, I'll note branch merge ownerships on the webpage (or someone else can :) )</td></tr>
+            <tr><td>[15:51] *** MS- moves on</td></tr>
+            <tr><td>[15:51] &lt vmlemon_&gt And CVS? (AKA Crappy Version Control) ;)</td></tr>
+            <tr><td>[15:51] &lt MS-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:51] &lt MS-&gt -----------------------------------</td></tr>
+            <tr><td>[15:51] &lt MS-&gt Thursday 29th May 2008, 4pm UK time</td></tr>
+            <tr><td>[15:51] &lt MS-&gt Note: "mentor time" (with me) for Monday/Tues is scrapped next week</td></tr>
+            <tr><td>[15:51] &lt MS-&gt due to long weekend, since I won't be around. Can either</td></tr>
+            <tr><td>[15:51] &lt MS-&gt make up on the Friday, or skip a week.</td></tr>
+            <tr><td>[15:52] &lt MS-&gt (could well be disappearing for the weekend - not actually planned yet)</td></tr>
+            <tr><td>[15:53] &lt Chong-&gt MS-: I will go to the Bath show next week, so I cannot take meeting, either.</td></tr>
+            <tr><td>[15:53] &lt MS-&gt Is that OK with everything?</td></tr>
+            <tr><td>[15:53] &lt MS-&gt k</td></tr>
+            <tr><td>[15:53] &lt MS-&gt s/everything/everyone/</td></tr>
+            <tr><td>[15:53] &lt orphans&gt cool by me :)</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt I'm good. I may do the meeting on Fri, but I'll just play it by ear.</td></tr>
+            <tr><td>[15:53] *** Chong- happy</td></tr>
+            <tr><td>[15:53] &lt Trun&gt you mean May 30th, right?</td></tr>
+            <tr><td>[15:53] &lt MS-&gt Trun: yep.</td></tr>
+            <tr><td>[15:54] &lt MS-&gt if you can you can/if you can't you can't</td></tr>
+            <tr><td>[15:54] &lt Trun&gt I'm out that day</td></tr>
+            <tr><td>[15:54] &lt MS-&gt np</td></tr>
+            <tr><td>[15:55] &lt MS-&gt OK, given that there's no major shouts beyond that and can be organised outside the meeting</td></tr>
+            <tr><td>[15:55] &lt MS-&gt ============================================</td></tr>
+            <tr><td>[15:55] &lt MS-&gt END OF WEEKLY IRC KAMAELIA MEETING, 20080522</td></tr>
+            <tr><td>[15:55] &lt MS-&gt ============================================</td></tr>
+            <tr><td>[15:55] &lt MS-&gt Cheers :)</td></tr>
+            <tr><td>[15:56] &lt Lawouach_&gt burp</td></tr>
+            <tr><td>[15:58] &lt Lawouach_&gt anyhow</td></tr>
+            <tr><td>[15:59] &lt Lawouach_&gt back to home</td></tr>
+            <tr><td>[16:34] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:38] &lt MS-&gt hiya</td></tr>
+            <tr><td>[17:12] *** MS- posts minutes to the list</td></tr>
+            <tr><td>[17:40] &lt j_baker&gt MS- or mhrd: if a component is not a threaded component, is there any reason not to call its stop() method?</td></tr>
+            <tr><td>[17:42] &lt MS-&gt .stop() in that scenario is like a kill(9)</td></tr>
+            <tr><td>[17:43] &lt j_baker&gt So in other words, the main problem is that the component won't be notified it's about to be stopped?</td></tr>
+            <tr><td>[17:43] &lt MS-&gt Essentially.</td></tr>
+            <tr><td>[17:43] &lt MS-&gt It also breaks the model of "only talking to the component over it's boxes"</td></tr>
+            <tr><td>[17:43] &lt MS-&gt But being able to do .stop() is a nice thing</td></tr>
+            <tr><td>[17:44] &lt MS-&gt and the direction the system is moving in, but not all the components know that right now</td></tr>
+            <tr><td>[17:46] &lt mhrd&gt looking at the present state of Axon: the scheduler won't know about the stoppage immediately, but looks like it will pick it up next time it tries to run that component</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt o.O "File too big. Limit is approx 2048 kbytes."</td></tr>
+            <tr><td>[17:47] &lt mhrd&gt you mean 2gigs?</td></tr>
+            <tr><td>[17:48] &lt j_baker&gt That would still happen more quickly than sending a shutdownMicroprocess message though, wouldn't it mhrd?</td></tr>
+            <tr><td>[17:49] &lt mhrd&gt "more quickly"?</td></tr>
+            <tr><td>[17:49] &lt vmlemon_&gt Hmm, I guess so, although it's the exact error vi gives here...</td></tr>
+            <tr><td>[17:50] &lt mhrd&gt 2^31 (signed 32 bit int) conveniently comes out as 2 gigs; hence the 2gig limit on fat32 iirc</td></tr>
+            <tr><td>[17:50] &lt vmlemon_&gt Interesting</td></tr>
+            <tr><td>[17:51] &lt mhrd&gt j_baker: performance wise: perhaps. if what you actually mean is its more "guaranteed" to stop the component/microprocess then yes</td></tr>
+            <tr><td>[17:51] &lt j_baker&gt Yeah. That's what I meant.</td></tr>
+            <tr><td>[17:51] &lt vmlemon_&gt I don't think QNX has a max file size limit, although the vi it comes with obviously does...</td></tr>
+            <tr><td>[17:52] &lt mhrd&gt pretty much all file systems have some kind of limit; its just with some (like zfs,xfx) its ridiculously large, even by modern standards ;-)</td></tr>
+            <tr><td>[17:53] &lt vmlemon_&gt Good point</td></tr>
+            <tr><td>[17:57] &lt vmlemon_&gt At least they claim that ZFS can store more data than could possibly fit on all the HDDs in the world, or some other limit</td></tr>
+            <tr><td>[17:58] &lt mhrd&gt we're safe for now :)</td></tr>
+            <tr><td>[18:19] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:23] &lt j_baker&gt Is there any reason why python would quit printing exception tracebacks? Right now, if I run something in python and it hits an exception, it stops and doesn't print anything.</td></tr>
+            <tr><td>[18:36] &lt mhrd&gt exception in a thread?</td></tr>
+            <tr><td>[18:36] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[18:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:39] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[19:19] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:21] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:50] *** MS- notes he's afk all day (literally :-( :-( :-( (6am -&gt 10pm in all likelihood) ) tomorrow</td></tr>
+            <tr><td>[20:06] *** MS- sees why j_baker asked the question earlier</td></tr>
+            <tr><td>[20:07] &lt j_baker&gt :)</td></tr>
+            <tr><td>[20:07] &lt j_baker&gt Are you talking about the GC component?</td></tr>
+            <tr><td>[20:07] &lt MS-&gt yes</td></tr>
+            <tr><td>[20:07] &lt MS-&gt For specific cases, the approach is valid</td></tr>
+            <tr><td>[20:07] &lt j_baker&gt I was just posting on the board about that.</td></tr>
+            <tr><td>[20:08] &lt MS-&gt But for the general case, it's as problematic as the "orphaned component" idea</td></tr>
+            <tr><td>[20:08] &lt MS-&gt Since your definition of an orphaned component isn't actually necessarily a broken component</td></tr>
+            <tr><td>[20:09] &lt MS-&gt ie a component with no links in or out is not necessarily OK to kill/harvest</td></tr>
+            <tr><td>[20:10] &lt MS-&gt Likewise, item.stop() is part of a slippery slope which is not as valid as it seems</td></tr>
+            <tr><td>[20:10] &lt MS-&gt Again, this is also inherently dangerous:</td></tr>
+            <tr><td>[20:10] &lt MS-&gt + self.link((self, '_internal-signal'), (item, 'control'))</td></tr>
+            <tr><td>[20:10] &lt j_baker&gt Right. I don't think it's going to replace control/signal inboxes at all. But I do think there are times when you just want to be able to kill a group of components easily.</td></tr>
+            <tr><td>[20:10] &lt MS-&gt + self.send(shutdownMicroprocess(), item)</td></tr>
+            <tr><td>[20:10] &lt MS-&gt + self.unlink(item)</td></tr>
+            <tr><td>[20:11] &lt j_baker&gt Would there be a better way of doing that? I couldn't think of any better way.</td></tr>
+            <tr><td>[20:11] &lt MS-&gt Agreed, and when you have to do it, you do find ways of doing that, but generally speaking the best components emerge from a collection of good designs.</td></tr>
+            <tr><td>[20:11] &lt MS-&gt and working systems</td></tr>
+            <tr><td>[20:11] &lt MS-&gt rather than the other way round</td></tr>
+            <tr><td>[20:11] &lt MS-&gt I'm not saying "don't do this"</td></tr>
+            <tr><td>[20:11] &lt MS-&gt What I am saying is "there may well be unexpected issues here"</td></tr>
+            <tr><td>[20:12] &lt j_baker&gt That's understandable. I figured if nothing else, it will be useful to at least test to make sure the core of a component works before you start messing with the control/signal boxes.</td></tr>
+            <tr><td>[20:12] &lt j_baker&gt (since that's been a problem with testing components for me)</td></tr>
+            <tr><td>[20:13] &lt MS-&gt In a testing environment you have a very restricted usecase</td></tr>
+            <tr><td>[20:13] &lt MS-&gt So it could well be useful in that case</td></tr>
+            <tr><td>[20:13] &lt MS-&gt (I'm not really a believer in absolutes and prefer "hypothesise, test, refine" over "I'm right do it this way")</td></tr>
+            <tr><td>[20:14] &lt MS-&gt But sometimes some things jump out at me as "this looks risky and maybe doing too much or something risky" - cf</td></tr>
+            <tr><td>[20:14] &lt MS-&gt http://cerenity.org/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1113136192</td></tr>
+            <tr><td>[20:15] &lt j_baker&gt So do you know of any ways it could be improved. I was thinking the item.stop() should only be used in testing at least until you said that it was the way things were heading.</td></tr>
+            <tr><td>[20:15] &lt j_baker&gt But I'm curious if you have any better ideas about sending the shutdown message.</td></tr>
+            <tr><td>[20:15] &lt MS-&gt I think compromising about using it during testing is a good idea.</td></tr>
+            <tr><td>[20:16] &lt MS-&gt The reason is because .stop() can happen at any time point, causing potentially vicious shutdown cases for the component</td></tr>
+            <tr><td>[20:16] &lt MS-&gt So for testing, that's perfect :)</td></tr>
+            <tr><td>[20:16] &lt MS-&gt Since you *do* want that sort of problem</td></tr>
+            <tr><td>[20:16] &lt MS-&gt But ideally for shutdown, you do want to give things the time to do it properly</td></tr>
+            <tr><td>[20:17] &lt MS-&gt For example if the component has handshaking with another</td></tr>
+            <tr><td>[20:17] &lt MS-&gt Ah, yes, this is a good example</td></tr>
+            <tr><td>[20:17] &lt MS-&gt Consider a component that was used to implement a TCP stack</td></tr>
+            <tr><td>[20:18] &lt MS-&gt The setup has particular setup sequence, and a particular shutdown sequence</td></tr>
+            <tr><td>[20:18] &lt MS-&gt If the shutdown sequence is bypassed, then unless the server set the reuseable socket flag</td></tr>
+            <tr><td>[20:18] &lt MS-&gt then the socket is then essentially locked for a certain period</td></tr>
+            <tr><td>[20:19] &lt MS-&gt (normally 60 seconds)</td></tr>
+            <tr><td>[20:19] &lt MS-&gt This does cause problems in the real world - you can send a server a HUP message</td></tr>
+            <tr><td>[20:19] &lt MS-&gt "Hang Up"</td></tr>
+            <tr><td>[20:19] &lt MS-&gt which can be used for a variety of things, but often is equivalent to sending a shutdownMicroprocess message</td></tr>
+            <tr><td>[20:20] &lt MS-&gt since it allows the server to close connections</td></tr>
+            <tr><td>[20:20] &lt MS-&gt and close the listener socket cleanly</td></tr>
+            <tr><td>[20:20] &lt MS-&gt meaning the restart can be instantaneous afterwards</td></tr>
+            <tr><td>[20:20] &lt MS-&gt However, if you kill -9 a server that's not using the reusable socket option, then you end up that problem</td></tr>
+            <tr><td>[20:21] &lt j_baker&gt Well, for the most part I was thinking the item.stop() would be most useful if say I need to make a Producer that does nothing but emit something.</td></tr>
+            <tr><td>[20:21] &lt MS-&gt And it's caused by the independent thing closing down, but not performing a shutdown handshake</td></tr>
+            <tr><td>[20:21] &lt MS-&gt Yeah, but that's not sufficient</td></tr>
+            <tr><td>[20:21] &lt MS-&gt If the transport is expected to be lossy</td></tr>
+            <tr><td>[20:21] &lt MS-&gt and the message has to get through</td></tr>
+            <tr><td>[20:22] &lt MS-&gt then you have to deal with the fact that you have to do this</td></tr>
+            <tr><td>[20:22] &lt MS-&gt FIN, FIN_ACK, ACK</td></tr>
+            <tr><td>[20:22] &lt MS-&gt A: "I'm shutting down"</td></tr>
+            <tr><td>[20:22] &lt MS-&gt B: "You're shutting down? OK, I'm shutting down too"</td></tr>
+            <tr><td>[20:22] &lt MS-&gt A: "Cool, I've shutdown"</td></tr>
+            <tr><td>[20:23] &lt MS-&gt If the third message goes missing, B could resend and get a TCP_RESET (which would confirm the shutdown)</td></tr>
+            <tr><td>[20:23] &lt MS-&gt But the point is there is *time* between those 3 messages for transit</td></tr>
+            <tr><td>[20:24] &lt MS-&gt Using .stop() forces the shutdown to be just</td></tr>
+            <tr><td>[20:24] &lt j_baker&gt Well, I do also see how that could cause problems other than that. Suppose an item has something waiting in one of its inboxes when it receives the stop()</td></tr>
+            <tr><td>[20:24] &lt MS-&gt A: "I'm shutting down"</td></tr>
+            <tr><td>[20:24] &lt MS-&gt Which is a problem</td></tr>
+            <tr><td>[20:24] &lt MS-&gt So, as I say for testing purposes, it's fine.</td></tr>
+            <tr><td>[20:25] &lt MS-&gt (and could encourage some interesting best practice)</td></tr>
+            <tr><td>[20:25] &lt MS-&gt So for example - Trun's project may benefit from it</td></tr>
+            <tr><td>[20:25] &lt MS-&gt since Trun's project is about building a testing framework</td></tr>
+            <tr><td>[20:26] &lt MS-&gt But be aware for real world systems, it could cause more problems than you might think</td></tr>
+            <tr><td>[20:26] &lt MS-&gt *could*</td></tr>
+            <tr><td>[20:26] &lt MS-&gt As I say though, this is hypothesis stage</td></tr>
+            <tr><td>[20:26] &lt j_baker&gt Suppose that for a real world system, you didn't rely on the stop method though?</td></tr>
+            <tr><td>[20:26] &lt MS-&gt Next logical steps are test & refine</td></tr>
+            <tr><td>[20:26] &lt MS-&gt For all existing real world systems we don't rely on the stop method</td></tr>
+            <tr><td>[20:28] &lt j_baker&gt Right, so suppose you used it to send the shutdownMicroprocess() message in such a system. Would that still cause problems?</td></tr>
+            <tr><td>[20:28] &lt MS-&gt I can see scenarios where it would be problematic, yes.</td></tr>
+            <tr><td>[20:29] &lt MS-&gt However, that doesn't mean it's a bad idea in the general case. It may mean that it needs careful thought</td></tr>
+            <tr><td>[20:29] &lt MS-&gt As to when/how it's used</td></tr>
+            <tr><td>[20:30] &lt MS-&gt I've gotten used to trusting my gut instinct over the years, and this is one area where it tells me that this has potentially nasty areas</td></tr>
+            <tr><td>[20:30] &lt j_baker&gt Are the problems caused by my method of doing that or do they come from the general idea of shutting things down at once? (sorry, not trying to be argumentative or pedantic. I'm just trying to understand where the problems are.)</td></tr>
+            <tr><td>[20:30] &lt MS-&gt Are you asking ...</td></tr>
+            <tr><td>[20:31] &lt MS-&gt Is this:</td></tr>
+            <tr><td>[20:31] &lt MS-&gt + if not box_found:</td></tr>
+            <tr><td>[20:31] &lt MS-&gt + if not isinstance(item, threadedcomponent):</td></tr>
+            <tr><td>[20:31] &lt MS-&gt + item.stop()</td></tr>
+            <tr><td>[20:31] &lt MS-&gt + print 'stopping a component!'</td></tr>
+            <tr><td>[20:31] &lt MS-&gt + else:</td></tr>
+            <tr><td>[20:31] &lt MS-&gt + raise 'Threaded component does not have a control inbox!'</td></tr>
+            <tr><td>[20:31] &lt MS-&gt the problem (the way you're using .stop() )</td></tr>
+            <tr><td>[20:31] &lt MS-&gt or are you asking is</td></tr>
+            <tr><td>[20:31] &lt MS-&gt  item.stop() a bad idea ?</td></tr>
+            <tr><td>[20:32] &lt MS-&gt It probably helps if I note that .stop() was originally expected to be used as</td></tr>
+            <tr><td>[20:32] &lt MS-&gt self.stop()</td></tr>
+            <tr><td>[20:32] &lt j_baker&gt I'm not really focusing on item.stop(). That can be something that I can note that is just for test cases or for toy components.</td></tr>
+            <tr><td>[20:32] &lt MS-&gt rather than some_component_I_can_see.stop()</td></tr>
+            <tr><td>[20:32] &lt MS-&gt I'm not getting you're question then :)</td></tr>
+            <tr><td>[20:32] &lt j_baker&gt There's two ways it can shut a component down.</td></tr>
+            <tr><td>[20:33] &lt j_baker&gt If it has a control inbox, it will connect to it and send a shutdownMicroprocess() message.</td></tr>
+            <tr><td>[20:33] &lt j_baker&gt Otherwise, it will call the stop() method.</td></tr>
+            <tr><td>[20:34] &lt j_baker&gt I do remember you saying that there were also problems with the way it sends the shutdownMicroprocess() message. I'm trying to understand if you feel it's something that can be refined or if you feel the problem is with the idea in general.</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Ah, that does also assume that the component actually listens to message on the control box :)</td></tr>
+            <tr><td>[20:34] &lt MS-&gt I think it's worth remembering what you're dealing with here</td></tr>
+            <tr><td>[20:35] &lt MS-&gt The scheduler doesn't schedule components</td></tr>
+            <tr><td>[20:35] &lt MS-&gt It schedules microprocesses</td></tr>
+            <tr><td>[20:35] &lt MS-&gt In the past there were 2 sorts of microprocess schedules</td></tr>
+            <tr><td>[20:35] &lt MS-&gt scheduled</td></tr>
+            <tr><td>[20:35] &lt MS-&gt and today there are also two sorts of microprocess scheduled</td></tr>
+            <tr><td>[20:35] &lt MS-&gt (2 different sets)</td></tr>
+            <tr><td>[20:36] &lt MS-&gt shutdownMicroprocess can only be sent to a component</td></tr>
+            <tr><td>[20:36] &lt MS-&gt and a component can choose to implement itself such that it ignores that message</td></tr>
+            <tr><td>[20:36] &lt MS-&gt Next point</td></tr>
+            <tr><td>[20:36] &lt MS-&gt .stop() is *not* a component level method</td></tr>
+            <tr><td>[20:36] &lt MS-&gt it's a microprocess level method</td></tr>
+            <tr><td>[20:37] &lt MS-&gt and it's purpose isn't really to enable someone to kill a microprocess</td></tr>
+            <tr><td>[20:37] &lt MS-&gt it's purpose is to allow a microprocess to signifiy to the scheduler "I'm going to sleep, don't wake me up"</td></tr>
+            <tr><td>[20:38] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:38] &lt MS-&gt It's part of a legacy API at *that* level, but one that has started to drift</td></tr>
+            <tr><td>[20:38] &lt Davbo&gt Evenin' folks</td></tr>
+            <tr><td>[20:38] &lt MS-&gt (Davbo: hi)</td></tr>
+            <tr><td>[20:38] &lt MS-&gt It started to drift because Lawouach wanted a way to shutdown the system cleanly, so</td></tr>
+            <tr><td>[20:39] &lt MS-&gt what happened was this</td></tr>
+            <tr><td>[20:39] &lt Davbo&gt Sorry about earlier, didn't want to be rude watching presentations and take out my laptop for the meeting</td></tr>
+            <tr><td>[20:39] &lt j_baker&gt Hello Davbo</td></tr>
+            <tr><td>[20:39] *** Davbo realises he's interrupting something</td></tr>
+            <tr><td>[20:39] &lt MS-&gt the scheduler (which is a microprocess) was changed such that if *it's* .stop() method was called</td></tr>
+            <tr><td>[20:40] &lt MS-&gt that the scheduler (which only deals with microprocesses, not components as far as its concerned)</td></tr>
+            <tr><td>[20:40] &lt MS-&gt would then loop through all it's components and call *their* .stop() methods</td></tr>
+            <tr><td>[20:40] &lt MS-&gt This doesn't mean the system as a whole guarantees clean shutdown - since it can't</td></tr>
+            <tr><td>[20:41] &lt MS-&gt But it does give a much cleaner way of doing an "application abort"</td></tr>
+            <tr><td>[20:41] &lt MS-&gt However using it in a generic component would be pretty nasty.</td></tr>
+            <tr><td>[20:42] &lt Davbo&gt So, how is everyone?</td></tr>
+            <tr><td>[20:42] &lt MS-&gt I'm fine, yourself? (tired)</td></tr>
+            <tr><td>[20:42] &lt MS-&gt So, when I say the system is moving in that direction, it's because the</td></tr>
+            <tr><td>[20:42] &lt MS-&gt scheduler can expect in certain scenarios to be able to call a .stop() method on a component</td></tr>
+            <tr><td>[20:42] &lt j_baker&gt Not too bad Davbo.</td></tr>
+            <tr><td>[20:43] &lt Davbo&gt Tired too, sat watching presentations for 3 hours</td></tr>
+            <tr><td>[20:43] &lt MS-&gt in a similar way to the way the scheduler can expect to call a .main() method on a microprocess</td></tr>
+            <tr><td>[20:43] &lt MS-&gt BUT, the key thing to note is that it's not a clean shutdown</td></tr>
+            <tr><td>[20:44] &lt MS-&gt It's much like a "kill -9" than a "kill " or "kill -HUP"</td></tr>
+            <tr><td>[20:44] &lt MS-&gt Does this mean it's an open issue and extra work is needed there? Yes.</td></tr>
+            <tr><td>[20:44] &lt MS-&gt Does it mean you can't manage shutdown? No.</td></tr>
+            <tr><td>[20:44] &lt MS-&gt It's just a bit harder than we'd all like at present.</td></tr>
+            <tr><td>[20:45] &lt MS-&gt So my suggestion is, given my caveats and warnings - keep trying what you're trying and see how it turns out :)</td></tr>
+            <tr><td>[20:45] &lt j_baker&gt I suppose like you said, it's all theoretical and there's not really any way to know what's happening.</td></tr>
+            <tr><td>[20:46] &lt j_baker&gt Or what could or couldn't go wrong.</td></tr>
+            <tr><td>[20:46] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:46] &lt MS-&gt Unless you actually try stuff and find out.</td></tr>
+            <tr><td>[20:47] &lt j_baker&gt Instead of linking, sending a message, then unlinking, is it possible to just send a message to a component? Or do you think a splitter would be best?</td></tr>
+            <tr><td>[20:48] &lt Davbo&gt MS-: For those of us that are new to open source development. Could you maybe explain (or link an explanation) of what's required from a "review" of a branch before it's merged?</td></tr>
+            <tr><td>[20:48] &lt MS-&gt I'm really not sure. Since it naturally interrupts things it's unclear which is best. Generally I've used a splitter (specifically http://edit.kamaelia.org/Components/pydoc/Kamaelia.Util.Fanout.html )</td></tr>
+            <tr><td>[20:48] &lt MS-&gt to do that</td></tr>
+            <tr><td>[20:48] &lt Davbo&gt Or could someone point me in the right direction</td></tr>
+            <tr><td>[20:49] &lt j_baker&gt Ok, I'll just have to play around with it some, MS-.</td></tr>
+            <tr><td>[20:49] &lt MS-&gt j_baker: Cool :-)</td></tr>
+            <tr><td>[20:49] &lt j_baker&gt At least I have something to make testing easier on me. :)</td></tr>
+            <tr><td>[20:49] &lt MS-&gt Just wanted to let you know there may be issues :)</td></tr>
+            <tr><td>[20:49] &lt MS-&gt Definitely</td></tr>
+            <tr><td>[20:49] &lt MS-&gt If it works out for testing that'd be very useful</td></tr>
+            <tr><td>[20:50] &lt Davbo&gt s/﻿those of us that are new to open source development/ me :-)</td></tr>
+            <tr><td>[20:50] &lt MS-&gt Davbo: It's not really specific to open source, it's more a matter of how good development happens whether or not it's open source :)</td></tr>
+            <tr><td>[20:50] &lt MS-&gt What it boils down to is looking for problems</td></tr>
+            <tr><td>[20:50] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:51] &lt MS-&gt In practice, reviewing a branch normally means reviewing changes and looking for issues</td></tr>
+            <tr><td>[20:51] &lt Davbo&gt When we program things at university we cite who "checked" things for people, is it a simple matter of that. ie. look through the code, trace it and check inputs/outputs/logic</td></tr>
+            <tr><td>[20:51] &lt MS-&gt It's essentially that sort of thing, but in the case of a branch you're looking at diffs</td></tr>
+            <tr><td>[20:51] &lt MS-&gt when you're used to diffs, it gets quicker</td></tr>
+            <tr><td>[20:52] &lt Davbo&gt oh</td></tr>
+            <tr><td>[20:52] *** Davbo reads http://svnbook.red-bean.com/en/1.0/re09.html</td></tr>
+            <tr><td>[20:52] &lt Davbo&gt :P</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt you can think of it from the perpective of someone contributing a set of changes to something you've built ...</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt you'd want to look through it and try to understand what it does; and have a think to see if it might cause some unintended problems</td></tr>
+            <tr><td>[20:53] &lt Davbo&gt Right, I see</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt you'd also want to think about whether it does things in a way you think is reasonable</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt :)</td></tr>
+            <tr><td>[20:53] &lt MS-&gt This includes running tests (if existing) running the code (if you have the hardware)</td></tr>
+            <tr><td>[20:54] &lt MS-&gt sanity checking it, and if appropriate sanity checking the code style</td></tr>
+            <tr><td>[20:54] &lt MS-&gt ls</td></tr>
+            <tr><td>[20:54] &lt Davbo&gt okay, you guys are much more experienced so when I see "Okay I reviewed it" or something on the mailing list it seemed very definite as though there was a protocol to is</td></tr>
+            <tr><td>[20:54] &lt Davbo&gt s/is/it</td></tr>
+            <tr><td>[20:54] &lt MS-&gt (just getting a diff)</td></tr>
+            <tr><td>[20:55] &lt MS-&gt The thing to bear in mind is that often there will be a conversation about specific points on IRC</td></tr>
+            <tr><td>[20:55] &lt MS-&gt like for example I reviewed matt's branch last night</td></tr>
+            <tr><td>[20:55] &lt mhrd-home&gt indeed</td></tr>
+            <tr><td>[20:55] &lt MS-&gt The way I actually did that was like this:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt svn diff -r&lt ver&gt:HEAD &gt diff.txt</td></tr>
+            <tr><td>[20:56] &lt Davbo&gt Yeah that's kinda what i was just looking at</td></tr>
+            <tr><td>[20:56] &lt MS-&gt I then open up the diff in a text editor</td></tr>
+            <tr><td>[20:56] &lt MS-&gt and first look for common changes</td></tr>
+            <tr><td>[20:56] &lt MS-&gt For example coderate_HP -&gt code_rate_HP</td></tr>
+            <tr><td>[20:57] &lt MS-&gt If I don't understand the change I query it</td></tr>
+            <tr><td>[20:57] &lt Davbo&gt right</td></tr>
+            <tr><td>[20:57] &lt MS-&gt If matt wasn't on IRC I would've collated the queries in a mail</td></tr>
+            <tr><td>[20:57] &lt Davbo&gt makes sense</td></tr>
+            <tr><td>[20:57] &lt MS-&gt But he was</td></tr>
+            <tr><td>[20:57] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:57] &lt Davbo&gt Thanks MS-, mhrd-home</td></tr>
+            <tr><td>[20:57] &lt mhrd-home&gt np</td></tr>
+            <tr><td>[20:58] &lt MS-&gt There's more :)</td></tr>
+            <tr><td>[20:58] &lt MS-&gt Just doing a diff to get what I do next</td></tr>
+            <tr><td>[20:59] &lt MS-&gt The diff itself isn't just a file</td></tr>
+            <tr><td>[20:59] &lt MS-&gt It actually consist of file delimiters</td></tr>
+            <tr><td>[20:59] &lt MS-&gt and "hunks"</td></tr>
+            <tr><td>[20:59] &lt MS-&gt which mark specific changes</td></tr>
+            <tr><td>[20:59] &lt Davbo&gt umm, like what?</td></tr>
+            <tr><td>[21:00] *** MS- loosk for a pastebin</td></tr>
+            <tr><td>[21:00] &lt MS-&gt finds one</td></tr>
+            <tr><td>[21:00] &lt Davbo&gt I test on MagnaDoodle after</td></tr>
+            <tr><td>[21:00] &lt MS-&gt http://pastebin.com/m63f15314</td></tr>
+            <tr><td>[21:00] &lt Davbo&gt (but wouldn't i need to know the revision number for when i changed MagnaDoodle?)</td></tr>
+            <tr><td>[21:01] &lt MS-&gt We'll come back to that :)</td></tr>
+            <tr><td>[21:01] &lt MS-&gt If you scroll down to the source, you'll find that that pastebin has actually mangled the diff</td></tr>
+            <tr><td>[21:02] &lt MS-&gt great</td></tr>
+            <tr><td>[21:02] &lt Davbo&gt uhh :(</td></tr>
+            <tr><td>[21:02] &lt MS-&gt Oh the irony</td></tr>
+            <tr><td>[21:02] &lt Davbo&gt The Diff pastebin mangles diff's ?</td></tr>
+            <tr><td>[21:02] &lt Davbo&gt intriguing</td></tr>
+            <tr><td>[21:03] &lt Davbo&gt are the + marking a new line of code?</td></tr>
+            <tr><td>[21:04] &lt MS-&gt There - here: http://thwackety.com/paste.html</td></tr>
+            <tr><td>[21:04] &lt MS-&gt Yes, the diff pastebin mangled the diff</td></tr>
+            <tr><td>[21:04] &lt Davbo&gt okay, ty MS-</td></tr>
+            <tr><td>[21:04] &lt MS-&gt Files affected are clear</td></tr>
+            <tr><td>[21:04] &lt Davbo&gt so this marks changes between 3961 and 3988</td></tr>
+            <tr><td>[21:04] &lt Davbo&gt i guess</td></tr>
+            <tr><td>[21:04] &lt MS-&gt For each file, yes</td></tr>
+            <tr><td>[21:06] &lt MS-&gt That diff is a little mangled due to copy and paste as well but is clearer</td></tr>
+            <tr><td>[21:06] &lt MS-&gt New lines are marked +</td></tr>
+            <tr><td>[21:06] &lt MS-&gt deleted are marked -</td></tr>
+            <tr><td>[21:06] &lt MS-&gt But the bit that speeds things up</td></tr>
+            <tr><td>[21:06] &lt MS-&gt Are the lines labelled</td></tr>
+            <tr><td>[21:06] &lt MS-&gt @@ -38,8 +38,8 @@</td></tr>
+            <tr><td>[21:06] &lt MS-&gt and</td></tr>
+            <tr><td>[21:06] &lt MS-&gt @@ -176,11 +176,10 @@</td></tr>
+            <tr><td>[21:06] &lt Davbo&gt yeah i see</td></tr>
+            <tr><td>[21:06] &lt MS-&gt Since they're complete hunks</td></tr>
+            <tr><td>[21:07] &lt MS-&gt So</td></tr>
+            <tr><td>[21:07] &lt MS-&gt If you skim through a large diff quickly</td></tr>
+            <tr><td>[21:07] &lt MS-&gt and see lots of</td></tr>
+            <tr><td>[21:07] &lt MS-&gt stuff like</td></tr>
+            <tr><td>[21:07] &lt MS-&gt  - "coderate_HP" : dvb3.frontend.FEC_3_4,</td></tr>
+            <tr><td>[21:07] &lt MS-&gt  - "coderate_LP" : dvb3.frontend.FEC_3_4,</td></tr>
+            <tr><td>[21:07] &lt MS-&gt  + "code_rate_HP" : dvb3.frontend.FEC_3_4,</td></tr>
+            <tr><td>[21:07] &lt MS-&gt  + "code_rate_LP" : dvb3.frontend.FEC_3_4,</td></tr>
+            <tr><td>[21:07] &lt MS-&gt You realise "ah, so *that's* what the change is"</td></tr>
+            <tr><td>[21:07] &lt Davbo&gt uh-huh</td></tr>
+            <tr><td>[21:07] &lt MS-&gt When I'm happy with that</td></tr>
+            <tr><td>[21:08] &lt MS-&gt I then go through the diff and delete all the hunks that match that</td></tr>
+            <tr><td>[21:08] &lt MS-&gt Once you get used to it you get used to skimming for pattens and deleting hunks leaving some specific questions regarding style etc</td></tr>
+            <tr><td>[21:09] &lt Davbo&gt hmm right</td></tr>
+            <tr><td>[21:09] &lt MS-&gt Also, deleting from the diff gives you something really handy - you can "put the diff down"</td></tr>
+            <tr><td>[21:09] &lt MS-&gt and "pick it back up later" knowing what you have/haven't reviewed</td></tr>
+            <tr><td>[21:09] &lt Davbo&gt so delete all the things from the diff that you're alright with?</td></tr>
+            <tr><td>[21:10] &lt Davbo&gt and work your way through</td></tr>
+            <tr><td>[21:10] &lt MS-&gt Yep</td></tr>
+            <tr><td>[21:10] &lt Davbo&gt Okay, I see :)</td></tr>
+            <tr><td>[21:10] &lt MS-&gt That also means it's very clear at the end to be able to say "this I'm not happy with"</td></tr>
+            <tr><td>[21:10] &lt Davbo&gt and just send them the diff</td></tr>
+            <tr><td>[21:10] &lt vmlemon_&gt I've probably missed something, but how would you apply several diffs to a single component with various disparate changes in each?</td></tr>
+            <tr><td>[21:10] &lt MS-&gt And if you end up with something empty - either by asking q's along the way or its fine</td></tr>
+            <tr><td>[21:10] &lt MS-&gt then that's fine</td></tr>
+            <tr><td>[21:11] &lt Davbo&gt and then, merge?</td></tr>
+            <tr><td>[21:11] &lt MS-&gt vmlemon_: The diffs are generated by svn - the changes are already in the code</td></tr>
+            <tr><td>[21:11] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[21:11] &lt MS-&gt Davbo: yep</td></tr>
+            <tr><td>[21:11] *** vmlemon_ was referring to manually made diffs, although he was just curious...</td></tr>
+            <tr><td>[21:12] &lt mhrd-home&gt I tend to use a clean checkout of trunk, merge into it, then try it out (clean install, run examples, etc) as my final check</td></tr>
+            <tr><td>[21:12] &lt MS-&gt I also tend to do a</td></tr>
+            <tr><td>[21:12] &lt MS-&gt svn merge --dry-run</td></tr>
+            <tr><td>[21:12] &lt MS-&gt first</td></tr>
+            <tr><td>[21:12] &lt MS-&gt to check it'd merge</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt oh cool</td></tr>
+            <tr><td>[21:13] &lt Davbo&gt is --dry-run a common modifier?</td></tr>
+            <tr><td>[21:13] &lt MS-&gt It's specific to svn</td></tr>
+            <tr><td>[21:14] &lt Davbo&gt i meant like, can you do it on other svn commands?</td></tr>
+            <tr><td>[21:15] &lt MS-&gt Maybe, but not with commit for example</td></tr>
+            <tr><td>[21:15] &lt Davbo&gt Say, if one was paranoid about breaking things.</td></tr>
+            <tr><td>[21:15] &lt Davbo&gt ah</td></tr>
+            <tr><td>[21:15] &lt Davbo&gt Oh back to the point from before</td></tr>
+            <tr><td>[21:15] &lt MS-&gt Well, that's the thing - you can't break this irretrievanly</td></tr>
+            <tr><td>[21:15] &lt mhrd-home&gt doesn't seem to be common - "svn help &lt cmd&gt" reveals all</td></tr>
+            <tr><td>[21:16] &lt MS-&gt even</td></tr>
+            <tr><td>[21:16] &lt MS-&gt svn rm &lt branch&gt</td></tr>
+            <tr><td>[21:16] &lt MS-&gt svn co &lt branch&gt</td></tr>
+            <tr><td>[21:16] &lt MS-&gt can be undone</td></tr>
+            <tr><td>[21:16] &lt Davbo&gt how can i see which revisions had changes to MagnaDoodle or anything for that matter</td></tr>
+            <tr><td>[21:16] &lt Davbo&gt just the logs?</td></tr>
+            <tr><td>[21:16] &lt MS-&gt ah yes</td></tr>
+            <tr><td>[21:17] &lt MS-&gt Did you svn copy it in?</td></tr>
+            <tr><td>[21:17] &lt mhrd-home&gt svn blame &lt sourcefile&gt will list revision numbers and authors against each line</td></tr>
+            <tr><td>[21:17] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[21:17] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:17] &lt MS-&gt ~/kamaelia/trunk/Sketches/DK&gt svn log --stop-on-copy</td></tr>
+            <tr><td>[21:17] &lt Davbo&gt Hah mhrd-home (is that a joke?)</td></tr>
+            <tr><td>[21:17] &lt MS-&gt nope</td></tr>
+            <tr><td>[21:17] &lt mhrd-home&gt see for yourself</td></tr>
+            <tr><td>[21:18] &lt MS-&gt in cvs it used to be called "cvs annotate"</td></tr>
+            <tr><td>[21:18] &lt MS-&gt But blame is more appropriate</td></tr>
+            <tr><td>[21:18] &lt Davbo&gt hahaha</td></tr>
+            <tr><td>[21:18] &lt Davbo&gt awesome</td></tr>
+            <tr><td>[21:18] &lt MS-&gt ~/kamaelia/trunk/Sketches/DK&gt svn log --stop-on-copy|tac|tail -2|head -1</td></tr>
+            <tr><td>[21:18] &lt MS-&gt Gives you the specific version number for the branch</td></tr>
+            <tr><td>[21:19] &lt Davbo&gt I see</td></tr>
+            <tr><td>[21:20] &lt Davbo&gt evidently svn log has to parse a lot before it gets there</td></tr>
+            <tr><td>[21:21] &lt MS-&gt Sorry svn log --stop-on-copy|tac|tail -2|head -1 is wrong</td></tr>
+            <tr><td>[21:21] &lt MS-&gt (late)</td></tr>
+            <tr><td>[21:21] &lt MS-&gt But the --stop-on-copy thing is what you want :)</td></tr>
+            <tr><td>[21:21] &lt MS-&gt ~/kamaelia/trunk/Sketches/DK&gt svn diff -r3937:HEAD MagnaDoodle.py</td></tr>
+            <tr><td>[21:21] &lt MS-&gt Will show you what you're done :-)</td></tr>
+            <tr><td>[21:22] &lt MS-&gt And it's also why I asked you to do an svn copy</td></tr>
+            <tr><td>[21:22] &lt Davbo&gt I see</td></tr>
+            <tr><td>[21:22] &lt MS-&gt since it also makes it easier for *me* to see what's changed</td></tr>
+            <tr><td>[21:22] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[21:22] &lt Davbo&gt that's cool</td></tr>
+            <tr><td>[21:24] &lt Davbo&gt Again, thanks MS-, mhrd-home</td></tr>
+            <tr><td>[21:24] &lt Davbo&gt I'll get there eventually :)</td></tr>
+            <tr><td>[21:24] &lt MS-&gt this is what GSOC is really about</td></tr>
+            <tr><td>[21:24] &lt Davbo&gt & stop pestering you two</td></tr>
+            <tr><td>[21:24] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[21:27] &lt mhrd-home&gt it really is np</td></tr>
+            <tr><td>[21:27] &lt mhrd-home&gt :)</td></tr>
+            <tr><td>[21:30] &lt Davbo&gt I got 62/100 on the stupid Java assembly thing</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt 2.1, pretty good</td></tr>
+            <tr><td>[21:40] &lt Davbo&gt Hopefully you'll get my contributor agreement tomorrow MS-, long weekend and all.</td></tr>
+            <tr><td>[21:40] &lt Davbo&gt Will take you ages to get through your email on tuesday :)</td></tr>
+            <tr><td>[21:40] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:41] &lt MS-&gt I'm out of the office tomorrow (work), and then on leave, back thursday - so won't get it till then at the soonest</td></tr>
+            <tr><td>[21:41] &lt MS-&gt congrats on the result</td></tr>
+            <tr><td>[21:41] &lt Davbo&gt Ah, oh yes</td></tr>
+            <tr><td>[21:41] &lt Davbo&gt the meeting got changed right</td></tr>
+            <tr><td>[21:42] &lt MS-&gt Probably worth looking at the minutes :)</td></tr>
+            <tr><td>[21:42] &lt MS-&gt It's either scrapped or can be on friday</td></tr>
+            <tr><td>[21:42] &lt MS-&gt I may or may not be going away</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt Yeah have done, just forgot to sort something out with you</td></tr>
+            <tr><td>[21:42] &lt MS-&gt hasn't actually been decided yet</td></tr>
+            <tr><td>[21:43] &lt Davbo&gt Well if it's Friday I suggest we scrap and just go with it on Monday</td></tr>
+            <tr><td>[21:43] &lt Davbo&gt Assuming the following monday is okay</td></tr>
+            <tr><td>[21:43] &lt MS-&gt seems sensible to me</td></tr>
+            <tr><td>[21:44] &lt Davbo&gt Okay :)</td></tr>
+            <tr><td>[21:56] *** MS- changed the topic to Release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 29th May 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[21:57] &lt MS-&gt please feel free to update the release/release discussion page</td></tr>
+            <tr><td>[21:57] &lt MS-&gt with things you want to add in/sort out</td></tr>
+            <tr><td>[21:58] *** Davbo wonders if he would be too enthusiastic to review something from your branch (MS-) for merging</td></tr>
+            <tr><td>[21:59] &lt MS-&gt I have to extract the feature out to a branch first</td></tr>
+            <tr><td>[21:59] &lt Davbo&gt Could I review the stuff i'm using (MultiProcess.py)</td></tr>
+            <tr><td>[21:59] &lt MS-&gt You're welcome to try doing that yourself if you like, in a similar way I've extracted some of Jinnas stuff</td></tr>
+            <tr><td>[22:00] &lt MS-&gt The multiprocess stuff would be *extremely* useful</td></tr>
+            <tr><td>[22:00] &lt MS-&gt since you're actually using it</td></tr>
+            <tr><td>[22:00] &lt MS-&gt You'd need to think of an answer to this question:</td></tr>
+            <tr><td>[22:00] &lt MS-&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1209413487</td></tr>
+            <tr><td>[22:00] &lt MS-&gt "Where to put our Multicore support in the Kamaelia tree?"</td></tr>
+            <tr><td>[22:00] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[22:01] &lt Davbo&gt I see</td></tr>
+            <tr><td>[22:01] &lt MS-&gt And that's very much a matter of opinion</td></tr>
+            <tr><td>[22:01] &lt MS-&gt and something worth doing :-)</td></tr>
+            <tr><td>[22:01] &lt MS-&gt It would also mean looking at the changes to the scheduler as well</td></tr>
+            <tr><td>[22:01] &lt MS-&gt which is an important detail</td></tr>
+            <tr><td>[22:01] &lt MS-&gt (it's minor btw)</td></tr>
+            <tr><td>[22:01] &lt Davbo&gt umm</td></tr>
+            <tr><td>[22:02] &lt Davbo&gt I wanna try</td></tr>
+            <tr><td>[22:02] &lt Davbo&gt Does it matter if I can't get my head round it#?</td></tr>
+            <tr><td>[22:02] &lt MS-&gt Depends on what you can't get your head round :)</td></tr>
+            <tr><td>[22:02] &lt Davbo&gt Well if I make a diff then leave in what i don't understand and post to the ML someone could explain :-)</td></tr>
+            <tr><td>[22:03] &lt MS-&gt You're probably well placed to think "where does this code made sense"</td></tr>
+            <tr><td>[22:03] &lt MS-&gt (ie "where to put the file currently called MultiProcess.py")</td></tr>
+            <tr><td>[22:04] &lt MS-&gt ~/kamaelia/branches/private_MPS_Scratch/Axon&gt svn diff -r3813:3827 Axon/</td></tr>
+            <tr><td>[22:05] &lt MS-&gt is the main changeset needed I think</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt right</td></tr>
+            <tr><td>[22:05] &lt MS-&gt That's the change set that keeps the print statements in used during debugging</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt uh-huh</td></tr>
+            <tr><td>[22:06] &lt MS-&gt OK, I need sleep</td></tr>
+            <tr><td>[22:06] &lt MS-&gt I have a stupidly early train tomorrow :-/</td></tr>
+            <tr><td>[22:06] &lt MS-&gt cya :)</td></tr>
+            <tr><td>[22:06] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[22:07] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt Heh, the spell checker in WordPress highlights blog as a typo</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt s/typo/spelling error</td></tr>
+            <tr><td>[22:19] &lt j_baker&gt night MS-</td></tr>
+            <tr><td>[22:19] &lt j_baker&gt It probably uses the PHP spellchecking library Davbo.</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt yeah, i'm pretty sure it does. But it still makes me giggle :-)</td></tr>
+            <tr><td>[22:23] &lt j_baker&gt Indeed.</td></tr>
+            <tr><td>[22:23] &lt Davbo&gt undermines their whole thing, it's not even a real word! ;-)</td></tr>
+            <tr><td>[22:32] &lt vmlemon_&gt o.O "Maybe I'll make a new one with a bunny in it so people can be bunny-free if they want. It's all about freedom, right?"</td></tr>
+            <tr><td>[22:34] &lt vmlemon_&gt Let me guess, it also thinks "WordPress" isn't a word/is spelt incorrectly, too?</td></tr>
+            <tr><td>[23:09] &lt Davbo&gt Anyone got thoughts on http://www.davbo.org/blog/2008/05/22/kamaelia-multicore-support/ ?</td></tr>
+            <tr><td>[23:12] *** Davbo isn't sure if he actually makes a valid point</td></tr>
+            <tr><td>[23:12] &lt mhrd-home&gt my gut feeling is that you're probably right, thoguh I'm not sure 'process' is quite the right word</td></tr>
+            <tr><td>[23:15] &lt Davbo&gt Ah.</td></tr>
+            <tr><td>[23:15] &lt mhrd-home&gt a name like "multicore" implies to me something a little more finegrained and quite low level</td></tr>
+            <tr><td>[23:16] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[23:16] &lt mhrd-home&gt "process" feels better - since its effects at that kind of level</td></tr>
+            <tr><td>[23:16] &lt mhrd-home&gt actually "multicore" implie to me that it would be something to do with managing multiple cores in some way</td></tr>
+            <tr><td>[23:16] &lt Davbo&gt essentially it's process manipulation, nothing to do with multicore</td></tr>
+            <tr><td>[23:16] &lt mhrd-home&gt I suppose I'm thinking "process", "fork", "thread"</td></tr>
+            <tr><td>[23:17] &lt mhrd-home&gt Davbo: yep</td></tr>
+            <tr><td>[23:17] &lt Davbo&gt if you have multicore there's an advantage there but it's upto the OS</td></tr>
+            <tr><td>[23:17] &lt Davbo&gt i was trying to point out that there's more to it than just multicore support</td></tr>
+            <tr><td>[23:18] &lt Davbo&gt Say if i had a grid of computers at my disposal all networked up and wanted to split the workload, it would be cool if we could handle that</td></tr>
+            <tr><td>[23:19] &lt mhrd-home&gt also this component is presumably useful on non multicore systems (eg. dual CPU, or even single CPU, eg. hyperthreaded)</td></tr>
+            <tr><td>[23:19] &lt mhrd-home&gt s/useful/immediately useful/</td></tr>
+            <tr><td>[23:19] &lt Davbo&gt I edit my post :-)</td></tr>
+            <tr><td>[23:19] &lt Davbo&gt needed to order my thoughts a bit</td></tr>
+            <tr><td>[23:20] &lt mhrd-home&gt feels like something worth posting on the mailing list too (even if its just a link to your post)</td></tr>
+            <tr><td>[23:20] &lt Davbo&gt yeah will do</td></tr>
+            <tr><td>[23:20] &lt Davbo&gt ty mhrd-home. needed to talk it through a bit</td></tr>
+            <tr><td>[23:21] &lt mhrd-home&gt np</td></tr>
+            <tr><td>[23:47] &lt Davbo&gt fyi mhrd-home: http://groups.google.com/group/kamaelia/browse_thread/thread/35b4e7f4c9459773</td></tr>
+            <tr><td>[23:57] &lt mhrd-home&gt cool</td></tr>
+            <tr><td>[23:58] *** mhrd-home finally gets some code working so calls it a night</td></tr>
+            <tr><td>[23:58] &lt mhrd-home&gt cya tomorrow I guess :)</td></tr>

@@ -1,0 +1,100 @@
+<html><body><table>
+            <tr><td>[04:10] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:18] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:19] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:16] &lt MS-&gt morning</td></tr>
+            <tr><td>[06:20] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[06:23] &lt MS-&gt I have some fantastic subject lines in my spam today</td></tr>
+            <tr><td>[06:24] &lt MS-&gt "Of the Quangle Wangle Quee"</td></tr>
+            <tr><td>[06:24] &lt MS-&gt "That Pobbles are happier without their toes"</td></tr>
+            <tr><td>[06:34] &lt MS-&gt right back in a bit</td></tr>
+            <tr><td>[06:34] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[06:57] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:23] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[08:26] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:10] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:10] &lt MS-&gt greetings</td></tr>
+            <tr><td>[10:28] &lt Lawouach_&gt same ol' same ol'</td></tr>
+            <tr><td>[13:44] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:05] &lt Lawouach_&gt the internals of Axon and Kamaelia are really funnily indented</td></tr>
+            <tr><td>[14:05] &lt Lawouach_&gt my emacs doesn't like it :)</td></tr>
+            <tr><td>[14:23] &lt Lawouach_&gt hmm</td></tr>
+            <tr><td>[14:24] &lt Lawouach_&gt it takes almost 350microseconds for data to go from the CSA to another component directly linked to the CSA's outbox</td></tr>
+            <tr><td>[14:24] &lt Lawouach_&gt no other components is running at the same time</td></tr>
+            <tr><td>[14:24] &lt Lawouach_&gt it's raher slow :/</td></tr>
+            <tr><td>[14:26] &lt Lawouach_&gt it's a bit less actually 300microseconds</td></tr>
+            <tr><td>[14:27] &lt Lawouach_&gt the recv('inbox') takes up to 130microseconds</td></tr>
+            <tr><td>[14:35] &lt Lawouach_&gt right-o</td></tr>
+            <tr><td>[14:36] &lt Lawouach_&gt it's due to the wakOnPop list in Box.py</td></tr>
+            <tr><td>[14:39] &lt MS-&gt ooh, activity</td></tr>
+            <tr><td>[14:39] *** MS- reads back</td></tr>
+            <tr><td>[14:39] &lt Lawouach_&gt going to go back home though</td></tr>
+            <tr><td>[14:39] &lt Lawouach_&gt I'm doing some heavy profiling of the code</td></tr>
+            <tr><td>[14:40] &lt MS-&gt k</td></tr>
+            <tr><td>[14:40] &lt Lawouach_&gt and it seems there are some performance hits in Axon/Kamaelia</td></tr>
+            <tr><td>[14:40] &lt MS-&gt Indentation used to be 3 spaces because that was what I was used to. moved to 5</td></tr>
+            <tr><td>[14:40] &lt Lawouach_&gt that being said</td></tr>
+            <tr><td>[14:40] &lt MS-&gt 4 even</td></tr>
+            <tr><td>[14:40] &lt MS-&gt That is *a lot* longer than I would expect</td></tr>
+            <tr><td>[14:40] &lt Lawouach_&gt it's only noticeable if you need less than a 1milisecond delay between various components</td></tr>
+            <tr><td>[14:40] &lt Lawouach_&gt indeed</td></tr>
+            <tr><td>[14:41] &lt Lawouach_&gt the wakeOnPop list is quite a hit</td></tr>
+            <tr><td>[14:41] &lt Lawouach_&gt and I can't explain the delay for the CSA</td></tr>
+            <tr><td>[14:41] &lt MS-&gt Interesting</td></tr>
+            <tr><td>[14:41] &lt MS-&gt Looks like I need to spend more time on the Axon2 code</td></tr>
+            <tr><td>[14:41] &lt Lawouach_&gt It's not massively bad but I wat to justify why I'd go for Kamaelia rather than "everything in erlang"</td></tr>
+            <tr><td>[14:42] *** MS- nods</td></tr>
+            <tr><td>[14:42] &lt Lawouach_&gt If you feel like tested, I'm just output some various timestamps within various components</td></tr>
+            <tr><td>[14:43] &lt MS-&gt Obviously if you find particular pain points, let me know and I'll take a look and see if we can alleviate those</td></tr>
+            <tr><td>[14:43] &lt Lawouach_&gt print "%s %f" % (self.__class__, time())</td></tr>
+            <tr><td>[14:43] &lt MS-&gt k</td></tr>
+            <tr><td>[14:43] &lt Lawouach_&gt well one thing I've noticed in the CSA is that it will keep reading until there is nothing on the socket</td></tr>
+            <tr><td>[14:43] &lt MS-&gt Also, if you spot any easy wins, we can always merge</td></tr>
+            <tr><td>[14:43] &lt Lawouach_&gt but</td></tr>
+            <tr><td>[14:44] &lt Lawouach_&gt it does send data each time it reads something without yielding back to the scheduler immediatly</td></tr>
+            <tr><td>[14:44] &lt Lawouach_&gt so we have a pattern like this: R, R, R, N, S where R = Read, N = Nothing to read, S Scheduler</td></tr>
+            <tr><td>[14:45] &lt Lawouach_&gt it also means it can end up filling up the inbox of the plugged component before that component got any chance to do anything</td></tr>
+            <tr><td>[14:46] &lt MS-&gt That's why most consumer components are written as</td></tr>
+            <tr><td>[14:46] &lt MS-&gt for msg in self.Inbox("bla"):</td></tr>
+            <tr><td>[14:46] &lt MS-&gt  consume</td></tr>
+            <tr><td>[14:46] &lt MS-&gt yield</td></tr>
+            <tr><td>[14:46] &lt MS-&gt rather tha</td></tr>
+            <tr><td>[14:46] &lt MS-&gt for msg in self.Inbox("bla"):</td></tr>
+            <tr><td>[14:46] &lt MS-&gt  consume</td></tr>
+            <tr><td>[14:46] &lt MS-&gt  yield</td></tr>
+            <tr><td>[14:46] &lt MS-&gt We found that yielding too often hurt overall system performance</td></tr>
+            <tr><td>[14:46] &lt Lawouach_&gt the producer should on ther hand yield each time IMO</td></tr>
+            <tr><td>[14:47] &lt MS-&gt We could change the CSA to have a flag that says it should yield</td></tr>
+            <tr><td>[14:47] &lt MS-&gt If you want to force it to only produce at the speed at which a consumer consumers, you can set a pipewidth.</td></tr>
+            <tr><td>[14:47] &lt MS-&gt Need to check that the CSA would handle that correctly, but that's the better mechanism</td></tr>
+            <tr><td>[14:48] &lt Lawouach_&gt I don't know if that would make things better but it's worth a try</td></tr>
+            <tr><td>[14:48] &lt MS-&gt A pipewidth of 1 is equivalent to your yielding after each message</td></tr>
+            <tr><td>[14:48] &lt MS-&gt Me neither fwiw.</td></tr>
+            <tr><td>[14:48] &lt Lawouach_&gt i'll look at it tomorrow</td></tr>
+            <tr><td>[14:49] &lt MS-&gt Thanks for mentioning it here! :)</td></tr>
+            <tr><td>[14:49] &lt Lawouach_&gt Performances aren't that bad but the scheduler is the current hit in the overall performances I'm getting</td></tr>
+            <tr><td>[14:49] *** MS- nods</td></tr>
+            <tr><td>[14:49] &lt Lawouach_&gt Once the message has reached my handler, I'm processing rather fastly</td></tr>
+            <tr><td>[14:50] &lt MS-&gt Well, that is an area I want to address, and if there's a very specific need, and there is, then that's a good motivator :)</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt Basically the XML handler performs some operations which take roughly 90microseconds overall</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt The overall treatment though may take up 600microseconds</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt I'm still drilling things down</td></tr>
+            <tr><td>[14:51] &lt Lawouach_&gt so I can't point at a particular area yet :p</td></tr>
+            <tr><td>[14:51] *** MS- nods</td></tr>
+            <tr><td>[14:52] &lt MS-&gt Nothing like this sort of thing for making code better :)</td></tr>
+            <tr><td>[14:52] &lt MS-&gt OK, i need to head off too.</td></tr>
+            <tr><td>[14:52] &lt MS-&gt cya later & thanks :)</td></tr>
+            <tr><td>[14:52] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:11] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[16:11] &lt MS-&gt back</td></tr>
+            <tr><td>[17:17] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[17:19] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[17:22] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[17:25] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[19:19] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:22] &lt MS-&gt Davbo: evening</td></tr>
+            <tr><td>[20:37] &lt MS-&gt Renamed "Paint" to "GSOCPaint", since that way we can package cleanly and merge (which is what I'm aiming to do)</td></tr>
+            <tr><td>[20:37] &lt MS-&gt Trying to clean out /branches slowly but surely</td></tr>
+            <tr><td>[20:46] &lt MS-&gt OK, I think I've somewhat tidied up private_DK_PaintDev. Still needs hacking around to replace the magnadoodle component with something useful, but this is a good base to move forward from probably</td></tr>
+            <tr><td>[20:47] &lt MS-&gt need sleep</td></tr>
+            <tr><td>[20:47] &lt MS-&gt night all</td></tr>

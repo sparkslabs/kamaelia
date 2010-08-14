@@ -1,0 +1,387 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Device.DVB.Core </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Device.DVB.Core</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.html">Core</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.DVB_Demuxer.html">DVB_Demuxer</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.DVB_Multiplex.html">DVB_Multiplex</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#462">SimpleDVB-T (Digital Terrestrial TV) Tuner</a><ul>
+<li><a class="reference" href="#463">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#464">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#465">SimpleDVB-T (Digital Terrestrial TV) Demuxer</a><ul>
+<li><a class="reference" href="#466">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#467">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<div class="section">
+<h2 id="462"><a id="simpledvb-t-digital-terrestrial-tv-tuner" name="simpledvb-t-digital-terrestrial-tv-tuner">SimpleDVB-T (Digital Terrestrial TV) Tuner</a></h2>
+<p>DVB_Multiplex tunes to the specified DVB-T multiplex and outputs received MPEG
+Transport Stream packets that have a PID in the list of PIDs specified.</p>
+<p>If you need to change which PIDs you receive at runtime, consider using
+<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Tuner.html">Kamaelia.Device.DVB.Tuner</a></p>
+<div class="section">
+<h3 id="463"><a id="example-usage" name="example-usage">Example Usage</a></h3>
+<p>Receiving PIDs 600 and 601 from MUX 1 broadcast from Crystal Palace in the UK
+(this should, effectively, receive the video and audio for the channel
+'BBC ONE'):</p>
+<pre class="literal-block">
+from <a class="reference" href="/Components/pydoc/Kamaelia.Chassis.Pipeline.html">Kamaelia.Chassis.Pipeline</a> import Pipeline
+from <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.html">Kamaelia.Device.DVB.Core</a> import DVB_Multiplex
+from <a class="reference" href="/Components/pydoc/Kamaelia.File.Writing.html">Kamaelia.File.Writing</a> import SimpleFileWriter
+import dvb3.frontend
+
+feparams = {
+    &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+    &quot;constellation&quot; : dvb3.frontend.QAM_16,
+    &quot;code_rate_HP&quot; : dvb3.frontend.FEC_3_4,
+    &quot;code_rate_LP&quot; : dvb3.frontend.FEC_3_4,
+}
+
+Pipeline( DVB_Multiplex(505.833330, [600,601], feparams),
+          SimpleFileWriter(&quot;BBC ONE.ts&quot;),
+        ).run()
+</pre>
+<p>Receive and record the whole multiplex (all pids):</p>
+<pre class="literal-block">
+from <a class="reference" href="/Components/pydoc/Kamaelia.Chassis.Pipeline.html">Kamaelia.Chassis.Pipeline</a> import Pipeline
+from <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.html">Kamaelia.Device.DVB.Core</a> import DVB_Multiplex
+from <a class="reference" href="/Components/pydoc/Kamaelia.File.Writing.html">Kamaelia.File.Writing</a> import SimpleFileWriter
+import dvb3.frontend
+
+feparams = {
+    &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+    &quot;constellation&quot; : dvb3.frontend.QAM_16,
+    &quot;code_rate_HP&quot; : dvb3.frontend.FEC_3_4,
+    &quot;code_rate_LP&quot; : dvb3.frontend.FEC_3_4,
+}
+
+Pipeline( DVB_Multiplex(505.833330, [0x2000], feparams),
+          SimpleFileWriter(&quot;BBC ONE.ts&quot;),
+        ).run()
+</pre>
+</div>
+<div class="section">
+<h3 id="464"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h3>
+<p>DVB_Multiplex tunes, using the specified tuning parameters to a DVB-T
+transmitted multiplex.</p>
+<p>It will output received transport stream packets out of its &quot;outbox&quot; outbox for
+those packets with a PID in the list of PIDs specified at initialization.</p>
+<p>Most DVB tuner devices understand a special packet ID of 0x2000 to request the
+entire transport stream of all packets with all IDs. Specify a list containing
+only this PID to receive the whole transport stream.</p>
+<p>This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the &quot;control&quot; inbox. The message will be forwarded on out of
+the &quot;signal&quot; outbox just before termination.</p>
+</div>
+</div>
+<div class="section">
+<h2 id="465"><a id="simpledvb-t-digital-terrestrial-tv-demuxer" name="simpledvb-t-digital-terrestrial-tv-demuxer">SimpleDVB-T (Digital Terrestrial TV) Demuxer</a></h2>
+<p>DVB_Demuxer take in MPEG transport stream packets and routes them to different
+outboxes, as specified in a mapping table.</p>
+<p>If you need to change which PIDs you receive at runtime, consider using
+<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.DemuxerService.html">Kamaelia.Device.DVB.DemuxerService</a>.</p>
+<div class="section">
+<h3 id="466"><a id="id1" name="id1">Example Usage</a></h3>
+<p>Receiving PIDs 600 and 601 from MUX 1 broadcast from Crystal Palace in the UK
+(this should, effectively, receive the video and audio for the channel
+'BBC ONE') and write them to separate files, plus also to a combined file. Plus
+also record PIDS 610 and 611 (audio and video for 'BBC TWO') to a fourth file:</p>
+<pre class="literal-block">
+from <a class="reference" href="/Components/pydoc/Kamaelia.Chassis.Graphline.html">Kamaelia.Chassis.Graphline</a> import Graphline
+from <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.html">Kamaelia.Device.DVB.Core</a> import DVB_Multiplex
+from <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.html">Kamaelia.Device.DVB.Core</a> import DVB_Demuxer
+from <a class="reference" href="/Components/pydoc/Kamaelia.File.Writing.html">Kamaelia.File.Writing</a> import SimpleFileWriter
+import dvb3.frontend
+
+feparams = {
+    &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+    &quot;constellation&quot; : dvb3.frontend.QAM_16,
+    &quot;code_rate_HP&quot; : dvb3.frontend.FEC_3_4,
+    &quot;code_rate_LP&quot; : dvb3.frontend.FEC_3_4,
+}
+
+Graphline(
+    RECV   = DVB_Multiplex(505.833330, [600,601, 610,611], feparams),
+    DEMUX  = DVB_Demuxer( { 600 : [&quot;outbox&quot;,&quot;video&quot;],
+                            601 : [&quot;outbox&quot;,&quot;audio&quot;],
+                            610 : [&quot;two&quot;],
+                            611 : [&quot;two&quot;] } ),
+    REC_A  = SimpleFileWriter(&quot;audio.ts&quot;),
+    REC_V  = SimpleFileWriter(&quot;video.ts&quot;),
+    REC_AV = SimpleFileWriter(&quot;audio_and_video.ts&quot;),
+    REC_2  = SimpleFileWriter(&quot;audio_and_video2.ts&quot;),
+
+    linkages = { (&quot;RECV&quot;,  &quot;outbox&quot;)  : (&quot;DEMUX&quot;,  &quot;inbox&quot;),
+
+                 (&quot;DEMUX&quot;, &quot;outbox&quot;) : (&quot;REC_AV&quot;, &quot;inbox&quot;),
+                 (&quot;DEMUX&quot;, &quot;audio&quot;)  : (&quot;REC_A&quot;,  &quot;inbox&quot;),
+                 (&quot;DEMUX&quot;, &quot;video&quot;)  : (&quot;REC_V&quot;,  &quot;inbox&quot;),
+
+                 (&quot;DEMUX&quot;, &quot;two&quot;)    : (&quot;REC_2&quot;,  &quot;inbox&quot;),
+               }
+).run()
+</pre>
+</div>
+<div class="section">
+<h3 id="467"><a id="id2" name="id2">How does it work?</a></h3>
+<p>DVB_Demuxer takes MPEG transport stream packets, sent to its &quot;inbox&quot; inbox
+and determines the packet ID (PID) of each, then distributes them to different
+outboxes according to a mapping dictionary specified at intialization.</p>
+<p>The dictionary maps individual PIDs to lists of outbox names (the outboxes to
+which packets with that given PID should be sent), for example:</p>
+<pre class="literal-block">
+{
+  600 : [&quot;outbox&quot;,&quot;video&quot;],
+  601 : [&quot;outbox&quot;,&quot;audio&quot;],
+  610 : [&quot;two&quot;],
+  611 : [&quot;two&quot;]
+}
+</pre>
+<p>This example mapping specified that packets with 600 and 601 should be sent to
+the &quot;outbox&quot; outbox. Packets with PID 600 should also be sent to the &quot;video&quot;
+outbox and packets with PID 601 should also be sent to the &quot;audio&quot; outbox.
+Finally, packets with PIDs 610 and 611 should b sent to the &quot;two&quot; outbox.</p>
+<p>The relevant outboxes are automatically created.</p>
+<p>If a packet arrives with a PID not featured in the mapping table, that packet
+will be discarded.</p>
+<p>As in the above example, a packet with a given PID can be mapped to more than
+one destination outbox. It will be sent to all outboxes to which it is mapped.</p>
+<p>Packets which have their 'error' or 'scrambled' flag bits set will be discarded.</p>
+<p>This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the &quot;control&quot; inbox. The message will be forwarded on out of
+the &quot;signal&quot; outbox just before termination.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.html">Core</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.DVB_Demuxer.html">DVB_Demuxer</a></h1>
+<div class="section">
+<h2 id="symbol-DVB_Demuxer">class DVB_Demuxer(<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</a>)</h2>
+<p>This demuxer expects to recieve the output from a DVB_Multiplex
+component on its primary inbox. It is also provided with a number
+of pids. For each pid that it knows about, it forwards the data
+received on that PID to an appropriate outbox. Data associated with
+unknown PIDs in the datastream is thrown away.</p>
+<p>The output here is still transport stream packets. Another layer
+is required to decide what to do with these - to yank out the PES
+and ES packets.</p>
+<div class="section">
+<h3><a id="symbol-DVB_Demuxer.Inboxes" name="symbol-DVB_Demuxer.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : We will receive shutdown messages here</li>
+<li><strong>inbox</strong> : This is where we expect to recieve a transport stream</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-DVB_Demuxer.Outboxes" name="symbol-DVB_Demuxer.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-DVB_Demuxer.__init__" name="symbol-DVB_Demuxer.__init__">__init__(self, pidmap)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-DVB_Demuxer.errorIndicatorSet" name="symbol-DVB_Demuxer.errorIndicatorSet">errorIndicatorSet(self, packet)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-DVB_Demuxer.main" name="symbol-DVB_Demuxer.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-DVB_Demuxer.scrambledPacket" name="symbol-DVB_Demuxer.scrambledPacket">scrambledPacket(self, packet)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-DVB_Demuxer.shutdown" name="symbol-DVB_Demuxer.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.html">Core</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Core.DVB_Multiplex.html">DVB_Multiplex</a></h1>
+<div class="section">
+<h2 id="symbol-DVB_Multiplex">class DVB_Multiplex(<a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html">Axon.ThreadedComponent.threadedcomponent</a>)</h2>
+<p>This is a DVB Multiplex Tuner.</p>
+<p>This tunes the given DVB card to the given frequency. This then sets
+up the dvr0 device node to recieve the data recieved on a number of
+PIDs.</p>
+<p>A special case use of these is to tune to 2 specific PIDs - the audio
+and video for a specific TV channel. If you pass just 2 PIDs then
+you're tuning to a specific channel.</p>
+<p>NOTE 1: This multiplex tuner deliberately does not know what
+frequency the multiplex is on, and does not know what PIDs are
+inside that multiplex. You are expected to find out this information
+independently.</p>
+<p>NOTE 2: This means also that producing a mock for the next stages in
+this system should be relatively simple - we run this code once and
+dump to disk.</p>
+<div class="section">
+<h3><a id="symbol-DVB_Multiplex.Inboxes" name="symbol-DVB_Multiplex.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-DVB_Multiplex.Outboxes" name="symbol-DVB_Multiplex.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-DVB_Multiplex.__init__" name="symbol-DVB_Multiplex.__init__">__init__(self, freq, pids[, feparams][, card])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-DVB_Multiplex.main" name="symbol-DVB_Multiplex.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-DVB_Multiplex.shutdown" name="symbol-DVB_Multiplex.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

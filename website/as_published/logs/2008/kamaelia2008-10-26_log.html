@@ -1,0 +1,607 @@
+<html><body><table>
+            <tr><td>[09:31] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:54] &lt aa_&gt MS-: ok, my brb was 26 hours long, but I am trying now. I understand the concept of how to close the input stream for a unix process, but I am not sure how to tell SimpleHTTPClient() to send to that control inbox when it is done sending to the inbox inbox. (without getting my hands dirty! I probably could do it with dirty hands)</td></tr>
+            <tr><td>[13:12] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:12] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:32] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:00] &lt MS-&gt aa_: SimpleHTTPClient was written by a gsoc student who wrote it as an adhoc thing, it might be a bit crap in the shutdown department :)</td></tr>
+            <tr><td>[15:00] &lt MS-&gt vmlemon_: hi</td></tr>
+            <tr><td>[15:01] &lt MS-&gt Oh, I see</td></tr>
+            <tr><td>[15:01] &lt MS-&gt reading:</td></tr>
+            <tr><td>[15:01] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/HTTP/HTTPClient.py</td></tr>
+            <tr><td>[15:01] &lt MS-&gt This component downloads the pages corresponding to HTTP URLs received</td></tr>
+            <tr><td>[15:01] &lt MS-&gt on "inbox" and outputs their contents (file data) as a message, one per</td></tr>
+            <tr><td>[15:01] &lt MS-&gt URL, to "outbox" in the order they were received.</td></tr>
+            <tr><td>[15:01] &lt MS-&gt basically, it spits out the *entire* file in one chunk</td></tr>
+            <tr><td>[15:03] &lt MS-&gt Oh that's surprising, it uses the carousel component</td></tr>
+            <tr><td>[15:03] &lt MS-&gt It should, given what it does, but still surprising.</td></tr>
+            <tr><td>[15:05] &lt MS-&gt aa_: I'm not sure what you're trying to do, but "SimpleHTTPClient" is misnamed really</td></tr>
+            <tr><td>[15:05] &lt MS-&gt But then Ryan wasn't great at naming IMO.</td></tr>
+            <tr><td>[15:06] &lt MS-&gt It's *correct* name would be something representative of "Reusable HTTP Client"</td></tr>
+            <tr><td>[15:06] &lt MS-&gt since that's what it is</td></tr>
+            <tr><td>[15:07] &lt MS-&gt It seems much more complex than it needs to be as well</td></tr>
+            <tr><td>[15:07] &lt MS-&gt But that's a sign of youth IMO</td></tr>
+            <tr><td>[15:07] &lt aa_&gt hah</td></tr>
+            <tr><td>[15:09] &lt vmlemon_&gt �berHyperComplexServer? ;)</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt RecycleableHTTPClient? ;)</td></tr>
+            <tr><td>[15:30] &lt MS-&gt Something like that</td></tr>
+            <tr><td>[15:48] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[16:49] &lt MS-&gt http://twitter.com/kamaeliacheckin created</td></tr>
+            <tr><td>[16:54] *** Rigolo has joined #kamaelia</td></tr>
+            <tr><td>[16:55] &lt Rigolo&gt good evening ...</td></tr>
+            <tr><td>[17:22] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[17:55] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[18:14] &lt Rigolo&gt anybody here that can help me with a python-dvb3 installation (on a clean mythbuntu 8.10 beta)?</td></tr>
+            <tr><td>[18:29] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[18:32] &lt Chong-&gt Has anyone met Maximum number of clients reached : unable to open display ":0.0" problem?</td></tr>
+            <tr><td>[18:32] &lt Rigolo&gt not me ... but I'm just starting out with Kamaelia today :-)</td></tr>
+            <tr><td>[18:33] &lt Chong-&gt Rigolo: hi, it's not a problem with Kamaelia but with linux</td></tr>
+            <tr><td>[18:33] &lt Chong-&gt Rigolo: BTW, welcome to Kamaelia :-)</td></tr>
+            <tr><td>[18:33] &lt Rigolo&gt okee ... I was wondering already because it looks like a X error message</td></tr>
+            <tr><td>[18:35] &lt Chong-&gt yes. Searched internet, found some solutions but not work for me :(</td></tr>
+            <tr><td>[18:35] &lt Chong-&gt Basically, it prevents you from opening more apps</td></tr>
+            <tr><td>[18:35] &lt Rigolo&gt what distribution?</td></tr>
+            <tr><td>[18:36] &lt Chong-&gt openSUSE, kde</td></tr>
+            <tr><td>[18:37] &lt Rigolo&gt mmm more of a ubuntu or gentoo person .. no experiance at all with openSUSE</td></tr>
+            <tr><td>[18:37] &lt Chong-&gt But when I searched internet, I found users of red hat, ubuntu + gnome also had met the same problem</td></tr>
+            <tr><td>[18:37] &lt Rigolo&gt okee :-)</td></tr>
+            <tr><td>[18:38] &lt Chong-&gt Rigolo: thanks anyway :-)</td></tr>
+            <tr><td>[18:39] &lt Rigolo&gt looks like a very recent bug ... and not limited to kde only</td></tr>
+            <tr><td>[18:41] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[18:41] &lt Rigolo&gt acording to some bug reports on ubuntu intrepid it looks like the screensaver might be causing this</td></tr>
+            <tr><td>[18:41] *** MS- reads backlog</td></tr>
+            <tr><td>[18:42] &lt Chong-&gt but I have not installed intrepid</td></tr>
+            <tr><td>[18:42] &lt MS-&gt Chong-: Your problem is an X server problem</td></tr>
+            <tr><td>[18:42] &lt Chong-&gt evening MS-</td></tr>
+            <tr><td>[18:42] &lt Chong-&gt MS-: do you know how to solve it?</td></tr>
+            <tr><td>[18:42] &lt MS-&gt Chong-: Never had the problem, but it's clear it's an X Server one</td></tr>
+            <tr><td>[18:43] &lt MS-&gt restarting the x server would probably help</td></tr>
+            <tr><td>[18:43] &lt MS-&gt lsof may give you some hints as well</td></tr>
+            <tr><td>[18:43] &lt MS-&gt But you'd need to know what you're looking for</td></tr>
+            <tr><td>[18:43] &lt MS-&gt Rigolo: What problem are you having with the dvb bindings?</td></tr>
+            <tr><td>[18:43] &lt Chong-&gt I have restarted pc several times, it did not work</td></tr>
+            <tr><td>[18:44] &lt MS-&gt Chong-: Could be stale files in /tmp in that case</td></tr>
+            <tr><td>[18:44] &lt Rigolo&gt can not compile them ... also posted a message to the google group</td></tr>
+            <tr><td>[18:44] &lt MS-&gt Cool, I'll take a look</td></tr>
+            <tr><td>[18:44] &lt Rigolo&gt got my python book yesterday :-)</td></tr>
+            <tr><td>[18:45] &lt MS-&gt ah, I see, it's probably due to pyrex changes</td></tr>
+            <tr><td>[18:45] &lt Rigolo&gt I would not be surpricec if python-dvb3 is not working anymore on recent kernels because of the v4l-dvb change of somewhere mid this summer.</td></tr>
+            <tr><td>[18:46] &lt MS-&gt Cool - I've read the first edition of that (I make a point of reading up various books :), and I think it's one of the best python books myself.</td></tr>
+            <tr><td>[18:47] &lt MS-&gt Rigolo: Oh, that's "great" - I wasn't aware of that</td></tr>
+            <tr><td>[18:47] &lt Rigolo&gt MS-: good to hear ... I noticed it as being a very recent one, already up to date for version 3 etc</td></tr>
+            <tr><td>[18:47] &lt Rigolo&gt MS-: they also have introduced a new API ... called version 5 .. but that is mainly for the latest and greatest dvb cards (think dvb-s2 etc)</td></tr>
+            <tr><td>[18:48] &lt MS-&gt I see</td></tr>
+            <tr><td>[18:48] &lt Rigolo&gt is anyone maintaining python-dvb3 .. or is it a stalled project?</td></tr>
+            <tr><td>[18:48] &lt MS-&gt Oh it's maintained primarily by myself and Matt Hammond</td></tr>
+            <tr><td>[18:49] &lt MS-&gt Basically though, we only look at changing things when we hear that it's broken with particular versions, primarily because the code works</td></tr>
+            <tr><td>[18:49] &lt Rigolo&gt but the sourceforge files are still from 2006? or did I download something incorrect (version 0.0.4)</td></tr>
+            <tr><td>[18:49] &lt MS-&gt The code is stable</td></tr>
+            <tr><td>[18:49] &lt MS-&gt Sounds like kernel changes are going to force changes though, which is a pain</td></tr>
+            <tr><td>[18:50] &lt MS-&gt The bindings have been used in a system running continuously for around 2 years solid fwiw</td></tr>
+            <tr><td>[18:50] &lt MS-&gt (to the extent we actually forgot the system was running :-) )</td></tr>
+            <tr><td>[18:50] &lt MS-&gt Which is a nice uptime, which is also why we view the bindings as stable</td></tr>
+            <tr><td>[18:51] &lt MS-&gt OK, I'm going to post some q's to the list, but ask them here as well</td></tr>
+            <tr><td>[18:51] &lt Rigolo&gt well .. that is good to hear .. so that proves stability in the basic code I would guess ... unless the code was not used during those 2 years</td></tr>
+            <tr><td>[18:51] &lt Rigolo&gt fine</td></tr>
+            <tr><td>[18:51] &lt MS-&gt primarily so that the answers get recorded in the archives</td></tr>
+            <tr><td>[18:51] &lt Rigolo&gt I will also respond to the list then .. to keep everyone up to date :-)</td></tr>
+            <tr><td>[18:51] &lt MS-&gt No, the code was demuxing constantly</td></tr>
+            <tr><td>[18:51] &lt MS-&gt cool</td></tr>
+            <tr><td>[18:53] &lt Rigolo&gt btw .. the function that changed in v4l-dvb was the dvb_register_adapter() function ... not sure if you are hit by that change .. there is now an extra parameter</td></tr>
+            <tr><td>[18:53] &lt Rigolo&gt could be too low level for these bidings</td></tr>
+            <tr><td>[18:57] &lt MS-&gt OK, sent</td></tr>
+            <tr><td>[18:57] &lt Rigolo&gt reading it now :-)</td></tr>
+            <tr><td>[18:58] &lt MS-&gt dvb_register_adapter isn't referenced in our bindings fwiw (just grepped :) )</td></tr>
+            <tr><td>[18:58] &lt Rigolo&gt okee ...</td></tr>
+            <tr><td>[18:59] &lt MS-&gt I suspect that's something hardware drivers have to do, rather than user side</td></tr>
+            <tr><td>[18:59] &lt Rigolo&gt but it might be usefull to readup on the new S2API (http://linuxtv.org/wiki/index.php/S2API)</td></tr>
+            <tr><td>[18:59] &lt Rigolo&gt well... I was hit with that change because I use open-sasc-ng</td></tr>
+            <tr><td>[18:59] &lt MS-&gt much appreciated</td></tr>
+            <tr><td>[19:00] &lt Rigolo&gt (not sure if you guys like to discuss softcam's etc)</td></tr>
+            <tr><td>[19:02] &lt MS-&gt Ahhh, I see.</td></tr>
+            <tr><td>[19:02] &lt MS-&gt The phrase didn't make much sense - but it's useful to know. I'd be tempted to figure that out</td></tr>
+            <tr><td>[19:04] &lt MS-&gt I've not bothered building something like Myth at home, primarily because I watch mainly Sky, Sci-Fi, etc</td></tr>
+            <tr><td>[19:05] &lt Rigolo&gt send my reply btw</td></tr>
+            <tr><td>[19:05] &lt Rigolo&gt where can I get an older version of pyrex?</td></tr>
+            <tr><td>[19:07] &lt Rigolo&gt I'm working on setting up mythtv with my dvb-c provider. I have 4 dvb-c cards in my machine and with the latest version of mythtv you can use all 4 and then even record multiple channels within the same transport stream</td></tr>
+            <tr><td>[19:08] &lt MS-&gt Oh, sorry, I'll put a copy up</td></tr>
+            <tr><td>[19:08] &lt Rigolo&gt but .. most of the channels are encrypted. Using a hardware cam would have set me back at least 400 Euro's for 4 CAM's and then I need 4 additional smartcards from my provider</td></tr>
+            <tr><td>[19:08] &lt MS-&gt (there's a copy on sourceforge in an old "megabundle" of kamaelia)</td></tr>
+            <tr><td>[19:08] *** MS- nods</td></tr>
+            <tr><td>[19:09] &lt MS-&gt For DVB-T the bindings are good enough (which is where they've mainly been used of course)</td></tr>
+            <tr><td>[19:09] &lt MS-&gt Though they were first used with DVB-S for radio stations</td></tr>
+            <tr><td>[19:09] &lt Rigolo&gt well ... dvdb is dvb they say &lt grin&gt</td></tr>
+            <tr><td>[19:10] &lt Rigolo&gt mmm extra d in dvdb should not be there :-)</td></tr>
+            <tr><td>[19:10] &lt MS-&gt http://www.kamaelia.org/release/deps/</td></tr>
+            <tr><td>[19:10] &lt Rigolo&gt let me get that megabundle and extract pyrex from there</td></tr>
+            <tr><td>[19:11] &lt Rigolo&gt okee ... got it from there ... that is a brandnew tar :-)</td></tr>
+            <tr><td>[19:12] &lt Rigolo&gt okee .. I assume I do a sudo python setup.py install from the pyrex dir?</td></tr>
+            <tr><td>[19:12] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[19:13] &lt MS-&gt yep</td></tr>
+            <tr><td>[19:13] &lt Rigolo&gt done .... no errors it looks like ..</td></tr>
+            <tr><td>[19:13] &lt Rigolo&gt going to try python-dvb3 now</td></tr>
+            <tr><td>[19:13] &lt MS-&gt Good to hear :)</td></tr>
+            <tr><td>[19:14] &lt Rigolo&gt is there a "make clean" like command that I need to do first on the python-dvb3 dir? or os that not needed (because my previous compile went wrong)</td></tr>
+            <tr><td>[19:16] &lt MS-&gt python setup.py --help-commands</td></tr>
+            <tr><td>[19:16] &lt MS-&gt is your friend :-)</td></tr>
+            <tr><td>[19:16] &lt MS-&gt and specifically</td></tr>
+            <tr><td>[19:16] &lt MS-&gt python setup.py clean</td></tr>
+            <tr><td>[19:16] &lt MS-&gt or rm -rf directory, re-untar directory :)</td></tr>
+            <tr><td>[19:17] &lt Rigolo&gt I think that one is easier ... did the clean but still problems ..</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Interesting, sounds like the S2API is moving to an API style that the Amiga used to use.</td></tr>
+            <tr><td>[19:17] &lt MS-&gt Was a very nice way of working with an API</td></tr>
+            <tr><td>[19:18] &lt Rigolo&gt would not be surprised if these developers where old amiga users/programmers :-)</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Me neither :)</td></tr>
+            <tr><td>[19:18] &lt Rigolo&gt mmm an other error</td></tr>
+            <tr><td>[19:18] &lt MS-&gt Did you say you're using Ubuntu 8.10 ?</td></tr>
+            <tr><td>[19:18] &lt Rigolo&gt yes ... latest beta/rc</td></tr>
+            <tr><td>[19:19] &lt Rigolo&gt really using mythbuntu</td></tr>
+            <tr><td>[19:19] &lt Rigolo&gt but is the same .. only a slightly different base install</td></tr>
+            <tr><td>[19:19] &lt Rigolo&gt xfce instead of gnome and much less packages</td></tr>
+            <tr><td>[19:20] &lt MS-&gt I use open suse, but if there's a live CD/DVD anywhere, I can always put that in a VirtualBox, and test things there. (though probably won't have a chance to test until some point in the week)</td></tr>
+            <tr><td>[19:20] &lt MS-&gt esp if pointed at an appropriate live CD/DVD :)</td></tr>
+            <tr><td>[19:20] &lt MS-&gt Won't be able to test the actual hardware that way, but probably be able to sort build issues.</td></tr>
+            <tr><td>[19:20] &lt Rigolo&gt 32 or 64 bits?</td></tr>
+            <tr><td>[19:20] &lt Rigolo&gt torrent of direct download?</td></tr>
+            <tr><td>[19:21] &lt MS-&gt It's possible, thinking about it, that Matt uses 8.10 since he moved to ubuntu</td></tr>
+            <tr><td>[19:21] &lt MS-&gt I prefer direct download personally, 32 bit</td></tr>
+            <tr><td>[19:21] &lt Rigolo&gt 8.10 is still in beta ... it will be out in a few days though</td></tr>
+            <tr><td>[19:21] &lt Rigolo&gt http://mythbuntu.org/download/?file=mythbuntu-8.10-beta-desktop-i386.iso</td></tr>
+            <tr><td>[19:21] &lt Rigolo&gt that is the .iso for mythbuntu ...</td></tr>
+            <tr><td>[19:21] &lt MS-&gt Much appreciated</td></tr>
+            <tr><td>[19:22] &lt Rigolo&gt can you also experiment with mythtv :-)</td></tr>
+            <tr><td>[19:22] &lt MS-&gt Timing is everything it seems:</td></tr>
+            <tr><td>[19:22] &lt MS-&gt "Service Temporarily Unavailable The server is temporarily unable to service your request due to maintenance downtime or capacity problems. Please try again later."</td></tr>
+            <tr><td>[19:22] &lt Rigolo&gt what mirror server?</td></tr>
+            <tr><td>[19:23] &lt MS-&gt I'll have a fiddle with this. It's something that I'd really like to keep working with current releass</td></tr>
+            <tr><td>[19:23] &lt Rigolo&gt there are more then one</td></tr>
+            <tr><td>[19:23] &lt MS-&gt http://us-ca2.cdimages.mythbuntu.org/mythbuntu-8.10-beta-desktop-i386.iso</td></tr>
+            <tr><td>[19:23] &lt Rigolo&gt try that link again .. there is a roulation I think</td></tr>
+            <tr><td>[19:23] &lt MS-&gt Ah, OK</td></tr>
+            <tr><td>[19:23] &lt Rigolo&gt I just got a australian one .. (very slow of course)</td></tr>
+            <tr><td>[19:23] &lt MS-&gt Yep, redirect to aus</td></tr>
+            <tr><td>[19:24] &lt MS-&gt How big is that ISO BTW? (noticed I'm low on disk space at the moment :)</td></tr>
+            <tr><td>[19:24] &lt MS-&gt Oh, nm</td></tr>
+            <tr><td>[19:24] &lt MS-&gt 590MB</td></tr>
+            <tr><td>[19:24] &lt MS-&gt that's fine</td></tr>
+            <tr><td>[19:25] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[19:25] &lt Rigolo&gt you where quicker ....</td></tr>
+            <tr><td>[19:25] &lt Rigolo&gt but .. I get a : error: storage size od '__pyx_v_e' isn't known error</td></tr>
+            <tr><td>[19:26] &lt Rigolo&gt DMX_GET_EVENT undeclared (first use in this function)</td></tr>
+            <tr><td>[19:26] &lt Rigolo&gt od = of</td></tr>
+            <tr><td>[19:27] &lt Rigolo&gt (compiling on an other machine than this IRC session ... this is my daily use laptop)</td></tr>
+            <tr><td>[19:27] *** MS- nods</td></tr>
+            <tr><td>[19:27] &lt MS-&gt I'll check the "normal" build errors</td></tr>
+            <tr><td>[19:27] &lt MS-&gt pyrex is nice, but a bit more cleanliness in its code would be nice</td></tr>
+            <tr><td>[19:28] &lt Rigolo&gt there where a ton of warnings about some labels that were defined but not used</td></tr>
+            <tr><td>[19:28] &lt Rigolo&gt and you need to add some explicit braces somewhere :-)</td></tr>
+            <tr><td>[19:28] &lt MS-&gt yep, that's normal for pyrex unfortnuately</td></tr>
+            <tr><td>[19:29] &lt Rigolo&gt btw .. using GCC 4.3.2 to compile</td></tr>
+            <tr><td>[19:29] &lt Rigolo&gt (before you ask)</td></tr>
+            <tr><td>[19:29] &lt MS-&gt OK, this is the "normal" build error: http://pastebin.com/m521fb913</td></tr>
+            <tr><td>[19:30] &lt MS-&gt I'm using gcc version 4.2.1 (SUSE Linux)</td></tr>
+            <tr><td>[19:32] &lt MS-&gt yeah, that DMX_GET_EVENT error specifically makes me think that it's a problem with the bindings</td></tr>
+            <tr><td>[19:32] &lt MS-&gt Oh, maybe not</td></tr>
+            <tr><td>[19:32] &lt MS-&gt I'm blind - it is there:</td></tr>
+            <tr><td>[19:32] &lt MS-&gt # grep DMX_GET *</td></tr>
+            <tr><td>[19:32] &lt MS-&gt cdmx.pxd: DMX_GET_EVENT</td></tr>
+            <tr><td>[19:32] &lt MS-&gt cdmx.pxd: DMX_GET_PES_PIDS</td></tr>
+            <tr><td>[19:32] &lt MS-&gt cdmx.pxd: DMX_GET_CAPS</td></tr>
+            <tr><td>[19:32] &lt MS-&gt cdmx.pxd: DMX_GET_SOURCE</td></tr>
+            <tr><td>[19:32] &lt MS-&gt cdmx.pxd: DMX_GET_STC</td></tr>
+            <tr><td>[19:32] &lt Rigolo&gt and this is mine: http://pastbin.com/m7c748a89 (if I typed correctly)</td></tr>
+            <tr><td>[19:33] &lt MS-&gt Though this is interesting:</td></tr>
+            <tr><td>[19:33] &lt MS-&gt dmx.pyx:# if ioctl(self.fd, cdmx.DMX_GET_EVENT, &e) == -1:</td></tr>
+            <tr><td>[19:33] &lt MS-&gt dmx.pyx: if ioctl(self.fd, cdmx.DMX_GET_STC, &stc) == -1:</td></tr>
+            <tr><td>[19:33] &lt Rigolo&gt forgot an e :-)</td></tr>
+            <tr><td>[19:33] &lt MS-&gt Looks like Matt was making changes there</td></tr>
+            <tr><td>[19:33] &lt Rigolo&gt http://pastebin.com/m7c748a89</td></tr>
+            <tr><td>[19:34] &lt Rigolo&gt that is better :-)</td></tr>
+            <tr><td>[19:34] &lt MS-&gt oooh. I wonder</td></tr>
+            <tr><td>[19:34] &lt MS-&gt I'm checking from svn , not that bindary</td></tr>
+            <tr><td>[19:34] &lt MS-&gt binary / tar ball even</td></tr>
+            <tr><td>[19:34] &lt MS-&gt I wonder...</td></tr>
+            <tr><td>[19:35] &lt Rigolo&gt you never know ...</td></tr>
+            <tr><td>[19:35] &lt Rigolo&gt you get the svn version from google code somewhere?</td></tr>
+            <tr><td>[19:35] &lt MS-&gt python-dvb3 python-dvb3-0.0.4 January 23, 2006</td></tr>
+            <tr><td>[19:35] &lt MS-&gt vs:</td></tr>
+            <tr><td>[19:36] &lt MS-&gt r2723 | matth_rd | 2007-02-26 16:05:00 +0000 (Mon, 26 Feb 2007) | 5 lines</td></tr>
+            <tr><td>[19:36] &lt MS-&gt Merge of bugfixes in /trunk/Sketches/MH/python-dvb3/ for linux dvb API v3.0 -&gt 3.1 changes.</td></tr>
+            <tr><td>[19:36] &lt MS-&gt Matt</td></tr>
+            <tr><td>[19:36] &lt MS-&gt Aha</td></tr>
+            <tr><td>[19:36] &lt MS-&gt OK, cool</td></tr>
+            <tr><td>[19:36] &lt MS-&gt I've been using this version all summer BTW</td></tr>
+            <tr><td>[19:37] &lt Rigolo&gt okee .. where can I get that version then?</td></tr>
+            <tr><td>[19:38] &lt Rigolo&gt http://code.google.com/p/kamaelia/source/browse/#svn/trunk/Code/Python/Bindings/python-dvb3%3Fstate%3Dclosed</td></tr>
+            <tr><td>[19:38] &lt Rigolo&gt that one?</td></tr>
+            <tr><td>[19:38] &lt Rigolo&gt so checkout trunk .. and then take that subdir and compile/install from there?</td></tr>
+            <tr><td>[19:38] &lt MS-&gt This one: http://www.kamaelia.org/release/python-dvb3-0.0.5.tar.gz</td></tr>
+            <tr><td>[19:38] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:39] &lt Rigolo&gt okee .. also fine</td></tr>
+            <tr><td>[19:39] &lt MS-&gt python setup.py sdist</td></tr>
+            <tr><td>[19:39] &lt MS-&gt is *great* :)</td></tr>
+            <tr><td>[19:40] &lt Rigolo&gt mmm some weird timestamp error when extracting that tarball ... time stamps are in the future it tells me :-)</td></tr>
+            <tr><td>[19:40] &lt MS-&gt Yes, these errors:</td></tr>
+            <tr><td>[19:40] &lt MS-&gt dvb3/dmx.c:1210: error: ‘DMX_SCRAMBLING_EV’ undeclared (first use in this function) dvb3/dmx.c:1215: error: ‘DMX_FRONTEND_EV’ undeclared (first use in this function) dvb3/dmx.c:1220: error: ‘DMX_SCRAMBLING_OFF’ undeclared (first use in this function) dvb3/dmx.c:1225: error: ‘DMX_SCRAMBLING_ON’ undeclared (first use in this function)</td></tr>
+            <tr><td>[19:40] &lt MS-&gt Are certainly caused due to API changes in DVB, I should've twigged, but that was from changes merged last year(!)</td></tr>
+            <tr><td>[19:41] &lt MS-&gt The clock on my machine is a few minutes fast :)</td></tr>
+            <tr><td>[19:41] &lt Rigolo&gt looks like it ..</td></tr>
+            <tr><td>[19:42] &lt Rigolo&gt looks better now ... it layed an egg it think :-)</td></tr>
+            <tr><td>[19:42] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:43] &lt Rigolo&gt did it install it already ? or do I need to do some other magic python command?</td></tr>
+            <tr><td>[19:43] &lt MS-&gt what command did you use?</td></tr>
+            <tr><td>[19:43] &lt MS-&gt sudo python setup.py install</td></tr>
+            <tr><td>[19:43] &lt MS-&gt builds and installs</td></tr>
+            <tr><td>[19:44] &lt MS-&gt sudo python setup.py build</td></tr>
+            <tr><td>[19:44] &lt MS-&gt just builds</td></tr>
+            <tr><td>[19:44] &lt Rigolo&gt but ... will you reply to me on the list and tell me where to get pyrex 0.9.3.something .. and version 0.0.5 of dvb bidings</td></tr>
+            <tr><td>[19:44] &lt Rigolo&gt okee</td></tr>
+            <tr><td>[19:44] &lt MS-&gt yep, will do</td></tr>
+            <tr><td>[19:44] &lt MS-&gt I'll summarise the conversation on the list</td></tr>
+            <tr><td>[19:44] &lt Rigolo&gt I installed kamaelia already before all this with easy_install btw .. so theortically I can just use some cookbook example now?</td></tr>
+            <tr><td>[19:45] &lt MS-&gt In theory, yes. You'll need to change the various frequency & pid settings to local values</td></tr>
+            <tr><td>[19:45] &lt MS-&gt But yes :)</td></tr>
+            <tr><td>[19:46] &lt MS-&gt So that built cleanly? That's really useful to know :-)</td></tr>
+            <tr><td>[19:46] &lt MS-&gt If it works, I might actually be tempted to change over to Kubuntu 8.10 (I'm a KDE user)</td></tr>
+            <tr><td>[19:46] &lt MS-&gt As long as I don't have to use KDE 4 :)</td></tr>
+            <tr><td>[19:47] &lt Rigolo&gt I knew that ... so if I just take a simple dvb example to record a FTA channel to file and put that in a .py file I can run that with python dvb-c-record.py for example?</td></tr>
+            <tr><td>[19:47] &lt Rigolo&gt yes .. it compiled ... no errors only (1000's) warnings</td></tr>
+            <tr><td>[19:48] &lt MS-&gt You should be able to, yes</td></tr>
+            <tr><td>[19:48] &lt MS-&gt The DVB bindings are nice like that</td></tr>
+            <tr><td>[19:49] &lt MS-&gt The examples that come in the distro are here btw:</td></tr>
+            <tr><td>[19:49] &lt MS-&gt https://kamaelia.googlecode.com/svn/trunk/Code/Python/Kamaelia/Examples</td></tr>
+            <tr><td>[19:49] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Code/Python/Kamaelia/Examples</td></tr>
+            <tr><td>[19:49] &lt MS-&gt even</td></tr>
+            <tr><td>[19:49] &lt Rigolo&gt btw .. I only installed Kamaelia .. but I guess I also need that Axon thingy right?</td></tr>
+            <tr><td>[19:49] &lt MS-&gt Kamaelia 0.6.0 comes with Axon by default now</td></tr>
+            <tr><td>[19:49] &lt MS-&gt I figured out how to make that happen nicely :)</td></tr>
+            <tr><td>[19:49] &lt Rigolo&gt okee .. so no need to speratly install that</td></tr>
+            <tr><td>[19:49] &lt MS-&gt svn co http://kamaelia.googlecode.com/svn/trunk/Code/Python/Kamaelia/Examples</td></tr>
+            <tr><td>[19:49] &lt MS-&gt is probably quite useful</td></tr>
+            <tr><td>[19:50] &lt Rigolo&gt mmm my english is not getting better .. must be the brain still on daylight saving :-)</td></tr>
+            <tr><td>[19:50] &lt MS-&gt The cookbook examples tend to lag slightly behind the examples in SVN</td></tr>
+            <tr><td>[19:50] &lt MS-&gt which is probably not a bad thing</td></tr>
+            <tr><td>[19:51] &lt MS-&gt The two sets are slightly disjoint</td></tr>
+            <tr><td>[19:51] &lt MS-&gt http://kamaelia.googlecode.com/svn/trunk/Code/Python/Kamaelia/Examples/DVB_Systems/SingleChannelTransportStreamCapture.py</td></tr>
+            <tr><td>[19:51] &lt MS-&gt is possibly the simplest thing that works</td></tr>
+            <tr><td>[19:51] &lt MS-&gt I tend to use it when I need to record something in an emergency :)</td></tr>
+            <tr><td>[19:52] &lt MS-&gt primarily because it *is* so simple :)</td></tr>
+            <tr><td>[19:52] &lt Rigolo&gt but that is specific for dvb-t?</td></tr>
+            <tr><td>[19:53] &lt Rigolo&gt okee ... see it now .. so I need to figure out what to pass to feparams ...</td></tr>
+            <tr><td>[19:54] &lt Rigolo&gt one moment .. then I first create a channels.conf .. that has all the PID;s etc in it ..and the FREQ and all other info</td></tr>
+            <tr><td>[19:54] &lt MS-&gt That is specific for DVB-T - I've personally only used it for DVB-T. The original author (Paul Clifford) used it for DVB-S. So it should be fine if you have a channels.conf.</td></tr>
+            <tr><td>[19:55] &lt Rigolo&gt that is running at the moment ... I have saved an initial tuning file somewhere</td></tr>
+            <tr><td>[19:56] &lt Rigolo&gt I also have a channels.conf .. but that is a old one . and the resuffeld transport streams to make room for docsis 3</td></tr>
+            <tr><td>[19:58] &lt Rigolo&gt I get around 250 services ... 150 tv channels and the rest are radio and firmware update channels for the official STB's</td></tr>
+            <tr><td>[19:58] &lt Rigolo&gt but .. there are only 4 FTA channels</td></tr>
+            <tr><td>[19:58] &lt Rigolo&gt so I will use those first ..</td></tr>
+            <tr><td>[19:58] &lt MS-&gt That's a little surreal. I can see why a softcam is so important</td></tr>
+            <tr><td>[19:58] &lt MS-&gt FTA using DVB-T here is 30 or 40 channels (if you include radio)</td></tr>
+            <tr><td>[19:59] &lt MS-&gt Including a films channel</td></tr>
+            <tr><td>[19:59] &lt Rigolo&gt you get the whole basis analog cable also via dvb-c included in your analog subscription .. but you still need a card from them</td></tr>
+            <tr><td>[19:59] &lt Rigolo&gt so they say it is free .. but you need a card .. and they only support their official stb</td></tr>
+            <tr><td>[20:00] *** MS- nods</td></tr>
+            <tr><td>[20:00] &lt Rigolo&gt dvb-t here is even worse .. it is owned by KPN (the dutch BT)</td></tr>
+            <tr><td>[20:01] &lt Rigolo&gt only 27 stations .. all encrypted exept the 3 public stations (they were encrypted before they turned off analog OTA broadcasts)</td></tr>
+            <tr><td>[20:01] &lt Rigolo&gt where can I find some more info about what should go into the feparams?</td></tr>
+            <tr><td>[20:03] &lt MS-&gt I'm not sure, but my suggestion would be to have a rummage around in myth & vdr :)</td></tr>
+            <tr><td>[20:03] &lt Rigolo&gt my first guess was to start looking at frontend.pyx on googlecode :-)</td></tr>
+            <tr><td>[20:04] &lt Rigolo&gt I know the freq, bitrate, pids, FEC, inversion etc</td></tr>
+            <tr><td>[20:04] &lt Rigolo&gt now I need to correct syntax for dvb3.frontend</td></tr>
+            <tr><td>[20:04] &lt Rigolo&gt btw .. do I need to specify an adapter somewhere? (i have 4 to choose from)</td></tr>
+            <tr><td>[20:05] &lt MS-&gt I've only ever used one...</td></tr>
+            <tr><td>[20:07] &lt Chong-&gt MS-: I have remove all files/dirs in /tmp including .X11-unix, but the problem has not been solved</td></tr>
+            <tr><td>[20:07] &lt Chong-&gt run lsof | wc, result is 24833 223879 2404649; lsof | grep X11-unix | wc the result is 0 0 0</td></tr>
+            <tr><td>[20:08] &lt MS-&gt Rigolo: grep suggests this:</td></tr>
+            <tr><td>[20:08] &lt MS-&gt dvb3/dmx.pyx: filename = "/dev/dvb/adapter" + str(card) + "/demux0"</td></tr>
+            <tr><td>[20:08] &lt MS-&gt dvb3/frontend.pyx: filename = "/dev/dvb/adapter" + str(card) + "/frontend0"</td></tr>
+            <tr><td>[20:09] &lt Rigolo&gt okee .. my tuning Frequency is 618 Mhz, my Inversion is AUTO, my bitrate is 6875kHz, my FEC is none, using QAM_64 and I need PIDs 88 and 89 from transport stream number 10</td></tr>
+            <tr><td>[20:09] &lt Rigolo&gt okee .. so that card variable need to be set somewhere .. most likely somewhere when you call dvb3.frontend I guess</td></tr>
+            <tr><td>[20:09] &lt MS-&gt The downside of reliable components</td></tr>
+            <tr><td>[20:10] &lt MS-&gt When you come to need to change anything, it's been ages since you've needed to look :)</td></tr>
+            <tr><td>[20:10] &lt MS-&gt  self.fe = dvb3.frontend.Frontend(self.card, blocking=0)</td></tr>
+            <tr><td>[20:10] &lt MS-&gt Which is in</td></tr>
+            <tr><td>[20:10] &lt MS-&gt class Tuner(threadedcomponent):</td></tr>
+            <tr><td>[20:10] &lt MS-&gt  def __init__(self, freq, feparams={},card=0):</td></tr>
+            <tr><td>[20:10] &lt MS-&gt  """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""</td></tr>
+            <tr><td>[20:10] &lt MS-&gt  self.freq = freq</td></tr>
+            <tr><td>[20:10] &lt MS-&gt  self.feparams = feparams</td></tr>
+            <tr><td>[20:10] &lt MS-&gt  self.card = card</td></tr>
+            <tr><td>[20:10] &lt MS-&gt  super(Tuner, self).__init__()</td></tr>
+            <tr><td>[20:11] &lt MS-&gt http://www.kamaelia.org/Components/pydoc/Kamaelia.Device.DVB.Tuner.html</td></tr>
+            <tr><td>[20:11] &lt Rigolo&gt mm but Tuners is a more high level component right?</td></tr>
+            <tr><td>[20:13] &lt MS-&gt Ah, yes. Hmm. DVB_Multiplex doesn't pass through any card number as yet</td></tr>
+            <tr><td>[20:13] &lt MS-&gt  # Open the frontend of card 0 (/dev/dvb/adaptor0/frontend0)</td></tr>
+            <tr><td>[20:13] &lt MS-&gt  fe = dvb3.frontend.Frontend(0, blocking=0)</td></tr>
+            <tr><td>[20:13] &lt MS-&gt OK, I'll do a minor fix for that</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt well .. I can use 0 for now .. not blocking for me now</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt but the structure for feparams is more difficult I guess</td></tr>
+            <tr><td>[20:15] &lt Rigolo&gt not sure if all Parameters that I need are defined in frontend.pyx</td></tr>
+            <tr><td>[20:15] &lt MS-&gt http://www.kamaelia.org/Components/pydoc/Kamaelia.Device.DVB.Tuner.html has the docs for the tuning parameters supported</td></tr>
+            <tr><td>[20:16] &lt Rigolo&gt yes .. but I do not need code_rate_HP and LP and guear_interval etc</td></tr>
+            <tr><td>[20:16] &lt MS-&gt I think if you don't include things, sensible defaults are chosen</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt mmm line 256 and further from frontend.pyx</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt  if t is QPSKParameters:</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt  return QPSKParameters(</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt  frequency=p.frequency,</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt  inversion=p.inversion,</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt  symbol_rate=p.u.qpsk.symbol_rate,</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt  fec_inner=p.u.qpsk.fec_inner</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt  )</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt that is most of what I need ... now let's find where to put QAM_64</td></tr>
+            <tr><td>[20:19] &lt Rigolo&gt looks like the constellation parameter</td></tr>
+            <tr><td>[20:19] &lt MS-&gt OK, I've checked in a change to the DVB_Multiplex code to not deal with adapter0 in a hardcoded fashion</td></tr>
+            <tr><td>[20:20] &lt Rigolo&gt okee .. and other fix for 0.7.0 :-)</td></tr>
+            <tr><td>[20:20] &lt MS-&gt Indeed :)</td></tr>
+            <tr><td>[20:21] &lt Rigolo&gt looks like you also need to teel dvb3.frontend what type of feparams object your are giving it</td></tr>
+            <tr><td>[20:21] &lt Rigolo&gt see frontend.pyx line 254</td></tr>
+            <tr><td>[20:21] &lt Rigolo&gt object t</td></tr>
+            <tr><td>[20:22] &lt Rigolo&gt I need to give QPSKParameters there I guess</td></tr>
+            <tr><td>[20:22] &lt Rigolo&gt somehow ..</td></tr>
+            <tr><td>[20:22] &lt Rigolo&gt mm or is cfrontend doing a check to see what parameters are supported?</td></tr>
+            <tr><td>[20:23] &lt Rigolo&gt I see all the FE_CAN_something parameters</td></tr>
+            <tr><td>[20:24] &lt MS-&gt It looks like it's doing a check</td></tr>
+            <tr><td>[20:24] &lt MS-&gt dvb3/frontend.pyx</td></tr>
+            <tr><td>[20:24] &lt MS-&gt  if ioctl(self.fd, cfrontend.FE_GET_INFO, &info) == -1:</td></tr>
+            <tr><td>[20:24] &lt MS-&gt  raise IOError(errno, strerror(errno))</td></tr>
+            <tr><td>[20:24] &lt MS-&gt ie, try to get info and populate the info structure</td></tr>
+            <tr><td>[20:24] &lt MS-&gt it then queries it</td></tr>
+            <tr><td>[20:24] &lt MS-&gt  if info.type == cfrontend.FE_QPSK:</td></tr>
+            <tr><td>[20:24] &lt MS-&gt  self.t = QPSKParameters</td></tr>
+            <tr><td>[20:24] &lt MS-&gt  elif info.type == cfrontend.FE_QAM:</td></tr>
+            <tr><td>[20:24] &lt MS-&gt  self.t = QAMParameters</td></tr>
+            <tr><td>[20:24] &lt MS-&gt  else:</td></tr>
+            <tr><td>[20:24] &lt MS-&gt  self.t = OFDMParameters</td></tr>
+            <tr><td>[20:25] &lt Rigolo&gt okee .... so it decides for me what type to use ... so where can I specify the QAM_64 .. because constelation is a OFDM parameter .. not a QPSK parameter</td></tr>
+            <tr><td>[20:26] &lt Rigolo&gt mm or it uses QAMParameters: :-)</td></tr>
+            <tr><td>[20:26] &lt Rigolo&gt lets try this as feparams:</td></tr>
+            <tr><td>[20:30] &lt Rigolo&gt (building them now .. takes some time .. determining what to use)</td></tr>
+            <tr><td>[20:31] *** MS- nods</td></tr>
+            <tr><td>[20:32] &lt Rigolo&gt mmm symbol_rate .. what value to use? just put 6875000 there?</td></tr>
+            <tr><td>[20:32] &lt MS-&gt Oh. I think I see....</td></tr>
+            <tr><td>[20:32] &lt MS-&gt You need to (literally) put these in:</td></tr>
+            <tr><td>[20:32] &lt MS-&gt  "frequency" :</td></tr>
+            <tr><td>[20:32] &lt MS-&gt  "inversion" :</td></tr>
+            <tr><td>[20:32] &lt MS-&gt  "symbol_rate" : ...</td></tr>
+            <tr><td>[20:32] &lt MS-&gt  "fec_inner" : ...</td></tr>
+            <tr><td>[20:33] &lt Rigolo&gt feparams = { "inversion" :dvb3.frontend.INVERSION_AUTO, "symbol_rate" : dvb3.frontend.6875000, "fec_inner" : dvb3.frontend.FEC_AUTO, "modulation" :dvb3.frontend.QAM_64,</td></tr>
+            <tr><td>[20:33] &lt Rigolo&gt }</td></tr>
+            <tr><td>[20:33] &lt Rigolo&gt mmm</td></tr>
+            <tr><td>[20:33] &lt Rigolo&gt I did :-)</td></tr>
+            <tr><td>[20:33] &lt MS-&gt http://www.linuxtv.org/pipermail/linux-dvb/2007-July/018867.html</td></tr>
+            <tr><td>[20:33] &lt Rigolo&gt mm I guess I will just need to try :-)</td></tr>
+            <tr><td>[20:33] &lt MS-&gt I use the ones from the nl-Casema scan file in the dvb-apps repo (i.e. initial frequency 372000000, symbol rate 6875000, qam64).</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Looks good :)</td></tr>
+            <tr><td>[20:34] &lt Rigolo&gt casema merged with 2 others to form Ziggo (my dvb-c provider)</td></tr>
+            <tr><td>[20:35] &lt MS-&gt sounds promising then :)</td></tr>
+            <tr><td>[20:35] &lt Rigolo&gt that initial frequency is used for scanning the other transponders</td></tr>
+            <tr><td>[20:36] &lt Rigolo&gt ziggo uses a Network ID as the actual Network ID that does not exists</td></tr>
+            <tr><td>[20:36] &lt Rigolo&gt they use network ID 1000 in the NITa table .. but you need to know your real network id (9003 in my case) and get the transponder details from NITo</td></tr>
+            <tr><td>[20:37] &lt Rigolo&gt not all dvb systems (read MythTV) do not understand this .... and support this</td></tr>
+            <tr><td>[20:37] &lt Rigolo&gt but .. I'm going to adjust that example .. and see what happens :-)</td></tr>
+            <tr><td>[20:41] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:42] &lt Rigolo&gt it does not like my symbol_rate parameter</td></tr>
+            <tr><td>[20:44] &lt Rigolo&gt mmmm no idea what to put there ...</td></tr>
+            <tr><td>[20:44] &lt Rigolo&gt I might try it in kHz ...</td></tr>
+            <tr><td>[20:44] &lt Rigolo&gt nope .. also not correct</td></tr>
+            <tr><td>[20:45] &lt MS-&gt I wish I could help, but I really wouldn't know the right answer except from google searches</td></tr>
+            <tr><td>[20:45] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[20:45] &lt Rigolo&gt well .. the answer should be in frontend.pyx somewhere</td></tr>
+            <tr><td>[20:48] &lt Rigolo&gt line 144/145 return "&lt %s frequency=%d Hz, inversion=%s, symbol_rate=%d sym/s, fec_inner=%s, modulation=%s&gt" % (</td></tr>
+            <tr><td>[20:48] &lt Rigolo&gt what does %d mean?</td></tr>
+            <tr><td>[20:48] &lt MS-&gt %d means a number</td></tr>
+            <tr><td>[20:49] &lt Rigolo&gt okee ... so what if I replace dvb3.frontend.xx .. with just 6875000 &gt</td></tr>
+            <tr><td>[20:49] &lt Rigolo&gt ?</td></tr>
+            <tr><td>[20:50] &lt MS-&gt Worth a try -- can't hurt.</td></tr>
+            <tr><td>[20:50] &lt Rigolo&gt mmm no error there .. but an other one ... NameError: name 'dvb3' is not defined</td></tr>
+            <tr><td>[20:51] &lt Rigolo&gt mmm maybe we should import dvb.frontend?</td></tr>
+            <tr><td>[20:52] &lt MS-&gt you'll need to do</td></tr>
+            <tr><td>[20:52] &lt MS-&gt import dvb3</td></tr>
+            <tr><td>[20:53] &lt Rigolo&gt just that? or a line like: from dvb3 import frontend ?</td></tr>
+            <tr><td>[20:53] &lt MS-&gt Should just be that line</td></tr>
+            <tr><td>[20:54] &lt Rigolo&gt just see an example in dvb.core documentation</td></tr>
+            <tr><td>[20:54] &lt Rigolo&gt with import dvb3.frontend</td></tr>
+            <tr><td>[20:55] &lt Rigolo&gt mmm an otehr step further ...</td></tr>
+            <tr><td>[20:55] &lt Rigolo&gt now I get: modulation is an invalid keyword argument for this function</td></tr>
+            <tr><td>[20:55] &lt Rigolo&gt afer a traceback</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Matt's docmentation is going to be canonical, since he's the one who's (by far) done the most with these bindings</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Yes, I think that invalid keyword thing comes from...</td></tr>
+            <tr><td>[20:57] &lt Rigolo&gt http://pastebin.com/d44d22098</td></tr>
+            <tr><td>[20:57] &lt MS-&gt line 128</td></tr>
+            <tr><td>[20:57] &lt MS-&gt of frontend.pyx</td></tr>
+            <tr><td>[20:57] &lt Rigolo&gt looks in core.py</td></tr>
+            <tr><td>[20:57] &lt MS-&gt class QPSKParameters:</td></tr>
+            <tr><td>[20:57] &lt MS-&gt  def __init__(self, frequency=0, inversion=0, symbol_rate=0, fec_inner=0):</td></tr>
+            <tr><td>[20:57] &lt MS-&gt oh?</td></tr>
+            <tr><td>[20:57] *** MS- looks</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt there it calls a tune_DVBT function ....</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt could be a small hint :-)</td></tr>
+            <tr><td>[20:58] &lt MS-&gt Ahhhhh</td></tr>
+            <tr><td>[20:58] &lt MS-&gt indeed</td></tr>
+            <tr><td>[20:58] &lt MS-&gt yes</td></tr>
+            <tr><td>[20:59] &lt MS-&gt It certainly would look like it</td></tr>
+            <tr><td>[20:59] &lt MS-&gt OK, so that would need changing</td></tr>
+            <tr><td>[20:59] &lt MS-&gt To use the QPSK version</td></tr>
+            <tr><td>[21:00] &lt Rigolo&gt looks like it</td></tr>
+            <tr><td>[21:00] &lt Rigolo&gt but then you need to be able define what you use ... dvb-s/dvb-c/dvb-t somewhere</td></tr>
+            <tr><td>[21:00] &lt MS-&gt I think that needs to have this:</td></tr>
+            <tr><td>[21:00] &lt MS-&gt http://pastebin.com/m3be412ad</td></tr>
+            <tr><td>[21:00] &lt Rigolo&gt or .... let the feparams define it?</td></tr>
+            <tr><td>[21:01] &lt MS-&gt feparams doesn't seem like a bad idea for the moment, at least temporarily</td></tr>
+            <tr><td>[21:01] &lt MS-&gt It looks like it can actually be autodetected</td></tr>
+            <tr><td>[21:02] &lt Rigolo&gt see .. bit by bit we make it work</td></tr>
+            <tr><td>[21:02] &lt Rigolo&gt :-)</td></tr>
+            <tr><td>[21:02] &lt MS-&gt I wonder if we can use that autodetection</td></tr>
+            <tr><td>[21:02] &lt MS-&gt indeed :)</td></tr>
+            <tr><td>[21:02] *** Rigolo suspects that he soon needs to do s svn checkout of kamaelia .. :-)</td></tr>
+            <tr><td>[21:03] &lt MS-&gt This brings me back to this again:</td></tr>
+            <tr><td>[21:03] &lt MS-&gt cdef class Frontend:</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  if ioctl(self.fd, cfrontend.FE_GET_INFO, &info) == -1:</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  raise IOError(errno, strerror(errno))</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  if info.type == cfrontend.FE_QPSK:</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  self.t = QPSKParameters</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  elif info.type == cfrontend.FE_QAM:</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  self.t = QAMParameters</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  else:</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  self.t = OFDMParameters</td></tr>
+            <tr><td>[21:03] &lt Rigolo&gt and I also see that the frequency can then be passed in feparams also ..</td></tr>
+            <tr><td>[21:04] &lt MS-&gt OK, so...</td></tr>
+            <tr><td>[21:04] &lt MS-&gt  fe = dvb3.frontend.Frontend(self.card, blocking=0)</td></tr>
+            <tr><td>[21:04] &lt MS-&gt means fe.t contains the correct tuning parameters class</td></tr>
+            <tr><td>[21:04] &lt MS-&gt so</td></tr>
+            <tr><td>[21:04] &lt MS-&gt  tune_DVBT(fe, self.freq, self.feparams)</td></tr>
+            <tr><td>[21:04] &lt MS-&gt can become</td></tr>
+            <tr><td>[21:04] &lt MS-&gt tune_DVBT(fe, self.freq, self.feparams)</td></tr>
+            <tr><td>[21:04] &lt MS-&gt tune_DVB(fe, self.freq, self.feparams)</td></tr>
+            <tr><td>[21:04] &lt MS-&gt rather, in theory</td></tr>
+            <tr><td>[21:04] &lt Rigolo&gt so feparams then has 2 additional parameters something like object type QPSK/OFDM/QAMP ... and Frequency in Hz also</td></tr>
+            <tr><td>[21:05] &lt Rigolo&gt okee ... your soolution is better ... :-)</td></tr>
+            <tr><td>[21:07] *** Rigolo needs something to drink ...</td></tr>
+            <tr><td>[21:07] &lt Rigolo&gt mmm and looks at the time ... time flys when you are having fun :-)</td></tr>
+            <tr><td>[21:08] &lt MS-&gt heh, indeed</td></tr>
+            <tr><td>[21:08] &lt MS-&gt OK, I've checked in a new version of Core.py</td></tr>
+            <tr><td>[21:08] &lt MS-&gt It should auto pickup the correct parameter type now</td></tr>
+            <tr><td>[21:09] &lt MS-&gt svn co http://kamaelia.googlecode.com/svn/trunk/Code/Python/Kamaelia</td></tr>
+            <tr><td>[21:09] &lt MS-&gt cd Kamaelia</td></tr>
+            <tr><td>[21:09] &lt MS-&gt sudo python setup.py install --force</td></tr>
+            <tr><td>[21:12] &lt Rigolo&gt okee</td></tr>
+            <tr><td>[21:12] &lt Rigolo&gt will try that now</td></tr>
+            <tr><td>[21:12] &lt Rigolo&gt will that automatically overwerite my easy_instal led version?</td></tr>
+            <tr><td>[21:12] &lt MS-&gt That I'm not sure about</td></tr>
+            <tr><td>[21:13] &lt MS-&gt Oh that could also be a PITA</td></tr>
+            <tr><td>[21:13] &lt Rigolo&gt so is there also a easy_uninstall?</td></tr>
+            <tr><td>[21:13] &lt MS-&gt No, that's the problem with easy_install</td></tr>
+            <tr><td>[21:14] &lt MS-&gt the only way I've found to get easy_install stuff out so far is by doing and an rm -rf inside site-packages of the appropriate files</td></tr>
+            <tr><td>[21:14] &lt MS-&gt AND</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt okee ... but there is if you do it via setup.py?</td></tr>
+            <tr><td>[21:14] *** Rigolo could just reinstall his whole machine ... :-)</td></tr>
+            <tr><td>[21:15] &lt MS-&gt and /usr/local/lib/python2.5/site-packages/easy-install.pth has to be re-editted to remove Kamaelia from there</td></tr>
+            <tr><td>[21:15] &lt MS-&gt You'd also need to install Axon, which is easiest from svn:</td></tr>
+            <tr><td>[21:15] &lt MS-&gt svn co http://kamaelia.googlecode.com/svn/trunk/Code/Python/Axon</td></tr>
+            <tr><td>[21:15] &lt MS-&gt cd Axon</td></tr>
+            <tr><td>[21:15] &lt MS-&gt sudo python setup.py install --force</td></tr>
+            <tr><td>[21:16] &lt Rigolo&gt mmmm</td></tr>
+            <tr><td>[21:16] &lt Rigolo&gt this channels is logged right?</td></tr>
+            <tr><td>[21:16] &lt Rigolo&gt so I can read this over tomorrow right?</td></tr>
+            <tr><td>[21:16] &lt MS-&gt Sure</td></tr>
+            <tr><td>[21:16] &lt Rigolo&gt where can I find these logs?</td></tr>
+            <tr><td>[21:16] &lt MS-&gt http://www.kamaelia.org/logs/kamaelia2008-10-26_log.html</td></tr>
+            <tr><td>[21:17] &lt MS-&gt http://www.kamaelia.org/logs/ - generally speaking</td></tr>
+            <tr><td>[21:17] &lt MS-&gt as per channel topic</td></tr>
+            <tr><td>[21:17] &lt Rigolo&gt okee ... then you need to update http://www.kamaelia.org/irc.html :-)</td></tr>
+            <tr><td>[21:17] &lt MS-&gt Thanks for your patience and feedback btw :)</td></tr>
+            <tr><td>[21:17] &lt MS-&gt Oh yes, so I do :)</td></tr>
+            <tr><td>[21:17] &lt MS-&gt ta</td></tr>
+            <tr><td>[21:17] &lt Rigolo&gt no problems ...</td></tr>
+            <tr><td>[21:18] &lt Rigolo&gt my idea is to take kakaelia and build a VDR kind of tool around it ...</td></tr>
+            <tr><td>[21:18] &lt Rigolo&gt (always AIM high :-) )</td></tr>
+            <tr><td>[21:18] &lt MS-&gt That should be doable BTW. :)</td></tr>
+            <tr><td>[21:18] &lt Rigolo&gt all the building blocks are there ... and you guys have done it already for dvb-t I guess :-)</td></tr>
+            <tr><td>[21:19] &lt MS-&gt Not live playback/pause etc, but yes</td></tr>
+            <tr><td>[21:19] &lt Rigolo&gt use a kamaelia powered backend ... and a web frontend to schedule recordings</td></tr>
+            <tr><td>[21:20] &lt Rigolo&gt well ... that live playback/pause should also be possible</td></tr>
+            <tr><td>[21:20] &lt Rigolo&gt as long as you treat every channel change as a new recording .. and then give the frontend the new filename ..</td></tr>
+            <tr><td>[21:20] *** MS- nods</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Probably the easiest way of dealing with live playback/pause/etc</td></tr>
+            <tr><td>[21:21] &lt MS-&gt hm. actually I'll think on that :)</td></tr>
+            <tr><td>[21:21] &lt Rigolo&gt how about paralel recording of the same channel?</td></tr>
+            <tr><td>[21:21] &lt MS-&gt I was going to suggest injecting packets</td></tr>
+            <tr><td>[21:21] &lt MS-&gt Oh that's trivial</td></tr>
+            <tr><td>[21:21] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:21] &lt Rigolo&gt okee .. so you can open 2 files to the same PIDs?</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt and control them independantly?</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt because that i needed when you want to record 2 programs that follow each other</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt give both recording a 5 minute overlap ...</td></tr>
+            <tr><td>[21:23] &lt MS-&gt We have a system that records and transcodes everything built using this</td></tr>
+            <tr><td>[21:23] &lt MS-&gt Uses EIT event information to switch things</td></tr>
+            <tr><td>[21:23] &lt MS-&gt When you consider though that we can have arbitrary shapes</td></tr>
+            <tr><td>[21:23] &lt MS-&gt making duplicates of the data coming out of a single PID is rather trivial...</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt okee .. but is the EIT accurate all the time?</td></tr>
+            <tr><td>[21:24] &lt MS-&gt In the UK when the EIT change is often frame accurate</td></tr>
+            <tr><td>[21:24] &lt MS-&gt http://www.slideshare.net/kamaelian/timeshift-everything-miss-nothing-mashup-your-pvr-with-kamaelia</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt okee ... here it is'nt</td></tr>
+            <tr><td>[21:24] &lt MS-&gt Goes through the architecture of Macro.py</td></tr>
+            <tr><td>[21:24] &lt MS-&gt which is in Examples/</td></tr>
+            <tr><td>[21:25] &lt MS-&gt But if you need overlap & duplicates those are as I say simple</td></tr>
+            <tr><td>[21:25] &lt Rigolo&gt I noticed that presentation already ... those are those slides with the building blocks?</td></tr>
+            <tr><td>[21:25] &lt Rigolo&gt and the web frontend right?</td></tr>
+            <tr><td>[21:25] &lt MS-&gt yep</td></tr>
+            <tr><td>[21:25] &lt Rigolo&gt okee</td></tr>
+            <tr><td>[21:25] &lt MS-&gt http://www.kamaelia.org/Components/pydoc/Kamaelia.Apps.Whiteboard.TwoWaySplitter</td></tr>
+            <tr><td>[21:25] &lt MS-&gt is a specialised 2 way splitter</td></tr>
+            <tr><td>[21:26] &lt MS-&gt http://www.kamaelia.org/Components/pydoc/Kamaelia.Util.Splitter has some more general splitters</td></tr>
+            <tr><td>[21:26] &lt Rigolo&gt what I will do is a reinstall of my machine ... (doing that anyway because I need to check the latest version of open-sasc-ng to see if it still builds)</td></tr>
+            <tr><td>[21:26] &lt MS-&gt And http://www.kamaelia.org/Components/pydoc/Kamaelia.Util.Fanout is another. (each has their own advantages really)</td></tr>
+            <tr><td>[21:26] &lt MS-&gt k</td></tr>
+            <tr><td>[21:26] &lt Rigolo&gt btw .. if you want to check out open-sasc-ng .. have a look here:</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt http://rigolo.googlepages.com/open-sasc-ng</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt my simple how-to for building open-sasc-ng ...</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt with a cardserver and a valid smartcard</td></tr>
+            <tr><td>[21:28] &lt Rigolo&gt then it should also work for Sky :-)</td></tr>
+            <tr><td>[21:28] &lt MS-&gt :-)</td></tr>
+            <tr><td>[21:28] &lt MS-&gt Much appreciated</td></tr>
+            <tr><td>[21:28] &lt Rigolo&gt at least .. if there is a way to decode their encoding .. not sure what they use ..</td></tr>
+            <tr><td>[21:28] &lt Rigolo&gt my providers uses irdeto2</td></tr>
+            <tr><td>[21:29] &lt Rigolo&gt then ... I go to bed .. almost midnight here .. and alarm clock goes again at 06:00</td></tr>
+            <tr><td>[21:29] &lt MS-&gt night then - once again thanks for the feedback :)</td></tr>
+            <tr><td>[21:30] &lt Rigolo&gt and to use the famous actor words: I'll be back</td></tr>
+            <tr><td>[21:30] &lt Rigolo&gt okee .. no problems ...</td></tr>
+            <tr><td>[21:30] &lt Rigolo&gt I like what I have seen so far .. and I can not even program in python yet</td></tr>
+            <tr><td>[21:30] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[21:30] &lt Rigolo&gt but it has a lot of potential and uses</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt like building a tool around a mythtv bug that prevents the use if mythtv for dvb-c in my area at the moment</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt that issue with the NITa and NITo</td></tr>
+            <tr><td>[21:31] &lt MS-&gt Indeed</td></tr>
+            <tr><td>[21:32] &lt MS-&gt When you consider that, as long as you have an adapter component, any kamaelia component can be used with almost any other, you get all sorts of possibilities</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt if I take the parsers .. I can extract all the details .. present a list to the used what network ID's are available and there names</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt then when he selects one .. we have all the information about frequencies, PID's transport streams etc .. and</td></tr>
+            <tr><td>[21:33] &lt Rigolo&gt then we can build a mysql insert statement in the mythtv database to populate that correctly</td></tr>
+            <tr><td>[21:34] &lt Rigolo&gt mm an other quick question ... how long do loop through a dvb stream before you start parsing the NIT tables?</td></tr>
+            <tr><td>[21:34] &lt Rigolo&gt because that was an other issue with mythtv .. it was not gettign enough packages .. so they did not get all tables</td></tr>
+            <tr><td>[21:35] &lt MS-&gt Ahh, I see</td></tr>
+            <tr><td>[21:35] &lt MS-&gt That's a question that really requires Matt to answer I'm afraid</td></tr>
+            <tr><td>[21:35] &lt MS-&gt he's much more knowledgeable about the various DVB tables</td></tr>
+            <tr><td>[21:36] &lt Rigolo&gt okee</td></tr>
+            <tr><td>[21:37] &lt Rigolo&gt because there are 10 or more other networks defined in the NITo tables where I think</td></tr>
+            <tr><td>[21:38] &lt Rigolo&gt well .. that must be it for today ...</td></tr>
+            <tr><td>[21:38] &lt MS-&gt well, good chatting :)</td></tr>
+            <tr><td>[21:38] &lt Rigolo&gt I will just stay in the channel ... put my self to away</td></tr>
+            <tr><td>[21:38] &lt Rigolo&gt enjoy the rest of your evening .. your still have one whole hour left :-)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt sleep well :)</td></tr>
+            <tr><td>[21:44] &lt Chong-&gt MS-: following your suggestion, I will put up the basic modules of Topology3D for review first</td></tr>
+            <tr><td>[21:45] &lt Chong-&gt So, I will create a new branch from trunk and then svn cp the basic modules of Topology3D to the branch. Is it ok?</td></tr>
+            <tr><td>[21:46] &lt MS-&gt Chong-: - much appreciated</td></tr>
+            <tr><td>[21:47] &lt MS-&gt The way to make a branch:</td></tr>
+            <tr><td>[21:47] &lt MS-&gt cd branches</td></tr>
+            <tr><td>[21:47] &lt MS-&gt svn cp ../trunk/Code/Python private_CL_NameOfYourBranch</td></tr>
+            <tr><td>[21:47] &lt MS-&gt svn ci private_CL_NameOfYourBranch -m "branch for merging .... short description of feature ..."</td></tr>
+            <tr><td>[21:48] &lt MS-&gt then make the changes you'd expect to be made inside that tree</td></tr>
+            <tr><td>[21:48] &lt MS-&gt (ie the changes you mention above)</td></tr>
+            <tr><td>[21:48] &lt MS-&gt But sounds good :)</td></tr>
+            <tr><td>[21:48] &lt MS-&gt I noticed that you've been doing some work on it, which is cool :)</td></tr>
+            <tr><td>[21:50] &lt MS-&gt BTW, if you're adding files into the main area (which you will be)</td></tr>
+            <tr><td>[21:50] &lt MS-&gt There should be an example for the components you've created</td></tr>
+            <tr><td>[21:50] &lt MS-&gt ie an example in Kamaelia/Examples</td></tr>
+            <tr><td>[21:50] &lt MS-&gt This can be as simple as taking the test harness from the end of your files and putting in a directory in there</td></tr>
+            <tr><td>[21:51] &lt Chong-&gt cool</td></tr>
+            <tr><td>[21:51] &lt MS-&gt Kamaelia/Examples/SoC2006/THF/MiniExamples</td></tr>
+            <tr><td>[21:51] &lt MS-&gt for example is exactly that kind of example</td></tr>
+            <tr><td>[21:51] &lt Chong-&gt MS-: I will take a look at it.</td></tr>
+            <tr><td>[21:52] &lt MS-&gt The reason is twofold - 1) examples are good 2) examples are essentially acceptance tests</td></tr>
+            <tr><td>[21:53] *** Chong- nods</td></tr>
+            <tr><td>[21:54] &lt Chong-&gt MS-: just in case you have not seen it, I have remove all files/dirs in /tmp including .X11-unix and restart computer, but the problem still has not been solved</td></tr>
+            <tr><td>[21:54] &lt MS-&gt I'm sorry to hear that</td></tr>
+            <tr><td>[21:54] &lt Chong-&gt run lsof | wc, result is 24833 223879 2404649; lsof | grep X11-unix | wc the result is 0 0 0, is 24833 too big?</td></tr>
+            <tr><td>[21:55] &lt Chong-&gt Now I can only open 4 apps totally :(</td></tr>
+            <tr><td>[21:56] &lt MS-&gt Did you see this: https://bugs.launchpad.net/ubuntu/+source/xorg/+bug/263211</td></tr>
+            <tr><td>[21:56] &lt MS-&gt Thought, have you tried changing window manager ?</td></tr>
+            <tr><td>[21:56] &lt MS-&gt ie if you use KDE, tried switching to xfce or gnome ?</td></tr>
+            <tr><td>[21:57] &lt Chong-&gt yes. I have seen it. But it has not offered any solution</td></tr>
+            <tr><td>[21:57] &lt Chong-&gt kde</td></tr>
+            <tr><td>[21:57] &lt MS-&gt You can probably do that in your login manager in kdm/xdm</td></tr>
+            <tr><td>[21:57] &lt MS-&gt It'd narrow down the problem</td></tr>
+            <tr><td>[21:58] &lt Chong-&gt Thanks. I will have a try.</td></tr>
+            <tr><td>[23:35] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[23:43] *** Chong- has joined #kamaelia</td></tr>

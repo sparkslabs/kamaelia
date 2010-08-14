@@ -1,0 +1,112 @@
+<html>
+<head>
+<title> STM </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - STM">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+<h1>Axon: STM</h1><h3 align="right">Software Transactional Memory</h3>Support for basic in-process software transactional memory has been added to Axon - Kamaelia's core. The API chosen is the simplest that that seems minimally sufficient. As well as being added to mainline Axon (for enhancing the CAT later), it is also packaged up a standalone package since it's likely to be useful in its own right.<br><h2>Getting it</h2>You can download the release version here:<br><blockquote><a href="http://thwackety.com/Axon.STM-1.0.1.tar.gz">http://thwackety.com/Axon.STM-1.0.1.tar.gz</a></blockquote><h2>Previewing it</h2>You can look at the sourcecode online here:<br><blockquote><a href="https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Bindings/STM/Axon/STM.py">https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Bindings/STM/Axon/STM.py</a><br></blockquote><h2>Installing it</h2><blockquote><pre>~ &gt; tar zxf Axon.STM-1.0.1.tar.gz<br>~ &gt; cd Axon.STM-1.0.1/<br>~ &gt; sudo python setup.py install</pre></blockquote><h2>What IS it?</h2><p>Software Transactional Memory (STM) is a technique for allowing multiple threads to share data in such a way that they know when something has gone wrong. It's been used in databases (just called transactions there really) for some time and is also very similar to version control. Indeed, you can think of STM as being like variable level version control.</p><p>Note: Because this is NOT intended to be persistent, this is not an ACID store because it doesn't support the D - durability across a crash. (after all, we don't save the state to disk) (The other aspects atomicity, consistency &amp; isolation are supported though)</p><p>I've written this to allow a part of Kamaelia to share &amp; manage a dictionary of atomic values simply, and as a result this code is also going into mainline Kamaelia. (Specifically into Axon Kamaelia's core)</p><p>However STM is something that should hopefully be of use to others doing concurrent <i>things</i> whether or not they're using kamaelia, hence this stand alone release.</p><p>This stand alone release should *not* be used alongside mainline Axon yet. (Well you can, as long as you reinstall your Axon over the top, but that's icky :-)</p><h2>Why is it useful?</h2><blockquote><i>please skip this (or correct me :) if you understand concurrency already :-)</i><br></blockquote>Why do you need it? Well, in normal code, Global variables are generally shunned because it can make your code a pain to work with and a pain to be certain if it works properly. Even with linear code, you can have 2 bits of code manipulating a structure in surprising ways - but the results are repeatable. Not-properly-managed-shared-data is to threaded systems as not-properly-managed-globals are to normal code. (This code is one way of helping manage shared data)<br><br>Well, with code where you have multiple threads active, having shared data is like an even nastier version of globals. Why? Well, when you have 2 (or more) running in parallel, the results of breakage can become hard to repeat as two pieces of code "race" to update values.<br><br>With STM you make it explicit what the values are you want to update, and only once you're happy with the updates do you publish them back to the shared storage. The neat thing is, if someone else changed things since you last looked, you get told (your commit fails), and you have to redo the work. This may sound like extra work (you have to be prepared to redo the work), but it's nicer than your code breaking :-)<br><br>The way you get that message is the .commit raises a <b>ConcurrentUpdate</b> exception.<br><br>Also, it's designed to work happily in code that requires non-blocking usage - which means you may also get a <b>BusyRetry</b> exception under load. If you do, you should as the exception suggests retry the action that you just tried. (With or without restarting the transaction)<br><br>Apologies if that sounds too noddy :)<br><h2>Using It</h2><h3>Accessing/Updating a single shared value in the store</h3>You can have many single vars in a store of course... If they're related though or updated as a group, see the next section.<br><blockquote><pre>from Axon.STM import Store<br><br>S = Store()<br>greeting = S.usevar("hello")<br>print repr(greeting.value)<br>greeting.set("Hello World")<br>greeting.commit()</pre></blockquote><h3>Accessing/Updating a collection of shared values in the store</h3>Likewise you can use as many collections of values from the store as you like.<br><blockquote><pre>from Axon.STM import Store<br><br>S = Store()<br>D = S.using("account_one", "account_two", "myaccount")<br>D["account_one"].set(50)<br>D["account_two"].set(100)<br>D.commit()<br>S.dump()<br><br>D = S.using("account_one", "account_two", "myaccount")<br>D["myaccount"].set(D["account_one"].value+D["account_two"].value)<br>D["account_one"].set(0)<br>D["account_two"].set(0)<br>D.commit()<br>S.dump()</pre></blockquote><h2>What can (possibly) go wrong?</h2>You can have 2 people trying to update the same values at once. An example of this would be - suppose you have the following commands being executed by 2 threads with this mix of commands:<br><blockquote><pre>S = Store()<br>D = S.using("account_one", "account_two", "myaccount")<br>D["myaccount"].set(0)<br>D["account_one"].set(50)<br>D["account_two"].set(100)<br>D.commit() # 1<br>S.dump()<br><br>D = S.using("account_one", "account_two", "myaccount")<br>D["myaccount"].set(D["account_one"].value+D["account_two"].value)<br><font color="#3333ff"><i>E = S.using("account_one", "myaccount")<br>E["myaccount"].set(E["myaccount"].value-100)<br>E["account_one"].set(100)<br>E.commit() # 2<br></i></font>D["account_one"].set(0)<br>D["account_two"].set(0)<br>D.commit() # 3 - should fail<br>S.dump()</pre></blockquote>You do actually want this to fail because you have concurrent updates. This will fail on the third commit, and fail by throwing a<b> ConcurrentUpdate</b> exception. If you get this, you should redo the transaction.<br><br>The other is where there's lots of updates happening at once. Rather than the code waiting until it acquires a lock, it is possible for either the .using, .usevar or .commit methods to fail with a <b>BusyRetry</b> exception. This means exactly what it says on the tin - the system was busy &amp; you need to retry. In this case you do <b>not</b> have to redo the transaction. This is hard to replicate except under load. The reason we do this however is because most Kamaelia components are implemented as generators, which makes blocking operation ( as a .acquire() rather than .acquire(0) would be) an expensive operation.<br><h2>Possible Extensions</h2>It'd be fun to use this in pypy (say) to extend python such that the latter example could become something like this:<br><blockquote><pre>atomically using account_one, account_two:<br>   account_one = 50<br>   account_two = 100<br><br><br>atomically using account_one, account_two, myaccount:<br>    myaccount = account_one + account_two<br>    account_one = 0<br>    account_two = 0<br></pre></blockquote>However that's out of scope really for this module here at present. (or at least me with the amount of time I have right now!) This module could be used to implement the above semantics though. <i>(Oh, note: I'm not even vaguely suggesting this as a modification to core python - it's just the sort of thing that strikes me as a fun thing to do :-)</i><br><h2>Feedback</h2>Feedback is very welcome, preferably via email to <a href="mailto:kamaelia-list@lists.sourceforge.net">kamaelia-list@lists.sourceforge.net</a><br><br>Michael Sparks <ms at="" cerenity="" dot="" org=""><br><br>
+
+</ms>
+<div style="width:425px;text-align:left" id="__ss_599591"><a style="font:14px Helvetica,Arial,Sans-serif;display:block;margin:12px 0 3px 0;text-decoration:underline;" href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation?type=powerpoint" title="Sharing Data and Services Safely in Concurrent Systems using Kamaelia">Sharing Data and Services Safely in Concurrent Systems using Kamaelia</a><object style="margin:0px" width="425" height="355"><param name="movie" value="http://static.slideshare.net/swf/ssplayer2.swf?doc=presentation2a-1221504540840795-8&stripped_title=sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation" /><param name="allowFullScreen" value="true"/><param name="allowScriptAccess" value="always"/><embed src="http://static.slideshare.net/swf/ssplayer2.swf?doc=presentation2a-1221504540840795-8&stripped_title=sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="355"></embed></object><div style="font-size:11px;font-family:tahoma,arial;height:26px;padding-top:2px;">View SlideShare <a style="text-decoration:underline;" href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation?type=powerpoint" title="View Sharing Data and Services Safely in Concurrent Systems using Kamaelia on SlideShare">presentation</a> or <a style="text-decoration:underline;" href="http://www.slideshare.net/upload?type=powerpoint">Upload</a> your own. (tags: <a style="text-decoration:underline;" href="http://slideshare.net/tag/pyconuk">pyconuk</a> <a style="text-decoration:underline;" href="http://slideshare.net/tag/kamaelia">kamaelia</a>)</div></div>
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

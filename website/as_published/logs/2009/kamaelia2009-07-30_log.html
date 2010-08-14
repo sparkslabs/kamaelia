@@ -1,0 +1,38 @@
+<html><body><table>
+            <tr><td>[02:23] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[02:39] *** eikenberry_ is now known as eikenberry</td></tr>
+            <tr><td>[03:57] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:25] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[05:55] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:52] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:56] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:56] &lt MS-&gt greetings</td></tr>
+            <tr><td>[09:31] &lt Lawouach_&gt same here :)</td></tr>
+            <tr><td>[12:40] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:38] &lt MS-&gt Trying to figure out something which I think should be simple.</td></tr>
+            <tr><td>[13:38] &lt MS-&gt Have a data source, of variable bit rate</td></tr>
+            <tr><td>[13:38] &lt MS-&gt Want to receive that & dump it to disk, with the varying bit rate</td></tr>
+            <tr><td>[13:39] &lt MS-&gt And then later on re-read the file. at that bit rate, with the same variances.</td></tr>
+            <tr><td>[13:39] &lt MS-&gt Strikes me as something that should be easy, but I think I need a break</td></tr>
+            <tr><td>[13:40] &lt MS-&gt I suspect I'm missing something obvious</td></tr>
+            <tr><td>[13:43] &lt MS-&gt Oh, I think I am.</td></tr>
+            <tr><td>[13:43] &lt MS-&gt If I have a buffer that simply writes out it's contents every &lt time spec&gt</td></tr>
+            <tr><td>[13:43] &lt MS-&gt And replay that data inside the same &lt timespec&gt</td></tr>
+            <tr><td>[13:43] &lt MS-&gt that gives me what I need doesn't it</td></tr>
+            <tr><td>[13:44] &lt MS-&gt eg 40 milliseconds is a nice number since that gives 25 chunks per second.</td></tr>
+            <tr><td>[13:47] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:49] &lt MS-&gt I can then write them in the same format that the standard "chunk" module reads. (ie IFF format)</td></tr>
+            <tr><td>[14:08] &lt MS-&gt heh, actually it's a perfect file format to choose thinking about it. It's 24 years old.</td></tr>
+            <tr><td>[15:20] &lt MS-&gt Right, I think I have my timed file writing source now</td></tr>
+            <tr><td>[16:54] &lt ronny&gt IFF?</td></tr>
+            <tr><td>[16:55] &lt ronny&gt ah, images?</td></tr>
+            <tr><td>[17:02] &lt MS-&gt Actually no (well not really), IFF is a general file format for storing binary data in a convenient tagged and chunked manner</td></tr>
+            <tr><td>[17:03] &lt MS-&gt the standard libraries "chunk" module handles reading of it natively</td></tr>
+            <tr><td>[17:03] &lt MS-&gt s/libraries/library's/</td></tr>
+            <tr><td>[17:03] &lt MS-&gt I'm actually storing a complete DVB-T transport stream of 4 channels + all associated metadata</td></tr>
+            <tr><td>[17:04] &lt MS-&gt Right, now I have 8GB of data, time for me to head homewards</td></tr>
+            <tr><td>[17:04] &lt MS-&gt cya later</td></tr>
+            <tr><td>[17:04] &lt MS-&gt :)</td></tr>
+            <tr><td>[17:04] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[19:26] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:27] &lt MS-&gt Hi</td></tr>

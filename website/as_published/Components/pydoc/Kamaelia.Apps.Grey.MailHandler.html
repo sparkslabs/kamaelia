@@ -1,0 +1,334 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Apps.Grey.MailHandler </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Apps.Grey.MailHandler</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.html">Apps</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.html">Grey</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html">MailHandler</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html">MailHandler</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#57">Abstract SMTP Mailer Core</a><ul>
+<li><a class="reference" href="#58">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#59">Note</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#60">How does it work?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#61">Configuration</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#62">Methods you are expected to override</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="57">Abstract SMTP Mailer Core</h1>
+<p>This component effectively forms the skeleton of an SMTP server. It expects
+an SMTP client to connect and send various SMTP requests to it. This basic
+SMTP Mailer Core however, does not actually do anything in response to any
+of the SMTP commands it expects.</p>
+<p>Each SMTP command is actually given a dummy callback which more customised
+SMTP protocol handlers are expected to override. Beyond this, this component
+is expected to be used as a protocol handler for ServerCore.</p>
+<p>Fundamentally, this component handles the command/response structure of SMTP
+fairly directly, but expects the brains of the protocol to be implemented by
+a more intelligent subclass.</p>
+<div class="section">
+<h2 id="58"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Whilst this will work to a minimal extent:</p>
+<pre class="literal-block">
+ServerCore(protocol=MailHandler, port=1025)
+</pre>
+<p>This will not actually form a very interesting SMTP, nor SMTP compliant,
+server since whilst it will tell you commands it doesn't understand, it will
+not do anything interesting.</p>
+<p>You are as noted expected to subclass MailHandler. For a better example
+of how to subclass MailHandler you are suggested to look at
+Kamaelia.Apps.ConcreteMailHandler.ConcreteMailHandler</p>
+</div>
+<div class="section">
+<h2 id="59"><a id="note" name="note">Note</a></h2>
+<p>This component is not complete - you are expected to subclass it to finish
+it off as you need. Specifically it does not implement the following:</p>
+<blockquote>
+<ul class="simple">
+<li>It does not enforce &quot;this command followed by that command&quot;</li>
+<li>It does not actually do anything with any DATA a client sends you</li>
+<li>It neither performs local mail delivery nor proxying - you'd need to implement this yourself.</li>
+</ul>
+</blockquote>
+</div>
+<div class="section">
+<h2 id="60"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>The component is expected to be connected to a client TCP connection by
+ServerCore, such that messages from the network arrive on inbox &quot;inbox&quot;, and
+outgoing messages get sent to outbox &quot;outbox&quot;</p>
+<p>The component will terminate if any of these is true:</p>
+<blockquote>
+<ul class="simple">
+<li>The client breaks the connection</li>
+<li>One of the methods sets self.breakConnection to True.</li>
+<li>If a &quot;socketShutdown&quot; message arrives on inbox &quot;control&quot;</li>
+</ul>
+</blockquote>
+<p>The main() method divides the connection into effectively two main states:</p>
+<blockquote>
+<ul class="simple">
+<li>accepting random commands prior to getting a DATA command</li>
+<li>accepting the email during a DATA command</li>
+</ul>
+</blockquote>
+<p>SMTP commands are specifically dispatched to a particular handler for that
+command. In this component none of the handlers do anything interesting.</p>
+</div>
+<div class="section">
+<h2 id="61"><a id="configuration" name="configuration">Configuration</a></h2>
+<p>The abstract mailer supports some basic config settings:</p>
+<blockquote>
+<ul class="simple">
+<li>logfile - path/filename where requests should get logged</li>
+<li>debuglogfile - path/filename to where the debug log file should do.</li>
+</ul>
+</blockquote>
+</div>
+<div class="section">
+<h2 id="62"><a id="methods-you-are-expected-to-override" name="methods-you-are-expected-to-override">Methods you are expected to override</a></h2>
+<p>Whilst you are probably better off subclassing ConcreteMailHandler, you will
+probably need to override the following methods in a subclass if you
+subclass MailHandler directly.</p>
+<blockquote>
+<ul class="simple">
+<li>handleConnect(self)</li>
+<li>handleHelo(self,command)</li>
+<li>handleEhlo(self,command)</li>
+<li>handleMail(self,command)</li>
+<li>handleRcpt(self,command)</li>
+<li>handleData(self,command)</li>
+<li>handleQuit(self,command)</li>
+<li>handleRset(self,command)</li>
+<li>handleNoop(self,command)</li>
+<li>handleVrfy(self,command)</li>
+<li>handleHelp(self,command)</li>
+<li>logResult(self)</li>
+<li>handleDisconnect(self)</li>
+</ul>
+</blockquote>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.html">Apps</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.html">Grey</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html">MailHandler</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html">MailHandler</a></h1>
+<div class="section">
+<h2 id="symbol-MailHandler">class MailHandler(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<div class="section">
+<h3><a id="symbol-MailHandler.Inboxes" name="symbol-MailHandler.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-MailHandler.Outboxes" name="symbol-MailHandler.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-MailHandler.__init__" name="symbol-MailHandler.__init__">__init__(self, **argd)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.getline" name="symbol-MailHandler.getline">getline(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleCommand" name="symbol-MailHandler.handleCommand">handleCommand(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleConnect" name="symbol-MailHandler.handleConnect">handleConnect(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleData" name="symbol-MailHandler.handleData">handleData(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleDisconnect" name="symbol-MailHandler.handleDisconnect">handleDisconnect(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleEhlo" name="symbol-MailHandler.handleEhlo">handleEhlo(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleHelo" name="symbol-MailHandler.handleHelo">handleHelo(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleHelp" name="symbol-MailHandler.handleHelp">handleHelp(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleMail" name="symbol-MailHandler.handleMail">handleMail(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleNoop" name="symbol-MailHandler.handleNoop">handleNoop(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleQuit" name="symbol-MailHandler.handleQuit">handleQuit(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleRcpt" name="symbol-MailHandler.handleRcpt">handleRcpt(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleRset" name="symbol-MailHandler.handleRset">handleRset(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.handleVrfy" name="symbol-MailHandler.handleVrfy">handleVrfy(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.lastline" name="symbol-MailHandler.lastline">lastline(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.logResult" name="symbol-MailHandler.logResult">logResult(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.logging_recv_connection" name="symbol-MailHandler.logging_recv_connection">logging_recv_connection(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.main" name="symbol-MailHandler.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.netPrint" name="symbol-MailHandler.netPrint">netPrint(self, *args)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.noteToDebugLog" name="symbol-MailHandler.noteToDebugLog">noteToDebugLog(self, line)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MailHandler.noteToLog" name="symbol-MailHandler.noteToLog">noteToLog(self, line)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

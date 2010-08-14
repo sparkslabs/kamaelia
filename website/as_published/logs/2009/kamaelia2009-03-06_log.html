@@ -1,0 +1,71 @@
+<html><body><table>
+            <tr><td>[00:31] *** TheBashar has joined #kamaelia</td></tr>
+            <tr><td>[04:55] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[04:57] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[07:03] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[08:23] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:46] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:46] &lt MS-&gt greetings</td></tr>
+            <tr><td>[10:01] &lt aa_&gt MS-: have you seen this thing "Circuits"?</td></tr>
+            <tr><td>[10:01] &lt MS-&gt yep</td></tr>
+            <tr><td>[10:01] &lt aa_&gt of course you have</td></tr>
+            <tr><td>[10:02] &lt aa_&gt MS-: seems you were way ahead of your time, but loads of people are clamouring into the domain now</td></tr>
+            <tr><td>[10:02] &lt MS-&gt Well, the aim was to try and get concurrency easier to use, by trying out ideas. If it encourages others to do the same, or similar, that's success</td></tr>
+            <tr><td>[10:03] &lt MS-&gt need to revisit the scheduler quite badly IMO</td></tr>
+            <tr><td>[10:04] &lt MS-&gt At minimum to find out why it performs the way it does</td></tr>
+            <tr><td>[10:04] &lt MS-&gt In theory it should be better than it is</td></tr>
+            <tr><td>[10:06] &lt aa_&gt MS-: that benchmark you pasted seemd pretty good</td></tr>
+            <tr><td>[10:06] &lt aa_&gt MS-: though I have lost the link</td></tr>
+            <tr><td>[10:06] &lt MS-&gt http://entitycrisis.blogspot.com/2009/03/concurrent-scaling-benchmarks.html</td></tr>
+            <tr><td>[10:07] &lt MS-&gt I don't really view being the worst case on that graph as being an appropriate place to be :)</td></tr>
+            <tr><td>[10:10] &lt MS-&gt but the silver lining is that it does say that there can be optimisations that jump that way</td></tr>
+            <tr><td>[10:13] &lt aa_&gt MS-: if you want a giggle: http://shortcircuit.net.au/~prologic/twisted.pdf</td></tr>
+            <tr><td>[10:13] &lt aa_&gt it's a twisted dependency graph</td></tr>
+            <tr><td>[10:14] &lt MS-&gt Now *that* would be more fun with Kamaelia</td></tr>
+            <tr><td>[10:14] &lt MS-&gt Esp. considering I'm planning on moving Graphline/Pipeline/etc into Axon.</td></tr>
+            <tr><td>[10:14] &lt MS-&gt Since they're components useful in almost any system. Whereas (say) PygameDisplay isn't useful in everything</td></tr>
+            <tr><td>[10:15] &lt aa_&gt right</td></tr>
+            <tr><td>[10:15] *** MS- waits for the pdf to render</td></tr>
+            <tr><td>[10:15] &lt MS-&gt wow</td></tr>
+            <tr><td>[10:15] &lt MS-&gt It has wires twisted everywhere!</td></tr>
+            <tr><td>[10:15] &lt MS-&gt ba-dum-tish</td></tr>
+            <tr><td>[10:15] &lt aa_&gt MS-: it's a giggle because I couldn't render it in any pdf viewer on a hugely powerful machine with a lot of ram</td></tr>
+            <tr><td>[10:15] &lt MS-&gt heh</td></tr>
+            <tr><td>[10:15] &lt aa_&gt MS-: and if you can render it, please tell me which viewer</td></tr>
+            <tr><td>[10:16] &lt MS-&gt kpdf</td></tr>
+            <tr><td>[10:16] &lt aa_&gt tried okular</td></tr>
+            <tr><td>[10:16] &lt aa_&gt the process reminded me of my first mandelbrot on a beeb</td></tr>
+            <tr><td>[10:16] &lt MS-&gt  PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND</td></tr>
+            <tr><td>[10:16] &lt MS-&gt  6602 michaels 15 0 47408 20m 15m S 0 1.0 0:12.57 kpdf</td></tr>
+            <tr><td>[10:16] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:17] &lt aa_&gt nice</td></tr>
+            <tr><td>[10:17] &lt MS-&gt now trying acrobat</td></tr>
+            <tr><td>[10:17] &lt MS-&gt That loads as well, but slower</td></tr>
+            <tr><td>[10:18] &lt MS-&gt wonder what open office makes of it</td></tr>
+            <tr><td>[10:18] &lt MS-&gt (accidentally discovered that open office can open PDFs for editting)</td></tr>
+            <tr><td>[10:18] &lt aa_&gt wow</td></tr>
+            <tr><td>[10:18] &lt aa_&gt no doubt "badly"</td></tr>
+            <tr><td>[10:19] &lt MS-&gt Hm, it does open it</td></tr>
+            <tr><td>[10:21] &lt MS-&gt Looks a complete mess mind</td></tr>
+            <tr><td>[10:21] &lt MS-&gt (no anti aliasing)</td></tr>
+            <tr><td>[10:30] &lt MS-&gt Mind you, in a way, the Axon Visualiser shows us the run time dependencies of each app really :)</td></tr>
+            <tr><td>[10:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:24] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[12:03] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:45] *** vmlemon_ has parted #kamaelia</td></tr>
+            <tr><td>[13:42] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[14:43] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[14:53] *** vmlemon_1 is now known as vmlemon_</td></tr>
+            <tr><td>[14:59] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[14:59] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[15:02] *** Lawouach_ has parted #kamaelia</td></tr>
+            <tr><td>[16:31] *** ramakrishnannk has joined #kamaelia</td></tr>
+            <tr><td>[16:31] &lt ramakrishnannk&gt hello</td></tr>
+            <tr><td>[17:02] *** ramakrishnannk has parted #kamaelia</td></tr>
+            <tr><td>[18:08] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[19:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:09] *** vmlemon_2 has joined #kamaelia</td></tr>
+            <tr><td>[20:32] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[21:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:26] *** vmlemon_2 has joined #kamaelia</td></tr>
+            <tr><td>[23:09] *** wyleu has joined #kamaelia</td></tr>

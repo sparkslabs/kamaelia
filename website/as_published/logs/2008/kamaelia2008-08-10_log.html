@@ -1,0 +1,153 @@
+<html><body><table>
+            <tr><td>[02:35] *** robertofaga has parted #kamaelia</td></tr>
+            <tr><td>[08:09] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:57] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:25] &lt Davbo&gt afternoon all</td></tr>
+            <tr><td>[11:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:40] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:15] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:18] &lt orphans&gt Davbo, ping?</td></tr>
+            <tr><td>[13:20] &lt Davbo&gt orphans: pong</td></tr>
+            <tr><td>[13:20] &lt orphans&gt hey, if you're not busy would you mind testing jam out again for me?</td></tr>
+            <tr><td>[13:21] &lt Davbo&gt sure,</td></tr>
+            <tr><td>[13:21] &lt orphans&gt I've got a couple of things to check in, but then it might work...</td></tr>
+            <tr><td>[13:21] &lt Davbo&gt alright</td></tr>
+            <tr><td>[13:22] &lt orphans&gt cool, give us 5 mins and I'll give you a shout :)</td></tr>
+            <tr><td>[13:26] *** Davbo is trying to organise a trip to Dublin</td></tr>
+            <tr><td>[13:28] &lt orphans&gt nice :)</td></tr>
+            <tr><td>[13:33] &lt orphans&gt Davbo, ok, this one should be nice and simple</td></tr>
+            <tr><td>[13:34] &lt orphans&gt all you need to do is svn update my code and make a quick one line change to the pygame display code</td></tr>
+            <tr><td>[13:35] *** orphans lies a little</td></tr>
+            <tr><td>[13:35] &lt Davbo&gt alright updated</td></tr>
+            <tr><td>[13:35] &lt Davbo&gt what do i need to do?</td></tr>
+            <tr><td>[13:35] &lt orphans&gt you need to comment out lines 599-602 inclusive in /Code/Python/Kamaelia/Kamaelia/UI/Pygame/Display.py</td></tr>
+            <tr><td>[13:35] &lt orphans&gt then run app/jam and hope :)</td></tr>
+            <tr><td>[13:35] &lt Davbo&gt ehh lol</td></tr>
+            <tr><td>[13:36] &lt Davbo&gt Okay, gimme a sec</td></tr>
+            <tr><td>[13:36] &lt orphans&gt cool, ta</td></tr>
+            <tr><td>[13:36] &lt orphans&gt I might try and get MS- to take out those lines if I can, more likely will just switch to a local copy</td></tr>
+            <tr><td>[13:37] &lt orphans&gt given that no-one can remember what it'll break if they are taken out :)</td></tr>
+            <tr><td>[13:38] &lt orphans&gt arg, 2 secs - got one more change to check in</td></tr>
+            <tr><td>[13:38] &lt Davbo&gt alright :)</td></tr>
+            <tr><td>[13:40] &lt orphans&gt k, should work now :)</td></tr>
+            <tr><td>[13:40] &lt orphans&gt this is a version (ab)using the pygame mixer to some extent</td></tr>
+            <tr><td>[13:41] &lt Davbo&gt lol</td></tr>
+            <tr><td>[13:42] &lt Davbo&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[13:42] &lt Davbo&gt  File "jam", line 49, in &lt module&gt</td></tr>
+            <tr><td>[13:42] &lt Davbo&gt  from Kamaelia.Apps.Jam.Audio.Sampler import Sampler</td></tr>
+            <tr><td>[13:42] &lt Davbo&gt ImportError: No module named Audio.Sampler</td></tr>
+            <tr><td>[13:42] &lt orphans&gt hum</td></tr>
+            <tr><td>[13:42] &lt orphans&gt you run setup.py install from inside the library directory?</td></tr>
+            <tr><td>[13:42] &lt Davbo&gt oh nope</td></tr>
+            <tr><td>[13:43] &lt Davbo&gt only from application</td></tr>
+            <tr><td>[13:43] &lt orphans&gt when it's a tarball that's all one command</td></tr>
+            <tr><td>[13:43] &lt Davbo&gt umm</td></tr>
+            <tr><td>[13:44] &lt Davbo&gt dave@KING-2:~/Kamaelia/kamaelia/Sketches/JT/Jam/application/trunk$ python jam</td></tr>
+            <tr><td>[13:44] &lt Davbo&gt Usage: jam [options]</td></tr>
+            <tr><td>[13:44] &lt Davbo&gt jam: error: In order to use MIDI you must have the pyrtmidi package installed. To run without midi use the --no-midi option.</td></tr>
+            <tr><td>[13:44] &lt orphans&gt jam --no-midi</td></tr>
+            <tr><td>[13:45] &lt orphans&gt it's just an add-on thing really</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt  File "/usr/bin/jam", line 414, in &lt module&gt</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt  Pipeline(SubscribeTo("midiOut"), Midi(options.midiPort)).activate()</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt NameError: name 'Midi' is not defined</td></tr>
+            <tr><td>[13:46] *** orphans swears at himself :)</td></tr>
+            <tr><td>[13:46] &lt orphans&gt sorry</td></tr>
+            <tr><td>[13:46] &lt Davbo&gt no problem</td></tr>
+            <tr><td>[13:47] &lt orphans&gt change line 413 in app/jam to if options.useMidi:</td></tr>
+            <tr><td>[13:48] &lt Davbo&gt umm still does it</td></tr>
+            <tr><td>[13:49] &lt orphans&gt you setup.py installed the app again?</td></tr>
+            <tr><td>[13:49] &lt Davbo&gt oh sorry didn't think i'd need to</td></tr>
+            <tr><td>[13:49] &lt Davbo&gt Hey, it's alive</td></tr>
+            <tr><td>[13:49] &lt orphans&gt :)</td></tr>
+            <tr><td>[13:49] &lt orphans&gt now does it make any noise?</td></tr>
+            <tr><td>[13:50] &lt Davbo&gt sure does</td></tr>
+            <tr><td>[13:50] &lt orphans&gt woop :)</td></tr>
+            <tr><td>[13:50] &lt Davbo&gt Sounds a bit odd though</td></tr>
+            <tr><td>[13:50] &lt orphans&gt if you play two notes at once on the piano roll it should break up a bit - I need to turn the volume down on them</td></tr>
+            <tr><td>[13:51] &lt orphans&gt and I changed the drum samples 'cause I got bored</td></tr>
+            <tr><td>[13:51] &lt orphans&gt is it anything other than that?</td></tr>
+            <tr><td>[13:51] &lt Davbo&gt sounds a bit "staticy"</td></tr>
+            <tr><td>[13:52] &lt orphans&gt arse</td></tr>
+            <tr><td>[13:52] &lt orphans&gt that's not what I wanted</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt you know what i mean by "staticy" lol</td></tr>
+            <tr><td>[13:52] &lt orphans&gt is it on the drums or the notes or both?</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt only the piano stuff</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt just the notes</td></tr>
+            <tr><td>[13:52] &lt orphans&gt is that only if you have two notes playing at once?</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt nope</td></tr>
+            <tr><td>[13:54] &lt orphans&gt ok, I'll make a quick fix and up it and see if that helps</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt the second xypad doesn't do anything either btw</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt 1st seems to work but have no effect too</td></tr>
+            <tr><td>[13:55] &lt orphans&gt yeah, I know about that</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt drums seem a bit odd now</td></tr>
+            <tr><td>[13:55] &lt orphans&gt not really sure what I'm going to do with it atm, but that's no problem :)</td></tr>
+            <tr><td>[13:55] &lt orphans&gt *sigh*</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt they're working</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt just the samples on them are weird</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt there's no "drum" like i'd expect</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt you know, like a snare</td></tr>
+            <tr><td>[13:56] &lt orphans&gt yeah, I put a clap on the second one</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt that's probably not a problem though</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt ah right</td></tr>
+            <tr><td>[13:56] &lt orphans&gt more just me being bored with the samples there were there before :)</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt alright cool</td></tr>
+            <tr><td>[13:57] &lt orphans&gt Davbo, can you try launching it using jam --no-midi --buffer-size=2048 and see if the static-ey ness is any better or worse?</td></tr>
+            <tr><td>[13:58] &lt Davbo&gt worse</td></tr>
+            <tr><td>[13:59] &lt orphans&gt jam --no-midi --buffer-size=8192</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt hmm it's really similar orphans</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt there's not much difference between all 3 TBH</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt it's kinda hard to tell</td></tr>
+            <tr><td>[14:00] &lt orphans&gt ok, in that case I've got a fair idea where the problem might be</td></tr>
+            <tr><td>[14:01] &lt orphans&gt I'll bash out a quick change and ping you again</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt kk</td></tr>
+            <tr><td>[14:01] &lt orphans&gt sorry for all this - testing = hard when it's working fine for me :)</td></tr>
+            <tr><td>[14:08] &lt orphans&gt Davbo, ok, change is up - svn update, setup.py install the library and give it another try when you have a mo</td></tr>
+            <tr><td>[14:12] &lt Davbo&gt seems to still be doing it</td></tr>
+            <tr><td>[14:12] &lt Davbo&gt have you got self.staticy = True? :P</td></tr>
+            <tr><td>[14:12] &lt orphans&gt god, I wish</td></tr>
+            <tr><td>[14:12] &lt Davbo&gt ohh install library</td></tr>
+            <tr><td>[14:12] *** Davbo forgets library</td></tr>
+            <tr><td>[14:12] &lt orphans&gt :)</td></tr>
+            <tr><td>[14:12] *** orphans crosses fingers</td></tr>
+            <tr><td>[14:13] *** orphans is doubtful</td></tr>
+            <tr><td>[14:14] &lt Davbo&gt still seems to be doing it</td></tr>
+            <tr><td>[14:14] &lt orphans&gt crapola</td></tr>
+            <tr><td>[14:14] &lt orphans&gt is it like a regular crackle when it's playing?</td></tr>
+            <tr><td>[14:15] &lt orphans&gt kinda pop-pop-pop-pop really fast?</td></tr>
+            <tr><td>[14:16] &lt Davbo&gt hmm yeah</td></tr>
+            <tr><td>[14:16] &lt Davbo&gt you can hear the tone</td></tr>
+            <tr><td>[14:16] &lt Davbo&gt but its crackling over it</td></tr>
+            <tr><td>[14:17] &lt orphans&gt that's me making the pygame mixer do things it wasn't meant to</td></tr>
+            <tr><td>[14:19] &lt orphans&gt I was hopeful about that one... *sigh*</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt #pygame ? :-)</td></tr>
+            <tr><td>[14:27] &lt Lawouach&gt afternoon folks</td></tr>
+            <tr><td>[14:28] &lt Davbo&gt Afternoon Lawouach</td></tr>
+            <tr><td>[14:28] &lt orphans&gt hey Lawouach</td></tr>
+            <tr><td>[14:29] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:33] &lt Lawouach&gt orphans, so how's he project coming?</td></tr>
+            <tr><td>[14:33] &lt Lawouach&gt s/he/the</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt http://www-tech.mit.edu/V128/N30/subway/Defcon_Presentation.pdf Haha, I'm at the wrong Uni</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt The WarCart they made is amazing</td></tr>
+            <tr><td>[14:36] &lt vmlemon_&gt That's the stuff they tried getting them to pull?</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt Yep</td></tr>
+            <tr><td>[14:42] &lt orphans&gt Lawouach, erm, interesting</td></tr>
+            <tr><td>[14:44] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[14:45] &lt orphans&gt am currently (still) desperately trying to find a way to get some sort of decent audio output which won't have a latency of three years, a list of install instructions as long as war and peace, and working on most computers</td></tr>
+            <tr><td>[14:50] &lt Lawouach&gt right</td></tr>
+            <tr><td>[14:50] &lt Lawouach&gt sounds like fun</td></tr>
+            <tr><td>[14:51] &lt orphans&gt you wouldn't believe :)</td></tr>
+            <tr><td>[14:52] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[14:59] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[14:59] Reply: does the macarena</td></tr>
+            <tr><td>[15:22] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:45] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt Hah my Dad bought a piece of software called "RegCure" to fix his registry on Windows</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt I always wondered "what kind of idiot buys this stuff", now i know</td></tr>
+            <tr><td>[15:48] *** Davbo hates being tech support</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt back later chaps</td></tr>
+            <tr><td>[16:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:19] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:27] *** vmlemon_ has joined #kamaelia</td></tr>

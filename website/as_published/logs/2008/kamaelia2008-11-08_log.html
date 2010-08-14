@@ -1,0 +1,462 @@
+<html><body><table>
+            <tr><td>[10:54] &lt Lawouach&gt afternoon</td></tr>
+            <tr><td>[13:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:25] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:29] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[14:29] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[16:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:48] &lt Rigolo&gt good evening ...</td></tr>
+            <tr><td>[16:48] &lt MS-&gt evening</td></tr>
+            <tr><td>[16:48] &lt Rigolo&gt lot's of activity I notices since I left 2 days ago :-)</td></tr>
+            <tr><td>[16:49] &lt Rigolo&gt mmm my backspace doesn work</td></tr>
+            <tr><td>[16:50] &lt Rigolo&gt now it does :-)</td></tr>
+            <tr><td>[16:50] &lt Rigolo&gt how are things MS?</td></tr>
+            <tr><td>[16:54] &lt MS-&gt Not bad - not really been doing much today, though there's some stuff I really ought to be working on</td></tr>
+            <tr><td>[16:54] &lt Rigolo&gt work related or private ...</td></tr>
+            <tr><td>[16:54] &lt MS-&gt I'll probably do that this evening</td></tr>
+            <tr><td>[16:54] &lt MS-&gt kinda both</td></tr>
+            <tr><td>[16:55] &lt Rigolo&gt I'm waiting for a developer to finish some work on a project that should go live this thuesday (work related)</td></tr>
+            <tr><td>[16:55] &lt MS-&gt Though I'm beginning to get an idea of a common theme that I'd like to work on for december</td></tr>
+            <tr><td>[16:55] &lt MS-&gt I'm planning a kamaelia/code advent calendar</td></tr>
+            <tr><td>[16:56] &lt Rigolo&gt MS-: did you see my adventures with "encrypted streams ... not so</td></tr>
+            <tr><td>[16:56] &lt Rigolo&gt mm that enter was too quick</td></tr>
+            <tr><td>[16:56] &lt MS-&gt ideally consisting of small things, which build up into larger chunks and a larger overall thing</td></tr>
+            <tr><td>[16:57] &lt Rigolo&gt not so good .... I can not get the "encrypted" channels to work with Kamaelia. I can watch them if i use czap -r &lt channel&gt and then cat the dvr0</td></tr>
+            <tr><td>[16:57] *** MS- 's phone goes</td></tr>
+            <tr><td>[16:57] &lt MS-&gt (may be able to help later :) )</td></tr>
+            <tr><td>[16:57] &lt Rigolo&gt mmm so a kamaelia advent code calendar with behind each little window a new and increasingly eleborate piece of kamaelia code?</td></tr>
+            <tr><td>[16:57] &lt Rigolo&gt sounds like fun :-)</td></tr>
+            <tr><td>[17:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:36] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:43] &lt Rigolo&gt hee vmlemon_</td></tr>
+            <tr><td>[17:44] &lt vmlemon_&gt Hmm, anyone managed to setup SSH as a tunnel/forwarding proxy before?</td></tr>
+            <tr><td>[17:46] &lt Rigolo&gt what do you mean? ssh from your desktop to a server and then a forward from there to some other place?</td></tr>
+            <tr><td>[17:46] &lt vmlemon_&gt Pretty much</td></tr>
+            <tr><td>[17:47] &lt Rigolo&gt so that is with the -L option right?</td></tr>
+            <tr><td>[17:47] &lt Rigolo&gt tried that once .. but gave up when I found some other way to get where I wanted to go</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[17:48] &lt vmlemon_&gt Although it doesn't seem to function, unless I don't know how to actually use it :|</td></tr>
+            <tr><td>[17:48] *** vmlemon_ puts it down to bad documentation</td></tr>
+            <tr><td>[17:48] &lt Rigolo&gt that is always a good excuse to use :-)</td></tr>
+            <tr><td>[17:49] &lt Rigolo&gt but you do need to be autorized to create a listning port on the intermediate server ...</td></tr>
+            <tr><td>[17:49] &lt vmlemon_&gt There was supposedly a way to set SSH up on a remote machine as a SOCKS proxy so that applications on the desktop box can connect through it, although as with most things, it doesn't actually work as advertised...</td></tr>
+            <tr><td>[17:49] &lt vmlemon_&gt Good point, Rigolo</td></tr>
+            <tr><td>[17:50] *** vmlemon_ assumed that non-root users could open a server port on a high number without additional permission </td></tr>
+            <tr><td>[17:50] &lt vmlemon_&gt (Can't remember the barrier, though, although it at least involved 4+ digit port numbers)</td></tr>
+            <tr><td>[17:51] &lt Rigolo&gt well ... if I was administrating some shell server .. then I would not allow that</td></tr>
+            <tr><td>[17:51] &lt Rigolo&gt non root usually can do what they want above 1024 ...</td></tr>
+            <tr><td>[17:51] &lt vmlemon_&gt That's the one</td></tr>
+            <tr><td>[17:51] &lt vmlemon_&gt (I'm trying to open 5651)</td></tr>
+            <tr><td>[17:51] &lt Rigolo&gt not use if it does what you want .. but did you have a look at stunnel</td></tr>
+            <tr><td>[17:51] *** vmlemon_ wonders if the connection has to be initiated from the client side, or the host side</td></tr>
+            <tr><td>[17:51] &lt Rigolo&gt and are you sure that one is free?</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt Gonna check</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt [tyson@DoCoMoDake ~]$ telnet dazjorz.com 5651</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt Trying 79.170.90.20...</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt telnet: connect to address 79.170.90.20: Connection refused</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt Trying 2a02:348:35:5a14::1...</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt telnet: connect to address 2a02:348:35:5a14::1: Network is unreachable</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt Seems unused</td></tr>
+            <tr><td>[17:52] &lt Rigolo&gt YOU ---&gt server ---&gt destination (that is what you try to do right?)</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[17:53] &lt Rigolo&gt and server --&gt destination is to a "real" port ..</td></tr>
+            <tr><td>[17:53] &lt Rigolo&gt and You --&gt server is on 5651</td></tr>
+            <tr><td>[17:53] &lt Rigolo&gt so forward every package that arrives on 5651 to port xxx on destination?</td></tr>
+            <tr><td>[17:54] &lt vmlemon_&gt Exactly</td></tr>
+            <tr><td>[17:54] &lt vmlemon_&gt (With xxx being arbitrary depending on what I'm boring through to at the other side)</td></tr>
+            <tr><td>[17:55] &lt Rigolo&gt http://www.onlamp.com/pub/a/onlamp/excerpt/ssh_11/index3.html</td></tr>
+            <tr><td>[17:56] &lt vmlemon_&gt Sod it, I'll probably just try and compile DeleGate (assuming that the resulting binary will work without giving a "Floating point exception" error, or something like that, with it being a 64-bit server)</td></tr>
+            <tr><td>[17:56] &lt vmlemon_&gt Thanks</td></tr>
+            <tr><td>[17:56] &lt vmlemon_&gt Looking now</td></tr>
+            <tr><td>[17:57] &lt Rigolo&gt http://ubuntu.wordpress.com/2006/12/08/ssh-tunnel-socks-proxy-forwarding-secure-browsing/</td></tr>
+            <tr><td>[17:57] &lt Rigolo&gt also looks what you want ...</td></tr>
+            <tr><td>[17:58] &lt Rigolo&gt and then there is the evil DNS tunnels if you have access to a "WiFi access point" that want you to pay first</td></tr>
+            <tr><td>[17:58] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[17:58] &lt vmlemon_&gt Just trying to bypass a transparent HTTP proxy :|</td></tr>
+            <tr><td>[17:58] &lt vmlemon_&gt (Orange crapiness, with me not being able to use UMTS at the moment)</td></tr>
+            <tr><td>[18:02] &lt vmlemon_&gt Grr</td></tr>
+            <tr><td>[18:02] &lt vmlemon_&gt It sort-of worked</td></tr>
+            <tr><td>[18:02] &lt vmlemon_&gt Although it doesn't do anything at the server end :(</td></tr>
+            <tr><td>[18:02] &lt vmlemon_&gt (Gives "channel 3: open failed: administratively prohibited: open failed") :(</td></tr>
+            <tr><td>[18:04] &lt Rigolo&gt well .. that kind of explains it .. you are not allowed to create a listning port</td></tr>
+            <tr><td>[18:05] &lt Rigolo&gt but you say: You ---- proxy ---- internet</td></tr>
+            <tr><td>[18:05] &lt Rigolo&gt and that proxy is transparent?</td></tr>
+            <tr><td>[18:05] &lt vmlemon_&gt Just found http://lists.trustix.org/pipermail/tsl-discuss/2004-April/010441.html</td></tr>
+            <tr><td>[18:05] &lt Rigolo&gt so all traffic to any port 80 server is routed through that proxy?</td></tr>
+            <tr><td>[18:05] &lt vmlemon_&gt Someone else has hit the same problem</td></tr>
+            <tr><td>[18:06] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[18:06] *** vmlemon_ has no control over the port 80 proxying, since it's happening at the ISP level</td></tr>
+            <tr><td>[18:07] &lt Rigolo&gt okee .. so you just need a tunnel to some server and then connect from there ...</td></tr>
+            <tr><td>[18:07] &lt vmlemon_&gt Exactly</td></tr>
+            <tr><td>[18:07] &lt vmlemon_&gt I intended to set something up on my shell account</td></tr>
+            <tr><td>[18:07] &lt Rigolo&gt sounds you you really need your own server in some colo .. run a full X desktop there .. and then use VNC, RDP or what ever to connect to it</td></tr>
+            <tr><td>[18:08] &lt Rigolo&gt also reduces the amount of traffic you generate on your link ..</td></tr>
+            <tr><td>[18:08] &lt vmlemon_&gt although as I've discovered, AllowTcpForwarding is unset</td></tr>
+            <tr><td>[18:08] &lt Rigolo&gt but no streaming video like that :-)</td></tr>
+            <tr><td>[18:08] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[18:08] &lt vmlemon_&gt Only need it for HTTP on GPRS, anyway</td></tr>
+            <tr><td>[18:09] &lt vmlemon_&gt I did try RTSP audio streaming (BBC Radio 2 I think), and it was pretty painful</td></tr>
+            <tr><td>[18:09] &lt vmlemon_&gt YouTube would be a total no-go</td></tr>
+            <tr><td>[18:09] &lt vmlemon_&gt (The latter worked perfectly on UMTS though)</td></tr>
+            <tr><td>[18:09] &lt Rigolo&gt and using some real HTTP proxy .. that would go through a non port 80 first</td></tr>
+            <tr><td>[18:10] &lt Rigolo&gt YouTube is not streaming .. it "downloads" and then starts playing ..</td></tr>
+            <tr><td>[18:10] &lt vmlemon_&gt Yup</td></tr>
+            <tr><td>[18:10] &lt Rigolo&gt so if you wait long enough .. you can watch it</td></tr>
+            <tr><td>[18:10] &lt vmlemon_&gt (I had a local caching proxy that stored YT videos)</td></tr>
+            <tr><td>[18:10] &lt vmlemon_&gt *for offline playback</td></tr>
+            <tr><td>[18:11] &lt Rigolo&gt so how many Wifi Accesspoints are there around you that you might be able to piggyback on?</td></tr>
+            <tr><td>[18:12] &lt vmlemon_&gt There are proxy lists, although they're of dubious quality</td></tr>
+            <tr><td>[18:12] &lt vmlemon_&gt Asking my shared partition admin</td></tr>
+            <tr><td>[18:13] *** Rigolo sees 13 wifi access points here ... of which 2 are non encrypted</td></tr>
+            <tr><td>[18:15] &lt vmlemon_&gt No Wi-Fi adaptor on this box, and all the networks had at least WEP last time I could check</td></tr>
+            <tr><td>[18:16] &lt Rigolo&gt well ... WEP is broken in 3 secs I read the other day ;-)(</td></tr>
+            <tr><td>[18:17] &lt vmlemon_&gt Haven't got a chance in hell</td></tr>
+            <tr><td>[18:17] &lt vmlemon_&gt *Hell</td></tr>
+            <tr><td>[18:17] &lt vmlemon_&gt (They're underutilised networks, so there are very few IVs to crack) :(</td></tr>
+            <tr><td>[18:18] &lt Rigolo&gt well .. then try to use them .. and generate traffic ...</td></tr>
+            <tr><td>[18:18] &lt Rigolo&gt non of your neighbours have any access points you could use?</td></tr>
+            <tr><td>[18:18] &lt Rigolo&gt by asking them nice? :-)</td></tr>
+            <tr><td>[18:19] &lt vmlemon_&gt Doesn't help that my PC is in one of the back rooms of the house, where there's only 1 access point in (fleeting) range</td></tr>
+            <tr><td>[18:19] &lt Rigolo&gt or buy a 100 meter of cat5 .. and go to all the houses and ask if you can hook up to their router :-)</td></tr>
+            <tr><td>[18:19] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[18:19] &lt vmlemon_&gt Or HomePlug adaptors and really long extension leads ;)</td></tr>
+            <tr><td>[18:20] &lt Rigolo&gt we had our previous neighbours hooked up to our cable modem for years</td></tr>
+            <tr><td>[18:20] &lt Rigolo&gt mm will homeplug work across houses? will it jump the fusebox?</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt (Just be careful in the glorious British weather, and watch for stray animals chewing cables, mud and cars) ;)</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt Just run two extension leads ;)</td></tr>
+            <tr><td>[18:21] &lt vmlemon_&gt It won't jump fuseboxes otherwise, though</td></tr>
+            <tr><td>[18:21] &lt Rigolo&gt we had a PVC pipe between the houses ... and a CAT5 in there .. worked great</td></tr>
+            <tr><td>[18:21] &lt vmlemon_&gt (One lead going their house with a HP adaptor, and one on an extension lead plugged into the other socket coming back to your house)</td></tr>
+            <tr><td>[18:21] &lt vmlemon_&gt Bit awkward though</td></tr>
+            <tr><td>[18:21] &lt vmlemon_&gt and probably a major safety hazard</td></tr>
+            <tr><td>[18:22] &lt Rigolo&gt (until their daughter got a boyfriend who discovered that their internet was faster than at his place and started to swamp the connection with 100's of bittorrent downloads</td></tr>
+            <tr><td>[18:22] &lt vmlemon_&gt Haha</td></tr>
+            <tr><td>[18:23] &lt vmlemon_&gt Think Broken Toilet would mind if folks ran CAT5 along the telegraph poles between houses? ;)</td></tr>
+            <tr><td>[18:23] &lt Rigolo&gt then I put them behind my router .. and squeezed their speeds when we had need for more :-)</td></tr>
+            <tr><td>[18:23] &lt Rigolo&gt not really ... just do it .. and call it "an enhancement of service" or something like that</td></tr>
+            <tr><td>[18:24] &lt vmlemon_&gt There was talk about "community networks" recently in the suckier parts of the country</td></tr>
+            <tr><td>[18:24] &lt vmlemon_&gt (Boroughbridge being one of them, in my opinion)</td></tr>
+            <tr><td>[18:24] &lt Rigolo&gt I was involved in one .. in a new apartment building ..</td></tr>
+            <tr><td>[18:25] &lt Rigolo&gt they had a 2Mbit up/down connection (when most people were on 56k modems) for about 50 apartments</td></tr>
+            <tr><td>[18:25] &lt Rigolo&gt worked great ... and much cheaper then all the telephone bills put together</td></tr>
+            <tr><td>[18:27] &lt vmlemon_&gt Shame we'll never get fibre optic or cable Internet services here, though</td></tr>
+            <tr><td>[18:31] &lt Rigolo&gt well .. I got my umts modem working under intrepid ... but not yet with the NetworkManager 0.7 that is included with 8.10</td></tr>
+            <tr><td>[18:33] &lt vmlemon_&gt Haha, http://www.engadget.com/2008/11/08/diebolds-e-voting-machines-violate-gpl-good-taste/</td></tr>
+            <tr><td>[18:42] *** MS- reads back</td></tr>
+            <tr><td>[18:42] &lt Rigolo&gt where you gone then :-)</td></tr>
+            <tr><td>[18:43] &lt MS-&gt "(18:29:49) Rigolo: not so good .... I can not get the "encrypted" channels to work with Kamaelia. I can watch them if i use czap -r &lt channel&gt and then cat the dvr0"</td></tr>
+            <tr><td>[18:43] &lt MS-&gt I suspect this is probably due to not picking up an appropriate adapter. I've not used Kamaelia with encrypted channels, so I can see that being a possible issue.</td></tr>
+            <tr><td>[18:44] &lt MS-&gt vmlemon_: I tend to use tunnels fairly often, the trick is to ensure that your end/startpoints are not 127.0.0.1, but IPs, since you can end up with some irritating issues occasionally</td></tr>
+            <tr><td>[18:45] &lt MS-&gt Rigolo: I think I'd need to look at what adapters are being used where</td></tr>
+            <tr><td>[18:45] &lt MS-&gt "cat the dvr0" specifically sounds different</td></tr>
+            <tr><td>[18:45] &lt Rigolo&gt well .. the adapter is fine ... because I can record FTA channels using the virtual adapter using Kamaelia</td></tr>
+            <tr><td>[18:46] &lt Rigolo&gt MS-: you are basically doing the same it looks like in Core.py</td></tr>
+            <tr><td>[18:46] &lt MS-&gt Well, it's using this:</td></tr>
+            <tr><td>[18:46] &lt MS-&gt Core.py: fd = os.open("/dev/dvb/adapter"+str(self.card)+"/dvr0", os.O_RDONLY) # | os.O_NONBLOCK)</td></tr>
+            <tr><td>[18:46] &lt MS-&gt Ah this:</td></tr>
+            <tr><td>[18:46] &lt MS-&gt Tuner.py: fd = os.open("/dev/dvb/adapter"+str(self.card)+"/dvr0", os.O_RDONLY | os.O_NONBLOCK)</td></tr>
+            <tr><td>[18:46] &lt MS-&gt as well</td></tr>
+            <tr><td>[18:46] &lt MS-&gt hm</td></tr>
+            <tr><td>[18:47] &lt MS-&gt You're using "czap -r " to do the tuning though?</td></tr>
+            <tr><td>[18:47] &lt MS-&gt (I've not used czap)</td></tr>
+            <tr><td>[18:47] &lt Rigolo&gt exactly .. and I pass the card parameter with the DVBMultiplex command</td></tr>
+            <tr><td>[18:47] &lt Rigolo&gt yes .. same as tzap though ..</td></tr>
+            <tr><td>[18:47] &lt vmlemon_&gt "ssh -D 5651 username@hostname" on the client?</td></tr>
+            <tr><td>[18:48] &lt Rigolo&gt http://rigolo.googlepages.com/DVB-C-RecordChannel-NL2.txt is my "program"</td></tr>
+            <tr><td>[18:48] &lt MS-&gt Rigolo: I don't use tzap either :)</td></tr>
+            <tr><td>[18:48] &lt Rigolo&gt vmlemon_: that will create a local SOCKS proxy that forwards everything to the server and then I think it goes from there to webserver</td></tr>
+            <tr><td>[18:48] *** MS- looks at your link</td></tr>
+            <tr><td>[18:49] &lt Rigolo&gt MS-: as simple as it can be .. that program</td></tr>
+            <tr><td>[18:49] &lt vmlemon_&gt It connects to the remote server, although it seems that the server has TCP forwarding disabled :(</td></tr>
+            <tr><td>[18:49] &lt MS-&gt Oh I'm beginning to remember something about tzap</td></tr>
+            <tr><td>[18:49] &lt vmlemon_&gt (I just get "channel 3: open failed: administratively prohibited: open failed" on the shell when trying to utilise the new port)</td></tr>
+            <tr><td>[18:49] &lt MS-&gt You use:</td></tr>
+            <tr><td>[18:49] &lt MS-&gt # tzap "BBC ONE" (or szap or czap)</td></tr>
+            <tr><td>[18:49] &lt Rigolo&gt exactly :-)</td></tr>
+            <tr><td>[18:50] &lt MS-&gt to tune the adapter, and make the card ready for reading data don't you?</td></tr>
+            <tr><td>[18:50] &lt MS-&gt and then you use:</td></tr>
+            <tr><td>[18:50] &lt vmlemon_&gt Aren't the names specified in channels.conf?</td></tr>
+            <tr><td>[18:50] &lt Rigolo&gt correct</td></tr>
+            <tr><td>[18:50] &lt MS-&gt # dvbstream -o -ps -qam 16 -cr 3_4 600 601 | mplayer -</td></tr>
+            <tr><td>[18:50] &lt MS-&gt To just rip out the data that is being presented in .../dvr0</td></tr>
+            <tr><td>[18:50] &lt MS-&gt Command lines taken from here:</td></tr>
+            <tr><td>[18:50] &lt MS-&gt http://www.ethics-gradient.net/myth/</td></tr>
+            <tr><td>[18:50] &lt Rigolo&gt well ...I do czap -r "Nederland 2" and then cat /dev/dvb/adapter4/dvr0</td></tr>
+            <tr><td>[18:51] &lt vmlemon_&gt Shame there isn't an interface with something like /proc to tune a DVB device</td></tr>
+            <tr><td>[18:51] &lt Rigolo&gt well ...I do czap -r "Nederland 2" and then cat /dev/dvb/adapter4/dvr0 &gt file.mpeg</td></tr>
+            <tr><td>[18:51] &lt MS-&gt ie you use one command to tune the device</td></tr>
+            <tr><td>[18:51] &lt MS-&gt and another command to grab the contents out, essentially</td></tr>
+            <tr><td>[18:51] &lt MS-&gt The reason that doesn't work here is because this:</td></tr>
+            <tr><td>[18:51] &lt MS-&gt http://rigolo.googlepages.com/DVB-C-RecordChannel-NL2.txt</td></tr>
+            <tr><td>[18:51] &lt MS-&gt specifically:</td></tr>
+            <tr><td>[18:51] &lt MS-&gt  DVB_Multiplex(618, [71, 97], feparams, 4), # Nederland 2</td></tr>
+            <tr><td>[18:52] &lt MS-&gt does the tuning *and* demuxing</td></tr>
+            <tr><td>[18:52] &lt MS-&gt You actually want something simpler that assumes the device is already set up and ready to read from</td></tr>
+            <tr><td>[18:53] &lt Rigolo&gt tzap or czap also does tuning *and* demuxing ... that is why you give it a channel name</td></tr>
+            <tr><td>[18:53] &lt Rigolo&gt it then looks in channels.conf to find the SID and the PID's .. and spits out that data via DVR0</td></tr>
+            <tr><td>[18:54] &lt Rigolo&gt (if you have set the -r option)</td></tr>
+            <tr><td>[18:54] &lt MS-&gt Are you sure it doesn't spit out a transport stream?</td></tr>
+            <tr><td>[18:55] &lt Rigolo&gt could be ... I could give you a sample if you like ...</td></tr>
+            <tr><td>[18:55] &lt MS-&gt maybe. I'm just wondering though</td></tr>
+            <tr><td>[18:55] &lt MS-&gt If it *is* a transport stream</td></tr>
+            <tr><td>[18:56] &lt MS-&gt Then dumping the results to disk using cat</td></tr>
+            <tr><td>[18:56] &lt MS-&gt should mean that this example could be adapted to check the results:</td></tr>
+            <tr><td>[18:56] &lt MS-&gt https://kamaelia.googlecode.com/svn/branches/private_MH_EnhancementsForDVB-C/Kamaelia/Examples/DVB_Systems/TransportStreamDemuxer.py</td></tr>
+            <tr><td>[18:56] &lt MS-&gt http://kamaelia.googlecode.com/svn/branches/private_MH_EnhancementsForDVB-C/Kamaelia/Examples/DVB_Systems/TransportStreamDemuxer.py</td></tr>
+            <tr><td>[18:56] &lt MS-&gt (rather - http vs https)</td></tr>
+            <tr><td>[18:57] &lt Rigolo&gt could be .. let me first check what the -r flag actually does ..</td></tr>
+            <tr><td>[18:57] &lt Rigolo&gt (in czap that is)</td></tr>
+            <tr><td>[18:58] *** MS- nods</td></tr>
+            <tr><td>[18:58] &lt MS-&gt My guess is "remultiplex"</td></tr>
+            <tr><td>[18:58] &lt Rigolo&gt -r : set up /dev/dvb/adapterX/dvr0 for TS recording</td></tr>
+            <tr><td>[18:59] &lt Rigolo&gt so it is a transport stream that get's spit out</td></tr>
+            <tr><td>[18:59] &lt Rigolo&gt with only one channel in it I guess then</td></tr>
+            <tr><td>[18:59] &lt Rigolo&gt http://www.linuxtv.org/wiki/index.php/Zap</td></tr>
+            <tr><td>[18:59] &lt MS-&gt Yes, it's a transport stream</td></tr>
+            <tr><td>[18:59] &lt MS-&gt Just came across this:</td></tr>
+            <tr><td>[18:59] &lt MS-&gt $ czap -r -n 3 This tunes the DVB card to channel number 3. Now, record some data by typing:$ cat /dev/dvb/adapter0/dvr0 &gt stream.ts</td></tr>
+            <tr><td>[18:59] &lt MS-&gt From: http://www.gentoo-wiki.info/HOWTO_Master_a_DVD_from_DVB_transport_stream</td></tr>
+            <tr><td>[19:00] &lt MS-&gt Well, given that, it's entirely likely that given that transport stream,</td></tr>
+            <tr><td>[19:00] &lt MS-&gt http://kamaelia.googlecode.com/svn/branches/private_MH_EnhancementsForDVB-C/Kamaelia/Examples/DVB_Systems/TransportStreamDemuxer.py</td></tr>
+            <tr><td>[19:00] &lt vmlemon_&gt Any way to get *zap to get the whole multiplex?</td></tr>
+            <tr><td>[19:00] &lt MS-&gt should be easily adaptable to deal with the data</td></tr>
+            <tr><td>[19:00] &lt MS-&gt vmlemon_: pid 0x2000 would do that if the hardware supports that pid</td></tr>
+            <tr><td>[19:00] &lt MS-&gt otherwise you'd have to list all the pids manually</td></tr>
+            <tr><td>[19:01] &lt vmlemon_&gt So you add a new "channel" with 0x2000 specified as the PID?</td></tr>
+            <tr><td>[19:01] &lt vmlemon_&gt And then feed it to *zap?</td></tr>
+            <tr><td>[19:01] &lt MS-&gt vmlemon_: yep - or pid 8192 (== 0x2000)</td></tr>
+            <tr><td>[19:01] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[19:01] &lt MS-&gt If that adapted version of TransportStreamDemuxer.py works btw</td></tr>
+            <tr><td>[19:02] &lt Rigolo&gt okee ... but if you look at http://rigolo.googlepages.com/DVB-C-RecordChannel-NL1.txt the only difference are the PID's and there I do get a correct datastream</td></tr>
+            <tr><td>[19:02] &lt MS-&gt Rigolo: No, it's a different component</td></tr>
+            <tr><td>[19:02] &lt MS-&gt Pipeline( DVB_Multiplex(618, [88, 89], feparams, 4), # Nederland 1</td></tr>
+            <tr><td>[19:03] &lt MS-&gt DVB_Multiplex(618, [88, 89], feparams, 4)</td></tr>
+            <tr><td>[19:03] &lt Rigolo&gt MS-: I mean .. compare the NL1 with the NL2 example</td></tr>
+            <tr><td>[19:03] &lt MS-&gt Is NL2 encrypted?</td></tr>
+            <tr><td>[19:04] &lt Rigolo&gt on the "real" adaptor it is ... and the virtual it is not</td></tr>
+            <tr><td>[19:04] &lt Rigolo&gt (remember .. I am using open-sasc-ng to decrypt)</td></tr>
+            <tr><td>[19:04] &lt MS-&gt I think I'm getting confused here by this being IRC, I'm aslo going to have to go afk for a short period</td></tr>
+            <tr><td>[19:04] &lt MS-&gt But I think I need something clearer saying</td></tr>
+            <tr><td>[19:05] &lt MS-&gt This is free to air, and this works</td></tr>
+            <tr><td>[19:05] &lt MS-&gt This is encrypted, and this is how to deal with it without kamaelia</td></tr>
+            <tr><td>[19:05] &lt MS-&gt Then another saying how NL1 fits in</td></tr>
+            <tr><td>[19:05] &lt MS-&gt and whether it works or not</td></tr>
+            <tr><td>[19:05] &lt MS-&gt and another for NL2</td></tr>
+            <tr><td>[19:05] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:05] &lt Rigolo&gt okee .. I will write a little piece to clarify ...</td></tr>
+            <tr><td>[19:06] &lt MS-&gt (it's made much more complex by the simple fact that I don't have the data sources or similar to test with!)</td></tr>
+            <tr><td>[19:06] &lt Rigolo&gt are there no encrypted DVB streams in the UK? that you can decrypt with a smartcard?</td></tr>
+            <tr><td>[19:07] &lt MS-&gt On freeview, the vast majority of the 40-50 odd services are unencrypted</td></tr>
+            <tr><td>[19:07] &lt MS-&gt There's a handful of recent additions, but none that I've ever needed access to</td></tr>
+            <tr><td>[19:07] &lt MS-&gt So I couldn't even say what they were off the top of my head</td></tr>
+            <tr><td>[19:07] &lt vmlemon_&gt There are plenty of them</td></tr>
+            <tr><td>[19:07] &lt vmlemon_&gt But it's a case of having the right hardware</td></tr>
+            <tr><td>[19:07] &lt MS-&gt On Sky however,</td></tr>
+            <tr><td>[19:08] &lt Rigolo&gt okee .. that is DVB-S then ...</td></tr>
+            <tr><td>[19:08] &lt vmlemon_&gt Isn't the "Top-up TV" stuff encrypted?</td></tr>
+            <tr><td>[19:08] &lt MS-&gt which is essentially DVB-S, it's almost the opposite</td></tr>
+            <tr><td>[19:08] &lt MS-&gt vmlemon_: Yep, but I have no idea what's on top up tv</td></tr>
+            <tr><td>[19:08] &lt vmlemon_&gt A load of junk, probably</td></tr>
+            <tr><td>[19:08] &lt vmlemon_&gt To be frank</td></tr>
+            <tr><td>[19:08] &lt MS-&gt Rigolo: I have sky at home, and the system you get for that is a completely closed system</td></tr>
+            <tr><td>[19:08] &lt vmlemon_&gt although I haven't seen it, either</td></tr>
+            <tr><td>[19:09] &lt MS-&gt Rigolo: Though there is this box:</td></tr>
+            <tr><td>[19:09] &lt MS-&gt http://en.wikipedia.org/wiki/Dreambox</td></tr>
+            <tr><td>[19:09] &lt MS-&gt which due to our conversations I'm now getting more tempted to consider getting :)</td></tr>
+            <tr><td>[19:09] &lt Rigolo&gt MS-: that is why I understood yes .. they are using BOX keys to link the smartcard to the actual STB I understood</td></tr>
+            <tr><td>[19:09] &lt Rigolo&gt MS-: I have a dreambox DM500C sitting here next to me ...</td></tr>
+            <tr><td>[19:09] &lt Rigolo&gt :-)</td></tr>
+            <tr><td>[19:09] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:09] &lt vmlemon_&gt Isn't Sky Digital DVB-S + OpenTV + a NDS-owned cryptography system?</td></tr>
+            <tr><td>[19:10] &lt vmlemon_&gt Or is it more than that?</td></tr>
+            <tr><td>[19:10] &lt MS-&gt vmlemon_: Essentially that, as I understand it</td></tr>
+            <tr><td>[19:10] &lt Rigolo&gt it is NDS ... but also with that box key linking the smartcard to the STB</td></tr>
+            <tr><td>[19:11] &lt Rigolo&gt so if you would have other hardware that is able to understand NDS .. you still can not use it</td></tr>
+            <tr><td>[19:11] &lt vmlemon_&gt (And the proprietary set-top-box with a practically unchanged from the original revision design, barring Sky+ and SkyHD products)</td></tr>
+            <tr><td>[19:11] &lt MS-&gt I'd find it useful because most of the stuff I watch (and would want to record) is on encrypted channels - Sky 1/2, Sci Fi , Virgin 1 (sarah connor chronicles), UKTV Gold, Dave, etc</td></tr>
+            <tr><td>[19:11] &lt MS-&gt Rigolo: I really don't know the details, except it's *annoyingly closed* :)</td></tr>
+            <tr><td>[19:12] &lt MS-&gt OK, I have to go do something, back shortly</td></tr>
+            <tr><td>[19:12] &lt Rigolo&gt MS-: going to see if I can find some people using open-sasc-ng in combination with Sky :-)</td></tr>
+            <tr><td>[19:12] &lt vmlemon_&gt Do they still have the obnoxious requirement to keep the STB connected to a phoneline, too?</td></tr>
+            <tr><td>[19:12] &lt Rigolo&gt no idea ... no sky here :-)</td></tr>
+            <tr><td>[19:12] &lt vmlemon_&gt (Although most people just disconnect it, anyway)</td></tr>
+            <tr><td>[19:14] &lt vmlemon_&gt Ugh, http://google.com/codesearch?hl=en&q=show:apP4RPcJCdQ:I6mHEUwuRl8:BrTdgLUqNQ0&sa=N&ct=rd&cs_p=http://www.angstrom-distribution.org/unstable/sources/firefox-1.0.7-source.tar.bz2&cs_f=mozilla/LEGAL</td></tr>
+            <tr><td>[19:15] &lt vmlemon_&gt (Thanks for reminding me why software patents are a bad idea...)</td></tr>
+            <tr><td>[19:16] &lt Rigolo&gt brb .. sounds like the kids starting the break down the kitchen or something like that</td></tr>
+            <tr><td>[19:17] &lt vmlemon_&gt Sounds fun</td></tr>
+            <tr><td>[19:29] &lt Rigolo&gt back ... and we still have a kitchen ...</td></tr>
+            <tr><td>[19:29] &lt Rigolo&gt :-)</td></tr>
+            <tr><td>[19:32] &lt vmlemon_&gt Hmm,</td></tr>
+            <tr><td>[19:32] &lt vmlemon_&gt [20:46] &lt meoblast001&gt we need to find ppl who work for microsoft to help on reactos</td></tr>
+            <tr><td>[19:32] &lt vmlemon_&gt [20:47] &lt meoblast001&gt to code it similar to windows</td></tr>
+            <tr><td>[19:32] &lt vmlemon_&gt A Dangerously Stupid Idea®</td></tr>
+            <tr><td>[19:33] &lt Rigolo&gt well ... if you look at it a bit more .. it make sense .. reactos is trying to build an exact copy of windows .. so that should include all the weird bugs, GPF, drivers problems etc etc in it also :-)</td></tr>
+            <tr><td>[19:35] &lt vmlemon_&gt Hmm, it makes sense that way, until you consider things like the recent source code audit they completed, not to mention that most Microsoft employees are probably covered under NDAs and contracts with "taint clauses"</td></tr>
+            <tr><td>[19:37] &lt Rigolo&gt I still think of reactos as being wine on steroids :-)</td></tr>
+            <tr><td>[19:38] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[19:38] *** vmlemon_ still wonders if there isn't a small amount of POSIX supporting code or a UNIX compatibility layer for dealing with the Wine bits on top of their custom kernel </td></tr>
+            <tr><td>[19:39] &lt vmlemon_&gt Although having seen parts of the ReactOS source code, there isn't anything to suggest it</td></tr>
+            <tr><td>[19:46] *** Rigolo is busy for a moment ....</td></tr>
+            <tr><td>[19:55] &lt MS-&gt back</td></tr>
+            <tr><td>[19:55] &lt aa_&gt evening everyone</td></tr>
+            <tr><td>[19:55] &lt MS-&gt aa_: evening</td></tr>
+            <tr><td>[19:55] &lt vmlemon_&gt Hi aa_</td></tr>
+            <tr><td>[19:56] &lt aa_&gt anyone hacking up anything interesting?</td></tr>
+            <tr><td>[19:58] &lt MS-&gt "Do they still have the obnoxious requirement to keep the STB connected to a phoneline" - that requirement is a marketing related thing.</td></tr>
+            <tr><td>[19:58] &lt MS-&gt The telesales channels collectively subsidise the hardware on the understanding that recipients of hardware will be contractually</td></tr>
+            <tr><td>[19:58] &lt MS-&gt required to keep the box connected for the first year, so that they can recoup enough of the costs from enough sales.</td></tr>
+            <tr><td>[19:59] &lt vmlemon_&gt Aah, through interactive services and such?</td></tr>
+            <tr><td>[19:59] &lt MS-&gt aa_: At the moment, I'm fiddling with stuff taking mobile messages into a system. But the context is less interesting than it may sound :)</td></tr>
+            <tr><td>[19:59] &lt Rigolo&gt does trying to get Kamaelia to work with open-sasc-ng count as "hacking up anything interesting" ?</td></tr>
+            <tr><td>[19:59] &lt MS-&gt May generate some components to help though</td></tr>
+            <tr><td>[19:59] &lt MS-&gt Rigolo: I'd say that counts :)</td></tr>
+            <tr><td>[19:59] &lt MS-&gt vmlemon_: yep</td></tr>
+            <tr><td>[19:59] &lt Rigolo&gt okee :-)</td></tr>
+            <tr><td>[19:59] &lt aa_&gt MS-: interesting</td></tr>
+            <tr><td>[20:00] &lt aa_&gt Rigolo: anything frankenstein-like counts</td></tr>
+            <tr><td>[20:00] *** aa_ is using chip and pin card security with twisted auth</td></tr>
+            <tr><td>[20:00] *** vmlemon_ is watching the idiots from last time pound the Samba instance on his box with their misconfigured Windows 2000 machines</td></tr>
+            <tr><td>[20:00] &lt MS-&gt aa_: These people offer inbound SMS-&gt email/http get/http post for £2 per month (billed quarterly)</td></tr>
+            <tr><td>[20:01] &lt vmlemon_&gt Naturally, they're not getting very far</td></tr>
+            <tr><td>[20:01] &lt MS-&gt With non-mobile numbers</td></tr>
+            <tr><td>[20:01] &lt Rigolo&gt MS-: notices that czap is also picking up PID 197 (besides 71 and 97) .. and somehow Kamaelia is not telling the virtual DVB card enough information to tune something it looks like</td></tr>
+            <tr><td>[20:01] &lt aa_&gt MS-: wow, unlimited?</td></tr>
+            <tr><td>[20:01] &lt MS-&gt Rigolo: I see</td></tr>
+            <tr><td>[20:01] &lt MS-&gt aa_: Yep, unlimited _inbound_</td></tr>
+            <tr><td>[20:01] &lt aa_&gt oh I see</td></tr>
+            <tr><td>[20:02] &lt MS-&gt Outbound through them can be pay as you go</td></tr>
+            <tr><td>[20:02] &lt aa_&gt "Text the number of youir favourite celebrity dance-program thing to us"</td></tr>
+            <tr><td>[20:02] &lt MS-&gt http://www.aql.co.uk/site/prices.php</td></tr>
+            <tr><td>[20:02] &lt vmlemon_&gt and get spammed back? ;)</td></tr>
+            <tr><td>[20:02] &lt MS-&gt aa_: Yep essentially</td></tr>
+            <tr><td>[20:02] &lt aa_&gt wonder how much it costs for people texting in?</td></tr>
+            <tr><td>[20:02] &lt vmlemon_&gt Meh, I can't help but read "czap" as "crap" without staring at it again to correct myself :|</td></tr>
+            <tr><td>[20:03] &lt MS-&gt aa_: It's usual cost</td></tr>
+            <tr><td>[20:03] &lt aa_&gt that's actually pretty cool</td></tr>
+            <tr><td>[20:03] &lt Rigolo&gt aa_: hacking chip and pin card security ... you should come to .nl and have some fun with our OV Chipcard (dutch version of the Oyster card for dutch public transport)</td></tr>
+            <tr><td>[20:03] &lt aa_&gt text "support" to 1107</td></tr>
+            <tr><td>[20:03] &lt MS-&gt I've got two numbers - 1 for a work project, and one because I thought "I can afford £2 a month for SMS data inbound"</td></tr>
+            <tr><td>[20:03] &lt MS-&gt And could make use of that</td></tr>
+            <tr><td>[20:03] &lt aa_&gt Rigolo: the things are *amazing*</td></tr>
+            <tr><td>[20:03] &lt aa_&gt did you know that there is an entire OS on some of those cards?</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt RFID?</td></tr>
+            <tr><td>[20:04] &lt aa_&gt vmlemon_: RFID++</td></tr>
+            <tr><td>[20:04] &lt aa_&gt but yeah</td></tr>
+            <tr><td>[20:04] &lt MS-&gt aa_: As a result, I may have a play at building a twitter type thing using kamaelia, complete with inbound SMS</td></tr>
+            <tr><td>[20:04] &lt Rigolo&gt aa_: yes ... I'm working for a MVNO that is also working on NFC payment systems :-)</td></tr>
+            <tr><td>[20:05] &lt vmlemon_&gt I saw a library a while ago (PaSoRi I think) for working with a Sony USB RFID reader on *nix</td></tr>
+            <tr><td>[20:05] &lt MS-&gt The difference being of course I could key it up to do more interesting things depending on what messages it receives from *me* :-)</td></tr>
+            <tr><td>[20:05] &lt vmlemon_&gt Shame they don't sell them outside of Japan, though :(</td></tr>
+            <tr><td>[20:06] &lt Rigolo&gt vmlemon_: I just read that alcatel/lucent was bring some RFID tags and readers on the market to play around with ...</td></tr>
+            <tr><td>[20:06] &lt aa_&gt MS-: you could do James Bond-like spy stuff</td></tr>
+            <tr><td>[20:06] &lt MS-&gt :-)</td></tr>
+            <tr><td>[20:06] &lt aa_&gt well, I was stunned by these chip cards. Complete OS, public key crypto. Generate the private key on the card, and it never leaves. Then you use it to sign all your transactions</td></tr>
+            <tr><td>[20:07] &lt MS-&gt aa_: That's the idea being the TCPA stuff</td></tr>
+            <tr><td>[20:07] &lt aa_&gt and of course protect the private key with a passphrase (pin number)</td></tr>
+            <tr><td>[20:08] &lt aa_&gt "Town and Country Planning Association" ?</td></tr>
+            <tr><td>[20:08] &lt MS-&gt The first use of the TCPA stuff as well was actually to securely protect the keys to linux encryption partitions</td></tr>
+            <tr><td>[20:08] &lt MS-&gt Trusted Computing Platform Alliance hardware</td></tr>
+            <tr><td>[20:08] &lt aa_&gt aha</td></tr>
+            <tr><td>[20:09] &lt MS-&gt also labelled "treacherous computing" by people who haven't understood the hardware</td></tr>
+            <tr><td>[20:09] &lt MS-&gt Or have only looked at one possible use of the hardware</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt Was just going to mention that</td></tr>
+            <tr><td>[20:09] &lt MS-&gt basically the same hardware can be used to create an OS that completely locks out the user from changing it</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt [21:34] &lt dazjorz&gt I'd rather you don't, because that creates a forward proxy for you</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt [21:34] &lt dazjorz&gt you can already do that yourself, but if anything happens, caesar is blamed</td></tr>
+            <tr><td>[20:10] &lt vmlemon_&gt (Is what the server partition manager says about TCP forwarding, although I'm free to try it "at my own risk")</td></tr>
+            <tr><td>[20:10] &lt MS-&gt But the same thing also allows you to protect your data from attack should you lose the hardware...</td></tr>
+            <tr><td>[20:11] &lt MS-&gt vmlemon_: That's always the danger of port forwarding</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt [21:38] &lt dazjorz&gt maybe because you are binding to a port &lt  1024</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt [21:38] &lt dazjorz&gt or because Bastille has blocked it</td></tr>
+            <tr><td>[20:11] &lt MS-&gt Port forwarding can be useful though in conjunction with the -C flag over high latency links</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt Aah, looks like there's a security system in place on the partition, anyway</td></tr>
+            <tr><td>[20:11] &lt MS-&gt Primarily because the connection is compressed that way then.</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt Which explains a lot</td></tr>
+            <tr><td>[20:12] &lt aa_&gt ooh x factor results show</td></tr>
+            <tr><td>[20:12] &lt aa_&gt have fun losers!</td></tr>
+            <tr><td>[20:12] &lt MS-&gt hehehe</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt Yay, FireStarter worked</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt (Blocked the Samba request crap and spat it back in an ICMP packet)</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt Unless it's just eating my own traffic</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt (A Bad Thing (TM) in that case)</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt MS-: have a look at this ... http://www.satellites.co.uk/satellite/satellite-pc-card-systems-internet-satellite/95167-htpc-sky-hd-uk-working-also-viewing-card-has-been-out-my-sky-box-months-2.html</td></tr>
+            <tr><td>[20:16] &lt MS-&gt OK, so that includes using a hardware smartcard reader</td></tr>
+            <tr><td>[20:16] &lt MS-&gt which is fine</td></tr>
+            <tr><td>[20:17] &lt Rigolo&gt those are cheap now adays ... I have one here for 45 Euro's</td></tr>
+            <tr><td>[20:17] &lt Rigolo&gt 30 Pounds</td></tr>
+            <tr><td>[20:17] &lt Rigolo&gt and that is a USB based one ..</td></tr>
+            <tr><td>[20:17] &lt Rigolo&gt Smargo+</td></tr>
+            <tr><td>[20:19] &lt MS-&gt looks interesting</td></tr>
+            <tr><td>[20:19] &lt MS-&gt back in a sec, just have to do something</td></tr>
+            <tr><td>[20:21] &lt vmlemon_&gt Hmm...</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt Black helicopters and lawyers from BSkyB at his door? ;)</td></tr>
+            <tr><td>[20:28] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:31] &lt vmlemon_&gt Hi again, MS-</td></tr>
+            <tr><td>[20:32] &lt MS-&gt hi</td></tr>
+            <tr><td>[20:33] &lt vmlemon_&gt No helicopters or Sky lawyers at your door in that brief interlude, after we've been discussing their cryptography/protection systems? ;)</td></tr>
+            <tr><td>[20:33] &lt MS-&gt nope</td></tr>
+            <tr><td>[20:35] &lt Rigolo&gt MS-: it looks like czap is doing something with the SID and Kamaelia not (which makes some sense)</td></tr>
+            <tr><td>[20:35] &lt Rigolo&gt kamaelia just takes the complete stream and then splits out the PIDs that you need</td></tr>
+            <tr><td>[20:36] *** MS- nods</td></tr>
+            <tr><td>[20:36] &lt Rigolo&gt mm there is one more thing that I can try I just remember</td></tr>
+            <tr><td>[20:36] &lt Rigolo&gt force the sasc-ng virtual adapter to "budget mode" (although I have a budget DVB card)</td></tr>
+            <tr><td>[20:39] &lt Rigolo&gt mmm no difference ...</td></tr>
+            <tr><td>[20:54] &lt Rigolo&gt I think the "problem" I'm having has to do with the fact that Kamaelia assumes that it can get a complete unencrypted DVB transport stream from the DVB adapter and then just drop what you do not need</td></tr>
+            <tr><td>[20:55] &lt vmlemon_&gt Nice, it's just started to rain heavily</td></tr>
+            <tr><td>[20:55] &lt Rigolo&gt however .. the virtual adapter that is created by open-sasc-ng can not give you that. It can only give you some PID's that you specifically requested and then it will do it's best to decrypte them before giving them to you</td></tr>
+            <tr><td>[20:56] &lt Rigolo&gt was the DVB support ever tested with a full feature DVB card?</td></tr>
+            <tr><td>[20:56] &lt Rigolo&gt (do they exist for dvb-t?)</td></tr>
+            <tr><td>[20:57] &lt vmlemon_&gt There are "full feature" cards, but they're not as common it seems</td></tr>
+            <tr><td>[20:57] &lt vmlemon_&gt for DVB-T</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt what I see happening if I use czap to tune a station is that specific PID's are requested from the dvb adapter ..I never see that with Kamaelia</td></tr>
+            <tr><td>[20:59] &lt Rigolo&gt (and all this ... if I read the logs correct ....)</td></tr>
+            <tr><td>[20:59] *** Rigolo is away for a moment ... </td></tr>
+            <tr><td>[21:17] &lt Rigolo&gt back</td></tr>
+            <tr><td>[21:18] &lt vmlemon_&gt The debate about command names in #opensolaris is "fun" at the moment..</td></tr>
+            <tr><td>[21:18] &lt vmlemon_&gt .</td></tr>
+            <tr><td>[21:18] &lt MS-&gt Rigolo: No, specific pids are requested from the DVB adapter</td></tr>
+            <tr><td>[21:18] &lt Rigolo&gt are they?</td></tr>
+            <tr><td>[21:18] &lt MS-&gt yep</td></tr>
+            <tr><td>[21:19] &lt Rigolo&gt mmmm</td></tr>
+            <tr><td>[21:19] &lt MS-&gt You have to tell the adapter which pids to spit out of the adapter</td></tr>
+            <tr><td>[21:19] &lt MS-&gt then grab those</td></tr>
+            <tr><td>[21:19] &lt MS-&gt and demux them specifically</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Generally we ask for 0x2000 where we can because it gives us everything in the containing transport stream</td></tr>
+            <tr><td>[21:21] &lt Rigolo&gt okee .. but asking for 0x2000 does not work on open-sasc-ng ...</td></tr>
+            <tr><td>[21:21] *** MS- nods</td></tr>
+            <tr><td>[21:21] &lt MS-&gt it also doesn't work with all DVB-T hardware either</td></tr>
+            <tr><td>[21:21] &lt MS-&gt eg I have a DVB-T stick it doesn't work with</td></tr>
+            <tr><td>[21:21] &lt vmlemon_&gt Can't you list the "essential PIDs" without problems (until you've covered everything you're interested in)?</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt MS .. I see .. on Core.py there is the addPIDS function ...</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt okee .. so DVBMultiplex tunes the DVB hardware to the correct frequency etc</td></tr>
+            <tr><td>[21:24] *** MS- nods</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt then when there is a lock selects the PID's it wants</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt and then retreives the resulting stream from dvr0</td></tr>
+            <tr><td>[21:25] &lt MS-&gt in dmx.pyx does the actual hardwork</td></tr>
+            <tr><td>[21:25] &lt Rigolo&gt the I thin something goes "wrong" in addPIDs</td></tr>
+            <tr><td>[21:25] &lt MS-&gt cdef class Demux:</td></tr>
+            <tr><td>[21:25] &lt MS-&gt ...</td></tr>
+            <tr><td>[21:25] &lt MS-&gt  def set_filter(self, pid, filter, mask, mode, timeout, flags):</td></tr>
+            <tr><td>[21:25] &lt MS-&gt  """Set up a filter according to the filter and mask arguments."""</td></tr>
+            <tr><td>[21:25] &lt MS-&gt ...</td></tr>
+            <tr><td>[21:25] &lt MS-&gt  cdef cdmx.dmx_sct_filter_params p</td></tr>
+            <tr><td>[21:25] &lt MS-&gt  p.pid = pid</td></tr>
+            <tr><td>[21:26] &lt MS-&gt ..</td></tr>
+            <tr><td>[21:26] &lt MS-&gt  if ioctl(self.fd, cdmx.DMX_SET_FILTER, &p) == -1:</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt okee .. when I use czap I see something about PES (actuall that is an error) in the logs .. but that does not happen with Kamaelia</td></tr>
+            <tr><td>[21:28] &lt vmlemon_&gt Hah, [22:56] &lt hrist&gt but don't you feel the need to type grandunifiedbootloader-install everytime you want to use grub-install? ;)</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt MS-: I find all those commented lines with the word "scarmbling" very scary :-)</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt scrambling also btw:-)</td></tr>
+            <tr><td>[21:33] &lt MS-&gt I didn't write that code in the first place :-)</td></tr>
+            <tr><td>[21:34] &lt Rigolo&gt but you took those parts out :-) (at least .. according to the chagnelog :-) )</td></tr>
+            <tr><td>[21:35] &lt Rigolo&gt actually .. Matt did :-)</td></tr>
+            <tr><td>[21:35] &lt vmlemon_&gt And he's scrambling to remove them ;)</td></tr>
+            <tr><td>[21:35] *** Rigolo needs new glasses ... or a bigger screen</td></tr>
+            <tr><td>[21:49] &lt Rigolo&gt mmmm too late to make sense of it all ...</td></tr>
+            <tr><td>[21:50] &lt Rigolo&gt no idea what happens here ...</td></tr>
+            <tr><td>[21:50] &lt Rigolo&gt tomorrow is an other day for these things ...</td></tr>
+            <tr><td>[21:51] &lt Rigolo&gt going to bed now ...</td></tr>
+            <tr><td>[21:51] &lt Rigolo&gt maybe talk to you tomorrow ...</td></tr>
+            <tr><td>[21:52] &lt vmlemon_&gt See you, Rigolo</td></tr>
+            <tr><td>[23:36] *** vmlemon_ has joined #kamaelia</td></tr>

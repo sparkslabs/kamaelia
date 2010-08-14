@@ -1,0 +1,468 @@
+<html><body><table>
+            <tr><td>[06:54] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[06:55] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[06:58] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[06:58] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[07:04] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:08] &lt MS-&gt morning</td></tr>
+            <tr><td>[07:40] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:12] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:30] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:40] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:53] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:14] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:20] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[10:36] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[10:36] Reply: does the macarena</td></tr>
+            <tr><td>[10:57] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[11:48] *** bcarlyon|laptop is now known as BarryCarlyon</td></tr>
+            <tr><td>[11:57] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[12:22] &lt ms-afk&gt http://www.ididwork.com/ - pretty nice little thing. Probably wouldn't share my "feed", but pretty nice.</td></tr>
+            <tr><td>[12:26] &lt Davbo&gt Heh cool</td></tr>
+            <tr><td>[12:28] &lt Davbo&gt good idea for SoC perhap</td></tr>
+            <tr><td>[12:28] &lt Davbo&gt s/perhap/perhaps</td></tr>
+            <tr><td>[12:28] &lt ms-afk&gt Probably too granular I think.</td></tr>
+            <tr><td>[12:29] &lt ms-afk&gt It's useful for me though - we have to report in 1.5 - 2 chunks what we've been working on, and it's almost always a pain at the end of the week</td></tr>
+            <tr><td>[12:29] &lt ms-afk&gt normally I make a rough guess based on mail.</td></tr>
+            <tr><td>[12:29] &lt vmlemon_&gt Ouch, "/home/tyson/Desktop/oss-v4.1-build080705-src-gpl/BUILD/BUILD/BUILD/BUILD/BUILD/BUILD/BUILD/BUILD/BUILD/.license: Too many levels of symbolic links"</td></tr>
+            <tr><td>[12:29] &lt ms-afk&gt For kamaelia stuff (when that was the main focus) I'd look at checkin logs which is far more accurate</td></tr>
+            <tr><td>[12:29] &lt Davbo&gt I suppose, interesting though</td></tr>
+            <tr><td>[12:29] &lt ms-afk&gt vmlemon_: heh, someones done ln -s X .</td></tr>
+            <tr><td>[12:30] &lt ms-afk&gt I'd find it interesting for people who did it, but I'd not want to use it for actual work (i think)</td></tr>
+            <tr><td>[12:30] &lt ms-afk&gt but useful for personal record</td></tr>
+            <tr><td>[12:30] &lt vmlemon_&gt Stupid faulty configure script</td></tr>
+            <tr><td>[12:30] &lt ms-afk&gt vmlemon_: indeed</td></tr>
+            <tr><td>[12:31] &lt vmlemon_&gt The work logger thing looks interesting</td></tr>
+            <tr><td>[12:32] &lt ms-afk&gt Yeah - it has support for "adding your managers email" and "sending a report to your boss", which I don't like</td></tr>
+            <tr><td>[12:32] &lt ms-afk&gt but as a work microblogger, useful</td></tr>
+            <tr><td>[12:33] &lt vmlemon_&gt That's better, it works now after trashing the directory I was going to build it in, and the unpacked stuff from the tarball</td></tr>
+            <tr><td>[12:33] &lt vmlemon_&gt Probably my fault trying to create the build directory inside the directory containing configure ;)</td></tr>
+            <tr><td>[12:33] &lt ms-afk&gt (reason I don't like it for those who've not had the "joy" of years of work, is that it'd be very easy to set the wrong expectations by starting on a very good week, and also potentially give rise to micromanagement - which is worth avoiding :) )</td></tr>
+            <tr><td>[12:34] &lt vmlemon_&gt Hah, nice "This library has been programmed using brute force methods and it's not designed to be any programming example."</td></tr>
+            <tr><td>[12:35] &lt vmlemon_&gt At least they were honest about it being crap and hacky ;)</td></tr>
+            <tr><td>[12:35] &lt Davbo&gt I guess ms-afk, it takes away some of the work from micromanagement though.</td></tr>
+            <tr><td>[12:36] &lt Davbo&gt Sounds like you've got your share of micromanagement as it is, this might just make it easier for you :-)</td></tr>
+            <tr><td>[12:36] &lt ms-afk&gt nah 1.5 - 2hours is OK - we have to log our work in terms of 20 quarter days a week</td></tr>
+            <tr><td>[12:37] &lt Davbo&gt They've got R&D on a tight leash don't you think?</td></tr>
+            <tr><td>[12:37] &lt ms-afk&gt I figure that's either 2 hour chunks or 1.5 hour chunks depending on how you think of producivity</td></tr>
+            <tr><td>[12:37] &lt ms-afk&gt Davbo: not particularly - most of us work on a handful of projects so we tend to end up say</td></tr>
+            <tr><td>[12:37] &lt ms-afk&gt "10 on this, 8 on that 2 on the other"</td></tr>
+            <tr><td>[12:37] &lt ms-afk&gt essentially</td></tr>
+            <tr><td>[12:38] &lt ms-afk&gt but unless you can go "20 on this" you have to think about it :)</td></tr>
+            <tr><td>[12:38] &lt ms-afk&gt I tend to like breaking it down</td></tr>
+            <tr><td>[12:38] &lt mhrd-afk&gt I've quite a few university friends who've worked for various big companies that demand time accounting in much finer grained terms - perhaps as small as 1/4 hour chunks</td></tr>
+            <tr><td>[12:38] &lt ms-afk&gt Indeed - if you're working for a company that does contracts for clients that's very common</td></tr>
+            <tr><td>[12:39] &lt ms-afk&gt I've seen it as low as 5 minutes</td></tr>
+            <tr><td>[12:39] &lt ms-afk&gt Depends normally on how the clients are billed</td></tr>
+            <tr><td>[12:39] &lt Davbo&gt That's crazy</td></tr>
+            <tr><td>[12:39] &lt mhrd-afk&gt Thats Management</td></tr>
+            <tr><td>[12:39] &lt ms-afk&gt Davbo: the thing that drives the 20 1/4 hour day thing is accounting for things like EU & DTI.renamed() projects</td></tr>
+            <tr><td>[12:40] &lt ms-afk&gt For commercial companies it boils down to money</td></tr>
+            <tr><td>[12:40] &lt Davbo&gt I can understand ms-afk if you're working on many projects</td></tr>
+            <tr><td>[12:40] &lt Davbo&gt management needs to see you're dividing time correctly</td></tr>
+            <tr><td>[12:40] &lt mhrd-afk&gt for us at least, it degrades gracefully if you're only on one project - you simply put down 20 quarter days against it</td></tr>
+            <tr><td>[12:40] &lt ms-afk&gt Well, to give an idea - I *am* working on a DTI.renamed() project at the moment as my primary work</td></tr>
+            <tr><td>[12:41] &lt ms-afk&gt so they need to know what level of overhead I'm giving to this sort of thing</td></tr>
+            <tr><td>[12:41] &lt ms-afk&gt and there's also things on overheads (which includes management/staff meetings)</td></tr>
+            <tr><td>[12:41] &lt ms-afk&gt As well as something called "ineffective" which I was putting despamming time against</td></tr>
+            <tr><td>[12:42] &lt ms-afk&gt Also, you *can* put in more than 20 quarter days into the system, which can flag up when there's problems or time in lieu needed etc</td></tr>
+            <tr><td>[12:43] &lt ms-afk&gt But as matt says it degrades nicely - though I do prefer an accurate log for when the monthly or quarterly (3 monthly) reporting cycle comes round</td></tr>
+            <tr><td>[12:44] &lt ms-afk&gt I don't personally kid myself about it being anything other than a reporting exercise for externally funded projects though.</td></tr>
+            <tr><td>[12:44] &lt ms-afk&gt since externally funded projects do require it as you'd expect :-)</td></tr>
+            <tr><td>[12:44] &lt Davbo&gt interesting, i see how some clients might take it too far though</td></tr>
+            <tr><td>[12:44] &lt ms-afk&gt Well, turn it on it's head</td></tr>
+            <tr><td>[12:45] &lt ms-afk&gt A contractor could ask for anywhere between 250 and 400 per day</td></tr>
+            <tr><td>[12:45] &lt ms-afk&gt If they bill you by the hour, that rate will be closer to £50 an hour (much like a plumber)</td></tr>
+            <tr><td>[12:45] &lt mhrd-afk&gt or more</td></tr>
+            <tr><td>[12:45] &lt Davbo&gt I guess</td></tr>
+            <tr><td>[12:46] &lt ms-afk&gt depends on skill rates</td></tr>
+            <tr><td>[12:46] &lt ms-afk&gt so that's the point at which it makes sense</td></tr>
+            <tr><td>[12:46] &lt ms-afk&gt I've not done contracting (even though it can be very lucrative) because the stress levels can be much higher because you can't guarantee where the money is coming from</td></tr>
+            <tr><td>[12:47] &lt ms-afk&gt there's also far less freedom</td></tr>
+            <tr><td>[12:47] &lt ms-afk&gt It's the closest I've seen to anyone getting overtime in the industry though :)</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt &lt  mhrd-afk&gt Thats Management &lt -- poor one IMO</td></tr>
+            <tr><td>[12:51] &lt Davbo&gt do you have anything like this Lawouach_?</td></tr>
+            <tr><td>[12:51] &lt Davbo&gt Also what's your userid on webfaction?</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt My userid is 'platom'</td></tr>
+            <tr><td>[12:52] &lt Lawouach_&gt Time accounting? It exists in France too but I've never heard something so drastic</td></tr>
+            <tr><td>[12:52] &lt Lawouach_&gt Usually you find that people have to checkin and checkout when they arrive and leave</td></tr>
+            <tr><td>[12:53] &lt Lawouach_&gt But contracting in France is not as common</td></tr>
+            <tr><td>[12:53] &lt Davbo&gt interesting</td></tr>
+            <tr><td>[12:53] &lt Lawouach_&gt IT is filled with IT agencies in France</td></tr>
+            <tr><td>[12:54] &lt Davbo&gt you work at a software development company?</td></tr>
+            <tr><td>[12:54] &lt Lawouach_&gt We still call them "meat sales" because they used to treat employees like crap</td></tr>
+            <tr><td>[12:54] &lt Lawouach_&gt They've improved a bit but when the market isn't good, they can be very tough</td></tr>
+            <tr><td>[12:54] &lt Lawouach_&gt I'm an employee of one of those agencies</td></tr>
+            <tr><td>[12:55] &lt Lawouach_&gt The game is to get as much as you can from them. They do the same from you for as little as they can</td></tr>
+            <tr><td>[12:55] &lt Lawouach_&gt The reason why i'm doing so much of OSS is because otherwise I'd be depressed</td></tr>
+            <tr><td>[12:55] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:55] &lt ms-afk&gt Lawouach_: Here it's virtually always tied to some form of accounting. So either contracting, or a company that provides X as a service, or is taking EU funding and working on multiple projects, etc</td></tr>
+            <tr><td>[12:55] &lt Lawouach_&gt IT agencies are rarely focused on one aspect of IT.</td></tr>
+            <tr><td>[12:56] &lt ms-afk&gt I believe that R&D for example didn't bother with it until they started doing EU projects</td></tr>
+            <tr><td>[12:56] &lt ms-afk&gt then it became a relatively lightweight way of doing it.</td></tr>
+            <tr><td>[12:58] *** Davbo wonders what he's signed up for</td></tr>
+            <tr><td>[12:59] &lt Davbo&gt Maybe I should try to get a job at BBC R&D lol</td></tr>
+            <tr><td>[13:01] &lt vmlemon_&gt Haha</td></tr>
+            <tr><td>[13:01] &lt vmlemon_&gt That's the "creative" bit the BBC mentions in their job ads? ;)</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt heheh</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt I find it rather amusing that the new series of spooks has a nuked version of london - set the year after a large chunk of the beeb moves to manchester</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt There really is creative bitching I believe. Probably a whole department somewhere</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt Or many</td></tr>
+            <tr><td>[13:03] &lt vmlemon_&gt (Or at least the ones I've seen)</td></tr>
+            <tr><td>[13:04] &lt vmlemon_&gt "Our moaning is as creative as our programming. What else would you expect from the BBC?" (or something like that) ;)</td></tr>
+            <tr><td>[13:05] &lt ms-afk&gt "This is what we do"</td></tr>
+            <tr><td>[13:07] &lt Davbo&gt Either that or i'll try to get a job off Mark Shuttleworth at Pycon ;)</td></tr>
+            <tr><td>[13:07] &lt vmlemon_&gt "Free whine, it's on us"</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt :-)</td></tr>
+            <tr><td>[13:08] &lt vmlemon_&gt Hmm, could give it to whoever can yodel "Oh Kamaelia!" the best ;)</td></tr>
+            <tr><td>[13:13] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[13:28] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[13:28] &lt Davbo&gt Meeting in 20 mins?</td></tr>
+            <tr><td>[13:29] &lt ms-afk&gt yep</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt ==============================================</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt START OF WEEKLY IRC KAMAELIA MEETING, 20080807</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt ==============================================</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt 1. Note of Agenda</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt -----------------</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt 1. Note of Agenda</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt 2. Participants</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt 3. Activity Reports</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt 4.1 GSOC Code reviews.</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt Any more items?</td></tr>
+            <tr><td>[13:51] *** Davbo can't think of any</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt 2. Participants</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt ---------------</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt Present: Davbo, Lawouach, aa_, BarryCarlyon, Chong-, ian_brasil, j_baker, kamlogbot, mhrd-afk, ms-afk, orphans, robertofaga, Uraeus, vmlemon</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt 3. Activity Reports</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt -------------------</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt ready?</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt set</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt go!</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt Michael</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt  DONE: Not a lot on Kamaelia</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt  TODO: (this) meeting, advise people on tagging code.</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt BLOCKED: Blocked with work, and urgent personal stuff taking up almost every hour. Away next week.</td></tr>
+            <tr><td>[13:51] &lt j_baker&gt DONE: Got the Kamaelia Publish gateway to use a database to track users, tested Kamaelia Publish with MoinMoin, got the gateway to serve static content via Minimal, moved gateway and peer to use python's built in logging system</td></tr>
+            <tr><td>[13:51] &lt j_baker&gt TODO: Tidy up documentation, provide some examples, clean up code, work on packaging some more</td></tr>
+            <tr><td>[13:51] &lt j_baker&gt BLOCKED: None</td></tr>
+            <tr><td>[13:51] &lt orphans&gt DONE: Make RtAudio binding work without needing to acquire the GIL. Put audio c</td></tr>
+            <tr><td>[13:51] &lt orphans&gt omponents into Jam. Various changes and fixes to the audio components.</td></tr>
+            <tr><td>[13:51] &lt orphans&gt TODO: Make the audio components synchronise to a master clock. Clean, document,</td></tr>
+            <tr><td>[13:51] &lt orphans&gt  test and package anything which moves.</td></tr>
+            <tr><td>[13:51] &lt orphans&gt BLOCKED: None</td></tr>
+            <tr><td>[13:52] &lt Chong-&gt DONE: finish RDFParser and link it to TopologyViewer3D to draw FOAF data; extend TopologyViewer3D and Particles3D to accept more parameters; fix several bugs of TopologyViewer3D; start collaboration viewer application</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt DONE: Finished up my colour selector by adding a vertical slider to control colour saturation. Tested other methods for drawing with brushes.</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt TODO: Implement new brush method, then work on UI mostly.</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt BLOCKED: None.</td></tr>
+            <tr><td>[13:52] &lt Chong-&gt TODO: Finish up collaboration viewer application (add different colours, be able to change view and so on), final code cleaning, and review Davo's code</td></tr>
+            <tr><td>[13:52] &lt Chong-&gt BLOCKED: None</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt waits for any comments</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt --------------------------------</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt 4.1 GSOC Code reviews/etc</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt ^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt OK, this was largely covered in the first mail in the recent "Getting GSOC code ready for merge" thread</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt But to summarise</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt The only way to have a decent code review (in terms of readability, understandability, maintainability, and hence safety)</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt is for a fresh set of eyes to look at code</td></tr>
+            <tr><td>[13:54] &lt ms-afk&gt Meaning that this should happen before then given the final "pens down" date of August 18</td></tr>
+            <tr><td>[13:55] &lt ms-afk&gt So if we take the recomennded "pens down" of next monday, that gives a good 2-3 days to review your peers code and give feedback.</td></tr>
+            <tr><td>[13:56] &lt ms-afk&gt Giving a few days to try and rectify any percieved problems prior to the point in time where you'll need to tag your code as "this was what I did" point</td></tr>
+            <tr><td>[13:56] &lt ms-afk&gt Now, fundamentally, no-one has to review anyone elses code, but doing so would be appreciated.</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt Since it reduces the overhead down the line.</td></tr>
+            <tr><td>[13:58] &lt ms-afk&gt Firstly, does anyone feel they have too much to do this week/next which means they feel they don't have time to do this?</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt is anyone there?</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt I'm gonna need some help from j_baker I think</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt for "where to start"</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt Everyone will, that's the point</td></tr>
+            <tr><td>[13:59] &lt j_baker&gt I'm able to do that.</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt If there isn't a "where to start" that's a fundamental problem with the code</td></tr>
+            <tr><td>[13:59] &lt orphans&gt happy to do it, but bit's and pieces of my code are quite ugly atm</td></tr>
+            <tr><td>[13:59] &lt orphans&gt I guess that's kinda the point :)</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt orphans: Spot on</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt same orphans</td></tr>
+            <tr><td>[14:00] &lt ms-afk&gt to the person who wrote the code, it's always obvious</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt Cheers j_baker</td></tr>
+            <tr><td>[14:00] &lt ms-afk&gt Chong-: ?</td></tr>
+            <tr><td>[14:00] &lt ms-afk&gt ok/not ok?</td></tr>
+            <tr><td>[14:00] &lt Chong-&gt me too. It's in my to do list :-)</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt I've only glanced at it tbh, so i wouldn't expect to know where to start. In terms of a review anyway</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt OK, now we come to allocation of reviews</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt My initial thought, which isn't cast in stone was this:</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt     Chong reviews Dave's code</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt      Dave reviews Jason's code</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt      Jason reviews Joe's code</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt      Joe reviews Chong's code.</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt Based on who is least likely to know whose code</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt To the extent of "how do I even get started with running this"</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt Um.</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt Any thoughts?</td></tr>
+            <tr><td>[14:03] &lt orphans&gt good for me - I've run Chong's code and done a one-liner fix on it, but no more :)</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt I've no problem reviewing j_baker's so long as he's patient ;)</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt makes for a better review though</td></tr>
+            <tr><td>[14:03] &lt j_baker&gt I need my code reviewed NOW.</td></tr>
+            <tr><td>[14:03] &lt j_baker&gt :P</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt note: a positive review won't mean "this code will be merged", a negative one won't mean "this code will be merged"</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt :D</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt or won't</td></tr>
+            <tr><td>[14:03] &lt orphans&gt j_baker, prepare to get the #VOMIT brush out for mine :)</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt It's a review IMO</td></tr>
+            <tr><td>[14:04] &lt j_baker&gt Meh, a summer really isn't THAT MUCH time to get code written, so I'd be surprised if I didn't have to.</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt Davbo: I have not seen Dave's code clearly before :/</td></tr>
+            <tr><td>[14:04] &lt ms-afk&gt rather than saying "ready for merge" since to be honest merging the entire project in one go will probably cause more problems than it should</td></tr>
+            <tr><td>[14:05] &lt ms-afk&gt So for actual merge, I'm going to suggest what actually happened with private_MPS_Scratch which is to divvy things up into concrete reviewable chunks</td></tr>
+            <tr><td>[14:05] &lt orphans&gt Chong-, worry not, every time I check out Davbo's code it seems to work. *shakes fist*</td></tr>
+            <tr><td>[14:05] &lt ms-afk&gt But that's for later on, rather than this which is "sanity checking" and "simplicity checking"</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt orphans: glad to hear about it :-)</td></tr>
+            <tr><td>[14:06] &lt Davbo&gt fair enough ms-afk</td></tr>
+            <tr><td>[14:06] &lt orphans&gt ms-afk, so this is more about it being conceptually sane and readable etc?</td></tr>
+            <tr><td>[14:06] &lt ms-afk&gt yes</td></tr>
+            <tr><td>[14:07] &lt orphans&gt k, cool :)</td></tr>
+            <tr><td>[14:07] &lt ms-afk&gt These code reviews really need to happen somewhere logged as a result - the discussions are as important as any "final" summary</td></tr>
+            <tr><td>[14:08] &lt ms-afk&gt Much like during the GSOC application period tbh</td></tr>
+            <tr><td>[14:08] &lt ms-afk&gt One of the core things we evaluated when picking things was how much people communicated, and it seems to be the only guide of how worthwhile the summer will be IMO</td></tr>
+            <tr><td>[14:08] &lt orphans&gt ms-afk, could we do it on google code - that has a review thing doesn't it?</td></tr>
+            <tr><td>[14:09] &lt ms-afk&gt I looked and fiddled with that, and intheory its OK</td></tr>
+            <tr><td>[14:09] &lt ms-afk&gt but it only reviews specific versions, not code in general</td></tr>
+            <tr><td>[14:10] &lt ms-afk&gt and operates on a final level rather than collection of files level</td></tr>
+            <tr><td>[14:10] &lt ms-afk&gt So as soon as you check in a file, the review disappears from the file</td></tr>
+            <tr><td>[14:10] &lt orphans&gt is it not stored with the revision?</td></tr>
+            <tr><td>[14:10] &lt ms-afk&gt It's stored with the revision, but say you change a comment in the file</td></tr>
+            <tr><td>[14:10] &lt ms-afk&gt and check that in</td></tr>
+            <tr><td>[14:11] &lt ms-afk&gt then a 100 line code review of a different part of the file disappears</td></tr>
+            <tr><td>[14:11] &lt vmlemon_&gt It's lost?</td></tr>
+            <tr><td>[14:11] &lt ms-afk&gt vmlemon_: yep</td></tr>
+            <tr><td>[14:11] &lt vmlemon_&gt Oucb</td></tr>
+            <tr><td>[14:11] &lt vmlemon_&gt *Ouch</td></tr>
+            <tr><td>[14:11] &lt ms-afk&gt You can go back and find it, but it would involve foraging, which is actually a large point of trying to avoid here</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt Better to review and post to the list then?</td></tr>
+            <tr><td>[14:11] &lt orphans&gt mhm, sounds not friendly</td></tr>
+            <tr><td>[14:12] &lt ms-afk&gt Probably the biggest thing to note with these things are "are these a good example of how to write Kamaelia code - does it follow idioms"</td></tr>
+            <tr><td>[14:12] &lt ms-afk&gt Personally, I'd say chat on IRC, and chat on the list</td></tr>
+            <tr><td>[14:12] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[14:12] &lt ms-afk&gt If kamlogbot dies then chatting on list is better</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt Should folks doing reviews put logs/log extracts on the list?</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt (If the logger's bust)</td></tr>
+            <tr><td>[14:13] &lt ms-afk&gt Things NOT following idioms isn't necessarily a problem if the code is safer or (as safe, but clearer) or (as safe, but faster)</td></tr>
+            <tr><td>[14:13] &lt ms-afk&gt I'm leery of mailing IRC logs to a list</td></tr>
+            <tr><td>[14:13] &lt ms-afk&gt Summaries of discussions are generally OK (as long as everyone's happy with it)</td></tr>
+            <tr><td>[14:14] &lt ms-afk&gt The reason is because the discussions show just how painful something really is, not how painful the code writer would want it NOT to be :-)</td></tr>
+            <tr><td>[14:14] &lt ms-afk&gt After all there are some axioms of software and software development/maintenance</td></tr>
+            <tr><td>[14:15] &lt ms-afk&gt 1) All software is crap</td></tr>
+            <tr><td>[14:15] &lt ms-afk&gt 2) The person who wrote the code can rarely see it's true crap form</td></tr>
+            <tr><td>[14:15] &lt ms-afk&gt 3) This applies to everyone, despite 2) making everyone think it doesn't apply to them</td></tr>
+            <tr><td>[14:15] &lt ms-afk&gt The implication is that the primary aim should be to reduce the potential for crap</td></tr>
+            <tr><td>[14:15] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[14:16] &lt ms-afk&gt The side issue here though is this: *no-one* likes being told their code is crap</td></tr>
+            <tr><td>[14:16] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[14:17] &lt Davbo&gt Don't worry Chong- I promise i wont break your legs</td></tr>
+            <tr><td>[14:17] &lt Davbo&gt *aherm*</td></tr>
+            <tr><td>[14:18] &lt orphans&gt this has all become very fight club. ms-afk is doing the first rule of code club, Davbo's breaking peoples legs</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt Also, the corrollary of that is given 1) any replacement for any piece of code will also be crap</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt heh</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt I didn't come up with these btw</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[14:18] &lt Chong-&gt Davbo: hehe, if only you don't break my hands, I can still "bombast" you :-)</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt Came up when I was working at inktomi - a colleague pointed it out and only after time came to the conclusion that whilst 1) seems reasonable that 2 & 3 have to be true as well :)</td></tr>
+            <tr><td>[14:19] &lt j_baker&gt Davbo was building an army. But for what purpose?</td></tr>
+            <tr><td>[14:19] &lt Davbo&gt I've also got split-personality disorder orphans :p</td></tr>
+            <tr><td>[14:20] *** Davbo recalls plot points of Fight Club</td></tr>
+            <tr><td>[14:20] &lt ms-afk&gt The side effect though of this is given "1" you should take no prisoners since the person you're talking to is in "2", but bear in mind that "*no-one* likes being told their code is crap", so be nice about it</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt The nastier you think something is, the nicer you should be</td></tr>
+            <tr><td>[14:21] &lt orphans&gt the three rules make me worry a bit. Does that mean that the bits which I know are crap are really really really crap? :)</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt orphans: Maybe :)</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt The older I get the more true it seems</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt The danger is you can end up thinking "ah sod it, it's going to be crap, so I'll just release crap"</td></tr>
+            <tr><td>[14:22] &lt ms-afk&gt "and hope someone else sees it and replaces it with something less crap"</td></tr>
+            <tr><td>[14:22] &lt ms-afk&gt You could argue that's what r0ml was advocating his talk of course.</td></tr>
+            <tr><td>[14:22] &lt Davbo&gt Yeah i was just thinking of that</td></tr>
+            <tr><td>[14:23] &lt ms-afk&gt It's certainly the approach that Rasmus Lerdorf claimed he took with PHP</td></tr>
+            <tr><td>[14:23] &lt ms-afk&gt The danger with it is if you create something truly crap, people go off and write their own crap</td></tr>
+            <tr><td>[14:23] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[14:23] &lt ms-afk&gt OK, I'm getting silly now</td></tr>
+            <tr><td>[14:23] &lt orphans&gt cf audio in linux :)</td></tr>
+            <tr><td>[14:23] &lt vmlemon_&gt and the crap continuum collapses under it's own weight and sucks everything else under with it? ;)</td></tr>
+            <tr><td>[14:24] &lt ms-afk&gt Fundamentally, be realistic, be honest, but be nice about it</td></tr>
+            <tr><td>[14:24] &lt ms-afk&gt But do tag code with TODO, FIXME, VOMIT, where you feel that's necessary</td></tr>
+            <tr><td>[14:24] &lt orphans&gt "my Chong-, you're looking lovely today, and that code you wrote made me want to gouge out my eyes :D"</td></tr>
+            <tr><td>[14:24] &lt ms-afk&gt heh</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[14:25] &lt Chong-&gt orphans: hehe</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt I think the "but be nice about it" bit is important to remember.</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt If you're not, you won't be listened to.</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt And there may be very good reasons for doing something in a particular way after all.</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt eg "windows made me do it"</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt "it's tuesday"</td></tr>
+            <tr><td>[14:26] &lt ms-afk&gt "I need coffee"</td></tr>
+            <tr><td>[14:27] &lt ms-afk&gt OK, everyone clear ?</td></tr>
+            <tr><td>[14:27] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[14:27] &lt ms-afk&gt (last thing I want to do is start a 4 way crap fight and then leave the room)</td></tr>
+            <tr><td>[14:27] &lt Davbo&gt yep</td></tr>
+            <tr><td>[14:27] &lt ms-afk&gt (mind you if there's going to be a 4 way crap fight, I probably don't want to be in the room :-D )</td></tr>
+            <tr><td>[14:28] &lt Chong-&gt hehe</td></tr>
+            <tr><td>[14:28] &lt Davbo&gt When are we wanting the reviews done by?</td></tr>
+            <tr><td>[14:28] &lt ms-afk&gt I would suggest starting them as soon as the person you're reviewing is ready for you to start</td></tr>
+            <tr><td>[14:29] &lt ms-afk&gt But starting no later than tuesday next week</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt Alright</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt I'll aim to get my code ready for review by the end of the weekend Chong-</td></tr>
+            <tr><td>[14:29] &lt ms-afk&gt and you ought to give each other a fighting chance to rectify (or justify in terms of docs in the code)</td></tr>
+            <tr><td>[14:29] &lt ms-afk&gt in time for the point in time where you'll all need to tag your code for GSOC - which is the following monday</td></tr>
+            <tr><td>[14:30] &lt orphans&gt j_baker, end of the weekend sounds about right for me too</td></tr>
+            <tr><td>[14:30] &lt Chong-&gt Davbo: cool. let me know when they are ready for review</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt any other q's ?</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt k</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt -----------------------------------</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt Would recommend continuing meetings next week and week after even though</td></tr>
+            <tr><td>[14:30] &lt ms-afk&gt I'm not here. Next meeting I'll be here will be 28th August 08</td></tr>
+            <tr><td>[14:31] &lt ms-afk&gt I'd suggest just having a catch up meeting next week to discuss any common issues regarding code reviews, how happy people are with tagging their code, etc</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt Sure, I'll be here to run it if nobody else is about</td></tr>
+            <tr><td>[14:32] &lt ms-afk&gt cool</td></tr>
+            <tr><td>[14:32] &lt orphans&gt will be there :)</td></tr>
+            <tr><td>[14:33] &lt ms-afk&gt In which case, since this is my last meeting before the end of GSOC - I'd just like to say that it's been great working with everyone over the summer (seems odd, since it feels for me like the summer's just beginning really)</td></tr>
+            <tr><td>[14:33] &lt Chong-&gt me too, will be there to listen to orphans' VOMIT(s)</td></tr>
+            <tr><td>[14:34] &lt ms-afk&gt There's no way I'd've been able to track every single line of code people have wirtten this summer so the more high level approach seems to have been more productive, and the suggestion of higher level applications seems to have been good (ie full blown examples)</td></tr>
+            <tr><td>[14:34] &lt vmlemon_&gt Mop buckets and Domestos at the ready? ;)</td></tr>
+            <tr><td>[14:34] &lt ms-afk&gt I think everyone's produced lots of really cool stuff, and when I get back will look at how we started merging things</td></tr>
+            <tr><td>[14:34] &lt ms-afk&gt :-)</td></tr>
+            <tr><td>[14:35] &lt ms-afk&gt Not every part of everyone's project will be ready for merge, but you've all produced great stuff :)</td></tr>
+            <tr><td>[14:35] &lt ms-afk&gt And at least a significant amount of it will be mergeable :)</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt Thanks ms-afk, it's been great fun</td></tr>
+            <tr><td>[14:36] &lt ms-afk&gt It'd be really nice if everyone can make the meeting on the 28th. I know that's after GSOC's finished, but then I don't work on this during work time (gsoc is an exception really, not the rule), and no one else does either.</td></tr>
+            <tr><td>[14:36] &lt ms-afk&gt So if you can make it that would be really nice, if you can't no problem :)</td></tr>
+            <tr><td>[14:36] &lt ms-afk&gt Davbo: Cool - that was largely what we were aiming for this summer :)</td></tr>
+            <tr><td>[14:37] &lt orphans&gt yup, better than flipping burgers any day</td></tr>
+            <tr><td>[14:37] &lt ms-afk&gt heh</td></tr>
+            <tr><td>[14:37] &lt ms-afk&gt Dunno, might have a BBQ at the weekend if weather holds out ;-)</td></tr>
+            <tr><td>[14:37] &lt orphans&gt mm, had a bbq last night</td></tr>
+            <tr><td>[14:38] &lt vmlemon_&gt Hmm, no Burger Inversion Specialists waiting in the wings? ;)</td></tr>
+            <tr><td>[14:38] &lt Chong-&gt I also quite enjoy the process</td></tr>
+            <tr><td>[14:39] &lt ms-afk&gt Chong-: Cool</td></tr>
+            <tr><td>[14:40] &lt Chong-&gt ms-afk: thanks for your help during the process :-)</td></tr>
+            <tr><td>[14:41] &lt ms-afk&gt you're welcome</td></tr>
+            <tr><td>[14:41] &lt ms-afk&gt OK, meeting done :)</td></tr>
+            <tr><td>[14:41] &lt ms-afk&gt ============================================</td></tr>
+            <tr><td>[14:41] &lt ms-afk&gt END OF WEEKLY IRC KAMAELIA MEETING, 20080807</td></tr>
+            <tr><td>[14:41] &lt ms-afk&gt ============================================</td></tr>
+            <tr><td>[14:41] &lt orphans&gt good job all, that had a relatively high ham-to-spam ratio too :)</td></tr>
+            <tr><td>[14:44] &lt Chong-&gt cheers :-)</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt orphans: I should be able to finish cleaning my code this weekends</td></tr>
+            <tr><td>[14:45] &lt orphans&gt cool, ping us when it's in some sort of fit state and I'll get going</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt s/ me too, will be there to listen to orphans' VOMIT(s) / me too, will be there to listen to orphans' VOMIT(s) *at my code*</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt orphans: cool</td></tr>
+            <tr><td>[14:46] &lt ms-afk&gt there'll be vomit none of you spot and some stuff you think is vomit will actually be parmesan</td></tr>
+            <tr><td>[14:46] &lt orphans&gt heh, is there #PARMESAN anywhere in the code-base</td></tr>
+            <tr><td>[14:47] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[14:47] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[14:55] &lt Davbo&gt You away all next week ms-afk?</td></tr>
+            <tr><td>[14:55] &lt ms-afk&gt I'm on leave for 2 weeks after friday</td></tr>
+            <tr><td>[14:55] &lt ms-afk&gt I'm likely to be offline for most of that</td></tr>
+            <tr><td>[14:56] &lt Davbo&gt Ah, fair enough</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt Exactly, good to know you're having a break</td></tr>
+            <tr><td>[14:58] &lt ms-afk&gt Yeah, also, it seems more important to have a decent break at the moment since work has been massively crunched recently</td></tr>
+            <tr><td>[14:59] &lt Lawouach&gt I see that thanks to Sun's fantastic marketing department we don't have a downloand link anymore on http://www.mysql.com/</td></tr>
+            <tr><td>[14:59] &lt Lawouach&gt a lot of crap that makes the home page look busy like MacDonald on a Saturday at lunch</td></tr>
+            <tr><td>[15:00] &lt Lawouach&gt oh</td></tr>
+            <tr><td>[15:00] &lt Lawouach&gt I found the download link</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt Wow, that's a horrible webstie</td></tr>
+            <tr><td>[15:00] &lt Lawouach&gt not the worst from Sun</td></tr>
+            <tr><td>[15:01] &lt Davbo&gt Took a few months before people stopped asking in lectures "Where do i download the JDK from?" "It's not there" "Which version"</td></tr>
+            <tr><td>[15:02] &lt ms-afk&gt hm.</td></tr>
+            <tr><td>[15:02] &lt vmlemon_&gt Wow, one hell of a cramped site</td></tr>
+            <tr><td>[15:02] &lt ms-afk&gt looking at that, I'm deliberately not hitting the search button</td></tr>
+            <tr><td>[15:02] &lt vmlemon_&gt Their CSS seems broken, too</td></tr>
+            <tr><td>[15:02] &lt ms-afk&gt Ah, second tiny little link at the top</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt You don't really need to promote MySQL :-/</td></tr>
+            <tr><td>[15:03] &lt ms-afk&gt followed by a second link asking me if I want to buy it</td></tr>
+            <tr><td>[15:03] &lt vmlemon_&gt Their Big Ugly Graphic at the top is covering up the navigation bar in Firefox here :(</td></tr>
+            <tr><td>[15:03] &lt ms-afk&gt Certain level of irony given it's been forked to remove the crap that's been added into the version they want to sell</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[15:04] &lt vmlemon_&gt and "Get Started" covers it over some more, too</td></tr>
+            <tr><td>[15:04] &lt ms-afk&gt Well, I guess they need to monetize it given the amount they paid for it</td></tr>
+            <tr><td>[15:05] &lt Davbo&gt How much it cost them ms-afk?</td></tr>
+            <tr><td>[15:05] &lt ms-afk&gt Billion I think</td></tr>
+            <tr><td>[15:05] &lt vmlemon_&gt Not as subtle as the Trolltech acquisition in my opinion, and that was pretty expensive...</td></tr>
+            <tr><td>[15:06] &lt vmlemon_&gt (Yes, I know Sun doesn't own Trolltech)</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt That's crazy</td></tr>
+            <tr><td>[15:06] &lt vmlemon_&gt Big difference between a tiny bit of text at the bottom of the page, and an all-out "revamp" that breaks the layout of the site</td></tr>
+            <tr><td>[15:07] &lt vmlemon_&gt and I'm not a web designer by any means, that said</td></tr>
+            <tr><td>[15:07] &lt Davbo&gt $1 Billion for something under GPL</td></tr>
+            <tr><td>[15:07] *** Davbo is now known as Dav-afk</td></tr>
+            <tr><td>[15:07] &lt ms-afk&gt http://blogs.sun.com/jonathan/entry/winds_of_change_are_blowing</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt They're not buying software, they're buying people who will want to pay for services</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt That's the theory at least</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt I'd probably do something more fun if I had that sort of money</td></tr>
+            <tr><td>[15:09] &lt j_baker&gt I forget the name of the company, but the company that owns MySQL was making a decent amount of money that way before Sun bought them out.</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt MySQL AB</td></tr>
+            <tr><td>[15:09] &lt j_baker&gt Interestingly, did anyone hear that Sun plans on open sourcing its entire product line by the end of the year?</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt They would be - the dual licensing scheme does work, if you have a product worth selling</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt well, solaris is open, java is, mysql is</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt so it's not a huge shock</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt as is open office</td></tr>
+            <tr><td>[15:10] &lt j_baker&gt I think that means that there will be an open source version of everything, not that everything would be open source.</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt yep</td></tr>
+            <tr><td>[15:10] &lt j_baker&gt I didn't realize they had already open sourced java.</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt yep</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt It's a pig to compile</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt and a gigantic download</td></tr>
+            <tr><td>[15:10] &lt ms-afk&gt and you begin to think "why am I bothering"</td></tr>
+            <tr><td>[15:11] &lt ms-afk&gt and then realise "I don't know, I'll go do something fun"</td></tr>
+            <tr><td>[15:11] &lt ms-afk&gt but it's there</td></tr>
+            <tr><td>[15:11] &lt j_baker&gt I could see how it would be helpful though.</td></tr>
+            <tr><td>[15:11] &lt j_baker&gt One of the pains of programming with .NET (before they released the code) was that the library was a giant black hole.</td></tr>
+            <tr><td>[15:11] &lt vmlemon_&gt Hmm, given that some parts of Solaris still aren't and maybe even won't be open source</td></tr>
+            <tr><td>[15:12] &lt ms-afk&gt Now it's just a giant hole?</td></tr>
+            <tr><td>[15:12] &lt j_baker&gt lol...</td></tr>
+            <tr><td>[15:12] &lt ms-afk&gt &lt /shooting ducks&gt</td></tr>
+            <tr><td>[15:12] &lt j_baker&gt Exactly</td></tr>
+            <tr><td>[15:12] &lt vmlemon_&gt Stuff like certain drivers and utlities, and CDE comes to mind</td></tr>
+            <tr><td>[15:12] &lt ms-afk&gt Not used it since it's never been something that seemed relevant to me</td></tr>
+            <tr><td>[15:12] &lt vmlemon_&gt .NET? Or MySQL?</td></tr>
+            <tr><td>[15:12] &lt ms-afk&gt vmlemon_: Yeah, there's always parts of things that are a pain to release</td></tr>
+            <tr><td>[15:13] &lt ms-afk&gt vmlemon_: .net</td></tr>
+            <tr><td>[15:13] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[15:13] &lt ms-afk&gt mysql is useful</td></tr>
+            <tr><td>[15:13] &lt j_baker&gt The thing about .NET is that it's better than the alternatives...</td></tr>
+            <tr><td>[15:13] &lt ms-afk&gt http://www.dizzy-dee.com/recipe/chocolate-cake-in-5-minutes</td></tr>
+            <tr><td>[15:13] &lt j_baker&gt Programming in MFC or God forbid Win32</td></tr>
+            <tr><td>[15:14] *** ms-afk goes back to writing unit tests</td></tr>
+            <tr><td>[15:15] &lt Lawouach&gt I have resumed doing so too on amplee</td></tr>
+            <tr><td>[15:15] &lt Lawouach&gt with coverage to understand what I forgot testing</td></tr>
+            <tr><td>[15:15] &lt Lawouach&gt it's really helpful</td></tr>
+            <tr><td>[15:15] &lt Lawouach&gt and nose is really helpful</td></tr>
+            <tr><td>[15:16] &lt ms-afk&gt Likewise, I'm doing this for a work thing, since I've now got something clearcut I'm doing and want it to be certain</td></tr>
+            <tr><td>[15:16] &lt ms-afk&gt I had a basic acceptance test in place and have exercised the stuff, but want something more</td></tr>
+            <tr><td>[15:17] &lt ms-afk&gt and also need to work on the next bit which I have a bit of a mental block on, and doing unit tests often breaks that</td></tr>
+            <tr><td>[15:17] &lt vmlemon_&gt Meh, presto (a tool that works with "Delta RPMs") is one of those things that sounds really useful, but is useless (at least implementation-wise) when you actually try it...</td></tr>
+            <tr><td>[15:20] &lt j_baker&gt Interesting statement to follow a discussion of Microsoft and Sun :P</td></tr>
+            <tr><td>[15:21] &lt ms-afk&gt which one - the cake, testing, more testing, or delta rpms ?</td></tr>
+            <tr><td>[15:22] &lt j_baker&gt I was thinking the presto (things that sound really useful, but are useless when you try it :) )</td></tr>
+            <tr><td>[15:22] &lt vmlemon_&gt presto is the useless thing</td></tr>
+            <tr><td>[15:22] &lt ms-afk&gt "things that sound really useful, but are useless when you try it"</td></tr>
+            <tr><td>[15:22] &lt ms-afk&gt ah i see</td></tr>
+            <tr><td>[15:22] &lt vmlemon_&gt Gives weird checksum errors when I try to download a package list that's been extended to support it</td></tr>
+            <tr><td>[15:24] &lt vmlemon_&gt In theory (if it works), it lets you "patch" a large RPM with smaller ones, in the premise of reducing download time for each package</td></tr>
+            <tr><td>[15:24] &lt vmlemon_&gt or something like that</td></tr>
+            <tr><td>[15:24] &lt vmlemon_&gt or so the blurb claims</td></tr>
+            <tr><td>[15:25] &lt ms-afk&gt vmlemon_: SuSE uses delta RPMs</td></tr>
+            <tr><td>[15:25] &lt ms-afk&gt which seem to work OK</td></tr>
+            <tr><td>[15:25] &lt ms-afk&gt don't know if they're the same though</td></tr>
+            <tr><td>[15:25] &lt vmlemon_&gt Seems like a sound idea</td></tr>
+            <tr><td>[15:25] &lt vmlemon_&gt if only the implementation didn't suck</td></tr>
+            <tr><td>[15:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:43] &lt vmlemon_&gt Yay, and it seems to do something, after downloading a primary.xml.gz file on my server partition account and FTPing it over</td></tr>
+            <tr><td>[15:51] *** Dav-afk is now known as Davbo</td></tr>
+            <tr><td>[16:18] &lt vmlemon_&gt Nifty, roughly 79-90% file size download savings so far, according to the blurb after each download</td></tr>
+            <tr><td>[16:40] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[17:22] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[18:42] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:55] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[19:53] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:22] *** jdnier has joined #kamaelia</td></tr>
+            <tr><td>[20:35] &lt ms-afk&gt j_baker: I don't have a chance to review your replacement idea right now, but glad to see it :)</td></tr>
+            <tr><td>[20:35] &lt ms-afk&gt much appreciated :)</td></tr>
+            <tr><td>[20:43] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:01] *** ms-afk has parted #kamaelia</td></tr>

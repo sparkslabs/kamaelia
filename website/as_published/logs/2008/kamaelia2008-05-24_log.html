@@ -1,0 +1,136 @@
+<html><body><table>
+            <tr><td>[09:42] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:51] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:52] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:14] &lt Lawouach_&gt 'lo</td></tr>
+            <tr><td>[11:15] &lt vmlemon_&gt Medium ;)</td></tr>
+            <tr><td>[11:44] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[12:41] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[12:53] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[12:55] *** vmlemon is now known as vmlemon__</td></tr>
+            <tr><td>[12:56] *** vmlemon_ is now known as vmlemon</td></tr>
+            <tr><td>[12:56] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[13:05] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[13:14] *** vmlemon__ is now known as vmlemon</td></tr>
+            <tr><td>[13:19] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:41] &lt Davbo&gt Genius: http://downforeveryoneorjustme.com/</td></tr>
+            <tr><td>[13:43] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[13:44] &lt mhrd-home&gt heh. this is good too: http://iyoulikeitsomuchwhydontyougolivethere.com/</td></tr>
+            <tr><td>[13:45] &lt mhrd-home&gt oops: http://ifyoulikeitsomuchwhydontyougolivethere.com/</td></tr>
+            <tr><td>[13:46] &lt Davbo&gt lol</td></tr>
+            <tr><td>[13:47] &lt Davbo&gt "If you love Nazis so much..</td></tr>
+            <tr><td>[13:47] &lt Davbo&gt  why don't you go live there?"</td></tr>
+            <tr><td>[13:47] &lt Davbo&gt lol</td></tr>
+            <tr><td>[13:54] *** vmlemon__ is now known as vmlemon</td></tr>
+            <tr><td>[13:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:54] &lt vmlemon&gt o.O</td></tr>
+            <tr><td>[13:55] &lt mhrd-home&gt before I write code to do it ... anyone know of any existing python code for comparing two dicts (or nested dicts/lists) and returning the differences?</td></tr>
+            <tr><td>[13:55] Reply: Hm?</td></tr>
+            <tr><td>[14:05] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[15:21] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[15:21] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[15:21] &lt MS-&gt I've realised some objections about the .stop() based "garbage collector" - which are probably useful</td></tr>
+            <tr><td>[15:22] &lt MS-&gt They don't negate the *idea* of a component responsible for doing shutdown</td></tr>
+            <tr><td>[15:23] &lt MS-&gt but as it stands, you can't know for certain that .stop() will do what you expect it to - specifically you can't actually expect it to stop the component</td></tr>
+            <tr><td>[15:24] &lt MS-&gt but it does open up some ideas I'll post to the list</td></tr>
+            <tr><td>[15:24] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:25] &lt Lawouach_&gt As much as I want a clear path when it comes to telling a tree of components to shutdown, I don't like much the .stop() API</td></tr>
+            <tr><td>[15:25] &lt MS-&gt (have gotten a backup power supply)</td></tr>
+            <tr><td>[15:25] *** MS- nods</td></tr>
+            <tr><td>[15:25] &lt MS-&gt but it has made me think about it more</td></tr>
+            <tr><td>[15:25] &lt Lawouach_&gt There is no .start() counter-part for a start</td></tr>
+            <tr><td>[15:26] &lt MS-&gt there's .activate()</td></tr>
+            <tr><td>[15:26] &lt MS-&gt but that's not the point I think</td></tr>
+            <tr><td>[15:26] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:26] &lt Lawouach_&gt Yes. Which means there could be a .deactivate() or .shutdwon()</td></tr>
+            <tr><td>[15:26] &lt Lawouach_&gt But .stop() is misleading</td></tr>
+            <tr><td>[15:27] &lt MS-&gt true</td></tr>
+            <tr><td>[15:27] &lt MS-&gt .stop() is very misleading</td></tr>
+            <tr><td>[15:28] &lt Lawouach_&gt Anyway, I guess the question is again of perspective. Who is responsible for shutting down a component?</td></tr>
+            <tr><td>[15:28] &lt Lawouach_&gt Another component? The scheduler?</td></tr>
+            <tr><td>[15:28] &lt MS-&gt The ideas in the "garbage collector" component (again, another misleading name), made me think that actually have a "stop service"</td></tr>
+            <tr><td>[15:28] &lt MS-&gt could be useful</td></tr>
+            <tr><td>[15:29] &lt Lawouach_&gt Could you explain how that'd work?</td></tr>
+            <tr><td>[15:29] &lt Lawouach_&gt on the list if you'd rather BTW :)</td></tr>
+            <tr><td>[15:29] &lt MS-&gt I think the list is better since it's a little detailed, but mirrors what happens with pygame display etc</td></tr>
+            <tr><td>[15:30] &lt Lawouach_&gt cool</td></tr>
+            <tr><td>[15:30] &lt MS-&gt You'd essentially be able to send to the service - where a service is (component, inbox) - a service (ie (self, someinbox) ) where you'd like shutdownMicroprocess messages sent</td></tr>
+            <tr><td>[15:31] &lt MS-&gt It'd be implemented as a component ("stopper" perhaps, and a mixin)</td></tr>
+            <tr><td>[15:31] &lt MS-&gt and to use you'd pull in the mixin and then just register with the shutdown service</td></tr>
+            <tr><td>[15:31] &lt MS-&gt using something like</td></tr>
+            <tr><td>[15:31] &lt MS-&gt yield SendMeShutdownMessages()</td></tr>
+            <tr><td>[15:31] &lt MS-&gt or something</td></tr>
+            <tr><td>[15:31] &lt mhrd-home&gt imo there are also at least two different reasons why you'd want to shutdown/stop a system and these feel like they have different requirement: intended shutdown (eg. reaches end of the file its processing) and unexpected termination (eg. error, ctrl-c etc) ...</td></tr>
+            <tr><td>[15:31] &lt mhrd-home&gt in the former situation I think there's a case for it being under the control of the components in question, so they can finish up and stop cleanly and timely</td></tr>
+            <tr><td>[15:31] *** mhrd-home puts his head back down and gets on with DVB stuff :-)</td></tr>
+            <tr><td>[15:33] &lt MS-&gt nb, while it's made me think a bit further down the route - essentially as a _potentially_ better way of doing that "garbage collector" component, I don't think it would be the "ideal" solution, but maybe a step towards something better</td></tr>
+            <tr><td>[15:33] &lt Lawouach_&gt mhrd-home: I agree and that's what I was saying the other day.</td></tr>
+            <tr><td>[15:33] *** MS- really needs to capture these discussions on the wiki</td></tr>
+            <tr><td>[15:34] &lt MS-&gt (the summaries that is)</td></tr>
+            <tr><td>[15:34] &lt MS-&gt Anyhow</td></tr>
+            <tr><td>[15:34] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:34] *** MS- goes back to summarising the changes on his branch...</td></tr>
+            <tr><td>[15:43] *** vmlemon_ is now known as vmlemon</td></tr>
+            <tr><td>[15:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:52] &lt Lawouach_&gt http://webworkerdaily.com/2008/05/21/openid-a-contrarian-view/ &lt -- I'm torn on that issue</td></tr>
+            <tr><td>[15:53] &lt Lawouach_&gt I understand the rational behind OpenID and I even appreciate its strength. But I've yet to consider it a success anywhere</td></tr>
+            <tr><td>[16:34] &lt Davbo&gt Agreed Lawouach_</td></tr>
+            <tr><td>[16:38] &lt Davbo&gt I like what Google are doing with their account though</td></tr>
+            <tr><td>[16:38] &lt Davbo&gt app engine lets you tap into the accounts API</td></tr>
+            <tr><td>[17:31] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[18:06] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:50] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[19:25] *** mhrd-home has parted #kamaelia</td></tr>
+            <tr><td>[19:40] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:48] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:53] *** jlei_ has joined #kamaelia</td></tr>
+            <tr><td>[20:34] *** MS- ms-eurovision</td></tr>
+            <tr><td>[20:34] *** MS- is now known as ms-eurovision</td></tr>
+            <tr><td>[20:39] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:40] &lt Davbo&gt ooo ms-eurovision :o</td></tr>
+            <tr><td>[20:40] &lt Davbo&gt I didn't know you were a musician</td></tr>
+            <tr><td>[20:40] *** vmlemon_ wonders if ms-eurovision has managed to sort out his melted powerbrick problem</td></tr>
+            <tr><td>[20:44] *** Davbo votes for MS</td></tr>
+            <tr><td>[20:45] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:47] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:59] *** ms-eurovision is delayed watching it by nearly 2 hours</td></tr>
+            <tr><td>[20:59] &lt ms-eurovision&gt But that's what sky+ is for :)</td></tr>
+            <tr><td>[21:00] &lt ms-eurovision&gt Davbo: I've sung on stage :-p</td></tr>
+            <tr><td>[21:00] &lt ms-eurovision&gt Arguably no worse than eurovision ;)</td></tr>
+            <tr><td>[21:00] &lt ms-eurovision&gt Arguably no better either ;)</td></tr>
+            <tr><td>[21:00] &lt Davbo&gt hehe :-)</td></tr>
+            <tr><td>[21:03] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:07] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:09] *** ms-eurovision thinks there should be a new show called "How do you solve a problem like EuroVision?"</td></tr>
+            <tr><td>[21:20] &lt Davbo&gt lol :-)</td></tr>
+            <tr><td>[21:21] &lt Davbo&gt I'd much rather have Wogan on than bloody Webber</td></tr>
+            <tr><td>[21:21] &lt Davbo&gt I can't stand that guy (Andrew Lloyd Webber)</td></tr>
+            <tr><td>[21:25] &lt ms-eurovision&gt Indeed</td></tr>
+            <tr><td>[21:25] &lt ms-eurovision&gt Seems FAR more appropriate</td></tr>
+            <tr><td>[21:25] &lt ms-eurovision&gt I think I may try and find someone to suggest it to</td></tr>
+            <tr><td>[21:25] &lt ms-eurovision&gt Worst case, there's always Ariel - the BBC internal newspaper</td></tr>
+            <tr><td>[21:29] &lt Davbo&gt Cool :-)</td></tr>
+            <tr><td>[21:31] &lt ms-eurovision&gt (this may not actually be a good idea)</td></tr>
+            <tr><td>[21:32] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:33] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[21:33] &lt vmlemon__&gt Ouch, that was fun :(</td></tr>
+            <tr><td>[21:33] &lt vmlemon__&gt I managed to drop my laptop onto the floor whilst my phone's data cable was connected to one of the USB ports, and now the USB connector on the cable is bent (but it still works), and the USB port it was connected to behaves erratically</td></tr>
+            <tr><td>[21:34] &lt Davbo&gt The back-and-forth between Graham Norton and Terry Wogan would be awesome though ms-eurovision</td></tr>
+            <tr><td>[21:35] &lt Davbo&gt I'm off to watch The Diving Bell and the Butterfly</td></tr>
+            <tr><td>[21:35] &lt Davbo&gt night all</td></tr>
+            <tr><td>[21:36] &lt ms-eurovision&gt cya</td></tr>
+            <tr><td>[21:36] &lt vmlemon__&gt Night Davbo</td></tr>
+            <tr><td>[21:36] &lt ms-eurovision&gt vmlemon__: sounds "delightful"</td></tr>
+            <tr><td>[21:37] &lt ms-eurovision&gt (I got a backup power supply btw)</td></tr>
+            <tr><td>[21:37] &lt vmlemon__&gt Luckily, I haven't managed to completely break it, although I had to bend the connector on the board back to position with a spare USB cable to make it "work" again</td></tr>
+            <tr><td>[21:37] &lt ms-eurovision&gt (and mailed acer saying "erm, my power adapter melted")</td></tr>
+            <tr><td>[21:37] &lt vmlemon__&gt (It seems to take much longer to detect devices now, than it did before)</td></tr>
+            <tr><td>[21:42] &lt ms-eurovision&gt that sounds a little dodgy</td></tr>
+            <tr><td>[21:43] &lt vmlemon__&gt That's odd, it seems to work perfectly again...</td></tr>
+            <tr><td>[21:44] &lt ms-eurovision&gt Maybe a wire was knocked ?</td></tr>
+            <tr><td>[21:44] &lt ms-eurovision&gt (ie a different connector somewhere ?)</td></tr>
+            <tr><td>[21:44] &lt vmlemon__&gt Good point...</td></tr>
+            <tr><td>[21:48] &lt ms-eurovision&gt The effects of the high cost of alcohol are showing on Iceland's entry I note</td></tr>
+            <tr><td>[21:54] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[22:13] &lt ms-eurovision&gt http://bmj.bmjjournals.com/cgi/content/full/331/7531/1498?ehom</td></tr>
+            <tr><td>[22:54] *** vmlemon__ has joined #kamaelia</td></tr>

@@ -1,0 +1,134 @@
+<html>
+<head>
+<title> Developers/Projects/ReferenceDocumentationGeneration </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/ReferenceDocumentationGeneration">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Project Task Page: Reference Documentation automated Generation<br></h2>
+<p><div style="float: right; border: solid;" class="twoC"><b> Status:</b> Completed<br><b>Current Developers: </b> MH, MPS<br><b>Current "inflight" dev location:</b> /Code/Python/Kamaelia/Tools/DocGen<br><b>Start Date:</b> <i>09 March 2006</i><br><b>Major Milestone date:</b> April 2007 - Auto generation of Axon &amp; Kamaelia docs (met)<br><b>End Date:</b> 5 Aug 2007<br><b>Date this page last updated:</b> 5 Aug 2007<br><b>Estimated effort so far:</b> 30<br></div> <b><br></b></p><h2><b>Description</b></h2><ul><li>Write a software tool(s) to generate HTML reference documentation for the Kamaelia component repository, and for Axon.</li><li>Arrange for automatic refreshing of the reference documentation on the website</li></ul><br>Up-to-date automatically generated reference documentation is useful to users/developers. If it is automatically rebuilt and uploaded to the kamaelia website regularly then it is one less maintenance task.<br><h2>Inputs</h2><ul><li>Task Sponsor: MS</li><li>Task Owner: MH<br></li><li>Developers: MS, MH</li><li>Users: MS, MH</li><li>Interested third parties: --<br></li><li>Requirements</li><ul><li>MUST: Generate HTML output suitable for inclusion on the Kamaelia website<br></li><li>MUST: Document components and prefabs in Kamaelia</li><li>MUST: Document classes and functions in Axon<br></li><li>SHOULD: Include test suite results</li><li>SHOULD: Not have to import python modules to document them<br></li><li>WOULD-LIKE: for regular (nightly?) automated rebuilds of docs and uploads to the Kamaelia website<br></li></ul></ul>The
+people listed here should be real people. Unless you have agreement
+however, this this should be their initials rather than name.<br><br>Relevant Influencing factors:<br>
+<ul><li><i>feedback from people on #kamaelia irc channel</i></li><li><i>lack of detailed introspection by existing Kamaelia.Support.Data.Repository code (not designed for that purpose)<br></i></li></ul>
+<h2>Outputs</h2><h3>Expected</h3><ul><li>Documentation generation tool<br></li></ul><h3>Actual</h3>Code:<ul><li>Documentation generation tool:<br></li><ul><li>/Code/Python/Kamaelia/Tools/DocGen/DocExtractor.py</li><li>/Code/Python/Kamaelia/Tools/DocGen/renderHTML.py</li><li>/Code/Python/Kamaelia/Tools/DocGen/Node.py</li></ul><li>Test Suite output generation tool:<br></li><ul><li>/Code/Python/Kamaelia/Tools/DocGen/TestSuiteRun.py</li></ul><li>More detailed repository/codebase introspection</li><ul><li>/Code/Python/Kamaelia/Kamaelia/Support/Data/Repository.py</li></ul><li>Automation scripts on bbc.kamaelia.org for nightly rebuilds of docs</li><ul><li>also checked into /Sketches/MH/AutoDocBuilding/</li></ul><li>Nightly rebuilds of Axon and Kamaelia reference documentation now automated.</li><li>Improvements to "Compose" tool:</li><ul><li>/Code/Python/Kamaelia/Tools/Compose/GUI/ArgumentsPanel.py</li><li>/Code/Python/Kamaelia/Tools/Compose.py<br></li></ul></ul><br><br><h3>Realistic possibilities arising as a result of activity on this task</h3><p>--<br></p><h2>Related Tasks</h2><h3>Tasks that directly enable this task (dependencies)<br></h3><ul><li>-- <br></li></ul><h3>Sub Tasks</h3><ul><li>Improved repository scanning (to detect components, prefabs, etc.. and collect documentation etc)<br></li><li>Setting up automatic rebuilding of docs on the website using the tools developed here<br></li></ul><h2>Task Log</h2><ul><li>09 March 2006 : <b>Task status changed</b> to running<br></li><li>09 March 2006 : Added developer: Michael</li><li>09 March 2006 : Development commenced in /Sketches/MPS/DocExtractor.py<br></li><li>12 March 2006 : First version of code complete. Kamaelia component docs built and uploaded manually to website manually.</li><li>15 March 2006 : <b>Task status changed</b> to stasis</li><li>...<br></li><li>26 February 2007 : Added developer Matt</li><li>26 February 2007 : <b>Task status changed</b> to running</li><li>26 February 2007 : Development re-commenced in /Sketches/MH/DocGen/</li><li>08 April 2007 : New code complete. Automated nightly rebuilds and uploaded set up on bbc.kamaelia.org</li><li>11 April 2007 : MH : Code moved from /Sketches/MH/DocGen/ to /Code/Python/Kamaelia/Tools/<br></li><li>11 April 2007 : MH : Created this PTP</li><li>11 April 2007 : MS : <b>Tasks status changed</b> to stasis</li><li>...<br></li><li>23 May 2007 : MH : <b>Task status changed</b> to running</li><li>23 May 2007 : MH : Development re-commenced in /Sketches/MH/DocGen/ - aim to add documenting of inherited methods</li><li>23 May 2007 : MH : Experimenting with rewriting AST parsing code to track imports, assignments, etc.</li><li>18 June 2007 : MH : Created branch /private_MH_20070618_docgen_improvements/ </li><li>18 June 2007 : MH : Adapted Compose.py (in branch) to use repository code instead of importing all the components</li><li>19 June 2007 : MH : Branch ready for merge (see below)</li><li>1 Aug 2007: MPS : Merged, has knock on for new bugfixes based on this changeset.<br></li></ul><h2>Discussion</h2><br>Documentation generation is capable of building reference documentation both: for Kamaelia components and prefabs; and also for Axon classes and functions<br><br>Part of this work included a ground-up rewrite of Kamaelia.Support.Data.Repository to:<br><ul><li>scan a code base by parsing the source files rather than importing them (so docs can be rebuilt on a machine that doesnt have all kamaelia dependencies installed)</li><li>extract substantially more information - not just component names, but full doc strings, methods, inboxes, outboxes, method arguments etc. also also to extract prefabs, classes, functions and module level docs too<br></li></ul>
+<br><b>
+Running systems:</b><br><ul><li>A nightly cron-job is now running on bbc.kamaelia.org that rebuilds
+both Axon and Kamaelia documentation and uploads it to the website.</li><li>If the cron-job fails, then kamaelia-commits is emailed to notify developers of the failure.<br></li></ul>
+-- Matt, 11 April 2007<br><p><b>Branch private_MH_20070618_docgen_improvements (ready for merge)</b></p><p>The repository introspection code has been rewritten so it now parses source files using a process more akin to execution - it tracks imports, class and function declarations, and assignment statements as it parses the code. This means that, for example, it will no longer be fooled by something like this:</p><blockquote><pre>from Axon.Component import component as C<br><br>class MyComponent(C):<br>    ....<br><br>MyActualComponent = MyComponent<br>MyComponent = None</pre></blockquote>This new code will correctly determine that MyActualComponent inherits from Axon.Component.component and that MyComponent doesn't actually reference a component once the module is imported.<br><br>This has therefore made it possible to determine what methods are inherited from base classes. The documentation generator can therefore provide more comprehensive class documentation for Axon. Mappings of symbols to URLs can also be exported from a documentation build to a file; and then re-imported for another build - thereby making it possible to cross-link from Kamaelia component docs back to Axon docs.<br><br>The nightly documentation build automation scripts (held in /Sketches/MH/AutoDocGeneration) have been updated to use these new capabilities, but this has not yet been uploaded to bbc.kamaelia.org<br><br>Finally, the "Compose" tool has also been modified so it no longer imports components - but instead uses the introspection data that comes from this repository scanning code.<br><p>-- Matt, 19 June 2007<br></p>
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

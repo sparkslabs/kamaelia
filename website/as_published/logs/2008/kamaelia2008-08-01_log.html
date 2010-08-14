@@ -1,0 +1,200 @@
+<html><body><table>
+            <tr><td>[04:36] &lt Lawouach_&gt http://google-code-updates.blogspot.com/2008/07/looks-good-to-me-source-code-review.html</td></tr>
+            <tr><td>[05:31] *** Lawouach1 has joined #kamaelia</td></tr>
+            <tr><td>[05:31] &lt Lawouach1&gt good morning folks</td></tr>
+            <tr><td>[05:32] *** Lawouach1 is now known as Lawouach</td></tr>
+            <tr><td>[05:32] &lt Lawouach&gt meh</td></tr>
+            <tr><td>[05:57] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[06:17] *** Lawouach is listening to Pulp - I Spy</td></tr>
+            <tr><td>[06:51] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:10] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:21] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:34] &lt ms-afk&gt Gah, that code review thing looks pointless. It was a nice idea, and you can attach comments to code, but when you next do a checkin, the comments are removed</td></tr>
+            <tr><td>[07:34] &lt ms-afk&gt http://code.google.com/p/kamaelia/source/browse/branches/private_MPS_Games4Kids/Apps/Games4Kids/App/main.py</td></tr>
+            <tr><td>[07:34] &lt ms-afk&gt vs</td></tr>
+            <tr><td>[07:34] &lt ms-afk&gt http://code.google.com/p/kamaelia/source/browse/branches/private_MPS_Games4Kids/Apps/Games4Kids/App/main.py?r=5042</td></tr>
+            <tr><td>[07:35] &lt ms-afk&gt I think code reviews make more sense to be mailed to the list as a result</td></tr>
+            <tr><td>[07:35] &lt ms-afk&gt as we do with merging at present</td></tr>
+            <tr><td>[07:35] *** ms-afk goes for train</td></tr>
+            <tr><td>[07:35] *** ms-afk has parted #kamaelia</td></tr>
+            <tr><td>[07:45] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[07:59] *** ms-afk has joined #kamaelia</td></tr>
+            <tr><td>[07:59] *** ms-afk has parted #kamaelia</td></tr>
+            <tr><td>[08:01] &lt vmlemon_&gt Hi wyleu</td></tr>
+            <tr><td>[08:02] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:06] &lt vmlemon_&gt Hi orphans</td></tr>
+            <tr><td>[08:06] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:06] &lt orphans&gt morning</td></tr>
+            <tr><td>[08:07] *** ms-afk has joined #kamaelia</td></tr>
+            <tr><td>[08:07] &lt ms-afk&gt where *IS* davbo?</td></tr>
+            <tr><td>[08:08] *** ms-afk wants to restructure his branch, but he's not around</td></tr>
+            <tr><td>[08:09] &lt ms-afk&gt ah b-it</td></tr>
+            <tr><td>[08:09] &lt ms-afk&gt I'll just do it</td></tr>
+            <tr><td>[08:09] &lt ms-afk&gt he can revert if needed</td></tr>
+            <tr><td>[08:09] &lt vmlemon_&gt Hmm, http://www.nasa.gov/mission_pages/phoenix/news/phoenix-20080731.html</td></tr>
+            <tr><td>[08:31] &lt wyleu&gt oprphans my dear chap...</td></tr>
+            <tr><td>[08:31] &lt wyleu&gt oh and Hi vm,</td></tr>
+            <tr><td>[08:35] &lt orphans&gt hey wyleu</td></tr>
+            <tr><td>[08:35] &lt wyleu&gt You remember that truly wonderful piece of synth you offered?</td></tr>
+            <tr><td>[08:36] &lt wyleu&gt ... and you know you mentioned MIDI as a subset of something bigger...</td></tr>
+            <tr><td>[08:36] &lt orphans&gt I think wonderful is overstating the quality by a fair way, but yeah :)</td></tr>
+            <tr><td>[08:37] &lt wyleu&gt ... would an equivalent that fired off a MIDI on and off involve pymedia?</td></tr>
+            <tr><td>[08:37] &lt orphans&gt nope, and hopefully soon the synth will have noting to do with pymedia :)</td></tr>
+            <tr><td>[08:37] *** orphans finds a link</td></tr>
+            <tr><td>[08:38] &lt wyleu&gt Given someone appears not to be able to get pymedia working on his Debian machine, apropos of nothing..</td></tr>
+            <tr><td>[08:39] &lt orphans&gt not production quality by any shape of the imagination but here's the component =&gt http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/JT/Jam/library/trunk/Kamaelia/Apps/Jam/Protocol/Midi.py</td></tr>
+            <tr><td>[08:39] &lt orphans&gt at the bottom you can see a quick example of sending off a single note-on message</td></tr>
+            <tr><td>[08:40] &lt wyleu&gt I've got a couple of Nord Modulars sitting here and that would be a quick solution...</td></tr>
+            <tr><td>[08:40] &lt orphans&gt mhm</td></tr>
+            <tr><td>[08:40] &lt orphans&gt it needs pyrtmidi to work which can be gotten from a svn co http://svn2.assembla.com/svn/pkaudio/pyrtmidi</td></tr>
+            <tr><td>[08:41] &lt vmlemon_&gt Hmm, how can you bundle a Nord synth with each copy of Jam, though? ;)</td></tr>
+            <tr><td>[08:42] &lt orphans&gt heh, if only. I've got a cassette four-track and the cheapest casio ebay can find - slightly in awe of real hardware</td></tr>
+            <tr><td>[08:42] &lt wyleu&gt Well there is the software demo but a good point. However I'll bet there's a fair proportion of hardware synth's on PC's that probably don't do too much work</td></tr>
+            <tr><td>[08:44] &lt wyleu&gt The Nord Modulars are pretty spectacular bit's of kit but I'd wish they' put an ethernet port on them instead of the MIDI they used for the first and USB for the second. They still lack Vista drivers which is a bit of a balls up.</td></tr>
+            <tr><td>[08:46] &lt ms-afk&gt When anyone sees Davbo, can they tell him I've packaged up his code?</td></tr>
+            <tr><td>[08:46] &lt ms-afk&gt Ta muchly</td></tr>
+            <tr><td>[08:46] &lt ms-afk&gt "They still lack Vista drivers which is a bit of a balls up" - Vista itself is a total balls up</td></tr>
+            <tr><td>[08:47] &lt ms-afk&gt To the extent that they're having to fix technical problems using the legal and marketing departments/budgets</td></tr>
+            <tr><td>[08:47] &lt wyleu&gt Yes I tried to run it on my portable logging box and it couldn't keep itself alive on it's own for more than about twenty hours</td></tr>
+            <tr><td>[08:48] *** ms-afk is now known as ms-nothere</td></tr>
+            <tr><td>[08:50] &lt vmlemon_&gt Kamaelia Synclavier Emulator, or something like that? ;)</td></tr>
+            <tr><td>[08:51] &lt vmlemon_&gt Seen the Moheme or Mojave thing, or whatever they're calling it?</td></tr>
+            <tr><td>[08:51] &lt vmlemon_&gt (i.e. Windows Vista's so bad, that they're willing to trick people into using it, by calling it something else)</td></tr>
+            <tr><td>[08:54] &lt vmlemon_&gt http://www.mojaveexperiment.com/</td></tr>
+            <tr><td>[08:58] &lt wyleu&gt I used to work at the Tape Gallery where they had seven synclaviers.... Pete Jackson is the man to talk to in that regard.</td></tr>
+            <tr><td>[09:00] &lt wyleu&gt I have real problems with desktop clocks that use cpu cycles to bounce the analogue hand of a clock to look realistic... Yes you can do it but then why do it? The driver issue is a real pain for anyone with Music hardware that plugs into a PC.</td></tr>
+            <tr><td>[09:01] &lt vmlemon_&gt Hmm, maybe they should make an analogue clock rendering component for GPUs ;)</td></tr>
+            <tr><td>[09:02] &lt vmlemon_&gt Yay for plain text clocks in 12 hour with am/pm format, you can't really go wrong</td></tr>
+            <tr><td>[09:07] &lt wyleu&gt I've used vista, it don't do what I would like it to do reliably on a toshiba laptop I own. All my other machines don't have enough clout to run it.</td></tr>
+            <tr><td>[09:09] &lt vmlemon_&gt Anyone tried Windows Server 2008?</td></tr>
+            <tr><td>[09:27] &lt wyleu&gt Seems not....</td></tr>
+            <tr><td>[09:50] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:08] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:19] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[10:39] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:42] &lt ms-nothere&gt Davbo had you seen my mails ?</td></tr>
+            <tr><td>[10:42] &lt ms-nothere&gt Or rather mail?</td></tr>
+            <tr><td>[10:42] &lt ms-nothere&gt Or mails if you count checkins</td></tr>
+            <tr><td>[10:42] &lt Davbo&gt Yeah just read it</td></tr>
+            <tr><td>[10:42] &lt Davbo&gt thanks ms-nothere</td></tr>
+            <tr><td>[10:42] &lt ms-nothere&gt also twitted you a message about it</td></tr>
+            <tr><td>[10:42] &lt ms-nothere&gt cool</td></tr>
+            <tr><td>[10:49] &lt Davbo&gt just looking through it now ms-nothere, big thanks :D</td></tr>
+            <tr><td>[10:54] &lt ms-nothere&gt you're welcome</td></tr>
+            <tr><td>[10:54] &lt ms-nothere&gt Probably needs cleaning up etc, but it should help</td></tr>
+            <tr><td>[10:54] &lt Davbo&gt If I clean up and document the slider can it go in the UI/Pygame/</td></tr>
+            <tr><td>[10:54] *** Lawouach suggests that no one tries to contact him by leaving a message on Twitter as /me hardly goes to Twitter :)</td></tr>
+            <tr><td>[10:55] &lt ms-nothere&gt Lawouach I was leaving messages for Davbo where-ever I could just in case</td></tr>
+            <tr><td>[10:56] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[10:56] &lt ms-nothere&gt I'm going to call in twitting some one and twitted though</td></tr>
+            <tr><td>[10:56] &lt Lawouach&gt Just FYI, that'd be lost on me :)</td></tr>
+            <tr><td>[10:56] &lt ms-nothere&gt rather than tweat</td></tr>
+            <tr><td>[10:57] *** Davbo would have been on earlier but drank too much Jameson's</td></tr>
+            <tr><td>[10:57] *** ms-nothere guessed from the pub quiz comments</td></tr>
+            <tr><td>[11:02] &lt Davbo&gt It probably explains why we did so badly also ;-)</td></tr>
+            <tr><td>[12:12] *** bcarlyon|laptop is now known as BarryCarlyon</td></tr>
+            <tr><td>[12:30] &lt Lawouach&gt http://www.youtube.com/watch?v=9H8tGE4mr_0&NR=1</td></tr>
+            <tr><td>[12:30] &lt Lawouach&gt lol</td></tr>
+            <tr><td>[13:14] &lt wyleu&gt Oooooh it makes MIDI :D</td></tr>
+            <tr><td>[13:18] &lt orphans&gt :)</td></tr>
+            <tr><td>[13:26] &lt Davbo&gt eh ? when did delicious change? http://delicious.com/</td></tr>
+            <tr><td>[13:27] &lt vmlemon_&gt It's still at del.icio.us?</td></tr>
+            <tr><td>[13:28] &lt Davbo&gt forwards you to .com now :-/</td></tr>
+            <tr><td>[13:28] &lt Davbo&gt I was fond of that URL too</td></tr>
+            <tr><td>[13:28] *** vmlemon_ is still waiting for dis.cust.in </td></tr>
+            <tr><td>[13:29] &lt vmlemon_&gt Meh, crapioca pudding (and very not delicious)</td></tr>
+            <tr><td>[13:30] *** vmlemon_ preferred the old design</td></tr>
+            <tr><td>[13:34] &lt Davbo&gt I never visit the website anyway</td></tr>
+            <tr><td>[13:34] &lt Davbo&gt Just use the FF addon</td></tr>
+            <tr><td>[13:39] *** vmlemon_ rarely uses his del.icio.us account</td></tr>
+            <tr><td>[13:52] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[13:58] *** vmlemon_ just thought of having a "Lorem Ipsum" generating component, for some weird, unknown reason</td></tr>
+            <tr><td>[14:12] &lt ms-nothere&gt That reminds me, I ought to put up my replacement for lorem ipsum</td></tr>
+            <tr><td>[14:13] &lt ms-nothere&gt (takes a book from project gutenberg and throws it through a markov change to produce gibberish words that had a "normal" distribution of letters, but none of it (much) is words)</td></tr>
+            <tr><td>[14:13] &lt aa_&gt jftr, &gt&gt&gt from jinja2.utils import generate_lorem_ipsum</td></tr>
+            <tr><td>[14:13] &lt ms-nothere&gt Looks very different from lorem ipsim. - more real</td></tr>
+            <tr><td>[14:13] &lt aa_&gt ms-nothere: oh that's a cool idea</td></tr>
+            <tr><td>[14:13] &lt aa_&gt but oh my goodness me thing of the enthalpy in the universe!</td></tr>
+            <tr><td>[14:13] &lt ms-nothere&gt had to do some web work recently and didn't really like lorem ipsum since it looked "wrong"</td></tr>
+            <tr><td>[14:14] &lt ms-nothere&gt heh</td></tr>
+            <tr><td>[14:14] &lt ms-nothere&gt eved no shereeiracce the actembe for houstake my nowe cher musatch they bethad gence, and</td></tr>
+            <tr><td>[14:14] &lt ms-nothere&gt Bens fortningle, 'Bing com. Aftermilimends rater re, en. "_Youse." And lorm," suarribily</td></tr>
+            <tr><td>[14:14] &lt ms-nothere&gt ingryth mad wint who dredingley plinteps It she cam's whing thime the ther ably not</td></tr>
+            <tr><td>[14:14] &lt ms-nothere&gt therse wity, and by fractiaging halstratter. "I her em der to the pectat whe</td></tr>
+            <tr><td>[14:15] &lt ms-nothere&gt th as pere londed dooll ther Mr. On tho tooke th throm as hations</td></tr>
+            <tr><td>[14:15] &lt ms-nothere&gt cen whe isce be offe was, "Youghter," Heard neiven be mily. I antles</td></tr>
+            <tr><td>[14:15] &lt ms-nothere&gt res; and wal as nothe _shad nou many glearrings apried I the ith me.</td></tr>
+            <tr><td>[14:15] &lt ms-nothere&gt etc</td></tr>
+            <tr><td>[14:16] &lt aa_&gt everyone look your mentor has gone insane! I am your new mentor!</td></tr>
+            <tr><td>[14:16] &lt ms-nothere&gt heh</td></tr>
+            <tr><td>[14:16] &lt aa_&gt some of that is pretty good actually</td></tr>
+            <tr><td>[14:17] &lt ms-nothere&gt https://kamaelia.googlecode.com/svn/trunk/Sketches/MPS/Random/MarkovChainLoremIpsum.py</td></tr>
+            <tr><td>[14:17] &lt ms-nothere&gt It reads this book</td></tr>
+            <tr><td>[14:17] &lt ms-nothere&gt f = open("pandp12.txt","r")</td></tr>
+            <tr><td>[14:17] &lt vmlemon_&gt Hmm, could link it to the bot ;)</td></tr>
+            <tr><td>[14:17] &lt ms-nothere&gt which happens to be pride and prejudice since for some reason it was the first thing I grabbed of project gutenberg</td></tr>
+            <tr><td>[14:17] &lt ms-nothere&gt vmlemon_: We could quite easily - feed it the contents of the channel instead</td></tr>
+            <tr><td>[14:18] &lt ms-nothere&gt Sooner or later it'd start joining in the weekly meeting ...</td></tr>
+            <tr><td>[14:19] &lt vmlemon_&gt Hmm, does that mean that we'll have kamlogbot contributing soon? ;)</td></tr>
+            <tr><td>[14:19] &lt ms-nothere&gt heh</td></tr>
+            <tr><td>[14:19] &lt ms-nothere&gt would get rather self referential if that happened</td></tr>
+            <tr><td>[14:19] &lt vmlemon_&gt The bot working on itself? Oh my!</td></tr>
+            <tr><td>[14:19] &lt aa_&gt &lt pop&gt</td></tr>
+            <tr><td>[14:19] &lt aa_&gt I think that was the noise of the universe imploding</td></tr>
+            <tr><td>[14:20] &lt ms-nothere&gt :)</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt Pringles?</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt If we want to keep our jobs just leave it with Jane Austen ;-)</td></tr>
+            <tr><td>[14:20] &lt ms-nothere&gt Thought it was a more squelchy noise myself</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt kamlogbot will become self-aware in $DAYS days? ;)</td></tr>
+            <tr><td>[14:21] &lt vmlemon_&gt "kamlogbot Does BBC News at 10"?</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt My brother had an interview today for a journalism course and they asked him who wrote pride and prejudice, sounded more like a pub quiz than an interview</td></tr>
+            <tr><td>[14:26] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[14:39] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[14:40] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[14:41] *** mhrd-afk has parted #kamaelia</td></tr>
+            <tr><td>[14:41] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[14:42] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[14:42] &lt mhrd&gt hmm, why can't I change my nick?</td></tr>
+            <tr><td>[14:43] *** ms-nothere is now known as ms-</td></tr>
+            <tr><td>[14:43] &lt vmlemon_&gt Tried GHOSTing the old one?</td></tr>
+            <tr><td>[14:43] *** ms- is now known as floobleSA</td></tr>
+            <tr><td>[14:43] &lt floobleSA&gt Woo</td></tr>
+            <tr><td>[14:43] *** floobleSA is now known as flibblebob</td></tr>
+            <tr><td>[14:43] &lt flibblebob&gt bingle</td></tr>
+            <tr><td>[14:43] &lt flibblebob&gt bongle</td></tr>
+            <tr><td>[14:43] &lt flibblebob&gt bangle</td></tr>
+            <tr><td>[14:43] &lt vmlemon_&gt Bangle?</td></tr>
+            <tr><td>[14:43] *** flibblebob is now known as MS-</td></tr>
+            <tr><td>[14:44] &lt MS-&gt likes me</td></tr>
+            <tr><td>[14:44] &lt mhrd&gt I can't change my nick to anything :(</td></tr>
+            <tr><td>[14:44] &lt mhrd&gt (that I've tried)</td></tr>
+            <tr><td>[14:45] &lt MS-&gt really?</td></tr>
+            <tr><td>[14:45] &lt MS-&gt how odd</td></tr>
+            <tr><td>[14:46] &lt mhrd&gt indeed</td></tr>
+            <tr><td>[14:47] *** mhrd logs off for the moment then</td></tr>
+            <tr><td>[15:22] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:31] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[16:31] &lt vmlemon_&gt Hi wyleu</td></tr>
+            <tr><td>[16:32] &lt wyleu&gt Hi vm..... I've got midi working here ............... finally :D</td></tr>
+            <tr><td>[16:32] &lt vmlemon_&gt Yay</td></tr>
+            <tr><td>[16:33] &lt wyleu&gt Not bad, after all the pymedia mcking about...</td></tr>
+            <tr><td>[16:44] &lt Davbo&gt Wow, getting something via bzr off sf, amazingly slow 5kb/s</td></tr>
+            <tr><td>[17:01] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[17:01] &lt vmlemon_&gt Hmm, SF do Bazaar now?</td></tr>
+            <tr><td>[17:08] &lt Davbo&gt 'course, you only need http for Bazaar</td></tr>
+            <tr><td>[17:08] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[17:08] &lt Davbo&gt you can run it with it's own server like svn i believe though#</td></tr>
+            <tr><td>[18:01] &lt vmlemon_&gt No more hexagons on the new site?</td></tr>
+            <tr><td>[18:21] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:25] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:06] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:19] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[19:19] Reply: does the macarena</td></tr>
+            <tr><td>[19:21] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:28] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[19:28] Reply: does the macarena</td></tr>
+            <tr><td>[20:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:14] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:52] &lt vmlemon_&gt Hmm, any Kamaelia bindings for database engines?</td></tr>
+            <tr><td>[20:53] &lt vmlemon_&gt (SQLite or Berkeley DB in particular)</td></tr>
+            <tr><td>[20:58] *** vmlemon_ has joined #kamaelia</td></tr>

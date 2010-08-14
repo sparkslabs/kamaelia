@@ -1,0 +1,115 @@
+<html><body><table>
+            <tr><td>[08:47] &lt MS-&gt aa_: Yes</td></tr>
+            <tr><td>[08:48] &lt MS-&gt "(21:57:35) aa_: are inbox and outbox the "standard" mesages?</td></tr>
+            <tr><td>[08:48] &lt MS-&gt (21:57:56) aa_: um, not messages I mean um..well places to get and give messages</td></tr>
+            <tr><td>[08:48] &lt MS-&gt (21:58:00) aa_: boxes?"</td></tr>
+            <tr><td>[08:48] &lt MS-&gt .. yes,, they are :)</td></tr>
+            <tr><td>[08:48] &lt MS-&gt standard inboxes: inbox/control</td></tr>
+            <tr><td>[08:48] &lt MS-&gt standard outboxes: outbox/signal</td></tr>
+            <tr><td>[08:48] &lt MS-&gt consider:</td></tr>
+            <tr><td>[08:49] &lt MS-&gt standard means into a unix process: stdin & kill messages (intended to *control* the unix process</td></tr>
+            <tr><td>[08:49] &lt MS-&gt standard means of data out from a unix process: stdout, stderr</td></tr>
+            <tr><td>[08:49] &lt MS-&gt so inbox "inbox" ~~ stdin</td></tr>
+            <tr><td>[08:49] &lt MS-&gt outbox "outbox" ~~ stdout</td></tr>
+            <tr><td>[08:50] &lt MS-&gt outbox "signal" ~~ stderr AND like sending kill signals to the next process</td></tr>
+            <tr><td>[08:50] &lt MS-&gt inbox "control" ~~ place to get the equivalent of kill signals</td></tr>
+            <tr><td>[08:50] &lt aa_&gt MS-: I see</td></tr>
+            <tr><td>[08:51] &lt aa_&gt MS-: because I had an instance last night to close a UnixProcess' stdin. Just to tell it that input was complete.</td></tr>
+            <tr><td>[08:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:52] &lt aa_&gt hmm, or maybe not...</td></tr>
+            <tr><td>[08:53] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[08:54] &lt aa_&gt hi vmlemon_</td></tr>
+            <tr><td>[08:54] &lt MS-&gt aa_: Hm, the docs for UnixProcess need a bit of a clean up</td></tr>
+            <tr><td>[08:55] &lt MS-&gt It's a but cryptic, but the point it tries to convey is "send me a producerFinished and I'll shutdown"</td></tr>
+            <tr><td>[08:55] &lt aa_&gt MS-: the case was using the shell command html2text for a simple text-only browser. Now I get the outbox of a SimplHTTPClient, and Pipeline it to the inbox of the UnixProcess. But I had no way to tell the UnixProcess that it had ended the input.</td></tr>
+            <tr><td>[08:56] &lt aa_&gt MS-: ah..</td></tr>
+            <tr><td>[08:56] &lt aa_&gt "If a producerFinished message is received on the "control" inbox,.."</td></tr>
+            <tr><td>[08:56] &lt MS-&gt yeah</td></tr>
+            <tr><td>[08:57] &lt MS-&gt As I say, the docs suck there</td></tr>
+            <tr><td>[08:57] &lt MS-&gt Inisde there it actually does this:</td></tr>
+            <tr><td>[08:57] &lt MS-&gt  if self.dataReady("control"):</td></tr>
+            <tr><td>[08:57] &lt MS-&gt  shutdownMessage = self.recv("control")</td></tr>
+            <tr><td>[08:57] &lt MS-&gt  self.send(removeWriter(self,(x.stdin)), "selector")</td></tr>
+            <tr><td>[08:57] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[08:57] &lt MS-&gt  x.stdin.close()</td></tr>
+            <tr><td>[08:57] &lt MS-&gt heh, it's amazing - when code *works* you never go back and look at it</td></tr>
+            <tr><td>[08:57] &lt MS-&gt That code was written for a deadline, and we know works because we left it running for a year without memory leaks</td></tr>
+            <tr><td>[08:58] &lt MS-&gt (literally - constant data rate of around 8Mbit/s through it)</td></tr>
+            <tr><td>[08:58] &lt aa_&gt MS-: something I try to tell my junior developers is "please resist the temptation to fix code that isn't broken"</td></tr>
+            <tr><td>[08:58] &lt MS-&gt Looking at the code I note all the debugging statements</td></tr>
+            <tr><td>[08:58] &lt MS-&gt aa_: Indeed, it something you learn :)</td></tr>
+            <tr><td>[08:58] &lt MS-&gt I appear to have learnt the lesson too well :-)</td></tr>
+            <tr><td>[08:59] &lt MS-&gt #print self.name,"Mighty Jibble", len(self.inboxes["inbox"]), len(writeBuffer)</td></tr>
+            <tr><td>[08:59] &lt aa_&gt hmm, ok, so control inbox</td></tr>
+            <tr><td>[08:59] &lt aa_&gt ahah</td></tr>
+            <tr><td>[08:59] &lt MS-&gt #print self.name,"Mighty FooBar", len(self.inboxes["inbox"]), len(writeBuffer)</td></tr>
+            <tr><td>[08:59] &lt MS-&gt I can see what I was doing there :)</td></tr>
+            <tr><td>[08:59] &lt MS-&gt #print self.name,"Mighty Foo", stdin_ready, stdout_ready, stderr_ready, len(self.inboxes["inbox"]), len(writeBuffer)</td></tr>
+            <tr><td>[08:59] &lt MS-&gt Mighty Floogly</td></tr>
+            <tr><td>[08:59] &lt MS-&gt hehehe</td></tr>
+            <tr><td>[08:59] &lt aa_&gt yeah, but Jibble is a new one on me ;)</td></tr>
+            <tr><td>[09:00] &lt aa_&gt My series is Banana, Manana, Fanana, then Foo, Bar, Baz, Blah</td></tr>
+            <tr><td>[09:00] &lt MS-&gt Oh, I've got a whole other sequence for when the foo bar, etc gets run out</td></tr>
+            <tr><td>[09:00] &lt MS-&gt jibble jabble bibble babble ..</td></tr>
+            <tr><td>[09:00] &lt aa_&gt hahah</td></tr>
+            <tr><td>[09:00] &lt aa_&gt what a great interview question...</td></tr>
+            <tr><td>[09:01] &lt aa_&gt ok brb to try this out</td></tr>
+            <tr><td>[09:01] &lt MS-&gt actually that would be wouldn't it</td></tr>
+            <tr><td>[09:01] &lt MS-&gt k</td></tr>
+            <tr><td>[09:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:02] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:04] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[10:42] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:12] &lt MS-&gt 77 downloads of the new release so far, which is pretty nice :)</td></tr>
+            <tr><td>[15:19] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:29] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[17:29] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:44] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[17:44] Reply: does the macarena</td></tr>
+            <tr><td>[17:52] &lt MS-&gt uploaded 0.6.0 rpms to kamaelia website</td></tr>
+            <tr><td>[17:53] *** vmlemon_ downloads the freshly baked goodness</td></tr>
+            <tr><td>[18:09] &lt vmlemon_&gt Can I just install it on top of the Kamaelia I have&gt</td></tr>
+            <tr><td>[18:09] &lt vmlemon_&gt ?</td></tr>
+            <tr><td>[18:09] &lt vmlemon_&gt Or should I rm -rf the old Axon and Kamaelia stuff first?</td></tr>
+            <tr><td>[18:19] &lt vmlemon_&gt Now to tinker with the examples</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt Meh,</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt [tyson@DoCoMoDake BouncingCatGame]$ ./Simplegame.py</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt  File "./Simplegame.py", line 61, in &lt module&gt</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt  cat_pop_wav = pygame.mixer.Sound(cat_pop_wav_file)</td></tr>
+            <tr><td>[18:20] &lt vmlemon_&gt pygame.error: mixer system not initialized</td></tr>
+            <tr><td>[18:27] &lt MS-&gt odd</td></tr>
+            <tr><td>[18:28] *** vmlemon_ is betting on PyGame not being compiled with support for/configured to use OSS</td></tr>
+            <tr><td>[18:28] &lt MS-&gt Ah, I see</td></tr>
+            <tr><td>[18:29] &lt vmlemon_&gt Not sure if that is the issue though</td></tr>
+            <tr><td>[18:29] &lt vmlemon_&gt Although stranger things have happened</td></tr>
+            <tr><td>[18:30] &lt vmlemon_&gt (Getting phony errors about missing black ink cartridges and not being able to print earlier until I replaced the power brick for my printer being one of them)</td></tr>
+            <tr><td>[18:30] &lt MS-&gt ./Simplegame.py works here - so it's probably borked pygame at your end</td></tr>
+            <tr><td>[18:31] *** vmlemon_ goes to compile a copy of PyGame</td></tr>
+            <tr><td>[18:32] &lt vmlemon_&gt Even though it'll end up trampling the Fedora versions</td></tr>
+            <tr><td>[18:35] &lt vmlemon_&gt Tried it with 1.8.1?</td></tr>
+            <tr><td>[19:00] &lt MS-&gt I use suse :)</td></tr>
+            <tr><td>[19:00] &lt MS-&gt Haven't tried a redhat or redhat derived distro in a long while</td></tr>
+            <tr><td>[19:01] &lt MS-&gt Oooh, that's nice - they've updated this page: http://www.linux-magazin.de/online_artikel/das_python_framework_kamaelia_in_version_0_6</td></tr>
+            <tr><td>[20:23] &lt vmlemon_&gt Same error</td></tr>
+            <tr><td>[20:23] &lt vmlemon_&gt Might be SDL related :(</td></tr>
+            <tr><td>[20:23] *** vmlemon_ wonders if there's a wrapper script/a way of abusing libsalsa</td></tr>
+            <tr><td>[20:27] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[20:28] &lt vmlemon_&gt Shame it's in German though</td></tr>
+            <tr><td>[20:28] *** vmlemon_ puts it through Google LangMang/"Translate"</td></tr>
+            <tr><td>[20:35] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[20:53] &lt MS-&gt It's great putting things back and forth both ways</td></tr>
+            <tr><td>[20:53] &lt MS-&gt you can end up with all sorts of things</td></tr>
+            <tr><td>[20:54] *** vmlemon_ remembers a bot in another channel that had a mangle command that passed text between several languages </td></tr>
+            <tr><td>[20:55] &lt vmlemon_&gt I was rather amused when it managed to derive "Buy this product and praise." from "Thank you for not purchasing this product." somehow</td></tr>
+            <tr><td>[20:56] &lt vmlemon_&gt Had a special-purpose Dutch mangling feature too, if I remember correctly</td></tr>
+            <tr><td>[20:57] *** vmlemon_ wonders how much of the 1GB quota he's used, but has no way of finding out :(</td></tr>
+            <tr><td>[20:57] &lt vmlemon_&gt Probably not much though</td></tr>
+            <tr><td>[21:07] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:06] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:39] *** Ngmgm has joined #kamaelia</td></tr>
+            <tr><td>[22:40] *** Jwjgtjg has joined #kamaelia</td></tr>
+            <tr><td>[22:48] *** Agqn has joined #kamaelia</td></tr>
+            <tr><td>[22:50] *** Mgmgm has joined #kamaelia</td></tr>
+            <tr><td>[23:06] *** vmlemon_ has joined #kamaelia</td></tr>

@@ -1,0 +1,544 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060928 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items
+4.1 Kamaelia 0.5.0 Release Status
+4.2 Wish list of low hanging fruit, often talked about items and tidying
+4.3 Outcome from Euro FOO - Project Focus vs Tasks
+4.4 Website
+5. Date/Time of next meeting
+Proposed: Thu 5th October 2006, 11am UK Time (GMT+0100)
+
+
+
+2. Participants
+Participating: c-ryan (Ryan), mhrd (Matt), MS- (Michael)
+Also attending: Uraeus, tav
+
+
+
+3. Activity Reports
+
+Michael:
+    DONE - Brainstormed the basis of our work at EuroFOO
+           EuroFOO & EuroOSCON
+           Bimonthyly meeting (fo.am)
+           presented our work EuroOSCON
+           integrated Ryan & Thomas's code into the codebase
+           integrated the audio whiteboard
+           produced release candidate
+           debugged issues with bittorrent components
+           tracked down problems with whiteboard
+           numerous smaller fixes
+           wrote article on Kamaelia for Linux Format
+           bumped queue size in axon for synchronous threaded components.
+
+    TODO - Get release out the door:
+               check release is stable
+               check on windows
+               update website, news pages
+           Revamp website:
+               pull back together BBC plans
+               layout aims
+               goals
+               mission on website
+           Demo for 3D stuff integrating video
+           Pick up old todos.
+
+    BLOCKED - euro oscon
+              euro foo
+
+Matt:
+    DONE - merged threadedcomponent self.pause() implementation
+           merged servicewrapper as Kamaelia.Experimental.Services
+           gave new DVB components more descriptive names
+           merged new DVB components into trunk
+           basic YUV to RGB converter
+           EuroOSCON & fo.am meeting
+           setup cronjob to delete files on macro backend
+           fixed whiteboard 'clear' button - now clears all connected whiteboard
+           fixed shutdown in backplane SubscribeTo component
+
+    BLOCKED - bbc 'innovation' stuff
+              EuroOSCON
+
+    TODO - investigate implementing RTP
+           pymedia audio components docs
+           Finish DVB component docs
+           make more pymedia wrappers (video)
+           review/revisit experimental Timer component
+           Improve box destruction to handle when a box is still linked
+           experiment with pausing when waiting to deliver to a full inbox
+
+Ryan:
+    DONE - Tagged files for Kamaelia Contributor agreement
+           Separated CharacterFIFO from Chunkifier, added popline method
+           Modified HTTPParser to use CharacterFIFO (for improved efficiency)
+           HTTP versions now stored as two-item tuples
+               providing standard-compliant comparison (2.1 > 1.13 > 1.2)
+           Added limits to HTTPParser to prevent DoS (memory exhaustion)
+               from overly large request/response lines or headers
+           Investigated BitTorrent locale bug with MS-
+
+    BLOCKED - University for the next 9 weeks :)
+
+    TODO - More limits in HTTPParser
+           Thorough security and efficiency testing of HTTP components
+           SMTP client
+           DNS MX record retrieval for remote mail delivery
+           MP3 decoder (for use with IcecastClient)
+           Pygame BlitScheduler (alt. to using lots of PygameDisplay surfaces)
+           Rewrite LOGO clone to use BlitScheduler
+           Write a compiler for fun
+
+
+Michael asked Ryan if he was "likely to check in blit scheduler & your logo
+clone" Ryan responded that they weren't ready (Blit scheduler, for example, is
+not yet written!)
+
+Matt pointed out pymedia components provide mp3 decoding, but Ryan confirmed
+that he wanted to write his own one for his own benefit.
+
+Uraeus pointed out that "Fluendo has one available under the MIT license" for
+GStreamer, reckoning that "refactoring it should be quicker than doing one from 
+scratch".
+
+Uraeus also added that "in regards to DVB we are currently expanding our MPEG2
+PS and TS demuxer to also handle DVB files".
+
+
+
+4. Discussion items (max 3 or 4, 5-10 minutes each, max)
+
+
+
+4.1 Kamaelia 0.5.0 Release Status
+
+Michael explained that it was "more or less there" now.
+
+Axon-1.5.1 & Kamaelia-0.5.0 release tar balls are ready to upload but he was
+still putting together the bundles, which would probably be complete "in the
+next couple of hours".
+
+Michael commented that the process is manual (since the scripts that used to
+automate much of the task under CVS haven't been adapted for SVN yet) and that
+it was lacking docs.
+
+Michael explained he intended to announce the release in:
+
+ * comp.lang.python (and announce)
+ * the mailing list
+ * freshmeat
+
+Michael asked for further suggestions. Matt, Michael and Ryan came up with:
+
+ * #kamaelia channel on freenode irc (including changing the channel topic)
+ * pygame & dvb related lists (as small announcements)
+ * BitTorrent mailing list (found by Ryan)
+    * http://lists.ibiblio.org/mailman/listinfo/bittorrent
+    * bittorrent@lists.ibiblio.org
+
+
+
+4.2 Wish list of low hanging fruit, often talked about items and tidying
+
+Michael explained that:
+
+"The aim of this is to find out the key areas of common "wishes", not actually
+to decide which of these are to be worked on. (That would be another item). The
+purpose of this item is to get a laundry list of the most wanted items from a
+development and user perspective (more on that in 4.3)."
+
+He added that "the idea is to have a wishlist on the website after the revamp
+rather than to say 'this specifically will be worked on' right now"
+
+Michael listed:
+
+ * Check windows, find out what works, what doesn't
+ * Windows specific megabundle
+ * Package up whiteboard for windows users
+ * get speex working for windows users.
+
+ * MS- Package up whiteboard for mac users
+ * audio capture component for macs
+ * get speex working for macs
+ * Resolve (likely) arising endian issues.
+
+ * change topology visualiser to support "on demand" screen update rather than
+   continuous
+ * support "no render" layout update (has to an extent already).
+ * Change topology visualiser to support hierarchical display/etc
+
+ * Try whiteboard in 3D
+ * try an automated "scatter onto a concave hemisphere with me the me middle
+   layout for auto layout of pictures. Allow links to be drawn between said
+   pictures positioned in 3D, potentially integrate with topology visualiser
+   subsystem (simply different rule set?).
+ * ability to edit the different pages of the same "shared pad" in whiteboard
+   session, rather than forced to be on the same page
+
+ * user authentication modules
+
+ * clean integration with twisted for reuse of twisted.protocols
+ * gstreamer integration
+
+ * Integrate PGU (Phil's pyGame Utils)
+ * Use integrated PGU for buttons drop down lists, etc
+    * in Whiteboard
+    * inside Compose, (simplifying use on Macs)
+
+ * need much better Mac support (for a variety of reasons)
+ * simple window manager support components -
+    * add policies to display locations and management for xxDisplays
+      (providing layering, z positioning, reposition for pygame & opengl
+      surfaces, opengl code has this to an extent),
+ * Styleable HTML layout engine for the window manager
+ * flesh out pygame related tools (perhaps independently of PGU)
+ * resolve MH.PygameApp issues,
+
+ * test on Python 2.5
+
+ * write 3D game using Kamaelia
+ * create joined spaces (2D and 3D) using Pygame & OpenGL code
+
+ * Automate release process.
+
+
+Tav suggested:
+
+ * a major python web framework, (i suggest turbogears) with a kamaelia based
+   web server and sample bi-directional "ajax" chat application
+
+    * Michael mentioned that Simon Willison of Django queried the possibility of
+      integrating Kamaelia at Euro OSCON
+
+      Tav commented that in his opinion "turbogears is cleaner than django", but
+      that the idea of integration just needed to be "proven *well* for one
+      framework..."
+
+
+Matt listed:
+
+ * adding visual ordering of components to pygame: eg. a component specifies a
+   "layer number" to appear on
+ * adding better event routing for pygame & opengl - eg. only top-most component
+   receives a click event
+
+ * RTP client and server implementation - potential internal bbc requirement
+
+ * Write a graphical EPG for DVB
+ * Build a more complete PVR application
+
+ * Rewrite topology viewer to abstract from rendering mechanism (so
+   rendering components could be plugged in for opengl, pygame etc)
+ * Rewrite topology physics in pyrex for serious speed boost :-)
+   (thereby making it practical for visualising 'real' systems, eg. whiteboard,
+    which contains 61 components when running stand alone)
+
+    * Ryan expressed doubt that the slowness was all due to python and offered
+      to investigate how it could be rewritten to be faster. Matt gratefully
+      accepted
+
+ * an interactive introspector/visualiser that only displays 'neighbourhood' of
+   a component (eg. those connected to a particular component) ... allowing you
+   to explore by moving through a system
+
+ * implementation of ssh protocol
+
+ * Tidy and simplify the Plug & PlugSplitter components
+
+Matt also seconded everything Michael said about a whiteboard in 3d with
+multiple sheets etc.
+
+
+Ryan listed:
+
+ * DNS client (would be useful in several places)
+ * have SimpleServer tell the source IP, source port, dest IP, dest port
+
+ * A better way to do his HTML parser in Kamaelia:
+   "I ended up doing my HTML parser as a state machine and a stack - if I did it
+   as a standard unix program (like a filter) it would have been much simpler
+   using function calls and blocking."
+
+    * Michael commented that he had some ideas on this issue
+
+ * Something similar to the selector for files for windows, preferably
+   transparent so the developer doesn't have to choose different components for
+   different platforms
+
+
+Michael said he'd snapshot these ideas to go onto the website wiki once it is
+set up.
+
+
+
+4.3 Outcome from Euro FOO - Project Focus vs Tasks
+
+Michael explained:
+
+"""
+Kamaelia started out officially as a project to develop a particular
+kind of server. However unofficially it has it's roots in an argument
+about better ways to build software better. At Euro FOO, it became
+apparent that this latter goal is actually much more interesting to
+people given some concrete objects to focus on. We're also at the 0.5.0
+point in the project, and have achieved a lot of things already.
+However there's as much work to do as has already been done before we
+hit what I would view as a 1.0 release. The project has ambitions,
+which we should communicate, especially now that we've hit the halfway
+stage that I feel the approach has real legs.
+
+At Euro OSCON I gave a talk on Kamaelia which was the standard fare
+"this is what we do, this is how, this is some stuff you can do, etc"
+which is nice and useful for them
+
+At EuroFOO I took the opportunity for something more general which was to share
+what we'd learnt about this approach to see what other people's experiences were
+with the aim of finding new & better ways of moving forward
+
+There were some interesting things - the only person who'd any experience of
+something similar (in terms of aims) was Steven Pemberton (who works at the W3C,
+and CWI - and worked on a project that spawned the language ABC which spawned
+Python)
+
+However, the thing I found is no-one was either working on or knew of anyone
+working on ways of making concurrency easier to deal with (even from the
+viewpoint of maintenance) ie not for performace, but because it's a fact of life
+
+The other thing was Steven also pimped his desire to push forward on people to
+move to declarative programming next he's pushed for a move from assembler -->
+imperative (eg algol like languages), and then from compiled (with poor
+datatypes) to dynamic languages (with rich) over his career
+
+And is now pushing the next layer up. Whilst we're not using XML, we're doing
+something similar in Kamaelia on one level And that struck me as interesting
+
+Specifically the thing I realised is that our system is incomplete in a way we
+hadn't totally realised, but are coming to specifically we have Axon at the core
+We have the set of Components (Kamaelia) in the middle forming a very large
+middle
+
+But the layer we are *largely* missing is the section we currently call
+"Chassis" ie graphlines and friends which are largely declarative.
+
+I'm not sure how it affects things, but it struck me as the obvious "missing
+bit" at a high level. Especially if we want simpler front ends.
+
+As a result, I want to make that area much more obvious at some point
+"""
+
+
+Ryan asked for an example of a "missing chassis bit". Michael responded with:
+
+ * how to allow a declarative system to override the structure of subcomponents
+ * how to override services for subcomponents
+
+Michael explained that the latter "is a feature caused by the fact the CAT isn't
+inherited yet, even though it can be"
+
+Matt suggested that once the website wiki is up and running there should be a
+brainstorn on "Axon: lovelinesses and pet-gripes"
+
+Matt commented that one pet-irritation at the moment is having to start from
+scratch every time he wants to build a component that is going to be a service
+to which multiple clients can subscribe"
+
+... as well as the lack of CAT inheritance
+
+Michael reckoned that if these areas are fleshed out more, then the more scope
+there'll be for simplifications and generalisation of core areas (eg. the
+removal of the postman)
+
+Michael also explained "that people kept mentioning erlang a fair amount".
+Having looked at the wikipedia page and then planet erlang he reckoned:
+
+1) it's very similar, but they're not really aiming for ease of use
+2) They're aiming to get everyone to reimplement their systems using erlang,
+   rather than integrate
+3) It's approach is *incredibly* similar to Axon even down to mailboxes &
+   hibernation (pause)
+
+Michael therefore reckoned they have ideas worth looking at, but that our focus
+is important : its an *aim* to make life *alot* simpler for people.
+
+Michael noted that Graphlines do that, but components are currently too hard
+
+However the aim of ease of use is probably our single key differentiator
+
+
+Michael also pointed out that Kamaelia aims to not be python specific, and that
+therefore he'd like to see the C++ version grow, and a ruby version
+
+Michael also noted having seen some posts on planet erlang, he felt the erlang
+community appeared "incredibly arrogant", making that assumptions that no other
+language other has any merit
+
+Michael felt that for him the approach was now proven, and that what was needed
+was fleshing out at the component & declarative/visual level.
+
+Michael then tried to state clearly the high level aims:
+"""
+The project has ambitions, which we should communicate, especially now that
+we've hit the halfway stage that I feel the approach has real legs.
+
+The aim is to build the computer systems that they would have on a 24th century
+space ship (he says avoiding naming certain TV franchises) With the aim of
+turning programs into live edittable and updateable systems, with internal
+runnable diagnostics on the fly Before we hit version 1.0
+
+ie the ability to bring up the introspector, write new components and set them
+running, whilst running inside the whiteboard is a real goal as well as test
+that it will continue running safely
+
+Since we're at the 50% stage, and have 50% of that functionality and various
+bits scattered around, I think this aim looks vaguely plausible now
+"""
+
+Michael noted that specific tasks and apps drop out of this, eg. Ryan's desire
+for a better Graphical Environment for Kamaelia.
+
+Matt raised some concerns with 'furthering the cause':
+
+He felt that the euro oscon presentation highlighted an issue: that people
+naturally are task oriented - they want a new whizzy way to do X (where X these
+days means "make a shiney ajax website")
+
+Matt had spoken to someone who  commented that he thought the talk was going to
+be about how to build/do PVRs, not about some wierd sounding framework (no
+criticism intended by calling it "wierd") - he wanted the talk to either be all
+about one, or the other,
+
+Matt felt that Kamaelia *is* a very conceptually different way to do stuff.
+
+Matt noted (earlier) that he still finds it hard to work out how to build many
+of the systems he'd like - but reckoned thats because he started pushing on
+things like the "services" issue boundary.
+
+Matt generalised, suggesting that it does take us longer to do stuff - because
+we're still trying to understand for ourselves how to build systems
+
+Others working on their specific applications will, at least for now, often do a
+better job than we could, eg:
+ * If someone wants to do a PVR, they go to MythTV.
+ * OpenGL apps? go for one of the object frameworks out there
+ * collaboration tools: go for ekiga/MS Net-meeting :-O
+
+Matt concluded by suggesting we should consider getting payoff on our
+concurrency claims and showing some tangible concurrency benefits on that front
+too: eg. start experimenting with multi threaded scheduling of components
+
+Michael and Ryan disagreed that it is hardto work out how to build systems. Both
+felt that they found it faster, easier and more natural.
+
+Michael commented that the apps Matt mentioned "don't have telepathy"
+
+Ryan pointed out that MythTV can do a better job because they have more
+developers focusing on a specific task.
+
+Michael felt that he was getting a 'concurrency payoff' from using Kamaelia.
+
+Matt responded that with current code, running, a Kamaelia system on a multi
+core system would not result in a faster app.
+
+Michael and Ryan both pointed out that this was not a project aim or priority
+yet. Michael explained:
+
+"""
+The *aim* has to been to make it such that *when* such systems come along
+that we will be able to naturally take advantage of such hardware
+after implementing necessary parts to do so
+however since we're deaing with naturally concurrent systems
+That we're making it easier to deal with those naturally concurrent systems
+"""
+
+Matt felt that he had not been aware of the "after implementing necessary parts
+to do so" aspect.
+
+Michael said that he'd been explaining at every presentation that "we want to
+work on more concurrency primitives and distribution specifically network server
+systems have to build their own concurrency primitives for scalability"
+
+He commented that normally they use statemachines, but that components based on
+communicating co-routines would be simpler - which he was not certain is the
+case. In particular such systemsare more maintainable.
+
+Matt explained that his interpretation of the way Kamaelia has been explained or
+pitched was that we we're going to deliver the multi-core functionality
+pre-emptively. He felt that if he was making this interpretation then other were
+likely doing so too.
+
+Michael confirmed that we were not actually claiming any functionality in this
+respect, but that potentially its not far away - eg. further optimisations could
+achieve this if we were to run on IronPython.
+
+Michael explained:
+"""
+If the baseclass for component were changed to have it's own mini-scheduler to
+run the generator inside a thread,
+eg. renaming: class component .... to _generatorcomponent
+
+class ThreadedCOmponent still derives from _generatorcomponent
+
+and create "class component" that derives from ThreadedComponent but one that
+simply runs the generator and we clean up axon the way we want to
+
+That has the potential to give us the multithreaded, multicore benefits on
+ironpython without radical changes to components
+"""
+
+There is a clear mapping from our existing model to something that would run
+across multiple cpus.
+
+Michael noted that it's this sort of thing that is missing from the website:
+ * The higher level aspirations and aims,
+ * and the lower level specific tasks
+
+
+
+4.4 Website
+
+Michael explained:
+"""
+Decisions have been taken on the website on IRC, they need to be
+documented for the minutes at minimum, but also I want to review
+how people's views have changed since the last decision took place.
+Specificaly, are people still happy with this redesign:
+http://thwackety.com/NewHome2.html (at least as a starting point),
+and what else would people like to see. (I expect this item to be
+the shortest)
+"""
+
+Both Matt and Ryan approved of the new design, commenting that it would be a
+substantial improvement over the existing one.
+
+Michael noted that the revamp would include switching the site over to use a 
+wiki engine. As project admins, Michael, Ryan and Matt would have to ensure that
+any (unlikely) Vandalism should just be deleted without comment or prejudice.
+
+Ryan felt that the pipe-separated links across the top could be better named. He
+felt that "Tools", "Cookbook" and "Systems" were too similar to each other.
+Michael responded that he would welcome any suggestions for improvements.
+
+Matt expressed concern that the "Tools for doing cool stuff" strapline could be
+misrepresentative, and that the emphasis should be something different, such as
+"A cool way to do stuff". Michael didn't like this alternative.
+
+Matt felt that Michael's rationale (that the underlying principles are a tool in
+themselves) was actually describing Axon, whereas the website is about Kamaelia.
+
+However, Matt commented that either way, the new design was a big improvement
+and that he felt it should go live asap. It could always be tweaked later.
+
+
+
+5. Date/Time of next meeting
+
+Thu 5th October 2006, 11am UK Time (GMT+0100)
+
+Ryan will not be able to attend as he will be in his first week of his
+university course.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060928 ======

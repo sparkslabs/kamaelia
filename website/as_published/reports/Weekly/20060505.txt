@@ -1,0 +1,211 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060505 ======
+Meeting Length: 41 minutes
+
+Agenda
+~~~~~~
+1. Participants
+
+Participants: Michael, Matt
+Present: Ryan, G0SUB, Uraeus
+
+2. Note of agenda
+3. Activity reports 
+
+Michael's lines:
+
+DONE - Install debian box.
+       Update BBC Research SoC page Merge of Matt's threading changes. 
+       Assisted about 10 applicants with their SoC proposals, reviewing and commenting.
+       Assisted Ryan getting started with Kamaelia, also enabling him as a Kamaelia Contributor.
+       Documented the sketcher's architecture.
+       Fielded a large number of queries relating to SoC.
+       Liased with Dirac team regarding getting their SOC things up.
+       Wrote up monthly report and added Ryan as a new Developer !
+
+TODO - Turn debian box into a debian build box
+       Implement basic transcoding component using the UnixPipe
+       Merge Backplane & UnixPipe into mainline
+       Implement subscription to multiple DVB channels
+       Implement demultiplexing of DVB channels, based on R&MI's code
+       Describe desired test first rewrite of the TCP components on the general bliki
+       Describe the requirement for the Database component on the general bliki
+       /document/ Kamaelia Macro better?
+
+BLOCKED - Fedora box is broken - at minimum the CD-ROM drive appears to have died
+          in transit (preventing the reinstall)
+          Need finance code for OSCON/EuroOSCON. 
+          Install fedora box -- BLOCKED
+          Get "approval code" for OSCON - BLOCKED
+          Get "approval code" for EuroOSCON - BLOCKED
+          Install DVB-T card - BLOCKED (waiting on fedora box)
+
+Matt's lines:
+
+DONE - Threading optimisations
+       Merged Michael's "Selector" improvements.
+       Sketches for flow control inversion
+       Google SoC project ideas & some followup discussions
+       Developer tarball for SoC.
+TODO - Flow control inversions
+       Setup DVB receiver
+       DVB SI data capture
+       Arrange accom & travel for May 19th meetup.
+BLOCKED - Flow control inversion (awaited merge of threading).
+
+4. Discussion items (3 or 4 max)
+
+4.1 Progress on other work needed for Macro related work (May 16th...)
+
+Threading work is progressing well.
+
+Michael got tied up on SoC related issues more than expected. This is
+terrible timing in terms of deadlines. We're still no closer than we were
+last week. Have I missed anything ?
+    * Stream Capture
+    * SI Information
+    * Efficient transcoding to multiple formats - requires:
+
+However in terms of dependencies, the only thing this is sitting on is
+the system inversion - and Matt's code is looking good there - at least
+in the miniaxon. As noted using shell outs we make some wins anyway due
+to dual CPU machines.
+
+Note that Michael will be out of the loop unavoidably for almost all of
+next week.
+
+Matt then led a short discussion on the inversions work. He noted that one
+was more radical - more complex - than the other, and that he would be
+choosing the simpler option. The reason was due to the fact the "clever"
+scheduler is a bigger change with more knockons due to the common use of
+self.pause(). 
+
+The use of clever scheduler will in all likelihood have benefit for systems
+with large numbers of components. Michael noted a way to mitigate this,
+but noted that the decision was sound and to discuss outside the meeting.
+
+Michael again asked the question of May 16th being doable, given we have
+single channel capture, and can take SI information from almost any source -
+even if it meant 10 minute/30 minute slots.
+
+Matt suggested the inversion should be doable "quite fast".
+
+Based on this the feeling was that May 16th is doable.
+
+
+4.2 Summer of Code Issues
+
+Today is the last working day before the deadline, realistically speaking.
+Michael is out next week, meaning last minute applicants will in all
+likelihood have missed their opportunity for review of their application.
+Confirmation that Matt is backup. Intent is to hope to take 3-5 applicants
+for Kamaelia work based on applicant self sufficiency (ie just needing
+mentoring rather than hand holding all the way through).
+
+Been impressed by the quality of some of the applicants and sadly stunned
+at others. Looks like at least one of the core project ideas, possibly 2
+may go through.
+
+Other:
+   * Cannot mentor all day every day as have done largely this week, it
+     harms productivity way too much.
+
+   * Decision: Each mentee will have 2 allotted hours per week for questions
+     and answers. These will be at the start or end of the working day to
+     match the mentees timezones. Eg India could be 9am UK time, USA could
+     be 5-6pm UK time. (This guarantees a time for a mentor to be available
+     for questions in addition to any general question times)
+      * Michael noted this is similar to the amount of time you would get
+        from a supervisor at a university, hence seeming reasonable.
+
+   * To assist, mentees within the appropriate timezone capture will be
+     asked to attend the weekly online IRC project meetings
+
+   * Does not mean that questions on the channel won't be answered, but
+     if people being mentored could group questions together, that would
+     be great.
+
+   * Also going to ask (request, not require) mentees to run a project
+     progress blog, and to publish the rss feed of that to planet.python.org.
+     Project blogs should be updated regularly, preferably daily or every
+     other day. Michael noted this would help participants formulate good
+     habits.
+
+     Matt noted that this could also be used to review progress as part of
+     the weekly meetings (DONE, TODOs, etc)
+
+Michael then asked if there was anything else. 
+
+Matt noted that everyone involved should try to put more complex questions
+and issues on the mailling list. The reason for this was because come
+questions and issues can benefit from being thrown out to a wider
+audience.
+
+Matt also wanted to clarify that he was acting as a backup mentor, not
+a primary mentor. This means he is unlikely to just "jump in" at any
+point in time. However he does need to know what's going on - so he will
+be watching IRC etc to keep tabs. He also wants to be cc'd on all
+correspondence to Michael regarding Kamaelia. However, do NOT contact
+Matt in the first instance.
+
+If after a reasonable period of time (1-2 WORKING DAYS) you don't get
+a response, pinging Matt is fair. Generally speaking however all questions
+not asked on IRC (or not answered on IRC), should be directed to the
+mailing list kamaelia-list@lists.sf.net, since that is it's purpose
+for existence.
+
+Michael noted for those curious that Matt's time is not 100% allocated
+to Kamaelia work, so its extremely unfair on him for his involit to be higher
+than that.
+
+4.3 Bimonthly meeting progress, agenda items
+
+For the people present who are new I explained the purpose of the
+bimonthly meets - same reason as python sprints. See also:
+   * http://kamaelia.sf.net/KamaeliaProjectProcesses.html
+
+The next internal meeting is May 19th.
+
+We discussed that we should discuss what we want Macro to do by June 30th
+"What's the deliverable" ("Rack mountable software" was a phrase I've come
+up with. Can we do better? Will people understand that?)
+
+Matt noted that he agreed with both discussion items - specifically because
+Macro is *a* deliverable, not these deliverable. Matt queried where this sat
+in the SoC timetable. Michael noted that this was the end of the week that
+mid-program evaluations had to be done.
+
+Matt added an item for May 19th: review SoC applications status and make
+any final decisions specifically for last minute refinements and any final
+submissions/paperwork needed. Michael noted he expected a flurry of
+applications at the weekend.
+
+Minor discussion on the phrase "rack mountable software". Matt thought
+it could be miscontrued as hardware, then changed his mind, then decided
+to think about it. Realised that it was partly aimed at removing someone
+elses (R) from the main analogy. Also suggested "bolt-together software".
+
+Michael also noted that one of the aims was to change perception from 
+toys to tools in users. For example people generally don't think of using
+mindstorms as a control system for a production system. Also the first
+question often asked of any server kit or machine room intended kit is
+"is it rack mountable".
+
+Matt noted not everyone understands what a rackmount is.
+
+Michael summarise the discussed agenda as follows:
+   * What (specifically) we want Macro to do by June 30th
+   * "What's the deliverable" - "Rack mountable software"
+   * Review SoC applications status
+   * Something fun :)
+
+Michael noted that this is a brainstorming and review mixture - after all
+"by June 30th" means thinking beyond that date and then reining in for
+realism.
+
+
+5. Date/Time of next meeting:
+
+   * Friday 12th May 2006, 11am UK time
+
+Meeting closed after 41 minutes.
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060505 ======

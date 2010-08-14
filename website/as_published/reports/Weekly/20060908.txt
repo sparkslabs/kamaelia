@@ -1,0 +1,93 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060908 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 What to discuss or do at bi-monthly meet up
+5. Date/Time of next meeting
+Proposed: Fri 15th September 2006, 11am BST (GMT+0100) ***changed***
+
+
+
+2. Participants
+
+Participating: MS- (Michael), mhrd (Matt)
+Also attending: Uraeus
+
+
+
+3. Activity Reports
+
+Michael:
+    DONE - Finished deprecations
+           chased legal regarding contributor agreement
+           started detangling the visualiser
+
+    TODO - Finish detangling the axon visualiser
+           switch the axon visualiser for the topology visualiser in Compose
+
+    BLOCKED - Seem to have had time eaten away by gnats this week
+
+    FOLLOWUP - yes
+
+Matt:
+    DONE - pymedia audio components tidyup
+           removed whiteboard audio latency bug
+           website improvements:
+               added & updated project admin pages
+               updated sidebar
+               updated News
+               updated SoC pages
+               updated documentation guidelines
+               updated project development page
+               experimental low pass audio filter
+
+    BLOCKED - various BBC meetings
+
+    TODO - add docstrings to pymedia components
+           more website updates!
+           make more pymedia wrappers (video)
+           continue with DVB components
+           review/revisit experimental Timer component
+           Improve box destruction to handle when a box is still linked
+           review/merge sync boxes support for threaded component
+           experiment with pausing when waiting to deliver to a full inbox
+
+
+
+4. Discussion items (max 3 or 4)
+
+4.1 What to discuss or do at bi-monthly meet up
+
+Matt asked if Michael had thoughts on what we could do? For example: tutorials
+with people, or development sprints.
+
+Michael replied that he didn't have any firm ideas yet. He pointed out that the
+core aim would be to help people get started with something, and that this was
+best done in the context of a general focus.
+
+Some possibilities that were suggested
+   * Write an online game
+   * serverless multiway text chat
+      * michael pointed out that adding text chat to the whiteboard would make
+        it much more usable for people without tablet pc's (ie. most people). It
+        would need a simple user greeting mechanism (so you know who is saying
+        what)
+
+Matt and Michael agreed to discuss this over the next week and decide at, or by,
+the next weekly meeting. Matt was happy for this to be decided, at worst, during
+the conference week, although a decisison sooner might help encourange Ryan to
+attend, as would funding the trip:
+
+Matt asked if Michael knew whether we would be able to fund Ryan attending.
+Michael said he wasn't sure yet, and suggested discussing it offline later.
+
+
+
+5. Date/Time of next meeting
+Fri 15th September 2006, 11am BST (GMT+0100)
+
+
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060908 ======

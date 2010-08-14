@@ -1,0 +1,408 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Protocol.SDP </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Protocol.SDP</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SDP.html">SDP</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SDP.SDPParser.html">SDPParser</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#609">Session Description Protocol (SDP) Support</a><ul>
+<li><a class="reference" href="#610">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#611">Behaviour</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#612">Format of parsed output</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="609">Session Description Protocol (SDP) Support</h1>
+<p>The SDPParser component parses Session Description Protocol (see <a class="reference" href="http://tools.ietf.org/html/rfc4566">RFC 4566</a>) data
+sent to it as individual lines of text (not multiline strings) and outputs a
+dictionary containing the parsed session description.</p>
+<div class="section">
+<h2 id="610"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Fetch SDP data from a URL, parse it, and display the output:</p>
+<pre class="literal-block">
+Pipeline( OneShot(&quot;http://www.mysite.com/sessiondescription.sdp&quot;),
+          SimpleHTTPClient(),
+          chunks_to_lines(),
+          SDPParser(),
+          ConsoleEchoer(),
+        ).run()
+</pre>
+<p>If the session description at the URL provided is this:</p>
+<pre class="literal-block">
+v=0
+o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5
+s=SDP Seminar
+i=A Seminar on the session description protocol
+u=http://www.example.com/seminars/sdp.pdf
+e=j.doe&#64;example.com (Jane Doe)
+c=IN IP4 224.2.17.12/127
+t=2873397496 2873404696
+a=recvonly
+m=audio 49170 RTP/AVP 0
+m=video 51372 RTP/AVP 99
+a=rtpmap:99 h263-1998/90000
+</pre>
+<p>Then parsing will return this dictionary:</p>
+<pre class="literal-block">
+{ 'protocol_version': 0,
+  'origin'     : ('jdoe', 2890844526, 2890842807, 'IN', 'IP4', '10.47.16.5'),
+  'sessionname': 'SDP Seminar',
+  'information': 'A Seminar on the session description protocol',
+  'connection' : ('IN', 'IP4', '224.2.17.12', '127', 1),
+  'time'       : [(2873397496L, 2873404696L, [])],
+  'URI'        : 'http://www.example.com/seminars/sdp.pdf',
+  'email'      : 'j.doe&#64;example.com (Jane Doe)',
+  'attribute'  : ['recvonly'],
+  'media':
+      [ { 'media'     : ('audio', 49170, 1, 'RTP/AVP', '0'),
+          'connection': ('IN', 'IP4', '224.2.17.12', '127', 1)
+        },
+        { 'media'     : ('video', 51372, 1, 'RTP/AVP', '99'),
+          'connection': ('IN', 'IP4', '224.2.17.12', '127', 1),
+          'attribute' : ['rtpmap:99 h263-1998/90000']
+        }
+      ],
+}
+</pre>
+</div>
+<div class="section">
+<h2 id="611"><a id="behaviour" name="behaviour">Behaviour</a></h2>
+<p>Send individual lines as strings to SDPParser's &quot;inbox&quot; inbox. SDPParser cannot
+handle multiple lines in the same string.</p>
+<p>When SDPParser receives a producerFinished() message on its &quot;control&quot; inbox, or
+if it encounter another &quot;v=&quot; line then it knows it has reached the end of the
+SDP data and will output the parsed data as a dictionary to its &quot;outbox&quot; outbox.</p>
+<p>The SDP format does <em>not</em> contain any kind of marker to signify the end of a
+session description - so SDPParser only deduces this by being told that the
+producer/data source has finished, or if it encounters a &quot;v=&quot; line indicating
+the start of another session description.</p>
+<p>SDPParser can parse more than one session description, one after the other.</p>
+<p>If the SDP data is malformed AssertionError, or other exceptions, may be raised.
+SDPParser does not rigorously test for exact compliance - it just complains if
+there are glaring problems, such as fields appearing in the wrong sections!</p>
+<p>If a producerFinished or shutdownMicroprocess message is received on the
+&quot;control&quot; inbox then, once any pending data at the &quot;inbox&quot; inbox has been
+processed, this component will terminate. It will send the message on out of
+its &quot;signal&quot; outbox.</p>
+<p>Only if the message is a producerFinished message will it output the session
+description is has been parsing. A shutdownMicroprocess message will not result
+in it being output.</p>
+</div>
+<div class="section">
+<h2 id="612"><a id="format-of-parsed-output" name="format-of-parsed-output">Format of parsed output</a></h2>
+<p>The result of parsing SDP data is a dictionary mapping descriptive names of
+types to values:</p>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="6%" />
+<col width="22%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head" colspan="3">Session Description</th>
+</tr>
+<tr><th class="head">Type</th>
+<th class="head">Dictionary key</th>
+<th class="head">Format of the value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>v</td>
+<td>&quot;protocol_version&quot;</td>
+<td>version_number</td>
+</tr>
+<tr><td>o</td>
+<td>&quot;origin&quot;</td>
+<td>(&quot;user&quot;, session_id, session_version, &quot;net_type&quot;, &quot;addr_type&quot;, &quot;addr&quot;)</td>
+</tr>
+<tr><td>s</td>
+<td>&quot;sessionname&quot;</td>
+<td>&quot;session name&quot;</td>
+</tr>
+<tr><td>t &amp; r</td>
+<td>&quot;time&quot;</td>
+<td><dl class="first last docutils">
+<dt>(starttime, stoptime, [repeat,repeat, ...])</dt>
+<dd>where repeat = (interval,duration,[offset,offset, ...])</dd>
+</dl>
+</td>
+</tr>
+<tr><td>a</td>
+<td>&quot;attribute&quot;</td>
+<td>&quot;value of attribute&quot;</td>
+</tr>
+<tr><td>b</td>
+<td>&quot;bandwidth&quot;</td>
+<td>(mode, bitspersecond)</td>
+</tr>
+<tr><td>i</td>
+<td>&quot;information&quot;</td>
+<td>&quot;value&quot;</td>
+</tr>
+<tr><td>e</td>
+<td>&quot;email&quot;</td>
+<td>&quot;email-address&quot;</td>
+</tr>
+<tr><td>u</td>
+<td>&quot;URI&quot;</td>
+<td>&quot;uri&quot;</td>
+</tr>
+<tr><td>p</td>
+<td>&quot;phone&quot;</td>
+<td>&quot;phone-number&quot;</td>
+</tr>
+<tr><td>c</td>
+<td>&quot;connection&quot;</td>
+<td>(&quot;net_type&quot;, &quot;addr_type&quot;, &quot;addr&quot;, ttl, groupsize)</td>
+</tr>
+<tr><td>z</td>
+<td>&quot;timezone adjustments&quot;</td>
+<td>[(adj-time,offset), (adj-time,offset), ...]</td>
+</tr>
+<tr><td>k</td>
+<td>&quot;encryption&quot;</td>
+<td>(&quot;method&quot;,&quot;value&quot;)</td>
+</tr>
+<tr><td>m</td>
+<td>&quot;media&quot;</td>
+<td><dl class="first last docutils">
+<dt>[media-description, media-description, ... ]</dt>
+<dd>see next table for media description structure</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>Note that 't' and 'r' lines are combined in the dictionary into a single
+&quot;time&quot; key containing both the start and end times specified in the 't' line
+and a list of any repeats specified in any 'r' lines present.</p>
+<p>The &quot;media&quot; key contains a list of media descriptions. Like for the overall
+session description, each is parsed into a dictionary, that will contain some
+or all of the following:</p>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="6%" />
+<col width="22%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head" colspan="3">Media Descriptions</th>
+</tr>
+<tr><th class="head">Type</th>
+<th class="head">Dictionary key</th>
+<th class="head">Format of the value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>m</td>
+<td>&quot;media&quot;</td>
+<td>(&quot;media-type&quot;, port-number, number-of-ports, &quot;protocol&quot;, &quot;format&quot;)</td>
+</tr>
+<tr><td>c</td>
+<td>&quot;connection&quot;</td>
+<td>(&quot;net_type&quot;, &quot;addr_type&quot;, &quot;addr&quot;, ttl, groupsize)</td>
+</tr>
+<tr><td>b</td>
+<td>&quot;bandwidth&quot;</td>
+<td>(mode, bitspersecond)</td>
+</tr>
+<tr><td>i</td>
+<td>&quot;information&quot;</td>
+<td>&quot;value&quot;</td>
+</tr>
+<tr><td>k</td>
+<td>&quot;encryption&quot;</td>
+<td>(&quot;method&quot;,&quot;value&quot;)</td>
+</tr>
+<tr><td>a</td>
+<td>&quot;attribute&quot;</td>
+<td>&quot;value of attribute&quot;</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>Some lines are optional in SDP. If they are not included, then the parsed output
+will not contain the corresponding key.</p>
+<p>The formats of values are left unchanged by the parsing. For example, integers
+representing times are simply converted to integers, but the units used remain
+unchanged (ie. they will not be converted to unix time units).</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SDP.html">SDP</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SDP.SDPParser.html">SDPParser</a></h1>
+<div class="section">
+<h2 id="symbol-SDPParser">class SDPParser(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>SDPParser() -&gt; new SDPParser component.</p>
+<p>Parses Session Description Protocol data (see RFC 4566) sent to its &quot;inbox&quot;
+inbox as individual strings for each line of the SDP data. Outputs a dict
+containing the parsed data from its &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-SDPParser.Inboxes" name="symbol-SDPParser.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : SDP data in strings, each containing a single line</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-SDPParser.Outboxes" name="symbol-SDPParser.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : Parsed SDP data in a dictionary</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-SDPParser.handleControl" name="symbol-SDPParser.handleControl">handleControl(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SDPParser.main" name="symbol-SDPParser.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SDPParser.readline" name="symbol-SDPParser.readline">readline(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SDPParser.sendOutParsedSDP" name="symbol-SDPParser.sendOutParsedSDP">sendOutParsedSDP(self, session)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

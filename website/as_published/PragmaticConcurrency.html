@@ -1,0 +1,132 @@
+<html>
+<head>
+<title> PragmaticConcurrency </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - PragmaticConcurrency">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    
+<h1>Kamaelia: Pragmatic Concurrency, A tutorial<br></h1><p>This was a tutorial held at Europython '09 in Birmingham on the morning of Sunday 28 June</p>
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<div style="float: right; width: 425px; text-align: right;" id="__ss_1653820"><a style="margin: 12px 0pt 3px; font-family: Helvetica,Arial,Sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 14px; line-height: normal; font-size-adjust: none; font-stretch: normal; display: block; text-decoration: underline;" href="http://www.slideshare.net/kamaelian/kamaelia-europython-tutorial" title="Kamaelia Europython Tutorial">Kamaelia Europython Tutorial</a><object style="margin: 0px;" height="355" width="425"><param name="movie" value="http://static.slidesharecdn.com/swf/ssplayer2.swf?doc=homezathrasincomingeuropythonkamaelia-tutorial-europython-09-slides-090629064849-phpapp01&amp;stripped_title=kamaelia-europython-tutorial"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always"><embed src="http://static.slidesharecdn.com/swf/ssplayer2.swf?doc=homezathrasincomingeuropythonkamaelia-tutorial-europython-09-slides-090629064849-phpapp01&amp;stripped_title=kamaelia-europython-tutorial" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" height="355" width="425"></object><div style="font-size: 11px; font-family: tahoma,arial; height: 26px; padding-top: 2px;">View more <a style="text-decoration: underline;" href="http://www.slideshare.net/">presentations</a> from <a style="text-decoration: underline;" href="http://www.slideshare.net/kamaelian">kamaelian</a>.</div></div><br><br><p>Why use concurrency? 
+</p><p>Since concurrency is viewed as an advanced topic by many developers, this question is often overlooked. However, many real world systems, including transportation, companies, electronics and Unix systems are highly concurrent and accessible by the majority of people. So, one motivation can be “many hands make light work”.
+</p><p>However, with software this maxim often appears to be false – in no small part due to the tools we use to create concurrent systems. Despite this, the need for concurrency often creeps into many systems – even something as basic as “attaching a debugger”.
+</p><p>Kamaelia is a toolset and mindset aimed at assisting in structuring your code such that you can focus on the problem you want to solve, but in a way that results in naturally reusable code that happens to be concurrent. <br>This tutorial aims to introduce you to the follow 4 core aspects of Kamaelia systems:<br></p><blockquote><b>Axon</b><br><blockquote>All Kamaelia systems are dependent on this core library – it provides you with tools for making systems which are naturally concurrent. Its primary metaphor is components with inboxes and outboxes, which get linked by parent components.<br></blockquote><b>Kamaelia Components</b><br><blockquote>The bulk of Kamaelia is actually a large collection of components. By themselves each component is useful, but their real power comes from being linked to each other, like  programs in /usr/bin get linked together, forming pipelines.<br></blockquote><b>Applications</b><br><blockquote>This is the point of Kamaelia – to build useful systems. Kamaelia was originally designed for naturally concurrent problems, so there was a desire to make this simple(r) to work with. Using Axon based components means applications generate more reusable components, and also have a naturally concurrent structure.  This can simplify many applications, allowing their reuse in unexpected ways.<br></blockquote><b>Testing &amp; Debugging</b><br><blockquote>Testing &amp; debugging concurrent systems is considered hard, we'll cover some approaches we can use in Kamaelia for debugging systems. Some of these are surprisingly familiar. Indeed, some can be used in non-Kamaelia based systems.<br></blockquote></blockquote>Kamaelia  was designed originally to make maintenance of highly concurrent network systems simpler, but has general application in a wider variety of problem domains, including desktop applications, web backend systems (eg video transcode &amp; SMS services), through to tools for teaching a child to read and write.<br><h2>More Information</h2>The rest of this website obviously contains more information, and based on lots of feedback, it does need work, but please <a href="http://groups.google.com/group/kamaelia">do tell us</a> how you think it needs work.<br><br>Also, a number of presentations have been made in the past. You can find these <a href="http://www.slideshare.net/kamaelian/presentations">Kamaelia presentations on slideshare</a>.<br><h2><b>Notes</b></h2>
+<p style="clear: both;">The notes are available in 3 forms:</p>
+<ul><li>One is <a href="http://www.kamaelia.org/Europython09/A4KamaeliaEuroPython09.FINAL.pdf">PDF suitable for printing on A4 paper</a>.</li><li>The other 2 ways are via lulu.com, which is a paid for print on demand service.<br></li><ul><li>One is as <a href="http://www.lulu.com/content/paperback-book/kamaelia-pragmatic-concurrency/7302222http://www.lulu.com/content/paperback-book/kamaelia-pragmatic-concurrency/7302222">a PDF download from lulu.com</a> - this is set to a cost of zero, but <b>isn't </b>A4 paper. If you prefer screen reading rather than printing, this is probably the nicest one for that.<br></li></ul><ul><li>The other is as <a href="http://www.lulu.com/content/paperback-book/kamaelia-pragmatic-concurrency/7302222http://www.lulu.com/content/paperback-book/kamaelia-pragmatic-concurrency/7302222">a printed book from lulu.com</a> - this is basically at production cost (£1.89), meaning it's cheap, but beware of two points:</li><ul><li>Postage
+from lulu.com can sting - but they appear to charge a flat fee whether
+it's 1 copy or 50 copies. (hence why I used them...)</li><li>Currently I'm going through it for typoes!</li><li>I do also still have some spares of the paper copies<br></li></ul></ul></ul>
+<p>The slides used in the tutorial are available on <a href="http://www.slideshare.net/kamaelian/kamaelia-europython-tutorial">slideshare</a>.
+As you might expect, different media have different benefits, and so
+each way of explaining things covers the same things in slightly
+different ways, but following a common theme.</p><p>Videos will go up on blip.tv, and are currently being transcoded.</p>
+
+<p>Two relevant downloads are also available:</p>
+<ul>
+   <li><a href="http://www.kamaelia.org/release/MonthlyReleases/Kamaelia-0.9.8.0.tar.gz">Kamaelia 0.9.8.0</a>
+       - is the latest monthly release. These were started just before the
+       conference, and we used 0.9.6.0 there. 0.9.8.0 also includes the
+       changes/apps inside the Europython09 release. A number of minor
+       issues with the 0.9.6.0 release have been resolved in this release,
+       along with a fair number of merges of kamaelia based apps. (enable
+       reuse of applications as well as components) <br><br>
+   <li>The <a href="http://www.kamaelia.org/release/Kamaelia-Europython09-1.0.0.tar.gz">Europython '09</a> specific release - this packages up all the example programs and scripts used in the tutorial.</li></ul><br><p>
+</p>
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

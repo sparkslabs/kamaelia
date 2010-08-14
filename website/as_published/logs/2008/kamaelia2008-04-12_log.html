@@ -1,0 +1,644 @@
+<html><body><table>
+            <tr><td>[06:47] &lt Lawouach&gt morning</td></tr>
+            <tr><td>[08:41] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:52] &lt bcarlyon|laptop&gt morning Lawouach and orphans</td></tr>
+            <tr><td>[08:53] &lt orphans&gt morning</td></tr>
+            <tr><td>[08:53] &lt orphans&gt how goes it bcarlyon|laptop</td></tr>
+            <tr><td>[08:54] &lt bcarlyon|laptop&gt Broke my ubuntu box last night still reinstalling...... :-(</td></tr>
+            <tr><td>[08:55] &lt bcarlyon|laptop&gt So once ive fixed my box and restored then I can write my component....</td></tr>
+            <tr><td>[08:56] *** Chong has joined #kamaelia</td></tr>
+            <tr><td>[08:56] &lt bcarlyon|laptop&gt morning Chong</td></tr>
+            <tr><td>[08:56] &lt orphans&gt gotta go to the shop quickly - back in a couple of mins</td></tr>
+            <tr><td>[08:57] &lt Chong&gt Good morning, bcarlyon|laptop and others.</td></tr>
+            <tr><td>[08:57] &lt Chong&gt orphans: have a good shopping:)</td></tr>
+            <tr><td>[09:08] &lt orphans&gt back :)</td></tr>
+            <tr><td>[10:02] &lt Lawouach&gt so am I</td></tr>
+            <tr><td>[10:27] *** simon89 has joined #kamaelia</td></tr>
+            <tr><td>[10:49] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[10:53] *** bcarlyon|ubuntu_ is now known as bcarlyon|ubuntu</td></tr>
+            <tr><td>[10:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:00] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:00] &lt bcarlyon|laptop&gt Morninhg</td></tr>
+            <tr><td>[11:06] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[11:10] *** vmlemon_ wonders how Davbo's doing with his RoboKitty/Kamaelia-powered Lego Bot...</td></tr>
+            <tr><td>[11:50] *** xotaku has joined #kamaelia</td></tr>
+            <tr><td>[11:50] &lt xotaku&gt hello</td></tr>
+            <tr><td>[11:50] &lt vmlemon_&gt Hi xotaku</td></tr>
+            <tr><td>[11:51] &lt bcarlyon|laptop&gt greetings</td></tr>
+            <tr><td>[11:51] &lt xotaku&gt i am just wondering, about SoC - prove you can code challenge</td></tr>
+            <tr><td>[11:52] &lt xotaku&gt i would like to do something more than mini-axon tutorial only</td></tr>
+            <tr><td>[11:52] &lt xotaku&gt but find sunday deadline to strict :|</td></tr>
+            <tr><td>[11:52] &lt bcarlyon|laptop&gt read the email, ot says about coding a component....</td></tr>
+            <tr><td>[11:54] &lt xotaku&gt but, since my proposal(application) is more about core tahn writing components (twisted kamaelia integration) does it make sense to write component</td></tr>
+            <tr><td>[11:54] &lt bcarlyon|laptop&gt yes</td></tr>
+            <tr><td>[11:54] &lt bcarlyon|laptop&gt it shows you know your stuff....</td></tr>
+            <tr><td>[11:55] &lt bcarlyon|laptop&gt imo any way</td></tr>
+            <tr><td>[11:57] &lt xotaku&gt so i should put a link to a code in application?</td></tr>
+            <tr><td>[11:57] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:58] *** MS- reads xotaku's comments</td></tr>
+            <tr><td>[11:58] &lt MS-&gt It's not a "prove you can code challenge"</td></tr>
+            <tr><td>[11:58] &lt MS-&gt It's a "what does your code look like and do you understand kamaelia" question</td></tr>
+            <tr><td>[11:59] &lt MS-&gt I decided to ask for it based on the fact that 2-3 students had already put the requested information in their applications</td></tr>
+            <tr><td>[11:59] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:59] &lt MS-&gt And that "unfairly" skews our judgement in their direction, since we have a high confidence that they can deliver what they say they can</td></tr>
+            <tr><td>[12:00] &lt MS-&gt You can put the link in your application, or as a comment - it's all one big shiny web page at the end of the day :)</td></tr>
+            <tr><td>[12:00] &lt MS-&gt Several people are just putting the code in http://pastebin.com/</td></tr>
+            <tr><td>[12:00] &lt MS-&gt And then adding the link as a comment</td></tr>
+            <tr><td>[12:00] &lt MS-&gt The deadline is "so that its there when we do a review on sunday"</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Since the deadlines for our eval are fast approaching</td></tr>
+            <tr><td>[12:01] &lt petruccigp&gt Sunday in which country ;)</td></tr>
+            <tr><td>[12:01] &lt petruccigp&gt just to be sure...</td></tr>
+            <tr><td>[12:02] &lt MS-&gt petruccigp: I'm in the UK, Matt's in the UK, Lawouach is based in france, so "Europe" is a good term of reference</td></tr>
+            <tr><td>[12:02] &lt xotaku&gt MS-: ok, its cool, of to the work then.</td></tr>
+            <tr><td>[12:02] &lt bcarlyon|ubuntu&gt MS- I might be able to finish my component, however I managed to break the computer, which I have just about finished fixing now, so I m about to start writing my componet, however i have to go to work at 6pm for 6hours, so I might miss the midnight deadline....if so i shall finish my component overnight....</td></tr>
+            <tr><td>[12:02] &lt petruccigp&gt hehehe ok</td></tr>
+            <tr><td>[12:03] &lt petruccigp&gt Europe is fine to me also</td></tr>
+            <tr><td>[12:03] &lt MS-&gt xotaku: Your comment here "but, since my proposal(application) is more about core tahn writing components (twisted kamaelia integration) does it make sense to write component" is also useful, since as far as I'm concerned you can't write a good/useful twisted/kamaelia integration unless you show systems and components exercising the integration.</td></tr>
+            <tr><td>[12:04] &lt xotaku&gt MS-: so, i would be best for me to take some twisted app (whatever) and make it a component?</td></tr>
+            <tr><td>[12:05] &lt xotaku&gt for example?</td></tr>
+            <tr><td>[12:05] &lt Lawouach&gt xotaku, I guess the question is what you're trying achieve? Being able to use Twisted from within K. or the other way around?</td></tr>
+            <tr><td>[12:06] &lt MS-&gt xotaku: that's already been done to an extent in the past - the bit torrent mainline code had to do that. The aim from my perspective would be to trivialise that process</td></tr>
+            <tr><td>[12:06] &lt Lawouach&gt or maybe being able to mix both in one single process?</td></tr>
+            <tr><td>[12:07] &lt xotaku&gt Lawouach: both would be nice ;)... but yes, running a twisted as a component is my main goal</td></tr>
+            <tr><td>[12:07] &lt Lawouach&gt then refer to MS-'s statement above :)</td></tr>
+            <tr><td>[12:07] &lt MS-&gt trivialise it to the extent that using several twisted protocols in a single app was doable</td></tr>
+            <tr><td>[12:07] &lt MS-&gt That requires an understanding of how to write compoents and how they're used</td></tr>
+            <tr><td>[12:08] &lt MS-&gt There was one application incidentally "above the line" for which these requests wasn't appropriate, so I didn't ask that person to do these tasks</td></tr>
+            <tr><td>[12:09] &lt MS-&gt So everyone who was asked to do them was being asked because it was either felt appropriate or they'd already done it (and therefore have the same opportunity to improve if they like)</td></tr>
+            <tr><td>[12:09] &lt MS-&gt Hey Chongs - how goes?</td></tr>
+            <tr><td>[12:09] &lt MS-&gt Chong even (sorry)</td></tr>
+            <tr><td>[12:11] &lt vmlemon_&gt Hah, "Great! My new "policy" is that it is a Trademark and Copyright infringement for anyone to use the letter "e" without my permission."</td></tr>
+            <tr><td>[12:11] &lt MS-&gt xotaku: In case you're wondering *why* we're asking for this, even from people who experienced developers...</td></tr>
+            <tr><td>[12:11] &lt MS-&gt Is that the people we've mainly found become unstuck with kamaelia is actually experienced developers, since there is a mindset change.</td></tr>
+            <tr><td>[12:12] &lt Lawouach&gt True story</td></tr>
+            <tr><td>[12:12] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[12:13] &lt MS-&gt the mindset change of OO to component oriented seems to be similar (but not as extreme) as it is from imperative to functional programming</td></tr>
+            <tr><td>[12:14] &lt Chong&gt Hey, MS-</td></tr>
+            <tr><td>[12:14] &lt MS-&gt Though some experienced people find it an easy change if they've done a lot of web mashups or lots of unix shell scripting</td></tr>
+            <tr><td>[12:14] &lt MS-&gt Chong: heya</td></tr>
+            <tr><td>[12:14] &lt Chong&gt MS-: still thinking:)</td></tr>
+            <tr><td>[12:14] &lt xotaku&gt MS-: I am cool with it, i am not trying to say: "i am leet, i dont need to write it"</td></tr>
+            <tr><td>[12:15] &lt MS-&gt xotaku: No, I guessed that :)</td></tr>
+            <tr><td>[12:15] &lt MS-&gt I still thought it worth mentioning though :)</td></tr>
+            <tr><td>[12:16] &lt xotaku&gt MS-: i am just not sure if i shoudl write e.g some component which have nothing to do with twisted</td></tr>
+            <tr><td>[12:16] &lt MS-&gt Oh yes absolutely</td></tr>
+            <tr><td>[12:16] &lt MS-&gt pick something trivial and fun</td></tr>
+            <tr><td>[12:16] &lt MS-&gt I'm not expecting anyone's demo code to relate to their project</td></tr>
+            <tr><td>[12:16] &lt MS-&gt It should be as quick and simple as they like</td></tr>
+            <tr><td>[12:17] &lt xotaku&gt ok :)</td></tr>
+            <tr><td>[12:17] &lt MS-&gt Ideally fun too :)</td></tr>
+            <tr><td>[12:18] &lt MS-&gt (for the person writing it :) )</td></tr>
+            <tr><td>[12:18] &lt vmlemon_&gt o.O "I disagree. Joe Six-pack doesn't understand the Segway PT, and wouldn't give a damn even if he did. TV ads are for further hypnotizing the addicted drones into buying more drugs and trying to get them to switch to Charmin because bears are somehow using it now."</td></tr>
+            <tr><td>[12:20] &lt MS-&gt For those curious, the first mini-axon was this one:</td></tr>
+            <tr><td>[12:20] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/CE/miniaxon_scriptview.py</td></tr>
+            <tr><td>[12:22] &lt MS-&gt For those wondering "huh? why those component names?"</td></tr>
+            <tr><td>[12:23] &lt MS-&gt They come from the diagram labelled "stream processing" here:</td></tr>
+            <tr><td>[12:23] &lt MS-&gt http://www.blachford.info/computer/Cell/archive/Cell3.html</td></tr>
+            <tr><td>[12:23] &lt MS-&gt The orange boxes (RAM{1,8}) are equivalent to in/out-boxes</td></tr>
+            <tr><td>[12:25] &lt MS-&gt He replaced the input source (radio signal) with a shakespeare script instead</td></tr>
+            <tr><td>[12:25] &lt MS-&gt and allocated some high level, slightly silly, semantics to the boxes instead</td></tr>
+            <tr><td>[12:25] &lt MS-&gt Was actually really quite fun :)</td></tr>
+            <tr><td>[12:25] &lt MS-&gt I'm not thinking of that level of complexity for people's miniaxon's & demo systems at all</td></tr>
+            <tr><td>[12:26] &lt Chong&gt MS-: One question about the MiniAxon tutorial</td></tr>
+            <tr><td>[12:26] &lt MS-&gt (hence the reason for including something on the more complex end of the spectrum regarding these things)</td></tr>
+            <tr><td>[12:26] &lt MS-&gt Yes Chong?</td></tr>
+            <tr><td>[12:26] &lt Chong&gt In the class of component, it seems to me that the name of its two methods should be exchanged.</td></tr>
+            <tr><td>[12:26] &lt Chong&gt send(): send data from outbox of the source component and then remove the data from outbox</td></tr>
+            <tr><td>[12:26] &lt Chong&gt recv(): receive data to inbox of the sink component and then add data to inbox</td></tr>
+            <tr><td>[12:27] &lt Lawouach&gt That debate again ;)</td></tr>
+            <tr><td>[12:27] &lt Chong&gt From the pointview of the current component</td></tr>
+            <tr><td>[12:27] &lt MS-&gt Chong: What's your rationale?</td></tr>
+            <tr><td>[12:28] &lt MS-&gt send: send the data to an outbox and forget about it</td></tr>
+            <tr><td>[12:28] &lt MS-&gt recv: receive (or recieve) data from an inbox and do something funky with it</td></tr>
+            <tr><td>[12:28] &lt MS-&gt Oh, little detail</td></tr>
+            <tr><td>[12:28] &lt MS-&gt using send and recv that way round</td></tr>
+            <tr><td>[12:29] &lt MS-&gt means you can take code that uses</td></tr>
+            <tr><td>[12:29] &lt MS-&gt sock.send(...) , sock.recv(...) and replace it with</td></tr>
+            <tr><td>[12:29] &lt MS-&gt self.send( ... ) , self.recv( ... )</td></tr>
+            <tr><td>[12:29] &lt MS-&gt The earliest IRC code was evolved that way</td></tr>
+            <tr><td>[12:29] &lt MS-&gt for example</td></tr>
+            <tr><td>[12:29] &lt MS-&gt But I *am* interested in your rationale</td></tr>
+            <tr><td>[12:30] &lt Chong&gt thanks:)</td></tr>
+            <tr><td>[12:30] *** MS- listens</td></tr>
+            <tr><td>[12:31] &lt Chong&gt the current version is data=source.recv()</td></tr>
+            <tr><td>[12:31] &lt Chong&gt I think it should be data = source.send()</td></tr>
+            <tr><td>[12:32] &lt Chong&gt then sink.recv()</td></tr>
+            <tr><td>[12:33] &lt MS-&gt At present I don't understand why you say that, so I need you to explain further why</td></tr>
+            <tr><td>[12:34] &lt Chong&gt sorry;)</td></tr>
+            <tr><td>[12:34] &lt Lawouach&gt Chong, you mean that the data should be sent by the source when the call to "send()" is made?</td></tr>
+            <tr><td>[12:34] &lt Lawouach&gt synchronously?</td></tr>
+            <tr><td>[12:34] &lt Lawouach&gt like a .get()</td></tr>
+            <tr><td>[12:35] &lt vmlemon_&gt Hmm, how easy is it extend the HTTP component to support additional protocol features/options?</td></tr>
+            <tr><td>[12:35] &lt Chong&gt My logic is source should send data first and then sink receives data</td></tr>
+            <tr><td>[12:35] &lt MS-&gt Ah, I see</td></tr>
+            <tr><td>[12:36] &lt MS-&gt You have an assumption of ordering?</td></tr>
+            <tr><td>[12:36] &lt MS-&gt that source/send happen in a given order?</td></tr>
+            <tr><td>[12:36] &lt Chong&gt Lawouach: yes, I consider recv as kinda get</td></tr>
+            <tr><td>[12:36] &lt Lawouach&gt Chong, isn't it what happens when you call "self.send(data, 'outbox')"?</td></tr>
+            <tr><td>[12:37] &lt Chong&gt Lawouach, no. something like data=self.send(outbox)</td></tr>
+            <tr><td>[12:37] &lt MS-&gt Chong: From which piece's perspectice</td></tr>
+            <tr><td>[12:37] &lt Chong&gt MS-: I can understand your logic</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Which piece of code's perspectice</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Are you stating this from?</td></tr>
+            <tr><td>[12:38] &lt MS-&gt The postman perhaps?</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Rather than the components themselves</td></tr>
+            <tr><td>[12:38] &lt MS-&gt ?</td></tr>
+            <tr><td>[12:38] &lt Chong&gt The postman perhaps? yes</td></tr>
+            <tr><td>[12:38] &lt MS-&gt Bingo</td></tr>
+            <tr><td>[12:38] &lt MS-&gt First person to spot that issue in 3 years</td></tr>
+            <tr><td>[12:39] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Axon/Axon/Component.py?revision=6&view=markup</td></tr>
+            <tr><td>[12:39] &lt Chong&gt MS-: I can understand your logic.</td></tr>
+            <tr><td>[12:39] &lt MS-&gt Is the version of code referring to a system with a postman in (the postman is optimised out somewhat these days, but there in spirit as a post office these days)</td></tr>
+            <tr><td>[12:39] &lt MS-&gt That version has actually 4 methods</td></tr>
+            <tr><td>[12:39] &lt Chong&gt recv gets data; send sends data;</td></tr>
+            <tr><td>[12:39] &lt MS-&gt from the perspective of a component</td></tr>
+            <tr><td>[12:40] &lt MS-&gt it has self.send and self.recv</td></tr>
+            <tr><td>[12:40] &lt Chong&gt So, your logic is from the perspective of data</td></tr>
+            <tr><td>[12:40] &lt MS-&gt since those semantics make sense from the perspective of the component</td></tr>
+            <tr><td>[12:40] &lt MS-&gt However 2 other methods also exist for the postman</td></tr>
+            <tr><td>[12:40] &lt MS-&gt _deliver & _collect</td></tr>
+            <tr><td>[12:40] &lt MS-&gt which do indeed have the opposite semantics you're asking for</td></tr>
+            <tr><td>[12:41] &lt MS-&gt Please feel free to implement _deliver & _collect in your miniaxon</td></tr>
+            <tr><td>[12:41] &lt MS-&gt (can even be done by saying</td></tr>
+            <tr><td>[12:41] &lt MS-&gt scratch that line (can be don..)</td></tr>
+            <tr><td>[12:43] &lt Chong&gt _deliver & _collect is close to my thought</td></tr>
+            <tr><td>[12:44] &lt Chong&gt thx:)</td></tr>
+            <tr><td>[12:44] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[12:44] &lt bcarlyon|nub&gt #join #gsoc</td></tr>
+            <tr><td>[12:44] &lt MS-&gt You're welcome</td></tr>
+            <tr><td>[12:44] &lt bcarlyon|nub&gt oops</td></tr>
+            <tr><td>[12:44] *** xotaku has parted #kamaelia</td></tr>
+            <tr><td>[12:44] *** bcarlyon|nub is now known as bcarlyon|laptop</td></tr>
+            <tr><td>[12:45] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:53] &lt petruccigp&gt I don't know if you have already discussed about this</td></tr>
+            <tr><td>[12:53] &lt petruccigp&gt but in the mini axon tut</td></tr>
+            <tr><td>[12:54] &lt petruccigp&gt in the "talking" part</td></tr>
+            <tr><td>[12:54] &lt petruccigp&gt the interface of send is: def send(self, value, outboxname):</td></tr>
+            <tr><td>[12:54] &lt petruccigp&gt while in the example you put: self.send("outbox", "gameover")</td></tr>
+            <tr><td>[12:54] &lt petruccigp&gt so value and outboxname I guess it should be the other way around</td></tr>
+            <tr><td>[12:54] &lt MS-&gt I do?</td></tr>
+            <tr><td>[12:55] *** MS- looks</td></tr>
+            <tr><td>[12:55] &lt MS-&gt So it does</td></tr>
+            <tr><td>[12:55] &lt MS-&gt that example should be</td></tr>
+            <tr><td>[12:55] &lt MS-&gt self.send("gameover", "outbox")</td></tr>
+            <tr><td>[12:55] &lt petruccigp&gt sure</td></tr>
+            <tr><td>[12:56] &lt MS-&gt thanks</td></tr>
+            <tr><td>[12:56] &lt petruccigp&gt no prob :)</td></tr>
+            <tr><td>[13:04] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:41] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:04] &lt MS-&gt bcarlyon|* Just noted your miniaxon</td></tr>
+            <tr><td>[14:04] &lt MS-&gt reading through it, I note you may wish to know that you can do:</td></tr>
+            <tr><td>[14:05] &lt MS-&gt for i in xrange(100):</td></tr>
+            <tr><td>[14:06] &lt MS-&gt also, rather than</td></tr>
+            <tr><td>[14:06] &lt MS-&gt  while ptr &lt  len(self.active):</td></tr>
+            <tr><td>[14:06] &lt MS-&gt  current = self.active[ptr] #load ptr ref in to current</td></tr>
+            <tr><td>[14:06] &lt MS-&gt for can do</td></tr>
+            <tr><td>[14:06] &lt MS-&gt for current in self.active:</td></tr>
+            <tr><td>[14:06] &lt MS-&gt These things do make it very clear it's not a c&p of the answers though :)</td></tr>
+            <tr><td>[14:08] &lt MS-&gt actually, I'll make other comments off list. There's a number of short cuts you're not aware of, but your code is valid</td></tr>
+            <tr><td>[14:08] &lt MS-&gt (as I'm reading this is, not finished reading)</td></tr>
+            <tr><td>[14:09] &lt bcarlyon|laptop&gt LOL</td></tr>
+            <tr><td>[14:09] &lt bcarlyon|laptop&gt i was applying what i used to do in php....</td></tr>
+            <tr><td>[14:09] &lt bcarlyon|laptop&gt i didnt know xrange existed until i looked at the answer after i had finsihed the exercise</td></tr>
+            <tr><td>[14:11] &lt MS-&gt Component.recv BTW doesn't match the spec, in the case of an empty box.</td></tr>
+            <tr><td>[14:12] &lt bcarlyon|laptop&gt o</td></tr>
+            <tr><td>[14:12] &lt MS-&gt neither does dataReady</td></tr>
+            <tr><td>[14:12] &lt MS-&gt "This should return the length of the list associated with the boxname. "</td></tr>
+            <tr><td>[14:12] &lt bcarlyon|laptop&gt o dear</td></tr>
+            <tr><td>[14:13] &lt MS-&gt hint: you've made dataReady too complex</td></tr>
+            <tr><td>[14:13] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:13] &lt bcarlyon|laptop&gt ah</td></tr>
+            <tr><td>[14:13] &lt MS-&gt (you don't need the "if" :)</td></tr>
+            <tr><td>[14:13] &lt MS-&gt )</td></tr>
+            <tr><td>[14:13] &lt MS-&gt Likewise actually for recv incidentally</td></tr>
+            <tr><td>[14:14] &lt bcarlyon|laptop&gt o</td></tr>
+            <tr><td>[14:14] &lt MS-&gt (if you look at the spec & what would break with an empty box vs what the spec says about breakage)</td></tr>
+            <tr><td>[14:14] &lt bcarlyon|laptop&gt i think i overlooked the breakage parts in view of getting it too work</td></tr>
+            <tr><td>[14:16] &lt MS-&gt You also completely skipped the proof it works components "producer & consumer"</td></tr>
+            <tr><td>[14:16] &lt MS-&gt which admittedly aren't in an "answer" section</td></tr>
+            <tr><td>[14:17] &lt bcarlyon|laptop&gt I didnt think we needed to write anything for it....</td></tr>
+            <tr><td>[14:19] &lt MS-&gt It just makes it easier to run the code to test it works .. :)</td></tr>
+            <tr><td>[14:19] &lt bcarlyon|laptop&gt i did the bits on the command line to test it worked however</td></tr>
+            <tr><td>[14:19] &lt MS-&gt You can happily copy and paste the example components in :)</td></tr>
+            <tr><td>[14:19] &lt MS-&gt I'm guessing that you did that since you were chatting about it as you did it :-)</td></tr>
+            <tr><td>[14:20] &lt bcarlyon|laptop&gt :-)</td></tr>
+            <tr><td>[14:21] &lt bcarlyon|laptop&gt At the moment I having trouble trying to decide what to write for my component.</td></tr>
+            <tr><td>[14:22] &lt MS-&gt I would suggest something simple :)</td></tr>
+            <tr><td>[14:24] &lt bcarlyon|laptop&gt indeed.</td></tr>
+            <tr><td>[14:34] &lt bcarlyon|laptop&gt I think i think complexly, hence something simple is diffcult to think of sometimes....</td></tr>
+            <tr><td>[14:39] &lt orphans&gt MS-: I just made the worst drum machine ever :) http://orphans.pastebin.com/f4ce994b8</td></tr>
+            <tr><td>[14:39] &lt orphans&gt or perhaps more usefully Kamaelia and MIDI is possible</td></tr>
+            <tr><td>[14:39] &lt MS-&gt hehe</td></tr>
+            <tr><td>[14:40] &lt MS-&gt That's quite fun</td></tr>
+            <tr><td>[14:40] &lt MS-&gt With a tablet PC that would work as well</td></tr>
+            <tr><td>[14:40] &lt MS-&gt (as a UI)</td></tr>
+            <tr><td>[14:40] *** MS- note to self, get new stylus</td></tr>
+            <tr><td>[14:40] &lt orphans&gt heh, yeah</td></tr>
+            <tr><td>[14:41] &lt MS-&gt For people wondering about complexity of expected component & expected system, orphans' link just posted is highly appropriate :)</td></tr>
+            <tr><td>[14:42] &lt orphans&gt i officially hate alsa though - theres at least three different naming systems just for a midi port</td></tr>
+            <tr><td>[14:42] &lt orphans&gt :) yay!</td></tr>
+            <tr><td>[14:44] &lt orphans&gt MS-: you want me to add that in a comment?</td></tr>
+            <tr><td>[14:46] &lt bcarlyon|laptop&gt Damn my ubuntu box it is definately not well.....</td></tr>
+            <tr><td>[14:49] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[14:50] *** MS- wanders off</td></tr>
+            <tr><td>[14:50] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[14:50] *** bcarlyon|ubuntu_ is now known as bcarlyon|ubuntu</td></tr>
+            <tr><td>[15:23] &lt bcarlyon|laptop&gt Doing a component using the irc stuff, but I cant find the irc lib is it a python in built or a kamaelia bit</td></tr>
+            <tr><td>[15:24] *** bcarlyon|laptop is looking in synaptic now since he just realised about it</td></tr>
+            <tr><td>[15:33] *** bcarlyon|laptop is having no joy :-(</td></tr>
+            <tr><td>[15:41] *** maveriick has joined #kamaelia</td></tr>
+            <tr><td>[15:43] *** Davbop has joined #kamaelia</td></tr>
+            <tr><td>[15:51] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:13] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:15] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:16] &lt bcarlyon|laptop&gt yo vmlemon</td></tr>
+            <tr><td>[16:17] &lt vmlemon_&gt Any NTP.org users here?</td></tr>
+            <tr><td>[16:19] &lt vmlemon_&gt Never mind, I finally worked out what their timeserver was called</td></tr>
+            <tr><td>[16:24] &lt bcarlyon|laptop&gt message for ms when he gets on, I havnt posted my component yet, as it isnt working as intended, and I have now got a 6 hour work shift to do starting at 6pm, filling in for someone, shall be on later :-)</td></tr>
+            <tr><td>[17:06] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[17:09] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[17:19] &lt Davbo&gt Hi vmlemon_</td></tr>
+            <tr><td>[17:20] &lt Davbo&gt C:\Users\Dave\Documents\COM1080\search%20space\userFiles\NxN Queens\Queens_State.java:116: cannot find symbol</td></tr>
+            <tr><td>[17:20] &lt Davbo&gt symbol : method Queens_State(int,boolean[][])</td></tr>
+            <tr><td>[17:20] &lt Davbo&gt location: class userSearch.Queens_State</td></tr>
+            <tr><td>[17:20] &lt Davbo&gt fun.</td></tr>
+            <tr><td>[17:24] &lt Davbo&gt Agh the Java compiler lies!</td></tr>
+            <tr><td>[17:26] &lt vmlemon_&gt Bad Compiler!</td></tr>
+            <tr><td>[17:26] *** vmlemon_ makes the Java compiler sit on the Naughty Step ;)</td></tr>
+            <tr><td>[17:27] &lt Davbo&gt hehe, fixed it now</td></tr>
+            <tr><td>[17:27] &lt Davbo&gt missed out a "new"</td></tr>
+            <tr><td>[17:38] *** Chong has joined #kamaelia</td></tr>
+            <tr><td>[18:03] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:12] *** maveriick has joined #kamaelia</td></tr>
+            <tr><td>[18:19] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[18:27] *** lightningmonkey has joined #kamaelia</td></tr>
+            <tr><td>[18:27] &lt lightningmonkey&gt hello</td></tr>
+            <tr><td>[18:43] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:44] &lt orphans&gt  hey all</td></tr>
+            <tr><td>[18:45] &lt vmlemon_&gt Hi orphans</td></tr>
+            <tr><td>[18:57] &lt lightningmonkey&gt howdy</td></tr>
+            <tr><td>[18:59] &lt orphans&gt hey lightningmonkey</td></tr>
+            <tr><td>[18:59] &lt orphans&gt you one of the SoC peoples or someone I should know who is vital to the operation of Kamaelia?</td></tr>
+            <tr><td>[18:59] &lt orphans&gt or someone completely else :)</td></tr>
+            <tr><td>[19:00] &lt lightningmonkey&gt i am very very vital of course</td></tr>
+            <tr><td>[19:00] &lt lightningmonkey&gt !</td></tr>
+            <tr><td>[19:00] &lt lightningmonkey&gt to So</td></tr>
+            <tr><td>[19:00] &lt lightningmonkey&gt C</td></tr>
+            <tr><td>[19:01] &lt lightningmonkey&gt sorry, I am doing like 8 things at once right now, and being able to type is not one of them it would appear</td></tr>
+            <tr><td>[19:01] &lt orphans&gt :)</td></tr>
+            <tr><td>[19:02] &lt orphans&gt you applying as a student?</td></tr>
+            <tr><td>[19:02] &lt lightningmonkey&gt I am</td></tr>
+            <tr><td>[19:02] &lt orphans&gt what project?</td></tr>
+            <tr><td>[19:02] &lt lightningmonkey&gt to the topology viewer</td></tr>
+            <tr><td>[19:02] &lt lightningmonkey&gt to make it 3D</td></tr>
+            <tr><td>[19:02] *** orphans looks at the idea page :)</td></tr>
+            <tr><td>[19:03] &lt orphans&gt ahh, with the social network stuff, or with other stuff?</td></tr>
+            <tr><td>[19:03] &lt lightningmonkey&gt both i believe</td></tr>
+            <tr><td>[19:04] &lt lightningmonkey&gt it should be able to work with anything</td></tr>
+            <tr><td>[19:04] &lt lightningmonkey&gt hopefully</td></tr>
+            <tr><td>[19:04] &lt lightningmonkey&gt do you work with kamaelia now?</td></tr>
+            <tr><td>[19:04] &lt orphans&gt I'm also applying as a student</td></tr>
+            <tr><td>[19:05] &lt lightningmonkey&gt ah</td></tr>
+            <tr><td>[19:05] &lt orphans&gt and slowly working out what all these crazy concepts are - Topology?!?</td></tr>
+            <tr><td>[19:06] *** orphans is only sort of joking...</td></tr>
+            <tr><td>[19:06] &lt lightningmonkey&gt lol</td></tr>
+            <tr><td>[19:06] &lt lightningmonkey&gt i am trying to write a component now</td></tr>
+            <tr><td>[19:06] &lt lightningmonkey&gt as per the email michael sent out</td></tr>
+            <tr><td>[19:07] &lt lightningmonkey&gt what project are you appling for?</td></tr>
+            <tr><td>[19:07] &lt orphans&gt like a networked music sequencer</td></tr>
+            <tr><td>[19:07] &lt orphans&gt so lots of users are editing one bit of music</td></tr>
+            <tr><td>[19:07] &lt lightningmonkey&gt nice</td></tr>
+            <tr><td>[19:08] &lt orphans&gt how's the component going?</td></tr>
+            <tr><td>[19:08] &lt orphans&gt and what are you getting it to do?</td></tr>
+            <tr><td>[19:08] &lt lightningmonkey&gt i just started</td></tr>
+            <tr><td>[19:09] &lt lightningmonkey&gt but i think im going to try something silly and small like getting the fortune cookie protocol to write to a file</td></tr>
+            <tr><td>[19:09] &lt lightningmonkey&gt you?</td></tr>
+            <tr><td>[19:09] &lt vmlemon_&gt Hah, http://uncyclopedia.org/wiki/Image:Vistaohlord2.png</td></tr>
+            <tr><td>[19:10] &lt lightningmonkey&gt well done microsoft</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt one idea for your tutorial could be to have a component that checks for emails on a server using smtplib and then dispatch them based on rules to different components</td></tr>
+            <tr><td>[19:11] &lt orphans&gt I've done a couple just to test things out - one of them sends random OSC data (I'll be using OSC for all the communication), and the other is a really crappy drum machine :)</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt you could have a Junk component where you'd send emails that you believe are spam</td></tr>
+            <tr><td>[19:11] &lt orphans&gt hey Lawouach</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt of course this would be entirely fake and with no real purpose</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt but is a fun idea</td></tr>
+            <tr><td>[19:12] &lt lightningmonkey&gt mhm</td></tr>
+            <tr><td>[19:16] &lt lightningmonkey&gt so did all you guys just do the miniaxiom tutorial and read the coompenet tutorial to figure out how to do all this?</td></tr>
+            <tr><td>[19:18] &lt orphans&gt lightningmonkey: yeah, pretty much. I had used a couple of the libs I'm using before, and the examples directory is your friend :)</td></tr>
+            <tr><td>[19:18] &lt Lawouach&gt Personally I found something cool I wanted to experiment and learned on that</td></tr>
+            <tr><td>[19:19] &lt lightningmonkey&gt mhm</td></tr>
+            <tr><td>[19:20] &lt lightningmonkey&gt sadly I have only really been able to start looking at this stuff like today</td></tr>
+            <tr><td>[19:20] &lt lightningmonkey&gt I had an emergency at work that ate up all my time the last couple days</td></tr>
+            <tr><td>[19:21] &lt orphans&gt lightningmonkey, I'm sure you'll pick it up pretty quickly - it's nicely designed and the docs are good</td></tr>
+            <tr><td>[19:22] &lt vmlemon_&gt With built-in spam e-mail generator? ;)</td></tr>
+            <tr><td>[19:22] &lt Lawouach&gt your example of the fortune cookie earlier would be a good start</td></tr>
+            <tr><td>[19:23] &lt Lawouach&gt vmlemon_, the idea is just to find ways of using components in context</td></tr>
+            <tr><td>[19:23] &lt Lawouach&gt it doesn't really have to be useful in the end</td></tr>
+            <tr><td>[19:23] &lt orphans&gt Lawouach, sounds like procmail to me - that's pretty useful :)</td></tr>
+            <tr><td>[19:23] &lt vmlemon_&gt GiftFromAfrica!</td></tr>
+            <tr><td>[19:24] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt orphans, actually MS- has done something along the lines already</td></tr>
+            <tr><td>[19:24] &lt vmlemon_&gt Kamaelia Grey?</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[19:26] &lt orphans&gt that is pretty cool actually - I reckon you could reimplement the main part of procmail in ~50 loc</td></tr>
+            <tr><td>[19:26] &lt Lawouach&gt BTW, one thing to retain above all, when you start seeing your component goes to big it is usually a sign you need to componentanize it :)</td></tr>
+            <tr><td>[19:27] &lt lightningmonkey&gt thats pretty much true for all programs, if its really big, break it up! ;)</td></tr>
+            <tr><td>[19:27] &lt orphans&gt if in doubt press enter a couple of times and write class :)</td></tr>
+            <tr><td>[19:28] &lt vmlemon_&gt Anyone know where I can find the source for the HTTP server component?</td></tr>
+            <tr><td>[19:28] Reply: Hm?</td></tr>
+            <tr><td>[19:29] &lt orphans&gt Kamaelia/Protocol/HTTP I think</td></tr>
+            <tr><td>[19:29] &lt Lawouach&gt lightningmonkey, sure but you'll see it can be hard to find the right balance at times :)</td></tr>
+            <tr><td>[19:30] &lt lightningmonkey&gt true true</td></tr>
+            <tr><td>[19:30] &lt Lawouach&gt orphans, http://kamaelia.sourceforge.net/Cookbook/HTTPServer</td></tr>
+            <tr><td>[19:30] &lt Lawouach&gt oops</td></tr>
+            <tr><td>[19:30] &lt vmlemon_&gt Thanks</td></tr>
+            <tr><td>[19:30] &lt Lawouach&gt I mean vmlemon_ :)</td></tr>
+            <tr><td>[19:31] *** vmlemon_ wants to try and hack on it to implement some of the various HTTP protocol extensions floating around, these days</td></tr>
+            <tr><td>[19:32] &lt Lawouach&gt like what?</td></tr>
+            <tr><td>[19:33] &lt vmlemon_&gt I have some of the recently released Microsoft protocol extension specifications, and I'm interested in trying to build a WebDAV implementation somehow</td></tr>
+            <tr><td>[19:33] &lt vmlemon_&gt Not sure how I'd be able to make it fit into the current design though (but it's just something to hammer on in my spare time)</td></tr>
+            <tr><td>[19:34] &lt Lawouach&gt WebDAV... I hope you've got plenty of times ahead of you</td></tr>
+            <tr><td>[19:34] &lt Lawouach&gt It's a large beast</td></tr>
+            <tr><td>[19:35] &lt Davbo&gt WebDAV is great but I have to agree with Lawouach. It's a difficult thing to implement</td></tr>
+            <tr><td>[19:36] &lt Davbo&gt I was listening to a podcast the other day with the main developer behind it on there. Really interesting</td></tr>
+            <tr><td>[19:37] &lt Davbo&gt vmlemon_: http://twit.tv/floss28 if you're interested</td></tr>
+            <tr><td>[19:38] &lt orphans&gt fraid I'm going to have to leave you all - I have an appointment with the pub :)</td></tr>
+            <tr><td>[19:39] &lt Davbo&gt also vmlemon_ I got my program to not only compile, but to do what i want it to :D</td></tr>
+            <tr><td>[19:39] &lt vmlemon_&gt Yay</td></tr>
+            <tr><td>[19:39] &lt Davbo&gt http://en.wikipedia.org/wiki/Eight_queens_puzzle</td></tr>
+            <tr><td>[19:40] &lt Davbo&gt we had to make a programatic solution for it, which is dead easy. But it had to use this generic search engine</td></tr>
+            <tr><td>[19:40] *** vmlemon_ is still trying to get his file parser/reader script up to a point where it can read files and do different things depending on the filetype/magic number...</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt It's probably 90% comments on various data structures/file formats, and the remaining few lines is variables for error message text, and the initial print statements for the welcome message listing the file formats which it (hopefully) will support</td></tr>
+            <tr><td>[19:46] &lt vmlemon_&gt Davbo: Thanks for the link, there's some interesting looking stuff there</td></tr>
+            <tr><td>[19:47] &lt vmlemon_&gt (the TWiT one)</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt Yeah, it's great :)</td></tr>
+            <tr><td>[19:50] &lt Davbo&gt That's one of the things I love about OSS, it usually starts with someone just scratching their own itch.</td></tr>
+            <tr><td>[19:53] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:54] &lt vmlemon__&gt Damn, just lost connectivity</td></tr>
+            <tr><td>[19:54] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:16] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:19] &lt Davbo&gt &lt bcarlyon|laptop&gt message for ms when he gets on, I havnt posted my component yet, as it isnt working as intended, and I have now got a 6 hour work shift to do starting at 6pm, filling in for someone, shall be on later :-)</td></tr>
+            <tr><td>[20:19] &lt MS-&gt Davbo: Saw that - thanks</td></tr>
+            <tr><td>[20:19] &lt MS-&gt He'd already mentioned it before & I'd remembered :)</td></tr>
+            <tr><td>[20:19] &lt MS-&gt For those interested in the UK: http://www.facebook.com/event.php?eid=11500818756</td></tr>
+            <tr><td>[20:20] &lt Davbo&gt ah, well i thought there was a chance you'd miss it in the logs</td></tr>
+            <tr><td>[20:20] &lt MS-&gt Davbo: indeed - appreciated :)</td></tr>
+            <tr><td>[20:21] &lt Davbo&gt what's that MS-? my facebook is disabled for personal reasons lol</td></tr>
+            <tr><td>[20:21] &lt MS-&gt ah</td></tr>
+            <tr><td>[20:21] &lt MS-&gt "Name:MashedTagline:it's like Hackday - only with DaleksHost:Matthew CashmoreType:Other - Festival"</td></tr>
+            <tr><td>[20:21] &lt MS-&gt "It's Mashed! Yeah so we did Hack Day last year and it was bloody good - so good in fact that we've decided to do it again. This year we're stepping out on our own, and in due deference to the very cool guys at Yahoo! (who's idea Hack Day is) we've decided to call it Mashed."</td></tr>
+            <tr><td>[20:22] &lt MS-&gt "The idea is that by doing it on our own everybody will be able to come, the only rule is that to be a partner you have to bring something cool - no sponsorship, no corporate logos and no distractions from coding 'till dawn."</td></tr>
+            <tr><td>[20:22] &lt MS-&gt "The format is the same, turn up Saturday morning, register and listen to some cool people talk, then start hacking at 1pm - carry on hacking (perhaps with some Wii fun in-between - but I'm trying to avoid lightening this time) till 1pm on the Sunday when everyone presents back to everyone else."</td></tr>
+            <tr><td>[20:22] &lt MS-&gt "I'm trying to arrange something pretty cool for the Saturday night - but can't talk about it yet - it's going to be awesome though :-) Watch my blog."</td></tr>
+            <tr><td>[20:22] &lt MS-&gt (this is quoting matt cashmore BTW)</td></tr>
+            <tr><td>[20:22] &lt MS-&gt "Registration will go live about three weeks before (maybe a littlesooner) and I'll post messages up here to let you know - we'll do theusual thing of releasing in waves so everyone gets a chance - if lastyear is anything to go by it'll be tough to get a ticket."</td></tr>
+            <tr><td>[20:22] &lt MS-&gt "I'm also going to be anouncing a competition that will run in the lead up to the event - but that will be in two weeks - keep your eyes peeled."</td></tr>
+            <tr><td>[20:23] &lt Davbo&gt Sounds cool!</td></tr>
+            <tr><td>[20:23] &lt MS-&gt Had good feedback last year, which is why it's happening again</td></tr>
+            <tr><td>[20:24] &lt Davbo&gt I guess it's down south?</td></tr>
+            <tr><td>[20:24] *** vmlemon_ doesn't have a BaceFook account...</td></tr>
+            <tr><td>[20:24] &lt Davbo&gt (looking at a blog post about last years atm)</td></tr>
+            <tr><td>[20:24] &lt MS-&gt Yep - Alexandra Palace in London - like last year</td></tr>
+            <tr><td>[20:24] &lt Davbo&gt Ah shame. :(</td></tr>
+            <tr><td>[20:25] &lt MS-&gt vmlemon_: I've got two accounts. One real, one fake.</td></tr>
+            <tr><td>[20:25] &lt MS-&gt Should have more really</td></tr>
+            <tr><td>[20:25] &lt Davbo&gt Just don't post any non-patented idea's on there! :P</td></tr>
+            <tr><td>[20:25] &lt MS-&gt (should split it into 2)</td></tr>
+            <tr><td>[20:25] &lt MS-&gt heh</td></tr>
+            <tr><td>[20:25] &lt MS-&gt No, people should post non-patented ideas</td></tr>
+            <tr><td>[20:26] &lt MS-&gt As widely, publically, and as visibly as possible</td></tr>
+            <tr><td>[20:26] &lt MS-&gt to prevent them being patented</td></tr>
+            <tr><td>[20:26] &lt MS-&gt patents are meant to patent *implementations* not *ideas*</td></tr>
+            <tr><td>[20:26] &lt MS-&gt after all</td></tr>
+            <tr><td>[20:26] &lt MS-&gt that's the *entire* problem with software patents</td></tr>
+            <tr><td>[20:26] &lt MS-&gt (I have a whole rant if people want ;-) )</td></tr>
+            <tr><td>[20:26] &lt Davbo&gt Did i trigger something?</td></tr>
+            <tr><td>[20:27] &lt MS-&gt Software patents are bad, m'kay</td></tr>
+            <tr><td>[20:27] &lt Davbo&gt I was merely referring to the rights which Facebook reserve on all the stuff up there</td></tr>
+            <tr><td>[20:27] &lt MS-&gt ah</td></tr>
+            <tr><td>[20:27] &lt Davbo&gt We're on freenode MS-, lets face it you're preaching to the choir</td></tr>
+            <tr><td>[20:28] &lt MS-&gt Wouldn't matter btw - posting on facebook would count as public disclosure BTW</td></tr>
+            <tr><td>[20:30] &lt Davbo&gt In future i'll just shut up lol :P</td></tr>
+            <tr><td>[20:32] *** vmlemon_ notes that it's sometimes difficult to tell which patents apply to the software itself, and which ones apply to technologies/algorithms embodied within the software, if presented with a laundry list of them (e.g. the About screens for RealPlayer and many Adobe products)</td></tr>
+            <tr><td>[20:33] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[20:39] &lt MS-&gt vmlemon_: It's always difficult</td></tr>
+            <tr><td>[20:40] &lt MS-&gt That's a significant part of the problem</td></tr>
+            <tr><td>[20:41] &lt MS-&gt http://en.wikipedia.org/wiki/Instant_film#Kodak (note that it doesn't cover the fact that the chemical process was entirely different - according to Kodak's patent advisor)</td></tr>
+            <tr><td>[20:43] &lt MS-&gt With software its even harder since often its a deliberately vague wording of the concept rather than specifics</td></tr>
+            <tr><td>[20:49] &lt Davbo&gt Yeah i dislike how you can get away with being vague, it should really be in a specificaiton language like Z or something to really show exactly what the algorithm is</td></tr>
+            <tr><td>[20:50] &lt vmlemon_&gt I remember looking at a hex dump of a file created by a 3rd Party MS Office plug-in that had strings throughout the file saying that the format was patented, and could not be reverse-engineered or reimplemented without a license...</td></tr>
+            <tr><td>[20:51] &lt Davbo&gt ... surely not :/</td></tr>
+            <tr><td>[20:51] &lt vmlemon_&gt and a firmware image with a message deeply hidden message inside it telling people not to reverse engineer the file</td></tr>
+            <tr><td>[20:51] &lt Davbo&gt hah</td></tr>
+            <tr><td>[20:51] &lt vmlemon_&gt although there was no license document supplied</td></tr>
+            <tr><td>[20:52] &lt vmlemon_&gt (So you have to go through the file to find that out - genius!)</td></tr>
+            <tr><td>[20:52] &lt Davbo&gt is Kamaelia licensed as GPL?</td></tr>
+            <tr><td>[20:52] &lt vmlemon_&gt MPL, GPL and also the LGPL (I think)</td></tr>
+            <tr><td>[20:53] &lt MS-&gt It's the MPL/GPL/LGPL tri-license (same as Mozilla/Firefox)</td></tr>
+            <tr><td>[20:53] &lt Davbo&gt ah</td></tr>
+            <tr><td>[20:53] &lt MS-&gt The MPL is a non-political license (kinda useful from BBC perspective) and contains an explicit (rather than implicit) patent grant</td></tr>
+            <tr><td>[20:53] &lt MS-&gt (not that I'd personally ever engage in the patent silliness)</td></tr>
+            <tr><td>[20:54] &lt MS-&gt The minimal requirements are therefore LGPL</td></tr>
+            <tr><td>[20:55] *** vmlemon_ finds it stupid that a humble PDF reader could contain so many patented components (mostly related to DRM and font reproduction/anti-aliasing)...</td></tr>
+            <tr><td>[20:55] &lt MS-&gt As per GSOC (and other) pages we ask contributors for a BSD license on their code, since that allows us to release the combination of the code under the MPL/GPL/LGPL license</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Which also means that MPL/GPL/LGPL actually originates from the BBC rather than individuals - with the advantage of if anyone breaches the license, they'd be speaking to the Beeb, rather than individuals</td></tr>
+            <tr><td>[20:56] &lt vmlemon_&gt Probably explains all the perceived "bloat" of it</td></tr>
+            <tr><td>[20:56] *** Davbo thinks it was a wise decision of Google to only allow for certain licenses when they started code.google</td></tr>
+            <tr><td>[20:56] &lt MS-&gt The Beeb are used to dealing with copyright infringement sensibly</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Davbo: indeed</td></tr>
+            <tr><td>[20:56] &lt MS-&gt License proliferation is a real problem</td></tr>
+            <tr><td>[20:57] &lt vmlemon_&gt What about people who wish to use a license other than those in the list? (e.g. Sun CDDL or the APSL)</td></tr>
+            <tr><td>[20:57] &lt Davbo&gt They missed out Artistic though which was kinda major</td></tr>
+            <tr><td>[20:57] &lt Davbo&gt think it's there now</td></tr>
+            <tr><td>[20:57] &lt MS-&gt My personal preference is BSD fwiw</td></tr>
+            <tr><td>[20:58] &lt MS-&gt The summary of licensing for kamaelia is here: http://kamaelia.sourceforge.net/Licensing</td></tr>
+            <tr><td>[20:58] &lt MS-&gt The key part there is this really:</td></tr>
+            <tr><td>[20:58] &lt MS-&gt "Essentially this boils down to this: If you change any of the code that is part of the Kamaelia project as part of your project and release your project, then the recipient of that project should recieve a copy of Kamaelia and the changed code."</td></tr>
+            <tr><td>[20:59] &lt Davbo&gt Ah sounds good</td></tr>
+            <tr><td>[20:59] &lt Davbo&gt I've not read up on them personally</td></tr>
+            <tr><td>[20:59] &lt Davbo&gt no need to</td></tr>
+            <tr><td>[20:59] &lt MS-&gt I've read them</td></tr>
+            <tr><td>[20:59] &lt MS-&gt And Lawrence Rosen's book "open source licensing" :)</td></tr>
+            <tr><td>[21:00] &lt Davbo&gt I imagine it would be a big headache to read them</td></tr>
+            <tr><td>[21:00] &lt MS-&gt Yep. It's good to know what people are doing & restrictions on use.</td></tr>
+            <tr><td>[21:00] &lt Davbo&gt It's important for someone like me who would only want to contribute to not need to know any of them really</td></tr>
+            <tr><td>[21:01] &lt MS-&gt I think people have to be aware of what they're giving away, but that can be in general terms rather than detailed</td></tr>
+            <tr><td>[21:01] *** vmlemon_ wonders how http://pastebin.com/f214d2c11 would work/withstand any potential issues...</td></tr>
+            <tr><td>[21:02] &lt MS-&gt In general terms the contributor agreement boils down to "you can use this code pretty much how you like as long as you don't claim ownership and tell people I wrote it" (due to being BSD license on code)</td></tr>
+            <tr><td>[21:02] &lt MS-&gt It's slightly more constrained than that, but the contibutor agreement is short and readable and in english rather than legalese</td></tr>
+            <tr><td>[21:02] &lt MS-&gt (though checked by contributor friendly lawyers :) )</td></tr>
+            <tr><td>[21:03] &lt Davbo&gt Ah :)</td></tr>
+            <tr><td>[21:03] &lt MS-&gt And the code which kamaelia gets released under (I view SVN as release) - boils down to the "essentially .." bit I quoted above</td></tr>
+            <tr><td>[21:03] &lt MS-&gt basically it's enough to make it all hang together in a nice happy friendly way</td></tr>
+            <tr><td>[21:03] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[21:04] &lt lightningmonkey&gt good talking to you guys, but I need to head out for now</td></tr>
+            <tr><td>[21:04] &lt MS-&gt Davbo: http://kamaelia.sourceforge.net/Developers/SampleContributorAgreement</td></tr>
+            <tr><td>[21:05] &lt lightningmonkey&gt I may be on later as well</td></tr>
+            <tr><td>[21:05] &lt MS-&gt lightningmonkey: cya</td></tr>
+            <tr><td>[21:05] &lt Davbo&gt Cya</td></tr>
+            <tr><td>[21:05] &lt lightningmonkey&gt later</td></tr>
+            <tr><td>[21:05] &lt Davbo&gt Ah the windy city</td></tr>
+            <tr><td>[21:06] &lt MS-&gt I've had any beans today!</td></tr>
+            <tr><td>[21:07] &lt Davbo&gt uh?</td></tr>
+            <tr><td>[21:07] &lt MS-&gt just excuse me, being silly</td></tr>
+            <tr><td>[21:07] &lt Davbo&gt I don't get it</td></tr>
+            <tr><td>[21:08] &lt Davbo&gt lol</td></tr>
+            <tr><td>[21:08] &lt Davbo&gt like JavaBeans MS-? :P</td></tr>
+            <tr><td>[21:08] &lt MS-&gt heh, nevermind :)</td></tr>
+            <tr><td>[21:09] &lt Davbo&gt that's component programming i believe</td></tr>
+            <tr><td>[21:09] &lt Davbo&gt Argh this N-Queens program is unbelievably annoying</td></tr>
+            <tr><td>[21:10] &lt Davbo&gt I could program a solution in an hour or so and it would be fine but it has to work with this stupid "Generic State search-engine"</td></tr>
+            <tr><td>[21:11] &lt vmlemon_&gt You also have to make the search engine?</td></tr>
+            <tr><td>[21:11] &lt vmlemon_&gt Or is that a component provided to you that you have to integrate with?</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt nah which is the most annoying part</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt exactly</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt It works to a degree now anyway.</td></tr>
+            <tr><td>[21:13] &lt Davbo&gt it finds a solution, it's just the wrong one :P</td></tr>
+            <tr><td>[21:13] &lt vmlemon_&gt FWIW means "For What It's Worth"?</td></tr>
+            <tr><td>[21:13] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[21:14] &lt vmlemon_&gt (My guess, seeing as I'm not too familiar with the various abbreviations/pieces of slang that have popped up at an alarming rate...)</td></tr>
+            <tr><td>[21:14] &lt MS-&gt YKYHBUITLWYCUT</td></tr>
+            <tr><td>[21:15] &lt vmlemon_&gt o.O</td></tr>
+            <tr><td>[21:17] &lt Davbo&gt MS-, are you okay?</td></tr>
+            <tr><td>[21:18] &lt Davbo&gt Perhaps he collapsed unconscious on his keyboard.</td></tr>
+            <tr><td>[21:19] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[21:19] Reply: does the macarena</td></tr>
+            <tr><td>[21:19] &lt MS-&gt Davbo: yep</td></tr>
+            <tr><td>[21:20] &lt Davbo&gt dancing at the demise of its master, oh there he is :P</td></tr>
+            <tr><td>[21:20] &lt MS-&gt It's common on usenet</td></tr>
+            <tr><td>[21:20] &lt MS-&gt You Know You Have Been ....</td></tr>
+            <tr><td>[21:20] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[21:20] *** Davbo thinks</td></tr>
+            <tr><td>[21:21] &lt MS-&gt waits to give people a moment, which might be a bad idea :)</td></tr>
+            <tr><td>[21:22] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[21:22] &lt MS-&gt You Know You Have Been Using IRC Too Long When You Can Understand This....</td></tr>
+            <tr><td>[21:23] &lt Davbo&gt i got to "You Know You Have Been Under Incognito Too Long When You Can't Understand .."</td></tr>
+            <tr><td>[21:23] &lt Davbo&gt Oh well.</td></tr>
+            <tr><td>[21:23] &lt Davbo&gt :P</td></tr>
+            <tr><td>[21:23] &lt MS-&gt heh</td></tr>
+            <tr><td>[21:23] *** MS- wonders why Uraeus is in the US...</td></tr>
+            <tr><td>[21:25] &lt Uraeus&gt MS-: LUGRadio Live USA atm, but its the CE Linux conference in a few days also</td></tr>
+            <tr><td>[21:25] &lt MS-&gt Ahh, of course</td></tr>
+            <tr><td>[21:25] &lt MS-&gt How is LUGRadio?</td></tr>
+            <tr><td>[21:25] &lt Chong&gt MS-: Any suggestion for impoving my application? I am still busy with the coding, so I am afraid I may not have enough time to check it carefully.</td></tr>
+            <tr><td>[21:26] &lt Uraeus&gt good, currently the gong-a-thong happening, with the Banshee maintainer standing in his underpants gonging on a giant gong for each lightning talk</td></tr>
+            <tr><td>[21:26] &lt Davbo&gt Agh I heard about that</td></tr>
+            <tr><td>[21:26] &lt Davbo&gt Poor guy</td></tr>
+            <tr><td>[21:28] &lt vmlemon_&gt o.O</td></tr>
+            <tr><td>[21:28] &lt MS-&gt Chong: I think you probably need to think about this part of the mail: """This will also allow you to change your deliverables/stuff you want to achieve section to a bulleted or number list of items"</td></tr>
+            <tr><td>[21:29] &lt MS-&gt Rather embarassingly I completely forgot about these links this year:</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/AVCodecs</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/BitTorrent</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/CodelessComposition</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/DistributedPhysics</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/GeneralisedEventsBackplane</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/OHKamaelia</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/OpenGLWidgets</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/PeerToPeerStreaming</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/VisualEditor</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.sourceforge.net/Projects/Soc2006/XML2DInterfaces</td></tr>
+            <tr><td>[21:30] &lt MS-&gt (those were republished with permission)</td></tr>
+            <tr><td>[21:31] &lt MS-&gt You'll note that the apps with bullet lists of deliverables are far clearer</td></tr>
+            <tr><td>[21:31] &lt MS-&gt Though deliverables is probably the wrong phrase</td></tr>
+            <tr><td>[21:31] &lt MS-&gt should be more "stuff I hope to achieve"</td></tr>
+            <tr><td>[21:31] &lt Chong&gt Thank you very much for your advice, MS.</td></tr>
+            <tr><td>[21:32] &lt MS-&gt You're welcome</td></tr>
+            <tr><td>[21:33] &lt MS-&gt I should've done the same for last years, but didn't it seems</td></tr>
+            <tr><td>[21:34] &lt MS-&gt which is a pity and reasons why not aren't really relevant to the channel</td></tr>
+            <tr><td>[21:34] &lt vmlemon_&gt Hah, "As an aside, this was possibly the most entertaining project title! Well, at least the short form. Never thought of Kamaelia as an expletive before... :-)"</td></tr>
+            <tr><td>[21:35] &lt MS-&gt indeed :)</td></tr>
+            <tr><td>[21:37] &lt vmlemon_&gt What's happening with Compose/the Kamaelia system builder?</td></tr>
+            <tr><td>[21:37] &lt vmlemon_&gt Is work still under progress with it?</td></tr>
+            <tr><td>[21:38] *** vmlemon_ wonders why he keeps getting 504 errors when trying to load various pages...</td></tr>
+            <tr><td>[21:38] &lt vmlemon_&gt "[code=GATEWAY_TIMEOUT] A gateway timeout occurred. The server is unreachable. Retry the request."</td></tr>
+            <tr><td>[21:38] &lt MS-&gt I think that's sourceforge being naff at present</td></tr>
+            <tr><td>[21:38] &lt MS-&gt My browser has issues connecting there at present as well</td></tr>
+            <tr><td>[21:39] &lt MS-&gt If you're seeing 504's I'm guessing you have a proxy between you and the site</td></tr>
+            <tr><td>[21:39] &lt MS-&gt Regarding compose, it does need an update</td></tr>
+            <tr><td>[21:39] &lt MS-&gt So you can still view it as a WIP</td></tr>
+            <tr><td>[21:39] &lt Davbo&gt MS-, http://davbo.pastebin.com/m7f4aaa46 you think that would work?</td></tr>
+            <tr><td>[21:40] &lt vmlemon_&gt Aah, I have a transparent proxy in the network somewhere that isn't under my control :|</td></tr>
+            <tr><td>[21:40] &lt MS-&gt Davbo: Motor, Lightsensor are imported from nxt.sensor?</td></tr>
+            <tr><td>[21:40] &lt Davbo&gt I think it will make it go forward till it hits a wall and hopefully output light values to the outbox</td></tr>
+            <tr><td>[21:40] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[21:41] &lt vmlemon_&gt (it seems that it was intended to compress image files for faster transmission)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt Davbo: Looks reasonable</td></tr>
+            <tr><td>[21:41] &lt vmlemon_&gt Although it also seems to trap certain other pages, rather annoyingly</td></tr>
+            <tr><td>[21:41] &lt MS-&gt I'd personally be tempted to add an inbox which when you recieve a message you do something to the power for either a motor or both motors</td></tr>
+            <tr><td>[21:41] &lt MS-&gt (eg an inbox per motor)</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt RC commands could come on an inbox</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt :D</td></tr>
+            <tr><td>[21:42] &lt MS-&gt I see</td></tr>
+            <tr><td>[21:42] &lt MS-&gt OK</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt Hah, “The day Microsoft makes something that doesn't suck is the day they make a vacuum cleaner.”</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt not a day goes by where you don't make a crack at MS vmlemon_ :P</td></tr>
+            <tr><td>[21:42] &lt MS-&gt All software sucks, some less than others. If it didn't we'd have little reason to make something better :)</td></tr>
+            <tr><td>[21:43] &lt MS-&gt corollary - all software has bugs</td></tr>
+            <tr><td>[21:43] &lt vmlemon_&gt I can see where that comes from, I guess that a Microsoft vacuum cleaner would be pretty useless, and laden with features that don't work and are of dubious utility</td></tr>
+            <tr><td>[21:44] &lt vmlemon_&gt (I wouldn't be surprised if one didn't explode in a plume of smoke when switched on, if one existed ;) )</td></tr>
+            <tr><td>[21:45] &lt MS-&gt Davbo: You do realise you're seriously tempting me to get an NXT mindstorms kit, don't you?</td></tr>
+            <tr><td>[21:45] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:45] &lt vmlemon_&gt RoboKitty®! ;)</td></tr>
+            <tr><td>[21:45] &lt Davbo&gt They're awesome :D</td></tr>
+            <tr><td>[21:46] &lt Davbo&gt My first day at university the first thing we did was program robots to play football then had a match</td></tr>
+            <tr><td>[21:46] *** vmlemon_ hasn't seen Lego for ages...</td></tr>
+            <tr><td>[21:47] &lt Davbo&gt in the end we just remote controlled them into more of a robot wars style competition :P</td></tr>
+            <tr><td>[21:47] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:47] &lt Davbo&gt which is suitable because Noel Sharkey from Robot Wars is in our department heh</td></tr>
+            <tr><td>[21:48] *** Davbo plans on shouting "Let the wars begin!" at the start of any lectures with him ;)</td></tr>
+            <tr><td>[21:49] &lt MS-&gt heh</td></tr>
+            <tr><td>[21:49] &lt MS-&gt He'll probably get very grumpy about that :)</td></tr>
+            <tr><td>[21:50] &lt Davbo&gt Hmm how could I manipulate data off an inbox to see which motor it was meant for?</td></tr>
+            <tr><td>[21:51] &lt Davbo&gt or would it be easier to have a second inbox</td></tr>
+            <tr><td>[21:52] &lt Davbo&gt oh i remember where i've seen something similar</td></tr>
+            <tr><td>[21:52] &lt MS-&gt It's very similar to BasicSprite in idea BTW</td></tr>
+            <tr><td>[21:53] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/BouncingCatGame/Sprites/BasicSprite.py</td></tr>
+            <tr><td>[21:54] &lt Davbo&gt Ah thanks MS- I was just looking for that</td></tr>
+            <tr><td>[21:55] &lt Davbo&gt well, something like that</td></tr>
+            <tr><td>[22:02] &lt vmlemon_&gt Davbo: Is it already at the stage where you can control the bot?</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt Not tried yet</td></tr>
+            <tr><td>[22:06] &lt vmlemon_&gt Interesting stuff, though</td></tr>
+            <tr><td>[22:08] &lt Davbo&gt Yeah, hopefully will try it out at uni</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt http://davbo.pastebin.com/d2e6b39d9</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt that any better?</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt oops</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt indent wrong on light sensor</td></tr>
+            <tr><td>[22:10] &lt MS-&gt previous comments weren't criticism BTW</td></tr>
+            <tr><td>[22:11] &lt Davbo&gt Oh that's fine if they were anyway :)</td></tr>
+            <tr><td>[22:11] &lt Davbo&gt more than welcome</td></tr>
+            <tr><td>[22:11] &lt Davbo&gt http://davbo.pastebin.com/d566c47c5</td></tr>
+            <tr><td>[22:12] &lt MS-&gt Indent on self.stop() is wrong...</td></tr>
+            <tr><td>[22:12] &lt Davbo&gt isn't that just outside the while loop?</td></tr>
+            <tr><td>[22:12] &lt Davbo&gt so when it hits something it leaves the while and does stop()</td></tr>
+            <tr><td>[22:13] &lt MS-&gt I'd also change it to be more like: http://pastebin.com/m4c18f3b6</td></tr>
+            <tr><td>[22:14] &lt Davbo&gt oh you can use break :D</td></tr>
+            <tr><td>[22:14] *** MS- nods</td></tr>
+            <tr><td>[22:14] &lt Davbo&gt break in Java causes problems a lot</td></tr>
+            <tr><td>[22:15] &lt Davbo&gt thanks MS-</td></tr>
+            <tr><td>[22:15] &lt MS-&gt yw</td></tr>
+            <tr><td>[22:15] &lt Davbo&gt Yeah i agree that's better</td></tr>
+            <tr><td>[22:17] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt After my experience with the Java search thingy today this is far more pleasant</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt Night vmlemon_</td></tr>
+            <tr><td>[22:17] &lt MS-&gt vmlemon cya</td></tr>
+            <tr><td>[22:17] &lt MS-&gt heh</td></tr>
+            <tr><td>[22:17] &lt MS-&gt That's nice to hear</td></tr>
+            <tr><td>[22:18] &lt Davbo&gt They gave us a little java application to program it from within, which has none of the usual IDE features</td></tr>
+            <tr><td>[22:19] &lt Davbo&gt also! even though it's programmed in java it fails to run on Linux</td></tr>
+            <tr><td>[22:19] &lt MS-&gt Impressive</td></tr>
+            <tr><td>[22:19] &lt MS-&gt Mind you, Java is "write once, debug everywhere"</td></tr>
+            <tr><td>[22:19] &lt Davbo&gt Yeah, they have some bloody .bat files in there</td></tr>
+            <tr><td>[22:19] &lt MS-&gt cool</td></tr>
+            <tr><td>[22:20] *** bcarlyon|ubuntu is back from work :-)</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt "write once, debug everywhere" hehe, so true.</td></tr>
+            <tr><td>[22:21] *** vmlemon_ thinks that Sun should have called it WODA ;)</td></tr>
+            <tr><td>[22:22] &lt vmlemon_&gt It has a nice ring to it, but it probably wouldn't pass by the marketing drones</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt Although they did have a little rebranding blitz where they prefixed just about all of their product names with Java, even if they didn't contain any Java-related technology/code</td></tr>
+            <tr><td>[22:33] &lt bcarlyon|laptop&gt Did you get my msg MS-?</td></tr>
+            <tr><td>[22:43] &lt vmlemon_&gt I think it was something like ConceptDraw or MathType that generated the files with the anti-reverse-engineering/format patent notice, although I haven't seen the files in question for a while (since they're on another HDD, that I can't use since I don't have a drive cage/converter for P-ATA laptop drives)</td></tr>
+            <tr><td>[22:43] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[22:43] Reply: or post your idea, you may get a response - either from a mentor or fellow student or from someone reading the logs.</td></tr>
+            <tr><td>[22:43] Reply: Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news</td></tr>
+            <tr><td>[22:43] Reply: Some useful links/tips - use the template : http://kamaelia.sourceforge.net/SummerOfCode2006Template - base page: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[22:43] Reply: Tips for a good application - q's to ask yourself: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783</td></tr>
+            <tr><td>[23:13] *** lightningmonkey has joined #kamaelia</td></tr>
+            <tr><td>[23:13] &lt lightningmonkey&gt hello again</td></tr>

@@ -1,0 +1,126 @@
+<html><body><table>
+            <tr><td>[01:22] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[01:29] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[01:29] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[10:39] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:39] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:39] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:40] &lt MS-&gt greetings</td></tr>
+            <tr><td>[11:40] &lt MS-&gt glad all that stuff is out the (for now) - can now carry on with this stuff :-)</td></tr>
+            <tr><td>[11:43] &lt Lawouach&gt hello MS-</td></tr>
+            <tr><td>[11:43] &lt MS-&gt How's things?</td></tr>
+            <tr><td>[11:44] &lt MS-&gt It just struck me - is there anything in particular that you think really ought to be on the trunk for merge for the new release ?</td></tr>
+            <tr><td>[11:45] &lt Lawouach&gt Well I'm using K. mainly for networking stuff and so far everything I needed was already there. Except for the SSL stuff that has been merged already.</td></tr>
+            <tr><td>[11:45] &lt Lawouach&gt So off the top of my head, no.</td></tr>
+            <tr><td>[11:46] &lt MS-&gt Cool. Really wanted to check that though :)</td></tr>
+            <tr><td>[11:47] &lt Lawouach&gt ta</td></tr>
+            <tr><td>[11:50] &lt MS-&gt I've also decided to look at virtual box to see if there's a way of better supporting windows people</td></tr>
+            <tr><td>[11:52] &lt Lawouach&gt good idea</td></tr>
+            <tr><td>[11:52] &lt Lawouach&gt what are the specific shortcomings of Kamaelia when it comes to Windows?</td></tr>
+            <tr><td>[11:53] &lt vmlemon_&gt I reckon that DVB stuff (or lack thereof) might be</td></tr>
+            <tr><td>[11:54] &lt vmlemon_&gt Although, that's probably very OS specific</td></tr>
+            <tr><td>[11:55] &lt MS-&gt Lawouach: Mainly dependencies on specific libraries which are linux specific</td></tr>
+            <tr><td>[11:56] &lt MS-&gt I'd expect a mature (version 1.0) version of kamaelia to detect whether the libraries required exist to support the functionality requested really</td></tr>
+            <tr><td>[11:56] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:56] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:56] &lt MS-&gt ie move from asking of an Alsa or similar sound output to just asking for a sound output, and potentially allowing tweaking for the OS</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[11:57] &lt MS-&gt much like the differences between windows & linux are masked by both python as far as possible then further by the TCPIP components</td></tr>
+            <tr><td>[11:57] &lt MS-&gt In all cases though it should be "only as far as sensible, but no further"</td></tr>
+            <tr><td>[11:57] &lt vmlemon_&gt Isn't there a generic Python module for audio?</td></tr>
+            <tr><td>[11:57] &lt MS-&gt vmlemon_: Not for audio capture</td></tr>
+            <tr><td>[11:57] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[11:58] &lt MS-&gt For audio playback, pygame is probably the closest you get</td></tr>
+            <tr><td>[11:58] &lt MS-&gt as you move to multiple audio sources it gets more problematic</td></tr>
+            <tr><td>[12:00] &lt Lawouach&gt What about pymedia on Windows?</td></tr>
+            <tr><td>[12:00] &lt vmlemon_&gt SDL?</td></tr>
+            <tr><td>[12:01] &lt vmlemon_&gt Won't they paper the cracks for audio?</td></tr>
+            <tr><td>[12:01] &lt vmlemon_&gt *it</td></tr>
+            <tr><td>[12:02] &lt Lawouach&gt puygame is SDL</td></tr>
+            <tr><td>[12:02] &lt Lawouach&gt pymedia is gstreamer based</td></tr>
+            <tr><td>[12:02] &lt vmlemon_&gt Aah, OK</td></tr>
+            <tr><td>[12:02] &lt MS-&gt Lawouach: pymedia should world nicer</td></tr>
+            <tr><td>[12:02] &lt MS-&gt s/nicer/nicely/</td></tr>
+            <tr><td>[12:03] *** MS- though pymedia was wrappers round libavcodec rather than gstreamer</td></tr>
+            <tr><td>[12:05] &lt Lawouach&gt I thought they had moved to gstreamer mainly now</td></tr>
+            <tr><td>[12:05] &lt Lawouach&gt could be wrong</td></tr>
+            <tr><td>[12:09] &lt Lawouach&gt seems I was wrong</td></tr>
+            <tr><td>[12:10] &lt Lawouach&gt is there a license or packaging issue with libavcodec on windows?</td></tr>
+            <tr><td>[12:10] &lt MS-&gt Regarding packaging/licensing of I have no clue.</td></tr>
+            <tr><td>[12:10] &lt MS-&gt Technically they probably can't do anything with it because libavcodec actually implements lots of patented codecs</td></tr>
+            <tr><td>[12:11] &lt MS-&gt which puts it into a really really grey area</td></tr>
+            <tr><td>[12:11] &lt MS-&gt to put it mildly</td></tr>
+            <tr><td>[12:11] &lt Lawouach&gt HMM</td></tr>
+            <tr><td>[12:11] &lt Lawouach&gt I wonder how a product like Vlc does it</td></tr>
+            <tr><td>[12:11] &lt Lawouach&gt ah well</td></tr>
+            <tr><td>[12:11] &lt MS-&gt It doesn't - it has the same issue</td></tr>
+            <tr><td>[12:12] &lt MS-&gt gstreamer is unusual in that someone *has* paid the license fees</td></tr>
+            <tr><td>[12:12] &lt MS-&gt The problem isn't actually limited to those areas though</td></tr>
+            <tr><td>[12:13] &lt MS-&gt For example consumer cameras with MP4 encoding support only *technically* have a license for use in a domestic setting (at least some cameras)</td></tr>
+            <tr><td>[12:13] &lt MS-&gt which means using them to make a video short, seems reasonable</td></tr>
+            <tr><td>[12:13] &lt MS-&gt unless it becomes popular, and then someone goes "ooh, we could do something with this"</td></tr>
+            <tr><td>[12:13] &lt MS-&gt Suddenly you hit all sorts of nasty issues</td></tr>
+            <tr><td>[12:14] &lt MS-&gt Basically because software patents are nuts :)</td></tr>
+            <tr><td>[12:14] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[12:15] &lt Lawouach&gt In such case using a binding like pymedia would be fine as long as you don't distribute libavcodec along</td></tr>
+            <tr><td>[12:15] &lt Lawouach&gt right?</td></tr>
+            <tr><td>[12:15] &lt Lawouach&gt Meaning it's one extra step for the user</td></tr>
+            <tr><td>[12:16] &lt MS-&gt yes</td></tr>
+            <tr><td>[12:16] &lt MS-&gt That'd be my understanding as well</td></tr>
+            <tr><td>[12:17] &lt MS-&gt It's also why I think libavcodec is hosted in hungary these days - because of laws in that country</td></tr>
+            <tr><td>[12:17] &lt MS-&gt basically meaning they can distribute it, shifting the onus onto the person who recieves it for it to be legal for them to have a copy</td></tr>
+            <tr><td>[12:18] *** MS- software patentsare awful IMO - they don't make the world a better place</td></tr>
+            <tr><td>[12:33] &lt vmlemon_&gt Anyone know when the Fraunhofer/Thomson MP3 patents expire?</td></tr>
+            <tr><td>[12:34] &lt vmlemon_&gt Ugh, the LZW/GIF fiasco, anyone?</td></tr>
+            <tr><td>[13:35] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[14:11] *** bcarlyon|ubuntu is now known as BCarlyon|Ubuntu</td></tr>
+            <tr><td>[15:56] &lt MS-&gt back later</td></tr>
+            <tr><td>[15:56] &lt MS-&gt cya</td></tr>
+            <tr><td>[16:55] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[19:07] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[19:23] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:24] &lt MS-&gt evening</td></tr>
+            <tr><td>[19:25] &lt Lawouach&gt evening</td></tr>
+            <tr><td>[19:28] &lt MS-&gt I now have XP in a virtualbox (as in www.virtualbox.org)</td></tr>
+            <tr><td>[19:28] &lt MS-&gt which seems to work as advertised</td></tr>
+            <tr><td>[19:34] &lt Lawouach&gt good</td></tr>
+            <tr><td>[19:36] &lt Lawouach&gt I'm watching a fascinating british documentary about Stonehenge.</td></tr>
+            <tr><td>[19:36] &lt Lawouach&gt I went there once and was disapointed</td></tr>
+            <tr><td>[19:36] &lt Lawouach&gt Not by the stones but the way it's by two roads</td></tr>
+            <tr><td>[19:36] &lt Lawouach&gt That was rather unexpected and annoying.</td></tr>
+            <tr><td>[19:37] &lt MS-&gt Are they busy roads ?</td></tr>
+            <tr><td>[19:37] &lt MS-&gt I've not been there and probably ought to really</td></tr>
+            <tr><td>[19:38] &lt Lawouach&gt One is rather busy but farther. The other one is not actually that busy, mainly the traffic to visit the site</td></tr>
+            <tr><td>[19:38] &lt Lawouach&gt But I was rather surprised nonetheless</td></tr>
+            <tr><td>[19:39] &lt Lawouach&gt Other than that it's inspiring to be there.</td></tr>
+            <tr><td>[19:39] &lt MS-&gt I see. Sounds cool still :)</td></tr>
+            <tr><td>[19:39] &lt Lawouach&gt Yes it is :)</td></tr>
+            <tr><td>[19:43] &lt Lawouach&gt One thing I enjoyed not far from there is the steam train http://www.watercressline.co.uk/</td></tr>
+            <tr><td>[19:44] &lt Lawouach&gt It's particularly nice in summer and if you have children as you can make a day of it (there are activities at each station)</td></tr>
+            <tr><td>[19:44] &lt Lawouach&gt The ride was fun</td></tr>
+            <tr><td>[20:34] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:34] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[21:07] &lt MS-&gt Train sounds like a lot of fun :)</td></tr>
+            <tr><td>[21:08] &lt MS-&gt I'm sure the kids would enjoy it :)</td></tr>
+            <tr><td>[21:18] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:18] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:28] *** MS- finds this</td></tr>
+            <tr><td>[21:28] &lt MS-&gt http://blog.red-bean.com/sussman/?p=96</td></tr>
+            <tr><td>[21:32] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[21:39] &lt MS-&gt Interesting concept: http://www.codingdojo.org/</td></tr>
+            <tr><td>[21:50] *** MS- realises he has no clue of what a decent command line console is for windows beyond cygwin</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt GNUWin32 utilities with Microsoft PowerShell work well for me, although I don't use the CLI on Windows very often</td></tr>
+            <tr><td>[21:53] &lt MS-&gt cheers :)</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt It probably works with the Cygwin tools, too</td></tr>
+            <tr><td>[21:54] &lt vmlemon_&gt Although I only tested the former, since they were easier/faster to install on a slow connection</td></tr>
+            <tr><td>[22:01] &lt vmlemon_&gt "Your Milage May Vary" though, as they say</td></tr>
+            <tr><td>[22:02] &lt MS-&gt indeed - thanks for the tip though :)</td></tr>
+            <tr><td>[22:02] &lt MS-&gt (will probably try that tomorrow)</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt (Or kilometrage? for our European friends ;) )</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt Assuming that it is even a word...</td></tr>
+            <tr><td>[22:06] *** vmlemon_ was shocked at how much dust had built up in his old, unused for ages desktop/server machine, when he was dismantling and reassembling it, to try and make it boot again, earlier</td></tr>
+            <tr><td>[22:12] &lt vmlemon_&gt I'm amazed that it still works, given that it's nearly 7 years old</td></tr>
+            <tr><td>[22:13] &lt vmlemon_&gt and the CMOS battery is well and truly dead</td></tr>
+            <tr><td>[23:36] &lt Chong-&gt gotta sleep. night, all.</td></tr>
+            <tr><td>[23:37] *** Chong- has parted #kamaelia</td></tr>

@@ -1,0 +1,396 @@
+<html><body><table>
+            <tr><td>[06:39] *** jle_ has joined #kamaelia</td></tr>
+            <tr><td>[07:10] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[08:05] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:43] &lt Lawouach&gt hi guys</td></tr>
+            <tr><td>[08:43] &lt Lawouach&gt how are things?</td></tr>
+            <tr><td>[08:44] &lt orphans&gt hey Lawouach, not bad ta</td></tr>
+            <tr><td>[08:44] &lt orphans&gt first exam tomorrow morning :S</td></tr>
+            <tr><td>[08:44] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[08:45] &lt Lawouach&gt well hope for the best, be ready for the worst :)</td></tr>
+            <tr><td>[08:45] &lt orphans&gt yeah. This one is going to be my worst one I think</td></tr>
+            <tr><td>[08:45] &lt Lawouach&gt If you'd rather postpone tomorrow's meeting to later on this week</td></tr>
+            <tr><td>[08:45] &lt Lawouach&gt It'd be fine by me.</td></tr>
+            <tr><td>[08:46] &lt orphans&gt nah, may as well get it done, I've got a day off on tuesday anyway</td></tr>
+            <tr><td>[08:48] &lt Lawouach&gt That's fine then.</td></tr>
+            <tr><td>[09:44] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:45] &lt Chong-&gt Morning, all.</td></tr>
+            <tr><td>[10:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:18] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:49] &lt Chong-&gt hey vmlemon_</td></tr>
+            <tr><td>[10:51] &lt vmlemon_&gt o.O 23:28 &lt  wonknu&gt what a hack: a sticker ^^</td></tr>
+            <tr><td>[12:35] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[12:37] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[12:45] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[12:50] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[13:24] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:37] &lt mhrd-home&gt yay, found the dvb bug :)</td></tr>
+            <tr><td>[13:44] &lt mhrd-home&gt vmlemon_ : I can confirm that the WinTV NovaT ub stick (labelled "DVB-T / TNT / Freeview TV receiver" on the back) does indeed to whole transport stream capture :)</td></tr>
+            <tr><td>[14:48] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:00] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[15:01] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[15:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:37] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt Afternoon Lawouach</td></tr>
+            <tr><td>[16:09] &lt mhrd-home&gt hi Davbo</td></tr>
+            <tr><td>[16:10] &lt Davbo&gt Hi mhrd-home :)</td></tr>
+            <tr><td>[16:10] &lt Davbo&gt Anyone heard if MS is going to be around tomorrow?</td></tr>
+            <tr><td>[16:11] *** mhrd-home has parted #kamaelia</td></tr>
+            <tr><td>[16:11] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[16:11] &lt mhrd-home&gt I've no idea I'm afraid</td></tr>
+            <tr><td>[16:24] *** Davbo finally gets JFileChooser to work.</td></tr>
+            <tr><td>[16:26] &lt mhrd-home&gt congratulations. was it giving you trouble?</td></tr>
+            <tr><td>[16:26] &lt mhrd-home&gt hmm, sorry that wasn't meant to come across as sarcastic(!)</td></tr>
+            <tr><td>[16:27] &lt vmlemon_&gt Yay</td></tr>
+            <tr><td>[16:27] &lt Davbo&gt s'ok :) - It was being annoying, took 20minutes to get it doing what i want</td></tr>
+            <tr><td>[16:27] &lt vmlemon_&gt I think you could have got him last night :|</td></tr>
+            <tr><td>[16:28] &lt Davbo&gt I was trying to get it to just open folders</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt Java--</td></tr>
+            <tr><td>[16:28] &lt Davbo&gt not java's fault, it was mine</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[16:29] &lt Davbo&gt it's really easy.....if you read the javadoc</td></tr>
+            <tr><td>[16:29] &lt Davbo&gt :)</td></tr>
+            <tr><td>[16:29] &lt Davbo&gt all swing components need to specify a setVisible method, this one didn't do what i wanted</td></tr>
+            <tr><td>[16:30] *** vmlemon_ wonders why there isn't a Java component called Slide or SeeSaw to go with Swing ;)</td></tr>
+            <tr><td>[16:32] &lt Davbo&gt Swing works really well, for what it is. It's just horribly slow</td></tr>
+            <tr><td>[16:32] &lt vmlemon_&gt Anyone use AWT, these days?</td></tr>
+            <tr><td>[16:32] &lt mhrd-home&gt when you specify verbose API structures like the ones Java seems to grow, I don't think there's room for personality or humour :-)</td></tr>
+            <tr><td>[16:33] &lt Davbo&gt Yeah vmlemon_, i'm using it right now</td></tr>
+            <tr><td>[16:33] &lt vmlemon_&gt Hell, they could lump them into a set of components called Park or Playground</td></tr>
+            <tr><td>[16:34] &lt Davbo&gt now what's your opinion. Should you select a folder then it import all the MP3's in there</td></tr>
+            <tr><td>[16:35] &lt Davbo&gt or select a folder and it recursively go through each folder in that looking for MP3's also</td></tr>
+            <tr><td>[16:35] &lt vmlemon_&gt Hmm, you could have an option to make it do both</td></tr>
+            <tr><td>[16:35] &lt vmlemon_&gt Although I think the latter sounds like a better idea</td></tr>
+            <tr><td>[16:36] &lt vmlemon_&gt Hah, http://solarisdiary.blogspot.com/2008/05/corel-seems-to-finally-found-linux.html</td></tr>
+            <tr><td>[17:48] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:05] &lt Davbo&gt mhrd-home: ping</td></tr>
+            <tr><td>[18:07] &lt Davbo&gt sorry ignore that, fixed it</td></tr>
+            <tr><td>[18:08] *** vmlemon__ wonders why Solaris 10 seems to be stuck at a resolution that's too high to display easily in a VMware window</td></tr>
+            <tr><td>[18:09] *** mhrd-home oeys</td></tr>
+            <tr><td>[18:09] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[18:10] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:29] &lt Davbo&gt mhrd-home: how does one kill a Pygame.Display ?</td></tr>
+            <tr><td>[18:29] &lt Davbo&gt it ignores everything sent to the signal box or so the docs say</td></tr>
+            <tr><td>[18:29] &lt Davbo&gt s/signal/control</td></tr>
+            <tr><td>[18:33] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[18:33] &lt mhrd-home&gt in which case it can't be killed ... unless someone mods it to make it killable</td></tr>
+            <tr><td>[18:34] &lt mhrd-home&gt I've not looked at that code for ages though, so I could be wrong</td></tr>
+            <tr><td>[18:35] &lt Davbo&gt right</td></tr>
+            <tr><td>[18:35] &lt Davbo&gt ty</td></tr>
+            <tr><td>[18:35] &lt mhrd-home&gt as you say, from the docs, it certainly looks like the situation is how you describe it :-)</td></tr>
+            <tr><td>[18:35] &lt mhrd-home&gt np</td></tr>
+            <tr><td>[18:35] &lt Davbo&gt i know</td></tr>
+            <tr><td>[18:36] &lt Davbo&gt if in my main i do a while done: and make something happen which triggers that</td></tr>
+            <tr><td>[18:36] &lt Davbo&gt kay, thanks</td></tr>
+            <tr><td>[18:36] *** Davbo thinks out-loud</td></tr>
+            <tr><td>[19:06] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:17] &lt vmlemon__&gt kamaeliabot: dance</td></tr>
+            <tr><td>[19:17] Reply: does the macarena</td></tr>
+            <tr><td>[19:19] *** vmlemon__ is trying to download SCO OpenServer 6.0</td></tr>
+            <tr><td>[19:20] &lt Davbo&gt Lawouach: Could you possibly test a theory for me? - or anyone else that runs a distro with some kinda 3d effects on there</td></tr>
+            <tr><td>[19:20] &lt Lawouach&gt I don't enabled 3d effects on my desktop.</td></tr>
+            <tr><td>[19:20] &lt Lawouach&gt So I'm not sure I can help</td></tr>
+            <tr><td>[19:20] &lt Davbo&gt ah, sorry Lawouach.</td></tr>
+            <tr><td>[19:21] *** vmlemon__ doesn't use 3D desktop effects</td></tr>
+            <tr><td>[19:21] &lt Davbo&gt When I was running Ubuntu with the 3D effects on programs like Whiteboard and Magnadoodle were pretty slow at updating. I didn't test it without those enabled though so never got to the bottom of it</td></tr>
+            <tr><td>[19:24] &lt Davbo&gt Oh I can test it myself, sorry for bothering you all.</td></tr>
+            <tr><td>[19:26] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:27] &lt Davbo&gt Oh! it's fine :)</td></tr>
+            <tr><td>[19:27] &lt Davbo&gt KDE + Compiz Fusion doesn't cause the lag i experienced on Ubuntu</td></tr>
+            <tr><td>[19:40] &lt vmlemon__&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[19:40] Reply: Ptang!</td></tr>
+            <tr><td>[20:00] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[20:01] &lt Chong-&gt Evening, all.</td></tr>
+            <tr><td>[20:02] &lt Davbo&gt Evenin' Chong-</td></tr>
+            <tr><td>[20:03] &lt Chong-&gt hey Davbo.</td></tr>
+            <tr><td>[20:04] &lt Chong-&gt Do you enjoy your book from google?</td></tr>
+            <tr><td>[20:05] &lt Davbo&gt Yeah not had chance to read much but it looks good :)</td></tr>
+            <tr><td>[20:06] &lt Chong-&gt Glad to hear that. I think it should be a great book, at least from the introduction:-)</td></tr>
+            <tr><td>[20:06] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[20:07] &lt Chong-&gt it's very thoughful of google to send everyone a book.</td></tr>
+            <tr><td>[20:07] &lt Chong-&gt Out of curiosity, do you know what book they give out last year?</td></tr>
+            <tr><td>[20:15] &lt Davbo&gt I don't think they did</td></tr>
+            <tr><td>[20:15] &lt Davbo&gt they sent out a bunch of stuff though</td></tr>
+            <tr><td>[20:16] &lt Davbo&gt I'm pretty sure we have more coming :)</td></tr>
+            <tr><td>[20:17] &lt Chong-&gt I see. So we are very lucky to receive a book rather than some downloadable software.</td></tr>
+            <tr><td>[20:17] &lt vmlemon__&gt GSoC: The Gift That Keeps On Giving ;)</td></tr>
+            <tr><td>[20:18] &lt vmlemon__&gt or something like that</td></tr>
+            <tr><td>[20:25] &lt Chong-&gt vmlemon__: hope so :-)</td></tr>
+            <tr><td>[20:26] &lt vmlemon__&gt Hah, http://paster.dazjorz.com/?a=rawpaste&p=2980 - the stupidity that emerged after someone reckoned that his phone was wiretapped ;)</td></tr>
+            <tr><td>[20:26] &lt vmlemon__&gt (includes a comprehensive "fix list", too ;) )</td></tr>
+            <tr><td>[20:29] &lt mhrd-home&gt so I'm noticing</td></tr>
+            <tr><td>[20:30] &lt vmlemon__&gt and he gets "rickrolled" ;)</td></tr>
+            <tr><td>[20:31] &lt Chong-&gt Interesting. yours and Colden's answers are very funny. :-)</td></tr>
+            <tr><td>[20:33] *** vmlemon__ wonders if r420r was serious about the "backdoor"</td></tr>
+            <tr><td>[20:35] &lt Chong-&gt out curiocity, which channel is it?</td></tr>
+            <tr><td>[20:37] &lt vmlemon__&gt #symbian</td></tr>
+            <tr><td>[20:39] &lt mhrd-home&gt I love the way people seem to forget that there's a whole back end infrastructure. putting backdoors in the handset feels like too much hassle :)</td></tr>
+            <tr><td>[20:40] &lt vmlemon__&gt Wasn't there a case in Greece a while ago involving a wiretap on some part of Vodafone's network there?</td></tr>
+            <tr><td>[20:41] &lt mhrd-home&gt no idea ... wouldn't surprise.</td></tr>
+            <tr><td>[20:46] &lt Chong-&gt I think he's over nervous :-)</td></tr>
+            <tr><td>[20:46] &lt Chong-&gt vmlemon__: thanks for the link</td></tr>
+            <tr><td>[20:47] &lt Chong-&gt mhrd-home: evening.</td></tr>
+            <tr><td>[20:47] &lt vmlemon__&gt No problem</td></tr>
+            <tr><td>[20:47] &lt vmlemon__&gt I was up until 1am last night on IRC, so saw plenty of weird stuff :|</td></tr>
+            <tr><td>[20:48] &lt Chong-&gt mhrd-home: can I ask you one question?</td></tr>
+            <tr><td>[20:51] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:51] &lt MS-&gt Evening</td></tr>
+            <tr><td>[20:51] *** MS- read logs and noticed the query:</td></tr>
+            <tr><td>[20:51] &lt Chong-&gt hey MS-</td></tr>
+            <tr><td>[20:51] &lt vmlemon__&gt Hi MS-</td></tr>
+            <tr><td>[20:51] &lt MS-&gt "Anyone heard if MS is going to be around tomorrow? "</td></tr>
+            <tr><td>[20:51] &lt MS-&gt I'm not going to be I'm afraid</td></tr>
+            <tr><td>[20:51] &lt Chong-&gt I heard not :-)</td></tr>
+            <tr><td>[20:51] &lt mhrd-home&gt Chong: go for it</td></tr>
+            <tr><td>[20:52] &lt Chong-&gt mhrd-home: thanks.</td></tr>
+            <tr><td>[20:52] &lt vmlemon__&gt "Don't Ask To Ask, Or Risk Axing"; )</td></tr>
+            <tr><td>[20:52] &lt vmlemon__&gt ;)</td></tr>
+            <tr><td>[20:52] &lt mhrd-home&gt hi MS-</td></tr>
+            <tr><td>[20:53] &lt Chong-&gt Is it possible to pass extra data to TopologyViewer?</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt such as what?</td></tr>
+            <tr><td>[20:53] &lt Chong-&gt e.g., person mum photo=/local/mum.gif</td></tr>
+            <tr><td>[20:53] &lt MS-&gt Hiya mhrd-home</td></tr>
+            <tr><td>[20:54] &lt Chong-&gt Is it possible to pass the link of the photo to TopologyViewer?</td></tr>
+            <tr><td>[20:54] &lt mhrd-home&gt the documented functionality is all there is atm ...</td></tr>
+            <tr><td>[20:54] &lt Chong-&gt I can only see it's possible to pass parciple type (a class or function).</td></tr>
+            <tr><td>[20:56] &lt mhrd-home&gt you can always get creative with a custom particle class and the 'names' for nodes</td></tr>
+            <tr><td>[20:56] &lt Chong-&gt parciple type -- particle type</td></tr>
+            <tr><td>[20:56] &lt mhrd-home&gt or take a look at extending the topology viewer</td></tr>
+            <tr><td>[20:57] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:58] &lt Chong-&gt yes. I know I can create a new particle type/ class, but it seems not possible to pass data (e.g. the photo of every node/ person).</td></tr>
+            <tr><td>[20:59] &lt Chong-&gt vmlemon_: I see :-)</td></tr>
+            <tr><td>[20:59] *** mhrd-home is now known as mhrd</td></tr>
+            <tr><td>[21:00] *** mhrd is now known as mhrd-home</td></tr>
+            <tr><td>[21:01] &lt MS-&gt Chong-: Have you done the basic blue/pink version first as suggested?</td></tr>
+            <tr><td>[21:01] &lt MS-&gt As a simple step forward ?</td></tr>
+            <tr><td>[21:02] &lt MS-&gt If not, I would suggest that first :)</td></tr>
+            <tr><td>[21:02] &lt Chong-&gt MS-: not yet. I want to do them together :-)</td></tr>
+            <tr><td>[21:02] &lt Chong-&gt since they are similar.</td></tr>
+            <tr><td>[21:03] &lt MS-&gt It's up to you. I suggested the two seperate steps since it *will* make your life easier</td></tr>
+            <tr><td>[21:03] &lt Chong-&gt person mum photo=/local/mum.gif person mum gender=female</td></tr>
+            <tr><td>[21:03] &lt MS-&gt But it's up to you</td></tr>
+            <tr><td>[21:03] &lt mhrd-home&gt MS-'s suggestion is a good excuse to familiarise with the particle classes and how they are used by the topologyviewer</td></tr>
+            <tr><td>[21:04] &lt Chong-&gt I know the blue/pink version is easier which can be implemented by define two particle classes.</td></tr>
+            <tr><td>[21:04] &lt MS-&gt After all, it's alot simpler to go to 2 particles pink/blue</td></tr>
+            <tr><td>[21:04] &lt MS-&gt than it is to go to multiple & configurable</td></tr>
+            <tr><td>[21:04] &lt MS-&gt (to say the least)</td></tr>
+            <tr><td>[21:05] &lt MS-&gt Chong-: Have you ever done test first development ?</td></tr>
+            <tr><td>[21:05] &lt MS-&gt (I suspect not)</td></tr>
+            <tr><td>[21:05] &lt Chong-&gt yep. probably I should do that one first.</td></tr>
+            <tr><td>[21:05] &lt Chong-&gt MS-: which one do you mean?</td></tr>
+            <tr><td>[21:06] &lt MS-&gt test driven development</td></tr>
+            <tr><td>[21:06] &lt MS-&gt Ala Kent Beck?</td></tr>
+            <tr><td>[21:06] &lt MS-&gt It's not intended as a trick question :)</td></tr>
+            <tr><td>[21:07] &lt Chong-&gt Do you mean the ConsoleReader and FileAdaptor ones?</td></tr>
+            <tr><td>[21:08] &lt MS-&gt I'm not talking about Kamaelia code here, I'm asking generally - have you ever done test driven development (in the style of Kent Beck and friends) ?</td></tr>
+            <tr><td>[21:08] &lt MS-&gt I suspect not you see</td></tr>
+            <tr><td>[21:09] &lt Chong-&gt You mean, do unit test</td></tr>
+            <tr><td>[21:09] &lt MS-&gt since even when doing non-test driven dev it changes the way you work</td></tr>
+            <tr><td>[21:09] &lt MS-&gt No, it's subtler than doing unit testing</td></tr>
+            <tr><td>[21:09] &lt MS-&gt You can/do use unit testing in TDD, but unit testing isn't TDD</td></tr>
+            <tr><td>[21:10] &lt MS-&gt I'll take that as a no.</td></tr>
+            <tr><td>[21:11] &lt MS-&gt That's fine</td></tr>
+            <tr><td>[21:11] &lt Chong-&gt So, what's your suggestion?</td></tr>
+            <tr><td>[21:11] &lt MS-&gt I was just asking a question, not making any specific suggestions or anything</td></tr>
+            <tr><td>[21:12] &lt Chong-&gt To be honest, I have just tried different input data to make sure it works.</td></tr>
+            <tr><td>[21:12] &lt MS-&gt I was trying to understand why you wanted to jump to try to do 2 things at once, and realised it was probably due to not having done TDD, and then that explains things</td></tr>
+            <tr><td>[21:12] &lt MS-&gt It's not a criticism in the slightest</td></tr>
+            <tr><td>[21:12] &lt MS-&gt just after a yes/no, and I've inferred a no from your general answers :)</td></tr>
+            <tr><td>[21:13] &lt Chong-&gt yes. the answer is no :-)</td></tr>
+            <tr><td>[21:14] &lt MS-&gt Cool. np.</td></tr>
+            <tr><td>[21:14] &lt MS-&gt The essence of it is "implement the minimal code to make the test work"</td></tr>
+            <tr><td>[21:14] &lt MS-&gt So, if a test suite contained 1 test and 1 test only</td></tr>
+            <tr><td>[21:14] &lt MS-&gt that looked like this:</td></tr>
+            <tr><td>[21:15] &lt Chong-&gt go ahead</td></tr>
+            <tr><td>[21:16] &lt MS-&gt from to_test import mean</td></tr>
+            <tr><td>[21:16] &lt MS-&gt class myTest(unittest.TestCase):</td></tr>
+            <tr><td>[21:16] &lt MS-&gt  def test_mean(self):</td></tr>
+            <tr><td>[21:16] &lt MS-&gt  self.failUnless(mean( [1,2,3]) == 2)</td></tr>
+            <tr><td>[21:16] &lt MS-&gt Then the code that is required to make that test pass is this:</td></tr>
+            <tr><td>[21:16] &lt MS-&gt def mean(*args):</td></tr>
+            <tr><td>[21:16] &lt MS-&gt  return 2</td></tr>
+            <tr><td>[21:17] &lt MS-&gt Since the test suite only checks 1 return value</td></tr>
+            <tr><td>[21:17] &lt MS-&gt In test driven development you get very used to extending the test suite to cause the code to cover the functionality you *actually* want</td></tr>
+            <tr><td>[21:18] &lt MS-&gt Now in very general terms you can extend this on a larger scale</td></tr>
+            <tr><td>[21:18] &lt MS-&gt If you look at the MiniAxon tutorial, it is essentially a test driven style thing</td></tr>
+            <tr><td>[21:18] &lt MS-&gt except with much larger "tests"</td></tr>
+            <tr><td>[21:18] &lt MS-&gt But still small incremental code steps</td></tr>
+            <tr><td>[21:19] &lt MS-&gt The small incremental steps make it easier to focus normally as well</td></tr>
+            <tr><td>[21:19] &lt MS-&gt and less to worry about at once</td></tr>
+            <tr><td>[21:19] &lt MS-&gt So, that was really the suggestion here</td></tr>
+            <tr><td>[21:19] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[21:19] &lt MS-&gt First of all - "topology visualiser from console"</td></tr>
+            <tr><td>[21:19] &lt MS-&gt "then from file"</td></tr>
+            <tr><td>[21:20] &lt MS-&gt "then from custom file"</td></tr>
+            <tr><td>[21:20] &lt MS-&gt "then interpret *one* new thing from custom file" (giving you colour)</td></tr>
+            <tr><td>[21:20] &lt Chong-&gt Do one new thing, only need to test one; Do two things, need to consider theirs couples</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Then interpret one more thing (eg image) for completely new/custom particle</td></tr>
+            <tr><td>[21:21] &lt MS-&gt On the surface of things, it looks like more work, but in practice, when you have a clear cut direction you're heading in, it's alot quicker</td></tr>
+            <tr><td>[21:21] &lt Chong-&gt got it. it's a very good incremental plan :-)</td></tr>
+            <tr><td>[21:21] &lt MS-&gt The ER modeller tool for example was only 1/2 days effort for example</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Because I took that kind of approach</td></tr>
+            <tr><td>[21:22] &lt MS-&gt I also had the advantage of knowing the code</td></tr>
+            <tr><td>[21:22] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:23] &lt MS-&gt TDD can also be useful in suprisingly many areas</td></tr>
+            <tr><td>[21:23] &lt Chong-&gt it's brilliant to finish the ER modeller tool in 1/2 days. I could spend one week;)</td></tr>
+            <tr><td>[21:24] &lt MS-&gt It's harder to apply in Kamaelia at present though than it should be, but that's partly due to Kamaelia's nature being rather different from the Unit test model</td></tr>
+            <tr><td>[21:24] &lt MS-&gt Thing was I *needed* it. Wasn't something I wanted, I actually *needed* a tool</td></tr>
+            <tr><td>[21:25] &lt MS-&gt I was working on a large(ish) data model, and wanted to play around with it, and it's structure and that was the quickest way of doing so.</td></tr>
+            <tr><td>[21:25] &lt Chong-&gt cool. coding increases productivity.</td></tr>
+            <tr><td>[21:26] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[21:27] &lt Chong-&gt Another thing I think of, which may be also a little ahead of plan, is it possible to custom the links?</td></tr>
+            <tr><td>[21:27] &lt vmlemon_&gt What about testing the test code?</td></tr>
+            <tr><td>[21:27] &lt Davbo&gt Evening MS-</td></tr>
+            <tr><td>[21:27] &lt Davbo&gt You going to be around tomorrow?</td></tr>
+            <tr><td>[21:28] &lt Chong-&gt vmlemon_: then testing the testing of the test code? :-)</td></tr>
+            <tr><td>[21:28] &lt mhrd-home&gt Chong- : check the docstrings and the source - should be obvious from there</td></tr>
+            <tr><td>[21:28] &lt MS-&gt Davbo: Tomorrow evening, not during the day unfortunately</td></tr>
+            <tr><td>[21:29] &lt Davbo&gt Ah, we're not meeting then?</td></tr>
+            <tr><td>[21:29] &lt MS-&gt No, we'll have to rearrange for another time.</td></tr>
+            <tr><td>[21:29] &lt Davbo&gt Okay, sounds good</td></tr>
+            <tr><td>[21:29] &lt Davbo&gt rather not be thursday or friday though</td></tr>
+            <tr><td>[21:29] &lt Chong-&gt mhrd-home: I have check them, but have not fine one way :(</td></tr>
+            <tr><td>[21:32] *** Chong- found he had misunstood MS-' question at the beginning.</td></tr>
+            <tr><td>[21:32] &lt mhrd-home&gt afaik there isn'tt</td></tr>
+            <tr><td>[21:32] &lt Davbo&gt it's fine to miss this week out if that would be preferable for you MS-</td></tr>
+            <tr><td>[21:33] &lt Davbo&gt my final 2 deadlines (a presentation and a poster session) are on Thurs and Fri respectively</td></tr>
+            <tr><td>[21:33] &lt mhrd-home&gt davbo: good luck with those :-)</td></tr>
+            <tr><td>[21:33] &lt mhrd-home&gt Chong: topologyviewer was originally deliberately quite simple and is quite old now. ...</td></tr>
+            <tr><td>[21:34] &lt MS-&gt Davbo: Cool.</td></tr>
+            <tr><td>[21:34] &lt Chong-&gt mhrd-home: I see. Thank you very much for your kindly help.</td></tr>
+            <tr><td>[21:34] &lt mhrd-home&gt if you want to modify it to add the facilities you mention then go for it (in a branch or your Sketches dir of course :-) )</td></tr>
+            <tr><td>[21:34] &lt Chong-&gt Davbo: good luck for me too :-)</td></tr>
+            <tr><td>[21:34] &lt mhrd-home&gt I've held off from doing it since MS- has managed to make do so far :-P</td></tr>
+            <tr><td>[21:34] &lt Davbo&gt thanks mhrd-home :)</td></tr>
+            <tr><td>[21:35] &lt MS-&gt We are going to have to rearrange the following week anyway too</td></tr>
+            <tr><td>[21:35] &lt Davbo&gt thanks guys :)</td></tr>
+            <tr><td>[21:35] &lt MS-&gt SInce the following monday is bank holiday</td></tr>
+            <tr><td>[21:35] &lt vmlemon_&gt Tomorrow is Bank Holiday?</td></tr>
+            <tr><td>[21:35] &lt MS-&gt vmlemon_: next week</td></tr>
+            <tr><td>[21:35] &lt MS-&gt not this week :)</td></tr>
+            <tr><td>[21:36] &lt vmlemon_&gt Or next week?</td></tr>
+            <tr><td>[21:36] &lt MS-&gt (26th)</td></tr>
+            <tr><td>[21:36] *** vmlemon_ assumes that's the 26th</td></tr>
+            <tr><td>[21:36] &lt MS-&gt Davbo: How about tuesday, 11am then?</td></tr>
+            <tr><td>[21:36] &lt Chong-&gt mhrd-home: no problem. After finishing the pink/blue one, I 'll try to extend it.</td></tr>
+            <tr><td>[21:36] &lt Davbo&gt Fine by me MS-</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Chong-: I'll need to change your mentor time as well tomorrow. Can we also change that to tuesday ? say midday&gt</td></tr>
+            <tr><td>[21:37] &lt MS-&gt ?</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Davbo: Cool :)</td></tr>
+            <tr><td>[21:37] &lt Davbo&gt My MagnaDoodle draws circles now hehe</td></tr>
+            <tr><td>[21:37] &lt Chong-&gt Just make sure it has not the function before extending it :-)</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Davbo: Good start :)</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Is it checked in?</td></tr>
+            <tr><td>[21:37] &lt vmlemon_&gt I thought you just turned the handles to make it draw ;)</td></tr>
+            <tr><td>[21:37] &lt Chong-&gt MS-: midday tueday is fine to me.</td></tr>
+            <tr><td>[21:38] &lt MS-&gt Chong-: excellent</td></tr>
+            <tr><td>[21:38] &lt Davbo&gt not yet, they're fixed size atm, I'm going to change that and get them to scale with mouse movement</td></tr>
+            <tr><td>[21:39] &lt MS-&gt Cool. Checking in often is very much encouraged BTW</td></tr>
+            <tr><td>[21:39] &lt MS-&gt code you put into /Sketches is OK to be broken</td></tr>
+            <tr><td>[21:39] &lt MS-&gt since the only person you affect is yourself</td></tr>
+            <tr><td>[21:40] &lt MS-&gt But it does mean you get feedback like "that new website looks good"</td></tr>
+            <tr><td>[21:40] &lt MS-&gt ;)</td></tr>
+            <tr><td>[21:40] &lt Davbo&gt alright</td></tr>
+            <tr><td>[21:40] &lt vmlemon_&gt I take it that people can nab bits from other parts of /Sketches to toy with and distroy, too? ;)</td></tr>
+            <tr><td>[21:41] *** MS- is paranoid about hardware crashes</td></tr>
+            <tr><td>[21:41] &lt vmlemon_&gt *destroy</td></tr>
+            <tr><td>[21:41] &lt MS-&gt vmlemon_: Absolutey</td></tr>
+            <tr><td>[21:41] &lt MS-&gt Matt's had all sorts of interesting stuff in his area</td></tr>
+            <tr><td>[21:41] &lt MS-&gt Jason's "stolen"/extended stuff directly from my /Sketches area</td></tr>
+            <tr><td>[21:41] &lt MS-&gt which is cool</td></tr>
+            <tr><td>[21:42] &lt MS-&gt matt's borrowed stuff from mine</td></tr>
+            <tr><td>[21:42] &lt MS-&gt etc</td></tr>
+            <tr><td>[21:42] &lt MS-&gt I still keep on wondering what to do with the Gesture Recognition code :)</td></tr>
+            <tr><td>[21:43] *** Davbo realises why his check-in isn't working</td></tr>
+            <tr><td>[21:43] &lt Davbo&gt ummm</td></tr>
+            <tr><td>[21:43] &lt Davbo&gt ! is an escape character?</td></tr>
+            <tr><td>[21:44] &lt MS-&gt ! is special as far as the shell is concerned, yes</td></tr>
+            <tr><td>[21:44] &lt MS-&gt It's officially annoying</td></tr>
+            <tr><td>[21:44] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:44] &lt Davbo&gt I see! :)</td></tr>
+            <tr><td>[21:44] &lt Davbo&gt heh, never encountered that befoer</td></tr>
+            <tr><td>[21:44] &lt Davbo&gt rare you learn something new in bash lol</td></tr>
+            <tr><td>[21:44] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:45] &lt Davbo&gt oh MS- if you wanna use it, press "C" for circles and "L" for lines</td></tr>
+            <tr><td>[21:46] &lt MS-&gt Woo! It does two things now :)</td></tr>
+            <tr><td>[21:46] &lt Davbo&gt heh, gonna make it so you can click and hold to make custom sized ones</td></tr>
+            <tr><td>[21:47] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:47] &lt MS-&gt I'm all in favour of small steps that work over big ones that don't :)</td></tr>
+            <tr><td>[21:48] &lt vmlemon_&gt With a secret "T-Mobile Pink" mode? ;)</td></tr>
+            <tr><td>[21:48] &lt Davbo&gt Heh, I don't wanna get locked up for using the RGB code for Magenta vmlemon_ :P</td></tr>
+            <tr><td>[21:48] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[21:48] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[21:50] &lt MS-&gt Davbo: Indeed, someone may be tempted to port magnadoodle to a mobile if that happened, and we'd never hear the end of it</td></tr>
+            <tr><td>[21:50] &lt MS-&gt ;-) :-D</td></tr>
+            <tr><td>[21:50] &lt Davbo&gt haha</td></tr>
+            <tr><td>[21:50] &lt Davbo&gt :)</td></tr>
+            <tr><td>[21:50] &lt vmlemon_&gt A *knitted*, T-Mobile Pink mobile, even? ;)</td></tr>
+            <tr><td>[21:50] *** vmlemon_ reckons that a colour would definitely fall under "fair use" or "fair dealling" </td></tr>
+            <tr><td>[21:51] *** MS- reckons that that anyone who thinks they can trademark a colour needs whacking with a cluestick</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt I suppose there's UPS Brown</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt (Good look trying to paint your delivery van with that)</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt (At least in the USA)</td></tr>
+            <tr><td>[21:52] &lt vmlemon_&gt Does this mean I should erase the Python interpreter from my phone now? ;)</td></tr>
+            <tr><td>[21:53] &lt Davbo&gt "This colour is licensed under a Creative Commons Attribution License" :P</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt A toxic colour? (It ends up putting anything it's painted on under the same license as the colour)</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt Never mind lead-based paint</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt Hmm, can you GPLv3 a colour?</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt Now that would be worrying</td></tr>
+            <tr><td>[21:55] *** vmlemon_ goes to trademark the letter "Z" ;)</td></tr>
+            <tr><td>[21:58] &lt vmlemon_&gt I wonder if prisms and rainbows would be prior art</td></tr>
+            <tr><td>[22:01] &lt mhrd-home&gt colorimetry is a deceptively complex subject - Pantone and other make huge amounts of money out of it ... so I almost wouldn't be surprised if its deemed by some as intellectual property :-)</td></tr>
+            <tr><td>[22:02] &lt vmlemon_&gt Good point about Pantone</td></tr>
+            <tr><td>[22:02] &lt vmlemon_&gt I know they're fairly aggressive when it comes to people using their colour names</td></tr>
+            <tr><td>[22:03] &lt MS-&gt mhrd-home: no it's not that sort of thing</td></tr>
+            <tr><td>[22:03] &lt MS-&gt t-mobile claim to own magenta</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt (which is one of the things stopping people from having Pantone support in Open Source software)</td></tr>
+            <tr><td>[22:03] &lt MS-&gt ie RGB value 0xFF00FF</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt I think they have a patent on a system called Hexachrome for describing colour mixes, too</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt (Similar sort of thing to RGB and CMYK)</td></tr>
+            <tr><td>[22:04] &lt vmlemon_&gt Isn't it just a very specific shade of magenta?</td></tr>
+            <tr><td>[22:04] &lt vmlemon_&gt And not magenta in general?</td></tr>
+            <tr><td>[22:04] &lt MS-&gt mhrd-home: http://www.engadget.com/2008/03/31/deutsche-telekom-t-mobile-demands-engadget-mobile-discontinue/</td></tr>
+            <tr><td>[22:05] &lt MS-&gt http://www.engadget.com/photos/deutsche-telekom-t-mobile-demands-engadget-mobile-discontinue-using-the-color-magenta/725824/</td></tr>
+            <tr><td>[22:05] &lt MS-&gt Latter actually includes the text</td></tr>
+            <tr><td>[22:09] &lt MS-&gt http://www.t-mobile.com/Templates/Popup.aspx?PAsset=Ftr_Ftr_Copyright -- "... and the color magenta are registered and/or unregistered trademarks of Deutsche Telekom"</td></tr>
+            <tr><td>[22:09] &lt vmlemon_&gt I think ICI have trademarked the (proprietary/marketing) names of certain shades of Dulux paint, although not the colours themselves</td></tr>
+            <tr><td>[22:09] &lt vmlemon_&gt and I think certain car companies do that, too</td></tr>
+            <tr><td>[22:10] &lt mhrd-home&gt hmm, I'd say they'd only have a legal case if it was the same specific shade</td></tr>
+            <tr><td>[22:10] &lt MS-&gt As I recall paint companies have always used names, rather than colours for enforcement purposes</td></tr>
+            <tr><td>[22:10] &lt MS-&gt I'd say they don't have a case myself. It's a clear case of overstepping the mark</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt I think that's how Pantone manage to do things, too</td></tr>
+            <tr><td>[22:11] &lt MS-&gt I could claim the colour purple tomorrow, but so what?</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt although they also have several patents</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt Which shade of purple?</td></tr>
+            <tr><td>[22:11] &lt MS-&gt vmlemon_: Yep, they don't claim that the colours themselves will be exact</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt (The most important question)</td></tr>
+            <tr><td>[22:11] &lt MS-&gt They claim that they will look the same relative to each other</td></tr>
+            <tr><td>[22:11] &lt MS-&gt IIRC</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt Don't they say that the colours will fade in the booklets, and that they won't be accurate then?</td></tr>
+            <tr><td>[22:12] &lt vmlemon_&gt Although I haven't read the Pantone swatchbooks</td></tr>
+            <tr><td>[22:12] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[22:13] &lt MS-&gt I have no idea, but as I understand it they just claim that they will look the same relative to each other</td></tr>
+            <tr><td>[22:13] &lt vmlemon_&gt Aren't most of the colours referred to in brand manuals provided as PMS/Pantone values, anyway?</td></tr>
+            <tr><td>[22:14] &lt Davbo&gt Had to administer a router firmware upgrade :)</td></tr>
+            <tr><td>[22:14] &lt vmlemon_&gt Which should (in theory) help in things like that</td></tr>
+            <tr><td>[22:15] &lt MS-&gt No idea :)</td></tr>
+            <tr><td>[22:15] &lt vmlemon_&gt Or at least I've noticed in several corporate brand documents I've came across</td></tr>
+            <tr><td>[22:16] &lt vmlemon_&gt (Sun and NTT DoCoMo come to mind)</td></tr>
+            <tr><td>[22:16] &lt vmlemon_&gt Hah, http://www.engadget.com/2008/05/18/asus-and-msi-have-some-splaining-to-do/</td></tr>
+            <tr><td>[22:18] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:18] &lt MS-&gt heh</td></tr>
+            <tr><td>[22:18] &lt mhrd-home&gt tsk tsk :)</td></tr>
+            <tr><td>[22:19] &lt vmlemon__&gt Damn, stupid PPP session terminated</td></tr>
+            <tr><td>[22:22] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[22:23] &lt vmlemon_&gt The joys of stock photos and Photoshop ;)</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[22:24] &lt mhrd-home&gt night vmlemon_</td></tr>
+            <tr><td>[22:35] &lt MS-&gt night all,</td></tr>
+            <tr><td>[22:35] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[23:04] *** mhrd-home packs it in too</td></tr>
+            <tr><td>[23:04] *** mhrd-home has parted #kamaelia</td></tr>
+            <tr><td>[23:14] &lt Chong-&gt me too. Gotta sleep. night, all.</td></tr>
+            <tr><td>[23:14] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[23:44] *** bcarlyon|laptop has joined #kamaelia</td></tr>

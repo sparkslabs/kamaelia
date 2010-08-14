@@ -1,0 +1,102 @@
+<html>
+<head>
+<title> Developers/MulticastProxyTools </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/MulticastProxyTools">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+<h2>Project Task Page: Multicast Proxy Tools</h2><h2>Description</h2><p><div style="float: right; border: solid;" class="twoC"> <b>Status:</b> Stasis<br><b>Current active developer:</b><br><b>Current dev locations:</b> /Sketches/MPS/Systems/MulticastProxying<br><b>Start Date: </b>9 June 2006<br><b>Expected date:</b> n/a<br><b>end date:</b> n/a<br><b>This page last updated:</b> 27th Nov 2006<br><b>Estimated effort so far:</b> 1/2 man day<br></div> This task aims to produce tools to make it simpler to join multicast islands together - in essence tools for proxying multicast over non-multicast enabled networks.</p>A direct end result of this is that it would enable someone to take a multicast stream, send it to a proxying hub, allow clients to connect to this multicast hub, and those clients would then remulticast that stream within a local (eg corporate intranet) network for local availability.<br>This task was created because it was deemed to be hopefully useful to a particular internal client at the BBC.<br>Some specific benefits of working on this include:<br><br><h3>Inputs</h3>Task Sponsor: (for BB)<br>Task Owner: Michael (mps)<br>Developers:<br><ul><li>Michael</li></ul>Users:<br><ul><li>BB (potential)<br></li></ul>Interested Third Parties<br><ul><li>na</li></ul>Requirements:<br><blockquote>The expected scenario for these components is that there are situations as follows:<br></blockquote><ul><ul><li>A single source which is desirable to multicast to a large population (mps)</li><li>A large population has many sources in which it wishes to multicast to itself (mps)</li><li>The population consists of many disaparate multicast islands which need joining (mps)</li><li>They desire having a central hub, to join islands together (mps)</li><li>They wish to join multiple islands together directly and in a distibuted fashion and route between islands. (mps)</li></ul></ul><blockquote>This is a non-exhaustive set of input states.<br></blockquote><h2>Outputs</h2><h3><b>Expected</b></h3><ul><li>Tools to allow multicast data and data sources to be proxied between locations effectively. The tools can be assumed at this level to not have to deal with any automated mesh set up or autodiscovery - merely to allow such higher level systems to be created.</li></ul><h3><b>Actual</b></h3><b>Code Produced:</b><br>These tools already exist in the subversion repository in <font face="Courier New, monospace">/Sketches/MPS/Systems/MulticastProxying</font>. Files in that directory and purpose:<br><ul><li><i><b>config.py</b></i><br>Defines the following config options<br><blockquote>mcast_group, mcast_port - The multicast group/port to be proxied<br>mcast_tcp_splitter_ip, mcast_tcp_splitter_port - IP/port of a simple TCP Splitter that serves the contents of a given multicast group to people who connect<br>tcp_tcp_splitter_ip, tcp_tcp_splitter_port - IP/port of a TCP Splitter that accepts a data source from a single TCP client<br>
+tcp_splitter_client_ip, tcp_splitter_client_port - IP/port of the TCP Splitter where clients can connect to recieve that data source</blockquote></li><li><i><b>MulticastTCPClientRelay.py</b></i></li><ul><li>This is a simple proxy to relay multicast data from a given multicast group and port to a TCP server which may choose to do something with the data (eg split and forward).<br></li></ul><li><i><b>MulticastTCPRelay.py</b></i></li><ul><li>This is a simple proxy to relay multicast data from a given multicast group and port as a TCP Service on a given port. It's worth noting that this is one way - any data from the TCP connection is discarded.<br></li></ul><li><i><b>SplittingServer.py</b></i></li><ul><li>Splitting server. This expects a single inbound connection on one port and spits it out to all recipients who connect on another port. This can be<br>used as an alternate server for the TCPRelayMulticast to connect to, and it would expect to be fed using MulticastTCPClientRelay.<br> </li></ul><li><i><b>TCPRelayMulticast.py</b></i></li><ul><li>A TCP Client that connects to the splitting server, and takes any data it receives a resends it as a multicast stream</li></ul></ul><h3><b><b>Realistic possibilities arising as a result of activity on this task<br></b></b></h3>
+The creation of tools that allow for automated mesh setup building on this allow for the realistic possibility of merging application layer multicast with IP level  multicast.<br><b>Tasks that could benefit from or build on this work:</b><br><ul><li>Whiteboard - specifically P2P Events Backplane (An extraction exercise)<br></li></ul>
+<h2>Related Tasks</h2><h3>Tasks that directly enable this task</h3><ul><li>Multicast Transciever</li><li>Internet Subsystem</li></ul><h3>Sub tasks</h3><ul><li>Coding each of the types of server, client and relay. (each of these is too small to be worth while)<br></li></ul><h3>Task Log</h3><ul><li>Initial version of the code developed, uploaded, and feedback sought from potential sponsor. This page created and project placed into <b>stasis.</b> (ie can be reactivated at any later point in time).<br><br>Time working on code ~ 1/2 day<br>Time working on this page ~ 1/2 hour<br>Entry made: Michael, 27th November 2006<br></li></ul> <h2>Discussion</h2>Potential future implementation approaches could see<br><ul><li>Automated mesh creation.</li><li>Transport over other mechanisms - such as UDP, STCP, etc</li><li>Authentication before joining the mesh</li><li>Integration with the implicit P2P events backplane in the Whiteboard</li></ul>-- Michael Sparks, 27th November 2006<br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

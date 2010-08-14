@@ -1,0 +1,202 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060512 ======
+
+Agenda
+------
+1. Note of agenda
+2. Participants
+
+Participants: Matt, Michael
+Attending: devendra_l, G0SUB, Mizipzor, tav, Uraeus
+
+3. Activity Reports
+
+Michael:
+
+DONE - Components: DVB Multiplex (tuner)
+       DVB_Demux (PID splitter)
+TODO - As per list last week (no change)
+BLOCKED - Missed most of the week due to leave. (Issue causing that is
+          now unblocked though). (Other blockers from last week largely
+          remain)
+FOLLOWUP: None
+
+Matt:
+
+DONE - Flow control inversion - core Axon changes, plus upgrades to Selector,
+       PygameDisplay and other components. 
+       Installed drivers for DVB-T USB2 box.
+       Obtained DVB TS and EIT specs.
+       Partial parsing of EIT signalling (DVB-SI info) working.
+       Arranged accom and travel for May 19th meetup.
+       Added Stuart Cunningham as backup mentor for Thomas.
+TODO - Finish EIT parsing. 
+       Other Macro stuff
+BLOCKED - Committing Inversion work (CVS failure).
+        - Test code for inversion work (awaiting commits of test cases
+          from threading branch)
+FOLLOWUP - None
+
+Matt asked questions briefly about the demux code. Michael clarified it
+was software based, and unchecked at that stage.
+
+ACTION: Michael asked Matt to document how to get the DVBT USB2 box working,
+        Matt agreed.
+
+4. Discussion items (max 3 or 4)
+4.1 Progress of Macro related work (May 16th...)
+
+Michael noted the demux & tuner code should make extracting single channels
+and EIT pid simpler. Initial discussion revolved around collection of EIT
+data for scheduling information. 
+
+Matt noted that he was able to capture the information you get from now &
+next, and that he'd be able to create a dictionary object with the expect
+information inside. He intended to output the information from his component
+whenever there was a change. The downside of this is that it can change at
+other times than a programme junction - due to updates/late running of a
+show. Decided to discuss that issue out of the meeting.
+
+Michael noted he intended to reuse the blog code as a front end. Estimate
+of completion of EIT information was Monday 15th due to a number of small
+issues to work through.
+
+Regarding flow control inversion work, Matt noted that the work for it
+was essentially complete, and has some knockons for a number of components
+that are designed to wake/sleep on external events. Most notable is the
+selector. 
+
+Michael noted that this is really because the selector is also really a
+reactor, and it's about reacting to reactors - noting the pygame stuff is
+also reactive. ie we have a "reactor reactor", which is useful since it
+should simplify integrating other reactive systems.
+
+Blog entry describing the major changes:
+
+http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1144936419.3.1.1
+
+Michael summarised that we expected to have the following for the 15th:
+   * Channel capture
+   * Channel transcode
+   * Programme event change
+   * Programme information capture
+
+Minor discussion regarding which channel to record followed.
+
+Matt noted we need to do the following:
+   * To brief Tom / give him kit/URL 
+   * Need to get data to bbc.kamaelia.org
+
+Michael finished with stating that after the 17th we want to have proper
+hosting, since it's considered a major problem at the moment. Matt agreed.
+This is a rapidly looming on the horizon as a project blocker.
+
+4.2 Summer of Code
+
+We summarised for those present the current status:
+   * Had 49 applications
+   * 6 junk
+   * Hope to take:
+      * 6 for kamaelia
+      * 2 for dirac
+   * Don't know the number we'll get allocated by google yet
+   * We're looking to finalise our rankings before 17th
+   * Then google evaluate and assign us N positions, this is based on number
+     of applications, number of mentors, and what's realistic
+
+Matt reminded people that Matt & Michael are having a face to face meeting
+on the 19th and any outstanding issues we can get sorted when we meet,
+but hopefully there'll be none. At the face to face meeting we'll be
+re-evaluating which applications we think are appropriate. Internally
+I'm also going to ask for feedback from Monday through to Weds/Thursday.
+
+Michael also noted that whilst it was fairly clear to us which projects
+we'd like to mentor, we're not saying yes/no to anyone until we know our
+numbers.
+
+Since someone may take a lack of saying no as a yes if we start saying no
+to people. Whereas it might simply mean "hopefully yes" or "we haven't
+reviewed your application well enough yet". Michael also noted that the
+quality of applications has been extremely high and if we could it would
+be really nice to mentor every one, but we don't have those resources :-(
+
+Michael also noted:
+   * The website will be updated as we hear more information
+   * He's producing HTMLised versions of everyone's applications who are
+     highest rated - for the website once we know who's finalised. This
+     is also to show people internally the current status. 
+   * Our mentoring is being watched relatively closely and if this summer
+     goes well, it's /possible/ that people at the BBC may want this sort
+     of thing to carry out outside of Google's SOC initiative. Not a big
+     possibility at this instant, but a number of successful diverse
+     projects would really encourage that possibility
+
+
+4.3 CVS / hosting
+
+Sourceforge is becoming increasingly a problem. At the time of the meeting:
+   * CVS is bust
+   * Email is taking *days* to get through.
+
+Matt noted developer CVS has been down all week, and that this would make
+merging/sharing code in the run-up to X-Tech difficult. We decided our
+options were:
+   * Give then 2 days to sort out CVS
+   * Use Michael's CVS server for the next week for code sharing?
+   * Move to berlios?
+
+Matt felt we should give them the 2 days, noting emails indicate they *may*
+be better in future.
+
+Michael suggested the following way of framework of looking at the issue.
+(comments interspersed)
+
+We need to think:
+   * The next week (xtech deadline)
+     Matt suggested the need to (re)establish a common codebase (the
+     inversion work makes lots of changes)
+   * The next month (release timeframe)
+   * Beyond (ongoing development - impacts summer of code)
+
+
+Michael suggested and Matt agreed to discuss the next month/beyond at the
+face to face meeting next week.
+
+Due to the problems, the plans was to use a tarball of something recent as 
+the basis of an interim CVS sever.
+
+Matt noted that if sourceforge aren't sorted by the end of next week (19
+May), that we should consider migrating to a different host - if we can
+sort release scripts in that timescale.
+
+Michael noted that regarding Kamaelia mailing lists he's rather hacked off
+about them constantly breaking, and is really open to suggestions. There
+was a discussion about what to do, but nothing concrete occurred. But there
+was consensus on a problem, despite sf.net's site status doesn't indicate
+any mailing list service problems.
+
+Matt suggested a bulk email to SoC applicants about email might be a good
+idea, Michael agreed. 
+
+Summary: OK, we're agreed that we really need to discuss this next week,
+         have a patch for CVS, and have an issue regarding email to raise
+         with SF.net.
+
+ACTION: set up triage CVS
+ACTION: Mail people regarding SoC vs mailing list
+ACTION: Look at alternative for email
+
+4.4 Bi-monthly meeting progress
+
+Michael noted he I hadn't booked any meeting space or similar yet.
+Matt noted that from his perspective, basically, all sorted - have
+arranged travel and accom.
+
+5. Date/Time of next meeting
+   Proposed: Fri 19th May 2006, 11am BST (GMT+0100)
+
+We discussed this and agreed that an online meeting at this point in
+time would not make sense, since it'd be during the bi-monthly meeting.
+As a result we decided to delay until 26th May 2006, 11am. However
+we gave anyone until Wednesday 17th to object.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060512 ======

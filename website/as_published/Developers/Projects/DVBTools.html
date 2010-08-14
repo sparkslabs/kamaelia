@@ -1,0 +1,110 @@
+<html>
+<head>
+<title> Developers/Projects/DVBTools </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/DVBTools">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Project Task Page: DVBTools</h1>
+
+<p><div style="float: right; border: solid;" class="twoC"><b> Status:</b> Stasis <i>- No other tasks currently requiring further development of these components</i> <br><b>Current Developers: </b><i>Matt</i><br><b>Current "inflight" dev location:</b> <br></p><ul><li>/Code/Python/Kamaelia/Kamaelia/Devices/DVB/</li><li>/Code/Python/Kamaelia/Kamaelia/Support/DVB/<br></li></ul><p><b>Start Date:</b> 06 May 2006<br><b>Major Milestone date:</b></p><ul><li>09 June 2006 : Code to enable Macro demonstrator complete.<br></li></ul><p><b>Expected End Date:</b> <i>n/a</i><br><b>End Date:</b> <i>??</i><br><b>Date this page last updated:</b> <i>28th November 2006</i><br><b>Estimated effort so far:</b> ~ 50 days (estimate)<br></div><b><br></b></p><h2><b>Description</b></h2>Components and example code and tools for receiving Digital Video Broadcasting (DVB) transmissions and parsing and handling the MPEG transport stream (TS) contained in it. Particularly with a mind to the creation of television timeshifting tools.<br><br>Using these components it should be relatively simple to instantiate Kamaelia systems capable of using a PC based DVB tuner device to receive an off-air broadcast in real time; extracting audio and video or additional meta data such as "now and next" or "electronic programme guide" (EPG) from the stream.<br><br>Simple examples or tools will demonstrate and explain the ways these components can be used to achieve tasks such as recording programmes.<br><br>Benefits:<br><ul><li>Substantial set of extra components providing interesting and useful capabilities (receiving and handling digital TV broadcasts)</li><li>Motivation for optimising the throughput of Kamaelia systems to handle the high data rates (up to 10s of Mbits/s)</li><li>Enables <a href="/Developers.html/.htmlProjects/KamaeliaMacro">Kamaelia Macro</a> work<br></li></ul><h2>Inputs</h2>Task Sponsor: TL (BBC internal)<br>Task Owner: Michael (MPS), Matt (MH)<br>Developers:<br><ul><li>Michael<br></li><li>Matt<br></li></ul>Users:<br><ul><li>MPS, MH (direct users of components)</li><li>TL, etc (users of systems incorporating them)</li></ul>Interested third parties:<br><ul><li>MB, PC (BBC internal)<br></li></ul>Requirements:<br><ul><li>MUST be able to operate in real time</li><li>MUST be able to tune and receive transport stream from a terrestrial (receive through aerial) DVB PCI or USB tuner.</li><li>MUST support Linux</li><li>MUST be able to extract transport stream packets with specific packet IDs (PIDs)</li><li>MUST be able to extract Event Information Table (EIT) data containing "now &amp; next" information</li><li>WOULD LIKE to be able to extract additional meta data, making it possible to:</li><ul><li>determine the PIDs containing a given service (channel)</li><li>map channel names to service IDs</li><li>locate and extract subtitling data</li><li>extract EPG data for the next 7 days (as broadcast in the UK)<br></li></ul><li>WOULD LIKE to support Mac, Windows<br></li></ul><br>Relevant Influencing factors:<br>
+<ul><li><i>"python-dvb3" bindings (to Linux DVB API) donated by MB &amp; PC<br></i></li><li>Relevant standards documentation: (all are publicly available at no charge to
+the best of my knowledge -- Matt)</li><ul><li><i>ISO/IEC 13818-1</i> (aka "MPEG: Systems") "Generic Coding of Moving Pictures and Associated Audio: Systems" ISO / Motion Picture Experts Group</li><li><i>ETSI EN 300 468</i> "Digital Video Broadcasting (DVB): Specification for Service Information (SI) in DVB systems" ETSI / EBU (DVB group)</li><li><i>"Digitial Terrestrial Television: Requirements for Interoperability"</i> Issue 4.0+ (aka "The D book") UK Digital Television Group (DTG)<br></li></ul></ul>
+<h2>Outputs</h2><h3>Expected</h3><ul><li>Code in /Code/Python/Kamaelia/Kamaelia/Device/DVB/:<br></li><ul><li>control a DVB device under Linux (tuning and receiving transport stream packets)</li><li>demultiplex transport stream packets (using DVB card facilities)</li><li>demultiplex transport stream packets (in software)</li><li>extract and parse information tables from the stream</li></ul><li>Small example code fragments demonstrating functionality provided by components</li><li>Example 'tools' demonstrating applications (eg. recording a channel or programme)</li><li>Tutorial webpages</li></ul><h3>Actual<br></h3><ul><li>First iteration code (for Kamaelia Macro initial demonstrator):</li><ul><li>Example tools:</li><ul><li>/Code/Python/Kamaelia/Examples/DVB_Systems/SingleChannelTransportStreamCapture.py</li><li>/Code/Python/Kamaelia/Examples/DVB_Systems/TransportStreamCapture.py</li><li>/Code/Python/Kamaelia/Examples/DVB_Systems/TransportStreamDemuxer.py</li></ul><li>Components for controlling tuner device and demultiplexing:<br></li><ul><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Core.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/SoftDemux.py</li></ul><li>Components for parsing stream metadata:</li><ul><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/NowNext.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/PSITables.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/EIT.py</li></ul></ul></ul><ul><li>Second iteration code (post Macro):</li><ul><li>Example tools:</li><ul><li>/Code/Python/Kamaelia/Examples/DVB_Systems/PersonalVideoRecorder.py</li><ul><li>uses EPG and other metadata tables to record programmes, specified by programme name and channel name<br></li></ul><li>/Code/Python/Kamaelia/Examples/DVB_Systems/RecordNamedChannel.py</li><ul><li>uses metadata tables to record a channel, specified by channel name<br></li></ul></ul></ul><ul><li>Components for controlling tuner device and demultiplexing:
+    </li><ul><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Receiver.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Tuner.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/DemuxerService.py</li></ul><li>Compoents for parsing stream metadata:</li><ul><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/ParseEventInformationTable.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/ParseProgramAssociationTable.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/ParseNetworkInformationTable.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/ParseProgramMapTable.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/ParseServiceDescriptionTable.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/ParseTimeAndDateTable.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/ParseTimeOffsetTable.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/PrettifyTables.py</li><li>/Code/Python/Kamaelia/Kamaelia/Device/DVB/Parse/ReassemblePSITables.py</li></ul></ul></ul>
+<ul><ul><li>Support code (CRC checks &amp; parsing data formats/structures)<br>
+    </li><ul><li>/Code/Python/Kamaelia/Kamaelia/Support/DVB/CRC.py</li><li>/Code/Python/Kamaelia/Kamaelia/Support/DVB/DateTime.py</li><li>/Code/Python/Kamaelia/Kamaelia/Support/DVB/Descriptors.py</li></ul><li>Experimental code for making it easier to create and access CAT registered services:<br></li><ul><li>/Code/Python/Kamaelia/Kamaelia/Experimental/Services.py<br></li></ul></ul></ul><h3>Realistic possibilities arising as a result of activity on this task</h3><ul><li>Build an Electronic Programme Guide browsing interface</li><li>Build a 'traditional' PVR style application, by combining an EPG browsing interface into a UI for scheduling programmes to record for later viewing</li><li>Devise code to capable of retuning to a different broadcast multiplex to get to a required TV channel</li><li>Build a radio recorder/PVR<br></li></ul><br><h2>Related Tasks</h2><h3>Tasks that directly enable this task (dependencies)<br></h3><ul><li>Axon optimisations to message passing along linkages.<br></li></ul><h3>Sub Tasks</h3><ul><li>For Kamaelia Macro initial demonstrator:<br></li><ul><li>Incorporation of python-dvb3 bindings into mainline</li></ul><ul><li>Write tuner and demultiplexer components</li></ul><ul><li>Write Program Status Info (PSI) table parser (enables access to metadata tables)<br></li></ul><ul><li>Write EIT parser to extract Now &amp; Next information<br></li></ul><ul><li>Write optimised software demuliplexer (doesn't use DVB device facilities)<br></li></ul><li>Further work:</li><ul><li>Write parsers for remaining metadata table types:</li><ul><li>Network Information Table (NIT)</li><li>Program Association Table (PAT)</li><li>Program Map Table (PMT)</li><li>Service Description Table (SDT)</li><li>Time and Date Table (TDT)</li><li>Time Offset Table (TOT)</li></ul><li>Write prettifiers to make output from table parsers more human readable (for debugging &amp; diagnostic purposes)<br></li><li>Rewrite PSI parser to behave as a 'service' able to dynamically serve table data to multiple table parsers, as requested</li><li>Refactor tuner and demultiplexing components to behave as a 'service' able to dynamically serve packets with particular PIDs, as requested<br></li></ul></ul><h2>Task Log</h2>Retrospectively generated entries (no guarantees of completeness!)<br><br><ul><li>19 January 2006 - Added developer Michael. Checked in experiments into /Sketches/MPS/DVB<br></li><li>23 January 2006 - Michael : Checked in donated python-dvb3 bindings</li><li>17 March 2006 - Michael : Improvements to experiments<br></li><li>06 May 2006 - Michael : <b>Task status changed</b> to running. Developing in /Sketches/MPS/DVB/<br></li><li>06 May 2006 - Added developer Matt. Developing in /Sketches/MH/DVB_EIT</li><li>09 June 2006 - Matt : <b>Task status changed</b> to stasis - code necesary for Macro demonstrator complete and working(!)</li><li>19 June 2006 - Matt : <b>Task status changed</b> to running - Matt continuing work on table parsing.</li><li>13 July 2006 - Matt : <b>Task status changed</b> to blocked - uncertain what to do next + other stuff: holidays, providing Google SoC support, pymedia components, etc.<br></li><li>11 September 2006 - Matt : <b>Task status changed</b> to running - documenting components and preparing for merge into mainline</li><li>13 September 2006 - Matt : 'PVR' example app checked into /Sketches/MH/DVB_PSI<br></li><li>03 October 2006 - Matt : <b>Task status changed</b> to stasis - components documented and merged into mainline</li></ul>Live entries<br><ul><li>28 November 2006 - Matt : created this task page<br></li><li>07 December 2006 - Matt : Fixed long
+standing software MPEG TS demuxer bug. Time spent 1/2 day.</li></ul><h2>Discussion</h2>Upon investigating how to handle metadata tables containing information such as audio and video PID values, channel names etc. it turned out that often the packet IDs containing tables are dynamically set - you need to look it up in another table first. <br><br>This generated the need to modify the demultiplexing components to be able to change what PIDs they extract, and where they send them to, at runtime. Similarly, Matt decided to apply the same logic to the packet-&gt;table data conversion (PSI parsing) step.<br><br>The EIT parsing code was rewritten (1 day) to match the same code design used for parsing all the other tables, and to add the ability to extract the full 7 day programme guide data.<br><br><br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

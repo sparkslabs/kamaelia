@@ -1,0 +1,199 @@
+<html><body><table>
+            <tr><td>[06:16] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[06:53] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[07:56] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:07] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:41] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:57] *** acrimo has joined #kamaelia</td></tr>
+            <tr><td>[13:22] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:22] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:32] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[13:32] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[13:32] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:45] &lt Chong-&gt hi MS- and vmlemon_</td></tr>
+            <tr><td>[14:01] &lt acrimo&gt afternoon</td></tr>
+            <tr><td>[14:30] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt Afternoon folks</td></tr>
+            <tr><td>[14:34] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[14:43] &lt MS-&gt Davbo: Oh, since you mentioned prolog last night : http://yieldprolog.sourceforge.net/</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt Hah, cool MS-</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt the embedded prolog in Python is pretty slow</td></tr>
+            <tr><td>[15:37] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[15:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:56] &lt Chong-&gt the Yield Prolog seems interesting, but wondering why it yield False not True :/</td></tr>
+            <tr><td>[15:59] &lt MS-&gt That I'm a little unclear on because I haven't gone through it in detail, but I think it's to differentiate between:</td></tr>
+            <tr><td>[15:59] &lt MS-&gt fail, complete, & answer</td></tr>
+            <tr><td>[15:59] &lt MS-&gt fail == StopIteration</td></tr>
+            <tr><td>[15:59] &lt MS-&gt complete == False</td></tr>
+            <tr><td>[15:59] &lt MS-&gt answer == Not False</td></tr>
+            <tr><td>[16:09] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:11] &lt Chong-&gt I see. It's just 3 status of generator/iterator. Very clever.</td></tr>
+            <tr><td>[16:11] &lt mhrd&gt in prolog the typical response for evaluating a statement is either a possible answer, or "no". Presumably the latter equates to False.</td></tr>
+            <tr><td>[16:12] &lt mhrd&gt so any sub evalulation (as part of the recursive evaluation process) will have the same kings of possible outputs</td></tr>
+            <tr><td>[16:13] &lt Chong-&gt mhrd: thanks. Is there uncertain or cannot be decided?</td></tr>
+            <tr><td>[16:14] &lt mhrd&gt nope.</td></tr>
+            <tr><td>[16:14] &lt mhrd&gt iirc</td></tr>
+            <tr><td>[16:14] &lt MS-&gt mhrd: StopIteration equates to false</td></tr>
+            <tr><td>[16:15] &lt MS-&gt ie StopIteration == No rather :)</td></tr>
+            <tr><td>[16:15] &lt mhrd&gt :)</td></tr>
+            <tr><td>[16:15] &lt mhrd&gt prolog basically methodically tries all possiblities by searching through the tree of the searchspace. In the context of prolog a problem is only undecidable if the search space is infinite - which simply means that the prolog interpreter will never complete its evalulation</td></tr>
+            <tr><td>[16:16] *** MS- nods</td></tr>
+            <tr><td>[16:16] &lt mhrd&gt so I suppose there can be "uncertain" or "undecided" if you ctrl-c the process before it completes :)</td></tr>
+            <tr><td>[16:16] &lt MS-&gt The mechanism they use uses side effects on the Variable()'s passed in to return answers</td></tr>
+            <tr><td>[16:17] &lt MS-&gt So for this:</td></tr>
+            <tr><td>[16:17] &lt MS-&gt def uncle(Person, Uncle):</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  Parent = Variable()</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  for l1 in parent(Person, Parent):</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  for l2 in brother(Parent, Uncle):</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  yield False</td></tr>
+            <tr><td>[16:17] &lt Chong-&gt I see. with enough time, it would decide eventually :-)</td></tr>
+            <tr><td>[16:17] &lt MS-&gt the actual values get "returned" as side effects.</td></tr>
+            <tr><td>[16:17] &lt MS-&gt It's about as twisted as prolog AFAICT</td></tr>
+            <tr><td>[16:17] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:18] &lt mhrd&gt if it interests you: http://en.wikipedia.org/wiki/Resolution_(logic)</td></tr>
+            <tr><td>[16:18] &lt mhrd&gt oops - wrong one: http://en.wikipedia.org/wiki/Prolog</td></tr>
+            <tr><td>[16:18] &lt Chong-&gt got it</td></tr>
+            <tr><td>[16:18] &lt mhrd&gt """Given a query, the Prolog engine attempts to find a resolution refutation of the negated query. If the negated query can be refuted, i.e., an instantiation for all free variables is found that makes the union of clauses and the singleton set consisting of the negated query false, it follows that the original query, with the found instantiation applied, is a logical consequence of the program"""</td></tr>
+            <tr><td>[16:19] &lt MS-&gt heh</td></tr>
+            <tr><td>[16:19] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[16:19] &lt MS-&gt Prolog is great - it breaks almost everyone</td></tr>
+            <tr><td>[16:20] &lt MS-&gt One of the ultimate levellers language wise :)</td></tr>
+            <tr><td>[16:20] &lt mhrd&gt ie. it tries to show that its not true :)</td></tr>
+            <tr><td>[16:20] &lt mhrd&gt so it basically explores the search space in its attempt to do that; accidentally finding answers on the way :)</td></tr>
+            <tr><td>[16:21] &lt MS-&gt  There's an X Windows manager that uses prolog IIRC</td></tr>
+            <tr><td>[16:21] &lt Chong-&gt hehe. Like experements, always try to disprove assumption</td></tr>
+            <tr><td>[16:21] &lt mhrd&gt heh, how unnecessarily freaky :)</td></tr>
+            <tr><td>[16:22] &lt MS-&gt mhrd: I'm tempted to embed something similar in what I'm doing at the moment for work since it's ending up similar in places.</td></tr>
+            <tr><td>[16:22] &lt MS-&gt Not sure if that's good or bad :)</td></tr>
+            <tr><td>[16:22] &lt mhrd&gt heh, cool :)</td></tr>
+            <tr><td>[16:22] &lt mhrd&gt no harm in trying :)</td></tr>
+            <tr><td>[16:23] &lt mhrd&gt you can see how it maps nicely to python with yield:</td></tr>
+            <tr><td>[16:23] &lt mhrd&gt def findSolutions(problems):</td></tr>
+            <tr><td>[16:23] &lt mhrd&gt . for subproblems in problems:</td></tr>
+            <tr><td>[16:23] &lt mhrd&gt  yield findSolutions(subproblems)</td></tr>
+            <tr><td>[16:23] &lt mhrd&gt  # now raises StopIteration</td></tr>
+            <tr><td>[16:23] &lt vmlemon_&gt Hmm, any idea about integrating the FileAppender I hacked up a while ago?</td></tr>
+            <tr><td>[16:24] &lt Chong-&gt nice. since it can be enbeded in python</td></tr>
+            <tr><td>[16:24] &lt mhrd&gt def executeQuery(problem):</td></tr>
+            <tr><td>[16:24] &lt mhrd&gt . for solution in findSolutions(problem):</td></tr>
+            <tr><td>[16:24] &lt mhrd&gt . print solution</td></tr>
+            <tr><td>[16:24] &lt mhrd&gt  print "No!"</td></tr>
+            <tr><td>[16:25] *** mhrd sees the time (gah!)</td></tr>
+            <tr><td>[16:27] &lt Chong-&gt the example on http://yieldprolog.sourceforge.net/ seems different: yield False is within the for statement</td></tr>
+            <tr><td>[16:27] &lt vmlemon_&gt Out of interest, does Kamaelia's DVB tuning code "block" the device so that other processes (e.g. rb-download or dvbtime) can't use it?</td></tr>
+            <tr><td>[16:27] &lt mhrd&gt I'm typing as I think it and my memory might be rusty - so I'm possibly wrong :-)</td></tr>
+            <tr><td>[16:28] &lt mhrd&gt Chong- : remember prolog tries to disprove the negative of the problem ... so it returns False for every valid solution found :-)</td></tr>
+            <tr><td>[16:29] &lt mhrd&gt (internally)</td></tr>
+            <tr><td>[16:29] &lt mhrd&gt (I think)</td></tr>
+            <tr><td>[16:30] &lt Chong-&gt But when can it return True?</td></tr>
+            <tr><td>[16:30] &lt mhrd&gt when it proves the negative :)</td></tr>
+            <tr><td>[16:30] &lt mhrd&gt oh, I see</td></tr>
+            <tr><td>[16:31] *** vmlemon_ has a one-liner for setting the CMOS and OS clocks using the time from a DVB-T multiplex, but requires having something to tune to a multiplex, so was thinking of hacking something up in Kamaelia...</td></tr>
+            <tr><td>[16:31] &lt mhrd&gt Chong- : why should it have to sometimes return True?</td></tr>
+            <tr><td>[16:32] &lt Chong-&gt When the anser is true :-)</td></tr>
+            <tr><td>[16:33] &lt mhrd&gt and wqhen will that be? :-)</td></tr>
+            <tr><td>[16:33] &lt mhrd&gt s/q//</td></tr>
+            <tr><td>[16:33] &lt Chong-&gt For example, uncle(Person, Uncle): should return true</td></tr>
+            <tr><td>[16:34] &lt Chong-&gt because Uncle is Person's uncle</td></tr>
+            <tr><td>[16:34] &lt mhrd&gt prolog tries, internally, to disprove the negative of the query</td></tr>
+            <tr><td>[16:34] &lt mhrd&gt so in that situation it *should* return False</td></tr>
+            <tr><td>[16:34] &lt Chong-&gt if parent(Person, Parent) and brother(Parent, Uncle) is true</td></tr>
+            <tr><td>[16:35] &lt mhrd&gt prolog tries, internally, to disprove the negative of the query</td></tr>
+            <tr><td>[16:37] &lt Chong-&gt It seems reasonable, but I not quite understand, probably needs more background reading about prolog;)</td></tr>
+            <tr><td>[16:37] &lt mhrd&gt or put it another way: prolog (and this python implementation) is trying to work out whether your query is NOT 'true'</td></tr>
+            <tr><td>[16:37] &lt mhrd&gt I've *really* got to go - cya</td></tr>
+            <tr><td>[16:37] &lt mhrd&gt (sorry - would love to talk longer, but no choice!)</td></tr>
+            <tr><td>[16:38] &lt Chong-&gt np. thanks a lot.</td></tr>
+            <tr><td>[16:38] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[16:38] &lt Chong-&gt Have a nice weekend.</td></tr>
+            <tr><td>[16:39] &lt Chong-&gt Sorry for probably asking a silly question :P</td></tr>
+            <tr><td>[16:54] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:44] &lt MS-&gt Chong-: It's trying to /disprove/ parent(Person, Parent) and brother(Parent, Uncle)</td></tr>
+            <tr><td>[18:45] &lt MS-&gt Chong-: I wouldn't worry too much - prolog really does break alot of people</td></tr>
+            <tr><td>[18:45] &lt MS-&gt The way to think about it is "proof by contraction"</td></tr>
+            <tr><td>[18:45] &lt MS-&gt gah</td></tr>
+            <tr><td>[18:45] &lt MS-&gt "proof by contradiction"</td></tr>
+            <tr><td>[18:45] &lt MS-&gt (typo)</td></tr>
+            <tr><td>[18:46] &lt MS-&gt Actually, looking at the wikipedia page that matt pointed at</td></tr>
+            <tr><td>[18:47] &lt Chong-&gt Probably I belong to the people broken by prolog :-)</td></tr>
+            <tr><td>[18:47] &lt MS-&gt I think I'm right</td></tr>
+            <tr><td>[18:47] &lt MS-&gt stopiteration == failed (ie prolog "No")</td></tr>
+            <tr><td>[18:47] &lt MS-&gt false == "success"</td></tr>
+            <tr><td>[18:47] &lt MS-&gt & other value == something else</td></tr>
+            <tr><td>[18:47] &lt MS-&gt given the example in http://en.wikipedia.org/wiki/Prolog#Evaluation</td></tr>
+            <tr><td>[18:48] &lt MS-&gt ?- sibling(sally, erica).</td></tr>
+            <tr><td>[18:48] &lt MS-&gt Yes</td></tr>
+            <tr><td>[18:48] &lt Chong-&gt MS-: Thanks for your explanation :-)</td></tr>
+            <tr><td>[18:48] &lt MS-&gt The problem with prolog is that I *ALWAYS* have to end up going back to a book</td></tr>
+            <tr><td>[18:48] &lt MS-&gt Best book on prolog I ever saw was called "microPROLOG", which used a custom syntax</td></tr>
+            <tr><td>[18:48] &lt MS-&gt and was actually understandable</td></tr>
+            <tr><td>[18:48] &lt MS-&gt Not seen that book in ages</td></tr>
+            <tr><td>[18:49] &lt MS-&gt The postulation is this:</td></tr>
+            <tr><td>[18:49] &lt MS-&gt Execution of a Prolog program is initiated by the user's posting of a single goal, called the query.</td></tr>
+            <tr><td>[18:49] &lt MS-&gt So the query here is this:</td></tr>
+            <tr><td>[18:49] &lt MS-&gt ?- sibling(sally, erica).</td></tr>
+            <tr><td>[18:49] &lt MS-&gt Yes</td></tr>
+            <tr><td>[18:49] &lt MS-&gt Prolog howeever tries to deal with this by doing this:</td></tr>
+            <tr><td>[18:49] &lt MS-&gt Logically, the Prolog engine tries to find a resolution refutation of the negated query.</td></tr>
+            <tr><td>[18:50] &lt Chong-&gt Probably can find it in school libary because they keep old book very well but update new book very slow :-)</td></tr>
+            <tr><td>[18:50] &lt MS-&gt ie it trues to prove that NOT ( sibling(sally, erica) ) is true</td></tr>
+            <tr><td>[18:50] &lt MS-&gt Chong-: Yes. It was in a school library when I saw it IIRC. That or the county library</td></tr>
+            <tr><td>[18:52] &lt Chong-&gt So, if it cannot reach NOT, the answer is yes?</td></tr>
+            <tr><td>[18:54] &lt Chong-&gt cool. worth having a look at the online catelog</td></tr>
+            <tr><td>[18:54] &lt MS-&gt yes</td></tr>
+            <tr><td>[18:56] &lt MS-&gt One of these days I'll sit down and make a readable version of it</td></tr>
+            <tr><td>[18:56] &lt Chong-&gt so, if Parent is parent of Person, "for l1 in parent(Person, Parent):", l1 will get a false value?</td></tr>
+            <tr><td>[18:58] &lt MS-&gt ERRNOBRAIN</td></tr>
+            <tr><td>[18:59] &lt Chong-&gt The book was published in 1984, avalaible in both main and Joule library</td></tr>
+            <tr><td>[19:00] &lt MS-&gt The answer to your question is "yes" I think btw</td></tr>
+            <tr><td>[19:00] &lt MS-&gt Oh that's a thought</td></tr>
+            <tr><td>[19:00] &lt MS-&gt I can go to the uni library</td></tr>
+            <tr><td>[19:00] &lt MS-&gt (I was checking amazon :) )</td></tr>
+            <tr><td>[19:01] &lt MS-&gt (I can use the Uni library because I went to manchester & you can still use it after graduating, even many years later)</td></tr>
+            <tr><td>[19:01] &lt Chong-&gt yes. I think you can get alumni library card</td></tr>
+            <tr><td>[19:02] &lt MS-&gt have one :)</td></tr>
+            <tr><td>[19:02] &lt Chong-&gt yes. we input the same information at the same time :-)</td></tr>
+            <tr><td>[19:02] &lt MS-&gt I have the clocksin and mellish book, but that's very theortical in approach and hence inpenetrable</td></tr>
+            <tr><td>[19:03] &lt Chong-&gt cool. That's the benefit of working in the same city with your study :-)</td></tr>
+            <tr><td>[19:03] &lt MS-&gt Indeed</td></tr>
+            <tr><td>[19:03] &lt MS-&gt I wonder if "Beginning micro-PROLOG / J.R. Ennals." is the book I'm thinking of</td></tr>
+            <tr><td>[19:03] &lt MS-&gt could go and look at it I suppose</td></tr>
+            <tr><td>[19:03] &lt MS-&gt (If it is I'll probably buy a copy)</td></tr>
+            <tr><td>[19:04] &lt Chong-&gt I can only see Micro-PROLOG : programming in logic and</td></tr>
+            <tr><td>[19:04] &lt Chong-&gt Micro-PROLOG and artificial intelligence.</td></tr>
+            <tr><td>[19:04] &lt MS-&gt Ah - i typed "prolog" as the search term</td></tr>
+            <tr><td>[19:05] &lt MS-&gt Or it could be: Learning micro-prolog : a problem-solving approach / Tom Conlon.</td></tr>
+            <tr><td>[19:06] &lt MS-&gt Ah, now I've found your two :)</td></tr>
+            <tr><td>[19:06] &lt Chong-&gt but I have not found yours :-)</td></tr>
+            <tr><td>[19:06] &lt MS-&gt I make a point of studying old languages</td></tr>
+            <tr><td>[19:07] &lt MS-&gt on the basis of "those who forget the past are condemned to repeat it" or the basis of "makes life more fun/easier"</td></tr>
+            <tr><td>[19:07] &lt Chong-&gt True. history repeats</td></tr>
+            <tr><td>[19:09] &lt Chong-&gt One question, when/ what cases will you use prolog rather than other languages?</td></tr>
+            <tr><td>[19:09] &lt MS-&gt I've got a number of old books on things like forth, occam and simular for example</td></tr>
+            <tr><td>[19:09] &lt MS-&gt it's used in proof systems and API</td></tr>
+            <tr><td>[19:09] &lt MS-&gt AI rather</td></tr>
+            <tr><td>[19:09] &lt MS-&gt For example, you could declare at it all the bills you get</td></tr>
+            <tr><td>[19:09] &lt MS-&gt what your income is</td></tr>
+            <tr><td>[19:10] &lt MS-&gt when you get red letters</td></tr>
+            <tr><td>[19:10] &lt MS-&gt and minimum payments</td></tr>
+            <tr><td>[19:10] &lt MS-&gt and say to it "what's the best order for doing these</td></tr>
+            <tr><td>[19:10] &lt MS-&gt "</td></tr>
+            <tr><td>[19:10] &lt MS-&gt and if you get the question right, it will tell you</td></tr>
+            <tr><td>[19:10] &lt MS-&gt if you get the question wrong, it will say "no"</td></tr>
+            <tr><td>[19:10] &lt MS-&gt that or use up all the resources on your machine</td></tr>
+            <tr><td>[19:11] &lt Chong-&gt yes. I can see it fits logic reasoning.</td></tr>
+            <tr><td>[19:11] &lt MS-&gt People think concurrency is hard, whereas in fact it's just the tools are hard. Prolog *IS* hard.</td></tr>
+            <tr><td>[19:11] &lt MS-&gt You can also use it for things like machine translation etc</td></tr>
+            <tr><td>[19:11] &lt MS-&gt Since it works on symbols</td></tr>
+            <tr><td>[19:12] &lt Chong-&gt yes, like the famous exmple, Socrate is a man, all man will die, so Socrate will die</td></tr>
+            <tr><td>[19:15] &lt Chong-&gt cool. you and other mentors are so versatile, knowing so many languages, frameworks ...</td></tr>
+            <tr><td>[19:19] &lt MS-&gt You know, I think it's the tom conlon book</td></tr>
+            <tr><td>[19:22] *** Chong- wondering what tom conlon means :/</td></tr>
+            <tr><td>[19:23] &lt MS-&gt it's his name :)</td></tr>
+            <tr><td>[19:23] &lt MS-&gt sorry</td></tr>
+            <tr><td>[19:23] &lt MS-&gt (based on searches)</td></tr>
+            <tr><td>[19:23] &lt MS-&gt described here</td></tr>
+            <tr><td>[19:23] &lt MS-&gt http://www.davidharrison.org/microbib.html</td></tr>
+            <tr><td>[19:24] *** MS- goes afk</td></tr>
+            <tr><td>[19:24] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[19:24] &lt Chong-&gt I see. Thanks and see you later.</td></tr>

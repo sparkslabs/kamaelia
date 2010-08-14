@@ -1,0 +1,737 @@
+<html><body><table>
+            <tr><td>[02:50] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[07:53] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[07:54] &lt Chong-&gt Good morning, everyone.</td></tr>
+            <tr><td>[08:04] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[08:18] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[08:18] &lt Lawouach_&gt hello</td></tr>
+            <tr><td>[08:28] &lt Chong-&gt morning, mhrd and Lawouach_.</td></tr>
+            <tr><td>[08:31] &lt Lawouach_&gt morning Chong-</td></tr>
+            <tr><td>[08:31] &lt mhrd&gt hi</td></tr>
+            <tr><td>[08:35] &lt Chong-&gt today's weather is cold and gloomy</td></tr>
+            <tr><td>[08:40] &lt mhrd&gt from my limited experiences of where you are: there'd be something wrong if it wasn't :-)</td></tr>
+            <tr><td>[08:47] &lt Lawouach_&gt I've always been happy enough with the two-day sunny summer British are allowed every year.</td></tr>
+            <tr><td>[08:47] &lt Chong-&gt mhrd: hehe. so you are in Manchester, too.</td></tr>
+            <tr><td>[08:48] &lt mhrd&gt I've visited (used to work in same project as MS-)</td></tr>
+            <tr><td>[08:50] &lt Chong-&gt Lawouach_: you'r right. cloud is more usual than sun.</td></tr>
+            <tr><td>[08:52] &lt Chong-&gt mhrd: I see. Did you work in the project as an employee of BBC or as a student of GSOC?</td></tr>
+            <tr><td>[08:52] &lt mhrd&gt I'm a BBC employee</td></tr>
+            <tr><td>[08:52] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[08:53] &lt mhrd&gt '/whois mhrd' should confirm that :-)</td></tr>
+            <tr><td>[08:53] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[08:54] *** Chong- is spying mhrd's confidential information</td></tr>
+            <tr><td>[08:54] &lt Chong-&gt What project are you working now?</td></tr>
+            <tr><td>[08:55] &lt Chong-&gt mhrd: What project are you working (on) now?</td></tr>
+            <tr><td>[08:55] &lt mhrd&gt too many :-( voip stuff, "axmedis", other smaller things</td></tr>
+            <tr><td>[08:56] &lt mhrd&gt probably starting shortly on some content navigation / mobile services work (though am only just starting to define it)</td></tr>
+            <tr><td>[08:56] &lt Chong-&gt cool</td></tr>
+            <tr><td>[08:58] &lt mhrd&gt you still mid course, or at the end?</td></tr>
+            <tr><td>[08:59] &lt Chong-&gt between mid and end :-)</td></tr>
+            <tr><td>[09:00] &lt mhrd&gt I'm also lurking here because I'm providing "backup" mentoring for SoC - ie. I'll be a point of contact if Lawouach or MS- are unavailable for a period</td></tr>
+            <tr><td>[09:00] &lt mhrd&gt hence I'm not saying much, mainly listening :-)</td></tr>
+            <tr><td>[09:00] &lt Chong-&gt mhrd: one question about voip: is it easy to send fax through voip?</td></tr>
+            <tr><td>[09:02] &lt Chong-&gt I see. So, now I see you more than MS- :-)</td></tr>
+            <tr><td>[09:02] &lt mhrd&gt hmm; if you mean using a modem to modulate the fax data onto the audio: will depend on the codec that the two voip clients negotiate - I'd suspect the lossy nature of most non-raw codecs won't interact too well with that ...</td></tr>
+            <tr><td>[09:02] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:03] &lt mhrd&gt ... if you mean as a side data channel, I'm not sufficiently familiar with voip specs to know if there are extensions to support setting up an independant 'fax' stream of data</td></tr>
+            <tr><td>[09:03] &lt MS-&gt morning</td></tr>
+            <tr><td>[09:03] &lt Chong-&gt morning, MS-</td></tr>
+            <tr><td>[09:03] &lt mhrd&gt "Cong: I see. So, now I see you more than MS- " ... umm, when I say "unavailable" I'm talking about timescales such as MS- being away for a week</td></tr>
+            <tr><td>[09:03] &lt mhrd&gt hi MS- :-)</td></tr>
+            <tr><td>[09:03] &lt mhrd&gt s/Cong/Chong/</td></tr>
+            <tr><td>[09:04] &lt Chong-&gt mhrd: I see. But most modems have the function to send fax themselves.</td></tr>
+            <tr><td>[09:04] *** mhrd does some digging: looks like there are devices/clients out there with fax capabilities, so presumably the standards exist</td></tr>
+            <tr><td>[09:05] &lt MS-&gt mhrd: Oh you know standards exist. It's just finding them and whether they're accessible that's the fun part ;-)</td></tr>
+            <tr><td>[09:05] &lt MS-&gt :)</td></tr>
+            <tr><td>[09:06] &lt mhrd&gt I meant "modem" in the abstract sense - as a devices tha modulates/demodulates data in some context - not specifically an old-skool plug-it-into-your-phone-socket device :-)</td></tr>
+            <tr><td>[09:06] &lt mhrd&gt MS-: heh, indeed</td></tr>
+            <tr><td>[09:08] &lt Lawouach_&gt hi MS-</td></tr>
+            <tr><td>[09:08] &lt MS-&gt Lawouach_: hiya</td></tr>
+            <tr><td>[09:08] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[09:09] &lt mhrd&gt voip standards I'm aware of use a call setup/negotation process where the two ends make contact and negotiate compatible codecs and transport mechanisms. So I'd guess a voip fax machine would attempt to initiate a call, specifying that it wishes to stream data in some 'fax' format/codec, over a particular transport, eg. RTP (as opposed to offering, say G.711 audio over RTP)</td></tr>
+            <tr><td>[09:09] &lt MS-&gt mhrd: You *know* someone in the BBC would just plug a fax machine into the VoIP system though</td></tr>
+            <tr><td>[09:09] &lt MS-&gt (ie normal fax machine) and hope it would work</td></tr>
+            <tr><td>[09:10] &lt mhrd&gt oh dear, looks like people have tried, and fortunately concluded its not such a good idea: http://www.soft-switch.org/foip.html</td></tr>
+            <tr><td>[09:10] &lt mhrd&gt :)</td></tr>
+            <tr><td>[09:10] &lt MS-&gt heh</td></tr>
+            <tr><td>[09:11] &lt MS-&gt I like the way some parts of that page are phrased</td></tr>
+            <tr><td>[09:11] *** mhrd suggests one of those nice scanners with fluffy windows driver software where you can click a "scan and email" button on the scanner :)</td></tr>
+            <tr><td>[09:11] &lt mhrd&gt yeah</td></tr>
+            <tr><td>[09:11] &lt Chong-&gt just check wikipedia, the fax 'sounds' simply don't fit in the VoIP channel.</td></tr>
+            <tr><td>[09:12] &lt MS-&gt """Would you really expect an 8kbps G.729 codec to convey a 9.6kbps FAX modem signal correctly? If you would, you probably also believe in perpetual motion."""</td></tr>
+            <tr><td>[09:12] &lt Chong-&gt An effort is underway to remedy this by defining an alternate IP-based solution for delivering fax-over-IP, namely the T.38 protocol.</td></tr>
+            <tr><td>[09:12] &lt mhrd&gt G.711 and A-law are the only two common uncompressed formats. G.729 not supporting it doesn't surprise at all</td></tr>
+            <tr><td>[09:17] &lt Chong-&gt mhrd: the article of your link is very interesting.</td></tr>
+            <tr><td>[09:27] &lt Chong-&gt MS-: BTW, I have got all examples I want from the SVN repository.</td></tr>
+            <tr><td>[09:27] &lt MS-&gt k</td></tr>
+            <tr><td>[09:28] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[09:33] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:37] &lt Lawouach&gt back</td></tr>
+            <tr><td>[10:41] &lt MS-&gt front!</td></tr>
+            <tr><td>[10:41] *** MS- wonders who wants sides...</td></tr>
+            <tr><td>[10:42] &lt Lawouach&gt I had heard so much about British humour. I see now.</td></tr>
+            <tr><td>[10:42] &lt MS-&gt See, this is why I work in technology...</td></tr>
+            <tr><td>[10:43] &lt MS-&gt and why other people try to keep me away from humour</td></tr>
+            <tr><td>[10:43] &lt MS-&gt :-D</td></tr>
+            <tr><td>[10:43] &lt Lawouach&gt Well no doubt you paid a Russian pimp to get your wife.</td></tr>
+            <tr><td>[10:43] &lt MS-&gt LOL</td></tr>
+            <tr><td>[10:44] &lt MS-&gt *still laughing*</td></tr>
+            <tr><td>[10:44] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[10:44] &lt Lawouach&gt ah ah ah :)</td></tr>
+            <tr><td>[10:44] &lt Lawouach&gt well... I shall play bingo this evening</td></tr>
+            <tr><td>[10:44] &lt MS-&gt Oh, even funnier for reasons which I wouldn't really chat about on IRC :)</td></tr>
+            <tr><td>[10:45] &lt Lawouach&gt ;)</td></tr>
+            <tr><td>[10:45] &lt MS-&gt But I suspect if Matt sees that he'll laugh as well :)</td></tr>
+            <tr><td>[10:45] &lt Lawouach&gt well if we meet some day you'll have to count me that tale :)</td></tr>
+            <tr><td>[10:45] &lt MS-&gt Let's just say ... that my life would be easier at times if that was the case</td></tr>
+            <tr><td>[10:45] &lt MS-&gt Yep</td></tr>
+            <tr><td>[10:45] &lt Lawouach&gt -count</td></tr>
+            <tr><td>[10:45] &lt Lawouach&gt anyhow</td></tr>
+            <tr><td>[10:46] &lt Lawouach&gt how are things around here?</td></tr>
+            <tr><td>[10:46] &lt mhrd&gt ;-D</td></tr>
+            <tr><td>[10:46] &lt MS-&gt I think pretty good</td></tr>
+            <tr><td>[10:48] &lt Lawouach&gt good</td></tr>
+            <tr><td>[11:08] &lt Lawouach&gt back to work</td></tr>
+            <tr><td>[11:08] &lt Lawouach&gt later</td></tr>
+            <tr><td>[11:08] &lt MS-&gt cya</td></tr>
+            <tr><td>[11:32] &lt Lawouach_&gt well back at work :)</td></tr>
+            <tr><td>[12:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:35] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:37] &lt MS-&gt vmlemon_: hi</td></tr>
+            <tr><td>[12:49] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[12:50] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[12:52] &lt vmlemon_&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[12:52] Reply: Ptang!</td></tr>
+            <tr><td>[13:02] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:02] &lt Davbo&gt hi all</td></tr>
+            <tr><td>[13:02] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[13:04] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[13:19] *** Davbo has parted #kamaelia</td></tr>
+            <tr><td>[13:23] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:30] &lt vmlemon_&gt How useful, 10.32.85.194 - - [18/Apr/2008:13:51:35 +0100] "POST http://server4.operamini.com:80/ HTTP/1.1" 200 62645 "-" "-" "application/xml" "-" "-" "UNTRUSTED/1.0"</td></tr>
+            <tr><td>[13:31] &lt vmlemon_&gt It looks like something is eating User-Agents from Java apps (either the network, or my phone's JVM)</td></tr>
+            <tr><td>[13:31] &lt MS-&gt That's "nice"</td></tr>
+            <tr><td>[13:33] &lt vmlemon_&gt Dunno what happens if a signed Java app tries to use a custom User-Agent</td></tr>
+            <tr><td>[13:33] &lt vmlemon_&gt Although I've encountered exactly 0 signed Java apps so far</td></tr>
+            <tr><td>[13:49] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[13:50] &lt j_baker&gt Hello everyone.</td></tr>
+            <tr><td>[13:50] &lt MS-&gt Hi j_baker</td></tr>
+            <tr><td>[13:56] &lt j_baker&gt Sigh... my only option to take the required communications class next fall is to take it at 8AM...</td></tr>
+            <tr><td>[13:56] &lt j_baker&gt I hate early morning classes.</td></tr>
+            <tr><td>[13:56] &lt MS-&gt 8am?</td></tr>
+            <tr><td>[13:57] &lt MS-&gt Unnatural</td></tr>
+            <tr><td>[13:57] &lt j_baker&gt Yeah.</td></tr>
+            <tr><td>[13:57] &lt j_baker&gt I think my university should offer 24 hour a day classes.</td></tr>
+            <tr><td>[13:57] &lt j_baker&gt I could handle going to class at 2 in the morning.</td></tr>
+            <tr><td>[13:58] &lt j_baker&gt Anyway, got to go catch the bus. Later guys.</td></tr>
+            <tr><td>[13:58] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[14:02] &lt MS-&gt kamaeliabot no i expect you to die</td></tr>
+            <tr><td>[14:02] &lt MS-&gt hm</td></tr>
+            <tr><td>[14:04] &lt MS-&gt ...</td></tr>
+            <tr><td>[14:04] &lt MS-&gt huh?</td></tr>
+            <tr><td>[14:04] &lt MS-&gt hm</td></tr>
+            <tr><td>[14:41] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[14:41] &lt MS-&gt Chong-: afternoon</td></tr>
+            <tr><td>[14:41] &lt vmlemon_&gt Hi MS-, and kamaeliabot</td></tr>
+            <tr><td>[14:41] &lt Davbo&gt Further thoughts on what MS- ?</td></tr>
+            <tr><td>[14:41] *** MS- replies off channel</td></tr>
+            <tr><td>[14:42] &lt Chong-&gt MS-: If I were you, I would choose the second one, a student who communicates lots, but with a "debateable" application.</td></tr>
+            <tr><td>[14:42] &lt MS-&gt I said over email</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt lol Chong- i think that was supposed to be in an email</td></tr>
+            <tr><td>[14:42] &lt Chong-&gt Sorry:)</td></tr>
+            <tr><td>[14:43] &lt vmlemon_&gt Hmm, is a HTTP daemon serving a page containing "Today's fish is trout ala creme, please enjoy your meal." the only thing at http://132.185.142.2/? Or are there other services on the box?</td></tr>
+            <tr><td>[14:44] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:44] &lt MS-&gt That box is running apache</td></tr>
+            <tr><td>[14:44] &lt mhrd&gt heh, oh that box :-)</td></tr>
+            <tr><td>[14:45] &lt MS-&gt yeah, that box</td></tr>
+            <tr><td>[14:45] *** vmlemon_ traceroutes the box</td></tr>
+            <tr><td>[14:46] &lt MS-&gt heh, it exists in two places at once</td></tr>
+            <tr><td>[14:46] &lt vmlemon_&gt Anycast?</td></tr>
+            <tr><td>[14:46] &lt vmlemon_&gt Or some weird internal view on the BBC's network?</td></tr>
+            <tr><td>[14:46] &lt MS-&gt latter</td></tr>
+            <tr><td>[14:46] &lt MS-&gt ish</td></tr>
+            <tr><td>[14:47] &lt MS-&gt IP is allocated on two networks</td></tr>
+            <tr><td>[14:47] &lt MS-&gt One internal, one external</td></tr>
+            <tr><td>[14:47] &lt vmlemon_&gt Hmm, 13 ae-14-51.car3.London1.Level3.net (4.68.116.17) 539.831 ms ae-14-55.car3.London1.Level3.net (4.68.116.145) 539.817 ms ae-14-51.car3.London1.Level3.net (4.68.116.17) 538.805 ms</td></tr>
+            <tr><td>[14:47] *** vmlemon_ wonders how on Earth that's supposed to work, assuming that the DNS name is the same for all three IPs</td></tr>
+            <tr><td>[14:48] &lt Davbo&gt same network, MAC address does the hops?</td></tr>
+            <tr><td>[14:48] &lt MS-&gt No, some are outside certain firewalls and some are inside</td></tr>
+            <tr><td>[14:48] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[14:49] &lt MS-&gt or rather one is inside and one outside</td></tr>
+            <tr><td>[14:49] &lt MS-&gt Means if you're outside the BBC it's easy to "see" that machine</td></tr>
+            <tr><td>[14:49] &lt vmlemon_&gt Isn't that Level3's network with that weird DNS thing?</td></tr>
+            <tr><td>[14:49] &lt MS-&gt and next to impossible inside</td></tr>
+            <tr><td>[14:49] *** Davbo experiences networking lecture flashbacks</td></tr>
+            <tr><td>[14:49] &lt MS-&gt Which is rather amusing</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt Hah MS-</td></tr>
+            <tr><td>[14:50] &lt MS-&gt Wasn't when we first discovered</td></tr>
+            <tr><td>[14:50] &lt MS-&gt but now I think of it as amusing/typical</td></tr>
+            <tr><td>[14:50] &lt vmlemon_&gt [15:50] &lt DaZeus&gt future-is.orange.co.uk has address 193.35.129.161; future-is.orange.co.uk has address 193.35.129.169;</td></tr>
+            <tr><td>[14:52] &lt simon89&gt MS-: got your email(s) and sent you an answer</td></tr>
+            <tr><td>[14:53] &lt vmlemon_&gt I guess that also explains http://paster.dazjorz.com/?p=2733</td></tr>
+            <tr><td>[14:53] &lt vmlemon_&gt somehow</td></tr>
+            <tr><td>[14:53] &lt mhrd&gt oh MS-: I had no problems reaching that machine from reith when I was up at Henry Wood House on Wednesday</td></tr>
+            <tr><td>[14:54] &lt MS-&gt really?</td></tr>
+            <tr><td>[14:54] &lt MS-&gt simon89: cool</td></tr>
+            <tr><td>[14:54] &lt mhrd&gt I got to it somehow quite quickly</td></tr>
+            <tr><td>[14:54] &lt MS-&gt Ah, I think I know why</td></tr>
+            <tr><td>[14:54] &lt mhrd&gt oh, no I remember, I bounced through my home server</td></tr>
+            <tr><td>[14:54] &lt MS-&gt at HWH they have direct network access</td></tr>
+            <tr><td>[14:55] &lt MS-&gt simon89: Can you resend it to my gmail account?</td></tr>
+            <tr><td>[14:55] &lt MS-&gt ?</td></tr>
+            <tr><td>[14:55] &lt MS-&gt Ah yes, you have</td></tr>
+            <tr><td>[14:55] &lt MS-&gt sorry,</td></tr>
+            <tr><td>[14:55] *** MS- reads</td></tr>
+            <tr><td>[14:58] &lt vmlemon_&gt I assume that they have some sort of "round-robbin"/load balancing system in place for their DNS</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt Does the beeb directly peer to UK ISP's?</td></tr>
+            <tr><td>[15:00] &lt vmlemon_&gt Supposedly</td></tr>
+            <tr><td>[15:00] &lt vmlemon_&gt I think they do have a LINX presence</td></tr>
+            <tr><td>[15:01] &lt mhrd&gt yes</td></tr>
+            <tr><td>[15:01] &lt Davbo&gt Ah, cool.</td></tr>
+            <tr><td>[15:02] &lt mhrd&gt https://www.linx.net/about/memberlist/letter/B</td></tr>
+            <tr><td>[15:02] &lt MS-&gt And it's also more complicated than that :-)</td></tr>
+            <tr><td>[15:02] *** MS- rummages for a post by bb</td></tr>
+            <tr><td>[15:03] &lt mhrd&gt if of interest: http://support.bbc.co.uk/support/network/</td></tr>
+            <tr><td>[15:03] &lt MS-&gt http://www.bbc.co.uk/blogs/bbcinternet/2007/12/brandons_history_of_bbc_on_the_2.html</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt ah thanks mhrd</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt + MS- :-)</td></tr>
+            <tr><td>[15:04] &lt vmlemon_&gt I assume that the BBC Multicast peering thing is a separate arrangement, then?</td></tr>
+            <tr><td>[15:04] &lt mhrd&gt yes</td></tr>
+            <tr><td>[15:05] &lt Davbo&gt interesting stuff</td></tr>
+            <tr><td>[15:05] &lt vmlemon_&gt I think JANET and Virgin Media peer with that, although I've never managed to get BBC Multicast content on a JANET connection</td></tr>
+            <tr><td>[15:05] &lt vmlemon_&gt I don't think BT peer with it</td></tr>
+            <tr><td>[15:06] &lt MS-&gt vmlemon_: I'm on plusnet, who according to our multicast pages peer with us for multicast</td></tr>
+            <tr><td>[15:06] &lt vmlemon_&gt It works for you?</td></tr>
+            <tr><td>[15:06] &lt MS-&gt But I can't get the multicast streams either</td></tr>
+            <tr><td>[15:06] &lt MS-&gt :-)</td></tr>
+            <tr><td>[15:07] &lt vmlemon_&gt Maybe the BBC have dismantled the Multicast infrastructure quietly, or ISPs have stopped transporting BBC Multicast traffic...</td></tr>
+            <tr><td>[15:07] &lt MS-&gt Um, I think we'd've heard about that :-)</td></tr>
+            <tr><td>[15:07] &lt vmlemon_&gt (a conspiracy theory? ;) )</td></tr>
+            <tr><td>[15:07] &lt vmlemon_&gt At least seeing as I've never seen it working</td></tr>
+            <tr><td>[15:08] &lt MS-&gt Oh I know its working and set up</td></tr>
+            <tr><td>[15:08] &lt MS-&gt Saw the servers being set up and heard the swearing</td></tr>
+            <tr><td>[15:08] &lt vmlemon_&gt You never know, though ;)</td></tr>
+            <tr><td>[15:08] &lt MS-&gt The issue is multicast</td></tr>
+            <tr><td>[15:08] &lt vmlemon_&gt Sounds fun</td></tr>
+            <tr><td>[15:09] &lt MS-&gt I think those servers will still be up when civilisation falls myself :-)</td></tr>
+            <tr><td>[15:09] &lt Davbo&gt Hah lol</td></tr>
+            <tr><td>[15:10] &lt vmlemon_&gt I'll believe it when I see it (if I'm not dead before then) ;)</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt Be unlimited was on that linx thing, that mean they also peer on the multicast MS- ?</td></tr>
+            <tr><td>[15:10] &lt vmlemon_&gt It's a separate peering for Multicast</td></tr>
+            <tr><td>[15:10] &lt mhrd&gt what vmlemon_ said</td></tr>
+            <tr><td>[15:11] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[15:11] &lt vmlemon_&gt The chances are probably high that your ISP has no peering, or that they've managed to break something so that it doesn't work, somehow</td></tr>
+            <tr><td>[15:11] &lt vmlemon_&gt There is a list of ISPs that supposedly support it on the BBC site, I think</td></tr>
+            <tr><td>[15:11] &lt vmlemon_&gt although your milage may vary</td></tr>
+            <tr><td>[15:12] &lt mhrd&gt http://support.bbc.co.uk/multicast/</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt Wasn't it just a trial?</td></tr>
+            <tr><td>[15:14] *** vmlemon_ wonders if we'll ever see an iPlayer for Symbian OS, or Windows Mobile...</td></tr>
+            <tr><td>[15:15] &lt vmlemon_&gt At least I assume that it is/was</td></tr>
+            <tr><td>[15:15] *** vmlemon_ signed up for it ages ago, when they were starting it, and could never get it working then</td></tr>
+            <tr><td>[15:16] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[15:16] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[15:16] &lt mhrd&gt oops</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt I assume that doesn't work now?</td></tr>
+            <tr><td>[15:16] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[15:16] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[15:17] &lt MS-&gt Davbo: Assume what doesn't work now?</td></tr>
+            <tr><td>[15:17] &lt vmlemon_&gt Barf, http://publicaffairs.linx.net/news/?p=742</td></tr>
+            <tr><td>[15:17] &lt Davbo&gt the multicast streams</td></tr>
+            <tr><td>[15:17] &lt MS-&gt Davbo: No, if you're on JANET it should work</td></tr>
+            <tr><td>[15:18] &lt MS-&gt (ie at a university)</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt oh</td></tr>
+            <tr><td>[15:18] &lt MS-&gt Note: *should*</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt Answers my question</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt seeing as I was going to ask about JANET ;)</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt (and no, I can't access either the BBC or Virgin Radio Multicast streams at college)</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt With RealPlayer or Windows Media Player :(</td></tr>
+            <tr><td>[15:19] &lt vmlemon_&gt I doubt that Be peer with BBC Multicast</td></tr>
+            <tr><td>[15:19] &lt Davbo&gt No but i can VPN to University</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt right?</td></tr>
+            <tr><td>[15:20] &lt vmlemon_&gt I'd assume so</td></tr>
+            <tr><td>[15:20] &lt MS-&gt Davbo: Let me just say I'd be really impressed if you could get access to the stream</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt :)</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt Worth a try</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt If you're lucky, you might be able to access a service running on one of the LAN machines from outside, though</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt (I managed to set up an Apache instance on one of the desktop machines in the library, and could access it from a remote server with Lynx without any issues)</td></tr>
+            <tr><td>[15:22] &lt vmlemon_&gt Although your milage may vary, as may your institution's network configuration</td></tr>
+            <tr><td>[15:25] &lt Davbo&gt brb gonna try the VPN on windows.</td></tr>
+            <tr><td>[15:25] &lt Chong-&gt vmlemon_: cool. BTW, how can you install software in the school machine?</td></tr>
+            <tr><td>[15:26] &lt vmlemon_&gt I can run the installer as normal, and just set a directory on the Desktop to be the destination, and it works fine</td></tr>
+            <tr><td>[15:26] &lt vmlemon_&gt although I have to run the server manually</td></tr>
+            <tr><td>[15:27] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[15:27] &lt Chong-&gt In my university, we have no privilege to install software.</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt I had problems trying to run it from the NetWare server, though</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt (some file locking issues)</td></tr>
+            <tr><td>[15:28] *** vmlemon_ thinks that if Phorm/WebWise can be considered a "service" (as obnoxious and evil as it potentially will be), then charging people to be hit in the teeth with a brick could be classed as a "service" (to use the word loosely) ;)</td></tr>
+            <tr><td>[15:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt Oh well :(</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt worth a try.</td></tr>
+            <tr><td>[15:32] &lt MS-&gt No luck?</td></tr>
+            <tr><td>[15:32] &lt Davbo&gt nope</td></tr>
+            <tr><td>[15:35] &lt Davbo&gt Perhaps the connections in DCS work, they're straight into JANET i think.</td></tr>
+            <tr><td>[15:36] &lt Davbo&gt doubt it though.</td></tr>
+            <tr><td>[15:36] &lt vmlemon_&gt Maybe they're on a proxied/sponsored JANET connection?</td></tr>
+            <tr><td>[15:36] &lt vmlemon_&gt Although I don't know what effect it would have</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt http://www.ja.net/services/connections/types-of-connection.html</td></tr>
+            <tr><td>[15:39] &lt MS-&gt Sheffield as a whole *should* work</td></tr>
+            <tr><td>[15:39] &lt MS-&gt But the problem with multicast</td></tr>
+            <tr><td>[15:39] &lt MS-&gt is the sheer number of "shoulds" involved</td></tr>
+            <tr><td>[15:39] &lt MS-&gt or rather one problem</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt Hmm, http://www.ja.net/technologies/multicast.html</td></tr>
+            <tr><td>[15:43] &lt vmlemon_&gt and http://www.ja.net/development/network-engineering/multicast/</td></tr>
+            <tr><td>[15:44] &lt vmlemon_&gt Looks like interesting technical stuff, even if it doesn't directly relate to each organization's implementation of JANET access</td></tr>
+            <tr><td>[15:45] &lt MS-&gt The problem with that sort of thing is it is often summarised as</td></tr>
+            <tr><td>[15:45] &lt MS-&gt "you can send out one stream and it's duplicated to everyone who subscribes to it"</td></tr>
+            <tr><td>[15:45] &lt MS-&gt which is not what multicast is</td></tr>
+            <tr><td>[15:45] &lt MS-&gt multicast is "anyone can publish data to a multicast group, which is forwarded to everyone subscribing"</td></tr>
+            <tr><td>[15:46] &lt MS-&gt key words : anyone, everyone</td></tr>
+            <tr><td>[15:46] &lt MS-&gt "anyone publish" not "anyone subscribed can publish"</td></tr>
+            <tr><td>[15:46] &lt MS-&gt etc</td></tr>
+            <tr><td>[15:47] &lt Chong-&gt interesting:-)</td></tr>
+            <tr><td>[15:47] &lt MS-&gt Well, it's not broadcast (one to many)</td></tr>
+            <tr><td>[15:47] &lt MS-&gt it's multicast (many to many)</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt Yeah it sounds..unreliable</td></tr>
+            <tr><td>[15:47] &lt MS-&gt Well, think spam</td></tr>
+            <tr><td>[15:48] &lt vmlemon_&gt I guess that someone at JANET/your college/university would have to enable access to the multicast streams on a server-by-server or stream-by-stream basis</td></tr>
+            <tr><td>[15:48] &lt vmlemon_&gt as stupid as it sounds...</td></tr>
+            <tr><td>[15:49] &lt j_baker&gt Multicast viagra ads: the wave of the future.</td></tr>
+            <tr><td>[15:49] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt biab</td></tr>
+            <tr><td>[15:50] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[15:57] *** Davbop has joined #kamaelia</td></tr>
+            <tr><td>[16:04] &lt vmlemon_&gt Hmm, anyone using IPv6 at the moment?</td></tr>
+            <tr><td>[16:07] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:07] &lt j_baker&gt vmlemon_: nope, not using IPv6</td></tr>
+            <tr><td>[16:18] &lt Chong-&gt On March 12th, 2008, Google launched an IPv6 version of www.google.com, the most visited page on the Internet, under an alternative host name (ipv6.google.com).</td></tr>
+            <tr><td>[16:19] &lt j_baker&gt Interesting.</td></tr>
+            <tr><td>[16:19] &lt Chong-&gt but cannot find its ip</td></tr>
+            <tr><td>[16:20] &lt j_baker&gt Neither can I.</td></tr>
+            <tr><td>[16:23] &lt Chong-&gt No DNS stores the mapping information :-)</td></tr>
+            <tr><td>[16:24] *** bcarlyon|lsrfm has joined #kamaelia</td></tr>
+            <tr><td>[16:24] &lt j_baker&gt Google's ipv6.google.com is an interesting case in a number of ways. First of all, Google chose to give it IPv6 addresses only—over IPv4, this site is unreachable.</td></tr>
+            <tr><td>[16:24] &lt vmlemon_&gt Tried a "looking glass"/gateway? (e.g. the SixXS one)</td></tr>
+            <tr><td>[16:26] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:26] &lt Chong-&gt Lawouach: welcome back</td></tr>
+            <tr><td>[16:26] &lt Lawouach&gt ta</td></tr>
+            <tr><td>[16:27] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:28] &lt Chong-&gt j_baker: the IPv6 version may be only for test purpose now.</td></tr>
+            <tr><td>[16:30] &lt j_baker&gt Well, no.</td></tr>
+            <tr><td>[16:30] &lt Chong-&gt IPv6 is not supported by some old routers and os.</td></tr>
+            <tr><td>[16:30] &lt j_baker&gt At least not from what I can tell.</td></tr>
+            <tr><td>[16:30] &lt j_baker&gt I quoted that from here: http://arstechnica.com/articles/culture/ietf-ipv6-switchoff.ars/2</td></tr>
+            <tr><td>[16:31] &lt j_baker&gt Well, I take that back. I'm not for sure.</td></tr>
+            <tr><td>[16:32] &lt j_baker&gt Knowing google, it will probably stay in "beta" for 5 years. :P</td></tr>
+            <tr><td>[16:33] *** Chong has joined #kamaelia</td></tr>
+            <tr><td>[16:33] *** Chong is now known as Chong-</td></tr>
+            <tr><td>[16:34] &lt Chong-&gt hehe:-)</td></tr>
+            <tr><td>[16:34] &lt vmlemon_&gt Hmm, isn't the "Beta" thing just a meaningless buzzword, now?</td></tr>
+            <tr><td>[16:35] &lt vmlemon_&gt Given by how much use for supposedly stable products it gets</td></tr>
+            <tr><td>[16:37] &lt mhrd&gt depends how much influence the marketing droids have in the organisation in question</td></tr>
+            <tr><td>[16:37] &lt j_baker&gt I dunno. I never thought about it that way.</td></tr>
+            <tr><td>[16:38] &lt j_baker&gt I suppose beta says "latest and greatest"</td></tr>
+            <tr><td>[16:38] &lt Chong-&gt like google scholar</td></tr>
+            <tr><td>[16:38] &lt mhrd&gt beta says "no guarantees"</td></tr>
+            <tr><td>[16:38] &lt vmlemon_&gt I know Flickr was supposedly in beta forever</td></tr>
+            <tr><td>[16:38] &lt j_baker&gt I always figured it was more along the lines of "don't blame us if it doesn't work right"</td></tr>
+            <tr><td>[16:38] &lt MS-&gt news.google.com isn't beta anymore</td></tr>
+            <tr><td>[16:38] &lt j_baker&gt gmail was google for how long?</td></tr>
+            <tr><td>[16:39] &lt j_baker&gt errr.</td></tr>
+            <tr><td>[16:39] &lt MS-&gt heh</td></tr>
+            <tr><td>[16:39] &lt j_baker&gt gmail was beta how long?</td></tr>
+            <tr><td>[16:39] &lt vmlemon_&gt I suppose you could call Windows a perpetual beta ;)</td></tr>
+            <tr><td>[16:39] &lt j_baker&gt (I'm assuming it was google all along) :P</td></tr>
+            <tr><td>[16:39] &lt Chong-&gt Sometimes, beta means free :-)</td></tr>
+            <tr><td>[16:40] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:40] &lt vmlemon_&gt "Caution, may explode if shaken or dropped"...</td></tr>
+            <tr><td>[16:41] &lt j_baker&gt lol... I think MS would say that Windows is a "polished product" with "undocumented features," vmlemon_.</td></tr>
+            <tr><td>[16:41] &lt j_baker&gt (MS being microsoft)</td></tr>
+            <tr><td>[16:41] &lt vmlemon_&gt Haha</td></tr>
+            <tr><td>[16:41] &lt vmlemon_&gt Hmm, if you could call a turd wrapped in glitter "polished"</td></tr>
+            <tr><td>[16:43] &lt j_baker&gt Well, I think the marketing term is "insect attractive."</td></tr>
+            <tr><td>[16:45] &lt vmlemon_&gt Yay, Exception in thread "main" java.lang.NoClassDefFoundError: com/netscape/management/client/console/Console</td></tr>
+            <tr><td>[16:46] *** vmlemon_ has just got an LDAP server configured and installed, but feels that it would probably implode in time (like his other Fedora Directory Server installations)</td></tr>
+            <tr><td>[16:47] &lt Chong-&gt call it a week. head for home. see you later, all.</td></tr>
+            <tr><td>[16:47] &lt mhrd&gt cya</td></tr>
+            <tr><td>[16:47] *** Chong- is now known as Chong-away</td></tr>
+            <tr><td>[16:55] *** MS- hopes everyone (studentwise) has seen Chris's latest email to the -discuss list</td></tr>
+            <tr><td>[16:56] &lt MS-&gt and now understands why I've said that we can give indications of what we'd like to those in a very strong position with their apps (very very very very very few of you)</td></tr>
+            <tr><td>[16:56] &lt MS-&gt and why we haven't been telling anyone else "no, you're out"</td></tr>
+            <tr><td>[16:56] &lt MS-&gt else</td></tr>
+            <tr><td>[16:59] &lt MS-&gt That said, no matter what way the GSOC allocation process goes, everyone's projects are welcome</td></tr>
+            <tr><td>[16:59] &lt MS-&gt well, except for the guy who I wrote on his public comments "Incidentally, you would _not_ be an asset to our project with your attitude." but then his application was the first one to be marked ineligible</td></tr>
+            <tr><td>[17:02] *** MS- wanders off as well</td></tr>
+            <tr><td>[17:02] &lt MS-&gt cya all.</td></tr>
+            <tr><td>[17:02] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[17:13] &lt j_baker&gt Be back later.</td></tr>
+            <tr><td>[17:13] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[17:22] *** bbc-michael has joined #kamaelia</td></tr>
+            <tr><td>[17:23] *** bbc-michael changed the topic to We're now going into radio silence regarding GSOC until the announcements monday | GSOC: http://kamaelia.sourceforge.net/SummerOfCode | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/)</td></tr>
+            <tr><td>[17:24] *** bbc-michael makes dinner</td></tr>
+            <tr><td>[17:24] *** bbc-michael has parted #kamaelia</td></tr>
+            <tr><td>[17:39] &lt mhrd&gt cya</td></tr>
+            <tr><td>[17:39] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[18:12] *** Uraeus is now known as gst_dirac_uraeus</td></tr>
+            <tr><td>[18:25] *** petruccigp has joined #kamaelia</td></tr>
+            <tr><td>[19:31] &lt vmlemon_&gt Hah, "The voice sounds like speak and spell had a daughter with Borat. I mean, a GPS shouldn't pronounce avenue, "oovenue.""</td></tr>
+            <tr><td>[19:39] &lt Davbo&gt Wow. Drama on the "</td></tr>
+            <tr><td>[19:39] &lt Davbo&gt</td></tr>
+            <tr><td>[19:39] &lt Davbo&gt Google Summer of Code Discuss</td></tr>
+            <tr><td>[19:39] &lt Davbo&gt mailing list</td></tr>
+            <tr><td>[19:40] &lt vmlemon_&gt Hmm, is it openly accessible? Or can only people on GSoC view it?</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt It's open</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt http://groups.google.com/group/google-summer-of-code-discuss</td></tr>
+            <tr><td>[19:41] &lt vmlemon_&gt Aah, thanks</td></tr>
+            <tr><td>[19:42] &lt Davbo&gt I just read through the top discussion with Chris DiBona's response</td></tr>
+            <tr><td>[19:42] *** bbc_michael has joined #kamaelia</td></tr>
+            <tr><td>[19:43] *** bbc_michael watching the #dupres channel</td></tr>
+            <tr><td>[19:43] &lt Davbo&gt Very wise of Michael to go into "Radio Silence" because they've got into some real trouble with it</td></tr>
+            <tr><td>[19:43] *** bbc_michael finds it amusing that the final duplicate to be resolved was solved by sending the student to christmas</td></tr>
+            <tr><td>[19:43] &lt Davbo&gt You seen the discussion about the student with a OpenNMS/Mono conflict bbc_michael?</td></tr>
+            <tr><td>[19:44] &lt bbc_michael&gt Yep</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt Crazy stuff, he got really angry</td></tr>
+            <tr><td>[19:44] &lt bbc_michael&gt It's precisely that sort of thing why I've been very careful to tell people that their positions are provisional</td></tr>
+            <tr><td>[19:44] &lt bbc_michael&gt or "fairly safe" or "less chance"</td></tr>
+            <tr><td>[19:45] &lt bbc_michael&gt if I've said *anything*</td></tr>
+            <tr><td>[19:45] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[19:45] &lt bbc_michael&gt and the latter was the most common</td></tr>
+            <tr><td>[19:45] &lt bbc_michael&gt Largely because you don't know how the dupe handling will go</td></tr>
+            <tr><td>[19:45] &lt bbc_michael&gt I'm certain we also can't say anything is certain until *after* google announce on monday</td></tr>
+            <tr><td>[19:46] &lt Davbo&gt If i were a mentor i'd want to sort out some students so you could be prepared if you might encounter a conflict</td></tr>
+            <tr><td>[19:46] &lt bbc_michael&gt OK, now we're into "extra time" as it were</td></tr>
+            <tr><td>[19:46] &lt bbc_michael&gt correct</td></tr>
+            <tr><td>[19:46] &lt bbc_michael&gt and we have those reserves</td></tr>
+            <tr><td>[19:47] &lt bbc_michael&gt (when I said we have more good proposals than slots that's true and a blessing in the case of conflicts, and a curse if you don't(</td></tr>
+            <tr><td>[19:47] &lt bbc_michael&gt All projects are welcome though :)</td></tr>
+            <tr><td>[19:47] &lt Davbo&gt Am i okay to watch these duplicate resolutions? or is it just for Org members?</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt i'm interested to see how it works out</td></tr>
+            <tr><td>[19:49] &lt bbc_michael&gt you can watch, just don't talk. The only people who can talk are orgs and students involved in a conflict</td></tr>
+            <tr><td>[19:49] &lt bbc_michael&gt At the moment the freed up slots are being bartered</td></tr>
+            <tr><td>[19:50] &lt bbc_michael&gt channel is #duplicate-resolution</td></tr>
+            <tr><td>[19:50] &lt vmlemon_&gt Yay, free commentry! ;)</td></tr>
+            <tr><td>[19:50] &lt Davbo&gt it's like spectating some kinda brawl</td></tr>
+            <tr><td>[19:51] &lt vmlemon_&gt And the "thanks"es are in full flow</td></tr>
+            <tr><td>[19:51] &lt vmlemon_&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[19:51] Reply: Ptang!</td></tr>
+            <tr><td>[19:54] &lt bbc_michael&gt Oh, btw, part of the reason why Chris got upset (I suspect)</td></tr>
+            <tr><td>[19:55] &lt vmlemon_&gt Yay, I can finally access the Google Groups thing after finding a HTTP proxy</td></tr>
+            <tr><td>[19:55] &lt bbc_michael&gt is that for many students, GSOC is the first time they've participated in something like that (proposal for paid work essentially)</td></tr>
+            <tr><td>[19:55] &lt bbc_michael&gt and that getting a "no" can be a huge rejection</td></tr>
+            <tr><td>[19:55] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[19:55] &lt vmlemon_&gt Meh, it keeps giving 502 Bad Gateway</td></tr>
+            <tr><td>[19:56] &lt bbc_michael&gt So that thread is a tiny microcosm of some of the reactions you get</td></tr>
+            <tr><td>[19:56] &lt Davbo&gt I can imagine :s</td></tr>
+            <tr><td>[19:56] &lt bbc_michael&gt and the one thing you learn with this is that whilst good news is easy to pass over, handing over bad news quickly and promptly and clearly is vital to making sure people know where they lie</td></tr>
+            <tr><td>[19:57] &lt bbc_michael&gt the key thing being clearly</td></tr>
+            <tr><td>[19:57] &lt Davbo&gt Wow. Everyone wants another slot</td></tr>
+            <tr><td>[19:58] &lt bbc_michael&gt If an org goes "OK, we got 100 apps and have 10 slots" and then tells 5 of them "you guys are in with a chance", then the other 90 may hear that and assume they're out the running (or worse assume because they haven't heard that they've got a slot)</td></tr>
+            <tr><td>[19:58] &lt bbc_michael&gt at which point everyone starts getting upset and hurt feelings left right and centre</td></tr>
+            <tr><td>[19:58] &lt bbc_michael&gt and it just becomes nasty all round</td></tr>
+            <tr><td>[19:59] &lt bbc_michael&gt yeah, regarding extra slots, we'd all like them really</td></tr>
+            <tr><td>[19:59] &lt vmlemon_&gt Hrm, damn proxy doesn't work</td></tr>
+            <tr><td>[19:59] &lt bbc_michael&gt though we've got only 1 less than we asked for, which is really cool, and some orgs really need more.</td></tr>
+            <tr><td>[20:00] &lt Davbo&gt Yeah it's not very pretty is it</td></tr>
+            <tr><td>[20:00] &lt Davbo&gt insanity</td></tr>
+            <tr><td>[20:01] &lt bbc_michael&gt Very</td></tr>
+            <tr><td>[20:01] &lt Davbo&gt hahaha</td></tr>
+            <tr><td>[20:01] &lt Davbo&gt &lt @lh&gt crap crap cap</td></tr>
+            <tr><td>[20:02] &lt Davbo&gt Those poor Google employee's</td></tr>
+            <tr><td>[20:02] &lt bbc_michael&gt (21:02:41) lh: DO NOT TELL YOUR STUDENTS ANYTHING UNTIL MONDAY</td></tr>
+            <tr><td>[20:02] &lt bbc_michael&gt is the single most important line in that channel at this instant</td></tr>
+            <tr><td>[20:02] &lt bbc_michael&gt I knew that was coming though</td></tr>
+            <tr><td>[20:02] &lt Davbo&gt They'll have to go and have a swim in the employee pool to calm down after this ;)</td></tr>
+            <tr><td>[20:02] &lt bbc_michael&gt hence the /topic change :)</td></tr>
+            <tr><td>[20:03] &lt vmlemon_&gt [20:52] &lt xiph_rillian&gt Gamara: our code is made with love. Do you still want it?</td></tr>
+            <tr><td>[20:03] &lt Davbo&gt ewww.</td></tr>
+            <tr><td>[20:03] &lt bbc_michael&gt I've met LH at Foo camp at O'Reilly's offices in sebastopol & also at OSCON</td></tr>
+            <tr><td>[20:04] &lt bbc_michael&gt I can confirm she's as mad/fun in real life as on channel :)</td></tr>
+            <tr><td>[20:04] &lt bbc_michael&gt Same for Chris Di Bona :)</td></tr>
+            <tr><td>[20:04] &lt bbc_michael&gt Very nice people</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt Yeah he's cool, seen a few of his talks online</td></tr>
+            <tr><td>[20:07] &lt Davbo&gt and his podcasts</td></tr>
+            <tr><td>[20:07] &lt bbc_michael&gt Not seen those - I've only met/chatted with him :-)</td></tr>
+            <tr><td>[20:08] *** vmlemon_ wonders why yum wants to update a ton of system packages just to install Tor</td></tr>
+            <tr><td>[20:08] &lt bbc_michael&gt Spent all evening in the bar/pub crawl a few years back with greg stein in Oxford - when we were both speaking there at ACCU Python :)</td></tr>
+            <tr><td>[20:09] &lt bbc_michael&gt Probably why I'm more cautious about asking for extra slots & stuff really, since I trust them to make a good call on the initial run/etc</td></tr>
+            <tr><td>[20:12] *** bbc_michael afk</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Just wondering, how open is the (view into the) GSoC process to those that aren't directly involved?</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[20:14] Reply: does the macarena</td></tr>
+            <tr><td>[20:18] &lt vmlemon_&gt Hah, [21:18] &lt socinfo&gt "no" is (#1) Due to the use of duct tape and bailing wire to hold the GSoC web app together for one more year, no new feature requests are being entertained., or (#2) See also !tlarsen</td></tr>
+            <tr><td>[20:31] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[20:32] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:33] &lt vmlemon__&gt Damn GPRS</td></tr>
+            <tr><td>[20:34] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:38] &lt vmlemon_&gt Cool, didn't know that Nintendo's ES OS project was in GSoC</td></tr>
+            <tr><td>[20:54] &lt vmlemon_&gt Looks like they have a new home (on Google Code, was SourceForge.jp), and an IRC channel albeit without a title...</td></tr>
+            <tr><td>[20:54] *** bbc_michael is now known as MS-</td></tr>
+            <tr><td>[20:55] &lt MS-&gt vmlemon_: "how open is the (view into the) GSoC process to those that aren't directly involved?" As open as they want it to be if they're interested</td></tr>
+            <tr><td>[20:55] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:55] &lt vmlemon_&gt Just curious</td></tr>
+            <tr><td>[20:56] &lt MS-&gt That's my view anyway. This year I was added as a mentor to 3 orgs : BBC Research/Kamaelia, DiracScrhoedinger & the PSF</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Largely because I asked "Can I be added to assist with looking to see if any should move your way or our way"</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Anyone interested in assisting ranking probably would be welcome by most orgs</td></tr>
+            <tr><td>[20:58] &lt MS-&gt About the only things that are really private are the actual ranking scores as well as private comments</td></tr>
+            <tr><td>[21:00] &lt vmlemon_&gt I find the concept of GSoC intriguing, although tracking progress of projects of interest, and many of the processes seem fairly opaque, if you don't know where to start looking/just want an idea of what's happening</td></tr>
+            <tr><td>[21:00] &lt vmlemon_&gt Although that's just my view as a GSoC "outsider"</td></tr>
+            <tr><td>[21:01] &lt vmlemon_&gt Still, I understand the need to keep certain things under control, to stop people from being disappointed, and what have you</td></tr>
+            <tr><td>[21:01] &lt MS-&gt I can see how it could seem that way</td></tr>
+            <tr><td>[21:02] &lt MS-&gt It's fairly transparent inside.</td></tr>
+            <tr><td>[21:02] &lt MS-&gt For example, we all know how many slots everyone else has got</td></tr>
+            <tr><td>[21:02] &lt MS-&gt who got more, who gave slots back etc</td></tr>
+            <tr><td>[21:03] &lt vmlemon_&gt I'd assume that the IRC channels give a small amount of insight, as would/do the mailing lists (if I could access the damn things)...</td></tr>
+            <tr><td>[21:04] &lt MS-&gt Yep. The key reference points for me are</td></tr>
+            <tr><td>[21:04] &lt MS-&gt the FAQ, terms & conditions (which are pretty clear on certain things)</td></tr>
+            <tr><td>[21:05] &lt MS-&gt and the two mailing lists mentors/orgs can see - *-discuss & the -mentor list</td></tr>
+            <tr><td>[21:05] &lt MS-&gt Likewise the students have a list as well the mentors can't see</td></tr>
+            <tr><td>[21:16] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[21:17] &lt Chong-&gt Evening, everyone.</td></tr>
+            <tr><td>[21:19] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:20] &lt Chong-&gt Just read the log, it seems that a lot things happened with GSOC tonight.</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Chong-: Just the usual for this part of GSOC</td></tr>
+            <tr><td>[21:22] &lt Chong-&gt I understand. Think of it's a big global projects, so many organization and so many students involved.</td></tr>
+            <tr><td>[21:24] &lt MS-&gt It's easily closer to 8000 or so people being involved, all told</td></tr>
+            <tr><td>[21:24] &lt MS-&gt over 7000 students.</td></tr>
+            <tr><td>[21:24] &lt Chong-&gt Hope we can get one more slot, so MS- need not face his dilemma.:-)</td></tr>
+            <tr><td>[21:24] &lt MS-&gt At least 3 or 4 mentors for each of the 175 orgs (I'd guess an average of 6)</td></tr>
+            <tr><td>[21:24] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:25] &lt MS-&gt that bumps it to over 8000</td></tr>
+            <tr><td>[21:25] &lt MS-&gt + the *handful* of people at google</td></tr>
+            <tr><td>[21:25] &lt Chong-&gt wow</td></tr>
+            <tr><td>[21:25] &lt MS-&gt But that's the size of a large village</td></tr>
+            <tr><td>[21:25] &lt MS-&gt It's an amazing feat of logistics really</td></tr>
+            <tr><td>[21:25] &lt MS-&gt No, we didn't get (or request) an extra slot at this stage</td></tr>
+            <tr><td>[21:26] &lt MS-&gt Adding an extra slot just moves a dilemma anyway</td></tr>
+            <tr><td>[21:26] &lt Chong-&gt More than the faculties and students of a middle sized university</td></tr>
+            <tr><td>[21:26] &lt MS-&gt It's a *huge* contribution to open source that google makes each year</td></tr>
+            <tr><td>[21:26] &lt MS-&gt (or has done for the past 4 years)</td></tr>
+            <tr><td>[21:27] &lt Chong-&gt I totally agree. It's a great job that google has done.</td></tr>
+            <tr><td>[21:27] &lt Chong-&gt It's a pity that I have not heard it earlier.</td></tr>
+            <tr><td>[21:28] &lt MS-&gt How did you find out about it, out of interest?</td></tr>
+            <tr><td>[21:28] &lt Chong-&gt So, that means I have missed 4 years' GSOC :-)</td></tr>
+            <tr><td>[21:28] &lt MS-&gt It's not the only way to get involved with open source you know</td></tr>
+            <tr><td>[21:28] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:28] &lt vmlemon_&gt Who knew that Google would be as involved with Open Source as they are now? Compared to when they started...</td></tr>
+            <tr><td>[21:29] &lt MS-&gt When they first had their first version of an alpha search engine</td></tr>
+            <tr><td>[21:29] &lt MS-&gt back in 98</td></tr>
+            <tr><td>[21:29] &lt MS-&gt I was working with a caching service, and did log file analysis</td></tr>
+            <tr><td>[21:29] &lt Chong-&gt From an e-mail sent by a professor of our school</td></tr>
+            <tr><td>[21:29] &lt MS-&gt and saw this new site creeping up quickly</td></tr>
+            <tr><td>[21:30] &lt MS-&gt too a look and went "ah"</td></tr>
+            <tr><td>[21:30] &lt vmlemon_&gt I used Lycos a lot, until someone told me about Google</td></tr>
+            <tr><td>[21:30] &lt Chong-&gt I don't know if he had sent it before, but I had not seen any for sure.:-)</td></tr>
+            <tr><td>[21:30] &lt MS-&gt Back then Google had specialised searches include specialised Linux ones</td></tr>
+            <tr><td>[21:30] &lt MS-&gt and wiped the floor with altavista, so I switched</td></tr>
+            <tr><td>[21:31] &lt MS-&gt I also added a google search box to the cache's error pages</td></tr>
+            <tr><td>[21:31] &lt MS-&gt when people put in requests for non-existant domains etc - to save us getting bugged :)</td></tr>
+            <tr><td>[21:32] &lt Chong-&gt cool</td></tr>
+            <tr><td>[21:32] &lt vmlemon_&gt I never understood the appeal of Ask (Jeeves)</td></tr>
+            <tr><td>[21:32] &lt vmlemon_&gt I've always found their results to be lousy</td></tr>
+            <tr><td>[21:32] &lt MS-&gt The linux search thing then was probably why really - since it just seemed more friendly to what I wanetd</td></tr>
+            <tr><td>[21:32] &lt vmlemon_&gt and I feel that Google's are declining in quality, compared to their humble beginnings</td></tr>
+            <tr><td>[21:33] &lt MS-&gt I think the problem is more that their earlier algorithms worked better when it was harder to do internet wide web spamming</td></tr>
+            <tr><td>[21:33] &lt Chong-&gt now they may be more commercial emphasized</td></tr>
+            <tr><td>[21:34] &lt MS-&gt and that creating content & linking required more effort than typing in a comment box</td></tr>
+            <tr><td>[21:34] &lt vmlemon_&gt I used to be able to find relevant results for most things immediately, but now I end up drowning in crap</td></tr>
+            <tr><td>[21:34] &lt MS-&gt It's possible they need a new jump for algorithms being used</td></tr>
+            <tr><td>[21:34] &lt vmlemon_&gt and the sponsored result things are annoying</td></tr>
+            <tr><td>[21:34] &lt MS-&gt yep, I think that's a factor caused by SEO type crap</td></tr>
+            <tr><td>[21:34] &lt vmlemon_&gt (I almost never use them, anyway)</td></tr>
+            <tr><td>[21:34] &lt Chong-&gt MS-: yes. the web become more complex than before.</td></tr>
+            <tr><td>[21:36] &lt vmlemon_&gt BlinkX looked interesting, but they've managed to turn that into a piece of junk</td></tr>
+            <tr><td>[21:36] &lt vmlemon_&gt it looks like another YouTube now, although they had a good initial idea</td></tr>
+            <tr><td>[21:37] &lt Chong-&gt I found google search has far more functions than search information.</td></tr>
+            <tr><td>[21:37] &lt Chong-&gt Sometimes, if I forget how to spell a word, or how to use a phrase, I will resort google search for help</td></tr>
+            <tr><td>[21:38] &lt vmlemon_&gt I find the Google Calculator and Unit Converter handy</td></tr>
+            <tr><td>[21:38] &lt vmlemon_&gt although they're not as well promoted as they could be</td></tr>
+            <tr><td>[21:38] &lt Chong-&gt Google's translator is also first class and very handy to translate web pages</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt Depends on the language</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt I find it sucks for Japanese stuff</td></tr>
+            <tr><td>[21:39] &lt MS-&gt *jinx*</td></tr>
+            <tr><td>[21:39] &lt MS-&gt was about to say the same for russian</td></tr>
+            <tr><td>[21:39] &lt MS-&gt It's OK, but not great</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt I bet their Arabic translation is pretty bad</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt although I've never used it</td></tr>
+            <tr><td>[21:40] &lt MS-&gt That said, it's *alot* better than my russian :)</td></tr>
+            <tr><td>[21:40] &lt Chong-&gt I agree not great. But it is at least comparable to other $$$ software.</td></tr>
+            <tr><td>[21:40] &lt vmlemon_&gt Their French and Italian translators are passable</td></tr>
+            <tr><td>[21:41] &lt vmlemon_&gt their German one isn't too bad either, although it doesn't manage to catch everything</td></tr>
+            <tr><td>[21:41] &lt Chong-&gt One good thing is becuase a lot of people use it, the translator engine could learn much quicker than sigle manchine software</td></tr>
+            <tr><td>[21:41] &lt vmlemon_&gt The Japanese one tends to run words together/"translate" them to non-valid Japanese, even when working with Japanese source text</td></tr>
+            <tr><td>[21:42] &lt Chong-&gt That means it has potential to evolve itself.</td></tr>
+            <tr><td>[21:42] &lt MS-&gt No, potential to be corrected</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt I don't know if they have a machine learning system behind it, but they supposedly test/"train" it with various governmental documents</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt in different languages</td></tr>
+            <tr><td>[21:42] &lt MS-&gt Not to correct itself really</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt They had a little experiment where users could suggest translations for a while</td></tr>
+            <tr><td>[21:43] &lt vmlemon_&gt although it didn't go anywhere, and they disabled it a while ago</td></tr>
+            <tr><td>[21:44] &lt Chong-&gt yes. it uses its rules to translate a premiliar version, then if the user improve it and submit the impoved version, it could make a supervised learning.</td></tr>
+            <tr><td>[21:47] &lt Chong-&gt Thanks to GSOC, I found kamaelia, and join in this vivid and friendly community.</td></tr>
+            <tr><td>[21:48] &lt Chong-&gt To be honest, I have not heard kamaelia before;)</td></tr>
+            <tr><td>[21:49] &lt Chong-&gt But now I found kamaelia is very interesting and has a lot of potentials.</td></tr>
+            <tr><td>[21:50] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[21:50] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt I managed to find it through http://www.bbc.co.uk/opensource/, after reading something on Dirac, somehow</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt (no idea how, but I guess I must have spent too much time perusing that section of the BBC site...)</td></tr>
+            <tr><td>[21:52] &lt vmlemon_&gt I don't think the BBC even publicize that page...</td></tr>
+            <tr><td>[21:53] &lt Chong-&gt hehe. I heard Dirac before, it's very famous:-)</td></tr>
+            <tr><td>[21:53] &lt MS-&gt vmlemon_: No idea how well it's advertised</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt I'm surprised by how much open source they do, just from that page alone</td></tr>
+            <tr><td>[21:53] &lt MS-&gt That page also isn't complete</td></tr>
+            <tr><td>[21:53] &lt vmlemon_&gt I'd never thought of a TV company as an originator of open source</td></tr>
+            <tr><td>[21:54] &lt vmlemon_&gt although I thought the same of Microsoft and Nintendo, until recently...</td></tr>
+            <tr><td>[21:54] &lt MS-&gt To my mind the best project isn't listed there, which is this one: http://ingex.sourceforge.net/</td></tr>
+            <tr><td>[21:54] &lt Chong-&gt At least I have not found links from bbc's homepage. I everyday see news and watch BBC news 24 from BBC website.</td></tr>
+            <tr><td>[21:55] *** vmlemon_ looks at the Ingex page</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt Interesting stuff</td></tr>
+            <tr><td>[21:55] &lt MS-&gt It allows TV production to avoid a very major problem</td></tr>
+            <tr><td>[21:56] &lt MS-&gt which is "how to get stuff off tapes and into an edit suite"</td></tr>
+            <tr><td>[21:56] &lt MS-&gt The getting stuff of tapes thing tends to limit people to a certain number of cameras due to pain</td></tr>
+            <tr><td>[21:56] &lt MS-&gt (often 1)</td></tr>
+            <tr><td>[21:56] &lt vmlemon_&gt Never knew about it until now, but I'm surprised by how many shows they've handled with it</td></tr>
+            <tr><td>[21:56] &lt MS-&gt whereas ingex goes straight to hard disk</td></tr>
+            <tr><td>[21:57] &lt MS-&gt which actually encourages using more cameras & hence often better programmes</td></tr>
+            <tr><td>[21:57] &lt vmlemon_&gt MediaHarmony looks like an interesting concept</td></tr>
+            <tr><td>[21:57] &lt Chong-&gt yes. it's very important.</td></tr>
+            <tr><td>[21:58] &lt MS-&gt MediaHarmony is a really neat trick</td></tr>
+            <tr><td>[21:58] &lt vmlemon_&gt (binding parts of files to SMB shares)</td></tr>
+            <tr><td>[21:58] &lt MS-&gt yep</td></tr>
+            <tr><td>[21:59] &lt Chong-&gt hard work:-)</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt Nice to see that Kamaelia makes the front page</td></tr>
+            <tr><td>[21:59] &lt MS-&gt front page?</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt I'm sure that there are other projects that they've not bothered to add, that hardly anyone has heard of</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt (of /opensource)</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt albeit near the bottom</td></tr>
+            <tr><td>[22:00] &lt MS-&gt Ahhh, I see</td></tr>
+            <tr><td>[22:00] &lt MS-&gt that list isn't in any particular order</td></tr>
+            <tr><td>[22:00] &lt vmlemon_&gt Probably just a list of projects that one person found interesting...</td></tr>
+            <tr><td>[22:01] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[22:02] &lt MS-&gt so essentially yes, it is a list from one person really</td></tr>
+            <tr><td>[22:02] &lt MS-&gt with small updates</td></tr>
+            <tr><td>[22:02] &lt MS-&gt And harder to update because it's hosted on bbc.co.uk</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt Don't they generate everything there to static HTML files on a timely basis?</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt (timely being every few days or hours, from content in a DB)</td></tr>
+            <tr><td>[22:03] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt I assume</td></tr>
+            <tr><td>[22:03] &lt MS-&gt No idea actually. I do know that most of it is _relatively_ static, but can't be entirely</td></tr>
+            <tr><td>[22:04] &lt MS-&gt And there are lots and lots and lots of disparate systems in use</td></tr>
+            <tr><td>[22:04] &lt MS-&gt which are being relatively slowly harmonise</td></tr>
+            <tr><td>[22:04] &lt MS-&gt d</td></tr>
+            <tr><td>[22:05] &lt vmlemon_&gt I see that they use Linux/Apache a lot for their sites and technical stuff, although they probably use a lot of Windows internally (which wouldn't be a surprise)</td></tr>
+            <tr><td>[22:06] &lt Chong-&gt I understand the homepage rebuit recently, other levels, say news, still from old templates.</td></tr>
+            <tr><td>[22:06] &lt MS-&gt News is mainly Linux/apache, the main site is mainly solaris/apache if I understand things right</td></tr>
+            <tr><td>[22:06] &lt MS-&gt The new homepage required major changes in the way that content feeds to it</td></tr>
+            <tr><td>[22:06] *** vmlemon_ runs it through Netcraft</td></tr>
+            <tr><td>[22:07] &lt vmlemon_&gt In general, their site feels like it was cobbled together from lots of older revisions and templates</td></tr>
+            <tr><td>[22:07] &lt vmlemon_&gt although I'm probably one of the few people to notice...</td></tr>
+            <tr><td>[22:07] &lt MS-&gt DNA (which is a version of the H2G2 engine made slightly more reusable) is windows behind the scenes, wrapped by solaris</td></tr>
+            <tr><td>[22:07] &lt Chong-&gt Which server-side script language do they use?</td></tr>
+            <tr><td>[22:07] &lt vmlemon_&gt It would take ages to update everything, though</td></tr>
+            <tr><td>[22:07] &lt vmlemon_&gt Some Perl</td></tr>
+            <tr><td>[22:08] &lt MS-&gt vmlemon_: No, I think you're right - there's a huge amount of stuff</td></tr>
+            <tr><td>[22:08] &lt vmlemon_&gt given by the CPAN modules listed on Open Source</td></tr>
+            <tr><td>[22:08] &lt MS-&gt Chong-: Mainly perl. Though there's a tech refresh going on to change to a slightly more SOA style architecture</td></tr>
+            <tr><td>[22:08] &lt MS-&gt which if I recall correctly is PHP front, Java backend</td></tr>
+            <tr><td>[22:08] &lt MS-&gt which is becoming a relatively common combo</td></tr>
+            <tr><td>[22:09] &lt Chong-&gt MS-: I see. thanks.</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt Kind of reminds me of 3 UK's consumer-oriented portal (a lot of it is 3rd party components hacked together, with a similar theme applied, although they haven't changed a lot of the graphics and templates during site changes)</td></tr>
+            <tr><td>[22:11] &lt Chong-&gt One question, if Java is used backend, why not JSP front end rather than PHP?</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt If I remember correctly, they used a lot of Java/JSP and quite a lot of PHP</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt Probably familiarity</td></tr>
+            <tr><td>[22:12] &lt MS-&gt Chong-: Sanity probably</td></tr>
+            <tr><td>[22:13] *** vmlemon_ once read something claiming that the BBC use a very restricted set of CPAN/PECL modules, and fairly old versions of Perl and PHP on their servers, which often caused problems for developers...</td></tr>
+            <tr><td>[22:13] &lt Chong-&gt MS-: not understand.</td></tr>
+            <tr><td>[22:13] &lt vmlemon_&gt although I don't have the URL to hand</td></tr>
+            <tr><td>[22:13] &lt MS-&gt vmlemon_: That's correct</td></tr>
+            <tr><td>[22:13] &lt MS-&gt Chong-: Java is a horrid language for lots of things</td></tr>
+            <tr><td>[22:13] &lt MS-&gt It's either a very bad C++ for some tasks</td></tr>
+            <tr><td>[22:14] &lt vmlemon_&gt It's slow</td></tr>
+            <tr><td>[22:14] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[22:14] &lt MS-&gt or a very bad python/level equivalent for others</td></tr>
+            <tr><td>[22:14] &lt Chong-&gt yes. I know it's very slow, but it's platform independent:-)</td></tr>
+            <tr><td>[22:15] &lt MS-&gt No, that's the hype</td></tr>
+            <tr><td>[22:15] &lt MS-&gt Most Java developers end up swearing at it</td></tr>
+            <tr><td>[22:15] &lt MS-&gt as "write once, debug everywhere"</td></tr>
+            <tr><td>[22:15] *** vmlemon_ wonders why no-one's found a way to compile Java stuff to native machine bytecode, with a minimal set of components for the task, instead of a gigantic JVM</td></tr>
+            <tr><td>[22:15] &lt vmlemon_&gt It seems like they tried to write a whole OS + kitchen sink, and then condensed it poorly</td></tr>
+            <tr><td>[22:16] &lt vmlemon_&gt I'm sure that they would have hacked up a CPU and computer system based on it, given chance ;)</td></tr>
+            <tr><td>[22:16] &lt vmlemon_&gt (a Java Physical Machine?...)</td></tr>
+            <tr><td>[22:16] &lt Chong-&gt I see. not totally compatible with all os.</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt Surely you've seen me swearing at Java by now Chong- :P</td></tr>
+            <tr><td>[22:17] &lt MS-&gt vmlemon_: There were the abortive java machines</td></tr>
+            <tr><td>[22:17] &lt vmlemon_&gt SavaJe and ARM Jazelle, anyone?</td></tr>
+            <tr><td>[22:17] &lt MS-&gt heck, the CS department you're in had some for a while at least IIRC :)</td></tr>
+            <tr><td>[22:17] &lt MS-&gt no one wanted them :)</td></tr>
+            <tr><td>[22:18] &lt vmlemon_&gt (the former is dead/was bought out by Sun, the latter is hardly ever used, despite being available on many new ARM architecture-based CPUs)</td></tr>
+            <tr><td>[22:18] &lt Chong-&gt Davbo: hehe. I have not yet met this problem.</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt There are chips you can get which have JVM on there</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt JAVA's A Vicious Abomination ;)</td></tr>
+            <tr><td>[22:20] &lt MS-&gt heh</td></tr>
+            <tr><td>[22:21] &lt vmlemon_&gt OpenLINA looks interesting</td></tr>
+            <tr><td>[22:21] &lt Chong-&gt Davbo: new ARM chips have JVM on board.</td></tr>
+            <tr><td>[22:21] &lt vmlemon_&gt although it's still a heavy work in progress</td></tr>
+            <tr><td>[22:22] &lt Davbo&gt Yeah, ARM is in Sheffield too.</td></tr>
+            <tr><td>[22:22] &lt Davbo&gt well they have something here</td></tr>
+            <tr><td>[22:22] *** vmlemon_ happens to run the unofficial IRC channel for it, and was a fairly early tester, along with a few other people...</td></tr>
+            <tr><td>[22:25] &lt vmlemon_&gt (http://www.openlina.com, if anyone's curious)</td></tr>
+            <tr><td>[22:26] *** MS- looks</td></tr>
+            <tr><td>[22:27] *** vmlemon_ wonders what the hell his cat is doing</td></tr>
+            <tr><td>[22:27] &lt Chong-&gt vmlemon_: Just have a quick look. LINA seems very interesting. not sure about its compiling / immigration efficiency.</td></tr>
+            <tr><td>[22:27] &lt vmlemon_&gt They're using QEMU at the moment, along with a modified version of Debian</td></tr>
+            <tr><td>[22:28] &lt vmlemon_&gt they're supposedly mapping host API calls to a fixed set of libraries with some glue code, and running it with CPU emulation (or supposedly virtualisation on Linux with a kernel module)</td></tr>
+            <tr><td>[22:28] &lt vmlemon_&gt from what I can tell</td></tr>
+            <tr><td>[22:29] &lt MS-&gt Kinda like an anti-wine?</td></tr>
+            <tr><td>[22:29] &lt MS-&gt ish</td></tr>
+            <tr><td>[22:29] &lt vmlemon_&gt Sort of</td></tr>
+            <tr><td>[22:29] &lt vmlemon_&gt They claim that it'll run a Linux ELF binary on Windows, other UNIXes and Mac OS X without modification, and with a native GUI and file system/network trapping</td></tr>
+            <tr><td>[22:29] &lt MS-&gt With a hint of rosetta & headless virtualisation thrown in for good measure</td></tr>
+            <tr><td>[22:30] &lt vmlemon_&gt I'd assume that it would work on non-x86 machines, too</td></tr>
+            <tr><td>[22:30] *** vmlemon_ proposed that they try Wine on it, to make a slightly more portable Windows app...</td></tr>
+            <tr><td>[22:31] &lt MS-&gt heh</td></tr>
+            <tr><td>[22:31] &lt vmlemon_&gt Hmm, I can see the performance hit</td></tr>
+            <tr><td>[22:31] &lt vmlemon_&gt Windows App on Wine -&gt LINA/QEMU + glue and traps -&gt Windows</td></tr>
+            <tr><td>[22:32] &lt vmlemon_&gt Windows App on Wine -&gt LINA/QEMU + glue and traps | Debian -&gt Windows</td></tr>
+            <tr><td>[22:32] &lt vmlemon_&gt even</td></tr>
+            <tr><td>[22:32] &lt vmlemon_&gt it was based on a custom Linux distribution, previously</td></tr>
+            <tr><td>[22:37] &lt Chong-&gt 'code needs to be "compiled for LINA" in order to make the *.lina files that run on LINA'</td></tr>
+            <tr><td>[22:38] &lt Chong-&gt So, all machines which run your programme (.lina) need to set up Lina first.</td></tr>
+            <tr><td>[22:39] &lt Chong-&gt machines need to set up Lina first before which they can run your programme (.lina) .</td></tr>
+            <tr><td>[22:39] &lt vmlemon_&gt You need to download a bulky runtime, too</td></tr>
+            <tr><td>[22:39] &lt Chong-&gt If so, it seems kinda JVM.</td></tr>
+            <tr><td>[22:39] &lt vmlemon_&gt and it takes hours, and hours and hours to compile on Linux</td></tr>
+            <tr><td>[22:40] &lt Chong-&gt Maybe more efficient than JVM</td></tr>
+            <tr><td>[22:40] &lt vmlemon_&gt (it took over a day for their pre-release version)</td></tr>
+            <tr><td>[22:40] &lt vmlemon_&gt which failed a load of times at different stages, although they offer binary packages now</td></tr>
+            <tr><td>[22:40] &lt Chong-&gt wow</td></tr>
+            <tr><td>[22:41] &lt vmlemon_&gt Their developers seem great though, and they tend to respond to mailing list, blog and forum posts pretty swiftly</td></tr>
+            <tr><td>[22:41] &lt vmlemon_&gt (usually within a few hours of posting)</td></tr>
+            <tr><td>[22:42] &lt Chong-&gt That's great. so they must be very dedicated in the project.</td></tr>
+            <tr><td>[22:43] &lt vmlemon_&gt We invited them for a discussion on IRC during launch, and they pretty much answered all the questions we had (mostly about why it took them so long to release it ;) )</td></tr>
+            <tr><td>[22:43] &lt vmlemon_&gt They've been working pretty solidly on it, so it seems</td></tr>
+            <tr><td>[22:43] &lt vmlemon_&gt and they've set up a company behind it</td></tr>
+            <tr><td>[22:45] &lt vmlemon_&gt (it's eponymously named LINA)</td></tr>
+            <tr><td>[22:46] &lt Chong-&gt nice. hope they go very well and could be a very useful tool.</td></tr>
+            <tr><td>[22:46] &lt vmlemon_&gt Hah, "Q: What does LINA stand for? A: LINA is not an acronym."</td></tr>
+            <tr><td>[22:46] &lt vmlemon_&gt (so they claim ;) )</td></tr>
+            <tr><td>[22:47] &lt vmlemon_&gt Their blog seems mildly amusing/interesting, at times</td></tr>
+            <tr><td>[22:48] &lt Chong-&gt interesting. but what does the name really mean?</td></tr>
+            <tr><td>[22:51] &lt Chong-&gt it's close to linux in spelling.</td></tr>
+            <tr><td>[22:52] &lt vmlemon_&gt Have a look at http://www.openlina.com/eulercode/?p=9</td></tr>
+            <tr><td>[22:52] &lt vmlemon_&gt That's their take on the name</td></tr>
+            <tr><td>[22:54] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[22:58] &lt vmlemon_&gt http://openlina.com/curious/?p=9 - and their initial launch/pre-release mention</td></tr>
+            <tr><td>[23:03] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[23:03] &lt Davbo&gt Night vmlemon_</td></tr>
+            <tr><td>[23:05] &lt MS-&gt vya</td></tr>
+            <tr><td>[23:05] &lt MS-&gt cya even</td></tr>
+            <tr><td>[23:05] &lt Chong-&gt night, vmlemon_</td></tr>
+            <tr><td>[23:06] &lt Chong-&gt it's very interesting. I heard Godel's incompleteness theorems before. It's nice to see their connection.</td></tr>
+            <tr><td>[23:07] &lt Chong-&gt I gotta sleep too. See you, all.</td></tr>
+            <tr><td>[23:07] &lt Chong-&gt And have a nice weekend. Hope tomorrow's weather is good:-)</td></tr>
+            <tr><td>[23:07] &lt vmlemon_&gt Aww, "Attempts to subvert or abuse quotas, such as by operating applications on multiple accounts that work in tandem, are a violation of the Terms of Service, and could result in apps being disabled or accounts being closed."</td></tr>
+            <tr><td>[23:09] &lt Chong-&gt very funny:-)</td></tr>
+            <tr><td>[23:09] &lt Chong-&gt good night.</td></tr>
+            <tr><td>[23:09] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[23:17] *** MS- is falling asleep & decides to stop fighting it</td></tr>
+            <tr><td>[23:17] &lt MS-&gt cya all</td></tr>
+            <tr><td>[23:17] *** MS- is now known as ms-away</td></tr>

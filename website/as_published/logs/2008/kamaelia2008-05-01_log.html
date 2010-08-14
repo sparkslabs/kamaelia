@@ -1,0 +1,201 @@
+<html><body><table>
+            <tr><td>[00:35] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[08:03] &lt ms-&gt Do you have to be root? No. But the path to where the Axon & Kamaelia directories needs to be on sys.path</td></tr>
+            <tr><td>[08:03] &lt ms-&gt Essentially</td></tr>
+            <tr><td>[08:07] &lt ms-&gt also, just dumping Axon & Kamaelia directories directly below the app to be run will also work</td></tr>
+            <tr><td>[08:07] &lt ms-&gt since "import Axon"</td></tr>
+            <tr><td>[08:07] &lt ms-&gt looks for</td></tr>
+            <tr><td>[08:08] &lt ms-&gt "./Axon.py"</td></tr>
+            <tr><td>[08:08] &lt ms-&gt "./Axon/__init__.py"</td></tr>
+            <tr><td>[08:08] &lt ms-&gt the first item that exists in [ x+"/Axon.py" for x in sys.path]</td></tr>
+            <tr><td>[08:08] &lt ms-&gt the first item that exists in [ x+"/Axon/__init__.py" for x in sys.path]</td></tr>
+            <tr><td>[08:25] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:08] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[10:07] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt afternoon</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt wow bit tired</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt had a party at my flat yesterday</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt ouch :)</td></tr>
+            <tr><td>[11:58] &lt ms-&gt heh</td></tr>
+            <tr><td>[11:58] &lt ms-&gt good party I hope :)</td></tr>
+            <tr><td>[11:58] &lt Lawouach&gt it was indeed :)</td></tr>
+            <tr><td>[11:58] &lt ms-&gt :)</td></tr>
+            <tr><td>[12:29] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:05] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:43] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[14:21] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:22] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:22] &lt ms-&gt hi</td></tr>
+            <tr><td>[14:24] &lt Davbo&gt afternoon all</td></tr>
+            <tr><td>[14:24] &lt Davbo&gt Going for my first proper vote today :)</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt I bet that novelty will wear off quickly</td></tr>
+            <tr><td>[14:26] &lt ms-&gt Gosh.</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt Ugh, it looks like my Nokia won't charge any more, after I managed to run the battery out and it kept giving "Not Charging" errors for some reason</td></tr>
+            <tr><td>[14:29] &lt ms-&gt Could be a duff battery</td></tr>
+            <tr><td>[14:29] &lt ms-&gt I've had that happen before and can happen if a battery is allowed to drain completely</td></tr>
+            <tr><td>[14:31] *** Davbo officially hates Java</td></tr>
+            <tr><td>[14:31] &lt ms-&gt heheh</td></tr>
+            <tr><td>[14:31] &lt ms-&gt Join the clan</td></tr>
+            <tr><td>[14:31] &lt vmlemon_&gt I hope that the charging circuit hasn't failed, since when I plug the charger in, it doesn't beep :(</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt if (classpath==baneOfDavesExistance) { System.out.println("/me officially hates Java"); }</td></tr>
+            <tr><td>[14:33] &lt Davbo&gt Could they not think of a better way to handle it instead of an environment variable</td></tr>
+            <tr><td>[14:33] &lt ms-&gt ~&gt python</td></tr>
+            <tr><td>[14:33] &lt ms-&gt Python 2.5.1 (r251:54863, Jan 10 2008, 18:01:57)</td></tr>
+            <tr><td>[14:33] &lt ms-&gt [GCC 4.2.1 (SUSE Linux)] on linux2</td></tr>
+            <tr><td>[14:33] &lt ms-&gt Type "help", "copyright", "credits" or "license" for more information.</td></tr>
+            <tr><td>[14:33] &lt ms-&gt &gt&gt&gt assert "JavaSucks"</td></tr>
+            <tr><td>[14:33] &lt ms-&gt &gt&gt&gt assert "Python Sucks" == True</td></tr>
+            <tr><td>[14:33] &lt ms-&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[14:33] &lt ms-&gt  File "&lt stdin&gt", line 1, in &lt module&gt</td></tr>
+            <tr><td>[14:33] &lt ms-&gt AssertionError</td></tr>
+            <tr><td>[14:33] &lt ms-&gt handle... ?</td></tr>
+            <tr><td>[14:33] &lt Davbo&gt classpath</td></tr>
+            <tr><td>[14:34] &lt ms-&gt ah</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt as soon as you want to use a package it throws it in your face</td></tr>
+            <tr><td>[14:34] &lt ms-&gt ah</td></tr>
+            <tr><td>[14:34] &lt ms-&gt Well, at least you have a standard location for.</td></tr>
+            <tr><td>[14:34] &lt ms-&gt oh.</td></tr>
+            <tr><td>[14:34] &lt ms-&gt hold on</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt "Oh you want to use a package - all right but now i'll forget where everything else is"</td></tr>
+            <tr><td>[14:34] &lt ms-&gt :)</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt lol ms-</td></tr>
+            <tr><td>[14:35] *** ms- just found out how to order books at work</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt http://en.wikibooks.org/wiki/Java_Programming/StarImports#Futureproofing</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt equally obscene</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt This is why they all use Eclipse</td></tr>
+            <tr><td>[14:36] &lt vmlemon_&gt Hah, how fitting for a politician, our Conservative candidate's surname here is Windass (insert joke about politicians and hot air)</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt lol</td></tr>
+            <tr><td>[14:37] &lt ms-&gt That reminds me, I ought to go vote for someone who doesn't know me, or care</td></tr>
+            <tr><td>[14:37] &lt vmlemon_&gt (Yes, really)</td></tr>
+            <tr><td>[14:38] &lt ms-&gt It'd be amusing to see what would happen if they weren't allowed to say the party of the person on the ballot paper</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt the person we've got at the minute quit her job a few weeks a go then later that same day announced that she was staying</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt talk about losing all credibility</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt "I resign!" "Actually I think i'll stay"</td></tr>
+            <tr><td>[14:39] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt YAY MY PROGRAM COMPILES</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt PRAISE THE LORD!</td></tr>
+            <tr><td>[14:43] *** ms- praises lord sutch, but wonders why</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt s/LORD/SUN GOD</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt You have to worship Ra to get your Java programs to compile</td></tr>
+            <tr><td>[15:06] &lt vmlemon_&gt Sun (Microsystems) God?</td></tr>
+            <tr><td>[15:07] &lt ms-&gt Well that'd mean the God of Java</td></tr>
+            <tr><td>[15:08] &lt ms-&gt which probably means the lady in the Starbucks logo</td></tr>
+            <tr><td>[15:08] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:10] &lt vmlemon_&gt The BT Piper, even?...</td></tr>
+            <tr><td>[15:13] &lt ms-&gt heh</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt wonders if the Sun god reads his own newspaper</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt *I wonder</td></tr>
+            <tr><td>[15:23] &lt Davbo&gt cool little bit in the BBC R&D review '06-'07 about Kamaelia</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt The fancy PDF, or a footnote on a document?</td></tr>
+            <tr><td>[15:28] &lt Davbo&gt http://www.bbc.co.uk/rd/pubs/annual-review/index.shtml</td></tr>
+            <tr><td>[15:28] &lt Davbo&gt it's only a little bit</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt WOOO!</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt YAY!</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt deadline for group project has been extended to next tuesday</td></tr>
+            <tr><td>[15:33] &lt Davbo&gt and repair status on EEE is Final Testing()</td></tr>
+            <tr><td>[15:52] *** Davbo just got back from voting :)</td></tr>
+            <tr><td>[15:55] &lt ms-&gt Davbo: thanks for the comment about the annual review. I wrote that page, and then it was editted.</td></tr>
+            <tr><td>[15:55] &lt ms-&gt Removing some of the words/bits that make it all make sense, but hey :)</td></tr>
+            <tr><td>[15:55] &lt ms-&gt Some inaccuracies added in etc</td></tr>
+            <tr><td>[15:55] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:56] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:58] &lt Davbo&gt oh no, I do understand ms- I didn't mean to say that was a good bit about Kamaelia but it was cool to see it</td></tr>
+            <tr><td>[15:58] &lt Davbo&gt i was reading it like "Kamaelia is about so much more than this..."</td></tr>
+            <tr><td>[15:59] &lt ms-&gt Indeed :)</td></tr>
+            <tr><td>[16:00] &lt Davbo&gt it doesn't surprise me that it was edited to be like that though</td></tr>
+            <tr><td>[16:00] &lt vmlemon_&gt Hmm, just wondering, can anyone make sense of the diagram at http://paster.dazjorz.com/?p=2823 ?</td></tr>
+            <tr><td>[16:00] *** ms- looks</td></tr>
+            <tr><td>[16:01] &lt vmlemon_&gt What does urine extraction have to do with Kamaelia?</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt lol</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt I told ms- to change to topic and that's what he did :(</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt :P</td></tr>
+            <tr><td>[16:01] &lt ms-&gt "be careful what you wish for"</td></tr>
+            <tr><td>[16:01] &lt ms-&gt ;)</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt haha</td></tr>
+            <tr><td>[16:01] &lt vmlemon_&gt It's in the topic...</td></tr>
+            <tr><td>[16:02] &lt Davbo&gt Yeah I told him to change it from what it was before</td></tr>
+            <tr><td>[16:02] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[16:02] &lt ms-&gt vmlemon_: debateably, urine extraction has a lot to do with it - since take the p is a fairly common activity....</td></tr>
+            <tr><td>[16:02] &lt ms-&gt sorry, will change</td></tr>
+            <tr><td>[16:02] *** ms- changed the topic to Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/)</td></tr>
+            <tr><td>[16:03] *** ms- looks at vmlemons diagram</td></tr>
+            <tr><td>[16:04] &lt ms-&gt Using IRC to build a distributed filesystem?</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt Yeah it's for that IRC File Server</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt clever idea</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt "Somewhat Convoluted" is an understatement lol</td></tr>
+            <tr><td>[16:05] &lt vmlemon_&gt Building a file system-based IRC client</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt I'm not sure how it works though</td></tr>
+            <tr><td>[16:06] &lt ms-&gt That's a really quite odd idea</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt it's not an fserve vmlemon_?</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt I assumed it was http://ircfs.sourceforge.net/</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt which is a standalone fserve</td></tr>
+            <tr><td>[16:08] &lt vmlemon_&gt Nope, it uses an external daemon to connect to an IRC server so that the FSServer can present it as an FS</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[16:09] *** Davbo isn't sure he follows</td></tr>
+            <tr><td>[16:10] &lt ms-&gt I'm guessing "tail -f #kamaelia "</td></tr>
+            <tr><td>[16:10] &lt ms-&gt vs echo "Hello" &gt&gt #kamaelia</td></tr>
+            <tr><td>[16:11] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[16:11] &lt Davbo&gt that didn't help :(</td></tr>
+            <tr><td>[16:13] *** mhrd_afk has parted #kamaelia</td></tr>
+            <tr><td>[16:14] &lt vmlemon_&gt You'd have a structure like /irc/irc.freenode.net/#kamaelia/ with a WholeChannel "file" and a file for each nick in the channel</td></tr>
+            <tr><td>[16:15] &lt Davbo&gt I see what ms- meant now</td></tr>
+            <tr><td>[16:16] &lt ms-&gt I can see what it'd be useful for</td></tr>
+            <tr><td>[16:16] &lt ms-&gt since it gives a mechanism for random programmes to communicate with something outside the system</td></tr>
+            <tr><td>[16:16] *** ms- thinks about that for a while</td></tr>
+            <tr><td>[16:21] *** mhrd_afk has joined #kamaelia</td></tr>
+            <tr><td>[16:24] &lt vmlemon_&gt The cat and tail utilization is spot on, though</td></tr>
+            <tr><td>[16:25] &lt vmlemon_&gt *echo</td></tr>
+            <tr><td>[16:25] &lt ms-&gt Hm.</td></tr>
+            <tr><td>[16:26] &lt ms-&gt why did I never notice "cat & tail" being among the two most useful unix commands</td></tr>
+            <tr><td>[16:27] &lt vmlemon_&gt Things would put text to it, and poll it for new incoming text periodically</td></tr>
+            <tr><td>[16:27] &lt ms-&gt yep</td></tr>
+            <tr><td>[16:27] &lt ms-&gt It was more the "cat & tail" out of context aspect versus a certain picture of a cat...</td></tr>
+            <tr><td>[16:27] &lt ms-&gt I'll get my coat</td></tr>
+            <tr><td>[16:27] &lt Davbo&gt cat = concatenate ? tail = print the last x lines?</td></tr>
+            <tr><td>[16:27] &lt ms-&gt Davbo: yep</td></tr>
+            <tr><td>[16:28] &lt Davbo&gt cool</td></tr>
+            <tr><td>[16:28] &lt Davbo&gt i'm still learning</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt Or do something with the modification times, since all data gets buffered</td></tr>
+            <tr><td>[16:28] &lt Davbo&gt tail -f = keep watching the file?</td></tr>
+            <tr><td>[16:28] &lt Davbo&gt print what gets added kinda thing</td></tr>
+            <tr><td>[16:29] &lt Davbo&gt also: lol! ms- I just got that joke</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt Pretty much</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[16:30] *** Davbo looks at man tail</td></tr>
+            <tr><td>[16:30] &lt Davbo&gt oops man tail out of context</td></tr>
+            <tr><td>[16:30] &lt Davbo&gt agh</td></tr>
+            <tr><td>[16:30] &lt Davbo&gt :|</td></tr>
+            <tr><td>[16:30] &lt Davbo&gt I'll get my coat</td></tr>
+            <tr><td>[16:31] *** ms- sniggers at http://teddziuba.com/2008/04/im-going-to-scale-my-foot-up-y.html</td></tr>
+            <tr><td>[16:36] &lt mhrd_afk&gt nice punchline :)</td></tr>
+            <tr><td>[16:38] &lt ms-&gt http://diveintomark.org/archives/2007/04/16/dhh-translation is rather amusing too</td></tr>
+            <tr><td>[17:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt Hi again</td></tr>
+            <tr><td>[18:02] &lt Davbo&gt Going on GTA for a while</td></tr>
+            <tr><td>[18:02] &lt Davbo&gt back later.</td></tr>
+            <tr><td>[18:06] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:33] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[19:33] Reply: does the macarena</td></tr>
+            <tr><td>[19:50] &lt vmlemon_&gt Oh, how fun, one of the floorboards upstairs is starting to cave in</td></tr>
+            <tr><td>[19:50] &lt ms-&gt oh great</td></tr>
+            <tr><td>[19:51] &lt vmlemon_&gt Part of the wood has a huge split in it, and of course it's now slightly flexible</td></tr>
+            <tr><td>[19:56] &lt ms-&gt hm</td></tr>
+            <tr><td>[19:56] &lt ms-&gt not very good</td></tr>
+            <tr><td>[19:57] &lt vmlemon_&gt The joys of "cheap" housing</td></tr>
+            <tr><td>[19:58] &lt ms-&gt indeed</td></tr>
+            <tr><td>[20:03] &lt vmlemon_&gt Like Tesco Value in performance, longevity and quality, but without the "Tesco Value" bit...</td></tr>
+            <tr><td>[20:04] &lt ms-&gt Well, you'll be saying next you want an M&S home</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[20:05] &lt vmlemon_&gt It's Harrogate Borough Council doing the tennancies, so I don't expect much</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt "Only the crumbliest, flakiest houses"</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt Blatent rip-off of the Flake ad :)</td></tr>
+            <tr><td>[20:22] *** vmlemon_ was going to prepare some diagrams for an upcoming project, but doesn't have either a copy of Inkscape or the project logo handy</td></tr>
+            <tr><td>[21:49] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[22:09] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[22:11] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[22:38] &lt Davbo&gt Evenin' all</td></tr>
+            <tr><td>[22:41] &lt j_baker&gt hello</td></tr>
+            <tr><td>[22:47] *** Davbo has parted #kamaelia</td></tr>
+            <tr><td>[22:49] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:51] *** vmlemon_ has joined #kamaelia</td></tr>

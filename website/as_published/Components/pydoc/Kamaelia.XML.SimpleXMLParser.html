@@ -1,0 +1,329 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.XML.SimpleXMLParser </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.XML.SimpleXMLParser</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.XML.html">XML</a>.<a class="reference" href="/Components/pydoc/Kamaelia.XML.SimpleXMLParser.html">SimpleXMLParser</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.XML.SimpleXMLParser.SimpleXMLParser.html">SimpleXMLParser</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#403">Simple/Basic parsing of XML using SAX</a><ul>
+<li><a class="reference" href="#404">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#405">What does it output?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#406">Behaviour</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="403">Simple/Basic parsing of XML using SAX</h1>
+<p>XMLParser parses XML data sent to its &quot;inbox&quot; inbox using SAX, and sends
+out &quot;document&quot;, &quot;element&quot; and &quot;character&quot; events out of its &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h2 id="404"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>The following code:</p>
+<pre class="literal-block">
+Pipeline( RateControlledFileReader(&quot;Myfile.xml&quot;),
+          SimpleXMLParser(),
+          ConsoleEchoer(),
+        ).run()
+</pre>
+<p>If given the following file as input:</p>
+<pre class="literal-block">
+&lt;EDL xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;MobileReframe.xsd&quot;&gt;&gt;
+    &lt;FileID&gt;File identifier&lt;/FileID&gt;
+
+    &lt;Edit&gt;
+        &lt;Start frame=&quot;0&quot;  /&gt;
+        &lt;End   frame=&quot;24&quot; /&gt;
+        &lt;Crop  x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;400&quot; y2=&quot;100&quot; /&gt;
+    &lt;/Edit&gt;
+    &lt;Edit&gt;
+        &lt;Start frame=&quot;25&quot; /&gt;
+        &lt;End   frame=&quot;49&quot; /&gt;
+        &lt;Crop  x1=&quot;80&quot; y1=&quot;40&quot; x2=&quot;480&quot; y2=&quot;140&quot; /&gt;
+    &lt;/Edit&gt;
+&lt;/EDL&gt;
+</pre>
+<p>Will output the following (albeit without the newlines, added here for clarity):</p>
+<pre class="literal-block">
+('document',)
+('element', u'EDL', &lt;xml.sax.xmlreader.AttributesImpl instance at 0x2aaaaca86e60&gt;)
+('chars', u'&gt;')
+('chars', u'\n')
+('chars', u'    ')
+('element', u'FileID', &lt;xml.sax.xmlreader.AttributesImpl instance at 0x2aaaac028758&gt;)
+('chars', u'File identifier')
+('/element', u'FileID')
+('chars', u'\n')
+('chars', u'    ')
+('chars', u'\n')
+('chars', u'    ')
+('element', u'Edit', &lt;xml.sax.xmlreader.AttributesImpl instance at 0x2aaaac028908&gt;)
+('chars', u'\n')
+('chars', u'        ')
+('element', u'Start', &lt;xml.sax.xmlreader.AttributesImpl instance at 0x2aaaac028908&gt;)
+('/element', u'Start')
+('chars', u'\n')
+('chars', u'        ')
+('element', u'End', &lt;xml.sax.xmlreader.AttributesImpl instance at 0x2aaaaca86e60&gt;)
+('/element', u'End')
+('chars', u'\n')
+('chars', u'        ')
+('element', u'Crop', &lt;xml.sax.xmlreader.AttributesImpl instance at 0x2aaaac028908&gt;)
+('/element', u'Crop')
+('chars', u'\n')
+('chars', u'    ')
+('/element', u'Edit')
+('chars', u'\n')
+('chars', u'    ')
+('/element', u'EDL')
+</pre>
+</div>
+<div class="section">
+<h2 id="405"><a id="what-does-it-output" name="what-does-it-output">What does it output?</a></h2>
+<p>What is output is effectively a simple, but useful, parsing of the XML. It
+is a set of messages representing a subset of the python SAX ContentHandler.
+All are in the form of a simple tuple where the first term is always the type
+of &quot;thing&quot; identified - 'document' start or finish, 'element' start or finish,
+or raw text characters:</p>
+<p><strong>``(&quot;document&quot;, )``</strong></p>
+<ul class="simple">
+<li>Start of the XML document</li>
+</ul>
+<p><strong>``(&quot;/document&quot;, )``</strong></p>
+<ul class="simple">
+<li>End of the XML document (not sent if shutdown with a shutdownMicroprocess()
+message)</li>
+</ul>
+<p><strong>``(&quot;element&quot;, name, attributes)``</strong></p>
+<ul>
+<li><p class="first">Start tag for an element. <tt class="docutils literal"><span class="pre">name</span></tt> is the name of the element. <tt class="docutils literal"><span class="pre">attributes</span></tt>
+is a SAX attributes object - which behaves just like a dictionary - mapping
+attribute names to strings of their values. For example:</p>
+<pre class="literal-block">
+(&quot;element&quot;, &quot;img&quot;, {&quot;src&quot;:&quot;/images/mypic.jpg&quot;})
+</pre>
+</li>
+</ul>
+<p><strong>``(&quot;/element&quot;, name)``</strong></p>
+<ul class="simple">
+<li>End tag for an element. <tt class="docutils literal"><span class="pre">name</span></tt> is the name of the element.</li>
+</ul>
+<p><strong>``(&quot;chars&quot;, textfragment)``</strong></p>
+<ul class="simple">
+<li>Fragment of text from within an element. Note that the text contained in
+a single element be comprised of multiple fragments. They will include
+whitespace and newline characters.</li>
+</ul>
+</div>
+<div class="section">
+<h2 id="406"><a id="behaviour" name="behaviour">Behaviour</a></h2>
+<p>Send chunks of text making up an XML document to this component's &quot;inbox&quot; inbox.
+The XML Parser used will output identified items from its &quot;outbox&quot; outbox.</p>
+<p>This component supports sending its output to a size limited inbox.
+If the size limited inbox is full, this component will pause until it is able
+to send out the data.</p>
+<p>If a producerFinished message is received on the &quot;control&quot; inbox, this component
+will complete parsing any data pending in its inbox, and finish sending any
+resulting data to its outbox. It will then send the producerFinished message on
+out of its &quot;signal&quot; outbox and terminate.</p>
+<p>If a shutdownMicroprocess message is received on the &quot;control&quot; inbox, this
+component will immediately send it on out of its &quot;signal&quot; outbox and immediately
+terminate. It will not complete processing, or sending on any pending data.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.XML.html">XML</a>.<a class="reference" href="/Components/pydoc/Kamaelia.XML.SimpleXMLParser.html">SimpleXMLParser</a>.<a class="reference" href="/Components/pydoc/Kamaelia.XML.SimpleXMLParser.SimpleXMLParser.html">SimpleXMLParser</a></h1>
+<div class="section">
+<h2 id="symbol-SimpleXMLParser">class SimpleXMLParser(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>, xml.sax.handler.ContentHandler)</h2>
+<p>SimpleXMLParser() -&gt; new SimpleXMLParser component.</p>
+<p>Send XML data to the &quot;inbox&quot; inbox, and events describing documents, elements
+and blocks of characters (as parsed by SAX) will be sent out of the &quot;outbox&quot;
+outbox.</p>
+<div class="section">
+<h3><a id="symbol-SimpleXMLParser.Inboxes" name="symbol-SimpleXMLParser.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : Incoming XML</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-SimpleXMLParser.Outboxes" name="symbol-SimpleXMLParser.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : XML events</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.__init__" name="symbol-SimpleXMLParser.__init__">__init__(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.characters" name="symbol-SimpleXMLParser.characters">characters(self, chars)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.checkShutdown" name="symbol-SimpleXMLParser.checkShutdown">checkShutdown(self)</a></h4>
+<p>Collects any new shutdown messages arriving at the &quot;control&quot; inbox, and
+returns &quot;NOW&quot; if immediate shutdown is required, or &quot;WHENEVER&quot; if the
+component can shutdown when it has finished processing pending data.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.endDocument" name="symbol-SimpleXMLParser.endDocument">endDocument(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.endElement" name="symbol-SimpleXMLParser.endElement">endElement(self, name)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.main" name="symbol-SimpleXMLParser.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.safesend" name="symbol-SimpleXMLParser.safesend">safesend(self, data, boxname)</a></h4>
+<p>Generator.</p>
+<p>Sends data out of the named outbox. If the destination is full
+(noSpaceInBox exception) then it waits until there is space and retries
+until it succeeds.</p>
+<p>If a shutdownMicroprocess message is received, returns early.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.startDocument" name="symbol-SimpleXMLParser.startDocument">startDocument(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SimpleXMLParser.startElement" name="symbol-SimpleXMLParser.startElement">startElement(self, name, attrs)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

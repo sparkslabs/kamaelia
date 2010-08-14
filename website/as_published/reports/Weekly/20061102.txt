@@ -1,0 +1,92 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20061102 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+   - None -
+5. Date/Time of next weekly meeting
+   Friday 10th November 2006, 11am GMT 
+
+
+
+2. Participants
+
+Participating: mhrd (Matt), MS- (Michael)
+Also attending: salfield, tav, Uraeus
+
+
+
+3. Activity Reports
+
+Michael:
+    DONE - wrote presentation and gave twice at Linux World (conf. & expo, UK)
+               including plug for Kamaelia
+           working on moving website to cerenity's wiki system (getting there)
+           revisited old todos
+               identified website as primary blocker for many overheads,
+
+    TODO - Continue on sorting out the website
+               resolve issues for tabbed documents (eg MiniAxon, Challenges)
+           pick off the longer term todos
+               starting with those blocked by website.
+           Assess/merge the wake-on-message-removal bugfix branch
+
+    BLOCKED - Moving offices, LinuxWorld, leave
+
+    Also blocked next week: internal BBC Research, non Kamaelia work
+
+
+Matt:
+
+    DONE - finish, test and check-in wake-on-message-removal
+           updated kamaelia changelog wrt. recent fixes
+           add to axon testsuite for wake-on-message-removal changes
+           written enhanced UnixProcess component
+               blocks on noSpaceInBox
+               supports named output pipes
+           worked on mobile video reframer engine
+               adaptations to rate limit by size limiting inboxes
+               wrote WAV file reader
+               made pipeline & graphline wrappers to allow inbox size to be set
+
+    TODO - commit recent work on mobile reframing rate limiting adaptations
+           get access to a more powerful box to do RTP work for BBC use
+           make more pymedia wrappers (video)
+           investigate mpeg transport stream remultiplexing issues
+           need to remove default queue size limits on threadedcomponent
+           more website updates
+           continue with DVB components
+           review/revisit experimental Timer component
+           Improve box destruction to handle when a box is still linked
+
+    BLOCKED - internal bbc presentation - prep and delivery
+
+
+
+Michael pointed out that his TODO list is actually longer, however he
+deliberately chose to only list items he expected to achieve in the next week.
+
+Matt promised to try to make his more concise in future.
+
+Michael explained that "after the disturbances of the past few weeks", he is 
+"trying to get things back on track"
+
+
+
+4. Discussion items (max 3 or 4)
+   - None -
+
+Matt took the opportunity to remind people he would appreciate opinions,
+feedback and criticism of the wake-on-message-removal 'bugfix' branch
+
+Michael added it to his TODOs [included above]
+
+
+
+5. Date/Time of next weekly meeting
+   Friday 10th November 2006, 11am GMT 
+
+Michale noted that Thursdays were, for him, becoming "too interrupting"
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20061102 ======

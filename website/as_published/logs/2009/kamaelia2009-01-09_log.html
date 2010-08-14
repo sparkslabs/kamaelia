@@ -1,0 +1,154 @@
+<html><body><table>
+            <tr><td>[07:33] &lt Patrick`&gt that whole bus thing lets the side down</td></tr>
+            <tr><td>[07:33] &lt Patrick`&gt the alpha course boards are subtle, indirect</td></tr>
+            <tr><td>[07:52] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[09:16] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:51] &lt mhrd&gt anyone else having problems resolving DNS for kamaelia.org ?</td></tr>
+            <tr><td>[11:50] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:35] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[13:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:37] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:38] &lt Davbo&gt Hey</td></tr>
+            <tr><td>[15:47] &lt mhrd&gt anyone else having problems resolving DNS for kamaelia.org ?</td></tr>
+            <tr><td>[15:48] *** vmlemon_ tried</td></tr>
+            <tr><td>[15:48] &lt vmlemon_&gt *tries</td></tr>
+            <tr><td>[15:49] &lt vmlemon_&gt I don't even get anything from ping</td></tr>
+            <tr><td>[15:49] &lt vmlemon_&gt Aha, "ping: unknown host www.kamaelia.org"</td></tr>
+            <tr><td>[15:56] &lt mhrd&gt been like that all day afaict</td></tr>
+            <tr><td>[15:56] &lt mhrd&gt was fine yesterday tho</td></tr>
+            <tr><td>[15:57] &lt mhrd&gt the server itself is still up and at the IP address it should be. It is just DNS that seems to be borked.</td></tr>
+            <tr><td>[15:59] *** vmlemon_ does a "dig"</td></tr>
+            <tr><td>[15:59] &lt vmlemon_&gt ; &lt &lt &gt&gt DiG 9.5.1b3-RedHat-9.5.1-0.9.b3.fc10 &lt &lt &gt&gt www.kamaelia.org</td></tr>
+            <tr><td>[15:59] &lt vmlemon_&gt ;; global options: printcmd</td></tr>
+            <tr><td>[15:59] &lt vmlemon_&gt ;; connection timed out; no servers could be reached</td></tr>
+            <tr><td>[16:34] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[16:34] Reply: does the macarena</td></tr>
+            <tr><td>[16:38] *** jae_ is now known as eikenberry</td></tr>
+            <tr><td>[16:40] &lt Davbo&gt this has happened before mhrd- http://twitter.com/kamaelian/statuses/1074070788</td></tr>
+            <tr><td>[16:41] &lt mhrd&gt ah, ta Davbo.</td></tr>
+            <tr><td>[16:41] &lt mhrd&gt makes sense - did some digging and kinda guessed - based on what box appeared to be set as the dns server</td></tr>
+            <tr><td>[16:45] &lt Davbo&gt np mhrd</td></tr>
+            <tr><td>[16:58] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:58] &lt vmlemon_&gt Hi j_baker</td></tr>
+            <tr><td>[16:58] &lt j_baker&gt hello</td></tr>
+            <tr><td>[17:23] &lt Davbo&gt if anyone needs to scrape some websites for anything, scrapy is a great little library. www.scrapy.org</td></tr>
+            <tr><td>[17:25] &lt Davbo&gt going to play with google calendar python library now</td></tr>
+            <tr><td>[17:26] *** Davbo just had a wispa bar</td></tr>
+            <tr><td>[17:26] *** vmlemon_ hasn't seen them for ages</td></tr>
+            <tr><td>[17:26] &lt vmlemon_&gt Didn't they used to make mint-flavour Wispas, at one time?</td></tr>
+            <tr><td>[17:27] &lt Davbo&gt Yeah not sure if they resurrected those ones unfortunately</td></tr>
+            <tr><td>[17:27] &lt Davbo&gt felt retro eating a Wispa but then i remembered that I don't really like them much anyway :P</td></tr>
+            <tr><td>[17:28] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[17:29] &lt vmlemon_&gt Don't know why, but I thought that'd be a good name for a Twitter client ;)</td></tr>
+            <tr><td>[17:32] &lt Davbo&gt Twispa?</td></tr>
+            <tr><td>[17:32] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[17:33] &lt vmlemon_&gt Meh, I keep getting HTTP timeouts whilst trying to connect to Wikipedia</td></tr>
+            <tr><td>[18:31] *** davbop has joined #kamaelia</td></tr>
+            <tr><td>[18:43] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:28] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[20:28] &lt MS-&gt evening</td></tr>
+            <tr><td>[20:29] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[20:32] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:43] &lt MS-&gt mhrd-home: regarding</td></tr>
+            <tr><td>[20:43] &lt MS-&gt [21:52] &lt  mhrd-home&gt background().start()</td></tr>
+            <tr><td>[20:43] &lt MS-&gt [21:52] &lt  mhrd-home&gt mycomponent().activate()</td></tr>
+            <tr><td>[20:43] &lt MS-&gt [21:52] &lt  mhrd-home&gt might result in the mycomponent instance being activated in a different scheduler</td></tr>
+            <tr><td>[20:44] &lt MS-&gt It won't</td></tr>
+            <tr><td>[20:44] &lt MS-&gt background().start() means that this scheduler is started:</td></tr>
+            <tr><td>[20:45] &lt MS-&gt  scheduler.run.waitForOne()</td></tr>
+            <tr><td>[20:45] &lt MS-&gt  scheduler.run.runThreads(slowmo = self.slowmo)</td></tr>
+            <tr><td>[20:45] &lt MS-&gt scheduler.run is set here:</td></tr>
+            <tr><td>[20:45] &lt MS-&gt  if not scheduler.run: # If no scheduler already allocated...</td></tr>
+            <tr><td>[20:45] &lt MS-&gt  scheduler.run = self # Make this scheduler the singleton scheduler.</td></tr>
+            <tr><td>[20:46] &lt MS-&gt which is in scheduler.__init__</td></tr>
+            <tr><td>[20:46] &lt MS-&gt which means this line at the end of Scheduler.py</td></tr>
+            <tr><td>[20:46] &lt MS-&gt microprocess.setSchedulerClass(scheduler)</td></tr>
+            <tr><td>[20:46] &lt MS-&gt scheduler() # Initialise the class.</td></tr>
+            <tr><td>[20:46] &lt MS-&gt guarantees that they're all singing from the songsheet</td></tr>
+            <tr><td>[20:47] &lt MS-&gt .activate with no-args, means this path:</td></tr>
+            <tr><td>[20:47] &lt MS-&gt  def activate(self, Scheduler=None.... )</td></tr>
+            <tr><td>[20:47] &lt MS-&gt  if Scheduler is not None:</td></tr>
+            <tr><td>[20:47] &lt MS-&gt ...</td></tr>
+            <tr><td>[20:47] &lt MS-&gt  else:</td></tr>
+            <tr><td>[20:47] &lt MS-&gt  self.__class__.schedulerClass.run._addThread(self)</td></tr>
+            <tr><td>[20:47] &lt MS-&gt  self.scheduler = self.__class__.schedulerClass.run</td></tr>
+            <tr><td>[20:48] &lt MS-&gt Which is why that code path can't end up with the wrong scheduler</td></tr>
+            <tr><td>[20:49] &lt MS-&gt Mainly really because it's all using the same scheduler as normal really</td></tr>
+            <tr><td>[20:49] &lt MS-&gt except background.start() is just running it in the background rather than foreground</td></tr>
+            <tr><td>[20:50] &lt MS-&gt Incidentally Handle is the replacement for LikeFile :)</td></tr>
+            <tr><td>[20:52] &lt MS-&gt "[22:32] &lt  mhrd-home&gt heh ... uk Advertising Standards Authority effectively being asked (imo) to rule on the probability of God's existence: http://news.bbc.co.uk/1/hi/uk/7818980.stm"</td></tr>
+            <tr><td>[20:52] &lt MS-&gt They can sidestep that - its not actually advertising anything is it? It's just someone using advertising space to promote a particular belief</td></tr>
+            <tr><td>[20:54] &lt vmlemon_&gt True</td></tr>
+            <tr><td>[20:54] &lt mhrd-home&gt you'd make Richard Dawkins very unhappy calling it a belief :-)</td></tr>
+            <tr><td>[20:55] &lt MS-&gt It is as much a belief as the counter point</td></tr>
+            <tr><td>[20:55] &lt vmlemon_&gt More like "promoting the lack of a particular belief"? ;)</td></tr>
+            <tr><td>[20:55] &lt MS-&gt The lack of a need for a deity does not prove the non-existence of a deity</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Indeed it could mean that if there was one, that it wasn't as powerful as people were led to believe perhaps</td></tr>
+            <tr><td>[20:56] &lt MS-&gt (ie this deity does not function as advertised, and contrary to advertising other deities are available - in a variety of colours and flavours)</td></tr>
+            <tr><td>[20:56] &lt MS-&gt &lt /tongue in cheek&gt</td></tr>
+            <tr><td>[20:56] &lt vmlemon_&gt I've always felt that there couldn't be a deity, since there'd be a Chicken and Egg problem - i.e. no-one/nothing to create the deity, as strange as it sounds</td></tr>
+            <tr><td>[20:57] &lt vmlemon_&gt and so on...</td></tr>
+            <tr><td>[20:57] &lt MS-&gt It's turtles all the way down</td></tr>
+            <tr><td>[20:57] &lt mhrd-home&gt re. background and race conditions ...</td></tr>
+            <tr><td>[20:58] &lt vmlemon_&gt "The God Myth - Busted by #Kamaelia!" ;)</td></tr>
+            <tr><td>[20:58] &lt mhrd-home&gt yep - I see what you're saying now MS- ... ta for the clarification</td></tr>
+            <tr><td>[20:58] &lt mhrd-home&gt what about the case when zap=True ?</td></tr>
+            <tr><td>[20:58] &lt MS-&gt heh</td></tr>
+            <tr><td>[20:58] &lt MS-&gt In which case there may be an issue, but that's _only_ used inside the multiprocess stuff</td></tr>
+            <tr><td>[20:58] &lt mhrd-home&gt granted I'm guessing its not the normal/recommended mode of operation</td></tr>
+            <tr><td>[20:58] &lt MS-&gt and it's rather experimental really</td></tr>
+            <tr><td>[20:58] &lt MS-&gt also, if you haven't seen it, there's this - http://www.kamaelia.org/AxonHandle</td></tr>
+            <tr><td>[20:59] &lt MS-&gt which was written for the release notes</td></tr>
+            <tr><td>[20:59] &lt MS-&gt Shows the full relationship between bits</td></tr>
+            <tr><td>[21:00] &lt MS-&gt Basically it turned out that Patrick`'s likefile code was too unreliable with many components - especially graphics, so I rewrote it.</td></tr>
+            <tr><td>[21:00] &lt mhrd-home&gt ta - hadn't spotted Handle.py ... will pillage the URL you've just provided, as I see fit, for docs</td></tr>
+            <tr><td>[21:00] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:00] *** mhrd-home decides to try Handle.py first before writing about it :-)</td></tr>
+            <tr><td>[21:00] &lt MS-&gt Unfortunately Handle only supports standard in/out boxes, but it is more friendly overal</td></tr>
+            <tr><td>[21:01] &lt MS-&gt There are examples in both Axon/Examples/Handle and Kamaelia/Examples/Handle</td></tr>
+            <tr><td>[21:01] &lt MS-&gt fwiw</td></tr>
+            <tr><td>[21:01] *** mhrd-home looking at them</td></tr>
+            <tr><td>[21:02] &lt mhrd-home&gt fwiw: I'm slightly surprised - was expecting it to be a component you shove into the pipeline, not a wrapper/chassis component itself</td></tr>
+            <tr><td>[21:03] &lt MS-&gt ERRNOPARSE</td></tr>
+            <tr><td>[21:04] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:04] &lt MS-&gt "it" is ambiguous :)</td></tr>
+            <tr><td>[21:04] &lt mhrd-home&gt it = Handle</td></tr>
+            <tr><td>[21:04] &lt mhrd-home&gt I was expecting something like:</td></tr>
+            <tr><td>[21:04] &lt mhrd-home&gt output = Handle()</td></tr>
+            <tr><td>[21:04] &lt mhrd-home&gt Pipeline(DataSource(),handle).run()</td></tr>
+            <tr><td>[21:05] &lt MS-&gt Oh, I see</td></tr>
+            <tr><td>[21:05] &lt MS-&gt No handle was just going to be a rename of LikeFile</td></tr>
+            <tr><td>[21:05] &lt MS-&gt But it showed up issues with LikeFile, hence the rewrite as well</td></tr>
+            <tr><td>[21:05] &lt MS-&gt LikeFile has connotations in python which aren't valid</td></tr>
+            <tr><td>[21:06] &lt MS-&gt since it gives the assumption you could do this:</td></tr>
+            <tr><td>[21:06] &lt aa_&gt MS-: hi, never got a chance to discuss the new Doctor with you</td></tr>
+            <tr><td>[21:06] &lt MS-&gt thing = LikeFile( .... )</td></tr>
+            <tr><td>[21:06] &lt MS-&gt for X in thing:</td></tr>
+            <tr><td>[21:06] &lt MS-&gt  do something</td></tr>
+            <tr><td>[21:08] &lt MS-&gt The rationale was that Handle was therefore a better name</td></tr>
+            <tr><td>[21:08] &lt MS-&gt ala - file handle - picked the latter word rather than former :)</td></tr>
+            <tr><td>[21:12] &lt MS-&gt The debate is probably somewhere in the logs</td></tr>
+            <tr><td>[21:12] &lt MS-&gt aa_: I'm still not sure about the new Doctor yet</td></tr>
+            <tr><td>[21:13] &lt MS-&gt He may be 26, but he looks 12 - I also haven't seen anything he's been in yet, so I really can't judge</td></tr>
+            <tr><td>[21:13] &lt MS-&gt Also, I hated the idea of Davison originally, and he turned out great</td></tr>
+            <tr><td>[21:13] &lt MS-&gt So I think its unfair to really judge him before he gets a chance to act it.</td></tr>
+            <tr><td>[21:13] &lt MS-&gt He may suck or not</td></tr>
+            <tr><td>[21:13] &lt MS-&gt if he sucks they kill him and put a new person in his place :-D</td></tr>
+            <tr><td>[21:16] &lt MS-&gt BTW the oddity with DNS is that it's hosted on my DSL box to get around the fact that if it</td></tr>
+            <tr><td>[21:16] &lt MS-&gt wasn't everyone outside the BBC would be able to see the kamaelia website,</td></tr>
+            <tr><td>[21:16] &lt MS-&gt but no-one inside the *bulk* of the BBC would be able to see it</td></tr>
+            <tr><td>[21:17] &lt MS-&gt Unfortunately, the machine the DNS is actually hosted on is (oddly) becoming flakier - for reasons which are currently unknown.</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Oh mhrd-home I'll be down in KW on tuesday</td></tr>
+            <tr><td>[21:20] &lt MS-&gt I was chatting to Adrian who said that Matthew P suggested it would be a good idea for me to come down.</td></tr>
+            <tr><td>[21:20] &lt mhrd-home&gt MS- : cool - stop by and say hi :-)</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Indeed :)</td></tr>
+            <tr><td>[21:21] &lt MS-&gt I'm not actually sure when the last time I came down was !</td></tr>
+            <tr><td>[21:21] &lt mhrd-home&gt hmm, I@m not sure either. I'm still at the same desk in the same chair :-)</td></tr>
+            <tr><td>[21:23] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:35] *** MS- is tired and calls it a night (went to liverpool & back today and suffered painful presentations, so I think sleep is in order)</td></tr>
+            <tr><td>[21:35] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[22:50] &lt Patrick`&gt ooh</td></tr>
+            <tr><td>[22:50] &lt Patrick`&gt new code</td></tr>
+            <tr><td>[22:50] &lt Patrick`&gt (that I can understand viscerally)</td></tr>
+            <tr><td>[22:55] &lt Patrick`&gt it's also considerably simpler</td></tr>
+            <tr><td>[23:33] *** mhrd-home has parted #kamaelia</td></tr>

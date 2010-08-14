@@ -1,0 +1,176 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20061012 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 Thursday 19th
+4.2 Any open issues ?
+5. Date/Time of next weekly meeting
+Proposed: Fri 20th October 2006, 11am UK Time (GMT+0100)
+
+
+
+2. Participants
+Participating: mhrd (Matt), MS- (Michael)
+Also attending: tav, c-ryan, Lawouach
+
+
+
+3. Activity Reports
+
+Michael:
+
+    DONE - Working on presentation for next thursday
+           TCP based systems tutorial
+           offline redo of Kamaelia website to transform into wiki (see blocked)
+           tried 2 USB audio cards for improving quality
+           tested improving sample rate
+           proof of concept for 360 degree possibility
+
+    TODO - Finish presentation for next thursday
+           try switching sample rate and downconvert
+           Assets selector
+
+    BLOCKED - Internal BBC meetings,
+              office change related things
+              Issues with Code for CDML renderer
+                - works differently in two different contexts (needs debugging)
+              PyMedia hates linux USB audio cards
+
+Matt:
+
+    DONE - pymedia audio components docs
+           DateTime and local timezone parsing from DVB transmissions
+           Investigations/experiments wrt. remultiplexing DVB streams
+           Located Dirac colour bug - latest files not in release
+           built RTP repeater and MPEG TS recovery & framing
+             - implemented RTP payload type 33 (mpeg transport stream) repeater
+           investigating clock reference/timestamp issues with mpeg ts in RTP
+           clean installed a mac mini for the above
+           fixed python 2.3 compatibility where 0xffffffff was used as a bitmask
+
+    TODO - update kamaelia changelog :)
+           fix dirac bindings for dirac 0.6.0
+           investigate mpeg transport stream remultiplexing issues
+           need to remove default queue size limits on threadedcomponent
+           more website updates
+           continue with DVB components
+           make more pymedia wrappers (video)
+           review/revisit experimental Timer component
+           Improve box destruction to handle when a box is still linked
+           experiment with pausing when waiting to deliver to a full inbox
+
+    BLOCKED - bbc stuff
+
+
+Michael pointed out that building pymedia video wrappers is pretty important but
+the DVB & RTP remultiplexing work is higher priority at the moment (internal bbc
+customer asking for it) ... assuming Matt is able to get the information he
+needs to proceed.
+
+
+
+4. Discussion items (max 3 or 4)
+
+4.1 Thursday 19th
+
+Michael explained that 2 things are happening on the 19th October which could
+affect the profile of the project:
+
+  * Externally: an article will be published in Linux Format, focusing on the
+    whiteboard application but also with info on the underlying Axon/Kamaelia
+    technology.
+
+  * Internally (bbc): there is also interest in the whiteboard application, and
+    Matt and Michael will be presenting their work and ongoing work ideas to an
+    internal research board.
+
+Presenting to the research board may result in:
+
+  * more work on interative systems
+  * more work on  network systems
+  * extra internal effort (unlikely)
+  * project being killed (rare historically)
+
+Michael explained these things in order to keep people informed, and also
+canvased those in attendance for ideas on where internal (bbc) effort could be
+directed.
+
+Michael explained that, personally, he was still interested in:
+
+  * Ryan's logo interpreter system
+  * Ryan's plans to redo pygame sprite handling
+  * Lawouach's LLUP router idea (discussed earlier outside of meeting)
+    (Essentially generic notification and subscription mechanisms)
+
+LLUP refs:
+http://dev.llup.org
+http://www.russmiles.com/home/2006/10/10/does-this-sound-like-llup-or-what.html
+
+Michael explained the LLUP idea has potential use in more efficient mashups and
+is very similar in a way to the RDF router than the OpenMetaDir people were
+working on when Kamaelia was less mature than now.
+
+Matt mentioned that he had a potential spare-time Kamaelia project for an
+internal (bbc) customer investigating use of mobile technology, that would need
+XML parsing and would perform simple video processing.
+
+Michael pointed out to Matt that there's an experimental XML parser in
+Kamaelia.Experimental
+
+Lawouach recommended 'Amara' - an efficient Pythonic XML toolkit, which Lawouach
+has used for an Atom Pulishing Protocol implementation.
+
+Michael also asked how people perceive Kamaelia right now (as in "what do you
+see Kamaelia as useful for right now ?") Since whilst he knew what our aims are,
+knowing other people's perceptions is useful. Michael asked for these to be
+submitted by email.
+
+
+
+4.2 Any open issues ?
+
+Lawouach asked why Kamaelia hasn't followed PEP-8 nomenclature/style. PEP-8 is
+the style guide for libraries to be included in the main python libraries.
+
+Lawouach explained this was not a criticism but that it takes some time for
+newcomers to Kamaelia.
+
+Michael replied that originally the project started internally, and much of the
+earlier style is based on his personal style, eg. 3 spaces (though slowly files
+are moving over to 4 spaces). We've not gone for a wholesale change to
+indentation since it breaks "svn blame" reports.
+
+Michael also commented that "we are doing something slightly new, so somethings
+can and should be worked out in that context".
+
+Matt addressed some of the recommendations from the PEP from his personal
+perspective:
+
+  * multiple imports on the same line - personal laziness
+  * aligning assignment operators over multiple lines - personal stubborn style
+
+
+
+Matt suggested making shutdownMicroprocess and shutdown Ipc messages synonyms.
+
+  * we were originally suppose to use shutdown rather than shutdownMicroprocess
+  * doing this would fix that
+  * we're not using shutdownMicroprocess for anything else anyway
+
+Michael agreed it was worth considering.
+
+
+
+Michael notified Ryan that he has added shutdown abilities to the TCP subsystem
+(specifically the selector)
+
+
+
+5. Date/Time of next weekly meeting
+Proposed: Fri 20th October 2006, 11am UK Time (GMT+0100)
+
+
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20061012 ======

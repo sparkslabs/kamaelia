@@ -1,0 +1,107 @@
+<html>
+<head>
+<title> Docs/UtilityModules </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/UtilityModules">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+<meta name="qrichtext" content="1">
+<p><span style="font-size: 24pt; font-weight: 600;">Utility Modules</span></p>
+
+<p>This is a small collection of utility components. They perform various universally useful functions, ranging from Console input and output to simple data filtering and transformations.</p><p><b>Console I/O (standard input and output)</b><br></p><p><a href='/Components/pydoc/Kamaelia.Util.Console'>Kamaelia.Util.Console</a> contains the ConsoleReader and ConsoleEchoer components for reading from standard input and writing to standard output respectively.</p><p><b>Backplanes, Splitters, Fanouts (ways to distribute data to multiple receipient components)</b><br></p><ul><li><a href='/Components/pydoc/Kamaelia.Util.Backplane'>Kamaelia.Util.Backplane</a></li><li><a href='/Components/pydoc/Kamaelia.Util.Splitter'>Kamaelia.Util.Splitter</a></li><li><a href='/Components/pydoc/Kamaelia.Util.Fanout'>Kamaelia.Util.Fanout</a></li></ul><p>The <a href='/Components/pydoc/Kamaelia.Util.Splitter'>Splitter</a> and <a href='/Components/pydoc/Kamaelia.Util.Fanout'>Fanout</a> components are both very similar - send one item of data to them and it gets replicated to multiple destinations. The Splitter module is the more actively maintained with a wider range of components in it.</p><p>The <a href='/Components/pydoc/Kamaelia.Util.Backplane'>Backplane</a> module built on them by providing a way to "publish" data under a name, and allow other components to "subscribe" to it.</p><b>Data filtering, processing, transforming</b><br><ul><li><a href='/Components/pydoc/Kamaelia.Util.Detuple'>Kamaelia.Util.Detuple</a> - extract term from a tuple<br></li><li><a href='/Components/pydoc/Kamaelia.Util.Filter'>Kamaelia.Util.Filter</a> - filter data<br></li><li><a href='/Components/pydoc/Kamaelia.Util.Marshalling'>Kamaelia.Util.Marshalling</a> - marshall/demarshall data<br></li><li><a href='/Components/pydoc/Kamaelia.Util.PureTransformer'>Kamaelia.Util.PureTransformer</a> - apply a function to data<br></li><li><a href='/Components/pydoc/Kamaelia.Util.SequentialTransformer'>Kamaelia.Util.SequentialTransformer</a> - apply a sequence of function<br></li><li><a href='/Components/pydoc/Kamaelia.Util.Stringify'>Kamaelia.Util.Stringify</a> - convert data to strings<br></li><li><a href='/Components/pydoc/Kamaelia.Util.UnseenOnly'>Kamaelia.Util.UnseenOnly</a> - only let through unique items</li></ul>There is a whole range of components for performing simple functions, ranging from de-tupling data (eg. extracting one of the terms from a tuple it is sent) to converting data to strings or applying an arbitrary transformation (function) to data.<br><p><b>Processing streams of data</b><br></p><ul><li><a href='/Components/pydoc/Kamaelia.Util.Chunkifier'>Kamaelia.Util.Chunkifier</a></li><li><a href='/Components/pydoc/Kamaelia.Util.ChunkNamer'>Kamaelia.Util.ChunkNamer</a></li><li><a href='/Components/pydoc/Kamaelia.Util.LineSplit'>Kamaelia.Util.LineSplit</a></li><li><a href='/Components/pydoc/Kamaelia.Util.Tokenisation'>Kamaelia.Util.Tokenisation</a></li></ul>There are also components for tagging or chunking data or splitting strings by newline characters or tokenising strings.<br><br><b>Timing, Regulating and controlling</b><br><ul><li><a href='/Components/pydoc/Kamaelia.Util.Chooser'>Kamaelia.Util.Chooser</a></li><li><a href='/Components/pydoc/Kamaelia.Util.Clock'>Kamaelia.Util.Clock</a></li><li><a href='/Components/pydoc/Kamaelia.Util.DataSource'>Kamaelia.Util.DataSource</a></li><li><a href='/Components/pydoc/Kamaelia.Util.LossyConnector'>Kamaelia.Util.LossyConnector</a></li><li><a href='/Components/pydoc/Kamaelia.Util.RateFilter'>Kamaelia.Util.RateFilter</a></li></ul>This fairly maverick bunch of modules contain components that perform various functions that can be used to control or regulate a system.<br><br><a href='/Components/pydoc/Kamaelia.Util.Chooser'>Chooser</a> components serve up data one item at a time on demand - a way to iterate through a collection of data items, values or even instructions. <a href='/Components/pydoc/Kamaelia.Util.DataSource'>DataSource</a> is a simplified way of injecting data into a system; and <a href='/Components/pydoc/Kamaelia.Util.LossyConnector'>LossyConnector</a> provides a way to 'loose it' if there is too much clogging up!<br><br><a href='/Components/pydoc/Kamaelia.Util.Clock'>Clock</a> and <a href='/Components/pydoc/Kamaelia.Util.RateFilter'>RateFilter</a> contain components for generating or regulating the timing or flow of data - for example, generating regular timing pulses, or buffering and regulating the flow of data, perhaps to maintain a frame rate.<br><br><br><p>-- Matt, April 2007<br></p>
+<p></p>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

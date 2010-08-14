@@ -1,0 +1,97 @@
+<html><body><table>
+            <tr><td>[08:31] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[09:12] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:09] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:09] &lt MS-&gt greetings</td></tr>
+            <tr><td>[10:17] &lt Uraeus&gt good morning</td></tr>
+            <tr><td>[10:17] &lt Uraeus&gt (puh, managed to get that 'good morning' in with just 5 minutes to go)</td></tr>
+            <tr><td>[11:11] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:01] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[17:14] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:14] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[18:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:11] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:11] &lt MS-&gt evening</td></tr>
+            <tr><td>[19:14] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[19:31] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[19:34] &lt j_baker&gt MS-: I just made a post to the mailing list to try to clear up some issues that seemed to be confusing based on the comments. I'll be here for a little while if you have questions.</td></tr>
+            <tr><td>[19:38] &lt MS-&gt The explanation of what your naming means is useful. As noted in my comments I was very aware that you were probably very clear on what you mean by them, but the meaning isn't clear.</td></tr>
+            <tr><td>[19:39] &lt j_baker&gt Understandable. I had to think about them myself when I first looked at the branch again. :-)</td></tr>
+            <tr><td>[19:40] &lt MS-&gt That's the problem with naming - it's one of the harder things to do</td></tr>
+            <tr><td>[19:41] &lt MS-&gt With reference to "pop" for example</td></tr>
+            <tr><td>[19:41] &lt MS-&gt it comes with baggage, meaning I expect a result</td></tr>
+            <tr><td>[19:41] &lt MS-&gt eg:</td></tr>
+            <tr><td>[19:41] &lt MS-&gt &gt&gt&gt X=stack()</td></tr>
+            <tr><td>[19:41] &lt MS-&gt &gt&gt&gt X.push(1)</td></tr>
+            <tr><td>[19:41] &lt MS-&gt &gt&gt&gt X.push(2)</td></tr>
+            <tr><td>[19:41] &lt MS-&gt &gt&gt&gt X.pop()</td></tr>
+            <tr><td>[19:41] &lt MS-&gt 2</td></tr>
+            <tr><td>[19:41] &lt MS-&gt &gt&gt&gt X.pop()</td></tr>
+            <tr><td>[19:41] &lt MS-&gt 1</td></tr>
+            <tr><td>[19:41] &lt MS-&gt Which isn't really what you mean - you're really stripping the stem</td></tr>
+            <tr><td>[19:42] &lt MS-&gt I did think about doing things piecemeal - in terms of renames</td></tr>
+            <tr><td>[19:42] &lt MS-&gt and then I thought actually going through it all and then reviewing would make more sense.</td></tr>
+            <tr><td>[19:42] &lt MS-&gt It took a long while to come up with the term "Chassis" for example</td></tr>
+            <tr><td>[19:42] &lt MS-&gt But we went through things including the phrase "Backplane"</td></tr>
+            <tr><td>[19:43] &lt MS-&gt which made us go "Hmm, OK, park that one, maybe come back to"</td></tr>
+            <tr><td>[19:43] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[19:44] &lt MS-&gt Also, as you can probably tell, I'm pondering renaming the original components names in the HTTP code - since they're not fantastic really</td></tr>
+            <tr><td>[19:44] &lt MS-&gt But I also don't want to screw over the rest of the code in your branch in the process :)</td></tr>
+            <tr><td>[19:44] &lt MS-&gt for obvious reasons :)</td></tr>
+            <tr><td>[19:44] &lt j_baker&gt Agreed. :-)</td></tr>
+            <tr><td>[19:44] &lt j_baker&gt (on both counts)</td></tr>
+            <tr><td>[19:45] &lt MS-&gt Also, re putting in Support - I liked that BTW</td></tr>
+            <tr><td>[19:45] &lt MS-&gt Which is perhaps difficult to tell just from the random annotations :)</td></tr>
+            <tr><td>[19:46] &lt j_baker&gt Meh. It would seem kind of dumb to mark up the things I did right.</td></tr>
+            <tr><td>[19:47] &lt MS-&gt It's all technically "right" since the code works. :)</td></tr>
+            <tr><td>[19:47] &lt MS-&gt It's also all a massive improvement :)</td></tr>
+            <tr><td>[19:47] &lt MS-&gt which is so much easier to see in discrete chunks like this :)</td></tr>
+            <tr><td>[19:48] &lt j_baker&gt Indeed. I felt like the previous HTTPServer setup encouraged too much code duplication (but did allow for a lot of modification).</td></tr>
+            <tr><td>[19:50] &lt MS-&gt You have to remember that Ryan did it as a side project during GSOC 2 years back, without being prompted and just went off and did it. Since he was massively ahead on his main project it was fun to watch and got to a very useable state given the short time period.</td></tr>
+            <tr><td>[19:50] &lt MS-&gt There are some parts which are painful though</td></tr>
+            <tr><td>[19:50] &lt MS-&gt as you've seen</td></tr>
+            <tr><td>[19:50] &lt mhrd-home&gt almost nothing is ever quite right first time (hi all!)</td></tr>
+            <tr><td>[19:51] &lt MS-&gt (it was somewhere between 2& 3 weeks he spent on it)</td></tr>
+            <tr><td>[19:51] &lt MS-&gt mhrd-home: Hiya & indeed</td></tr>
+            <tr><td>[19:51] &lt MS-&gt Also r0ml likes to say "release the crap & then improve"</td></tr>
+            <tr><td>[19:52] &lt MS-&gt To be fair it's not that bad - just naive in many places, and Ryan was pre-university :-)</td></tr>
+            <tr><td>[20:34] *** jae_ has joined #kamaelia</td></tr>
+            <tr><td>[20:45] *** mhrd-home looking at Axon docs ...</td></tr>
+            <tr><td>[20:45] &lt mhrd-home&gt Axon.background is the replacement for Axon.LikeFile ?</td></tr>
+            <tr><td>[21:17] &lt j_baker&gt Sorry about that, got tied up doing some tech support (which sucks because I got hired as a programmer). Anyway, got to go catch the bus. See you guys later!</td></tr>
+            <tr><td>[21:51] &lt mhrd-home&gt apologies if this is going back over old territory: just noticed what looks like a race condition in Axon.background :</td></tr>
+            <tr><td>[21:51] &lt mhrd-home&gt there's nothing in the start() method to force it to postpone returning until the thread has finished starting up the scheduler</td></tr>
+            <tr><td>[21:52] &lt mhrd-home&gt without this there's the possiblity that a sequence such as:</td></tr>
+            <tr><td>[21:52] &lt mhrd-home&gt background().start()</td></tr>
+            <tr><td>[21:52] &lt mhrd-home&gt mycomponent().activate()</td></tr>
+            <tr><td>[21:52] &lt mhrd-home&gt might result in the mycomponent instance being activated in a different scheduler</td></tr>
+            <tr><td>[22:01] &lt vmlemon_&gt o.O http://www.thesun.co.uk/sol/homepage/news/article2105253.ece#OTC-RSS&ATTR=News</td></tr>
+            <tr><td>[22:01] *** vmlemon_ wonders how she managed to achieve that</td></tr>
+            <tr><td>[22:06] &lt mhrd-home&gt hmm ... website stylesheet bug? : http://www.kamaelia.org/Docs/Axon/Axon.background.html ... numbered bullets missing in "Example Usage" section unless you disable stylesheets</td></tr>
+            <tr><td>[22:32] &lt mhrd-home&gt heh ... uk Advertising Standards Authority effectively being asked (imo) to rule on the probability of God's existence: http://news.bbc.co.uk/1/hi/uk/7818980.stm</td></tr>
+            <tr><td>[22:33] *** vmlemon_ looks</td></tr>
+            <tr><td>[22:33] &lt vmlemon_&gt I wonder how they'll manage to solve that</td></tr>
+            <tr><td>[22:34] &lt mhrd-home&gt I agree with the quote in that article: I don't envy the ASA either (irrespective of my personal views)</td></tr>
+            <tr><td>[22:39] &lt vmlemon_&gt Nice, Flash Player killed Firefox, and spammed the console with a tonne of "*** NSPlugin Wrapper *** WARNING:(../src/npw-wrapper.c:1840):invoke_NPP_Destroy: assertion failed: (rpc_method_invoke_possible(plugin-&gtconnection)" and "*** NSPlugin Wrapper *** ERROR: NPObject 0x1317daa0 is no longer valid!" errors :(</td></tr>
+            <tr><td>[22:40] &lt mhrd-home&gt flash regularly seems to break with Opera for me (and FF too sometimes) :-(</td></tr>
+            <tr><td>[22:40] *** vmlemon_ bets "Christian Voice" will probably try and buy influence, in order to sway the ASA's decision in their favour </td></tr>
+            <tr><td>[22:40] &lt mhrd-home&gt they've tried that before?</td></tr>
+            <tr><td>[22:40] &lt vmlemon_&gt Strange that it seems to work for ages, but then fails suddenly and randomly, when you least expect</td></tr>
+            <tr><td>[22:40] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[22:40] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[22:40] &lt vmlemon_&gt Not as far as I know</td></tr>
+            <tr><td>[22:41] &lt vmlemon_&gt Although I'm sure similar organisations of that type have tried in the past</td></tr>
+            <tr><td>[22:41] &lt vmlemon_&gt I can't say I'd ever heard of them, until reading that article, though</td></tr>
+            <tr><td>[22:42] *** mhrd-home needs an excuse to cycle into central london and see one of the ads</td></tr>
+            <tr><td>[22:50] *** vmlemon_ sees that the new Palm Pre, and Nova platform have been hyped like crazy for the last few hours on FriendFeed</td></tr>
+            <tr><td>[22:52] &lt mhrd-home&gt they need to get themselves a Steve Jobs of their own :-)</td></tr>
+            <tr><td>[22:53] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[22:54] &lt vmlemon_&gt At least 3 threads on it, so far</td></tr>
+            <tr><td>[22:54] &lt vmlemon_&gt One has about 110 or so comments on it, already</td></tr>
+            <tr><td>[22:54] &lt vmlemon_&gt Naturally, there hasn't been as much as a peep from Nokia, regarding Symbian as of late</td></tr>
+            <tr><td>[22:55] &lt vmlemon_&gt (The last post on their site was from December 4th)</td></tr>
+            <tr><td>[22:57] &lt vmlemon_&gt Heh, 144 on the most active thread</td></tr>
+            <tr><td>[22:57] &lt vmlemon_&gt (http://friendfeed.com/e/8c77cdc8-b091-46df-7fa0-5b6740810a37/Palm-event-about-to-start-at-ces09-Note-to-self/)</td></tr>
+            <tr><td>[23:00] &lt mhrd-home&gt heh</td></tr>
+            <tr><td>[23:00] &lt mhrd-home&gt night</td></tr>
+            <tr><td>[23:00] *** mhrd-home has parted #kamaelia</td></tr>

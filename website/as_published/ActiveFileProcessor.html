@@ -1,0 +1,115 @@
+<html>
+<head>
+<title> ActiveFileProcessor </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - ActiveFileProcessor">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+<h1>Active File Processor</h1>(Full Documentation for this will be written shortly.)<br><h3>What is it?</h3>It's designed to sit on the backend of a website that accepts images and videos from users, and transodes them to sizes suitable for the web, and to flash video. <br><br>The code is however more general, and could in fact be used for anything that needs to watch a bunch of directories and do interesting things (hence the name of this page).<br><h3><b>What does it do right now?</b></h3>At present, the code does this:<br><ul><li>Has directory watchers</li><li>When a file is added to the source directory, the first processor splits it off into different directories based on file type</li><li>Another does image size conversion, cropping etc, </li><li>Another does video conversion to flash video.</li><li>The result is images &amp; videos placed into a directory for moderation.</li></ul>
+It's designed to run as a backend system that sits in the background running continuously.<br><br><h1>Draft Installation Instructions</h1><p>Install Image Magick as normal.<br></p><h3><b>Download and install libamr</b></h3>This is to support transcoding of video from mobile phones.<br><br>Originally from <a href="http://www.penguin.cz/%7Eutx/amr">http://www.penguin.cz/~utx/amr</a><blockquote><pre>curl -O <a href="http://ftp.penguin.cz/pub/users/utx/amr/amrnb-7.0.0.2.tar.bz2">http://ftp.penguin.cz/pub/users/utx/amr/amrnb-7.0.0.2.tar.bz2</a><br>tar jxvf amrnb-7.0.0.2.tar.bz2<br>cd amrnb-7.0.0.2/<br>./configure --libdir /usr/lib/<br>make  #   -- requires wget to build<br>sudo su<br>make install<br>ldconfig<br></pre></blockquote><h3><b>Download and install ffmpeg</b></h3>This is used by the transcode engine to transcode videos. You can however plug something in its place relatively easily.<br><blockquote><pre>svn co svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg-trunk<br>cd ffmpeg-trunk/<br>./configure --enable-nonfree --enable-libamr-nb<br>make<br>sudo su<br>make install<br>ldconfig<br></pre></blockquote><h3><b>Download, install and configure the transcode engine.</b></h3>Grab the code and install it<br><blockquote><pre>curl -O <a href="http://edit.kamaelia.org/release/Kamaelia-FileProcessor-0.1.0.tar.gz">http://edit.kamaelia.org/release/Kamaelia-FileProcessor-0.1.0.tar.gz</a><br>tar zxvf Kamaelia-FileProcessor-0.1.0.tar.gz<br>cd Kamaelia-FileProcessor-0.1.0<br>sudo python setup.py install<br></pre></blockquote><b>Create uploads and moderation directories for transcode/moderation pipeline</b><br>
+<blockquote><pre>cd /tmp # or whereever you prefer - you'll need to change a config option no matter what :-)<br>mkdir incoming<br>mkdir -p uploads/images uploads/videos<br>mkdir -p moderate/images moderate/videos<br></pre></blockquote>
+Make everything writeable by the webuser.<br>
+<br><b>Configure it</b><br>Copy the default config to one you want to edit<br><blockquote><pre>cp /etc/batch_converter.conf.dist /etc/batch_converter.conf<br></pre></blockquote>Then edit <b>/etc/batch_converter.conf</b> such that the following lines/config options ...<br><blockquote><pre># main_incoming_queue /tmp/uploads<br># image_queue /tmp/uploads/images <br># video_queue /tmp/uploads/videos <br># image_moderation_queue /tmp/moderate/images<br># video_moderation_queue /tmp/moderate/videos</pre></blockquote>... get changed to:<br><blockquote><pre># main_incoming_queue /tmp/incoming<br># image_queue /tmp/uploads/images <br># video_queue /tmp/uploads/videos <br># image_moderation_queue /tmp/moderate/images<br># video_moderation_queue /tmp/moderate/video</pre></blockquote>... or whatever you changed it to...<br><br><b>Grab and install PIL ("python imaging library")</b><br>Download from<br><blockquote><a href="http://effbot.org/downloads/Imaging-1.1.6.tar.gz">http://effbot.org/downloads/Imaging-1.1.6.tar.gz</a><br></blockquote>Unpack and install<br><blockquote><pre>tar zxvf Imaging-1.1.6.tar.gz<br>cd Imaging-1.1.6/<br>sudo python setup.py install --force</pre></blockquote>Note:
+PIL requires the ability to build tcl/tk apps for odd reasons. You may
+find you need to install that dependency before PIL will build. Hence
+the recommendation to use am .rpm or .deb file if you can.<br><br>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

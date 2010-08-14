@@ -1,0 +1,62 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20061201 ======
+ 
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+<nothing specific, since only one regular participant>
+5. Date/Time of next weekly meeting
+Friday 1st December 2006, 11am GMT 
+ 
+2. Participants
+Participants: Michael.
+Present: G0SUB, ben017f, Lawouach, matthew-p, shawn, Uraeus
+Absent: Matt (on leave! 
+ 
+3. Activity Reports
+ 
+Michael:
+    DONE:
+    * Meeting with world service
+    * Bimonthly meeting
+    * Explained purpose and design approach behind project task pages,
+        and brainstormed ideas
+    * Created basic paper version of project task pages using Macro
+        as an example
+    * Created PTP template on wiki, which is automatically pulled in
+        for /Developers/Projects/AnythingHere
+    * Notified mailing list about PTPs
+    * Isolated & fixed wiki issues for Mac OS X
+    * Created up to date PTP for Kamaelia Macro and Multicast Proxy
+        Tools
+    * Started PTP for Whiteboard
+    * Wiki shifted over to kamaelia.sourceforge.net
+    * PTPs created that allow us to see current work clearly
+    * Fleshed out list of PTPs that need fleshing out (!)
+    * Wrote updates (not pushed out) to handle recent changes better
+ 
+    TODO:
+    * Add in auth framework (maybe)
+    * Investigate sourceforge issues for new page creation
+    * Improve recent changes
+    * Finish Project Task Page for the whiteboard
+    * Create Project Task Pages for:
+        * Compose, Whiteboard - Headless server
+        * Whiteboard - Headless (audio only) client
+        * Whiteboard - Improve audio quality
+        * Database component ideas - to capture requirements
+        * TCP components - to capture desire for test first rewrite
+        * Bit Torrent
+            * Tools for completely self contained diagnostic.
+ 
+    BLOCKED:
+    * Been blocked: 2 days on non-Kamaelia work
+    * Will be blocked - estimated 2 - 2.5 days next week for similar reasons
+ 
+4. Discussion items (max 3 or 4)
+<nothing specific, since only one regular participant>
+ 
+5. Date/Time of next weekly meeting
+Friday 8th December 2006, 11am GMT 
+ 
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20061201 ======

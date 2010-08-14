@@ -1,0 +1,52 @@
+<html><body><table>
+            <tr><td>[03:39] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[04:58] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[05:24] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[06:37] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[06:37] &lt MS-&gt greetings</td></tr>
+            <tr><td>[10:50] *** ronny &lt 3 py.test -f</td></tr>
+            <tr><td>[11:23] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:55] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:37] &lt MS-&gt Working on fixing JMB's http "fixes". Includes actually making the code work and reverting bad decisions on core code.</td></tr>
+            <tr><td>[13:51] &lt MS-&gt Sometimes I wonder how anyone was willing to offer up code for merge which didn't actually work</td></tr>
+            <tr><td>[13:52] &lt MS-&gt Especially after spending an entire summer complaining about how broken other people's code is.</td></tr>
+            <tr><td>[14:36] &lt MS-&gt Right. OK. Having gone through all the "HTTP Improvements", I've found that all that aside from minor tweaks and seemingly pointless renames of a few things, that there's either</td></tr>
+            <tr><td>[14:36] &lt MS-&gt very few actual improvements</td></tr>
+            <tr><td>[14:36] &lt MS-&gt or actually the improvements on the branch have already been merged</td></tr>
+            <tr><td>[14:37] &lt MS-&gt which means they originated in my Scratch branch originally and weren't developed any further</td></tr>
+            <tr><td>[14:37] &lt MS-&gt ie JMB didn't do the stuff I expected him to as part of his GSOC project (on the HTTP code this is)</td></tr>
+            <tr><td>[14:38] &lt MS-&gt Indeed it potentially introduces a subtle bug into some code.</td></tr>
+            <tr><td>[14:38] &lt MS-&gt I'm unclear whether it existed beforehand though, since the previous logic was even more convoluted.</td></tr>
+            <tr><td>[14:39] &lt MS-&gt Over all the code is an improvment. I think. But needs a lot of work to be clean IMO</td></tr>
+            <tr><td>[16:05] &lt MS-&gt anyway, since it's overall an improvement it's now merged.</td></tr>
+            <tr><td>[16:05] &lt MS-&gt Overall increasing quality is IMO more realistic/practical.</td></tr>
+            <tr><td>[17:11] &lt MS-&gt OK, now moving onto JMB's wsgi code</td></tr>
+            <tr><td>[17:34] &lt MS-&gt I really like diff</td></tr>
+            <tr><td>[17:34] &lt MS-&gt It really is my friend</td></tr>
+            <tr><td>[17:34] &lt MS-&gt :)</td></tr>
+            <tr><td>[18:19] &lt MS-&gt OK, I normally rag on the concept of pythonic vs non-pythonic, but this is just wierd</td></tr>
+            <tr><td>[18:19] &lt MS-&gt in an __init__.py file there's:</td></tr>
+            <tr><td>[18:19] &lt MS-&gt from _factory import WSGIFactory, SimpleWSGIFactory</td></tr>
+            <tr><td>[18:20] &lt MS-&gt I don't understand that in this context at all</td></tr>
+            <tr><td>[18:24] &lt eikenberry&gt What don't you get?</td></tr>
+            <tr><td>[18:25] &lt eikenberry&gt Is it pulling (?)classes from a _private module into __init__?</td></tr>
+            <tr><td>[18:26] &lt eikenberry&gt Ie. why have the _private module.</td></tr>
+            <tr><td>[18:32] &lt MS-&gt It's just particularly convoluted in this context</td></tr>
+            <tr><td>[18:33] &lt MS-&gt There's also Factory classes in this code</td></tr>
+            <tr><td>[18:34] &lt MS-&gt which again don't make sense because they just create instances of a known class</td></tr>
+            <tr><td>[18:34] &lt MS-&gt I'm all in favour of indirection where it makes sense, but in this case it just doesn't</td></tr>
+            <tr><td>[18:35] &lt MS-&gt I'm looking at this FWIW: http://kamaelia.googlecode.com/svn/branches/private_JMB_MPS_WSGI/Kamaelia/Kamaelia/Protocol/HTTP/Handlers/WSGI/</td></tr>
+            <tr><td>[18:37] &lt MS-&gt I think I'm going shift all of that code over as an app, and then sort it out</td></tr>
+            <tr><td>[18:37] &lt MS-&gt (I like code to have clean simple interfaces)</td></tr>
+            <tr><td>[18:40] &lt eikenberry&gt Not much beats simple.</td></tr>
+            <tr><td>[18:43] &lt MS-&gt I don't think many people looking to host a WSGI app using kamaelia would particularly care for this interface</td></tr>
+            <tr><td>[18:43] &lt MS-&gt The actual handler itself is fine, but how it's configured is wierd :)</td></tr>
+            <tr><td>[18:45] &lt MS-&gt You have to go through 2 layers of indirection and a factory method which is configured against an URL list which itself is then matched against a regex *before* picking the appropriate App</td></tr>
+            <tr><td>[18:45] &lt MS-&gt to run</td></tr>
+            <tr><td>[18:45] &lt MS-&gt Strikes me as very java-esque actually</td></tr>
+            <tr><td>[18:45] &lt MS-&gt In java this would probably be considered pretty nice</td></tr>
+            <tr><td>[18:46] &lt MS-&gt I think I'm certain what I'll do with this is switch it over to being a user specific app namespace, and then cherry pick into the main namespace.</td></tr>
+            <tr><td>[18:53] &lt eikenberry&gt I agree... that does have a bit of a java feel. And having just reviewed a bunch of wsgi frameworks recently I don't find that very attractive.</td></tr>
+            <tr><td>[18:54] &lt eikenberry&gt Could have worked on Zope/Plone as well... they have that same over-engineered feel.</td></tr>
+            <tr><td>[19:23] *** MS- nods</td></tr>
+            <tr><td>[21:15] *** Lawouach has joined #kamaelia</td></tr>

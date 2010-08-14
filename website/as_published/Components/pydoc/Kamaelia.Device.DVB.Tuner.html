@@ -1,0 +1,272 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Device.DVB.Tuner </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Device.DVB.Tuner</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Tuner.html">Tuner</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Tuner.Tuner.html">Tuner</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#528">DVB-T (Digital Terrestrial TV) Tuner</a><ul>
+<li><a class="reference" href="#529">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#530">How does it work?</a><ul>
+<li><a class="reference" href="#531">Tuning parameters</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="528">DVB-T (Digital Terrestrial TV) Tuner</h1>
+<p>Tunes to the specified frequency, using the specified parameters, using a DVB
+tuner device; then outputs packets from the received MPEG transport stream as
+requested.</p>
+<div class="section">
+<h2 id="529"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Record entire received MPEG transport stream, from a particular frequency and
+set of tuning parameters to file:</p>
+<pre class="literal-block">
+feparams = {
+    &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+    &quot;constellation&quot; : dvb3.frontend.QAM_16,
+    &quot;code_rate_HP&quot; : dvb3.frontend.FEC_3_4,
+    &quot;code_rate_LP&quot; : dvb3.frontend.FEC_3_4,
+}
+
+Pipeline( OneShot( msg=[&quot;ADD&quot;, [0x2000] ] ),    # send the msg [&quot;ADD&quot;, [0x2000]]
+          Tuner(537.833330, feparams),
+          SimpleFileWriter(&quot;dump.ts&quot;),
+        ).run()
+</pre>
+<p>Record just packets with packet ID (PID) 0 and 18:</p>
+<pre class="literal-block">
+Pipeline( OneShot( msg=[&quot;ADD&quot;, [0, 18] ] ),
+          Tuner(537833330.0, feparams),
+          SimpleFileWriter(&quot;dump.ts&quot;),
+        ).run()
+</pre>
+</div>
+<div class="section">
+<h2 id="530"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>Tuner tunes, using the specified tuning parameters to a DVB-T transmitted
+multiplex. You can also specify which DVB tuner card (device) to use if there
+is more than one in your system.</p>
+<p>To start with it outputs nothing. To start or stop outputting packets, send
+messages to the &quot;inbox&quot; inbox of the form:</p>
+<pre class="literal-block">
+[ &quot;ADD&quot;,    [pid, pid, ...] ]
+[ &quot;REMOVE&quot;, [pid, pid, ...] ]
+</pre>
+<p>These instruct Tuner to output packets from the received multiplex with the
+specified packet IDs (PIDs).</p>
+<p>Most DVB tuner devices understand a special packet ID of 0x2000 to request the
+entire transport stream of all packets with all IDs.</p>
+<p>This component will terminate if a shutdownMicroprocess or producerFinished
+message is sent to the &quot;control&quot; inbox. The message will be forwarded on out of
+the &quot;signal&quot; outbox just before termination.</p>
+<div class="section">
+<h3 id="531"><a id="tuning-parameters" name="tuning-parameters">Tuning parameters</a></h3>
+<p>The tuning parameters come from the dvb3.frontend library. Specify them as a
+dictionary:</p>
+<pre class="literal-block">
+{
+     &quot;bandwidth&quot;             : dvb3.frontend.BANDWIDTH_?_MHZ where ? is 6, 7 or 8
+     &quot;constellation&quot;         : dvb3.frontend.QPSK, QAM_16 or QAM_64
+     &quot;hierarchy_information&quot; : dvb3.frontend.HIERARCHY_? where ? is NONE, 1, 2 or 4
+     &quot;code_rate_HP&quot;          : dvb3.frontend.FEC_X_Y where X/Y = 1/2, 2/3, 3/4, 5/6, 7/8
+     &quot;code_rate_LP&quot;          : dvb3.frontend.FEC_X_Y where X/Y = 1/2, 2/3, 3/4, 5/6, 7/8
+     &quot;guard_interval&quot;        : dvb3.frontend.GUARD_INTERVAL_1_? where ? is 32, 16, 8 or 4
+     &quot;transmission_mode&quot;     : dvb3.frontend.TRANSMISSION_MODE_?K where ? is 2 or 8
+     &quot;inversion&quot;             : dvb3.frontend.INVERSION_AUTO
+}
+</pre>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Tuner.html">Tuner</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Tuner.Tuner.html">Tuner</a></h1>
+<div class="section">
+<h2 id="symbol-Tuner">class Tuner(<a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html">Axon.ThreadedComponent.threadedcomponent</a>)</h2>
+<p>Tuner(freq[,feparams][,card]) -&gt; new Tuner component.</p>
+<p>Tunes the DVB-T card to the given frequency with the given parameters. Send
+(ADD, [PID list]) or (REMOVE, [PID list]) messages to its &quot;inbox&quot; inbox to
+cuase it to output MPEG transport stream packets (with the specified PIDs)
+from its &quot;outbox&quot; outbox.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>freq      -- Frequency to tune to in MHz</li>
+<li>feparams  -- Dictionary of parameters for the tuner front end (default={})</li>
+<li>card      -- Which DVB device to use (default=0)</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-Tuner.Inboxes" name="symbol-Tuner.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-Tuner.Outboxes" name="symbol-Tuner.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-Tuner.__init__" name="symbol-Tuner.__init__">__init__(self, freq[, feparams][, card])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Tuner.addPID" name="symbol-Tuner.addPID">addPID(self, pid)</a></h4>
+<p>Adds the given PID to the transport stream that will be available
+in &quot;/dev/dvb/adapter0/dvr0&quot;</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Tuner.handleCommand" name="symbol-Tuner.handleCommand">handleCommand(self, cmd, demuxers)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Tuner.main" name="symbol-Tuner.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Tuner.notLocked" name="symbol-Tuner.notLocked">notLocked(self)</a></h4>
+<p>Returns True if the frontend is not yet locked.
+Returns False if it is locked.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Tuner.shutdown" name="symbol-Tuner.shutdown">shutdown(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Tuner.tune_DVB" name="symbol-Tuner.tune_DVB">tune_DVB(self, frequency[, feparams])</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

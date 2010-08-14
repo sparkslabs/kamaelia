@@ -1,0 +1,244 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20061110 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+   4.1. New Website engine/wiki
+   4.2. Developer Console,
+   4.3. Project Direction, Goals, and Mission page - OTT or OK?
+   4.4. Next BiMonthly Meeting
+5. Date/Time of next weekly meeting
+   Proposed Fri 17th November2006, 11am GMT
+   OR: Tues: 21st November 2006, 11am GMT
+
+
+
+2. Participants
+
+Participating: MS- (Michae), mhrd (Matt)
+Also attending: G0SUB, ben017f, matthew-p
+
+
+
+3. Activity Reports
+
+Michael:
+    DONE - Rolled out start of website revamp:
+
+           Wiki engine and CDML renderer from Cerenity running
+           not complete until cerenity blog engine integated as well.
+           Changed front page to consist of includes, and title change.     
+           (Intermediate changes before full revamp)
+           Created a developer console
+               intended as a useful resource for kamaelia devs.
+               Updated to reflect things that should be checked.
+           Updated news pages
+               Added note that Current Status page need updating
+               Added unsuccessful, but detailed SOC proposals to the website
+                   (via Projects link)
+           Created initial version of public todo lists
+           Captured Matt's current projects into the projects page
+           Updated project direction to give an idea of current work areas
+           Created first draft of a project mission, goals, direction page.
+           Discussed idea of structure for Projects space for Project Task Pages
+               decided on page tagging instead.
+           Pulled in the Challenges into the Projects page
+               as classifications of already done work in these areas
+           Started documenting the work so far of P2P/Multicast island joining
+               noting work already relevent done/in progress.
+
+    TODO - Pull back together BBC plans (this doesn't look too bad actually)
+           Shift revampled website over to kamaelia.sourceforge.net
+           Roll out improved front page :-)
+           Publicise the process for contributing to Kamaelia
+               (via the website dev console) 
+           Send out contributor agreement to Anagha & Devendra
+           Publicise the contributor agreement
+           Make it clearer and easier for people to contribute
+           Project Task Pages
+                Demo new to writing Kamaelia project tasks pages
+                    kamaelia-style - naturally composable & decomposable
+                    NB, this is much like the idea for PIPs
+                Compose
+                Whiteboard
+                Describe the requirement for the Database component
+                Describe desired test first rewrite of the TCP components
+                Capture own projects
+           Project direction pages
+                make the fact that things reusuable should be extracted clearer
+                    (thinking of the backplane)
+
+    BLOCKED - Been ill for part of this week
+              Desktop PC at work has had its display gone boom
+              Discussions on wiki pages blocked
+                  "cerenity" doesn't yet have integrated blog with wiki/cdml
+
+
+Matt:
+    DONE - Added named input pipes my UnixProcess component
+           Adding audio processing and encoding to 'mobile reframer'
+
+    BLOCKED - Organising short term secondment to alt. BBC project
+              Future: Secondment (Non Kamaelia) until 20th Nov
+
+    TODO - (NB: these are for post secondment)
+           fix final bugs with piping data into mencoder (switch to ffmpeg?)
+           commit mobile reframing code
+           get access to a more powerful box to do RTP work (BBC internal)
+           implement first cut RTP remultiplexer (simple ext. of existing work)
+           investigate mpeg transport stream remultiplexing issue
+
+
+Michael pointed out that Matt's todo list for the next week should be empty if
+he is not going to be able to work on them during the next week.
+
+
+
+4. Discussion items (max 3 or 4)
+
+
+4.1. New Website engine/wiki
+
+Michael explained this is being trialled at:
+
+ * http://owiki.sourceforge.net/
+
+Structurally it's pretty much identical to the current website, however there
+are new areas:
+
+ * A new 'developer console' area:
+       http://owiki.sourceforge.net/Developers/
+
+ * List of active projects or fleshed out ideas for projects:
+       http://owiki.sourceforge.net/Developers/Projects
+
+ * Stuff that would be useful to do:
+       http://owiki.sourceforge.net/Developers/Tasks
+
+ * Specific areas where help has been specifically requested:
+       http://owiki.sourceforge.net/Developers/HelpWanted
+
+Matt, Ryan & Michael trialled this over the past week. Michael canvased for
+comments on how well or not the system works.
+
+Matt commented that he would like there to be RSS feeds, but already knows that
+is on Michael's todos for cerenity. He also commented that there were a few
+glitched with wysiwyg editing using opera, but that was probably the dojo
+toolkit's fault.
+
+Matt approved of the addition of developer specific stuff to the site, and
+commented that he still inteded, when this becomes 'official' to start updating
+Axon docs.
+
+Michael asked if people felt it was good enough to roll out. He explained that
+rolling out would unblock him from a number of tasks.
+
+Matt expressed concern at the lack of access control on editing, but said he
+was okay for Michael to roll out. Michael said it would be simple to implement.
+Specifically, Matt wanted to be able to control or track, easily, any changes
+made, for example, to his personal TODOs.
+
+
+4.2. Developer Console
+
+Michael requested that if anyone felt there is anything missing could they
+please say.
+
+Matt apologised that due to local network proxy problems he was not able to
+access the site, so would be unable to give useful feedback at the moment.
+
+Michael pointed out that commenting outside the meeting would be fine, and
+invited people to add anything they felt was appropriate. He hoped that,
+ideally, it would link to all the common tasks that are done/ought to be done.
+
+
+4.3. Project Direction, Goals, and Mission page - OTT or OK?
+
+ * http://owiki.sourceforge.net/Developers/Direction
+
+Matt again apologised that he couldn't make useful comments due to local network
+issues. He did comment that the goals seemed reasonable, but that it needs
+"bringing down to earth a little - it feels like theres a gap between very high level goals/mission statements and what we're actually doing (projects/tasks)"
+
+Michael felt that "at present ... it's too OTT BBC" despite the caveat "This
+reflects the fact the project lead works at, and Kamaelia originated at the BBC"
+
+Michael commented that the page may well have changed substantially since Matt
+was last able to look. He explained that he "put in 5 basic goals":
+
+ 1. Kamaelia systems should be creatable, eventually, by a user with a similar
+    level of ease as using a speadsheet.
+
+ 2. Kamaelia needs to support the various ways stories can be told and
+    distributed
+
+ 3. Kamaelia must work for the average programmer as well as the
+    uber-programmer.
+
+ 4. Systems should be future proofed - this is our starting point, driving many
+    design decisions
+
+ 5. This all needs to be as cross platform as possible
+
+Again, Michael invited comments to be made later outside the meeting, either by
+email, irc, or on the page.
+
+
+4.4. Next BiMonthly Meeting
+
+Michael explained that, following earlier one to one discussions, and due to
+various things going on, it would shifted to 24th November.
+
+Matt confirmed this date was okay for him
+
+Michael explained his aim before then was "to pull together the various things
+we've been working on, and try to make it so that we know clearly what's being
+worked on, why and how and what it enables"
+
+He explained that the reason the projects pages lack focus at the moment, is
+because the project *is* defocussed
+
+Matt offered to investigate what precisely was required from Vali (internal BBC
+possible customer). But Michael reckoned that would be an added distraction.
+
+He explained that that is "*exactly* this sort of thing that's causing the
+defocus. It's useful to get internal customers etc, but they're causing
+fragmentation: Who's projects get _completed_ this way? Tom? Steve? BB? Vali?
+Ours?"
+
+Michael felt that that meant he was constantly playing catch up, and seeing lots
+of empty shells. He therefore wanted the project to take stock.
+
+"""
+There's important external people as well, which are worth bearing in mind
+Certain aspects of Tav's & Sylvain's ideas could be really useful for example
+Since they (in conjunction with some existing work)
+
+work to resolve the problem the iPlayer people have - which is they don't really want an *external* standalone program - they want everything to be web based.
+
+Our tuner application idea ties right in with that, and will probably be useful for the other projects ideas we have as well
+"""
+
+Michael just wanted to make it clear that he had some very strong feelings about
+direction, and being torn 4 ways by internal people *right now* is not good.
+On the 30h that may add in 2 extra ways.
+
+He also noted that that is "without doing the things *we* want to do"
+
+He felt that unless we're clear on those, the project will disintegrate because
+we simply won't have the effort which will either hurt us, or demoralise us.
+Michael wanted to avoid that happening.
+
+Michael explained that ideas regarding active projects (eg. Valis) should
+therefore be added to the wiki as soon as is practical.
+
+
+
+5. Date/Time of next weekly meeting
+   Tuesday 21st November 2006, 11am GMT
+
+Matt explained he would be busy all next week. Michael explained that he had
+various commitments that would make it hard to meet before the 21st too.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20061110 ======

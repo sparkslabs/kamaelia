@@ -1,0 +1,106 @@
+<html>
+<head>
+<title> Examples/NetworkControllableGraphViewer </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Examples/NetworkControllableGraphViewer">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
+<p align="right"><span style="font-size:18pt">How can I...?</span></p>
+<p>Example 6: How to build a network controllable graph viewer. <span style="font-weight:600">Components used: </span><span style="font-style:italic;color:#ff0004">TopologyViewerServer</span></p>
+<ul type="disc"><div><pre><span style="font-style:italic">#!/usr/bin/python<br /><br /></span><span style="font-weight:600">from</span> Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer <span style="font-weight:600">import</span> TopologyViewerServer<br /><br /><span style="font-weight:600">def</span> parseArgs(argv, extraShortArgs=&quot;&quot;, extraLongArgs=[]):<br />    <span style="font-weight:600">import</span> getopt<br /><br />    shortargs = &quot;fh&quot; + extraShortArgs<br />    longargs  = list(&quot;help&quot;,&quot;fullscreen&quot;,&quot;resolution=&quot;,&quot;port=&quot;) + extraLongArgs<br /><br />    optlist, remargs = getopt.getopt(argv, shortargs, longargs)<br /><br />    dictArgs = {}<br />    <span style="font-weight:600">for</span> o,a <span style="font-weight:600">in</span> optlist:<br />        <span style="font-weight:600">if</span> o <span style="font-weight:600">in</span> (&quot;-h&quot;,&quot;--help&quot;):<br />            dictArgs['help'] = &quot;Arguments:\n&quot; + \<br />                               &quot;   -h, --help\n&quot; + \<br />                               &quot;      This help message\n\n&quot; + \<br />                               &quot;   -f, --fullscreen\n&quot; + \<br />                               &quot;      Full screen mode\n\n&quot; + \<br />                               &quot;   --resolution=WxH\n&quot; + \<br />                               &quot;      Set window size to W by H pixels\n\n&quot; + \<br />                               &quot;   --port=N\n&quot; + \<br />                               &quot;      Listen on port N (default is 1500)\n\n&quot;<br /><br />        <span style="font-weight:600">elif</span> o <span style="font-weight:600">in</span> (&quot;-f&quot;,&quot;--fullscreen&quot;):<br />            dictArgs['fullscreen'] = True<br /><br />        <span style="font-weight:600">elif</span> o <span style="font-weight:600">in</span> (&quot;--resolution&quot;):<br />            match = re.match(r&quot;^(\d+)[x,-](\d+)$&quot;, a)<br />            x=int(match.group(1))<br />            y=int(match.group(2))<br />            dictArgs['screensize'] = (x,y)<br /><br />        <span style="font-weight:600">elif</span> o <span style="font-weight:600">in</span> (&quot;--port&quot;):<br />            dictArgs['serverPort'] = int(a)<br /><br />    <span style="font-weight:600">return</span> dictArgs, optlist, remargs<br /><br /><span style="font-weight:600">if</span> __name__==&quot;__main__&quot;:<br />    <span style="font-weight:600">import</span> sys<br />    dictArgs, remargs, junk = parseArgs(sys.argv[1:])<br /><br />    <span style="font-weight:600">if</span> &quot;help&quot; <span style="font-weight:600">in</span> dictArgs:<br />        print dictArgs[&quot;help&quot;]<br />    <span style="font-weight:600">else</span>:<br />        TopologyViewerServer(**dictArgs).run()<br /></pre><br /><span style="font-weight:600">Source:</span> Examples/example6/TopologyVisualiser.py</div></ul>
+<p></p>
+<p></p>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,101 @@
+<html>
+<head>
+<title> Cookbook/TCPSystems </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/TCPSystems">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>Cookbook: Creating TCP Systems</h1><div style="float: right; border: solid;" class="twoC">There are a number of lower down cookbook recipes for TCP systems in Kamaelia. This cookbook page walks through a small number of techniques which are useful in creating TCPSystems.<br><b> Discussion </b> Please discuss this on <a href='http://www.kamaelia.org/Cookbook/TCPSystemsDiscuss'> the discussion page </a> for this page </div> One of the earliest systems that Kamaelia was designed for was to build network systems, specifically scaleable TCP based network servers.  <br><h2><b>An Echo Server</b></h2>One of the more trivial examples of TCP server is the traditional echo server. On the surface of things echo servers tend to look useless, but are often extremely useful for simply testing the question "is this thing on?". As a result that's why even Skype has something similar! An echo server takes whatever message it recieves and sends it back to you.<br><br>In Kamaelia building this protocol is relatively easy to do:<br><blockquote><div align="left"><pre><font face="Courier New, monospace"><b>import</b> Axon<br><b>from</b> Kamaelia.Chassis.ConnectedServer <b>import</b> SimpleServer<br><br><b>class</b> Echo(Axon.Component.component):<br>    <b>def</b> main(self):<br>        <b>while</b> 1:<br>            <b>while</b> self.dataReady("inbox"):<br>                data = self.recv("inbox")<br>                self.send(data, "outbox")<br>            <b>yield</b> 1<br><br>SimpleServer(protocol=Echo, port=1500).run()</font></pre></div><b>Example 1:</b> Basic echo server<br></blockquote>We can then run this and connect back to our server: (locally typed chars in italics)<br><blockquote><pre><i><b># telnet 127.0.0.1 1500</b></i><br>Trying 127.0.0.1...<br>Connected to 127.0.0.1.<br>Escape character is '^]<font size="3"></font>'.<i><br>Hello</i><br>Hello<i><br>This</i><br>This<i><br>is</i><br>is<i><br>a</i><br>a<br><i>test<br></i>test</pre></blockquote>As you can see this works pretty much you'd hope - you provide something that can create protocol handlers to the simple server. When a connection occurs, the simple server creates an instance, and that instance recieves data from the socket on its inbox "inbox",  and any data it sends to its outbox "outbox" is sent to the socket.<br><h2><b>Shutting Down the Connection inside the Protocol Handler</b></h2>OK, so that's a trivial server, how about something a little more complex? How about a protocol that when a client connects it runs, sends a message to the user and then breaks the connection? This is very similar to a "message of the day service" or a finger service.<br><br>Well, to do this, we don't actually care about looping or waiting for data, or anything similar and interesting, we can just send messages and shutdown. Specifically to shutdown, we send a Axon.Ipc.shutdownMicroprocess message out of our "signal" outbox, so a simple "message of the day" server could look like this:<br><blockquote><div align="left"><pre><b>import</b> Axon<br><b>from</b> Kamaelia.Chassis.ConnectedServer <b>import</b> SimpleServer<br><br>message = """\<br>Hello, this is the message of the day<br><br>Bye Bye!<br>"""<br><br><b>class</b> MOTD(Axon.Component.component):<br>    <b>def</b> main(self):<br>        self.send(message, "outbox")<br>        self.send(Axon.Ipc.shutdownMicroprocess(), "signal")<br>        <b>print</b> "Shutting down"<br>        <b>yield</b> 1<br><br>SimpleServer(protocol=MOTD, port=1501).run()</pre><b>Example 2:</b> Basic server with a message of the day protocol that shuts down immediately<br></div></blockquote><h2><b>Handling a shutdown message from the socket</b></h2>When a client breaks their connection, the protocol handler recieves a <i>Kamaelia.IPC.socketShutdown </i>IPC mesage on it's control inbox, which you can test for in order to determine whether to shutdown or not! Taking the original echo protocol above and extending it to handle this, looks like this:<br><div align="left"><blockquote><pre><b>import</b> Axon<br><b>import</b> Kamaelia.IPC <br><b>from </b>Kamaelia.Chassis.ConnectedServer <b>import</b> SimpleServer<br><br><b>class</b> Echo(Axon.Component.component):<br>    <b>def</b> main(self):<br>        protocolRunning = True<br>        <b>while</b> protocolRunning:<br>            <b>while</b> self.dataReady("inbox"):<br>                data = self.recv("inbox")<br>                self.send(data, "outbox")<br>            <b>while</b> self.dataReady("control"):<br>                data = self.recv("control")<br>                <b>if</b> isinstance(data, Kamaelia.IPC.socketShutdown):<br>                    protocolRunning = False<br>            <b>yield</b> 1<br>        <b>print</b> "Protocol finished!"<br><br>SimpleServer(protocol=Echo, port=1500).run()</pre><b>Example 3:</b> Server with a protocol that shuts down when it recieves notification the socket has shutdown<br></blockquote></div>OK, so that's a relatively simple component - what about a simple component that sits, waits for a message, and when it gets one, sends one message in response and also shuts down? Well, this is kinda a combination of examples 1&amp; 2. In realworld terms, this is very similar conceptually to the "finger" protocol (though not quite :), and has basic similarities to HTTP as well.<br><blockquote><div align="left"><pre><b>import</b> Axon<br><b>import</b> Kamaelia.IPC <br><b>from</b> Kamaelia.Chassis.ConnectedServer <b>import</b> SimpleServer<br><br><b>class</b> Echo(Axon.Component.component):<br>    <b>def</b> main(self):<br>        <b>while</b> not self.dataReady():<br>            <b>yield</b> 1<br><br>        message = self.recv("inbox")<br>        self.send("You sent the message:" + message, "outbox")<br>        self.send(Axon.Ipc.shutdownMicroprocess(), "signal")<br>        <b>print</b> "Protocol finished!"<br>        <b>yield</b> 1<br><br>SimpleServer(protocol=Echo, port=1500).run()</pre><b>Example 4:</b> Server with a protocol that sends a message and shuts down when it recieves any message from the connection<br></div></blockquote>There's a couple of further examples worth looking at here. One is a protocol that runs and when it recieves a special message - in this case the word "shutdown" - it causes the connection to be shutdown, but also one that also handles a client disconnection:<br><blockquote><div align="left"><pre><b>import</b> Axon<br><b>import</b> Kamaelia.IPC <br><b>from </b>Kamaelia.Chassis.ConnectedServer <b>import</b> SimpleServer<br><br><b>class</b> Echo(Axon.Component.component):<br>    <b>def</b> main(self):<br>        protocolRunning = True<br>        <b>while</b> protocolRunning:<br>            <b>while</b> self.dataReady("inbox"):<br>                data = self.recv("inbox")<br>                <b>if</b> "shutdown" <b>in </b>data:<br>                    protocolRunning = False<br>                    self.send(Axon.Ipc.shutdownMicroprocess(), "signal")<br>                <b>else</b>:<br>                    self.send("munch"+data, "outbox")<br><br>            <b>while</b> self.dataReady("control"):<br>                data = self.recv("control")<br>                <b>if</b> isinstance(data, Kamaelia.IPC.socketShutdown):<br>                    protocolRunning = False<br>            <b>yield</b> 1<br>        <b>print</b> "Protocol finished!"<br><br>SimpleServer(protocol=Echo, port=1500).run()</pre></div><b>Example 5:</b> Server with a protocol where the client can forcibly break the connection or request disconnection<br></blockquote>A final basic example is how to create a server that when a client connects the server will send a message and shutdown. For this the client needs to send a serverShutdown message to a serversignal outbox as well as a shutdownMicroprocess to the signal. <br><div align="left"><blockquote><pre><b>import</b> Axon<br><b>from</b> Kamaelia.Chassis.ConnectedServer <b>import</b> SimpleServer<br><b>from</b> Kamaelia.IPC <b>import</b> serverShutdown<br><br>message = """Hello, this is the message of the day<br>Bye Bye!"""<br><br><b>class</b> MOTD(Axon.Component.component):<br>    Outboxes = ["outbox", "signal", "serversignal"]<br>    <b>def</b> main(self):<br>        self.send(message, "outbox")<br>        self.send(serverShutdown(), "serversignal")<br>        <b>print</b> "Shutting down"<br>        <b>yield</b> 1<br><br>SimpleServer(protocol=MOTD, port=1501).run()</pre><b>Example 6:</b> Server where the server shuts down as soon as the first client connects.<br></blockquote></div><h2>Shared Markov Chain Protocol</h2>For a more fun example, let's create a simple server that accepts connections from users, and is expected to chat to the people who connect. For extra bonus points, what it will do is take anything that's typed to it, and use this to build up a simple markov chain. This markov chain will be shared between all connections, and as a result its dialogue will grow as the number of connections to it grows.<br><br>Whilst this sounds complex, the code is relatively simple, and focusses almost entirely around the markov chain aspects rather than the network system aspects.<br><br>I wrote this as an example of a relatively simple, but non-trivial network protocol. It creates a server that sits there waiting for connections. Anything that you type at it updates the markov chain for anyone/everyone connected. The protocol handler itself could be bolted into an IRC bot instead so you could have a deranged bot sitting on a channel which talks vaguely on-topic (but relatively - not totally - incoherently) most of the time. I thought I'd blog about it because it makes quite a nice fun/simple introduction to Kamaelia in it's own special way. The markov chain used is based on the one here. (courtesy of a google search)<br><div align="left"><blockquote><pre><b>import</b> Axon, random<br>nlnl = '\n', '\n'<br>key = nlnl<br><br><b>def</b> new_key(key, word):<br>   <b>if</b> word == '\n': <b>return</b> nlnl<br>   <b>else: return</b> (key[1], word)<br><br><b>class</b> Chatty(Axon.Component.component):<br>   data = {}<br>   <b>def</b> updateChain(self, message):<br>       key = nlnl<br>       <b>for</b> word <b>in</b> message.split():<br>           self.__class__.data.setdefault(key, []).append(word)<br>           key = new_key(key, word)<br><br>   <b>def</b> response(self):<br>       key, result, word = nlnl, [], None<br>       <b>while</b> word != "\n":<br>           word = random.choice(self.__class__.data.get(key, nlnl))<br>           key = new_key(key, word)<br>           result.append(word)<br>       <b>return</b> " ".join(result)<br><br>   <b>def</b> main(self):<br>       <b>while</b> 1:<br>           <b>if</b> self.dataReady("inbox"):<br>               message = self.recv("inbox")<br>               self.updateChain(message)<br>               self.send(self.response(), "outbox")<br>           <b>yield</b> 1<br><br><b>if</b> __name__ == "__main__":<br>    <b>from</b> Kamaelia.Chassis.ConnectedServer <b>import</b> SimpleServer<br>    SimpleServer(protocol=Chatty, port=1500).run()</pre><b>Example 7:</b> Markov Chain Chat server.<br></blockquote></div><br>And that's pretty much all there is to it. As you'd imagine (I hope), a Chatty component is created to handle any accepted connection on port 1500, and anything the user types is received on the inbox "inbox", used to update the class's markov chain DB, and then generates a response to send to the outbox "outbox" (meaning it gets sent to the socket). The upshot is the more people who connect, the more the database gets updated.<br><br>The nice thing about this is that the bulk of the code here focusses on the logic that's desired, not on any networking details. OK, this example isn't ideal because it misses some important things like shutdown and what happens if the connection disappears, but it also is interesting because you can test the component in isolation as well:<br><blockquote><pre>Pipeline(<br>        ConsoleReader(),<br>        Chatty(),<br>        ConsoleEchoer(),<br>).run()<br></pre></blockquote>Which is a nice thing to be able to do! If you wanted to train the markov chain server you could also do that as follows:<br><blockquote><pre>Pipeline(<br>        ReadFileAdaptor("SomeTrainingMaterial"),<br>        TCPClient("127.0.0.1", 1500), # assuming localhost<br>        ConsoleEchoer(), # May as well see the deranged output :)<br>).run()</pre></blockquote>The fun thing about this trainer is that you can see the output from the markov chain during testing as well :-)<br><br>-- Michael, January 2007<br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

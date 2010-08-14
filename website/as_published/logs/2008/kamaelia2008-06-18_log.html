@@ -1,0 +1,318 @@
+<html><body><table>
+            <tr><td>[06:41] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:48] &lt ms-afk&gt morning</td></tr>
+            <tr><td>[08:07] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:11] *** PJ_Coudert_ has joined #kamaelia</td></tr>
+            <tr><td>[08:12] *** PJ_Coudert_ is now known as PJ_Coudert</td></tr>
+            <tr><td>[08:20] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[08:20] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[08:35] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:53] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[08:55] &lt mhrd&gt ms-afk: have added docs to Sketches/MH/DVB_PSI/ParseChannelsConf.py ... hopefully good enough for the release now</td></tr>
+            <tr><td>[09:13] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:21] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:23] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[09:24] &lt ms-afk&gt cool :)</td></tr>
+            <tr><td>[09:50] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[09:51] &lt Lawouach_&gt yesterday's game will stay as a WTF game :)</td></tr>
+            <tr><td>[09:51] &lt orphans&gt :)</td></tr>
+            <tr><td>[09:51] &lt ms-afk&gt &gt</td></tr>
+            <tr><td>[09:51] &lt ms-afk&gt ?</td></tr>
+            <tr><td>[09:51] &lt ms-afk&gt (even)</td></tr>
+            <tr><td>[09:52] &lt orphans&gt http://news.bbc.co.uk/sport1/hi/football/euro_2008/7363384.stm</td></tr>
+            <tr><td>[09:52] &lt ms-afk&gt Ah</td></tr>
+            <tr><td>[09:52] *** ms-afk backs away slowly</td></tr>
+            <tr><td>[09:52] &lt ms-afk&gt :-)</td></tr>
+            <tr><td>[09:55] &lt Lawouach_&gt sad evening</td></tr>
+            <tr><td>[09:55] &lt Lawouach_&gt sad Euro</td></tr>
+            <tr><td>[10:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:27] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:35] &lt Chong-&gt Lawouach_: I can understand :-)</td></tr>
+            <tr><td>[10:36] &lt Chong-&gt I also watched that game. the red card is too much.</td></tr>
+            <tr><td>[10:38] &lt Chong-&gt In fact, Abidal needn't stop toni. Toni cannot shoot in that match even with good opportunities:p</td></tr>
+            <tr><td>[10:38] &lt Lawouach&gt well those things happen</td></tr>
+            <tr><td>[10:43] &lt Chong-&gt Without Buffon, they have been already out even before yesterday's match.</td></tr>
+            <tr><td>[10:44] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[10:44] Reply: does the macarena</td></tr>
+            <tr><td>[10:44] &lt vmlemon_&gt kamaeliabot: poke</td></tr>
+            <tr><td>[10:44] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[10:51] &lt orphans&gt you know you're doing something sketchy in python when (part 847362)... You find yourself writing this: data[0][1][i[0]+1]</td></tr>
+            <tr><td>[10:52] &lt orphans&gt bonus points for guessing why I needed it :)</td></tr>
+            <tr><td>[10:52] &lt orphans&gt extra bonus points for telling my how I should really be doing it</td></tr>
+            <tr><td>[10:58] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:11] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:39] &lt orphans&gt mhrd, ping?</td></tr>
+            <tr><td>[11:52] *** ms-afk realised that the best way to deal with Compose & it's limitations at this instant is to spin it out as a full separate app</td></tr>
+            <tr><td>[11:54] &lt orphans&gt ms-afk, don't spose you know much about Matt's profiler do you?</td></tr>
+            <tr><td>[11:54] &lt mhrd&gt orphans: hi</td></tr>
+            <tr><td>[11:54] &lt orphans&gt ahh, hey :)</td></tr>
+            <tr><td>[11:54] &lt mhrd&gt sorry, in and out the office still (assembling kit for MASHED in a lab 2 floors down)</td></tr>
+            <tr><td>[11:55] &lt orphans&gt no probs, you got a moment?</td></tr>
+            <tr><td>[11:55] &lt mhrd&gt yeah</td></tr>
+            <tr><td>[11:55] &lt orphans&gt cool, I was just wondering what I should be looking out for when using the profiler. It gives me lots of numbers but I don't really know what to do with them :)</td></tr>
+            <tr><td>[11:55] &lt mhrd&gt k,</td></tr>
+            <tr><td>[11:55] &lt mhrd&gt can you paste a chunk of output here?</td></tr>
+            <tr><td>[11:56] &lt orphans&gt it's kinda long - I'll pastebin it</td></tr>
+            <tr><td>[11:56] &lt mhrd&gt good idea</td></tr>
+            <tr><td>[11:57] &lt orphans&gt http://orphans.pastebin.com/d25dfa99e</td></tr>
+            <tr><td>[11:57] &lt orphans&gt that's one run</td></tr>
+            <tr><td>[11:57] &lt mhrd&gt ok, context:</td></tr>
+            <tr><td>[11:58] &lt mhrd&gt the two args you provide it when creating it: one specifies how many times per second it collects data; the other specifies how many times per second it outputs stats based on the data</td></tr>
+            <tr><td>[11:58] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[11:59] &lt mhrd&gt (sorry, just checking stuff before I tell you wrong info)</td></tr>
+            <tr><td>[11:59] &lt orphans&gt np</td></tr>
+            <tr><td>[11:59] &lt mhrd&gt ok, so each row is a component ...</td></tr>
+            <tr><td>[11:59] &lt mhrd&gt the 'run' value is how many times it has sampled info</td></tr>
+            <tr><td>[12:00] &lt mhrd&gt so '21' means the profiler had collected data on 21 occasions</td></tr>
+            <tr><td>[12:00] &lt mhrd&gt 'active' is the number of those occassions on which the scheduler had it marked as an active microprocess</td></tr>
+            <tr><td>[12:00] &lt mhrd&gt '%Usage' is what percentage of cycles (since the last time stats were output) that it active</td></tr>
+            <tr><td>[12:01] &lt mhrd&gt so 'active' is a little like "total cpu ticks used so far"</td></tr>
+            <tr><td>[12:01] &lt mhrd&gt and '%Usage' is a little like current CPU usage</td></tr>
+            <tr><td>[12:01] &lt orphans&gt does active reset after each run?</td></tr>
+            <tr><td>[12:01] &lt mhrd&gt LineNo is the line number at which that component last yielded</td></tr>
+            <tr><td>[12:01] &lt mhrd&gt you should find 'active' accumulates over time</td></tr>
+            <tr><td>[12:02] &lt mhrd&gt if you just run ./Profiling.py ... you'll see it has a component called 'BusyComponent' where the 'active' and 'run' values are the same ... because it never calls self.pause()</td></tr>
+            <tr><td>[12:03] &lt mhrd&gt so 'active' is only reset when teh profiler starts</td></tr>
+            <tr><td>[12:03] &lt orphans&gt mhm, I see it accumulating now</td></tr>
+            <tr><td>[12:03] &lt mhrd&gt does that make sense?</td></tr>
+            <tr><td>[12:03] &lt orphans&gt yeah</td></tr>
+            <tr><td>[12:03] &lt orphans&gt for usage I seem to only get 0% or 100% though - is that normal?</td></tr>
+            <tr><td>[12:03] &lt mhrd&gt it can be</td></tr>
+            <tr><td>[12:03] &lt mhrd&gt caveats: its a crude tool and should not be used for 'accurate' measurements ...</td></tr>
+            <tr><td>[12:04] &lt mhrd&gt a 'real' profiler would interrupt the CPU/OS and find out the state of all threads/processes ...</td></tr>
+            <tr><td>[12:04] &lt orphans&gt yeah, not really looking to do accurate measurements :)</td></tr>
+            <tr><td>[12:04] &lt mhrd&gt but this profiler only asks the scheduler what is happening when the scheduler actually executes it</td></tr>
+            <tr><td>[12:05] &lt mhrd&gt so if, for example, the scheduler always schedules it before another component 'X' it might never see X pause</td></tr>
+            <tr><td>[12:05] &lt mhrd&gt there are also some optimisations within the scheduler that mean that it can be unclear whether a microprocess is active or not at that point in time</td></tr>
+            <tr><td>[12:05] &lt mhrd&gt :)</td></tr>
+            <tr><td>[12:06] &lt mhrd&gt its basically only really useful for finding out what components might be unexpectedly never pausing</td></tr>
+            <tr><td>[12:06] &lt orphans&gt ok, so what would I see if a component was never pausing?</td></tr>
+            <tr><td>[12:06] &lt mhrd&gt 100% usage probably - like the busy compnoent I mentioned</td></tr>
+            <tr><td>[12:07] &lt orphans&gt mm, I get quite a lot of components fluctuating between 0 and 100%</td></tr>
+            <tr><td>[12:07] &lt Davbo&gt ms-afk: Just read the logs, you know why i get a .pyc?</td></tr>
+            <tr><td>[12:08] &lt mhrd&gt running ./Profiling.py is a good case in point about the alck of accuracy: at the time at which the profiler itself gets scheduled, all the other compnoents are asleep. The data it generates subsequently causes them to wake, but then they go back to sleep again by the time the profiler next gets executed by the scheduler</td></tr>
+            <tr><td>[12:08] &lt ms-afk&gt Davbo: Because that's what you'd expect</td></tr>
+            <tr><td>[12:08] &lt Davbo&gt oh.</td></tr>
+            <tr><td>[12:08] &lt ms-afk&gt http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html</td></tr>
+            <tr><td>[12:08] &lt mhrd&gt some component probably shoudl fluctuate - if you're receiving network traffic sporadically, for example, most of those compnoent will only be active when they're procesing data</td></tr>
+            <tr><td>[12:08] &lt Davbo&gt ty</td></tr>
+            <tr><td>[12:09] &lt orphans&gt mhrd, yeah, ok. That's pretty much what I am seeing (although something is definitely a bit dodgy, but I think it'll need some debugging which the profiler can't do</td></tr>
+            <tr><td>[12:09] *** ms-afk wonders why his registration code hates him</td></tr>
+            <tr><td>[12:09] &lt mhrd&gt threaded components are a big caveat - because the main() is executing in a completely different thread, the profiler will not report useful/accurate info at all ... what it is actually reporting on is the internal wrapper inside threadedcompoennt that is normally hidden</td></tr>
+            <tr><td>[12:10] &lt orphans&gt uh huh. It's not threaded stuff, but I'll remember that for next time :)</td></tr>
+            <tr><td>[12:10] &lt mhrd&gt :)</td></tr>
+            <tr><td>[12:11] &lt orphans&gt right, off to write about 20 lines of print statements :D</td></tr>
+            <tr><td>[12:11] &lt ms-afk&gt oh</td></tr>
+            <tr><td>[12:11] *** ms-afk realises</td></tr>
+            <tr><td>[12:11] &lt mhrd&gt so yeah, take anythign it says with a pinch of salt and understand there are (unforuntaely) interactions with the rest of Axon that means the data it gives out is very imperfect</td></tr>
+            <tr><td>[12:12] &lt mhrd&gt ms-afk?</td></tr>
+            <tr><td>[12:12] &lt orphans&gt yup. Looks to me like everything is pausing OK, it's just some problem with code somewhere</td></tr>
+            <tr><td>[12:12] &lt mhrd&gt enjoy</td></tr>
+            <tr><td>[12:12] &lt orphans&gt ta mhrd</td></tr>
+            <tr><td>[12:13] &lt mhrd&gt np</td></tr>
+            <tr><td>[12:13] &lt mhrd&gt fyi: if you can get your head wrapped around the axon scheduler, you can eventually figure out all the ways the profiler might give wrong data :)</td></tr>
+            <tr><td>[12:14] &lt mhrd&gt s/wrong/misleading/</td></tr>
+            <tr><td>[12:14] &lt mhrd&gt :)</td></tr>
+            <tr><td>[12:16] &lt orphans&gt can't wait :)</td></tr>
+            <tr><td>[12:19] &lt ms-afk&gt Wooooo</td></tr>
+            <tr><td>[12:25] &lt mhrd&gt ?</td></tr>
+            <tr><td>[12:25] &lt mhrd&gt Wooooo?</td></tr>
+            <tr><td>[12:29] *** Davbo is listening to LUGRadio debate what's better, Pizza or Linux</td></tr>
+            <tr><td>[12:29] &lt ms-afk&gt Pizza</td></tr>
+            <tr><td>[12:30] &lt Davbo&gt Agreed ms-afk :-)</td></tr>
+            <tr><td>[12:33] &lt Davbo&gt "What's better emacs or vi?" was the best, since they all hate both of them the answer ended up being Gedit :p</td></tr>
+            <tr><td>[12:33] &lt ms-afk&gt kate</td></tr>
+            <tr><td>[12:33] &lt vmlemon_&gt KWrite</td></tr>
+            <tr><td>[12:33] &lt vmlemon_&gt (and vim for editing config files when X11 is broken)</td></tr>
+            <tr><td>[12:35] &lt ms-afk&gt kwrite is nice - kate is basically the same thing but with multiple file support</td></tr>
+            <tr><td>[12:35] &lt ms-afk&gt and a terminal</td></tr>
+            <tr><td>[12:39] &lt Chong-&gt nedit is also not bad</td></tr>
+            <tr><td>[12:39] &lt Chong-&gt http://www.vimeo.com/1093745 the commit history of Python</td></tr>
+            <tr><td>[12:56] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[13:07] &lt Lawouach_&gt Chong-: I saw that the other day and it's fascinating</td></tr>
+            <tr><td>[13:07] &lt Lawouach_&gt On the prior topic, emacs powa!</td></tr>
+            <tr><td>[13:09] &lt Davbo&gt You must be kidding Lawouach_ ;-)</td></tr>
+            <tr><td>[13:09] &lt Lawouach_&gt I kid you not</td></tr>
+            <tr><td>[13:10] &lt Davbo&gt using Emacs feels like torture to me</td></tr>
+            <tr><td>[13:10] &lt vmlemon_&gt Eats Memory And Crashes ;)</td></tr>
+            <tr><td>[13:11] &lt Lawouach_&gt To be honest, I hardly use more than 1% of emacs</td></tr>
+            <tr><td>[13:11] &lt Lawouach_&gt But that 1% makes me feel like the king of the world</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[13:17] &lt j_baker&gt http://xkcd.com/378/</td></tr>
+            <tr><td>[13:18] &lt Lawouach_&gt Hah!</td></tr>
+            <tr><td>[13:22] &lt Chong-&gt Lawouach_: it's good to see a project history in such an interesting way.</td></tr>
+            <tr><td>[13:23] &lt Davbo&gt The tools to do those visualisations are all out there most likely</td></tr>
+            <tr><td>[13:23] &lt Davbo&gt Could probably do one for Kamaelia</td></tr>
+            <tr><td>[13:24] &lt Chong-&gt Personally, I think emacs and vi are two different styles. It cannot be compared just like apple with pear.</td></tr>
+            <tr><td>[13:25] &lt Chong-&gt You choose one depending on your personal needs and liking.</td></tr>
+            <tr><td>[13:25] &lt orphans&gt looks like processing with something like traer.physics imo. That's what I'd use to make it anyway</td></tr>
+            <tr><td>[13:25] &lt j_baker&gt I choose neither. I'm too spoiled by my IDEs.</td></tr>
+            <tr><td>[13:25] *** j_baker loves Komodo edit</td></tr>
+            <tr><td>[13:28] &lt j_baker&gt Heh.... The IE team just sent Mozilla this cake for releasing Firefox 3.</td></tr>
+            <tr><td>[13:28] &lt j_baker&gt http://arstechnica.com/news.media/IMAG0073.jpg</td></tr>
+            <tr><td>[13:29] &lt Chong-&gt Davbo: it's not hard to do it. the idea is more important.</td></tr>
+            <tr><td>[13:34] &lt Lawouach_&gt orphans: http://vis.cs.ucdavis.edu/~ogawa/codeswarm/</td></tr>
+            <tr><td>[13:34] &lt Lawouach_&gt Might have the code for play at some point :)</td></tr>
+            <tr><td>[13:36] &lt orphans&gt yup, made using Processing :)</td></tr>
+            <tr><td>[13:37] &lt orphans&gt my final project for my degree was pretty much all written in Processing - it's really quite nice to work with</td></tr>
+            <tr><td>[14:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:22] &lt j_baker&gt That's a pretty cool website Lawouach_. I wonder if you can download code_swarm? I think it would be interesting to see a video done of Kamaelia.</td></tr>
+            <tr><td>[14:24] &lt Chong-&gt j_baker: yes. it seems the author will make it open source soon</td></tr>
+            <tr><td>[14:25] &lt Chong-&gt orphans: Processing seems very interesting</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt orphans: is newframe irrelevant if it's not bouncing?</td></tr>
+            <tr><td>[15:10] &lt j_baker&gt ms-afk: I made a branch for my WSGI code that includes the HTTP refactoring that was in private_MPS_Scratch. Is there any major functionality change other than the refactoring?</td></tr>
+            <tr><td>[15:27] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[15:31] &lt ms-afk&gt Bugfixes primarily</td></tr>
+            <tr><td>[15:31] &lt ms-afk&gt oh crap,</td></tr>
+            <tr><td>[15:31] *** ms-afk notices the time</td></tr>
+            <tr><td>[16:09] *** Davbo has a headache from reading too many "flood-fill" and boundary-fill algorithms </td></tr>
+            <tr><td>[16:16] &lt ms-afk&gt http://mashed08.backnetwork.com/sessions/#s262</td></tr>
+            <tr><td>[16:17] &lt ms-afk&gt Davbo: You could always just find an open source one :)</td></tr>
+            <tr><td>[16:31] &lt Davbo&gt Yeah looked at a few</td></tr>
+            <tr><td>[16:43] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:44] &lt orphans&gt sorry, away for a bit. Davbo: yeah, newframe looks pretty irrelevent if you are not bouncing</td></tr>
+            <tr><td>[16:44] *** Davbo isn't bouncing :-)</td></tr>
+            <tr><td>[16:44] &lt orphans&gt :)</td></tr>
+            <tr><td>[16:45] &lt orphans&gt should be ok to just not send anything through it - I think it'll render fine</td></tr>
+            <tr><td>[16:45] &lt orphans&gt or cut it down if you need to :)</td></tr>
+            <tr><td>[16:45] &lt Davbo&gt Yeah it's fine, I worked out what it was "pausing" your code now anyway</td></tr>
+            <tr><td>[16:46] &lt Davbo&gt Right, testing openSUSE 11.0</td></tr>
+            <tr><td>[16:46] *** ms-afk would be interested in hearing how Davbo gets on with that</td></tr>
+            <tr><td>[16:47] &lt Davbo&gt back shortly</td></tr>
+            <tr><td>[17:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:34] *** Davbo was disappointed by openSUSE 11.0</td></tr>
+            <tr><td>[17:38] &lt ms-afk&gt did it not work?</td></tr>
+            <tr><td>[17:39] &lt j_baker&gt I'd imagine they're still at the "get all the bugs out" phase right now. 11 was just released wasn't it?</td></tr>
+            <tr><td>[17:41] &lt Davbo&gt oh it worked</td></tr>
+            <tr><td>[17:41] &lt j_baker&gt Oh... It's supposed to be released tomorrow actually...</td></tr>
+            <tr><td>[17:41] &lt Davbo&gt it's on their tracker already though j_baker</td></tr>
+            <tr><td>[17:42] &lt Davbo&gt and it's on some of the mirrors i believe</td></tr>
+            <tr><td>[17:43] &lt j_baker&gt I see. Still, I think I've pretty much decided to stay a release behind if I ever use Fedora or openSUSE. RedHat and Novell basically use those distros as a testing ground for their professional software packages.</td></tr>
+            <tr><td>[17:43] &lt Davbo&gt Fedora is that way</td></tr>
+            <tr><td>[17:44] &lt Davbo&gt not so much openSUSE</td></tr>
+            <tr><td>[17:44] &lt Davbo&gt They're pushing KDE4 too early though IMO</td></tr>
+            <tr><td>[17:44] &lt j_baker&gt And usually, you'll notice that those professional packages are usually just the "open" packages with older software (at least in Red Hat's case)</td></tr>
+            <tr><td>[17:45] &lt Davbo&gt They haven't changed the network management so it seemed though, which means I can't use it</td></tr>
+            <tr><td>[17:45] &lt Davbo&gt s/can't use it/ can't be bothered to waste a week configuring it to work</td></tr>
+            <tr><td>[17:46] &lt j_baker&gt Does openSUSE come with KDE 4?</td></tr>
+            <tr><td>[17:46] &lt Davbo&gt They've done a lot of good stuff with KDE4 hopefully that will be pushed upstream</td></tr>
+            <tr><td>[17:46] &lt Davbo&gt the DVD comes with Gnome/KDE3/KDE4</td></tr>
+            <tr><td>[17:47] &lt Davbo&gt there is no default</td></tr>
+            <tr><td>[17:47] &lt Davbo&gt it's clear KDE4 was the major aim of the release though</td></tr>
+            <tr><td>[17:47] &lt Davbo&gt I'm happy with Mandriva atm</td></tr>
+            <tr><td>[17:48] &lt j_baker&gt Did you try out Hardy Heron?</td></tr>
+            <tr><td>[17:49] &lt Davbo&gt Kubuntu?</td></tr>
+            <tr><td>[17:49] &lt j_baker&gt Yeah.</td></tr>
+            <tr><td>[17:49] &lt Davbo&gt umm pretty sure they're still using that ugly package manager</td></tr>
+            <tr><td>[17:50] &lt j_baker&gt They use two of them for Kubuntu... Adept and Synaptic. Synaptic is probably the ugly one that you're thinking of.</td></tr>
+            <tr><td>[17:50] &lt Davbo&gt I've never really liked Kubuntu</td></tr>
+            <tr><td>[17:50] &lt j_baker&gt Synaptic is more the "power" package manager and Adept is more the "noob friendly" package manager.</td></tr>
+            <tr><td>[17:50] &lt j_baker&gt I like it, but then again, I've never really tried any other x86 distros in too much detail.</td></tr>
+            <tr><td>[17:51] &lt Davbo&gt lol! That says a lot about me, it's Adept that I dislike lol :-)</td></tr>
+            <tr><td>[17:51] &lt j_baker&gt Heh.</td></tr>
+            <tr><td>[17:51] &lt Davbo&gt Synaptic is Ubuntu isn't it?</td></tr>
+            <tr><td>[17:51] &lt Davbo&gt I didn't realise that was with Kubuntu also</td></tr>
+            <tr><td>[17:51] &lt j_baker&gt You can use Synaptic in Kubuntu.</td></tr>
+            <tr><td>[17:52] &lt j_baker&gt I think that's more a Debian thing actually.</td></tr>
+            <tr><td>[17:53] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[17:54] &lt j_baker&gt I should probably try out some more distros to see which I like the best, but Kubuntu works for me, so I stick with it.</td></tr>
+            <tr><td>[17:55] &lt j_baker&gt My biggest gripe about linux though is that it seems like some parts of the GUI just don't work that well together in both gnome and KDE (KDE to a lesser extent though).</td></tr>
+            <tr><td>[17:57] &lt Davbo&gt Yeah that used to bother me</td></tr>
+            <tr><td>[17:58] &lt Davbo&gt I've not encountered it so much recently</td></tr>
+            <tr><td>[17:58] &lt j_baker&gt On Mandriva?</td></tr>
+            <tr><td>[17:58] &lt Davbo&gt Yeah, although I don't go out of the shipped apps that much to be honest</td></tr>
+            <tr><td>[17:59] *** vmlemon_ tends to install a lot of stuff that looks/sounds interesting at first glance, but rarely uses it once it's installed</td></tr>
+            <tr><td>[17:59] &lt j_baker&gt Neither do I (other than Komodo Edit). I may have to try Mandriva out then.</td></tr>
+            <tr><td>[18:00] &lt j_baker&gt Is the package manager of mandriva any good?</td></tr>
+            <tr><td>[18:00] &lt Davbo&gt Yeah it's great</td></tr>
+            <tr><td>[18:02] &lt j_baker&gt I've been meaning to find a reason to try out VirtualBox.</td></tr>
+            <tr><td>[18:09] &lt Davbo&gt The thing that I find with KDE is that it's all about customising it, lots of gnome users just install Ubuntu and roll with that. Before I can enjoy any KDE install I have to spend a few weeks tweaking things</td></tr>
+            <tr><td>[18:10] &lt Davbo&gt That's why Ubuntu is on my laptop because I don't want to be spending time customising KDE for that 7'' screen on the EEE :-)</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt Davbo: indeed</td></tr>
+            <tr><td>[18:10] &lt Davbo&gt Rather install Ubuntu and go "that'll do"</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt And in the past when I used OpenSuse or Mandrake I was happy with their default KDE choice</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt Kubuntu is just too vanilla</td></tr>
+            <tr><td>[18:11] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt And I can't be bothered anymore</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt So I'm rolling with Gnome simply because it's simpler</td></tr>
+            <tr><td>[18:12] &lt Davbo&gt Yep, it's a shame but so are many others Lawouach</td></tr>
+            <tr><td>[18:12] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:14] &lt j_baker&gt I may end up just trying gnome out. I didn't originally because I hate having my menus crufted up with apps from both windowing systems.</td></tr>
+            <tr><td>[18:17] &lt Davbo&gt is your /home on a separate partition?</td></tr>
+            <tr><td>[18:17] &lt Davbo&gt that really helps shifting distro's</td></tr>
+            <tr><td>[18:23] &lt j_baker&gt Yup</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt Yes and no</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt I've been doing that for years but with all the config files created in $HOME</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt It's sometimes not that easy to change distro</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt They sometimes conflict</td></tr>
+            <tr><td>[18:25] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[18:25] &lt Davbo&gt I've had that before</td></tr>
+            <tr><td>[18:46] *** vmlemon_ hates DHCP and iptables</td></tr>
+            <tr><td>[18:52] &lt j_baker&gt Wow. Synaptic is really slow today. It must be because of Firefox 3.</td></tr>
+            <tr><td>[18:57] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:23] &lt Davbo&gt Hmm Flood-fill vs Boundary-fill seems a controversial subject so I think I'll get it right rather than rush it ms-afk</td></tr>
+            <tr><td>[19:25] *** Davbo has an idea</td></tr>
+            <tr><td>[19:26] *** ms-afk makes a suggestion</td></tr>
+            <tr><td>[19:26] &lt ms-afk&gt You don't actually have to choose</td></tr>
+            <tr><td>[19:27] &lt ms-afk&gt You just pick one, see what it looks like.</td></tr>
+            <tr><td>[19:27] &lt ms-afk&gt If it's not nice, do another</td></tr>
+            <tr><td>[19:27] &lt ms-afk&gt Repeat until happy</td></tr>
+            <tr><td>[19:27] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[19:27] &lt ms-afk&gt Then make it an option to use any of them and declare it a feature</td></tr>
+            <tr><td>[19:27] &lt ms-afk&gt :-D</td></tr>
+            <tr><td>[19:29] &lt Davbo&gt lol :D</td></tr>
+            <tr><td>[19:29] &lt Davbo&gt Getting my head round it atm</td></tr>
+            <tr><td>[19:45] &lt Davbo&gt RuntimeError: maximum recursion depth exceeded in cmp</td></tr>
+            <tr><td>[19:45] &lt Davbo&gt Tee-hee! :-)</td></tr>
+            <tr><td>[19:45] &lt vmlemon_&gt o.O</td></tr>
+            <tr><td>[19:45] &lt Davbo&gt looks like I may need to make a stack for this</td></tr>
+            <tr><td>[19:46] &lt Davbo&gt that can be saved for tomorrows adventure</td></tr>
+            <tr><td>[19:47] &lt Lawouach&gt note to all, if you've never seen it, please watch the movie called "Lars and the real girl"</td></tr>
+            <tr><td>[19:47] &lt Lawouach&gt It's great.</td></tr>
+            <tr><td>[19:52] &lt Davbo&gt cya tomorrow chaps</td></tr>
+            <tr><td>[20:04] *** ms-afk makes a mental note to try to remember that</td></tr>
+            <tr><td>[20:04] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[20:27] &lt vmlemon_&gt kamaeliabot: time</td></tr>
+            <tr><td>[20:27] Reply: 20:27:45</td></tr>
+            <tr><td>[20:41] &lt ms-afk&gt kamaeliabot: time</td></tr>
+            <tr><td>[20:41] Reply: 20:41:12</td></tr>
+            <tr><td>[20:41] &lt ms-afk&gt didn't know it did that</td></tr>
+            <tr><td>[20:41] &lt ms-afk&gt Must be one of the things Jinna made it do :)</td></tr>
+            <tr><td>[20:41] &lt vmlemon_&gt Hmm, I think it's an hour out...</td></tr>
+            <tr><td>[20:41] &lt vmlemon_&gt Unless the bot I was comparing it to was wrong</td></tr>
+            <tr><td>[20:41] &lt ms-afk&gt yeah, quite possibly</td></tr>
+            <tr><td>[20:42] &lt ms-afk&gt probably a BST/GMT thing</td></tr>
+            <tr><td>[20:42] &lt vmlemon_&gt That said, I don't think I can trust the clock here</td></tr>
+            <tr><td>[20:43] &lt ms-afk&gt Well, my watch etc also agrees it's wrong :)</td></tr>
+            <tr><td>[20:43] &lt ms-afk&gt As does the TV :)</td></tr>
+            <tr><td>[20:44] &lt vmlemon_&gt 22:44 on my desktop, 21:44 on my phone (which 'insanity' in #amarok agrees with)</td></tr>
+            <tr><td>[20:44] &lt vmlemon_&gt Nay for a house full of clocks, all with the incorrect time on - it makes it so much harder to correct them</td></tr>
+            <tr><td>[20:45] &lt vmlemon_&gt How naff, http://www.engadget.com/2006/08/16/dareway-segway-knock-off-for-kids/</td></tr>
+            <tr><td>[20:46] &lt vmlemon_&gt There was an equally awful advert to go with it, too</td></tr>
+            <tr><td>[20:46] &lt vmlemon_&gt Although I can't find it</td></tr>
+            <tr><td>[20:46] &lt vmlemon_&gt Yay, 73% of a 20MB file downloaded, and it only took me 3 days :|</td></tr>
+            <tr><td>[20:47] &lt vmlemon_&gt kamaeliabot: help</td></tr>
+            <tr><td>[20:47] Reply: Name: kamaeliabot   Channel: #kamaelia</td></tr>
+            <tr><td>[20:47] Reply: I do a simple job -- recording all channel traffic.</td></tr>
+            <tr><td>[20:47] Reply: Lines prefixed by [off] won't get recorded</td></tr>
+            <tr><td>[20:47] Reply: I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', 'boo', and 'reload {modulename}'.</td></tr>
+            <tr><td>[20:53] &lt ms-afk&gt vmlemon_: Yeah, I saw the advert for dareway on the TV.</td></tr>
+            <tr><td>[20:53] &lt ms-afk&gt Also they're sold in Toys R Us IIRC</td></tr>
+            <tr><td>[20:55] &lt vmlemon_&gt They sound like a "Vomit Comet for Kids", to me ;)</td></tr>
+            <tr><td>[20:57] &lt vmlemon_&gt Hmm, "You are currently using 87 MB (1%) of your 6840 MB."</td></tr>
+            <tr><td>[20:57] &lt vmlemon_&gt I hate to think about how much mail that actually is</td></tr>
+            <tr><td>[20:58] &lt vmlemon_&gt 2997 items, supposedly</td></tr>
+            <tr><td>[20:58] &lt vmlemon_&gt My inferior quality meat tray is empty, thankfully ;)</td></tr>
+            <tr><td>[20:59] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[21:10] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[21:11] &lt vmlemon_&gt Seen http://www.dailymail.co.uk/pages/live/articles/news/news.html?in_article_id=480999&in_page_id=1770?</td></tr>
+            <tr><td>[21:36] &lt j_baker&gt kamaeliabot: logfile</td></tr>
+            <tr><td>[21:36] Reply: /usr/local/httpd/sites/com.yeoldeclue/docs/logs/kamaelia2008-06-18_log.html</td></tr>
+            <tr><td>[21:37] &lt j_baker&gt ms-afk: Is there any reason why the IRC logs aren't working?</td></tr>
+            <tr><td>[22:06] &lt ms-afk&gt ?</td></tr>
+            <tr><td>[22:07] &lt ms-afk&gt http://yeoldeclue.com/logs/kamaelia2008-06-18_log.html</td></tr>
+            <tr><td>[22:07] &lt ms-afk&gt looks fine</td></tr>
+            <tr><td>[22:07] &lt ms-afk&gt see also: http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[22:12] &lt j_baker&gt Ah, I forgot not to put the www in front of it.</td></tr>
+            <tr><td>[22:15] &lt ms-afk&gt :)</td></tr>

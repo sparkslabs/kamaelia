@@ -1,0 +1,441 @@
+<html><body><table>
+            <tr><td>[00:01] *** ms- is now known as ms-away</td></tr>
+            <tr><td>[00:45] &lt victorultimus&gt Hello/Greetings everyone. Is "whiteboard" a system meant only to be used with tablet laptops?</td></tr>
+            <tr><td>[02:47] *** amnorvend has joined #kamaelia</td></tr>
+            <tr><td>[02:51] &lt amnorvend&gt Does anyone know how to access the IRC logs for today? I tried going to the link on the webpage and it doesn't show anything past 6/27</td></tr>
+            <tr><td>[02:51] Reply: Hm?</td></tr>
+            <tr><td>[02:52] &lt amnorvend&gt kamaeliabot help</td></tr>
+            <tr><td>[02:55] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[03:00] &lt amnorvend&gt help</td></tr>
+            <tr><td>[03:17] *** victorultimus has parted #kamaelia</td></tr>
+            <tr><td>[05:29] *** thesquib has joined #kamaelia</td></tr>
+            <tr><td>[09:23] *** barrycarlyon has joined #kamaelia</td></tr>
+            <tr><td>[10:05] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:11] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:25] *** MS- updates http://kamaelia.sourceforge.net/irc to point at the new logs location</td></tr>
+            <tr><td>[10:31] &lt MS-&gt I've had a fun idea, which people thinking of writing kamaelia based games for GSOC may wish to consider</td></tr>
+            <tr><td>[10:31] &lt MS-&gt You have a little person who runs around, like with many of these things</td></tr>
+            <tr><td>[10:32] &lt MS-&gt And you find objects on the floor. Consider them little hexagonal shaped things which have connectors on them and they go into a "backpack" of some kind</td></tr>
+            <tr><td>[10:32] &lt MS-&gt You can open up your backpack and connect these objects together</td></tr>
+            <tr><td>[10:32] &lt MS-&gt Now these objects actually represent kamaelia components</td></tr>
+            <tr><td>[10:32] &lt Uraeus&gt thats Gumpy's Chase, released on the Commodore 64 in 1987</td></tr>
+            <tr><td>[10:32] &lt MS-&gt so you can find functionality lying around in the game</td></tr>
+            <tr><td>[10:32] &lt MS-&gt connect them up</td></tr>
+            <tr><td>[10:33] &lt MS-&gt and incorporate the functionality into your player</td></tr>
+            <tr><td>[10:33] &lt MS-&gt It would be rather amusing if someone could "find" the ability to see in 3D, and have the worldview change from 2D to 3D</td></tr>
+            <tr><td>[10:40] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[12:09] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[12:09] &lt robertofaga&gt MS-: are you there?</td></tr>
+            <tr><td>[12:10] &lt robertofaga&gt I want to know 2 things:</td></tr>
+            <tr><td>[12:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:11] &lt robertofaga&gt 1) anyone already proposed to do the multi-window task?</td></tr>
+            <tr><td>[12:11] &lt MS-&gt yep</td></tr>
+            <tr><td>[12:11] &lt vmlemon_&gt  Hi</td></tr>
+            <tr><td>[12:11] &lt MS-&gt I'm here</td></tr>
+            <tr><td>[12:11] &lt MS-&gt vmlemon_: hi</td></tr>
+            <tr><td>[12:11] &lt robertofaga&gt 2) if so, is interesting to submit a project to port kamaelia to OLPC/XO platform?</td></tr>
+            <tr><td>[12:11] &lt MS-&gt robertofaga: I can guarantee we'll get multiple applications per task</td></tr>
+            <tr><td>[12:11] &lt MS-&gt per idea</td></tr>
+            <tr><td>[12:12] &lt robertofaga&gt ah ok :) so I think is more interesting 1) :)</td></tr>
+            <tr><td>[12:13] &lt vmlemon_&gt Any plans for D-BUS integration?</td></tr>
+            <tr><td>[12:14] &lt MS-&gt robertofaga: It'd be interesting, but since I don't have an OLPC/XO, to me personally it's "just" "interesting"</td></tr>
+            <tr><td>[12:14] &lt MS-&gt vmlemon_: Not me personally</td></tr>
+            <tr><td>[12:14] &lt robertofaga&gt hehehe, I see</td></tr>
+            <tr><td>[12:15] &lt robertofaga&gt I have one, but working alone isn't so nice</td></tr>
+            <tr><td>[12:15] &lt robertofaga&gt I mean, working without my mentor seeing what I'm doing</td></tr>
+            <tr><td>[12:15] &lt MS-&gt robertofaga: I think the thing I would note is that in previous years we have had overlap between projects</td></tr>
+            <tr><td>[12:15] *** MS- nods</td></tr>
+            <tr><td>[12:16] &lt vmlemon_&gt Didn't someone get Python working on Symbian?</td></tr>
+            <tr><td>[12:17] &lt MS-&gt No idea :)</td></tr>
+            <tr><td>[12:17] &lt MS-&gt Oh, do you mean on series 60?</td></tr>
+            <tr><td>[12:17] &lt MS-&gt I have that on my phone</td></tr>
+            <tr><td>[12:34] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[12:35] &lt vmlemon__&gt Damn connection</td></tr>
+            <tr><td>[12:37] &lt vmlemon__&gt Anyone get my last message before my connection flaked out?</td></tr>
+            <tr><td>[12:37] &lt robertofaga&gt (09:16:23 AM) vmlemon_: Didn't someone get Python working on Symbian?</td></tr>
+            <tr><td>[12:38] &lt vmlemon__&gt Nope</td></tr>
+            <tr><td>[12:39] &lt vmlemon__&gt Probably had something to do with the client error that followed</td></tr>
+            <tr><td>[12:42] &lt vmlemon__&gt Hmm, probably very off-topic, but does anyone know how to unlock a gas meter cupboard door without a triangular key?</td></tr>
+            <tr><td>[12:42] Reply: Hm?</td></tr>
+            <tr><td>[12:42] &lt MS-&gt I'm with kamaeliabot on that</td></tr>
+            <tr><td>[12:44] &lt MS-&gt Just a note to say that no matter how much feedback we give people, we can't guarantee *anyone* a place on GSOC until we've got our slots allocated. It's one of the hardest aspects of GSOC, but it's worth mentioning.</td></tr>
+            <tr><td>[12:44] &lt MS-&gt That does of course cut both ways - it means that everyone has an equal chance :)</td></tr>
+            <tr><td>[12:45] &lt MS-&gt quality of applications matters and a huge part of that is how the application is made as well.</td></tr>
+            <tr><td>[12:45] &lt MS-&gt so things are weighted towards people who discuss their apps early (as people on channel have been doing)</td></tr>
+            <tr><td>[12:50] &lt vmlemon__&gt How is the XO? I've heard many things about it, but never from an owner of one...</td></tr>
+            <tr><td>[12:53] &lt robertofaga&gt ah, it's being great, very appropriate to a child</td></tr>
+            <tr><td>[12:53] &lt robertofaga&gt all opensource</td></tr>
+            <tr><td>[12:54] &lt robertofaga&gt and the machine in itself is nice, is small (good to child fingers), very green and have a good webcam</td></tr>
+            <tr><td>[12:54] &lt robertofaga&gt a mic too</td></tr>
+            <tr><td>[12:55] *** LawAtWork has joined #kamaelia</td></tr>
+            <tr><td>[12:55] &lt vmlemon__&gt Didn't know they shipped them outside the US</td></tr>
+            <tr><td>[12:55] &lt robertofaga&gt but there aren't many games yet - when it'll have will be cool to play, as it has buttons in the screen</td></tr>
+            <tr><td>[12:55] &lt LawAtWork&gt hello</td></tr>
+            <tr><td>[12:55] &lt robertofaga&gt I think they didn't</td></tr>
+            <tr><td>[12:55] &lt robertofaga&gt I won one because I worked for it :)</td></tr>
+            <tr><td>[12:55] &lt MS-&gt vmlemon__: There's a way of getting them shipped out</td></tr>
+            <tr><td>[12:56] &lt robertofaga&gt (and I'm also contributing)</td></tr>
+            <tr><td>[12:56] &lt MS-&gt But its pain</td></tr>
+            <tr><td>[12:56] &lt vmlemon__&gt eBay?</td></tr>
+            <tr><td>[12:56] &lt MS-&gt vmlemon__: No, IIRC you set the shipping address via some post company in the US</td></tr>
+            <tr><td>[12:56] &lt MS-&gt I forget which one</td></tr>
+            <tr><td>[12:56] &lt robertofaga&gt if you'll use for develop and prove you're working on it (you can use emulation in your Desktop to develop) you can ask for one</td></tr>
+            <tr><td>[12:57] &lt robertofaga&gt but they send an experimental model, not the sold model</td></tr>
+            <tr><td>[12:57] &lt MS-&gt right, I'm off for a while</td></tr>
+            <tr><td>[12:57] &lt MS-&gt back later</td></tr>
+            <tr><td>[12:57] &lt vmlemon__&gt How much does it cost?</td></tr>
+            <tr><td>[12:57] *** MS- is now known as ms-gone</td></tr>
+            <tr><td>[12:57] &lt robertofaga&gt probably 178 to 200 dollars</td></tr>
+            <tr><td>[12:58] &lt vmlemon__&gt Aah</td></tr>
+            <tr><td>[12:58] &lt robertofaga&gt (on eBay can be more than this, 200 was the price in Give 1 get 1</td></tr>
+            <tr><td>[12:58] &lt robertofaga&gt vmlemon__: I'm off for a while too, later!</td></tr>
+            <tr><td>[12:58] *** imsameer_in has joined #kamaelia</td></tr>
+            <tr><td>[12:58] &lt vmlemon__&gt See you</td></tr>
+            <tr><td>[13:03] &lt LawAtWork&gt following our discussion from yesterday evening (GMT), there are interesting threads on the JabberDev list about crossing boundaries when it comes to GSoC projects (XMPP, wordpress plugins, notifications), etc: http://mail.jabber.org/pipermail/jdev/2008-March/thread.html</td></tr>
+            <tr><td>[13:04] &lt LawAtWork&gt for those interested in XMPP as a protocol for decentralization and distributed applications</td></tr>
+            <tr><td>[13:05] &lt vmlemon__&gt Interesting</td></tr>
+            <tr><td>[13:08] &lt LawAtWork&gt it is</td></tr>
+            <tr><td>[13:41] &lt imsameer_in&gt does anyone have an idea how fix the dirac_encoder module problem i posted yesterday</td></tr>
+            <tr><td>[15:25] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[15:25] &lt j_baker&gt BTW, I got a little gung-ho last night and submitted the proposal for my P2P app. If necessary, can it be revised?</td></tr>
+            <tr><td>[15:25] &lt MS-&gt It should be possible, let me add a public comment saying "would you like to revise this"</td></tr>
+            <tr><td>[15:26] &lt MS-&gt since that used to bounce it back to you</td></tr>
+            <tr><td>[15:26] &lt MS-&gt OK, done that - I think you should be able to revise/edit it now</td></tr>
+            <tr><td>[15:27] &lt MS-&gt I believe you can add comments as well</td></tr>
+            <tr><td>[15:27] &lt j_baker&gt After reading it, do you have any advice for things that could be edited? (I did finally figure out how to read the logs and saw your comment on adding more about how friends would use it)</td></tr>
+            <tr><td>[15:27] &lt MS-&gt I think that was my biggest concern. I think I can see (a few ways in which ) it could work/be implemented</td></tr>
+            <tr><td>[15:28] &lt MS-&gt but having a clearer idea of how you see it being used would help somewhat</td></tr>
+            <tr><td>[15:28] &lt MS-&gt That said, what you put in the system is clearer than what you sent to the mailing list - which is good :)</td></tr>
+            <tr><td>[15:28] &lt j_baker&gt One other question about the schedule, does it need to be more specific than what I put?</td></tr>
+            <tr><td>[15:31] &lt MS-&gt It's a bit on the vague side. The idea behind asking for a timeline/schedule isn't necessarily to say "you must stick to these deadlines" but rather "this is my estimate on complexity"</td></tr>
+            <tr><td>[15:31] &lt MS-&gt which can be difficult to judge I know</td></tr>
+            <tr><td>[15:31] &lt MS-&gt If it turns out you've massively underestimated complexity, its useful to know and we can work around, and vice versa</td></tr>
+            <tr><td>[15:32] &lt MS-&gt Goes for everyone really :)</td></tr>
+            <tr><td>[15:32] &lt MS-&gt Helpfully, Ryan Lothian (GSOC student in 2006) has left his application up publically here:</td></tr>
+            <tr><td>[15:32] &lt MS-&gt http://www.ryanlothian.com/kamaelia/abstract</td></tr>
+            <tr><td>[15:32] &lt MS-&gt Which may be of use</td></tr>
+            <tr><td>[15:33] &lt MS-&gt This was the core aspect of his project incidentally: http://www.ryanlothian.com/kamaelia/bittorrent</td></tr>
+            <tr><td>[15:33] &lt j_baker&gt That actually clarifies a lot.</td></tr>
+            <tr><td>[15:33] &lt MS-&gt And the diagram here: http://www.ryanlothian.com/kamaelia/bittorrent-components.png</td></tr>
+            <tr><td>[15:33] &lt MS-&gt was his "before" diagram - before he'd started.</td></tr>
+            <tr><td>[15:34] &lt MS-&gt which helped dramatically to show what he intended to do</td></tr>
+            <tr><td>[15:34] &lt MS-&gt Aside from anything else it allows us to go "hm, if he implements even X of those, that will be useful"</td></tr>
+            <tr><td>[15:34] &lt MS-&gt For comparison, Ryan also did an after diagram afterwards</td></tr>
+            <tr><td>[15:34] &lt MS-&gt http://www.ryanlothian.com/kamaelia/bittorrent/kamaelia-p2p-revised.png</td></tr>
+            <tr><td>[15:35] &lt MS-&gt Oh, thanks for the suggestion of what else should be on the application template</td></tr>
+            <tr><td>[15:35] &lt MS-&gt I added that :)</td></tr>
+            <tr><td>[15:35] &lt MS-&gt (why I want to...)</td></tr>
+            <tr><td>[15:35] &lt j_baker&gt np :)</td></tr>
+            <tr><td>[15:36] &lt j_baker&gt BTW, does anyone have a direct link to the student dashboard? For some reason, google insists on burying it somewhere in the SoC website.</td></tr>
+            <tr><td>[15:37] &lt orphans&gt http://code.google.com/soc/2008/student_home.html</td></tr>
+            <tr><td>[15:37] &lt orphans&gt and hi all :)</td></tr>
+            <tr><td>[15:38] &lt j_baker&gt Thanks. Bookmarked for future reference.</td></tr>
+            <tr><td>[15:38] &lt MS-&gt orphans: hi</td></tr>
+            <tr><td>[15:39] &lt j_baker&gt So just out of curiosity, who else here is applying for GSoC and what are you proposing?</td></tr>
+            <tr><td>[15:41] &lt orphans&gt planning on - I'm proposing a networked music editor thingumy</td></tr>
+            <tr><td>[15:41] *** orphans gets the technical terms in</td></tr>
+            <tr><td>[15:41] &lt MS-&gt I believe it involves watchamacallums too, yes?</td></tr>
+            <tr><td>[15:42] &lt orphans&gt one or two, if you're lucky :D</td></tr>
+            <tr><td>[15:42] &lt MS-&gt heh</td></tr>
+            <tr><td>[15:42] &lt orphans&gt well, I think that's my proposed component list done!</td></tr>
+            <tr><td>[15:42] &lt j_baker&gt I'd advise avoiding doohickeys though</td></tr>
+            <tr><td>[15:42] &lt j_baker&gt They'll mess your program up.</td></tr>
+            <tr><td>[15:42] &lt orphans&gt yeah, I hear they just don't scale...</td></tr>
+            <tr><td>[15:43] &lt vmlemon__&gt Whatsymos and thingamabobs, too?</td></tr>
+            <tr><td>[15:43] &lt orphans&gt now you're just tempting me to write some completely unreadable code</td></tr>
+            <tr><td>[15:44] &lt MS-&gt orphans: You've ported kamaelia to perl?!</td></tr>
+            <tr><td>[15:44] &lt orphans&gt Pipeline(Whatsit, thingamybob, whatdjamacallit).run()</td></tr>
+            <tr><td>[15:44] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:44] &lt orphans&gt haha</td></tr>
+            <tr><td>[15:44] &lt j_baker&gt I think there should be a Kamaelia component called a thingumy</td></tr>
+            <tr><td>[15:44] &lt MS-&gt Just as well this isn't a friday afternoon...</td></tr>
+            <tr><td>[15:44] &lt orphans&gt :)</td></tr>
+            <tr><td>[15:45] &lt vmlemon__&gt PennyFarthing component? ;)</td></tr>
+            <tr><td>[15:45] &lt orphans&gt surely that's a penny connected to a farthing. Or am I overthinking this?</td></tr>
+            <tr><td>[15:45] &lt vmlemon__&gt Hmm, with a pipline?</td></tr>
+            <tr><td>[15:46] &lt j_baker&gt I'm going to log out for a moment. Be back in a few moments.</td></tr>
+            <tr><td>[15:46] *** orphans slowly watches the conversation slowly deteriorate the moment he starts conversing...</td></tr>
+            <tr><td>[15:46] &lt vmlemon__&gt erm pipeline</td></tr>
+            <tr><td>[15:46] &lt MS-&gt heh</td></tr>
+            <tr><td>[15:47] *** orphans writes sentences which have the word slowly in twice. Grammatical. Sigh</td></tr>
+            <tr><td>[15:48] &lt MS-&gt Frame = Graphline</td></tr>
+            <tr><td>[15:48] &lt MS-&gt Frame(</td></tr>
+            <tr><td>[15:48] &lt MS-&gt  PENNY = Wheel(size=3),</td></tr>
+            <tr><td>[15:48] &lt MS-&gt  FARTHING = Wheel(Size=30),</td></tr>
+            <tr><td>[15:48] &lt MS-&gt  OPERATOR = Chair(),</td></tr>
+            <tr><td>[15:48] &lt MS-&gt  linkages= {# exercise for the reader</td></tr>
+            <tr><td>[15:48] &lt MS-&gt  }</td></tr>
+            <tr><td>[15:48] &lt MS-&gt )</td></tr>
+            <tr><td>[15:49] &lt MS-&gt (Graphline is a Chassis component, and a Frame is a Chassis ... )</td></tr>
+            <tr><td>[15:49] &lt vmlemon__&gt Oil, Chassis and Chain components optional?</td></tr>
+            <tr><td>[15:50] &lt vmlemon__&gt Needs a Bell, too</td></tr>
+            <tr><td>[15:53] *** orphans tries: linkages = {("OPERATOR","outbox"):("PENNY","inbox"), ("OPERATOR","outbox"):("FARTHING","inbox")}</td></tr>
+            <tr><td>[15:53] &lt MS-&gt vmlemon__: exeriicse for the reader</td></tr>
+            <tr><td>[15:53] &lt MS-&gt orphans: :)</td></tr>
+            <tr><td>[15:54] &lt orphans&gt didn't really know whether it should be operator=&gtpenny or penny=&gtoperator</td></tr>
+            <tr><td>[15:54] &lt orphans&gt although I think that might be a philosophical question</td></tr>
+            <tr><td>[15:55] &lt MS-&gt orphans: it's really operator -&gt pedals really</td></tr>
+            <tr><td>[15:55] &lt MS-&gt or operator -&gt bike (pedals)</td></tr>
+            <tr><td>[15:55] &lt MS-&gt But there's points where metaphors just break</td></tr>
+            <tr><td>[15:56] *** simon____ has joined #kamaelia</td></tr>
+            <tr><td>[15:56] &lt LawAtWork&gt note to self, stop listening to the Tenacious D while working. Doesn't help productivity at all</td></tr>
+            <tr><td>[15:57] *** vmlemon__ wonders why Nokia devices honour the fwd=no pseudo-DRM, and don't let you send those files from the handset, but yet you store them on a removable card, to be copied en mass with a PC</td></tr>
+            <tr><td>[15:57] &lt vmlemon__&gt *yet let you</td></tr>
+            <tr><td>[15:59] &lt vmlemon__&gt Probably applies to other brands, although I only have a Nokia to test that with</td></tr>
+            <tr><td>[16:00] &lt vmlemon__&gt Seems like a broken system, but all DRM is flawed</td></tr>
+            <tr><td>[16:02] &lt MS-&gt vmlemon__: Oh I don't know. Digital Radio Mondiale is pretty good</td></tr>
+            <tr><td>[16:02] &lt vmlemon__&gt Hah</td></tr>
+            <tr><td>[16:03] &lt vmlemon__&gt inSecurity wise?</td></tr>
+            <tr><td>[16:06] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:06] &lt j_baker&gt test</td></tr>
+            <tr><td>[16:06] &lt j_baker&gt My school sucks. The firewalls block IRC.</td></tr>
+            <tr><td>[16:07] &lt orphans&gt cause you should be doing work :)</td></tr>
+            <tr><td>[16:07] &lt vmlemon__&gt Hmm, DRM'd recording from a DRM radio would be strangely fitting</td></tr>
+            <tr><td>[16:07] &lt j_baker&gt Work schmork</td></tr>
+            <tr><td>[16:08] &lt vmlemon__&gt j_barker: They don't block SSH?</td></tr>
+            <tr><td>[16:08] &lt j_baker&gt I don't believe so.</td></tr>
+            <tr><td>[16:09] &lt j_baker&gt At least not outgoing.</td></tr>
+            <tr><td>[16:09] &lt j_baker&gt I've never tried SSH'ing into someone else's computer on campus</td></tr>
+            <tr><td>[16:10] &lt j_baker&gt I've been able to SSH into my web host from campus though.</td></tr>
+            <tr><td>[16:11] &lt vmlemon__&gt I once set up an Apache instance on a machine at college, and was able to access it from outside</td></tr>
+            <tr><td>[16:11] &lt j_baker&gt Nice.</td></tr>
+            <tr><td>[16:12] &lt vmlemon__&gt Since they give each machine a globally addressable IP</td></tr>
+            <tr><td>[16:12] &lt j_baker&gt Does anyone know of any graphing software for the Mac that doesn't cost an arm and a leg?</td></tr>
+            <tr><td>[16:12] Reply: Hm?</td></tr>
+            <tr><td>[16:13] &lt vmlemon__&gt Although they block IRC, SSH still works</td></tr>
+            <tr><td>[16:13] &lt vmlemon__&gt Gnuplot?</td></tr>
+            <tr><td>[16:13] &lt vmlemon__&gt Octave?</td></tr>
+            <tr><td>[16:14] &lt j_baker&gt Sorry, perhaps I should have said diagramming software.</td></tr>
+            <tr><td>[16:15] &lt j_baker&gt I'm using violet UML currently, but it's not as full featured as I would like.</td></tr>
+            <tr><td>[16:16] &lt vmlemon__&gt There's Dia, and Visio probably works on CrossOver</td></tr>
+            <tr><td>[16:16] &lt j_baker&gt Dia sounds interesting.</td></tr>
+            <tr><td>[16:17] &lt j_baker&gt I don't think I can get Visio through my school though. :(</td></tr>
+            <tr><td>[16:17] &lt j_baker&gt Don't see why, we get just about everything else microsoft makes for free.</td></tr>
+            <tr><td>[16:20] &lt vmlemon__&gt There is a free, legal way to obtain CrossOver if you ever need it, though</td></tr>
+            <tr><td>[16:22] &lt j_baker&gt I've got VMWare fusion.</td></tr>
+            <tr><td>[16:22] &lt vmlemon__&gt Aah</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt One of my professors gets paid commission by the C# team (or so my theory is).</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt Thus I have to use Visual Studio.</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt Not that I dislike C# or VS, but I kinda dislike using anything that will tie an application to Windows.</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt As awesome as mono is.</td></tr>
+            <tr><td>[16:23] &lt vmlemon__&gt Tried the Mac version of Mono?</td></tr>
+            <tr><td>[16:26] &lt j_baker&gt It's like too much other open source software: made to run on Linux with Mac OS X as an afterthought. At least in my experience.</td></tr>
+            <tr><td>[16:26] &lt j_baker&gt For example, there's no way to get mono's compiler to make a mac executable.</td></tr>
+            <tr><td>[16:27] &lt j_baker&gt There's a program called macpack that will do it, but I honestly have no idea how to use it as the documentation is next to nonexistant.</td></tr>
+            <tr><td>[16:31] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:31] &lt vmlemon__&gt Hi again</td></tr>
+            <tr><td>[16:32] &lt j_baker&gt wb</td></tr>
+            <tr><td>[16:33] &lt vmlemon__&gt Shame that they assume that the world runs Linux</td></tr>
+            <tr><td>[16:33] &lt orphans&gt network gurus: is there any way for a client to get a list of all the other clients in a multicast network?</td></tr>
+            <tr><td>[16:35] &lt vmlemon__&gt Walk the entire range of IPs in the subnet with ICMP?</td></tr>
+            <tr><td>[16:36] &lt vmlemon__&gt Although that would be better suited for unicast</td></tr>
+            <tr><td>[16:38] &lt j_baker&gt Ok, this may not make sense to you guys if you haven't read my proposal draft, but tell me if you guys get the basic gist of this:</td></tr>
+            <tr><td>[16:38] &lt j_baker&gt http://www.csdconline.com/P2P.jpeg</td></tr>
+            <tr><td>[16:41] &lt vmlemon__&gt Anyone seen the Python bindings for the Wii remote?</td></tr>
+            <tr><td>[16:43] &lt j_baker&gt So you can use the Wiimote to control your computer?</td></tr>
+            <tr><td>[16:43] &lt orphans&gt j_baker: sorry, I really am a networking imbecile.</td></tr>
+            <tr><td>[16:43] &lt orphans&gt vmlemon__: link?</td></tr>
+            <tr><td>[16:43] &lt vmlemon__&gt Yup</td></tr>
+            <tr><td>[16:43] &lt vmlemon__&gt Just give me a moment...</td></tr>
+            <tr><td>[16:43] *** orphans is soon going to buy a nunchuk to wave in the air and make funny sounds</td></tr>
+            <tr><td>[16:44] &lt j_baker&gt orphans: np :)</td></tr>
+            <tr><td>[16:45] &lt vmlemon__&gt I don't know a great deal about writing network-based apps, at the moment :(</td></tr>
+            <tr><td>[16:47] &lt vmlemon__&gt I mostly focus on the protocols and networks themselves</td></tr>
+            <tr><td>[16:49] &lt orphans&gt everyone seems to know so much about all that stuff here :) I swear I'm not a proper dev - I like the style of Kamaelia because I don't have to think about it, just stick a server/client component in the pipeline and forget about it</td></tr>
+            <tr><td>[16:49] &lt j_baker&gt That's what I like about Kamaelia too. :)</td></tr>
+            <tr><td>[16:49] &lt orphans&gt I think I like the outcome and not how to get there - it all seems a jumble of acronyms</td></tr>
+            <tr><td>[16:51] *** vmlemon__ knows a limited amount of Perl, and a bit of C</td></tr>
+            <tr><td>[16:52] &lt orphans&gt I'm actually getting OK at clocking up languages - this year I've had to work in C, C++, Java and Python in bits and pieces</td></tr>
+            <tr><td>[16:52] &lt orphans&gt you should see my C++ though :D</td></tr>
+            <tr><td>[16:52] &lt orphans&gt makes you want to cry</td></tr>
+            <tr><td>[16:53] &lt j_baker&gt I think C++ has a definite purpose and probably isn't going away any time soon.</td></tr>
+            <tr><td>[16:53] &lt j_baker&gt With that said, I don't like programming in it very much.</td></tr>
+            <tr><td>[16:54] &lt j_baker&gt And to be fair, I don't think it's because of C++. I think it's because of its reliance on C.</td></tr>
+            <tr><td>[16:54] &lt orphans&gt yeah, it's not the language, it's me using it that's so bad</td></tr>
+            <tr><td>[16:56] &lt vmlemon__&gt It took me months to learn enough Perl to make a small script, and even longer to fix the bad habits that I formed (the Perl docs were partly to blame)</td></tr>
+            <tr><td>[16:56] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:58] &lt vmlemon__&gt I'd agree with you on that - I'm pretty awful when it comes to trying to learn and use languages...</td></tr>
+            <tr><td>[17:00] &lt vmlemon__&gt I'm trying to learn C, but still can't get my head around it :(</td></tr>
+            <tr><td>[17:02] &lt Davbo&gt afternoon all</td></tr>
+            <tr><td>[17:02] &lt MS-&gt orphans: "is there any way for a client to get a list of all the other clients in a multicast network" No</td></tr>
+            <tr><td>[17:02] &lt vmlemon__&gt Hi Davbo</td></tr>
+            <tr><td>[17:02] &lt MS-&gt You can try things, but they'd all be incomplete and invalid</td></tr>
+            <tr><td>[17:02] &lt MS-&gt Davbo: hi</td></tr>
+            <tr><td>[17:03] &lt MS-&gt orphans: The primary problem you have is "people can join and say nothing" and "people can send without joining" as well as "you have no idea how far the multicast group propogates" (its not likely to go beyond the bounds of the network you're connected to)</td></tr>
+            <tr><td>[17:05] &lt orphans&gt MS-: fair enough. in that case should I be using a lot of individual udp connections to do the peer selection bit of my app?</td></tr>
+            <tr><td>[17:06] &lt orphans&gt ^bad sentence, I'll try and rephrase if you need me ot</td></tr>
+            <tr><td>[17:06] &lt orphans&gt *to</td></tr>
+            <tr><td>[17:06] &lt MS-&gt orphans: My suggestion would be to worry about the application first, and the networking second really</td></tr>
+            <tr><td>[17:06] &lt MS-&gt Also, I'd aim for things to work over TCP connections rather than multicast because multicast sucks in reality</td></tr>
+            <tr><td>[17:07] &lt MS-&gt Multicast is kinda like the internet version of a perpetual motion machine</td></tr>
+            <tr><td>[17:07] &lt Davbo&gt lol well said</td></tr>
+            <tr><td>[17:07] &lt MS-&gt It'd be really nice to have, but over the wide area internet it just isn't ever really going to happen</td></tr>
+            <tr><td>[17:07] &lt MS-&gt Except in patches</td></tr>
+            <tr><td>[17:08] &lt orphans&gt ok :) afaik the OSC spec says it should happen over UDP, but yeah, I'll focus more once the application's in</td></tr>
+            <tr><td>[17:08] &lt MS-&gt Ahh, I see</td></tr>
+            <tr><td>[17:08] &lt MS-&gt Well, it makes pretty much very little difference to kamaelia</td></tr>
+            <tr><td>[17:08] &lt MS-&gt it's just different set of components</td></tr>
+            <tr><td>[17:08] &lt orphans&gt yeah</td></tr>
+            <tr><td>[17:08] &lt orphans&gt cool, cheers</td></tr>
+            <tr><td>[17:08] &lt MS-&gt np</td></tr>
+            <tr><td>[17:09] &lt MS-&gt Multicast in a local area can be nice. But you can even get packet loss inside a LAN</td></tr>
+            <tr><td>[17:09] &lt MS-&gt with multicast</td></tr>
+            <tr><td>[17:09] &lt MS-&gt If you use wifi, then due to the link layer having error correction and resends you can get both packet loss and out of order delivery</td></tr>
+            <tr><td>[17:09] &lt MS-&gt if you use multicast</td></tr>
+            <tr><td>[17:10] &lt MS-&gt (having actually seen this when playing with multicast with kamaelia :) )</td></tr>
+            <tr><td>[17:10] &lt orphans&gt yeah. packet loss = very not good in music. "This &^%&% note won't turn off!"</td></tr>
+            <tr><td>[17:10] &lt vmlemon__&gt What about broadcast? Or even things like DCCP, UDPlite or SCTP?</td></tr>
+            <tr><td>[17:10] &lt MS-&gt thing is the reason why they suggest UDP is because it won't have delay</td></tr>
+            <tr><td>[17:11] &lt MS-&gt SCTP is a better option overall</td></tr>
+            <tr><td>[17:11] &lt MS-&gt But not implemented yet</td></tr>
+            <tr><td>[17:12] &lt orphans&gt yeah, delay's a pretty big issue too - human ear hears latency of ~10ms</td></tr>
+            <tr><td>[17:13] &lt vmlemon__&gt Just test with cats or dogs, and no-one would be any the wiser ;)</td></tr>
+            <tr><td>[17:14] &lt MS-&gt j_baker: Your diagram makes sense, though it may make more sense to categorise the ways content has been retrieve by colour. (Or perhaps better by taking the same diagram and just showing with big red lines over the top how ...</td></tr>
+            <tr><td>[17:14] &lt MS-&gt peer 1 gets peer 2's content</td></tr>
+            <tr><td>[17:14] &lt MS-&gt peer 1 gets peer 4s</td></tr>
+            <tr><td>[17:14] &lt MS-&gt how peer 4 gets peer 1</td></tr>
+            <tr><td>[17:14] &lt MS-&gt etc</td></tr>
+            <tr><td>[17:15] &lt j_baker&gt Makes sense. :)</td></tr>
+            <tr><td>[17:15] &lt j_baker&gt I set up a site for my proposal. Tell me if this clears up some of the ambiguities that you were mentioning:</td></tr>
+            <tr><td>[17:15] &lt MS-&gt I can also see that you may want to consider simple cases first - such as peers with public internet address</td></tr>
+            <tr><td>[17:15] &lt j_baker&gt http://www.csdconline.com/KamConnect/Welcome.html</td></tr>
+            <tr><td>[17:15] &lt MS-&gt vs peers behind NAT</td></tr>
+            <tr><td>[17:15] &lt MS-&gt j_baker: ta</td></tr>
+            <tr><td>[17:15] *** MS- looks</td></tr>
+            <tr><td>[17:16] &lt j_baker&gt That's one thing that I hadn't considered.</td></tr>
+            <tr><td>[17:16] &lt MS-&gt You may end up in the unusual scenario of needing to run HTTP over UDP port 80 (or port 8080). UDP/80 is reserved for HTTP</td></tr>
+            <tr><td>[17:16] &lt MS-&gt but I've never seen a webserver running on it :)</td></tr>
+            <tr><td>[17:17] &lt MS-&gt It should be relatively easy (bizarrely) to repurpose the HTTP code to run over UDP</td></tr>
+            <tr><td>[17:17] &lt vmlemon__&gt I once ran a web server on SCTP</td></tr>
+            <tr><td>[17:18] &lt vmlemon__&gt UPnP happens to use HTTP over UDP</td></tr>
+            <tr><td>[17:18] &lt MS-&gt really? Didn't know that</td></tr>
+            <tr><td>[17:18] &lt vmlemon__&gt for some reason</td></tr>
+            <tr><td>[17:18] &lt MS-&gt probably because they didn't want to invent a protocol</td></tr>
+            <tr><td>[17:19] &lt MS-&gt but also wanted (perhaps) to use UDP's broadcast capability</td></tr>
+            <tr><td>[17:19] &lt MS-&gt at a guess</td></tr>
+            <tr><td>[17:19] &lt j_baker&gt Are there any good documents about HTTP, UDP, and any other protocols I should be familiar with? I have a basic idea of what the protocols do, but I don't have a very good understanding of how they work or how to use them in a network app.</td></tr>
+            <tr><td>[17:20] &lt vmlemon__&gt Can't remember what they call their version</td></tr>
+            <tr><td>[17:21] &lt orphans&gt MS-: What's the best way to get feedback on a draft app - post it on the webapp, or stick it somewhere on the net?</td></tr>
+            <tr><td>[17:21] &lt orphans&gt back in a sec</td></tr>
+            <tr><td>[17:21] &lt vmlemon__&gt The RFCs have a lot of detail, although they dont' tell you how to actually implement them</td></tr>
+            <tr><td>[17:22] &lt vmlemon__&gt *don't</td></tr>
+            <tr><td>[17:22] &lt MS-&gt j_baker: RFC 2616 is HTTP 1.1</td></tr>
+            <tr><td>[17:22] &lt MS-&gt which is a good start</td></tr>
+            <tr><td>[17:23] &lt MS-&gt You can also look at the pre-existing kamaelia HTTP components</td></tr>
+            <tr><td>[17:23] &lt vmlemon__&gt Googling should unearth them</td></tr>
+            <tr><td>[17:23] &lt MS-&gt When reading RFCs, the best starting point is to look for the word "MUST"</td></tr>
+            <tr><td>[17:24] &lt j_baker&gt gtg. Will get back with you guys later today. :)</td></tr>
+            <tr><td>[17:24] &lt j_baker&gt Thanks for the help.</td></tr>
+            <tr><td>[17:26] &lt vmlemon__&gt Hmm, I wonder how well an AJAX IRC client would work in practice...</td></tr>
+            <tr><td>[17:26] &lt Davbo&gt I was just thinking the same thing vmlemon</td></tr>
+            <tr><td>[17:26] &lt Davbo&gt I wonder why he uses that</td></tr>
+            <tr><td>[17:27] &lt vmlemon__&gt CGI:IRC does something funky with frames, if memory serves correct</td></tr>
+            <tr><td>[17:28] &lt vmlemon__&gt and works on a long-life TCP connection</td></tr>
+            <tr><td>[17:29] &lt vmlemon__&gt I once used an AJAX telnet/SSH client, and it left a lot to be desired for</td></tr>
+            <tr><td>[17:30] &lt vmlemon__&gt (AJAXTerm)</td></tr>
+            <tr><td>[17:34] &lt vmlemon__&gt I still find it amusing that it shares it's name with a brand of toilet cleaner...</td></tr>
+            <tr><td>[17:35] &lt Davbo&gt lol</td></tr>
+            <tr><td>[17:36] &lt Davbo&gt Rather it be Ajax than Jif</td></tr>
+            <tr><td>[17:37] &lt vmlemon__&gt Although I'm sure that the Spam folks will regret their choice of name, in time</td></tr>
+            <tr><td>[17:37] &lt orphans&gt The internet, bought to you by Cillit Bang</td></tr>
+            <tr><td>[17:37] &lt vmlemon__&gt Vim?</td></tr>
+            <tr><td>[17:38] &lt vmlemon__&gt Stardrops?</td></tr>
+            <tr><td>[17:38] &lt vmlemon__&gt We already have Flash</td></tr>
+            <tr><td>[17:38] &lt Davbo&gt :D</td></tr>
+            <tr><td>[17:40] &lt Davbo&gt I think Detol sounds like a good shell alternative to Bash</td></tr>
+            <tr><td>[17:40] &lt vmlemon__&gt Speaking of Cillit Bang, have you seen the disco/techno remix of the ad?</td></tr>
+            <tr><td>[17:41] &lt orphans&gt yeah</td></tr>
+            <tr><td>[17:41] &lt orphans&gt "look what it does to this penny farthing kamaelia example!"</td></tr>
+            <tr><td>[17:42] &lt orphans&gt erm...</td></tr>
+            <tr><td>[17:42] &lt vmlemon__&gt Hah</td></tr>
+            <tr><td>[17:42] *** MS- groans</td></tr>
+            <tr><td>[17:42] &lt orphans&gt sorry :)</td></tr>
+            <tr><td>[17:43] &lt vmlemon__&gt I find it ironic that the bottle tells you not to use it on copper, yet the ad shows coins soaked in it</td></tr>
+            <tr><td>[17:45] &lt Davbo&gt MS-, don't bother with my application. I'll just submit it when i'm happy with it. You've got enough on your plate it seems</td></tr>
+            <tr><td>[17:46] &lt Davbo&gt GSoC looks like a hectic time for Kamaelia</td></tr>
+            <tr><td>[17:49] &lt MS-&gt Davbo: I knew precisely what I was letting us in for when I signed us up</td></tr>
+            <tr><td>[17:49] &lt MS-&gt The best way for us to review apps is for people to put them in the application, and then we can work together to improve them</td></tr>
+            <tr><td>[17:49] &lt MS-&gt You've done a good job with your app so far, so I wouldn't worry :)</td></tr>
+            <tr><td>[17:50] &lt MS-&gt (same goes for everyone else who have been discussing their ideas upfront :-) )</td></tr>
+            <tr><td>[17:51] &lt jle&gt Hehe, you think you'll get any apps where they haven't been hashed out in the channel first?</td></tr>
+            <tr><td>[17:52] &lt MS-&gt jle: We always do</td></tr>
+            <tr><td>[17:52] &lt MS-&gt Some are good, and some are terrible</td></tr>
+            <tr><td>[17:54] &lt MS-&gt It is preferable for people to discuss their ideas on the channel though (even if we don't have time to thrash out the ideas) though simply because we get to see how people interact with others - though for some it can be scary</td></tr>
+            <tr><td>[17:54] &lt vmlemon__&gt orphans: The suspense is killing me, just what does it do to penny farthing Kamaelia examples? ;)</td></tr>
+            <tr><td>[17:56] &lt Davbo&gt thanks MS- :)</td></tr>
+            <tr><td>[18:03] &lt vmlemon__&gt Probably oxidises them, and leaves a plume of smoke</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[18:28] &lt MS-&gt Lawouach: hi</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt how are things?</td></tr>
+            <tr><td>[18:32] &lt Davbo&gt Hey Lawouach</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt hi there</td></tr>
+            <tr><td>[18:34] &lt Davbo&gt How're things across the channel?</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt rainy</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt I thought that was part of the treaty between our countries that you'd keep the rain</td></tr>
+            <tr><td>[18:35] &lt Davbo&gt Hehe! It was nice over here earlier, went for a drive to a pub next to a reservoir then it started raining</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt I'm sure you were somehow scared the end was near, I mean the fact it stopped raining for a bit that is.</td></tr>
+            <tr><td>[18:37] &lt MS-&gt Lawouach: pretty good</td></tr>
+            <tr><td>[18:38] &lt Davbo&gt Leave our somewhat melancholic nation alone Lawouach :P</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt more seriously, where I was living in the UK (Reading) it was more or less the same weather I get in Brittany where I live now</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt Davbo, :p</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt Just a bit colder during winter but not much really</td></tr>
+            <tr><td>[18:39] &lt Lawouach&gt Mind you isn't Berkshire supposed to meet a drought someday? Like soonish?</td></tr>
+            <tr><td>[18:41] &lt Davbo&gt hmm no idea, Ladybower reservoir was plenty full so at least i'll be okay :p</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt for interested people https://stpeter.im/?p=2177</td></tr>
+            <tr><td>[19:00] &lt MS-&gt Lawouach: Interesting</td></tr>
+            <tr><td>[19:00] &lt MS-&gt I'd really like to see someone taking your XMPP code to the next level</td></tr>
+            <tr><td>[19:00] &lt Davbo&gt ooo! I just started with Twitter and was looking at XMPP</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt I'd like to do so :)</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt I'm actually still working on it but the last few weeks have been demanding</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt I didn't find enough time</td></tr>
+            <tr><td>[19:01] &lt MS-&gt I know the feeling</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt sigh</td></tr>
+            <tr><td>[19:01] &lt vmlemon__&gt A Twitter XMPP gateway?</td></tr>
+            <tr><td>[19:01] &lt MS-&gt Well, in some respects it's better to have more ideas than you can do than no ideas at all :)</td></tr>
+            <tr><td>[19:01] &lt Davbo&gt vmlemon__, i was reading http://www.process-one.net/en/blogs/article/introducing_the_xmpp_application_server/</td></tr>
+            <tr><td>[19:02] &lt MS-&gt Lawouach: That link was interesting</td></tr>
+            <tr><td>[19:02] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:07] &lt Davbo&gt Lawouach, what's your involvement with xmpp?</td></tr>
+            <tr><td>[19:08] &lt Davbo&gt is it this ? http://trac.defuze.org/wiki/headstock</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt it is</td></tr>
+            <tr><td>[19:10] &lt Lawouach&gt I've been working on that piece for a while. There's more on my local machine but I haven't committed the code yet</td></tr>
+            <tr><td>[19:10] &lt Davbo&gt awesome</td></tr>
+            <tr><td>[19:10] &lt Lawouach&gt My next step is too clean the code base and ensure people can work on it and help out</td></tr>
+            <tr><td>[19:10] &lt Lawouach&gt currently it's a bit complicated to understand the design I chose</td></tr>
+            <tr><td>[19:10] &lt Lawouach&gt suffice to say Kamaelia is all around</td></tr>
+            <tr><td>[19:12] &lt Davbo&gt ah</td></tr>
+            <tr><td>[19:12] &lt Lawouach&gt should be updated soon</td></tr>
+            <tr><td>[19:12] &lt Lawouach&gt hopefully</td></tr>
+            <tr><td>[19:14] &lt Davbo&gt looks like an interesting project</td></tr>
+            <tr><td>[19:15] *** MS- goes for food</td></tr>
+            <tr><td>[19:36] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[19:38] &lt j_baker&gt What's the format for keying in the date for the log?</td></tr>
+            <tr><td>[19:39] &lt j_baker&gt I know it's www.yeoldeclue.com/logs/kamaelia(something)</td></tr>
+            <tr><td>[19:40] &lt orphans&gt kamaelia2008-03-25_log.html</td></tr>
+            <tr><td>[19:40] &lt j_baker&gt Ah.... forgot the _log at the end.</td></tr>
+            <tr><td>[19:49] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:52] *** simon____ has joined #kamaelia</td></tr>
+            <tr><td>[19:56] &lt simon____&gt MS-: made an update to my little game: http://mellby.no-ip.org/kamaelia/ please take a look when you have time</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt eheh I first looked at your first stab at it and I was thinking "he could have use boxes for the keyboard event", then I looked at the second try and I shut up :)</td></tr>
+            <tr><td>[20:05] &lt simon____&gt Lawouach: MS- helped me with that part</td></tr>
+            <tr><td>[20:06] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:07] &lt Lawouach&gt no worries, it took me a while to stop trying to fit Kamaelia into my OOP thinking and start using it how it was designed</td></tr>
+            <tr><td>[20:52] *** Davbop has joined #kamaelia</td></tr>
+            <tr><td>[20:57] *** barrycarlyon has joined #kamaelia</td></tr>
+            <tr><td>[21:00] &lt Davbop&gt MS-, i added the schedule to my app</td></tr>
+            <tr><td>[21:03] &lt simon____&gt MS-: I read the logs tomorrow if you have any comments on my code</td></tr>
+            <tr><td>[21:04] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[21:13] &lt orphans&gt off to watch some rubbish tv - bye all</td></tr>
+            <tr><td>[21:16] &lt Davbop&gt booting to windows brb</td></tr>
+            <tr><td>[21:21] *** vmlemon__ finds the self-crushing car tax ad, and the Persil one with the droning kid with a lisp annoying...</td></tr>
+            <tr><td>[21:29] *** MS- notes that Star Gate Ark of Truth (end of the Ori story) is on a day earlier than advertised on Sky Two</td></tr>
+            <tr><td>[21:29] &lt MS-&gt (in 1/2 hour)</td></tr>
+            <tr><td>[21:30] &lt vmlemon__&gt (Yes, we know the gov't wants to milk money out of folk, and selling less of a product for the same price is stupid)</td></tr>
+            <tr><td>[21:34] &lt vmlemon__&gt Wonder how many people will miss it...</td></tr>
+            <tr><td>[21:34] &lt vmlemon__&gt If they changed the time</td></tr>
+            <tr><td>[21:37] &lt vmlemon__&gt Hmm, the Sky Digibox is a DVB-S compliant/compatible device?</td></tr>
+            <tr><td>[21:43] *** vmlemon__ was under the impression that it was slightly "enhanced" so it wouldn't work with non-Sky/Astra satellites</td></tr>
+            <tr><td>[22:52] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[23:51] *** _robz has joined #kamaelia</td></tr>

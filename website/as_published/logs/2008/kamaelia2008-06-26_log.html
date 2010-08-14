@@ -1,0 +1,750 @@
+<html><body><table>
+            <tr><td>[01:06] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[01:37] *** Trun has parted #kamaelia</td></tr>
+            <tr><td>[02:37] &lt ms-afk&gt woo. my image upload/transcode/moderate/view cycle is working correctly</td></tr>
+            <tr><td>[02:38] *** ms-afk goes for sleep</td></tr>
+            <tr><td>[02:43] *** xmlhacker has joined #kamaelia</td></tr>
+            <tr><td>[07:13] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:13] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[08:07] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:10] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:32] &lt ms-afk&gt morning</td></tr>
+            <tr><td>[08:34] &lt mhrd&gt hi</td></tr>
+            <tr><td>[08:49] &lt Lawouach_&gt I was looking at the Joe's SchedulingComponent</td></tr>
+            <tr><td>[08:49] &lt Lawouach_&gt It's really interesting and opens quite few doors for specific task</td></tr>
+            <tr><td>[08:49] &lt Lawouach_&gt Questions arise however :)</td></tr>
+            <tr><td>[08:53] &lt mhrd&gt such as?</td></tr>
+            <tr><td>[08:59] &lt Lawouach_&gt well</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt for one, Joe has considered quite sensibly it'd make a good fit for Axon rather than Kamaelia.</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt I can see why he made such a choice</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt But adding stuff to Axon should require strong requirements</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt Considering that Axon is at the core of Kamaelia</td></tr>
+            <tr><td>[09:01] &lt Lawouach_&gt It should be updated carefully</td></tr>
+            <tr><td>[09:02] &lt mhrd&gt indeed. fwiw I think there may potentially be a strong case for some kind of timing/event capability ...</td></tr>
+            <tr><td>[09:02] &lt mhrd&gt (in Axon) ...</td></tr>
+            <tr><td>[09:02] &lt mhrd&gt Axon/Kamaelia systems naturally tend to 'free-run' and so in some cases need rate control - eg. reading data from a file</td></tr>
+            <tr><td>[09:03] &lt Lawouach_&gt Yes I agree.</td></tr>
+            <tr><td>[09:04] &lt mhrd&gt Axon does deliberately concern itself already with the dynamics of teh system - it provides scheduling - ie. control over when stuff gets run ... even if the current scheduling algorithm is deliberately simple-stupid</td></tr>
+            <tr><td>[09:05] &lt Lawouach_&gt simple-stupid and with very little control upstream</td></tr>
+            <tr><td>[09:05] &lt mhrd&gt yep</td></tr>
+            <tr><td>[09:05] &lt mhrd&gt alot of the earlier file reading stuff, for example, relies on a separate timing component (or built in), which, in current implementations, busy-waits .... it functions well, but is less desireable wrt efficiency and playing nice with other processes :)</td></tr>
+            <tr><td>[09:06] &lt Lawouach_&gt Incidently it'd be interesting if Axon mainloop could be run from within another host mainloop, e.g. use the Qt mainloop system to drive the Axon scheduling. This is more or less dosable already but it's neither clean nor straightforward in my book</td></tr>
+            <tr><td>[09:07] &lt mhrd&gt agreed - it just about can be, but ought to be cleaner</td></tr>
+            <tr><td>[09:09] &lt mhrd&gt I have tried doing rate control by enforcing size limits on all inboxes in a system (the video reframer app) ...</td></tr>
+            <tr><td>[09:09] &lt mhrd&gt but writing components that behaved well in that situation turned out to be quite hard</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt I see</td></tr>
+            <tr><td>[09:11] &lt mhrd&gt particularly wrt. ensuring shutdown through "control"-&gt"signal" messages can still happen even if components are 'stalled' because the inbox(es) they want to write to are full</td></tr>
+            <tr><td>[09:13] &lt mhrd&gt ... sorry thats kind of an aside as it doesn't directly relate to Joe's idea, timing, scheduling :)</td></tr>
+            <tr><td>[09:13] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:14] &lt Lawouach_&gt Nonetheless interesting :)</td></tr>
+            <tr><td>[09:17] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:22] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[10:02] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:17] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:20] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:20] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:29] *** Davb1 has joined #kamaelia</td></tr>
+            <tr><td>[11:42] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[11:50] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:54] &lt Chong-&gt morning, vmlemon_</td></tr>
+            <tr><td>[12:47] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[12:47] Reply: does the macarena</td></tr>
+            <tr><td>[13:27] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[14:07] &lt j_baker&gt You know, django seems a lot better than pylons in terms of designing a website. But it definitely needs some work to integrate it better with WSGI.</td></tr>
+            <tr><td>[14:11] &lt Lawouach_&gt They have a long standing tickets for that support</td></tr>
+            <tr><td>[14:11] &lt Lawouach_&gt It's a showstopper I think for their 1.0 release</td></tr>
+            <tr><td>[14:15] &lt j_baker&gt btw, you wouldn't happen to have or know about any simple, stable CherryPy source code I could test with my server, would you Lawouach_?</td></tr>
+            <tr><td>[14:17] &lt Lawouach_&gt Depends which part of CP you want to try. The WSGI server aspect of CP with a Kamaelia WSGI application, or the CP application engine hosted by the Kamaelia WSGI server.</td></tr>
+            <tr><td>[14:18] &lt j_baker&gt I was wanting a WSGI application to be hosted by the Kamaelia WSGI server.</td></tr>
+            <tr><td>[14:21] &lt Lawouach_&gt give me a minute then</td></tr>
+            <tr><td>[14:22] &lt j_baker&gt np</td></tr>
+            <tr><td>[14:26] &lt Lawouach_&gt http://rafb.net/p/FnT7N257.html</td></tr>
+            <tr><td>[14:26] &lt Lawouach_&gt try that</td></tr>
+            <tr><td>[14:27] &lt Lawouach_&gt just replace the wsgiref server creation with your Kamaelia server</td></tr>
+            <tr><td>[14:27] &lt j_baker&gt Alright. I'll let you know how that goes.</td></tr>
+            <tr><td>[14:35] &lt Lawouach_&gt This BTW was working against the latest trunk of CP</td></tr>
+            <tr><td>[14:35] &lt Lawouach_&gt should work 3.1RC1</td></tr>
+            <tr><td>[14:35] &lt Lawouach_&gt +with</td></tr>
+            <tr><td>[14:37] &lt j_baker&gt Awesome. Thanks.</td></tr>
+            <tr><td>[14:43] *** Davb1 is pondering ways to implement "layers" in his paint program</td></tr>
+            <tr><td>[14:43] &lt Davb1&gt Pygame Surfaces aren't all that feature rich =[</td></tr>
+            <tr><td>[14:45] &lt Lawouach_&gt can't pygame create and handle OpenGL surfaces?</td></tr>
+            <tr><td>[14:45] &lt vmlemon_&gt Davbotoshop - soon to be the industry standard! ;)</td></tr>
+            <tr><td>[14:45] *** vmlemon_ ducks</td></tr>
+            <tr><td>[14:46] &lt orphans&gt afternoon all</td></tr>
+            <tr><td>[14:46] &lt vmlemon_&gt Hi orphans</td></tr>
+            <tr><td>[14:46] *** orphans made it (following a day of hell caused by department administration)</td></tr>
+            <tr><td>[14:47] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[14:47] &lt Davb1&gt All sorted orphans?</td></tr>
+            <tr><td>[14:47] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[14:47] &lt MS-&gt (back in a sec)</td></tr>
+            <tr><td>[14:47] &lt Davb1&gt Afternoon MS-</td></tr>
+            <tr><td>[14:48] &lt orphans&gt yeah, I had to wait for aaages to get my viva, got messed around loads</td></tr>
+            <tr><td>[14:48] &lt orphans&gt resulted in having to sit for about 2 hours in a room on my own with nothing to do but stare blankly at a wall</td></tr>
+            <tr><td>[14:49] &lt j_baker&gt I think being a sadist is a job requirement for being a university administrator sometimes.</td></tr>
+            <tr><td>[14:50] &lt orphans&gt they were supposed to announce the list at 9.30, delayed it til 12.30, told us no-one was having vivas then half an hour later told me I had been chosen to have one.</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt I assume they called the room the numb room</td></tr>
+            <tr><td>[14:51] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[14:51] &lt j_baker&gt Just out of curiosity, what is a viva?</td></tr>
+            <tr><td>[14:52] &lt orphans&gt it's like an oral exam to help determine what grade you get for your degree</td></tr>
+            <tr><td>[14:52] &lt orphans&gt they normally only do them for postgrad courses afaik, and then you have to defend your thesis</td></tr>
+            <tr><td>[14:53] &lt j_baker&gt Ah, I see.</td></tr>
+            <tr><td>[14:53] &lt j_baker&gt Are you a grad student?</td></tr>
+            <tr><td>[14:53] &lt orphans&gt no, final year undergrad</td></tr>
+            <tr><td>[14:53] &lt orphans&gt my department are indeed sadists :)</td></tr>
+            <tr><td>[14:54] &lt orphans&gt from tomorrow I'm a free man though! (apart from GSoC and a Masters next year :D)</td></tr>
+            <tr><td>[14:54] &lt vmlemon_&gt Viva la sitting in a room for hours with extreme boredom! ;)</td></tr>
+            <tr><td>[14:54] &lt MS-&gt (back)</td></tr>
+            <tr><td>[14:54] &lt vmlemon_&gt (Sorry, I couldn't resist)</td></tr>
+            <tr><td>[14:57] &lt MS-&gt (just getting notes together for meeting)</td></tr>
+            <tr><td>[14:57] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[14:57] &lt MS-&gt vmlemon_: hI</td></tr>
+            <tr><td>[14:58] &lt j_baker&gt I actually remembered to prepare my DONE, TODO, and BLOCKED ahead of time today. :)</td></tr>
+            <tr><td>[14:58] &lt MS-&gt j_baker: Cool</td></tr>
+            <tr><td>[14:58] &lt MS-&gt OK, let's go</td></tr>
+            <tr><td>[14:58] &lt MS-&gt ==============================================</td></tr>
+            <tr><td>[14:58] &lt MS-&gt START OF WEEKLY IRC KAMAELIA MEETING, 20080626</td></tr>
+            <tr><td>[14:58] &lt MS-&gt ==============================================</td></tr>
+            <tr><td>[14:58] &lt MS-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[14:58] &lt MS-&gt -----------------</td></tr>
+            <tr><td>[14:58] &lt MS-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[14:58] &lt MS-&gt 2. Participants</td></tr>
+            <tr><td>[14:58] &lt MS-&gt 3. Activity Reports</td></tr>
+            <tr><td>[14:58] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[14:58] &lt MS-&gt 4.1 Summer of Code Progress</td></tr>
+            <tr><td>[14:58] &lt MS-&gt 4.2 Other</td></tr>
+            <tr><td>[14:58] &lt MS-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[14:58] &lt MS-&gt Thursday 3rd July 2008, 4pm UK time</td></tr>
+            <tr><td>[14:58] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[14:58] &lt MS-&gt Any extra items?</td></tr>
+            <tr><td>[14:58] &lt mhrd-afk&gt :)</td></tr>
+            <tr><td>[14:58] &lt mhrd-afk&gt (sorry)</td></tr>
+            <tr><td>[14:59] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:59] *** MS- takes that as no</td></tr>
+            <tr><td>[14:59] &lt MS-&gt 2. Participants</td></tr>
+            <tr><td>[14:59] &lt MS-&gt ---------------</td></tr>
+            <tr><td>[14:59] &lt MS-&gt Participants: MS-, mhrd, Lawouach, Chong-, orphans, Davb1, Trun, j_baker, Lawouach</td></tr>
+            <tr><td>[14:59] &lt j_baker&gt I'm here. :)</td></tr>
+            <tr><td>[14:59] &lt MS-&gt Also present: others</td></tr>
+            <tr><td>[15:00] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:00] &lt MS-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:00] &lt MS-&gt -------------------</td></tr>
+            <tr><td>[15:00] &lt MS-&gt Ready?</td></tr>
+            <tr><td>[15:00] &lt MS-&gt Go!</td></tr>
+            <tr><td>[15:00] &lt j_baker&gt DONE: Got kp working with Moin, pylons, and to some degree django</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  DONE:</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Merged LOTS onto /trunk</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Release Candidate</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Build system for release candidates & upload</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Various GSOC related things</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Speak N'Write</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  IRC Speaker Bot</td></tr>
+            <tr><td>[15:00] &lt Trun&gt DONE: Tested some stuff at HTTPClient/HTTPParser, a couple of bugs found and fixed, trying to put the changes in a branch. Improvements, stats and tests in KamPlanet. Tried to move from private_MPS_Scratch/**/LikeFile to trunk/**/Handle in order to make the branch from trunk for testing other stuff; still on it.</td></tr>
+            <tr><td>[15:00] &lt Trun&gt TODO: Finish moving to Handle, create the branch, move the HTTPClient tests/fixes to the branch, add kamtest to the branch, and start testing Kamaelia.Chassis etc. based on existing tests.</td></tr>
+            <tr><td>[15:00] &lt Trun&gt BLOCKED: None</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Offline Batch Image/Video Transcoder</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Presentation @Mashed</td></tr>
+            <tr><td>[15:00] &lt Chong-&gt DONE: start TopologyViewer3D and Particles3D base coding. Particles3D: OpenGL cuboid with label, position, size, rotation customable and updatable; TopologyViewer3D: add particles, random position generation, event handling (click and drag)</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  God knows what else... :-)</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  TODO:</td></tr>
+            <tr><td>[15:00] &lt orphans&gt DONE: Componentised python's sched module. Finished Step Sequencer UI, and made</td></tr>
+            <tr><td>[15:00] &lt orphans&gt  it work over a network. Started redoing Pure Data example to use the Step Sequencer.</td></tr>
+            <tr><td>[15:00] &lt orphans&gt TODO: Finish PD example. Document scheduling and sequencer components. Test ne</td></tr>
+            <tr><td>[15:00] &lt orphans&gt twork code more thoroughly using step sequencer. Start making piano roll component.</td></tr>
+            <tr><td>[15:00] &lt orphans&gt BLOCKED: None</td></tr>
+            <tr><td>[15:00] &lt j_baker&gt TODO: Test CherryPy, optimize server, clean up and document code</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Clean up release & release tools</td></tr>
+            <tr><td>[15:00] &lt Chong-&gt TODO: add links, extend GridRenderer, ParticleSystem and physical laws wherever necessary</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Continue merge of code from branches</td></tr>
+            <tr><td>[15:00] &lt j_baker&gt BLOCKED: Just started back at my old part time job and have been having to work more hours than normal</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Extend release tools to pull in autodocs</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Check webcam code into svn</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Get kernel fix into linux-uvc project</td></tr>
+            <tr><td>[15:00] &lt Chong-&gt BLOCKED: None</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Sleep</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  BLOCKED:</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Been blocked: Work is very busy, eating into home/kamaelia time</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Will be blocked: again, deadlines with work (this is rare)</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  Will be blocked: no doubt will take a rest...</td></tr>
+            <tr><td>[15:00] &lt MS-&gt  NEED SLEEP</td></tr>
+            <tr><td>[15:01] &lt MS-&gt j_baker: BLOCKED notes</td></tr>
+            <tr><td>[15:01] &lt MS-&gt noted</td></tr>
+            <tr><td>[15:01] &lt MS-&gt thanks</td></tr>
+            <tr><td>[15:01] &lt j_baker&gt np</td></tr>
+            <tr><td>[15:02] &lt MS-&gt I don't suppose you could answer the query regarding HTTP POST that's just come on the list at some point ? (no rush :) )</td></tr>
+            <tr><td>[15:02] &lt orphans&gt MS-, you've been busy!</td></tr>
+            <tr><td>[15:02] &lt j_baker&gt Sure. I'll look at it.</td></tr>
+            <tr><td>[15:02] &lt MS-&gt j_baker: ta</td></tr>
+            <tr><td>[15:02] &lt MS-&gt orphans: And that's only the non-work stuff</td></tr>
+            <tr><td>[15:02] &lt MS-&gt I've built a youtube/flickr clone at work from the ground up more or less</td></tr>
+            <tr><td>[15:03] &lt MS-&gt Which is why I'm kinda needing sleep :)</td></tr>
+            <tr><td>[15:03] &lt MS-&gt (Massively reusing stuff from the kamaelia website / cerenity though)</td></tr>
+            <tr><td>[15:03] *** MS- will explain another time</td></tr>
+            <tr><td>[15:03] &lt orphans&gt :)</td></tr>
+            <tr><td>[15:04] *** MS- will take up any issues in people's mentor time</td></tr>
+            <tr><td>[15:04] &lt MS-&gt or offline</td></tr>
+            <tr><td>[15:04] &lt Chong-&gt MS-: after you have a good rest :-)</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Chong-: I don't think I can leave things for that many weeks</td></tr>
+            <tr><td>[15:05] &lt MS-&gt OK, moving on</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:05] &lt MS-&gt --------------------------------</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 4.1 Summer of Code Progress</td></tr>
+            <tr><td>[15:05] &lt MS-&gt ^^^^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Oh, hold on</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Davb1:</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Davb1: yoooooooooooooooooooooooo hoooooooooooooooooooooooooooooooooo</td></tr>
+            <tr><td>[15:06] &lt Davb1&gt Sorry!</td></tr>
+            <tr><td>[15:06] &lt Davb1&gt DONE: Non-recursive flood-fill working nicely lots better than last week, cleaned up code and added buttons for controling the tools. Started work on methods for layering</td></tr>
+            <tr><td>[15:06] &lt Davb1&gt TODO: Implement Layers using pygame surfaces perhaps. Once this is done start adding paint features where possible but start progressing on the Animation tools. Some ideas up on the project page.</td></tr>
+            <tr><td>[15:06] &lt Davb1&gt BLOCKED: None</td></tr>
+            <tr><td>[15:06] &lt MS-&gt ta</td></tr>
+            <tr><td>[15:06] &lt MS-&gt FWIW, definitely use surface</td></tr>
+            <tr><td>[15:06] &lt MS-&gt s</td></tr>
+            <tr><td>[15:07] &lt Davb1&gt Yeah</td></tr>
+            <tr><td>[15:07] &lt Davb1&gt I will be, certainly at first anyway</td></tr>
+            <tr><td>[15:07] &lt MS-&gt You may wish to delve into the cess pit called PygameDisplay to see how transparency etc can work</td></tr>
+            <tr><td>[15:07] &lt MS-&gt I'd be tempted to use whole components actually</td></tr>
+            <tr><td>[15:07] &lt MS-&gt which happen to use pygame display</td></tr>
+            <tr><td>[15:07] &lt MS-&gt but that's not for the meeting</td></tr>
+            <tr><td>[15:07] *** MS- moves on</td></tr>
+            <tr><td>[15:08] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:08] &lt MS-&gt --------------------------------</td></tr>
+            <tr><td>[15:08] &lt MS-&gt 4.1 Summer of Code Progress</td></tr>
+            <tr><td>[15:08] &lt MS-&gt ^^^^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:08] &lt MS-&gt OK, This may catch people out, but we're approaching the 1/2 way point</td></tr>
+            <tr><td>[15:08] *** Davb1 went afk because he realised the gutter appears to be falling off :-)</td></tr>
+            <tr><td>[15:08] &lt MS-&gt oops</td></tr>
+            <tr><td>[15:09] &lt MS-&gt And in practice, 12 weeks really == 10 weeks + documentation + packaging</td></tr>
+            <tr><td>[15:09] &lt MS-&gt Which probably means everyone is actually about 1/2 way through</td></tr>
+            <tr><td>[15:09] &lt Davb1&gt Cool</td></tr>
+            <tr><td>[15:10] &lt MS-&gt Or 1/3 if you're good and packaging and doc'ing as you go</td></tr>
+            <tr><td>[15:10] &lt MS-&gt Generally everyone's made progress, but there are issues</td></tr>
+            <tr><td>[15:11] &lt MS-&gt Trun - you're still not asking enough (brief enough, quick enough to answer) questions</td></tr>
+            <tr><td>[15:11] &lt MS-&gt You're developing something that should be used by the rest of us, and haven't been actively poking people for information about how they're testing now and *what* they're testing so that can be automated</td></tr>
+            <tr><td>[15:12] &lt MS-&gt I suspect you're going to end up with a very well tested KamPlanet tool</td></tr>
+            <tr><td>[15:12] &lt MS-&gt But that's a bad risk</td></tr>
+            <tr><td>[15:12] &lt MS-&gt please be aware of the difference between "exploration & learning" exercise vs "actual tool"</td></tr>
+            <tr><td>[15:13] &lt MS-&gt If that carries on beyond the actual half way point (say 7th-10th July), then you'll be simply wasting your time.</td></tr>
+            <tr><td>[15:13] &lt Trun&gt yeah, I'm sorry for that, I started testing SimpleHTTPClient and I wanted to have already started testing Kamaelia.Chassis.*</td></tr>
+            <tr><td>[15:13] &lt Trun&gt ok</td></tr>
+            <tr><td>[15:14] &lt MS-&gt Was only saying here because you weren't very communicative during mentor time</td></tr>
+            <tr><td>[15:14] &lt MS-&gt and haven't been saying anything on email</td></tr>
+            <tr><td>[15:15] &lt MS-&gt More generally, I think discussions around checkin messages have brought something interesting to light</td></tr>
+            <tr><td>[15:15] &lt MS-&gt which I posted to the list</td></tr>
+            <tr><td>[15:15] &lt MS-&gt Does everyone understand what I meant there?</td></tr>
+            <tr><td>[15:15] &lt Davb1&gt (When was it debated on IRC because i'd like to read the logs)</td></tr>
+            <tr><td>[15:15] &lt Davb1&gt Yeah seems fair enough</td></tr>
+            <tr><td>[15:16] &lt Chong-&gt I understand :-)</td></tr>
+            <tr><td>[15:16] *** MS- checks time</td></tr>
+            <tr><td>[15:16] &lt j_baker&gt Yes. I understand.</td></tr>
+            <tr><td>[15:16] &lt MS-&gt Chong-: I noticed - your checkin messages have become clearer :)</td></tr>
+            <tr><td>[15:16] &lt Trun&gt Yes. I understand.</td></tr>
+            <tr><td>[15:17] &lt Chong-&gt MS-: Thanks :-)</td></tr>
+            <tr><td>[15:17] &lt Davb1&gt Mine are usually pretty brief and informal "did this 'cause this wasn't working" - the post to the ML is certainly useful</td></tr>
+            <tr><td>[15:17] &lt MS-&gt I know it was a bit strict thing (policing checkins) , but it can make a huge differece</td></tr>
+            <tr><td>[15:17] &lt MS-&gt Davb1: Informal is fine -</td></tr>
+            <tr><td>[15:18] &lt MS-&gt yours have naturally defaulted to a "'cause" approach</td></tr>
+            <tr><td>[15:18] &lt MS-&gt which is my default as well</td></tr>
+            <tr><td>[15:18] &lt MS-&gt But I'd not considered that simply summarising without *why* was natural as well</td></tr>
+            <tr><td>[15:18] &lt j_baker&gt I admit sometimes mine can be cryptic and hard to decipher, but I generally try to be descriptive.</td></tr>
+            <tr><td>[15:18] &lt Davb1&gt Yeah</td></tr>
+            <tr><td>[15:19] &lt MS-&gt j_baker: Yours are generally OK as well - you have a nice habit of checking in often</td></tr>
+            <tr><td>[15:19] &lt Davb1&gt I also look at this http://cia.vc/stats/author/davbo and see how it reads</td></tr>
+            <tr><td>[15:19] &lt MS-&gt Davb1: That's a good habit - thanks :)</td></tr>
+            <tr><td>[15:20] &lt MS-&gt terse is often fine as long as it covers the why</td></tr>
+            <tr><td>[15:20] &lt MS-&gt The diffs will cover the what and how</td></tr>
+            <tr><td>[15:21] &lt MS-&gt To give a completely unrelated view of checkin messages http://code.google.com/p/facilitate/source/list</td></tr>
+            <tr><td>[15:21] &lt MS-&gt That's what I'm working on during the day - the general gist of things should be gettable from that, without any detail..</td></tr>
+            <tr><td>[15:22] &lt Davb1&gt Hah r105 Should not be checked in</td></tr>
+            <tr><td>[15:22] &lt MS-&gt Yep, someone else checked that file in</td></tr>
+            <tr><td>[15:22] *** vmlemon_ thinks a minute was too much for reheating his cup of coffee in the microwave...</td></tr>
+            <tr><td>[15:22] &lt MS-&gt So I was removing it and explaining why</td></tr>
+            <tr><td>[15:22] &lt MS-&gt which boils down to "should not be there" :)</td></tr>
+            <tr><td>[15:23] &lt Davb1&gt :-)</td></tr>
+            <tr><td>[15:23] &lt MS-&gt I've also noticed that there seems to be a constant level of lines of text for checkins</td></tr>
+            <tr><td>[15:23] &lt MS-&gt eg 12 lines over 3 checkins or 12 lines over 12 checkins</td></tr>
+            <tr><td>[15:23] &lt MS-&gt You can't really escape that</td></tr>
+            <tr><td>[15:24] &lt MS-&gt unless you lose clarity</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Beyond that though, I think everyone appears to be progressing well in the projects I have a clear following of</td></tr>
+            <tr><td>[15:24] &lt MS-&gt So, question is</td></tr>
+            <tr><td>[15:25] &lt MS-&gt Is there anything you guys think I or Lawouach or mhrd-afk should be doing ?</td></tr>
+            <tr><td>[15:25] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:25] &lt MS-&gt (aside from sleep)</td></tr>
+            <tr><td>[15:25] &lt MS-&gt (or drinking caffienated beverages)</td></tr>
+            <tr><td>[15:25] &lt orphans&gt I think Lawouach should take me on holiday with him next time</td></tr>
+            <tr><td>[15:25] &lt MS-&gt heh</td></tr>
+            <tr><td>[15:26] &lt MS-&gt orphans: You're not supposed to be here anyway, so I'll ignore that</td></tr>
+            <tr><td>[15:26] &lt orphans&gt :)</td></tr>
+            <tr><td>[15:26] &lt MS-&gt Seriously BTW</td></tr>
+            <tr><td>[15:26] &lt MS-&gt If anyone thinks something could be improved, please let us know</td></tr>
+            <tr><td>[15:26] &lt j_baker&gt Personally, I would like it if someone would review my code to some degree and give me an idea of what's clear and what needs to be documented better. And also take a precursory glance to make sure I'm not doing anything stupid.</td></tr>
+            <tr><td>[15:26] &lt MS-&gt Even if it can't happen immediately</td></tr>
+            <tr><td>[15:27] &lt MS-&gt j_baker: Will do</td></tr>
+            <tr><td>[15:27] &lt MS-&gt FWIW, I am glancing over things to check stuff isn't happening that is stupid :)</td></tr>
+            <tr><td>[15:27] &lt MS-&gt Probably ought to say that though</td></tr>
+            <tr><td>[15:27] &lt MS-&gt At present it has been a bit of glance mode</td></tr>
+            <tr><td>[15:27] &lt j_baker&gt I see.</td></tr>
+            <tr><td>[15:28] &lt MS-&gt However I'll set aside some decent time</td></tr>
+            <tr><td>[15:28] &lt MS-&gt The 1/2 way point for GSOC is also the point where my work deadlines let up</td></tr>
+            <tr><td>[15:28] &lt Davb1&gt Yeah, mhrd-afk sent me an email last week when he'd seen me complaining about something in a checkin message and offered a solution :-)</td></tr>
+            <tr><td>[15:28] *** Davb1 is happy with progress</td></tr>
+            <tr><td>[15:29] &lt MS-&gt We do actively tend to read the checkin messages</td></tr>
+            <tr><td>[15:29] &lt Davb1&gt yeah, it's nice to know :)</td></tr>
+            <tr><td>[15:29] &lt vmlemon_&gt Time to call the round tuit supplier again, I think ;)</td></tr>
+            <tr><td>[15:29] &lt MS-&gt Once you're used to them it's quite relaxing really</td></tr>
+            <tr><td>[15:29] &lt orphans&gt I quite like reading what everyone's up to too, it's kinda fun seeing all the stuff going on around you</td></tr>
+            <tr><td>[15:29] &lt MS-&gt Indeed :-)</td></tr>
+            <tr><td>[15:30] &lt MS-&gt That's actually part of the idea behind /Sketches as well</td></tr>
+            <tr><td>[15:30] &lt MS-&gt It's a bit unusual in open source to have a /Sketches area</td></tr>
+            <tr><td>[15:30] &lt Lawouach_&gt indeed</td></tr>
+            <tr><td>[15:30] &lt MS-&gt the closest you'd normally get is Scratch branches</td></tr>
+            <tr><td>[15:30] &lt MS-&gt But it's actually alot more open</td></tr>
+            <tr><td>[15:30] &lt MS-&gt as a result</td></tr>
+            <tr><td>[15:31] &lt orphans&gt MS-, off topic, but whilst I think of it can you change the address on cia.vc so it points to viewvc rather than viewcvs</td></tr>
+            <tr><td>[15:31] &lt MS-&gt orphans: No idea if I can</td></tr>
+            <tr><td>[15:31] &lt MS-&gt (not my site)</td></tr>
+            <tr><td>[15:31] &lt MS-&gt (Would be nice if we could)</td></tr>
+            <tr><td>[15:31] &lt orphans&gt ok, np. thought it might be an option somewhere</td></tr>
+            <tr><td>[15:32] &lt MS-&gt  /Sketches does also encourage you not to develop under a bushel</td></tr>
+            <tr><td>[15:32] &lt Davb1&gt i know orphans has played with Paint and others have which is useful for me since there are still bugs to iron out with the features in there atm</td></tr>
+            <tr><td>[15:32] &lt vmlemon_&gt Speaking of CVS, some of the links to stuff in it on the wiki are/were broken</td></tr>
+            <tr><td>[15:32] &lt j_baker&gt It seems to be fixed now.</td></tr>
+            <tr><td>[15:33] &lt j_baker&gt At least on edit.kamaelia.org</td></tr>
+            <tr><td>[15:33] &lt MS-&gt FWIW j_baker once my work crush is over, I'm actually intending on porting it all to be usable on top of your codebase</td></tr>
+            <tr><td>[15:33] &lt MS-&gt So you'll probably get the best possible review that way</td></tr>
+            <tr><td>[15:33] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:33] &lt orphans&gt Davb1, paint = almost as much fun as Speak n write :) when I can draw moustaches on people it'll overtake it I think :)</td></tr>
+            <tr><td>[15:33] &lt MS-&gt And a free flickr/youtube clone at the same time</td></tr>
+            <tr><td>[15:33] &lt j_baker&gt Sounds fun. And scary at the same time. :)</td></tr>
+            <tr><td>[15:34] &lt MS-&gt Well, it sounds fun to me and may seriously break some people I know, so that's always a plus</td></tr>
+            <tr><td>[15:34] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:34] &lt Davb1&gt hah orphans, images will be one of the next things implemented, they're dead easy with pygame</td></tr>
+            <tr><td>[15:34] &lt vmlemon_&gt Take it to the next level - Speak 'n' Paint ;)</td></tr>
+            <tr><td>[15:35] &lt MS-&gt OK, so I guess the only major comment coming back is "a bit more review of my code please"</td></tr>
+            <tr><td>[15:35] &lt MS-&gt That's a fair cop :)</td></tr>
+            <tr><td>[15:35] &lt MS-&gt There is one way to guarantee review of course - put it up for merge.</td></tr>
+            <tr><td>[15:35] &lt MS-&gt j_baker: Your packaging tools will be first up for that as a result :)</td></tr>
+            <tr><td>[15:36] &lt MS-&gt OK, moving on</td></tr>
+            <tr><td>[15:36] &lt MS-&gt 4.2 Other</td></tr>
+            <tr><td>[15:36] &lt MS-&gt ^^^^^^^^^</td></tr>
+            <tr><td>[15:36] &lt MS-&gt Rather generic - anything else ?</td></tr>
+            <tr><td>[15:36] &lt MS-&gt non-GSOC related, but kamaelia related ?</td></tr>
+            <tr><td>[15:37] &lt j_baker&gt Did you want me to come up with a solution to the CSA problem I posted, or were you working on it?</td></tr>
+            <tr><td>[15:37] &lt MS-&gt I think it just needs periodic reminders to be made for one of us to do so</td></tr>
+            <tr><td>[15:38] &lt MS-&gt If you do, I'll happily review it, otherwise it'll have to be this weekend</td></tr>
+            <tr><td>[15:38] &lt MS-&gt Fixing the CSA would be the highest priority thing I can think of though</td></tr>
+            <tr><td>[15:38] &lt MS-&gt It's an unusual corner case really</td></tr>
+            <tr><td>[15:38] &lt MS-&gt But still, I kinda think of the TCP subsystem as the core</td></tr>
+            <tr><td>[15:39] &lt j_baker&gt Yeah. There are a LOT of other components that depend on it.</td></tr>
+            <tr><td>[15:39] &lt MS-&gt Indeed</td></tr>
+            <tr><td>[15:40] &lt MS-&gt OK, all sounds good.</td></tr>
+            <tr><td>[15:41] &lt Davb1&gt Overall is GSoC progress going alright you think MS-?</td></tr>
+            <tr><td>[15:41] &lt MS-&gt FWIW, I actually want to merge your app onto mainline as soon as I can - even if parts are simply rebranded as being a vanilla webserver :)</td></tr>
+            <tr><td>[15:41] &lt MS-&gt Davb1: Overall, yes. I think picking projects based on people having a vested interest in them (for whatever reason)</td></tr>
+            <tr><td>[15:41] &lt MS-&gt is actually going really well.</td></tr>
+            <tr><td>[15:42] &lt orphans&gt "for whatever reason" :D</td></tr>
+            <tr><td>[15:42] &lt Davb1&gt good, i've been enjoying it so far anyway :)</td></tr>
+            <tr><td>[15:42] &lt MS-&gt It's a very different feel from different years :)</td></tr>
+            <tr><td>[15:42] &lt MS-&gt Davb1: Me too :)</td></tr>
+            <tr><td>[15:43] &lt MS-&gt OK, is there anything else anyone wants to raise at this point?</td></tr>
+            <tr><td>[15:43] *** MS- waits a minute</td></tr>
+            <tr><td>[15:44] *** MS- guesses not, as he watches the tumbleweed blow by</td></tr>
+            <tr><td>[15:44] &lt MS-&gt moving on then</td></tr>
+            <tr><td>[15:44] &lt MS-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:44] &lt MS-&gt -----------------------------------</td></tr>
+            <tr><td>[15:44] &lt MS-&gt Thursday 3rd July 2008, 4pm UK time</td></tr>
+            <tr><td>[15:44] &lt MS-&gt I'm guessing that's fine for everyone ?</td></tr>
+            <tr><td>[15:44] &lt MS-&gt j_baker: if you told me you're disappearing next week it wouldn't surprise me :)</td></tr>
+            <tr><td>[15:45] &lt Chong-&gt fine for me :-)</td></tr>
+            <tr><td>[15:45] &lt j_baker&gt Nah, I've already discussed my situation with my boss and told him about my schedule here as far as mentoring and meetings are concerned.</td></tr>
+            <tr><td>[15:45] &lt MS-&gt cool</td></tr>
+            <tr><td>[15:46] &lt MS-&gt in which case, i declare the meeting done</td></tr>
+            <tr><td>[15:46] &lt Davb1&gt Is celebrating American Independence not a good enough excuse for the rest of us?</td></tr>
+            <tr><td>[15:46] &lt Davb1&gt :P</td></tr>
+            <tr><td>[15:46] &lt MS-&gt ==============================================</td></tr>
+            <tr><td>[15:46] &lt MS-&gt END OF WEEKLY IRC KAMAELIA MEETING, 20080626</td></tr>
+            <tr><td>[15:46] &lt MS-&gt ==============================================</td></tr>
+            <tr><td>[15:46] &lt orphans&gt err, yeah, go Independence!</td></tr>
+            <tr><td>[15:46] &lt j_baker&gt Well, that would be a good enough reason if the meeting were the day after, Davb1.</td></tr>
+            <tr><td>[15:46] &lt MS-&gt 48 minutes</td></tr>
+            <tr><td>[15:47] *** orphans goes to lie down for a bit and forget about today</td></tr>
+            <tr><td>[15:47] &lt MS-&gt Davb1: It's rather uncouth to celebrate the annivesary of someone growing up leaving home - unless you're that person ;)</td></tr>
+            <tr><td>[15:47] &lt Davb1&gt hehe</td></tr>
+            <tr><td>[15:48] &lt MS-&gt (Besides, we don't tell them that we all do that)</td></tr>
+            <tr><td>[15:48] &lt Davb1&gt Not if you're glad to get rid of 'em ;-)</td></tr>
+            <tr><td>[15:48] &lt MS-&gt (it's a secret)</td></tr>
+            <tr><td>[15:48] &lt Davb1&gt hehe</td></tr>
+            <tr><td>[15:48] &lt MS-&gt It was a standing joke when I worked at Inktomi</td></tr>
+            <tr><td>[15:48] &lt MS-&gt The people in the US would be celebrating being shot of us, so we did likewise :)</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt It's ok. We're happy to be rid of you guys too. :P</td></tr>
+            <tr><td>[15:50] &lt MS-&gt j_baker: Don't we know it :-)</td></tr>
+            <tr><td>[15:50] &lt MS-&gt We just burn an effigy of a terrorist with long hair and and bear each year with fireworks</td></tr>
+            <tr><td>[15:50] &lt MS-&gt Closest we get</td></tr>
+            <tr><td>[15:51] &lt j_baker&gt I do have to admit though, you guys' movie about that holiday (V for Vendetta) was a lot more cool than ours (Independence Day).</td></tr>
+            <tr><td>[15:52] &lt MS-&gt I still haven't seen that film. I really ought to.</td></tr>
+            <tr><td>[15:52] *** j_baker struggles not to type y'all every time he means to say "you guys."</td></tr>
+            <tr><td>[15:52] &lt MS-&gt I do like independence day. It's a wonderfully silly film</td></tr>
+            <tr><td>[15:52] &lt Davb1&gt Haha the virus in Independence Day is amazing.</td></tr>
+            <tr><td>[15:53] &lt MS-&gt Personally I like the fact that Brent Spiner thought no-one would recognise him</td></tr>
+            <tr><td>[15:53] &lt MS-&gt And the bit where the head of the NSA (or whatever) turns round and says "well, actually...." in response to the president going "there are no aliens"</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt I wouldn't have recognized him had I not seen him in interviews about the film.</td></tr>
+            <tr><td>[15:53] &lt MS-&gt Fair enough :)</td></tr>
+            <tr><td>[15:53] &lt MS-&gt I always recognise people based on voices</td></tr>
+            <tr><td>[15:54] &lt MS-&gt Probably because I listen to tv alot (much like other people do with radio)</td></tr>
+            <tr><td>[16:10] *** Davb1 can't stand the "Data Episodes" of Star Trek</td></tr>
+            <tr><td>[16:11] &lt Davb1&gt oh MS- I did read your comments about that video i linked yesterday</td></tr>
+            <tr><td>[16:11] &lt Davb1&gt I agree entirely, I just thought it was interesting</td></tr>
+            <tr><td>[16:12] &lt MS-&gt Yeah, some of the comments around the video are really quite badly misinformed</td></tr>
+            <tr><td>[16:12] &lt Davb1&gt Was the guy commenting on it an American?</td></tr>
+            <tr><td>[16:12] *** MS- has sat in a meeting with Erik Huggers and heard him very categorically wax lyrical about wanting the BBC to do more with open source and have a more positive impact</td></tr>
+            <tr><td>[16:13] &lt MS-&gt Davb1: Dunno</td></tr>
+            <tr><td>[16:13] &lt Davb1&gt He didn't seem to understand how closely the govt keeps an eye on the BBC</td></tr>
+            <tr><td>[16:13] &lt MS-&gt (When I say sat in a meeting I wasn't sitting silent either - there was like a dozen of us there, talking etc)</td></tr>
+            <tr><td>[16:13] &lt MS-&gt who?</td></tr>
+            <tr><td>[16:13] &lt MS-&gt who doesn't?</td></tr>
+            <tr><td>[16:13] &lt Davb1&gt whoever subtitled the video</td></tr>
+            <tr><td>[16:13] &lt MS-&gt the person making the comments</td></tr>
+            <tr><td>[16:13] &lt MS-&gt yes</td></tr>
+            <tr><td>[16:14] &lt MS-&gt indeed</td></tr>
+            <tr><td>[16:14] &lt MS-&gt So many possible reasons to rip into it with regard to that video</td></tr>
+            <tr><td>[16:14] &lt Davb1&gt I find it hard to believe Govt' would let Microsoft have such a large say in BBC activities</td></tr>
+            <tr><td>[16:14] &lt MS-&gt and missing it all by going after conspiracy theories</td></tr>
+            <tr><td>[16:14] &lt MS-&gt They don't</td></tr>
+            <tr><td>[16:15] &lt MS-&gt The "memorandum on understanding" was actually signed with lots of others as well</td></tr>
+            <tr><td>[16:15] &lt MS-&gt including people like IBM and Google</td></tr>
+            <tr><td>[16:15] &lt Davb1&gt Sorry, who's ﻿Erik Huggers?</td></tr>
+            <tr><td>[16:15] &lt MS-&gt it actually boils down to a fancy standing NDA</td></tr>
+            <tr><td>[16:15] &lt MS-&gt he's an ex-microsoft exec</td></tr>
+            <tr><td>[16:15] &lt MS-&gt who is now in change of (essentially) online stuff at the BBC</td></tr>
+            <tr><td>[16:15] &lt Davb1&gt Ah, now at the beeb?</td></tr>
+            <tr><td>[16:15] &lt Davb1&gt Right</td></tr>
+            <tr><td>[16:15] &lt MS-&gt He's in my direct chain of management</td></tr>
+            <tr><td>[16:16] &lt MS-&gt Actually seems like a nice guy, honest, up front and committed to doing the right thing</td></tr>
+            <tr><td>[16:16] &lt Davb1&gt Yeah</td></tr>
+            <tr><td>[16:16] &lt MS-&gt Though I believe "the right thing" is determined by where he works - which is fair enough</td></tr>
+            <tr><td>[16:17] &lt MS-&gt It wouldn't surprise me if he could be sold on the idea of growing our GSOC involvement TBH</td></tr>
+            <tr><td>[16:17] &lt MS-&gt He really did seem genuine about wanting to make a more positive involvement</td></tr>
+            <tr><td>[16:17] &lt MS-&gt That or copying the model</td></tr>
+            <tr><td>[16:21] &lt Davb1&gt Yeah that'd be cool. Open source fits nicely into the BBC really</td></tr>
+            <tr><td>[16:21] &lt Davb1&gt For some things at least</td></tr>
+            <tr><td>[16:22] &lt MS-&gt Most things really</td></tr>
+            <tr><td>[16:22] &lt MS-&gt We're not really a tech company</td></tr>
+            <tr><td>[16:23] &lt Davb1&gt I bet open source goes down horribly with a lot of middle management though</td></tr>
+            <tr><td>[16:23] &lt MS-&gt we're required to do R&D (primarily to give the BBC an edge but also to push the broadcast industry forward) and that's a really cool thing, but we're not a tech company</td></tr>
+            <tr><td>[16:23] &lt MS-&gt It's varied considerably</td></tr>
+            <tr><td>[16:24] &lt Davb1&gt Yeah</td></tr>
+            <tr><td>[16:24] &lt MS-&gt Though currently it's at risk in a way because it's at present the new "buzz word" - last year it was "Innovation" the year before it was "blue sky"</td></tr>
+            <tr><td>[16:24] &lt vmlemon_&gt They certainly do a lot of tech stuff, to say they're not tech</td></tr>
+            <tr><td>[16:24] &lt MS-&gt So, I'm not holding my breath, but will do my best to make things longer lasting :)</td></tr>
+            <tr><td>[16:24] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:25] &lt MS-&gt vmlemon_: Yeah, but the BBC's core job is making cool stuff for us all to watch and listen to - to give something to think about and ponder about</td></tr>
+            <tr><td>[16:25] &lt vmlemon_&gt Hmm, what the hell is "blue sky"?</td></tr>
+            <tr><td>[16:25] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[16:25] &lt vmlemon_&gt Very true</td></tr>
+            <tr><td>[16:25] &lt MS-&gt vmlemon_: Not manchester - it's all grey sky at the moment</td></tr>
+            <tr><td>[16:25] &lt MS-&gt Hm...</td></tr>
+            <tr><td>[16:25] &lt vmlemon_&gt Hehe</td></tr>
+            <tr><td>[16:26] &lt MS-&gt wonder if I could be evil and start a "grey sky thinking" meme</td></tr>
+            <tr><td>[16:26] &lt MS-&gt That'd be delightfully broken</td></tr>
+            <tr><td>[16:26] &lt vmlemon_&gt Yum</td></tr>
+            <tr><td>[16:26] &lt Davb1&gt I think that would be a difficult pitch MS- :P</td></tr>
+            <tr><td>[16:27] &lt MS-&gt Oh I dunno</td></tr>
+            <tr><td>[16:27] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:27] &lt vmlemon_&gt "Northern English Weather Thinking"</td></tr>
+            <tr><td>[16:27] &lt MS-&gt NEWT</td></tr>
+            <tr><td>[16:27] &lt MS-&gt I like it</td></tr>
+            <tr><td>[16:27] &lt MS-&gt It's got potential</td></tr>
+            <tr><td>[16:27] &lt MS-&gt You see all you need to do is pick out 5 other places where it rains that produce "innovation"</td></tr>
+            <tr><td>[16:28] &lt MS-&gt And pick 5 cool inventions/discoveries from each</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[16:28] &lt MS-&gt and just say "there you go"</td></tr>
+            <tr><td>[16:28] &lt MS-&gt COmpelling BS</td></tr>
+            <tr><td>[16:28] &lt Davb1&gt lmao</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[16:28] &lt Davb1&gt Masterfully done</td></tr>
+            <tr><td>[16:29] &lt MS-&gt Right gotta go</td></tr>
+            <tr><td>[16:29] &lt MS-&gt biab</td></tr>
+            <tr><td>[16:29] &lt Lawouach&gt isn't Newt the name of the child in Aliens?</td></tr>
+            <tr><td>[16:29] &lt MS-&gt Lawouach yep</td></tr>
+            <tr><td>[16:29] &lt Davb1&gt Cya MS- :-)</td></tr>
+            <tr><td>[16:29] &lt MS-&gt cya</td></tr>
+            <tr><td>[16:29] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:30] &lt Davb1&gt I was thinking that too Lawouach</td></tr>
+            <tr><td>[16:32] &lt Davb1&gt It's also an S-lang library apparently, but hey, what isn't</td></tr>
+            <tr><td>[16:37] *** vmlemon_ thinks S-lang sounds like some crappy pop band, for some reason ;)</td></tr>
+            <tr><td>[16:40] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:42] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:08] &lt j_baker&gt Well, I have to say that cherrypy was the easiest framework to get working with the server, Lawouach_. :)</td></tr>
+            <tr><td>[17:08] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:44] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:02] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt pong</td></tr>
+            <tr><td>[18:06] &lt orphans&gt hey, how's it going?</td></tr>
+            <tr><td>[18:07] &lt Lawouach&gt good :)</td></tr>
+            <tr><td>[18:07] &lt orphans&gt cool, you ready for meetingness?</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt go ahead</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt let me know what you've done in the past week :)</td></tr>
+            <tr><td>[18:09] &lt orphans&gt cool, so this week I've turned the scheduler into an axon component (which from reading the logs back you've had a look at), and sorted out the step sequencer and added it to jam</td></tr>
+            <tr><td>[18:10] &lt orphans&gt which all seems to work ok :)</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt I haven't had the chance yet to launch the application itself but I will</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt I was interested indeed by the scheduler component</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt I think it will need a bit of improvment</td></tr>
+            <tr><td>[18:13] &lt orphans&gt yeah, it's pretty much a direct port of the python version for now</td></tr>
+            <tr><td>[18:13] &lt Lawouach&gt it's a good start</td></tr>
+            <tr><td>[18:13] &lt Lawouach&gt what were your challenges this week then?</td></tr>
+            <tr><td>[18:14] &lt orphans&gt hah, I got caught up for about a day with a horrible python gotcha in the step sequencer</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt ah?</td></tr>
+            <tr><td>[18:14] *** orphans exaggerates slightly</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt which was?</td></tr>
+            <tr><td>[18:14] &lt orphans&gt just let me find it in the logs</td></tr>
+            <tr><td>[18:15] &lt orphans&gt a = [[[0, None]]*4]*4</td></tr>
+            <tr><td>[18:15] &lt orphans&gt a[0][0][0] = 2</td></tr>
+            <tr><td>[18:15] &lt orphans&gt print a</td></tr>
+            <tr><td>[18:15] &lt orphans&gt [[[2, None], [2, None], [2, None], [2, None]], [[2, None], [2, None], [2, None], [2, None]], [[2, None], [2, None], [2, None], [2, None]], [[2, None], [2, None], [2, None], [2, None]]]</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:16] &lt orphans&gt where * is doing a shallow copy rather than the deep copy I expected. Had me baffled for aages</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt yeah :)</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt it's like you should never use [], {} and other sequences like that in function signature</td></tr>
+            <tr><td>[18:17] &lt orphans&gt I was certain I was just setting one variable, then they were all going. I thought I'd accidentally looped somewhere</td></tr>
+            <tr><td>[18:17] &lt orphans&gt yeah, MS- showed me that one :)</td></tr>
+            <tr><td>[18:17] &lt orphans&gt the step sequencer dropped really nicely into the networking stuff though, which is encouraging :)</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:18] &lt orphans&gt and I'm all of 10 minutes work before jam can make something vaguely resembling music (drum beats)</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt I'll let you do that then if you will.</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt I really didn't get the time to look through your code yet</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt so there is little point wasting your time</td></tr>
+            <tr><td>[18:19] &lt orphans&gt no probs :)</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt I apologise</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt I'll review your code this weekend and will make comments either here or on the list before next Monday</td></tr>
+            <tr><td>[18:20] &lt orphans&gt it's fine. This week's been pretty straightforward I think (aside from issues with the design of scheduler which will need some thrashing out)</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt I'm around this evening anyway</td></tr>
+            <tr><td>[18:22] &lt orphans&gt k, cool. If I think of anything else I'll ping you</td></tr>
+            <tr><td>[18:23] &lt orphans&gt back to the joy that is working in PD. Whoever thought ctrl-1 was a good shortcut?</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:21] *** Lawouach wonders how to deploy the SpeakNLearn application</td></tr>
+            <tr><td>[19:22] *** pphalen has joined #kamaelia</td></tr>
+            <tr><td>[19:22] &lt pphalen&gt Hello, I have a question about IRCSpeakerBot</td></tr>
+            <tr><td>[19:22] &lt MS-&gt Hi</td></tr>
+            <tr><td>[19:22] &lt pphalen&gt HI</td></tr>
+            <tr><td>[19:22] &lt MS-&gt Go ahead - I wrote it :)</td></tr>
+            <tr><td>[19:23] &lt pphalen&gt I'd like to adapt it to use on OS X, which has the 'say' builtin</td></tr>
+            <tr><td>[19:23] *** MS- nods</td></tr>
+            <tr><td>[19:23] &lt MS-&gt That should be a relatively simple change</td></tr>
+            <tr><td>[19:24] &lt pphalen&gt I've installed Kamaelia .5 and Axon 1.5 but am getting not found on the IRC module</td></tr>
+            <tr><td>[19:24] &lt MS-&gt We've got a new release candidate out - which is probably why</td></tr>
+            <tr><td>[19:24] &lt pphalen&gt Ah</td></tr>
+            <tr><td>[19:25] &lt pphalen&gt BTW, Kamaelia seems VERY cool</td></tr>
+            <tr><td>[19:25] &lt MS-&gt It's linked from here : http://edit.kamaelia.org/GetMashed</td></tr>
+            <tr><td>[19:25] &lt MS-&gt thank you :)</td></tr>
+            <tr><td>[19:25] &lt MS-&gt Which links to here: http://edit.kamaelia.org/release/</td></tr>
+            <tr><td>[19:25] &lt pphalen&gt OK</td></tr>
+            <tr><td>[19:25] &lt MS-&gt Installation of both axon & kamaelia is done from the single setup.py now</td></tr>
+            <tr><td>[19:25] &lt MS-&gt Which simplifies things :)</td></tr>
+            <tr><td>[19:26] &lt pphalen&gt Ah, good, that wasn't clear.</td></tr>
+            <tr><td>[19:26] &lt pphalen&gt So http://edit.kamaelia.org/release/Kamaelia-0.6.0-rc7.tar.gz</td></tr>
+            <tr><td>[19:26] *** MS- nods</td></tr>
+            <tr><td>[19:26] &lt pphalen&gt Great!</td></tr>
+            <tr><td>[19:27] &lt pphalen&gt I was thinking of calling IRCSpeakerBot.py with the channels as parameters and using sys.argv[1] to gather a list of them</td></tr>
+            <tr><td>[19:28] &lt MS-&gt Seems like a reasonable idea</td></tr>
+            <tr><td>[19:28] &lt MS-&gt The nice thing about the way we configure components these days BTW</td></tr>
+            <tr><td>[19:28] &lt MS-&gt ie like this:</td></tr>
+            <tr><td>[19:28] &lt MS-&gt class spokenIRCFilter(Axon.Component.component):</td></tr>
+            <tr><td>[19:28] &lt MS-&gt  channels = ["#mashed", "#kamaelia", "#kamtest"]</td></tr>
+            <tr><td>[19:28] &lt MS-&gt Also means you can do this:</td></tr>
+            <tr><td>[19:28] &lt pphalen&gt There are two or three groups I like to follow that are sparsely populated</td></tr>
+            <tr><td>[19:28] &lt MS-&gt spokenIRCFilter(channels = ["#kamaelia", "#python", "#foobar"])</td></tr>
+            <tr><td>[19:29] &lt pphalen&gt channels = []</td></tr>
+            <tr><td>[19:29] &lt pphalen&gt for channel in channels_in:</td></tr>
+            <tr><td>[19:29] &lt pphalen&gt  channels.append('#' + channel)</td></tr>
+            <tr><td>[19:29] &lt pphalen&gt maybe?</td></tr>
+            <tr><td>[19:31] &lt MS-&gt Yep, that'd work</td></tr>
+            <tr><td>[19:31] &lt pphalen&gt Also perhaps, if os.uname()[1] == 'Darwin': UnixProcess("while read word; do echo $word | say; done")</td></tr>
+            <tr><td>[19:31] &lt MS-&gt That's a good idea.</td></tr>
+            <tr><td>[19:31] &lt pphalen&gt Thanks! I'll go try it. :)</td></tr>
+            <tr><td>[19:32] &lt MS-&gt Please do - I hadn't actually expected it to be useful to anyone else - if you find it useful I'll package it up with autodetection for Mac OS :)</td></tr>
+            <tr><td>[19:32] &lt pphalen&gt From a IRC etiquette standpoint, should I change the nick</td></tr>
+            <tr><td>[19:32] *** MS- nods</td></tr>
+            <tr><td>[19:32] &lt MS-&gt Yes, I would</td></tr>
+            <tr><td>[19:33] &lt pphalen&gt So maybe I'll abstract that out into a parameter too</td></tr>
+            <tr><td>[19:33] &lt MS-&gt It's a 40 minute hack or so, so there's liable to be some nice ways to extend it :)</td></tr>
+            <tr><td>[19:33] &lt MS-&gt Sounds like a plan :)</td></tr>
+            <tr><td>[19:33] &lt pphalen&gt Thanks again!</td></tr>
+            <tr><td>[19:33] *** pphalen has parted #kamaelia</td></tr>
+            <tr><td>[19:40] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:40] *** MS- notes http://pyprocessing.berlios.de/ has been merged into python 2.6 & python 3.0</td></tr>
+            <tr><td>[19:41] &lt MS-&gt I'll have to review the way we're doing multiprocess stuff then I guess</td></tr>
+            <tr><td>[19:41] &lt MS-&gt since that'll be in the standard lib</td></tr>
+            <tr><td>[19:42] &lt vmlemon__&gt o.O http://news.slashdot.org/article.pl?sid=08/06/24/0216205</td></tr>
+            <tr><td>[19:42] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:45] &lt MS-&gt Here's an interesting thought</td></tr>
+            <tr><td>[19:46] &lt MS-&gt When a component/microprocess dies, the scheduler could quite happily catch that</td></tr>
+            <tr><td>[19:46] &lt MS-&gt with a bare try...except...</td></tr>
+            <tr><td>[19:46] &lt MS-&gt It could then choose to call an emergency shutdown on the component</td></tr>
+            <tr><td>[19:46] &lt MS-&gt The component could, then if it so chose respond by spawning a new microprocess</td></tr>
+            <tr><td>[19:46] &lt MS-&gt potentially with the same in/outboxes</td></tr>
+            <tr><td>[19:47] &lt MS-&gt Or it could choose to shutdown</td></tr>
+            <tr><td>[19:48] &lt MS-&gt I wonder what that'd give you</td></tr>
+            <tr><td>[19:49] &lt MS-&gt The thing is, the earliest versions of Axon *did* have bare try..excepts there, but I think I wasn't really sure what I wanted from that</td></tr>
+            <tr><td>[19:51] &lt MS-&gt It'd probably make the system much more resilient under fire as well</td></tr>
+            <tr><td>[19:51] &lt MS-&gt (which is highly desirable)</td></tr>
+            <tr><td>[19:54] &lt MS-&gt I think this time it might be an idea to find out what erlang does - though what erlang does will be appropriate for a pure functional language, not necessarily what you want in python</td></tr>
+            <tr><td>[19:54] &lt MS-&gt I think I'll post about it on my blog & on the list</td></tr>
+            <tr><td>[19:57] &lt MS-&gt (the idea that is)</td></tr>
+            <tr><td>[20:04] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:27] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[20:30] &lt MS-&gt Trun: Heya</td></tr>
+            <tr><td>[20:30] &lt Trun&gt hi</td></tr>
+            <tr><td>[20:31] &lt MS-&gt I don't suppose you could take a look at the last 10-20 lines of the log http://yeoldeclue.com/logs/kamaelia2008-06-26_log.html - ie [19:45] -- [19:57] and give me your thoughts could you?</td></tr>
+            <tr><td>[20:31] &lt Trun&gt sure :-)</td></tr>
+            <tr><td>[20:32] &lt MS-&gt ta :)</td></tr>
+            <tr><td>[20:35] &lt Trun&gt I'm not sure if I get it. You mean something like hooking a "callback" for the end of the component? (I don't know erlang)</td></tr>
+            <tr><td>[20:38] &lt MS-&gt No,ignore the erlang comment</td></tr>
+            <tr><td>[20:39] &lt MS-&gt It's not relevant</td></tr>
+            <tr><td>[20:39] &lt MS-&gt The idea is to go back to something we once did</td></tr>
+            <tr><td>[20:39] &lt MS-&gt but with some experience</td></tr>
+            <tr><td>[20:40] &lt Trun&gt so you have a component SimpleComponent, that, as soon as it dies (by an exception?), it calls some code that chooses to shutdown itself or activate a new component that substitutes itself?</td></tr>
+            <tr><td>[20:40] &lt MS-&gt turn it round slightly</td></tr>
+            <tr><td>[20:40] &lt MS-&gt look at it from the perspective of the scheduler</td></tr>
+            <tr><td>[20:41] &lt MS-&gt At present the scheduler *essentially* does this:</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  for mprocess in runqueue:</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  try:</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  result = mprocess.next()</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  except StopIteration:</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  del self.threads[mprocess]</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  mprocess.stop()</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  knockon = mprocess._closeDownMicroprocess()</td></tr>
+            <tr><td>[20:41] &lt MS-&gt  self.handleMicroprocessShutdownKnockon(knockon)</td></tr>
+            <tr><td>[20:42] &lt MS-&gt Whereas at one point in the past it did this:</td></tr>
+            <tr><td>[20:42] &lt MS-&gt  for mprocess in runqueue:</td></tr>
+            <tr><td>[20:42] &lt MS-&gt  try:</td></tr>
+            <tr><td>[20:42] &lt MS-&gt  result = mprocess.next()</td></tr>
+            <tr><td>[20:42] &lt MS-&gt  except:</td></tr>
+            <tr><td>[20:42] &lt MS-&gt  del self.threads[mprocess]</td></tr>
+            <tr><td>[20:42] &lt MS-&gt  mprocess.stop()</td></tr>
+            <tr><td>[20:42] &lt MS-&gt  knockon = mprocess._closeDownMicroprocess()</td></tr>
+            <tr><td>[20:42] &lt MS-&gt  self.handleMicroprocessShutdownKnockon(knockon)</td></tr>
+            <tr><td>[20:43] &lt MS-&gt This of course makes the /system/ next to indestructable in the case of a rogue component</td></tr>
+            <tr><td>[20:43] &lt MS-&gt Which was why it was there</td></tr>
+            <tr><td>[20:43] &lt MS-&gt but it did make killing kamaelia systems relatively hard</td></tr>
+            <tr><td>[20:43] &lt MS-&gt so over time that's been eroded</td></tr>
+            <tr><td>[20:43] &lt MS-&gt However.</td></tr>
+            <tr><td>[20:43] *** vmlemon_ found a broken tree splayed across a town path, a few days ago (got blown over in very strong wind) - http://www.flickr.com/photos/vmlemon/2612527061/</td></tr>
+            <tr><td>[20:43] &lt MS-&gt We can now do this:</td></tr>
+            <tr><td>[20:43] &lt MS-&gt  self.scheduler.stop()</td></tr>
+            <tr><td>[20:43] &lt MS-&gt In order to shutdown the system</td></tr>
+            <tr><td>[20:44] &lt MS-&gt which makes it sensible to consider going back to this bare try...except</td></tr>
+            <tr><td>[20:44] &lt MS-&gt vmlemon_: Impressive tree failure</td></tr>
+            <tr><td>[20:45] &lt MS-&gt Anyhow, changing the bit after the except opens up interesting options</td></tr>
+            <tr><td>[20:45] &lt MS-&gt Such as (maybe) copying this logic:</td></tr>
+            <tr><td>[20:45] &lt vmlemon_&gt Some elderly folks came a few hours later, and started chucking parts of the tree into a nearby ditch (which was already full of blown over signs and shopping baskets, of all things)...</td></tr>
+            <tr><td>[20:46] &lt MS-&gt  result = mprocess.error_handling()</td></tr>
+            <tr><td>[20:46] &lt MS-&gt  if isinstance(result, reactivate):</td></tr>
+            <tr><td>[20:46] &lt MS-&gt  ...</td></tr>
+            <tr><td>[20:46] &lt MS-&gt or</td></tr>
+            <tr><td>[20:46] &lt MS-&gt  if isinstance(result, newComponent):</td></tr>
+            <tr><td>[20:46] &lt MS-&gt  for c in result.components():</td></tr>
+            <tr><td>[20:46] &lt MS-&gt  c.activate()</td></tr>
+            <tr><td>[20:47] &lt MS-&gt etc</td></tr>
+            <tr><td>[20:47] &lt MS-&gt So the idea would be to call the thing and allow the thing to just shutdown, or pass on a generator worth activating in place of an exception based death</td></tr>
+            <tr><td>[20:48] &lt MS-&gt The upshot would be that the system could actually gain greater restart support</td></tr>
+            <tr><td>[20:48] &lt MS-&gt hence greater resilience</td></tr>
+            <tr><td>[20:48] &lt MS-&gt (ie inplace process replacement)</td></tr>
+            <tr><td>[20:49] &lt Trun&gt would the code of mprocess.error_handling() receive the raised exception as parameter?</td></tr>
+            <tr><td>[20:49] &lt MS-&gt Maybe, depends on where we can grab the exception from (reliably) in a</td></tr>
+            <tr><td>[20:49] &lt MS-&gt try:</td></tr>
+            <tr><td>[20:49] &lt MS-&gt except: # no args</td></tr>
+            <tr><td>[20:49] &lt MS-&gt form</td></tr>
+            <tr><td>[20:50] &lt MS-&gt try: except:</td></tr>
+            <tr><td>[20:50] &lt MS-&gt catches string exceptions btw</td></tr>
+            <tr><td>[20:50] &lt MS-&gt where as</td></tr>
+            <tr><td>[20:50] &lt MS-&gt try:</td></tr>
+            <tr><td>[20:50] &lt MS-&gt except Exception, e:</td></tr>
+            <tr><td>[20:50] &lt MS-&gt doesn't</td></tr>
+            <tr><td>[20:50] &lt Trun&gt I mean, would this mechanism be something "auxiliar" that can be provided but not "very used" or a mechanism that you would encourage people to use for "normal exception handling"?</td></tr>
+            <tr><td>[20:51] &lt MS-&gt I think it would be rare to use it, but in places where it could be used (I'm thinking network servers) it could be pretty invaluable</td></tr>
+            <tr><td>[20:51] &lt Trun&gt ok</td></tr>
+            <tr><td>[20:52] &lt Trun&gt would error_handling be always implemented? I mean, maybe if the component doesn't implement it, it would be useful to reraise the exception, right?</td></tr>
+            <tr><td>[20:54] &lt MS-&gt No. The aim exception would be blocked</td></tr>
+            <tr><td>[20:54] &lt MS-&gt s/aim//</td></tr>
+            <tr><td>[20:54] &lt MS-&gt Currently its possible for a bug to take out the server</td></tr>
+            <tr><td>[20:55] &lt MS-&gt which is kinda unacceptable really for a production system</td></tr>
+            <tr><td>[20:55] &lt MS-&gt (speaking from experience)</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Interestingly, looking at an ancient version of Axon,</td></tr>
+            <tr><td>[20:56] &lt MS-&gt in version 1.4, it changed from this:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  try:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  runComponentABit</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  except:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  pass</td></tr>
+            <tr><td>[20:56] &lt MS-&gt to this:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  try:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  runComponentABit</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  except Exception, e:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  if crashAndBurn:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  raise e</td></tr>
+            <tr><td>[20:57] &lt Trun&gt so you could just choose wether you wanted to activate the system?</td></tr>
+            <tr><td>[20:58] &lt MS-&gt Not sure what you mean by that - I guess you mean "not crash the system" rather than activate</td></tr>
+            <tr><td>[20:59] &lt Trun&gt sorry, by "activate the system" I meant that you could choose if the error handling management was being used or not</td></tr>
+            <tr><td>[20:59] &lt Trun&gt yep, "not crash the system"</td></tr>
+            <tr><td>[21:01] &lt MS-&gt hmm. interesting</td></tr>
+            <tr><td>[21:01] &lt Trun&gt so was that "crashAndBurn" variable set to False when running in production?</td></tr>
+            <tr><td>[21:01] &lt MS-&gt Found the initial generator based socket test</td></tr>
+            <tr><td>[21:01] &lt MS-&gt That was the idea</td></tr>
+            <tr><td>[21:02] &lt MS-&gt dated 2002.11.06.15.57.46</td></tr>
+            <tr><td>[21:02] &lt MS-&gt It's interesting actually, I think people who've looked at various parts of kamaelia would recognise a certain core here</td></tr>
+            <tr><td>[21:03] &lt MS-&gt (It's a simple echo server using generators)</td></tr>
+            <tr><td>[21:03] &lt Trun&gt (where can I find it? is it in the SVN or in a concrete release?)</td></tr>
+            <tr><td>[21:03] &lt MS-&gt But my instinct then was to do this:</td></tr>
+            <tr><td>[21:04] &lt MS-&gt  for sock in readables:</td></tr>
+            <tr><td>[21:04] &lt MS-&gt  process = lookup[id(sock)]</td></tr>
+            <tr><td>[21:04] &lt MS-&gt  try:</td></tr>
+            <tr><td>[21:04] &lt MS-&gt  value = process.next()</td></tr>
+            <tr><td>[21:04] &lt MS-&gt  except:</td></tr>
+            <tr><td>[21:04] &lt MS-&gt  ... # shutdown</td></tr>
+            <tr><td>[21:04] &lt MS-&gt It's not in a release</td></tr>
+            <tr><td>[21:04] &lt MS-&gt I don't think...</td></tr>
+            <tr><td>[21:04] &lt MS-&gt nope</td></tr>
+            <tr><td>[21:06] &lt MS-&gt It's useful though for this discussion. I'll post a certain part of the core on my blog I think</td></tr>
+            <tr><td>[21:08] &lt MS-&gt In case you're wondering, its in a tar ball of an old archive of a tar ball of an internal CVS repository</td></tr>
+            <tr><td>[21:10] &lt Trun&gt yeah, I was looking at the SVN, but it starts on 2004 with code coming from the CVS repository</td></tr>
+            <tr><td>[21:10] &lt MS-&gt no, this predates the public CVS repository</td></tr>
+            <tr><td>[21:11] &lt Trun&gt oh</td></tr>
+            <tr><td>[21:11] &lt Trun&gt was kamaelia hosted in a private CVS repository back then?</td></tr>
+            <tr><td>[21:11] &lt MS-&gt Yep - before we released as open source</td></tr>
+            <tr><td>[21:12] &lt MS-&gt We were using CVS from day one more or less.</td></tr>
+            <tr><td>[21:20] &lt Trun&gt I was still thinking in the crashAndBurn thing...</td></tr>
+            <tr><td>[21:20] &lt Trun&gt would it make sense to have that "crashAndBurn" configured in a global AND component basis?</td></tr>
+            <tr><td>[21:21] &lt Trun&gt like asking the component "you want to raise any exception? [y/n/don't know]" -default to "don't know"-, and, if "don't know" ask the global variable?</td></tr>
+            <tr><td>[21:22] &lt Trun&gt I mean, I'm thinking of whenever someone is writing code and a common exception is raised. Wouldn't it become a problem to discard the information provided by the exception itself?</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Maybe - it's _very_ easy to over complicate things</td></tr>
+            <tr><td>[21:22] &lt Trun&gt how did you gather the exception information in older versions of Axon, when you did the try..except thing?</td></tr>
+            <tr><td>[21:22] &lt MS-&gt we didn't - we just killed the thing off</td></tr>
+            <tr><td>[21:23] &lt MS-&gt My thought was that maybe we could allow restart</td></tr>
+            <tr><td>[21:23] &lt Trun&gt but when you were writing code and a NameError or something like that because you did a typo, how did you find it?</td></tr>
+            <tr><td>[21:24] &lt Trun&gt s/NameError or something like that/NameError or something like that was raised/</td></tr>
+            <tr><td>[21:25] &lt MS-&gt That's why the scheduler doesn't contain that anymore :)</td></tr>
+            <tr><td>[21:25] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:25] &lt MS-&gt I'm wondering if there's a way of putting that resilience back in</td></tr>
+            <tr><td>[21:25] &lt MS-&gt but without losing the benefits.</td></tr>
+            <tr><td>[21:25] *** vmlemon__ is now known as vmlemon___</td></tr>
+            <tr><td>[21:26] *** vmlemon___ is now known as vmlemon_</td></tr>
+            <tr><td>[21:27] &lt Trun&gt (sorry, resilience in wordreference gives me two translations... flexibility -in a material- and endurance -in a person-... what did you mean by resilience?)</td></tr>
+            <tr><td>[21:27] &lt vmlemon_&gt Failure-protection</td></tr>
+            <tr><td>[21:27] &lt MS-&gt ...rephrasing..</td></tr>
+            <tr><td>[21:27] &lt MS-&gt yes, that</td></tr>
+            <tr><td>[21:27] &lt Trun&gt ok</td></tr>
+            <tr><td>[21:29] &lt MS-&gt Mind you...</td></tr>
+            <tr><td>[21:29] &lt MS-&gt That *entire* section :</td></tr>
+            <tr><td>[21:30] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Axon/Axon/Scheduler.py?view=markup</td></tr>
+            <tr><td>[21:30] &lt MS-&gt line 439</td></tr>
+            <tr><td>[21:30] &lt MS-&gt to line</td></tr>
+            <tr><td>[21:30] &lt MS-&gt 462</td></tr>
+            <tr><td>[21:30] &lt MS-&gt is doable as just a function call</td></tr>
+            <tr><td>[21:30] &lt MS-&gt meaning we could have our cake and eat it - make it a switch</td></tr>
+            <tr><td>[21:31] &lt MS-&gt Though adding in a function call there affects the performance of the whole system</td></tr>
+            <tr><td>[23:32] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[23:32] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[23:40] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:40] *** vmlemon__ is now known as vmlemon_</td></tr>

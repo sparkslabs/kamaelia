@@ -1,0 +1,60 @@
+<html><body><table>
+            <tr><td>[01:35] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[04:21] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[05:13] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[05:53] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:02] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[09:17] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:19] &lt MS-&gt greetings</td></tr>
+            <tr><td>[09:24] &lt Lawouach_&gt afternoon</td></tr>
+            <tr><td>[09:29] &lt Lawouach_&gt http://www.catonmat.net/blog/wp-content/plugins/wp-downloadMonitor/user_uploads/screen.cheat.sheet.txt &lt -- my new best bookmark :)</td></tr>
+            <tr><td>[10:29] *** MS- clicks</td></tr>
+            <tr><td>[10:29] &lt MS-&gt Oh that's handy</td></tr>
+            <tr><td>[10:44] &lt Lawouach_&gt indeed</td></tr>
+            <tr><td>[11:11] &lt Lawouach_&gt I've spent a few days investigating a really odd issue with some of my XMPP clients running on our servers</td></tr>
+            <tr><td>[11:12] &lt Lawouach_&gt Quite regularly (but not precisely at the period interval), we would see high CPU times usage</td></tr>
+            <tr><td>[11:12] &lt Lawouach_&gt Meaning the OS was spending lots of time within the process even though the CPU wasn't usually doing much</td></tr>
+            <tr><td>[11:13] &lt Lawouach_&gt I though I had a bug in my code, then was worried it could be Kamaelia</td></tr>
+            <tr><td>[11:13] &lt Lawouach_&gt Now I'm leaning towards the logging package</td></tr>
+            <tr><td>[11:13] &lt Lawouach_&gt I'm using rotating logs</td></tr>
+            <tr><td>[11:13] &lt Lawouach_&gt and I've witnessed those peaks usually around the time the rotation occurs</td></tr>
+            <tr><td>[11:14] &lt Lawouach_&gt I've disabled the logs to see if my theory is right</td></tr>
+            <tr><td>[11:14] &lt Lawouach_&gt if so then... lame lame logging module :/</td></tr>
+            <tr><td>[12:11] *** MS- reads scrollback</td></tr>
+            <tr><td>[12:11] &lt MS-&gt "Quite regularly (but not precisely at the period interval), we would see high CPU times usage"</td></tr>
+            <tr><td>[12:11] &lt MS-&gt The garbage collector ?</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt We still consider that option yes</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt But it's tricky to track down</td></tr>
+            <tr><td>[12:13] &lt MS-&gt Indeed.</td></tr>
+            <tr><td>[12:52] &lt MS-&gt Oooh, just identified an interesting side effect of threaded components which can allow them to burn more CPU than they should.</td></tr>
+            <tr><td>[12:52] &lt MS-&gt It's a logical burn, but unexpected</td></tr>
+            <tr><td>[12:52] &lt MS-&gt If you're using self.pause() in a threaded component to sleep for a given time</td></tr>
+            <tr><td>[12:53] &lt MS-&gt And send out messages periodically</td></tr>
+            <tr><td>[12:53] &lt MS-&gt That works OK if the consumer is consuming them slower than you're sending</td></tr>
+            <tr><td>[12:53] &lt MS-&gt since then you'll sleep</td></tr>
+            <tr><td>[12:53] &lt MS-&gt However, given a message being removed from an outbox (by the recipient) causes a component to unpause</td></tr>
+            <tr><td>[12:54] &lt MS-&gt then if you're sending messages when awoken from that pause</td></tr>
+            <tr><td>[12:54] &lt MS-&gt then you can go into a CPU burn</td></tr>
+            <tr><td>[12:54] &lt MS-&gt It's not a particularly massive problem, but is an interesting edge case.</td></tr>
+            <tr><td>[12:55] &lt Lawouach_&gt I see</td></tr>
+            <tr><td>[12:56] &lt Lawouach_&gt I have to come dislike threaded component even though I do understand they are required in some circumstances</td></tr>
+            <tr><td>[12:56] &lt Lawouach_&gt I much prefer generator based components</td></tr>
+            <tr><td>[12:56] &lt MS-&gt Likewise. I'm doing something which is time related here hence looking at it</td></tr>
+            <tr><td>[12:57] &lt MS-&gt I'm beginning to think though that threaded components as a concept is a nice idea, but a threadedchassis is a better one</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt My main concern about them is not so much about the implementation but that they feel less well-behaved than regular components</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt With potential side-effects like the one you mention</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt It's hard to trust them</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:00] &lt MS-&gt Well, they are harder to trust - they're running potentially truly in parallel in a shared memory space, which is akin to playing with fire</td></tr>
+            <tr><td>[13:00] &lt MS-&gt But that's threads for you :)</td></tr>
+            <tr><td>[13:02] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:04] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:10] *** chumpalump has joined #kamaelia</td></tr>
+            <tr><td>[16:38] &lt MS-&gt Right, hometime. back online later this evening. Plan is to continue reviewing the HTTP improvements.</td></tr>
+            <tr><td>[16:38] *** MS- is hungry :)</td></tr>
+            <tr><td>[16:38] &lt MS-&gt cya</td></tr>
+            <tr><td>[16:38] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[19:03] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:54] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:54] &lt MS-&gt evening</td></tr>
+            <tr><td>[21:10] *** MS- has parted #kamaelia</td></tr>

@@ -1,0 +1,158 @@
+<html><body><table>
+            <tr><td>[02:19] *** elvum has joined #kamaelia</td></tr>
+            <tr><td>[04:32] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[04:40] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:22] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:01] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[07:09] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[07:39] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:00] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:06] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:06] &lt MS-&gt greetings</td></tr>
+            <tr><td>[08:28] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[08:29] &lt Lawouach&gt my gosh, I'm going nuts with integrating the scheduler with Qt</td></tr>
+            <tr><td>[08:29] &lt Lawouach&gt not that it's not possible but there are all kinds of pitfalls</td></tr>
+            <tr><td>[08:29] &lt Lawouach&gt mainly due to threads issues</td></tr>
+            <tr><td>[08:30] &lt MS-&gt heya</td></tr>
+            <tr><td>[08:30] *** MS- listens</td></tr>
+            <tr><td>[08:30] &lt MS-&gt I'd like to get that working nicely fwiw</td></tr>
+            <tr><td>[08:31] &lt Lawouach&gt well would I</td></tr>
+            <tr><td>[08:31] &lt Lawouach&gt I've tried many scenarios</td></tr>
+            <tr><td>[08:31] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[08:32] &lt Lawouach&gt first</td></tr>
+            <tr><td>[08:32] &lt Lawouach&gt I tried simply running Axon.background()</td></tr>
+            <tr><td>[08:32] &lt Lawouach&gt That works well except if your components at some point try to interact with the GUI</td></tr>
+            <tr><td>[08:32] &lt Lawouach&gt in theory Qt4 signals are thread-safe but perhaps not from a Python thread</td></tr>
+            <tr><td>[08:33] &lt Lawouach&gt so there are some nasty GUI deadlocks in that scenario</td></tr>
+            <tr><td>[08:33] &lt MS-&gt They probably need to be a QThread</td></tr>
+            <tr><td>[08:33] &lt MS-&gt (If I've got the right class - I know they provide threading primitives)</td></tr>
+            <tr><td>[08:33] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[08:33] &lt Lawouach&gt so I tried that</td></tr>
+            <tr><td>[08:34] &lt Lawouach&gt This meant running scheduler.run.main() myself in a loop like this:</td></tr>
+            <tr><td>[08:34] &lt Lawouach&gt http://pastebin.ca/1420301</td></tr>
+            <tr><td>[08:35] &lt Lawouach&gt but I've experience some deadlocks too</td></tr>
+            <tr><td>[08:36] &lt Lawouach&gt eventually I decided to try implementing the scheduler as a QThread but without using Axon's scheduler</td></tr>
+            <tr><td>[08:36] &lt Lawouach&gt it didn't pan out as well as I wanted</td></tr>
+            <tr><td>[08:37] &lt Lawouach&gt I was almost tempted to run each application component I wrote in its own thread and rid of the scheduler</td></tr>
+            <tr><td>[08:37] &lt MS-&gt http://pastebin.ca/1420301 isn't too different from http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Axon/Axon/background.py</td></tr>
+            <tr><td>[08:37] &lt Lawouach&gt but that doesn't sound good to me</td></tr>
+            <tr><td>[08:37] &lt MS-&gt What OS is this on OOI?</td></tr>
+            <tr><td>[08:38] &lt Lawouach&gt Linux</td></tr>
+            <tr><td>[08:38] *** MS- just wondering about possible OS level issues</td></tr>
+            <tr><td>[08:38] &lt Lawouach&gt Qt4.5</td></tr>
+            <tr><td>[08:38] &lt MS-&gt not that then</td></tr>
+            <tr><td>[08:38] &lt Lawouach&gt same deadlock experienced on MacOSX</td></tr>
+            <tr><td>[08:38] &lt Lawouach&gt The deadlock issue might also come from one of my components accessing the GUI without a signal</td></tr>
+            <tr><td>[08:38] &lt MS-&gt Yeah, I was mainly worried about windows really, since it's pretty braindead</td></tr>
+            <tr><td>[08:39] &lt Lawouach&gt I have a large set of components so it might be possible</td></tr>
+            <tr><td>[08:39] &lt MS-&gt quite possibly</td></tr>
+            <tr><td>[08:40] &lt MS-&gt If you can post the code anywhere for me to look at that'd be appreciated. If it's something that can't be public, I'm fine with that - just pass over a private channel (eg email :) )</td></tr>
+            <tr><td>[08:41] &lt Lawouach&gt it's public but large :)</td></tr>
+            <tr><td>[08:41] &lt Lawouach&gt it's basically widgets for headstock</td></tr>
+            <tr><td>[08:41] &lt MS-&gt I see. Well, point me at it and I'll take a look</td></tr>
+            <tr><td>[08:41] &lt MS-&gt I'm going afk in a few minutes BTW (just had a phone call dragging me off somewhere... :) )</td></tr>
+            <tr><td>[08:42] &lt Lawouach&gt http://trac.defuze.org/browser/oss/animato</td></tr>
+            <tr><td>[08:42] &lt Lawouach&gt np</td></tr>
+            <tr><td>[08:43] &lt Lawouach&gt animato is an application that would eventually allow for creating and running load test scenarios of XMPP servers</td></tr>
+            <tr><td>[08:43] &lt Lawouach&gt the GUI actually uses jlib for the various XMPP widgets</td></tr>
+            <tr><td>[08:43] &lt Lawouach&gt http://trac.defuze.org/browser/oss/jlib</td></tr>
+            <tr><td>[08:44] &lt Lawouach&gt those widgets are a mapping of headstock Axon components</td></tr>
+            <tr><td>[08:44] &lt Lawouach&gt the main class is http://trac.defuze.org/browser/oss/animato/animato/gui/mainwindow.py</td></tr>
+            <tr><td>[08:44] &lt Lawouach&gt where you'll see two different schedulers attempt</td></tr>
+            <tr><td>[08:45] &lt Lawouach&gt you should just run it like this:</td></tr>
+            <tr><td>[08:45] &lt Lawouach&gt cd animato</td></tr>
+            <tr><td>[08:45] &lt Lawouach&gt python animato/gui/mainwindow.py</td></tr>
+            <tr><td>[08:46] &lt Lawouach&gt this requires Qt 4.5 and PyQt 4 bindings latest snapshot</td></tr>
+            <tr><td>[08:47] &lt Lawouach&gt though might work with 4.4 and binary PyQt4 bindings</td></tr>
+            <tr><td>[08:57] &lt MS-&gt So to confirm in order to install this, I need:</td></tr>
+            <tr><td>[08:57] &lt MS-&gt headstock</td></tr>
+            <tr><td>[08:57] &lt MS-&gt jlib</td></tr>
+            <tr><td>[08:57] &lt MS-&gt animato</td></tr>
+            <tr><td>[08:57] &lt MS-&gt (which all look simple to install) and if necessary: upgrade to qt 4.5 and latest pyqt 4 bindings?</td></tr>
+            <tr><td>[08:57] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[08:57] &lt Lawouach&gt that's right</td></tr>
+            <tr><td>[08:57] &lt MS-&gt cool</td></tr>
+            <tr><td>[08:57] &lt Lawouach&gt for headstock you'll need bridge too</td></tr>
+            <tr><td>[08:57] &lt Lawouach&gt on my repo as well</td></tr>
+            <tr><td>[08:57] &lt MS-&gt k</td></tr>
+            <tr><td>[08:57] &lt Lawouach&gt I advise getting them from svn though</td></tr>
+            <tr><td>[08:59] &lt MS-&gt decided to : svn co https://svn.defuze.org/oss/ : to simplify things :)</td></tr>
+            <tr><td>[08:59] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[08:59] &lt Lawouach&gt that's what I do too :)</td></tr>
+            <tr><td>[08:59] &lt Lawouach&gt my repo isn't so big ;p</td></tr>
+            <tr><td>[09:00] &lt MS-&gt :)</td></tr>
+            <tr><td>[09:01] &lt Lawouach&gt if you plan on running it you'll need obviously an xmpp server</td></tr>
+            <tr><td>[09:01] &lt Lawouach&gt you can just grab the ejabberd installer</td></tr>
+            <tr><td>[09:01] &lt MS-&gt TypeError: argument 4 of QCoreApplication.translate() has an invalid type</td></tr>
+            <tr><td>[09:01] &lt Lawouach&gt it's really easy to run</td></tr>
+            <tr><td>[09:01] &lt Lawouach&gt oh?</td></tr>
+            <tr><td>[09:01] &lt MS-&gt appears to not work with the version of Qt I have installed</td></tr>
+            <tr><td>[09:01] &lt Lawouach&gt which module/line?</td></tr>
+            <tr><td>[09:01] &lt MS-&gt (was trying it on the offchance)</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt well the app will launch without the server</td></tr>
+            <tr><td>[09:02] &lt MS-&gt I didn't expect it to work FWIW</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt only when you start the clients will it ask for one :)</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt still</td></tr>
+            <tr><td>[09:02] &lt Lawouach&gt which Qt version are you using?</td></tr>
+            <tr><td>[09:03] &lt MS-&gt a stock installed version with SuSE 10.3 - appears to be qt 4.3</td></tr>
+            <tr><td>[09:03] &lt Lawouach&gt oh right</td></tr>
+            <tr><td>[09:03] &lt Lawouach&gt yeah rather old</td></tr>
+            <tr><td>[09:03] &lt MS-&gt As I said - I didn't expect it to work, but an easy check :)</td></tr>
+            <tr><td>[09:04] &lt Lawouach&gt http://www.qtsoftware.com/downloads</td></tr>
+            <tr><td>[09:04] &lt Lawouach&gt the Qt: Framework Only would be enough</td></tr>
+            <tr><td>[09:04] &lt MS-&gt ta</td></tr>
+            <tr><td>[09:04] &lt Lawouach&gt it's a self installer I think</td></tr>
+            <tr><td>[09:04] &lt Lawouach&gt along with the source if you need to recompile</td></tr>
+            <tr><td>[09:05] &lt MS-&gt OK, that's going to take a little while :)</td></tr>
+            <tr><td>[09:05] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[09:05] &lt MS-&gt I think I'll get lunch :)</td></tr>
+            <tr><td>[09:05] &lt Lawouach&gt and if you need to recompile it will also be rather long</td></tr>
+            <tr><td>[09:05] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[09:05] &lt Lawouach&gt I'll be online this afternoon :)</td></tr>
+            <tr><td>[09:05] &lt MS-&gt cool</td></tr>
+            <tr><td>[09:34] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:58] *** elvum has parted #kamaelia</td></tr>
+            <tr><td>[12:34] *** PJ_Coudert_ has joined #kamaelia</td></tr>
+            <tr><td>[14:56] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[16:01] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[16:09] &lt eikenberry&gt http://www.kamaelia.org/Developers/Roadmap</td></tr>
+            <tr><td>[16:09] &lt eikenberry&gt Is that just behind or is it no longer relevant?</td></tr>
+            <tr><td>[16:13] &lt MS-&gt I think it's no longer relevant tbh. Lots of it is aspirational, but it was also dependent, rather heavily, on continued contribution by ex-gsoc students.</td></tr>
+            <tr><td>[16:14] &lt MS-&gt That said, I think actually kick starting a 6-weekly release candidate cycle is probably a good idea</td></tr>
+            <tr><td>[16:15] &lt MS-&gt (with the expectation that a full release would happen for every other release candidate)</td></tr>
+            <tr><td>[16:15] &lt MS-&gt On a personal level I've been a little overloaded, which has been the reason for slipping a bit</td></tr>
+            <tr><td>[16:16] &lt MS-&gt On a more useful note, I'm shifting projects at work, which will be a good fit for kamaelia which is useful :)</td></tr>
+            <tr><td>[16:17] &lt MS-&gt I think I need more realistic targets/goals for the roadmap at the moment :)</td></tr>
+            <tr><td>[16:24] &lt MS-&gt Maybe bi-monthly is more realistic.</td></tr>
+            <tr><td>[16:26] &lt MS-&gt I think I'll go with that.</td></tr>
+            <tr><td>[16:27] &lt MS-&gt FWIW, whilst the release schedule is definitely out of kilter, I'm still actively working on kamaelia. I've been spending some time looking at improving examples and performance given reports in recent months</td></tr>
+            <tr><td>[16:28] &lt MS-&gt Along with how to make it easier for people to add things into Kamaelia - specifically through the Kamaelia.Apps namespace.</td></tr>
+            <tr><td>[16:33] &lt aa_&gt MS-: (hi) is kamaelia/you making an appearance at europython?</td></tr>
+            <tr><td>[16:35] &lt MS-&gt I've yet to decide tbh - I should - but I'm not sure what to talk about this time :) I have a feeling that something based around real world uses of concurrency/kamaelia though</td></tr>
+            <tr><td>[16:35] &lt MS-&gt would be a good/useful idea.</td></tr>
+            <tr><td>[16:36] &lt MS-&gt Candidate things there being : backend transcoder for a website that serves user contributed videos as flvs ,</td></tr>
+            <tr><td>[16:36] &lt MS-&gt the greylisting server</td></tr>
+            <tr><td>[16:36] &lt MS-&gt whiteboard</td></tr>
+            <tr><td>[16:36] &lt MS-&gt & speak n write</td></tr>
+            <tr><td>[16:37] &lt MS-&gt But there's others as well, like a system for accepting & replying to SMS messages</td></tr>
+            <tr><td>[16:37] &lt MS-&gt The feedback I've generally had is "more real world examples"</td></tr>
+            <tr><td>[16:38] &lt MS-&gt But, more suggestions/etc very welcome</td></tr>
+            <tr><td>[16:39] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:43] &lt MS-&gt Gah, call for submissions closed.</td></tr>
+            <tr><td>[16:43] &lt MS-&gt hm</td></tr>
+            <tr><td>[16:43] &lt MS-&gt wonder if I can put something in (probably not :-/ )</td></tr>
+            <tr><td>[17:06] &lt MS-&gt eikenberry: Does this look better now: http://www.kamaelia.org/Developers/Roadmap ?</td></tr>
+            <tr><td>[17:10] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:13] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:13] &lt MS-&gt hiya</td></tr>
+            <tr><td>[17:14] *** vmlemon_ just had "fun" setting up one of the 3 HSDPA dongles under Fedora</td></tr>
+            <tr><td>[17:15] &lt vmlemon_&gt Who would have thought that *not* setting the SUID bit on an executable would have made all the difference, between stuff working, and not working? :(</td></tr>
+            <tr><td>[17:18] &lt vmlemon_&gt Still, I get higher speeds and lower latency, for all the pain</td></tr>
+            <tr><td>[17:31] &lt eikenberry&gt MS-. Yes. Thanks. :)</td></tr>
+            <tr><td>[17:48] &lt Lawouach&gt evening</td></tr>
+            <tr><td>[17:48] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[17:53] *** vmlemon_1 is now known as vmlemon_</td></tr>
+            <tr><td>[18:05] &lt MS-&gt Lawouach: evening</td></tr>
+            <tr><td>[18:55] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[19:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:53] *** salmon_ has joined #kamaelia</td></tr>

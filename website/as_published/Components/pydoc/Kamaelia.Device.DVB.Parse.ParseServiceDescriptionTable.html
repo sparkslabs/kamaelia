@@ -1,0 +1,485 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.html">ParseServiceDescriptionTable</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.ParseServiceDescriptionTable.html">ParseServiceDescriptionTable</a></strong></li>
+<li><strong>prefab <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.ParseServiceDescriptionTable_ActualAndOtherTS.html">ParseServiceDescriptionTable_ActualAndOtherTS</a></strong></li>
+<li><strong>prefab <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.ParseServiceDescriptionTable_ActualTS.html">ParseServiceDescriptionTable_ActualTS</a></strong></li>
+<li><strong>prefab <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.ParseServiceDescriptionTable_OtherTS.html">ParseServiceDescriptionTable_OtherTS</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.SDT_to_SimpleServiceList.html">SDT_to_SimpleServiceList</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#508">Parsing Service Description Tables in DVB streams</a><ul>
+<li><a class="reference" href="#509">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#510">ParseServiceDescriptionTable</a><ul>
+<li><a class="reference" href="#511">Behaviour</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#512">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#513">SDT_to_SimpleServiceList</a><ul>
+<li><a class="reference" href="#514">Behaviour</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="508">Parsing Service Description Tables in DVB streams</h1>
+<p>ParseServiceDescriptionTable parses a reconstructed PSI table from a DVB MPEG
+Transport Stream, and outputs a dictionary containing the data in the table.</p>
+<p>The purpose of the SDT and details of the fields within in are defined in the
+DVB SI specification, including the possible 'descriptor' fields that feature in
+the table:</p>
+<ul class="simple">
+<li>ETSI EN 300 468
+&quot;Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+in DVB systems&quot;
+ETSI / EBU (DVB group)</li>
+</ul>
+<p>See <a class="reference" href="/Components/pydoc/Kamaelia.Support.DVB.Descriptors.html">Kamaelia.Support.DVB.Descriptors</a> for information on how they are parsed.</p>
+<div class="section">
+<h2 id="509"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>A simple pipeline to receive, parse and display the Service Description Table
+applying to the transport stream (MUX) being received (&quot;actual TS&quot;):</p>
+<pre class="literal-block">
+FREQUENCY = 505.833330
+feparams = {
+    &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+    &quot;constellation&quot; : dvb3.frontend.QAM_16,
+    &quot;code_rate_HP&quot; : dvb3.frontend.FEC_3_4,
+    &quot;code_rate_LP&quot; : dvb3.frontend.FEC_3_4,
+}
+
+SID_Actual_PID = 0x11
+
+Pipeline( DVB_Multiplex(FREQUENCY, [SID_Actual_PID], feparams),
+          DVB_Demuxer({ SID_Actual_PID:[&quot;outbox&quot;]}),
+          ReassemblePSITables(),
+          ParseServiceDescriptionTable_ActualTS(),
+          PrettifyServiceDescriptionTable(),
+          ConsoleEchoer(),
+        ).run()
+</pre>
+<p>A simple pipeline to receive and parse the Service Description Table then
+convert it to a simple list mapping service names to service ids:</p>
+<pre class="literal-block">
+Pipeline( DVB_Multiplex(FREQUENCY, [SID_Actual_PID], feparams),
+          DVB_Demuxer({ SID_Actual_PID:[&quot;outbox&quot;]}),
+          ReassemblePSITables(),
+          ParseServiceDescriptionTable_ActualTS(),
+          SDT_to_SimpleServiceList(),
+          ConsoleEchoer(),
+        ).run()
+</pre>
+</div>
+<div class="section">
+<h2 id="510"><a id="parseservicedescriptiontable" name="parseservicedescriptiontable">ParseServiceDescriptionTable</a></h2>
+<div class="section">
+<h3 id="511"><a id="behaviour" name="behaviour">Behaviour</a></h3>
+<p>At initialisation, specify whether you want ParseServiceDescriptionTables to
+parse 'actual' or 'other' tables (or both). 'Actual' tables describe services
+within the actual transport stream the table is it. 'Other' tables describe
+services carried in other transport streams - ie. broadcast in a different MUX
+in the same network. For example:</p>
+<pre class="literal-block">
+ParseServiceDescriptionTable(acceptTables = {0x42:&quot;ACTUAL&quot;,0x46:&quot;OTHER&quot;})
+</pre>
+<p>There are shorthands available for the various combinations:</p>
+<pre class="literal-block">
+ParseServiceDescriptionTable_ActualTS()
+ParseServiceDescriptionTable_OtherTS()
+ParseServiceDescriptionTable_ActualAndOtherTS():
+</pre>
+<p>Send reconstructed PSI table 'sections' to the &quot;inbox&quot; inbox. When all sections
+of the table have arrived, ParseServiceDescriptionTable will parse the table and
+send it out of its &quot;outbox&quot; outbox.</p>
+<p>If the table is unchanged since last time it was parsed, then it will not be
+sent out. Parsed tables are only sent out when they are new or have just
+changed.</p>
+<p>The parsed table is sent out as a dictionary data structure, similar to this
+(the 'streams' list here is abridged for brevity):</p>
+<pre class="literal-block">
+{
+    'actual_other'        : 'ACTUAL',
+    'table_type'          : 'SDT',
+    'current'             : 1,
+    'original_network_id' : 9018,
+    'table_id'            : 66,
+    'services': {
+        4228: { 'running_status'       : 4,
+                'free_CA_mode'         : 0,
+                'eit_present_following': 1,
+                'eit_schedule'         : 2,
+                'descriptors': [
+                    ( 72, { 'type': 'service',
+                            'service_name': 'BBC TWO',
+                            'service_type': 'digital television service',
+                            'service_provider_name': 'BBC'
+                          } ),
+                    (115, { 'type': 'UNKNOWN',
+                            'contents': 'fp.bbc.co.uk'
+                          } )
+                ] },
+        4164: { 'running_status'       : 4,
+                'free_CA_mode'         : 0,
+                'eit_present_following': 1,
+                'eit_schedule'         : 2,
+                'descriptors': [
+                    ( 72, { 'type': 'service',
+                            'service_name': 'BBC ONE',
+                            'service_type': 'digital television service',
+                            'service_provider_name': 'BBC'
+                          } ),
+                    (115, { 'type': 'UNKNOWN',
+                            'contents': 'fp.bbc.co.uk'
+                          } )
+                ] },
+
+        .....
+
+        4671: { 'running_status': 4,
+                'free_CA_mode'         : 0,
+                'eit_present_following': 1,
+                'eit_schedule'         : 2,
+                'descriptors': [
+                    ( 72, { 'type': 'service',
+                            'service_name': 'CBBC Channel',
+                            'service_type': 'digital television service',
+                            'service_provider_name': 'BBC'
+                          } ),
+                    (115, { 'type': 'UNKNOWN',
+                            'contents': 'fp.bbc.co.uk'
+                          } )
+                ] }
+        },
+    'transport_stream_id': 4100
+}
+</pre>
+<p>This table contains information about the services within the transport stream.
+It lists the services (channels) including their names. types, and the fact that
+there is now &amp; next data (eit_present_following) and Electronic Programme Guide
+(eit_schedule) data available for each of them.</p>
+<p>This is part of an instantaneous snapshot of the SDT broadcast from Crystal
+Palace MUX 1 (505.8MHz) in the UK on 21th Dec 2006.</p>
+<p>If this data is sent on through a PrettifyServiceDescriptionTable component,
+then the equivalent output is a string containing the following (again, abridged
+here for brevity):</p>
+<pre class="literal-block">
+Table ID           : 66
+Table is valid for : CURRENT (valid)
+Actual or Other n/w: ACTUAL
+Transport stream id: 4100
+Original network id: 9018
+Services:
+    Service id : 4228
+        EIT present_following? : YES
+        EIT schedule?          : YES
+        Running status         : 4 (RUNNING)
+        Scrambled?             : NO
+        Service descriptors:
+            Descriptor 0x48 : service
+                service_name : 'BBC TWO'
+                service_provider_name : 'BBC'
+                service_type : 'digital television service'
+            Descriptor 0x73 : UNKNOWN
+                contents : 'fp.bbc.co.uk'
+    Service id : 4164
+        EIT present_following? : YES
+        EIT schedule?          : YES
+        Running status         : 4 (RUNNING)
+        Scrambled?             : NO
+        Service descriptors:
+            Descriptor 0x48 : service
+                service_name : 'BBC ONE'
+                service_provider_name : 'BBC'
+                service_type : 'digital television service'
+            Descriptor 0x73 : UNKNOWN
+                contents : 'fp.bbc.co.uk'
+
+    .....
+
+    Service id : 4671
+        EIT present_following? : YES
+        EIT schedule?          : YES
+        Running status         : 4 (RUNNING)
+        Scrambled?             : NO
+        Service descriptors:
+            Descriptor 0x48 : service
+                service_name : 'CBBC Channel'
+                service_provider_name : 'BBC'
+                service_type : 'digital television service'
+            Descriptor 0x73 : UNKNOWN
+                contents : 'fp.bbc.co.uk'
+</pre>
+<p>ParseServiceDescriptionTable can collect the sections of, and then parse, both
+'current' and 'next' tables simultaneously.</p>
+<p>See the &quot;DVB SI&quot; specifications for information on the purposes of the
+descriptor fields that appear in various parts of this table.</p>
+<p>See <a class="reference" href="/Components/pydoc/Kamaelia.Support.DVB.Descriptors.html">Kamaelia.Support.DVB.Descriptors</a> for information on how each is parsed.</p>
+<p>If a shutdownMicroprocess or producerFinished message is received on the
+&quot;control&quot; inbox, then it will immediately be sent on out of the &quot;signal&quot; outbox
+and the component will then immediately terminate.</p>
+</div>
+<div class="section">
+<h3 id="512"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h3>
+<p>ParseServiceDescriptionTable logs all the table sections it receives, until it
+determines it has the complete set; then it parses them.</p>
+<p>If the version number field in any table section changes, then the log is
+cleared, and the component starts collecting the sections again from scratch.</p>
+</div>
+</div>
+<div class="section">
+<h2 id="513"><a id="sdt-to-simpleservicelist" name="sdt-to-simpleservicelist">SDT_to_SimpleServiceList</a></h2>
+<div class="section">
+<h3 id="514"><a id="id1" name="id1">Behaviour</a></h3>
+<p>Send parsed service description tables to this component's &quot;inbox&quot; inbox and
+a dictionary mapping service names to service ids will be sent out the &quot;outbox&quot;
+outbox. For example:</p>
+<pre class="literal-block">
+{ 'BBCi'        : 4479,
+  'BBC ONE'     : 4164,
+  'BBC TWO'     : 4228,
+  'CBBC Channel': 4671,
+  'BBC NEWS 24' : 4415,
+  'BBC THREE'   : 4351
+}
+</pre>
+<p>If a shutdownMicroprocess or producerFinished message is received on the
+&quot;control&quot; inbox, then it will immediately be sent on out of the &quot;signal&quot; outbox
+and the component will then immediately terminate.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.html">ParseServiceDescriptionTable</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.ParseServiceDescriptionTable.html">ParseServiceDescriptionTable</a></h1>
+<div class="section">
+<h2 id="symbol-ParseServiceDescriptionTable">class ParseServiceDescriptionTable(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>ParseServiceDescriptionTable([acceptTables]) -&gt; new ParseServiceDescriptionTable component.</p>
+<p>Send reconstructed PSI table sections to the &quot;inbox&quot; inbox. When a complete
+table is assembled and parsed, the result is sent out of the &quot;outbox&quot; outbox
+as a dictionary.</p>
+<p>Doesn't emit anything again until the version number of the table changes.</p>
+<p>Keyword arguments:</p>
+<pre class="literal-block">
+- acceptTables  - dict of (table_id,string_description) mappings for tables to be accepted (default={0x42:&quot;ACTUAL&quot;,0x46:&quot;OTHER&quot;})
+</pre>
+<div class="section">
+<h3><a id="symbol-ParseServiceDescriptionTable.Inboxes" name="symbol-ParseServiceDescriptionTable.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : DVB PSI Packets from a single PID containing SDT table sections</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-ParseServiceDescriptionTable.Outboxes" name="symbol-ParseServiceDescriptionTable.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : Parsed PMT table (only when it changes)</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-ParseServiceDescriptionTable.__init__" name="symbol-ParseServiceDescriptionTable.__init__">__init__(self[, acceptTables])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ParseServiceDescriptionTable.main" name="symbol-ParseServiceDescriptionTable.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ParseServiceDescriptionTable.parseTable" name="symbol-ParseServiceDescriptionTable.parseTable">parseTable(self, index, sections)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ParseServiceDescriptionTable.shutdown" name="symbol-ParseServiceDescriptionTable.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.html">ParseServiceDescriptionTable</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.ParseServiceDescriptionTable_ActualAndOtherTS.html">ParseServiceDescriptionTable_ActualAndOtherTS</a></h1>
+<div class="section">
+<h2 id="symbol-ParseServiceDescriptionTable_ActualAndOtherTS">prefab: ParseServiceDescriptionTable_ActualAndOtherTS</h2>
+<p>ParseServiceDescriptionTable_ActualAndOtherTS() -&gt; new ParseServiceDescriptionTable component.</p>
+<p>Instantiates a ParseServiceDescriptionTable component configured to parse
+both 'ACTUAL' and 'OTHER TS' tables (table ids 0x42 and 0x46)</p>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.html">ParseServiceDescriptionTable</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.ParseServiceDescriptionTable_ActualTS.html">ParseServiceDescriptionTable_ActualTS</a></h1>
+<div class="section">
+<h2 id="symbol-ParseServiceDescriptionTable_ActualTS">prefab: ParseServiceDescriptionTable_ActualTS</h2>
+<p>ParseServiceDescriptionTable_ActualTS() -&gt; new ParseServiceDescriptionTable component.</p>
+<p>Instantiates a ParseServiceDescriptionTable component configured to parse
+'ACTUAL TS' tables only (table id 0x42)</p>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.html">ParseServiceDescriptionTable</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.ParseServiceDescriptionTable_OtherTS.html">ParseServiceDescriptionTable_OtherTS</a></h1>
+<div class="section">
+<h2 id="symbol-ParseServiceDescriptionTable_OtherTS">prefab: ParseServiceDescriptionTable_OtherTS</h2>
+<p>ParseServiceDescriptionTable_OtherTS() -&gt; new ParseServiceDescriptionTable component.</p>
+<p>Instantiates a ParseServiceDescriptionTable component configured to parse
+'OTHER TS' tables only (table id 0x46)</p>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.html">ParseServiceDescriptionTable</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseServiceDescriptionTable.SDT_to_SimpleServiceList.html">SDT_to_SimpleServiceList</a></h1>
+<div class="section">
+<h2 id="symbol-SDT_to_SimpleServiceList">class SDT_to_SimpleServiceList(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>SDT_to_SimpleServiceList() -&gt; new SDT_to_SimpleServiceList component.</p>
+<p>Converts parsed Service Description Tables to a simplified list of services.</p>
+<div class="section">
+<h3><a id="symbol-SDT_to_SimpleServiceList.Inboxes" name="symbol-SDT_to_SimpleServiceList.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-SDT_to_SimpleServiceList.Outboxes" name="symbol-SDT_to_SimpleServiceList.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-SDT_to_SimpleServiceList.main" name="symbol-SDT_to_SimpleServiceList.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-SDT_to_SimpleServiceList.shutdown" name="symbol-SDT_to_SimpleServiceList.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

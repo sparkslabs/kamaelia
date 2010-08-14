@@ -1,0 +1,41 @@
+<html><body><table>
+            <tr><td>[04:12] &lt Lawouach_&gt hello</td></tr>
+            <tr><td>[06:15] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:35] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[07:20] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:45] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:15] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:14] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:02] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:03] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:08] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[14:26] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:06] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[15:15] *** dsuch has joined #kamaelia</td></tr>
+            <tr><td>[15:24] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:25] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:49] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:50] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:57] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:01] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:58] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[21:09] &lt RandIter&gt is kamaelia restricted to utilizing a single core/processor, or does it seamlessly utilize multiple cores/processors?</td></tr>
+            <tr><td>[21:11] &lt RandIter&gt seems like a make-or-break question to me</td></tr>
+            <tr><td>[21:17] &lt MS-&gt Kamaelia was originally written in the context of making it easier to manage naturally concurrent problems, originally & specifically network servers.</td></tr>
+            <tr><td>[21:17] &lt MS-&gt So it's default is to use generator based components.</td></tr>
+            <tr><td>[21:18] &lt MS-&gt These can be run on multiple processors by being run inside a processpipeline component</td></tr>
+            <tr><td>[21:18] &lt MS-&gt This hasn't been a major focus though for historical reasons. But kamaelia can certainly be used to keep a multicore machine busy.</td></tr>
+            <tr><td>[21:19] &lt MS-&gt I realise that's not a direct answer to your exact question/comment, but is a good reflection of current status</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Essentially something written for kamaelia results in a multicore friendly app</td></tr>
+            <tr><td>[21:20] &lt MS-&gt The rationale behind that statement is that generators seem to be a good unit of work and composition, encouraging reuse, whilst being efficient on a few core machine.</td></tr>
+            <tr><td>[21:21] &lt MS-&gt Whether that matches your needs, I don't know :-)</td></tr>
+            <tr><td>[21:21] &lt MS-&gt But hopefully it's a helpful comment :)</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Right, sleep time for me. Night all.</td></tr>
+            <tr><td>[21:30] &lt RandIter&gt MS-: thanks</td></tr>
+            <tr><td>[21:32] &lt RandIter&gt so i get that I'd have to use kamaelia along with multiprocessing to keep a multicore machine busy? if so, I'd like to see an example of code that does just this.</td></tr>
+            <tr><td>[21:36] &lt RandIter&gt or example that uses the processpipeline component</td></tr>
+            <tr><td>[21:44] &lt RandIter&gt i see http://www.kamaelia.org/MulticoreExample</td></tr>
+            <tr><td>[21:45] &lt RandIter&gt whoops - the link to http://www.kamaelia.org/Publications on the home page is broken</td></tr>
+            <tr><td>[21:47] &lt RandIter&gt will Kamaelia install on Windows?</td></tr>
+            <tr><td>[22:20] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[22:55] &lt RandIter&gt is the any comparison of the concurrency offerings in erlang vs in kamaelia?</td></tr>

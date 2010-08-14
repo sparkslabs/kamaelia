@@ -1,0 +1,278 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060825 ====== 
+
+1. Note of Agenda 
+2. Participants 
+3. Activity Reports 
+4. Discussion items (max 3 or 4) 
+    4.1 Deprecations - lessons learnt 
+    4.2 Plans for EuroOSCON 
+    4.3 Plans for next release 
+5. Date/Time of next meeting 
+Proposed: Thu 31st August 2006, 11am BST (GMT+0100) 
+
+
+
+2. Participants 
+
+Participating: c-ryan (Ryan), mhrd (Matt), MS- (Michael)
+Also attending: G0SUB
+
+
+
+3. Activity Reports
+
+Matt:
+    DONE - experiment allowing WaitComplete methods to be woken by message
+               delivery 
+           folding/curling 3d opengl paper 
+           signed up and booked my own travel for euro oscon 
+           investigated whiteboard latency - found bottleneck at audio output 
+
+    TODO - reduce whiteboard audio latency 
+           make more pymedia wrappers (video)
+           continue with DVB components 
+           review/revisit experimental Timer component 
+           Improve box destruction to handle when a box is still linked to
+               another 
+           review/merge sync boxes support for threaded component
+           experiment with pausing when waiting to deliver to a full inbox
+
+    BLOCKED - doing boring BBC stuff (writing and giving presentationS) 
+
+    FOLLOWUP - Google mentor payments & tax 
+
+Michael:
+    DONE - started on deprecations (merge)
+           chased BBC legal (twice)
+
+    TODO - Foo camp
+           get back into work after foo
+           release SoC release
+           SoC evaluations
+           talk to BBC legal (again)
+           talk to BBC finance 
+           michael to book travel to euro oscon/euro foo 
+           BBC international finance form for euro oscon (maybe already done?)
+           on own time: article (Linux Format magazine)
+
+    BLOCKED - jet lagged
+              catching up emails after being on leave
+              flying
+
+Ryan:
+    DONE - TorrentClient fixes suggested by Thomas
+           Add 301-redirect support to HTTPClient
+           Basic HTTP spider
+
+    TODO - Make HTTPClient components say that they've followed a redirect
+               (needed if the page redirected to has relative hyperlinks)
+           Add timeout/failure IPC messages to HTTPClient's repertoire 
+           Concurrent HTTP downloads in HTTP spider 
+           Have HTTP spider respect robots.txt file 
+
+    BLOCKED - GSoC over so less incentive :)
+
+
+Michael apologised for being rather vague as he has had a "mad week"!
+
+Michael decided to sort out EuroOSCON booking related items on Tuesday when
+he gets back to the office.
+
+
+
+4. Discussion items (max 3 or 4) 
+
+4.1 Deprecations - lessons learnt
+
+Matt said he had learnt "to not try and roll it all into one branch"
+
+Michael generalised, pointing out a: "Key lesson learnt is that the policy for
+branches intended to merge on the main trunk in /Code/Python/Kamaelia ,
+/Code/Python/Axon needs to be clearer"
+
+Michael suggested it should be further discussed on the mailing list. To which
+Matt agreed.
+
+Michael agreed that branches "needed to be easier to be merged, even if it does
+mean the coding gets more complicated slightly"
+
+He pointed out that it was a "nice example though of a problem, and the solution
+to it should make everyone's lives easier"
+
+Ryan asked if Axon.Component.component.mainBody and co. were going to be
+deprecated? Michael confirmed this, though pointed out that it would not happen
+for a while - probably not until at least Axon 2.0. And then it wouldn't be
+completely removed until 3.0
+
+This was becaue it's in the core, which Michael wants to be "much slower moving"
+- with deprecations being stubbed first, like in Kamaelia.
+
+Michael felt that the newer deprecation "stubber" is great.
+
+He explained the process, over time as being:
+    * stubbed
+    * raise exceptions with explanaton
+    * keel over and die 
+
+He suggested that after that code could *maybe* be moved into
+"Kamaelia.__past__" or similar.
+
+Michael reckoned that "the key thing about deprecations is that agreeing them
+all upfront was a good thing. Where they weren't it's caused more problems"
+
+Matt agreed with this.
+
+Michael provided examples:
+    * Kamaelia.Chassis.Pipeline.Pipeline - a no-brainer to merge (conceptually)
+    * UnixPipe - not the case
+
+Matt agreed that retrospectively he should have "just let some be, and they 
+could have been sorted in a later iteration"
+
+Michael pointed out that "if *policy yet to be decided and discussed* of
+smaller branches gets created then this becomes less of an issue "
+
+Michael also identified the potentially useful lesson that "small (largely)
+independently mergeable branches allows discussion to be done after the coding
+(where coding is fast), rather than before ("I could've written this by now
+with all this discussion") "
+
+Matt pointed out that on the practical front it would mean lots of branches
+(though we are heading that way anyway), and that probably would need to "change
+recommended checkout intructions to suggest developers start by only taking the
+trunk"
+
+Michael agreed; but pointed out that having lots of branches is quite a common
+thing. He also suggested branches could be grouped into subdirectories by
+developer initials, eg:
+    /branches/MS 
+    /branches/MH 
+    /branches/RJL 
+
+Matt thought this was a good idea.
+
+Michael reckoned it should be trivial to implement in svn.
+
+Matt suggested that other directories could be used, eg:
+    branches/old
+    branches/merged
+
+Michael felt that this kind of information could more usefully be put in a
+README file of some kind.
+
+
+
+4.2 Plans for EuroOSCON 
+
+Michael reiterated that "we're planning to hold an open meeting there - much
+like a python sprint - on the Friday after EOSCON is over"
+
+"Location is yet to be determined, O'Reilly can't help, but made a few
+pointers. It might mean we hold it in a nice friendly cafe or similar"
+(similar to what foocamp is doing)
+
+Matt asked:
+    * is there anything we want working/demonstrable that currently isn't
+        * Michael reckoned not - "Macro works, the whiteboard works"
+
+    * would we need to prepare a package/the repository for a sprint?
+        * Michael reckoned that "having a repository people could hack on and
+          check into would be useful. But not the main one."
+
+Michael'splans for EOSCON are to:
+    * show macro 
+    * show the whiteboard (used to do the presentation)
+    * make the release *after next* at euro oscon 
+    * release the whiteboard as a seperate bundle 
+        (Ie make a point of it as a useful application, rather than just in
+        "Tools")
+
+Michael skipped ahead temporarily into 4.3 (see 4.3 below) but returned to here
+later.
+
+Michael noted he had a discount code for euro oscon now - worth 30- 35% of the
+conference price.
+
+Matt commented that he was invoking the non-profit organisation discount; but
+if that fell through he would ask for it.
+
+Michael invited Ryan to Brussels for the next bimonthly meeting on Friday 22nd
+September - "the idea is to (hopefully) show other people stuff that's been
+done, and do new stuff with people."
+
+Michael offered to investigate if the BBC could cover Ryan's costs if he wanted
+to come. Michael explained the meeting was immediately after EuroOSCON - hence
+being in Brussels, and that Matt and Michael thought it therefore worth opening
+it out to more than just BBC people.
+
+Ryan expressed interest, but was worried that he would be starting university
+and therefore unable to attend.
+
+Matt and Ryan checked, and it looks like Ryan will be free as he doesn't start
+until the beginning of October. Ryan will confirm this.
+
+Both Matt and Michael said it would be good if Ryan could come, but that he
+shouldn't worry if he couldn't.
+
+
+
+4.3 Plans for next release 
+
+Michael described his plan for the next few releases:
+    
+August 31st: Summer of Code enhanced release 
+    * will contain the deprecations work, Ryan's work and Thomas's work
+
+Euro OSCON: The next release
+    * consolidation of a few other areas
+    * Also the whiteboard available as stand alone 
+
+Michael clarified that by "euro OSCON" he meant "released and announced at
+Euro OSCON"
+
+Michael suggested that the next release after that could be the end of October,
+moving into a 6 weekly (or faster) release cycle.
+
+Matt agreed.
+
+Michael suggested the idea of setting up a nightly automated build, and asked it
+it would be useful. (Build of /trunk/Code)
+
+
+Ryan thought nightly releases wouldn't be "all that useful" - since someone
+interested in that would be better off taking a svn checkout.
+
+Matt and MS- both suggested weekly builds. Matt felt things wouldn't be changing
+fast enough to warrant nightlies.
+
+Ryan agreed with the idea of weeklies. He reckoned it would be useful for people
+who are new to Kamaelia and don't want a release that is weeks/months old,
+without having to faff about with subversion.
+
+Michael reckoned the release would done via anonymous checkout.
+
+Ryan also pointed out that weeklies would be useful if svn went down:
+"people that want a copy of the source code then don't have to wait for it to
+come back up"
+
+Michael stated that for the Euro OSCON release he wanted "to change Compose (ie
+the pipe brain) to use the axon visualiser rather than the topology viewer
+Which is a significant change"
+    * "it'd allow the creation of more complex systems on the fly"
+    * might not happen though (lots of dependancies)
+    * "Goes towards a better GUI for Kamaelia" - something Ryan has previously
+      expressed a desire for. It would likely be more refactorable in that
+      direction too.
+
+Matt also pointed out that "dirac video playback makes a nice little demo - if
+MessageRateLimit and VideoOverlay have shutdown code added, then it should
+clean up nicely too"
+
+
+
+5. Date/Time of next meeting 
+Thu 31st August 2006, 11am BST (GMT+0100) 
+
+Ryan noted that he would be away the week after next.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060825 ======

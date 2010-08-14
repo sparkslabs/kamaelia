@@ -1,0 +1,133 @@
+<html><body><table>
+            <tr><td>[07:59] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:16] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[09:23] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:23] &lt MS-&gt morning</td></tr>
+            <tr><td>[09:58] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[10:29] &lt Rigolo&gt good morning MS-</td></tr>
+            <tr><td>[10:29] &lt Rigolo&gt :-)</td></tr>
+            <tr><td>[10:29] &lt Rigolo&gt I think that good morning is still valid for 3 minutes where you are</td></tr>
+            <tr><td>[10:29] &lt MS-&gt Morning</td></tr>
+            <tr><td>[10:29] &lt Rigolo&gt Good afternoon MS- :-)</td></tr>
+            <tr><td>[10:30] &lt MS-&gt How's things?</td></tr>
+            <tr><td>[10:30] &lt Rigolo&gt Well ... did you see my kamaelia page?</td></tr>
+            <tr><td>[10:30] &lt Rigolo&gt rigolo.googlepages.com/kamaelia</td></tr>
+            <tr><td>[10:31] &lt Rigolo&gt there I documented how I installed Kamaelia with DVB support</td></tr>
+            <tr><td>[10:31] &lt MS-&gt I haven't - looking</td></tr>
+            <tr><td>[10:31] &lt MS-&gt Fantastic - very much appreciated :)</td></tr>
+            <tr><td>[10:32] &lt Rigolo&gt I was reading throug the dvb examples .. and then I noticed something that drew my attention</td></tr>
+            <tr><td>[10:32] &lt Rigolo&gt in the TransportStreamDemuxer.py</td></tr>
+            <tr><td>[10:33] &lt Rigolo&gt there it says: For more than one channel the DVB_Demuxer doesn't seem to be realtime.</td></tr>
+            <tr><td>[10:33] &lt Rigolo&gt is that still true?</td></tr>
+            <tr><td>[10:34] &lt MS-&gt I'm not sure</td></tr>
+            <tr><td>[10:35] &lt MS-&gt IIRC we do have a version written using Pyrex as well</td></tr>
+            <tr><td>[10:35] &lt MS-&gt which is an option if it isn't</td></tr>
+            <tr><td>[10:35] &lt Rigolo&gt okee .. then I am going to test that (without the pyrex version)</td></tr>
+            <tr><td>[10:36] &lt Rigolo&gt I have my softcam working with one stream .. so I wanted to adjust thatexample for a single DVB-C transport streeam</td></tr>
+            <tr><td>[10:36] &lt Rigolo&gt and then see if I can record all channels that I can see on that stream to seperate files</td></tr>
+            <tr><td>[10:36] &lt Rigolo&gt the Macro.py is also doing multiple channels on one transport right?</td></tr>
+            <tr><td>[10:45] &lt Rigolo&gt just noticed an "mistake" in my installation instructions .. Axon was not compiled :-)</td></tr>
+            <tr><td>[10:51] &lt MS-&gt Macro.py can be used to do that, yes</td></tr>
+            <tr><td>[10:51] &lt MS-&gt Depending on CPU availability</td></tr>
+            <tr><td>[10:51] &lt MS-&gt That said, if you just dump the content to disk, rather than transode, that should be more interesting</td></tr>
+            <tr><td>[10:52] &lt Rigolo&gt yes, that is my plan ... so dump the raw mpeg streams to disk</td></tr>
+            <tr><td>[10:52] &lt Rigolo&gt that is also a good test for my softcam .. i it likes multiple channels</td></tr>
+            <tr><td>[10:53] &lt Rigolo&gt btw .. how do I specify what dvb card to use? now it defaults to adapter0 ... should I included that in my feparams?</td></tr>
+            <tr><td>[11:30] *** Rigolo is back to work again ... :-)</td></tr>
+            <tr><td>[12:04] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:05] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:19] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt kamlogbot: ecky</td></tr>
+            <tr><td>[15:42] Reply: Ptang!</td></tr>
+            <tr><td>[15:51] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:07] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[16:10] &lt vmlemon_&gt Hi Lawouach</td></tr>
+            <tr><td>[16:20] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:41] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:00] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt evening</td></tr>
+            <tr><td>[18:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:58] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:10] *** Rigolo is back</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt Hi Rigolo</td></tr>
+            <tr><td>[20:11] &lt Rigolo&gt and going to work again on multiple streams from one transport</td></tr>
+            <tr><td>[20:11] &lt Rigolo&gt hee vmlemon_</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt You've also got TS files with data from several networks?</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt Or is it something else?</td></tr>
+            <tr><td>[20:12] &lt Rigolo&gt had some connection issues I noticed?</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt Me?</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt (Although that somewhat goes against what most implementations are designed for)</td></tr>
+            <tr><td>[20:13] &lt Rigolo&gt no, I want to see if I can record multiple channels from a single transport stream ... directly as they come in. So not from a full transportstream capture file</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt Just specify several PIDs</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt instead of just one</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt Worked fine for me</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Although I can't remember the exact syntax</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt I know .. but it needs to also work with my softcam :-)</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt What does the traffic/dump look like without SoftCAM decryption, out of interest?</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt no idea ... never looked at that ...</td></tr>
+            <tr><td>[20:15] &lt Rigolo&gt what do you mean exactly?</td></tr>
+            <tr><td>[20:15] &lt vmlemon_&gt With something like dvbsnoop</td></tr>
+            <tr><td>[20:15] &lt vmlemon_&gt (Doing a dump whilst tuned without the SoftCAM, and with it)</td></tr>
+            <tr><td>[20:15] &lt vmlemon_&gt Although you end up getting deluged with data</td></tr>
+            <tr><td>[20:16] &lt Rigolo&gt well, dvbsnoop will probably show the same details I think with and without ...</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt and trying hold open the frontend and run several apps off the tuned multiplex is a PITA</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt There was an Encryption flag, if I remember correctly</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt vmlemon_: well, that is why I try not to use mutliple apps ... but do it all from kamaelia</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt :-)</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt I used to just dump and tune with Kamaelia, and hope for a decent utility for dissecting the resulting TS</td></tr>
+            <tr><td>[20:20] &lt vmlemon_&gt (dvbsnoop is awful when you have more than 100MB of data in a file, and the only other option I've found is TSReader Lite (a crippled version of a Windows app) running under Wine) :(</td></tr>
+            <tr><td>[20:20] &lt Rigolo&gt and .. as a softcam I use open-sasc-ng .. that creates a dvbloopback dvb adapter with decrypted streams :-)</td></tr>
+            <tr><td>[20:20] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[20:21] &lt Rigolo&gt vmlemon_: and ... you can use kamaelia to do that disecting for you ...</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt Not sure if it'll handle the Interesting Bits(TM) like MHEG-5 carousels and DVB Subtitles at present, though :(</td></tr>
+            <tr><td>[20:23] &lt Rigolo&gt why not? if it has a PID it should be able to spit it out I guess</td></tr>
+            <tr><td>[20:24] &lt Rigolo&gt did you have a look at this example ... (let me look for it ...)</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt I know it'll handle the PIDs/raw data, but I don't know there's code for making sense of the said data</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt for doing stuff like converting the subtitles to text (they're graphics) or extracting files from MHEG-5 carousels</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt There was a tool for doing the latter, but it was fussy and needed to be used in conjunction with a tuned in app</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt Can you throw over a small (20MB compressed maximum) DVB-C TS to have a poke at?</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt (Just out of interest, since I've only seen -T and -S stuff)</td></tr>
+            <tr><td>[20:25] &lt Rigolo&gt well .. I can remember something on the mailing list about that subtitle conversion ...</td></tr>
+            <tr><td>[20:26] &lt Rigolo&gt no problem ... I will do that in a moment ..</td></tr>
+            <tr><td>[20:26] &lt vmlemon_&gt Thanks</td></tr>
+            <tr><td>[20:29] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[20:30] &lt vmlemon_&gt Hi Uraeus</td></tr>
+            <tr><td>[20:30] &lt Uraeus&gt hi there</td></tr>
+            <tr><td>[20:32] &lt vmlemon_&gt o.O http://www.engadget.com/2008/11/06/tomy-xiao-digital-camera-has-built-in-zink-printer-the-spirit-o/</td></tr>
+            <tr><td>[21:07] &lt Rigolo&gt mmmm can not even get a single stream recorded via my virtual dvb adapter</td></tr>
+            <tr><td>[21:07] &lt vmlemon_&gt Ugh</td></tr>
+            <tr><td>[21:07] &lt Rigolo&gt an FTA channel works via the virtual adapter and Kamaelia ..</td></tr>
+            <tr><td>[21:07] &lt vmlemon_&gt Can't you get something out of the real one?</td></tr>
+            <tr><td>[21:07] &lt Rigolo&gt FTA from the real one works also</td></tr>
+            <tr><td>[21:09] &lt Rigolo&gt well ... If it do a czap -r &lt channel&gt and then a cat /dev/dev/adapter4/dvr0 &gt&gt channel.mpeg on the virtual I get a perfect stream capture</td></tr>
+            <tr><td>[21:09] &lt Rigolo&gt do the virtual adapter does work ...</td></tr>
+            <tr><td>[21:09] &lt Rigolo&gt do = so</td></tr>
+            <tr><td>[21:09] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[21:09] &lt vmlemon_&gt No whole network PID dumping?</td></tr>
+            <tr><td>[21:10] &lt Rigolo&gt well ... first try simple things ...</td></tr>
+            <tr><td>[21:18] &lt Rigolo&gt http://rigolo.googlepages.com/DVB-C-RecordChannel-NL1.txt</td></tr>
+            <tr><td>[21:19] &lt Rigolo&gt that is the script that I use for the FTA channel</td></tr>
+            <tr><td>[21:19] &lt Rigolo&gt http://rigolo.googlepages.com/DVB-C-RecordChannel-NL2.txt</td></tr>
+            <tr><td>[21:19] &lt Rigolo&gt and that is the encrypted one ... but it is not encrypted on the virtual adapter</td></tr>
+            <tr><td>[21:20] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[21:21] &lt Rigolo&gt so no real difference between them ...</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt so somehow Kamaelia does something different than czap :-)</td></tr>
+            <tr><td>[21:22] &lt vmlemon_&gt Hah, http://www.guardian.co.uk/commentisfree/2008/oct/21/religion-advertising</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt and I do not have my hardware CAM anymore .....</td></tr>
+            <tr><td>[21:22] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt mmm browsing the kamaelia code on google code does not work :-)</td></tr>
+            <tr><td>[21:26] &lt Rigolo&gt okee ... work for an other day ...</td></tr>
+            <tr><td>[21:26] &lt Rigolo&gt diving into the depths of Kamaelia to find what is happening here :-)</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt for those that are reading the logs ...</td></tr>
+            <tr><td>[21:27] &lt vmlemon_&gt Into the heart of the cat? ;)</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt Are there documented success with encrypted channels and Kamaelia?</td></tr>
+            <tr><td>[21:28] &lt vmlemon_&gt I haven't heard anything about it</td></tr>

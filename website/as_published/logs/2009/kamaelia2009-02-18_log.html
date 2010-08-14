@@ -1,0 +1,110 @@
+<html><body><table>
+            <tr><td>[08:10] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:10] *** Patrick` has joined #kamaelia</td></tr>
+            <tr><td>[08:10] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[08:10] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[08:10] *** tdobson has joined #kamaelia</td></tr>
+            <tr><td>[08:11] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[08:11] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[09:19] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[09:29] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[15:35] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[17:16] *** taj has joined #kamaelia</td></tr>
+            <tr><td>[17:16] &lt taj&gt hi folks</td></tr>
+            <tr><td>[17:16] &lt taj&gt I'm trying to integrate axon's scheduler into my PyQt app</td></tr>
+            <tr><td>[17:16] &lt taj&gt so that it runs within the Qt event loop</td></tr>
+            <tr><td>[17:17] &lt taj&gt I've written a small replacement scheduler subclass and was hoping someone could point out if I had done anything exceptionally stupid</td></tr>
+            <tr><td>[17:17] &lt taj&gt http://sirtaj.net/projects/axonqt.py</td></tr>
+            <tr><td>[20:12] &lt Lawouach&gt taj:</td></tr>
+            <tr><td>[20:12] &lt Lawouach&gt I have something you might like</td></tr>
+            <tr><td>[20:13] &lt Lawouach&gt taj: http://trac.defuze.org/wiki/jlib</td></tr>
+            <tr><td>[20:13] &lt taj&gt Lawouach: does it have cheese in it?</td></tr>
+            <tr><td>[20:13] &lt taj&gt looking...</td></tr>
+            <tr><td>[20:13] &lt Lawouach&gt http://trac.defuze.org/browser/oss/jlib/jlib/core/qaxon.py</td></tr>
+            <tr><td>[20:13] &lt Lawouach&gt no cheese</td></tr>
+            <tr><td>[20:13] &lt Lawouach&gt I'm French but I hate cheese with a passion</td></tr>
+            <tr><td>[20:14] &lt Lawouach&gt that qaxon module is all you need to interface Kamaelia/Axon with PyQt4</td></tr>
+            <tr><td>[20:14] &lt taj&gt nice!</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt it's geared towards my requirements but can be easily adapted</td></tr>
+            <tr><td>[20:15] &lt taj&gt heh it took me a moment to work that out :) but I got there</td></tr>
+            <tr><td>[20:15] &lt taj&gt thanks man that's great</td></tr>
+            <tr><td>[20:15] &lt taj&gt I noticed that Kamaelia hasnt had a release in a while. is it still being actively developed?</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt oh yeah</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt it's one of those projects which is carried mostly by one or two developers</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt so it looks like it's dead but it isn't</td></tr>
+            <tr><td>[20:16] &lt taj&gt yes I figured</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt So yeah it is very much alive</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:16] &lt taj&gt is it still under the bbc umbrella, or is it now a side-project of the devs?</td></tr>
+            <tr><td>[20:17] &lt taj&gt not that it matters but just curious</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt Michael would be the best to answer that question but AFAIK, it's not carried by the BBC any longer. Michael happens to work for the BBC but he works on Kamaelia on his spare time.</td></tr>
+            <tr><td>[20:18] &lt Lawouach&gt I don't think the BBC is actively supporting the project anymore.</td></tr>
+            <tr><td>[20:18] &lt Lawouach&gt Doesn't mean the project failed in any way</td></tr>
+            <tr><td>[20:18] &lt Lawouach&gt It's just probably not in scope any longer.</td></tr>
+            <tr><td>[20:19] &lt Lawouach&gt OH BTW, jlib is under GPL if I remember well because PyQT4 is using that license. I usually prefer BSD myself.</td></tr>
+            <tr><td>[20:19] &lt Lawouach&gt BUt couldn't use it in this case.</td></tr>
+            <tr><td>[20:20] &lt taj&gt thanks for the heads up</td></tr>
+            <tr><td>[20:20] &lt taj&gt you can actually release jlib under BSD anyway, but that's another discussion :)</td></tr>
+            <tr><td>[20:20] &lt Lawouach&gt well it isn't clear</td></tr>
+            <tr><td>[20:21] &lt Lawouach&gt the guys behind PyQT seem to argue I can't</td></tr>
+            <tr><td>[20:21] &lt taj&gt as an old-school KDE developer I've had to learn some of this stuff the hard way :-)</td></tr>
+            <tr><td>[20:21] &lt Lawouach&gt yeah but the Python "import" is like linking to PyQt</td></tr>
+            <tr><td>[20:22] &lt taj&gt it is</td></tr>
+            <tr><td>[20:22] &lt taj&gt so the combined project is definitely bound by the GPL</td></tr>
+            <tr><td>[20:22] &lt taj&gt but you can use any licence you like for your own code</td></tr>
+            <tr><td>[20:22] &lt taj&gt anyway like I said - this is somewhat offtopic</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[20:23] &lt Lawouach&gt thanks for the heads up</td></tr>
+            <tr><td>[20:29] &lt taj&gt ok I think I understand what you did there</td></tr>
+            <tr><td>[20:30] &lt taj&gt you are running the axon scheduler in another thread</td></tr>
+            <tr><td>[20:30] &lt taj&gt that is a good general solution, but my goal is slightly different - I want to keep it single-threaded and use the Qt event loop as the scheduling "point"</td></tr>
+            <tr><td>[20:31] &lt taj&gt this allows me to make regular Qt calls from within the microprocesses without having to worry about Qt threading issues</td></tr>
+            <tr><td>[20:32] &lt taj&gt of course that won't work with threaded components but for regular, generator-driven components it works</td></tr>
+            <tr><td>[20:35] &lt Lawouach&gt the example runs the scheduler in a different thread indeed</td></tr>
+            <tr><td>[20:36] &lt Lawouach&gt that was convenient here</td></tr>
+            <tr><td>[20:36] &lt Lawouach&gt however I don't use threaded component either</td></tr>
+            <tr><td>[20:37] &lt Lawouach&gt I actually never use them</td></tr>
+            <tr><td>[20:37] &lt Lawouach&gt I don't see much point in their existence except in some very specific cases</td></tr>
+            <tr><td>[20:38] &lt Lawouach&gt That's why I'm a bit confused as what you have in mind here</td></tr>
+            <tr><td>[20:38] &lt Lawouach&gt the only way would probably be to hook into the Qt mainloop</td></tr>
+            <tr><td>[20:38] &lt Lawouach&gt I remembered wishing doing just that but that wasn't as easy as it sounds</td></tr>
+            <tr><td>[20:39] &lt Lawouach&gt because Qt doesn't expose it internal loop like Gtk would probably do</td></tr>
+            <tr><td>[20:40] &lt taj&gt have a look at the url I pasted above - I have implemented it but I am not certain it is correct</td></tr>
+            <tr><td>[20:40] &lt taj&gt Qt does in fact expose its event loop</td></tr>
+            <tr><td>[20:40] &lt taj&gt but I'm just using a QTimer with zero timeout</td></tr>
+            <tr><td>[20:40] &lt taj&gt http://sirtaj.net/projects/axonqt.py</td></tr>
+            <tr><td>[20:41] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[20:41] &lt Lawouach&gt I don't find the timer bit very elegant myself but that doesn't mean it's wrong</td></tr>
+            <tr><td>[20:42] &lt Lawouach&gt matter of taste really :)</td></tr>
+            <tr><td>[20:42] &lt Lawouach&gt Regarding the mainloop, how does Qtexpose it?</td></tr>
+            <tr><td>[20:42] &lt Lawouach&gt I'm curious :)</td></tr>
+            <tr><td>[20:43] &lt Lawouach&gt note also that I've long thought we ought to eventually make the scheduler mainloop more "pluggable"</td></tr>
+            <tr><td>[20:43] &lt taj&gt http://doc.trolltech.com/4.5/qeventloop.html</td></tr>
+            <tr><td>[20:43] &lt taj&gt but honestly, as ideologically ugly as the qtimer is (I agree with you!), it is the correct way to do this.</td></tr>
+            <tr><td>[20:44] &lt taj&gt all the timer does is immediately queue a timerevent</td></tr>
+            <tr><td>[20:44] &lt taj&gt so the mainloop continues to process events without caring about axon</td></tr>
+            <tr><td>[20:45] &lt Lawouach&gt basically you kind of hi-jack the QTimer object to glue the scheduler</td></tr>
+            <tr><td>[20:45] &lt Lawouach&gt That's probably the most straightforward path</td></tr>
+            <tr><td>[20:45] &lt taj&gt yup</td></tr>
+            <tr><td>[20:46] &lt taj&gt there is the question of granularity - ie how many axon scheduling events should take place between timerevents</td></tr>
+            <tr><td>[20:46] &lt Lawouach&gt I think the way Qt exposes its mainloop doesn't help either for foreign code to be plugged in</td></tr>
+            <tr><td>[20:46] &lt taj&gt but honestly thats a small detail</td></tr>
+            <tr><td>[20:46] &lt taj&gt how is that?</td></tr>
+            <tr><td>[20:46] &lt taj&gt meaning, how could it be improved?</td></tr>
+            <tr><td>[20:47] &lt Lawouach&gt oh it's more a documentation issue here</td></tr>
+            <tr><td>[20:47] &lt Lawouach&gt To me it's rather unclear as to how use it</td></tr>
+            <tr><td>[20:47] &lt taj&gt ah</td></tr>
+            <tr><td>[20:47] &lt Lawouach&gt anywau</td></tr>
+            <tr><td>[20:47] &lt Lawouach&gt regarding the granularity question, I'll be honest I wouldn't know</td></tr>
+            <tr><td>[20:47] &lt Lawouach&gt probably needs some tweaking till you get the throughput you expect</td></tr>
+            <tr><td>[20:47] &lt taj&gt yes I'm not worrying about that</td></tr>
+            <tr><td>[20:48] &lt taj&gt the timerevent overhead is not soo bad that I'm going to worry about it for now</td></tr>
+            <tr><td>[20:48] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[20:49] &lt Lawouach&gt besides, I'm using similar techniques to wake components up at regular intervals (sometimes you need just that) so I can't spit on that solution either :)</td></tr>
+            <tr><td>[20:49] &lt Lawouach&gt smart choice :)</td></tr>
+            <tr><td>[20:49] &lt taj&gt ;)</td></tr>
+            <tr><td>[20:50] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:50] &lt Lawouach&gt anyway, going to bed for now</td></tr>
+            <tr><td>[20:50] &lt Lawouach&gt take care :)</td></tr>
+            <tr><td>[20:50] &lt taj&gt thanks Lawouach</td></tr>

@@ -1,0 +1,168 @@
+<html>
+<head>
+<title> SpeakAndWrite </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - SpeakAndWrite">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Hack for Mashed: Speak And Write</h1>
+<p><div style="float: right; border: solid;" class="twoC"><b>NOTE: </b>This doesn't replace actually teaching - but
+it makes a lovely toy, in the style of a speak and spell from years
+ago...</div> This hack is a "toy" for a small child to assist them to learn
+to read and write. They are asked to write specific words - both
+textually and also using speech synthesis. What they write is then read
+out to them. This version is by no means "complete", but it works. <br></p><p>The vocabulary it teaches (currently) is from sheet one of the DFES <a href="http://www.standards.dfes.gov.uk/primary/publications/literacy/nls_framework/485701/">Reception Term, Reception Year word cards</a> for literacy in reading/writing.<br></p><p align="center"><img src="../../../images/SpeakNLearn-1.png" height="400" width="623"></p>
+<h2>Where to Get it:<br></h2><p>First initial version here: (name reflects what I was calling it then)<br></p><ul><li><a href="../../../release/Kamaelia%20Speak%20N%20Learn-0.1.0.tar.gz">http://edit.kamaelia.org/release/Kamaelia Speak N Learn-0.1.0.tar.gz</a></li></ul><h2>Installing:</h2><blockquote>~/incoming/&gt; tar zxvf Kamaelia\ Speak\ N\ Learn-0.1.0.tar.gz<br>~/incoming/&gt; cd Kamaelia\ Speak\ N\ Learn-0.1.0/Kamaelia/<br>~/Kamaelia/&gt; python setup.py install<br></blockquote><h2>Where's the Source?<br></h2><ul><li><a href="https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_SpeakNLearn/Apps/SpeakNLearn/App/SpeakNWrite.py">https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_SpeakNLearn/Apps/SpeakNLearn/App/SpeakNWrite.py</a></li></ul><h2>Running:</h2><blockquote>~&gt; SpeakNLearn.py<br></blockquote><h2>Dependencies:</h2><ul><li>You need to have espeak installed</li><li>You need to have aplay installed</li><li>You need to have pygame installed<br></li></ul><h2>Internals</h2>This will shift off to the developers area since you don't need to know this to use it, but provided for those who may find it interesting:<br><div align="center"><img src="../../../images/SpeakNWriteCodeArchitecture.png"><br><div align="left">To read this, start at the top - with Challenger. That sends a challenge out, which is sent to both the display and to a backplane called "speech". The speech backplane simply speaks anything that gets to it. The child hears this and scribbles on the canvas. (The canvas sends messages about scribbles to the pen which decides what to do - draw, etc. The pen sends messages to the strokes (handwriting) recogniser. They both need to be able to draw lines on the canvas, and/or clear it.<br><br>The stroke recogniser sends messages to the aggregator which turns the recognised strokes into commands the textbox understands. This includes detecting a stroke from top right to bottom left to mean "press return". The output from the text box is then forwarded to the display and also to something that's checking what the challenger asked for. It then sends a message to the "speech" backplane to say something to the user, and also, if appropriate to the challenger. The challenger then either repeats or says a new word. This diagram has a 1:1 correspondance with the code.<br></div></div><br><h3>What's inside the Stroke Recogniser?</h3>For tomorrow :-)<br><br><h2>Follow on Ideas</h2>Instant Messenger for Children. They write, it speaks.<br><br>Michael, June 2008
+
+
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

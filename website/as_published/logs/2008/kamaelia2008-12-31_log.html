@@ -1,0 +1,76 @@
+<html><body><table>
+            <tr><td>[01:30] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:45] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:24] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:35] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:05] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:31] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:56] &lt vmlemon_&gt Hah, interesting to read about the frozen Zune thing</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt Yeah, just been reading that</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt I've got an 80GB Zune and i've checked it</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt seems fine</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt think it's just the 30GB versions</td></tr>
+            <tr><td>[13:58] &lt Davbo&gt kinda weird :/ you'd expect them to have very similar firmware</td></tr>
+            <tr><td>[13:58] &lt vmlemon_&gt Yeah, although it's Microsoft's typical excellent quality control, for you ;)</td></tr>
+            <tr><td>[13:59] &lt vmlemon_&gt (Although Toshiba made/licensed out the building of the hardware, if I remember correctly)</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt yeah, it's more of a code review problem really</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt not to defend them but it's tough to QC a bug that occurs at a specific time ;)</td></tr>
+            <tr><td>[14:00] &lt vmlemon_&gt True</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt it's one of the things you'd look for straight away if someone had programmed a clock though</td></tr>
+            <tr><td>[14:01] &lt vmlemon_&gt Although it's not as if New Year's Eve 2008 is going to cause a problem like the 2000 one supposedly did, or the 2038 "problem"...</td></tr>
+            <tr><td>[14:02] *** Davbo can't see an obvious problem with today and binary / hex / oct</td></tr>
+            <tr><td>[14:03] *** Davbo shrugs</td></tr>
+            <tr><td>[14:03] &lt vmlemon_&gt Same here</td></tr>
+            <tr><td>[14:03] &lt vmlemon_&gt I doubt they'd have a buffer overflow in the clock handling code, or something like that...</td></tr>
+            <tr><td>[14:03] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[14:03] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[14:03] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[14:05] &lt vmlemon_&gt After all, despite it presumably containing code ported from "standard" Win32, I would have expected the Windows CE time handling code to be some of the most reliable/most tested code</td></tr>
+            <tr><td>[14:06] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[14:06] &lt vmlemon_&gt Unless it's a component firmware issue</td></tr>
+            <tr><td>[14:06] &lt Davbo&gt they have been really good up until now too, it's a shame the whole device becomes a laughing stock when this happens</td></tr>
+            <tr><td>[14:07] &lt Davbo&gt i don't think Apple have been adding features to the iPod like MS have with the Zune</td></tr>
+            <tr><td>[14:07] &lt vmlemon_&gt The conspiracy theorists suggest it being some sort of eFuse to disable the device, so people have to buy a new Zune model ;)</td></tr>
+            <tr><td>[14:07] &lt vmlemon_&gt Although even I don't quite buy that one, despite not being the biggest fan of MS</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt hehe :)</td></tr>
+            <tr><td>[14:08] &lt vmlemon_&gt WTF? I've just seen "grep used greatest stack depth: 1344 bytes left" in my dmesg output</td></tr>
+            <tr><td>[14:09] &lt Davbo&gt eh? what were you grepping?</td></tr>
+            <tr><td>[14:09] &lt vmlemon_&gt No idea</td></tr>
+            <tr><td>[14:09] &lt vmlemon_&gt Although prior to checking dmesg, I changed channels on my 802.11 card</td></tr>
+            <tr><td>[14:10] &lt vmlemon_&gt (Which happens to be using the buggy as Hell ath5k driver)</td></tr>
+            <tr><td>[14:10] &lt vmlemon_&gt I haven't called grep directly for a while, so I don't know how that could have happened</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt Heh, interesting. I also got the said log spammed with "ath5k phy0: unsupported jumbo" and "ath5k phy0: noise floor calibration timeout (2437MHz)" errors, after leaving my laptop on overnight, and in Wireshark I found 7 beacon and Acknowledgement packets, which is probably the most I've seen in monitor mode with this card and driver combination</td></tr>
+            <tr><td>[14:14] &lt vmlemon_&gt (It usually pukes and decides to stop functioning until I reboot, thanks to some bad device probing and initialisation code that's persisted against 5 nightly wireless-compat driver tarballs, and 3 versions of the Linux kernel)</td></tr>
+            <tr><td>[14:15] &lt vmlemon_&gt Naturally, I have another card somewhere based on a very similar Atheros chipset (might be the same, barring the MAC and PHY versions differing), and never had those problems</td></tr>
+            <tr><td>[14:16] &lt vmlemon_&gt Seems like a Heisenbug, for what it's worth</td></tr>
+            <tr><td>[14:18] &lt vmlemon_&gt Didn't know there was a PSP or PlayStation 3 around somewhere, after looking at the said WS live dumo</td></tr>
+            <tr><td>[14:18] &lt vmlemon_&gt *dump</td></tr>
+            <tr><td>[14:27] *** vmlemon_ wonders if anyone actually likes using Windows Vista...</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt is that ath5k in the kernel?</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt my ralink is but I still need to download some firmware to get it working</td></tr>
+            <tr><td>[14:29] &lt Davbo&gt which is really strange to get working</td></tr>
+            <tr><td>[14:31] &lt vmlemon_&gt It's been in the kernel for ages, but it's a piece of unfinished crap, as much as admire their attempts at creating a "re-engineered" version of MadWifi</td></tr>
+            <tr><td>[14:32] &lt Davbo&gt wireless on linux is still hocus pocus</td></tr>
+            <tr><td>[14:33] &lt vmlemon_&gt Meh, Bluetooth is unusable on Fedora 9 :(</td></tr>
+            <tr><td>[14:33] &lt vmlemon_&gt They were hyping about mesh mode support being added recently, but there's no equivalent of "multi-mode VAPs" yet, so I can't use monitor mode together with master or access point mode :(</td></tr>
+            <tr><td>[14:34] &lt vmlemon_&gt (I don't know if the latter is even possible yet, but I can't see anything to suggest an interface to mesh mode, and they still managed to have the lowest performing monitor mode I've seen)</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt My brother has 808 followers on Twitter.</td></tr>
+            <tr><td>[14:34] &lt Davbo&gt :(</td></tr>
+            <tr><td>[14:34] *** Davbo feels unpopular</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt this is his account http://twitter.com/Ackbar he got it really early when Twitter was just starting i think</td></tr>
+            <tr><td>[14:35] &lt vmlemon_&gt Still more than I have, although a few followed me recently, and I followed back, so it's harder for me to keep track of things with their deluge of posts</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt i unfollowed a few recently, my brother just does "it's a trap!!" jokes on there. Quite funny though</td></tr>
+            <tr><td>[14:36] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[14:39] &lt vmlemon_&gt Looks like the Crapcast and One Velociraptor Per Child posts are my most popular on FriendFeed, for some reason</td></tr>
+            <tr><td>[14:40] &lt vmlemon_&gt Davbo: His feed's a trap!? ;)</td></tr>
+            <tr><td>[14:40] &lt Davbo&gt this one is my favourite http://twitter.com/Ackbar/status/5570160</td></tr>
+            <tr><td>[14:41] &lt vmlemon_&gt Interesting that you also had a problem with iPlayer being stuck in Offline mode, for wħær</td></tr>
+            <tr><td>[14:42] &lt vmlemon_&gt *for what it's worth</td></tr>
+            <tr><td>[14:42] &lt vmlemon_&gt No idea how I managed to type that</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt Yeah it's odd, they say it supports openSUSE 10.3 but that's quite old now, I don't see why they developed for it</td></tr>
+            <tr><td>[14:45] &lt vmlemon_&gt Although I'm on Fedora 10, if it make a difference...</td></tr>
+            <tr><td>[14:45] &lt vmlemon_&gt *makes</td></tr>
+            <tr><td>[14:45] &lt vmlemon_&gt Grm, I really can't type properly right now :(</td></tr>
+            <tr><td>[14:47] &lt vmlemon_&gt WTF? http://friendfeed.com/e/79738f9c-1345-4c9e-8ea7-bc5162712c20/Driver-fired-after-snowplow-falls-through-ice/</td></tr>
+            <tr><td>[14:53] &lt vmlemon_&gt Heh, http://pictures.sprintpcs.com//mmps/RECIPIENT/000_267cf9748abb1a57_1/2?inviteToken=UEBr2wYd2YPebhHoh0pk</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt Hi</td></tr>

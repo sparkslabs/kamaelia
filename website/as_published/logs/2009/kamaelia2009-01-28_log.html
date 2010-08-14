@@ -1,0 +1,61 @@
+<html><body><table>
+            <tr><td>[08:02] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:56] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:29] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:29] &lt MS-&gt greetings</td></tr>
+            <tr><td>[10:39] *** MS- reads back logs from whilst afk being ill</td></tr>
+            <tr><td>[10:40] &lt MS-&gt (chest infection, still taking anti-biotics)</td></tr>
+            <tr><td>[10:41] &lt MS-&gt hmm. I note this from the other day:</td></tr>
+            <tr><td>[10:41] &lt MS-&gt "going to get my gsoc project up for merge sometime this week / next weekend"</td></tr>
+            <tr><td>[10:41] &lt MS-&gt "hopefully MS will be a bit more forgiving than he was with j_bakers (the ML got a bit ugly with that)"</td></tr>
+            <tr><td>[10:41] &lt MS-&gt I think there's a general misunderstanding about merging here</td></tr>
+            <tr><td>[10:41] &lt MS-&gt (he says thinking out loud mainly)</td></tr>
+            <tr><td>[10:42] &lt MS-&gt Stuff gets merged if it's definitely useful. Either because someone's using it in something fun, or if it's a bug fix.</td></tr>
+            <tr><td>[10:42] &lt MS-&gt I don't randomly merge stuff that's got no use.</td></tr>
+            <tr><td>[10:42] &lt MS-&gt Or not being used</td></tr>
+            <tr><td>[10:42] &lt MS-&gt The problem with j_baker's branch was just that - it wasn't being used and contained lots of stuff that wasn't used even by other stuff on the branch</td></tr>
+            <tr><td>[10:43] &lt MS-&gt As a result there was no way to test it or even sanity check the names</td></tr>
+            <tr><td>[10:43] &lt MS-&gt All code also needs to be exerciseable at minimum, tests would be preferable, but exerciseable at minimum - so you can see expected behaviour</td></tr>
+            <tr><td>[10:44] &lt MS-&gt With stuff that goes in Kamaelia.Apps, I expect it all to be used by a given application</td></tr>
+            <tr><td>[10:44] &lt MS-&gt And that's a minimally sufficient means of exercising the code, though preferably it should not contain code that isn't exercised by the app</td></tr>
+            <tr><td>[10:45] &lt MS-&gt For stuff outside Kamaelia.Apps, it has to have examples that make it clear how you use something, and just as importantly why someone would choose to use it</td></tr>
+            <tr><td>[10:46] &lt MS-&gt Also, as an aside, Kamaelia.Support should not contain anything that creates components - either classes that derive from *component or functions that create configured components or functions that create classes/functions that create components.</td></tr>
+            <tr><td>[10:46] &lt MS-&gt I'm guessing davbo reads the logs, which is another reason for posting this here.</td></tr>
+            <tr><td>[10:46] *** MS- changed the topic to http://www.kamaelia.org/logs/</td></tr>
+            <tr><td>[10:49] &lt MS-&gt But the core points really: should work and should be in use (however occasionally).</td></tr>
+            <tr><td>[10:49] &lt MS-&gt I don't think any of the GSOC projects match the criterion of "in use" :-(</td></tr>
+            <tr><td>[10:50] &lt MS-&gt ho hum</td></tr>
+            <tr><td>[10:51] &lt MS-&gt Not going to do gsoc this year anyway, for definite</td></tr>
+            <tr><td>[10:58] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:58] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[11:10] &lt Davbo&gt fair enough MS-, I wont bother</td></tr>
+            <tr><td>[11:19] &lt Davbo&gt with merging, that is :)</td></tr>
+            <tr><td>[11:19] &lt Davbo&gt unless a use pops up or something</td></tr>
+            <tr><td>[11:25] &lt Davbo&gt Lawouach: if I use easy_install for cheerypy should i get the latest version?</td></tr>
+            <tr><td>[11:25] &lt Davbo&gt or should I do a checkout of it?</td></tr>
+            <tr><td>[11:34] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:50] &lt MS-&gt "I wont bother" - that's your call really - I just don't want you to go through the scenario of fighting to get things ready if you have a doubt over "Is it in use/am I using it/am I likely to use it/have I found it useful"</td></tr>
+            <tr><td>[11:50] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[11:50] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[11:52] &lt Davbo&gt I've found it useful as an example bit of Kamaelia code</td></tr>
+            <tr><td>[11:53] *** MS- nods</td></tr>
+            <tr><td>[11:55] &lt Davbo&gt I still have ideas though MS- so I'd like the branch to remain</td></tr>
+            <tr><td>[11:56] &lt Davbo&gt or I can move back to /sketches/ if you'd like to spring clean /branches/ that's fine</td></tr>
+            <tr><td>[11:57] &lt MS-&gt The branch can remain happily. I got rid of the branches which had been put up for merge simply because they weren't ready to merge (and the original branch was in a better state really)</td></tr>
+            <tr><td>[11:57] &lt Davbo&gt fair enough</td></tr>
+            <tr><td>[11:59] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[13:18] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[13:55] &lt MS-&gt Lawouach: Really impressed about hearing that IronPython can run Kamaelia now btw</td></tr>
+            <tr><td>[13:56] &lt MS-&gt That's really cool. Means that IronPython has reached another level of maturity :)</td></tr>
+            <tr><td>[15:45] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[15:45] &lt Lawouach&gt and it really ran smoothly</td></tr>
+            <tr><td>[15:45] &lt Lawouach&gt I didn't expect it to work</td></tr>
+            <tr><td>[18:15] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:16] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[19:52] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[19:52] Reply: does the macarena</td></tr>
+            <tr><td>[20:02] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt kamlogbot: ecky</td></tr>
+            <tr><td>[20:22] Reply: Ptang!</td></tr>
+            <tr><td>[22:23] *** Patrick` has joined #kamaelia</td></tr>
+            <tr><td>[22:32] *** Patrick` has joined #kamaelia</td></tr>

@@ -1,0 +1,564 @@
+<html><body><table>
+            <tr><td>[00:14] *** barrycarlyon is now known as bcarlyon|modding</td></tr>
+            <tr><td>[00:34] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[00:37] *** _robz has joined #kamaelia</td></tr>
+            <tr><td>[00:39] *** MS- is now known as ms-sleeping</td></tr>
+            <tr><td>[01:12] *** MattJ_ has joined #kamaelia</td></tr>
+            <tr><td>[02:12] *** _robz has joined #kamaelia</td></tr>
+            <tr><td>[02:19] *** stan26ans has joined #kamaelia</td></tr>
+            <tr><td>[02:19] &lt stan26ans&gt hey</td></tr>
+            <tr><td>[02:20] &lt stan26ans&gt any Gsoc mentors here?</td></tr>
+            <tr><td>[02:33] *** stan26ans has parted #kamaelia</td></tr>
+            <tr><td>[02:33] *** stan26ans has joined #kamaelia</td></tr>
+            <tr><td>[03:14] *** stan26ans has parted #kamaelia</td></tr>
+            <tr><td>[04:28] *** kakashi_ has joined #kamaelia</td></tr>
+            <tr><td>[04:31] &lt kakashi_&gt !help</td></tr>
+            <tr><td>[06:51] *** thesquib has joined #kamaelia</td></tr>
+            <tr><td>[07:40] *** LawAtWork has joined #kamaelia</td></tr>
+            <tr><td>[07:41] &lt LawAtWork&gt hello</td></tr>
+            <tr><td>[07:55] &lt _robz&gt [5~/scan</td></tr>
+            <tr><td>[09:14] *** ms-sleeping is now known as ms-</td></tr>
+            <tr><td>[09:37] *** ms- sees the off channel message from robz from the middle of last night</td></tr>
+            <tr><td>[09:37] &lt ms-&gt _robz: Please, whenever asking questions, ask them on the channel and don't wait for a response to a</td></tr>
+            <tr><td>[09:37] &lt ms-&gt "Hi, can I run an idea by you"</td></tr>
+            <tr><td>[09:37] &lt ms-&gt If you post it into the channel, then even if I'm not there, the question and the answer is logged</td></tr>
+            <tr><td>[09:38] &lt ms-&gt the logs are here: http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[09:38] &lt ms-&gt It makes it *alot* easier to respond to questions, since there is generally a lot of commonality between questions.</td></tr>
+            <tr><td>[09:40] &lt ms-&gt also simply due to timezones, taking advantage of logs etc makes development of ideas (and code) asynchronous which makes everyone more productive and get enough sleep ;)</td></tr>
+            <tr><td>[09:41] &lt ms-&gt At the end of the day, even if you (or anyone else) thinks they have a super, duper idea that no one else has ever had before and its unique, that's not really what matters, its what you do with the idea that matters</td></tr>
+            <tr><td>[10:53] *** ms- forwards the GSOC-discuss email I wrote to 3 local universities</td></tr>
+            <tr><td>[11:28] &lt Lawouach&gt hi</td></tr>
+            <tr><td>[11:50] &lt Lawouach&gt ms-,</td></tr>
+            <tr><td>[11:50] &lt Lawouach&gt oops</td></tr>
+            <tr><td>[11:50] &lt Lawouach&gt wrong key</td></tr>
+            <tr><td>[11:59] &lt ms-&gt hiya</td></tr>
+            <tr><td>[12:16] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[12:40] *** MattJ_ has joined #kamaelia</td></tr>
+            <tr><td>[12:45] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[13:06] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[13:08] &lt j_baker&gt ms- I updated the webpage I made with some new diagrams (although the project text still needs to be updated). Does that clear up the issues you were talking about (aside from the project timeline)?</td></tr>
+            <tr><td>[13:09] &lt j_baker&gt www.csdconline.com/KamConnect</td></tr>
+            <tr><td>[13:10] &lt ms-&gt Whatever you're using to generate the pages doesn't render sensibly in firefox</td></tr>
+            <tr><td>[13:10] &lt ms-&gt All your text disappears from visibility</td></tr>
+            <tr><td>[13:11] &lt ms-&gt lynx works better there</td></tr>
+            <tr><td>[13:12] &lt j_baker&gt The actual text of the webpage or the pictures?</td></tr>
+            <tr><td>[13:12] &lt ms-&gt text</td></tr>
+            <tr><td>[13:13] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[13:13] &lt j_baker&gt Hmmm... they seem to be working on my computer in firefox, but I'm using windows.</td></tr>
+            <tr><td>[13:14] &lt ms-&gt Your intemediary is essentially a web proxy?</td></tr>
+            <tr><td>[13:15] &lt orphans&gt hi all</td></tr>
+            <tr><td>[13:15] &lt ms-&gt With some interesting controls on top</td></tr>
+            <tr><td>[13:15] &lt ms-&gt orphans: hi</td></tr>
+            <tr><td>[13:15] &lt j_baker&gt I suppose that would be an accurate way to describe it.</td></tr>
+            <tr><td>[13:15] &lt j_baker&gt Do you think it would be easier for me to implement it as a real web proxy?</td></tr>
+            <tr><td>[13:16] &lt ms-&gt Question: are you clear in your mind as to how content gets from random content source to random browser ?</td></tr>
+            <tr><td>[13:16] &lt ms-&gt Want to check that before I repeat back what you've written slightly differently (to confirm what you're saying)</td></tr>
+            <tr><td>[13:17] &lt j_baker&gt I was thinking that the user would type in a url (say http://intermediary_domain.com/peer_id).</td></tr>
+            <tr><td>[13:17] &lt j_baker&gt The intermediary would route that request back to the peer.</td></tr>
+            <tr><td>[13:18] &lt ms-&gt I think that's a yes, you're clear :)</td></tr>
+            <tr><td>[13:18] &lt ms-&gt OK, let me repeat back to you slightly differently</td></tr>
+            <tr><td>[13:18] &lt ms-&gt The basic system consists of 3 groups of people</td></tr>
+            <tr><td>[13:18] &lt ms-&gt 1 is the normal average web user</td></tr>
+            <tr><td>[13:18] &lt ms-&gt with no special software</td></tr>
+            <tr><td>[13:19] &lt ms-&gt the next is a web user who is just you're average user who wants to run a website from their own machine, in a relatively ad hoc fashion</td></tr>
+            <tr><td>[13:19] &lt ms-&gt That person has installed a peer component that manages serving their content to the user.</td></tr>
+            <tr><td>[13:20] &lt ms-&gt That peer component registers with an intermediary service at a given place the fact that they exist and have resources which can be served.</td></tr>
+            <tr><td>[13:20] &lt ms-&gt Kinda like a next layer up on no-ip.com</td></tr>
+            <tr><td>[13:20] &lt ms-&gt So when a user makes a request for http://intermediary_domain.com/peer_id/some_content.html</td></tr>
+            <tr><td>[13:21] &lt ms-&gt intemediary.com makes a request to peerid'ss peercomponent for the content some_content.html and serves that back to the client</td></tr>
+            <tr><td>[13:21] &lt ms-&gt Essentially as intelligent proxy/ad hoc CDN</td></tr>
+            <tr><td>[13:22] &lt j_baker&gt That's how it works essentially.</td></tr>
+            <tr><td>[13:22] &lt ms-&gt As a result anyone can install that intermediary code, but bounces through an intemediary</td></tr>
+            <tr><td>[13:22] &lt ms-&gt The idea being however that there can be many intermediaries</td></tr>
+            <tr><td>[13:22] &lt ms-&gt I can see *plenty* of open issues here, but that's a clear enough idea</td></tr>
+            <tr><td>[13:23] &lt j_baker&gt What specifically do you mean by open issues?</td></tr>
+            <tr><td>[13:23] &lt ms-&gt open issues as in "devil in the details"</td></tr>
+            <tr><td>[13:23] &lt j_baker&gt Ah, I see. :)</td></tr>
+            <tr><td>[13:23] &lt ms-&gt I can see multiple ways of achieving some of this</td></tr>
+            <tr><td>[13:24] &lt ms-&gt For example, you could have the peer component leave a connection open to the intemediary</td></tr>
+            <tr><td>[13:24] &lt ms-&gt which then allows peer components behind nats to work happily</td></tr>
+            <tr><td>[13:24] &lt ms-&gt or you could allow direct connection by enabling a form of HTTP over UDP</td></tr>
+            <tr><td>[13:25] &lt ms-&gt If you allow the right hand side of http://www.csdconline.com/KamConnect/How_it_works.html to install a local proxy</td></tr>
+            <tr><td>[13:25] &lt ms-&gt But as a basic concept, it's doable</td></tr>
+            <tr><td>[13:27] &lt j_baker&gt Here's one other thing I was thinking of doing as a "given time": I was thinking of differentiating between "trusted" and "nontrusted" peers. If the peer is trusted, they can directly connect to each other without having to rely on the intermediary.</td></tr>
+            <tr><td>[13:27] &lt ms-&gt Well, the thing that's interesting is that it's a bit like Skype for HTTP</td></tr>
+            <tr><td>[13:28] &lt j_baker&gt I can't really figure out any way to do that at least not in a platform independent way though.</td></tr>
+            <tr><td>[13:28] &lt ms-&gt I mean with skype, AIM, IRC etc you can do direct transfers (sometimes), but it's not always guaranteed to work, but it's relatively hard for the averafe yser</td></tr>
+            <tr><td>[13:28] &lt ms-&gt That's why I said open issues</td></tr>
+            <tr><td>[13:29] &lt ms-&gt the simplest approach is to go through an intemediary in the first instance</td></tr>
+            <tr><td>[13:29] &lt ms-&gt But once you have that you can also look at techniques for punching holes in NAT (which is pretty well documented - you'd need to root aorund, but it exists)</td></tr>
+            <tr><td>[13:30] &lt j_baker&gt alright, well I'll have to give it some thought. I've got to go get ready for school now. :)</td></tr>
+            <tr><td>[13:30] &lt j_baker&gt I'll be back on when I get a break.</td></tr>
+            <tr><td>[13:32] &lt ms-&gt cool</td></tr>
+            <tr><td>[13:32] &lt ms-&gt The idea is sound.</td></tr>
+            <tr><td>[13:32] &lt ms-&gt I'll repeat it back in a different way on the mailing list this evening</td></tr>
+            <tr><td>[13:34] *** ghtdak has joined #kamaelia</td></tr>
+            <tr><td>[13:36] &lt ms-&gt j_baker: One thought worth knowing - everything in your project (including the given time) is probably all doable in the time available.</td></tr>
+            <tr><td>[13:36] &lt ms-&gt The HTTP over UDP/hole punching in NAT stuff is probably a "given time" thing</td></tr>
+            <tr><td>[13:37] &lt ms-&gt Given these two cookbook pages:</td></tr>
+            <tr><td>[13:37] &lt ms-&gt http://kamaelia.sourceforge.net/Cookbook/HTTPServer , http://kamaelia.sourceforge.net/Cookbook/HTTPClient</td></tr>
+            <tr><td>[13:37] &lt ms-&gt :)</td></tr>
+            <tr><td>[13:37] &lt orphans&gt *sigh* probably ought to get a draft of my app in today</td></tr>
+            <tr><td>[13:38] &lt ms-&gt orphans: Please please please do</td></tr>
+            <tr><td>[13:38] &lt orphans&gt all this work eh :)</td></tr>
+            <tr><td>[13:38] &lt ms-&gt the sooner something goes in, the sooner I can give feedback.</td></tr>
+            <tr><td>[13:38] &lt ms-&gt I won't be around this weekend, when I expect the channel to explode</td></tr>
+            <tr><td>[13:38] &lt orphans&gt ms-: yeah, I spent all day yesterday working on it, it's nearly got everything in the template done now</td></tr>
+            <tr><td>[13:38] &lt ms-&gt cool</td></tr>
+            <tr><td>[13:39] &lt orphans&gt have to apologise in advance about it though - the writing is a little rushed and crappy at best</td></tr>
+            <tr><td>[13:40] &lt orphans&gt i guess that's kinda the nature of SoC though</td></tr>
+            <tr><td>[13:40] *** imsameer_in has joined #kamaelia</td></tr>
+            <tr><td>[13:41] &lt ms-&gt orphans: There can be an element of that</td></tr>
+            <tr><td>[13:42] &lt orphans&gt i've been applying for masters at the same time, and it's taken me about two months just to write a personal statement for them</td></tr>
+            <tr><td>[13:42] &lt ms-&gt Please tell me you write software faster than that</td></tr>
+            <tr><td>[13:42] &lt orphans&gt yeah :D</td></tr>
+            <tr><td>[13:42] &lt orphans&gt thank god - I'd never get anything done</td></tr>
+            <tr><td>[13:43] &lt ms-&gt You can see how that might be a worry</td></tr>
+            <tr><td>[13:44] &lt orphans&gt haha yeah</td></tr>
+            <tr><td>[13:44] &lt j_baker&gt Will talk to you guys later</td></tr>
+            <tr><td>[13:44] &lt orphans&gt three weeks in and I've written #!/usr/bin/env python</td></tr>
+            <tr><td>[13:44] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:45] &lt orphans&gt thankfully code isn't like writing english - theres only one way to say c=a+b</td></tr>
+            <tr><td>[13:45] *** orphans watches as the entire channel writes c=a+b in a million ways :D</td></tr>
+            <tr><td>[13:50] &lt Davbo&gt c=b+a</td></tr>
+            <tr><td>[13:50] &lt orphans&gt dah</td></tr>
+            <tr><td>[13:51] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[13:53] &lt ms-&gt hi</td></tr>
+            <tr><td>[13:53] &lt ms-&gt generally I'll be reviewing apps in early evenings btw where possible</td></tr>
+            <tr><td>[13:53] &lt ms-&gt they can speculatively post them</td></tr>
+            <tr><td>[13:53] &lt ms-&gt but just so people know</td></tr>
+            <tr><td>[13:54] &lt orphans&gt Davbo: afternoon</td></tr>
+            <tr><td>[13:55] &lt orphans&gt ms-: cool, mine'll be in by then</td></tr>
+            <tr><td>[13:55] &lt ms-&gt orphans: c = math.log10( (10**a) * (10**b) )</td></tr>
+            <tr><td>[13:58] &lt orphans&gt heh, ms- proves power rules whilst adding. That takes class. Kinda.. :)</td></tr>
+            <tr><td>[14:30] *** Davbop has joined #kamaelia</td></tr>
+            <tr><td>[14:37] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:38] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[14:40] &lt orphans&gt hi</td></tr>
+            <tr><td>[14:45] &lt Davbop&gt ms-, you convince anyone to make that game where the protagonist is sticking kamaelia components together? :D</td></tr>
+            <tr><td>[14:45] &lt Davbop&gt sounds awesome</td></tr>
+            <tr><td>[14:46] &lt Davbop&gt "You have found the networking Component" *becomes mmorpg*</td></tr>
+            <tr><td>[14:46] &lt Davbop&gt ;D</td></tr>
+            <tr><td>[14:47] &lt vmlemon__&gt You have discovered a rare Pipeline!</td></tr>
+            <tr><td>[14:47] *** Davbop is now known as Davbo</td></tr>
+            <tr><td>[14:48] &lt Davbo&gt no no vmlemon__ Pipelines and Graphlines could be complex dungeons of sorts where a new Component is found on the last boss</td></tr>
+            <tr><td>[14:48] &lt ms-&gt Davbo: Not yet, but you never know :)</td></tr>
+            <tr><td>[14:48] &lt Davbo&gt the boss being a Kamaelia contributor or something ;P</td></tr>
+            <tr><td>[14:49] &lt vmlemon__&gt Hmm, and your trusty companion is the Kamaelia cat?</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt exactly!!</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt it's just getting better vmlemon__</td></tr>
+            <tr><td>[14:50] &lt Davbo&gt you would have to play as Alexon or something</td></tr>
+            <tr><td>[14:51] *** Davbo thinks of a better pun on Axon</td></tr>
+            <tr><td>[14:51] &lt vmlemon__&gt Axion?</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt Axion sounds evil</td></tr>
+            <tr><td>[14:51] &lt vmlemon__&gt *Max Axion</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt haha</td></tr>
+            <tr><td>[14:54] &lt vmlemon__&gt GSoC could be the final challenge ;)</td></tr>
+            <tr><td>[14:55] &lt Davbo&gt ms- needs to get someone to make this because me and vmlemon__ are already sold on it</td></tr>
+            <tr><td>[14:59] *** vmlemon__ never knew it was possible to embed an image into a VCard</td></tr>
+            <tr><td>[15:03] *** stan26ans has joined #kamaelia</td></tr>
+            <tr><td>[15:06] &lt orphans&gt heh, also pretty sold on the idea. I thought you could maybe play as ms-, slowly obtaining skills to navigate the mountain of SoC work. "You picked up 'reject application'" :D</td></tr>
+            <tr><td>[15:07] &lt stan26ans&gt hey</td></tr>
+            <tr><td>[15:07] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[15:07] &lt stan26ans&gt any gsoc people here</td></tr>
+            <tr><td>[15:08] &lt stan26ans&gt :P</td></tr>
+            <tr><td>[15:10] &lt vmlemon__&gt Hah</td></tr>
+            <tr><td>[15:10] &lt orphans&gt ms-: What's the difference between the synopsis in the application template and the abstract on the form?</td></tr>
+            <tr><td>[15:10] &lt orphans&gt stan26ans: am applying as a student if that counts?</td></tr>
+            <tr><td>[15:14] &lt vmlemon__&gt You could have a few mini-games, too</td></tr>
+            <tr><td>[15:15] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[15:16] &lt orphans&gt yeah - you've gotta assess three applications before you manage to find the Torchwood component</td></tr>
+            <tr><td>[15:17] &lt orphans&gt kinda like you have to find the keys in quake</td></tr>
+            <tr><td>[15:18] &lt vmlemon__&gt Hmm, you could have a "Deliver The Messages" mini-game, too</td></tr>
+            <tr><td>[15:19] &lt orphans&gt yeah, or fix up the linkages. Kinda like pipe dream (if you ever played that)</td></tr>
+            <tr><td>[15:24] &lt ms-&gt orphans: the abstract is a google thing, if I was filling in the form, I'd copy and past the synopsis (which is expected to be 2-3 paras) into the abstract</td></tr>
+            <tr><td>[15:25] &lt orphans&gt ms-: cool, that's what I thought</td></tr>
+            <tr><td>[15:25] &lt orphans&gt ta</td></tr>
+            <tr><td>[15:25] &lt ms-&gt To give you an idea of the sort of thing that makes sense as a synopsis</td></tr>
+            <tr><td>[15:25] &lt ms-&gt the following pages all have them:</td></tr>
+            <tr><td>[15:26] &lt ms-&gt http://kamaelia.sourceforge.net/Developers/Projects/KamaeliaMacro</td></tr>
+            <tr><td>[15:26] &lt ms-&gt http://kamaelia.sourceforge.net/Developers/Projects/DVBTools</td></tr>
+            <tr><td>[15:26] &lt ms-&gt http://kamaelia.sourceforge.net/Developers/Projects/MobileReframer</td></tr>
+            <tr><td>[15:26] &lt ms-&gt This page gives a guide as to the sort of things that go in those sorts of pages:</td></tr>
+            <tr><td>[15:26] &lt ms-&gt http://kamaelia.sourceforge.net/Developers/Projects/ProjectTaskPageTemplate</td></tr>
+            <tr><td>[15:26] &lt ms-&gt The GSOC template is a simpler version of the same idea</td></tr>
+            <tr><td>[15:27] &lt ms-&gt The four bullet points there though are relevant:</td></tr>
+            <tr><td>[15:27] &lt ms-&gt Short one line of what the task is designed to achieve/create.</td></tr>
+            <tr><td>[15:27] &lt ms-&gt A practical, clear result of what will be possible as a result of achieving this task. This is best described in the case of a user story.</td></tr>
+            <tr><td>[15:27] &lt ms-&gt The context in which this task sits. Has this task any history? Is it the result of any previous tasks - either within the project or outside.</td></tr>
+            <tr><td>[15:27] &lt ms-&gt What benefits will be gained by working on this task, and achieving its goals? Speculative as well as certained/realistically expected benefits are valid here.</td></tr>
+            <tr><td>[15:28] &lt ms-&gt stan26ans: yes, there are</td></tr>
+            <tr><td>[15:28] &lt ms-&gt As the channel topic says "don't ask to ask, just ask"</td></tr>
+            <tr><td>[15:29] &lt vmlemon__&gt Any storyline?</td></tr>
+            <tr><td>[15:29] &lt vmlemon__&gt Or is it more free form?</td></tr>
+            <tr><td>[15:30] &lt orphans&gt ms-: cool, I think I pretty much follow that :)</td></tr>
+            <tr><td>[15:31] &lt ms-&gt vmlemon__: You are in a twisty maze of passages, all alike</td></tr>
+            <tr><td>[15:32] &lt vmlemon__&gt Sounds fun</td></tr>
+            <tr><td>[15:35] &lt vmlemon__&gt Could have a multiplayer area with a big Whiteboard</td></tr>
+            <tr><td>[15:38] &lt ms-&gt yep</td></tr>
+            <tr><td>[15:43] *** _raz_ has joined #kamaelia</td></tr>
+            <tr><td>[15:43] &lt _raz_&gt ms-: you around?</td></tr>
+            <tr><td>[15:44] &lt ms-&gt (09:39:49) ms-: _robz: Please, whenever asking questions, ask them on the channel and don't wait for a response to a</td></tr>
+            <tr><td>[15:44] &lt ms-&gt (09:39:56) ms-: "Hi, can I run an idea by you"</td></tr>
+            <tr><td>[15:45] &lt ms-&gt (09:40:20) ms-: If you post it into the channel, then even if I'm not there, the question and the answer is logged</td></tr>
+            <tr><td>[15:45] &lt ms-&gt (09:40:38) ms-: the logs are here: http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[15:45] &lt ms-&gt (same goes for everyone, hence reposting comment from earlier :) )</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt stupid pymedia!!</td></tr>
+            <tr><td>[15:45] *** Davbo grumbles</td></tr>
+            <tr><td>[15:45] &lt ms-&gt (09:41:10) ms-: It makes it *alot* easier to respond to questions, since there is generally a lot of commonality between questions.</td></tr>
+            <tr><td>[15:45] &lt ms-&gt (09:42:59) ms-: also simply due to timezones, taking advantage of logs etc makes development of ideas (and code) asynchronous which makes everyone more productive</td></tr>
+            <tr><td>[15:46] &lt ms-&gt _raz_: That's a yes btw</td></tr>
+            <tr><td>[15:46] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:46] &lt _raz_&gt I know</td></tr>
+            <tr><td>[15:47] &lt _raz_&gt that#s however not why I pinged you :)</td></tr>
+            <tr><td>[15:47] &lt ms-&gt okey doke</td></tr>
+            <tr><td>[15:47] &lt ms-&gt what's up?</td></tr>
+            <tr><td>[15:47] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:47] &lt _raz_&gt regarding the GSoC I wonder, if the kamaelia project has any pygame applications so far - there was some interest on pygame mailing list</td></tr>
+            <tr><td>[15:47] &lt _raz_&gt I'm currently trying to figure out where various pygame volunteers applied :)</td></tr>
+            <tr><td>[15:47] *** ms- looks at whois </td></tr>
+            <tr><td>[15:47] &lt ms-&gt ahh I see :)</td></tr>
+            <tr><td>[15:48] &lt ms-&gt We've got various people proposing projects which would involving using pygame</td></tr>
+            <tr><td>[15:48] &lt ms-&gt But none that seem to have come from the pygame list</td></tr>
+            <tr><td>[15:48] &lt ms-&gt which is a shame</td></tr>
+            <tr><td>[15:48] &lt _raz_&gt Funny :), same with the PSF %)</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt My project would involve pygame</td></tr>
+            <tr><td>[15:48] &lt _raz_&gt wow, smiley overkill</td></tr>
+            <tr><td>[15:48] &lt _raz_&gt yay, Davbo, go for it</td></tr>
+            <tr><td>[15:48] &lt ms-&gt The PSF have one idea that's from the pygame list</td></tr>
+            <tr><td>[15:48] &lt _raz_&gt what is it?</td></tr>
+            <tr><td>[15:49] &lt _raz_&gt ms-: ah, I thought you mean the applicants</td></tr>
+            <tr><td>[15:49] &lt ms-&gt the easy 3d one</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt Multi-window pygame paint program _raz_</td></tr>
+            <tr><td>[15:49] &lt vmlemon__&gt Would a frowny suffice?</td></tr>
+            <tr><td>[15:49] &lt _raz_&gt ms-: 3d not, but the vector stuff</td></tr>
+            <tr><td>[15:50] &lt ms-&gt "Easy 3D Software: Models, Sounds, Cameras, and more"</td></tr>
+            <tr><td>[15:50] &lt _raz_&gt Davbo: that might be good in conjunction with the upcoming SDL 1.3 as it shall support multiple windows</td></tr>
+            <tr><td>[15:50] &lt ms-&gt "This project would utilize PyOpenGL"</td></tr>
+            <tr><td>[15:51] &lt _raz_&gt overread that...</td></tr>
+            <tr><td>[15:51] &lt Davbo&gt Heh. I just installed SDL dev about 2 minutes ago, perhaps t'was fate.</td></tr>
+            <tr><td>[15:51] &lt Davbo&gt :P</td></tr>
+            <tr><td>[15:53] &lt ms-&gt _raz_: I think a common issue is people aren't putting their apps in the system until their "perfect", rather than putting them in and refining them based on feedback. Kinda makes sense for people at the end of the week, but at the beginning of the week it makes it hard to track people.</td></tr>
+            <tr><td>[15:54] &lt orphans&gt ms-: more dull application questions. What do you mean by "how you plan to manage ongoing maintenance & development of the work you do." Is that like what VCS and things? Commit early, commit often etc etc?</td></tr>
+            <tr><td>[15:54] &lt orphans&gt ms-: oops :D</td></tr>
+            <tr><td>[15:54] &lt _raz_&gt ms-: yep, another problem for me as psf mentor is to get an overview about what the other orgs have</td></tr>
+            <tr><td>[15:56] &lt vmlemon__&gt Argh, kbluetooth crashed</td></tr>
+            <tr><td>[15:57] &lt vmlemon__&gt Probably have to dig through packet dumps for the files now</td></tr>
+            <tr><td>[15:57] &lt ms-&gt Well, feel free to add yourself as a mentor for bbc research - if you want to see what apps we're getting. I think its useful for people in related orgs (in whatever way) to be able to go "hm, that would work best...)</td></tr>
+            <tr><td>[15:58] &lt _raz_&gt ms-: sure - whom should I poke to introduce myself by mail?</td></tr>
+            <tr><td>[15:58] &lt ms-&gt me :)</td></tr>
+            <tr><td>[15:58] &lt ms-&gt I'm the org admin :)</td></tr>
+            <tr><td>[15:58] &lt ms-&gt I'll recognise the name and add you</td></tr>
+            <tr><td>[15:59] &lt _raz_&gt okay</td></tr>
+            <tr><td>[15:59] &lt ms-&gt or rather hit the "approve" button :)</td></tr>
+            <tr><td>[15:59] &lt _raz_&gt done</td></tr>
+            <tr><td>[16:00] &lt ms-&gt Done - you'll see we don't have many apps in the system yet</td></tr>
+            <tr><td>[16:00] &lt Davbo&gt i'll add mine in a short while hopefully</td></tr>
+            <tr><td>[16:00] &lt _raz_&gt yeah, not very different from the psf and others I guess</td></tr>
+            <tr><td>[16:00] &lt Davbo&gt you can keep revising them all week right?</td></tr>
+            <tr><td>[16:00] &lt _raz_&gt I think around the 30th the large bulks will come</td></tr>
+            <tr><td>[16:00] &lt ms-&gt Davbo: Yep</td></tr>
+            <tr><td>[16:00] &lt _raz_&gt Davbo: yes</td></tr>
+            <tr><td>[16:01] &lt ms-&gt Davbo: we have to bounce it back to you, but yes</td></tr>
+            <tr><td>[16:03] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:07] &lt j_baker&gt ms- how long do you think would be good for me to figure to have the core components of KamConnect finished? About a month?</td></tr>
+            <tr><td>[16:07] &lt orphans&gt app in :D</td></tr>
+            <tr><td>[16:12] &lt ms-&gt j_baker: I think it more depends on your learning curve</td></tr>
+            <tr><td>[16:13] &lt ms-&gt I think it's perhaps better to point at Kamaelia Grey - which is described here: http://kamaelia.sourceforge.net/KamaeliaGrey</td></tr>
+            <tr><td>[16:13] &lt ms-&gt That was 2-3 days work</td></tr>
+            <tr><td>[16:13] *** simon____ has joined #kamaelia</td></tr>
+            <tr><td>[16:13] &lt ms-&gt For me a month seems overly long</td></tr>
+            <tr><td>[16:13] &lt ms-&gt as a result</td></tr>
+            <tr><td>[16:13] &lt ms-&gt I'd break it down myself</td></tr>
+            <tr><td>[16:13] &lt ms-&gt into 3 core parts</td></tr>
+            <tr><td>[16:14] &lt ms-&gt client side intemediary handling & request forwarding</td></tr>
+            <tr><td>[16:14] &lt ms-&gt peer side intermediary registration</td></tr>
+            <tr><td>[16:14] &lt ms-&gt peer side intermediary serving</td></tr>
+            <tr><td>[16:15] &lt ms-&gt For those that strikes me as really a few days work each at most, depending on the amount of polish you put in place</td></tr>
+            <tr><td>[16:15] &lt ms-&gt But given you have a learning curve, multiplying that by a factor seems sensible.</td></tr>
+            <tr><td>[16:16] &lt ms-&gt Time estimation sucks when you don't know the libraries.</td></tr>
+            <tr><td>[16:16] &lt ms-&gt j_baker: Have you done the miniaxon tutorial?</td></tr>
+            <tr><td>[16:16] &lt ms-&gt If not, I would suggest doing that because then it might be clearer/easier for you to make an estimate</td></tr>
+            <tr><td>[16:16] &lt j_baker&gt Yes</td></tr>
+            <tr><td>[16:16] &lt ms-&gt We also can't really evaluate how realistic your ideas are without seeing your answers to the miniaxon tutorial</td></tr>
+            <tr><td>[16:17] &lt ms-&gt (you'll see a few miniaxon's scattered around our svn tree in /Sketches as a result)</td></tr>
+            <tr><td>[16:18] &lt j_baker&gt Oh, I didn't realize I was actually supposed to submit something from the tutorial.</td></tr>
+            <tr><td>[16:19] &lt ms-&gt Supposed to? No. Helpful in evaluating realism of projects? Very much so</td></tr>
+            <tr><td>[16:19] &lt ms-&gt :)</td></tr>
+            <tr><td>[16:21] &lt _raz_&gt orphans: your extra deliverables are "stuff to do if enough time is left"?</td></tr>
+            <tr><td>[16:22] &lt orphans&gt _raz_: yeah</td></tr>
+            <tr><td>[16:22] &lt orphans&gt perhaps should have made that a bit more clear</td></tr>
+            <tr><td>[16:27] &lt ms-&gt orphans: I've add links (in a public comment) to the mockup you created and the video you gave to show some of the inspiration</td></tr>
+            <tr><td>[16:29] &lt orphans&gt cheers ms-. Probably make it a bit clearer too</td></tr>
+            <tr><td>[16:30] &lt ms-&gt Ah you included a link to the mock up - missed that</td></tr>
+            <tr><td>[16:30] &lt orphans&gt yeah, but not the video</td></tr>
+            <tr><td>[16:33] &lt ms-&gt OK, regarding the awkward part of 26/5 -&gt 6/6 - since google are pretty clear about this, you need to find a way to work around the problem in dates you mention there</td></tr>
+            <tr><td>[16:33] &lt ms-&gt we can chat about that off channel if you like</td></tr>
+            <tr><td>[16:34] &lt orphans&gt ok yeah, it said in all the stuff to be clear about any time probs so I stuck it down</td></tr>
+            <tr><td>[16:35] &lt ms-&gt It's good</td></tr>
+            <tr><td>[16:35] &lt ms-&gt (good to mention)</td></tr>
+            <tr><td>[16:38] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:41] &lt j_baker&gt ms- do you still have the link to the example GSoC app you showed me?</td></tr>
+            <tr><td>[16:42] &lt j_baker&gt For the bittorrent client?</td></tr>
+            <tr><td>[16:43] &lt ms-&gt http://www.ryanlothian.com/kamaelia/abstract</td></tr>
+            <tr><td>[16:43] &lt ms-&gt And final docs http://www.ryanlothian.com/kamaelia/bittorrent</td></tr>
+            <tr><td>[16:44] &lt vmlemon__&gt Hmm, how much work would be involved in making a Gnutella or eDonkey client with Kamaelia?</td></tr>
+            <tr><td>[16:46] &lt vmlemon__&gt At least to connect and obtain a peer list</td></tr>
+            <tr><td>[16:47] &lt ms-&gt vmlemon__: No idea - never used either :)</td></tr>
+            <tr><td>[16:47] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:52] *** vmlemon_ had an idea for an app that would record a small clip of audio to a WAV file, look it up on MusicBrainz, and then find the file on Gnutella/BitTorrent</td></tr>
+            <tr><td>[16:54] &lt ms-&gt AH, this I've been chatting to people off channel</td></tr>
+            <tr><td>[16:55] &lt ms-&gt Regarding schedule, he key thing is "what do you expect to have done by the mid term evals" and "what do you expect to have done nearer the end"</td></tr>
+            <tr><td>[16:55] &lt j_baker&gt vmlemon_ THAT would be awesome</td></tr>
+            <tr><td>[16:56] &lt vmlemon_&gt Like having your own Shazam for free</td></tr>
+            <tr><td>[16:57] &lt vmlemon_&gt You could also have it find the album on Amazon or similar, too</td></tr>
+            <tr><td>[17:01] &lt vmlemon_&gt It doesn't have to be WAV, or even MB, of course</td></tr>
+            <tr><td>[17:04] &lt vmlemon_&gt It'd be a pain in the backside to build, but you could even make a version for video</td></tr>
+            <tr><td>[17:04] *** imsameer_in has joined #kamaelia</td></tr>
+            <tr><td>[17:05] &lt imsameer_in&gt hello everyone</td></tr>
+            <tr><td>[17:05] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:06] &lt j_baker&gt hello imsameer_in</td></tr>
+            <tr><td>[17:06] &lt imsameer_in&gt hey the Dirac-0.0.1 bundled with the megabundle 1.4.0 needs a little update</td></tr>
+            <tr><td>[17:07] &lt ms-&gt yes, I know</td></tr>
+            <tr><td>[17:07] &lt imsameer_in&gt for the dirac_encoder module</td></tr>
+            <tr><td>[17:07] &lt ms-&gt It will work perfectly fine with the rest of the code it's bundled with</td></tr>
+            <tr><td>[17:07] &lt imsameer_in&gt not really</td></tr>
+            <tr><td>[17:07] &lt ms-&gt No, it does</td></tr>
+            <tr><td>[17:08] &lt j_baker&gt Ok, I updated my proposal a little bit. http://www.csdconline.com/kamconnect</td></tr>
+            <tr><td>[17:08] &lt imsameer_in&gt the SimpleDiracPlayer example does not run</td></tr>
+            <tr><td>[17:08] &lt ms-&gt That's the point of the megabundle</td></tr>
+            <tr><td>[17:08] &lt ms-&gt Oh yes it does</td></tr>
+            <tr><td>[17:08] &lt imsameer_in&gt i did try</td></tr>
+            <tr><td>[17:08] &lt imsameer_in&gt and Davbo also had the same problem</td></tr>
+            <tr><td>[17:08] &lt ms-&gt You install dirac as supplied in the bundle</td></tr>
+            <tr><td>[17:09] &lt ms-&gt you installl pyrex, as supplied in the bundle</td></tr>
+            <tr><td>[17:09] &lt ms-&gt you install Dirac-0.0.1 as supplied in the bundle</td></tr>
+            <tr><td>[17:09] &lt Davbo&gt I got it to work imsameer_in i thought you also did</td></tr>
+            <tr><td>[17:09] &lt ms-&gt It works</td></tr>
+            <tr><td>[17:09] &lt ms-&gt It's not perfect and does need an update, but it *does* work</td></tr>
+            <tr><td>[17:10] &lt imsameer_in&gt Davbo:um how did u get it to work</td></tr>
+            <tr><td>[17:10] &lt Davbo&gt Can't remember now, I think i installed it originally in the wrong order</td></tr>
+            <tr><td>[17:11] &lt ms-&gt http://kamaelia.sourceforge.net/t/Dirac3D.png is a screen shot of a dirac video being decoded, rendered to a pygame surface and displayed as a texture on an openGL object</td></tr>
+            <tr><td>[17:11] &lt ms-&gt decodes, spins and plays back in realtime</td></tr>
+            <tr><td>[17:11] &lt imsameer_in&gt ow maybe i need to reinstall too</td></tr>
+            <tr><td>[17:12] &lt vmlemon_&gt Can't view the pic, but it sounds nifty</td></tr>
+            <tr><td>[17:12] &lt ms-&gt khttp://kamaelia.sourceforge.net/GettingStarted has full instructions</td></tr>
+            <tr><td>[17:13] &lt ms-&gt The megabundle approach is rather OTT, but all the files in it were tested with each other</td></tr>
+            <tr><td>[17:14] &lt vmlemon_&gt Could start selling "Kamaelia Ready" PCs, soon ;)</td></tr>
+            <tr><td>[17:15] &lt ms-&gt heh</td></tr>
+            <tr><td>[17:15] &lt ms-&gt As I say, not a very good approach over all, but for somethings it can be useful</td></tr>
+            <tr><td>[17:19] &lt j_baker&gt Ok, back to class again. Talk to you guys later.</td></tr>
+            <tr><td>[18:25] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:27] &lt vmlemon__&gt Yay for the Orange Music Store and the weird bastardized MP3 files that it produces (.KOZ files)</td></tr>
+            <tr><td>[18:29] &lt vmlemon__&gt It seems that they inject corrupted or encrypted data into chunks of the file</td></tr>
+            <tr><td>[18:30] &lt vmlemon__&gt So that most players either skip during playback, or refuse to play the file</td></tr>
+            <tr><td>[18:31] *** bcarlyon|modding is now known as barrycarlyon</td></tr>
+            <tr><td>[18:32] *** BazNet has joined #kamaelia</td></tr>
+            <tr><td>[18:36] &lt vmlemon__&gt DRM/Obfuscation--</td></tr>
+            <tr><td>[18:37] &lt ms-&gt Delightful</td></tr>
+            <tr><td>[18:40] &lt vmlemon__&gt Cost me all of £2.50 to download it, including the cost of the song, and updating the player catalogue</td></tr>
+            <tr><td>[18:40] &lt vmlemon__&gt It sort of plays in MPlayer, although it skips</td></tr>
+            <tr><td>[18:41] &lt vmlemon__&gt RealPlayer and Xine refuse to play it</td></tr>
+            <tr><td>[18:42] &lt vmlemon__&gt Don't have VLC to test with</td></tr>
+            <tr><td>[18:45] &lt vmlemon__&gt I expected the entire file to be encrypted, and for the No Forward flag to be set</td></tr>
+            <tr><td>[18:46] &lt vmlemon__&gt Although it was possible to send via Bluetooth, and wasn't hidden on the MMC card</td></tr>
+            <tr><td>[18:50] &lt vmlemon__&gt I'm curious about the Windows Mobile version of their player</td></tr>
+            <tr><td>[18:54] &lt vmlemon__&gt Although it probably works in a similar way to the Symbian version</td></tr>
+            <tr><td>[18:55] &lt vmlemon__&gt Still, it was probably designed for the less technically inclined user</td></tr>
+            <tr><td>[18:56] &lt vmlemon__&gt who isn't likely to be breaking encryption, and using hex editors</td></tr>
+            <tr><td>[19:01] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[19:10] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[19:10] *** ms- wanders off for a bit</td></tr>
+            <tr><td>[19:10] &lt ms-&gt biab</td></tr>
+            <tr><td>[19:38] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[19:38] &lt j_baker&gt ms- I submitted the second draft of my application in case you missed it. What are your thoughts?</td></tr>
+            <tr><td>[20:06] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:08] &lt orphans&gt time for my regular trip to the land of slightly questionable televisual output. Bye all</td></tr>
+            <tr><td>[20:08] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[21:02] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[21:02] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[21:03] &lt j_baker&gt hola</td></tr>
+            <tr><td>[21:06] &lt j_baker&gt So my university just got Visual Studio 2008</td></tr>
+            <tr><td>[21:07] &lt j_baker&gt I'm in the process of downloading it now.</td></tr>
+            <tr><td>[21:07] &lt j_baker&gt Much as I hate tying myself to .NET, it looks like there are some pretty interesting things in VS 2008.</td></tr>
+            <tr><td>[21:08] &lt j_baker&gt (plus we get it for free)</td></tr>
+            <tr><td>[21:09] *** vmlemon__ is trying to document the KOZ file format and OMP database structures</td></tr>
+            <tr><td>[21:09] &lt j_baker&gt KOZ? OMP?!</td></tr>
+            <tr><td>[21:10] &lt j_baker&gt Sounds complicated.</td></tr>
+            <tr><td>[21:10] &lt vmlemon__&gt A KOZ file is a modified MP3 file used by the Orange Music Player (OMP) app</td></tr>
+            <tr><td>[21:12] &lt j_baker&gt Haven't heard of it.</td></tr>
+            <tr><td>[21:12] &lt vmlemon__&gt It deviates in a way that makes it difficult to play in anything other than the custom player</td></tr>
+            <tr><td>[21:12] &lt vmlemon__&gt (Portions are deliberately corrupted)</td></tr>
+            <tr><td>[21:13] &lt vmlemon__&gt Supposedly for copy protection</td></tr>
+            <tr><td>[21:13] &lt j_baker&gt Heh... a poor man's DRM?</td></tr>
+            <tr><td>[21:13] &lt vmlemon__&gt Looks like it</td></tr>
+            <tr><td>[21:15] &lt vmlemon__&gt Only MPlayer seems to be able to try and play it, even though it plays faster than normal and has glitches</td></tr>
+            <tr><td>[21:16] *** _raz_ has parted #kamaelia</td></tr>
+            <tr><td>[21:17] &lt vmlemon__&gt (Also tested RealPlayer and Xine without success)</td></tr>
+            <tr><td>[21:17] &lt j_baker&gt Tried VLC?</td></tr>
+            <tr><td>[21:17] *** barrycarlyon has joined #kamaelia</td></tr>
+            <tr><td>[21:18] &lt vmlemon__&gt I don't have it installed at the moment :(</td></tr>
+            <tr><td>[21:18] &lt vmlemon__&gt Not willing to download it over GPRS, either</td></tr>
+            <tr><td>[21:21] &lt j_baker&gt Heh.</td></tr>
+            <tr><td>[21:21] &lt j_baker&gt I've found plenty of information about how to convert media TO koz.</td></tr>
+            <tr><td>[21:21] &lt j_baker&gt But not the other way around.</td></tr>
+            <tr><td>[21:30] *** xmlhacker_ has joined #kamaelia</td></tr>
+            <tr><td>[21:31] *** vmlemon__ can barely just about recognize the song amongst the corruption noise...</td></tr>
+            <tr><td>[21:31] &lt vmlemon__&gt Interesting</td></tr>
+            <tr><td>[21:33] &lt vmlemon__&gt Scrambled Japanese isn't the easiest thing in the world to work out...</td></tr>
+            <tr><td>[21:35] &lt vmlemon__&gt ("This Is Love" by Hikaru Utada, if anyone wants to know)</td></tr>
+            <tr><td>[21:36] &lt j_baker&gt Bah. TRUE H4X0RS know at least 5 foreign languages just in case something like this happens.</td></tr>
+            <tr><td>[21:36] &lt vmlemon__&gt Ouch, sounds like a modem dialling</td></tr>
+            <tr><td>[21:38] &lt vmlemon__&gt I have a non-mangled copy of the track somewhere</td></tr>
+            <tr><td>[21:38] &lt j_baker&gt Has anyone tried out Kamaelia in IronPython?</td></tr>
+            <tr><td>[21:40] *** vmlemon__ Isn't a haxor a tool for cutting wood?</td></tr>
+            <tr><td>[21:40] *** vmlemon__ ducks</td></tr>
+            <tr><td>[21:40] &lt j_baker&gt lol</td></tr>
+            <tr><td>[21:44] &lt vmlemon__&gt How is VS2008?</td></tr>
+            <tr><td>[21:50] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:51] &lt vmlemon__&gt Damn battery</td></tr>
+            <tr><td>[21:51] *** rabidpoobear has joined #kamaelia</td></tr>
+            <tr><td>[21:53] &lt vmlemon__&gt Other than being 100% Pure Concentrated Evil (R) by virue of being a Microsoft product ;)</td></tr>
+            <tr><td>[21:56] &lt vmlemon__&gt (VS 2008)</td></tr>
+            <tr><td>[22:02] *** _raz_ has joined #kamaelia</td></tr>
+            <tr><td>[22:03] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[22:18] &lt Davbo&gt back later all</td></tr>
+            <tr><td>[22:21] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[22:22] &lt vmlemon__&gt Hi again</td></tr>
+            <tr><td>[22:22] &lt j_baker&gt Microsoft sucks. As does installing Visual Studio.</td></tr>
+            <tr><td>[22:23] &lt vmlemon__&gt Still Pure Concentrated Evil?</td></tr>
+            <tr><td>[22:24] &lt j_baker&gt Nope. Pure Concentrated INCOMPETENT Evil</td></tr>
+            <tr><td>[22:24] &lt j_baker&gt The docs on installing VS are absolutely no help either.</td></tr>
+            <tr><td>[22:24] &lt MS-&gt incompetent evil implies doing good by accident</td></tr>
+            <tr><td>[22:24] &lt vmlemon__&gt (TM)</td></tr>
+            <tr><td>[22:24] &lt MS-&gt better to just view things as incompetent IMO</td></tr>
+            <tr><td>[22:24] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:24] &lt MS-&gt covers far more people that way</td></tr>
+            <tr><td>[22:25] &lt vmlemon__&gt Microsoft does good? ;)</td></tr>
+            <tr><td>[22:26] &lt MS-&gt They pay for ironpython to be developed</td></tr>
+            <tr><td>[22:26] &lt vmlemon__&gt Snowballs in Hell...</td></tr>
+            <tr><td>[22:26] &lt j_baker&gt IronPython is pretty cool.</td></tr>
+            <tr><td>[22:27] &lt MS-&gt and they go round saying "the best thing about iron python is that it is open source" -- Microsoft Developer Evangelist (ie sales guy) giving a talk about IronP at ACCUPython 2005</td></tr>
+            <tr><td>[22:27] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[22:27] &lt vmlemon__&gt It behaves like real Python? Or has it been "Enhanced"?</td></tr>
+            <tr><td>[22:28] &lt j_baker&gt I don't believe so.</td></tr>
+            <tr><td>[22:28] &lt j_baker&gt It will interact with C# pretty well.</td></tr>
+            <tr><td>[22:28] &lt j_baker&gt Getting C# to interact with IronPython though is another matter entirely.</td></tr>
+            <tr><td>[22:28] &lt vmlemon__&gt Hi Lawouach</td></tr>
+            <tr><td>[22:29] &lt Lawouach&gt MS-, technically I think IP is under a license that is considered now as open source by the OSI</td></tr>
+            <tr><td>[22:29] &lt Lawouach&gt I may have to double check that though</td></tr>
+            <tr><td>[22:30] &lt Lawouach&gt Indeed, IP2 is MPL</td></tr>
+            <tr><td>[22:30] &lt MS-&gt Lawouach: It was always open source</td></tr>
+            <tr><td>[22:30] &lt Lawouach&gt now that being said, sticking an OSS license doesn't make a project truly OSS per se :)</td></tr>
+            <tr><td>[22:30] &lt MS-&gt IIRC it was an odd one but open</td></tr>
+            <tr><td>[22:30] &lt MS-&gt indeed</td></tr>
+            <tr><td>[22:30] &lt vmlemon__&gt Their open source licences that they submitted didn't seem obnoxious or over-restrictive</td></tr>
+            <tr><td>[22:30] &lt MS-&gt But they hired the guy who was working on it to continue develop on it</td></tr>
+            <tr><td>[22:31] &lt MS-&gt Last time I looked (aaages back) it had some interesting deficiencies, which I haven't had a chance to test to see if they'd been fixed or not</td></tr>
+            <tr><td>[22:32] &lt Lawouach&gt They have</td></tr>
+            <tr><td>[22:32] &lt MS-&gt It was something like the CPL originally IIRC</td></tr>
+            <tr><td>[22:32] &lt j_baker&gt Does Kamaelia work on IronPython?</td></tr>
+            <tr><td>[22:32] &lt MS-&gt bits</td></tr>
+            <tr><td>[22:32] &lt MS-&gt last time I checked it had major blockers, but they went away to fix it</td></tr>
+            <tr><td>[22:32] &lt MS-&gt so maybe</td></tr>
+            <tr><td>[22:32] &lt Lawouach&gt j_baker, that's one potential idea for this year GSoC :p</td></tr>
+            <tr><td>[22:34] &lt MS-&gt Hm, looks like I broke the HTTP code a while back on my branch</td></tr>
+            <tr><td>[22:34] &lt vmlemon__&gt Shame that not all of Microsoft views open source positively/with a unified pespective</td></tr>
+            <tr><td>[22:34] &lt j_baker&gt Indeed.</td></tr>
+            <tr><td>[22:34] &lt j_baker&gt I mean, how many patents did they say Linux violated?</td></tr>
+            <tr><td>[22:34] &lt vmlemon__&gt *perspective</td></tr>
+            <tr><td>[22:35] &lt j_baker&gt And then wouldn't release what those patents are?</td></tr>
+            <tr><td>[22:35] &lt vmlemon__&gt 200+, I think</td></tr>
+            <tr><td>[22:36] &lt vmlemon__&gt They released the Office binary specs recently, and a lot of it is vague or missing important detail</td></tr>
+            <tr><td>[22:38] &lt vmlemon__&gt (They cache certain opaque data in the file temporarily, and leave dictionary and Smart Tag stuff undocumented)</td></tr>
+            <tr><td>[22:43] *** vmlemon__ finds Sony interesting when it comes to open source...</td></tr>
+            <tr><td>[22:51] *** vmlemon__ notes that Open Source projects can come out of some of the most unlikely organizations...</td></tr>
+            <tr><td>[23:02] &lt MS-&gt OK, j_baker's project idea is definitely too simple</td></tr>
+            <tr><td>[23:02] &lt MS-&gt I've just hacked up a simple simple simple version of his intermediary in the past hour</td></tr>
+            <tr><td>[23:03] &lt MS-&gt It's nowhere near the full level of the intermediary nor of the peer component, but that's hardly the issue here.</td></tr>
+            <tr><td>[23:04] &lt MS-&gt I can type: http://127.0.0.1:8082/peer/Cookbook</td></tr>
+            <tr><td>[23:04] &lt MS-&gt and have http://kamaelia.sourceforge.net/Cookbook rendered at me using this</td></tr>
+            <tr><td>[23:06] &lt vmlemon__&gt Cool</td></tr>
+            <tr><td>[23:09] &lt vmlemon__&gt Does it rewrite URLs in pages transparently and give the impression of hosting them itself? Or does it just redirect the browser currently?</td></tr>
+            <tr><td>[23:09] &lt MS-&gt It's a proxy</td></tr>
+            <tr><td>[23:09] &lt vmlemon__&gt Aah</td></tr>
+            <tr><td>[23:09] &lt MS-&gt So the URLs aren't rewritten</td></tr>
+            <tr><td>[23:09] &lt vmlemon__&gt OK</td></tr>
+            <tr><td>[23:10] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/demo_http.py</td></tr>
+            <tr><td>[23:11] &lt MS-&gt URL rewriting would be a potential thing to deal with</td></tr>
+            <tr><td>[23:12] &lt vmlemon__&gt Still, it's a start :)</td></tr>
+            <tr><td>[23:12] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[23:12] &lt j_baker&gt I would just like to reiterate that microsoft sucks.</td></tr>
+            <tr><td>[23:14] &lt vmlemon__&gt "My Microsoft is broken. Can you fix it?" ;)</td></tr>
+            <tr><td>[23:16] &lt MS-&gt j_baker, you may wish to take a look at https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/demo_http.py , the logs for the past quarter of an hour and your application</td></tr>
+            <tr><td>[23:16] &lt MS-&gt I found myself wondering "just how simple *is* the intermediary"</td></tr>
+            <tr><td>[23:20] &lt j_baker&gt Hmmm... well that definitely is a lot simpler than I thought.</td></tr>
+            <tr><td>[23:20] &lt MS-&gt What that does mean of course is your idea can be more ambitious than you thought</td></tr>
+            <tr><td>[23:21] &lt MS-&gt If you note, vmlemon's comment regarding URLs needing rewriting etc or being made to be kept in sync and pointing in the right places</td></tr>
+            <tr><td>[23:22] &lt MS-&gt But it's definitely one of the risks of a kamaelia based GSOC project - something that sounds like a 3 month project being close to an hour for an initial hack and a 1 week project in practice</td></tr>
+            <tr><td>[23:22] &lt MS-&gt That is of course IMO a benefit of kamaelia :-)</td></tr>
+            <tr><td>[23:22] &lt MS-&gt But a pain if you're applying :)</td></tr>
+            <tr><td>[23:23] &lt j_baker&gt Well, I think that it would allow me to focus more on getting a good, easy to use framework set up.</td></tr>
+            <tr><td>[23:23] &lt j_baker&gt But I don't even know that that would be much more time.</td></tr>
+            <tr><td>[23:24] &lt MS-&gt So you get to consider how you can really go to town</td></tr>
+            <tr><td>[23:24] &lt MS-&gt :)</td></tr>
+            <tr><td>[23:24] &lt vmlemon__&gt The Anti-GSoC Framework? ;)</td></tr>
+            <tr><td>[23:24] &lt MS-&gt vmlemon__: No</td></tr>
+            <tr><td>[23:24] &lt j_baker&gt How difficult would it be to WYSIWYG-ify an editor for such a webpage?</td></tr>
+            <tr><td>[23:25] &lt MS-&gt click http://kamaelia.sourceforge.net/JBaker</td></tr>
+            <tr><td>[23:25] &lt MS-&gt (in firefox the browser will hand due to some nastiness in dojo)</td></tr>
+            <tr><td>[23:25] &lt MS-&gt (but it will come back)</td></tr>
+            <tr><td>[23:26] &lt vmlemon__&gt Still, it's a testament to the framework if you can get an app working that fast</td></tr>
+            <tr><td>[23:26] &lt MS-&gt (something to do with odd DNS lookups - doesn't happen locally)</td></tr>
+            <tr><td>[23:26] &lt vmlemon__&gt (A Good Thing)</td></tr>
+            <tr><td>[23:26] &lt MS-&gt indeed</td></tr>
+            <tr><td>[23:26] &lt j_baker&gt Is that box implemented in Kamaelia?</td></tr>
+            <tr><td>[23:27] &lt MS-&gt It uses the dojo toolkit for the editor</td></tr>
+            <tr><td>[23:27] &lt MS-&gt the code that's running on sourceforge to present that is a simple wiki engine I wrote a while back</td></tr>
+            <tr><td>[23:27] &lt MS-&gt It is python based</td></tr>
+            <tr><td>[23:27] &lt MS-&gt It'd be nice if it could be wsgi hosted you see....</td></tr>
+            <tr><td>[23:28] &lt MS-&gt which then if your peer component could be a wsgi container....</td></tr>
+            <tr><td>[23:28] &lt MS-&gt (and the code is a fair way towards that btw)</td></tr>
+            <tr><td>[23:28] &lt j_baker&gt WSGI is basically Prism, right?</td></tr>
+            <tr><td>[23:28] &lt MS-&gt No.</td></tr>
+            <tr><td>[23:29] &lt MS-&gt WSGI is more like linear kamaelia pipelines for generators in a web environment</td></tr>
+            <tr><td>[23:29] &lt MS-&gt http://www.python.org/dev/peps/pep-0333/</td></tr>
+            <tr><td>[23:30] &lt MS-&gt But what you would be implementing would be very similar to a P2P version of AIR</td></tr>
+            <tr><td>[23:30] &lt MS-&gt if you did that</td></tr>
+            <tr><td>[23:31] &lt j_baker&gt So if I'm understanding this, I'd be implementing a kamaelia HTML generator that would generate content on the peer end?</td></tr>
+            <tr><td>[23:31] &lt MS-&gt http://kamaelia.sourceforge.net/t/Wiki.tar.gz - that's the sourcecode for the wiki engine on sourceforge</td></tr>
+            <tr><td>[23:31] &lt MS-&gt That is one option</td></tr>
+            <tr><td>[23:32] &lt MS-&gt the alternative is to finish the wsgi container code which is "in flight", wsgi-ify that wiki, and then get *that* to maintain the links for you</td></tr>
+            <tr><td>[23:33] &lt MS-&gt The side effect is that you'd also be able to run pylons & django on your clients opening up all sorts of wierd and wonderful possibilities</td></tr>
+            <tr><td>[23:33] &lt j_baker&gt That's interesting.</td></tr>
+            <tr><td>[23:33] &lt j_baker&gt Which parts of that code should I pay the most attention to?</td></tr>
+            <tr><td>[23:33] &lt vmlemon__&gt a Kamaelia OpenID server component, anyone?</td></tr>
+            <tr><td>[23:34] &lt MS-&gt j_baker: your core idea is the place to focus</td></tr>
+            <tr><td>[23:34] &lt MS-&gt That's what I liked. I realised that it probably could have a very easy core, but had possibilities</td></tr>
+            <tr><td>[23:35] &lt MS-&gt my suggestion beyond that is to say that the peercomponent should support basic HTML, then say it will host the kamaelia wiki engine.</td></tr>
+            <tr><td>[23:35] &lt MS-&gt *IF* you think that's something you'd find interesting</td></tr>
+            <tr><td>[23:35] &lt MS-&gt with the suggestion being the easiest way of making that maintainable is to finish off the wsgi support</td></tr>
+            <tr><td>[23:35] &lt j_baker&gt Actually, I think that would be very interesting.</td></tr>
+            <tr><td>[23:36] &lt j_baker&gt Dumb question: what's a PEP?</td></tr>
+            <tr><td>[23:36] &lt MS-&gt Python Enhancement Proposal</td></tr>
+            <tr><td>[23:36] &lt MS-&gt It's how change and improvement is managed in python</td></tr>
+            <tr><td>[23:37] &lt MS-&gt Minor claim to fame - I'm listed on http://www.python.org/dev/peps/pep-0318/</td></tr>
+            <tr><td>[23:37] &lt MS-&gt That was a fun summer :)</td></tr>
+            <tr><td>[23:38] &lt MS-&gt (nothing to do with gsoc, just happened to be in summer)</td></tr>
+            <tr><td>[23:38] &lt j_baker&gt Ok, so basically WSGI is an interface that Kamaelia needs to implement?</td></tr>
+            <tr><td>[23:38] &lt MS-&gt Ye</td></tr>
+            <tr><td>[23:38] &lt MS-&gt yep</td></tr>
+            <tr><td>[23:38] &lt j_baker&gt I'll have to give that some thought, but it sounds interesting.</td></tr>
+            <tr><td>[23:39] &lt MS-&gt cool</td></tr>
+            <tr><td>[23:39] &lt j_baker&gt Anyway, going to work on some homework now, so I'll talk to you guys later.</td></tr>
+            <tr><td>[23:40] &lt MS-&gt cya</td></tr>
+            <tr><td>[23:46] &lt vmlemon__&gt Tried to run Kamaelia on Windows, yet?</td></tr>
+            <tr><td>[23:48] &lt MS-&gt It runs there</td></tr>
+            <tr><td>[23:49] &lt MS-&gt The pygame code was first written there, and there's been changes to specifically accommodate windows in the way the pygame code works these days</td></tr>
+            <tr><td>[23:50] &lt MS-&gt (windows doesn't like event handling for the window to be in a "background thread", whereas linux doesn't make a distinction - at least X windows doesn't - between the various threads in an app)</td></tr>
+            <tr><td>[23:50] &lt vmlemon__&gt Might be interesting to see how Windows-specific tech could work in a Kamaelia app</td></tr>
+            <tr><td>[23:50] &lt MS-&gt You'd just wrap it as a component and just use it really</td></tr>
+            <tr><td>[23:50] &lt vmlemon__&gt (e.g. DirectX and OLE)</td></tr>
+            <tr><td>[23:51] *** vmlemon__ was thinking the same, somehow</td></tr>
+            <tr><td>[23:56] &lt vmlemon__&gt I'd assume that Python comes with components for that sort of stuff on Windows, so wrapping/Kamaeliafying them should be trivial</td></tr>
+            <tr><td>[23:59] &lt vmlemon__&gt If it doesn't, bindings probably exist somewhere</td></tr>

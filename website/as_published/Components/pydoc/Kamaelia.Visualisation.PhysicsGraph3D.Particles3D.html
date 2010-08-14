@@ -1,0 +1,265 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.Particles3D </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Visualisation.PhysicsGraph3D.Particles3D</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.html">Visualisation</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.html">PhysicsGraph3D</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph3D.Particles3D.html">Particles3D</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#420">Particle3D: Simple generic/ supertype particle for 3D Topology visualisation</a><ul>
+<li><a class="reference" href="#421">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#422">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#423">CuboidParticle3D: cuboid rendering particle for 3D Topology visualisation</a><ul>
+<li><a class="reference" href="#424">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#425">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#426">SphereParticle3D: sphere rendering particle for 3D Topology visualisation</a><ul>
+<li><a class="reference" href="#427">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#428">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#429">TeapotParticle3D: teapot rendering particle for 3D Topology visualisation</a><ul>
+<li><a class="reference" href="#430">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#431">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<div class="section">
+<h2 id="420"><a id="particle3d-simple-generic-supertype-particle-for-3d-topology-visualisation" name="particle3d-simple-generic-supertype-particle-for-3d-topology-visualisation">Particle3D: Simple generic/ supertype particle for 3D Topology visualisation</a></h2>
+<p>This is an implementation of a simple supertype particle for 3D topology
+visualisation.</p>
+<div class="section">
+<h3 id="421"><a id="example-usage" name="example-usage">Example Usage</a></h3>
+<p>Subclass it and extend it by adding draw() method to render any shape you want the particle to be.</p>
+</div>
+<div class="section">
+<h3 id="422"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h3>
+<p>This object subclasses <a class="reference" href="/Components/pydoc/Kamaelia.Support.Particles.Particle.html">Kamaelia.Support.Particles.Particle</a> and adds 3D elements.</p>
+<p>At initialisation, provide a unique ID, a starting (x,y,z) position tuple, and
+a name. The name is displayed as a label on top of the particle. For other parameters,
+such as bgcolour and fgcolour, see its doc string below.</p>
+<p>If the particle becomes selected it changes its visual appearance to reflect
+this.</p>
+<p>There are two kinds of textures, i.e. text label and image textures.
+When the 'image' argument is provided, it uses image textures; otherwise, it uses
+text label textures in which particle name is used as the caption of the label.
+Note, the value of the 'image' argument is the uri of the image; it could be a
+path in local drive, a network address or an internet address.</p>
+<p>It only serves as a superclass of 3D particle and has no rendering (draw) method,
+so it leaves the shape rendering to subclasses.</p>
+</div>
+</div>
+<div class="section">
+<h2 id="423"><a id="cuboidparticle3d-cuboid-rendering-particle-for-3d-topology-visualisation" name="cuboidparticle3d-cuboid-rendering-particle-for-3d-topology-visualisation">CuboidParticle3D: cuboid rendering particle for 3D Topology visualisation</a></h2>
+<p>This is an implementation of a simple cuboid particle for 3D topology
+visualisation.</p>
+<div class="section">
+<h3 id="424"><a id="id1" name="id1">Example Usage</a></h3>
+<p>A 3D topology viewer where particles of type &quot;-&quot; are rendered by CuboidParticle3D
+instances:</p>
+<pre class="literal-block">
+TopologyViewer3D( particleTypes = {&quot;-&quot;:CuboidParticle3D},
+                laws = <a class="reference" href="/Components/pydoc/Kamaelia.Support.Particles.SimpleLaws.html">Kamaelia.Support.Particles.SimpleLaws</a>(bondLength=2),
+              ).run()
+</pre>
+<p>SimpleLaws are used that apply the same simple physics laws for all particle
+types.</p>
+</div>
+<div class="section">
+<h3 id="425"><a id="id2" name="id2">How does it work?</a></h3>
+<p>This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particles3D.Particle3D
+and adds methods to support rendering (draw).</p>
+</div>
+</div>
+<div class="section">
+<h2 id="426"><a id="sphereparticle3d-sphere-rendering-particle-for-3d-topology-visualisation" name="sphereparticle3d-sphere-rendering-particle-for-3d-topology-visualisation">SphereParticle3D: sphere rendering particle for 3D Topology visualisation</a></h2>
+<p>This is an implementation of a simple sphere particle for 3D topology
+visualisation.</p>
+<p>Note: it would be much slower than CuboidParticle3D because it uses GLU library.</p>
+<div class="section">
+<h3 id="427"><a id="id3" name="id3">Example Usage</a></h3>
+<p>A 3D topology viewer where particles of type &quot;sphere&quot; are rendered by SphereParticle3D
+instances:</p>
+<pre class="literal-block">
+TopologyViewer3D( particleTypes = {&quot;sphere&quot;:SphereParticle3D},
+                laws = <a class="reference" href="/Components/pydoc/Kamaelia.Support.Particles.SimpleLaws.html">Kamaelia.Support.Particles.SimpleLaws</a>(bondLength=2),
+              ).run()
+</pre>
+<p>SimpleLaws are used that apply the same simple physics laws for all particle
+types.</p>
+</div>
+<div class="section">
+<h3 id="428"><a id="id4" name="id4">How does it work?</a></h3>
+<p>This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particles3D.Particle3D
+and adds methods to support rendering (draw).</p>
+</div>
+</div>
+<div class="section">
+<h2 id="429"><a id="teapotparticle3d-teapot-rendering-particle-for-3d-topology-visualisation" name="teapotparticle3d-teapot-rendering-particle-for-3d-topology-visualisation">TeapotParticle3D: teapot rendering particle for 3D Topology visualisation</a></h2>
+<p>This is an implementation of a simple teapot particle for 3D topology
+visualisation.</p>
+<p>Note: it would be much slower than CuboidParticle3D and SphereParticle3D because it uses GLUT library.</p>
+<div class="section">
+<h3 id="430"><a id="id5" name="id5">Example Usage</a></h3>
+<p>A 3D topology viewer where particles of type &quot;teapot&quot; are rendered by CuboidParticle3D
+instances:</p>
+<pre class="literal-block">
+TopologyViewer3D( particleTypes = {&quot;teapot&quot;:TeapotParticle3D},
+                laws = <a class="reference" href="/Components/pydoc/Kamaelia.Support.Particles.SimpleLaws.html">Kamaelia.Support.Particles.SimpleLaws</a>(bondLength=2),
+              ).run()
+</pre>
+<p>SimpleLaws are used that apply the same simple physics laws for all particle
+types.</p>
+</div>
+<div class="section">
+<h3 id="431"><a id="id6" name="id6">How does it work?</a></h3>
+<p>This object subclasses Kamaelia.Visualisation.PhysicsGraph3D.Particles3D.Particle3D
+and adds methods to support rendering (draw).</p>
+<p>References: 1. <a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.Button.html">Kamaelia.UI.OpenGL.Button</a>
+2. <a class="reference" href="/Components/pydoc/Kamaelia.UI.OpenGL.OpenGLComponent.html">Kamaelia.UI.OpenGL.OpenGLComponent</a></p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

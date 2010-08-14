@@ -1,0 +1,69 @@
+<html><body><table>
+            <tr><td>[00:43] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[02:15] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[02:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:13] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:22] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[08:22] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[08:32] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[12:07] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:13] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[12:21] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:37] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[13:02] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[13:04] &lt j_baker&gt Morning everyone</td></tr>
+            <tr><td>[13:04] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:06] &lt j_baker&gt Only 4 more days until school starts.</td></tr>
+            <tr><td>[13:06] &lt j_baker&gt For me anyway.</td></tr>
+            <tr><td>[13:07] *** vmlemon_ has to go to some enrolment thing, next week...</td></tr>
+            <tr><td>[13:08] &lt vmlemon_&gt Still, I can get the certificate from the last course I did there, too (since they won't mail them out)</td></tr>
+            <tr><td>[13:08] &lt j_baker&gt They give you certificates for completing classes?</td></tr>
+            <tr><td>[13:10] &lt vmlemon_&gt Nah, it's the national qualification for completing the course itself</td></tr>
+            <tr><td>[13:10] &lt vmlemon_&gt (can't remember the name, though)</td></tr>
+            <tr><td>[13:11] &lt j_baker&gt Maybe it's just me, but going to school in the UK sounds like a more complicated situation than here in the US. Then again, maybe it's just different terminologies.</td></tr>
+            <tr><td>[13:11] &lt vmlemon_&gt Probably, a bit of both</td></tr>
+            <tr><td>[13:12] &lt vmlemon_&gt Still, it's all very confusing</td></tr>
+            <tr><td>[13:12] &lt j_baker&gt Yeah. How much does it cost you a semester?</td></tr>
+            <tr><td>[13:12] &lt vmlemon_&gt It didn't cost me anything, since I'm under 18 (they eat the costs)</td></tr>
+            <tr><td>[13:13] &lt vmlemon_&gt Plus we have a government-funded initiative where they pay folks per week for attending</td></tr>
+            <tr><td>[13:13] &lt j_baker&gt I see. It's the same here. But then it's expensive as hell until you turn 24.</td></tr>
+            <tr><td>[13:14] &lt vmlemon_&gt If I remember correctly, they pay until either 18, 19 or 20</td></tr>
+            <tr><td>[13:14] &lt vmlemon_&gt although I don't know the specifics</td></tr>
+            <tr><td>[13:19] &lt j_baker&gt Sigh... so I got this new job working with databases. I like it thus far. But is it just me or is SQL a really horrible language?</td></tr>
+            <tr><td>[13:22] &lt aa_&gt it's pretty good at what it does</td></tr>
+            <tr><td>[13:22] &lt aa_&gt but it is pretty horrid</td></tr>
+            <tr><td>[13:22] &lt j_baker&gt I suppose that's true.</td></tr>
+            <tr><td>[13:23] &lt Davbo&gt it's 19 I think vmlemon_</td></tr>
+            <tr><td>[13:23] &lt j_baker&gt Maybe I'm just an OOP whore, but I think that objects are a much better way to represent databases.</td></tr>
+            <tr><td>[13:25] *** Davbo is now known as Dav-afk</td></tr>
+            <tr><td>[13:31] &lt vmlemon_&gt Hmm, KDBAL, anyone? ;)</td></tr>
+            <tr><td>[13:31] &lt vmlemon_&gt (Kamaelia Database Access Language, or something like that)</td></tr>
+            <tr><td>[13:38] &lt j_baker&gt You know, I'd thought about making some components to deal with databases, but I just don't think that Kamaelia is a good fit for it.</td></tr>
+            <tr><td>[13:39] &lt j_baker&gt It could probably be done, but what would be the point? Databases by design handle concurrency well enough.</td></tr>
+            <tr><td>[13:39] &lt j_baker&gt But maybe that's just me. :)</td></tr>
+            <tr><td>[13:39] &lt vmlemon_&gt Unless you just want a component to connect a Kamaelia system to a database, probably to use as a dumb data store</td></tr>
+            <tr><td>[13:39] &lt vmlemon_&gt But that's my guess</td></tr>
+            <tr><td>[13:40] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[13:41] &lt j_baker&gt Meh, for kamaelia publish, I just wrote a few functions and put them in their own module for connecting to databases.</td></tr>
+            <tr><td>[13:41] &lt j_baker&gt But then again, Kamaelia Publish is very far from using a sophisticated database system.</td></tr>
+            <tr><td>[13:44] &lt vmlemon_&gt If someone wanted, they could always knock something up to interface with SQLite or MySQL (probably just wrapping around a library)...</td></tr>
+            <tr><td>[13:45] &lt vmlemon_&gt Although you don't always need a DB</td></tr>
+            <tr><td>[13:45] &lt j_baker&gt Yup. It is also possible to use SQLAlchemy to do such a thing and pass rows or tables around.</td></tr>
+            <tr><td>[14:06] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[14:32] &lt Dav-afk&gt I also thought about writing some components for databases; if anyone does they should have a look at Drizzle</td></tr>
+            <tr><td>[14:32] &lt Dav-afk&gt https://launchpad.net/drizzle</td></tr>
+            <tr><td>[14:32] &lt vmlemon_&gt The mini-MySQL thing?</td></tr>
+            <tr><td>[14:37] &lt j_baker&gt Can't say I've heard of drizzle</td></tr>
+            <tr><td>[14:43] &lt Dav-afk&gt it's quite a cool project</td></tr>
+            <tr><td>[16:10] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[16:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:25] *** j_baker_ has joined #kamaelia</td></tr>
+            <tr><td>[18:25] *** j_baker_ is now known as j_baker__</td></tr>
+            <tr><td>[18:26] *** j_baker__ is now known as j_baker</td></tr>
+            <tr><td>[19:48] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:10] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[22:06] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[22:06] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[22:06] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[22:44] *** vmlemon_ has joined #kamaelia</td></tr>

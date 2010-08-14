@@ -1,0 +1,527 @@
+<html><body><table>
+            <tr><td>[01:48] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[06:39] &lt Lawouach_&gt morning folks</td></tr>
+            <tr><td>[07:31] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[07:32] *** mhrd forgot to mention - am away yesterday/today/tomorrow (project meetings abroad)</td></tr>
+            <tr><td>[07:32] *** mhrd shocked at the sudden deluge of commits :-)</td></tr>
+            <tr><td>[07:32] &lt mhrd&gt I'll loiter here a little while, but'll have to go in a bit</td></tr>
+            <tr><td>[07:59] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:24] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:30] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[08:53] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:04] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[09:06] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:12] &lt ms-afk&gt "mhrd shocked at the sudden deluge of commits"</td></tr>
+            <tr><td>[09:12] &lt ms-afk&gt  -- caused by commits at the weekend, but no emails being sent by sourceforge. Looks like they had mailing list constipation</td></tr>
+            <tr><td>[09:14] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[09:15] &lt orphans&gt there's a lovely image to start the day with :)</td></tr>
+            <tr><td>[09:30] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:53] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:13] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:40] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[10:41] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[10:55] &lt Davbo&gt ms-afk: I can't get the Logger to connect to another server anymore</td></tr>
+            <tr><td>[10:55] &lt Davbo&gt not sure if it's just a problem on my end</td></tr>
+            <tr><td>[10:55] &lt Davbo&gt other than that it seems fine for merge, what do you think. Shall I merge?</td></tr>
+            <tr><td>[10:56] &lt Davbo&gt I mailed the Mailing List about it but it hasn't shown up for some reason</td></tr>
+            <tr><td>[11:24] &lt ms-afk&gt What server are you trying to connect to&gt</td></tr>
+            <tr><td>[11:24] &lt ms-afk&gt ?</td></tr>
+            <tr><td>[11:24] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[11:28] &lt Davbo&gt Sorry ms-afk!</td></tr>
+            <tr><td>[11:28] &lt Davbo&gt i've got it connected to irc.quakenet.org but it didn't join the channel</td></tr>
+            <tr><td>[11:28] &lt vmlemon&gt Aaw, http://gizmodo.com/assets/images/gizmodo/2008/06/SnowLeopard3.jpg</td></tr>
+            <tr><td>[11:31] &lt Davbo&gt I thought it might be because IRCClient uses this format</td></tr>
+            <tr><td>[11:31] &lt Davbo&gt print "/user testingkbot irc.freenode.net 127.0.0.1 username"</td></tr>
+            <tr><td>[11:31] &lt Davbo&gt but the logger is doing</td></tr>
+            <tr><td>[11:31] &lt Davbo&gt self.send(("USER", self.name, self.name, self.name, self.name), "irc")</td></tr>
+            <tr><td>[11:31] &lt Davbo&gt I was just about to look into that for a solution</td></tr>
+            <tr><td>[11:53] &lt Davbo&gt Meh, works on EFNet</td></tr>
+            <tr><td>[11:54] &lt Davbo&gt Changed it so you can put host in the config file though</td></tr>
+            <tr><td>[11:55] &lt Davbo&gt maybe that quakenet server was unorthodox</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt Could someone help me merge when they've got time please</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt I don't want to break svn</td></tr>
+            <tr><td>[12:56] &lt ms-afk&gt If you've made changes, you ought to do a</td></tr>
+            <tr><td>[12:56] &lt ms-afk&gt svn diff -r&lt last version you didn't change&gt: HEAD .</td></tr>
+            <tr><td>[12:56] &lt ms-afk&gt summarise the changes you've made and post those changes, along with the diff line (with the right version number) to the list</td></tr>
+            <tr><td>[12:57] &lt ms-afk&gt Along with any observations on the rest of the code :)</td></tr>
+            <tr><td>[12:57] &lt ms-afk&gt It's worth bearing in mind though</td></tr>
+            <tr><td>[12:57] &lt ms-afk&gt That svn merge doesn't automatically check in, so you can only break your own repository</td></tr>
+            <tr><td>[12:57] &lt ms-afk&gt If you're worried about that,</td></tr>
+            <tr><td>[12:57] &lt ms-afk&gt cp -R /trunk /trunk.backup.just.in.case</td></tr>
+            <tr><td>[12:58] &lt Davbo&gt I was trying to do that ms-afk but I get a huge diff with things i didn't change</td></tr>
+            <tr><td>[12:58] &lt ms-afk&gt Where are you doing this:</td></tr>
+            <tr><td>[12:58] &lt ms-afk&gt svn diff -r&lt last version you didn't change&gt: HEAD .</td></tr>
+            <tr><td>[12:59] &lt ms-afk&gt If you're doing it on the branch, then it should be fine</td></tr>
+            <tr><td>[12:59] &lt ms-afk&gt (should)</td></tr>
+            <tr><td>[12:59] &lt ms-afk&gt (ie short)</td></tr>
+            <tr><td>[12:59] &lt ms-afk&gt ie really need</td></tr>
+            <tr><td>[12:59] &lt ms-afk&gt ~/kamaelia/branches/private_MPS_Scratch&gt pwd</td></tr>
+            <tr><td>[12:59] &lt ms-afk&gt /home/michael/kamaelia/branches/private_MPS_Scratch</td></tr>
+            <tr><td>[12:59] &lt Davbo&gt pj</td></tr>
+            <tr><td>[13:00] &lt Davbo&gt oh*</td></tr>
+            <tr><td>[13:00] &lt ms-afk&gt and that sort of detail (pastebin is your friend)</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt After all, if "I was trying to do &lt thing&gt but I get &lt other thing&gt", really need to be able to "see" what you're doing when you do &lt thing&gt</td></tr>
+            <tr><td>[13:01] &lt Davbo&gt [root@localhost private_MPS_KamaeliaLogger]# svn update</td></tr>
+            <tr><td>[13:01] &lt Davbo&gt At revision 4337.</td></tr>
+            <tr><td>[13:01] &lt Davbo&gt [root@localhost private_MPS_KamaeliaLogger]# svn diff -r4337:HEAD</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt and see results</td></tr>
+            <tr><td>[13:01] &lt Davbo&gt I'm totally doing this wrong aren't i</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt ta</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt not necessarily :-)</td></tr>
+            <tr><td>[13:01] &lt Davbo&gt it's empty</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt Yes, that is.</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt The reason is because "HEAD" is a special version</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt it means "the current last revision for this branch"</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt Since "At revision 4337."</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt that means you're doing</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt svn diff -r4337:4337</td></tr>
+            <tr><td>[13:02] &lt Davbo&gt oh.</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt which is asking for the diff between 2 versions which are the same :)</td></tr>
+            <tr><td>[13:02] &lt Davbo&gt i see lol</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt so the diff should be empty</td></tr>
+            <tr><td>[13:02] &lt Davbo&gt How do i see what revision it was before I changed anything?</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt hold on</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt ~/kamaelia/branches/private_MPS_KamaeliaLogger&gt svn update</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt U Apps/Kamaelia-Logger/App/KamaeliaLogger.py</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt U Apps/Kamaelia-Logger/Config/kamaelia_logger.conf.dist</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt U Apps/Kamaelia-Logger/Doc/README</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt Updated to revision 4337.</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt ~/kamaelia/branches/private_MPS_KamaeliaLogger&gt svn log --stop-on-copy</td></tr>
+            <tr><td>[13:03] *** ms-afk reads through that</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt To make clearer what I'm looking at:</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt ~/kamaelia/branches/private_MPS_KamaeliaLogger&gt svn log --stop-on-copy|grep ^r</td></tr>
+            <tr><td>[13:04] &lt Davbo&gt oh i see</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt r4335 | davbo | 2008-06-10 13:36:43 +0100 (Tue, 10 Jun 2008) | 1 line</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt r4334 | davbo | 2008-06-10 13:34:52 +0100 (Tue, 10 Jun 2008) | 1 line</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt r4333 | davbo | 2008-06-10 13:20:16 +0100 (Tue, 10 Jun 2008) | 1 line</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt r4332 | davbo | 2008-06-10 13:15:51 +0100 (Tue, 10 Jun 2008) | 1 line</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt r4313 | davbo | 2008-06-09 17:56:38 +0100 (Mon, 09 Jun 2008) | 1 line</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt r4312 | davbo | 2008-06-09 14:59:38 +0100 (Mon, 09 Jun 2008) | 1 line</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt r4255 | ms_ | 2008-06-08 21:38:24 +0100 (Sun, 08 Jun 2008) | 4 lines</td></tr>
+            <tr><td>[13:04] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt So the last version you didn't change was r4255</td></tr>
+            <tr><td>[13:04] &lt Davbo&gt yep</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt ~/kamaelia/branches/private_MPS_KamaeliaLogger&gt svn diff -r4255:HEAD</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt Is what you've been doing :-)</td></tr>
+            <tr><td>[13:05] &lt Davbo&gt thank you ms-afk</td></tr>
+            <tr><td>[13:05] &lt Davbo&gt I'll write this up on to the mailing list</td></tr>
+            <tr><td>[13:05] &lt ms-afk&gt It's *really* handy if someone says "what have you done to this branch" ;-) :-D</td></tr>
+            <tr><td>[13:05] &lt ms-afk&gt Please do write it up - I (like others) have many hidden assumptions</td></tr>
+            <tr><td>[13:06] &lt ms-afk&gt Lines that look like this:</td></tr>
+            <tr><td>[13:06] &lt ms-afk&gt @@ -156,6 +156,7 @@</td></tr>
+            <tr><td>[13:06] &lt ms-afk&gt Show specific changes, which can be really useful for summarising what's going on</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt eg:</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt +++ Apps/Kamaelia-Logger/App/KamaeliaLogger.py (revision 4337)</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt @@ -156,6 +156,7 @@</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt  yield 1</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt  while True:</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt + time.sleep(0.1) # better way to do this?</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt  if self.currentDateString() != self.lastdatestring:</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt  self.changeDate()</td></tr>
+            <tr><td>[13:07] &lt Davbo&gt Right</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt The question is what is that doing?</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt etc :)</td></tr>
+            <tr><td>[13:08] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt oh one question ms-afk</td></tr>
+            <tr><td>[13:11] &lt ms-afk&gt ?</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt I thought it would be better for the user to see the default's the bot took, so i uncommented them in the config file, so those values are taken by default over the hardcoded ones.</td></tr>
+            <tr><td>[13:12] &lt Davbo&gt i thought a user might wonder why it connected to freenode if the config was all commented out</td></tr>
+            <tr><td>[13:13] &lt ms-afk&gt Trun: Your checkin messages should be proportional to the size of change</td></tr>
+            <tr><td>[13:13] &lt ms-afk&gt * Refactored KamTestCase (it does not inherit unittest.TestCase anymore but still delegates everything on it)</td></tr>
+            <tr><td>[13:13] &lt ms-afk&gt * KamMockObject is now "private" for the user</td></tr>
+            <tr><td>[13:13] &lt ms-afk&gt * More tests added, a couple of bugfixes</td></tr>
+            <tr><td>[13:13] &lt ms-afk&gt Doesn't really actually assist in following what you are working on</td></tr>
+            <tr><td>[13:14] &lt Davbo&gt you'll see what i mean with the diff ms-afk</td></tr>
+            <tr><td>[13:14] &lt ms-afk&gt Davbo: Ta :)</td></tr>
+            <tr><td>[13:14] &lt Davbo&gt :)</td></tr>
+            <tr><td>[13:14] &lt Trun&gt hmm... you mean by more doc in the messages or you mean by shorter commits?</td></tr>
+            <tr><td>[13:15] &lt ms-afk&gt More commite more often which are smaller</td></tr>
+            <tr><td>[13:15] &lt Trun&gt ok, sorry for that</td></tr>
+            <tr><td>[13:15] &lt ms-afk&gt Let me put it this way</td></tr>
+            <tr><td>[13:15] &lt ms-afk&gt r4158 | nctrun | 2008-06-03 02:19:11 +0100 (Tue, 03 Jun 2008) | 7 lines</td></tr>
+            <tr><td>[13:15] &lt ms-afk&gt r4100 | nctrun | 2008-05-29 02:17:35 +0100 (Thu, 29 May 2008) | 6 lines</td></tr>
+            <tr><td>[13:15] &lt ms-afk&gt r4075 | nctrun | 2008-05-27 01:57:35 +0100 (Tue, 27 May 2008) | 5 lines</td></tr>
+            <tr><td>[13:15] &lt ms-afk&gt r4053 | nctrun | 2008-05-24 20:46:17 +0100 (Sat, 24 May 2008) | 3 lines</td></tr>
+            <tr><td>[13:16] &lt ms-afk&gt gah</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt r4338 | nctrun | 2008-06-10 14:12:16 +0100 (Tue, 10 Jun 2008) | 5 lines</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt r4191 | nctrun | 2008-06-05 15:33:40 +0100 (Thu, 05 Jun 2008) | 8 lines</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt r4185 | nctrun | 2008-06-05 03:17:25 +0100 (Thu, 05 Jun 2008) | 4 lines</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt r4158 | nctrun | 2008-06-03 02:19:11 +0100 (Tue, 03 Jun 2008) | 7 lines</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt r4100 | nctrun | 2008-05-29 02:17:35 +0100 (Thu, 29 May 2008) | 6 lines</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt The gaps between those checkins are very large</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt generally speaking</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt So between:</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt r4338 | nctrun | 2008-06-10 14:12:16 +0100 (Tue, 10 Jun 2008) | 5 lines</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt r4191 | nctrun | 2008-06-05 15:33:40 +0100 (Thu, 05 Jun 2008) |</td></tr>
+            <tr><td>[13:17] &lt ms-afk&gt You've got 1 line of summarising what you're doing per day of work</td></tr>
+            <tr><td>[13:18] &lt ms-afk&gt It's *impossible* to keep track of what you're doing if you only communicate 1 line of information for an entire day's work</td></tr>
+            <tr><td>[13:18] &lt ms-afk&gt (which is a huge shame because you're doing lots :) )</td></tr>
+            <tr><td>[13:18] &lt ms-afk&gt * More tests added, a couple of bugfixes</td></tr>
+            <tr><td>[13:19] &lt ms-afk&gt is actually quite bad as well - what tests? What bugs were fixed?</td></tr>
+            <tr><td>[13:19] &lt ms-afk&gt If you fix a bug, it should get checked in</td></tr>
+            <tr><td>[13:19] &lt ms-afk&gt Compare my checkin log:</td></tr>
+            <tr><td>[13:19] &lt ms-afk&gt http://cia.vc/stats/author/ms_</td></tr>
+            <tr><td>[13:20] &lt ms-afk&gt You can see quite clearly what's changing</td></tr>
+            <tr><td>[13:20] &lt Trun&gt yeah, I see</td></tr>
+            <tr><td>[13:21] &lt Trun&gt "If you fix a bug, it should get checked in" -&gt commit then as the bug is fixed, with explanation of the bug?</td></tr>
+            <tr><td>[13:21] &lt ms-afk&gt definitely</td></tr>
+            <tr><td>[13:21] &lt ms-afk&gt even a one line explanation :-)</td></tr>
+            <tr><td>[13:21] &lt Trun&gt ok :-)</td></tr>
+            <tr><td>[13:21] &lt ms-afk&gt svn ci filename.py -m "fixed missing comma, which destroys your filesystem if missing"</td></tr>
+            <tr><td>[13:22] *** ms-afk wonders</td></tr>
+            <tr><td>[13:23] *** ms-afk tries somethings</td></tr>
+            <tr><td>[13:27] &lt ms-afk&gt (sorry was interrupted)</td></tr>
+            <tr><td>[13:28] &lt ms-afk&gt OK, if there's a problem due to language, then this is works:</td></tr>
+            <tr><td>[13:28] &lt ms-afk&gt http://translate.google.com/translate?u=http%3A%2F%2Fcia.vc%2Fstats%2Fauthor%2Fms_&hl=en&ie=UTF8&sl=es&tl=en</td></tr>
+            <tr><td>[13:28] &lt ms-afk&gt which means that if you find it quicker, you can checkin in spanish.</td></tr>
+            <tr><td>[13:28] &lt ms-afk&gt BUT:</td></tr>
+            <tr><td>[13:28] &lt ms-afk&gt and its a huge but</td></tr>
+            <tr><td>[13:29] &lt ms-afk&gt If you DO do that, please ensure that you post that english language version to EITHER the commits mailing list</td></tr>
+            <tr><td>[13:29] &lt ms-afk&gt or to the google group</td></tr>
+            <tr><td>[13:29] &lt ms-afk&gt *before* you hit 20 versions</td></tr>
+            <tr><td>[13:29] &lt ms-afk&gt Preferably with just the check in messages !</td></tr>
+            <tr><td>[13:29] &lt ms-afk&gt  and details</td></tr>
+            <tr><td>[13:30] &lt Trun&gt mmm... I think that I prefer to keep checking in in english, I'll place more efforts on writing the message</td></tr>
+            <tr><td>[13:31] &lt ms-afk&gt I'd prefer it too - mainly because I'd be utterly hopeless without that auto-translater</td></tr>
+            <tr><td>[13:31] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[13:31] &lt Trun&gt yeah, I know that my english is not very good :-) but I'll try to place more effort on the checkins</td></tr>
+            <tr><td>[13:32] &lt ms-afk&gt Thank you :)</td></tr>
+            <tr><td>[13:33] &lt ms-afk&gt It's worth remembering that as well as the checkin emails, that due to the cia.vc site, it's possible for someone to see what you're doing more clearly</td></tr>
+            <tr><td>[13:33] &lt Davbo&gt my diff is up on the mailing list ms-afk</td></tr>
+            <tr><td>[13:33] &lt Davbo&gt (no rush or anything, just letting you know)</td></tr>
+            <tr><td>[13:33] &lt ms-afk&gt Davbo: ta</td></tr>
+            <tr><td>[13:35] &lt ms-afk&gt Trun: So, can you give me a bit more detail than just the 8 bullet points as to what you've been doing?</td></tr>
+            <tr><td>[13:35] &lt ms-afk&gt In case you're wondering why I ask, let me translate your checkin messages into "trying to track what's going on ese"</td></tr>
+            <tr><td>[13:35] &lt ms-afk&gt (inteneded to be slightly humourous translation)</td></tr>
+            <tr><td>[13:36] &lt Trun&gt sure, you mean now? (want to use #kamaelia-mentor ?)</td></tr>
+            <tr><td>[13:36] &lt ms-afk&gt Changed code in &lt some file&gt (but not how or why)</td></tr>
+            <tr><td>[13:37] &lt ms-afk&gt [ yes, now (after I show you how your check messages read) ]</td></tr>
+            <tr><td>[13:37] &lt Trun&gt [ ok ]</td></tr>
+            <tr><td>[13:37] &lt ms-afk&gt &lt code&gt is now "private" for the user (what does this actually mean in practice? How is it private ? Why is it private even ? )</td></tr>
+            <tr><td>[13:37] &lt ms-afk&gt More tests added, a couple of bugfixes -&gt "I wrote code, but you'll have to rummage to find out what"</td></tr>
+            <tr><td>[13:38] &lt ms-afk&gt "Added libraries to KamPlanet's "libs" folder to make it far easier to run the application" --&gt "I added more code, but not saying what"</td></tr>
+            <tr><td>[13:39] &lt ms-afk&gt "Added "libraries.py" to import these libraries, runTests, KamPlanet.py and runSingleTest use it" --&gt Um, that's just (almost literally) "I added some code. I'm not saying what it does though"</td></tr>
+            <tr><td>[13:39] &lt ms-afk&gt "Migrated from pmock to the "Python Mocker" module (http://labix.org/mocker) ** Reason: pmock is available in repositories (such as ubuntu or debian), but it will be incompatible with Python 2.6 & py3k.</td></tr>
+            <tr><td>[13:39] &lt ms-afk&gt  Contacted the author and he confirmed that it's not going to be maintained anymore :-( ** Little class that added a feature to pmock removed since "Python Mocker" already supports it"</td></tr>
+            <tr><td>[13:39] &lt ms-afk&gt That's something that should be discussed on the list</td></tr>
+            <tr><td>[13:39] &lt ms-afk&gt (no machine I use uses ubuntu or debian)</td></tr>
+            <tr><td>[13:40] &lt ms-afk&gt (also it becomes a barrier to using your code, so needs discussion really)</td></tr>
+            <tr><td>[13:40] &lt ms-afk&gt "Adding more test all over KamPlanet (most units already have tests, although they still don't test every situation)"</td></tr>
+            <tr><td>[13:40] &lt ms-afk&gt --&gt "I wrote lots of code. "</td></tr>
+            <tr><td>[13:40] &lt ms-afk&gt "Changes in KamMockObject and KamTestCase, method renaming and more features" --&gt "I changed some things"</td></tr>
+            <tr><td>[13:41] &lt ms-afk&gt Now, that's meant lightheartedly</td></tr>
+            <tr><td>[13:41] &lt ms-afk&gt But</td></tr>
+            <tr><td>[13:41] &lt ms-afk&gt That means your checkin messages say this to me:</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt Changed code in &lt some file&gt (but not how or why)</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt &lt code&gt is now "private" for the user</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt I wrote code, but you'll have to rummage to find out what</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt I added more code, but not saying what"</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt I added some code. I'm not saying what it does</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt &lt discussion of something that should be on IRC or the mailing list - probably the latter&gt</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt "I wrote lots of code. "</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt "I changed some things"</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt Which is not really that easy to follow</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt Trun: You see ?</td></tr>
+            <tr><td>[13:43] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[13:43] &lt Trun&gt yeah, definetely, I see</td></tr>
+            <tr><td>[13:43] &lt Trun&gt s/definetely/definitely/ :-)</td></tr>
+            <tr><td>[13:44] &lt ms-afk&gt It's a really nasty danger that people fall into with checkin messages - they don't state specifically what they've changed, merged, fixed, broken, etc</td></tr>
+            <tr><td>[13:45] &lt ms-afk&gt The other thing is did you get my email saturday?</td></tr>
+            <tr><td>[13:45] &lt Trun&gt yeah... it's definitely a bad habit I have :-) sorry for that</td></tr>
+            <tr><td>[13:45] &lt Trun&gt yeah</td></tr>
+            <tr><td>[13:46] &lt Trun&gt I understand it and accept it</td></tr>
+            <tr><td>[13:46] &lt ms-afk&gt OK, simply telling me that would've helped btw :)</td></tr>
+            <tr><td>[13:46] &lt ms-afk&gt I've currently got no idea if your code / approach/ideas will fit in with the current testing & logging frameworks that we use</td></tr>
+            <tr><td>[13:47] &lt ms-afk&gt or those that check nightly for problems, or rebuild docs etc</td></tr>
+            <tr><td>[13:47] &lt ms-afk&gt since you've not really discussed your ideas on the list</td></tr>
+            <tr><td>[13:49] &lt Trun&gt yeah, I guess I should have written about it some time ago, may I tell now [here]?</td></tr>
+            <tr><td>[13:49] &lt ms-afk&gt yes, also, for information:</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt ~/kamaelia/trunk/Tests/Python/Axon&gt for i in test*py; do echo $i; echo $i|sed -e "s/./=/g"; ./$i -v; done</td></tr>
+            <tr><td>[13:50] &lt ms-afk&gt That'll run the Axon test suite and document what works.</td></tr>
+            <tr><td>[13:51] &lt ms-afk&gt (go on)</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt (14:41:38) Trun: sure, you mean now? (want to use #kamaelia-mentor ?)</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt (14:42:23) ms-afk: [ yes, now (after I show you how your check messages read) ]</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt (14:42:43) Trun: [ ok ]</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt (14:54:26) Trun: yeah, I guess I should have written about it some time ago, may I tell now [here]?</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt (14:55:15) ms-afk: yes</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt (14:57:16) ms-afk: (go on)</td></tr>
+            <tr><td>[13:52] &lt ms-afk&gt Please don't ask for permission to talk about what your project is</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt If you don't get an answer posting the same thing to the list is appreciated</td></tr>
+            <tr><td>[13:53] &lt ms-afk&gt OK</td></tr>
+            <tr><td>[13:53] &lt Trun&gt ok, I go</td></tr>
+            <tr><td>[13:54] &lt Trun&gt well, on the one comment about debian/ubuntu in the checkin, I just wanted to mean that it might not be so easily found installed. Ubuntu and debian were just "examples"</td></tr>
+            <tr><td>[13:55] &lt ms-afk&gt Anyway, I'll be quiet and listen</td></tr>
+            <tr><td>[13:56] &lt Trun&gt well, I don't know pretty well how to start talking about it</td></tr>
+            <tr><td>[13:56] &lt Trun&gt the main class in the testing framework is the KamTestCase class</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt "well, I don't know pretty well how to start talking about it" - talk high level then</td></tr>
+            <tr><td>[13:57] &lt Trun&gt that I have changed several times and I still don't think it has an "stable api" or sth like that</td></tr>
+            <tr><td>[13:57] &lt ms-afk&gt then go into detail</td></tr>
+            <tr><td>[13:57] &lt Trun&gt ok</td></tr>
+            <tr><td>[13:58] &lt Trun&gt the idea is to have a class (KamTestCase) that "runs kamaelia" in each test, and stops it at the end</td></tr>
+            <tr><td>[13:58] &lt ms-afk&gt Not surprised that there isn't a stable API yet - I sort of expect that for the first 1/2 of GSOC you'll be doing exploratory work, and the second half doing stuff that actually tightens it up</td></tr>
+            <tr><td>[13:58] &lt ms-afk&gt k</td></tr>
+            <tr><td>[13:59] &lt Trun&gt the main problem is that if a test actually fails, it can go into an endless loop</td></tr>
+            <tr><td>[13:59] &lt Trun&gt (a test that is testing a Axon.Component.component )</td></tr>
+            <tr><td>[13:59] &lt ms-afk&gt Correct</td></tr>
+            <tr><td>[13:59] &lt Trun&gt while this can happen in other common tests, this is specially easy in kamaelia</td></tr>
+            <tr><td>[14:00] *** ms-afk nods</td></tr>
+            <tr><td>[14:00] &lt ms-afk&gt 2 suggestions then</td></tr>
+            <tr><td>[14:00] &lt ms-afk&gt 1) use my branch (private_MPS_Scratch) - that has a formal version of what you're trying to do here:</td></tr>
+            <tr><td>[14:00] &lt ms-afk&gt  self._graph.__class__.schedulerClass.run = None</td></tr>
+            <tr><td>[14:00] &lt ms-afk&gt  self._graph.__class__.schedulerClass()</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt 2) Use LikeFile (again perhaps the one in my /Sketches/MPS area)</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt to run systems</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt since then you're still left in control of the system</td></tr>
+            <tr><td>[14:01] &lt ms-afk&gt (That is actually a crutch, but it may help initially)</td></tr>
+            <tr><td>[14:02] &lt Trun&gt yeah, I used that first approach (right now it is the clearThread method at KamTestCase)</td></tr>
+            <tr><td>[14:02] &lt ms-afk&gt "self._graph.__class__.schedulerClass.run = None" is copied and pasted from your code</td></tr>
+            <tr><td>[14:03] &lt Trun&gt oh</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt In https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/pprocess/MultiPipeline.py</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt I do this:</td></tr>
+            <tr><td>[14:03] &lt ms-afk&gt background(zap=True).start()</td></tr>
+            <tr><td>[14:04] &lt ms-afk&gt Which starts a background scheduler & zaps the current scheduler state</td></tr>
+            <tr><td>[14:04] &lt Trun&gt oh, I see</td></tr>
+            <tr><td>[14:04] &lt ms-afk&gt (this is necesarry for reasons irrelevant here)</td></tr>
+            <tr><td>[14:04] &lt ms-afk&gt But "zap=True" relies on code in my branch</td></tr>
+            <tr><td>[14:04] &lt ms-afk&gt (it'll get merged soon enough)</td></tr>
+            <tr><td>[14:05] &lt ms-afk&gt Anyway, please continue</td></tr>
+            <tr><td>[14:06] &lt Trun&gt anyway, if you run a background scheduler, the problem of knowing if the system has finished or not still continues, right?</td></tr>
+            <tr><td>[14:06] &lt Trun&gt i mena</td></tr>
+            <tr><td>[14:06] &lt ms-afk&gt Depends if that is a test you're making</td></tr>
+            <tr><td>[14:06] &lt ms-afk&gt But it is then something you can test</td></tr>
+            <tr><td>[14:06] &lt Trun&gt I mean, right now I assert that "if in N steps the system hasn't finished, this is a bug"</td></tr>
+            <tr><td>[14:06] &lt ms-afk&gt and if it takes too long, you can exit the test</td></tr>
+            <tr><td>[14:07] &lt ms-afk&gt Since the scheduler runs in the background you can also query it's current run queues etc</td></tr>
+            <tr><td>[14:07] &lt Trun&gt but I don't know what should be "N", or how long something should take to know if it is a bug</td></tr>
+            <tr><td>[14:08] &lt ms-afk&gt This isn't necessarily threadsafe, BUT the snapshot could be useful</td></tr>
+            <tr><td>[14:08] &lt Trun&gt yeah, yeah, that code in LikeFile definitely is really useful for the testing framework (thanks!)</td></tr>
+            <tr><td>[14:08] &lt ms-afk&gt I think rather than "N" it should be time based</td></tr>
+            <tr><td>[14:09] &lt Trun&gt why time based?</td></tr>
+            <tr><td>[14:09] &lt Trun&gt I assumed that it would be based on "steps" to ensure that it will run the same expectations in any machine</td></tr>
+            <tr><td>[14:09] &lt ms-afk&gt You'll want to use likefile from here: /home/zathras/kamaelia/trunk/Sketches/MPS/Experiments/Likefile2/likefile</td></tr>
+            <tr><td>[14:10] &lt ms-afk&gt OK, time based or "steps" based</td></tr>
+            <tr><td>[14:10] &lt ms-afk&gt You also can't assume that "steps" will be the same on any machine either</td></tr>
+            <tr><td>[14:10] &lt ms-afk&gt especially if the component under test is actually process based - then the number of steps taken will vary with the number of CPUs</td></tr>
+            <tr><td>[14:11] &lt ms-afk&gt time based in terms of "if a test that should take nano-seconds or microsends takes 10 seconds, it's broken"</td></tr>
+            <tr><td>[14:12] &lt Trun&gt ok, for example there, it's normal to assume the user to provide that number (10 seconds), right?</td></tr>
+            <tr><td>[14:12] &lt ms-afk&gt they will know their code</td></tr>
+            <tr><td>[14:12] &lt Trun&gt ok</td></tr>
+            <tr><td>[14:12] &lt ms-afk&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/GSOC08/MultiPipeTest.py</td></tr>
+            <tr><td>[14:12] &lt ms-afk&gt contains lots of "expect" style tests as well</td></tr>
+            <tr><td>[14:13] &lt ms-afk&gt which is a form of test I don't know if you're planning on automating & making re-runnable</td></tr>
+            <tr><td>[14:13] &lt Trun&gt I see</td></tr>
+            <tr><td>[14:14] &lt ms-afk&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/Experiments/Likefile2/likefile/TestLikeFile.py - is again, effectively a manual test harness.</td></tr>
+            <tr><td>[14:14] &lt ms-afk&gt which is another type of problem to automate</td></tr>
+            <tr><td>[14:15] &lt Trun&gt I see</td></tr>
+            <tr><td>[14:16] *** Trun takes note :-)</td></tr>
+            <tr><td>[14:16] &lt ms-afk&gt You've also not (yet :-) ) related what you're doing to the tests in /trunk/Tests/Python/Axon /trunk/Tests/Python/Kamaelia , /trunk/Code/Python/Kamaelia/Test/</td></tr>
+            <tr><td>[14:17] &lt Trun&gt I read some of them on Friday (I didn't notice that the comments were later used in the doc until you said on saturday, though)</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt It's also probably worth noting that some tests have been broken by changes in the core of Axon itself</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt rather than the code being broken</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt for example:</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Test/Protocol/test_framing.py</td></tr>
+            <tr><td>[14:18] &lt ms-afk&gt now fails because it does things like:</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt  for chunk in chunks:</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt  system._deliver(chunk, "inbox")</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt and expects similarly</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt  chunk = system._collect("outbox")</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt to exist</td></tr>
+            <tr><td>[14:19] &lt ms-afk&gt But it fails because it uses private methods to Axon which no longer actually exist</td></tr>
+            <tr><td>[14:20] &lt ms-afk&gt That particular test suite is perhaps the most useful here actually</td></tr>
+            <tr><td>[14:20] &lt ms-afk&gt partly because it shows how the scheduler can be run manually for a limited number of steps</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt which is similar to backgrounding</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt OK, I think I'm going to suggest you post to the mailing list</td></tr>
+            <tr><td>[14:21] &lt ms-afk&gt since you're not actually saying what you're doing</td></tr>
+            <tr><td>[14:22] &lt Trun&gt oh</td></tr>
+            <tr><td>[14:22] &lt Trun&gt you want an e-mail with what I'm doing exactly?</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt I can't mentor you if you don't communicate what you're doing</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt If you're not going to communicate what you're doing, no one will use your test suite</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt please start making it clear what you're up to</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt Start with a high level view and get more detailed from there</td></tr>
+            <tr><td>[14:25] &lt ms-afk&gt work from what you already have, but also where you want to go</td></tr>
+            <tr><td>[14:25] &lt Trun&gt I was reading what you had pointed out (I was recalling having used the _deliver method, but I see that it's in my misc folder, not in the test framework itself)</td></tr>
+            <tr><td>[14:25] &lt Trun&gt ok</td></tr>
+            <tr><td>[14:26] &lt Trun&gt currently the KamTestCase is the class that the user would use</td></tr>
+            <tr><td>[14:26] &lt Trun&gt you can (now) override the setUp and tearDown methods, write tests as if it was a unittest.TestCase instance</td></tr>
+            <tr><td>[14:27] &lt Trun&gt and there is a classmethod that provides a dynamically generated class that subclasses unittest.TestCase</td></tr>
+            <tr><td>[14:27] &lt Trun&gt this way, unittest test runners can run these tests</td></tr>
+            <tr><td>[14:27] &lt Trun&gt def suite():</td></tr>
+            <tr><td>[14:27] &lt Trun&gt  return KamTestCase.TestSuite((</td></tr>
+            <tr><td>[14:27] &lt Trun&gt  KamTestCase.makeSuite(FeedParserTestCase.getTestCase()),</td></tr>
+            <tr><td>[14:27] &lt Trun&gt  KamTestCase.makeSuite(FeedParserFactoryTestCase.getTestCase()),</td></tr>
+            <tr><td>[14:27] &lt Trun&gt  ))</td></tr>
+            <tr><td>[14:28] &lt Trun&gt (where KamTestCase.TestSuite = unittest.TestSuite and KamTestCase.makeSuite = unittest.TestSuite )</td></tr>
+            <tr><td>[14:28] &lt Trun&gt right now, the user that writes a test method, has two auxiliar attributes:</td></tr>
+            <tr><td>[14:28] &lt Trun&gt messageAdder and messageStorer, which are kamaelia components that send and receive messages to/from the component under test</td></tr>
+            <tr><td>[14:29] &lt Trun&gt these two components are created whenever the user calls a KamTestCase method called "initializeSystem"</td></tr>
+            <tr><td>[14:30] &lt Trun&gt in this method, the user says "I want to test this component", and KamTestCase will generate the messageAdder and messageStorer that will have the required inboxes/outboxes</td></tr>
+            <tr><td>[14:31] &lt Trun&gt ok, so what the user is expected to do is: setting up the environment through the setUp method (as usually)</td></tr>
+            <tr><td>[14:31] &lt Trun&gt call at some time the initializeSystem method</td></tr>
+            <tr><td>[14:31] &lt Trun&gt provide messages to be added to the component inboxes (you can also add "yields" between message and message)</td></tr>
+            <tr><td>[14:32] &lt Trun&gt and run the system (currently during a certain number of "steps")</td></tr>
+            <tr><td>[14:33] &lt Trun&gt if you expect it to finish, you call the self.assertStopping() method, if you expect it to not finish, you call the self.assertNotStopping() method</td></tr>
+            <tr><td>[14:33] &lt Trun&gt after that, you retrieve the messages stored in the messageStorer component, and check that the results are the expected ones</td></tr>
+            <tr><td>[14:34] &lt Trun&gt in order to avoid "problematic" components (those accessing disk/network/etc.) in tests, I have started a "KamMockObject"</td></tr>
+            <tr><td>[14:34] &lt Trun&gt you create it through an inherited KamTestCase method: self.createMock(whatever)</td></tr>
+            <tr><td>[14:35] &lt Trun&gt being whatever a component</td></tr>
+            <tr><td>[14:35] &lt Trun&gt the returned component will have the same public inboxes and outboxes that "whatever" has</td></tr>
+            <tr><td>[14:36] &lt Trun&gt and you can add messages that it will send (again, you can force a number of yields between message and message)</td></tr>
+            <tr><td>[14:36] &lt Trun&gt and check what messages it has stored</td></tr>
+            <tr><td>[14:36] &lt Trun&gt the user is not expected to create instances of this class directly, but through the self.createMock due to some "optimizations"</td></tr>
+            <tr><td>[14:37] &lt Trun&gt the idea is that the KamTestCase method that runs the system during "steps"/time can stop as soon as there is no more components running</td></tr>
+            <tr><td>[14:37] &lt Trun&gt and the KamMockObject objects shouldn't count</td></tr>
+            <tr><td>[14:38] &lt Trun&gt and I think that that's pretty all the infrastructure itself as it is right now</td></tr>
+            <tr><td>[14:40] &lt Trun&gt the rest of the code is just KamPlanet and testing KamPlanet to test the testing framework</td></tr>
+            <tr><td>[14:40] &lt Trun&gt for instance, until last commit, KamTestCase was actually a unittest.TestCase, so it could be run directly by the unittest runners</td></tr>
+            <tr><td>[14:41] &lt Trun&gt but I didn't find a way to allow the user to override the setUp and tearDown methods without having problems (KamTestCase needs to have its own initialize and finish method)</td></tr>
+            <tr><td>[14:43] &lt Trun&gt that's why there is now an "ugly" _AuxiliarTestCase class in the KamTestCase module, and a couple of new methods that dynamically generate the missing classes</td></tr>
+            <tr><td>[14:43] &lt Trun&gt (i.e. a class per KamTestCase, and all the assert* and fail* methods of unittest.TestCase are also added to KamTestCase)</td></tr>
+            <tr><td>[14:44] &lt Trun&gt do you want me to continue to a lower-level detail, or do you prefer information about KamPlanet?</td></tr>
+            <tr><td>[14:44] *** ms-afk notices that the lot is going in the channel after I specifically said to please post it to the list</td></tr>
+            <tr><td>[14:45] &lt ms-afk&gt (15:26:50) ms-afk: OK, I think I'm going to suggest you post to the mailing list</td></tr>
+            <tr><td>[14:45] &lt Trun&gt oh, sorry</td></tr>
+            <tr><td>[14:45] &lt ms-afk&gt I'd actually moved on to do other work, ignoring this window</td></tr>
+            <tr><td>[14:46] &lt Trun&gt after that you talked about communicating what I was doing I thought you meant "now", sorry for that :-S</td></tr>
+            <tr><td>[14:46] &lt ms-afk&gt After all, the time you can "guarantee" me being there is from 2pm til 3pm</td></tr>
+            <tr><td>[14:46] &lt ms-afk&gt not "all afternoon"</td></tr>
+            <tr><td>[14:46] &lt ms-afk&gt email *IS* communicating</td></tr>
+            <tr><td>[14:46] &lt ms-afk&gt sigh</td></tr>
+            <tr><td>[14:46] &lt Trun&gt yeah, sorry for that :-( I'll write the e-mail</td></tr>
+            <tr><td>[14:49] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt don't worry about it Trun just refactor it into an email</td></tr>
+            <tr><td>[14:53] &lt ms-afk&gt ++ Davbo</td></tr>
+            <tr><td>[14:53] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[15:04] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt let me know if there's anything else you'd like me to review ms-afk</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt private_MPS_Tools2AppsConsolidation looks like it isn't claimed</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt That'd be a good one :)</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt I'll do that tomorrow if you'd like</td></tr>
+            <tr><td>[15:08] &lt ms-afk&gt Cool</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt i'll add to wiki</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt Try not to allow these reviews to get in the way of your project work (goes for everyone :-) ), but they are very much appreciated :)</td></tr>
+            <tr><td>[15:09] &lt ms-afk&gt And in many respects probably better experience ;)</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt well closer to release i might not be able to help out as much as now</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt so i'd like to get some done now</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[15:11] &lt Lawouach_&gt I got spam today, one was title: "Update your penis"</td></tr>
+            <tr><td>[15:12] &lt Lawouach_&gt They know my geek side.</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt hah Lawouach_</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt ms-afk: any idea's why i'm getting this error?</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt TypeError: __init__() got an unexpected keyword argument 'zap'</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt I can paste the rest for you if you like</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt http://davbo.pastebin.com/m5c1dcda0</td></tr>
+            <tr><td>[16:02] &lt ms-afk&gt Oh</td></tr>
+            <tr><td>[16:02] &lt ms-afk&gt that</td></tr>
+            <tr><td>[16:03] &lt ms-afk&gt That's because you're not using the branch private_MPS_Scratch which contains that extra keyword</td></tr>
+            <tr><td>[16:03] &lt ms-afk&gt (specifically not using *axon* from that branch)</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt Weird ms-afk, i've installed it and still get it</td></tr>
+            <tr><td>[16:07] &lt Davbo&gt (i had already installed it before asking, assuming that was the problem)</td></tr>
+            <tr><td>[16:14] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:16] &lt ms-afk&gt really ?</td></tr>
+            <tr><td>[16:16] &lt ms-afk&gt can you check in your current code version</td></tr>
+            <tr><td>[16:16] &lt ms-afk&gt ?</td></tr>
+            <tr><td>[16:17] &lt Davbo&gt Yeah Sketches/DK/MagnaDoodle.py is popping the error</td></tr>
+            <tr><td>[16:18] &lt ms-afk&gt works here</td></tr>
+            <tr><td>[16:18] *** ms-afk did this:</td></tr>
+            <tr><td>[16:18] &lt ms-afk&gt ~&gt</td></tr>
+            <tr><td>[16:18] &lt ms-afk&gt ~&gt cd ~/kamaelia/branches/private_MPS_Scratch/Axon/</td></tr>
+            <tr><td>[16:18] &lt ms-afk&gt ~/kamaelia/branches/private_MPS_Scratch/Axon&gt sudo python setup.py --quiet install --force</td></tr>
+            <tr><td>[16:20] &lt Davbo&gt works</td></tr>
+            <tr><td>[16:20] &lt Davbo&gt thanks ms-afk</td></tr>
+            <tr><td>[16:20] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[16:21] &lt Davbo&gt I was just doing regular install didn't know I had to force</td></tr>
+            <tr><td>[16:21] &lt j_baker&gt Oooooohhhh.... OS X 10.6 will have ZFS.</td></tr>
+            <tr><td>[16:21] &lt Davbo&gt I guess that means it overwrites it all?</td></tr>
+            <tr><td>[16:23] &lt Davbo&gt Heh j_baker :-) Yesterday I was "ooooo! the iPhone is going to be affordable in this country"</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt Here too. $199 isn't bad.</td></tr>
+            <tr><td>[16:24] &lt Davbo&gt It was about $700 over here before + contract ended up being near $1800 ;/</td></tr>
+            <tr><td>[16:24] &lt Davbo&gt too much for a phone</td></tr>
+            <tr><td>[16:24] &lt j_baker&gt They charge you MORE for a contract?</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt well that's for the entire duration of the contract</td></tr>
+            <tr><td>[16:25] &lt j_baker&gt Ah, I see. That's still expensive though.</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt O2 are doing a Pay as you Go deal for the iPhone this time round</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt not announced prices yet</td></tr>
+            <tr><td>[16:25] &lt j_baker&gt Really? Now THAT is cool.</td></tr>
+            <tr><td>[16:28] &lt Davbo&gt I guess AT&T don't do that?</td></tr>
+            <tr><td>[16:28] &lt j_baker&gt I don't believe so. I haven't checked though.</td></tr>
+            <tr><td>[16:30] &lt j_baker&gt I'm still happy with my Ming though</td></tr>
+            <tr><td>[16:30] &lt j_baker&gt http://www.motorola.com.hk/eng/motomobile/a/a1200/</td></tr>
+            <tr><td>[16:31] &lt Davbo&gt ah, thats a cool phone</td></tr>
+            <tr><td>[16:31] &lt j_baker&gt Yeah. Only problem is that it's GPRS only. No Edge or 3G. But I hardly ever use the internet on my phone anyway</td></tr>
+            <tr><td>[16:46] *** j_baker just spent 20 mins trying to figure out why the internet wasn't working on my desktop only to figure out the ethernet cord was unplugged.</td></tr>
+            <tr><td>[16:57] &lt Davbo&gt Imagine how long it would have took if you weren't so tech savy though :)</td></tr>
+            <tr><td>[16:57] &lt j_baker&gt lol... good point.</td></tr>
+            <tr><td>[16:57] &lt Davbo&gt you'd have took it to the Geek Squad ;-)</td></tr>
+            <tr><td>[16:58] &lt Davbo&gt or whatever they're called</td></tr>
+            <tr><td>[16:58] &lt j_baker&gt Thank god I know how to fix computers. I'm not particularly fond of dealing with technicians/salespeople who over charge you.</td></tr>
+            <tr><td>[17:04] *** Uraeus_ is now known as Uraeus</td></tr>
+            <tr><td>[17:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:46] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:53] &lt ms-afk&gt hi</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt ms-afk: http://rafb.net/p/dLF2e392.html</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt the patch to remove trailing print statements in HTTP components</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt I can just commit it if you will</td></tr>
+            <tr><td>[18:01] *** vmlemon_ wonders if any tools for mining source code locally exist...</td></tr>
+            <tr><td>[18:02] &lt Lawouach&gt what do you mean by mining? what would you want to see?</td></tr>
+            <tr><td>[18:02] &lt ms-afk&gt Lawouach: (looking)</td></tr>
+            <tr><td>[18:03] &lt ms-afk&gt Ah, I see :)</td></tr>
+            <tr><td>[18:03] &lt ms-afk&gt If theyre already on a checkout of /trunk feel free to commit :)</td></tr>
+            <tr><td>[18:03] &lt vmlemon_&gt Essentially a keyword-based search engine of some sort that gets pointed to a set of directories and archive files</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt ms-afk: I've remove thf irst one because I had introduced it I think</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt The second one was already there</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt so I just commented out</td></tr>
+            <tr><td>[18:04] &lt vmlemon_&gt I'm sure something for general text or even HTML handling would be useful, though</td></tr>
+            <tr><td>[18:04] &lt ms-afk&gt I must admit, my preference is to comment out debugging info, rather than delete it</td></tr>
+            <tr><td>[18:04] &lt ms-afk&gt Until I'm sure it all works as intended for absolute certain that is :)</td></tr>
+            <tr><td>[18:05] &lt Lawouach&gt I can revert the first one locally and just comment it</td></tr>
+            <tr><td>[18:05] &lt ms-afk&gt Up to you - they're trivial - just talking personal preference</td></tr>
+            <tr><td>[18:05] &lt ms-afk&gt it's only 2 lines - hardly worth discussion :)</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt I'll comment both and commit then</td></tr>
+            <tr><td>[18:06] &lt ms-afk&gt ta :)</td></tr>
+            <tr><td>[18:06] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[18:07] &lt vmlemon_&gt http://gonzui.sourceforge.net/ sounds like it might be useful for what I'm after</td></tr>
+            <tr><td>[18:08] &lt ms-afk&gt woo, it supports BF</td></tr>
+            <tr><td>[18:09] &lt j_baker&gt Hmmm... apparently the Minimal handler is REALLY vulnerable to DOS attacks.</td></tr>
+            <tr><td>[18:10] &lt ms-afk&gt ?</td></tr>
+            <tr><td>[18:10] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:10] &lt vmlemon_&gt Except it doesn't appear to support searching zip/tar archives</td></tr>
+            <tr><td>[18:10] &lt ms-afk&gt j_baker: why do you say that?</td></tr>
+            <tr><td>[18:10] &lt j_baker&gt Well, I tried doing a little stress testing on your new server code.</td></tr>
+            <tr><td>[18:10] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[18:11] &lt j_baker&gt And it gave me a too many files open error about 34% of the way through.</td></tr>
+            <tr><td>[18:11] &lt ms-afk&gt So that's a bug. It can be fixed :)</td></tr>
+            <tr><td>[18:12] &lt j_baker&gt And fairly easily I'm assuming. I would imagine that all we'd have to do is change the intelligent file reader to a max speed file reader.</td></tr>
+            <tr><td>[18:12] &lt j_baker&gt Either that or just open the file directly.</td></tr>
+            <tr><td>[18:15] &lt ms-afk&gt I don't actually know - I suspect that the problem is likely to be caused by files not actually being closed after being read to be honest</td></tr>
+            <tr><td>[18:15] &lt j_baker&gt That could also be the case. I don't recall seeing that code anywhere.</td></tr>
+            <tr><td>[18:16] &lt j_baker&gt Hey btw, were you aware that Kamaelia.Internet.TimeOutCSA doesn't have any documentation, ms-afk?</td></tr>
+            <tr><td>[18:16] &lt ms-afk&gt yeah, I suck</td></tr>
+            <tr><td>[18:16] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[18:17] &lt j_baker&gt :)</td></tr>
+            <tr><td>[18:17] &lt ms-afk&gt It was written because I *really* needed it for K.Grey, but you're right it needs doc'ing</td></tr>
+            <tr><td>[18:17] &lt ms-afk&gt noting that as a blocker for merge is fine fwiw</td></tr>
+            <tr><td>[18:19] &lt ms-afk&gt j_baker: IFR doesn't actually close the file</td></tr>
+            <tr><td>[18:19] &lt ms-afk&gt That'll almost certainly be a problem</td></tr>
+            <tr><td>[18:19] &lt ms-afk&gt (It may not be the only one)</td></tr>
+            <tr><td>[18:19] &lt j_baker&gt Yeah. You're correct.</td></tr>
+            <tr><td>[18:24] *** ms-afk goes afk. Hopefully back later</td></tr>
+            <tr><td>[18:24] &lt ms-afk&gt (many thanks for taking this level of care BTW - it's very much appreciated!)</td></tr>
+            <tr><td>[18:25] &lt ms-afk&gt biab</td></tr>
+            <tr><td>[18:25] *** ms-afk has parted #kamaelia</td></tr>
+            <tr><td>[18:30] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[18:36] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[18:36] Reply: does the macarena</td></tr>
+            <tr><td>[19:43] *** j_baker_ has joined #kamaelia</td></tr>
+            <tr><td>[20:02] *** j_baker_ is now known as j_baker</td></tr>
+            <tr><td>[20:08] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[20:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:17] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:24] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:37] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[21:48] &lt vmlemon_&gt Hah, http://cache.gizmodo.com/assets/resources/2008/04/psystarofficial.png</td></tr>
+            <tr><td>[22:27] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:27] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[23:06] *** j_baker has joined #kamaelia</td></tr>

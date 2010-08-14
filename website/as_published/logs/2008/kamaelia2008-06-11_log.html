@@ -1,0 +1,107 @@
+<html><body><table>
+            <tr><td>[06:41] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[08:09] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:25] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:34] &lt Davbo&gt morning all</td></tr>
+            <tr><td>[10:34] &lt Davbo&gt Lawouach_ are you BST+1? or GMT+1</td></tr>
+            <tr><td>[10:34] &lt Lawouach&gt GMT</td></tr>
+            <tr><td>[10:35] &lt Lawouach&gt currently GMT+2 due to summer time</td></tr>
+            <tr><td>[10:35] &lt Davbo&gt ah,yeah</td></tr>
+            <tr><td>[11:16] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[11:33] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:41] &lt Davbo&gt MS-: Why in Tools2Apps do we have /Kamaelia/Tools/Whiteboard but also have /Kamaelia/Kamaelia/Apps/Whiteboard?</td></tr>
+            <tr><td>[11:41] &lt MS-&gt Because the lift & shift is</td></tr>
+            <tr><td>[11:42] &lt MS-&gt  /Kamaelia/Tools/Whiteboard/Whiteboard</td></tr>
+            <tr><td>[11:42] &lt MS-&gt to</td></tr>
+            <tr><td>[11:42] &lt MS-&gt  /Kamaelia/Kamaelia/Apps/Whiteboard</td></tr>
+            <tr><td>[11:42] &lt Davbo&gt oh right, so it is</td></tr>
+            <tr><td>[11:42] &lt MS-&gt The whiteboard tools are in: /Kamaelia/Tools/Whiteboard</td></tr>
+            <tr><td>[11:42] &lt Davbo&gt Sorry, I must have not paid attention with the diff</td></tr>
+            <tr><td>[11:42] &lt Davbo&gt it's a bit of a confusing diff, in fairness :)</td></tr>
+            <tr><td>[11:43] &lt MS-&gt it essentiall does boil down to a lift and shift of things really</td></tr>
+            <tr><td>[11:47] &lt Davbo&gt Yeah, lets just get this merged, there doesn't seem to be anything wrong with it</td></tr>
+            <tr><td>[11:48] &lt Davbo&gt Compose works fine, I get the same error about Speex I always get when trying to run Whiteboard :-)</td></tr>
+            <tr><td>[11:53] &lt Davbo&gt Did you get chance to look at my diff for the irc logger MS-?</td></tr>
+            <tr><td>[11:53] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:54] &lt Davbo&gt I was holding off merging it until you checked that</td></tr>
+            <tr><td>[11:54] &lt MS-&gt Did you install speex?</td></tr>
+            <tr><td>[11:55] *** MS- moves off channel</td></tr>
+            <tr><td>[12:09] &lt Davbo&gt pyrex fails building pyspeex I believe</td></tr>
+            <tr><td>[12:09] &lt Davbo&gt and it just drops out</td></tr>
+            <tr><td>[12:09] &lt Davbo&gt it's a very uninformative error so I'm not entirely sure what to do with it</td></tr>
+            <tr><td>[12:09] &lt Davbo&gt I can run Whiteboard without speex anyway with minor changes</td></tr>
+            <tr><td>[12:11] &lt MS-&gt Cool. That means the minor changes to make that work, work :)</td></tr>
+            <tr><td>[12:14] &lt Davbo&gt I don't know what package layout I should use hmm</td></tr>
+            <tr><td>[12:16] &lt Davbo&gt speex.c:1:2: error: #error Do not use this file, it is the result of a failed Pyrex compilation.</td></tr>
+            <tr><td>[12:16] &lt Davbo&gt error: command 'gcc' failed with exit status 1</td></tr>
+            <tr><td>[12:21] &lt MS-&gt which version of pyrex are you using?</td></tr>
+            <tr><td>[12:21] &lt MS-&gt pyrex changed</td></tr>
+            <tr><td>[12:21] &lt Davbo&gt I've made a start on a Paint tools component and a Colour Selector MS-, I don't think I'll add them onto MagnaDoodle, instead copy MagnaDoodle rename it to Paint and add those features to that, make the transition to my main project.</td></tr>
+            <tr><td>[12:21] &lt MS-&gt It may be a good idea to use the version in the megabundle</td></tr>
+            <tr><td>[12:22] &lt MS-&gt k</td></tr>
+            <tr><td>[12:22] &lt MS-&gt sounds reasonable</td></tr>
+            <tr><td>[12:22] &lt MS-&gt you can always later look at integrating into the whiteboard (part of the _original_ ) plan later, but fundamentally the project is about a paint tool :)</td></tr>
+            <tr><td>[12:23] &lt MS-&gt And it's always worth remembering the original aims with these things and what mattered - in this case a fun paint tool :)</td></tr>
+            <tr><td>[12:24] &lt MS-&gt with multiple windows to show multiprocess stuff</td></tr>
+            <tr><td>[12:24] &lt MS-&gt That reminds me, I'll need to deal with multiprocess stuff next week</td></tr>
+            <tr><td>[12:24] &lt Davbo&gt I'm sure things will come across from Whiteboard in the process</td></tr>
+            <tr><td>[12:24] &lt Davbo&gt if not it wouldn't be difficult due to the nature of them</td></tr>
+            <tr><td>[12:25] *** MS- wanders off for a while</td></tr>
+            <tr><td>[12:32] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[12:39] &lt Davbo&gt Hey vmlemon</td></tr>
+            <tr><td>[12:40] &lt vmlemon&gt o.O "This plug for the IDE allows the legal staff not to delete this section C1(c) and thereby mess up our section numbering system between licenses."</td></tr>
+            <tr><td>[13:29] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[13:29] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt MS-: I don't see any blockers for merging both Tools2Apps and IRC Logger</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt Alright if i go ahead and merge now?</td></tr>
+            <tr><td>[13:59] &lt MS-&gt yep - if it all looks horribly wrong afterwards, we can always revert :)</td></tr>
+            <tr><td>[13:59] &lt MS-&gt But they wouldn't've been up for merge if I didn't think they were basically OK</td></tr>
+            <tr><td>[13:59] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt I'm trying to do it now humm</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt not 100% on what I do</td></tr>
+            <tr><td>[13:59] &lt MS-&gt That was in the ready to merge mail...</td></tr>
+            <tr><td>[13:59] &lt MS-&gt :-)</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt I made changes to the logger so i don't want to merge the revision you have here though right?</td></tr>
+            <tr><td>[14:01] &lt MS-&gt That number remains the same</td></tr>
+            <tr><td>[14:01] &lt MS-&gt that number on the left is the revision number where the branch was created</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt ah</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt [root@localhost private_MPS_KamaeliaLogger]# svn update</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt At revision 4346.</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt [root@localhost Python]# svn merge -r4346:HEAD ../../../private_MPS_KamaeliaLogger .</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt that didn't do anything then did it?</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[14:04] &lt Davbo&gt (it didn't spit out any updates anyway)</td></tr>
+            <tr><td>[14:06] *** Davbo see's what it does now</td></tr>
+            <tr><td>[14:06] &lt MS-&gt That doesn't cause any checkin - it just modifies your local version</td></tr>
+            <tr><td>[14:06] &lt MS-&gt if you type</td></tr>
+            <tr><td>[14:06] &lt MS-&gt svn diff</td></tr>
+            <tr><td>[14:06] &lt MS-&gt it will show you want you've applied to /trunk/Code/Python</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt svn: Access scheme mixtures not yet supported ('http://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_KamaeliaLogger/Apps/Kamaelia-Logger' and 'https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Apps')</td></tr>
+            <tr><td>[14:13] *** Davbo tries somethign</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt merged the logger</td></tr>
+            <tr><td>[14:19] &lt MS-&gt ta</td></tr>
+            <tr><td>[14:19] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:20] *** MS- gets lunch</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt MS-: I tried merging the Tools2Apps but I dont think it worked correctly</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt It made merge-left and merge-right files from the setup.py</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt a merging conflict i think</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt i've not commited so no big problem</td></tr>
+            <tr><td>[16:04] *** orphans_ has joined #kamaelia</td></tr>
+            <tr><td>[16:25] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[16:41] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:58] &lt Davbo&gt Lawouach I tried to merge and ended up with merge-left and merge-right</td></tr>
+            <tr><td>[16:58] &lt Davbo&gt that means it didn't go to plan doesn't it? :-(</td></tr>
+            <tr><td>[16:58] &lt Lawouach&gt probably, just try again :)</td></tr>
+            <tr><td>[16:59] &lt Lawouach&gt merging is hard</td></tr>
+            <tr><td>[16:59] &lt Davbo&gt Will leave it for now, I have a suspicion about it though</td></tr>
+            <tr><td>[16:59] &lt Davbo&gt it was on setup.py for Kamaelia</td></tr>
+            <tr><td>[17:29] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[17:42] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[17:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:02] *** jle_ has joined #kamaelia</td></tr>
+            <tr><td>[18:02] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:12] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:12] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:24] *** jle_ has joined #kamaelia</td></tr>
+            <tr><td>[18:26] *** Chong- has joined #kamaelia</td></tr>

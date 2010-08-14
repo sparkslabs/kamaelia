@@ -1,0 +1,251 @@
+<html>
+<head>
+<title> ReleaseProgress070 </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - ReleaseProgress070">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    <h1>Release Progress: 0.7.0</h1>This page is for tracking 0.7.0 from planning through to release 
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    <b>If you're looking for the current release</b>, please go to the <a href="GetKamaelia">Get Kamaelia</a> page since it always links to the current version
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <h2>Draft Release Notes</h2><ul><li>SuSE packaging for <a href="http://rpm.pbone.net/index.php3/stat/4/idpl/9272711/com/python-axon-1.5.1-1.1.i586.rpm.html">Axon</a> &amp; <a href="http://rpm.pbone.net/index.php3/stat/4/idpl/9308970/com/python-kamaelia-0.5.0-1.1.i586.rpm.html">Kamaelia</a> in done</li><ul><li>Repackaging for a new release seems relatively simple</li><ul><li>grab the SRPM, do a rpmbuild -bp <i>specfile</i></li><li>copy the new tar ball into the SOURCES directory</li><li>edit the specfile to update it to point at the new tarball, and update the change log<br>
+    </li><li>Then rebuild the binary rpm using  rpmbuild -bb <i>specfile</i></li><li>Test it, by installing the new binary file</li><li>Assuming you're happy with the results, build a source RPM as well using: rpmbuild -bs <i>specfile</i></li><li>Upload, announce, be happy.</li><li>Tell the nice people at suse that you've done this :-)</li></ul></ul><li>DVB_Multiplex component changed to support multiple adapters (ie not just adapter0)</li><li>DVB/Core.py, DVB/Tuner.py changed to automatically pick up which DVB tuning class. Now supports DVB-C (in holland) as well.<br></li><ul><li>python_dvb3 bindings updates to 0.0.5 - added in a support function.<br></li></ul><li>Extended Kamaelia.Util.Console.ConsoleReader to have clean shutdown</li><li>Tyson's File Append component:</li><ul><li>Merged onto branch private_MPS_FileAppender</li><li>Cleaned up, documentation added, extended slightly</li></ul><li>Implemented better graphline shutdown on branch private_MPS_ImprovedGraphlineShutdown:</li><ul><li>It extended Graphline slightly such that, when a message is received on the Graphline's "control" inbox, that the message is copied to all subcomponents' "control" inbox, as long as they don't already have anything linking there already.</li><li>If a shutdown message is sent to the graphline, the graphline will now terminate normally, after having passed on that message to subcomponents.</li><li>Example of usage here: <a href="http://kamaelia.googlecode.com/svn/branches/private_MPS_ImprovedGraphlineShutdown/Kamaelia/Examples/UsingChassis/Graphline/DemoShutdown.py">DemoShutdown.py</a></li><li>Also now has a decent test suite.</li><ul><li>Worth investigating how to extract and generalise the general test pattern from this.</li></ul></ul></ul><h2>Work in progress - Bumped to 0.8.12<br>
+</h2><b>Note:</b> <i>"if not done by"</i> is a means of timing out ownership of an item. It makes no judgement other than that.<br><ul><li>Awaiting review/merge</li><ul><li>review/merge <a href="http://groups.google.com/group/kamaelia/browse_frm/thread/599eefa8ee835b5b"><span id="thread_subject_site">private_CL_Topology3DCore</span></a><span id="thread_subject_site"> (27/10)</span></li></ul><ul><ul><li><span id="thread_subject_site">Reclaimed by Michael 2/11/08. If not merged by 5/11/08, becomes unclaimed again.<br></span></li></ul></ul></ul>
+<p>
+</p><h2>Bumped to 0.8.12<br>
+</h2>
+<p>
+</p>Current outline plans discussed:<br><ul><li>Merged of Chong's Google Summer of code project - <a href="http://www.kamaelia.org/Developers/Projects/3DTopologyVisualiser">3D visualisation work</a> (since this is something I actually need sooner rather than later)</li><li>Flesh out http://www.kamaelia.org/Presentations somewhat...<br></li><li>Packaging up of the <a href="http://www.kamaelia.org/t/TN-LinuxFormat-Kamaelia.pdf">whiteboard</a> (pdf) as a standalone app</li><li>Packaging up of the <a href="http://code.google.com/p/kamaelia/source/browse/branches/private_MPS_Participate/Apps/FileProcessor/App/BatchFileProcessor.py">batch file processor</a> (image/video transcoder) as a standalone app (or better packaging than <a href="http://http//www.kamaelia.org/release/Kamaelia-FileProcessor-0.1.0.tar.gz">this</a>)</li><li>A mirror of the Ben's <a href="http://code.google.com/p/kamaelia-aws/">Kamaelia AWS</a> code into Kamaelia.Apps.AWS, if it's at a stage where it's ready. (aside from reviews etc)</li><li>Merge
+of Jason's google summer of code on on extensions/improvements to the
+HTTP server code, including a better example of the seaside like
+functionality. (I think <a href="http://www.kamaelia.org/Developers/Projects/KamaeliaPublish">Kamaelia Publish</a> itself should probably wait until 0.8.12 or 0.9.X) Probably after it gets a clearer name.</li><li>Perhaps initial work on <a href="http://groups.google.com/group/kamaelia/browse_frm/thread/7c9fe6a4202303e5">integration of the STM code into the CAT</a>. (The what? <a href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation/">The STM and CAT tools were discussed at pycon uk</a>) Though I suspect this will get started now, and merged in 0.8.12</li><li>2.6 cleanups (probably based on hinting from 2to3), and work started on a 3.0 autoconversion/build system.</li><li>Other
+stuff I'd like to see includes : work started on rationalising
+Kamaelia.File, Full review and merge of UDP_ng code in place of current
+UDP code, basic "connected" UDP server support (perhaps) (ie such that
+it can be used as a drop in replacement for TCPServer in ServerCore)</li></ul>
+<p>
+</p>...<br><br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    <b>Current status:<br><span style="background-color: rgb(51, 255, 51);">&nbsp;FROZEN   </span></b><br>Freeze Target: 2008/11/23<br>
+Release Target: w/e  2008/11/30<br>
+
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

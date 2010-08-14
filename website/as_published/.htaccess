@@ -1,0 +1,3 @@
+#ErrorDocument 404 /cgi-bin/test.sh
+ErrorDocument 404 /cgi-bin/Wiki/wiki
+Redirect /index.html http://www.kamaelia.org/Home.html

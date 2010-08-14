@@ -1,0 +1,159 @@
+<html><body><table>
+            <tr><td>[04:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[05:30] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:30] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:40] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:45] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:00] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[08:24] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:24] &lt MS-&gt morning</td></tr>
+            <tr><td>[08:25] &lt Lawouach_&gt hi there</td></tr>
+            <tr><td>[08:25] &lt Lawouach_&gt lots of discussion on the list</td></tr>
+            <tr><td>[08:26] &lt Lawouach_&gt not saying much but reading them :)</td></tr>
+            <tr><td>[08:26] &lt Lawouach_&gt Jason is eager :)</td></tr>
+            <tr><td>[08:32] &lt MS-&gt indeed - very pleased to see that. I think he's willing to "own" porting to 2.6 / 3.0 - which is good, as long as we manage it right :)</td></tr>
+            <tr><td>[08:32] &lt MS-&gt lots of good q's getting asked as well</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt otherwise it would be a good GsoC project for next year :)</td></tr>
+            <tr><td>[08:33] &lt Lawouach_&gt though we would need someone who's already very good at python</td></tr>
+            <tr><td>[08:36] &lt MS-&gt there is that</td></tr>
+            <tr><td>[08:36] &lt MS-&gt http://www.mathys-squire.com/legal-updates/symbian-vs-comptroller.asp - is rather depressing news</td></tr>
+            <tr><td>[08:36] &lt MS-&gt "Critically, it is now likely to be easier to obtain patent protection for software related inventions in the UK."</td></tr>
+            <tr><td>[08:49] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:50] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:05] *** Lawouach__ has joined #kamaelia</td></tr>
+            <tr><td>[09:16] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:19] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:19] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:18] &lt MS-&gt I've decided I'm going to merge this branch private_MPS_Games4Kids/ as part of the 0.6.0 release</td></tr>
+            <tr><td>[10:18] &lt MS-&gt my rationale is that it's fun :)</td></tr>
+            <tr><td>[10:19] &lt MS-&gt Only really merges something into Kamaelia.Apps. with a minor change to KeyEvent component - which gains the mythological "key up" ability</td></tr>
+            <tr><td>[10:27] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[11:37] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[11:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:30] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[12:32] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[12:33] *** mhrd-afk has parted #kamaelia</td></tr>
+            <tr><td>[13:31] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:37] &lt MS-&gt hi</td></tr>
+            <tr><td>[15:44] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:41] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:50] *** tro has joined #kamaelia</td></tr>
+            <tr><td>[16:50] *** tro has parted #kamaelia</td></tr>
+            <tr><td>[17:16] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:35] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[17:50] &lt eikenberry&gt 0.6.0 final... today?</td></tr>
+            <tr><td>[17:50] &lt vmlemon_&gt Hi eikenberry</td></tr>
+            <tr><td>[17:51] &lt eikenberry&gt hi</td></tr>
+            <tr><td>[17:58] &lt Davbo&gt Hi eikenberry, I'm not certain what MS- was planning but there have been a few checkins today</td></tr>
+            <tr><td>[17:59] &lt Davbo&gt most notable he merged the Games4Kids to trunk</td></tr>
+            <tr><td>[17:59] &lt eikenberry&gt I had read in the ml archives and again here in the topic that it was planned for release last weekend.</td></tr>
+            <tr><td>[18:02] &lt Davbo&gt you can get the latest RC here: http://edit.kamaelia.org/release/</td></tr>
+            <tr><td>[18:03] &lt Davbo&gt alternately you could co the trunk</td></tr>
+            <tr><td>[18:03] *** eikenberry nods. The latest was from June and if it was just about to be release I thought I could wait a bit. </td></tr>
+            <tr><td>[18:04] &lt Davbo&gt svn checkout http://kamaelia.googlecode.com/svn/trunk/Code/Python/ kamaelia-read-only</td></tr>
+            <tr><td>[18:05] &lt Davbo&gt MS-: is the BDFL when it comes to decisions on release though ;-)</td></tr>
+            <tr><td>[18:05] &lt eikenberry&gt Thanks.</td></tr>
+            <tr><td>[18:07] *** vmlemon_ avoids suggesting asking the cat ;)</td></tr>
+            <tr><td>[18:07] *** Davbo will post a tarball of current trunk in a short while</td></tr>
+            <tr><td>[18:10] &lt Davbo&gt releases are a strange idea for Kamaelia really since it's a library of components, new releases = more components...</td></tr>
+            <tr><td>[18:13] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[18:13] &lt Davbo&gt Hey Lawouach</td></tr>
+            <tr><td>[18:13] &lt Lawouach&gt hi mate</td></tr>
+            <tr><td>[18:17] &lt Davbo&gt hows things?</td></tr>
+            <tr><td>[18:17] &lt MS-&gt evening</td></tr>
+            <tr><td>[18:17] &lt Davbo&gt evenin' MS</td></tr>
+            <tr><td>[18:18] &lt MS-&gt eikenberry: "0.6.0 final... today" Will be, yes. I'm just cleaning up the website actually, since I'd just like a tidy house on the new site before doing the release notes</td></tr>
+            <tr><td>[18:19] &lt MS-&gt http://www.kamaelia.org/Home is much nicer than it was for example</td></tr>
+            <tr><td>[18:19] &lt Davbo&gt thanks for clearing that up :-)</td></tr>
+            <tr><td>[18:19] &lt eikenberry&gt heh... had it open. Just reloaded it. It does look nicer. :)</td></tr>
+            <tr><td>[18:21] &lt eikenberry&gt Is it possible to set the &lt title&gt? Currently it is 'Index'. Had to edit my bookmark... that always annoys me.</td></tr>
+            <tr><td>[18:23] &lt MS-&gt Ah, the title follows the name of the file on disk, so http://www.kamaelia.org/Developers/Branches for example says Developers/Branches. I'll add a rewrite rule for /Home (which is really /index) .</td></tr>
+            <tr><td>[18:25] *** Davbo just noticed /trunk/Website/</td></tr>
+            <tr><td>[18:26] &lt Davbo&gt that's pretty cool</td></tr>
+            <tr><td>[18:27] &lt MS-&gt It's also out of date sadly. Though recent overhauls behind the changes from edit.kamaelia.org & kamaelia.sourceforge.net --&gt www.kamaelia.org will probably see it's reinstatement at some point</td></tr>
+            <tr><td>[18:28] &lt MS-&gt primarily because we're no longer beholden to sourceforge</td></tr>
+            <tr><td>[18:28] &lt Davbo&gt oh is it, i wondered how you'd set that up then</td></tr>
+            <tr><td>[18:31] &lt MS-&gt It was how things were done *before* the website was powered by a wiki engine</td></tr>
+            <tr><td>[18:32] *** Davbo nods</td></tr>
+            <tr><td>[18:33] &lt MS-&gt OK, release notes...</td></tr>
+            <tr><td>[18:34] &lt MS-&gt I'll have to do this as overview probably.</td></tr>
+            <tr><td>[18:35] &lt MS-&gt 0.5.0 was rev 2504</td></tr>
+            <tr><td>[18:35] &lt MS-&gt current rev is somewhat higher...</td></tr>
+            <tr><td>[18:35] &lt MS-&gt (It's why I want to switch over to a fixed 6 week release candidate cycle)</td></tr>
+            <tr><td>[18:35] &lt MS-&gt (even if stable releases don't match that)</td></tr>
+            <tr><td>[18:42] &lt MS-&gt diff is still going...</td></tr>
+            <tr><td>[18:45] &lt MS-&gt and going...</td></tr>
+            <tr><td>[18:45] &lt MS-&gt really really ought to NOT do such large deltas between releases...</td></tr>
+            <tr><td>[18:50] &lt vmlemon_&gt Hmm, will http://www.kamaelia.org/ eventually redirect to the page at http://www.kamaelia.org/Home?</td></tr>
+            <tr><td>[18:50] &lt vmlemon_&gt (If it doesn't already)</td></tr>
+            <tr><td>[18:50] &lt MS-&gt vmlemon_: it does already</td></tr>
+            <tr><td>[18:50] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[18:50] &lt vmlemon_&gt I probably just haven't been paying enough attention ;)</td></tr>
+            <tr><td>[18:52] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:53] *** Davbo grumbles</td></tr>
+            <tr><td>[18:53] &lt Davbo&gt http://edit.kamaelia.org/logs/kamaelia2008-10-13_log.html shows none of my messages were reaching the channel</td></tr>
+            <tr><td>[18:55] &lt Davbo&gt ﻿(21:01:35) Davbo: Hehehe!! http://delicious.com/url/ab951b1c4fd138901f464a44303af80d the people (incl me) which copied and pasted the blurb on the front page as a note</td></tr>
+            <tr><td>[18:55] &lt Davbo&gt (21:02:21) Davbo: the cat certainly works though: ""Concurrency made useful, fun" has a cat pic on homepage, I have to play with this"</td></tr>
+            <tr><td>[18:55] &lt vmlemon_&gt "And it's got a cat" was one of the original project slogans, if I remember correctly</td></tr>
+            <tr><td>[18:56] &lt Davbo&gt MS-: I commited a contribution to the site, hopefully useful.</td></tr>
+            <tr><td>[18:58] &lt MS-&gt ?</td></tr>
+            <tr><td>[18:59] &lt MS-&gt what where/</td></tr>
+            <tr><td>[18:59] &lt MS-&gt ?</td></tr>
+            <tr><td>[18:59] &lt Davbo&gt Couldn't think where to host so stuck it in svn Website dir :P</td></tr>
+            <tr><td>[19:00] &lt MS-&gt in which case I'll take a look when I've gone through this diff....</td></tr>
+            <tr><td>[19:00] &lt Davbo&gt http://code.google.com/p/kamaelia/source/detail?r=5403</td></tr>
+            <tr><td>[19:02] &lt MS-&gt ta</td></tr>
+            <tr><td>[19:02] &lt MS-&gt ahhhhh</td></tr>
+            <tr><td>[19:02] &lt MS-&gt ta</td></tr>
+            <tr><td>[19:02] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:03] &lt Davbo&gt np ;-)</td></tr>
+            <tr><td>[19:05] &lt MS-&gt The funny thing about the cat - right when we started, the one thing I said was that we'd need a logo which was an animal of some kind and so since I like cats, I picked that.</td></tr>
+            <tr><td>[19:05] &lt MS-&gt It's been a good idea all along :)</td></tr>
+            <tr><td>[19:06] &lt vmlemon_&gt Wasn't it based on a wood carving, or something like that?</td></tr>
+            <tr><td>[19:06] &lt vmlemon_&gt (Or so I recall you saying, ages ago)</td></tr>
+            <tr><td>[19:06] &lt MS-&gt vmlemon_: yep</td></tr>
+            <tr><td>[19:06] &lt MS-&gt sitting on the table over there &lt ----------</td></tr>
+            <tr><td>[19:06] &lt MS-&gt Had it around 16 years or so I guess</td></tr>
+            <tr><td>[19:06] &lt vmlemon_&gt Pointing to my window ;)</td></tr>
+            <tr><td>[19:09] &lt Davbo&gt nice to see the bookmarks on delicious though, for the new site that is</td></tr>
+            <tr><td>[19:19] &lt MS-&gt without any major attempt to tell anyone about it either, interestingly. I've mentioned it in a handful of places, but not actually launched it per se</td></tr>
+            <tr><td>[19:52] &lt MS-&gt About 1/4 way through this diff</td></tr>
+            <tr><td>[19:52] &lt MS-&gt which is pretty good going</td></tr>
+            <tr><td>[19:52] &lt eikenberry&gt There's a 'bug' on the miniaxon tutorial page.</td></tr>
+            <tr><td>[19:52] &lt MS-&gt eikenberry: Oh?</td></tr>
+            <tr><td>[19:52] &lt MS-&gt which page?</td></tr>
+            <tr><td>[19:53] &lt eikenberry&gt http://www.kamaelia.org/MiniAxon in the Consumer class toward the bottom.</td></tr>
+            <tr><td>[19:53] &lt eikenberry&gt  if self.dataReady("inbox"):</td></tr>
+            <tr><td>[19:53] &lt eikenberry&gt  data = self.recv("inbox")</td></tr>
+            <tr><td>[19:53] &lt eikenberry&gt  print self.message, count</td></tr>
+            <tr><td>[19:53] &lt eikenberry&gt self.message should be data</td></tr>
+            <tr><td>[19:54] &lt eikenberry&gt The Producer class (just above on that page) has the message attribute.</td></tr>
+            <tr><td>[19:54] &lt MS-&gt ta - looking now</td></tr>
+            <tr><td>[19:54] &lt eikenberry&gt It is corrent in the full listing @ http://www.kamaelia.org/MiniAxonFull.html</td></tr>
+            <tr><td>[19:55] &lt MS-&gt ah see, just above Interlude 2</td></tr>
+            <tr><td>[19:55] *** eikenberry nods</td></tr>
+            <tr><td>[19:56] &lt MS-&gt there, that should be better</td></tr>
+            <tr><td>[19:56] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:56] &lt eikenberry&gt Yep. Fixed.</td></tr>
+            <tr><td>[19:57] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:57] &lt MS-&gt (I really don't like documentation bugs)</td></tr>
+            <tr><td>[20:31] &lt Davbo&gt Logging of IRC Channels is so amazingly useful</td></tr>
+            <tr><td>[20:31] *** Davbo just fixed a bug in a django app by reading through something in their logs</td></tr>
+            <tr><td>[20:40] *** MS- nods</td></tr>
+            <tr><td>[20:48] &lt MS-&gt about 2/5's of the way through now</td></tr>
+            <tr><td>[20:52] &lt Davbo&gt g'night all</td></tr>
+            <tr><td>[21:47] &lt MS-&gt 2/3 way through diff/release notes</td></tr>
+            <tr><td>[22:16] &lt MS-&gt yay, 4/5ths of the way through</td></tr>
+            <tr><td>[22:16] &lt eikenberry&gt Can you see that light at the end of the tunnel?</td></tr>
+            <tr><td>[22:21] &lt MS-&gt getting there :)</td></tr>
+            <tr><td>[22:22] &lt MS-&gt The nice thing about doing this is that whenever I do this sort of thing I always do a diff, and have that in one editor window and make notes in a second</td></tr>
+            <tr><td>[22:22] &lt MS-&gt Deleting the parts of the diff I've summarised</td></tr>
+            <tr><td>[22:22] &lt MS-&gt As a result you get to see the diff shrinking and feel like you're getting somewhere</td></tr>
+            <tr><td>[22:22] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:24] *** eikenberry nods. I know just what you mean.</td></tr>
+            <tr><td>[23:10] &lt MS-&gt first pass at release notes done...</td></tr>
+            <tr><td>[23:16] &lt MS-&gt First pass is here: http://www.kamaelia.org/ReleaseNotes060</td></tr>
+            <tr><td>[23:17] &lt MS-&gt hm. That excludes the improvements and changes to Axon...</td></tr>
+            <tr><td>[23:35] &lt MS-&gt WIll have to come back to that tomorrow I guess</td></tr>
+            <tr><td>[23:35] *** MS- is beat and calls it a night</td></tr>
+            <tr><td>[23:36] *** MS- is now known as ms-afk</td></tr>

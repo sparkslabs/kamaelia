@@ -1,0 +1,174 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20061121 ======
+
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+   4.1 Bi-monthly meeting agenda
+       Suggestions: Review of the year, Project Task Pages, Macro
+5. Date/Time of next weekly meeting
+   Friday 1st December 2006, 11am GMT
+
+
+
+2. Participants
+
+Participants: mhrd (Matt), MS- (Michael)
+Also attending: tav, Uraeus, Lawouach, G0SUB
+
+
+
+3. Activity Reports
+
+Michael:
+    DONE - Worked on finalising the website for moving over
+           requested contributor agreement from Anagha, Devendra (silence)
+           Added contributor section
+           Continued fleshing out website revamp
+           Simplified website design
+           moved office (again)
+
+    TODO - Bi-monthly meeting
+               collate achievements beforehand
+           finalise macro plans
+           presentation in cambridge
+           also offices related stuff
+
+    BLOCKED - website doesn't work in Safari for some reason - investigating
+              out the office for 2 days coming up
+              been blocked due to meetings.
+
+    Note - Sourceforge website becoming slow
+
+    FOLLOWUP - None
+
+
+Matt:
+    DONE - Added named input pipes my UnixProcess component
+           Added audio processing and encoding to 'mobile reframer'
+           Fixed data loss in my UnixProcess component (not mencoder's fault)
+           Requested faster machine for RTP work
+
+    BLOCKED - Secondment to (non Kamaelia) internal BBC project
+
+    TODO - Propogate audio rate & format to output stage in mobile reframer
+               (hard coded atm)
+           commit mobile reframing code
+           implement first cut RTP remultiplexer (simple ext. of existing work)
+           investigate mpeg transport stream remultiplexing issue
+           bimonthly meetup on Friday
+               collate statuses of runnning/pending tasks
+               collate outstanding bugs/issues
+
+
+4. Discussion items (max 3 or 4)
+
+
+4.1. Bi-monthly meeting agenda
+
+Suggestions: Review of the year, Project Task Pages, Macro
+
+Michael explained that he wanted to use the meeting to take stock. He reckoned
+the review would take an hour at most (just to see what has been achieved). This
+would be a positive thing.
+
+Lawouach asked if this meeting would be on IRC. Michael clarified that it would
+not be - since it is a face to face meeting between Matt and Michael. Lawouach
+asked for a report/notes. Michael hoped to take some.
+
+Lawouach explained that he would be "interested in understanding what you've
+addressed"
+
+Michael reckoned that having this written down would be useful since the (BBC
+internal) departmental annual review will be coming along at some point anyway.
+
+Matt said he would pull together the statuses of his runnning/pending tasks and
+any outstanding bugs/issues. Michael pointed out that the latter, in his opinon,
+are project tasks in themselves.
+
+Michael explained that he was thinking of using "the same technique for managing
+outstanding projects and tasks as we do for Kamaelia building/design"
+
+He explained that this would "gives us a flat project structure (so we can see
+everything outstanding) But also allows us to deal with dependencies."
+
+He reckoned it would make it simpler to address questions like "So, what
+happened to P2P & multicast". The idea though is for it to be helpful, not a
+hindrence
+
+Matt was not sure he completely understood, so Michael clarified:
+
+"""
+Basically, there's too much stuff to do and it does need to get done. So I'm
+trying to find a way to manage that, whilst also realising I don't actually know
+of a good way of managing it since it is actually a research project.
+"""
+
+Matt and Lawouach ventured that this boiled down to having the courage to say
+"no" to some work requests.
+
+Michael explained that "people like to know why sometimes. Also, there are times
+when things do need to get put down temporarily, and it strikes me as a way of
+managing it"
+
+Michael explained that he wanted to incur a concept of "debt" onto projects -
+taking technical debt and extending it.
+
+By Technical Debt, Michael explained, that he meant, for example, being able to
+say "I can develop this in 2 weeks, instead of the 4 it will need to test
+properly; but that'll incurr you a testing/bugfixing debt of 4-6 weeks later
+down the line". Time == Money, so a time credit of 2 weeks means they have to
+pay back 4 weeks later, costing them an extra 2 weeks (potentially)
+
+It's a concrete way of putting forward "This is what doing the quick hacky
+version will cost you in future". Its also a way of being able to say "the
+guilty party is the person who made the bad judgement call"
+
+Michael reckoned that this doesn't just apply to technical things; but that it
+can apply to things as basic as project management. It could be treated like
+any other engineering problem.
+
+Michael and Matt have been saying for a long while now "we need an internal
+project manager" (beyond Michael) to handle project management issues rather
+than design/code/architecture.
+
+Michael felt that some of the issues at the moment (from a BBC perspective) are
+a consequence of that - ie the project's project management debt has reached a
+level where there are problems.
+
+Day to day and week to week management is good; but the longer term management
+is less good, for these very reasons.
+
+Michael felt that that if we sort this out, in our way, it'll be to our
+satisfaction.
+
+Matt agreed this made alot of sense.
+
+Michael hoped that he and Matt could discuss this further at the bimonthly
+meetup. He has started fleshing out the subtasks needed for P2P/multicast and
+identifying what has been done towards this so far, to get a clearer picture:
+
+"""
+By creating some project task pages for it, we make it possible to say "this is
+the project stage and it can be handed off, and this is what needs doing"
+ie it gives us a way of putting a sub-project to sleep as well
+"""
+
+Matt hoped that this process would result in clear prioritisation of TODOs, so
+he would know "what to do next" after each task is finished.
+
+Michael agreed and reckoned it would, since tasks and substasks could be
+prioritised.
+
+Matt clarified for Michael that he would be able to arrive after 10am for an
+11am start. Michael set a finish time of 4 to 5pm, giving Matt time to catch
+his return train at 6pm.
+
+Michael also pointed out that his new room number was 1046.
+
+
+
+5. Date/Time of next weekly meeting
+   Friday 1st December 2006, 11am GMT
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20061121 ======

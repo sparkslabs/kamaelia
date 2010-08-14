@@ -1,0 +1,241 @@
+<html><body><table>
+            <tr><td>[15:16] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[15:17] &lt Davbo&gt Ah fair enough</td></tr>
+            <tr><td>[15:17] &lt Davbo&gt I'll still use it then</td></tr>
+            <tr><td>[15:18] &lt j_baker&gt If nothing else, it makes it convenient to transfer files back and forth during development (and makes you have to worry less about which branch you have installed currently).</td></tr>
+            <tr><td>[15:18] &lt Chong-&gt j_baker: It seems interesting. I will also try it this weekend to package my branch.</td></tr>
+            <tr><td>[15:19] &lt j_baker&gt I'll try to put it in a branch today since there appears to be a decent amount of interest in it.</td></tr>
+            <tr><td>[15:19] &lt ms-&gt Chong-: It doesn't actyally make any sense for your work</td></tr>
+            <tr><td>[15:19] &lt ms-&gt since you're creating core components</td></tr>
+            <tr><td>[15:19] &lt ms-&gt rather than an application</td></tr>
+            <tr><td>[15:19] &lt Chong-&gt ms-: yes. that's true</td></tr>
+            <tr><td>[15:20] &lt ms-&gt In fact, if you did start going down that route you'd be making your code incompatible with the rest of the system</td></tr>
+            <tr><td>[15:20] &lt Chong-&gt And my code also heavily depends on pygame and pyOpenGL.</td></tr>
+            <tr><td>[15:21] &lt ms-&gt That's not relevant</td></tr>
+            <tr><td>[15:21] &lt ms-&gt You are writing library code, not an application</td></tr>
+            <tr><td>[15:21] &lt ms-&gt j_baker, Davbo & orphans are all writing applications</td></tr>
+            <tr><td>[15:21] &lt ms-&gt the bulk of their code should end up in Kamaelia.Apps.*</td></tr>
+            <tr><td>[15:22] &lt ms-&gt with their apps actually just stubs to pull in the top level components really</td></tr>
+            <tr><td>[15:22] &lt Chong-&gt ms-: I see.</td></tr>
+            <tr><td>[15:22] &lt ms-&gt but their apps need packaging for a user to install and run</td></tr>
+            <tr><td>[15:22] &lt ms-&gt j_baker's done a nice job of that for these particular sorts of application</td></tr>
+            <tr><td>[15:23] &lt ms-&gt The second biggest risk that anyone can fall into is an assumption that (their) one size fits all</td></tr>
+            <tr><td>[15:23] &lt ms-&gt probably the biggest risk is that someone can assume that one size fits all and that they can design it</td></tr>
+            <tr><td>[15:25] &lt Chong-&gt ms-: do you mean (fits) all OS or others?</td></tr>
+            <tr><td>[15:28] &lt ms-&gt huh?</td></tr>
+            <tr><td>[15:28] &lt Chong-&gt about "one size fits all"</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt he means j_baker's packaging solution doesn't fit your problem. Your code will go into core Kamaelia</td></tr>
+            <tr><td>[15:30] *** Davbo is confused what that has to do with OS</td></tr>
+            <tr><td>[15:30] &lt Chong-&gt Davbo: I see. thanks.</td></tr>
+            <tr><td>[15:30] &lt ms-&gt Davbo: you weren't the only one confused :)</td></tr>
+            <tr><td>[15:30] &lt ms-&gt OS is just a way of sharing code.</td></tr>
+            <tr><td>[15:30] &lt ms-&gt the rest is actually just "software development"</td></tr>
+            <tr><td>[15:30] &lt ms-&gt which is the same inside a proprietary software dev house as it is in open source</td></tr>
+            <tr><td>[15:31] &lt ms-&gt At least inside a good proprietary software dev house it is</td></tr>
+            <tr><td>[15:31] &lt ms-&gt (having worked in what I consider was a good one - with hindsight :) )</td></tr>
+            <tr><td>[15:32] &lt Davbo&gt Sun?</td></tr>
+            <tr><td>[15:32] *** Davbo provokes ms-</td></tr>
+            <tr><td>[15:32] &lt Chong-&gt Davbo: I had thought a package may not be suitable for all os (linux, mac, windows and others)</td></tr>
+            <tr><td>[15:36] &lt ms-&gt Davbo: No, Inktomi</td></tr>
+            <tr><td>[15:36] &lt ms-&gt Sun are meant to be a good place to work AFAICT</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt Aren't they part of Yahoo!, now?</td></tr>
+            <tr><td>[15:37] &lt ms-&gt yep</td></tr>
+            <tr><td>[15:37] &lt ms-&gt I left when the writing was on the wall</td></tr>
+            <tr><td>[15:38] &lt ms-&gt (they'd separated the accounts for each division out - which is clearly a mechanism for saying "buy this bit" )</td></tr>
+            <tr><td>[15:39] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:39] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt Ah I've heard of those</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt Inktomi</td></tr>
+            <tr><td>[15:39] &lt ms-&gt Was an incredibly good place to work in terms of people with strong skills and good coding practices though</td></tr>
+            <tr><td>[15:40] *** Davbo likes the idea of having 20% time for your own project</td></tr>
+            <tr><td>[15:40] &lt Davbo&gt You kinda get something like that, although less that 20% ms-, right?</td></tr>
+            <tr><td>[15:40] &lt ms-&gt No we don't get that</td></tr>
+            <tr><td>[15:41] &lt ms-&gt There was something similar until about 16 months back</td></tr>
+            <tr><td>[15:41] &lt Davbo&gt oh.</td></tr>
+            <tr><td>[15:41] &lt j_baker&gt So this is a totally on your own time deal?</td></tr>
+            <tr><td>[15:41] &lt ms-&gt which was "Up to 10%" time</td></tr>
+            <tr><td>[15:41] &lt ms-&gt j_baker: yep, with a blind eye</td></tr>
+            <tr><td>[15:41] &lt ms-&gt A bit like doublethink</td></tr>
+            <tr><td>[15:42] &lt ms-&gt basically I have the blessing of my management to steal some time as long as I don't take the P</td></tr>
+            <tr><td>[15:42] &lt Davbo&gt Ah I see</td></tr>
+            <tr><td>[15:42] &lt ms-&gt but I don't have time allocated to it at work</td></tr>
+            <tr><td>[15:42] &lt j_baker&gt Well, I find it interesting that the BBC at least allows this in the first place. I'd like someone to show me open source webpage for NBC, CBS, or ABC. Or even PBS.</td></tr>
+            <tr><td>[15:43] &lt ms-&gt Kamaelia was on the workplan until a resource crunch hit last year (the dept has been shrinking for various reason)</td></tr>
+            <tr><td>[15:43] &lt vmlemon_&gt Urine extaction? ;)</td></tr>
+            <tr><td>[15:43] &lt vmlemon_&gt Ugh</td></tr>
+            <tr><td>[15:43] &lt ms-&gt So last year my time was reallocated to this project: http://www.participateonline.co.uk/, but K wasn't removed from the workplan, but just allocated a resource level of "0"</td></tr>
+            <tr><td>[15:44] &lt vmlemon_&gt Still no ITV or Channel 4 or 5 open source...</td></tr>
+            <tr><td>[15:44] &lt ms-&gt I wasn't going to put us forward for GSOC this year as a result, but decided to run this by LH and the GSOC team</td></tr>
+            <tr><td>[15:44] &lt ms-&gt and they were happy with the fact that the project is still active in practice</td></tr>
+            <tr><td>[15:44] &lt ms-&gt (after all, many projects happen outside work time)</td></tr>
+            <tr><td>[15:44] &lt ms-&gt and so were happy for us to be involved :)</td></tr>
+            <tr><td>[15:45] &lt ms-&gt It's good for everyone really since for me it gives good justification for getting things back on later in the year</td></tr>
+            <tr><td>[15:45] &lt ms-&gt since that participate project is an external commitment by the department that finishes this year</td></tr>
+            <tr><td>[15:46] &lt ms-&gt Hence I was interested in application project areas that expand the codebase into lots more interesting areas that people were interested in working on for their own personal benefit :)</td></tr>
+            <tr><td>[15:46] &lt j_baker&gt It's pretty cool that Leslie did that. But I suppose that's also one of the points of GSOC.</td></tr>
+            <tr><td>[15:46] &lt ms-&gt It is really cool</td></tr>
+            <tr><td>[15:47] &lt Uraeus&gt Davbo: be aware that most 20% time for own projects ends up being empty air in practice. I know a lot of people at Google, almost none of who ever actually get around to those 20%. Problem is that when working on an important project with a deadline, taking a day to work on a private project might be something your contract allows, but it is not socially acceptable</td></tr>
+            <tr><td>[15:47] &lt ms-&gt I suppose the other thing though is it's a demonstrator that I'm really not doing this because anyone's asking me to - it's because I really believe this will be a better way of writing code, and a way that we need to make easier for everyone</td></tr>
+            <tr><td>[15:47] &lt vmlemon_&gt Anyone think we'd see BSkyB Open Source any time soon? ;)</td></tr>
+            <tr><td>[15:48] &lt ms-&gt since otherwise we'll all get to 8/16 core machines and people will get worse and worse software</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt I think microsoft deserves a lot (but by far definitely not all) of the blame.</td></tr>
+            <tr><td>[15:49] &lt vmlemon_&gt All software is going that way, sadly</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt I suppose that's why it *seems* like a good idea Uraeus but you don't see it much/hear much about it.</td></tr>
+            <tr><td>[15:49] &lt ms-&gt Nah, regarding multithreaded/etc software on 8/16 core systems, they can't really be blamed</td></tr>
+            <tr><td>[15:49] &lt j_baker&gt Writing parallel apps in windows is just a pain.</td></tr>
+            <tr><td>[15:50] &lt ms-&gt The problem is that people get trained to use things like threads without being told how to use them safely</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt I think it would be interesting to port Kamaelia to C#. :)</td></tr>
+            <tr><td>[15:50] &lt ms-&gt Likewise</td></tr>
+            <tr><td>[15:50] &lt ms-&gt There *is* a reason why the code tree is</td></tr>
+            <tr><td>[15:50] &lt ms-&gt  /Code/Python :)</td></tr>
+            <tr><td>[15:50] &lt ms-&gt rather than /Axon /Kamaelia /Apps etc</td></tr>
+            <tr><td>[15:50] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:50] &lt Uraeus&gt ms-: people get trained to use threads? which uni did you talk to? :)</td></tr>
+            <tr><td>[15:51] &lt ms-&gt They covered threads on our course</td></tr>
+            <tr><td>[15:51] &lt j_baker&gt I think at our university, parallel processing is an optional senior level class.</td></tr>
+            <tr><td>[15:51] &lt ms-&gt along with multiprocess, etc</td></tr>
+            <tr><td>[15:52] &lt Uraeus&gt I know its part of the courses, I was more being sarcastic about the general level of education :)</td></tr>
+            <tr><td>[15:52] &lt ms-&gt heh</td></tr>
+            <tr><td>[15:52] &lt ms-&gt Our course was also entertaining in that every module had a significant labs content which everyone had to do</td></tr>
+            <tr><td>[15:52] &lt vmlemon_&gt It's great that we have machines with more power than an early Cray, but not that the code running on them is slower/less efficient than that on even really old machines</td></tr>
+            <tr><td>[15:52] &lt ms-&gt and every labs session had a maximum mark that could be obtained of 70% *if you only did the things requested*</td></tr>
+            <tr><td>[15:53] &lt ms-&gt essentially forcing everyone to do more than the minimum requested</td></tr>
+            <tr><td>[15:53] &lt ms-&gt and to be inventive</td></tr>
+            <tr><td>[15:53] &lt Davbo&gt Courses at polytechnic uni's are awful for those things though ms-. They just create C++ code monkeys</td></tr>
+            <tr><td>[15:54] &lt Davbo&gt Well Universities which used to be Polytechnics</td></tr>
+            <tr><td>[15:54] &lt ms-&gt yep</td></tr>
+            <tr><td>[15:54] &lt j_baker&gt I think mine is potentially worse. Our university seems to generate a lot of C# code monkeys.</td></tr>
+            <tr><td>[15:54] &lt ms-&gt manchester CS doesn't have a good excuse for a crap course though :)</td></tr>
+            <tr><td>[15:55] &lt ms-&gt so they don't (or didn't) have one :)</td></tr>
+            <tr><td>[15:55] &lt vmlemon_&gt Hell, they still take as long to boot now, as a 486 running did, if not even longer</td></tr>
+            <tr><td>[15:55] &lt vmlemon_&gt *486 did</td></tr>
+            <tr><td>[15:55] &lt Davbo&gt They do lots of things like "Games Programming" these days and they start with C++, what an awful idea</td></tr>
+            <tr><td>[15:56] &lt ms-&gt Games programming is a good idea. Starting with C++ is a bad idea</td></tr>
+            <tr><td>[15:56] &lt ms-&gt they'd do far better to start with python :)</td></tr>
+            <tr><td>[15:56] &lt Chong-&gt ms-: I agree. manchester CS' most labs are very interesting and practical.</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt Those courses should be using PyGame for sure,</td></tr>
+            <tr><td>[15:56] &lt j_baker&gt I don't think C++ is necessarily a bad language to start out with. As long as you move on to something else very quickly.</td></tr>
+            <tr><td>[15:57] &lt ms-&gt Davbo: well CMU created this: http://www.alice.org/ as their starting point</td></tr>
+            <tr><td>[15:57] &lt ms-&gt which is really quite a neat idea</td></tr>
+            <tr><td>[15:57] &lt vmlemon_&gt Ugh, some still use Vomit, erm Visual Basic...</td></tr>
+            <tr><td>[15:57] &lt ms-&gt Uraeus: One of our second year labs was to write a scheduler</td></tr>
+            <tr><td>[15:57] &lt Uraeus&gt well I have been to various meetings with game developers and their complaint is that people leave Uni, even with 'game development' degrees, know some basic C++, but next to nothing about 3D development for instance</td></tr>
+            <tr><td>[15:57] &lt ms-&gt etc</td></tr>
+            <tr><td>[15:58] &lt ms-&gt Well, the reason why I think that games programming can be a good one is because it can be an interesting domain</td></tr>
+            <tr><td>[15:58] &lt Uraeus&gt and if said students need to optimize some code in assembly they tend to go blank eyed</td></tr>
+            <tr><td>[15:58] &lt ms-&gt but also many games involve things like concurrency, etc</td></tr>
+            <tr><td>[15:58] &lt ms-&gt and so provides interesting scope for development</td></tr>
+            <tr><td>[15:59] &lt ms-&gt The comment that many unis are bad though is valid - it's why we have/had such a focus on asking people for running code</td></tr>
+            <tr><td>[16:00] &lt ms-&gt Largely to see in practical terms what people were like :)</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt That's the problem with "Game Development" degree's they could be easily as technical as Computer Science but due to a lot of Universities treating them like joke degree's they tend to just be a course on simple C++</td></tr>
+            <tr><td>[16:01] &lt j_baker&gt I have to say: I've learned more about programming doing this than I think I have in the sum of all my programming classes at the university.</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt My comments are largely on Sheffield Hallam btw which obviously is my rival university ;-)</td></tr>
+            <tr><td>[16:02] &lt vmlemon_&gt That says a lot about the university, then...</td></tr>
+            <tr><td>[16:02] &lt Davbo&gt but I do know people on CS courses there</td></tr>
+            <tr><td>[16:02] &lt ms-&gt j_baker: Glad to hear it :) That is largely the reason for me why I get involved in GSOC :)</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt that's a no brainer for me j_baker, sit in a class about "Java and Swing" for 2hours and you'll see why</td></tr>
+            <tr><td>[16:04] &lt j_baker&gt Urghh... I know what you're talking about.</td></tr>
+            <tr><td>[16:04] &lt j_baker&gt I take it you also get the feeling that your professors are more interested in teaching the language itself than the principles behind?</td></tr>
+            <tr><td>[16:05] &lt j_baker&gt s/behind/behind it</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt Yeah, exactly</td></tr>
+            <tr><td>[16:05] &lt j_baker&gt I just got done taking a class on Object Oriented programming. I don't know a whole lot about good OO designs. But I know a lot about C#. :)</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt That was only really 1 class for me though</td></tr>
+            <tr><td>[16:08] *** vmlemon_ wants to learn assembler, but has no idea where to even begin, with only knowing a small amount of Perl...</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt One of the main complaints about my course is they teach us how to use a Screwdriver (Java) and then we use it for hammering, painting, soldering...etc (you get the idea)</td></tr>
+            <tr><td>[16:09] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[16:10] &lt j_baker&gt Yup. I remember you talking about using Java for an AI class.</td></tr>
+            <tr><td>[16:10] &lt ms-&gt vmlemon_: I learnt assembler from this: http://www.currybet.net/cbet_blog/2004/06/beginners_computer_handbook.php</td></tr>
+            <tr><td>[16:11] &lt vmlemon_&gt I guess it's a lousy all-round multitool, then? ;)</td></tr>
+            <tr><td>[16:11] &lt Davbo&gt That book looks *awesome*</td></tr>
+            <tr><td>[16:11] &lt ms-&gt Davbo: It's great</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt to ebay!</td></tr>
+            <tr><td>[16:12] &lt j_baker&gt I think all programming languages are lousy. It's just which is the least lousy, vmlemon_.</td></tr>
+            <tr><td>[16:13] &lt vmlemon_&gt "Cutting Bread With Chainsaws, Volume 1", anyone?</td></tr>
+            <tr><td>[16:13] &lt ms-&gt Davbo: This however is awesome: http://www.amazon.com/cartoon-guide-computer-science/dp/0064604179</td></tr>
+            <tr><td>[16:13] &lt j_baker&gt With that said though, I don't hear anything but complaints about Java these days so I can guess which end it lies on.</td></tr>
+            <tr><td>[16:14] &lt j_baker&gt I think the book we got sent this year is also awesome. It definitely isn't light reading material though. :)</td></tr>
+            <tr><td>[16:14] &lt ms-&gt Davbo: At somepoint I do want to build a kids version of Kamaelia, such that a book like that Usborne one (first link) is possible again</td></tr>
+            <tr><td>[16:14] &lt Davbo&gt Yeah j_baker: I know more about svn delta editor than I need to know ;-)</td></tr>
+            <tr><td>[16:15] &lt Davbo&gt Yeah you mentioned something about that before ms-</td></tr>
+            <tr><td>[16:15] &lt j_baker&gt I actually found the part about the Solaris kernel interesting, Davbo.</td></tr>
+            <tr><td>[16:16] &lt vmlemon_&gt I remember those Usborne books...</td></tr>
+            <tr><td>[16:20] &lt vmlemon_&gt With the robots and shelves full of cardboard boxes?</td></tr>
+            <tr><td>[16:21] &lt ms-&gt yep</td></tr>
+            <tr><td>[16:21] &lt ms-&gt There's a reason the metaphor in kamaelia for a component is of someone (or something) sitting at a desk with a bunch of (physical) inboxes and outboxes</td></tr>
+            <tr><td>[16:22] &lt ms-&gt ;)</td></tr>
+            <tr><td>[16:22] &lt vmlemon_&gt PEEK & POKE!</td></tr>
+            <tr><td>[16:22] &lt ms-&gt :)</td></tr>
+            <tr><td>[16:25] &lt vmlemon_&gt And the 2 line recursive app - just add PRINT and GOTO ;)</td></tr>
+            <tr><td>[16:26] &lt vmlemon_&gt Now, you'd have to do stuff with one of the many *fork()s</td></tr>
+            <tr><td>[16:27] &lt vmlemon_&gt or probably spawn()</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt (Just hope you don't exhaust RAM and crash the box)</td></tr>
+            <tr><td>[16:39] &lt Davbo&gt Gonna install Ubuntu on my EEE and co my Sketches</td></tr>
+            <tr><td>[16:44] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:44] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:04] &lt j_baker&gt ms-: I did make a fix to the Intelligent File Reader not closing the file it reads that was like 2 lines. Since it's semi-related to the server code, do you want me to put that in with the TCPServerImprovements branch or should I put it in its own branch?</td></tr>
+            <tr><td>[17:22] &lt Lawouach&gt orphans: ping</td></tr>
+            <tr><td>[17:23] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:29] *** ms- ponders</td></tr>
+            <tr><td>[17:30] &lt ms-&gt I was planning another branch for HTTP related stuff you see</td></tr>
+            <tr><td>[17:30] &lt ms-&gt ie to pull in the stuff which I'd done, but also for any improvements you want to pull in as well</td></tr>
+            <tr><td>[17:30] &lt ms-&gt As a fix it really goes with that</td></tr>
+            <tr><td>[17:30] &lt ms-&gt in a very sensible way</td></tr>
+            <tr><td>[17:30] &lt j_baker&gt That will work.</td></tr>
+            <tr><td>[17:31] *** ms- has to go out shortly for a while, and even when I get back I won't have a chance to deal with it</td></tr>
+            <tr><td>[17:31] &lt ms-&gt It might be a good idea to post that to the list, OR, add it as a note to the release page</td></tr>
+            <tr><td>[17:31] &lt ms-&gt probably the release page</td></tr>
+            <tr><td>[17:32] &lt ms-&gt near the "merging" section</td></tr>
+            <tr><td>[17:34] &lt j_baker&gt Ok, will do.</td></tr>
+            <tr><td>[17:35] &lt ms-&gt I think the word request needs clarifying btw in your mails - you seem to have an assumption regarding something which I don't understand, and I think I need to in order to answer whatever question you're asking is :-)</td></tr>
+            <tr><td>[17:35] *** ms- sees next mail</td></tr>
+            <tr><td>[17:37] &lt j_baker&gt By request, I mean the request that's passed to the request handler that contains the raw uri and all the other HTTP data.</td></tr>
+            <tr><td>[17:37] &lt j_baker&gt (IE, what environ in my WSGI handler is a copy of)</td></tr>
+            <tr><td>[18:40] *** jlei_ has parted #kamaelia</td></tr>
+            <tr><td>[19:08] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:08] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:19] &lt ms-&gt (back briefly)</td></tr>
+            <tr><td>[19:19] &lt ms-&gt j_baker: Ahh, I see.</td></tr>
+            <tr><td>[19:19] &lt ms-&gt You are assuming that the ServerCore does something it doesn't :-)</td></tr>
+            <tr><td>[19:19] &lt j_baker&gt Yeah</td></tr>
+            <tr><td>[19:19] &lt j_baker&gt That's handled by the HTTPServer I'm assuming.</td></tr>
+            <tr><td>[19:19] &lt ms-&gt That means it's a good opportunity for me to document that then - maybe at the weekend</td></tr>
+            <tr><td>[19:19] &lt ms-&gt Yep</td></tr>
+            <tr><td>[19:20] &lt ms-&gt HTTPServer is very badly named</td></tr>
+            <tr><td>[19:20] &lt ms-&gt It should really be something like</td></tr>
+            <tr><td>[19:20] &lt ms-&gt Kamaelia.Protocol.HTTP.ServerSide</td></tr>
+            <tr><td>[19:20] &lt ms-&gt But that would leave the component being just ServerSide</td></tr>
+            <tr><td>[19:20] &lt ms-&gt which is rather nondescript</td></tr>
+            <tr><td>[19:21] &lt j_baker&gt HTTPHandler?</td></tr>
+            <tr><td>[19:21] &lt j_baker&gt Although that may create confusion as to whether or not you're talking about a protocol handler or a request handler.</td></tr>
+            <tr><td>[19:21] &lt j_baker&gt So maybe HTTPProtocolHandler?</td></tr>
+            <tr><td>[19:21] &lt ms-&gt Not bad - it presumes that you call all things that manage protocols " handlers " and there is that problem as well</td></tr>
+            <tr><td>[19:22] &lt ms-&gt http://edit.kamaelia.org/Docs/NotationForVisualisingAxon - shows visually what's going on somewhat better</td></tr>
+            <tr><td>[19:22] &lt j_baker&gt Can we not just go with HTTPThingamajig? :-P</td></tr>
+            <tr><td>[19:23] &lt ms-&gt Ask me again on a friday</td></tr>
+            <tr><td>[19:23] &lt ms-&gt That's a day I name things badly :)</td></tr>
+            <tr><td>[19:23] &lt j_baker&gt Heh</td></tr>
+            <tr><td>[19:23] &lt j_baker&gt Perhaps HTTPProtocolMiddleware? It's a bit of a mouthful, but it's somewhat more descriptive.</td></tr>
+            <tr><td>[19:24] &lt j_baker&gt I suppose this one will require thought.</td></tr>
+            <tr><td>[19:24] &lt ms-&gt HTTPResponder perhaps</td></tr>
+            <tr><td>[19:25] &lt ms-&gt class HTTPServer(ServerCore):</td></tr>
+            <tr><td>[19:25] &lt ms-&gt  protocol = Kamaelia.Protocol.HTTP.HTTPResponder</td></tr>
+            <tr><td>[19:25] &lt ms-&gt class HTTPServer(ServerCore):</td></tr>
+            <tr><td>[19:25] &lt ms-&gt  protocol = HTTPResponder</td></tr>
+            <tr><td>[19:25] &lt ms-&gt Not too shabby</td></tr>
+            <tr><td>[19:26] &lt j_baker&gt Not bad. It's succinct and descriptive.</td></tr>
+            <tr><td>[19:26] *** ms- has to go afk now. Probably not back until later tomorrow</td></tr>
+            <tr><td>[19:26] &lt ms-&gt have a good one</td></tr>
+            <tr><td>[19:26] &lt ms-&gt cya</td></tr>
+            <tr><td>[19:26] &lt ms-&gt :)</td></tr>
+            <tr><td>[19:26] *** ms- has parted #kamaelia</td></tr>
+            <tr><td>[19:48] &lt j_baker&gt Heh... there's an author in the python cookbook named Indyana Jones :)</td></tr>
+            <tr><td>[19:54] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[20:04] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:06] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[20:10] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:19] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:24] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:25] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:33] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:33] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:35] *** vmlemon_ has joined #kamaelia</td></tr>

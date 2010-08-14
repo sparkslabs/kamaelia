@@ -1,0 +1,109 @@
+<html>
+<head>
+<title> Developers/Projects/KamaeliaPublish/RequestReference </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/KamaeliaPublish/RequestReference">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+<h1>HTTP request dictionary reference<br></h1>
+<p>This is a reference to the various fields that the HTTPServer will include in the request dictionary.&nbsp; In considering these items, I'll use the following example request URI:</p><p>&nbsp; http://www.foo.com:8080/index.html?foo=bar<br></p><ul><li>bad - This is used internally by the HTTPParser to know if there is a problem with the HTTP request.&nbsp; You probably shouldn't worry about this variable.<br></li><li>body - Ignore this.&nbsp; The body will be forwarded to the resource handler by the HTTPRequestHandler component.</li><li>headers - This is a dictionary containing all of the HTTP headers.<br></li><li>localip - The IP address for the computer the server is running on.<br></li><li>localport - The port the HTTP request came in on.</li><li>method - GET, POST, PUT, etc.<br></li><li>peer - The IP address of the requestor.<br></li><li>peerport - The port the requestor sent the request to us through.<br></li><li>protocol - This is always HTTP.</li><li>raw-uri - the unprocessed URI. The above example URI would translate into /index.html?foo=bar<br></li><li>uri-prefix-trigger - This is roughly equivalent to the CGI environment variable 'SCRIPT_NAME'.&nbsp; This lets the handler know its virtual "location" within the server.&nbsp; It represents the portion of the URI that is consumed getting to the point it is at.&nbsp; The value of this variable will vary depending on how the URL routing is set up, but in this example, it will probably be '/' since it appears we are looking at the root of the URI.<br></li><li>uri-protocol - This will be the protocol as specified in the URI.&nbsp; Will be empty if this data is not available.<br></li><li>uri-server - This is the server's address.&nbsp; Using the example URI, this variable will be 'www.foo.com:8080'<br></li><li>uri-suffix - This is roughly equivalent to the CGI environment variable 'PATH_INFO'.&nbsp; This tells the handler the virtual "location" of its target.&nbsp; It basically represents the portion of the URI that has yet to be consumed.&nbsp; Again, this is dependent on the server's URL routing, but in the example above, the uri-suffix would probably be 'index.html?foo=bar'.<br></li><li>version - The version of HTTP the request was sent as.&nbsp; This is dependent upon the browser the requestor is using, but will most likely be '1.1' for most browsers.</li></ul>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

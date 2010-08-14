@@ -1,0 +1,212 @@
+<html>
+<head>
+<title> Developers/Projects/KamaeliaPublish/CrossTalk </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/KamaeliaPublish/CrossTalk">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Kamaelia CrossTalk<br></h1>Kamaelia Crosstalk is an open internet
+communication protocol for transmitting HTTP information between
+computers.&nbsp; Of course, the obvious question here is why not use HTTP to
+transmit HTTP data?&nbsp; I'm glad you asked.&nbsp; :)&nbsp; <br><h2>History <br></h2>If you just want to get to the details of CrossTalk, feel free to skip this section.<br><br>When
+I first proposed Kamaelia Publish, I had intended upon making separate
+"peer" and "intermediary" programs.&nbsp; The idea being that a person who
+wanted to pull up a webpage that a peer is hosting can send an HTTP
+request to the intermediary (which is essentially an HTTP proxy) and
+the intermediary will then forward the request to the peer.&nbsp; The peer
+will then send the response to the intermediary.&nbsp; I then came across a
+protocol known as XMPP, a protocol typically used for instant
+messenging.&nbsp; Here's an example of how XMPP works from <a href="http://en.wikipedia.org/wiki/Jabber">wikipedia</a>:<br><br><blockquote><p>Suppose <i>juliet@capulet.com</i> wants to chat with <i>romeo@montague.net</i>.
+Juliet and Romeo each respectively have accounts on the capulet.com and
+montague.net servers. When Juliet types in and sends her message, a
+sequence of events is set in motion:</p><ol><li>Juliet's client sends her message to the capulet.com server
+<ul><li>If montague.net is blocked on capulet.com, the message is dropped.</li></ul>
+</li><li>The capulet.com server opens a connection to the montague.net server.
+<ul><li>If capulet.com is blocked on montague.net, the message is dropped.</li><li>If Romeo is not currently connected, the message is stored for later delivery.</li></ul>
+</li><li>The montague.net server delivers the message to Romeo.</li></ol></blockquote>The
+idea of XMPP servers sounds an awful lot like my "intermediary" doesn't
+it?&nbsp; So I took this idea a step further.&nbsp; XMPP has a concept of
+"gateways" that are intended to convert other protocols into XMPP.&nbsp;
+That way, if you want to talk to a friend who uses AIM or Yahoo, you
+can do it.&nbsp; What if it were possible to transmit HTTP via XMPP using a
+gateway?<br><br>The next step was to try sending the text of the HTTP
+request to the peer, and then the peer would send the response back to
+the gateway.&nbsp; This turned out to be more complicated than it seems.&nbsp;
+The problem being that the HTTP request would have to be parsed at the
+gateway level as well as at the peer level.&nbsp; So why not just send the
+parsed data from the gateway to the peer?&nbsp; That led to what I am now
+terming CrossTalk (the name may change later).<br><br><br>
+<h2>Why the name CrossTalk?</h2>
+Because I got tired of referring to Kamaelia's means of transmitting
+HTTP data as "HTTP over XMPP."&nbsp; That's too much of a mouthful, has too
+much alphabet soup for laymen, and isn't really accurate anyway.<br><h2><br></h2><h2>How does it work?<br></h2>First of all, I should note that CrossTalk is currently purely experimental, and is likely to change.<br><br>CrossTalk
+uses JSON to serialize data to be transmitted from Peer to Gateway (and
+possibly from Peer to Peer at a later point in time).&nbsp; An operation
+that starts with an HTTP request from a user and ends with an HTTP
+response back to that same user is referred to as a <i>transaction</i>.&nbsp;
+Each transaction begins with a request object.&nbsp; This object contains
+all of the data that is present in the HTTP request line and headers, formatted in a CGI environment-like dictionary.&nbsp; In addition to the data that is present in the HTTP request dictionary, there are two other keys that may be present.<br><br><ul><li>The
+'data' key is where the body of the HTTP request will be transmitted.&nbsp;
+It may appear in the request object or it may be sent seperately or
+even split out across several messages (although this is probably to be
+avoided for performance reasons).&nbsp; </li><li>The 'signal' key is currently used
+to signal that the gateway is through transmitting the HTTP request and
+its body, but keep in mind that there may be other data present here in
+the future.&nbsp; The signal key may be present in any message described
+above or it may be sent by itself as the final message, although the
+current peer script will not function properly if it is included in the
+request object (the current implementation of the gateway will always
+send it by itself after the other data has been transmitted)</li><li>The 'batch' key identifies which transaction the message belongs to.</li></ul>Once the Peer has formulated its response, it will transmit a response object.&nbsp; The type of data it contains will be roughly the same as the request object.&nbsp; The format is a little bit different though.<br><br><ul><li>The 'data', 'signal', and 'batch' keys currently have the same meaning as in the response object.</li><li>'headers' will contain a list of the response headers.&nbsp; Here is a sample of what that would look like:</li></ul><blockquote>[<br>&nbsp;&nbsp;&nbsp; [<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Content-type", <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "text\/html"<br>&nbsp;&nbsp;&nbsp; ],<br>&nbsp;&nbsp;&nbsp; [<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "Pragma", <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "no-cache"<br>&nbsp;&nbsp;&nbsp; ]<br>]<br></blockquote>
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

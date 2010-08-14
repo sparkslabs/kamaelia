@@ -1,0 +1,243 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.html">Visualisation</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.html">PhysicsGraph</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists.html">lines_to_tokenlists</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists.lines_to_tokenlists.html">lines_to_tokenlists</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#441">Simple line-of-text tokeniser</a><ul>
+<li><a class="reference" href="#442">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#443">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="441">Simple line-of-text tokeniser</h1>
+<p>This component takes a line of text and splits it into space character
+separated tokens. Tokens can be encapsulated with single or double quote marks,
+allowing spaces to appear within a token.</p>
+<div class="section">
+<h2 id="442"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>A simple pieline that takes each line you type and splits it into a list of tokens,
+showing you the result:</p>
+<pre class="literal-block">
+Pipeline( ConsoleReader(),
+          lines_to_tokenlists(),
+          ConsoleEchoer()
+        ).run()
+</pre>
+<dl class="docutils">
+<dt>At runtime::</dt>
+<dd><pre class="first last doctest-block">
+&gt;&gt;&gt; Hello world &quot;how are you&quot; 'john said &quot;hi&quot;' &quot;i replied &quot;hi&quot;&quot; &quot;c:\windows&quot; end
+[ 'Hello',
+  'world',
+  'how are you',
+  'john said &quot;hi&quot;',
+  'i replied &quot;hi&quot;',
+  'c:\windows',
+  'end' ]
+</pre>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h2 id="443"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>lines_to_tokenlists receives individual lines of text on its &quot;inbox&quot; inbox. A
+line is converted to a list of tokens, which is sent out of its &quot;outbox&quot;
+outbox.</p>
+<p>Space characters are treated as the token separator, however a token can be
+encapsulated in single or double quotes allowing space characters to appear
+within it.</p>
+<p>If you need to use a quote mark or backslash within a token encapsulated by
+quote marks, it must be escaped by prefixing it with a backslash. Only do
+this if the token is encapsulated.</p>
+<p>encapsulating quote marks are removed when the line is tokenised. Escaped
+backslashes and quote marks are converted to plain backslashes and quote marks.</p>
+<p>If a producerFinished() or shutdownMicroprocess() message is received on this
+component's &quot;control&quot; inbox, then it will send it on out of its &quot;signal&quot; outbox
+and immediately terminate. It will not flush any whole lines of text that may
+still be buffered.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.html">Visualisation</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.html">PhysicsGraph</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists.html">lines_to_tokenlists</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists.lines_to_tokenlists.html">lines_to_tokenlists</a></h1>
+<div class="section">
+<h2 id="symbol-lines_to_tokenlists">class lines_to_tokenlists(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>lines_to_tokenlists() -&gt; new lines_to_tokenlists component.</p>
+<p>Takes individual lines of text and separates them into white
+space separated tokens. Tokens can be enclosed with single or
+double quote marks.</p>
+<div class="section">
+<h3><a id="symbol-lines_to_tokenlists.Inboxes" name="symbol-lines_to_tokenlists.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : Individual lines of text</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-lines_to_tokenlists.Outboxes" name="symbol-lines_to_tokenlists.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : list of tokens making up the line of text</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-lines_to_tokenlists.__init__" name="symbol-lines_to_tokenlists.__init__">__init__(self)</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-lines_to_tokenlists.lineToTokens" name="symbol-lines_to_tokenlists.lineToTokens">lineToTokens(self, line)</a></h4>
+<p>linesToTokens(line) -&gt; list of tokens.</p>
+<p>Splits a line into individual white-space separated tokens.
+Tokens can be enclosed in single or double quotes to allow spaces
+to be used in them.</p>
+<p>Escape backslash and single or double quotes by prefixing them
+with a backslash <em>only</em> if used within an quote encapsulated string.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-lines_to_tokenlists.main" name="symbol-lines_to_tokenlists.main">main(self)</a></h4>
+<p>Main loop.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-lines_to_tokenlists.shutdown" name="symbol-lines_to_tokenlists.shutdown">shutdown(self)</a></h4>
+<p>Returns True if a shutdownMicroprocess or producerFinished message was received.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

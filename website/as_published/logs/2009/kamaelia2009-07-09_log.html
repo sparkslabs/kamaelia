@@ -1,0 +1,52 @@
+<html><body><table>
+            <tr><td>[00:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:06] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[08:06] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[08:06] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[08:06] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[09:01] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:00] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:08] *** vmlemon_ has parted #kamaelia</td></tr>
+            <tr><td>[12:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:06] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:47] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[14:12] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:31] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:07] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:44] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:21] *** westymatt has joined #kamaelia</td></tr>
+            <tr><td>[17:21] &lt westymatt&gt the Axon.Ipc class, that is just handling communication for the mailboxes not actual named pipes right?</td></tr>
+            <tr><td>[17:33] &lt vmlemon_&gt Hu</td></tr>
+            <tr><td>[17:33] &lt vmlemon_&gt *Hi</td></tr>
+            <tr><td>[17:33] &lt vmlemon_&gt Even</td></tr>
+            <tr><td>[18:22] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:22] &lt MS-&gt evening</td></tr>
+            <tr><td>[18:23] &lt MS-&gt Reading log,</td></tr>
+            <tr><td>[18:23] &lt MS-&gt Re Axon.Ipc - that was a file named very early on. What it contains is control messages which are sent between from signal to control mailboxes</td></tr>
+            <tr><td>[18:23] &lt MS-&gt Which means it's not actual named pipes</td></tr>
+            <tr><td>[18:24] &lt MS-&gt Axon.Box contains the actual implementation of the mailboxes themselves for Axon.Components</td></tr>
+            <tr><td>[18:24] &lt MS-&gt Unlike a mini-axon, real axon has 2 actual forms for normal mailboxes</td></tr>
+            <tr><td>[18:25] &lt MS-&gt 1 is a null box - which is the default outbox until linked somewhere - which acts like /dev/null until linked</td></tr>
+            <tr><td>[18:25] &lt MS-&gt That form is called a nullsink</td></tr>
+            <tr><td>[18:26] &lt MS-&gt The actual storage is "owned" by inboxes, and is called a realsink</td></tr>
+            <tr><td>[18:26] &lt MS-&gt which is implemented as a normal python list, since the update is guaranteed in this case as threadsafe</td></tr>
+            <tr><td>[18:26] &lt MS-&gt There's actually a fair amount of information on what actually happens there and why in the docs for that file, which we take some care to make accessible via</td></tr>
+            <tr><td>[18:27] &lt MS-&gt pydoc Axon.Box</td></tr>
+            <tr><td>[18:27] &lt MS-&gt Similarly pydoc Axon.Ipc has some docs on those messages</td></tr>
+            <tr><td>[18:28] &lt MS-&gt Indeed, with almost any Axon or Kamaelia file, doing pydoc module_name - will generally contain lots of docs</td></tr>
+            <tr><td>[18:29] &lt MS-&gt The exception to this tends to be application specific modules</td></tr>
+            <tr><td>[18:30] &lt MS-&gt Contrast pydoc Kamaelia.Chassis.Graphline</td></tr>
+            <tr><td>[18:30] &lt MS-&gt with pydoc Kamaelia.Apps.Whiteboard.Canvas</td></tr>
+            <tr><td>[18:31] &lt MS-&gt But slowly apps modules tend to grow module docs as well, to encourage component scavenging & consolidation eg: pydoc Kamaelia.Apps.Grey.MailHandler</td></tr>
+            <tr><td>[18:32] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[18:41] &lt MS-&gt First large batch of Europython videos now up, transcoded and available as flash here:</td></tr>
+            <tr><td>[18:42] &lt MS-&gt http://europython09.blip.tv/</td></tr>
+            <tr><td>[18:42] &lt MS-&gt Includes some tutorials long talks, keynotes, lightning talks, etc</td></tr>
+            <tr><td>[19:14] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:02] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[21:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:12] *** vmlemon_ has joined #kamaelia</td></tr>

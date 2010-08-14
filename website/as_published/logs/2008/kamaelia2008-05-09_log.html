@@ -1,0 +1,444 @@
+<html><body><table>
+            <tr><td>[00:01] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[01:19] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[03:09] *** sadru1 has joined #kamaelia</td></tr>
+            <tr><td>[05:00] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[07:21] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:22] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[08:01] &lt mhrd&gt morning :)</td></tr>
+            <tr><td>[08:01] &lt mhrd&gt was in pub yesterday evening (forgot to mark myself as afk)</td></tr>
+            <tr><td>[08:02] &lt Lawouach_&gt good beer I hope :)</td></tr>
+            <tr><td>[08:02] &lt mhrd&gt acceptable :)</td></tr>
+            <tr><td>[08:03] &lt mhrd&gt beer garden was less so though - more like a patch of concrete besides a major road junction</td></tr>
+            <tr><td>[08:04] &lt Lawouach_&gt ouch</td></tr>
+            <tr><td>[08:05] *** mhrd shrugs</td></tr>
+            <tr><td>[08:05] &lt mhrd&gt regarding SimplePeer ...</td></tr>
+            <tr><td>[08:05] &lt mhrd&gt the short answer is that it doesn't have a self.pause() because we never got round to adding it :)</td></tr>
+            <tr><td>[08:06] &lt mhrd&gt the long answer is that adding it is non trivial - as it is currently designed, it polls to check for incoming packets. so just sticking in a self.pause() would break its ability to receive packets when it isn't sending them (iyswim)</td></tr>
+            <tr><td>[08:07] &lt mhrd&gt one solution would be to re-engineer it to use the Selector, rather like CSA does</td></tr>
+            <tr><td>[08:08] &lt Lawouach_&gt Indeed</td></tr>
+            <tr><td>[08:08] &lt Lawouach_&gt Thanks for the insight</td></tr>
+            <tr><td>[08:09] &lt mhrd&gt np</td></tr>
+            <tr><td>[08:09] &lt mhrd&gt This reminds me: a while ago I did some experiments with RTP - trying to remultiplex MPEG2 Transport streams received over multicast RTP, then re-transmitting them ...</td></tr>
+            <tr><td>[08:11] &lt mhrd&gt I hit the same 100% cpu issue with the existing multicast transciever components - I was trying to process a few megabits/s</td></tr>
+            <tr><td>[08:11] &lt mhrd&gt so ended up creating a new multicast transceiver by modifying CSA and Selector, so that a custom 'socket' object could be plugged in.</td></tr>
+            <tr><td>[08:11] &lt mhrd&gt unfortunately, it never made it out of my sketches folder</td></tr>
+            <tr><td>[08:12] &lt mhrd&gt if you/orphans are interested, its in: /Sketches/MH/RTP/</td></tr>
+            <tr><td>[08:16] &lt mhrd&gt probably still in a bit of a mess, but iirc the multicast transceiver bit did work</td></tr>
+            <tr><td>[08:16] &lt Lawouach_&gt well, I guess you saw I had to tweak the CSA this week to support SSL.</td></tr>
+            <tr><td>[08:16] &lt Lawouach_&gt I realized one thing</td></tr>
+            <tr><td>[08:16] &lt Lawouach_&gt The CSA concept is great and yet not flexible enough I guess</td></tr>
+            <tr><td>[08:16] &lt Lawouach_&gt It's great</td></tr>
+            <tr><td>[08:16] &lt Lawouach_&gt But it felt really like monkey patching what I was doing</td></tr>
+            <tr><td>[08:17] &lt mhrd&gt indeed</td></tr>
+            <tr><td>[08:17] &lt Lawouach_&gt Maybe we'll need to take a look at it some day :)</td></tr>
+            <tr><td>[08:17] &lt mhrd&gt hindsight is wonderful :-)</td></tr>
+            <tr><td>[08:17] &lt mhrd&gt I'm certainly not adverse to seeing something reengineered to clean it up and improve it</td></tr>
+            <tr><td>[08:18] &lt Lawouach_&gt Indeed. Mind you it seems to be low priority for now since it works great</td></tr>
+            <tr><td>[08:18] &lt Lawouach_&gt Don't fix if it ain't broken :)</td></tr>
+            <tr><td>[08:23] *** sadru1 is now known as sadrul</td></tr>
+            <tr><td>[09:04] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:04] &lt MS-&gt morning</td></tr>
+            <tr><td>[09:04] &lt mhrd&gt hi MS-</td></tr>
+            <tr><td>[09:04] &lt MS-&gt How goes?</td></tr>
+            <tr><td>[09:05] *** mhrd reliving the joys of win32 mfc development for the past few days :-/</td></tr>
+            <tr><td>[09:06] &lt Lawouach_&gt MS-: hi</td></tr>
+            <tr><td>[09:06] &lt Lawouach_&gt mhrd: I feel for you mate</td></tr>
+            <tr><td>[09:07] &lt MS-&gt mhrd: Sounds "great"</td></tr>
+            <tr><td>[09:07] &lt MS-&gt yay, come back to 400 mails</td></tr>
+            <tr><td>[09:07] &lt MS-&gt Just as well I live on spam</td></tr>
+            <tr><td>[09:08] &lt mhrd&gt how lovely for you</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt have you considered using gmail instead?</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt Not having an actual gmail address</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt but using its interface and spam engine to read yours</td></tr>
+            <tr><td>[09:12] &lt MS-&gt Lawouach_: This is my work email address</td></tr>
+            <tr><td>[09:12] &lt MS-&gt Rather than personal</td></tr>
+            <tr><td>[09:12] &lt MS-&gt On my personal one due to Kamaelia Grey I get virtually zero spam</td></tr>
+            <tr><td>[09:12] &lt MS-&gt *my* code works ;)</td></tr>
+            <tr><td>[09:13] &lt Lawouach_&gt I see</td></tr>
+            <tr><td>[09:13] &lt MS-&gt It's my work emal which is a spam ridden cess pit :)</td></tr>
+            <tr><td>[09:13] &lt MS-&gt Which I can't use those tricks for</td></tr>
+            <tr><td>[09:13] &lt Lawouach_&gt Still, I assume you have a pop at work</td></tr>
+            <tr><td>[09:13] &lt MS-&gt Not public</td></tr>
+            <tr><td>[09:13] &lt Lawouach_&gt i see</td></tr>
+            <tr><td>[09:13] &lt MS-&gt I doubt work would appreciate me punching a hole through to gmail</td></tr>
+            <tr><td>[09:13] &lt MS-&gt Not a bad idea though</td></tr>
+            <tr><td>[09:14] &lt MS-&gt Probably be classed as gross misconduct or similar</td></tr>
+            <tr><td>[09:14] &lt Lawouach_&gt Maybe they should consider it would make their employees more efficient to have a proper spam filter</td></tr>
+            <tr><td>[09:14] &lt Lawouach_&gt dunno... weird ideas like that</td></tr>
+            <tr><td>[09:14] &lt MS-&gt heh, wierdo</td></tr>
+            <tr><td>[09:14] &lt Lawouach_&gt I have no shame.</td></tr>
+            <tr><td>[09:15] &lt Lawouach_&gt Well I have a low barrier anyway.</td></tr>
+            <tr><td>[09:15] &lt MS-&gt yeah, I'm getting close to the point of just putting a vacation message on both email accounts saying "please mail &lt here&gt instead"</td></tr>
+            <tr><td>[09:15] &lt mhrd&gt kamaeliabot: help</td></tr>
+            <tr><td>[09:15] Reply: Name: kamaeliabot   Channel: #kamaelia</td></tr>
+            <tr><td>[09:15] Reply: I do a simple job -- recording all channel traffic.</td></tr>
+            <tr><td>[09:15] Reply: Lines prefixed by [off] won't get recorded</td></tr>
+            <tr><td>[09:15] Reply: I respond to the following: 'logfile', 'infofile', 'help', 'date', 'time', 'dance', 'poke', 'slap', 'ecky', 'boo', and 'reload {modulename}'.</td></tr>
+            <tr><td>[09:15] &lt MS-&gt Only problem there is the internal lists</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt Thunderbird does a good job on its own I've found</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt It filters out around 95% of spam</td></tr>
+            <tr><td>[09:20] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:20] &lt Lawouach_&gt I assume you can't install it :)</td></tr>
+            <tr><td>[10:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:06] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:08] &lt MS-&gt Lawouach_: Oh I can install stuff, I'd just rather not have to faff about with it</td></tr>
+            <tr><td>[10:08] &lt MS-&gt Though it's reached the point as far as I'm concerned that I have to do some faff with it</td></tr>
+            <tr><td>[10:12] &lt Lawouach&gt Well in that case Thunderbird is decent there.</td></tr>
+            <tr><td>[10:12] &lt Lawouach&gt It takes a bit of training but not that much</td></tr>
+            <tr><td>[10:22] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:22] &lt Davbo&gt Mornin' all</td></tr>
+            <tr><td>[10:23] &lt MS-&gt morning</td></tr>
+            <tr><td>[10:24] &lt Davbo&gt Another deadline down</td></tr>
+            <tr><td>[10:25] &lt Davbo&gt oh MS-, you'll like this: I got my java src for the main project to uni today and it wouldn't compile (100+ errors) - fortunately i had another copy which had the .class' pre-compiled in there</td></tr>
+            <tr><td>[10:25] &lt Davbo&gt what was it? write once, debug everywhere? :)</td></tr>
+            <tr><td>[10:26] &lt MS-&gt Davbo: Pretty much, yes</td></tr>
+            <tr><td>[10:27] &lt vmlemon_&gt WODALang, anyone?</td></tr>
+            <tr><td>[10:27] &lt Davbo&gt Fortunately it went okay and the guy i was demoing it to understood what the problem was (new version of Java at home older version here)</td></tr>
+            <tr><td>[10:28] &lt MS-&gt Ah, you mean you didn't code to spec ? ;)</td></tr>
+            <tr><td>[10:28] &lt MS-&gt &lt /tease&gt</td></tr>
+            <tr><td>[10:29] &lt Davbo&gt lol</td></tr>
+            <tr><td>[10:29] *** Davbo codes to his own spec ;)</td></tr>
+            <tr><td>[10:30] &lt MS-&gt Explaination of tease: I presume that the demo is a deliverable</td></tr>
+            <tr><td>[10:30] &lt MS-&gt that means being able to demo it matters :)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt And can be viewed as part of spec :)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt Computer Science has a very limited concept of spec</td></tr>
+            <tr><td>[10:31] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:31] &lt Davbo&gt Yeah I had a feeling there may be a problem anyway, hence the pre-compiled version.</td></tr>
+            <tr><td>[10:31] &lt Lawouach&gt Since most software in production are buggy I would never really expect a demo to be perfect</td></tr>
+            <tr><td>[10:31] &lt mhrd&gt yep, quite abstract at times</td></tr>
+            <tr><td>[10:31] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[10:31] &lt mhrd&gt Davbo: wise, and paid off :)</td></tr>
+            <tr><td>[10:32] &lt MS-&gt Lawouach: Indeed. Running matters though ;)</td></tr>
+            <tr><td>[10:32] &lt MS-&gt Though doing the wrong thing quickly is pointless too</td></tr>
+            <tr><td>[10:32] &lt Davbo&gt Probably shouldn't have opened it in Eclipse though (constantly keep compiling your code)</td></tr>
+            <tr><td>[10:38] &lt Davbo&gt Deadline for my Java byte-code stuff monday then that's pretty much it i think :)</td></tr>
+            <tr><td>[10:39] &lt Davbo&gt Get in some practice with Kamaelia before SoC starts.</td></tr>
+            <tr><td>[10:47] &lt MS-&gt Davbo: very wise - that's kinda the idea of the community bonding period</td></tr>
+            <tr><td>[10:48] *** MS- notes that orphans has a patch for simple peer that needs to get looked at, but no patch to be seen :0</td></tr>
+            <tr><td>[10:48] &lt MS-&gt :-)</td></tr>
+            <tr><td>[10:48] *** MS- thinks it's the idea of the bonding period anyway :)</td></tr>
+            <tr><td>[10:48] *** MS- would probably suggest Davbo plays with the multicore code</td></tr>
+            <tr><td>[10:49] &lt Davbo&gt Yeah, wish I could have done more before now but it just hasn't been feasible</td></tr>
+            <tr><td>[10:49] *** MS- nods</td></tr>
+            <tr><td>[10:49] &lt MS-&gt something like making two magnadoodle components operate in sync probably makes sense</td></tr>
+            <tr><td>[10:49] &lt Davbo&gt Alright, sounds cool</td></tr>
+            <tr><td>[10:49] &lt MS-&gt (drawing on one being mirrored on the other - like a massively simplified whiteboard)</td></tr>
+            <tr><td>[10:50] &lt MS-&gt just a random suggestion :)</td></tr>
+            <tr><td>[10:50] &lt MS-&gt I'm good at random suggestions</td></tr>
+            <tr><td>[10:50] &lt mhrd&gt MS-: ooi, do we still have that diagram around of how the whiteboard works inside?</td></tr>
+            <tr><td>[10:50] &lt MS-&gt *somewhere*</td></tr>
+            <tr><td>[10:50] &lt MS-&gt yes</td></tr>
+            <tr><td>[10:51] &lt MS-&gt It'll definitely be in my mail somewhere</td></tr>
+            <tr><td>[10:51] &lt mhrd&gt heh, np</td></tr>
+            <tr><td>[10:51] &lt MS-&gt I was hunting for it a while back and it was more elusive than it should be</td></tr>
+            <tr><td>[10:51] *** Davbo found the code for Whiteboard a bit overwhelming</td></tr>
+            <tr><td>[10:51] &lt Davbo&gt i'd like to see a diagram</td></tr>
+            <tr><td>[10:52] &lt MS-&gt The trick is to break it down into chunks really</td></tr>
+            <tr><td>[10:52] &lt MS-&gt Doing things as black boxes</td></tr>
+            <tr><td>[10:52] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[10:52] &lt MS-&gt (ie treat an entire pipeline as a black box</td></tr>
+            <tr><td>[10:52] &lt MS-&gt )</td></tr>
+            <tr><td>[10:53] &lt MS-&gt I think that's what I did when I did that diagram</td></tr>
+            <tr><td>[10:53] &lt MS-&gt (Since Matt wrote lots of the code for it)</td></tr>
+            <tr><td>[10:53] &lt MS-&gt ie the vast vast bulk</td></tr>
+            <tr><td>[10:53] &lt mhrd&gt neat trick MS- realised a while ago is to start from the end of the program</td></tr>
+            <tr><td>[10:53] &lt mhrd&gt so you start by drawing a top level diagram, then gradually work down through the layers</td></tr>
+            <tr><td>[10:55] &lt Davbo&gt Structures like pipelines really help with diagrams i imagine</td></tr>
+            <tr><td>[10:56] &lt mhrd&gt albeit there's probably alot of components you start to encounter, pretty much immediately, and go "what on earth does that do?"</td></tr>
+            <tr><td>[11:00] &lt Davbo&gt Yeah, that's when you jump on IRC and start asking questions at an exponential rate :P</td></tr>
+            <tr><td>[11:00] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[11:00] &lt mhrd&gt :)</td></tr>
+            <tr><td>[11:02] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[11:03] &lt MS-&gt mhrd: I tend to have that viewpoint with code you right sometimes :)</td></tr>
+            <tr><td>[11:04] &lt MS-&gt But then your code is normally *RIGHT* :)</td></tr>
+            <tr><td>[11:04] &lt MS-&gt (cf the carousel taking me a stupidly long period of time to pick up :-) )</td></tr>
+            <tr><td>[11:04] &lt MS-&gt The whiteboard does have a fairly simple structure though, just a fair amount of it</td></tr>
+            <tr><td>[11:05] &lt MS-&gt It definitely needs refactoring though</td></tr>
+            <tr><td>[11:05] *** mhrd knows he's not always as focused as he shoudl be on writing *clear* code</td></tr>
+            <tr><td>[11:05] &lt MS-&gt largely due to my additions</td></tr>
+            <tr><td>[11:05] &lt MS-&gt heh</td></tr>
+            <tr><td>[11:05] &lt mhrd&gt "it works, just don't as me how" :-)</td></tr>
+            <tr><td>[11:05] &lt MS-&gt mhrd: Yeah, but I tend to trust your alpha code over other people's production code</td></tr>
+            <tr><td>[11:06] *** mhrd looks at MS- with concern :)</td></tr>
+            <tr><td>[11:15] *** zaheerm has joined #kamaelia</td></tr>
+            <tr><td>[11:15] &lt Uraeus&gt hi zaheerm</td></tr>
+            <tr><td>[11:16] &lt zaheerm&gt hiyahi Uraeus</td></tr>
+            <tr><td>[11:16] &lt zaheerm&gt i had a question about Kamaelia</td></tr>
+            <tr><td>[11:16] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[11:16] Reply: or post your idea, you may get a response - either from a mentor or fellow student or from someone reading the logs.</td></tr>
+            <tr><td>[11:16] Reply: Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news</td></tr>
+            <tr><td>[11:16] Reply: Some useful links/tips - use the template : http://kamaelia.sourceforge.net/SummerOfCode2006Template - base page: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[11:16] Reply: Tips for a good application - q's to ask yourself: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783</td></tr>
+            <tr><td>[11:16] &lt zaheerm&gt my question is whether it handles the compression used in freesat's schedule eit tables for name and description</td></tr>
+            <tr><td>[11:17] &lt MS-&gt Hi zaheerm</td></tr>
+            <tr><td>[11:17] &lt MS-&gt The short answer is I have no idea personally, though mhrd may well know</td></tr>
+            <tr><td>[11:17] &lt zaheerm&gt hi MS- , as a bit of context I am a gstreamer developer and have done the dvb work in gstreamer</td></tr>
+            <tr><td>[11:17] &lt MS-&gt We can certainly poke people to find out</td></tr>
+            <tr><td>[11:17] &lt zaheerm&gt that would be awesome</td></tr>
+            <tr><td>[11:17] &lt MS-&gt We have code to support EIT tables etc</td></tr>
+            <tr><td>[11:18] &lt MS-&gt But I wasn't aware of any compression being used. (I'm not really a DVB expert)</td></tr>
+            <tr><td>[11:18] &lt zaheerm&gt from my analysis, the name and description of the event seems to be huffman compressed</td></tr>
+            <tr><td>[11:18] &lt zaheerm&gt in one of two codebooks</td></tr>
+            <tr><td>[11:18] &lt MS-&gt zaheerm: I've heard many a good thing about the dvb support in gstreamer :)</td></tr>
+            <tr><td>[11:18] &lt MS-&gt Ah, I see</td></tr>
+            <tr><td>[11:18] &lt zaheerm&gt if first byte is 0x01 then codebook 1 and if 0x01 then codebook 2</td></tr>
+            <tr><td>[11:19] &lt zaheerm&gt this is only the freesat eit tables for the 8 day epg info</td></tr>
+            <tr><td>[11:19] &lt zaheerm&gt the normal present/following eits do not seem to have any compression</td></tr>
+            <tr><td>[11:19] &lt zaheerm&gt MS-, great :) i'm lucky in that i get to do this as part of my employment :)</td></tr>
+            <tr><td>[11:20] &lt zaheerm&gt the freesat stuff however is to scratch my own itch :)</td></tr>
+            <tr><td>[11:22] &lt zaheerm&gt MS-, any info you'd be able to dig up about the freesat schedule eits, i would be extremely grateful for</td></tr>
+            <tr><td>[11:22] &lt MS-&gt I'll see what I can do</td></tr>
+            <tr><td>[11:22] &lt zaheerm&gt awesome thanks!</td></tr>
+            <tr><td>[11:22] *** MS- vaguely remembers there may be something annoying to do with it though</td></tr>
+            <tr><td>[11:23] &lt MS-&gt I think that in order to encourage manufacturers to meet the spec that there's a short period of exclusivity on it</td></tr>
+            <tr><td>[11:23] &lt MS-&gt (and I believe it *is* short)</td></tr>
+            <tr><td>[11:23] &lt zaheerm&gt i did some preliminary analysis on them last night and figured it'd be easier to ask someone first before i attempt to reverse engineer it</td></tr>
+            <tr><td>[11:23] &lt MS-&gt indeed</td></tr>
+            <tr><td>[11:24] &lt MS-&gt I'll check with people thogh</td></tr>
+            <tr><td>[11:24] &lt zaheerm&gt thanks</td></tr>
+            <tr><td>[11:24] &lt MS-&gt if it turns out there is that little foible, I'll let you know, and if there isn't hopefully with the info you need :)</td></tr>
+            <tr><td>[11:24] &lt Uraeus&gt MS-: the problem with exclusivity setups like that is that they are easy prey to accidental leaks ;)</td></tr>
+            <tr><td>[11:24] &lt zaheerm&gt :) you're a star</td></tr>
+            <tr><td>[11:25] &lt MS-&gt Maybe worth looking at this in the meantime - http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Device/DVB/EIT.py?revision=2733&view=markup</td></tr>
+            <tr><td>[11:25] &lt MS-&gt zaheerm: cheers</td></tr>
+            <tr><td>[11:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:25] &lt Davbo&gt oooo a Freesat PVR?</td></tr>
+            <tr><td>[11:26] &lt zaheerm&gt considering the manufacturers have already manufactured, surely the openness promise of freesat will make it such that the spec is no longer needed to be exclusive :)</td></tr>
+            <tr><td>[11:27] &lt MS-&gt zaheerm: I've no idea really, and it's just a vague memory. If I recall correctly it's just intended to be temporary anyway.</td></tr>
+            <tr><td>[11:27] &lt MS-&gt Doesn't make any sense to me</td></tr>
+            <tr><td>[11:28] &lt zaheerm&gt MS-, cheers for looking into it for me :)</td></tr>
+            <tr><td>[11:28] &lt mhrd&gt zaheerm: I'm afraid it doesn't handle the differences in the EIT in freesat streams</td></tr>
+            <tr><td>[11:29] &lt zaheerm&gt in meantime I am checking if it is the same coding as in ATSC which uses huffman with 2 specified code tables</td></tr>
+            <tr><td>[11:29] &lt MS-&gt zaheerm: I've got the name of the person who came up with it - I'll see whether I can release it or not</td></tr>
+            <tr><td>[11:29] &lt MS-&gt I'm guessing it would be easy to reverse engineer if I can't :)</td></tr>
+            <tr><td>[11:29] &lt vmlemon_&gt Hmm, anyone know if a Sky Minidish will work with Freesat? (Assuming that you don't use BSkyB's proprietary Digibox)</td></tr>
+            <tr><td>[11:29] Reply: Hm?</td></tr>
+            <tr><td>[11:30] &lt zaheerm&gt vmlemon, it should work yes</td></tr>
+            <tr><td>[11:30] *** MS- slaps kamaeliabot</td></tr>
+            <tr><td>[11:30] &lt vmlemon_&gt I find it interesting that the box says DVB on the front</td></tr>
+            <tr><td>[11:30] &lt vmlemon_&gt I assume that they've made a few "enhancements", though</td></tr>
+            <tr><td>[11:30] &lt zaheerm&gt vmlemon, sky does use dvb</td></tr>
+            <tr><td>[11:31] &lt zaheerm&gt vmlemon, dvb-s and dvb-s2, they also broadcast sdt, nit and eit tables</td></tr>
+            <tr><td>[11:31] &lt mhrd&gt vmlemon_ : I'd imagine it is likely to. its broadcast on astra satellites in the same constellation</td></tr>
+            <tr><td>[11:32] &lt zaheerm&gt vmlemon, their epg and 7 day epg data however is in a proprietary form and only sky digiboxes can decode it</td></tr>
+            <tr><td>[11:33] &lt zaheerm&gt mhrd, any hints that would not be considered a leak are welcome :)</td></tr>
+            <tr><td>[11:33] &lt Uraeus&gt zaheerm: so when will you rev-eng that epg data? :)</td></tr>
+            <tr><td>[11:33] &lt zaheerm&gt Uraeus, i have got some way with the sky epg data, but it's a lot more complex than the freesat one</td></tr>
+            <tr><td>[11:34] &lt vmlemon_&gt I see that it's possible to view Virgin Media DVB-C content on Linux, now</td></tr>
+            <tr><td>[11:34] &lt vmlemon_&gt although you contravene their terms and conditions by doing so</td></tr>
+            <tr><td>[11:34] &lt mhrd&gt zaherm: even if I'm allowed to, I'm afraid I know very little about it</td></tr>
+            <tr><td>[11:35] &lt vmlemon_&gt What about Sky firmware updates?</td></tr>
+            <tr><td>[11:35] *** vmlemon_ wonders how/when they are sent over DVB</td></tr>
+            <tr><td>[11:36] &lt zaheerm&gt vmlemon_, yes Uraeus has done so using gstreamer and totem</td></tr>
+            <tr><td>[11:37] &lt vmlemon_&gt I saw the blog post, a few weeks ago</td></tr>
+            <tr><td>[11:39] &lt zaheerm&gt vmlemon_, the sky firmware updates are useless for anything except the sky digiboxes</td></tr>
+            <tr><td>[11:39] *** vmlemon_ was aware of that, but is still curious as to how and where they broadcast them/inject them into the TS</td></tr>
+            <tr><td>[11:39] &lt vmlemon_&gt Hmm, anyone managed to dump Sky's "EPG Background Audio" channel from a Transport Stream?</td></tr>
+            <tr><td>[11:40] &lt zaheerm&gt vmlemon_, the epg background audio is very simple</td></tr>
+            <tr><td>[11:40] &lt MS-&gt vmlemon_: You mean their twinkle twinkle little star music?</td></tr>
+            <tr><td>[11:40] &lt vmlemon_&gt It is it's own channel</td></tr>
+            <tr><td>[11:40] &lt MS-&gt (since that's one of the tunes :) )</td></tr>
+            <tr><td>[11:40] &lt vmlemon_&gt if I remember correctly</td></tr>
+            <tr><td>[11:40] &lt zaheerm&gt yes</td></tr>
+            <tr><td>[11:40] &lt zaheerm&gt they changed it i think at xmas time</td></tr>
+            <tr><td>[11:40] &lt vmlemon_&gt Although it's years since I last touched a Sky Digibox :|</td></tr>
+            <tr><td>[11:41] &lt vmlemon_&gt Isn't it usually stock "elevator"/"whoosh" music?</td></tr>
+            <tr><td>[11:41] &lt vmlemon_&gt (For want of a better way to describe it)</td></tr>
+            <tr><td>[11:42] &lt vmlemon_&gt With the occasional devocalized rock track</td></tr>
+            <tr><td>[11:42] &lt Davbo&gt Musak? :-)</td></tr>
+            <tr><td>[11:43] &lt vmlemon_&gt Yup</td></tr>
+            <tr><td>[11:43] &lt vmlemon_&gt That's the word I was looking for</td></tr>
+            <tr><td>[11:43] &lt Davbo&gt They really play twinkle twinkle little star?</td></tr>
+            <tr><td>[11:43] &lt vmlemon_&gt No idea</td></tr>
+            <tr><td>[11:44] &lt vmlemon_&gt I'd be surprised if they did</td></tr>
+            <tr><td>[11:44] &lt Davbo&gt http://www.digitalspy.co.uk/forums/showthread.php?t=769077</td></tr>
+            <tr><td>[11:45] &lt MS-&gt Davbo: yes, it's twinkle twinkle</td></tr>
+            <tr><td>[11:45] &lt MS-&gt They've done other nursery rhymes in the past</td></tr>
+            <tr><td>[11:45] &lt vmlemon_&gt Anyone know how the OpenTV applications (i.e. Teletext Holidays and Open..../Sky Active) work?</td></tr>
+            <tr><td>[11:45] Reply: Hm?</td></tr>
+            <tr><td>[11:45] &lt Davbo&gt Cool. Well, in away.</td></tr>
+            <tr><td>[11:45] &lt MS-&gt It's a bit like the theme for "Small Soliders" is in fact "The ants went marching one by one, hurrah, hurrah"</td></tr>
+            <tr><td>[11:46] &lt Davbo&gt Heh</td></tr>
+            <tr><td>[11:46] &lt mhrd&gt http://en.wikipedia.org/wiki/OpenTV#OpenTV_Virtual_Machine_execution_environment</td></tr>
+            <tr><td>[11:48] *** vmlemon_ assume that they too are just another Channel/Stream (with a Data typeflag?) on the TS that gets broadcast</td></tr>
+            <tr><td>[11:48] &lt vmlemon_&gt *assumes</td></tr>
+            <tr><td>[11:48] &lt vmlemon_&gt Although I don't know if they send them as plain-text, or encrypt them</td></tr>
+            <tr><td>[11:48] &lt mhrd&gt fraid I'm not sure.</td></tr>
+            <tr><td>[11:49] &lt mhrd&gt I know that for freeview, the mheg apps are streamed as an "object carousel" - ie. a stream containing named chunks of data that regularly repeat - thereby ensuring the bits you need come round regularly</td></tr>
+            <tr><td>[11:49] &lt mhrd&gt I'd imagine sky do something similar</td></tr>
+            <tr><td>[11:49] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[11:49] &lt vmlemon_&gt Short of trying to find a DVB-S PCI card, and a Sky Minidish, and getting the timing Just Right</td></tr>
+            <tr><td>[11:50] &lt vmlemon_&gt (as well as positioning the said dish properly)</td></tr>
+            <tr><td>[11:52] &lt mhrd&gt but at a higher level, it is just another stream. A "Program Map Table" associates several streams with a "service" (channel) - that'll include the video, audio, subtitles, other audio (eg. audio description/alternative languages), egc.. probably also the interactive streams</td></tr>
+            <tr><td>[11:52] &lt mhrd&gt http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramMapTable.html</td></tr>
+            <tr><td>[11:54] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:55] &lt Davbo&gt "Use Jacobi iteration to attempt to solve the equation" *facepalm*</td></tr>
+            <tr><td>[11:55] &lt vmlemon__&gt Damn connection</td></tr>
+            <tr><td>[11:55] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[12:00] *** MS- goes afk for a bit</td></tr>
+            <tr><td>[12:04] *** vmlemon_ has never understood why certain juice drink and mineral water containers state "Made with natural mineral water"...</td></tr>
+            <tr><td>[12:04] &lt vmlemon_&gt (Surely all water is natural)</td></tr>
+            <tr><td>[12:10] &lt vmlemon_&gt Hmm, http://www.skyuser.co.uk/forum/sky-sky-tv/17875-whats-your-favourite-epg-background-audio.html</td></tr>
+            <tr><td>[12:15] &lt vmlemon_&gt http://www.tvforum.co.uk.nyud.net:8080/forum/viewtopic.php?t=27594&start=0 looks somewhat interesting...</td></tr>
+            <tr><td>[12:16] &lt vmlemon_&gt Answers most of my questions about implementation of the EPG/Guide stuff</td></tr>
+            <tr><td>[13:13] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[14:00] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[15:16] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[15:47] &lt j_baker&gt MS-I found a minor bug in Kamaelia.File.BetterReading</td></tr>
+            <tr><td>[15:47] &lt j_baker&gt It is using KamaeliaIPC instead of Kamaelia.IPC</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt It seems to work if I change it to Kamaelia.IPC</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt Is there any major functional difference between the two?</td></tr>
+            <tr><td>[15:49] &lt MS-&gt IIRC, that will be due to files being renamed</td></tr>
+            <tr><td>[15:49] &lt MS-&gt Kamaelia.KamaeliaIPC is very bad naming</td></tr>
+            <tr><td>[15:49] &lt MS-&gt Kamaelia.IPC is better</td></tr>
+            <tr><td>[15:49] &lt MS-&gt But less than ideal</td></tr>
+            <tr><td>[15:49] &lt MS-&gt (Kamaelia.IPC implies it contains _components_ for IPC)</td></tr>
+            <tr><td>[15:50] &lt MS-&gt Whereas Kamaelia.Support.IPC would mean it's support code (not components) for IPC</td></tr>
+            <tr><td>[15:50] &lt MS-&gt Even then it's not IPC since IPC is something else</td></tr>
+            <tr><td>[15:50] &lt MS-&gt but back to the original q, the difference is the name</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt Oh, I see.</td></tr>
+            <tr><td>[15:51] &lt j_baker&gt Did you want me to commit the change I made to BetterReading, or did you plan on changing where the IPC module is located?</td></tr>
+            <tr><td>[15:51] &lt MS-&gt you should create a branch with the fix in</td></tr>
+            <tr><td>[15:51] &lt MS-&gt make the change on the branch and commit that</td></tr>
+            <tr><td>[15:51] &lt MS-&gt if you want something lighter weight</td></tr>
+            <tr><td>[15:52] &lt MS-&gt you can do a</td></tr>
+            <tr><td>[15:52] &lt MS-&gt svn copy Code/Python/Kamaelia/Kamaelia/Path/To/File.py Sketches/YOURDIR/File.py</td></tr>
+            <tr><td>[15:52] &lt MS-&gt and make the changes there, but doing the branch is nicer</td></tr>
+            <tr><td>[15:53] &lt MS-&gt svn copy trunk/Code/Python branches/private_INITIALS_NameOfBugFix</td></tr>
+            <tr><td>[15:53] &lt MS-&gt I'd prefer the latter</td></tr>
+            <tr><td>[15:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:56] &lt j_baker&gt Ok, I can do that. One last question, if I run the cookbook HTTP server, should http://127.0.0.1:8082/ return index.html?</td></tr>
+            <tr><td>[15:57] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt Or do I have to go to http://127.0.0.1:8082/index.html?</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt (it only works with the latter)</td></tr>
+            <tr><td>[15:58] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:01] &lt MS-&gt The latter</td></tr>
+            <tr><td>[16:01] &lt MS-&gt http://127.0.0.1:8082/ is *normally* configured by a webserver to say "return index.html", but it doesn't have to</td></tr>
+            <tr><td>[16:02] &lt MS-&gt It just means " return the resource "/ "</td></tr>
+            <tr><td>[16:02] &lt MS-&gt or resource "" depending on perspective</td></tr>
+            <tr><td>[16:02] &lt MS-&gt which is why it refers to index.html instead</td></tr>
+            <tr><td>[16:02] &lt MS-&gt though index.cgi was also common at some points in the past</td></tr>
+            <tr><td>[16:03] &lt MS-&gt There's nothing stopping the creation of a better handler that returns index.html of course</td></tr>
+            <tr><td>[16:03] &lt j_baker&gt Then what's the point of the indexfilename variable?</td></tr>
+            <tr><td>[16:04] &lt MS-&gt Dunno - I didn't write it :-D</td></tr>
+            <tr><td>[16:04] &lt MS-&gt (the original web serving code that is</td></tr>
+            <tr><td>[16:04] &lt MS-&gt )</td></tr>
+            <tr><td>[16:04] &lt j_baker&gt Ok. I've got a couple of ideas about how to change that code to some degree.</td></tr>
+            <tr><td>[16:04] &lt j_baker&gt I'll try them out.</td></tr>
+            <tr><td>[16:05] &lt MS-&gt OK, I better go catch a train (since they become irregular otherwise - I'll be back on later</td></tr>
+            <tr><td>[16:05] &lt MS-&gt That's the nice thing about branches</td></tr>
+            <tr><td>[16:05] &lt MS-&gt as long as they're named as suggested you can create as many as you like and say</td></tr>
+            <tr><td>[16:05] &lt MS-&gt "that code sucks, my code rules, look at this"</td></tr>
+            <tr><td>[16:05] &lt MS-&gt ;)</td></tr>
+            <tr><td>[16:05] &lt j_baker&gt :)</td></tr>
+            <tr><td>[16:05] &lt j_baker&gt Alright, talk to you later.</td></tr>
+            <tr><td>[16:05] &lt MS-&gt back in a while</td></tr>
+            <tr><td>[16:05] &lt MS-&gt cya</td></tr>
+            <tr><td>[16:05] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:29] &lt j_baker&gt going to get breakfast</td></tr>
+            <tr><td>[16:29] *** j_baker is now known as j_baker-breakfas</td></tr>
+            <tr><td>[16:42] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:09] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[17:39] &lt vmlemon_&gt Hi j_baker</td></tr>
+            <tr><td>[17:39] &lt j_baker&gt hello vmlemon_</td></tr>
+            <tr><td>[18:03] &lt vmlemon_&gt o.O http://www.textfiles.com/humor/acronym.lis</td></tr>
+            <tr><td>[18:29] *** mhrd is now known as Matt-afk</td></tr>
+            <tr><td>[18:41] &lt j_baker&gt Do you know much about svn, vmlemon_?</td></tr>
+            <tr><td>[18:41] &lt vmlemon_&gt Nope :|</td></tr>
+            <tr><td>[18:42] &lt j_baker&gt Well, crap. :P</td></tr>
+            <tr><td>[18:42] &lt j_baker&gt I'll ask MS- when he gets back.</td></tr>
+            <tr><td>[18:43] &lt vmlemon_&gt I tend to use it more for retrieving stuff, than for trying to upload stuff</td></tr>
+            <tr><td>[18:43] &lt vmlemon_&gt (I've never managed to get it working for the latter :()</td></tr>
+            <tr><td>[18:43] &lt j_baker&gt Me too.</td></tr>
+            <tr><td>[18:44] *** vmlemon_ managed to destroy his Windows Server 2003 installation, or at least make it boot in a less predictable manner, earlier</td></tr>
+            <tr><td>[18:44] &lt vmlemon_&gt somehow...</td></tr>
+            <tr><td>[18:45] &lt j_baker&gt Heh...</td></tr>
+            <tr><td>[18:45] &lt j_baker&gt I hear that's pretty easy to do if you're using Windows 2003 as a desktop OS</td></tr>
+            <tr><td>[18:45] &lt vmlemon_&gt It now boots to the Windows logo screen, and then displays a black screen and does nothing</td></tr>
+            <tr><td>[18:45] &lt vmlemon_&gt If I'm lucky, it'll give me a log-in screen, if I've rebooted it at least 5 times</td></tr>
+            <tr><td>[18:45] &lt vmlemon_&gt or something like that</td></tr>
+            <tr><td>[18:46] &lt vmlemon_&gt I reckon that it was the crappy Helix Download Manager for DRM'd content I'd installed on it, earlier</td></tr>
+            <tr><td>[18:46] &lt j_baker&gt Heh...</td></tr>
+            <tr><td>[18:46] &lt vmlemon_&gt (which happens to not only crash Firefox and IE6 when invoked from it, but the whole VM)</td></tr>
+            <tr><td>[18:47] &lt vmlemon_&gt *them</td></tr>
+            <tr><td>[18:47] &lt j_baker&gt Yeah, I would install Win 2k3 if not for that.</td></tr>
+            <tr><td>[18:47] &lt vmlemon_&gt It was the only version of Windows I had handy for experimentation :|</td></tr>
+            <tr><td>[18:47] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:48] &lt MS-&gt evening</td></tr>
+            <tr><td>[18:48] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[18:48] &lt vmlemon_&gt (I did have Windows 2000 Advanced Server, somewhere)</td></tr>
+            <tr><td>[18:48] &lt j_baker&gt Just the person I was looking for.</td></tr>
+            <tr><td>[18:48] *** MS- has just installed the open office 3 beta</td></tr>
+            <tr><td>[18:48] &lt MS-&gt Very nice</td></tr>
+            <tr><td>[18:48] &lt vmlemon_&gt It supports a subset of MSOOXML?</td></tr>
+            <tr><td>[18:48] &lt j_baker&gt If I have a directory on my local machine and want to add it to SVN as a branch, how would I do that MS-?</td></tr>
+            <tr><td>[18:48] &lt MS-&gt (zooming out on text document results in being able to see multiple pages side by side at a time)</td></tr>
+            <tr><td>[18:48] &lt vmlemon_&gt Or so I hear it supposedly does</td></tr>
+            <tr><td>[18:48] &lt MS-&gt vmlemon_: No idea, nor do I care :)</td></tr>
+            <tr><td>[18:49] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[18:49] *** vmlemon_ was curious, after reading blog posts about it</td></tr>
+            <tr><td>[18:49] &lt MS-&gt It may do, it's just shiny behaviour</td></tr>
+            <tr><td>[18:49] &lt MS-&gt j_baker: assuming said directory is in the right place</td></tr>
+            <tr><td>[18:49] &lt MS-&gt svn add directory</td></tr>
+            <tr><td>[18:49] &lt MS-&gt svn ci directory</td></tr>
+            <tr><td>[18:49] &lt vmlemon_&gt If I didn't have such a poor connection here, I might download it</td></tr>
+            <tr><td>[18:50] &lt j_baker&gt It's not. :/</td></tr>
+            <tr><td>[18:50] &lt j_baker&gt I've just been editing a few kamaelia files in place in my site-packages directory.</td></tr>
+            <tr><td>[18:50] &lt MS-&gt in which case you need to move it to the right place first :)</td></tr>
+            <tr><td>[18:50] &lt MS-&gt simple :)</td></tr>
+            <tr><td>[18:50] &lt vmlemon_&gt I wonder if KOffice will ever fix their weird full screen presentation mode</td></tr>
+            <tr><td>[18:50] &lt j_baker&gt I see.</td></tr>
+            <tr><td>[18:50] *** MS- goes afk again (back in a bit)</td></tr>
+            <tr><td>[18:51] &lt vmlemon_&gt (it displays more of the background than it should, and displays things in weird places for some reason)</td></tr>
+            <tr><td>[19:09] *** j_baker_ has joined #kamaelia</td></tr>
+            <tr><td>[19:14] &lt vmlemon_&gt Ouch, http://www.flickr.com/photos/vmlemon/2479053910/</td></tr>
+            <tr><td>[19:14] &lt vmlemon_&gt I wonder why they hid it so deep in the binary</td></tr>
+            <tr><td>[19:17] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[19:19] &lt Lawouach&gt evening</td></tr>
+            <tr><td>[19:19] &lt vmlemon_&gt Hi Lawouach</td></tr>
+            <tr><td>[19:29] *** j_baker_ has parted #kamaelia</td></tr>
+            <tr><td>[19:43] &lt Lawouach&gt http://www.newcastlestuff.com/charver/lifestyles.html</td></tr>
+            <tr><td>[19:44] &lt Lawouach&gt Country life is the real thing.</td></tr>
+            <tr><td>[20:45] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:46] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:07] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:16] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[21:20] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:22] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[21:28] &lt Davbo&gt Hi vmlemon_ - and the rest of ye.</td></tr>
+            <tr><td>[21:30] &lt Lawouach&gt http://trac.defuze.org/browser/oss/headstock/headstock/example/simplechat/simplechat.py</td></tr>
+            <tr><td>[21:30] &lt Lawouach&gt simple XMPP client example</td></tr>
+            <tr><td>[22:16] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt Hmm stupid Vista!</td></tr>
+            <tr><td>[22:17] &lt Davbo&gt I'm going to upgrade to XP</td></tr>
+            <tr><td>[22:19] &lt vmlemon_&gt Are you sure you don't want to downgrade to Vista, after upgrading to XP again? ;)</td></tr>
+            <tr><td>[22:19] &lt Davbo&gt I'm having a phase at the minute, I always do this after upgrading my computer</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt There isn't anything that isn't backed up so I like to install various OS</td></tr>
+            <tr><td>[22:21] *** vmlemon_ wanted to try Windows Server 2008, but can't download or install it </td></tr>
+            <tr><td>[22:22] &lt vmlemon_&gt (The former since I don't have broadband, the latter since it uses more RAM than I have installed in my laptop when running on VMware, which would make it incredibly slow)</td></tr>
+            <tr><td>[22:24] &lt Davbo&gt A UNIX saleslady, Lenore,</td></tr>
+            <tr><td>[22:24] &lt Davbo&gt Enjoys work, but she likes the beach more.</td></tr>
+            <tr><td>[22:24] &lt Davbo&gt She found a good way</td></tr>
+            <tr><td>[22:24] &lt Davbo&gt To combine work and play:</td></tr>
+            <tr><td>[22:24] &lt Davbo&gt She sells C shells by the seashore.</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[22:25] &lt Davbo&gt http://limerickdb.com/?top150 :-)</td></tr>
+            <tr><td>[22:27] &lt vmlemon_&gt Aww, it isn't possible to use 0800Reverse to call 0800Reverse (or other 0800 numbers, for that matter)</td></tr>
+            <tr><td>[22:28] &lt vmlemon_&gt (I tried to do it, a few days ago)</td></tr>
+            <tr><td>[22:31] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[22:31] &lt vmlemon_&gt Would have been fun to have done a recursive 0800Reverse session</td></tr>
+            <tr><td>[22:32] &lt vmlemon_&gt (Using each time to call a new one, until eventually blocking the system up)</td></tr>
+            <tr><td>[22:34] &lt vmlemon_&gt Conference calling between customer service centre employees is fun on 3, though</td></tr>
+            <tr><td>[22:34] &lt vmlemon_&gt if you can get the timing right, before one of them hangs up</td></tr>
+            <tr><td>[22:35] &lt vmlemon_&gt The idea being to see how long you can keep both employees on the call, and hopefully get them to at least converse for a few seconds</td></tr>
+            <tr><td>[22:37] &lt vmlemon_&gt (Bonus points if you can get two people who happen to be sat next to each other, or manage to get two from different departments ;) )</td></tr>
+            <tr><td>[22:38] &lt Davbo&gt Haha</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt Me and my brother bought some Skype out for similar reasons once</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt so much fun :)</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt back in a bit, upgrading to XP</td></tr>
+            <tr><td>[22:39] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[22:39] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[23:58] *** zaheer_ has joined #kamaelia</td></tr>

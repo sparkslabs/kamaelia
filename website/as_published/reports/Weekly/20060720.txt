@@ -1,0 +1,118 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060720 ======
+1. Note of Agenda
+
+2. Participants
+
+c-ryan, mhrd, MS-, thomasFx
+present: G0SUB, [LOGGER]
+
+3. Activity Reports
+
+Matt:
+    DONE:
+        advice/feedback/code review for anagha
+        Axon.Scheduler bugfix & test code to catch it in future
+        investigating bottlenecks in devendra's secure phone (alsa & speex)
+        Kamaelia bimonthly meeting
+    BLOCKED:
+        family holiday
+        BBC internal happenings
+        alsa+speex choppy-audio problems
+    TODO:
+        integrate speex into whiteboard
+        track down alsa+speex problem
+        make pymedia wrappers
+        continue with DVB components
+        review/revisit experimental Timer component
+        Improve box destruction to handle when a box is still linked to another
+        review/merge sync boxes support for threaded component
+
+Thomas:
+    DONE:
+        nothing (holiday)
+    TODO:
+        Code restructure
+        More widgets
+        Container component
+        Experiment with intersection testing methods
+    BLOCKED:
+        None
+
+Michael:
+    DONE:
+        Updated the Whiteboard to be able to edit a collection of pages. (checkpoint, back, forward) 
+        Felt more natural to view it as a collection of pages than a version controlled whiteboard (subtle distinction). 
+        Refactored whiteboard. Logged complaint with sourceforge regarding svn notify hooks. 
+        Moved forward on the contributor agreement. It's now going to be an online form, but now have to run by the DPA Lawyer as a result. 
+        Extensive discussions with Anagha. 
+        Sorted out flights/hotel for OSCON. 
+        Kamaelia bimonthly meeting - brainstorm. Initial draft version of a checkin script, however needs finishing (see blocked).
+    TODO:
+        Finish/integrate OSCON presentation into whiteboard. OSCON
+    BLOCKED:
+        Changes at the BBC caused distractions. Next week will be blocked by OSCON.
+
+Ryan:
+    DONE:
+        Documentation, code commenting for HTTP and Torrent components
+        HTTPServer - allow different instances to provide different services, minor bugfix, also should stop sending file after a disconnect now
+        Handy PureTransformer (filter-style) component
+    TODO:
+        resuming support for TorrentClient,
+        shutdown support for TorrentService,
+        Request handler components for HTTPServer,
+        component test scripts,
+        reconnecting kambot,
+        unpausing of HTTPServer when its messages are delivered
+    BLOCKED:
+        Too Hot!
+
+4. Discussion items (max 3 or 4)
+
+4.1 SoC progress check
+
+Michael recapped the discussion from the previous week for Thomas, which
+revolved around availability, and also noted that the last 2 weeks should
+be fully documenting and packaging up.
+
+4.2 Devolution of power
+
+
+This item arose out of a misunderstanding - Ryan wasn't aware that being
+a developer on the project included the ability to update the website,
+amongst other things. 
+
+Developers on the project can:
+   * Create a chaos branch, and make releases of their own based on the chaos branch.
+   * Everyone can post new news items
+   * Everyone can update the website, and should view it as an SVN based wiki
+
+Updating the website involves:
+   * Actually pushing to the website
+   * ssh'ing into shell.sf.net
+   * cd'ing to /home/groups/k/ka/kamaelia
+
+In that directory, we have:
+   * hotdocs/ htdocs/
+
+Apache looks in htdocs, which is largely empty. The reason is
+because we use and error hander from htdocs/.htacess that runs
+/cgi-bin/cdml-wiki/doc.py to serve pages. That script understands
+the [[...][...=...][...=...] ] syntax for includes and so on.
+
+That pulls in the contents of hotdocs, which is an anonymous checkout
+of /Website, which we can locally update. (Making local update relatively
+easy - which also mean editting the files on shell.sf.net is a bad idea!)
+
+For large files we simply put them in htdocs to allow apache to serve
+them directly. Examples: css, images, snapshots, etc.
+
+Michael also noted though that for large changes, especially structural that
+he would appreciate people running it by him first. Michael also suggested
+the creation of a place on the website called SummerOfCode2006/ .
+
+5. Date/Time of next meeting
+
+Decision was: Friday 28th 1100 BST
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060720 ======

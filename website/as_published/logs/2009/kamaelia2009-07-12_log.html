@@ -1,0 +1,108 @@
+<html><body><table>
+            <tr><td>[07:23] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:13] &lt MS-&gt having a lazy day</td></tr>
+            <tr><td>[10:24] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[12:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:04] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[13:25] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[13:30] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[19:21] &lt ronny&gt MS-: got any kamaelia+gtk examples?</td></tr>
+            <tr><td>[19:31] &lt MS-&gt Sorry, I haven't - but aa_ has one.</td></tr>
+            <tr><td>[19:32] &lt MS-&gt I'm actually debugging Axon.Handle at the moment, since that should be the preferred mechanism for talking to gtk from kamaelia</td></tr>
+            <tr><td>[19:32] &lt MS-&gt But there seems to be a bug in Axon.Handle, which is rather annoying.</td></tr>
+            <tr><td>[19:33] &lt MS-&gt Once I have that debugged, then I'll put up a hello world of using GTK & kamaelia</td></tr>
+            <tr><td>[19:40] &lt ronny&gt hmk</td></tr>
+            <tr><td>[19:41] &lt ronny&gt MS-: any plans to support the glib mainloop as base of io watching/sheduling?</td></tr>
+            <tr><td>[19:42] &lt MS-&gt Well, given I don't currently use glib myself, that would be a bit of a leap :-) However...</td></tr>
+            <tr><td>[19:42] &lt MS-&gt the scheduler can be run as follows:</td></tr>
+            <tr><td>[19:42] &lt MS-&gt (grabbing something to c&p)</td></tr>
+            <tr><td>[19:42] &lt MS-&gt OK, a number of older pieces of kamaelia code do this:</td></tr>
+            <tr><td>[19:42] &lt MS-&gt scheduler.run.runThreads()</td></tr>
+            <tr><td>[19:43] &lt MS-&gt That final method runThreads()</td></tr>
+            <tr><td>[19:43] &lt MS-&gt Has this as its body:</td></tr>
+            <tr><td>[19:43] &lt MS-&gt  def runThreads(self,slowmo=0):</td></tr>
+            <tr><td>[19:43] &lt MS-&gt  for i in self.main(slowmo,canblock=True): pass</td></tr>
+            <tr><td>[19:44] &lt MS-&gt Clearly that means you could drive the scheduler yourself from another mainloop - eg glib's mainloop</td></tr>
+            <tr><td>[19:44] &lt MS-&gt should you wish to do so</td></tr>
+            <tr><td>[19:44] &lt MS-&gt But the preferred technique (IMO) would be to run the axon scheduler in the background, and then communicate with axon components running in the background using axon.handle</td></tr>
+            <tr><td>[19:45] &lt MS-&gt The scheduler will happily run in a non-foreground thread you see</td></tr>
+            <tr><td>[19:46] &lt MS-&gt cf http://kamaelia.googlecode.com/svn/trunk/Code/Python/Axon/Examples/Handles</td></tr>
+            <tr><td>[19:47] &lt MS-&gt There's an issue there which I'm currently investigating which I think is due to me being rather OTT recently in cleaning up component shutdown (!)</td></tr>
+            <tr><td>[19:49] &lt MS-&gt (both those examples work fine for example)</td></tr>
+            <tr><td>[19:51] &lt MS-&gt That said, I have a minimal example for debugging now. I'd suggest asking that question again in a couple of days :)</td></tr>
+            <tr><td>[19:51] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[19:51] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[19:53] &lt MS-&gt kamlogbot: poke</td></tr>
+            <tr><td>[19:53] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[20:03] &lt ronny&gt hmm, there are some possible painfull loopholes i see about stuff like WaitForData</td></tr>
+            <tr><td>[20:03] &lt ronny&gt i need to do some diggin before i can tell if there is a good way not to do polling all the time</td></tr>
+            <tr><td>[20:03] *** MS- nods</td></tr>
+            <tr><td>[20:04] &lt MS-&gt If I used GTK I could probably tell you what the best way of doing that was, but it's not been an area I've needed to look into</td></tr>
+            <tr><td>[20:34] &lt MS-&gt OK, there was a small race hazard exercised by Axon.background and threaded components, which is now resolved cleanly. Probably handful of similar issues in Axon.Handle to deal with, but that was step</td></tr>
+            <tr><td>[20:34] &lt MS-&gt #1</td></tr>
+            <tr><td>[20:34] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:12] &lt ronny&gt MS-: will do some light diging when im not learning for my exams, and some deep digging after my exam on 23.07.</td></tr>
+            <tr><td>[21:12] &lt MS-&gt cool :)</td></tr>
+            <tr><td>[21:14] &lt MS-&gt woah. unexpected event. gtk appears to kill regular python threads?</td></tr>
+            <tr><td>[21:15] &lt MS-&gt Yes, it does</td></tr>
+            <tr><td>[21:15] &lt MS-&gt that's plain evil</td></tr>
+            <tr><td>[21:15] &lt ronny&gt MS-: what? it shouldnt do that</td></tr>
+            <tr><td>[21:15] &lt ronny&gt MS-: we do use regular python threads in tonns of places in pida, seems fine there</td></tr>
+            <tr><td>[21:16] &lt aa_&gt threads_init called?</td></tr>
+            <tr><td>[21:16] &lt MS-&gt http://pastebin.org/1243</td></tr>
+            <tr><td>[21:17] &lt MS-&gt When run, you get this behaviour:</td></tr>
+            <tr><td>[21:17] &lt MS-&gt http://pastebin.org/1244</td></tr>
+            <tr><td>[21:17] &lt aa_&gt MS-: when using threads with gtk you need to call gtk.gdk.threads_init()</td></tr>
+            <tr><td>[21:17] &lt MS-&gt At the point the window appears, no more "running" messages are displayed</td></tr>
+            <tr><td>[21:17] &lt MS-&gt aa_: That's plain evil :)</td></tr>
+            <tr><td>[21:18] &lt aa_&gt MS-: that initializes the multithreaded bits</td></tr>
+            <tr><td>[21:18] &lt aa_&gt MS-: call it once, and yes its evil</td></tr>
+            <tr><td>[21:18] &lt MS-&gt Ahh much better</td></tr>
+            <tr><td>[21:18] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:18] &lt MS-&gt I thought it was a bug in Axon</td></tr>
+            <tr><td>[21:20] &lt MS-&gt OK, http://pastebin.org/1245 works as I'd expect</td></tr>
+            <tr><td>[21:20] &lt ronny&gt aa_: is it really necessary if no other thread writes on the gui?</td></tr>
+            <tr><td>[21:22] &lt MS-&gt well, http://pastebin.org/1243 freezes every background thread, http://pastebin.org/1245 doesn't</td></tr>
+            <tr><td>[21:22] &lt MS-&gt That's useful to know</td></tr>
+            <tr><td>[21:23] &lt MS-&gt That's actually quite nice. I thought it was an axon bug and it actually a GTK foible.</td></tr>
+            <tr><td>[21:23] &lt MS-&gt aa_: Thank you :-)</td></tr>
+            <tr><td>[21:23] &lt ronny&gt hmm, aa_ ftw :)</td></tr>
+            <tr><td>[21:24] &lt MS-&gt Well, a day you learn something is a good day :)</td></tr>
+            <tr><td>[21:25] &lt aa_&gt ronny: it's absolutely necessary</td></tr>
+            <tr><td>[21:29] &lt ronny&gt aa_: i think it also kills some kittens if one calls it twice</td></tr>
+            <tr><td>[21:30] &lt MS-&gt And doing this also fixes all the other bits I thought were axon bugs</td></tr>
+            <tr><td>[21:36] &lt MS-&gt OK, this is a minimal version that shows how to send a message to a kamaelia component when a button is clicked in GTK: http://pastebin.org/1249</td></tr>
+            <tr><td>[21:36] &lt MS-&gt That component happens to forward a message over a network connection to a server, which in this case logs the event</td></tr>
+            <tr><td>[21:37] &lt MS-&gt That server looks like this: http://pastebin.org/1250</td></tr>
+            <tr><td>[21:38] &lt MS-&gt and that's the example on pages 58-60 of the tutorial notes :-)</td></tr>
+            <tr><td>[21:38] &lt MS-&gt I didn't cover that in the session because I thought Axon.Handle was borked</td></tr>
+            <tr><td>[21:41] &lt MS-&gt yay, really pleased with that. That's a good nights work</td></tr>
+            <tr><td>[21:45] &lt ronny&gt ++</td></tr>
+            <tr><td>[21:50] &lt ronny&gt night</td></tr>
+            <tr><td>[21:51] &lt MS-&gt night</td></tr>
+            <tr><td>[22:32] &lt MS-&gt OK, I'm off to sleep</td></tr>
+            <tr><td>[22:32] &lt MS-&gt I've rummaged around inside filterpype now properly and discovered 2 things:</td></tr>
+            <tr><td>[22:33] &lt MS-&gt a) it really is a python-style co-routine system rather than based on genuine co-routine ideas</td></tr>
+            <tr><td>[22:33] &lt MS-&gt that means it's inherently push based (as noted in it's own source) and limited to "push only" topologies in practice</td></tr>
+            <tr><td>[22:34] &lt MS-&gt Also, this means that filters in its system are all pushing control flow as well as data flow</td></tr>
+            <tr><td>[22:34] &lt MS-&gt meaning that multiple flows in a single system would be hard at best to implement</td></tr>
+            <tr><td>[22:34] &lt MS-&gt if possible at all</td></tr>
+            <tr><td>[22:34] &lt MS-&gt It's actually significantly more limited and limiting than I gave it credit for in the session where it was being described.</td></tr>
+            <tr><td>[22:36] &lt MS-&gt That also explains, as a result, why most of the actual filters in the system are almost all largely written in callback style (meaning it could be done in a nicer way as well...)</td></tr>
+            <tr><td>[22:36] &lt MS-&gt since otherwise, someone working with it risks breaking it's execution structure quite hard</td></tr>
+            <tr><td>[22:37] &lt MS-&gt It also explains the fundamental misunderstanding of kamaelia that was made by the authors of it, when combined with their misunderstanding of how unix pipelines actually work in practice</td></tr>
+            <tr><td>[22:38] &lt MS-&gt That said, they've produced an interesting solution to a real world problem that they had, even if their talk didn't get that over well.</td></tr>
+            <tr><td>[22:43] &lt MS-&gt This does open up the intriguing thought that it should be possible to convert (or assimilate) all the filterpype filters as kamaelia components and make them more useful in the process.</td></tr>
+            <tr><td>[22:44] &lt MS-&gt Not something for the moment, but something for another day maybe.</td></tr>
+            <tr><td>[22:45] &lt MS-&gt Interestingly they get close conceptually to some aspects</td></tr>
+            <tr><td>[22:45] &lt MS-&gt seeing stuff like this:</td></tr>
+            <tr><td>[22:45] &lt MS-&gt  self.send_on(packet.clone(), 'branch')</td></tr>
+            <tr><td>[22:45] &lt MS-&gt  self.send_on(packet, 'main')</td></tr>
+            <tr><td>[22:46] &lt MS-&gt BUT, this isn't an asynchronous send_on</td></tr>
+            <tr><td>[22:47] &lt MS-&gt since it actually passes control to the next filter named branch, rather than sends it a message</td></tr>
+            <tr><td>[22:47] &lt MS-&gt which eventually returns</td></tr>
+            <tr><td>[22:47] &lt MS-&gt and then it calls the other branch</td></tr>
+            <tr><td>[22:48] &lt MS-&gt So I don't know if it would be even vaguely wise to wrap their filters as components :-/</td></tr>
+            <tr><td>[22:49] &lt MS-&gt Anyway, interesting. The amount of interest there did make me think that it might be worth offering talks & (better) tutorial next time round, with different focusses for those with different interests.</td></tr>
+            <tr><td>[22:49] &lt MS-&gt anyway, sleep</td></tr>
+            <tr><td>[22:49] &lt MS-&gt night</td></tr>

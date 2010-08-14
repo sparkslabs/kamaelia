@@ -1,0 +1,893 @@
+<html><body><table>
+            <tr><td>[00:15] *** ms- sends mail regarding that branch</td></tr>
+            <tr><td>[00:26] &lt ms-&gt OK, that may be it for the week. (hopefully not, but being realistic about the coming 5 days - I'll have something higher priority)</td></tr>
+            <tr><td>[00:26] &lt ms-&gt cya</td></tr>
+            <tr><td>[00:26] *** ms- has parted #kamaelia</td></tr>
+            <tr><td>[00:35] *** ms- has joined #kamaelia</td></tr>
+            <tr><td>[00:36] *** ms- changed the topic to Update and review the release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 12th June 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[00:36] *** ms- changed the topic to Claim a branch for review and (maybe) merge! :-) | Update and review the release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 12th June 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[01:04] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[06:32] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:32] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:42] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:42] &lt Lawouach_&gt morning folks</td></tr>
+            <tr><td>[06:50] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:50] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:51] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:24] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[07:55] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:55] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[08:15] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:22] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:30] *** ms- has parted #kamaelia</td></tr>
+            <tr><td>[08:56] &lt Lawouach_&gt http://blog.ianbicking.org/2008/06/08/which-way/ &lt -- what a pointless question :/</td></tr>
+            <tr><td>[08:56] &lt Lawouach_&gt If the World could fit only two boxes it'd be way too simple :)</td></tr>
+            <tr><td>[09:00] &lt orphans&gt morning Lawouach_</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt morning mate</td></tr>
+            <tr><td>[09:01] &lt orphans&gt how's it going?</td></tr>
+            <tr><td>[09:01] &lt Lawouach_&gt You're luck the French game ends before our meeting this evening :)</td></tr>
+            <tr><td>[09:01] &lt Lawouach_&gt Going well</td></tr>
+            <tr><td>[09:01] &lt Lawouach_&gt I wrote a large chunk of code this weekend</td></tr>
+            <tr><td>[09:02] &lt orphans&gt cool cool. Mm, might have to watch the france game</td></tr>
+            <tr><td>[09:03] &lt orphans&gt I like that when I google france euro 2008 it tells me when the match is and who's playing</td></tr>
+            <tr><td>[09:03] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:04] &lt Lawouach_&gt I hope we're gonna kick those Italians during the thir game</td></tr>
+            <tr><td>[09:04] &lt orphans&gt :)</td></tr>
+            <tr><td>[09:05] &lt orphans&gt I don't really know who to support this year</td></tr>
+            <tr><td>[09:07] &lt Lawouach_&gt France man. Well unless you want me to make your life a misery :)</td></tr>
+            <tr><td>[09:09] &lt orphans&gt sounds like a done deal :)</td></tr>
+            <tr><td>[09:09] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:10] &lt orphans&gt wow, for the first time in my life the team I'm supporting have a chance of winning a major football tournament!</td></tr>
+            <tr><td>[09:10] &lt orphans&gt it's a strange feeling...</td></tr>
+            <tr><td>[09:11] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:12] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[09:15] &lt Davbo&gt Salut Lawouach_</td></tr>
+            <tr><td>[09:15] &lt Davbo&gt Hi all</td></tr>
+            <tr><td>[09:17] &lt Lawouach_&gt salut Davbo</td></tr>
+            <tr><td>[09:21] &lt orphans&gt hey Davbo</td></tr>
+            <tr><td>[09:22] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:22] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[09:29] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:57] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:58] &lt MS-&gt morning</td></tr>
+            <tr><td>[09:58] &lt orphans&gt morning MS-</td></tr>
+            <tr><td>[09:59] &lt MS-&gt orphans: Thanks for offering to merge the STM code</td></tr>
+            <tr><td>[09:59] &lt MS-&gt (or review for merge - just as useful)</td></tr>
+            <tr><td>[09:59] *** MS- will wait for j_baker to be awake before saying thanks there</td></tr>
+            <tr><td>[09:59] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:00] &lt Lawouach_&gt MS-: I apologize for not giving you any feedback on that quick word page you ported to the wiki</td></tr>
+            <tr><td>[10:00] &lt Lawouach_&gt I just forgot :/</td></tr>
+            <tr><td>[10:00] &lt MS-&gt No problem :)</td></tr>
+            <tr><td>[10:01] &lt orphans&gt MS-, no probs - looks interesting :)</td></tr>
+            <tr><td>[10:01] &lt MS-&gt I asked, but that doesn't guarantee an answer :)</td></tr>
+            <tr><td>[10:01] &lt MS-&gt been around long enough to know a) people forget even if they don't want to b) life gets in the way</td></tr>
+            <tr><td>[10:01] &lt MS-&gt For me b) is going to be happening somewhat this week until after friday</td></tr>
+            <tr><td>[10:02] &lt MS-&gt (part of the reason for trying to get so much out of private_MPS_Scratch yesterday)</td></tr>
+            <tr><td>[10:02] &lt Davbo&gt Hi MS-</td></tr>
+            <tr><td>[10:03] &lt Davbo&gt I think i'll review the logger for you</td></tr>
+            <tr><td>[10:03] &lt Davbo&gt shouldn't take long</td></tr>
+            <tr><td>[10:03] &lt MS-&gt ta :)</td></tr>
+            <tr><td>[10:03] &lt Davbo&gt was the IRC stuff already merged?</td></tr>
+            <tr><td>[10:03] &lt MS-&gt Indeed - it just works really. The only foible is a) I think it needs *some* documentation</td></tr>
+            <tr><td>[10:04] &lt Davbo&gt Want me to write some stuff for it ?</td></tr>
+            <tr><td>[10:04] &lt MS-&gt b) it needs specific directories for logging to exist</td></tr>
+            <tr><td>[10:04] &lt MS-&gt You can do - just note down what you need to do to get it working</td></tr>
+            <tr><td>[10:04] &lt Davbo&gt I'll check code see if i can put in some friendly exceptions for the directories</td></tr>
+            <tr><td>[10:05] &lt MS-&gt It's useful that coming from you because you'll hit the problems fresh and probably list everything as a result</td></tr>
+            <tr><td>[10:05] &lt MS-&gt And yes, the IRC code has been merged</td></tr>
+            <tr><td>[10:05] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:06] &lt Davbo&gt well we all know the logger is reasonably robust anyway :-)</td></tr>
+            <tr><td>[10:06] *** Davbo pokes kamaeliabot</td></tr>
+            <tr><td>[10:07] &lt bcarlyon|laptop&gt I just saw tweet for this http://tinyurl.com/6qvmd2 A peta flop computer made from stuff designed for the PS3, well the Cell Chip.</td></tr>
+            <tr><td>[10:07] &lt bcarlyon|laptop&gt How is everyone btw?</td></tr>
+            <tr><td>[10:08] &lt orphans&gt "It will be installed at a US government laboratory later this year where it will monitor the US nuclear stockpile." - I don't need a supercomputer to do that! They've got enough to wipe me off the face of the earth a fair few times over. Job done :)</td></tr>
+            <tr><td>[10:09] &lt Davbo&gt Yeah, read about that on Engadget, Roadrunner is for military use anyway heh.</td></tr>
+            <tr><td>[10:10] &lt Davbo&gt MS-: Can I get a Slider widget out of PyGame?</td></tr>
+            <tr><td>[10:11] &lt MS-&gt Davbo: You could easily make one</td></tr>
+            <tr><td>[10:12] &lt MS-&gt I think at present my suggestion for this week aside from anything else is to start writing a full feature list of what you're intending to put into your tool at this stage</td></tr>
+            <tr><td>[10:12] &lt MS-&gt Or would like</td></tr>
+            <tr><td>[10:12] &lt MS-&gt So that you can then say done, done, done and restructure etc</td></tr>
+            <tr><td>[10:13] &lt Davbo&gt oh on that note I started the wishlist</td></tr>
+            <tr><td>[10:13] &lt MS-&gt cool</td></tr>
+            <tr><td>[10:13] &lt Davbo&gt http://edit.kamaelia.org/Developers/Projects/KamaeliaPaint</td></tr>
+            <tr><td>[10:13] &lt MS-&gt you can always extend it</td></tr>
+            <tr><td>[10:13] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[10:13] &lt MS-&gt But you'll probably also pick out specific things you need - like sliders, colour selectors</td></tr>
+            <tr><td>[10:14] &lt MS-&gt fading, layers etc</td></tr>
+            <tr><td>[10:14] &lt MS-&gt whatever :)</td></tr>
+            <tr><td>[10:14] &lt Davbo&gt well it's just a start from things I could remember after reading your email</td></tr>
+            <tr><td>[10:14] *** MS- clicks</td></tr>
+            <tr><td>[10:14] *** MS- adds lens flare</td></tr>
+            <tr><td>[10:15] &lt bcarlyon|laptop&gt Hello again, random laptop crash.</td></tr>
+            <tr><td>[10:15] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[10:19] &lt Davbo&gt Could you point me in the right direction for making a slider with pygame at all MS-, it's quite different to what i'm used to</td></tr>
+            <tr><td>[10:22] &lt orphans&gt Davbo, you might want to look at my the Button component - it's a nice easy start to doing pygame stuff</td></tr>
+            <tr><td>[10:22] &lt orphans&gt s/my//</td></tr>
+            <tr><td>[10:23] &lt orphans&gt also might want to look at this: http://www.imitationpickles.org/pgu/wiki/index</td></tr>
+            <tr><td>[10:23] &lt orphans&gt somewhere on the wishlist is a port of some of the utils there - I'd definitely be interested in getting some of the UI stuff over</td></tr>
+            <tr><td>[10:24] &lt orphans&gt perhaps a joint task for the summer :)</td></tr>
+            <tr><td>[10:24] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[10:24] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[10:24] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[10:27] &lt MS-&gt Davbo: yes, please look at pyame :)</td></tr>
+            <tr><td>[10:27] &lt Lawouach&gt back home</td></tr>
+            <tr><td>[10:27] &lt MS-&gt sorry, the pygame.org website</td></tr>
+            <tr><td>[10:27] &lt Lawouach&gt Yeah it was b) :)</td></tr>
+            <tr><td>[10:27] &lt MS-&gt heh</td></tr>
+            <tr><td>[10:27] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:27] &lt MS-&gt Davbo: you may also want to take a look at the slider in the opengl code</td></tr>
+            <tr><td>[10:27] &lt MS-&gt a slide is just moving a box</td></tr>
+            <tr><td>[10:28] &lt MS-&gt Oh, on that front - you could look at orphans' XYPad</td></tr>
+            <tr><td>[10:28] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:28] &lt MS-&gt Since you only need one direction, but it could be interesting/useful</td></tr>
+            <tr><td>[10:28] *** orphans finds a nice revision, cause it's got a bit more complex since</td></tr>
+            <tr><td>[10:28] &lt MS-&gt Actually that could be really nice - you could have an RGB colour cube with 3 squares:</td></tr>
+            <tr><td>[10:28] &lt MS-&gt RG GB RB</td></tr>
+            <tr><td>[10:29] &lt MS-&gt (instead of XY)</td></tr>
+            <tr><td>[10:29] &lt Davbo&gt umm</td></tr>
+            <tr><td>[10:29] *** MS- wonders if anyone else has seen a colour cube since Photon Paint...</td></tr>
+            <tr><td>[10:30] &lt Davbo&gt I can honestly say I've never seen one heh</td></tr>
+            <tr><td>[10:30] &lt orphans&gt MS-, saw one in my Digital Imaging course</td></tr>
+            <tr><td>[10:30] &lt Davbo&gt http://www.navgen.com/nova/cube_fullsize.jpg</td></tr>
+            <tr><td>[10:30] &lt Davbo&gt That sort of thing?</td></tr>
+            <tr><td>[10:30] &lt Davbo&gt I've seen those</td></tr>
+            <tr><td>[10:31] &lt MS-&gt Ah, *ish*</td></tr>
+            <tr><td>[10:31] &lt MS-&gt simpler</td></tr>
+            <tr><td>[10:31] &lt MS-&gt consider the 3 visible sufaces</td></tr>
+            <tr><td>[10:31] &lt MS-&gt If you draw a dot on each of them and draw a line straight through</td></tr>
+            <tr><td>[10:32] &lt MS-&gt looking at that picture...</td></tr>
+            <tr><td>[10:32] &lt MS-&gt red is bottom left</td></tr>
+            <tr><td>[10:32] &lt MS-&gt blue is top</td></tr>
+            <tr><td>[10:32] &lt MS-&gt green is bottom right</td></tr>
+            <tr><td>[10:32] &lt MS-&gt so left square is RB</td></tr>
+            <tr><td>[10:32] &lt MS-&gt right square is GB</td></tr>
+            <tr><td>[10:33] &lt MS-&gt top square is RG</td></tr>
+            <tr><td>[10:33] &lt MS-&gt in terms of Axes</td></tr>
+            <tr><td>[10:33] &lt MS-&gt A position in RGB space can therefore be represent by 3 dots - one on each of those planes</td></tr>
+            <tr><td>[10:33] &lt MS-&gt Suggestion: if you don't understand, a) pretend you do</td></tr>
+            <tr><td>[10:34] &lt Davbo&gt Sorry, I see what you mean yeah</td></tr>
+            <tr><td>[10:34] &lt MS-&gt Cool</td></tr>
+            <tr><td>[10:34] &lt Davbo&gt I was looking at another colour cube and it was mesmerising</td></tr>
+            <tr><td>[10:34] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[10:34] &lt MS-&gt heh</td></tr>
+            <tr><td>[10:34] &lt MS-&gt b) play with 3 of orphan's XYpads</td></tr>
+            <tr><td>[10:35] &lt Davbo&gt Righty</td></tr>
+            <tr><td>[10:35] &lt MS-&gt to do it *right* you really need to show the "slices" through the cube & update them when someone moves a pad</td></tr>
+            <tr><td>[10:35] &lt MS-&gt But as a starting point I'd just suggest XYPads controlling a thing that just shows the colour</td></tr>
+            <tr><td>[10:36] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[10:36] &lt MS-&gt Can make picking the right colour quite nice :)</td></tr>
+            <tr><td>[10:37] &lt MS-&gt aha</td></tr>
+            <tr><td>[10:37] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[10:37] &lt MS-&gt http://www.softpedia.com/progScreenshots/Color-Cube-Screenshot-75780.html</td></tr>
+            <tr><td>[10:38] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[10:38] &lt Davbo&gt so, just the faces of the cube?</td></tr>
+            <tr><td>[10:38] &lt MS-&gt Essentially, yes</td></tr>
+            <tr><td>[10:39] &lt MS-&gt Each face gives you 2 values</td></tr>
+            <tr><td>[10:39] &lt MS-&gt RG GB orr RB</td></tr>
+            <tr><td>[10:39] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[10:39] &lt MS-&gt You need to synchronise them, but that's a detail - especially considering the XYPad already does that - you just need to link 3 rather than 2</td></tr>
+            <tr><td>[10:40] &lt Davbo&gt I need to look at this XYPad before i see how i can apply it i'm afraid</td></tr>
+            <tr><td>[10:40] &lt orphans&gt ahh, yeah, you'll need synchronisation - in that case use trunk Davbo</td></tr>
+            <tr><td>[10:40] &lt MS-&gt orphans: Has done screen cast</td></tr>
+            <tr><td>[10:41] &lt MS-&gt Davbo: The alternative is find or write 3 sliders :)</td></tr>
+            <tr><td>[10:41] &lt orphans&gt there'll be a bit more doc for it later today describing the synchronisation stuff</td></tr>
+            <tr><td>[10:41] &lt MS-&gt It's no harder than a magnadoodle</td></tr>
+            <tr><td>[10:41] &lt MS-&gt simpler really</td></tr>
+            <tr><td>[10:42] &lt MS-&gt Davbo: http://www.vimeo.com/1127967 :)</td></tr>
+            <tr><td>[10:42] &lt Davbo&gt thanks MS-,</td></tr>
+            <tr><td>[10:42] &lt MS-&gt yw</td></tr>
+            <tr><td>[10:43] &lt MS-&gt you may however find it easier to consider merging one of the existing pygame UI's</td></tr>
+            <tr><td>[10:43] &lt MS-&gt There's a couple, and there'd be ongoing useful benefits from doing that</td></tr>
+            <tr><td>[10:43] &lt MS-&gt not least it may make your life easier</td></tr>
+            <tr><td>[10:43] &lt MS-&gt (providing options :-) )</td></tr>
+            <tr><td>[10:43] &lt Davbo&gt Sounds like that might be useful for orphans if I start on that too</td></tr>
+            <tr><td>[10:45] &lt Davbo&gt watching the screencast</td></tr>
+            <tr><td>[10:45] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:45] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[10:46] &lt Davbo&gt hehe looks familiar to MagnaDoodle</td></tr>
+            <tr><td>[10:46] &lt Davbo&gt s/familiar/similar</td></tr>
+            <tr><td>[10:47] &lt Davbo&gt Very different protocols but hey :-)</td></tr>
+            <tr><td>[10:48] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:50] &lt MS-&gt Indeed. Lots of code is really similar like that</td></tr>
+            <tr><td>[10:51] &lt MS-&gt a slider that you want would be identical to the XYPad, except X or Y would be fixed</td></tr>
+            <tr><td>[10:51] &lt MS-&gt unless you wanted diagonal sliders - which I would recommend against</td></tr>
+            <tr><td>[10:52] &lt Davbo&gt the XYPad looks like a good way to do it</td></tr>
+            <tr><td>[10:55] &lt MS-&gt It's an easy win. It's definitely worth looking at other toolkits as well, and considering whether you'd want to componentise them of course. (Ala tkinter etc)</td></tr>
+            <tr><td>[10:55] *** vmlemon_ never knew that RISC OS used the BSD TCP/IPv4 stack...</td></tr>
+            <tr><td>[10:57] &lt Davbo&gt I'd like to know what things you'd like componentised orphans, from the GUI engines like: http://ocemp.sourceforge.net/gui.html and http://www.imitationpickles.org/pgu/wiki/index</td></tr>
+            <tr><td>[10:58] *** MS- idly notes that playing with these comes highly recommended as well to find out what they're like</td></tr>
+            <tr><td>[10:59] &lt MS-&gt ocemp is richer, pgu seems "nicer" (which is incredibly hard to justify)</td></tr>
+            <tr><td>[10:59] &lt MS-&gt Lawouach_: yes pointless q</td></tr>
+            <tr><td>[10:59] *** MS- notes 2 minutes silence</td></tr>
+            <tr><td>[10:59] &lt Lawouach&gt Those reminds me of ClanLib (well ClanLib has no Python bindings though)</td></tr>
+            <tr><td>[11:01] &lt Davbo&gt What would your suggestion be over ocemp and pgu</td></tr>
+            <tr><td>[11:01] &lt Davbo&gt MS-*</td></tr>
+            <tr><td>[11:01] &lt Davbo&gt I think it's worth getting some of these things over to Kamaelia</td></tr>
+            <tr><td>[11:03] &lt orphans&gt Davbo, I'm not entirely sure atm. For definite things like radio buttons/dropdown menus.</td></tr>
+            <tr><td>[11:03] &lt Lawouach&gt It's also interesting to note that although quite different in scope pygame+ocemp/pgu are getting close to a PyQt. Notably when considering you can perfectly access OpenGL with Qt and thei phonon engine offers a nice audio layer.</td></tr>
+            <tr><td>[11:03] &lt orphans&gt Lawouach, how easily do you think something like pyqt would fit in?</td></tr>
+            <tr><td>[11:04] *** MS- would like the paint tool, where possible to be pygame based almost exclusively - meaning ocemp, pgu or homebrew (as at present)</td></tr>
+            <tr><td>[11:04] &lt Lawouach&gt Well first of all I'm not saying one ought to drop one for the other. I like PyQt because it's a really well tested framework. Solid fast and well maintained.</td></tr>
+            <tr><td>[11:04] &lt MS-&gt the advantage of homebrew is the modelessness</td></tr>
+            <tr><td>[11:05] &lt MS-&gt PyQT should fit trivially in with kamaelia IMO</td></tr>
+            <tr><td>[11:05] &lt Davbo&gt Yeah I was planning on sticking with PyGame</td></tr>
+            <tr><td>[11:06] &lt orphans&gt mm, that's interesting. I thought it'd be a lot of work</td></tr>
+            <tr><td>[11:06] &lt MS-&gt orphans: The best integration plays to the strengths</td></tr>
+            <tr><td>[11:07] &lt MS-&gt You let pygame be pygame (we just replace pygame.display.flip() and how you get a display surface and where you get events from really)</td></tr>
+            <tr><td>[11:07] &lt MS-&gt You let PyQT be PyQT etc</td></tr>
+            <tr><td>[11:08] &lt Lawouach&gt back to work</td></tr>
+            <tr><td>[11:08] &lt Lawouach&gt see you in a bit</td></tr>
+            <tr><td>[11:09] &lt MS-&gt Same for tkinter - much of that still looks like tkinter etc</td></tr>
+            <tr><td>[11:10] &lt orphans&gt yeah</td></tr>
+            <tr><td>[11:12] &lt orphans&gt do you think something like pyqt would be good for Jam? I can see upsides and downsides</td></tr>
+            <tr><td>[11:12] &lt Davbo&gt back, sorry about that.</td></tr>
+            <tr><td>[11:12] &lt MS-&gt orphans: I don't no. Personally the reason I like pygame is because it just works everywhere I use it.</td></tr>
+            <tr><td>[11:13] &lt MS-&gt I'm *tempted* to get a new GP2X after my old one was bricked, and they upgraded it to have a stylus for example</td></tr>
+            <tr><td>[11:13] &lt Davbo&gt MS-: Plan of action- bring the slider across from ocemp/pgu then decide what to do after that</td></tr>
+            <tr><td>[11:13] &lt MS-&gt (kamaelia runs happily on it for example)</td></tr>
+            <tr><td>[11:13] &lt orphans&gt ok, cool. pygame has the happy benefit of being done already too :)</td></tr>
+            <tr><td>[11:13] &lt MS-&gt Which would mean painting using a stylus on a GP2X, but the downside is it has *zero* connectivity</td></tr>
+            <tr><td>[11:14] *** orphans goes to get lunch</td></tr>
+            <tr><td>[11:14] &lt MS-&gt It's your project though, and ease of deployment and options all play a part with these things</td></tr>
+            <tr><td>[11:15] &lt MS-&gt Eg Davbo I'd personally be tempted to just use XYPad & extend that or just create a slider - to go with the other pygame widgets</td></tr>
+            <tr><td>[11:15] &lt MS-&gt But as the saying goes - if you always do what you've always done, you'll always get what you've always got</td></tr>
+            <tr><td>[11:16] &lt orphans&gt realistically the benefits I see are having a nice big widget set available (which I won't use much of, but for the future), and simple styling support</td></tr>
+            <tr><td>[11:16] &lt orphans&gt both of which are nice, but not showstoppers</td></tr>
+            <tr><td>[11:16] &lt MS-&gt Yes</td></tr>
+            <tr><td>[11:16] &lt MS-&gt BUT that doesn't necessarily mean its good</td></tr>
+            <tr><td>[11:16] &lt MS-&gt The fact that I can put a whiteboard or magnadoodle or whatever over playing video</td></tr>
+            <tr><td>[11:17] &lt MS-&gt and still have both work because I can set one transparent and they're modeless (ie events aren't captured by just one widget) can be really useful</td></tr>
+            <tr><td>[11:18] &lt MS-&gt Interestingly, the open gl code has the same benefit as well - events pass through to all components in a line of sight</td></tr>
+            <tr><td>[11:18] &lt Davbo&gt http://gp2x.co.uk/indexgp2x.html</td></tr>
+            <tr><td>[11:18] &lt Davbo&gt Work well with whiteboard?</td></tr>
+            <tr><td>[11:19] &lt orphans&gt ok, well, pygame for now unless I think of any really convincing reasons to change :)</td></tr>
+            <tr><td>[11:19] *** orphans really goes to get lunch :)</td></tr>
+            <tr><td>[11:24] &lt Davbo&gt Thanks MS-, now you've made me want a GP2X</td></tr>
+            <tr><td>[11:24] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[11:34] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:35] &lt MS-&gt heh</td></tr>
+            <tr><td>[11:35] &lt MS-&gt Davbo: I'd like an Acer Aspire One, but I doubt I'm getting one</td></tr>
+            <tr><td>[11:36] &lt Lawouach_&gt orphans: Although I'm a huge fan of PyQt (currently using it at work) I won't push down that line. Regarding your project itself it'd be better for now to keep pygame so that you don't have to waste time learning PyQt and integrating it with K.</td></tr>
+            <tr><td>[11:36] *** MS- recieves Jason's contributer agreement</td></tr>
+            <tr><td>[11:36] *** MS- notes he also likes PyQT :)</td></tr>
+            <tr><td>[11:36] &lt MS-&gt It's nice to work with</td></tr>
+            <tr><td>[11:37] &lt MS-&gt (I have a wysiwyg standard alone tabbed editor that spits out/displays HTML as a personal notepad)</td></tr>
+            <tr><td>[11:37] &lt MS-&gt s/standard/stand/</td></tr>
+            <tr><td>[11:37] &lt Lawouach_&gt Before we started your project I was tempted to suggest going for PyQt but since pygame is already well integrated with K. I didn't want you to waste time on framework stuff rather than functionnalities</td></tr>
+            <tr><td>[11:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:41] &lt Lawouach_&gt Mind you ocemp looks good</td></tr>
+            <tr><td>[11:41] &lt vmlemon&gt Nice to hear that there's a Kamaelia Publish release</td></tr>
+            <tr><td>[11:45] &lt MS-&gt Davbo: You're happy with reviewing kamaelia-logger then?</td></tr>
+            <tr><td>[11:45] *** MS- updates releasepage</td></tr>
+            <tr><td>[11:45] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[11:46] &lt Davbo&gt I'll do that now actually</td></tr>
+            <tr><td>[11:46] &lt MS-&gt ta :)</td></tr>
+            <tr><td>[11:46] &lt MS-&gt It defaults to testing on #kamaelia-test BTW</td></tr>
+            <tr><td>[11:47] &lt Davbo&gt right, ty</td></tr>
+            <tr><td>[11:47] &lt MS-&gt configured by /etc/kamaelia_logger.conf</td></tr>
+            <tr><td>[11:47] &lt MS-&gt etc</td></tr>
+            <tr><td>[11:47] &lt Davbo&gt and freenode i presume</td></tr>
+            <tr><td>[11:47] &lt Davbo&gt kk</td></tr>
+            <tr><td>[11:47] &lt MS-&gt yep</td></tr>
+            <tr><td>[11:55] *** MS- wanders off</td></tr>
+            <tr><td>[11:55] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[12:20] &lt ms-afk&gt 527 files on /trunk modified since last release</td></tr>
+            <tr><td>[12:21] &lt ms-afk&gt (all changes reviewed)</td></tr>
+            <tr><td>[12:22] &lt ms-afk&gt 281 of those are .py files in kamaelia.*</td></tr>
+            <tr><td>[12:22] &lt ms-afk&gt 20 in Axon.Axon</td></tr>
+            <tr><td>[12:23] &lt ms-afk&gt 78 examples</td></tr>
+            <tr><td>[12:25] &lt ms-afk&gt The diff alone is 1.7MB in size ...</td></tr>
+            <tr><td>[12:25] &lt ms-afk&gt *really* have to do releases more often</td></tr>
+            <tr><td>[12:26] &lt Davbo&gt :D</td></tr>
+            <tr><td>[12:26] &lt Davbo&gt that's something to be proud of</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt Good job ms-afk, since a lot of it is from your scratch</td></tr>
+            <tr><td>[12:27] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:27] &lt vmlemon&gt o.O http://flickr.com/photos/vmlemon/2482100946/</td></tr>
+            <tr><td>[12:28] &lt Lawouach_&gt release more often would be appreciated but I've found that, for my usage, I haven't had to fix much of 0.5 in order to work</td></tr>
+            <tr><td>[12:28] &lt Lawouach_&gt A bit of the HTTP components and the SSL support were the major stuff.</td></tr>
+            <tr><td>[12:28] &lt Lawouach_&gt Of course I don't use any of the media stuff so...</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt BTW, there is a trailing print statement in HTTPClient that'd need to be removed. Don't think creating a whole branch would make any sense.</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt What would you rather me do ms-afk ?</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt Could be a good idea to release at the end of summer perhaps</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt with our apps in there :-)</td></tr>
+            <tr><td>[12:39] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:30] &lt Davbo&gt KamaeliaLogger seems good</td></tr>
+            <tr><td>[13:31] &lt Davbo&gt ah, found a problem</td></tr>
+            <tr><td>[13:49] *** ms-afk is now known as ms-</td></tr>
+            <tr><td>[13:49] &lt ms-&gt (back)</td></tr>
+            <tr><td>[13:49] &lt ms-&gt Lawouach_: Send a diff/patch against either /tags/Kamaelia-0.5.0 or against /trunk to the list ?</td></tr>
+            <tr><td>[13:50] &lt ms-&gt Or it it's really obvious, tell us where/what?</td></tr>
+            <tr><td>[13:50] &lt ms-&gt I'm guessing it should just be commented out?</td></tr>
+            <tr><td>[13:51] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[13:51] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[13:53] &lt Davbo&gt wasn't a big problem ms-, it just wasn't sleeping at any point so using 100% cpu</td></tr>
+            <tr><td>[13:53] &lt ms-&gt Really?</td></tr>
+            <tr><td>[13:53] &lt Davbo&gt fixed it now</td></tr>
+            <tr><td>[13:54] &lt ms-&gt oh yes, so it does</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt Good job we spotted that now</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt :)</td></tr>
+            <tr><td>[13:55] &lt ms-&gt (Never really noticed on the machine I run the logger on)</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt Courtesy of my fans being extremely loud when it runs at 100%</td></tr>
+            <tr><td>[13:56] &lt ms-&gt I see</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt It's fine now though ms-, I can write README if you like</td></tr>
+            <tr><td>[13:56] &lt ms-&gt probably useful to fix then :-)</td></tr>
+            <tr><td>[13:56] &lt ms-&gt Please do</td></tr>
+            <tr><td>[13:56] &lt ms-&gt I take it you made the changes on the branch ?</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt any format for it you want me to follow?</td></tr>
+            <tr><td>[13:56] &lt ms-&gt (I make a habit of asking obvious q's)</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt oh sorry not ci'd</td></tr>
+            <tr><td>[13:57] &lt ms-&gt Format. Plain short. What, Why, How, Where, etc</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt Sorry I had to wrestle getting Kate running as root for some reason</td></tr>
+            <tr><td>[13:57] &lt ms-&gt Assume the reader doesn't know anything about Kamaelia (or perhaps even care)</td></tr>
+            <tr><td>[13:58] &lt ms-&gt Unpack</td></tr>
+            <tr><td>[13:58] &lt ms-&gt Install</td></tr>
+            <tr><td>[13:58] &lt ms-&gt Configure</td></tr>
+            <tr><td>[13:58] &lt ms-&gt Run</td></tr>
+            <tr><td>[13:58] &lt ms-&gt What output?</td></tr>
+            <tr><td>[13:59] &lt ms-&gt Something similar to : http://edit.kamaelia.org/KamaeliaGrey is probably what you want</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt Can't do OSX i'm afraid, i'll leave that blank</td></tr>
+            <tr><td>[13:59] &lt ms-&gt That's fine</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt I see you've left something in there for Apple users, i'm sure it's a similar script</td></tr>
+            <tr><td>[14:00] &lt ms-&gt The only guidance on writing is pretend you're writing for someone (specific) you know, who is relatively techie, but doesn't know anything about it</td></tr>
+            <tr><td>[14:00] &lt ms-&gt beyond that: sentences less than 10 words. Paragraphs no more than 5 lines.</td></tr>
+            <tr><td>[14:01] &lt ms-&gt Show what people should expect to do/see, don't just explain</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt Righty</td></tr>
+            <tr><td>[14:01] &lt ms-&gt The actual logger runs on OSX BTW, hence why that's there</td></tr>
+            <tr><td>[14:01] &lt ms-&gt Though it was developed under linux</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt Ah cool.</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt setup.py applies to all anyway</td></tr>
+            <tr><td>[14:02] &lt ms-&gt Config is the same</td></tr>
+            <tr><td>[14:02] &lt ms-&gt setup.py is the same</td></tr>
+            <tr><td>[14:02] &lt ms-&gt the running is just</td></tr>
+            <tr><td>[14:02] &lt ms-&gt  /System/Library/StartupItems/KamaeliaLogger/KamaeliaLogger start</td></tr>
+            <tr><td>[14:02] &lt ms-&gt rather than</td></tr>
+            <tr><td>[14:02] &lt ms-&gt  /etc/init.d/whatever_it_is start</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt Right, cool</td></tr>
+            <tr><td>[14:03] &lt ms-&gt Chong-: ping</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt here :-)</td></tr>
+            <tr><td>[14:04] &lt ms-&gt any q's (given it's your mentor time?)</td></tr>
+            <tr><td>[14:04] &lt ms-&gt if not, I'd appreciate being able to move on</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt Seeing you are talking, so I have not bothered you;)</td></tr>
+            <tr><td>[14:05] &lt Chong-&gt Can you have a look at my plan in the future a couple of days?</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt 1. Extend links: add text to show the relation, make link colour, arrow and other attributes customable</td></tr>
+            <tr><td>[14:06] &lt Lawouach_&gt ms-: I'll send you a patch this evening</td></tr>
+            <tr><td>[14:06] &lt ms-&gt Lawouach_: ta</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt 2. Modify particle laws to implement bondLength(A,B)=A.radius+B.radius+aValue instead of bondLength(A,B)=aValue</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt 3. Make attributes updatable</td></tr>
+            <tr><td>[14:07] &lt Chong-&gt Any suggestion about the plan or their implementation?</td></tr>
+            <tr><td>[14:07] &lt ms-&gt It's your project - what's your plan?</td></tr>
+            <tr><td>[14:07] &lt ms-&gt the above?</td></tr>
+            <tr><td>[14:08] &lt Chong-&gt yep</td></tr>
+            <tr><td>[14:08] &lt Chong-&gt 1-3</td></tr>
+            <tr><td>[14:09] &lt ms-&gt regarding 2, I already discussed (at length) my suggestion which was "try something, see if it makes sense"</td></tr>
+            <tr><td>[14:10] &lt ms-&gt I'm finding it really hard to understand why this is being made into a major issue</td></tr>
+            <tr><td>[14:10] &lt Chong-&gt So, your suggestion is to to classify them and then define multiple laws for every class?</td></tr>
+            <tr><td>[14:11] &lt ms-&gt I fail to see how you go from</td></tr>
+            <tr><td>[14:11] &lt ms-&gt "try something, see if it makes sense"</td></tr>
+            <tr><td>[14:11] &lt ms-&gt to</td></tr>
+            <tr><td>[14:11] &lt ms-&gt "classify them and then define multiple laws for every class"</td></tr>
+            <tr><td>[14:11] &lt Chong-&gt When the user is able to define the size of pictures/ particles, it would be a problem.</td></tr>
+            <tr><td>[14:12] &lt ms-&gt you said that</td></tr>
+            <tr><td>[14:12] &lt ms-&gt And after discussing it I said "try something"</td></tr>
+            <tr><td>[14:12] &lt ms-&gt I'm not going to do your project for you</td></tr>
+            <tr><td>[14:12] &lt ms-&gt try something, see what works,. what doesn't</td></tr>
+            <tr><td>[14:12] &lt ms-&gt you know, research it, play</td></tr>
+            <tr><td>[14:13] &lt ms-&gt open source is to computer science as chemistry is to physics & maths</td></tr>
+            <tr><td>[14:13] &lt Chong-&gt Ok. I have tried but have not found a good way yet. I will try more :-)</td></tr>
+            <tr><td>[14:13] &lt ms-&gt chemistry == try lots of things & hope it doesn't go wrong or explode in your face</td></tr>
+            <tr><td>[14:13] &lt ms-&gt physics == trying to understand why it won't</td></tr>
+            <tr><td>[14:13] &lt ms-&gt maths == proving that it won't</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[14:13] &lt ms-&gt however the only proof is actually trying it</td></tr>
+            <tr><td>[14:14] &lt Chong-&gt yes. BTW, the metaphor is very classic :-)</td></tr>
+            <tr><td>[14:16] &lt Chong-&gt I think after finish 1-3, I can start hierarchical particles.</td></tr>
+            <tr><td>[14:16] &lt Chong-&gt Do you think the plan makes sense?</td></tr>
+            <tr><td>[14:17] &lt ms-&gt Chong-: you mean of your plan to</td></tr>
+            <tr><td>[14:17] &lt ms-&gt 1. add stuff to make it prettier</td></tr>
+            <tr><td>[14:17] &lt ms-&gt 2. change bonds stuff to make sure its pretty</td></tr>
+            <tr><td>[14:17] &lt ms-&gt 3. make stuff updateable ?</td></tr>
+            <tr><td>[14:17] &lt ms-&gt Seems a reasonable plan</td></tr>
+            <tr><td>[14:18] &lt ms-&gt you'll probably need to do 2 again afterwards</td></tr>
+            <tr><td>[14:19] &lt Chong-&gt yes. For OpenGL version, it needs to modify the physical law again.</td></tr>
+            <tr><td>[14:19] &lt ms-&gt Well, yes, that's a given</td></tr>
+            <tr><td>[14:20] &lt Chong-&gt It seems that you're not happy with the plan :-)</td></tr>
+            <tr><td>[14:20] &lt ms-&gt ?</td></tr>
+            <tr><td>[14:21] &lt Chong-&gt Any suggestions to improve it?</td></tr>
+            <tr><td>[14:21] *** vmlemon_ wonders if Kamaelia would work on the OLPC</td></tr>
+            <tr><td>[14:21] &lt ms-&gt At this rate I'm going to program kamaeliabot to answer that question</td></tr>
+            <tr><td>[14:21] &lt ms-&gt try something, see what works,. what doesn't</td></tr>
+            <tr><td>[14:23] &lt Chong-&gt Ok. I'll try my best. Thanks for your time.</td></tr>
+            <tr><td>[14:23] &lt ms-&gt It's a suggestion. I made it the other day as well.</td></tr>
+            <tr><td>[14:24] &lt ms-&gt Seems the logical thing to do.</td></tr>
+            <tr><td>[14:24] &lt ms-&gt let me put it this way, for me to evaluate the "best" way (if there is one), it would require me to write the code and find out</td></tr>
+            <tr><td>[14:25] &lt ms-&gt I've actually written something similar before which I've mentioned before which is</td></tr>
+            <tr><td>[14:25] &lt ms-&gt in /Sketches/MPS/Experiments/360/</td></tr>
+            <tr><td>[14:25] &lt ms-&gt But that didn't progress.</td></tr>
+            <tr><td>[14:25] &lt ms-&gt (nor did it need to)</td></tr>
+            <tr><td>[14:25] &lt vmlemon_&gt "Yorkshire Tea" comes to mind, for some reason ;)</td></tr>
+            <tr><td>[14:26] &lt Chong-&gt Now, I am studying the 360 codes :-)</td></tr>
+            <tr><td>[14:26] &lt ms-&gt I'm actually confused as to how this relates to your actual project of writing a 3D visualiser tool, but as a learning exercise it makes sense.</td></tr>
+            <tr><td>[14:27] &lt ms-&gt I would actually rather seem some progress on your proposed project sooner rather than later, but again, as a learning exercise it makes sense</td></tr>
+            <tr><td>[14:27] &lt ms-&gt I'm just not sure it's really a months work.</td></tr>
+            <tr><td>[14:27] &lt ms-&gt (months' full time work)</td></tr>
+            <tr><td>[14:27] &lt ms-&gt (or more actually)</td></tr>
+            <tr><td>[14:28] &lt ms-&gt But again, you know how long it takes you to do something, I don't</td></tr>
+            <tr><td>[14:28] &lt ms-&gt :)</td></tr>
+            <tr><td>[14:28] &lt Chong-&gt I think our initial plan is try to extend the PyGame one, pink/blue, picture, hierarchical work and so on.</td></tr>
+            <tr><td>[14:29] &lt ms-&gt That was a learning exercise</td></tr>
+            <tr><td>[14:29] &lt ms-&gt yep</td></tr>
+            <tr><td>[14:29] &lt ms-&gt but a month and a half on it?</td></tr>
+            <tr><td>[14:29] &lt ms-&gt that's around 1/2 the schedule!</td></tr>
+            <tr><td>[14:29] &lt ms-&gt As a learning exercise it makes sense though</td></tr>
+            <tr><td>[14:30] &lt ms-&gt but you have to bear in mind, that you chose a very targetted project - "Change the Kamaelia topology visualiser to work in full 3D"</td></tr>
+            <tr><td>[14:30] &lt ms-&gt http://code.google.com/soc/2008/bbc/appinfo.html?csaid=C6B31943FE370789</td></tr>
+            <tr><td>[14:30] &lt Chong-&gt Maybe I should not go into too many details.</td></tr>
+            <tr><td>[14:32] &lt Chong-&gt So, is your suggestion to start OpenGL one now?</td></tr>
+            <tr><td>[14:32] &lt ms-&gt Which was heavily based on this description: "</td></tr>
+            <tr><td>[14:32] &lt ms-&gt "Change the topology visualiser to work in full 3D - this would relate to changing the implementation from using the pygame code and replacing it with open GL code. Most of the physics engine would still work. "</td></tr>
+            <tr><td>[14:32] &lt ms-&gt from the project pages</td></tr>
+            <tr><td>[14:32] &lt ms-&gt I'd personally want to see it usable for the other idea on that page:</td></tr>
+            <tr><td>[14:32] &lt ms-&gt 3D Social Network Visualisation tool. This builds on 2 core project ideas. The assumption is that the social network will be embedded in some kind of SQL database,</td></tr>
+            <tr><td>[14:32] &lt ms-&gt which can be extracted by a component. Then, extend topologyVisualiser in the Kamaelia distribution to work in 3D.</td></tr>
+            <tr><td>[14:33] &lt ms-&gt (As I mentioned before)</td></tr>
+            <tr><td>[14:33] &lt ms-&gt No, I'm not making a suggestion to start an OpenGL one this instant</td></tr>
+            <tr><td>[14:33] &lt ms-&gt you have your project plan.</td></tr>
+            <tr><td>[14:34] &lt ms-&gt I would suggest revising it such that you're not spending 5 weeks on stuff not in your proposed project, that all.</td></tr>
+            <tr><td>[14:34] &lt ms-&gt As a learning exercise 2-3 weeks (maybe a little more) at best maybe</td></tr>
+            <tr><td>[14:35] &lt Chong-&gt I see. I will revise my plan to start OpenGL one as soon as possible.</td></tr>
+            <tr><td>[14:35] &lt ms-&gt After all, your initial project schedule was:</td></tr>
+            <tr><td>[14:35] &lt ms-&gt  1. Now – 26 May</td></tr>
+            <tr><td>[14:35] &lt ms-&gt Study the codes of Kamaelia TopologyViewer, PyGameApp, and OpenGL modules, and take notes</td></tr>
+            <tr><td>[14:35] &lt ms-&gt  2. 27 May – 7 Jul</td></tr>
+            <tr><td>[14:35] &lt ms-&gt Start programming and build and test OpenGLApp, TopologyViewer3D, and 3D physics engine module,</td></tr>
+            <tr><td>[14:36] &lt ms-&gt  3. 8 Jul – 11 Aug</td></tr>
+            <tr><td>[14:36] &lt ms-&gt Build and test a Kamaelia interface for SQL database and use it and the3D topology visualiser to show the relationships, and write documentsat the same time; extend other topology-related graph components to 3Dif time allows</td></tr>
+            <tr><td>[14:36] &lt ms-&gt your current schedule bears little relation to that at all</td></tr>
+            <tr><td>[14:37] &lt ms-&gt You can't/shouldn't/ just junk what you're doing. BUT likewise, please bear in mind that your project was accepted because you offered to write 2 pieces of code that I do actually *really* want</td></tr>
+            <tr><td>[14:37] &lt ms-&gt specifically a 3D version of the visualiser and database scraping to visualise</td></tr>
+            <tr><td>[14:38] &lt ms-&gt pablo's was chosen because it is really speculatively possible to really help with making the project cleaner & better and better dev</td></tr>
+            <tr><td>[14:38] &lt ms-&gt Jasons/Davids and Joes chosen on just sheer enthusiasm and clear willingness to take owner ship :)</td></tr>
+            <tr><td>[14:39] &lt ms-&gt I just need you to stay focussed on it being your project, and if you need to do learning exercises, that's good, but bear in mind where you're going</td></tr>
+            <tr><td>[14:39] &lt ms-&gt And if you disagree, tell me :-)</td></tr>
+            <tr><td>[14:40] &lt ms-&gt (nb, I type fast - sometimes that gets mistaken for ranting :), it's not - it's a side effect of having been writing code for 25 years :-) )</td></tr>
+            <tr><td>[14:40] &lt Chong-&gt I totally agree with you. I will finish the components on time as planned.</td></tr>
+            <tr><td>[14:41] &lt ms-&gt Oh, I doubt that. :-) I've yet to meet *anyone* who can reliably gauge how long things will take :-)</td></tr>
+            <tr><td>[14:41] &lt ms-&gt (you could be the first of course :) )</td></tr>
+            <tr><td>[14:42] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[14:43] &lt Chong-&gt It's true I should start the OpenGL one as soon as possible.</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt Please do point out my mistakes during the project as my mentor. :-)</td></tr>
+            <tr><td>[14:48] &lt Lawouach_&gt He does ;)</td></tr>
+            <tr><td>[14:48] &lt ms-&gt I expect it back though too</td></tr>
+            <tr><td>[14:48] &lt ms-&gt and not because anyone's my mentor ;)</td></tr>
+            <tr><td>[14:48] &lt Chong-&gt Lawouach_: :-)</td></tr>
+            <tr><td>[14:49] &lt ms-&gt The biggest risk any project can have is to have any one person believe they are infallible.</td></tr>
+            <tr><td>[14:49] &lt Chong-&gt ms-: That's because you are experienced, it's less likely that we can find your mistakes :-)</td></tr>
+            <tr><td>[14:49] &lt ms-&gt The nice thing about fallibility though is that it's really easy to demostrate</td></tr>
+            <tr><td>[14:49] &lt ms-&gt Hah! I doubt that.</td></tr>
+            <tr><td>[14:50] &lt ms-&gt "what does this button do?"</td></tr>
+            <tr><td>[14:50] &lt ms-&gt *** B O O M ***</td></tr>
+            <tr><td>[14:50] &lt ms-&gt "oh"</td></tr>
+            <tr><td>[14:50] &lt ms-&gt "i didn't know that happened?! OK, better fix that"</td></tr>
+            <tr><td>[14:50] &lt Chong-&gt :D</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt Not really Chong-, right now lots of people are reviewing ms- code to make sure there aren't mistakes, and i'm sure plenty will be found. Nobody writes perfect code :-)</td></tr>
+            <tr><td>[14:51] &lt ms-&gt *everyone* writes bugs</td></tr>
+            <tr><td>[14:52] &lt ms-&gt it's easier to find someone elses than your own</td></tr>
+            <tr><td>[14:52] &lt Davbo&gt exactly</td></tr>
+            <tr><td>[14:52] &lt Chong-&gt Davbo: yes. So I say **less likely**</td></tr>
+            <tr><td>[14:54] &lt vmlemon_&gt If you're Microsoft, you just write all bugs, all of the time ;)</td></tr>
+            <tr><td>[14:55] &lt ms-&gt heh</td></tr>
+            <tr><td>[14:55] &lt vmlemon_&gt erm "features"</td></tr>
+            <tr><td>[14:56] &lt ms-&gt If anyone wants proof I write bugs, ask mhrd-afk and look for VOMIT on the codebase</td></tr>
+            <tr><td>[14:56] &lt Lawouach_&gt VOMIT</td></tr>
+            <tr><td>[14:56] &lt Lawouach_&gt That's one I had never seen :)</td></tr>
+            <tr><td>[14:58] &lt vmlemon_&gt View Only, Might Implode (if) Touched ;)</td></tr>
+            <tr><td>[14:58] &lt Chong-&gt On one hand, the more codes you write, the more experience you get; on the other hand, however, the more bugs you will write.</td></tr>
+            <tr><td>[14:59] &lt Chong-&gt vmlemon_: Might Implode (even if not) Touched :D</td></tr>
+            <tr><td>[14:59] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt Chong-: lots of bugs arise from what is called creeping featurism http://en.wikipedia.org/wiki/Feature_creep</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt This not always a problem with the developer per se</td></tr>
+            <tr><td>[15:02] &lt ms-&gt yep</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt But with what he/she is asked to do</td></tr>
+            <tr><td>[15:03] &lt ms-&gt The worst example I've seen is in a wiki engine which shall remain nameless which has over 2000 regular expressions applied to every *file* used in a single page view for each pageview</td></tr>
+            <tr><td>[15:03] *** Chong- is looking at what's creeping featurism</td></tr>
+            <tr><td>[15:05] &lt vmlemon_&gt Ugh, sounds badly designed</td></tr>
+            <tr><td>[15:06] &lt ms-&gt vmlemon_: It wasn't that bad originally - it started off with a dozen or maybe 2 regexes applies in a relatively simple fashion</td></tr>
+            <tr><td>[15:06] &lt ms-&gt (which is a common way to implement a wiki)</td></tr>
+            <tr><td>[15:07] &lt ms-&gt It means that the syntax of many wikis is actually context sensitive and dependent on content</td></tr>
+            <tr><td>[15:07] &lt Chong-&gt Lawouach_: that's very interesting. too much is as bad as not enough.</td></tr>
+            <tr><td>[15:07] &lt ms-&gt which is nice because the same goes for human languages. But for machines it sucks</td></tr>
+            <tr><td>[15:08] &lt vmlemon_&gt I'm sure it gets worse when you add custom markup features</td></tr>
+            <tr><td>[15:09] *** Chong- thinking if he has made Feature creeping mistakes</td></tr>
+            <tr><td>[15:11] &lt ms-&gt Your code probably isn't big enough yet</td></tr>
+            <tr><td>[15:11] &lt Lawouach_&gt the problem is not so much about quantity as with the fact that you keep adding features regardless of the initial design</td></tr>
+            <tr><td>[15:11] &lt ms-&gt arguably a diff of 1.7M is perhaps a bit of a symptom</td></tr>
+            <tr><td>[15:11] &lt ms-&gt But probably not in K's case</td></tr>
+            <tr><td>[15:12] &lt ms-&gt Chong-: It was the sort of worry that j_baker_ had regarding the ServerCore code</td></tr>
+            <tr><td>[15:12] &lt vmlemon_&gt Hmm, how many lines are in Kamaelia?</td></tr>
+            <tr><td>[15:13] &lt ms-&gt 75285 on /trunk</td></tr>
+            <tr><td>[15:13] &lt ms-&gt (including Examples)</td></tr>
+            <tr><td>[15:13] &lt Chong-&gt ms-: Do ServerCore code have too much functions? :-)</td></tr>
+            <tr><td>[15:14] &lt ms-&gt 7137 on Axon</td></tr>
+            <tr><td>[15:14] &lt ms-&gt Chong-: maybe, maybe not. I don't think so.</td></tr>
+            <tr><td>[15:14] &lt ms-&gt I think it just the minimum necessary to make things work</td></tr>
+            <tr><td>[15:14] &lt ms-&gt SimpleServer didn't</td></tr>
+            <tr><td>[15:14] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[15:15] &lt ms-&gt For certain important classes of server</td></tr>
+            <tr><td>[15:15] &lt ms-&gt though SimpleServer was sufficient for many kinds of server</td></tr>
+            <tr><td>[15:15] &lt ms-&gt 7508 for Axon on my branch</td></tr>
+            <tr><td>[15:16] &lt ms-&gt 75980 for Kamaelia on my branch</td></tr>
+            <tr><td>[15:16] &lt ms-&gt Not really huge in the grand scheme of things</td></tr>
+            <tr><td>[15:16] &lt Chong-&gt That's a good design. For simple application, users can just use SimpleServer for simplicity. for more complex ones, use the other.</td></tr>
+            <tr><td>[15:17] &lt Chong-&gt That's a large number of codes.</td></tr>
+            <tr><td>[15:17] &lt Chong-&gt ms-: how long does it take you to do them?</td></tr>
+            <tr><td>[15:18] &lt ms-&gt I'd say relatively small by commercial standards myself. maybe large for python.</td></tr>
+            <tr><td>[15:18] &lt ms-&gt Chong-: How long is a piece of string?</td></tr>
+            <tr><td>[15:18] &lt ms-&gt I type fast, it helps</td></tr>
+            <tr><td>[15:18] &lt Chong-&gt yes. I can feel :-)</td></tr>
+            <tr><td>[15:19] &lt Chong-&gt ms-: have you used word complete editors?</td></tr>
+            <tr><td>[15:19] &lt ms-&gt I use command completion on the console. No point elsewhere really IMO</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt Some people swear by it, Ruby on Rails programmers seem to love TextMate (well the last time used RoR they did)</td></tr>
+            <tr><td>[15:21] &lt Chong-&gt I see. It may be because you type very fast :-)</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt seems to be more trouble than it's worth IMO</td></tr>
+            <tr><td>[15:21] &lt ms-&gt Davbo: But most people swear at Ruby on Rails programmers :-P</td></tr>
+            <tr><td>[15:21] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:22] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt touche</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[15:22] *** Davbo couldn't recall how to get the accent on the e for touche</td></tr>
+            <tr><td>[15:23] &lt Chong-&gt it does occupy a lot of system resource</td></tr>
+            <tr><td>[15:23] &lt ms-&gt touché ?</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt I used to remember a key-combo to do that quickly but I've forgotten it</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt oh well</td></tr>
+            <tr><td>[15:25] &lt ms-&gt &lt alt-gr&gt and ";" followed by "e"</td></tr>
+            <tr><td>[15:26] &lt Davbo&gt touché</td></tr>
+            <tr><td>[15:26] &lt Davbo&gt Thanks :-)</td></tr>
+            <tr><td>[15:26] &lt ms-&gt</td></tr>
+            <tr><td>[15:26] *** Davbo makes good use of his GSoC mentor</td></tr>
+            <tr><td>[15:26] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[15:26] &lt ms-&gt heh</td></tr>
+            <tr><td>[15:27] &lt ms-&gt I could be nasty and say it should be kamælia</td></tr>
+            <tr><td>[15:27] &lt ms-&gt technically probably should be</td></tr>
+            <tr><td>[15:28] &lt Davbo&gt Good job you're not pedantic isn't it</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt i'd have probably jumped ship long ago if when i typed "Kamaelia" you responded with "s/Kamaelia/﻿Kamælia" :P</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt Ah!</td></tr>
+            <tr><td>[15:31] *** Davbo realises why Kamealia bot isn't connecting</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt I was trying another server which required identd</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt Forgot about that</td></tr>
+            <tr><td>[15:34] *** ms- can't stand pedants really</td></tr>
+            <tr><td>[15:34] &lt ms-&gt a bit of pedantry is eneded when coding I know, but the spirit of pedantry is "it can't change"</td></tr>
+            <tr><td>[15:35] &lt Davbo&gt Pedantry isn't very Pythonic (from my limited experience with Python) that's how it feels IMO</td></tr>
+            <tr><td>[15:42] &lt ms-&gt I'm not sure on that actually</td></tr>
+            <tr><td>[15:42] &lt ms-&gt "import this"</td></tr>
+            <tr><td>[15:42] &lt ms-&gt sometimes encourages it</td></tr>
+            <tr><td>[15:43] &lt ms-&gt "There should be one-- and preferably only one --obvious way to do it."</td></tr>
+            <tr><td>[15:43] &lt ms-&gt which often gets rephrases as "There should be one way to do it"</td></tr>
+            <tr><td>[15:43] &lt ms-&gt which I feel is wrong.</td></tr>
+            <tr><td>[15:43] &lt ms-&gt One obvious way is good</td></tr>
+            <tr><td>[15:44] &lt ms-&gt only one way is bad</td></tr>
+            <tr><td>[15:44] &lt ms-&gt perl by comparison has the axiom "there's more than one way to do it"</td></tr>
+            <tr><td>[15:44] &lt ms-&gt Though intriguingly their personas swap when it comes to packaging</td></tr>
+            <tr><td>[15:44] &lt ms-&gt with perl there is only one obvious way to do it</td></tr>
+            <tr><td>[15:44] &lt ms-&gt Makefile.PL and CPAN compatible</td></tr>
+            <tr><td>[15:45] &lt ms-&gt with python the ethos "there's more than one way to do it" tends to rule</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt heh, yeah</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt I meant purely in that Python is much more dynamic from my previous programming experience</td></tr>
+            <tr><td>[15:45] &lt ms-&gt Ahh, yes</td></tr>
+            <tr><td>[15:45] &lt ms-&gt As a language, unlike (say C/Java)</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt Pedantry perhaps not the best way to describe that when it comes to programming though, everything is pedantic :-)</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt With Java it's a clear war against the Compiler though hehe</td></tr>
+            <tr><td>[15:47] &lt ms-&gt If it was just the compiler that'd be OK</td></tr>
+            <tr><td>[15:47] &lt ms-&gt but in practice in *its * wars, it has *friends*</td></tr>
+            <tr><td>[15:54] &lt Davbo&gt Finally feeling better now, had horrible tooth ache all day. I think one of my wisdom teeth must be attacking me or something.</td></tr>
+            <tr><td>[15:55] &lt ms-&gt well, beat it back!</td></tr>
+            <tr><td>[15:56] &lt ms-&gt just get the baseball bat out...</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt Paracetamol and a can of Stella (the only thing in the fridge and it's stupidly hot here) seems to have done it :-/</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt All the wrong reasons to drink alcohol</td></tr>
+            <tr><td>[15:58] &lt Davbo&gt It goes out of date next month and I'm from Yorkshire therefore cannot throw away anything *especially* Beer.</td></tr>
+            <tr><td>[16:03] &lt ms-&gt heh</td></tr>
+            <tr><td>[16:03] &lt ms-&gt ok, back later</td></tr>
+            <tr><td>[16:03] &lt ms-&gt cya</td></tr>
+            <tr><td>[16:03] *** ms- has parted #kamaelia</td></tr>
+            <tr><td>[16:13] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:31] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:31] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:53] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:19] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:19] &lt MS-&gt back</td></tr>
+            <tr><td>[17:50] &lt orphans&gt MS-, how closely do you want the UDP components api to stick to the original ones?</td></tr>
+            <tr><td>[17:51] &lt j_baker_&gt MS-: fyi I should have the wsgiref issue fixed.</td></tr>
+            <tr><td>[17:52] &lt MS-&gt orphans: The API doesn't *need* to change, so it shouldn't</td></tr>
+            <tr><td>[17:52] &lt MS-&gt a *new* component can do something new</td></tr>
+            <tr><td>[17:53] &lt MS-&gt j_baker_: cool</td></tr>
+            <tr><td>[17:55] &lt orphans&gt ok, cool. I just cringe every time I see localaddr vs receiver_addr</td></tr>
+            <tr><td>[17:55] &lt orphans&gt I'm sure I'm towards the pedantic end of pythoners :)</td></tr>
+            <tr><td>[18:00] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:00] &lt MS-&gt I can't spell receiver consistently correctly</td></tr>
+            <tr><td>[18:01] *** MS- wonders if that's right now</td></tr>
+            <tr><td>[18:01] &lt j_baker_&gt Does anyone already have a py2exe toolchain set up atm?</td></tr>
+            <tr><td>[18:01] &lt MS-&gt I don't even have the platform :)</td></tr>
+            <tr><td>[18:02] &lt j_baker_&gt I just realized I don't either. I removed my winxp install from my mac book.</td></tr>
+            <tr><td>[18:02] &lt MS-&gt Ah</td></tr>
+            <tr><td>[18:02] &lt MS-&gt :)</td></tr>
+            <tr><td>[18:02] &lt j_baker_&gt It's a great thing when I can go without windows for so long without even realizing or needing it.</td></tr>
+            <tr><td>[18:02] &lt orphans&gt j_baker_, I do</td></tr>
+            <tr><td>[18:04] &lt j_baker_&gt Where is it at? I may end up basing something off of it since I'm probably going to have to spend some time getting Windows up and running.</td></tr>
+            <tr><td>[18:05] &lt orphans&gt just on the windows side of my box</td></tr>
+            <tr><td>[18:06] &lt j_baker_&gt I mean in the repository :)</td></tr>
+            <tr><td>[18:06] &lt orphans&gt ahh, no, sorry :)</td></tr>
+            <tr><td>[18:07] &lt orphans&gt fwiw py2exe is pretty simple - it sorts out all the deps automagically, so you just tell it where the script to exe-ise is and it does the rest for you</td></tr>
+            <tr><td>[18:08] &lt MS-&gt checking it in allows automation ...</td></tr>
+            <tr><td>[18:08] &lt MS-&gt I suppose localaddr vs receiver_addr is slightly odd</td></tr>
+            <tr><td>[18:11] &lt orphans&gt mm, quite a lot of different naming all over the shop on them - I guess the more the merrier :)</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt orphans: ping</td></tr>
+            <tr><td>[18:11] &lt orphans&gt Lawouach, pong</td></tr>
+            <tr><td>[18:11] &lt orphans&gt 0-0?</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt boring game</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt Romani is not a nice team</td></tr>
+            <tr><td>[18:12] &lt orphans&gt mm, not a very good result</td></tr>
+            <tr><td>[18:12] &lt j_baker_&gt orphans, I can get py2exe to work if it's like py2app, so don't worry about it too much if it's not already in the repository (at least not for my sake anyway)</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt orphans: nope</td></tr>
+            <tr><td>[18:12] &lt orphans&gt j_baker_, ok, cool. If you need anything just ping us and I can give it a go</td></tr>
+            <tr><td>[18:14] &lt orphans&gt Lawouach, ok, so are you cool for the meeting now?</td></tr>
+            <tr><td>[18:14] &lt orphans&gt not too depressed about the game :)</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt nah :)</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt yeah go ahead</td></tr>
+            <tr><td>[18:15] &lt orphans&gt ok, cool</td></tr>
+            <tr><td>[18:16] *** j_baker_ is now known as j_baker</td></tr>
+            <tr><td>[18:16] &lt orphans&gt so from last week - XYPads talk to each other nicely, and I'm almost there with the rewritten UDP components (just need docs copying over and fully testing)</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt when you say they talk to each other</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt does it mean they speak Osc?</td></tr>
+            <tr><td>[18:19] *** MS- will review the UDP components when they're ready</td></tr>
+            <tr><td>[18:19] *** MS- goes quiet</td></tr>
+            <tr><td>[18:19] &lt orphans&gt yeah, both locally (for music) and between the two of them (for communication)</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt so they speak via a server or directly?</td></tr>
+            <tr><td>[18:20] &lt orphans&gt via a server</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt okay cool</td></tr>
+            <tr><td>[18:21] &lt Lawouach&gt what does it mean in regards to your schedule as described here: http://edit.kamaelia.org/Developers/Projects/KamaeliaJam</td></tr>
+            <tr><td>[18:22] &lt orphans&gt I'm winning (kinda) - I'm pretty much at the point I put down to be at by the 22nd June</td></tr>
+            <tr><td>[18:22] &lt orphans&gt but that's with a fair bit of docs to write etc, testing to do, so that's a bit unrealistic</td></tr>
+            <tr><td>[18:22] &lt orphans&gt still, I think a decent amount ahead of schedule :)</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt I would appreciate that you first revise your schedule accordingly then</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt For tomorrow so that I can review it</td></tr>
+            <tr><td>[18:23] &lt orphans&gt ok, cool. I will do</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt When I mean tomorrow I don't mean by 8am :)</td></tr>
+            <tr><td>[18:24] &lt orphans&gt yup</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt I had a question regarding all this :)</td></tr>
+            <tr><td>[18:25] &lt orphans&gt yup</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt Currently the sound you produce are fairly random and noisy, is there a plan for something nicer to hear? :)</td></tr>
+            <tr><td>[18:26] &lt orphans&gt yeah - it'll come kinda later on though</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:26] &lt orphans&gt when the step sequencer and piano roll are done it'll make sound a lot closer to real music</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt that's fair</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt was just curious :)</td></tr>
+            <tr><td>[18:27] &lt orphans&gt it's a fair question :)</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt okay, so in a nutshell what do you plan on doing this week?</td></tr>
+            <tr><td>[18:27] &lt orphans&gt I want to spend a day or so getting everything in order - docs, tests etc</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[18:28] &lt orphans&gt then look into packaging a bit more thoroughly - try and get a linux, win, mac (possibly) package together so I know I can do it when I need to</td></tr>
+            <tr><td>[18:29] &lt orphans&gt I'm not so sure how long that'll take, but with a fair wind I might make it to starting to write the code so I can have more than two clients at the same time</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt I would suggest chatting with Jason for that</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt That'd be interesting</td></tr>
+            <tr><td>[18:31] &lt orphans&gt yeah, I was going to have a look through his code and break my svn possibly :)</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt sounds good</td></tr>
+            <tr><td>[18:32] &lt orphans&gt cool</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt well I don't think there is much to ask this week. You are doing well so that's fine by me.</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt Again</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt I would appreciate a mid(ish)-week report if you can</td></tr>
+            <tr><td>[18:32] &lt orphans&gt yeah, sure</td></tr>
+            <tr><td>[18:33] &lt orphans&gt I'll try and get it done a bit before Friday this time, but no promises :)</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt that'd be appreciated</td></tr>
+            <tr><td>[18:34] &lt orphans&gt I had a quick question if you've got time?</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt this is your time :)</td></tr>
+            <tr><td>[18:34] &lt orphans&gt I don't suppose you could give me a bit of an idea where to start looking at the many-client thing</td></tr>
+            <tr><td>[18:35] &lt orphans&gt two seems pretty easy and logical to me, but I'm a bit adrift with what I need for more than that</td></tr>
+            <tr><td>[18:35] &lt orphans&gt could just do with something to read through, or code to look at for a bit more understanding</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt on what level?</td></tr>
+            <tr><td>[18:36] &lt orphans&gt fairly broad - I don't see very clearly the link between having two peers and having, say, seven</td></tr>
+            <tr><td>[18:36] &lt orphans&gt two peers is a graphline, but seven is some hideous mess in my mind :)</td></tr>
+            <tr><td>[18:37] &lt orphans&gt I maybe need to do a bit more reading to ask my question a bit better :)</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt Well I must admit I'm not entirely sure what you mean.</td></tr>
+            <tr><td>[18:38] &lt orphans&gt ok, don't worry about it - I know there's a couple of places in Kamaelia where it does it, so I'll have a look and come back if I'm still lost</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt orphans: if you don't mind, which bit of code is causing the trouble in that context?</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt I'm curious</td></tr>
+            <tr><td>[18:42] &lt orphans&gt I've not tried it out at all, but for example if you look at Jam at the moment it makes an XY pad for each user then connects that up manually to the client/server bit</td></tr>
+            <tr><td>[18:42] &lt orphans&gt I guess what I was wondering was how you make that process of creating, connecting, sending the current state work for an arbitrary number of users</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt you should create them lazily</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt the Carousel component is a good example of what I mean</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt actually even the SimpleServer component is a good idea</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt based on certain condition (say a new connection is accepted by the server) it calls the factory function provided</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt that function returns a new component</td></tr>
+            <tr><td>[18:45] &lt orphans&gt where's simpleserver?</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Not knowing the Osc protocol enough I don't know if you can retrieve the available peers from the Osc server</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt But I assume that be the idea</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt oh</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt http://trac.defuze.org/browser/oss/bucker/scripts/queue-server.py#L86</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt example of what I mean</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt http://kamaelia.sourceforge.net/Cookbook/Carousels</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt But before deciding the component to choose what I'd like to understand is</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt Are users supposed to define where to connect to? I mean in terms of Osc</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt Your current code hardcode /XY/1 and /XY/2</td></tr>
+            <tr><td>[18:51] &lt orphans&gt yeah, that should be hardcoded (ish - so it'd probably be /XY/1 /XY/2 ... /XY/N-1 /XY/N), and then you provide a doc describing what is available</td></tr>
+            <tr><td>[18:51] &lt orphans&gt I think you can also query the server as to what is available - gotta check that out</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt Well probably you could query the server and provide a combo box or a tree allowing the user to select dynamically where to connect</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt But does that help you? I'm not sure :)</td></tr>
+            <tr><td>[18:54] &lt orphans&gt you still need the ip of the other peers - it doesn't provide that for you</td></tr>
+            <tr><td>[18:54] &lt orphans&gt but I think that's an issue for when I understand a bit more</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt I don't understand why</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt I thought you were conversing with a server</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt Is there direct peer-2-peer connection?</td></tr>
+            <tr><td>[18:55] &lt orphans&gt yeah, but there's no centeral server - it's distributed</td></tr>
+            <tr><td>[18:55] &lt orphans&gt yeah - direct peer to peer</td></tr>
+            <tr><td>[18:55] &lt orphans&gt ahh, I think maybe I confused what you meant earlier</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt ah okay</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt I had missed</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt that point</td></tr>
+            <tr><td>[18:56] &lt orphans&gt i.e. you can connect up the XYPads directly in a graphline or something</td></tr>
+            <tr><td>[18:57] &lt orphans&gt but yeah, somewhere (possibly everywhere) there's going to have to be a list of which peers are in a certain network, and their locations</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt well think of it like any video games where a local machine is both a server and a client</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt the server part must track which clients it is connected to</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt this means you're going to have a to write some logic to</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt 1. track connected peers to the server</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt 2. dispatch the Osc messages based on the pads each peers has shown an interest</td></tr>
+            <tr><td>[18:59] *** MS- needs to go afk </td></tr>
+            <tr><td>[19:00] &lt MS-&gt j_baker: I'll be back later (sorry for short notice)</td></tr>
+            <tr><td>[19:00] &lt j_baker&gt np</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt orphans: or you might decide to consider you only write clients. Meaning you let a third party application to handle the server part</td></tr>
+            <tr><td>[19:00] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt And your peers connect to that 3rd party application</td></tr>
+            <tr><td>[19:00] &lt orphans&gt mhm</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt Damn I need to read more of Osc</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt This is confusing</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt I would indeed appreciate more docs</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt and diagrams :)</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt That will help us to communicate clearly</td></tr>
+            <tr><td>[19:01] &lt orphans&gt yeah - I put one in for Jam, but I'll try and clear it all up a bit</td></tr>
+            <tr><td>[19:01] &lt orphans&gt top of my todo list :)</td></tr>
+            <tr><td>[19:03] &lt orphans&gt from what you said above I'd probably prefer the distributed way rather than relying on a single server</td></tr>
+            <tr><td>[19:03] &lt orphans&gt think it's probably a bit simpler from a user's pov then, and you don't need to rely on anything other than yourself</td></tr>
+            <tr><td>[19:03] &lt orphans&gt but then it does pose the problem of how you find the first client to connect to</td></tr>
+            <tr><td>[19:04] &lt orphans&gt s/client/peer</td></tr>
+            <tr><td>[19:04] &lt Lawouach&gt Well you would need to specify its address no matter what</td></tr>
+            <tr><td>[19:04] &lt Lawouach&gt There is no auto discovery mechanism yet AFAIK</td></tr>
+            <tr><td>[19:04] &lt Lawouach&gt So let's just assume you know at least the initial address</td></tr>
+            <tr><td>[19:05] &lt orphans&gt yeah, but the server would be a fixed address I suppose. Anyway, yeah</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt It would be interesting that once connected the other peer informs the peer of other connected peers</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt So let's say we have A which is both a peer and a server in itself</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt B -&gt A</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt C -&gt A</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt A tells B and C of the other one</td></tr>
+            <tr><td>[19:06] &lt orphans&gt yeah</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt B and C might want to connect to each other as well</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt say:</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt B -&gt C</td></tr>
+            <tr><td>[19:06] &lt orphans&gt yup</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt C would start acting like a server too</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt then eventually you build a network of peers that can act as server if requested</td></tr>
+            <tr><td>[19:07] &lt orphans&gt yeah</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt of course you would need to provide an option to Jam so that a user could disable the server capabilities if he wants too</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt so B -&gt C</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt C rejects the request</td></tr>
+            <tr><td>[19:08] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[19:08] &lt Lawouach&gt alright, from a GUI perspective you could imagine that each peer offers the list of potential other peers in a combo box</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt the user would select one and click "Connect"</td></tr>
+            <tr><td>[19:09] &lt orphans&gt yeah</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt you need to keep a clean seperation between the peer and server sides of course</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[19:09] &lt orphans&gt yeah - the new UDP components let you do that easily</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt well have understood each other better? :)</td></tr>
+            <tr><td>[19:10] &lt orphans&gt a lot better :)</td></tr>
+            <tr><td>[19:10] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt so how does it fit your schedule?</td></tr>
+            <tr><td>[19:11] &lt orphans&gt erm, hard to say</td></tr>
+            <tr><td>[19:11] &lt orphans&gt how long do you think something like that would take at a guess?</td></tr>
+            <tr><td>[19:12] &lt orphans&gt I've never done anything like it so I'm a bit in the dark</td></tr>
+            <tr><td>[19:13] &lt Lawouach&gt A first draft of functionnality would take only a couple of days because you basically have the code there already</td></tr>
+            <tr><td>[19:13] &lt Lawouach&gt But making it more useful will be gradual and will take some time</td></tr>
+            <tr><td>[19:14] &lt Lawouach&gt I suggest you basically start by making sure you can start Jam and let it act as a server and a peer itself</td></tr>
+            <tr><td>[19:14] &lt Lawouach&gt Take three peers overall</td></tr>
+            <tr><td>[19:14] &lt Lawouach&gt and ensure two of them can connect the third</td></tr>
+            <tr><td>[19:14] &lt Lawouach&gt then make sure that third informs the other two of each other</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt just sending their address as text would be enough for now</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt Then you'd have the basic of the P2P network</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt Italians are getting killed :)</td></tr>
+            <tr><td>[19:15] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:16] &lt orphans&gt ok, yeah - that sounds like what I was going to go for</td></tr>
+            <tr><td>[19:16] &lt Lawouach&gt good</td></tr>
+            <tr><td>[19:16] &lt Lawouach&gt so that should take you two to three days max.</td></tr>
+            <tr><td>[19:16] &lt Lawouach&gt (and make sure you ask questions ;)</td></tr>
+            <tr><td>[19:17] &lt orphans&gt ok, cool. In the schedule I've given a week and a bit to get it all good and working well enough to distribute, so it sounds feasible</td></tr>
+            <tr><td>[19:17] &lt Lawouach&gt currently there is no UDPServer I think in Kamaelia</td></tr>
+            <tr><td>[19:18] &lt orphans&gt yeah, I'll need to add it in. I think it should be relatively easy to do</td></tr>
+            <tr><td>[19:18] &lt orphans&gt I'm slowly getting my head round this whole networking malarkey :)</td></tr>
+            <tr><td>[19:19] &lt Lawouach&gt http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html &lt -- that component would be a good base to look at</td></tr>
+            <tr><td>[19:20] &lt orphans&gt ahh, yeah - that looks cool</td></tr>
+            <tr><td>[19:21] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[19:21] &lt Lawouach&gt My UDP knowledge is so rusty</td></tr>
+            <tr><td>[19:21] &lt Lawouach&gt Do you actually need to listen for incoming sockets like you'd do with TCP?</td></tr>
+            <tr><td>[19:21] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:22] &lt orphans&gt not exactly - you bind to a port, but incoming clients don't actually connect</td></tr>
+            <tr><td>[19:22] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[19:22] &lt Lawouach&gt so you don't need to write a component like above</td></tr>
+            <tr><td>[19:22] &lt orphans&gt they just send the data and the ip it comes from</td></tr>
+            <tr><td>[19:23] &lt Lawouach&gt http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html#222</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt Even though I don't think you need anything as extensive as the ConnectedServer component</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt This example is roughly what I would expect your UDPReceive to eventually be like</td></tr>
+            <tr><td>[19:24] &lt Lawouach&gt the "protocol = newProtocol" bit is what interests me</td></tr>
+            <tr><td>[19:25] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[19:25] &lt Lawouach&gt well it's simpler than it looks</td></tr>
+            <tr><td>[19:25] &lt Lawouach&gt in your UDPReceiver</td></tr>
+            <tr><td>[19:25] &lt Lawouach&gt where you read data</td></tr>
+            <tr><td>[19:25] &lt orphans&gt that's good :)</td></tr>
+            <tr><td>[19:25] &lt Lawouach&gt you could have somethinge like:</td></tr>
+            <tr><td>[19:27] &lt Lawouach&gt scratch that</td></tr>
+            <tr><td>[19:27] &lt Lawouach&gt I'm trying to get my head around the design you might want to follow</td></tr>
+            <tr><td>[19:27] &lt Lawouach&gt ah good</td></tr>
+            <tr><td>[19:28] &lt Lawouach&gt got it</td></tr>
+            <tr><td>[19:28] &lt Lawouach&gt in your saveRecv(...)</td></tr>
+            <tr><td>[19:28] &lt Lawouach&gt you get the data and the peer address</td></tr>
+            <tr><td>[19:28] &lt orphans&gt yeah</td></tr>
+            <tr><td>[19:28] &lt Lawouach&gt so I would have something like this</td></tr>
+            <tr><td>[19:28] &lt Lawouach&gt self.peersMapping = {}</td></tr>
+            <tr><td>[19:28] &lt Lawouach&gt if address not in self.peersMapping:</td></tr>
+            <tr><td>[19:29] &lt Lawouach&gt  self.peersMapping[address] = makeProtocol(address)</td></tr>
+            <tr><td>[19:29] &lt Lawouach&gt else:</td></tr>
+            <tr><td>[19:29] &lt Lawouach&gt  self.send(data, 'outbox_%s' % address)</td></tr>
+            <tr><td>[19:29] &lt Lawouach&gt the point here:</td></tr>
+            <tr><td>[19:30] &lt Lawouach&gt You create specialized components the first time you receive data from a peer you don't know about</td></tr>
+            <tr><td>[19:30] &lt Lawouach&gt the makeProtocol could be a function that returns you a component or directly a component instance created</td></tr>
+            <tr><td>[19:30] &lt Lawouach&gt the former might allow for more dynamic behavior</td></tr>
+            <tr><td>[19:31] &lt Lawouach&gt in the first if</td></tr>
+            <tr><td>[19:31] &lt Lawouach&gt you'd have :</td></tr>
+            <tr><td>[19:31] &lt Lawouach&gt  if address not in self.peersMapping:</td></tr>
+            <tr><td>[19:31] &lt Lawouach&gt  self.peersMapping[address] = MakePeerComponentToHandlePeerData(address)</td></tr>
+            <tr><td>[19:32] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[19:32] &lt Lawouach&gt  self.link((self, 'outbox_%s' address), ( self.peersMapping[address], 'inbox)</td></tr>
+            <tr><td>[19:32] &lt Lawouach&gt Do you see what I'm getting at?</td></tr>
+            <tr><td>[19:33] &lt orphans&gt yeah, and then you'd send messages to all (or a subsection of) outboxes</td></tr>
+            <tr><td>[19:33] &lt Lawouach&gt Basically create a component to deal with the data each time a new peer announces itself</td></tr>
+            <tr><td>[19:33] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[19:33] &lt Lawouach&gt Here you might want to dynamlically create boxes</td></tr>
+            <tr><td>[19:33] &lt Lawouach&gt This is not well known but there is a very handy component to do that in Axon</td></tr>
+            <tr><td>[19:33] &lt orphans&gt yeah</td></tr>
+            <tr><td>[19:34] &lt orphans&gt adaptiveCommsComponent?</td></tr>
+            <tr><td>[19:34] &lt Lawouach&gt Instead of inheriting from component, you inherit from AdaptiveCommsComponent</td></tr>
+            <tr><td>[19:34] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[19:34] &lt Lawouach&gt exactly</td></tr>
+            <tr><td>[19:34] &lt orphans&gt :)</td></tr>
+            <tr><td>[19:34] &lt Lawouach&gt so you'd have to create dynamically those boxes before creating the linkage</td></tr>
+            <tr><td>[19:35] &lt Lawouach&gt That's how you could support multiple peers :)</td></tr>
+            <tr><td>[19:35] &lt orphans&gt awesome :)</td></tr>
+            <tr><td>[19:35] &lt orphans&gt that's all an awful lot clearer in my mind now, cheers</td></tr>
+            <tr><td>[19:36] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[19:36] &lt Lawouach&gt that's clearer in mine too :)</td></tr>
+            <tr><td>[19:36] &lt orphans&gt heh, good</td></tr>
+            <tr><td>[19:36] &lt orphans&gt I'll be testing you next week :D</td></tr>
+            <tr><td>[19:37] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:37] &lt Lawouach&gt heh!</td></tr>
+            <tr><td>[19:37] &lt orphans&gt right, I think that's your lot from me this week - I'll let you go and drown your sorrows</td></tr>
+            <tr><td>[19:38] &lt Lawouach&gt bah :)</td></tr>
+            <tr><td>[19:38] &lt orphans&gt cheers for all the help</td></tr>
+            <tr><td>[19:38] &lt Lawouach&gt That was an interesting session for me and it shows you again than you need to attack a problem in different angles but step by step.</td></tr>
+            <tr><td>[19:38] &lt orphans&gt yeah, I'm a lot further on now than what I was beforehand</td></tr>
+            <tr><td>[19:39] &lt Lawouach&gt And asking someone out of the project is always a good way of getting a new point of view</td></tr>
+            <tr><td>[19:39] &lt Lawouach&gt Anyway that was interesting for me :)</td></tr>
+            <tr><td>[19:39] &lt orphans&gt glad to hear it :)</td></tr>
+            <tr><td>[19:40] *** orphans goes to eat curry which my housemate has prepared for me</td></tr>
+            <tr><td>[19:40] *** orphans switches from the third to the first person</td></tr>
+            <tr><td>[19:41] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:06] &lt Lawouach&gt orphans: http://www.transmote.com/flosc/ knew about this?</td></tr>
+            <tr><td>[20:14] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[22:13] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:33] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:35] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[22:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:01] *** vmlemon_ has joined #kamaelia</td></tr>

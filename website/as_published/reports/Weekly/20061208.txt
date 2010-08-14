@@ -1,0 +1,115 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20061208 ======
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 Open floor
+5. Date/Time of next weekly meeting
+Thursday 14th December 2006, 11am GMT 
+ 
+2. Participants
+ 
+Participants: Michael, Matt
+Present: G0SUB, Lawouach, tav_
+ 
+3. Activity Reports
+ 
+Matt: (covers 2 weeks)
+ 
+    DONE
+    * bimonthly meetup
+    * Documented core and support components for Mobile
+        Reframer, RTP Remultiplexing
+    * generated PTPs for: DVB Tools, Multicast RTP MPEG TS
+        remultiplexer, and Mobile Reframer
+    * Made experimental mixin wrapping all size limited inbox
+        helper methods developed for components in Mobile reframer
+    * Setup faster Mac Mini for RTP work
+    * (Probably) fixed long standing bug (6 months) in software
+        MPEG TS demultiplexer (needed for RTP)
+ 
+    BLOCKED
+    * Leave (Thu->Sun)
+    * Delayed response from BB wrt. RTP hardware
+    * Broke, then had to fix, svn repository working copies (doh!)
+ 
+    TODO
+    * Implement first cut RTP remultiplexer (simple extension of existing 
+work)
+    * Investigate mpeg transport stream remultiplexing issue
+    * Sort selector shutdown in mobile reframer / UnixProcess
+    * Sort shutdown of Backplane to similar model as Selector
+    * Finish simple SDP parser for RTP remultiplexer
+ 
+Michael:
+ 
+    DONE:
+    * Rolled out improved recent changes
+    * finished PTP for Whiteboard
+    * Created internal PTP for Kamaelia Options for the World Service
+    * Synced kamaelia.sf.net with latest cerenity CVS version
+    * Investigated (and fixed) why dojo wasn't working with Mac
+        OS X and headings/preformatted correctly. (bug in 0.4.0
+        release fixed since)
+ 
+    BLOCKED:
+    * Travelling to BBC for meeting
+    * Catching up due to being out of the office for meetings.
+    * Work on TV in the nations and regions 2007 conference.
+    * Will be blocked for a couple of days coming week as well.
+ 
+    TODO:
+    * Add in auth framework
+    * Create Project Task Pages for:
+        * Compose
+        * Whiteboard - Headless server
+        * Whiteboard - Improve audio quality
+        * Database component ideas
+        * TCP components
+        * Include correct shutdown in TCP Client
+        * Bit Torrent
+        * Tools for completely self contained diagnostic of bit torrent
+ 
+Michael question stability of Mobile Reframer/RTP remultiplexing
+component. Discussion noted that the RTP components are under
+active development in their first use case. Some known issues
+discussed in the logs.
+ 
+http://koala.ilog.fr/twikiirc/bin/irclogger_log/kamaelia?date=2006-12-08,Fri&sel=58#l54
+ 
+Matt queried plans for improving whiteboard audio. Michael noted
+its about increasing the sample rate, filtering and then downsampling
+before encoding to see if that improves the audio. Matt warned that
+there'd probably be knockons.
+ 
+Michael also noted the amount he's been blocked in the past week.
+ 
+4. Discussion items (max 3 or 4)
+ 
+4.1 Open floor
+ 
+General discussion on some random items. Michael noted that it would 
+be nice to do something similar to www.perladvent.org, but being
+swamped this year prevented it. Issues with dojo (now resolved) didn't
+help.
+ 
+Michael noted that he's going to have to turn the website into a less
+ephemeral document at some point soon for internal purposes. This will
+also probably be done externally first. Biggest concern is keeping
+that sort of document uptodate, so automating ODF production might 
+get looked at.
+ 
+Matt raised issue of case insensitive filesystems - basically they
+exist, and whilst they're not the primary dev platform we should
+be aware this and work around.
+ 
+Currently the only problem file is passThough.py/PassThrough.py.
+Decision taken for Matt to simply delete passThough.py.
+ 
+5. Date/Time of next weekly meeting
+ 
+Thursday 14th December 2006, 11am GMT 
+ 
+Agreed.
+ 
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20061208 ======

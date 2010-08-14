@@ -1,0 +1,130 @@
+*.boxnew    {
+        overflow: hidden;
+        font-size: 10pt;
+        width: 7em;
+        height: 10em;
+        float: left;
+        background: #ffff88;
+        margin-left: 1em;
+        margin-top: 1em;
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+        padding-top: 0.7em;
+}
+
+*.boxblue    {
+        overflow: hidden;
+        font-size: 10pt;
+        width: 7em;
+        height: 10em;
+        float: left;
+        background: #eeeeff;
+        margin-left: 1em;
+        margin-top: 1em;
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+        padding-top: 0.7em;
+}
+
+*.boxred    {
+        overflow: hidden;
+        font-size: 10pt;
+        width: 7em;
+        height: 10em;
+        float: left;
+        background: #ffeeee;
+        margin-left: 1em;
+        margin-top: 1em;
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+        padding-top: 0.7em;
+}
+
+*.boxgreen    {
+        overflow: hidden;
+        font-size: 10pt;
+        width: 7em;
+        height: 10em;
+        float: left;
+        background: #eeffee;
+        margin-left: 1em;
+        margin-top: 1em;
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+        padding-top: 0.7em;
+}
+
+*.boxyellow    {
+        overflow: hidden;
+        font-size: 10pt;
+        width: 7em;
+        height: 10em;
+        float: left;
+        background: #ffffdd;
+        margin-left: 1em;
+        margin-top: 1em;
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+        padding-top: 0.7em;
+}
+
+*.boxpurple    {
+        overflow: hidden;
+        font-size: 10pt;
+        width: 7em;
+        height: 10em;
+        float: left;
+        background: #ffddff;
+        margin-left: 1em;
+        margin-top: 1em;
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+        padding-top: 0.7em;
+}
+
+*.boxcyan   {
+        overflow: hidden;
+        font-size: 10pt;
+        width: 7em;
+        height: 10em;
+        float: left;
+        background: #ddffff;
+        margin-left: 1em;
+        margin-top: 1em;
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+        padding-top: 0.7em;
+}
+
+*.boxview    {
+        overflow: auto;
+        font-size: 10pt;
+        width: 25.8em; 
+        height: 21.7em;
+        float: left;
+        background: #ffffdd;
+        margin-left: 1em;
+        margin-top: 1em;
+        padding-left: 0.7em;
+        padding-right: 0.7em;
+        padding-top: 0.7em;
+}
+
+.D11 {
+   POSITION:absolute;
+   width: 30em;
+#   VISIBILITY:hidden;
+   Z-INDEX:200;
+   border-width: 1;
+}
+
+a {
+        text-decoration: none;
+        font-weight: 100;
+        font-size: 1.1em;
+}
+
+.postedby {
+        font-size: 0.8em;
+        vertical-align: bottom;
+}

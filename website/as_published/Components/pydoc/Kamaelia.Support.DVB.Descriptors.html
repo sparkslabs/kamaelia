@@ -1,0 +1,462 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Support.DVB.Descriptors </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Support.DVB.Descriptors</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Support.html">Support</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Support.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Support.DVB.Descriptors.html">Descriptors</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#24">Support functions for parsing DVB data structures</a><ul>
+<li><a class="reference" href="#25">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#26">Parsing Descriptors</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#27">How does it Work?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#28">References</a><ul>
+<li><a class="reference" href="#29">Mappings, Tables, Values</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#30">Service types</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#31">Stream Component Mappings</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#32">Private Data Specifiers</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#33">Content Types</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="24">Support functions for parsing DVB data structures</h1>
+<p>A collection of functions for parsing 'descriptor' elements of information
+tables in DVB data streams. Descriptors contain data such as channel names,
+tuning information for other multiplexes, and information about the audio/video
+streams making up a channel.</p>
+<div class="section">
+<h2 id="25"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>A simple loop to parse a set of descriptors stored consecutively in a string:</p>
+<pre class="literal-block">
+i=0
+while i &lt; len(setOfDescriptors):
+    parsed, i = parseDescriptor(i, setOfDescriptors)
+    (tag, data) = parsed
+    print &quot;Descriptor found with tag&quot;,tag
+    for (key,value) in data.items():
+        print key, &quot;=&quot;, value
+</pre>
+</div>
+<div class="section">
+<h2 id="26"><a id="parsing-descriptors" name="parsing-descriptors">Parsing Descriptors</a></h2>
+<p>Call the parseDescriptor() function, passing it the string containing the
+descriptor and the index of the beginning of the descriptor within the string.</p>
+<p>parseDescriptor() will return the parsed descriptor:</p>
+<pre class="literal-block">
+(tag, data)
+    - tag = the ID of this descriptor type
+    - data = dictionary containing the parsed descriptor data:
+        { type : WhatKindOfDescriptor,
+          key  : value,
+          key2 : value2,
+          ...
+        }
+</pre>
+<p>All parsed descriptor data will contain the 'type' key. The remaining key,value
+pairs are specific to the type of descriptor.</p>
+<p>parseDescriptor() uses helper functions to parse each particular descriptor. See
+their documentation to see what descriptors are currently supported and what
+data to expect in the dictionary.</p>
+</div>
+<div class="section">
+<h2 id="27"><a id="how-does-it-work" name="how-does-it-work">How does it Work?</a></h2>
+<p>parseDescriptor() uses helper functions to parse each particular descriptor.
+parseDescriptor() extracts the 'tag' defining the descriptor type, and the
+length of the descriptor. A mapping table maps from tags to parser functions.</p>
+<dl class="docutils">
+<dt>Each parser function is of the form::</dt>
+<dd>parse(data,i,length,end) -&gt; dict(parsed descriptor elements)</dd>
+</dl>
+<p>'data' is a string containing the descriptor. 'i' is the index into the string
+of the start of the descriptor. 'length' is the length of the descriptor payload
+and end' is the index of the first point after the descriptor.</p>
+</div>
+<div class="section">
+<h2 id="28"><a id="references" name="references">References</a></h2>
+<p>For the full description of the descriptors available see the following MPEG and
+DVB standards documents:</p>
+<ul class="simple">
+<li>ISO/IEC 13818-1 (aka &quot;MPEG: Systems&quot;)
+&quot;GENERIC CODING OF MOVING PICTURES AND ASSOCIATED AUDIO: SYSTEMS&quot;
+ISO / Motion Picture Experts Grou7p</li>
+<li>ETSI EN 300 468
+&quot;Digital Video Broadcasting (DVB); Specification for Service Information (SI)
+in DVB systems&quot;
+ETSI / EBU (DVB group)</li>
+<li>&quot;Digital Terrestrial Television: Requirements for Interoperability&quot; Issue 4.0+
+(aka &quot;The D book&quot;)
+UK Digital Television Group</li>
+<li>ETSI TS 102 323
+Technical Specification: &quot;Digital Video Broadcasting (DVB); Carriage and
+signalling of TV-Anytime information in DVB transport streams&quot;
+ETSI / EBU (DVB group)</li>
+</ul>
+<div class="section">
+<h3 id="29"><a id="mappings-tables-values" name="mappings-tables-values">Mappings, Tables, Values</a></h3>
+<p>Various mappings, tables, values etc. used by the DVB standard.</p>
+</div>
+</div>
+<div class="section">
+<h2 id="30"><a id="service-types" name="service-types">Service types</a></h2>
+<p>Types of services (channel) that can be found in a DVB multiplex:</p>
+<pre class="literal-block">
+&quot;digital television service&quot;,
+&quot;digital radio sound service&quot;,
+&quot;Teletext service&quot;,
+&quot;NVOD reference service&quot;,
+&quot;NVOD time-shifted service&quot;,
+&quot;mosaic service&quot;,
+&quot;PAL coded signal&quot;,
+&quot;SECAM coded signal&quot;,
+&quot;D/D2-MAC&quot;,
+&quot;FM Radio&quot;,
+&quot;NTSC coded signal&quot;,
+&quot;data broadcast service&quot;,
+&quot;RCS Map&quot;,
+&quot;RCS FLS&quot;,
+&quot;DVB MHP service&quot;,
+&quot;MPEG-2 HD digital television service&quot;,
+&quot;advanced codec SD digital television service&quot;,
+&quot;advanced codec SD NVOD time-shifted service&quot;,
+&quot;advanced codec SD NVOD reference service&quot;,
+&quot;advanced codec HD digital television service&quot;,
+&quot;advanced codec HD NVOD time-shifted service&quot;,
+&quot;advanced codec HD NVOD reference service&quot;,
+</pre>
+</div>
+<div class="section">
+<h2 id="31"><a id="stream-component-mappings" name="stream-component-mappings">Stream Component Mappings</a></h2>
+<p>Mappings from (stream_component, component_type) values to their actual
+meanings. Used in 'component' descriptors:</p>
+<pre class="literal-block">
+(0x01, 0x01) : (&quot;video&quot;,                 &quot;4:3 aspect ratio, 25 Hz&quot;),
+(0x01, 0x02) : (&quot;video&quot;,                 &quot;16:9 aspect ratio with pan vectors, 25 Hz&quot;),
+(0x01, 0x03) : (&quot;video&quot;,                 &quot;16:9 aspect ratio without pan vectors, 25 Hz&quot;),
+(0x01, 0x04) : (&quot;video&quot;,                 &quot;&gt; 16:9 aspect ratio, 25 Hz&quot;),
+(0x01, 0x05) : (&quot;video&quot;,                 &quot;4:3 aspect ratio, 30 Hz&quot;),
+(0x01, 0x06) : (&quot;video&quot;,                 &quot;16:9 aspect ratio with pan vectors, 30 Hz&quot;),
+(0x01, 0x07) : (&quot;video&quot;,                 &quot;16:9 aspect ratio without pan vectors, 30 Hz&quot;),
+(0x01, 0x05) : (&quot;video&quot;,                 &quot;&gt; 16:9 aspect ratio, 30 Hz&quot;),
+(0x01, 0x09) : (&quot;high definition video&quot;, &quot;4:3 aspect ratio, 25 Hz&quot;),
+(0x01, 0x0A) : (&quot;high definition video&quot;, &quot;16:9 aspect ratio with pan vectors, 25 Hz&quot;),
+(0x01, 0x0B) : (&quot;high definition video&quot;, &quot;16:9 aspect ratio without pan vectors, 25 Hz&quot;),
+(0x01, 0x0C) : (&quot;high definition video&quot;, &quot;&gt; 16:9 aspect ratio, 25 Hz&quot;),
+(0x01, 0x0D) : (&quot;high definition video&quot;, &quot;4:3 aspect ratio, 30 Hz&quot;),
+(0x01, 0x0E) : (&quot;high definition video&quot;, &quot;16:9 aspect ratio with pan vectors, 30 Hz&quot;),
+(0x01, 0x0F) : (&quot;high definition video&quot;, &quot;16:9 aspect ratio without pan vec., 30 Hz&quot;),
+(0x01, 0x10) : (&quot;high definition video&quot;, &quot;&gt; 16:9 aspect ratio, 30 Hz&quot;),
+(0x02, 0x01) : (&quot;audio&quot;,                 &quot;single mono channel&quot;),
+(0x02, 0x02) : (&quot;audio&quot;,                 &quot;dual mono channel&quot;),
+(0x02, 0x03) : (&quot;audio&quot;,                 &quot;stereo (2 channel)&quot;),
+(0x02, 0x04) : (&quot;audio&quot;,                 &quot;multi-lingual, multi-channel&quot;),
+(0x02, 0x05) : (&quot;audio&quot;,                 &quot;surround sound&quot;),
+(0x02, 0x40) : (&quot;audio description for the visually impaired&quot;, &quot;&quot;),
+(0x02, 0x41) : (&quot;audio for the hard of hearing&quot;,               &quot;&quot;),
+(0x03, 0x01) : (&quot;EBU Teletext subtitles&quot;,  &quot;&quot;),
+(0x03, 0x02) : (&quot;associated EBU Teletext&quot;, &quot;&quot;),
+(0x03, 0x03) : (&quot;VBI data&quot;,                &quot;&quot;),
+(0x03, 0x10) : (&quot;DVB subtitles (normal)&quot;, &quot;with no monitor aspect ratio criticality&quot;),
+(0x03, 0x11) : (&quot;DVB subtitles (normal)&quot;, &quot;for display on 4:3 aspect ratio monitor&quot;),
+</pre>
+</div>
+<div class="section">
+<h2 id="32"><a id="private-data-specifiers" name="private-data-specifiers">Private Data Specifiers</a></h2>
+<p>Specifiers defining various types of private data payload:</p>
+<pre class="literal-block">
+0x00000001 : &quot;SES&quot;,
+0x00000002 : &quot;BSkyB 1&quot;,
+0x00000003 : &quot;BSkyB 2&quot;,
+0x00000004 : &quot;BSkyB 3&quot;,
+0x000000BE : &quot;BetaTechnik&quot;,
+0x00006000 : &quot;News Datacom&quot;,
+0x00006001 : &quot;NDC 1&quot;,
+0x00006002 : &quot;NDC 2&quot;,
+0x00006003 : &quot;NDC 3&quot;,
+0x00006004 : &quot;NDC 4&quot;,
+0x00006005 : &quot;NDC 5&quot;,
+0x00006006 : &quot;NDC 6&quot;,
+0x00362275 : &quot;Irdeto&quot;,
+0x004E544C : &quot;NTL&quot;,
+0x00532D41 : &quot;Scientific Atlanta&quot;,
+0x44414E59 : &quot;News Datacom (IL) 1&quot;,
+0x46524549 : &quot;News Datacom (IL) 1&quot;,
+0x53415053 : &quot;Scientific Atlanta&quot;,
+</pre>
+</div>
+<div class="section">
+<h2 id="33"><a id="content-types" name="content-types">Content Types</a></h2>
+<p>Level 1 content types/genres:</p>
+<pre class="literal-block">
+0x1 : &quot;Movie/Drama&quot;,
+0x2 : &quot;News/Current Affairs&quot;,
+0x3 : &quot;Show/Game show&quot;,
+0x4 : &quot;Sports&quot;,
+0x5 : &quot;Children's/Youth&quot;,
+0x6 : &quot;Music/Ballet/Dance&quot;,
+0x7 : &quot;Arts/Culture (without music)&quot;,
+0x8 : &quot;Social/Political issues/Economics&quot;,
+0x9 : &quot;Childrens/Youth Education/Science/Factual&quot;,
+0xa : &quot;Leisure hobbies&quot;,
+0xb : &quot;Misc&quot;,
+0xf : &quot;Drama&quot;, # user defined (specified in the UK &quot;D book&quot;)
+</pre>
+<p>Note that 0xf is a user defined field. The mapping it is assigned here is that used in the UK &quot;D book&quot; specification.</p>
+<p>Level 2 content types/genres:</p>
+<pre class="literal-block">
+# movie/drama
+0x10 : &quot;General&quot;,
+0x11 : &quot;Detective/Thriller&quot;,
+0x12 : &quot;Adventure/Western/War&quot;,
+0x13 : &quot;Science Fiction/Fantasy/Horror&quot;,
+0x14 : &quot;Comedy&quot;,
+0x15 : &quot;Soap/Melodrama/Folkloric&quot;,
+0x16 : &quot;Romance&quot;,
+0x17 : &quot;Serious/ClassicalReligion/Historical&quot;,
+0x18 : &quot;Adult Movie/Drama&quot;,
+
+# news/current affairs
+0x20 : &quot;General&quot;,
+0x21 : &quot;News/Weather Report&quot;,
+0x22 : &quot;Magazine&quot;,
+0x23 : &quot;Documentary&quot;,
+0x24 : &quot;Discussion/Interview/Debate&quot;,
+
+# show/game show
+0x30 : &quot;General&quot;,
+0x31 : &quot;Game show/Quiz/Contest&quot;,
+0x32 : &quot;Variety&quot;,
+0x33 : &quot;Talk&quot;,
+
+# sports
+0x40 : &quot;General&quot;,
+0x41 : &quot;Special Event (Olympics/World cup/...)&quot;,
+0x42 : &quot;Magazine&quot;,
+0x43 : &quot;Football/Soccer&quot;,
+0x44 : &quot;Tennis/Squash&quot;,
+0x45 : &quot;Team sports (excluding football)&quot;,
+0x46 : &quot;Athletics&quot;,
+0x47 : &quot;Motor Sport&quot;,
+0x48 : &quot;Water Sport&quot;,
+0x49 : &quot;Winter Sports&quot;,
+0x4a : &quot;Equestrian&quot;,
+0x4b : &quot;Martial sports&quot;,
+
+# childrens/youth
+0x50 : &quot;General&quot;,
+0x51 : &quot;Pre-school&quot;,
+0x52 : &quot;Entertainment (6 to 14 year-olds)&quot;,
+0x53 : &quot;Entertainment (10 to 16 year-olds)&quot;,
+0x54 : &quot;Informational/Educational/Schools&quot;,
+0x55 : &quot;Cartoons/Puppets&quot;,
+
+# music/ballet/dance
+0x60 : &quot;General&quot;,
+0x61 : &quot;Rock/Pop&quot;,
+0x62 : &quot;Serious music/Classical Music&quot;,
+0x63 : &quot;Folk/Traditional music&quot;,
+0x64 : &quot;Jazz&quot;,
+0x65 : &quot;Musical/Opera&quot;,
+0x66 : &quot;Ballet&quot;,
+
+# arts/culture
+0x70 : &quot;General&quot;,
+0x71 : &quot;Performing Arts&quot;,
+0x72 : &quot;Fine Arts&quot;,
+0x73 : &quot;Religion&quot;,
+0x74 : &quot;Popular Culture/Tradital Arts&quot;,
+0x75 : &quot;Literature&quot;,
+0x76 : &quot;Film/Cinema&quot;,
+0x77 : &quot;Experimental Film/Video&quot;,
+0x78 : &quot;Broadcasting/Press&quot;,
+0x79 : &quot;New Media&quot;,
+0x7a : &quot;Magazine&quot;,
+0x7b : &quot;Fashion&quot;,
+
+# social/political/economic
+0x80 : &quot;General&quot;,
+0x81 : &quot;Magazine/Report/Domentary&quot;,
+0x82 : &quot;Economics/Social Advisory&quot;,
+0x83 : &quot;Remarkable People&quot;,
+
+# children's youth: educational/science/factual
+0x90 : &quot;General&quot;,
+0x91 : &quot;Nature/Animals/Environment&quot;,
+0x92 : &quot;Technology/Natural sciences&quot;,
+0x93 : &quot;Medicine/Physiology/Psychology&quot;,
+0x94 : &quot;Foreign Countries/Expeditions&quot;,
+0x95 : &quot;Social/Spiritual Sciences&quot;,
+0x96 : &quot;Further Education&quot;,
+0x97 : &quot;Languages&quot;,
+
+# leisure hobbies
+0xa0 : &quot;General&quot;,
+0xa1 : &quot;Tourism/Travel&quot;,
+0xa2 : &quot;Handicraft&quot;,
+0xa3 : &quot;Motoring&quot;,
+0xa4 : &quot;Fitness &amp; Health&quot;,
+0xa5 : &quot;Cooking&quot;,
+0xa6 : &quot;Advertisement/Shopping&quot;,
+0xa7 : &quot;Gardening&quot;,
+
+# misc
+0xb0 : &quot;Original Language&quot;,
+0xb1 : &quot;Black and White&quot;,
+0xb2 : &quot;Unpublished&quot;,
+0xb3 : &quot;Live Broadcast&quot;,
+
+# drama (user defined, specced in the UK &quot;D-Book&quot;)
+0xf0 : &quot;General&quot;,
+0xf1 : &quot;Detective/Thriller&quot;,
+0xf2 : &quot;Adventure/Western/War&quot;,
+0xf3 : &quot;Science Fiction/Fantasy/Horror&quot;,
+0xf4 : &quot;Comedy&quot;,
+0xf5 : &quot;Soap/Melodrama/Folkloric&quot;,
+0xf6 : &quot;Romance&quot;,
+0xf7 : &quot;Serious/ClassicalReligion/Historical&quot;,
+0xf8 : &quot;Adult&quot;,
+</pre>
+<p>Note that 0xf0 to 0xff range is a user defined field. The mapping it is assigned here is that used in the UK &quot;D book&quot; specification.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

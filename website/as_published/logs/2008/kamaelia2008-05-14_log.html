@@ -1,0 +1,991 @@
+<html><body><table>
+            <tr><td>[01:07] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[02:43] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[02:59] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[05:44] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[06:00] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[06:36] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[06:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:53] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:02] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[07:33] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[07:33] &lt Chong-&gt Morning, all.</td></tr>
+            <tr><td>[07:55] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:56] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:56] &lt MS-&gt greetings</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt hi MS-</td></tr>
+            <tr><td>[09:00] &lt Lawouach_&gt how are you?</td></tr>
+            <tr><td>[09:01] &lt MS-&gt I'm fine - yourself ?</td></tr>
+            <tr><td>[09:01] &lt MS-&gt Was stuck on trains and meetings all day yesterday</td></tr>
+            <tr><td>[09:02] &lt MS-&gt Total of 10 hours travelling all told yesterday</td></tr>
+            <tr><td>[09:02] &lt Lawouach_&gt ouch</td></tr>
+            <tr><td>[09:02] &lt Lawouach_&gt sorry for you</td></tr>
+            <tr><td>[09:03] &lt Lawouach_&gt I'm doing good</td></tr>
+            <tr><td>[09:03] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[09:03] &lt mhrd&gt morning</td></tr>
+            <tr><td>[09:03] &lt Lawouach_&gt Have you had a chance to see that Kamaelia got a bit of spot light yesterday?</td></tr>
+            <tr><td>[09:03] &lt Lawouach_&gt morning mhrd</td></tr>
+            <tr><td>[09:04] &lt MS-&gt hm?</td></tr>
+            <tr><td>[09:04] &lt MS-&gt It did?</td></tr>
+            <tr><td>[09:04] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[09:04] &lt Lawouach_&gt http://reddit.com/r/programming/</td></tr>
+            <tr><td>[09:04] &lt Lawouach_&gt Look up for Kamaelia</td></tr>
+            <tr><td>[09:04] &lt Lawouach_&gt It was also well placed on deliocus</td></tr>
+            <tr><td>[09:05] &lt Lawouach_&gt http://del.icio.us/url/c079c50d2078b29f74a1fa89c6272501</td></tr>
+            <tr><td>[09:12] *** MS- looks</td></tr>
+            <tr><td>[09:12] &lt MS-&gt Ooh, cool. #13 on reddit for programming?</td></tr>
+            <tr><td>[09:13] &lt MS-&gt PIty the front page says "Downoad" and the code is out of date :-/</td></tr>
+            <tr><td>[09:13] &lt MS-&gt But very cool :)</td></tr>
+            <tr><td>[09:14] *** MS- reads the link</td></tr>
+            <tr><td>[09:15] &lt MS-&gt Nice article :-D</td></tr>
+            <tr><td>[09:17] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:19] &lt Chong-&gt MS-: can you help me check why the code doesn't work?</td></tr>
+            <tr><td>[09:19] &lt Chong-&gt http://chong.pastebin.com/f1bbef1bb</td></tr>
+            <tr><td>[09:20] &lt mhrd&gt in what way does it not work?</td></tr>
+            <tr><td>[09:21] &lt mhrd&gt what do you do to use it? what output do you expect? what are you actually getting?</td></tr>
+            <tr><td>[09:22] &lt Chong-&gt It is supposed to draw a topology from a file commands.</td></tr>
+            <tr><td>[09:23] &lt Chong-&gt But it open pygame and then close it imediately.</td></tr>
+            <tr><td>[09:23] &lt mhrd&gt any errors on the console output? have you used any of the other topologyviewer based tools/demos/examples? eg. AxonVisualiser?</td></tr>
+            <tr><td>[09:24] &lt Chong-&gt the file is here http://chong.pastebin.com/f27a9ec5b</td></tr>
+            <tr><td>[09:25] &lt Chong-&gt yes. Others work. So, I suppose the problem is within my code.</td></tr>
+            <tr><td>[09:25] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[09:25] &lt mhrd&gt any errors on the console output?</td></tr>
+            <tr><td>[09:26] &lt Chong-&gt I also did the console input one. it works.</td></tr>
+            <tr><td>[09:26] &lt Chong-&gt http://chong.pastebin.com/f2819c06c</td></tr>
+            <tr><td>[09:26] &lt Chong-&gt No obvious error.</td></tr>
+            <tr><td>[09:26] &lt mhrd&gt ah, k ...</td></tr>
+            <tr><td>[09:27] *** mhrd knows what it is ...</td></tr>
+            <tr><td>[09:27] &lt MS-&gt it's improved shutdown isn't it</td></tr>
+            <tr><td>[09:27] &lt mhrd&gt can you summarise for me what the behaviour of th ReadFileAdaptor componet is?</td></tr>
+            <tr><td>[09:27] &lt Chong-&gt Brilliant</td></tr>
+            <tr><td>[09:27] *** MS- looks</td></tr>
+            <tr><td>[09:27] &lt Lawouach_&gt MS-, mhrd: also http://www.defuze.org/archives/16-XMPP,-AtomPub,-headstock,-amplee-and-the-BBC.html</td></tr>
+            <tr><td>[09:27] &lt Lawouach_&gt in case you missed it :)</td></tr>
+            <tr><td>[09:28] &lt mhrd&gt Lawouach_: ta</td></tr>
+            <tr><td>[09:28] &lt mhrd&gt more specifically ... what does it do when it reaches the end of the file it is reading?</td></tr>
+            <tr><td>[09:29] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:29] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:29] &lt MS-&gt mhrd: it does what you suspect - it reads from the file, sends to the visualiser which follows the commands, gets the shutdown signal and then quits</td></tr>
+            <tr><td>[09:29] &lt Chong-&gt it will raise "End of Data"</td></tr>
+            <tr><td>[09:29] *** MS- looks at Lawouach's link</td></tr>
+            <tr><td>[09:30] &lt Chong-&gt morning, vmlemon_</td></tr>
+            <tr><td>[09:31] &lt MS-&gt I think it boils down to either a producerFinished message being interpreted as a "shutdown the topology visualiser" mesage</td></tr>
+            <tr><td>[09:31] &lt MS-&gt of the RFA is spitting out a shutdown message</td></tr>
+            <tr><td>[09:31] &lt MS-&gt I'm certain it sends a producerFinished though</td></tr>
+            <tr><td>[09:31] &lt MS-&gt So the visualiser is probably at fault there, but its worth checking</td></tr>
+            <tr><td>[09:31] &lt Chong-&gt MS- : so the problem is ReadFileAdaptor shutdown the whole process? but it's still running.</td></tr>
+            <tr><td>[09:31] &lt Lawouach_&gt MS-: It could be fun to use my code and add an audio/video that goes to fetch the specific BBC program when alerted about it via XMPP then plays it</td></tr>
+            <tr><td>[09:32] &lt Lawouach_&gt It could be a fun way to make many aspect of Kamaelia work together while an interesting concept to demonstrate to your colleagues at the BBC</td></tr>
+            <tr><td>[09:32] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[09:33] &lt mhrd&gt whereas the consolereader component never finishes - its always waiting for the next line of user input, so it never sends one of these msgs</td></tr>
+            <tr><td>[09:33] &lt MS-&gt Lawouach very interesting</td></tr>
+            <tr><td>[09:34] &lt MS-&gt Chong-: The RFA doesn't shutdown the whole process, but what it does, causes the process to shutdown</td></tr>
+            <tr><td>[09:34] &lt MS-&gt When it reaches end of file, it has no reason to stay living, so it shuts down</td></tr>
+            <tr><td>[09:34] &lt MS-&gt When it does, it sends a producerFinished message out of it's signal box</td></tr>
+            <tr><td>[09:34] &lt MS-&gt which gets picked up by the next component</td></tr>
+            <tr><td>[09:35] &lt MS-&gt In this case, lines to token lists</td></tr>
+            <tr><td>[09:35] &lt MS-&gt lines to token lists realises that it then has no more source data coming in</td></tr>
+            <tr><td>[09:35] &lt Chong-&gt Can it just shut down itself and leave others alone?</td></tr>
+            <tr><td>[09:35] &lt MS-&gt so it shuts down</td></tr>
+            <tr><td>[09:35] &lt MS-&gt and passes it's message on</td></tr>
+            <tr><td>[09:35] &lt MS-&gt Chong-: From*it's* perspective that's precisely what it's doing</td></tr>
+            <tr><td>[09:36] &lt MS-&gt It's just telling the others in the chain "hey, I've shut down"</td></tr>
+            <tr><td>[09:36] &lt MS-&gt "you do what you want to do :-)"</td></tr>
+            <tr><td>[09:36] &lt mhrd&gt ...by sending a message out of its "signal" outbox</td></tr>
+            <tr><td>[09:36] &lt MS-&gt which is what producerFinished means</td></tr>
+            <tr><td>[09:36] &lt Chong-&gt got it.</td></tr>
+            <tr><td>[09:37] &lt MS-&gt ie it does this:</td></tr>
+            <tr><td>[09:37] &lt MS-&gt  sig = producerFinished(self)</td></tr>
+            <tr><td>[09:37] &lt MS-&gt  self.send(sig, "signal")</td></tr>
+            <tr><td>[09:37] &lt MS-&gt The next person in the chain then has to decide what they want to do next</td></tr>
+            <tr><td>[09:37] &lt MS-&gt s/person/component/</td></tr>
+            <tr><td>[09:37] &lt Chong-&gt So in your modeller.py, you used Backplane to save the data after the shutdown.</td></tr>
+            <tr><td>[09:37] &lt MS-&gt hold on</td></tr>
+            <tr><td>[09:38] &lt MS-&gt lines_to_tokenlists does this for its shutdown</td></tr>
+            <tr><td>[09:38] &lt MS-&gt  def shutdown(self):</td></tr>
+            <tr><td>[09:38] &lt MS-&gt  """\</td></tr>
+            <tr><td>[09:38] &lt MS-&gt  Returns True if a shutdownMicroprocess or producerFinished message was received.</td></tr>
+            <tr><td>[09:38] &lt MS-&gt  """</td></tr>
+            <tr><td>[09:38] &lt MS-&gt which then boils down to:</td></tr>
+            <tr><td>[09:38] &lt MS-&gt  if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):</td></tr>
+            <tr><td>[09:38] &lt MS-&gt  self.send(msg,"signal")</td></tr>
+            <tr><td>[09:38] &lt MS-&gt  return True</td></tr>
+            <tr><td>[09:39] &lt MS-&gt So as far as it's concerned, if it's told it must shutdown (the first message type) or than it is NOT getting more data (the second message type)</td></tr>
+            <tr><td>[09:39] &lt MS-&gt then it decides it may as well shutdown too.</td></tr>
+            <tr><td>[09:39] &lt MS-&gt And passes on the message it recieved.</td></tr>
+            <tr><td>[09:39] &lt MS-&gt Which in this case, since it came from an RFA will always be producerFinished</td></tr>
+            <tr><td>[09:40] &lt Chong-&gt So, lines_to_tokenlists and TopologyViewer will shut down when their input component shutdown</td></tr>
+            <tr><td>[09:40] &lt MS-&gt So *it* is operating correctly</td></tr>
+            <tr><td>[09:40] &lt MS-&gt Wait</td></tr>
+            <tr><td>[09:40] &lt MS-&gt We're discussing each one in isolation</td></tr>
+            <tr><td>[09:40] &lt MS-&gt I've said how RFA works</td></tr>
+            <tr><td>[09:40] &lt Chong-&gt np</td></tr>
+            <tr><td>[09:40] &lt MS-&gt and how lines_to_tokenlists work</td></tr>
+            <tr><td>[09:41] &lt MS-&gt but all that tells you is a "producerFinished" message is reaching the signal outbox of lines_to_tokenlists</td></tr>
+            <tr><td>[09:41] &lt MS-&gt now since that's in a pipeline, this means it gets passed on to the topology visualiser</td></tr>
+            <tr><td>[09:41] &lt MS-&gt so the question is what does *it* do when it recieves the message?</td></tr>
+            <tr><td>[09:42] &lt MS-&gt Well, if we look at the code, it does this:</td></tr>
+            <tr><td>[09:42] &lt MS-&gt  if self.dataReady("control"):</td></tr>
+            <tr><td>[09:42] &lt MS-&gt  msg = self.recv("control")</td></tr>
+            <tr><td>[09:42] &lt MS-&gt  if isinstance(msg, Axon.Ipc.producerFinished) or isinstance(msg, Axon.Ipc.shutdownMicroprocess):</td></tr>
+            <tr><td>[09:42] &lt MS-&gt  self.send(msg, "signal")</td></tr>
+            <tr><td>[09:42] &lt MS-&gt  self.quit()</td></tr>
+            <tr><td>[09:42] &lt MS-&gt And it's debateable whether that's right.</td></tr>
+            <tr><td>[09:42] &lt MS-&gt My feeling is that it's wrong.</td></tr>
+            <tr><td>[09:43] &lt MS-&gt My feeling is that it should be this instead:</td></tr>
+            <tr><td>[09:43] &lt MS-&gt  if self.dataReady("control"):</td></tr>
+            <tr><td>[09:43] &lt MS-&gt  msg = self.recv("control")</td></tr>
+            <tr><td>[09:43] &lt MS-&gt  if isinstance(msg, Axon.Ipc.shutdownMicroprocess):</td></tr>
+            <tr><td>[09:43] &lt MS-&gt  self.send(msg, "signal")</td></tr>
+            <tr><td>[09:43] &lt MS-&gt  self.quit()</td></tr>
+            <tr><td>[09:43] &lt MS-&gt since the viewer can have good reason to stay visible even when it's told the data source for the topology has gone away</td></tr>
+            <tr><td>[09:43] &lt MS-&gt thoughts welcome</td></tr>
+            <tr><td>[09:43] &lt Chong-&gt yes. I agree.</td></tr>
+            <tr><td>[09:44] &lt Chong-&gt For lines_to_tokenlists, it has no meaning to exist if its producer shut down.</td></tr>
+            <tr><td>[09:45] &lt MS-&gt mhrd: It was your code in the first place, I'm guessing you would agree this makes more sense this way?</td></tr>
+            <tr><td>[09:45] &lt Chong-&gt But for topology view, it has function to show the result even if the program ends.</td></tr>
+            <tr><td>[09:47] &lt Chong-&gt otherwise, if it ends before users can see the topology, it becomes useless.</td></tr>
+            <tr><td>[09:47] &lt MS-&gt yep</td></tr>
+            <tr><td>[09:48] &lt MS-&gt Since it's generic as well, and could be used (it isn't but could be) for a more general user interface approach, it strikes me as sensible to stay open.</td></tr>
+            <tr><td>[09:50] &lt Chong-&gt yes. Maybe we can define its behavior when initiate it.</td></tr>
+            <tr><td>[09:51] &lt Chong-&gt make its behavior definable by users.</td></tr>
+            <tr><td>[09:51] &lt MS-&gt Chong-: In this case I think that's overkill.</td></tr>
+            <tr><td>[09:52] &lt MS-&gt If there's a clear need to make it optional between the messages, I would, but I think I'd need to see a reason for it being optional really</td></tr>
+            <tr><td>[09:52] *** MS- waits for confirmation from mhrd/someone</td></tr>
+            <tr><td>[09:53] &lt MS-&gt It's such a tiny change I'm proposing just changing it on trunk and being done with it, as per get out clause on the dev processes page for such things</td></tr>
+            <tr><td>[09:53] &lt Chong-&gt yes. I agree. there is little chance that users want the other behavior.</td></tr>
+            <tr><td>[09:55] &lt Chong-&gt I support your proposal.</td></tr>
+            <tr><td>[09:55] &lt Chong-&gt Thank you very much for your help, MS- and mhrd.</td></tr>
+            <tr><td>[09:57] &lt Lawouach_&gt That sounds reasonable to me as long as it's documented :)</td></tr>
+            <tr><td>[09:58] &lt MS-&gt cool</td></tr>
+            <tr><td>[09:58] *** j^ has joined #kamaelia</td></tr>
+            <tr><td>[10:04] *** mhrd returns</td></tr>
+            <tr><td>[10:04] &lt mhrd&gt MS-, Chong: yes, I agree it woudl be better behaviour for the topology viewer</td></tr>
+            <tr><td>[10:04] &lt mhrd&gt and possibly other persistent UI type components</td></tr>
+            <tr><td>[10:05] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[10:05] &lt Chong-&gt Maybe we can generalize two types of shut down behaviour of components</td></tr>
+            <tr><td>[10:06] &lt mhrd&gt MS-: changing it on trunk - cool. but do a quick audit of where topologyviewer is used first and see that it doesn't break anything (extremely unlikely) :-)</td></tr>
+            <tr><td>[10:16] &lt mhrd&gt there'll always be borderline cases ... where the behaviour you want will depend on the context in which a component is used</td></tr>
+            <tr><td>[10:16] &lt MS-&gt True</td></tr>
+            <tr><td>[10:17] *** mhrd wouldn't be surprised if something like a BlockProducerFinished component eventually gets written :)</td></tr>
+            <tr><td>[10:17] &lt MS-&gt But I think that if someone wants that they could always write an adapter componer</td></tr>
+            <tr><td>[10:18] &lt MS-&gt That could be written today if the filter component could be told which in/outbox to filter</td></tr>
+            <tr><td>[10:22] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[10:29] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[10:48] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[10:54] &lt Lawouach&gt MS-: the BBC radio labs stutff is quite exciting :)</td></tr>
+            <tr><td>[11:03] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[11:08] &lt vmlemon&gt o.O "Try it without fear -- our instant rollback feature works like a giant undo button, so your system is always protected, and you'll never lose work."</td></tr>
+            <tr><td>[11:18] *** j^ has parted #kamaelia</td></tr>
+            <tr><td>[11:19] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[11:20] &lt j_baker&gt Morning everyone.</td></tr>
+            <tr><td>[11:20] &lt vmlemon&gt Hi j_baker</td></tr>
+            <tr><td>[11:21] &lt j_baker&gt Man, downloading Fedora 9 is a PITA</td></tr>
+            <tr><td>[11:21] *** vmlemon has just ordered the free OpenSolaris CD</td></tr>
+            <tr><td>[11:22] &lt j_baker&gt Nice.</td></tr>
+            <tr><td>[11:23] &lt vmlemon&gt Aaw, "(h) Software is not designed, licensed or intended for use in the design, construction, operation or maintenance of any nuclear facility and Sun and its licensors disclaim any express or implied warranty of fitness for such uses."</td></tr>
+            <tr><td>[11:24] &lt j_baker&gt I think I speak for everyone when I say that I think it's a bad idea for you to try and run a nuclear plant, vmlemon. :P</td></tr>
+            <tr><td>[11:25] &lt vmlemon&gt Hah</td></tr>
+            <tr><td>[11:25] &lt vmlemon&gt I wouldn't be likely to use it for such a thing</td></tr>
+            <tr><td>[11:25] &lt vmlemon&gt Although I do find it fairly amusing that they include such clauses, sometimes</td></tr>
+            <tr><td>[11:25] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:26] &lt j_baker&gt MS- I got the WSGI code to pass wsgiref.validate (It's still not WSGI compliant though)</td></tr>
+            <tr><td>[11:34] &lt MS-&gt cool</td></tr>
+            <tr><td>[11:34] *** MS- is on phone</td></tr>
+            <tr><td>[11:45] &lt vmlemon&gt Ouch, "da1: write failed, user block limit reached."</td></tr>
+            <tr><td>[11:50] &lt Lawouach_&gt j_baker: that's good news :)</td></tr>
+            <tr><td>[11:50] &lt j_baker&gt :)</td></tr>
+            <tr><td>[11:51] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[11:52] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[11:52] &lt j_baker&gt Hello Davbo</td></tr>
+            <tr><td>[11:55] &lt Davbo&gt MS-: you see Kamaelia on the delicious front-page yesterday?</td></tr>
+            <tr><td>[11:56] &lt MS-&gt Davbo: Nope - I heard about it though :)</td></tr>
+            <tr><td>[11:56] &lt MS-&gt I was stuck in trains and meetings yesterday</td></tr>
+            <tr><td>[11:56] &lt MS-&gt Trun: Sorry for the delay</td></tr>
+            <tr><td>[11:57] &lt MS-&gt I know we should've had our rescheduled meeting starting an hour ago :-(</td></tr>
+            <tr><td>[11:57] &lt MS-&gt Let me know when is convenient for you</td></tr>
+            <tr><td>[11:57] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:00] &lt Davbo&gt also, credit where it's due the new website looks pretty cool</td></tr>
+            <tr><td>[12:01] &lt Davbo&gt the thing in your sketches anyway</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Davbo: Thanks :)</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Yay, someone's looked at it :)</td></tr>
+            <tr><td>[12:02] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[12:04] &lt Trun&gt hi</td></tr>
+            <tr><td>[12:04] &lt vmlemon&gt New website?</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt ?</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt vmlemon: indeed</td></tr>
+            <tr><td>[12:04] &lt MS-&gt Trun, realistically, I think we'd need to have your meeting later today - anytime between 3:30 and finishing 5:30 UK time is fine for me.</td></tr>
+            <tr><td>[12:04] *** mhrd looks and thinks its a bit improvement too</td></tr>
+            <tr><td>[12:04] &lt vmlemon&gt Where?</td></tr>
+            <tr><td>[12:04] &lt MS-&gt In Sketches/MPS/Web</td></tr>
+            <tr><td>[12:04] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[12:04] &lt MS-&gt Not yet gone out for "what do people think" yet</td></tr>
+            <tr><td>[12:04] &lt vmlemon&gt I was just going to say that the current home page looks the same</td></tr>
+            <tr><td>[12:05] &lt MS-&gt but in sketches mean people can stick their oar in if they like :)</td></tr>
+            <tr><td>[12:05] &lt vmlemon&gt (I haven't seen the new one, but I assumed it was already rolled out)</td></tr>
+            <tr><td>[12:05] &lt MS-&gt vmlemon: indeed</td></tr>
+            <tr><td>[12:05] &lt Lawouach_&gt I still don't et where I should be looking at :)</td></tr>
+            <tr><td>[12:05] &lt mhrd&gt s/bit/big/</td></tr>
+            <tr><td>[12:06] &lt mhrd&gt Lawouach_ : /trunk/Sketches/MPS/Web</td></tr>
+            <tr><td>[12:06] &lt Davbo&gt MS-: is there any kinda stats thing we can see for the traffic we got yesterday?</td></tr>
+            <tr><td>[12:07] &lt MS-&gt Davbo: yes -here</td></tr>
+            <tr><td>[12:07] &lt MS-&gt http://sourceforge.net/project/stats/?group_id=122494&ugn=kamaelia</td></tr>
+            <tr><td>[12:07] &lt MS-&gt Oh look, there was a spike</td></tr>
+            <tr><td>[12:07] &lt MS-&gt :-)</td></tr>
+            <tr><td>[12:07] &lt MS-&gt That's cool</td></tr>
+            <tr><td>[12:08] &lt Trun&gt MS- I have just cancelled the meeting I had at 3:00 UK time, so I can come whenever you want from that moment</td></tr>
+            <tr><td>[12:08] &lt MS-&gt Oh now that's odd: http://sourceforge.net/project/stats/detail.php?group_id=122494&ugn=kamaelia&mode=week&type=prweb</td></tr>
+            <tr><td>[12:08] &lt MS-&gt Trun: Cool - I'll try to make sure I'm back for that - I'm going out for a meeting and coming back</td></tr>
+            <tr><td>[12:08] &lt Trun&gt MS- I'm gonna be in front of the computer, so whenever you want send me an e-mail to connect to the channel</td></tr>
+            <tr><td>[12:09] &lt MS-&gt It should be pretty brief quick at this stage :)</td></tr>
+            <tr><td>[12:09] &lt Lawouach_&gt what's odd?</td></tr>
+            <tr><td>[12:09] &lt Lawouach_&gt the weekly peak?</td></tr>
+            <tr><td>[12:09] &lt mhrd&gt s/weekly/daily/</td></tr>
+            <tr><td>[12:10] &lt MS-&gt Lawouach_: The regular peak, yes</td></tr>
+            <tr><td>[12:10] &lt Lawouach_&gt oh yeap</td></tr>
+            <tr><td>[12:10] &lt mhrd&gt thats about the time the documentationrebuild takes place, but thats all "svn update" and ssh upload traffic</td></tr>
+            <tr><td>[12:10] &lt MS-&gt mhrd: But that wouldn't cause the page count to change like that</td></tr>
+            <tr><td>[12:11] &lt mhrd&gt exactly - just proffering an explanation and why it isn't an explanation :-)</td></tr>
+            <tr><td>[12:11] &lt mhrd&gt ... in case I'm wrong about the latter part :)</td></tr>
+            <tr><td>[12:12] &lt MS-&gt Maybe someone's noticed and crawls it at that time?</td></tr>
+            <tr><td>[12:13] *** mhrd corrects himself - doc rebuilds take place at 4am UK time</td></tr>
+            <tr><td>[12:13] &lt MS-&gt That midnight is also midnight in sourceforge time</td></tr>
+            <tr><td>[12:18] &lt j_baker&gt That is a pretty flashy new website. Is it still going to use cerenity?</td></tr>
+            <tr><td>[12:19] &lt Davbo&gt I think we need a picture like the one on the website that Lawouach_ posted to the ML really</td></tr>
+            <tr><td>[12:19] &lt Davbo&gt I'm sure we could cook something like that up</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt something to "sum it up" a bit</td></tr>
+            <tr><td>[12:20] &lt MS-&gt Picture?</td></tr>
+            <tr><td>[12:20] &lt MS-&gt I really need to sort out permissions/website stuff</td></tr>
+            <tr><td>[12:21] &lt Davbo&gt Lawouach_ posted http://www.divmod.org/trac#Overview as an example</td></tr>
+            <tr><td>[12:21] &lt MS-&gt Ah, yes</td></tr>
+            <tr><td>[12:21] &lt mhrd&gt MS-: let me know if you need the doc generation turned off/modified etc ... so it doesn't go trampling over any changes you make ;-)</td></tr>
+            <tr><td>[12:21] &lt MS-&gt Well, anyone with artistic talent is welcome to do stuff</td></tr>
+            <tr><td>[12:22] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[12:22] &lt MS-&gt mhrd: Will do - though I'd probably work around/ensure that works</td></tr>
+            <tr><td>[12:22] &lt MS-&gt Just saying that (the artistic talent thing) simply because sometimes people think they need to ask permission.</td></tr>
+            <tr><td>[12:22] &lt Davbo&gt You're the photographer Lawouach_ :P</td></tr>
+            <tr><td>[12:22] &lt MS-&gt I'm not exactly precious about things. I do have good reasons for the website, but I *am* in the process of redoing it somewhat :)</td></tr>
+            <tr><td>[12:23] &lt MS-&gt one of these days I'll manage to successfully clone myself.</td></tr>
+            <tr><td>[12:23] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt Davbo: Not sure my skills would fit Kamaelia :)</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt http://www.flickr.com/photos/lawouach/2017945587/ here's a cat though</td></tr>
+            <tr><td>[12:29] &lt j_baker&gt So, does anybody here know of any good way to get a computer's IP address (given a specific interface) that's at least platform independent enough to work on most unices?</td></tr>
+            <tr><td>[12:30] &lt vmlemon&gt The humble ifconfig?</td></tr>
+            <tr><td>[12:30] &lt j_baker&gt Well, I mean in python vmlemon</td></tr>
+            <tr><td>[12:30] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[12:30] &lt j_baker&gt Or can I do that in python?</td></tr>
+            <tr><td>[12:31] &lt MS-&gt j_baker: There's very few portable methods that actually work</td></tr>
+            <tr><td>[12:31] &lt MS-&gt One of the better ones is to create a connection to a remote server</td></tr>
+            <tr><td>[12:31] &lt MS-&gt And take the local ip address from the local end of the socket</td></tr>
+            <tr><td>[12:32] &lt vmlemon&gt Lawouach_: Nice cat</td></tr>
+            <tr><td>[12:32] &lt MS-&gt That won't give you the public IP of the server, but it's not too bad</td></tr>
+            <tr><td>[12:32] &lt MS-&gt There are some people who wrap ifconfig though and get you the info that way in a relatively platform independent way</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt vmlemon: one of my parent's cats</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt easy life</td></tr>
+            <tr><td>[12:32] &lt j_baker&gt I see. I've got it set up to get it by using socket.gethostbyname(socket.gethostname())</td></tr>
+            <tr><td>[12:32] &lt j_baker&gt But on my computer that just gives me the loopback address.</td></tr>
+            <tr><td>[12:33] &lt MS-&gt Yep, it would</td></tr>
+            <tr><td>[12:34] &lt vmlemon&gt Ugh, http://www.hacktivismo.com/about/hessla.php</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt j_baker: why do you need such a value BTW?</td></tr>
+            <tr><td>[12:34] &lt vmlemon&gt At least they admit that it's for political reasons</td></tr>
+            <tr><td>[12:34] &lt j_baker&gt There's a WSGI environ var for server IP address, Lawouach_</td></tr>
+            <tr><td>[12:34] &lt Davbo&gt Stupid FedEx logo, once you've seen the arrow you -can't- not see the arrow.</td></tr>
+            <tr><td>[12:34] &lt vmlemon&gt I don't think that sort of stuff belongs in a software license</td></tr>
+            <tr><td>[12:35] &lt vmlemon&gt Davbo: Hah, I've noticed that, too</td></tr>
+            <tr><td>[12:35] *** MS- goes afk</td></tr>
+            <tr><td>[12:35] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[12:36] &lt j_baker&gt If I remember correctly, the environment var is an optional one though.</td></tr>
+            <tr><td>[12:36] &lt Lawouach_&gt j_baker: is there?</td></tr>
+            <tr><td>[12:36] &lt Lawouach_&gt Look at the CherryPy WSGI server maybe</td></tr>
+            <tr><td>[12:36] &lt Lawouach_&gt It might help</td></tr>
+            <tr><td>[12:37] &lt Lawouach_&gt http://www.cherrypy.org/browser/trunk/cherrypy/wsgiserver/__init__.py</td></tr>
+            <tr><td>[12:37] &lt j_baker&gt Good idea. Do you have any idea which optional environment vars are more likely to break an app if not supplied, Lawouach_?</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt Not of the top of my head</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt But it'd be better to include them all as long as it's feasible</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt Also you might want to subscribe to the Web-Sig mailing-list if you have specifc question about WSGI</td></tr>
+            <tr><td>[12:39] &lt Lawouach_&gt They are usually helpful, sometimes rough, but helpful :)</td></tr>
+            <tr><td>[12:42] &lt Lawouach_&gt http://wsgi.org/wsgi/Servers this also might help</td></tr>
+            <tr><td>[12:42] &lt Lawouach_&gt browsing through some of those servers could help you</td></tr>
+            <tr><td>[12:42] &lt j_baker&gt I see. It appears that the CherryPy implementation doesn't support SERVER_ADDR.</td></tr>
+            <tr><td>[12:42] &lt Lawouach_&gt It's a CGI key isn't it?</td></tr>
+            <tr><td>[12:42] &lt j_baker&gt I believe so.</td></tr>
+            <tr><td>[12:44] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[12:44] &lt Lawouach_&gt By default CP uses 0.0.0.0 to bind the server</td></tr>
+            <tr><td>[12:44] &lt Lawouach_&gt Indicating that it leaves the system host free of providing the most adequate interface and address</td></tr>
+            <tr><td>[12:44] &lt Lawouach_&gt IPv4 or IPv6</td></tr>
+            <tr><td>[12:45] &lt Lawouach_&gt I would assume in that case the SERVER_ADDR would default to 0.0.0.0</td></tr>
+            <tr><td>[12:45] &lt j_baker&gt I see. So in other words, "if you need it that bad, find it yourself"? :)</td></tr>
+            <tr><td>[12:45] &lt Lawouach_&gt Unless you force a specific interface and address</td></tr>
+            <tr><td>[12:45] &lt Lawouach_&gt Although it's not what I was going for yeah that's the idea :)</td></tr>
+            <tr><td>[12:46] &lt Lawouach_&gt Unless you need it, leave it aside for now I'd say</td></tr>
+            <tr><td>[12:47] &lt vmlemon&gt Heh, cool</td></tr>
+            <tr><td>[12:47] &lt j_baker&gt Ok. And the last question is that I'm assuming that to get the full HTTP response... it's basically:</td></tr>
+            <tr><td>[12:47] &lt vmlemon&gt Didn't know that SourceForge supports OpenID now</td></tr>
+            <tr><td>[12:47] &lt j_baker&gt [method] [uri] \n [headers]</td></tr>
+            <tr><td>[12:48] &lt Lawouach_&gt vmlemon: it's like 2 weeks old max :)</td></tr>
+            <tr><td>[12:48] &lt j_baker&gt Or HTTP request rather.</td></tr>
+            <tr><td>[12:48] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[12:48] &lt vmlemon&gt I've only just noticed</td></tr>
+            <tr><td>[12:49] &lt Lawouach_&gt j_baker: in the best case scenarios yes</td></tr>
+            <tr><td>[12:49] &lt Lawouach_&gt I would strongly suggest to read through CherryPy's code</td></tr>
+            <tr><td>[12:49] &lt vmlemon&gt Probably since I don't use SourceForge very often, except for a few minutes to initiate a file download before going to another page... ;)</td></tr>
+            <tr><td>[12:49] &lt Lawouach_&gt It's well polished and quite easy to read I think</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt Are our sf.net logins OpenID's now then?</td></tr>
+            <tr><td>[12:49] &lt j_baker&gt Ok, I'll do that Lawouach_ thanks for your help.</td></tr>
+            <tr><td>[12:49] &lt Lawouach_&gt RFC 2616 should also be open in your browser ;)</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt because i already have 4 OpenID's :(</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt vmlemon: same here</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt j_baker: :) It's just that WSGI servers have been written quite a few times now and it'd be bad to waster your time if you can find it done somwhere else or just ask people who have.</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt Like the guy who wrote mod_wsgi</td></tr>
+            <tr><td>[12:51] &lt vmlemon&gt Ouch, only 4.82MB free space left on my USB drive, despite RAR-ing and deleting nearly everything on it</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt He can be difficult to talk to but he knows a lot about implementing WSGI</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt http://reddit.com/r/programming/info/6j7ed/comments/c04076o &lt -- interesting, I didn't know a framework was supposed to do anything. I though programmers were.</td></tr>
+            <tr><td>[12:52] &lt j_baker&gt I see. I'll look into that.</td></tr>
+            <tr><td>[12:52] &lt Lawouach_&gt s/though/thought</td></tr>
+            <tr><td>[12:54] &lt Davbo&gt Haha, nice comments on that blog post. Lawouach and j_baker</td></tr>
+            <tr><td>[12:54] *** vmlemon hands ms-away an atom cloner for that "one day" ;)</td></tr>
+            <tr><td>[12:54] &lt Davbo&gt "Timmy: Just to clarify"</td></tr>
+            <tr><td>[12:55] &lt j_baker&gt I would like to point out that I was first. :P</td></tr>
+            <tr><td>[12:55] &lt Davbo&gt hehehe</td></tr>
+            <tr><td>[12:57] *** Lawouach_ is calling Google to ensure they know j_baker bypassed a mentor</td></tr>
+            <tr><td>[12:57] &lt Davbo&gt lol</td></tr>
+            <tr><td>[12:57] &lt j_baker&gt lol</td></tr>
+            <tr><td>[12:57] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[12:59] &lt vmlemon&gt Hah, I like the tagline rotation on the new homepage design</td></tr>
+            <tr><td>[12:59] &lt Davbo&gt Hype!</td></tr>
+            <tr><td>[12:59] &lt vmlemon&gt Hype? Who wants it?</td></tr>
+            <tr><td>[13:00] *** vmlemon wonders when 0.6.0 is coming</td></tr>
+            <tr><td>[13:00] &lt vmlemon&gt More Hype!</td></tr>
+            <tr><td>[13:00] &lt Davbo&gt Probably with the website update :)</td></tr>
+            <tr><td>[13:01] &lt vmlemon&gt And it's got a (shiny new) cat!</td></tr>
+            <tr><td>[13:01] &lt vmlemon&gt ;)</td></tr>
+            <tr><td>[13:02] &lt vmlemon&gt It improves on Hype 1.0? ;)</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt It's green :)</td></tr>
+            <tr><td>[13:10] &lt Davbo&gt Pandora was going to be my pick for today vmlemon, but it looks like j_baker will be the only one that can visit it without a proxy</td></tr>
+            <tr><td>[13:10] &lt Davbo&gt http://www.pandora.com</td></tr>
+            <tr><td>[13:11] &lt j_baker&gt I &lt 3 pandora</td></tr>
+            <tr><td>[13:11] &lt vmlemon&gt I used to be able to use it, even when they had the block</td></tr>
+            <tr><td>[13:11] &lt vmlemon&gt when I was on BT</td></tr>
+            <tr><td>[13:11] &lt vmlemon&gt Although it's not the case now</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt Yeah, i used to be able to use it</td></tr>
+            <tr><td>[13:11] &lt vmlemon&gt last.fm is still OK</td></tr>
+            <tr><td>[13:11] &lt Lawouach_&gt That's sad</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt Yeah they're in London too, right vmlemon?</td></tr>
+            <tr><td>[13:11] &lt vmlemon&gt Yes</td></tr>
+            <tr><td>[13:12] &lt j_baker&gt Who wants to bet it's because of the RIAA that you can't get pandora outside the US?</td></tr>
+            <tr><td>[13:12] &lt vmlemon&gt There was a little "hack" that sort of welded Pandora to last.fm for updating the played song list on a profile with Pandora stuff</td></tr>
+            <tr><td>[13:12] *** vmlemon waves</td></tr>
+            <tr><td>[13:14] &lt vmlemon&gt RIAA--</td></tr>
+            <tr><td>[13:14] &lt vmlemon&gt (Pandora.FM, I think)</td></tr>
+            <tr><td>[13:15] &lt Davbo&gt vmlemon: our musical compatibility is Very Low</td></tr>
+            <tr><td>[13:15] &lt Davbo&gt :(</td></tr>
+            <tr><td>[13:15] &lt Davbo&gt Oh well</td></tr>
+            <tr><td>[13:15] &lt vmlemon&gt Any artists shared?</td></tr>
+            <tr><td>[13:16] &lt Davbo&gt You share some artists in common, including The Flaming Lips, Manic Street Preachers, ORANGE RANGE, and Jack Johnson.</td></tr>
+            <tr><td>[13:16] &lt vmlemon&gt Aah</td></tr>
+            <tr><td>[13:17] &lt vmlemon&gt Ouch, "You cannot access the following Web address: http://www.last.fm/ The site you requested is blocked under the following categories: Dating/Social"</td></tr>
+            <tr><td>[13:17] &lt Davbo&gt :|</td></tr>
+            <tr><td>[13:17] *** vmlemon wouldn't call last.fm a "dating site" by any means</td></tr>
+            <tr><td>[13:17] &lt Lawouach_&gt My username on last.fm is "seel20" BTW</td></tr>
+            <tr><td>[13:17] &lt Lawouach_&gt A social one probably</td></tr>
+            <tr><td>[13:17] *** vmlemon assumes that Davbo's is well "Davbo"</td></tr>
+            <tr><td>[13:17] &lt Davbo&gt :)</td></tr>
+            <tr><td>[13:17] &lt Davbo&gt Your musical compatibility rating with seel20 is: High</td></tr>
+            <tr><td>[13:18] *** Davbo annoyingly adds everyone as friends.</td></tr>
+            <tr><td>[13:18] &lt vmlemon&gt Good Idea (R)</td></tr>
+            <tr><td>[13:19] &lt Lawouach_&gt Is that Ichigo from Bleach I see there?</td></tr>
+            <tr><td>[13:19] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[13:20] *** vmlemon assumes that Utada Hikaru, Ayumi Hamasaki, Vo Vo Tau, Kazumasa Oda and probably ZARD make his profile compatibility with Davbo "very low"...</td></tr>
+            <tr><td>[13:20] &lt Lawouach_&gt http://www.allfacebook.com/2008/05/breaking-facebook-to-launch-jabberxmpp-support/</td></tr>
+            <tr><td>[13:20] &lt Lawouach_&gt Great man</td></tr>
+            <tr><td>[13:20] &lt Lawouach_&gt I love Bleach :)</td></tr>
+            <tr><td>[13:21] &lt Davbo&gt awesome :)</td></tr>
+            <tr><td>[13:21] &lt vmlemon&gt Domestos? ;)</td></tr>
+            <tr><td>[13:21] *** vmlemon ducks</td></tr>
+            <tr><td>[13:21] &lt Lawouach_&gt No need to duck man. That was so lame it just didn't even go near me</td></tr>
+            <tr><td>[13:22] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[13:23] &lt Davbo&gt Hah :)</td></tr>
+            <tr><td>[13:28] &lt Davbo&gt Lawouach_: A friend of mine went o Japan last year and brought me back a copy of Shonen Weekly Jump and I could only read the Bleach bit 2 weeks ago without reading spoilers hehe</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt I got it off him in like August last year too</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt and when i say "read" i mean, look at the pictures.</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt :)</td></tr>
+            <tr><td>[13:30] &lt Lawouach_&gt I have all the volumes publiushed in French, meaning up to 27</td></tr>
+            <tr><td>[13:30] &lt Lawouach_&gt I'm expecting 28 next week</td></tr>
+            <tr><td>[13:31] &lt Lawouach_&gt That means 5 or 6 behind the Japan edition</td></tr>
+            <tr><td>[13:33] &lt Davbo&gt hehe cool :-)</td></tr>
+            <tr><td>[13:33] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:33] &lt Lawouach_&gt They broadcast the shows everyday here</td></tr>
+            <tr><td>[13:34] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:34] *** Davbo has to download it :(</td></tr>
+            <tr><td>[13:40] *** Lawouach_ is listening to Skunk Anansie - Charlie Big Potato</td></tr>
+            <tr><td>[13:41] &lt Lawouach_&gt powerful :)</td></tr>
+            <tr><td>[13:57] *** Davb1 has joined #kamaelia</td></tr>
+            <tr><td>[14:28] *** Davb1 is now known as Davbo</td></tr>
+            <tr><td>[14:33] &lt ms-away&gt back</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt ms-away: I got your scratch branch here</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt any instructions for installing it?</td></tr>
+            <tr><td>[14:37] &lt Davbo&gt or just as usual</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt (i'm installing it from having no previous kamaelia/axon installed)</td></tr>
+            <tr><td>[14:38] *** ms-away has to go away again</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt lol</td></tr>
+            <tr><td>[14:38] &lt ms-away&gt yes, just install as usual</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt okay, thanks</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt Aha!</td></tr>
+            <tr><td>[14:40] &lt Davbo&gt for some reasons it crashed out installing Python-dev</td></tr>
+            <tr><td>[14:40] &lt Davbo&gt got it working now</td></tr>
+            <tr><td>[15:00] &lt mhrd&gt davbo, you have a branch that needs merging?</td></tr>
+            <tr><td>[15:01] &lt Davbo&gt what err?</td></tr>
+            <tr><td>[15:01] &lt Davbo&gt no</td></tr>
+            <tr><td>[15:01] &lt Davbo&gt i don't think so lol</td></tr>
+            <tr><td>[15:01] &lt mhrd&gt ok, I'm mixed up ... someone has</td></tr>
+            <tr><td>[15:01] *** mhrd checks the google group again</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt I did what MS said to copy out a MagnaDoodle if you're looking at recent svn activity</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt I think i did that correctly</td></tr>
+            <tr><td>[15:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:02] &lt mhrd&gt yeah, I'm just getting names mixed up ...</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt oh okay :)</td></tr>
+            <tr><td>[15:02] &lt mhrd&gt j_baker : you've got a branch that needs merging?</td></tr>
+            <tr><td>[15:02] &lt mhrd&gt ;-)</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt you the branch merger mhrd? :)</td></tr>
+            <tr><td>[15:04] &lt mhrd&gt not usually - usually my job is to suddenly regurgitate large chunks of unreadable code then cajole MS- into merging them :)</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt Haha :)</td></tr>
+            <tr><td>[15:04] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt is merging just taking something from Branch and getting it into Trunk?</td></tr>
+            <tr><td>[15:04] &lt mhrd&gt kinda, its a reviewing process too</td></tr>
+            <tr><td>[15:05] &lt mhrd&gt ie. a fresh set of eyes doing a cursorary sanity check</td></tr>
+            <tr><td>[15:05] &lt mhrd&gt plus, I also do a clean checkout of the branch and trunk and test installing the changes</td></tr>
+            <tr><td>[15:05] &lt mhrd&gt depending on how substantial they are, or what components they effect, then doing an appropriate amount of testing/checking</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt Ah I see</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt so it's a sort of review process too</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt cool</td></tr>
+            <tr><td>[15:06] &lt mhrd&gt eg. Michaels ERModeller branch was relatively easy to do, since it was adding something new and separate</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:06] &lt mhrd&gt whereas, a change to Axon would require more thorough testing to check that no regressions were introduced</td></tr>
+            <tr><td>[15:07] &lt Davbo&gt Ah, I see</td></tr>
+            <tr><td>[15:08] &lt mhrd&gt Axon is at the extreme end, because everythign else depends on it. Axon therefore also has an overall more comprehensive test suite than the rest of Kamaelia to test ti behaves as expected</td></tr>
+            <tr><td>[15:09] &lt Davbo&gt Yeah, I suppose the nature of the components makes them relatively easy to merge in</td></tr>
+            <tr><td>[15:09] &lt Davbo&gt new ones that is</td></tr>
+            <tr><td>[15:09] &lt Davbo&gt although then again, something like consolechoer where lots of things use it</td></tr>
+            <tr><td>[15:09] &lt Davbo&gt humm</td></tr>
+            <tr><td>[15:09] &lt mhrd&gt exactly :)</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt Yeah, i can see it being a headache at times</td></tr>
+            <tr><td>[15:10] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt Anyway, i'm off to try see if Fedora 9 detects my WLAN card.</td></tr>
+            <tr><td>[15:10] *** Davbo hopes it doesn't</td></tr>
+            <tr><td>[15:11] &lt vmlemon_&gt Hah, why?</td></tr>
+            <tr><td>[15:11] &lt Davbo&gt If it does i'll have to install it!</td></tr>
+            <tr><td>[15:11] &lt Davbo&gt back in a bit</td></tr>
+            <tr><td>[15:20] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt oh dear</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt this is bad new</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt s/new/news</td></tr>
+            <tr><td>[15:22] &lt ms-away&gt sigh</td></tr>
+            <tr><td>[15:23] &lt Davbo&gt what's up ms-away?</td></tr>
+            <tr><td>[15:23] &lt ms-away&gt never mind :)</td></tr>
+            <tr><td>[15:24] &lt ms-away&gt thanks though</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt for what?</td></tr>
+            <tr><td>[15:27] &lt ms-away&gt Asking :)</td></tr>
+            <tr><td>[15:28] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt oh no problem :)</td></tr>
+            <tr><td>[15:34] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:36] &lt Davbo&gt Looks like I have to install it vmlemon_ :-)</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[15:39] &lt Lawouach_&gt mhrd: That's why I'm not pushing too strong for the SSL branch to be merged</td></tr>
+            <tr><td>[15:39] &lt Lawouach_&gt I don't think it'd break anything considering I only add</td></tr>
+            <tr><td>[15:39] &lt Lawouach_&gt I don't change the existing behavior of any components</td></tr>
+            <tr><td>[15:39] &lt Lawouach_&gt But well...</td></tr>
+            <tr><td>[15:39] &lt ms-away&gt Lawouach_: When I looked at it, I thought that there is probably a nice clean way of merging it</td></tr>
+            <tr><td>[15:40] &lt ms-away&gt but it would need a small amount of work - so I'm planning on hacking on it on your branch to separate out bits</td></tr>
+            <tr><td>[15:40] *** mhrd leaving that one to Lawouach_ and ms-away</td></tr>
+            <tr><td>[15:40] &lt ms-away&gt and then pass it back to you to say "yes, I like" or "No, that sucks" :)</td></tr>
+            <tr><td>[15:40] &lt ms-away&gt It strikes me as a really useful thing to add though</td></tr>
+            <tr><td>[15:41] &lt Lawouach_&gt Thanks.</td></tr>
+            <tr><td>[15:41] &lt Lawouach_&gt The branch was really there as a proof of concept</td></tr>
+            <tr><td>[15:41] &lt Lawouach_&gt I haven't assess the many different components impacted by it.</td></tr>
+            <tr><td>[15:41] &lt Lawouach_&gt Nor did I try to make it more usable overall.</td></tr>
+            <tr><td>[15:41] &lt Lawouach_&gt I needed a quick fix :p</td></tr>
+            <tr><td>[15:42] &lt ms-away&gt Indeed :)</td></tr>
+            <tr><td>[15:42] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:42] &lt Lawouach_&gt I'll be glad to work on it with you to make it production ready</td></tr>
+            <tr><td>[15:42] &lt ms-away&gt Cool :)</td></tr>
+            <tr><td>[15:42] *** ms-away is really still away and really shouldn't be chatting this instant ... :-/</td></tr>
+            <tr><td>[15:42] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[15:43] &lt Lawouach_&gt I didn't see you anyway and I'm speaking to myself.</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[15:46] &lt vmlemon__&gt The physical card needs installing? Or just a driver module?</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt oh no, I meant i'll have to install Fedora 9</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt it's working fine :D</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt I'm on it right now</td></tr>
+            <tr><td>[15:47] &lt vmlemon__&gt Aah</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt the live CD</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt Don't really like Mandriva and there subscription thing would rather get away from that.</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt Funny how because i installed Windows first the partition table has lost 10GB into the ether</td></tr>
+            <tr><td>[15:49] &lt vmlemon__&gt Ouch</td></tr>
+            <tr><td>[15:50] &lt vmlemon__&gt Digital quicksand? ;)</td></tr>
+            <tr><td>[16:05] &lt j_baker&gt Sorry mhrd, but yes, I believe that branch is ready for merging. You may want to double check it for any obvious errors though.</td></tr>
+            <tr><td>[16:05] &lt mhrd&gt ta; I will be :)</td></tr>
+            <tr><td>[16:06] &lt mhrd&gt do you have any example code anywhere that demos/makes use of the changes you have made?</td></tr>
+            <tr><td>[16:06] &lt mhrd&gt (I've not looked at it yet, so pls forgive if the question is silly)</td></tr>
+            <tr><td>[16:07] &lt j_baker&gt Well, yes and no.</td></tr>
+            <tr><td>[16:07] &lt j_baker&gt The HTTPServer demo was kinda broken.</td></tr>
+            <tr><td>[16:08] &lt j_baker&gt (the one from the cookbook)</td></tr>
+            <tr><td>[16:08] &lt j_baker&gt Minimal is supposed to have an index page such that if you go to http://ip:port/ it will return http://ip:port/index.html</td></tr>
+            <tr><td>[16:08] &lt j_baker&gt But it doesn't. :)</td></tr>
+            <tr><td>[16:09] &lt mhrd&gt but now it does?</td></tr>
+            <tr><td>[16:09] &lt j_baker&gt Right.</td></tr>
+            <tr><td>[16:09] &lt j_baker&gt Now that I think about it, there was one other thing that I wanted to fix.</td></tr>
+            <tr><td>[16:10] &lt j_baker&gt I believe if you try a URL like http://ip:port/../directory it will crash the server due to the way sanitizePath works.</td></tr>
+            <tr><td>[16:10] &lt j_baker&gt So you may want to hold off on merging it just this minute.</td></tr>
+            <tr><td>[16:10] &lt mhrd&gt I'm planning on looking at it when I get home later this evening, so you've got breathing space :)</td></tr>
+            <tr><td>[16:10] &lt j_baker&gt Anyway, I've got an appt with the Dr, so I've got to go now. :)</td></tr>
+            <tr><td>[16:10] &lt mhrd&gt cya</td></tr>
+            <tr><td>[16:11] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[16:12] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:14] &lt mhrd&gt quick survey ooi: what linux distros do people here use? I used to use SuSE 9/10 and have moved to Umbongo 7 now 8</td></tr>
+            <tr><td>[16:15] &lt j_baker-away&gt I'm currently using Yellowdog but am about to try out fedora 9</td></tr>
+            <tr><td>[16:15] &lt j_baker-away&gt Ok, I'm away for reals now</td></tr>
+            <tr><td>[16:15] &lt mhrd&gt ta j_baker-away</td></tr>
+            <tr><td>[16:22] &lt ms-away&gt mhrd: opensuse 10.1 & 10.3</td></tr>
+            <tr><td>[16:23] &lt mhrd&gt ta ms-away</td></tr>
+            <tr><td>[16:40] *** Trun has parted #kamaelia</td></tr>
+            <tr><td>[17:06] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[17:33] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:39] &lt vmlemon__&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[17:39] Reply: Ptang!</td></tr>
+            <tr><td>[17:43] &lt vmlemon__&gt Yay, the Ethernet driver/chipset actually sends and receives packets now (I didn't test that when the driver started to work after upgrading the kernel)...</td></tr>
+            <tr><td>[18:13] *** ms-away is now known as MS-</td></tr>
+            <tr><td>[18:50] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[18:54] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:54] &lt j_baker&gt Does anybody know if Ubuntu can read an NTFS partition?</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt Ubuntu doesn't. The Linux kernel does ;)</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt A more direct answer: yes it can.</td></tr>
+            <tr><td>[18:56] &lt vmlemon__&gt The kernel has in-built support</td></tr>
+            <tr><td>[18:57] &lt vmlemon__&gt mount /dev/diskpartition /mountpoint -t ntfs</td></tr>
+            <tr><td>[18:57] &lt vmlemon__&gt Should do the trick</td></tr>
+            <tr><td>[18:57] &lt vmlemon__&gt Or try NTFS-3G</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt Most likely Ubuntu will have already done that</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt Your partition should be visible from any explorer already</td></tr>
+            <tr><td>[19:06] &lt j_baker&gt That's awesome.</td></tr>
+            <tr><td>[19:09] &lt vmlemon__&gt Hah, "orinthe: Furansujin: well i'm not saying it's a terrible terrible place and you couldn't ever go there! not at all!"</td></tr>
+            <tr><td>[19:28] *** vmlemon__ is trying to stack £1 coins on top of each other, rather unsuccessfully</td></tr>
+            <tr><td>[19:29] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[19:51] &lt Lawouach&gt Interestingly sourceforge only supports a specific subset of OpenID providers...</td></tr>
+            <tr><td>[19:51] &lt Lawouach&gt *cough*partnership*cough*</td></tr>
+            <tr><td>[19:52] &lt Lawouach&gt That defeats parts of the OpenID philosophy really.</td></tr>
+            <tr><td>[19:52] &lt MS-&gt Well, that'll be the "open" part of open id being "understood"</td></tr>
+            <tr><td>[19:53] &lt Lawouach&gt Indeed.</td></tr>
+            <tr><td>[19:56] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[19:56] *** MS- goes to look at Lawouach's branch properly</td></tr>
+            <tr><td>[20:00] &lt MS-&gt Lawouach: Looking at your code, it looks like you are able to send a message to the system in its "makessl" box which would mean, for example,</td></tr>
+            <tr><td>[20:00] &lt MS-&gt that you could use a non-encrypted connection for some of the connection time</td></tr>
+            <tr><td>[20:00] &lt MS-&gt (say 5 seconds) and then "go" encrypted</td></tr>
+            <tr><td>[20:00] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[20:00] &lt Lawouach&gt That's what happens with xMPP</td></tr>
+            <tr><td>[20:00] &lt MS-&gt I see</td></tr>
+            <tr><td>[20:01] &lt Lawouach&gt You start with an non encrypted connection</td></tr>
+            <tr><td>[20:01] &lt MS-&gt That completely explains the code structure</td></tr>
+            <tr><td>[20:01] &lt Lawouach&gt Then upon receiving a specific message you add SSL</td></tr>
+            <tr><td>[20:01] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:01] &lt Lawouach&gt Yeah it reflects what I was doing.</td></tr>
+            <tr><td>[20:01] &lt MS-&gt As an interesting thought,</td></tr>
+            <tr><td>[20:01] &lt MS-&gt since you do this:</td></tr>
+            <tr><td>[20:02] &lt MS-&gt + self.socket = SSLSocket(self.socket)</td></tr>
+            <tr><td>[20:02] &lt MS-&gt Would I be right in thinking that if we stored the original self.socket</td></tr>
+            <tr><td>[20:02] &lt MS-&gt that we could toggle the encryption on and off?</td></tr>
+            <tr><td>[20:02] &lt MS-&gt clear, enc, clear, enc, clear, enc, etc</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt That is an interesting idea. I believe that in theory this should be working.</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt Meaning that if you close the SSL part down it wouldn't mean you close the actual socket.</td></tr>
+            <tr><td>[20:03] &lt Lawouach&gt I believe this should work but I haven't tried.</td></tr>
+            <tr><td>[20:04] &lt Lawouach&gt At least with XMPP when you close one it means you close the other ;)</td></tr>
+            <tr><td>[20:04] &lt MS-&gt The one thing I note that's missing from this is lack of an example for me to test this against - I don't suppose you have a minimal example somewhere do you?</td></tr>
+            <tr><td>[20:05] &lt Lawouach&gt Hmm</td></tr>
+            <tr><td>[20:06] &lt Lawouach&gt I can work one out swiftly I guess</td></tr>
+            <tr><td>[20:06] &lt MS-&gt Would it work for (say) connecting over SSL to an HTTPS server?</td></tr>
+            <tr><td>[20:06] &lt MS-&gt Just as a raw connection?</td></tr>
+            <tr><td>[20:07] &lt MS-&gt I suppose I could test that by bolting a console reader/echoer either side of the tcpclient</td></tr>
+            <tr><td>[20:07] &lt MS-&gt and trying it</td></tr>
+            <tr><td>[20:08] &lt Lawouach&gt That was my idea too</td></tr>
+            <tr><td>[20:08] &lt MS-&gt Ah, no, that by itself won't quite work - I need to set the makessl as well</td></tr>
+            <tr><td>[20:08] &lt MS-&gt Though that's just a detail</td></tr>
+            <tr><td>[20:08] &lt MS-&gt I'll give that a try</td></tr>
+            <tr><td>[20:10] &lt MS-&gt Ah, I just need matt's oneshot component of course :)</td></tr>
+            <tr><td>[20:15] &lt MS-&gt Oh fantastic</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt I have a working sample otherwise</td></tr>
+            <tr><td>[20:16] &lt MS-&gt I can manually "telnet" to https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_SH_SSLCSA/Kamaelia/Kamaelia/Internet/ConnectedSocketAdapter.py and send http to it over https</td></tr>
+            <tr><td>[20:16] &lt MS-&gt That's fantastic</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:16] &lt MS-&gt Graphline(</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  MAKESSL = OneShot(" make ssl "),</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  CONSOLE = ConsoleReader(),</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  ECHO = ConsoleEchoer(),</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  linkages = {</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  ("CONNECTION", "outbox"): ("ECHO", "inbox"),</td></tr>
+            <tr><td>[20:16] &lt MS-&gt  }</td></tr>
+            <tr><td>[20:16] &lt MS-&gt ).run()</td></tr>
+            <tr><td>[20:16] &lt MS-&gt (needs a few more linkages)</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt well that's pretty cool :)</td></tr>
+            <tr><td>[20:17] &lt MS-&gt It's like magic :)</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt My patch doesn't change the existing code</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt That's why everything works as it used to.</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt I just add the extra SSL layer</td></tr>
+            <tr><td>[20:17] &lt mhrd-home&gt cool :)</td></tr>
+            <tr><td>[20:17] &lt MS-&gt Indeed - I did want to see if I could abstract some aspects out of it to separate out some bits, but that's just too cool</td></tr>
+            <tr><td>[20:18] &lt MS-&gt This would also work for doing HTTPS through web proxies correctly too</td></tr>
+            <tr><td>[20:18] &lt MS-&gt Since you have you do the CONNECT server:port HTTP/ver in clear text</td></tr>
+            <tr><td>[20:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:18] &lt Lawouach&gt The only place where things are changed is in _saveRecv where in case data read from the socket object is empty it would close the connection usually (normal behavior). With SSL it won't because it's just a case of starving the buffer. Hence the isSSL flag in the CSA component.</td></tr>
+            <tr><td>[20:19] &lt MS-&gt and then the rest of the connection in encrypted</td></tr>
+            <tr><td>[20:19] &lt Lawouach&gt Quite likely yes.</td></tr>
+            <tr><td>[20:19] &lt MS-&gt I think the only thing I'll add to this at this point is the example to show minimal usage</td></tr>
+            <tr><td>[20:19] &lt Lawouach&gt Good point.</td></tr>
+            <tr><td>[20:21] &lt MS-&gt I guess I also ought to look at docs.</td></tr>
+            <tr><td>[20:21] &lt MS-&gt I think it's particularly nice because I didn't even check to see if I had SSL support installed before using it</td></tr>
+            <tr><td>[20:21] &lt MS-&gt :-D</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt Just wondering, the SSL component can also be used as part of a server component?</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt One more thing, like I said, the ssl support in Python means there is no certificate validation</td></tr>
+            <tr><td>[20:22] &lt MS-&gt vmlemon_: It should be, I would expect.</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt Or is it client-only?</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt I don't mind so much but well...</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[20:22] &lt MS-&gt Lawouach: Yes, that is an issue.</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt Yeah</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt The best course IMO would be to the ssl module instead</td></tr>
+            <tr><td>[20:23] &lt Lawouach&gt I tried but with little success.</td></tr>
+            <tr><td>[20:23] &lt Lawouach&gt It works a bit differently internally and didn't play along well with Kamaelia.</td></tr>
+            <tr><td>[20:23] &lt Lawouach&gt  But that'd be the better course of action.</td></tr>
+            <tr><td>[20:23] &lt Lawouach&gt http://pypi.python.org/pypi/ssl/1.13</td></tr>
+            <tr><td>[20:24] &lt Lawouach&gt Specifically the bottom line should be that you replace the</td></tr>
+            <tr><td>[20:24] &lt Lawouach&gt self.socket == SSLSocket(self.socket)</td></tr>
+            <tr><td>[20:24] &lt Lawouach&gt s/==/=</td></tr>
+            <tr><td>[20:24] &lt Lawouach&gt line with:</td></tr>
+            <tr><td>[20:25] &lt Lawouach&gt self.socket = ssl.wrap_socket(self.socket, ca_certs=PATH_TO_CERT, cert_reqs=ssl.CERT_OPTIONAL)</td></tr>
+            <tr><td>[20:25] &lt Lawouach&gt It wouldn't work when I tried. At least not from Kamaelia</td></tr>
+            <tr><td>[20:26] &lt MS-&gt That's worth looking into. For a version 0 though for something that works, I do like this.</td></tr>
+            <tr><td>[20:26] &lt Lawouach&gt http://docs.python.org/dev/library/ssl.html#examples</td></tr>
+            <tr><td>[20:26] &lt Lawouach&gt Cool :)</td></tr>
+            <tr><td>[20:27] &lt j_baker&gt Am I missing something or does the HTTPServer component really give new meaning to the term "Spaghetti code?"</td></tr>
+            <tr><td>[20:28] &lt j_baker&gt Or rather HTTPParser</td></tr>
+            <tr><td>[20:28] &lt Lawouach&gt j_baker: +1</td></tr>
+            <tr><td>[20:28] &lt Lawouach&gt That module still scares me :)</td></tr>
+            <tr><td>[20:28] &lt Lawouach&gt It does work mind you :p</td></tr>
+            <tr><td>[20:28] &lt MS-&gt j_baker: Absolutely.</td></tr>
+            <tr><td>[20:28] &lt Lawouach&gt And is quite sensible in many aspects. It's just plain ugly.</td></tr>
+            <tr><td>[20:29] &lt j_baker&gt Well yeah, it works, but it is totally horrendous to try to modify.</td></tr>
+            <tr><td>[20:29] &lt MS-&gt It's worth bearing in mind that it's largely code from a pre-university student</td></tr>
+            <tr><td>[20:29] &lt j_baker&gt I see.</td></tr>
+            <tr><td>[20:29] &lt MS-&gt I've done some work on improving it, slowly and the way I've found best is to take very small very incremental steps.</td></tr>
+            <tr><td>[20:29] &lt mhrd-home&gt j_baker: am starting to look at your branch. did you say you wanted to make some changes first?</td></tr>
+            <tr><td>[20:29] &lt MS-&gt Of abstracting bits out</td></tr>
+            <tr><td>[20:30] &lt j_baker&gt I was planning on just passing the text of the HTTP request through the request dictionary, but that's a lot harder than it appears.</td></tr>
+            <tr><td>[20:30] &lt j_baker&gt mhrd-home, yeah, but I haven't gotten a chance yet. And I may not get a chance until later tonight.</td></tr>
+            <tr><td>[20:31] &lt mhrd-home&gt ok, I'll leave it for the moment</td></tr>
+            <tr><td>[20:33] &lt Lawouach&gt j_baker: You might almost consider starting the server from scratch again :p</td></tr>
+            <tr><td>[20:33] &lt MS-&gt Lawouach: It's tempting to say that, but I would recommend against it</td></tr>
+            <tr><td>[20:33] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:33] &lt vmlemon_&gt Hi Davbo</td></tr>
+            <tr><td>[20:33] &lt Lawouach&gt Yeah I can understand why.</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt Just add more Dolmio, and no-one need know how bad it is... ;)</td></tr>
+            <tr><td>[20:34] &lt MS-&gt I've set the task "build a basic web server" in the past for various people when people joined/left the project at the beeb, and Ryan's code had a singular advantage over the others</td></tr>
+            <tr><td>[20:34] &lt MS-&gt  - it focussed on actually serving pages, and then adding in compiance</td></tr>
+            <tr><td>[20:34] &lt MS-&gt s/compiance/compliance/</td></tr>
+            <tr><td>[20:35] &lt MS-&gt Getting it to the stage where "delete first programming" could be used though would be a good idea</td></tr>
+            <tr><td>[20:35] &lt MS-&gt (it's an idea me and couple of others came up with a while back - as a means of controlled rewriting of major systems</td></tr>
+            <tr><td>[20:36] &lt Davbo&gt hello vmlemon_, all.</td></tr>
+            <tr><td>[20:36] &lt MS-&gt compartmentalise to large chunks, delete and then put back in sufficient clean code to work</td></tr>
+            <tr><td>[20:36] &lt MS-&gt Davbo: Heya</td></tr>
+            <tr><td>[20:36] *** vmlemon_ has just approved Davbo's friend request on last.fm</td></tr>
+            <tr><td>[20:37] &lt Davbo&gt Didn't bother with Fedora after it crashed on me :P - I was literally typing "Yeah I think i'll install this" into IRC then boom.</td></tr>
+            <tr><td>[20:37] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[20:37] &lt Davbo&gt KDE4 isn't there yet</td></tr>
+            <tr><td>[20:38] &lt j_baker&gt I still don't know what red hat was thinking.</td></tr>
+            <tr><td>[20:38] &lt j_baker&gt Did you try gnome?</td></tr>
+            <tr><td>[20:38] &lt Davbo&gt nah, couldn't be bothered after that.</td></tr>
+            <tr><td>[20:38] &lt Davbo&gt Mandriva has been working really nicely anyway</td></tr>
+            <tr><td>[20:39] &lt Lawouach&gt I've never enjoyed Fedora at all</td></tr>
+            <tr><td>[20:39] &lt Davbo&gt It's meant as an experimental thing I suppose</td></tr>
+            <tr><td>[20:39] &lt Lawouach&gt It looks as if only the version number increases but the actual disto stays the same</td></tr>
+            <tr><td>[20:39] *** vmlemon_ isn't sure how he could upgrade to Fedora 9, or even if he should...</td></tr>
+            <tr><td>[20:39] &lt MS-&gt I think the last time I used redhat was when it was version 4.2 IIRC</td></tr>
+            <tr><td>[20:39] &lt Lawouach&gt Groundhog day feeling.</td></tr>
+            <tr><td>[20:41] &lt Davbo&gt I like Mandriva just not so much the different sku's they put out</td></tr>
+            <tr><td>[20:43] &lt Davbo&gt Actually, I have no good reason.</td></tr>
+            <tr><td>[20:43] &lt Davbo&gt Just not a fan of the logo</td></tr>
+            <tr><td>[20:43] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[20:44] *** vmlemon_ contemplates finding a generic orange juice carton photo, and using his poor Photoshop/GIMP skills to rebrand it ;)</td></tr>
+            <tr><td>[20:44] &lt j_baker&gt I like YellowDog linux (which is based on red hat).</td></tr>
+            <tr><td>[20:45] &lt j_baker&gt It's just that the packages are too old. I think on enterprise linux, red hat is a lot more conservative in pushing packages.</td></tr>
+            <tr><td>[20:45] &lt j_baker&gt (that and it just a lot slower for some reason)</td></tr>
+            <tr><td>[20:45] &lt j_baker&gt s/just/seems</td></tr>
+            <tr><td>[20:45] &lt Davbo&gt Hmm</td></tr>
+            <tr><td>[20:46] &lt Davbo&gt With so many customers you've got to try and keep as many happy as possible</td></tr>
+            <tr><td>[20:46] &lt j_baker&gt Did you guys see that they're sending the stored value cards?</td></tr>
+            <tr><td>[20:47] &lt Davbo&gt I've got my FedEx email</td></tr>
+            <tr><td>[20:48] &lt vmlemon_&gt I liked Kubuntu for a while, although it's been an absolute pain to install on this laptop</td></tr>
+            <tr><td>[20:48] &lt vmlemon_&gt (It had weird issues with screen resolution, and stuff kept breaking constantly whilst upgrading it, since I only had an ancient install CD and had to keep doing upgrades from one version to the next)</td></tr>
+            <tr><td>[20:48] &lt vmlemon_&gt o.O "Your musical compatibility rating with seel20 is: High You share some artists in common, including U2, and Bob Marley."</td></tr>
+            <tr><td>[20:48] &lt vmlemon_&gt Interesting, seeing as Davbo shared more artists...</td></tr>
+            <tr><td>[20:49] *** vmlemon_ hates Linux, sometimes</td></tr>
+            <tr><td>[20:52] &lt j_baker&gt Did you guys see this?</td></tr>
+            <tr><td>[20:52] &lt j_baker&gt http://code.google.com/appengine/articles/rietveld.html</td></tr>
+            <tr><td>[20:53] &lt j_baker&gt Could help with dealing with all these branches</td></tr>
+            <tr><td>[20:54] &lt MS-&gt j_baker: Branches intended for use in merging should ideally be small, and short lived</td></tr>
+            <tr><td>[20:54] &lt MS-&gt Once they're merged they can actually be deleted</td></tr>
+            <tr><td>[20:54] &lt MS-&gt since they stay in the version history</td></tr>
+            <tr><td>[20:56] &lt j_baker&gt I see.</td></tr>
+            <tr><td>[20:57] &lt MS-&gt But using a complete branch also makes testing the change in the branch trivial</td></tr>
+            <tr><td>[20:58] &lt MS-&gt And at the end of the day, doing an svn copy isn't really a big deal</td></tr>
+            <tr><td>[20:58] &lt MS-&gt Just something to get used to</td></tr>
+            <tr><td>[20:58] &lt Davbo&gt oh I copied that MagnaDoodle into my branch fyi MS-</td></tr>
+            <tr><td>[20:58] &lt MS-&gt Into your /Sketches area you mean ? :)</td></tr>
+            <tr><td>[20:59] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[20:59] &lt MS-&gt I noticed :)</td></tr>
+            <tr><td>[20:59] &lt Davbo&gt Shall i just keep commiting that every now and again while i work on it?</td></tr>
+            <tr><td>[20:59] &lt MS-&gt Absolutely</td></tr>
+            <tr><td>[20:59] &lt MS-&gt The only person you'll affect if yourself, and you'll find yourself more willing to change things if you do</td></tr>
+            <tr><td>[21:00] &lt mhrd-home&gt I'm doing that with the code I'm writing atm - its not even Kamaelia components yet ;-)</td></tr>
+            <tr><td>[21:00] &lt Davbo&gt Alright, cool</td></tr>
+            <tr><td>[21:01] &lt vmlemon_&gt o.O "This is our ball ool, notice there is no P in it, please keep it that way."</td></tr>
+            <tr><td>[21:02] &lt mhrd-home&gt heh</td></tr>
+            <tr><td>[21:08] &lt j_baker&gt mhrd-home: I think that branch should be ready.</td></tr>
+            <tr><td>[21:10] &lt Davbo&gt Wow, unexpected.</td></tr>
+            <tr><td>[21:11] &lt Davbo&gt I assumed Kate was installed here, so i clicked the menu typed "kate" into the KDE search thingy and pressed enter</td></tr>
+            <tr><td>[21:11] &lt Davbo&gt it just opened a tab in firefox with a google search of "kate" (pictures of Kate from Lost lol)</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt but, or feature? hmm.</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt s/but/bug</td></tr>
+            <tr><td>[21:13] &lt Davbo&gt Heh, works now.</td></tr>
+            <tr><td>[21:20] &lt MS-&gt j_baker: I suppose the other thing I should mention is that lots of small branches are *alot* easier to merge than large mega branches.</td></tr>
+            <tr><td>[21:23] &lt j_baker&gt That's true MS-. I was mentioning rietveld because it seems to simplify the process of reviewing those branches and marking them as ready to merge.</td></tr>
+            <tr><td>[21:25] &lt mhrd-home&gt j_baker : k, I'll take a look</td></tr>
+            <tr><td>[21:26] &lt mhrd-home&gt Davbo: you said it - it was a "KDE search thingy" - sounds like it did exactly what it said on the tin :)</td></tr>
+            <tr><td>[21:26] &lt MS-&gt j_baker: There's a limit to automation though</td></tr>
+            <tr><td>[21:27] &lt MS-&gt The key thing about the summary & email of "ready to merge" is about communication, not about code.</td></tr>
+            <tr><td>[21:27] &lt Davbo&gt Well I guess, for whatever reason it didn't see the text editor because it wasn't on the KDE Menu</td></tr>
+            <tr><td>[21:28] &lt MS-&gt alt-f2 , type "kate" into the popup, enjoy :)</td></tr>
+            <tr><td>[21:29] &lt mhrd-home&gt j_baker: did you made any further changes?</td></tr>
+            <tr><td>[21:29] &lt mhrd-home&gt (I can't see any commits)</td></tr>
+            <tr><td>[21:29] &lt j_baker&gt No, there wasn't a bug mhrd-home.</td></tr>
+            <tr><td>[21:29] &lt Davbo&gt Heh I know MS- :-)</td></tr>
+            <tr><td>[21:29] &lt mhrd-home&gt k</td></tr>
+            <tr><td>[21:29] &lt j_baker&gt MS- I think you should get us one of these:</td></tr>
+            <tr><td>[21:29] &lt j_baker&gt http://panospace.wordpress.com/2008/05/14/nodal-ninja-sponsors-hugin-gsoc/</td></tr>
+            <tr><td>[21:29] &lt MS-&gt heh, It'd be nice</td></tr>
+            <tr><td>[21:30] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:30] &lt vmlemon_&gt Ugh, ./lastfmfpclient: /usr/lib/libcurl.so.3: no version information available (required by ./lastfmfpclient)</td></tr>
+            <tr><td>[21:31] *** vmlemon_ goes to look for a CURL 3.x tarball, seeing as the Fedora repositories don't have it, and symlinking /usr/lib/libcurl.so.4 is a suboptimal solution</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt MS- could probably get us Doctor Who swag, although I think I'd rather pay him to keep it away from me ;-)</td></tr>
+            <tr><td>[21:31] &lt MS-&gt heh</td></tr>
+            <tr><td>[21:31] &lt MS-&gt "More K9s for me"</td></tr>
+            <tr><td>[21:32] &lt Davbo&gt If they were Cylons however! that'd be a different story :)</td></tr>
+            <tr><td>[21:32] &lt MS-&gt The BBC has this great purchasing system. It's all completely centralised and designed to enable the bbc to save money. It's primary weapons here are deceit and camoflage.</td></tr>
+            <tr><td>[21:33] &lt MS-&gt It is neither easy to order from nor quick.</td></tr>
+            <tr><td>[21:33] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[21:33] &lt mhrd-home&gt do we have to talk about the purchasing system? I was starting to enjoy my evening :-)</td></tr>
+            <tr><td>[21:33] &lt Davbo&gt pure genius!</td></tr>
+            <tr><td>[21:33] &lt MS-&gt It's primary effect is to prevent purchases from ever occurring</td></tr>
+            <tr><td>[21:33] &lt MS-&gt heheheh</td></tr>
+            <tr><td>[21:33] &lt vmlemon_&gt Let me guess, the Yorkshire Purchasing Organization Catalogue? ;)</td></tr>
+            <tr><td>[21:33] &lt mhrd-home&gt Its called QuickOrder+ :-)</td></tr>
+            <tr><td>[21:34] *** vmlemon_ assumes that's a synonym for "SlowOrder-"</td></tr>
+            <tr><td>[21:34] &lt MS-&gt Well, I've not managed to order anything from it yet, primarily I think due to some dependencies it relies on</td></tr>
+            <tr><td>[21:34] &lt Davbo&gt Do they have an online store? you sign up and they post you your password (7-10 weeks)?</td></tr>
+            <tr><td>[21:34] &lt MS-&gt Anyway, that's enough on that</td></tr>
+            <tr><td>[21:35] *** MS- doesn't want to deal with that</td></tr>
+            <tr><td>[21:35] &lt MS-&gt rather</td></tr>
+            <tr><td>[21:35] &lt Davbo&gt Fair enough :)</td></tr>
+            <tr><td>[21:35] *** MS- doesn't want to have mhrd-home hearing about it here :)</td></tr>
+            <tr><td>[21:35] &lt mhrd-home&gt oh great, lots of rain tomorrow</td></tr>
+            <tr><td>[21:36] *** MS- looks at weather here</td></tr>
+            <tr><td>[21:36] &lt j_baker&gt It's raining here too.</td></tr>
+            <tr><td>[21:36] &lt MS-&gt Sunny blue skies tomorrow for me :-) (allegedly)</td></tr>
+            <tr><td>[21:36] &lt vmlemon_&gt No rain here</td></tr>
+            <tr><td>[21:37] &lt vmlemon_&gt and the sky looks clear</td></tr>
+            <tr><td>[21:37] &lt vmlemon_&gt (I can see the moon, for once)</td></tr>
+            <tr><td>[21:37] &lt j_baker&gt It's kinda nice for us because, well... we have sunny blue skies pretty much all year long.</td></tr>
+            <tr><td>[21:37] &lt vmlemon_&gt [22:36] &lt xevix&gt mjsilva, amarok can't sing, but it can play music, is that what you want? =)</td></tr>
+            <tr><td>[21:41] &lt Davbo&gt MS-: what Speex bindings do i need to run Whiteboard?</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt I can edit it and run without Speex but would rather see the full thing</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt Don't they come in the Megabundle?</td></tr>
+            <tr><td>[21:42] &lt mhrd-home&gt its not raining here yet; I was just taking the lady-standing-in-front-of-the-weather-map's word for it</td></tr>
+            <tr><td>[21:43] *** vmlemon_ wonders if anyone's managed to check Hype 2.0 into SVN ;)</td></tr>
+            <tr><td>[21:43] &lt Davbo&gt Ah, I see where you've gone wrong there mhrd-home. You gotta ignore that person completely ;-)</td></tr>
+            <tr><td>[21:43] *** MS- has merged the SSL code :-)</td></tr>
+            <tr><td>[21:44] &lt mhrd-home&gt I assure you I was ignoring her .. not my cup of tea :)</td></tr>
+            <tr><td>[21:44] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[21:44] &lt vmlemon_&gt Hmm, [22:42] &lt quasi&gt comparable to pulling the wheels off a car - still more than 90% car, but useless nontheless</td></tr>
+            <tr><td>[21:46] &lt MS-&gt Lawouach: That's very much appreciated. It looks like a tricky case to support cleanly and works well :)</td></tr>
+            <tr><td>[21:46] *** MS- laughs at Matt's most recent checkin message</td></tr>
+            <tr><td>[21:47] *** mhrd-home bows</td></tr>
+            <tr><td>[21:51] &lt Davbo&gt Hehe :-)</td></tr>
+            <tr><td>[21:57] &lt vmlemon_&gt Ouch, http://playground.last.fm/aliases/artist/Original%20Cast</td></tr>
+            <tr><td>[21:57] &lt Davbo&gt oh MS- what're the Speex bindings you use in Whiteboard?</td></tr>
+            <tr><td>[21:58] &lt MS-&gt Davbo: As vmlemon_ said - they're the ones in the megabundle</td></tr>
+            <tr><td>[21:59] &lt MS-&gt originally from here: http://www.freenet.org.nz/python/pySpeex/</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt Aren't they called PySpeex or Speex, or something like that?</td></tr>
+            <tr><td>[21:59] &lt MS-&gt version 0.2 - as per that page</td></tr>
+            <tr><td>[22:00] &lt Davbo&gt thought so</td></tr>
+            <tr><td>[22:00] &lt MS-&gt vmlemon_: yep</td></tr>
+            <tr><td>[22:00] &lt mhrd-home&gt ok, am happy to merge ... just one small thing whilst testing it:</td></tr>
+            <tr><td>[22:01] &lt mhrd-home&gt following the cookbook example it still doesn't work ... unless I add a trailing slash onto the 'homedirectory' path</td></tr>
+            <tr><td>[22:01] &lt MS-&gt mhrd-home: I think that's more a problem with the cookbook rather than anything else</td></tr>
+            <tr><td>[22:02] &lt mhrd-home&gt k</td></tr>
+            <tr><td>[22:02] *** mhrd-home commits the merge</td></tr>
+            <tr><td>[22:03] &lt j_baker&gt Awesome mhrd-home</td></tr>
+            <tr><td>[22:04] &lt j_baker&gt And now I've got to go to work. :)</td></tr>
+            <tr><td>[22:04] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[22:04] *** MS- calls it a night as well</td></tr>
+            <tr><td>[22:04] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[22:04] &lt ms-away&gt night all :)</td></tr>
+            <tr><td>[22:06] &lt mhrd-home&gt night</td></tr>
+            <tr><td>[22:08] &lt Davbo&gt night ms-away</td></tr>
+            <tr><td>[22:13] &lt vmlemon_&gt Haha, http://blogs.sun.com/plamere/entry/freakomendations_hacking_last_fm_poor and http://www.last.fm/music/Hillary+Rodham+Clinton</td></tr>
+            <tr><td>[22:38] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:00] *** aconbere_ has joined #kamaelia</td></tr>
+            <tr><td>[23:02] &lt aconbere_&gt is there a way to use kamaelia across processes? as opposed to inside the interpreter?</td></tr>
+            <tr><td>[23:05] &lt mhrd-home&gt hi aconbere_</td></tr>
+            <tr><td>[23:05] &lt mhrd-home&gt There are a few ways ...</td></tr>
+            <tr><td>[23:05] &lt aconbere_&gt cool :)</td></tr>
+            <tr><td>[23:05] &lt aconbere_&gt I... well</td></tr>
+            <tr><td>[23:05] &lt aconbere_&gt I love the abstraction that kamaelia provides</td></tr>
+            <tr><td>[23:05] &lt aconbere_&gt and, twisted freaks me out</td></tr>
+            <tr><td>[23:06] &lt aconbere_&gt heh</td></tr>
+            <tr><td>[23:06] &lt mhrd-home&gt one is to make use of the fact that all communication between components is message passing - so you can relatively easily take a Kamaelia system and divide it up into separate apps that communicate using sockets ....</td></tr>
+            <tr><td>[23:07] &lt Davbo&gt ProcessPipelines too right mhrd-home?</td></tr>
+            <tr><td>[23:08] &lt mhrd-home&gt The other, which is much more recent (and which ms-away knows more about atm) is a "Process" component that forks some components out into a separate process ...</td></tr>
+            <tr><td>[23:08] &lt mhrd-home&gt yeah - thats the one Davbo (thanks - was trying to remember the name!)</td></tr>
+            <tr><td>[23:08] &lt Davbo&gt Yeah I've been reading up on it since I'll be using it</td></tr>
+            <tr><td>[23:09] &lt Davbo&gt MultiPipeline I believe, in MS' Sketches</td></tr>
+            <tr><td>[23:09] &lt Davbo&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/pprocess/MultiPipeline.py?revision=3829&view=markup</td></tr>
+            <tr><td>[23:09] &lt Davbo&gt Also; http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1205626569</td></tr>
+            <tr><td>[23:09] &lt mhrd-home&gt ok yeah, its still an experimental component but rather promising :)</td></tr>
+            <tr><td>[23:09] &lt Davbo&gt Yeah :)</td></tr>
+            <tr><td>[23:10] &lt Davbo&gt I believe the transition from a regular pipeline to these is rather trivial now, well, he intends to make it that way if it isn't already :)</td></tr>
+            <tr><td>[23:10] &lt mhrd-home&gt aconbere_ you got a particular application in mind? we're always interested in finding out about possible use cases</td></tr>
+            <tr><td>[23:11] &lt aconbere_&gt oh</td></tr>
+            <tr><td>[23:12] &lt aconbere_&gt so I consult for a startup in LA (and as happens in startups they've got me doing things I know little about)</td></tr>
+            <tr><td>[23:12] &lt mhrd-home&gt :)</td></tr>
+            <tr><td>[23:12] &lt aconbere_&gt but basically I wrote the pieces that grab data from a variety of social networks / social media sites</td></tr>
+            <tr><td>[23:12] &lt aconbere_&gt (so the list of your most recent photos in flickr)</td></tr>
+            <tr><td>[23:13] &lt aconbere_&gt so when you scale that up to 350k users, I need a way to be able to sub divide the problem into services, (with rate limiting, etc.)</td></tr>
+            <tr><td>[23:13] &lt aconbere_&gt and then further sub divide that problem into users of those services</td></tr>
+            <tr><td>[23:13] &lt aconbere_&gt etc.</td></tr>
+            <tr><td>[23:13] &lt Davbo&gt ooo, interesting.</td></tr>
+            <tr><td>[23:13] &lt aconbere_&gt so it's a very parellel problem</td></tr>
+            <tr><td>[23:14] &lt aconbere_&gt I just don't want to write it in twisted :)</td></tr>
+            <tr><td>[23:14] &lt aconbere_&gt (so I was looking for other solutions)</td></tr>
+            <tr><td>[23:14] &lt aconbere_&gt not that I couldn't do it in pure python, but having a framework to put the pieces in will help</td></tr>
+            <tr><td>[23:14] &lt mhrd-home&gt well in Kamaelia you think in terms of data flows - lots of small components wired to each other, passing data</td></tr>
+            <tr><td>[23:15] &lt aconbere_&gt right</td></tr>
+            <tr><td>[23:15] &lt aconbere_&gt so I can imagine (taking the flickr example)</td></tr>
+            <tr><td>[23:15] &lt mhrd-home&gt its a nice model for thinking about tasks you want to parallelise - you might find it a good environment to prototype in, even if you end up re-coding a production system in a different language/framework/platform</td></tr>
+            <tr><td>[23:15] &lt aconbere_&gt and inbox populated with users</td></tr>
+            <tr><td>[23:15] &lt mhrd-home&gt - have seen someone else do that before</td></tr>
+            <tr><td>[23:15] &lt aconbere_&gt oops</td></tr>
+            <tr><td>[23:15] &lt aconbere_&gt outbox</td></tr>
+            <tr><td>[23:15] &lt aconbere_&gt anyway</td></tr>
+            <tr><td>[23:15] &lt aconbere_&gt a BOX</td></tr>
+            <tr><td>[23:15] &lt Davbo&gt :)</td></tr>
+            <tr><td>[23:15] &lt aconbere_&gt with users that's picked up from</td></tr>
+            <tr><td>[23:16] &lt aconbere_&gt and used to go grab a list of objects</td></tr>
+            <tr><td>[23:16] &lt aconbere_&gt which are passed back</td></tr>
+            <tr><td>[23:16] &lt aconbere_&gt (simple case)</td></tr>
+            <tr><td>[23:16] &lt aconbere_&gt along with that I need to event new data (so after checking if it's in the current set, any straglers event them out to the world... so maybe a third box :-D)</td></tr>
+            <tr><td>[23:17] &lt mhrd-home&gt inboxes and outboxes in kamaelia are like connectors on a circuit board - they're a way to wire up to something else, rather than a means of storage</td></tr>
+            <tr><td>[23:17] &lt aconbere_&gt I've been thinking of them as queues</td></tr>
+            <tr><td>[23:17] &lt mhrd-home&gt so for your kind of model, you'd maybe have componen(s) storing info, responding to requests that arrive by sending stuff out. other components initiating things by sending out messages/requests etc...</td></tr>
+            <tr><td>[23:18] &lt mhrd-home&gt when they're wired up they can behave like queues</td></tr>
+            <tr><td>[23:18] *** aconbere_ nods</td></tr>
+            <tr><td>[23:18] &lt mhrd-home&gt when an outbox is not wired to an inbox then data falls into the void (again think wiring analogies)</td></tr>
+            <tr><td>[23:19] &lt mhrd-home&gt it might seem slightly strange initially</td></tr>
+            <tr><td>[23:19] &lt mhrd-home&gt but actually has a big advantage that components are very decoupled from each other</td></tr>
+            <tr><td>[23:19] &lt aconbere_&gt right</td></tr>
+            <tr><td>[23:19] &lt aconbere_&gt I mean I appreviate that if nothing else the mini-axon tutorial gave me a way to think about the problem</td></tr>
+            <tr><td>[23:19] &lt mhrd-home&gt so a component doesn't need to know who/what it is receiving data from or sending data to ... or even if there is anything there sending to.receiving from it</td></tr>
+            <tr><td>[23:20] &lt mhrd-home&gt thats cool :)</td></tr>
+            <tr><td>[23:20] &lt aconbere_&gt :-D</td></tr>
+            <tr><td>[23:20] &lt aconbere_&gt indeed</td></tr>
+            <tr><td>[23:20] &lt mhrd-home&gt you might want to take a look at the "Cookbook" too</td></tr>
+            <tr><td>[23:21] &lt aconbere_&gt I kept trying to force it into this erlang model I had, and given the python requirements I just wasn't seeing the light at the end of the tunnel.</td></tr>
+            <tr><td>[23:21] &lt mhrd-home&gt shows some of the more flexible components that allow more interesting ways of wiring up and structuring systems - even ones that change their shape ont he fly</td></tr>
+            <tr><td>[23:21] &lt mhrd-home&gt heh:)</td></tr>
+            <tr><td>[23:21] &lt aconbere_&gt hehe I saw that on the fly rewiring and decided that I shouldn't even look at that for a few days</td></tr>
+            <tr><td>[23:21] &lt aconbere_&gt (not until I grok other aspects)</td></tr>
+            <tr><td>[23:21] &lt mhrd-home&gt probably wise - does make some people double-take :)</td></tr>
+            <tr><td>[23:22] &lt mhrd-home&gt Backplanes are probably worth a look if you've not already seen them - a good way to aggregate and distribute data</td></tr>
+            <tr><td>[23:22] &lt aconbere_&gt Haven't seen them yet (or haven't really dug into them)</td></tr>
+            <tr><td>[23:22] &lt aconbere_&gt I saw the word somewhere</td></tr>
+            <tr><td>[23:22] &lt aconbere_&gt :)</td></tr>
+            <tr><td>[23:23] &lt mhrd-home&gt there's a reasonable explanation in the cookbook</td></tr>
+            <tr><td>[23:23] &lt aconbere_&gt ah</td></tr>
+            <tr><td>[23:23] &lt aconbere_&gt yeah</td></tr>
+            <tr><td>[23:23] &lt aconbere_&gt so for that part of things I actually think we'll be using our xmpp infrastructure</td></tr>
+            <tr><td>[23:23] &lt aconbere_&gt I doubt it would be difficult to tie together to two concepts</td></tr>
+            <tr><td>[23:24] &lt mhrd-home&gt indeed</td></tr>
+            <tr><td>[23:25] &lt mhrd-home&gt also Lawouach has been working on some XMPP capabilties in Kamaelia recently iirc</td></tr>
+            <tr><td>[23:25] &lt Davbo&gt Yeah he has...i think</td></tr>
+            <tr><td>[23:25] &lt aconbere_&gt I saw the guy from defuze posted a kamaelia xmpp client</td></tr>
+            <tr><td>[23:25] &lt Davbo&gt Yeah that's Lawouach</td></tr>
+            <tr><td>[23:25] &lt aconbere_&gt (part of what brought me to check out kamaelia)</td></tr>
+            <tr><td>[23:25] *** mhrd-home not been watching commit logs closely enough to know if he's been putting stuff in the repository yet</td></tr>
+            <tr><td>[23:26] &lt Davbo&gt defuze == Lawouach :-)</td></tr>
+            <tr><td>[23:27] &lt mhrd-home&gt at last, b****y spec dcoument finally finished downloading :)</td></tr>
+            <tr><td>[23:27] &lt mhrd-home&gt .. and all to find out what less than 1 byte's worth of bitfields mean :)</td></tr>
+            <tr><td>[23:27] &lt Davbo&gt hehe :)</td></tr>
+            <tr><td>[23:28] &lt mhrd-home&gt argh! they're just labelled as 'reserved' !</td></tr>
+            <tr><td>[23:30] &lt Davbo&gt Am I right thinking MultiPipline isn't merged yet mhrd-home?</td></tr>
+            <tr><td>[23:30] &lt Davbo&gt s/﻿MultiPipline/MultiPipeline</td></tr>
+            <tr><td>[23:31] &lt mhrd-home&gt not afaik</td></tr>
+            <tr><td>[23:32] &lt Davbo&gt I'm working on linking up 2 simple paint programs (MagnaDoodle.py) using that and I know MS recommended i go from Pipeline to MultiPipeline to ProcessPipeline (hopefully without any changes :))</td></tr>
+            <tr><td>[23:32] &lt mhrd-home&gt unless you know better, I don't think he's even proposed merging it yet</td></tr>
+            <tr><td>[23:33] &lt mhrd-home&gt just use his copy in his Sketches directory</td></tr>
+            <tr><td>[23:33] &lt Davbo&gt Yeah i've checked-out his branch with it in</td></tr>
+            <tr><td>[23:34] &lt Davbo&gt I don't think he has</td></tr>
+            <tr><td>[23:34] &lt mhrd-home&gt as a hack you can add to the python path for imports, see the top of: /trunk/Sketches/MH/DVB_EIT.py for example</td></tr>
+            <tr><td>[23:36] &lt Davbo&gt ah</td></tr>
+            <tr><td>[23:36] &lt Davbo&gt thank you mhrd-home :-)</td></tr>
+            <tr><td>[23:36] &lt mhrd-home&gt its a little messy, but it does mean you don't have to copy his file</td></tr>
+            <tr><td>[23:37] &lt mhrd-home&gt np</td></tr>
+            <tr><td>[23:40] &lt Davbo&gt Cool mhrd-home you've done some VoIP stuff?</td></tr>
+            <tr><td>[23:40] &lt Davbo&gt things you don't realise until you start poking around in peoples /Sketches/</td></tr>
+            <tr><td>[23:40] &lt mhrd-home&gt Another project I'm working on is java voip based; I hacked some stuff there to act as a quick diagnostic tool</td></tr>
+            <tr><td>[23:41] &lt Davbo&gt hehe, cool</td></tr>
+            <tr><td>[23:42] &lt Davbo&gt They get you doing all sorts in R&D heh</td></tr>
+            <tr><td>[23:42] &lt mhrd-home&gt hmm, true :)</td></tr>
+            <tr><td>[23:44] &lt mhrd-home&gt I knew there had to be *some* reason why I stick around there :)</td></tr>
+            <tr><td>[23:45] &lt Davbo&gt Hah :-)</td></tr>
+            <tr><td>[23:45] &lt Davbo&gt I've no idea where I want to work now.</td></tr>
+            <tr><td>[23:46] &lt Davbo&gt Before i started university I was pondering joining some research team or something</td></tr>
+            <tr><td>[23:46] &lt Davbo&gt but after meeting people on them, not so much.</td></tr>
+            <tr><td>[23:46] &lt mhrd-home&gt knowing you don't know is probably better than mistakenly thinking you do</td></tr>
+            <tr><td>[23:47] &lt mhrd-home&gt I have several friends who have gone into employment, then a few years later decided to go back to academia and do PhDs</td></tr>
+            <tr><td>[23:47] &lt Davbo&gt Yeah, I've gone right off academia recently though</td></tr>
+            <tr><td>[23:47] &lt mhrd-home&gt they were enjoying the work, but wanted a change and academic research can look more appealing again once you've had a break from university</td></tr>
+            <tr><td>[23:48] &lt mhrd-home&gt important thing to remember is that you can always move on from one thing to something else</td></tr>
+            <tr><td>[23:48] &lt Davbo&gt I really like the *idea* of it but the people, the "academics" are just.</td></tr>
+            <tr><td>[23:49] &lt Davbo&gt It's quite a backwards institution really</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt don't forget one uni dept can be very different from another</td></tr>
+            <tr><td>[23:49] &lt Davbo&gt true</td></tr>
+            <tr><td>[23:49] &lt mhrd-home&gt different atmosphere, different research focus, different opinions on what is respectable to research :)</td></tr>
+            <tr><td>[23:50] &lt Davbo&gt The Computer Science head of department regaling you with a talk about his friend who worked on Deep Blue. There's only so much of that you can take ;)</td></tr>
+            <tr><td>[23:51] &lt mhrd-home&gt if you get any opporunities to network (talks, conferences, etc) they can be useful to take - esp. if they give you an opporunity to meet people from other insititutions/industries/etc</td></tr>
+            <tr><td>[23:51] &lt mhrd-home&gt heh, lots of "characters" at university :)</td></tr>
+            <tr><td>[23:51] &lt Davbo&gt There has been 3 talks given by some folks from Sun</td></tr>
+            <tr><td>[23:51] *** mhrd-home notices 100% cpu usage and investigates</td></tr>
+            <tr><td>[23:52] &lt mhrd-home&gt ah, the indexer</td></tr>
+            <tr><td>[23:52] &lt mhrd-home&gt what did you think?</td></tr>
+            <tr><td>[23:52] &lt Davbo&gt Apparently they're doing one about OpenJDK and their open source projects I'll probably go along to</td></tr>
+            <tr><td>[23:52] &lt Davbo&gt I didn't get to go to the others due to lectures</td></tr>
+            <tr><td>[23:53] &lt Davbo&gt Maths is more important than someone explaining ZFS to me</td></tr>
+            <tr><td>[23:54] &lt Davbo&gt I heard they were pretty good though</td></tr>
+            <tr><td>[23:54] &lt mhrd-home&gt should be interesting just to hear how they talk about the subjects - try and figure out what working for Sun is like, and what kind of people do :)</td></tr>
+            <tr><td>[23:54] &lt Davbo&gt Yeah, I don't wanna get a job at Sun though MS will kick me off SoC ;)</td></tr>
+            <tr><td>[23:55] &lt mhrd-home&gt heh</td></tr>
+            <tr><td>[23:55] &lt mhrd-home&gt I need to call it a night now :)</td></tr>
+            <tr><td>[23:55] &lt Davbo&gt Good idea</td></tr>
+            <tr><td>[23:55] &lt Davbo&gt night mhrd-home, all</td></tr>
+            <tr><td>[23:55] &lt mhrd-home&gt cya all</td></tr>
+            <tr><td>[23:56] &lt mhrd-home&gt aconbere_ thank for dropping by - MS- / ms-away and Lawouach will probably be really interested to hear what you're working on</td></tr>
+            <tr><td>[23:56] *** mhrd-home has parted #kamaelia</td></tr>

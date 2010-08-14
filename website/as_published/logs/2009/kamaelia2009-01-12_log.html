@@ -1,0 +1,85 @@
+<html><body><table>
+            <tr><td>[09:16] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:16] &lt MS-&gt Morning</td></tr>
+            <tr><td>[09:19] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:24] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[09:53] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[10:26] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:48] &lt Patrick`&gt  /msg MS- morning, got 5 minutes?</td></tr>
+            <tr><td>[10:48] &lt Patrick`&gt dur</td></tr>
+            <tr><td>[10:48] &lt Patrick`&gt MS-: can I pm you?</td></tr>
+            <tr><td>[10:48] &lt Patrick`&gt it'll only take 5 minutes :3</td></tr>
+            <tr><td>[10:49] &lt MS-&gt Hiya</td></tr>
+            <tr><td>[10:49] &lt MS-&gt Your time starts *NOW*</td></tr>
+            <tr><td>[10:49] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:55] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[11:49] *** MS- will be AFK for most of the rest of today in all likelihood and most of (if not all of) tomorrow as well</td></tr>
+            <tr><td>[12:51] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:02] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[13:37] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:53] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[15:35] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:51] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[16:09] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:09] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:24] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[18:56] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[19:10] *** vmlemon_1 is now known as vmlemon_</td></tr>
+            <tr><td>[19:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:57] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[20:04] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[20:06] *** vmlemon_1 is now known as vmlemon_</td></tr>
+            <tr><td>[20:37] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[21:24] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[21:24] &lt MS-&gt greetings</td></tr>
+            <tr><td>[21:24] &lt mhrd-home&gt greetings</td></tr>
+            <tr><td>[21:25] &lt aa_&gt ... earthlings</td></tr>
+            <tr><td>[21:25] &lt mhrd-home&gt MS- : many many thanks for writing sensible commit logs for various past branches of ConnectedServer.py .... have just been going back through to understand the purpose and difference of ServerCore vs SimpleServer ... and it seems to make sense :-)</td></tr>
+            <tr><td>[21:26] &lt MS-&gt heh, cool :)</td></tr>
+            <tr><td>[21:26] &lt MS-&gt I'm a firm believer in decent commit messages :)</td></tr>
+            <tr><td>[21:26] &lt mhrd-home&gt indeed - something I've valued learning from you ;-)</td></tr>
+            <tr><td>[21:27] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:27] *** MS- goes and looks at the log for that</td></tr>
+            <tr><td>[21:28] &lt mhrd-home&gt combination of logs and looking at sources revealed The Truth</td></tr>
+            <tr><td>[21:28] &lt mhrd-home&gt s/sources/diffs/</td></tr>
+            <tr><td>[21:29] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:29] &lt MS-&gt Reading the logs for it, I'm quite pleased with that. Does tell a half decent story</td></tr>
+            <tr><td>[21:30] &lt MS-&gt It's quite fascinating these things actually IMO</td></tr>
+            <tr><td>[21:30] &lt MS-&gt I'm realising that there's a higher level concurrency co-ordination DSL in the system now that if made explicit would be kinda handy</td></tr>
+            <tr><td>[21:30] &lt MS-&gt ie the sort of thing that would normally be viewed as patterns</td></tr>
+            <tr><td>[21:31] &lt MS-&gt but we can express as chasses or as fundamental things relating to chasses</td></tr>
+            <tr><td>[21:32] *** mhrd-home reworking ConnectedServer.py docs, as suggested by Jason</td></tr>
+            <tr><td>[21:33] &lt MS-&gt Cool - much appreciated :)</td></tr>
+            <tr><td>[21:34] &lt MS-&gt I'm still pondering names regarding the functionality we've been discussing on the list</td></tr>
+            <tr><td>[21:34] &lt MS-&gt I think I'm going to need to look at what is actually transformed from what to what and why in more detail</td></tr>
+            <tr><td>[21:34] &lt mhrd-home&gt of SimpleServer / ServerCore ?</td></tr>
+            <tr><td>[21:34] &lt MS-&gt (web server stuff) I think actually it's just a particular protocol, and he's viewing it as a translator which doesn't make sense</td></tr>
+            <tr><td>[21:35] &lt MS-&gt well it makes sense to him and I can see his logic, but it looks odd</td></tr>
+            <tr><td>[21:36] &lt MS-&gt MessageDemuxer in here: http://kamaelia.googlecode.com/svn/trunk/Sketches/MPS/Examples/AIM/MultiAIMBot.py - may form the basis for a generic - non network related - in process server</td></tr>
+            <tr><td>[21:37] &lt MS-&gt ie like the generic pattern you see in pygame display etc</td></tr>
+            <tr><td>[21:39] &lt mhrd-home&gt interesting - so that demuxer creates outboxes as it thinks it needs them</td></tr>
+            <tr><td>[21:39] &lt mhrd-home&gt thats quite neat</td></tr>
+            <tr><td>[21:40] *** mhrd-home wonders if it leads to complications when wiring up a system - since it won't be possible to wire to a particular outbox until messages start being routed to it (causing it to be created)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt It's more the sort of thing that pygame display & servercore/et al tend to do</td></tr>
+            <tr><td>[21:42] &lt MS-&gt So it more enables a particular type of thing really</td></tr>
+            <tr><td>[21:45] &lt mhrd-home&gt I think I thought about the same thing, but from the opposite direction ages ago: http://www.kamaelia.org/Components/pydoc/Kamaelia.Experimental.Services.html</td></tr>
+            <tr><td>[21:45] &lt mhrd-home&gt kinda liked what I built there, but it was awfully prescriptive</td></tr>
+            <tr><td>[21:46] &lt mhrd-home&gt and didn't attack the big issue (that you've just been talking about) of abstracting away the behaviour in the component that provides the service/demuxing capability - to make it easier to write</td></tr>
+            <tr><td>[21:46] &lt mhrd-home&gt (iiuc)</td></tr>
+            <tr><td>[21:46] *** MS- nod</td></tr>
+            <tr><td>[21:47] &lt MS-&gt Well the thing is, ServerCore is actually almost network independent, it just doesn't look like it</td></tr>
+            <tr><td>[21:47] &lt MS-&gt Due to the new configuration approach</td></tr>
+            <tr><td>[21:48] &lt MS-&gt class MyServer(ServerCore):</td></tr>
+            <tr><td>[21:48] &lt MS-&gt  class TCPServer(Component):</td></tr>
+            <tr><td>[21:48] &lt MS-&gt  ... actually implement something else more like message demuxer perhaps</td></tr>
+            <tr><td>[21:58] &lt MS-&gt I think your code tangles up the logical opposite/combination</td></tr>
+            <tr><td>[21:59] &lt MS-&gt (ie if MessageDemuxer can be like an in-process server</td></tr>
+            <tr><td>[21:59] &lt MS-&gt then your code tangles up the logical counterpart to TCPClient into one thing</td></tr>
+            <tr><td>[21:59] &lt MS-&gt ie the sort of "Mistake" we made a lot back then :)</td></tr>
+            <tr><td>[22:00] &lt MS-&gt readfileadapter being the bloodyminded example :)</td></tr>
+            <tr><td>[22:14] &lt MS-&gt night all</td></tr>
+            <tr><td>[22:14] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[22:20] &lt mhrd-home&gt good plan - sleep :-)</td></tr>
+            <tr><td>[22:20] *** mhrd-home heads off</td></tr>
+            <tr><td>[22:20] *** mhrd-home has parted #kamaelia</td></tr>

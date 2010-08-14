@@ -1,0 +1,1109 @@
+<html><body><table>
+            <tr><td>[00:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[02:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[02:58] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[03:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[05:31] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:04] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:54] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:54] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[07:14] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[08:12] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:28] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:35] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[10:30] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:01] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:01] &lt MS-&gt Afternoon</td></tr>
+            <tr><td>[11:01] *** MS- changed the topic to gsoc coding period has started :-) | Release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 29th May 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[11:02] *** MS- looks forward to reading checkins later today :)</td></tr>
+            <tr><td>[11:08] &lt orphans&gt MS-, hey, quick (potentially silly question)</td></tr>
+            <tr><td>[11:09] &lt MS-&gt 42</td></tr>
+            <tr><td>[11:09] &lt MS-&gt (quick, potentially silly answer)</td></tr>
+            <tr><td>[11:09] &lt orphans&gt damn, you got it first time!</td></tr>
+            <tr><td>[11:09] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:09] &lt bcarlyon|laptop&gt Ha!</td></tr>
+            <tr><td>[11:09] &lt orphans&gt is there any reason why only threaded components have a timeout argument in self.pause()</td></tr>
+            <tr><td>[11:10] &lt orphans&gt or if you need that bit of functionality should you be using a threaded component :)</td></tr>
+            <tr><td>[11:10] &lt MS-&gt Ah yes, that - it's to do with pragmatics.</td></tr>
+            <tr><td>[11:10] &lt MS-&gt Suppose I want to have something repeat once an hour</td></tr>
+            <tr><td>[11:11] &lt MS-&gt I could write</td></tr>
+            <tr><td>[11:11] &lt MS-&gt time.sleep(3600)</td></tr>
+            <tr><td>[11:11] &lt MS-&gt Oh hold on, not quite that is it</td></tr>
+            <tr><td>[11:11] &lt MS-&gt I can't remember off the top of my head actually</td></tr>
+            <tr><td>[11:11] &lt MS-&gt It's something like that</td></tr>
+            <tr><td>[11:11] &lt MS-&gt it was added because there was a problem case</td></tr>
+            <tr><td>[11:12] &lt MS-&gt Ahh, I think it's a cheat</td></tr>
+            <tr><td>[11:12] &lt MS-&gt And it's related to that</td></tr>
+            <tr><td>[11:12] &lt MS-&gt Suppose I wanted to do</td></tr>
+            <tr><td>[11:12] &lt MS-&gt time.sleep(3600) BUT wanted to honour shutdown requests immediately</td></tr>
+            <tr><td>[11:13] &lt MS-&gt If I write time.sleep(3600), then the component will wait for an entire hour, then check in/outboxes</td></tr>
+            <tr><td>[11:13] &lt MS-&gt and then if it received a shutdown (eg 50 minutes before), then and only then shutdown</td></tr>
+            <tr><td>[11:13] &lt MS-&gt whereas if you do self.pause() with a timeout for an hour</td></tr>
+            <tr><td>[11:13] &lt MS-&gt it will have the same effect as time.sleep(3600)</td></tr>
+            <tr><td>[11:14] &lt MS-&gt BUT, wake up when sent a message to wake up</td></tr>
+            <tr><td>[11:14] &lt orphans&gt yeah - I like how it works - thought it would be useful in non-threaded components too though</td></tr>
+            <tr><td>[11:14] &lt MS-&gt For non-threaded components it'd be a different thing</td></tr>
+            <tr><td>[11:15] &lt orphans&gt so for example my X-Y pad at the moment has to use a CheapAndCheerfulClock to wake it up so it can redraw often enough</td></tr>
+            <tr><td>[11:15] &lt MS-&gt it would mean "reactivate me after X seconds in the absence something"</td></tr>
+            <tr><td>[11:15] &lt orphans&gt in that case I reckon it would be cleaner to just call self.pause(1.0/60)</td></tr>
+            <tr><td>[11:16] &lt MS-&gt That wouldn't actually give you what you want btw. It'd be close, but not "correct"</td></tr>
+            <tr><td>[11:16] &lt orphans&gt what's the "correct" way?</td></tr>
+            <tr><td>[11:16] &lt MS-&gt Well, but not "correct" it wouldn't give you a rate of 60 fps (or similar)</td></tr>
+            <tr><td>[11:17] &lt MS-&gt it wouldn't approximate to it either - I suspect it'd be closer to 55fps</td></tr>
+            <tr><td>[11:17] &lt MS-&gt chooseing 1.0/5 instead</td></tr>
+            <tr><td>[11:17] &lt MS-&gt You'd want to be called at</td></tr>
+            <tr><td>[11:17] &lt MS-&gt 0.2, 0.4, 0.6. 0.8, 1.0</td></tr>
+            <tr><td>[11:18] &lt MS-&gt Whereas what self.pause(1.0/5) would give you in all likelihood is more like</td></tr>
+            <tr><td>[11:18] &lt MS-&gt 0.24, 0.48, 0.72, 0.96, 1.20</td></tr>
+            <tr><td>[11:18] &lt orphans&gt yeah, it's more for non-time critical stuff (like redrawing)</td></tr>
+            <tr><td>[11:18] &lt MS-&gt Since it wouldn't give you time correction</td></tr>
+            <tr><td>[11:18] *** MS- nods</td></tr>
+            <tr><td>[11:19] &lt MS-&gt Adding real-time aspects into the scheduler - which is what this would do - would be a nice idea, but its very hard to get *right*</td></tr>
+            <tr><td>[11:19] &lt MS-&gt or even what people really want</td></tr>
+            <tr><td>[11:19] &lt orphans&gt heh - I look quickly at it and thought "no" :D</td></tr>
+            <tr><td>[11:19] &lt MS-&gt If you can describe a few usecases and what sort of API you'd like though, feel free</td></tr>
+            <tr><td>[11:20] &lt MS-&gt (ie to post to the list)</td></tr>
+            <tr><td>[11:20] &lt MS-&gt after all, you get to communicate with the scheduler everytime you yield</td></tr>
+            <tr><td>[11:20] &lt MS-&gt eg yield WaitComplete(...) does just that</td></tr>
+            <tr><td>[11:20] &lt orphans&gt touch wood I've managed to get close enough timing stuff working without needing it built into the scheduler, so it's not super critical</td></tr>
+            <tr><td>[11:20] &lt MS-&gt Infact, WaitComplete might be an interesting way of handling self.pause(1.0/60)</td></tr>
+            <tr><td>[11:21] &lt MS-&gt since you could wrap the WaitComplete into something</td></tr>
+            <tr><td>[11:21] &lt MS-&gt I'm not actually sure what that would look like right now, but it's an option</td></tr>
+            <tr><td>[11:21] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[11:22] &lt MS-&gt Hmm.. I can also see you needing finer control over timing</td></tr>
+            <tr><td>[11:22] &lt MS-&gt give your project.</td></tr>
+            <tr><td>[11:22] &lt MS-&gt s/give/given/</td></tr>
+            <tr><td>[11:23] &lt MS-&gt I'd think about it and post a set of comments to the list :-)</td></tr>
+            <tr><td>[11:23] &lt MS-&gt I'm actually off out now though :)</td></tr>
+            <tr><td>[11:23] &lt bcarlyon|laptop&gt I hope your not going to the pub in the rain?</td></tr>
+            <tr><td>[11:23] &lt MS-&gt chester</td></tr>
+            <tr><td>[11:23] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:23] &lt bcarlyon|laptop&gt I hear it is raining down south.</td></tr>
+            <tr><td>[11:23] &lt bcarlyon|laptop&gt leeds is nice and sunny!</td></tr>
+            <tr><td>[11:23] &lt MS-&gt I'm not down south</td></tr>
+            <tr><td>[11:23] &lt orphans&gt ok - I'll be interested to hear what you reckon. I've gotta test my timing code pretty hard soon, so I'll see how it looks as it is</td></tr>
+            <tr><td>[11:23] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:24] &lt bcarlyon|laptop&gt Hmm lol</td></tr>
+            <tr><td>[11:24] &lt MS-&gt cool</td></tr>
+            <tr><td>[11:24] &lt MS-&gt ok, cya later :)</td></tr>
+            <tr><td>[11:24] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[11:24] *** orphans is off to get lunch then restart revision :)</td></tr>
+            <tr><td>[11:29] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:34] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:45] &lt Lawouach_&gt damn</td></tr>
+            <tr><td>[12:46] &lt Lawouach_&gt PyQt is a great tool but some of the people on the PyQt mailing list are major pain in the ass</td></tr>
+            <tr><td>[12:46] &lt Lawouach_&gt don't know why</td></tr>
+            <tr><td>[12:48] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[12:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:08] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[13:10] &lt Davbo&gt Lawouach_ you used ProcessGraphline for anything?</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt there seems to be literally 0 examples of it used in code, i mean it's pretty much identical to be Graphline but i'd like to see some working code with it</td></tr>
+            <tr><td>[13:11] &lt Davbo&gt (mine wont work :-( )</td></tr>
+            <tr><td>[13:17] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[13:27] &lt Lawouach_&gt I haven't used it no</td></tr>
+            <tr><td>[13:47] &lt Davbo&gt ahh well</td></tr>
+            <tr><td>[13:47] &lt Davbo&gt will grab MS when he's around</td></tr>
+            <tr><td>[13:48] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:07] &lt bcarlyon|laptop&gt http://www.hcs.harvard.edu/~freeculture/blog/2008/05/22/zuneral-this-saturday/ &lt - haha</td></tr>
+            <tr><td>[14:12] &lt vmlemon__&gt Hah</td></tr>
+            <tr><td>[14:13] &lt vmlemon__&gt o. "(Harvard College Free Culture would like to thank Rachel and Jason for their Zune and iPod, respectively. We are sorry for your loss.)"</td></tr>
+            <tr><td>[14:22] &lt bcarlyon|laptop&gt Indeedy</td></tr>
+            <tr><td>[14:22] &lt vmlemon__&gt Ouch, http://seattletimes.nwsource.com/html/localnews/2003652872_webhouse05m.html</td></tr>
+            <tr><td>[14:23] &lt vmlemon__&gt "The ad posted last weekend welcomed people to take for free anything they wanted from the home. It has since been pulled from the site, but not before the residence was stripped of light fixtures, the hot water heater and the kitchen sink."</td></tr>
+            <tr><td>[14:24] &lt bcarlyon|laptop&gt Nice</td></tr>
+            <tr><td>[14:25] &lt bcarlyon|laptop&gt At least they remembered the kitchen sink....</td></tr>
+            <tr><td>[14:25] &lt vmlemon__&gt Took the front door and a window, too</td></tr>
+            <tr><td>[14:25] &lt bcarlyon|laptop&gt That is quite funny.</td></tr>
+            <tr><td>[14:25] *** vmlemon__ wonders if anyone took bricks and parts of the floor from it</td></tr>
+            <tr><td>[14:26] &lt bcarlyon|laptop&gt If you use pear, you might find this amusing: http://gsoc.barrycarlyon.servegame.org/bugs/</td></tr>
+            <tr><td>[14:27] &lt vmlemon__&gt Yay, a database error</td></tr>
+            <tr><td>[14:27] &lt bcarlyon|laptop&gt But it looks the same as the real pear website :-)</td></tr>
+            <tr><td>[14:27] &lt bcarlyon|laptop&gt They hanvt sent me the database yet.</td></tr>
+            <tr><td>[14:27] &lt vmlemon__&gt It's a mirror?</td></tr>
+            <tr><td>[14:28] *** bcarlyon|laptop reads bottom line: Bandwidth and hardware provided by: This is an unofficial mirror!</td></tr>
+            <tr><td>[14:28] &lt vmlemon__&gt Aah</td></tr>
+            <tr><td>[14:28] &lt bcarlyon|laptop&gt Its a copy of the website for building on</td></tr>
+            <tr><td>[14:28] &lt vmlemon__&gt Aah, cool</td></tr>
+            <tr><td>[14:31] &lt bcarlyon|laptop&gt indeedy</td></tr>
+            <tr><td>[14:31] &lt bcarlyon|laptop&gt Have you seen the new facebook vmlemon?</td></tr>
+            <tr><td>[14:31] &lt vmlemon__&gt Nope</td></tr>
+            <tr><td>[14:31] *** vmlemon__ doesn't have an account on it</td></tr>
+            <tr><td>[14:31] &lt bcarlyon|laptop&gt O</td></tr>
+            <tr><td>[14:31] &lt vmlemon__&gt Any good?</td></tr>
+            <tr><td>[14:31] &lt bcarlyon|laptop&gt my university union is paying my to build them an application. :-)</td></tr>
+            <tr><td>[14:32] &lt bcarlyon|laptop&gt the new one is ok</td></tr>
+            <tr><td>[14:32] &lt bcarlyon|laptop&gt lot of controvesy between the application developers at the moment tho</td></tr>
+            <tr><td>[14:34] &lt bcarlyon|laptop&gt My current facebook status: Barry is officially a Google Employee.</td></tr>
+            <tr><td>[14:34] &lt bcarlyon|laptop&gt Do you use Twitter?</td></tr>
+            <tr><td>[14:34] &lt vmlemon__&gt I've had a look at it, but it doesn't exactly scream "useful" to me</td></tr>
+            <tr><td>[14:36] &lt bcarlyon|laptop&gt Its good as a microbloggin service and when the jabber bot is working, they had a big database crash the other day, and are still recovering from it.</td></tr>
+            <tr><td>[14:36] &lt bcarlyon|laptop&gt They have a nice API to play with.</td></tr>
+            <tr><td>[14:36] &lt vmlemon__&gt Sounds fun...</td></tr>
+            <tr><td>[14:38] &lt bcarlyon|laptop&gt Indeed</td></tr>
+            <tr><td>[14:48] &lt Lawouach_&gt bcarlyon|laptop: I don't find their API nice :)</td></tr>
+            <tr><td>[14:48] &lt Lawouach_&gt They have a useful one but it's rather ugly to me</td></tr>
+            <tr><td>[14:48] &lt bcarlyon|laptop&gt Ive not really used in that much.</td></tr>
+            <tr><td>[14:49] &lt bcarlyon|laptop&gt I only use it to updated two radio accounts via cron and curl</td></tr>
+            <tr><td>[14:50] &lt Davbo&gt Does Twitter run on RoR?</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt Regarding their support of jabber, it's great for Jabber and XMPP but I don't quite understand the added value to them :)</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt Davbo: does it matter ? :)</td></tr>
+            <tr><td>[14:50] &lt Davbo&gt Just out of interest</td></tr>
+            <tr><td>[14:50] &lt bcarlyon|laptop&gt Lawouach, means i can updated from gtalk....and communicate with random people.</td></tr>
+            <tr><td>[14:51] &lt Davbo&gt I'm not implying anything from it</td></tr>
+            <tr><td>[14:51] &lt Lawouach_&gt bcarlyon|laptop: hey I'm aware of that considering I've implemented part of XMPP :)</td></tr>
+            <tr><td>[14:51] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[14:51] &lt Lawouach_&gt That doesn't add any value to Facebook :)</td></tr>
+            <tr><td>[14:51] &lt Lawouach_&gt The problem lies there</td></tr>
+            <tr><td>[14:51] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[14:52] &lt Lawouach_&gt Neither Google with GTalk nor Facebook, nor even Twitter have a business model around their use of IM</td></tr>
+            <tr><td>[14:52] &lt Lawouach_&gt It's just... cool.</td></tr>
+            <tr><td>[14:52] &lt bcarlyon|laptop&gt agreed</td></tr>
+            <tr><td>[14:52] &lt Lawouach_&gt Davbo: Neither do I. :)</td></tr>
+            <tr><td>[14:53] &lt Davbo&gt I'm not sure RoR scales very well though</td></tr>
+            <tr><td>[14:54] &lt bcarlyon|laptop&gt Twitter just netted $15million didnt they?</td></tr>
+            <tr><td>[14:54] &lt Davbo&gt no idea</td></tr>
+            <tr><td>[14:54] &lt vmlemon__&gt Lawouach_: Just wondering, have you had a play with the GMail notification extensions?</td></tr>
+            <tr><td>[14:54] *** vmlemon__ can see Twitter being purchased soon-ish...</td></tr>
+            <tr><td>[14:54] &lt Lawouach_&gt vmlemon__: nope. Should I?</td></tr>
+            <tr><td>[14:54] &lt vmlemon__&gt Dunno</td></tr>
+            <tr><td>[14:54] &lt vmlemon__&gt I was merely curious</td></tr>
+            <tr><td>[14:54] &lt Lawouach_&gt Yeah but again buying Twitter is just securing millions of users.</td></tr>
+            <tr><td>[14:55] &lt Lawouach_&gt They still can't make MySpace or YouTube economically viable</td></tr>
+            <tr><td>[14:55] &lt Lawouach_&gt It's just buying a pool of user</td></tr>
+            <tr><td>[14:55] *** vmlemon__ has always thought of YouTube and it's ilk as "stop and go sites"</td></tr>
+            <tr><td>[14:55] &lt Davbo&gt that's all they care about in silicon valley these days, get the users and the business model will come</td></tr>
+            <tr><td>[14:55] &lt vmlemon__&gt (i.e. quickly visit them to watch a video and two, and then leave)</td></tr>
+            <tr><td>[14:56] &lt vmlemon__&gt Back in a sec</td></tr>
+            <tr><td>[14:56] &lt Lawouach_&gt But since they still don't know how to monetize that pool I wonder about such move. Well yeah I know the move, the first to buy them prevent competitors to buy them instead</td></tr>
+            <tr><td>[14:56] &lt Davbo&gt Exactly Lawouach_</td></tr>
+            <tr><td>[14:56] &lt Lawouach_&gt I mean, Twitter is empty of ads AFAIK.</td></tr>
+            <tr><td>[14:56] &lt Davbo&gt what price would you put on 1 Twitter user ?</td></tr>
+            <tr><td>[14:56] &lt Lawouach_&gt How do you make money then?</td></tr>
+            <tr><td>[14:56] &lt Lawouach_&gt Twitter has no business model</td></tr>
+            <tr><td>[14:56] &lt Davbo&gt Twitter isn't empty of ads though is it</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt the page has no ads</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt but the service itself</td></tr>
+            <tr><td>[14:57] &lt Lawouach_&gt what service?</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt Twitter</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt Full of people pushing their products</td></tr>
+            <tr><td>[14:57] &lt Lawouach_&gt Twitter is not Facebook</td></tr>
+            <tr><td>[14:57] &lt Lawouach_&gt I don't think you push products on twitter, do yo?</td></tr>
+            <tr><td>[14:58] &lt Davbo&gt You'd be surprised</td></tr>
+            <tr><td>[14:58] &lt Lawouach_&gt Hit me :)</td></tr>
+            <tr><td>[14:59] &lt Davbo&gt There are many people documenting it</td></tr>
+            <tr><td>[14:59] &lt Davbo&gt http://www.profy.com/2007/07/17/is-twitter-the-next-big-advertising-medium/</td></tr>
+            <tr><td>[14:59] &lt Davbo&gt http://darmano.typepad.com/logic_emotion/2007/02/could_advertisi.html</td></tr>
+            <tr><td>[14:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:59] &lt Lawouach_&gt Microsoft is able to push ads via Windows Live because, IMO, they have such a large pool of dedicated users who don't know better that they can afford to. I don't think Google or Facebook can say the same.</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt second article i linked there “Out with friends, sipping on Bacardi and Coke.  Gotta go, Justin just pulled up in his hot new S-Class...”</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt I think that says it all</td></tr>
+            <tr><td>[15:00] &lt Lawouach_&gt True</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt As you can see, huge advertising potential</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt but not from the site itself, from the users</td></tr>
+            <tr><td>[15:00] &lt Lawouach_&gt But I'm not sure that's any different from what you could read 2 years ago when Facebook hit the road</td></tr>
+            <tr><td>[15:01] &lt Davbo&gt Humm</td></tr>
+            <tr><td>[15:01] &lt vmlemon_&gt Hi agai</td></tr>
+            <tr><td>[15:01] &lt vmlemon_&gt *again</td></tr>
+            <tr><td>[15:01] &lt vmlemon_&gt even</td></tr>
+            <tr><td>[15:01] &lt vmlemon_&gt Anyone seen the new Windows Live Search gimmick that supposedly gives users a tiny rebate for using their ads?</td></tr>
+            <tr><td>[15:02] &lt vmlemon_&gt I can't see the Yahicrosoft! thing working out, either</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt I see what you mean Lawouach_</td></tr>
+            <tr><td>[15:03] &lt Lawouach_&gt Davbo: I'm not syaing people believing Twitter will be an ad vector are wrong.</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:03] &lt vmlemon_&gt It might be interesting to see what Flickr's fate will be</td></tr>
+            <tr><td>[15:03] &lt Lawouach_&gt I'm just wondering if their claim it'll change the World all over again are realistic :)</td></tr>
+            <tr><td>[15:03] &lt vmlemon_&gt (Seeing as they've been purchased once)(</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt Oh of course it wont :-)</td></tr>
+            <tr><td>[15:03] &lt Lawouach_&gt You alway have people bragging like that</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt we've seen that time and time again</td></tr>
+            <tr><td>[15:03] &lt Lawouach_&gt What is their ground?</td></tr>
+            <tr><td>[15:04] &lt Lawouach_&gt yeap</td></tr>
+            <tr><td>[15:04] &lt Lawouach_&gt MySpace is still not making much money AFAIK</td></tr>
+            <tr><td>[15:04] &lt Lawouach_&gt Yet it has a fantastic added value for bands.</td></tr>
+            <tr><td>[15:04] &lt Lawouach_&gt Go figure</td></tr>
+            <tr><td>[15:04] &lt vmlemon_&gt Good job that a gigantic cash sink purchased them, then</td></tr>
+            <tr><td>[15:04] &lt vmlemon_&gt (At least for MySpace itself, although I couldn't care less about what happens to it)</td></tr>
+            <tr><td>[15:05] &lt Davbo&gt Seems a user called "CocaCola" signing up to Twitter could make more money than the service itself</td></tr>
+            <tr><td>[15:06] &lt bcarlyon|laptop&gt How would you make money with that other than selling the account to cocacola?</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt I mean CocaCola making an account and using it to advertise bcarlyon|laptop</td></tr>
+            <tr><td>[15:06] &lt bcarlyon|laptop&gt o</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[15:06] &lt vmlemon_&gt Don't some companies already have "fake blogs" which appear to be written by "fans" or "customers" of the company, but is really well-written/packaged marketing schpiel intended to trick people?</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt Interestingly... that means you can steal the identity of a brand</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt Like MySpace</td></tr>
+            <tr><td>[15:07] &lt bcarlyon|laptop&gt And some companies pay people to write good stuff on wikipedia as well.</td></tr>
+            <tr><td>[15:07] &lt Davbo&gt ﻿You could see a "GMail Style" advertising strategy working for something like Twitter</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt http://twitter.com/cocacola &lt -- I doubt the guy got it for anything else than seeling it for a large price to Coco Cola</td></tr>
+            <tr><td>[15:07] &lt Davbo&gt Tweets accompanied with targeted ads depending on their contents</td></tr>
+            <tr><td>[15:08] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt Davbo: That's the point.</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt Indeed :)</td></tr>
+            <tr><td>[15:08] &lt bcarlyon|laptop&gt never updated tho.</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt I've been discussing about technologies to allow that for almost three years with some friends</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt It's very very difficult problem that goes well beyond technology</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt It's a social and human behavior topic.</td></tr>
+            <tr><td>[15:09] &lt Lawouach_&gt bcarlyon|laptop: the point is not to update it.</td></tr>
+            <tr><td>[15:09] &lt vmlemon_&gt Hmm, I can really see something like "Hi, I'm Honda"? Or "We're Coca-Cola, and we're partying non-stop, why don't you join us" working out well...</td></tr>
+            <tr><td>[15:09] &lt Lawouach_&gt It's just twitter squatting :)</td></tr>
+            <tr><td>[15:09] &lt vmlemon_&gt (Not)</td></tr>
+            <tr><td>[15:09] &lt vmlemon_&gt It seems too pretentious, to me</td></tr>
+            <tr><td>[15:09] &lt bcarlyon|laptop&gt Not to update it?</td></tr>
+            <tr><td>[15:09] &lt vmlemon_&gt An "Anti-Twitter"?</td></tr>
+            <tr><td>[15:09] &lt bcarlyon|laptop&gt Hmm.</td></tr>
+            <tr><td>[15:10] &lt Lawouach_&gt It's the URL that matters</td></tr>
+            <tr><td>[15:10] &lt vmlemon_&gt Twittertising?</td></tr>
+            <tr><td>[15:10] &lt Lawouach_&gt Not the content in that case :)</td></tr>
+            <tr><td>[15:10] &lt Lawouach_&gt vmlemon_: you may see agencies pretending they are expert in that field yes.</td></tr>
+            <tr><td>[15:11] &lt Lawouach_&gt http://adverlab.blogspot.com/search/label/neuroscience?max-results=500</td></tr>
+            <tr><td>[15:11] &lt Lawouach_&gt interesting set of resouyrces</td></tr>
+            <tr><td>[15:14] &lt Davbo&gt Anyway I'm going to see how this kernel update goes. Back in a bit</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt The supposed fake/Microsoft-sponsored "pro-Zune" sites come to mind</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt although whether or not that rumour is true, I don't know</td></tr>
+            <tr><td>[15:14] &lt Lawouach_&gt Never heard of it. Any link?</td></tr>
+            <tr><td>[15:15] &lt vmlemon_&gt Not handy, although I remember reading something like that</td></tr>
+            <tr><td>[15:15] &lt Davbo&gt lol wouldn't surprise me vmlemon_. And i have a Zune :-P</td></tr>
+            <tr><td>[15:15] &lt vmlemon_&gt Really?</td></tr>
+            <tr><td>[15:15] &lt vmlemon_&gt Is it any good?</td></tr>
+            <tr><td>[15:15] &lt Lawouach_&gt It's quite amazing how the World changes though. When I started using the Internet we would have never discussed about such subjects.</td></tr>
+            <tr><td>[15:15] *** vmlemon_ has never actually seen one "in the wild"...</td></tr>
+            <tr><td>[15:15] &lt Lawouach_&gt We did have a teacher years later who tried to tell us about that topic but we couldn't care less</td></tr>
+            <tr><td>[15:16] &lt Lawouach_&gt i'm quite impressed by your feedback guys :)</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt it's just like an iPod really</td></tr>
+            <tr><td>[15:16] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[15:17] *** Davbo wouldn't have paid full price for it though :-)</td></tr>
+            <tr><td>[15:17] &lt Davbo&gt Mine fell off the back of a lorry vmlemon_ ;-)</td></tr>
+            <tr><td>[15:17] *** Lawouach_ has an iRiver and is happy with it</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt Interesting choice of colours that they make them in</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt Haha</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt Zune lorries in Europe?</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt *aherm* no comment :P</td></tr>
+            <tr><td>[15:18] *** vmlemon_ wouldn't have thought that would ever happen</td></tr>
+            <tr><td>[15:19] &lt vmlemon_&gt Kamaelia port to the BBC Micro, anyone? ;)</td></tr>
+            <tr><td>[15:19] &lt bcarlyon|laptop&gt ha</td></tr>
+            <tr><td>[15:19] &lt bcarlyon|laptop&gt Wouldn't that break some bbc properitry laws somewhere, lol.</td></tr>
+            <tr><td>[15:20] &lt vmlemon_&gt It'd be next to impossible to get even Python to run on it, though</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt Heh we had a BBC Micro at school.</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt They were Acorn anyway right?</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt I think we had one of the later BBC/Acorn machines</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt (It ran some version of RISC OS, if I remember correctly)</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt the one we had was certainly Acorn</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt At school, anyway</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt Hehe funny things</td></tr>
+            <tr><td>[15:22] *** vmlemon_ had a Macintosh Performa running Mac OS 8 (dual booted to Mac OS 7.5.x) at home, then</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt lol :-)</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt we had an Amiga at home, the pinnacle of computer games</td></tr>
+            <tr><td>[15:23] &lt vmlemon_&gt I think I managed to make it tri-boot Mac OS 8, 7.5.x, and Mac OS 9 at one time</td></tr>
+            <tr><td>[15:23] &lt vmlemon_&gt Which was surprising for such an underpowered machine</td></tr>
+            <tr><td>[15:23] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:24] &lt vmlemon_&gt I remember trying to boot LinuxPPC 2000, and mkLinux on it, to no avail</td></tr>
+            <tr><td>[15:24] &lt vmlemon_&gt Later tried them on a slot-loading iMac, also without success</td></tr>
+            <tr><td>[15:25] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[15:25] &lt Davbo&gt Really pushed that poor thing to its limits vmlemon_</td></tr>
+            <tr><td>[15:25] &lt vmlemon_&gt I did manage to get MachTen working on it, although I couldn't do much with it</td></tr>
+            <tr><td>[15:26] *** Davbo finds it funny he can't sync his MP3 player until he boots to another OS</td></tr>
+            <tr><td>[15:26] &lt vmlemon_&gt (I didn't know many UNIX commands at the time, and it didn't have a toolchain and compiler)</td></tr>
+            <tr><td>[15:26] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[15:26] *** vmlemon_ had an el-cheapo Chinese MP4 (AVI) and MP3 player/recorder thing that wouldn't work under Windows at all in USB Mass Storage Mode</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt Ironically, it Just Worked under Linux</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt So much for Windows supposedly having "more comprehensive hardware support than anything else)</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt "</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt Main thing i use my Zune for is podcasts anyway and it works just fine.</td></tr>
+            <tr><td>[15:28] &lt Davbo&gt it's really essential that they can resume from where you left off there</td></tr>
+            <tr><td>[15:28] &lt vmlemon_&gt That's nuZe to me ;)</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt yeah it's alright</td></tr>
+            <tr><td>[15:30] &lt vmlemon_&gt I had an Acorn emulator on one machine here, although I don't know which one, or even if I still have a copy of it</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt cool :-)</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt gonna go and revise for a bit.</td></tr>
+            <tr><td>[15:31] &lt Davbo&gt back later chaps.</td></tr>
+            <tr><td>[15:31] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[15:31] *** Davbo is now known as Davbo-afk</td></tr>
+            <tr><td>[15:32] *** vmlemon_ goes to look for a PlayStation 2 emulator...</td></tr>
+            <tr><td>[15:34] &lt bcarlyon|laptop&gt i know where there might be one, the same place i got my game boy emulator</td></tr>
+            <tr><td>[15:35] &lt vmlemon_&gt Aha</td></tr>
+            <tr><td>[15:35] &lt vmlemon_&gt I found the PCSX2 source code, but I remember it being a real b*tch to compile last time</td></tr>
+            <tr><td>[15:36] &lt vmlemon_&gt (http://www.pcsx2.net/downloads.php)</td></tr>
+            <tr><td>[15:38] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[15:39] &lt vmlemon_&gt If I remember correctly, it was originally written either for Windows or Linux, and then "ported" either way</td></tr>
+            <tr><td>[15:40] *** vmlemon_ assumes it started on Windows, since the Linux/UNIX version lags behind it hugely, and they only managed to get the two in sync recently</td></tr>
+            <tr><td>[15:40] &lt vmlemon_&gt Now to get 7Zip and the other junk it needs installed</td></tr>
+            <tr><td>[15:44] &lt bcarlyon|laptop&gt Nice.</td></tr>
+            <tr><td>[15:45] &lt bcarlyon|laptop&gt Does that mean if you grab it and install it you can go online and play others and it loads from cd?</td></tr>
+            <tr><td>[15:45] &lt vmlemon_&gt Yay, Fedora don't have a package for 7Zip...</td></tr>
+            <tr><td>[15:46] &lt vmlemon_&gt Last time I tested it, it supported loading certain games from CD/DVD, getting to certain places before crashing (and having horrid graphical glitches), emulated a gamepad with the keyboard, supported file-backed memory cards, and could run the PlayStation 2 BIOS image</td></tr>
+            <tr><td>[15:46] &lt vmlemon_&gt and it was very, very slow</td></tr>
+            <tr><td>[15:48] &lt vmlemon_&gt Dunno how well it (doesn't) work(s), now</td></tr>
+            <tr><td>[15:48] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[15:49] &lt vmlemon_&gt Still, it's an amazing feat to actually get even a semi-functional PlayStation 2 emulator, given by how complex the hardware is they have to emulate</td></tr>
+            <tr><td>[15:49] &lt bcarlyon|laptop&gt indeed</td></tr>
+            <tr><td>[15:51] &lt vmlemon_&gt Probably even more so than the Amiga, and people thought that would be impossible</td></tr>
+            <tr><td>[15:52] &lt vmlemon_&gt (That UAE stood for "Unusable Amiga Emulator" at one time says a lot ;) )</td></tr>
+            <tr><td>[16:12] *** Davbo-afk is now known as Davbo</td></tr>
+            <tr><td>[16:13] &lt orphans&gt http://blogs.adobe.com/penguin.swf/linuxaudio.png</td></tr>
+            <tr><td>[16:13] *** orphans cries</td></tr>
+            <tr><td>[16:14] &lt vmlemon_&gt It's well known that audio is in a sorry state on Linux, right now :|</td></tr>
+            <tr><td>[16:15] &lt vmlemon_&gt (Although that's one of the problems of having a "free for all"-style environment when it comes to system, in my opinion...)</td></tr>
+            <tr><td>[16:18] &lt vmlemon_&gt It seems that certain groups are so focused on bolting shiny, wizzy stuff on, that they forget the stuff that is critical for most people...</td></tr>
+            <tr><td>[16:19] &lt vmlemon_&gt (e.g. consistently working audio, a unified clipboard system that doesn't lose state when an application crashes, and so on)</td></tr>
+            <tr><td>[16:20] &lt vmlemon_&gt *system-level components</td></tr>
+            <tr><td>[16:34] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:01] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:02] &lt Lawouach&gt back</td></tr>
+            <tr><td>[17:02] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[17:59] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt pong</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt how are you?</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt still head down for your exams?</td></tr>
+            <tr><td>[18:02] &lt orphans&gt yeah, got 4 in 3 days coming up :)</td></tr>
+            <tr><td>[18:02] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[18:02] &lt Lawouach&gt last ones?</td></tr>
+            <tr><td>[18:03] &lt orphans&gt maybe - I've got one more which I can sit depending on whether I need to/think I'll do alright on it</td></tr>
+            <tr><td>[18:03] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt well you'll let me know :)</td></tr>
+            <tr><td>[18:04] &lt orphans&gt it's a bit of a crazy system where you can do extra credits, but if the grade isn't good it drags your overall one down</td></tr>
+            <tr><td>[18:04] &lt orphans&gt will do :)</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt ouch</td></tr>
+            <tr><td>[18:04] &lt orphans&gt if the next 4 go well I probably won't bother</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:05] &lt Lawouach&gt well I wish you good luck obviously :)</td></tr>
+            <tr><td>[18:05] &lt orphans&gt cheers :)</td></tr>
+            <tr><td>[18:05] &lt Lawouach&gt We shall be fairly fast today again</td></tr>
+            <tr><td>[18:05] &lt orphans&gt k</td></tr>
+            <tr><td>[18:05] *** orphans gets Sonic Speed Boots on</td></tr>
+            <tr><td>[18:05] &lt Lawouach&gt Right, so last week I had asked you to lay out the application directory structure</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt I can see you did so</td></tr>
+            <tr><td>[18:06] &lt orphans&gt yup</td></tr>
+            <tr><td>[18:07] &lt Lawouach&gt I went though the README</td></tr>
+            <tr><td>[18:07] &lt Lawouach&gt Nice of you to give a quick summary of each of your choice</td></tr>
+            <tr><td>[18:08] &lt orphans&gt yeah - thought that would give a bit more clarity as to where everything lives</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt It does</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt Okay</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt I saw that Jam.py is empty for now</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt Could you sketch quickly what it will contain eventually</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt To be more precise</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt sine it'll be the module that starts the application</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt what will it contain towards that goal?</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt how will you run it?</td></tr>
+            <tr><td>[18:11] &lt orphans&gt yeah - at the moment it's basically contain the main graphlines/pipelines used in the app. I'll get it set up with fairly basic code to start with and then build on top of it</td></tr>
+            <tr><td>[18:12] &lt orphans&gt so currently it'd probably look something a bit like UITest.py</td></tr>
+            <tr><td>[18:12] &lt orphans&gt and as I add and test components I'll work them into Jam.py</td></tr>
+            <tr><td>[18:13] &lt orphans&gt s/at the moment it's basically contain/it will basically contain</td></tr>
+            <tr><td>[18:13] &lt Lawouach&gt I'm curious about something</td></tr>
+            <tr><td>[18:13] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:13] &lt Lawouach&gt Do you use Opera?</td></tr>
+            <tr><td>[18:13] &lt orphans&gt nope, ff</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt Okay</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt Have you ever used it? Or have you used the latest KDE?</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt More to the point, have you ever used their widgets?</td></tr>
+            <tr><td>[18:14] &lt orphans&gt no, and no, and no :)</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt Okay</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt Nevertheless, have you ever thought about the concept of widget applications? Or rather embedded applications?</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt You know you have usually fat client applications</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt and thing client applications</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt widget application sit in the middle as they are emebedded in a larger program</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt Now</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt where that leads me is whether or not you had considered that your application might be embedded one day in a larger program</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt ?</td></tr>
+            <tr><td>[18:17] &lt orphans&gt I guess I thought that the seperate elements may be - not the whole application though</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt are you interested in such concept?</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt no trick question here BTW :)</td></tr>
+            <tr><td>[18:17] &lt orphans&gt I'm not really sure what you're getting at?</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt well</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt You have not considered that your application could be emebeded in another application</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt right?</td></tr>
+            <tr><td>[18:18] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt You had considered parts if it to be</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt not the whole application</td></tr>
+            <tr><td>[18:18] &lt orphans&gt yeah - more like a toolkit I guess</td></tr>
+            <tr><td>[18:19] &lt orphans&gt I'm not sure I see the value of embedding the whole app rather than just reusing the parts</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt That's where I wanted to get at</td></tr>
+            <tr><td>[18:19] &lt Lawouach&gt It's your application</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt I'm not trying to lead you one or the other. You have to consider short term as well as longer term decision you make</td></tr>
+            <tr><td>[18:20] &lt orphans&gt still a little confused</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt Okay let me be clearer then.</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt When I looked at Jam.py and the way you had setup your directory structure, I wondered how you were seeing your application being used.</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt The point I'm trying to make you think about is whether or not you build this application as a demo of some sort</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt or an application that is could be used as a service by other applications.</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt I'll take an example</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt Vst plugins</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt They can be plugins and/or standalone applications</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt Currently, if your application is considered as a standalone application.</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt I don't mind either way.</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt I'm asking you "is it on purpose?"</td></tr>
+            <tr><td>[18:24] &lt orphans&gt ahh, I see - yes, it's deliberate</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt Good. Why?</td></tr>
+            <tr><td>[18:24] &lt orphans&gt because of the way OSC is designed really - you don't need one tool coupled to one music making tool</td></tr>
+            <tr><td>[18:25] &lt orphans&gt so having it seperate gives the flexibility to use the app with anything else which supports OSC</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt Okay</td></tr>
+            <tr><td>[18:26] &lt orphans&gt you could even have one part controlling one program, and another part controlling another program</td></tr>
+            <tr><td>[18:26] &lt orphans&gt and route it however you like it</td></tr>
+            <tr><td>[18:26] &lt orphans&gt I guess kinda like how jack routes audio OSC can route messages</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt jack is a server. Applications are built atop jack indeed.</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt What are you building?</td></tr>
+            <tr><td>[18:27] &lt orphans&gt ah, bad analogy :)</td></tr>
+            <tr><td>[18:27] &lt orphans&gt forget that</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt the server part or an application that sits atop?</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt anyway</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt don't worry too much</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt I'm glad you know why you chose to go that route.</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt That's one thing you will have to document however</td></tr>
+            <tr><td>[18:28] &lt orphans&gt ok, yeah</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt Because in many applications, specially libraries, it is hard to understand or see the rational behind the thinking of a developer</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt I've understood that while developing amplee</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt THings that seem trivial to you may lose your user base</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt When things are getting too complex to explain it may mean you're lost yourself :p</td></tr>
+            <tr><td>[18:30] &lt orphans&gt yeah, I guess a "why do you want this app doing this in this way" doc would be very useful</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt for instance yes</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt one side note here</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt Start using something like textile, markdown or restructedText for your doc.</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt That'd be easier to translate that to HTML later on :)</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt Also, starting from next week. You'll lead the meeting :)</td></tr>
+            <tr><td>[18:32] &lt orphans&gt oh, yeah. Somewhere in something I read it says what they use for Kamaelia, I'll dig it up</td></tr>
+            <tr><td>[18:32] &lt orphans&gt ooh, exciting!</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt Meaning you'll have to explain what, why and how :)</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt We're not finished BTW ;)</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt put the beer down!</td></tr>
+            <tr><td>[18:33] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt I had another question</td></tr>
+            <tr><td>[18:33] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[18:33] Reply: or post your idea, you may get a response - either from a mentor or fellow student or from someone reading the logs.</td></tr>
+            <tr><td>[18:33] Reply: Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news</td></tr>
+            <tr><td>[18:33] Reply: Some useful links/tips - use the template : http://kamaelia.sourceforge.net/SummerOfCode2006Template - base page: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[18:33] Reply: Tips for a good application - q's to ask yourself: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt damn you kamaeliabot :)</td></tr>
+            <tr><td>[18:33] &lt orphans&gt kamaeliabot: slap</td></tr>
+            <tr><td>[18:33] Reply: Ouch!</td></tr>
+            <tr><td>[18:33] &lt vmlemon_&gt kamaeliabot: poke</td></tr>
+            <tr><td>[18:33] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt thanks vmlemon_</td></tr>
+            <tr><td>[18:34] &lt vmlemon_&gt No problem ;)</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt orphans: Currently you have the Sketches directory allocated to you.</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt Let's say you want to release your application next week.</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt How would you proceed?</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt (Not asking for each svn command here just the general process you'd follow)</td></tr>
+            <tr><td>[18:35] &lt orphans&gt eesh, erm</td></tr>
+            <tr><td>[18:35] *** orphans flounders</td></tr>
+            <tr><td>[18:35] &lt orphans&gt make a setup.py file</td></tr>
+            <tr><td>[18:35] &lt orphans&gt sort everything out so it'd install nice</td></tr>
+            <tr><td>[18:36] &lt orphans&gt make a tarball/exe/whatever</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt alright.</td></tr>
+            <tr><td>[18:36] &lt orphans&gt and whack a tag on the svn version</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt Good :)</td></tr>
+            <tr><td>[18:36] &lt orphans&gt (if svn does tagging - *sigh*)</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt it kindda does</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt currently though your Sketches directory is not really well laid out for such task</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt I mean, where would you stuff the tag?</td></tr>
+            <tr><td>[18:37] &lt orphans&gt yeah, I see that</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt so one tiny task for next week</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt re-organise your Sketch directory so that you can have</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt tags, branches and a trunk</td></tr>
+            <tr><td>[18:38] &lt orphans&gt ok, cool</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt the branches is quite useless really considering your trunk will be in a constant move but let's follow the good practices of our elders</td></tr>
+            <tr><td>[18:39] &lt orphans&gt yup, cool</td></tr>
+            <tr><td>[18:39] &lt Lawouach&gt https://svn.defuze.org/ &lt -- I guess something like this.</td></tr>
+            <tr><td>[18:40] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt Now, considering what you told me earlier about being able to use parts of the application</td></tr>
+            <tr><td>[18:40] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt Could it mean that I'd be able to do an import of some of your modules?</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt And use components for your applications?</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt assuming they have a specific purpose that fit my needs</td></tr>
+            <tr><td>[18:41] &lt orphans&gt yeah, definitely</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt what kind of import would I be doing?</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt do you have an example?</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt even a fake one :)</td></tr>
+            <tr><td>[18:42] &lt orphans&gt not as such - it should be something like 'from jam.UI.XYPad import XYPad'</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt good</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt that's what I wanted to know</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:42] &lt orphans&gt so almost everything except jam.py would get installed into site-packages/jam</td></tr>
+            <tr><td>[18:42] &lt orphans&gt or similar</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt well then don't we have a problem with the way you have setup your Sketch directory?</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt I don't see a "jam" directory there yet</td></tr>
+            <tr><td>[18:43] &lt orphans&gt yeah - I was going to sort that out nearer things being vaguely sorted</td></tr>
+            <tr><td>[18:43] &lt orphans&gt I guess I'm just building developer debt there though :)</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt Hah!</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt Good</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt then in reality, what should we have is something along:</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt Sketches/JT/application/tags</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt Sketches/JT/application/trunk</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt Sketches/JT/application/trunk/LetsJam</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Sketches/JT/library/tags</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Sketches/JT/library/trunk/Jam</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Eventually:</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Sketches/JT/library/trunk/Jam/setup.py</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Sketches/JT/library/trunk/Jam/Jam/UI</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Sketches/JT/library/trunk/Jam/Jam/Utils</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Sketches/JT/library/trunk/Jam/Jam/Protocol</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt LetsJam would contain the data and the main application module</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt Which would have:</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt from Jam.UI.XYPad import XYPad</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt How does it sound to you?</td></tr>
+            <tr><td>[18:47] &lt orphans&gt yeah, sounds cool</td></tr>
+            <tr><td>[18:47] &lt vmlemon__&gt kamaeliabot: dance</td></tr>
+            <tr><td>[18:47] Reply: does the macarena</td></tr>
+            <tr><td>[18:47] &lt orphans&gt quick question about that - how do you work path stuff?</td></tr>
+            <tr><td>[18:48] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt orphans: what do you mean?</td></tr>
+            <tr><td>[18:48] &lt orphans&gt do you just add Sketches/JT/library/trunk/Jam to pythonpath globally?</td></tr>
+            <tr><td>[18:48] *** MS- read logs, and jumps in to suggest Kamaelia.Apps.Jam as the namespace</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt Hello MS-</td></tr>
+            <tr><td>[18:48] &lt orphans&gt or do you do some python-fu in application/trunk/LetsJam?</td></tr>
+            <tr><td>[18:49] &lt orphans&gt hey MS-</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt MS-: Yeah I wasn't sure about that one.</td></tr>
+            <tr><td>[18:49] &lt MS-&gt hi</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt orphans: You don't add that path</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt As you can see there is a setup.py</td></tr>
+            <tr><td>[18:49] &lt orphans&gt so just setup.py often :)</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt That'll install your Jam library to the site-packages</td></tr>
+            <tr><td>[18:50] &lt MS-&gt The rationale behind it is that if the apps are all sitting Kamaelia.Apps.* , it makes it alot easier to reuse functionality from all apps</td></tr>
+            <tr><td>[18:50] &lt orphans&gt MS-, so Kamaelia.Apps.Jam would be where the modules I import in the main app come from?</td></tr>
+            <tr><td>[18:50] &lt MS-&gt yes</td></tr>
+            <tr><td>[18:51] &lt MS-&gt I'm expecting that all the exemplar projects to end up having a directory in /Code/Python/Apps (for packaging)</td></tr>
+            <tr><td>[18:51] &lt Lawouach&gt in other word you could setup your directoyr like this:</td></tr>
+            <tr><td>[18:51] &lt Lawouach&gt Sketches/JT/library/trunk/Jam/Kamaelia/Apps/Jam</td></tr>
+            <tr><td>[18:52] &lt MS-&gt and for their support modules, if not merged into the mainline areas, to be in Kamaelia.Apps.&lt appname&gt</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt Sketches/JT/library/trunk/Jam/setup.py</td></tr>
+            <tr><td>[18:52] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[18:52] &lt orphans&gt yeah, got it</td></tr>
+            <tr><td>[18:52] &lt MS-&gt I'll sit back for a bit and stop interfering now, since I think that's sufficient info :)</td></tr>
+            <tr><td>[18:52] &lt MS-&gt (I hope :) )</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt orphans: the main idea here is for you to see that your application and its core should be distinguished.</td></tr>
+            <tr><td>[18:53] &lt MS-&gt (btw, "expecting" is a bit OTT there, "hoping" is perhaps better)</td></tr>
+            <tr><td>[18:53] *** MS- goes quiet</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt ;)</td></tr>
+            <tr><td>[18:53] &lt orphans&gt Lawouach, yeah, cool</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt This is really important because you need to help yourself with the way you lay your application out on the filesystem.</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt You wouldn't believe how a wrong choice at the very beginning can cost you a lot later on.</td></tr>
+            <tr><td>[18:54] &lt orphans&gt heh, I can imagine</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt Refactoring is a dandy word in those evil worlds of J2EE and .NET as they have proper tools for that</td></tr>
+            <tr><td>[18:56] &lt orphans&gt yeah. I'm sure I'm going to spend a fair bit of time getting the timing code "just right" now rather than later - kinda thing which would be a nightmare to change</td></tr>
+            <tr><td>[18:56] &lt MS-&gt "You wouldn't believe how a wrong choice at the very beginning can cost you a lot later on"</td></tr>
+            <tr><td>[18:56] &lt MS-&gt Oh yes indeed. &lt /heckle&gt</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:57] &lt Lawouach&gt orphans: may I ask you which editor you're programming with?</td></tr>
+            <tr><td>[18:57] &lt orphans&gt vim</td></tr>
+            <tr><td>[18:57] &lt Lawouach&gt hard core :p</td></tr>
+            <tr><td>[18:57] &lt orphans&gt for my sins...</td></tr>
+            <tr><td>[18:57] &lt orphans&gt I learnt it, and now can't change - I keep typing i at the start of sentencer :)</td></tr>
+            <tr><td>[18:57] &lt orphans&gt s/sentencer/sentences</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt well that's actually good from my POV. It forces you using only a small necessary set of tools.</td></tr>
+            <tr><td>[18:58] &lt orphans&gt I love it really though :)</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt I'm using emacs personally and I never bother learning more than just the more common commands.</td></tr>
+            <tr><td>[18:58] &lt orphans&gt same here</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt I use Eclipse at work and I like it until something goes wrong. Like a path that is set somewhere I forgot about</td></tr>
+            <tr><td>[18:59] &lt orphans&gt mm, I use eclipse on windows</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt Then I realize how those IDEs hide from me.</td></tr>
+            <tr><td>[19:00] &lt orphans&gt IDEs scare me slightly :)</td></tr>
+            <tr><td>[19:00] &lt orphans&gt too many buttons and modes and things</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt good then make sure your application is designed as cleanly as vim :)</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt For a developer going through the source code is like a second nature</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt Developers understand a lot of your design decisions we were discussing earlier just like that</td></tr>
+            <tr><td>[19:02] &lt Lawouach&gt If a developer fails to grasp what your directory structure means he/she may struggle using it anyway</td></tr>
+            <tr><td>[19:02] &lt Lawouach&gt Developers don't like writing doc. They don't like reading docs much more IMO :)</td></tr>
+            <tr><td>[19:02] &lt orphans&gt :)</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt Be clear and ensure your structure means something by itself. Document the rest :)</td></tr>
+            <tr><td>[19:03] *** orphans adds to the_tau_of_lawouach.txt</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt I'm levitating</td></tr>
+            <tr><td>[19:03] &lt orphans&gt heh</td></tr>
+            <tr><td>[19:04] &lt Lawouach&gt That might sound a bit out there but if you start really enjoying writing code you will be less and less encline at accepting messy developers.</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt The funny thing is that the don't reivent the wheel often comes because a developer refactored some code at the directory structure level to suit its mindset</td></tr>
+            <tr><td>[19:05] &lt orphans&gt I do look back at stuff I wrote a long time ago and cringe :)</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt Not because he added any value to the code.</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt orphans: good. so do I :D</td></tr>
+            <tr><td>[19:06] &lt orphans&gt occasionally look back at something I wrote yesterday and cringe :D</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt s/its/his</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt bach I haven't written a line since last week because I have a big refactoring ahead of me and I don't yet see it</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt The force is not strong enough</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt :D</td></tr>
+            <tr><td>[19:07] &lt orphans&gt heh</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt anyway</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt That was supposed to be quick</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt I'm sorry I kept you</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt That's all for me</td></tr>
+            <tr><td>[19:07] &lt orphans&gt no probs</td></tr>
+            <tr><td>[19:07] &lt orphans&gt actually, if you're not busy can I keep you for five minutes more?</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt If you've got more questions... hit me :)</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt You can</td></tr>
+            <tr><td>[19:07] &lt orphans&gt you're on ubustu atm right?</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt I am</td></tr>
+            <tr><td>[19:08] &lt orphans&gt can you see whether TimingTest.pd from sketches/JT/PD runs OK?</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt how do I test it?</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt what should I get?</td></tr>
+            <tr><td>[19:09] &lt orphans&gt open it up in pd (preinstalled with ubustu I think)</td></tr>
+            <tr><td>[19:10] &lt orphans&gt hopefully all the boxes will be solid rather than dotted, and it won't complain too much</td></tr>
+            <tr><td>[19:10] *** Lawouach finds amusing that 'pd' is a slang term for 'gay' in French.</td></tr>
+            <tr><td>[19:10] &lt orphans&gt :)</td></tr>
+            <tr><td>[19:10] &lt vmlemon__&gt Ubustu? Is that how you'd describe Ubuntu when it "works"? ;)</td></tr>
+            <tr><td>[19:10] &lt orphans&gt you learn something new every day :)</td></tr>
+            <tr><td>[19:10] &lt vmlemon__&gt (i.e., when it's broken)</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt orphans: http://rafb.net/p/GRS9Hu62.html</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt That's what it says</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt but the diagram opens up</td></tr>
+            <tr><td>[19:12] &lt orphans&gt *sigh* - thought it might say that</td></tr>
+            <tr><td>[19:12] &lt Lawouach&gt They are dotted though</td></tr>
+            <tr><td>[19:12] &lt orphans&gt what's the point in installing pd if you don't get anything with it</td></tr>
+            <tr><td>[19:14] &lt orphans&gt Lawouach, I think for most of the "it makes noise" testing from now on I'll be using PD - if you want to try stuff out theres a more comprehensive package here - http://puredata.info/downloads</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[19:15] &lt orphans&gt I'll keep everything with vanilla components as much as possible, but as Ubustu doesn't come with the OSC bits it's not particularly useful in it's vanilla state</td></tr>
+            <tr><td>[19:16] &lt orphans&gt should mean there's a fairly easy to install thing for testing on anyways - the pd-extended packages are pretty awesome</td></tr>
+            <tr><td>[19:17] &lt orphans&gt right, I'm off to revise a little more now - thanks for the help Lawouach and MS-</td></tr>
+            <tr><td>[19:17] &lt Lawouach&gt np</td></tr>
+            <tr><td>[19:17] &lt Lawouach&gt Good luck :)</td></tr>
+            <tr><td>[19:17] &lt orphans&gt ta</td></tr>
+            <tr><td>[19:18] &lt MS-&gt enjoy</td></tr>
+            <tr><td>[19:18] *** MS- also goes afk for a bit</td></tr>
+            <tr><td>[19:18] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[19:22] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[19:44] *** Davbo thinks ﻿orphans should commit ﻿the_tau_of_lawouach.txt ;-)</td></tr>
+            <tr><td>[19:45] &lt Davbo&gt We can review it for merge into the release :P</td></tr>
+            <tr><td>[19:45] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[20:12] *** bcarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[20:42] &lt ms-away&gt import that</td></tr>
+            <tr><td>[20:45] &lt j_baker&gt Speaking of the tau of Lawouach: I was going to try to spend some time reviewing headstock this week. I know it's undocumented, so do you have any suggestions for a starting place?</td></tr>
+            <tr><td>[20:46] &lt Lawouach&gt Hell?</td></tr>
+            <tr><td>[20:46] &lt Lawouach&gt j_baker: Really it depends on what you're looking for</td></tr>
+            <tr><td>[20:47] &lt Lawouach&gt I'd say that the simplechat example is good to start up with</td></tr>
+            <tr><td>[20:47] &lt j_baker&gt What I'd like to do is find a way to drop in the ability to use XMPP in the MoreComplexServer/ServerCore somehow.</td></tr>
+            <tr><td>[20:48] &lt Lawouach&gt http://trac.defuze.org/browser/oss/headstock/headstock/example/simplechat/simplechat.py</td></tr>
+            <tr><td>[20:48] &lt Lawouach&gt I'm not sure that's the right way of seeing it.</td></tr>
+            <tr><td>[20:48] &lt Lawouach&gt I'm currently working on a much more complex example of headstock</td></tr>
+            <tr><td>[20:49] &lt Lawouach&gt And I had started using headstock as part of the single process running my HTTP server (usinh CherryPy but doesn't really matter)</td></tr>
+            <tr><td>[20:49] &lt Lawouach&gt I'm changing that as we speak for a more decoupled management</td></tr>
+            <tr><td>[20:50] &lt Lawouach&gt In other words, my XMPP code runs in its own process.</td></tr>
+            <tr><td>[20:50] &lt Lawouach&gt The HTTP server runs in its own process too</td></tr>
+            <tr><td>[20:50] &lt j_baker&gt I see. I'll spend some time reviewing that then and move on from there. For now I just want to get an idea of what headstock is like so I can give ms-away a sensible idea of how long it's going to take me to adapt my code to use it.</td></tr>
+            <tr><td>[20:50] &lt Lawouach&gt simplechat is good to do that I think</td></tr>
+            <tr><td>[20:50] &lt Lawouach&gt and asking me questions as well</td></tr>
+            <tr><td>[20:51] &lt Lawouach&gt You might want to consider bucker too</td></tr>
+            <tr><td>[20:51] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[20:51] &lt Lawouach&gt http://trac.defuze.org/wiki/bucker</td></tr>
+            <tr><td>[20:51] &lt ms-away&gt j_baker: The only reason I'd like a sensible idea of &lt insert random thing&gt is so that you get a sensible idea of &lt insert random thing&gt :-)</td></tr>
+            <tr><td>[20:51] &lt Lawouach&gt It's a small queue messaging system I had written months ago</td></tr>
+            <tr><td>[20:51] &lt ms-away&gt Reality can be far quicker/slower</td></tr>
+            <tr><td>[20:52] *** ms-away thinks TCPServer should revert to something similar to what it used to be called</td></tr>
+            <tr><td>[20:53] &lt ms-away&gt eg something like PrimaryListenerSocket, or TCPListener</td></tr>
+            <tr><td>[20:53] &lt ms-away&gt and then ServerCore could be TCPServerCore (perhaps)</td></tr>
+            <tr><td>[20:53] &lt Lawouach&gt It's much simpler than hadstock to start up with but provides a good perspective on adding Kamaelia's server components</td></tr>
+            <tr><td>[20:53] &lt ms-away&gt (after all there's lots of other servers out there)</td></tr>
+            <tr><td>[20:53] &lt j_baker&gt Understandable ms-away. At any rate, I need to figure out how much time to allocate for this, so I figure that's the best place to begin.</td></tr>
+            <tr><td>[20:53] &lt ms-away&gt (Wouldn't directly affect any existing servers)</td></tr>
+            <tr><td>[20:54] &lt ms-away&gt j_baker: seems very reasonable :)</td></tr>
+            <tr><td>[20:54] &lt Lawouach&gt j_baker: https://svn.defuze.org/oss/bucker/scripts/queue-server.py for instance</td></tr>
+            <tr><td>[20:54] &lt j_baker&gt Alright. I'll check into that Lawouach.</td></tr>
+            <tr><td>[20:54] &lt Lawouach&gt That code is actually quite handy too :D</td></tr>
+            <tr><td>[20:55] &lt Lawouach&gt if you need message queuing capabilities without too much overhead :)</td></tr>
+            <tr><td>[20:56] &lt Lawouach&gt I wonder sometimes how I manage to keep track of all the code I'm writing :)</td></tr>
+            <tr><td>[20:56] &lt j_baker&gt I'm sure at some point, that will become a necessity. Especially when I start to write the intermediary.</td></tr>
+            <tr><td>[20:56] &lt j_baker&gt Just out of curiosity, what's your "real" job, Lawouach?</td></tr>
+            <tr><td>[20:57] &lt Lawouach&gt developer</td></tr>
+            <tr><td>[20:58] &lt Lawouach&gt mind you not a single of those projects come from any of my job</td></tr>
+            <tr><td>[20:58] &lt Lawouach&gt although I did have a few months last fall with a job that gave me plenty of time :)</td></tr>
+            <tr><td>[21:00] &lt j_baker&gt Wow. That's pretty amazing. That's a lot of code to write for it not to be related to your actual job.</td></tr>
+            <tr><td>[21:00] &lt Lawouach&gt yeah well I'm single.</td></tr>
+            <tr><td>[21:00] &lt Lawouach&gt Nothing comes for free :)</td></tr>
+            <tr><td>[21:00] &lt j_baker&gt Plus jobs also tend to demand a break.</td></tr>
+            <tr><td>[21:01] &lt Lawouach&gt well until now I've never had a job that was so demanding on me.</td></tr>
+            <tr><td>[21:01] &lt Lawouach&gt I don't look for responsabilities that much either which helps :)</td></tr>
+            <tr><td>[21:01] &lt Lawouach&gt Responsabilities are great when you have the associated power</td></tr>
+            <tr><td>[21:01] &lt Lawouach&gt That doesn't happen often</td></tr>
+            <tr><td>[21:02] &lt Lawouach&gt Usually you have the responsabilities and the crappy management that goes with them :)</td></tr>
+            <tr><td>[21:02] &lt Lawouach&gt s/crappy/unhappy</td></tr>
+            <tr><td>[21:02] &lt Lawouach&gt guess both are valid :)</td></tr>
+            <tr><td>[21:02] &lt j_baker&gt Heh... I hear that. Plus in my experience no good deed goes unpunished.</td></tr>
+            <tr><td>[21:03] &lt j_baker&gt "Oh, you did that? Thanks! Here's more work!"</td></tr>
+            <tr><td>[21:03] &lt Lawouach&gt But to be honest I just enjoy the code I'm writing. My main problem I think is that I mainly like having to solve a problem. Once I've found a solution I tend to lose interest rather quickly.</td></tr>
+            <tr><td>[21:03] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:04] &lt Davbo&gt I think that's the mentality of many developers Lawouach. I know i'm like that :-)</td></tr>
+            <tr><td>[21:04] &lt Lawouach&gt headstock stall for a while because I had found a first design. I wasn't happy with it but it was a proof of concept to myself. Once I felt a need for more I started again.</td></tr>
+            <tr><td>[21:04] &lt Lawouach&gt Davbo: makes me feel less lonely then :D</td></tr>
+            <tr><td>[21:05] &lt Davbo&gt hehe :-)</td></tr>
+            <tr><td>[21:05] &lt Lawouach&gt I'm not sure that makes me a better software developer.</td></tr>
+            <tr><td>[21:05] &lt Lawouach&gt at least not enterpriseyyyyy</td></tr>
+            <tr><td>[21:06] &lt Lawouach&gt bucker came from 1) a need I had for a simple message queue system and 2) a need to find a good well scoped project to play with Kamaelia</td></tr>
+            <tr><td>[21:07] &lt Lawouach&gt I had a problem, I solved it. I moved on and never actually used bucker much (even though I would if I had a problem requiring what it does)</td></tr>
+            <tr><td>[21:07] &lt Davbo&gt Who wants to be a enterprisey developer :P That's for the .NET programmers anyway :-)</td></tr>
+            <tr><td>[21:07] &lt Davbo&gt not Python folk. ;-)</td></tr>
+            <tr><td>[21:08] &lt Lawouach&gt I guess the programing language usually fits the way you think.</td></tr>
+            <tr><td>[21:08] &lt j_baker&gt Well, I would take a second glance at that statement after knowing how much enterprisey developers make. ;)</td></tr>
+            <tr><td>[21:08] &lt Davbo&gt Hehehe</td></tr>
+            <tr><td>[21:08] &lt j_baker&gt But there are more important things than money.</td></tr>
+            <tr><td>[21:08] &lt Davbo&gt Well said j_baker</td></tr>
+            <tr><td>[21:09] &lt Lawouach&gt j_baker: Money that makes you live the life you desire is the right amount. A friend of mine is never happy and too much is never too much.</td></tr>
+            <tr><td>[21:09] &lt Lawouach&gt I don't work like that.</td></tr>
+            <tr><td>[21:09] &lt Lawouach&gt As long as I enjoy my life I'm fine. But the job needs to leave me alone in return :)</td></tr>
+            <tr><td>[21:10] &lt j_baker&gt I agree Lawouach. I'd work for slave wages if I could find a job that I could look forward to coming to every day.</td></tr>
+            <tr><td>[21:10] &lt Davbo&gt I'm a fan of changing language depending on the problem really, which is why i get frustrated with working in Java at university. It NEVER fits the problem :P</td></tr>
+            <tr><td>[21:10] &lt Lawouach&gt Be careful there. I didn't want to convey that idea.</td></tr>
+            <tr><td>[21:10] &lt Lawouach&gt I did a job for a year that was quite cool but it paid barely enough to pay the bills and period</td></tr>
+            <tr><td>[21:11] &lt Lawouach&gt I quit after a year because life sucked :)</td></tr>
+            <tr><td>[21:11] &lt Lawouach&gt You still need decent wages to enjoy life "outside of work" :)</td></tr>
+            <tr><td>[21:11] &lt Lawouach&gt For some it may mean being able to take expensive holidays once in a while</td></tr>
+            <tr><td>[21:11] &lt Lawouach&gt For others being able to pay expensive furnitures</td></tr>
+            <tr><td>[21:11] &lt Lawouach&gt doesn't matter</td></tr>
+            <tr><td>[21:11] &lt vmlemon_&gt Isn't Java part of the problem, rather than part of the solution? ;)</td></tr>
+            <tr><td>[21:11] *** vmlemon_ ducks</td></tr>
+            <tr><td>[21:11] &lt Lawouach&gt Just find the right amount for you :)</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt Why duck vmlemon_, I think we all agree with that lol :-)</td></tr>
+            <tr><td>[21:12] *** j_baker doesn't know enough about java to agree or disagree.</td></tr>
+            <tr><td>[21:13] &lt j_baker&gt What exactly is the problem with java anyway?</td></tr>
+            <tr><td>[21:13] &lt j_baker&gt Just out of curiosity.</td></tr>
+            <tr><td>[21:13] *** ms-away is now known as ms-</td></tr>
+            <tr><td>[21:13] &lt j_baker&gt (there doesn't seem to be any shortage of people disliking it, so I'm just curious)</td></tr>
+            <tr><td>[21:13] *** Davbo Thinks Lawouach is good at conveying his wisdom :P</td></tr>
+            <tr><td>[21:13] &lt ms-&gt write once, debug everywhere, overly verbose, neither a scripting language, nor C++</td></tr>
+            <tr><td>[21:14] &lt Davbo&gt what ms- said</td></tr>
+            <tr><td>[21:14] &lt ms-&gt It's neither high level enough nor low level enough</td></tr>
+            <tr><td>[21:14] &lt Lawouach&gt Davbo: I don't know. I used to think that way. Like I used to believe Microsoft sucked. That KDE was the way to go and that English girls were crazy not to dress more during winter. Now I just don't care.</td></tr>
+            <tr><td>[21:14] &lt vmlemon_&gt And the slow JVM, although that's subjective...</td></tr>
+            <tr><td>[21:14] &lt ms-&gt It also encourages coding through obfuscation</td></tr>
+            <tr><td>[21:14] &lt j_baker&gt ms- since you're not away right now, I had a question for you.</td></tr>
+            <tr><td>[21:14] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[21:14] Reply: or post your idea, you may get a response - either from a mentor or fellow student or from someone reading the logs.</td></tr>
+            <tr><td>[21:14] Reply: Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news</td></tr>
+            <tr><td>[21:14] Reply: Some useful links/tips - use the template : http://kamaelia.sourceforge.net/SummerOfCode2006Template - base page: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[21:14] Reply: Tips for a good application - q's to ask yourself: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783</td></tr>
+            <tr><td>[21:14] &lt vmlemon_&gt Don't they pretty much encourage people to obfuscate their delivered bytecode, anyway/</td></tr>
+            <tr><td>[21:14] &lt vmlemon_&gt ?</td></tr>
+            <tr><td>[21:15] *** ms- reads back</td></tr>
+            <tr><td>[21:15] *** Davbo kicks kamaeliabot in the shins</td></tr>
+            <tr><td>[21:15] &lt j_baker&gt I haven't typed it yet. :)</td></tr>
+            <tr><td>[21:15] *** ms- still reads back</td></tr>
+            <tr><td>[21:15] &lt ms-&gt ;)</td></tr>
+            <tr><td>[21:15] &lt j_baker&gt I read in PEP 333 that the data returned by the application object should be treated as binary data.</td></tr>
+            <tr><td>[21:15] &lt vmlemon_&gt o.O "...Or if you hate people, you can bank online" (according to a bank advert I just heard on the TV in the other room)</td></tr>
+            <tr><td>[21:15] &lt ms-&gt go on</td></tr>
+            <tr><td>[21:16] &lt Lawouach&gt Davbo: I think it's important to think in such simplistic way only if you're able at some point to realise it really doesn't make much sense and that nothing is so black and white. I'm not saying you do BTW ;)</td></tr>
+            <tr><td>[21:16] &lt j_baker&gt I've noticed that if the app object returns an integer, some component somewhere down the line throws an exception.</td></tr>
+            <tr><td>[21:16] &lt Davbo&gt Yeah I know what you mean</td></tr>
+            <tr><td>[21:16] &lt j_baker&gt (I've forgotten which one)</td></tr>
+            <tr><td>[21:16] &lt j_baker&gt Is that going to be a problem?</td></tr>
+            <tr><td>[21:17] &lt ms-&gt it's not ideal, but a long shot. BUT</td></tr>
+            <tr><td>[21:17] &lt ms-&gt have you seen how bad wsgi_ref handles it?</td></tr>
+            <tr><td>[21:18] &lt ms-&gt I mean, it just comes back with something akin to prolog's "No"</td></tr>
+            <tr><td>[21:18] &lt ms-&gt Something like "An error occurred"</td></tr>
+            <tr><td>[21:18] &lt ms-&gt and that's it</td></tr>
+            <tr><td>[21:18] &lt ms-&gt even if you have tracebacks enabled</td></tr>
+            <tr><td>[21:18] &lt ms-&gt It utterly sucks</td></tr>
+            <tr><td>[21:18] &lt ms-&gt So, whatever you do can't be worse :-D</td></tr>
+            <tr><td>[21:19] &lt ms-&gt if you can log the error somewhere and deal with it even slightly better, you'll be doing along better</td></tr>
+            <tr><td>[21:19] &lt ms-&gt You should always return something valid to the user though</td></tr>
+            <tr><td>[21:19] &lt ms-&gt Even if its as crappy as what wsgi_ref does</td></tr>
+            <tr><td>[21:19] &lt j_baker&gt I see. Would there not be any way to pack that data into a string (like an aray of chars in C) or would that cause more problems?</td></tr>
+            <tr><td>[21:20] &lt ms-&gt I'm not sure what you mean</td></tr>
+            <tr><td>[21:20] &lt j_baker&gt (for the most part, I'm happy with doing better than wsgiref though)</td></tr>
+            <tr><td>[21:20] &lt j_baker&gt Well, say the app object returns a 32 bit integer</td></tr>
+            <tr><td>[21:21] &lt j_baker&gt Could you just convert the binary data into a 4 8-bit char string?</td></tr>
+            <tr><td>[21:21] &lt ms-&gt the app object *can't* return a 32 bit integer. It can return an integer</td></tr>
+            <tr><td>[21:21] &lt ms-&gt (subtle I know, but important to bear in mind)</td></tr>
+            <tr><td>[21:21] &lt ms-&gt My personal feeling is that if you're expecting something that looks like strings</td></tr>
+            <tr><td>[21:22] &lt ms-&gt (which is what that section really means in pratice for discussion unless we start getting really subtle)</td></tr>
+            <tr><td>[21:22] &lt ms-&gt that you are well within your rights to turn round and say "It broke"</td></tr>
+            <tr><td>[21:22] &lt ms-&gt As the string that 32 bit integer gets converted to</td></tr>
+            <tr><td>[21:23] &lt j_baker&gt Ok, no problem. I think I might have just read that section wrong now that I think about it.</td></tr>
+            <tr><td>[21:23] &lt ms-&gt Otherwise, if you don't, you're allowing an error state to pass through, which is generally a bad idea</td></tr>
+            <tr><td>[21:23] &lt ms-&gt You mean this:</td></tr>
+            <tr><td>[21:23] &lt ms-&gt The server or gateway should treat the yielded strings as binary byte sequences: in particular, it should ensure that line endings are not altered. The application is responsible for ensuring that the string(s) to be written are in a format suitable for the client.</td></tr>
+            <tr><td>[21:23] &lt ms-&gt ?</td></tr>
+            <tr><td>[21:23] &lt ms-&gt Or were you querying this:</td></tr>
+            <tr><td>[21:23] &lt j_baker&gt I think it was just meaning "don't convert '\r\n' into '\n'"</td></tr>
+            <tr><td>[21:23] &lt ms-&gt  (The server or gateway may apply HTTP transfer encodings, or perform other transformations for the purpose of implementing HTTP features such as byte-range transmission. See Other HTTP Features, below, for more details.)</td></tr>
+            <tr><td>[21:24] &lt ms-&gt That's one example</td></tr>
+            <tr><td>[21:24] &lt j_baker&gt The first one</td></tr>
+            <tr><td>[21:24] &lt ms-&gt It's essentially meaning - don't make any conversions which would be viewed as invalid with regard to the network</td></tr>
+            <tr><td>[21:24] &lt ms-&gt For example, you could force the server to set a header of</td></tr>
+            <tr><td>[21:24] &lt ms-&gt Content-Transfer-Encoding: base64</td></tr>
+            <tr><td>[21:24] &lt ms-&gt or similar</td></tr>
+            <tr><td>[21:24] &lt ms-&gt Which whilst a little mad</td></tr>
+            <tr><td>[21:24] &lt ms-&gt would work</td></tr>
+            <tr><td>[21:25] &lt ms-&gt At that point you'd be converting everything to base64</td></tr>
+            <tr><td>[21:25] &lt ms-&gt However an integer still wouldn't make sense there</td></tr>
+            <tr><td>[21:26] &lt j_baker&gt I understand. I was using that as an example. :) I wasn't sure if there were any client side technologies that woud expect differently.</td></tr>
+            <tr><td>[21:26] &lt j_baker&gt I'll brb though, got to run to the store.</td></tr>
+            <tr><td>[21:27] *** j_baker is now known as j_baker-brb</td></tr>
+            <tr><td>[21:27] &lt ms-&gt Oh there's always a client that expects differently</td></tr>
+            <tr><td>[21:28] &lt ms-&gt It's why I don't trust network code without battle testing it</td></tr>
+            <tr><td>[21:28] &lt ms-&gt Kinda why only now I'm happy to start merging stuff from Kamaelia Grey (which is primarily where changes for the server come from) onto the /trunk</td></tr>
+            <tr><td>[21:29] &lt ms-&gt Davbo - I've had a rethink about the multi process stuff</td></tr>
+            <tr><td>[21:29] &lt ms-&gt It should go in Kamaelia.Experimental IMO</td></tr>
+            <tr><td>[21:29] &lt ms-&gt since it is</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt Can we fork the pipeline from graphline?</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt Pipeline seems stable</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt perhaps that's a bad idea though.</td></tr>
+            <tr><td>[21:31] &lt ms-&gt I'd like to keep both together</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt that's fair enough ms-</td></tr>
+            <tr><td>[21:31] &lt ms-&gt I'm pretty sure that graphline is a simple fix - just not looked at it yet</td></tr>
+            <tr><td>[21:32] &lt Davbo&gt Well I think we concluded where they should go once we're happy to merge them</td></tr>
+            <tr><td>[21:32] &lt Davbo&gt but I agree</td></tr>
+            <tr><td>[21:32] &lt ms-&gt We did conclude where we thought they should go once we're happy to merge</td></tr>
+            <tr><td>[21:33] &lt ms-&gt I've come to the conclusion since then that merging it without a redflag to anyone saying "Um, this is new, handle with care" might be bad idea</td></tr>
+            <tr><td>[21:33] &lt ms-&gt Oh, this book is good http://www.apress.com/book/view/9781590596241</td></tr>
+            <tr><td>[21:33] &lt ms-&gt Given the conversation earlier</td></tr>
+            <tr><td>[21:33] &lt Davbo&gt Good point ms-</td></tr>
+            <tr><td>[21:36] &lt Davbo&gt is experimental a branch or will actually be in the release just in a folder marked "use with caution" ? :-)</td></tr>
+            <tr><td>[21:36] &lt ms-&gt It's a folder in the release clearly labelled Experimental</td></tr>
+            <tr><td>[21:37] &lt Davbo&gt Ah good, it would be a shame for it to not be in the release</td></tr>
+            <tr><td>[21:37] &lt ms-&gt One of the most useful things about the Linux release process is that even the stable kernels have an Experimental section</td></tr>
+            <tr><td>[21:37] &lt ms-&gt but it will function fine without it</td></tr>
+            <tr><td>[21:37] &lt Davbo&gt hehe :-)</td></tr>
+            <tr><td>[21:37] &lt ms-&gt But sometimes those experimental things are really useful</td></tr>
+            <tr><td>[21:37] *** ms- can force an error now</td></tr>
+            <tr><td>[21:37] *** ms- is happy</td></tr>
+            <tr><td>[21:38] &lt ms-&gt The problem is if a component spits out data unexpectedly</td></tr>
+            <tr><td>[21:38] &lt Davbo&gt I'm just finishing writing something up that someone else in my group should have done. Then going to have another look at MagnaDoodle</td></tr>
+            <tr><td>[21:38] &lt ms-&gt k</td></tr>
+            <tr><td>[21:41] &lt Davbo&gt Done, sorry ms-</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt hmm, spits out data unexpectedly?</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt Can I warn it?</td></tr>
+            <tr><td>[21:44] *** j_baker-brb is now known as j_baker</td></tr>
+            <tr><td>[21:46] &lt j_baker&gt If I'm understanding this properly, the ProcessPipeline Davbo's been testing is just a Pipeline that executes in a different process?</td></tr>
+            <tr><td>[21:47] &lt ms-&gt Tes</td></tr>
+            <tr><td>[21:47] &lt ms-&gt Yes</td></tr>
+            <tr><td>[21:47] &lt ms-&gt Davbo: It's because you're not linking an outbox to something</td></tr>
+            <tr><td>[21:48] *** ms- reads the comment about "can I have a warning" after commiting</td></tr>
+            <tr><td>[21:48] &lt j_baker&gt That will be really helpful for me here soon. I plan on getting the Web Server code to run in a manner similar to mod_wsgi's daemon mode.</td></tr>
+            <tr><td>[21:48] &lt ms-&gt yes, I put a note saying that may be useful</td></tr>
+            <tr><td>[21:52] &lt ms-&gt Davbo: Debugging/warning flag added</td></tr>
+            <tr><td>[21:52] &lt ms-&gt see the examples at the bottom of /Sketches/MPS/pprocess/MultiPipeline.py for details</td></tr>
+            <tr><td>[21:52] &lt ms-&gt (boils down to __debug = True )</td></tr>
+            <tr><td>[21:53] &lt Davbo&gt right</td></tr>
+            <tr><td>[21:56] &lt ms-&gt OK, fixed MultiPipeline.py , and the examples based on my copy of your MagnaDoodle only now fail due to errors in that version of MagnaDoodle rather than anything I've written :-)</td></tr>
+            <tr><td>[21:57] &lt ms-&gt Thanks for the test case :0</td></tr>
+            <tr><td>[21:57] &lt ms-&gt :)</td></tr>
+            <tr><td>[21:57] &lt Davbo&gt hmm right</td></tr>
+            <tr><td>[21:57] &lt Davbo&gt I'm not sure I see what is wrong</td></tr>
+            <tr><td>[21:57] &lt ms-&gt with what ?</td></tr>
+            <tr><td>[21:57] &lt Davbo&gt the boxes in my MagnaDoodle</td></tr>
+            <tr><td>[21:58] &lt ms-&gt That's still a little terse for me</td></tr>
+            <tr><td>[21:59] &lt Davbo&gt Sorry, I need to look through it ms-</td></tr>
+            <tr><td>[21:59] &lt ms-&gt np</td></tr>
+            <tr><td>[22:00] &lt Davbo&gt Will things which work with Graphline still not necessarily work with ProcessGraphline</td></tr>
+            <tr><td>[22:00] &lt ms-&gt A very very limited subset of things won't work</td></tr>
+            <tr><td>[22:00] &lt ms-&gt You couldn't send an _active_ component across a link for example. You *may* be able to send a "not yet activated" one though.</td></tr>
+            <tr><td>[22:01] &lt ms-&gt (not tried :) )</td></tr>
+            <tr><td>[22:01] &lt ms-&gt Even that limitation probably doesn't hold for kamaelia running on stackless python</td></tr>
+            <tr><td>[22:01] &lt ms-&gt Things like services and the CAT aren't shared across the boundary as well</td></tr>
+            <tr><td>[22:02] &lt ms-&gt which is likely to mean that Backplanes are likely to be "odd" (at best) over the boundary.</td></tr>
+            <tr><td>[22:03] &lt ms-&gt BTW, your core problem is likely to revolve around this:</td></tr>
+            <tr><td>[22:03] &lt ms-&gt ("WINDOW1", "outbox") :("WINDOW2", "inbox"),</td></tr>
+            <tr><td>[22:03] &lt ms-&gt heh</td></tr>
+            <tr><td>[22:04] &lt ms-&gt ("WINDOW1", "outbox") : ("WINDOW2", "inbox"),</td></tr>
+            <tr><td>[22:04] &lt ms-&gt BUT</td></tr>
+            <tr><td>[22:04] &lt ms-&gt inside magnadoodle doing this:</td></tr>
+            <tr><td>[22:04] &lt ms-&gt  for event in self.recv("inbox"):</td></tr>
+            <tr><td>[22:04] &lt ms-&gt ...</td></tr>
+            <tr><td>[22:04] &lt ms-&gt  if event.type ==</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[22:05] &lt ms-&gt  while self.dataReady("drawn"):</td></tr>
+            <tr><td>[22:05] &lt ms-&gt  print "drawn"</td></tr>
+            <tr><td>[22:05] &lt ms-&gt  for this in self.recv("drawn"):</td></tr>
+            <tr><td>[22:05] &lt ms-&gt is a step in the right sort of direction</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt I get the idea</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt Could you just explain this :</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt ﻿(22:47:40) ms-: Davbo: It's because you're not linking an outbox to something</td></tr>
+            <tr><td>[22:05] &lt ms-&gt I could just write a version that'd work, but that would kinda miss the point</td></tr>
+            <tr><td>[22:06] &lt ms-&gt Ah that?</td></tr>
+            <tr><td>[22:06] &lt ms-&gt I see</td></tr>
+            <tr><td>[22:06] &lt ms-&gt Well</td></tr>
+            <tr><td>[22:06] &lt ms-&gt you do this:</td></tr>
+            <tr><td>[22:06] &lt Davbo&gt wait wait</td></tr>
+            <tr><td>[22:07] &lt Davbo&gt could you svn update</td></tr>
+            <tr><td>[22:07] &lt ms-&gt  WINDOW1 = MagnaDoodle(),</td></tr>
+            <tr><td>[22:07] &lt ms-&gt  WINDOW2 = MagnaDoodle(),</td></tr>
+            <tr><td>[22:07] &lt ms-&gt Both of those can spit out messages to "outbox", but you were "only" linking messages from window 1 to window 2</td></tr>
+            <tr><td>[22:07] &lt Davbo&gt that'll clear with Graphline but not ProcessGraphline</td></tr>
+            <tr><td>[22:07] &lt ms-&gt will do</td></tr>
+            <tr><td>[22:07] &lt ms-&gt that was all that MultiProcess was whinging about</td></tr>
+            <tr><td>[22:08] &lt Davbo&gt Yeah I see why that'd make a problem, but only if I put something onto that outbox right?</td></tr>
+            <tr><td>[22:08] &lt ms-&gt That links Window 1 outbox to window2 drawn ?</td></tr>
+            <tr><td>[22:08] &lt Davbo&gt or does that make problems anyway?</td></tr>
+            <tr><td>[22:08] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[22:08] &lt ms-&gt Yes, right - BUT due to the unique way in which ProcessGraphline works, it saw the data and assumed it was meant to go somewhere and had a panic about it</td></tr>
+            <tr><td>[22:08] &lt ms-&gt even though it didn't</td></tr>
+            <tr><td>[22:08] &lt ms-&gt so there's a long comment to that effect nows</td></tr>
+            <tr><td>[22:09] &lt ms-&gt saying why it isn't an error and passed silently</td></tr>
+            <tr><td>[22:09] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[22:09] &lt ms-&gt Oh, that's an interesting new erro</td></tr>
+            <tr><td>[22:09] &lt ms-&gt error</td></tr>
+            <tr><td>[22:10] &lt Davbo&gt with mine?</td></tr>
+            <tr><td>[22:10] &lt ms-&gt This one:</td></tr>
+            <tr><td>[22:10] &lt ms-&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[22:10] &lt ms-&gt  File "MagnaDoodle.py", line 233, in &lt module&gt</td></tr>
+            <tr><td>[22:10] &lt ms-&gt  __debug = True,</td></tr>
+            <tr><td>[22:10] &lt ms-&gt  File "../MPS/pprocess/MultiPipeline.py", line 108, in ProcessGraphline</td></tr>
+            <tr><td>[22:10] &lt ms-&gt  D = chan._receive()</td></tr>
+            <tr><td>[22:10] &lt ms-&gt  File "/usr/local/lib/python2.5/site-packages/pprocess.py", line 110, in _receive</td></tr>
+            <tr><td>[22:10] &lt ms-&gt  raise obj</td></tr>
+            <tr><td>[22:10] &lt ms-&gt KeyError: 'drawn'</td></tr>
+            <tr><td>[22:10] &lt ms-&gt No, that looks like an error in mine</td></tr>
+            <tr><td>[22:13] &lt Davbo&gt ah right</td></tr>
+            <tr><td>[22:15] &lt Davbo&gt oh oh I see</td></tr>
+            <tr><td>[22:15] &lt Davbo&gt what you did with debug that is</td></tr>
+            <tr><td>[22:15] &lt ms-&gt You do ?</td></tr>
+            <tr><td>[22:16] &lt ms-&gt I see :-)</td></tr>
+            <tr><td>[22:16] &lt Davbo&gt not this problem lol :-)</td></tr>
+            <tr><td>[22:16] &lt Davbo&gt Sorry</td></tr>
+            <tr><td>[22:20] &lt Davbo&gt I don't see why it throws that error ms-</td></tr>
+            <tr><td>[22:21] &lt ms-&gt I'm hunting that down</td></tr>
+            <tr><td>[22:21] &lt ms-&gt Does seem a little strange</td></tr>
+            <tr><td>[22:22] &lt Davbo&gt Why does it work with other components but not this?</td></tr>
+            <tr><td>[22:22] &lt ms-&gt I think something hardcoded</td></tr>
+            <tr><td>[22:23] &lt vmlemon_&gt o.O [23:23] &lt probono&gt i don't open my important files with bonzi buddy</td></tr>
+            <tr><td>[22:24] &lt ms-&gt OK, I can see the data going OUT the component correctly</td></tr>
+            <tr><td>[22:24] &lt ms-&gt ooooh</td></tr>
+            <tr><td>[22:24] &lt Davbo&gt Well your debug thing works :D</td></tr>
+            <tr><td>[22:24] &lt Davbo&gt WARNING: Data sent to outbox not linked to anywhere. Error?</td></tr>
+            <tr><td>[22:25] &lt ms-&gt Found it</td></tr>
+            <tr><td>[22:25] &lt ms-&gt I think</td></tr>
+            <tr><td>[22:25] *** ms- looks</td></tr>
+            <tr><td>[22:26] &lt ms-&gt It's due to the way likefile works</td></tr>
+            <tr><td>[22:27] &lt ms-&gt (Written by a GSOC student last summer)</td></tr>
+            <tr><td>[22:27] &lt Davbo&gt What does that do?</td></tr>
+            <tr><td>[22:27] &lt ms-&gt Well, it's intended to give a "bit file like" interface to component</td></tr>
+            <tr><td>[22:27] &lt Davbo&gt I don't see any problems with MultiPipeline</td></tr>
+            <tr><td>[22:27] &lt ms-&gt stepping back a second</td></tr>
+            <tr><td>[22:27] &lt ms-&gt MultiPipeline itself is fine</td></tr>
+            <tr><td>[22:27] &lt Davbo&gt Good</td></tr>
+            <tr><td>[22:27] &lt ms-&gt it's likefile that is bust</td></tr>
+            <tr><td>[22:28] &lt Davbo&gt not so good</td></tr>
+            <tr><td>[22:28] &lt ms-&gt If I do this:</td></tr>
+            <tr><td>[22:28] &lt ms-&gt f = open(somefile)</td></tr>
+            <tr><td>[22:28] &lt ms-&gt f.write(...)</td></tr>
+            <tr><td>[22:28] &lt ms-&gt r.read()...</td></tr>
+            <tr><td>[22:28] &lt ms-&gt I'm actually working with something operating concurrently to the mainline code</td></tr>
+            <tr><td>[22:28] &lt Davbo&gt right</td></tr>
+            <tr><td>[22:28] &lt ms-&gt So the idea was</td></tr>
+            <tr><td>[22:29] &lt ms-&gt G = likefile(somecomponent())</td></tr>
+            <tr><td>[22:29] &lt ms-&gt G.put(data,"inbox")</td></tr>
+            <tr><td>[22:29] &lt ms-&gt G.get("someoutbox")</td></tr>
+            <tr><td>[22:30] &lt ms-&gt And to allow this in non-kamaelia code</td></tr>
+            <tr><td>[22:30] &lt ms-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Axon/Axon/LikeFile.py</td></tr>
+            <tr><td>[22:30] &lt ms-&gt skip down to the bottom of that</td></tr>
+            <tr><td>[22:30] &lt ms-&gt  background = background().start()</td></tr>
+            <tr><td>[22:30] &lt ms-&gt  time.sleep(0.1)</td></tr>
+            <tr><td>[22:30] &lt ms-&gt  from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient</td></tr>
+            <tr><td>[22:30] &lt ms-&gt  import time</td></tr>
+            <tr><td>[22:30] &lt ms-&gt  p = likefile(SimpleHTTPClient())</td></tr>
+            <tr><td>[22:30] &lt ms-&gt  p.put("http://google.com")</td></tr>
+            <tr><td>[22:30] &lt ms-&gt  p.put("http://slashdot.org")</td></tr>
+            <tr><td>[22:30] &lt ms-&gt  p.put("http://whatismyip.org")</td></tr>
+            <tr><td>[22:30] &lt Davbo&gt yeah just looking at taht</td></tr>
+            <tr><td>[22:31] &lt Davbo&gt clever</td></tr>
+            <tr><td>[22:31] &lt ms-&gt The problem is despite repeated prodding for different usecases, that student never actually pushed their code in areas it should've been pushed.</td></tr>
+            <tr><td>[22:31] &lt ms-&gt Meaning that cases like this never got hit</td></tr>
+            <tr><td>[22:31] &lt ms-&gt Essentially that code should automatically look for extra boxes and it doesn't</td></tr>
+            <tr><td>[22:31] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[22:31] &lt Davbo&gt right</td></tr>
+            <tr><td>[22:32] &lt ms-&gt So that's what I need to fix</td></tr>
+            <tr><td>[22:32] &lt ms-&gt :)</td></tr>
+            <tr><td>[22:32] &lt ms-&gt Another nice test case :)</td></tr>
+            <tr><td>[22:32] &lt ms-&gt ta</td></tr>
+            <tr><td>[22:32] &lt ms-&gt :)</td></tr>
+            <tr><td>[22:33] &lt Davbo&gt Glad I could raise some bugs for you ms- :-)</td></tr>
+            <tr><td>[22:33] *** ms- sees this:</td></tr>
+            <tr><td>[22:33] &lt ms-&gt  validInboxes = type(child).Inboxes.keys()</td></tr>
+            <tr><td>[22:33] &lt ms-&gt  validOutboxes = type(child).Outboxes.keys()</td></tr>
+            <tr><td>[22:33] &lt ms-&gt and nearly sobs</td></tr>
+            <tr><td>[22:34] &lt ms-&gt it gets so close and "just doesn't bother"</td></tr>
+            <tr><td>[22:34] &lt Davbo&gt What does that do?</td></tr>
+            <tr><td>[22:34] &lt ms-&gt Well, it does this:</td></tr>
+            <tr><td>[22:34] &lt ms-&gt  validInboxes = type(child).Inboxes.keys()</td></tr>
+            <tr><td>[22:34] &lt ms-&gt  validOutboxes = type(child).Outboxes.keys()</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  inboxes = []</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  outboxes = []</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  if wrapDefault:</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  for i in DEFIN:</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  if i in validInboxes: inboxes.append(i)</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  for i in DEFOUT:</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  if i in validOutboxes: outboxes.append(i)</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  inboxes += list(extraInboxes)</td></tr>
+            <tr><td>[22:35] &lt ms-&gt  outboxes += list(extraOutboxes)</td></tr>
+            <tr><td>[22:35] &lt ms-&gt ie it checks to see if the component to wrap has the default inboxes</td></tr>
+            <tr><td>[22:35] &lt ms-&gt and outboxes</td></tr>
+            <tr><td>[22:35] &lt ms-&gt and if it does, wraps them</td></tr>
+            <tr><td>[22:35] &lt Davbo&gt Ah right</td></tr>
+            <tr><td>[22:35] &lt Davbo&gt but doesn't wrap something like my "drawn" ?</td></tr>
+            <tr><td>[22:35] &lt ms-&gt If the user specifies others, it wraps those too</td></tr>
+            <tr><td>[22:36] &lt ms-&gt correct</td></tr>
+            <tr><td>[22:36] &lt ms-&gt the fix, AFAICT</td></tr>
+            <tr><td>[22:36] &lt ms-&gt is to do this:</td></tr>
+            <tr><td>[22:36] &lt ms-&gt  inboxes = child.Inboxes.keys()</td></tr>
+            <tr><td>[22:36] &lt ms-&gt  outboxes = child.Outboxes.keys()</td></tr>
+            <tr><td>[22:36] &lt ms-&gt replacing that entire swathe of logic</td></tr>
+            <tr><td>[22:37] &lt Davbo&gt wouldn't the problem be with the function "list" there not returning all the boxes?</td></tr>
+            <tr><td>[22:37] &lt Davbo&gt oh</td></tr>
+            <tr><td>[22:37] &lt ms-&gt or rather list(child.Inboxes)</td></tr>
+            <tr><td>[22:39] &lt ms-&gt Oh now *that's* unexpected...</td></tr>
+            <tr><td>[22:39] *** Davbo thinks it's good we've found these problems now rather than later</td></tr>
+            <tr><td>[22:40] &lt Davbo&gt what's up ms-</td></tr>
+            <tr><td>[22:40] &lt ms-&gt indeed</td></tr>
+            <tr><td>[22:40] &lt ms-&gt Changing it to that</td></tr>
+            <tr><td>[22:40] &lt ms-&gt results in series of trackbacks</td></tr>
+            <tr><td>[22:41] &lt Davbo&gt oh dear :(</td></tr>
+            <tr><td>[22:41] &lt ms-&gt This isn't a problem - it's useful</td></tr>
+            <tr><td>[22:41] &lt ms-&gt It means this use case has always existed and always had these problems and wasn't known about</td></tr>
+            <tr><td>[22:44] &lt ms-&gt Ahhh...</td></tr>
+            <tr><td>[22:44] &lt ms-&gt He sidestepped a problem which he didn't know how to handle</td></tr>
+            <tr><td>[22:44] &lt ms-&gt probably because it relates to pygame display objects</td></tr>
+            <tr><td>[22:44] &lt ms-&gt And rather than querying how to solve, just took a decision.</td></tr>
+            <tr><td>[22:44] &lt Davbo&gt Humm, is it solvable?</td></tr>
+            <tr><td>[22:44] &lt ms-&gt Of course :)</td></tr>
+            <tr><td>[22:45] *** Davbo realised he asked a silly question :D</td></tr>
+            <tr><td>[22:45] &lt ms-&gt Haven't thought about it yet, but of course :)</td></tr>
+            <tr><td>[22:45] &lt Davbo&gt I think i'll call it a day.</td></tr>
+            <tr><td>[22:45] &lt ms-&gt night then :)</td></tr>
+            <tr><td>[22:45] &lt Davbo&gt Good first day to SoC</td></tr>
+            <tr><td>[22:45] &lt ms-&gt indeed :)</td></tr>
+            <tr><td>[22:46] &lt Davbo&gt night all!</td></tr>
+            <tr><td>[22:46] &lt Davbo&gt thanks for the help ms-</td></tr>
+            <tr><td>[22:46] &lt ms-&gt You too :)</td></tr>
+            <tr><td>[22:54] &lt j_baker&gt ms-: I think I might have found a bug in Minimal. Suppose you have a routing that includes ['/static', Minimal.Handler('index.html', './Static/www/')]</td></tr>
+            <tr><td>[22:55] &lt j_baker&gt It then pulls up the page at ./Static/www/static</td></tr>
+            <tr><td>[22:55] &lt j_baker&gt Is this intended behavior?</td></tr>
+            <tr><td>[22:55] &lt ms-&gt Dunno :)</td></tr>
+            <tr><td>[22:55] *** ms- looks</td></tr>
+            <tr><td>[22:55] &lt j_baker&gt Just checking. I changed it for my web server.</td></tr>
+            <tr><td>[22:56] &lt ms-&gt I think my expectation for</td></tr>
+            <tr><td>[22:56] &lt ms-&gt ['/static', Minimal.Handler('index.html', './Static/www/')]</td></tr>
+            <tr><td>[22:57] &lt ms-&gt given a request for</td></tr>
+            <tr><td>[22:57] &lt ms-&gt  /static/index.html</td></tr>
+            <tr><td>[22:57] &lt ms-&gt that it would pull in a file from</td></tr>
+            <tr><td>[22:57] &lt ms-&gt  ./Static/www/index.html</td></tr>
+            <tr><td>[22:58] &lt ms-&gt assuming ./Static/www/ to be a relative directory with the docroot</td></tr>
+            <tr><td>[22:58] &lt ms-&gt which it does appear to be</td></tr>
+            <tr><td>[22:58] &lt j_baker&gt Yes. Instead with the code the way it is right now, it tries to pull up ./Static/www/static unless I misconfigured something.</td></tr>
+            <tr><td>[22:58] &lt ms-&gt That's my expectation beyond whatever the code actually does now</td></tr>
+            <tr><td>[22:59] &lt j_baker&gt s/./Static/www/static/index.html / ./Static/www/static</td></tr>
+            <tr><td>[22:59] &lt ms-&gt So you're saying</td></tr>
+            <tr><td>[22:59] &lt ms-&gt /static/index.html</td></tr>
+            <tr><td>[22:59] &lt ms-&gt is served (or trying to be served) from:</td></tr>
+            <tr><td>[22:59] &lt ms-&gt ./Static/www/static/index.html ?</td></tr>
+            <tr><td>[22:59] &lt ms-&gt That to me would be counter intuitive</td></tr>
+            <tr><td>[22:59] &lt j_baker&gt Yup.</td></tr>
+            <tr><td>[23:00] &lt j_baker&gt It may be due to my change that I just made. I'll have to look into it.</td></tr>
+            <tr><td>[23:00] &lt ms-&gt Sounds like that you agree given you've raised it</td></tr>
+            <tr><td>[23:03] &lt j_baker&gt Yep. The reason why it did that was that that the code was set up just to append the raw uri after homedirectory.</td></tr>
+            <tr><td>[23:03] *** ms- nods</td></tr>
+            <tr><td>[23:03] &lt ms-&gt That does seem a bit wrong in that context</td></tr>
+            <tr><td>[23:09] &lt j_baker&gt I'll have to check PEP 333 for anything I might have missed, but tomorrow I'm going to try testing what I have with MoinMoin or some other WSGI software and see how that goes.</td></tr>
+            <tr><td>[23:10] &lt j_baker&gt But I'm off to a friend's Memorial Day party so I'll talk to you guys later. :)</td></tr>
+            <tr><td>[23:11] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[23:18] *** ms- sends a note regarding the likefile issue to the list</td></tr>
+            <tr><td>[23:18] &lt ms-&gt (not fixing *now* so any feedback on suggested workaround welcom)</td></tr>
+            <tr><td>[23:21] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:22] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[23:44] *** ms- has parted #kamaelia</td></tr>

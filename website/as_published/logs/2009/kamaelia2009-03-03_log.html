@@ -1,0 +1,153 @@
+<html><body><table>
+            <tr><td>[08:24] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:26] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:45] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:00] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:00] &lt MS-&gt greetings</td></tr>
+            <tr><td>[10:43] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:48] &lt Davbo&gt Good to see activity on the mailing list</td></tr>
+            <tr><td>[10:50] &lt MS-&gt indeed</td></tr>
+            <tr><td>[10:51] &lt MS-&gt Gnat's posting on radar helped I think (there's a time correlation)</td></tr>
+            <tr><td>[10:51] &lt MS-&gt ( http://radar.oreilly.com/2009/02/four-short-links-27-feb-2009.html )</td></tr>
+            <tr><td>[10:52] &lt MS-&gt Though Gloria's interest predates that, and Steve's questions have been interesting/useful</td></tr>
+            <tr><td>[10:53] &lt MS-&gt I generally don't like adding in timeouts in network code if I can help it because it adds complexity to the core code. Putting in a watcher component - ala the TTL component - which the greylister does as well is nice</td></tr>
+            <tr><td>[10:53] &lt MS-&gt But in TCPClient's case the timeout suggested seems sensible</td></tr>
+            <tr><td>[10:54] &lt MS-&gt Anyway, how's things?</td></tr>
+            <tr><td>[10:54] &lt Davbo&gt I think he's realised that he doesn't really need that TTL anyway</td></tr>
+            <tr><td>[10:55] &lt Davbo&gt I'm good thanks, yourself?</td></tr>
+            <tr><td>[10:55] &lt MS-&gt But what I don't think he's realised is that the TTL component is reusable beyond this case :-)</td></tr>
+            <tr><td>[10:55] &lt MS-&gt I'm OK. Bit tired, but I think that's because it's tuesday</td></tr>
+            <tr><td>[10:57] &lt MS-&gt On the upside I've realised that if I time my holidays appropriately I can take 6, or maybe 7 weeks leave this year, which would be really nice.</td></tr>
+            <tr><td>[10:58] &lt MS-&gt (we can buy leave - sacrifice salary for leave :) - contemplating that at the moment)</td></tr>
+            <tr><td>[10:58] &lt Davbo&gt you can buy leave? is that a common thing?</td></tr>
+            <tr><td>[10:59] &lt MS-&gt dunno - essentially its a salary sacrifice really - more of a formal way of handling "I would like X days extra unpaid leave"</td></tr>
+            <tr><td>[11:00] &lt MS-&gt not as good as when I worked at Manchester University though</td></tr>
+            <tr><td>[11:01] &lt MS-&gt There was one really nice aspect of that - the university would shutdown between just before christmas , and only reopen just after the new year - giving about 10 days off</td></tr>
+            <tr><td>[11:01] &lt Davbo&gt I bet you could do with the leave, you always seem so busy</td></tr>
+            <tr><td>[11:01] &lt MS-&gt but it wasn't classed as leave</td></tr>
+            <tr><td>[11:02] &lt MS-&gt I managed to take 3 weeks leave *before* that shutdown when I was there my second year</td></tr>
+            <tr><td>[11:02] &lt MS-&gt Managed to basically get a month off work paid for something like 10 days</td></tr>
+            <tr><td>[11:02] &lt MS-&gt which was fun :)</td></tr>
+            <tr><td>[11:03] &lt MS-&gt last year was manic work wise, which is why I'm thinking about leave. Also they opened a month long window yesterday - which is when we get to decide this stuff</td></tr>
+            <tr><td>[11:04] &lt MS-&gt it was also manic personal wise, given the personal hassles. The combo meant I was over busy really</td></tr>
+            <tr><td>[11:04] &lt MS-&gt this year should be much better on both fronts.</td></tr>
+            <tr><td>[11:05] &lt Davbo&gt you should go for it :)</td></tr>
+            <tr><td>[14:38] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:19] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[21:23] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[21:24] &lt MS-&gt evening</td></tr>
+            <tr><td>[22:13] *** TheBashar has joined #kamaelia</td></tr>
+            <tr><td>[22:14] &lt TheBashar&gt MS-: Sorry for all the back and forth on the mailing list. I thought you were off IRC for lent.</td></tr>
+            <tr><td>[22:14] &lt TheBashar&gt +1 to the idea of making non-threaded component pause() semantics match the threaded components.</td></tr>
+            <tr><td>[22:36] &lt MS-&gt I think it will simplify things. FWIW, I think that sort of back and forth on the list is a good place for detailed discussions. IRC is good for bitty things.</td></tr>
+            <tr><td>[22:36] &lt MS-&gt and chattyness :)</td></tr>
+            <tr><td>[22:37] &lt MS-&gt I'm not off irc for lent - just things like twitter/yammer/facebook etc. Stuff that is fun, but has no major usage.</td></tr>
+            <tr><td>[22:37] &lt TheBashar&gt Next year I'm giving up sockets for lent.</td></tr>
+            <tr><td>[22:39] &lt MS-&gt heh.</td></tr>
+            <tr><td>[22:39] &lt MS-&gt In a way, that's what kamaelia gives me</td></tr>
+            <tr><td>[22:40] &lt MS-&gt I've not needed to think about this sort of low level stuff for a long time now</td></tr>
+            <tr><td>[22:40] &lt TheBashar&gt Hehe... in a way that's what I'd like it to give me. Darn microsoft.</td></tr>
+            <tr><td>[22:40] &lt MS-&gt the behaviour you're hitting is precisely because of the way you're using it.</td></tr>
+            <tr><td>[22:41] &lt TheBashar&gt Are you talking about not picking up on the ECONNREFUSED or the other thing with timeouts?</td></tr>
+            <tr><td>[22:41] &lt MS-&gt TCPClient wasn't really designed with opening lots of connections all at once in mind.</td></tr>
+            <tr><td>[22:41] &lt MS-&gt It was designed to play nicely with the server code, but not to worry about that being an issue</td></tr>
+            <tr><td>[22:42] &lt MS-&gt hence the decision to go down the "brute force" approach of retrying in a loop, rather than something more complex</td></tr>
+            <tr><td>[22:42] &lt TheBashar&gt Granted. But the standard socket errors detect refused connections for you right? That WSAEINVALID crud is complicating picking up on refused connections.</td></tr>
+            <tr><td>[22:42] &lt TheBashar&gt With silently ignored connections, I agree totally with you.</td></tr>
+            <tr><td>[22:43] &lt MS-&gt "But the standard socket errors detect refused connections for you right" yep</td></tr>
+            <tr><td>[22:43] &lt MS-&gt Windows being different for no good reason is indeed a pain</td></tr>
+            <tr><td>[22:43] &lt TheBashar&gt Any chance you'd be agreeable to the changes suggested in: http://pastebin.com/m7d8914a6</td></tr>
+            <tr><td>[22:44] &lt TheBashar&gt It works for windows. I was hoping it wouldn't break other OSs.</td></tr>
+            <tr><td>[22:46] &lt MS-&gt Taking lines 35 & 36 first</td></tr>
+            <tr><td>[22:46] &lt MS-&gt You're saying that if errno has the attribute WSAEINVAL to raise the error</td></tr>
+            <tr><td>[22:47] &lt MS-&gt IF the given error isn't that</td></tr>
+            <tr><td>[22:47] &lt TheBashar&gt Those two lines don't really help the connrefused, but it was just good cleanup.</td></tr>
+            <tr><td>[22:47] &lt TheBashar&gt If the chain above doesn't catch the error, and you're on windows but NOT WSAEINVALID, then before we did nothing.</td></tr>
+            <tr><td>[22:47] &lt MS-&gt I think that can be made clearer by doing this:</td></tr>
+            <tr><td>[22:48] &lt TheBashar&gt An exception needs to be raised.</td></tr>
+            <tr><td>[22:48] &lt MS-&gt change:</td></tr>
+            <tr><td>[22:48] &lt MS-&gt elif hasattr(errno, "WSAEINVAL"):</td></tr>
+            <tr><td>[22:48] &lt MS-&gt        if errorno == errno.WSAEINVAL:</td></tr>
+            <tr><td>[22:48] &lt MS-&gt to</td></tr>
+            <tr><td>[22:48] &lt MS-&gt elif hasattr(errno, "WSAEINVAL") and errorno == errno.WSAEINVAL:</td></tr>
+            <tr><td>[22:48] &lt TheBashar&gt Agreed.</td></tr>
+            <tr><td>[22:48] &lt MS-&gt since python will short circuit cleanly on the first part.</td></tr>
+            <tr><td>[22:49] &lt MS-&gt Taking the former part</td></tr>
+            <tr><td>[22:49] &lt TheBashar&gt My only reason not to do that was if we ever used blocking sockets (timeouts) than a timed out connection would fall in the else clause I made.</td></tr>
+            <tr><td>[22:52] &lt MS-&gt Adding in lines 20, 23,24 looks like the wrong way to go about fixing the problem you're seeing - especially for unix platforms</td></tr>
+            <tr><td>[22:53] &lt MS-&gt I need to check that before making that change really.</td></tr>
+            <tr><td>[22:54] &lt TheBashar&gt Fair enough. But I'd really like to find some way to fix that. Repeatedly trying a a refused connection is a waste of time.</td></tr>
+            <tr><td>[22:54] &lt MS-&gt re-reading your mails btw</td></tr>
+            <tr><td>[22:54] &lt MS-&gt indeed it is</td></tr>
+            <tr><td>[22:55] &lt TheBashar&gt Had some get lost. Sorry if I double mailed you.</td></tr>
+            <tr><td>[22:55] &lt MS-&gt However, what SHOULD be happening is that when the other end refused connection this:</td></tr>
+            <tr><td>[22:55] &lt MS-&gt except socket.error, socket.msg:</td></tr>
+            <tr><td>[22:55] &lt MS-&gt should fail with a refused connection error</td></tr>
+            <tr><td>[22:55] &lt MS-&gt which falls through to:</td></tr>
+            <tr><td>[22:55] &lt TheBashar&gt But windows doesn't get that.</td></tr>
+            <tr><td>[22:55] &lt MS-&gt  else:</td></tr>
+            <tr><td>[22:55] &lt MS-&gt  raise socket.msg</td></tr>
+            <tr><td>[22:56] &lt TheBashar&gt It just goes from WSAEINVALID back to EWOULDBLOCK.</td></tr>
+            <tr><td>[22:56] &lt TheBashar&gt That's why I'm a bit upset at microsoft.</td></tr>
+            <tr><td>[22:57] &lt MS-&gt OK, for the moment, assume: any change I make to make this work/portable will be compatible with what you've got</td></tr>
+            <tr><td>[22:58] &lt MS-&gt May not be identical, but compatible in terms of usage</td></tr>
+            <tr><td>[22:58] &lt TheBashar&gt Cool, thanks. I understand the ignored connections are a lot harder to fix, but I'm glad to get the refused connections taken care of.</td></tr>
+            <tr><td>[22:58] &lt MS-&gt I'm going to have to check this under windows</td></tr>
+            <tr><td>[22:59] &lt MS-&gt The refused connections not working properly is rather bizarre</td></tr>
+            <tr><td>[22:59] &lt MS-&gt esp if they're reusing an error message</td></tr>
+            <tr><td>[22:59] &lt MS-&gt At the TCP stack level they get back a TCP RESET message which is rather different to say the least</td></tr>
+            <tr><td>[23:00] &lt TheBashar&gt I think they just don't save the result. The connection gets refused in the background so next time you loop around to call connect you're just making a fresh new connection.</td></tr>
+            <tr><td>[23:00] &lt TheBashar&gt Hence wouldblock.</td></tr>
+            <tr><td>[23:01] &lt MS-&gt Oh that's *NASTY*</td></tr>
+            <tr><td>[23:01] &lt TheBashar&gt MS says handling WSAEINVAL is needed to be "robust", but then again they say they prefer that you not using the looping connect paradigm at all.</td></tr>
+            <tr><td>[23:01] &lt TheBashar&gt Agreed. Nasty.</td></tr>
+            <tr><td>[23:02] &lt MS-&gt largely because they get it wrong by the looks of things</td></tr>
+            <tr><td>[23:02] &lt MS-&gt Reading that page in more detail:</td></tr>
+            <tr><td>[23:02] &lt TheBashar&gt I was working off: http://msdn.microsoft.com/en-us/library/ms737625(VS.85).aspx</td></tr>
+            <tr><td>[23:02] &lt MS-&gt "WSAEALREADY --- Note  In order to preserve backward compatibility, this error is reported as WSAEINVAL to Windows Sockets 1.1 applications that link to either Winsock.dll or Wsock32.dll."</td></tr>
+            <tr><td>[23:02] &lt MS-&gt *sob*</td></tr>
+            <tr><td>[23:06] &lt TheBashar&gt I guess I'm seeing that behavior because python is linking to an older 1.1 version of the winsock library?</td></tr>
+            <tr><td>[23:06] &lt MS-&gt Maybe.</td></tr>
+            <tr><td>[23:06] &lt MS-&gt means that different versions of windows will work differently</td></tr>
+            <tr><td>[23:07] &lt TheBashar&gt Well, I'm on Vista and it's behaving like the described legacy 1.1 behaviour.</td></tr>
+            <tr><td>[23:07] &lt MS-&gt Also, reading between the lines and your experiments, it looks like they reserve WSAECONNREFUSED for blocking sockets only</td></tr>
+            <tr><td>[23:07] &lt TheBashar&gt So when exactly did they fix that/</td></tr>
+            <tr><td>[23:07] &lt TheBashar&gt ?</td></tr>
+            <tr><td>[23:09] &lt MS-&gt Mind you, that said, if it fails over to EALREADY it would just mean they're changing from being different to changing to doing it the same as others</td></tr>
+            <tr><td>[23:11] &lt TheBashar&gt It's the fact that they silently drop the refused connection that is the really pinch though.</td></tr>
+            <tr><td>[23:12] &lt MS-&gt Indeed, I've just tried it in a VM manually, and as you say it's being really dumb</td></tr>
+            <tr><td>[23:13] &lt TheBashar&gt Glad it's not just me being crazy.</td></tr>
+            <tr><td>[23:17] &lt MS-&gt No, just windows being crappy</td></tr>
+            <tr><td>[23:18] &lt TheBashar&gt http://bugs.python.org/issue889544</td></tr>
+            <tr><td>[23:18] &lt MS-&gt As guessed btw, it was a speed thing</td></tr>
+            <tr><td>[23:18] &lt TheBashar&gt Closed ticket for moving python to the winsock 2 api off of old 1. I wonder if it was ever implemented.</td></tr>
+            <tr><td>[23:18] &lt MS-&gt manually repeating connects largely gives you EWOULDBLOCKs</td></tr>
+            <tr><td>[23:18] &lt MS-&gt doing it in a tight loop generally gives you INVALs</td></tr>
+            <tr><td>[23:19] &lt TheBashar&gt Is the python mhammond the same as the Kamaelia mailing list Matt Hammond?</td></tr>
+            <tr><td>[23:20] &lt MS-&gt No, it's a different one - did make me smile though :)</td></tr>
+            <tr><td>[23:20] &lt MS-&gt that one is Mark Hammond :)</td></tr>
+            <tr><td>[23:20] &lt TheBashar&gt I think that might be a big part of the problem, if python is still using the ancient winsock library.</td></tr>
+            <tr><td>[23:21] &lt TheBashar&gt Maybe that's why UDP sockets are broken for me as well.</td></tr>
+            <tr><td>[23:21] &lt MS-&gt no, I think this is a windows issue generally.</td></tr>
+            <tr><td>[23:22] &lt MS-&gt I haven't looked at the UDP thing yet, but I suspect it could be a windows specific issue as well.</td></tr>
+            <tr><td>[23:22] &lt TheBashar&gt I took that MS doc to mean WSAEINVALID should only be seen by clients using the ancient 1.1 sockets library.</td></tr>
+            <tr><td>[23:22] &lt MS-&gt the UDP code doesn't share any code with the TCP code btw</td></tr>
+            <tr><td>[23:22] &lt TheBashar&gt Sorry microsoft doc, not michael sparks doc. :)</td></tr>
+            <tr><td>[23:22] &lt MS-&gt :)</td></tr>
+            <tr><td>[23:22] &lt MS-&gt The WSAEINVALID is probably meaning EALREADY, which is OK</td></tr>
+            <tr><td>[23:23] &lt MS-&gt But the fact it doesn't result in an ECONNREFUSED is rather irritating</td></tr>
+            <tr><td>[23:24] &lt MS-&gt Ho hum. Well the way that gets fixed properly is by passing the socket in as a writeable socket to the selector, and waiting for it to show up as ready to write or in the exception set</td></tr>
+            <tr><td>[23:24] &lt MS-&gt if it shows up in the exception set connection failed, and if it shows up in the writeable it connected</td></tr>
+            <tr><td>[23:24] &lt TheBashar&gt I'm going to bring up task explorer and see if I can find what winsock python is loading.</td></tr>
+            <tr><td>[23:25] &lt MS-&gt That was kinda the more general path to follow, and will fix windows properly - for TCP, so I'll follow that through. Though it'll have to wait until tomorrow at the soonest.</td></tr>
+            <tr><td>[23:25] &lt TheBashar&gt Much appreciated.</td></tr>
+            <tr><td>[23:25] &lt MS-&gt you're welcome - thanks for taking the time to explain the problem :)</td></tr>
+            <tr><td>[23:26] &lt TheBashar&gt My pleasure. And sorry it took so long to narrow it down.</td></tr>
+            <tr><td>[23:27] &lt MS-&gt i was expecting windows to be sane. That was problem</td></tr>
+            <tr><td>[23:27] &lt MS-&gt #1</td></tr>
+            <tr><td>[23:27] &lt MS-&gt :)</td></tr>
+            <tr><td>[23:27] &lt MS-&gt OK, I'll sleep on this and implement that tomorrow at some point.</td></tr>
+            <tr><td>[23:27] &lt MS-&gt cya</td></tr>
+            <tr><td>[23:27] &lt TheBashar&gt LOL Yes, always a bad assimption.</td></tr>
+            <tr><td>[23:27] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[23:27] &lt TheBashar&gt Cheers</td></tr>

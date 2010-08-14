@@ -1,0 +1,104 @@
+<html>
+<head>
+<title> Developers/Projects/AxonThreadedComponentAPIChange </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/AxonThreadedComponentAPIChange">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h2>Project Task Page: Axon ThreadedComponent API Change<br></h2>
+<p><div style="float: right; border: solid;" class="twoC"><b> Status:</b> <i>Completed </i><br><b>Current Developers:<i> </i></b><i>MH</i><br><b>Current "inflight" dev location:</b> /branches/private_MH_axon_threads<br><b>Start Date:</b> <i>13 April 2006</i><br><b>Expected End Date:</b> <i>n/a</i><br><b>End Date:</b> <i>4 May 2006</i><br><b>Date this page last updated:</b> <i>22 February 2007</i><br><b>Estimated effort so far:</b> <i>15</i><br></div> <b><br></b></p><h2><b>Description</b></h2><p>To change the design of ThreadedComponent so that when writing a component based on it, it is almost identical to writing a normal component (just leaving out the yield statements).</p><p>The existing design required the component writer to access queue objects to send and receive data, rather than use the <i>self.dataReady()</i>, <i>self.send</i> and <i>self.recv()</i> methods they would use for a normal component.</p><p>In the process, thread safety should also be improved, and the ability to add and remove inboxes and outboxes on the fly (ala AdaptiveCommsComponent) should be implemented.</p><p>Benefits:</p><ul><li>Much easier to write threaded components</li><li>Very easy to convery a normal component to/from being a threaded one<br></li><li>Possible to write threaded components that dynamically change their inboxes and outboxes (eg. Selector service component)<br></li></ul><h2>Inputs</h2><ul><li>Task Sponsor: Michael (MS)<br></li><li>Task Owner: Matt (MH)<br></li><li>Developers involved: Matt (development), Michael (merging)<br></li><li>Users: Matt, Michael<br></li><li>Interested third parties: none<br></li><li>Requirements</li><ul><li>Just like for a normal component, when writing a threaded one...<br></li><ul><li>MUST be able to use <i>self.dataReady()</i>, <i>self.send()</i> and <i>self.recv()<br></i></li><li>SHOULD be able to call the main body code main()<br></li></ul><li>MUST be thread safe for:</li><ul><li>sending messages</li><li>receiving messages</li><li>adding inboxes &amp; outboxes</li><li>removing inboxes &amp; outboxes</li><li>creating linkages</li><li>destroying linkages</li></ul><li>SHOULD be able to trap exceptions and throw them back to the main thread so an Axon system can correctly terminate.<br></li></ul></ul>Relevant Influencing factors:<br>
+<ul><li><i>Need to implement 'Selector' as a threaded component (for throughput optimisations)<br></i></li></ul>
+<h2>Outputs</h2><h3>Expected</h3><ul><li>Modifications to Axon (initially in branch, then merged into mainline code)</li><li>Modifications and additions to Axon test suite</li></ul><h3>Actual</h3><ul><li>Code:</li><ul><li>CVS branch: private_MH_axon_threads</li><li>Mainline code: /Code/Python/Axon/Axon/</li><ul><li>Modified: Microprocess, Component and Scheduler<br></li><li>Added: <font face="Courier New, monospace">threadedadaptivecommscomponent</font> to ThreadedComponent.py<br></li></ul><li>Mainline code: /Code/Python/Axon/Axon/Tests</li><ul><li>Tests removed that were now inapplicable</li><li>New tests added</li></ul><li>Updated components to use new API: <br></li><ul><li>/Sketches/MPS/backplane.py</li><li>/Sketches/MPS/control_mix.py</li><li>/Sketches/MPS/dj1.py</li><li>/Sketches/MPS/dj2.py</li><li>/Sketches/MPS/music.py</li></ul></ul></ul><h3>Realistic possibilities arising as a result of activity on this task</h3><p>Need to make access to CAT threadsafe too.<br></p><h2>Task Log</h2><ul><li>13 April 2006 : Added developer Matt<br></li><li>13 April 2006 : <b>Task status changed</b> to running</li><li>13 April 2006 : Matt : worked on private_MH_Axon_threads branch for Axon</li><li>02 May 2006 : Matt : completed development<br></li><li>03 May 2006 : Added developer Michael : to merge branch into mainline</li><li>04 May 2006 : Michael : Merge completed</li><li>04 May 2006 : <b>Task status changed</b> to completed</li><li>04 May 2006 : Removed developers Matt, Michael</li><li>22 February 2007 : Project Task Page created<br></li></ul><h2>Discussion</h2>Distinction between activity-creators and non activity-creator components removed (the scheduler would stop if there wasn't at least one activity-creator microprocess running). This was no longer necessary as there was no longer a postman microprocess (a non activity-creator). Removing support for this from the scheduler simplified things, making implementing support for the new design threaded components (and later quiescence optimisations) easier.<br><br><p>-- Matt Hammond, 22 February 2007<br></p>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

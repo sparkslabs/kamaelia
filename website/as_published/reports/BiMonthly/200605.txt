@@ -1,0 +1,258 @@
+Notes from the Kamaelia Bi-Monthly Meeting, May 2006
+====================================================
+
+AGENDA
+======
+   1 Activity Reports as normal, short discussion
+   2 Summer of Code applications and last minute details
+   3 Next Release, when and what?
+   4 "What's the deliverable?" - how we talk about our work
+   5 What we want for Macro by June 15th
+   6 Any general aims over Macro over next 6 months
+
+Meeting Summary
+===============
+
+   * Decided on release path for Axon 1.5, Kamaelia 0.4 for June 15th
+     (this is to consolidate code more than anything else)
+
+   * Discussed aims and goals for Macro by June 30th. Aim is to have an
+     alpha version of the full system up and running.
+
+   * Came up with better descriptions of Kamalia:
+      * A 30 second description for non-technical people
+      * A single paragraph description for software developers
+
+   * Agreed on a new overall idea for website, allowing a site revamp.
+
+   * A face to face bimonthly meeting appears useful.
+   * Typing up notes as you go is a very good idea.
+   * Two notes for revamping the project management process:
+      * A debrief and bi-monthly meeting don't really mix.
+      * Don't do face to face that which you can effectively do over IRC
+
+BACKGROUND
+==========
+
+The bimonthly meeting turned out to be more catchup and where are we now
+than brainstorming the next six months, which is to be expected in the
+same week where a hard deadline is passed. We decided that having the
+bimonthly meeting in future in the same week as a debrief from a deadline
+would be OK, as long as the debrief occurred the previous day.
+
+Similarly having a bimonthly meeting is not a substitute for a weekly
+IRC meeting. We both realised that we needed the weekly meeting and
+effectively held it face to face. In practice this ate up a large
+amount of time that could have been better spent. ie don't do face
+to face that which works well via IRC!
+
+One key point was we agreed a way of talking about the project to BBC
+colleagues and agreed a revamp of the site was necessary, along with
+some ideas for that revamp.
+
+USUAL ACTIVITY REPORTS
+======================
+
+Michael:
+DONE: Wrote initial version of Macro.py - single channel grab, demux, transcode, dump
+      Wrote basic description/design/spec of Macro for website
+      Wrote one sider description of the project aims, goals, and milestones
+      Installed & customised front end for macro
+      Created tool to convert EIT info to blog entries & automated the process
+      Checked in and debugged DVB_Multiplexer, DVB_Demux
+      Optimised DVB_Demux to get to realtime for single channel on moderate capacity CPU.
+      Modified Unix pipe very heavily to make better use of the selector component.
+      Corresponding changes to selector
+      Email all summer of code candidates letting them know that no news
+      is not bad news, but not good news either, why and time scales.
+      Fending off a late applicant to summer of code
+      Encouraging Ryan to continue developing his Kamaelia skills (has
+      now implemented an IRC client, and a web server in Kamaelia)
+
+TODO: *Google SoC - get Thomas/Student to assign students to himself (or else he won't have any)*
+      Modify internet subsystem to be compliant with selector changes
+      Merge inversion branch onto head
+      Merge tests from threading branch
+      Write detailed design document for Proper Macro
+      Follow up with Kevin regarding one sider
+      Update Huw, Ela, Kevin on SoC (project descriptions)
+      Sort out next Axon/Kamaelia release
+      Audit/update documentation as needed
+      Propose candidate components to move into release tree.
+      Improve website documentation - long spiely text and how its used.
+      Summer of code: communicate results of summer code
+
+BLOCKED: Internet connectivity: problems going through socks proxy to servers for copying files.
+         Process for putting servers on the internet harder than it should be
+         Sourceforge: Many services broken/unreliable (CVS, email)
+
+Matt:
+DONE: EIT Parsing (now & next data)
+      Set up and installed HP/Macro demonstrator box
+      Wrote an initial software demuxer in pyrex
+      Copying of files from demonstrator to front end
+      Debugging demux code
+      Minor fixes to carousel, unix pipe, selector
+      Extended upon michael's initial version & design of Macro.
+      Minor change to DVB multiplex to control Front end parameters
+      Implementation of crash first approach to programme segmentation
+
+TODO: Anybox problem - looks at final destination inbox in a passthrough
+      chain, this is broken :)
+      (11:09:48) mhrd: change self.dataReady() to examine only storage directly local to the inbox
+      Move threading branch axon tests to right location & notify Michael.
+      Diagnose and debug issue with programme transcoder.
+      Now and Next change detection needs to distinguish between programme
+      update and programme junction.
+      Write tests for the system inversion changes
+      Synchronised boxes need reimplementing (needed really for UnixPipe
+      code, would also simplify reading AND the selector)
+      Many components don't play nicely with the inversion right now due to busy wait.
+      Implementation of blocking based on a timer service of some kind
+      (perhaps as component).
+      Extraction of sys-status from Macro.py, into the introspection code.
+      (Logical knockon, could be provided in Axon, and accessed through
+      introspection code) NB: could become a route in to something equivalent
+      to "top/ps"
+      Audit/update documentation as needed
+      Propose candidate components to move into release tree.
+      Improve website documentation - long spiely text and how its used.
+
+(note the todo list is a general list)
+
+BLOCKED: Issues with stopping/restarting programme transcoder (let to crash first work around)
+         (restarting at programme junctions)
+         Internet connectivity: problems going through socks proxy to servers for copying files
+         Process for putting servers on the internet harder than it should be
+         Sourceforge: Many services broken/unreliable (CVS, email)
+
+Rest of meeting isn't relevant this week due to bimonthly meeting.
+
+SUMMER OF CODE
+==============
+... In-appropriate for this forum, sorry ...
+[ discussed the merits of applications and ranking order for
+  confirmation with other BBC Research people ]
+
+
+NEXT RELEASE
+============
+
+Release Checklist
+
+Target Date: By June 15th
+
+MUST HAVES
+
+      Sort out next Axon/Kamaelia release
+      Modify internet subsystem to be compliant with selector changes
+      Merge inversion branch onto head
+      add linkage removal when components shutdown
+      components that Macro.py depends on should be included in the release, even if we tag them as being experimental
+      Anybox problem - looks at final destination inbox in a passthrough chain, this is broken :)
+      (11:09:48) mhrd: change self.dataReady() to examine only storage directly local to the inbox
+
+WOULD LIKE TO HAVES
+
+      Now and Next change detection needs to distinguish between programme update and programme junction.
+      Move threading branch axon tests to right location & notify Michael.
+      Merge tests from threading branch
+      Write tests for the system inversion changes
+      Synchronised boxes need reimplementing
+      Many components don't play nicely with the inversion right now due to busy wait.
+
+      Audit/update documentation as needed
+      Propose candidate components to move into release tree.
+
+The goal is to the same for audio/visual, broadcast and internet systems,
+with a possible outcome of a visual tool for general applications, usable
+by a non-specialist. 
+
+BBC Document To BBC People Who Aren't Primarily Engineering
+===========================================================
+Research into snap-together software systems. ie do for software
+systems what IKEA has done for furniture, and spreadsheets have
+done for traditional business. Snap-together software offers
+the possibility to do the same for the the BBC's business of
+story telling, and distribution.
+
+We're doing this by building a toolkit, and using it to solve
+real problems for the BBC. These problems are used to flesh out
+the toolkit to develop functionality that is genuinely useful
+the BBC. As a result this needs to include a diversity of
+problems, and the current problem is delivery of the BBC's
+Archive to the home.
+
+The underlying reason for this work is to increase flexibility,
+maintainability and scalability of BBC systems, clearly vital
+aims for the delivery of the BBC Archive online in a long term
+sustainable fashion.
+
+DESCRIPTION ON THE WEBSITE
+==========================
+
+Kamaelia is a general component framework for all
+programmers and maintainable development. Write
+clear and simple snap-together components using
+Unix Pipes for the 21st Century.
+
+MACRO - AIM FOR 30TH JUNE 2006
+==============================
+
+Our goal is a full alpha system: capturing, transcoding and segmenting of
+all* BBC channels, along with EIT information capture/dumping as MIME objects.
+This should be running on the original BBC Macro kit. The resulting data
+should be suitable as a backend for a frontend resembling the original BBC
+Macro.
+
+It goes without saying this should be extendable/evolvable.
+
+NECESSARY
+---------
+Setup in manchester - Michael
+Claiming kit - Matt/Michael
+Manchester hosting - Michael
+
+Multiple format transcoding - Michael
+
+TS -> multicast, multicast -> TS - Matt/Michael
+
+Demuxing/throughput optimisation - Matt
+
+This includes all relevant TODOs from Friday 19th May 2006 meeting.
+
+WOULD LIKE TO HAVE
+------------------
+Automation of channel tuning - Matt
+A really cool set of ways of communicating what we're doing, both  
+internally and externally
+    * get people excited
+Integrate SoC work
+
+We noted these general aims and post-macro project work should be a
+discussion point at the next bimonthly me
+Injection of MIME objects into a database - ?
+
+GENERAL AIMS OVER NEXT 6 MONTHS
+===============================
+Synchronised boxes reimplemented
+Consolidation and safety of threading, including CAT
+Website revamp
+Documentation revamp
+Improve pipeline editor to become a truly graphline editor
+Integration of PGU (Pygame widgets) as short term win towards pure-pygame displays
+Next project beyond Macro?
+    * cross platform iPlayer?
+    * video editing suite?
+    * audio editing?
+    * new media interactive planner and systems provider
+    * Something from the Challenges doc?
+Make the sketcher/whiteboard something the BBC really wants
+    * py2exe
+A really cool set of ways of communicating what we're doing, both  
+internally and externally
+    * get people excited
+Integrate SoC work
+
+We noted these general aims and post-macro project work should be a
+discussion point at the next bimonthly meeting.

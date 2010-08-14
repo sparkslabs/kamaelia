@@ -1,0 +1,139 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060706 ======
+
+1. Note of Agenda
+
+2. Participants
+
+Participants: Matt, Ryan, Devendra, Michael
+Attending: G0SUB, Uraeus
+
+3. Activity Reports
+
+Matt:
+
+    DONE: (all in sketches)
+        better DVB Now and Next change detection
+        Reformatters to make DVB tables human readable (tables: NIT,SDT,PMT,fullEIT)
+        made component that tunes to the audio and video streams for a *named* channel (MagicTuner.py)
+        experimenting with services in Kamaelia
+    BLOCKED:
+        BBC appraisal, barbeque, visitors
+        Won't change main codebase due to lack of svn notifications
+    TODO:
+        sign up for euro oscon
+        continue with DVB components
+        experiment with ways to make services shutdown & use local trackers
+        review/revisit experimental Timer component
+
+Devendra:
+
+    DONE:
+        Added Stream Cipher
+        Added addtional encryption moes OFB, CFB
+    TODO:
+        Add Public Key Protocol ciphers
+        Create components for Secure Key Exchange
+    BLOCKED:
+        Poor Documentation (pycrypto module)
+
+
+Michael:
+
+    DONE:
+        Changed repository over to use SVN instead
+        Restructured repository
+        Reviewed the updated code from Ryan
+        Summer of Code reviews
+        Chased legal regarding contributor agreements
+        More tests with exogenous style components
+    TODO:
+        Fix the win32 pygame issues
+        Test release on GP2X, Mac OS X
+        On the bliki: Describe the requirement for the Database component
+        Write detailed design document for Proper Macro
+        Fix throughput & capture issues for Alsa
+        Write up what we want from the website & release going forward.
+        Write up monthly notes and meeting notes from the day HDD drive died.
+        Write presentation for OSCON
+        Converge Whiteboard & Show
+        Reply to Gangadhar
+        Create public todo list
+        Investigate pygame issues
+        Update website with Ryan's change
+        Look into 100% cpu issues and client connection handling.
+    BLOCKED:
+        Hard drive scragged, awaiting results from disk recovery firm
+        Macro stalled
+
+Ryan:
+
+    DONE:
+        IcecastClient (aka SHOUTcast client),
+        Rewrite of HTTPClient to use Carousel (cleaner code, now supports
+            HTTP redirects as a result),
+        POST (uploading) support in HTTPClient,
+        'stepwise' output from HTTPParser ([header, chunk, chunk, ..., done]
+            rather than whole response in one msg),
+        Partially completed modulisation of HTTPServer's request-handling,
+        Documentation of some of my components
+    TODO:
+        More documentation,
+        tests for lots of my components,
+        HTTPServer support for the updated HTTPParser,
+        Stepwise HTTPServer request-handling,
+        Reconnecting TCP client or similar for kambot,
+        Resuming support for TorrentClient,
+    BLOCKED:
+        Unsolved 100% CPU bug in HTTP example eating my time
+
+4. Discussion items (max 3 or 4)
+
+4.1 SoC progress check
+
+Michael noted that it looks like most people are either on target with
+their project, ahead or have had their work refocussed towards something
+acheivable. Summer of code assessments have been "done", but the deadline
+to complete them has changed to 10th July.
+
+The reason for the change to the 10th July is because SoC admins have no
+way of seeing if all mentors have completed their assessments. It's worth
+noting that if you're blocked with something, you need to realise that
+generally speaking you do have the capability to work around it - that's
+really the point of the CHAOS branch (Even if no-one's felt a need to
+instantiate it yet :-)
+
+Basic idea for the CHAOS branch is to treat the codebase as you would a
+wiki -- just edit cf
+   * http://kamaelia.sourceforge.net/KamaeliaProjectDevelopment.html
+
+Michael noted that the CHAOS branch is not a candidate for release by BBC
+people however it can be obviously released by others. Devendra queried
+the contributor agreement, ryan noted that we're still waiting for BBC
+machinations to finish.
+
+Michael noted that if this takes too long, he would actively encourage
+people to use the Kamaelia.Community process for bringing in code. Obviously
+for that you have to (as I understand licensing :) , I could be wrong )use
+the MPL/GPL/LGPL tri-license, but that's a minor detail.
+
+c-ryan noted actally people could pick a single one of the licenses -
+eg the GPL, and Michael noted that it would be preferable for people to
+actually use the LGPL since Kamaelia is after-all a library, but yes
+Ryan's right.
+
+Michael also noted that **IF** things tool long he'll:
+   a) encourage the release using the Kamaelia.Community process
+   b) Include them in Kamaelia Bundles (since that's mere aggregation of
+      multiple things already)
+   c) help out with packaging etc
+
+4.2 Any issues now we're using SVN?
+
+Everyone hates the lack of SVN commit notifications. Ryan's not impressed
+with the web front end's reliability. Otherwise Matt liked the transition.
+
+5. Date/Time of next meeting
+
+Thursday 13th July 2006, 11am BST (GMT+0100)
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060706 ======

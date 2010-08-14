@@ -1,0 +1,83 @@
+<html><body><table>
+            <tr><td>[04:04] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[05:38] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:21] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:46] &lt MS-&gt Morning</td></tr>
+            <tr><td>[08:36] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[08:42] &lt Lawouach&gt once I have time (which may be never) I will try to hook kamaelia to erlang like twisted has done http://twistedmatrix.com/trac/browser/sandbox/therve/</td></tr>
+            <tr><td>[08:42] &lt Lawouach&gt I like the idea</td></tr>
+            <tr><td>[08:43] &lt MS-&gt Why not :)</td></tr>
+            <tr><td>[08:43] &lt MS-&gt I suspect that it may be rather simple</td></tr>
+            <tr><td>[08:43] &lt MS-&gt FWIW, Nokia's "disco" project links python and erlang together as well</td></tr>
+            <tr><td>[08:48] &lt Lawouach&gt right</td></tr>
+            <tr><td>[08:58] &lt MS-&gt Just committed a simple console component. Currently just implements a "read from console, execute, display" loop</td></tr>
+            <tr><td>[08:59] &lt MS-&gt But since its from inside a threaded component does mean you can launch more components and activate them and have them just run</td></tr>
+            <tr><td>[09:42] &lt Lawouach_&gt I realised yesterday that it wasn't easy to have a non-threaded component that performed the same job as the CheapAndCheerfulClock</td></tr>
+            <tr><td>[09:46] &lt Lawouach_&gt Damn I received a comment on my blog that was a cleverly hidden spam</td></tr>
+            <tr><td>[09:46] &lt Lawouach_&gt The text itself was smart and almost relevant but when you looked at the various links it was clearly spam</td></tr>
+            <tr><td>[09:46] &lt Lawouach_&gt It actually tricked me first</td></tr>
+            <tr><td>[10:19] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:32] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:45] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:49] *** MS- wonders if that's netsplits or local. Looks like netsplits</td></tr>
+            <tr><td>[11:07] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:30] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[11:38] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:38] &lt MS-&gt Was disconnected but wasn't showing locally. (guessing a netsplit)</td></tr>
+            <tr><td>[11:39] &lt MS-&gt Have completed the basic python interpreter component</td></tr>
+            <tr><td>[11:39] &lt MS-&gt If you add this to any kamaelia system:</td></tr>
+            <tr><td>[11:39] &lt MS-&gt def NetInterpreter(*args, **argv):</td></tr>
+            <tr><td>[11:39] &lt MS-&gt  return Pipeline(</td></tr>
+            <tr><td>[11:39] &lt MS-&gt  PureTransformer(lambda x: str(x).rstrip()),</td></tr>
+            <tr><td>[11:39] &lt MS-&gt  InterpreterTransformer(),</td></tr>
+            <tr><td>[11:39] &lt MS-&gt  PureTransformer(lambda x: str(x)+"\r\n&gt&gt&gt "),</td></tr>
+            <tr><td>[11:39] &lt MS-&gt  )</td></tr>
+            <tr><td>[11:39] &lt MS-&gt ServerCore(protocol=NetInterpreter, port=1236).run()</td></tr>
+            <tr><td>[11:40] &lt MS-&gt The you can telnet to your system, and rummage around inside the running piece of code</td></tr>
+            <tr><td>[11:40] &lt Lawouach_&gt oh that is very nice</td></tr>
+            <tr><td>[11:40] &lt Lawouach_&gt it's close to something erlangs provides</td></tr>
+            <tr><td>[11:40] &lt MS-&gt Code is currently here:</td></tr>
+            <tr><td>[11:40] &lt MS-&gt https://kamaelia.googlecode.com/svn/trunk/Sketches/MPS/Experiments/Interpreter</td></tr>
+            <tr><td>[11:40] &lt Lawouach_&gt for instance I can do:</td></tr>
+            <tr><td>[11:41] &lt Lawouach_&gt ejabberd debug</td></tr>
+            <tr><td>[11:41] &lt Lawouach_&gt and it will be hook me to a running instance of ejabberd</td></tr>
+            <tr><td>[11:41] &lt MS-&gt That's cool :)</td></tr>
+            <tr><td>[11:41] &lt Lawouach_&gt well what you offer here is similar, isn't it?</td></tr>
+            <tr><td>[11:41] &lt MS-&gt Yep</td></tr>
+            <tr><td>[11:42] &lt MS-&gt I've noticed that the greylisting mail server has a growing memory footprint over time, even though it's now stable</td></tr>
+            <tr><td>[11:42] &lt MS-&gt so I wanted to find out why</td></tr>
+            <tr><td>[11:42] &lt MS-&gt hence the desire for such a component</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[11:45] &lt MS-&gt It's also rather small and trivial, so it's bizarre it's not been there before :)</td></tr>
+            <tr><td>[11:47] &lt Lawouach_&gt never had a need for it until now I suppose</td></tr>
+            <tr><td>[11:47] &lt MS-&gt indeed. However I suspect it will be more generally useful</td></tr>
+            <tr><td>[11:48] &lt MS-&gt given you can embed it in various things and it can start up any axon system by just activating it</td></tr>
+            <tr><td>[11:48] &lt MS-&gt eg</td></tr>
+            <tr><td>[11:48] &lt MS-&gt from Kamaelia.UI.Pygame.Ticker import Ticker</td></tr>
+            <tr><td>[11:48] &lt MS-&gt Ticker().activate()</td></tr>
+            <tr><td>[11:49] &lt Lawouach_&gt that's rather nifty</td></tr>
+            <tr><td>[11:58] &lt MS-&gt I think I'll place it in Kamaelia.Experimental for the moment</td></tr>
+            <tr><td>[12:44] &lt MS-&gt OK, that's officially wierd</td></tr>
+            <tr><td>[12:45] &lt MS-&gt Doing this:</td></tr>
+            <tr><td>[12:45] &lt MS-&gt  from Kamaelia.UI.Pygame.Text import Textbox, TextDisplayer</td></tr>
+            <tr><td>[12:45] &lt MS-&gt  Pipeline(</td></tr>
+            <tr><td>[12:45] &lt MS-&gt  Textbox(size = (800, 300), position = (100,380)),</td></tr>
+            <tr><td>[12:45] &lt MS-&gt  InterpreterTransformer(),</td></tr>
+            <tr><td>[12:45] &lt MS-&gt  TextDisplayer(size = (800, 300), position = (100,40)),</td></tr>
+            <tr><td>[12:45] &lt MS-&gt  ).run()</td></tr>
+            <tr><td>[12:45] &lt MS-&gt And then inside that importing pygame</td></tr>
+            <tr><td>[12:45] &lt MS-&gt and calling</td></tr>
+            <tr><td>[12:45] &lt MS-&gt pygame.display.toggle_fullscreen()</td></tr>
+            <tr><td>[12:45] &lt MS-&gt is officially very odd</td></tr>
+            <tr><td>[13:04] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:03] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[14:26] &lt MS-&gt OK, checked in the PythonInterpreter component into SVN in</td></tr>
+            <tr><td>[14:26] &lt MS-&gt Kamaelia.Experimental.PythonInterpreter</td></tr>
+            <tr><td>[14:27] &lt MS-&gt Examples of usage here:</td></tr>
+            <tr><td>[14:27] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Kamaelia/Examples/PythonInterpreter</td></tr>
+            <tr><td>[15:53] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:57] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:13] &lt MS-&gt hi</td></tr>
+            <tr><td>[16:14] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[17:56] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:01] *** Davbo has joined #kamaelia</td></tr>

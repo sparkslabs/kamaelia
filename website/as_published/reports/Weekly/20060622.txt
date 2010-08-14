@@ -1,0 +1,248 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060622 ======
+
+Agenda
+------
+
+1. Note of Agenda
+2. Participants
+
+People here: Matt, Michael, Devendra, Thomas
+Present: Salfield, Adam_D, Tav, Uraeus
+Apologies from: Anagha, Ryan
+
+3. Activity Reports
+
+Michael
+
+       DONE: Got Axon & Kamaelia releases out the door
+             Reinstalled my system
+             Experimented with exogenous style components
+       TODO: Get back on track properly
+             Deal with aftermath of release issues
+             Test release on Windows, GP2X, Mac OS X
+             On the bliki: Describe the requirement for the Database component
+             Write detailed design document for Proper Macro
+             Move Alsa components into Kamaelia.Devices
+             Improve website documentation - long spiely text and how its used.
+       BLOCKED: Hard drive scragged, awaiting results from disk recovery firm
+
+Matt
+       DONE: Tests for the system inversion & linkage removal on component shutdown
+             Prototype Timer service and experiment self.pause() for threadedcomponent
+             Prototype code profiling components
+             Prototype PSI packet reconstruction service
+       TODO: Release vorbissimple bindings (update changelogs etc as appropriate)
+             complete sync boxes support for threaded components
+             More complete DVB PSI parsing & improved Now and Next change detection
+             Improve box destruction to handle when a box is still linked to another
+             Mod various components to utilise inversion
+       BLOCKED: none
+
+Devendra
+       DONE: Basic Integrity component
+             Setup of dev environment
+       TODO : Add MAC service to basic Integrity Component
+             Create test cases for Integrity Component
+             Test Integrity component on real world example <yet to be decided>
+       BLOCKED : none
+
+Thmomas
+       DONE - Pygame 3D wrapper
+             Intersection point mapping
+             Linearly interpolated paths
+             Pathmover component
+             3D button component
+       TODO - Code cleanup
+             Example program
+             More 3D widgets
+       BLOCKED - Exams next week
+
+Additions, changes:
+   * Michael to take the vorbis release issues off Matt
+   * Michael to deal with Ryan's TCP handling issues.
+   * Matt added "play more with thomasfx's shiny 3d stuff" to his TODOs :)
+   * Matt added "write axon docstrings" to his TODOs
+
+4. Discussion items (max 3 or 4)
+4.1 Summer of Code
+
+General viewpoint is that there was nothing really to discuss here this
+week. People liked Thomas's new 3D buttons. Michael noted that mentor
+evaluations would be happening over the next week.
+
+4.2 Release out! What next?
+
+Generally lots of happiness about the release being out the door, but the
+question is "what next". Rather than the usual discussion this was more
+of a brainstorm, which focussed on the next release - target is for OSCON.
+
+The general consensus was that this should feature/showcase work from
+Summer of Code, improve documentation and consolidate. We also had a quick
+walk through the code base to look for a laundry list of issues we want to
+resolve.
+
+Focus:
+   * Immediate development: Consolidate SoC & the new release, "update Axon Docs"
+   * Target date : OSCON (Last week of July)
+   * Theme : Mid summer release based on summer of code
+   * Version: Debate over 0.5 vs 0.4.5
+   * need to get contributor licences sorted by then
+     or
+     go down the Kamaelia.Community approach
+
+Some specific issues:
+    1) bug reports coming in - another release shortly?
+    2) macro stuff still to do
+    3) other loose ends, eg. threaded CAT & sync boxes support
+
+1 & 3 were considered important for the 1 month from now release.
+
+Specific things to include: (even if marked experimental)
+   * Thomas's SoC work
+   * Ryan's SoC work
+
+Questions for Anagha & Devendra - what would they like to be possible using
+their work by then? Noted that Anagha & Devendra should think about this over
+the coming week.
+
+Michael asked Matt to comment on his minor issues with Thomas's work to date.
+This would happen over private email, cc'ing Michael.
+
+Matt noted that this was looking like some must haves & would like to haves.
+
+Michael raised issue that the Tools directory is become full, and it might
+be worth looking at how its contents gets reused - either as seperate code
+releases or as components. Some example ideas that sprang up
+
+    import Kamaelia.App.Show.Dependencies
+    Kamaelia.App.Show
+
+Matt thought this was premature for the next release. Worth revisiting
+for NEXT+1 . (Michael noted there is interest in seperate release of
+things like Whiteboard)
+
+Matt queried if linux equivalent of py2exe existed. Michael suggested
+python eggs. Thomas referred to
+Freeze:
+    http://wiki.python.org/moin/Freeze
+
+Michael noted that Macro should be discussed outside the meeting.
+
+We then broke down the rest of the discussion by specific areas. This
+turned into a laundry list of todos - not all necessarily for the next
+release:
+
+[ this is collated, but only lightly editted ]
+
+Axon:
+   * Documentation
+   * threaded component - continue consolidation
+   * Make using the cat threadsafe in threaded components
+   * Sync boxes API - would be good to finalise it soon so that
+     threadedcomponent can be upgraded to use it.
+   * Agreed that unifying the scheduler with threaded components
+     will probably simplify code in the end and could well make it
+     very nice to embed kamaelia in another system too :) (leave
+     to NEXT+1)
+   * Process component - leave to NEXT+1
+
+Kamaelia:
+   * Code that should go quietly into the night...
+      * MimeRequestComponent
+      * afortune.pl
+   * Issues for Kamaelia.Internet
+      * Document the UDP components, more examples of usage
+      * Make UDP & multicast components use the selector
+      * Change the selector service to a file descriptor service
+        Since the API for usage would now work for poll and various
+        other things that check file descriptors
+      * Fix the selector issue described in the selector code
+        (It affects all services though)
+      * SimpleServer & SingleServer would make sense to move into Internet
+        leave behind stubs for the moment
+   * Issues for Kamaelia.Chassis
+      * Util.PipelineComponent --> Chassis.Pipeline
+      * Util.Graphline --> Chassis.Graphline
+      leave behind stubs for the moment
+   * Issues for Kamaelia.Codec
+      * Vorbis ought to be in Codec?
+      * If devendra's code is ready it can go in Codec if appropriate
+   * Issues for Kamaelia.Data
+   * Issues for Kamaelia.Device
+      * Matt's beginning to work on EIT/SI stuff, should be in Device.DVB
+   * Issues for Kamaelia.File
+      * ReadFileAdaptor needs migrating into File
+      * All file reading code is changed to support control via the selector
+   * Issues for Kamaelia.Protocol
+      * Move Ryan's IRC & HTTP code into Protocol
+   * Issues for Kamaelia.Support
+      * Contention over its very existance. Michael views it as code
+        oriented where as Data is data oriented. However neither are
+        component oriented. *NO CONSENSUS*
+        Possible that this might be a route for Exogenous connector style
+        components.
+      * Need a clear understandable way of describing exogenous connector
+        style components (not developer friendly IMO)
+      * Michael noted that it's candidate location for Matt's non-component
+        code to migrate into
+   * Issues for Kamaelia.test
+   * Issues for Kamaelia.Util
+   * Issues for Kamaelia.Visualisation
+      * Axon visualiser should remove inherited dependency of TCP code
+      * Rewrite of the TopologyVisualiser - componentise physics & node
+        rendering
+   * Issues for Kamaelia.UI
+     Discussion as to where to move UI/PygameDisplay.pyto.
+     Consensus on the following (I think):
+      * UI/Pygame/Display.py
+      * UI/OpenGL/Display.py
+      * UI/GraphicDisplay.py
+     Other:
+      * Wishlist: a video display that accepts YUV but renders to an RGB
+        SDL surface, or a YUV to SDL surface object would be fine (just
+        a filter)
+      * Existing components in UI/Pygame/ need to be changed over to
+        support the new display framework better where they don't already.
+        (not sure which this is an issue for, if any)
+      * Visual ordering of objects in PygameDisplay needs sorting
+      * Default surface size needs better definition
+      * Suggestion:  maybe you manually instantiate a Display object
+        (3d or 2d) and specify surface size then. It then registers as a
+        service Michael noted this suggestion already works - could be
+        worth formalising.
+      * Consolidation of the key event, muliclick code
+      * The ability to specify focus for events is needed
+      * Ticker to change to "understand" it was being passed letters
+      * Add concept of a cursor
+      * Or... Integrate PGU - http://www.pygame.org/projects/9/108/
+        -> needs experimentation, could be very easy, or very hard to
+           integrate :)
+        -> Consensus was that it sounded like it would be worth it
+           -> pro: well written set of functionality
+
+      * UI/Tk
+         * Desire to be able to pull together TK based displays alot more
+           simply (like the pygame code)
+         * eg How easy is it to reuse _part of_ the Tk display for the
+           PipeBuilder for example?
+         * Might require exogenous style components
+         * there are flow control issues within the TK stuff too (callbacks)
+
+Notes:
+      * "Physics" is really badly named
+        Better name might be "behaviours"
+      * TODO: think of rename for Physics
+      * Physics.Simple really is support code (not components)
+        either make into component(s) or move to Data
+
+5. Date/Time of next meeting
+Proposed: Fri 30th June 2006, 11am BST (GMT+0100)
+
+Michael noted a clash for BBC people. Thomas couldn't attend.
+Date/time CHANGED to:
+      * THURSDAY 29th June, 11:00am BST
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060622 ======
+
+Michael noted it was a nicely different meeting for a change :)
+Longer than usual, but useful.

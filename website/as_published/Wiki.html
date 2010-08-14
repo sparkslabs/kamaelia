@@ -1,0 +1,134 @@
+<html>
+<head>
+<title> Wiki </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Wiki">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Wiki</h1>
+This website is a wiki (called cerenity). Specifically, it's a wysiwyg wiki. You largely don't need markup as a result - you just type  stuff and hit buttons to do styling if you want styling. Click the link  button to make a link, etc. Pages linked to which don't exist will cause an edit box to be displayed when click on.<br><br>CDML itself as a syntax originated in prowiki, but the selection of tags in cerenity is different. The core syntax is this:<ul><li>[[tag][attr=value][attr=value][attr=value] Text that tag is applied to ]</li><ul><li>If a tag is not recognised, then the tag is ignored and the text inside is displayed</li><li>ie the failure mode for unrecognised markup is to default to making the test visible.</li></ul><li>Tags can be nested. ie you can do this:</li><ul><li>[[tag]  [[anothertag] Text that tag &amp; another tag is applied to ] Text that tag is applied to ]</li></ul><li>The advantage of this syntax over a more traditional wiki syntax for <b>directives</b> is that this form of markup can be parsed in a <b>single</b> pass using an LR(1) parser. (ie fast)<br></li></ul><p>Generally speaking you don't need to know them for writing pages. (wiki markup is a crutch often for a lack of wysiwyg) I've included a list of the tags &amp;  their docs - generated from the code. It's not perfect, but should show why  you're not likely to need to worry about it :-)<br></p><p><div style="float: right; border: solid;" class="twoC"><b>please note that this list of tags will extend, and the format will probably change slightly at a later point in time.</b></p><p><b>Also, please be aware that the use of </b>[ <b>and </b>] for markup can occasionally cause problems with code samples. If you hit this problem use % 91% (sans space) for [ and % 93% (sans space) for ] . (Yes this is why the markup will change slightly at somepoint in the nearish future.<br>
+</p><p></div><b>CDML Tags in use</b><br></p><p>all_user_tags_all_pages<br>&nbsp;&nbsp; [91all_user_tags_all_pages%93 %93 - outputs all the tags added by users for all pages<br><br>all_user_tags_this_page<br>&nbsp;&nbsp; [91all_user_tags_this_page%93 %93 Shows all the user tags for the<br>&nbsp;&nbsp; currently viewed page.<br><br>anchor<br>&nbsp;&nbsp; [91anchor]91name=&lt;the anchor name&gt;%93 %93 Makes a named anchor. Text inside is ignored/removed.<br><br>axon.interfacedef<br>&nbsp;&nbsp; [91boxright%93 text %93 - Create a nice box, and puts it on the right hand side. Everything inside this tag is inside the box<br><br>body<br>&nbsp;&nbsp; [91body%93 &lt;text&gt; %93 Emits &lt;body&gt; tags around the text.<br><br>boxright<br>&nbsp;&nbsp; [91boxright%93 text %93 - Create a nice box, and puts it on the right hand side. Everything inside this tag is inside the box<br><br>cookies<br>&nbsp;&nbsp; [91cookies%93 %93 - Displays all cookies the user supplied<br><br>discuss<br>&nbsp;&nbsp; [91discuss%93 %93 - Spits out text + a link to a discussion version of the current page. Page -&gt; PageDiscuss<br><br>env<br>&nbsp;&nbsp; [91env]91var=&lt;which var&gt;]91default=&lt;default text%93 %93 Insert the value of an environment variable. If the variable isn't set, return the default value<br><br>group<br>&nbsp;&nbsp; [91group%93 puts the text inside the box inside a table with no border %93<br><br>hr<br>&nbsp;&nbsp; [91hr%93 %93 - Insert a horizontal rule<br><br>href<br>&nbsp;&nbsp; [91href]91location=&lt;url&gt;%93 text %93 Makes a hyperlink : &lt;a href='&lt;url&gt;'&gt; text &lt;/a&gt;<br><br>html<br>&nbsp;&nbsp; [91html%93 &lt;text&gt; %93 - Emits &lt;html&gt; tags around the text.<br><br>img<br>&nbsp;&nbsp; [91img]91align=&lt;arg&gt;]91width=&lt;size&gt;]91src=&lt;url&gt;%93 &lt;text&gt;%93 src is mandatory, rest are optional. Used to insert an image.<br><br>include<br>&nbsp;&nbsp; [91include]91file=&lt;filename relative to the root&gt;]91croptop=&lt;numlines]91cropbottom=&lt;numlines&gt;%93 text%93<br>&nbsp;&nbsp; Performs much the same function as a #include in C - literally pull in the text<br>&nbsp;&nbsp; from another page (technical transcludes) the other page into this one.<br>&nbsp;&nbsp; croptop &amp; cropbottoms are partial hacks - they remove the top/bottom<br>&nbsp;&nbsp; lines (as many as indicated).<br><br>&nbsp;&nbsp; Included pages also get evaluated.<br><br>index<br>&nbsp;&nbsp; [91index]91cropextension=&lt;bool&gt;]91nobullet=.]91limit=]91sub=]91order=&lt;ordering&gt;]91compact=&lt;bool&gt;%93 text %93<br>&nbsp;&nbsp; Used for creating indexes on the site.<br>&nbsp;&nbsp; If you want to not show the extensions (recommended often), set cropextension to True<br>&nbsp;&nbsp; If you just want a list with no bullets, set that to true.<br>&nbsp;&nbsp; If you want to only traverse subdirectories, set sub to the subdirectory<br>&nbsp;&nbsp; The only ordering supported (if supplying the order attribute) is "recent". Defaults to alphabetical otherwise<br>&nbsp;&nbsp; Setting compact to true gives a more compact layout<br><br>linktoself<br>&nbsp;&nbsp; linktoself<br><br>oldboxright<br>&nbsp;&nbsp; [91oldboxright%93 &lt;text&gt; %93 Puts text is a not so nice box (table, not div) and that goes on the right<br><br>pre<br>&nbsp;&nbsp; [91pre%93 &lt;text&gt; %93 Wraps the supplied text in &lt;pre&gt; tags<br><br>prefs<br>&nbsp;&nbsp; [91prefs%93 %93 - FIXME<br><br>revision<br>&nbsp;&nbsp; revisions<br><br>roundedbox<br>&nbsp;&nbsp; [91roundedbox]91colour=&lt;colour&gt;]91heading=&lt;heading&gt; %93 Creates a<br>&nbsp;&nbsp; rounded box round the text and aligns it on the right. The edges<br>&nbsp;&nbsp; are the colour indicated if that colour is avaialble. Deprecated.<br><br>sectionheading<br>&nbsp;&nbsp; [91sectionheading%93 text %93 - Uses text to set a "heading" for rounded boxes (deprecated)<br></p><p>showcookie<br>&nbsp;&nbsp; [91showcookie]91cookie=&lt;cookieid%93 %93 Displays the value of a particular cookie, if set<br><br>sidebar<br><br><br>systemnote<br>&nbsp;&nbsp; [91systemnote%93 &lt;text&gt; %93 If there is a system wide note from the environment, this displays it + the text inside the tag<br><br>tabs<br>&nbsp;&nbsp; [91tabs%93 ... %93 This is the most complex of the things inside cerenity. Please look at the source for the /Miniaxon tutorial to see how this works...<br><br>taglinkcloud<br>&nbsp;&nbsp; [91taglinkcloud%93 &lt;text&gt;%93 Splits text into phrases. Phrases are comma seperated. These made into a cloud of (wikiword) links to pages of those names. (experimental). Tag sizes reflect file size.<br><br>title<br>&nbsp;&nbsp; [91title%93 %93Emits the page name<br><br>tt<br>&nbsp;&nbsp; [91tt%93 &lt;text&gt;%93 - Takes the text and wraps it in &lt;tt&gt; tags<br><br>user<br>&nbsp;&nbsp; [91user%93 %93 - FIXME<br><br>user_tags<br>&nbsp;&nbsp; [91user_tags%93 %93 - FIXME<br><br>versioninfo<br>&nbsp;&nbsp; linktoself<br><br>versionlink<br>&nbsp;&nbsp; versionlink<br></p><p>versions<br>&nbsp;&nbsp; versions<br></p><p><hr width='100%'></p><p></p>As noted, the above list will probably change &amp; extend overtime. The fixmes are notes inside the code regarding fixing the documentation(!)<br>&nbsp;<br>Michael.<br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

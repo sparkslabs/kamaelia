@@ -1,0 +1,397 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.UI.Pygame.Display </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.UI.Pygame.Display</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.html">Pygame</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Display.html">Display</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Display.PygameDisplay.html">PygameDisplay</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#392">Pygame Display Access</a><ul>
+<li><a class="reference" href="#393">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#394">How does it work?</a><ul>
+<li><a class="reference" href="#395">Surfaces</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#396">Listening to events</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#397">Video Overlays</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#398">Redraw requests</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#399">Implementation Details</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="392">Pygame Display Access</h1>
+<p>This component provides a pygame window. Other components can request to be
+notified of events, or ask for a pygame surface or video overlay that will be
+rendered onto the display.</p>
+<p>Pygame Display is a service that registers with the Coordinating Assistant
+Tracker (CAT).</p>
+<div class="section">
+<h2 id="393"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>See the Button component or VideoOverlay component for examples of how
+Pygame Display can be used.</p>
+</div>
+<div class="section">
+<h2 id="394"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>Pygame Display is a service. obtain it by calling the
+PygameDisplay.getDisplayService(...) static method. Any existing instance
+will be returned, otherwise a new one is automatically created.</p>
+<p>Alternatively, if you wish to configure Pygame Display with options other than
+the defaults, create your own instance, then register it as a service by
+calling the PygameDisplay.setDisplayService(...) static method. NOTE that it
+is only advisable to do this at the top level of your system, as other
+components may have already requested and created a Pygame Display component!</p>
+<p>pygame only supports one display window at a time, you must not make more than
+one Pygame Display component.</p>
+<p>Pygame Display listens for requests arriving at its &quot;notify&quot; inbox. A request can
+be to:
+- create or destroy a surface,
+- listen or stop listening to events (you must have already requested a surface)
+- move an existing surface
+- create a video overlay
+- notify of ne to redraw</p>
+<p>The requests are described in more detail below.</p>
+<p>Once your component has been given the requested surface, it is free to render
+onto it whenever it wishes. It should then immediately send a &quot;REDRAW&quot; request
+to notify Pygame Display that the window needs redrawing.</p>
+<p>NOTE that you must set the alpha value of the surface before rendering and
+restore its previous value before yielding. This is because Pygame Display uses
+the alpha value to control the transparency with which it renders the surface.</p>
+<p>Overlays work differently: instead of being given something to render to, you
+must provide, in your initial request, an outbox to which you will send raw
+yuv (video) data, whenever you want to change the image on the overlay.</p>
+<p>Pygame Display instantiates a private, threaded component to listen for pygame
+events. These are then forwarded onto Pygame Display.</p>
+<p>Pygame Display's main loop continuously renders the surfaces and video overlays
+onto the display, and dispatches any pygame events to listeners. The rendering
+order is as follows:
+- background fill (default=white)
+- surfaces (in the order they were requested and created)
+- video overlays (in the order they were requested and created)</p>
+<p>In summary, to use a surface, your component should:
+1. Obtain and wire up to the &quot;notify&quot; inbox of the Pygame Display service
+2. Request a surface
+3. Render onto that surface in its main loop</p>
+<p>And to use overlays, your component should:
+1. Obtain and wire up to the &quot;notify&quot; inbox of the Pygame Display service
+2. Request an overlay, providing an outbox
+3. Send yuv data to the outbox</p>
+<p>This component does not terminate. It ignores any messages arriving at its
+&quot;control&quot; inbox and does not send anything out of its &quot;outbox&quot; or &quot;signal&quot;
+outboxes.</p>
+<div class="section">
+<h3 id="395"><a id="surfaces" name="surfaces">Surfaces</a></h3>
+<p>To request a surface, send a dictionary to the &quot;notify&quot; inbox. The following
+keys are mandatory:</p>
+<pre class="literal-block">
+{
+    &quot;DISPLAYREQUEST&quot; : True,               # this is a 'new surface' request
+    &quot;size&quot; : (width,height),               # pixels size for the new surface
+    &quot;callback&quot; : (component, &quot;inboxname&quot;)  # to send the new surface object to
+}
+</pre>
+<p>These keys are optional:</p>
+<pre class="literal-block">
+{
+    &quot;position&quot; : (left,top)                # location of the new surface in the window (default=arbitrary)
+    &quot;alpha&quot; : 0 to 255,                    # alpha of the surface (255=opaque) (default=255)
+    &quot;transparency&quot; : (r,g,b),              # colour that will appear transparent (default=None)
+    &quot;events&quot; : (component, &quot;inboxname&quot;),   # to send event notification to (default=None)
+}
+</pre>
+<p>To deregister your surface, send a producerFinished(surface) message to the
+&quot;notify&quot; inbox. Where 'surface' is your surface. This will remove your surface
+and deregister any events you were listening to.</p>
+<p>To change the position your surface is rendered at, send a dictionary to the
+&quot;notify&quot; inbox containing the folling keys:</p>
+<pre class="literal-block">
+{
+    &quot;CHANGEDISPLAYGEO&quot; : True,             # this is a 'change geometry' request
+    &quot;surface&quot; : surface,                   # the surface to affect
+    &quot;position&quot; : (left,top)                # new location for the surface in the window
+}
+</pre>
+<p>The &quot;surface&quot; and &quot;position&quot; keys are optional. However if either are not
+specified then there will be no effect!</p>
+</div>
+<div class="section">
+<h3 id="396"><a id="listening-to-events" name="listening-to-events">Listening to events</a></h3>
+<p>Once your component has obtained a surface, it can request to be notified
+of specific pygame events.</p>
+<p>To request to listen to a given event, send a dictionary to the &quot;notify&quot; inbox,
+containing the following:</p>
+<pre class="literal-block">
+{
+    &quot;ADDLISTENEVENT&quot; : pygame_eventtype,     # example: pygame.KEYDOWN
+    &quot;surface&quot; : your_surface,
+}
+</pre>
+<p>To unsubscribe from a given event, send a dictionary containing:</p>
+<pre class="literal-block">
+{
+    &quot;REMOVELISTENEVENT&quot; : pygame_eventtype,
+    &quot;surface&quot; : your_surface,
+}
+</pre>
+<p>Events will be sent to the inbox specified in the &quot;events&quot; key of the
+&quot;DISPLAYREQUEST&quot; message. They arrive as a list of pygame event objects.</p>
+<p>NOTE: If the event is MOUSEMOTION, MOUSEBUTTONUP or MOUSEBUTTONDOWN then you
+will instead receive a replacement object, with the same attributes as the
+pygame event, but with the 'pos' attribute adjusted so that (0,0) is the top
+left corner of <em>your</em> surface.</p>
+</div>
+<div class="section">
+<h3 id="397"><a id="video-overlays" name="video-overlays">Video Overlays</a></h3>
+<p>To request an overlay, send a dictionary to the &quot;notify&quot; inbox. The following
+keys are mandatory:</p>
+<pre class="literal-block">
+{
+    &quot;OVERLAYREQUEST&quot; : True,                      # this is a 'new overlay' request
+    &quot;size&quot; : (width,height),                      # pixels size of the overlay
+    &quot;pixformat&quot; : pygame_pixformat,               # example: pygame.IYUV_OVERLAY
+}
+</pre>
+<p>These keys are optional:</p>
+<pre class="literal-block">
+{
+    &quot;position&quot; : (left,top),                      # location of the overlay (default=(0,0))
+    &quot;yuv&quot; : (ydata,udata,vdata),                  # first frame of yuv data
+    &quot;yuvservice&quot; : (component,&quot;outboxname&quot;),      # source of future frames of yuv data
+    &quot;positionservice&quot; : (component,&quot;outboxname&quot;), # source of changes to the overlay position
+}
+</pre>
+<p>&quot;yuv&quot; enables you to provide the first frame of video data. It should be 3
+strings, containing the yuv data for a whole frame.</p>
+<p>If you have supplied a (component,outbox) pair as a &quot;yuvservice&quot; then any
+(y,u,v) data sent to that outbox will update the video overlay. Again the data
+should be 3 strings, containing the yuv data for a <em>whole frame</em>.</p>
+<p>If you have supplied a &quot;positionservice&quot;, then sending (x,y) pairs to the
+outbox you specified will update the position of the overlay.</p>
+<p>There is currently no mechanism to destroy an overlay.</p>
+</div>
+<div class="section">
+<h3 id="398"><a id="redraw-requests" name="redraw-requests">Redraw requests</a></h3>
+<p>To notify Pygame Display that it needs to redraw the display, send a dictionary
+containing the following keys to the &quot;notify&quot; inbox:</p>
+<pre class="literal-block">
+{
+    &quot;REDRAW&quot; : True,             # this is a redraw request
+    &quot;surface&quot; : surface          # surface that has been changed
+}
+</pre>
+</div>
+</div>
+<div class="section">
+<h2 id="399"><a id="implementation-details" name="implementation-details">Implementation Details</a></h2>
+<p>You may notice that this module also contains a _PygameEventSource component.
+PygameDisplay uses this separate threaded component to notify it when pygame
+events occur - so that it can sleep quiescently when it has nothing to do.</p>
+<p>Unfortunately event handling itself cannot be done in the thread since pygame
+on many platforms (particularly win32) does not work properly if event handling
+and display creation is not done in the main thread of the program.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.html">Pygame</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Display.html">Display</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.Pygame.Display.PygameDisplay.html">PygameDisplay</a></h1>
+<div class="section">
+<h2 id="symbol-PygameDisplay">class PygameDisplay(<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</a>)</h2>
+<p>PygameDisplay(...) -&gt; new PygameDisplay component</p>
+<p>Use PygameDisplay.getDisplayService(...) in preference as it returns an
+existing instance, or automatically creates a new one.</p>
+<p>Or create your own and register it with setDisplayService(...)</p>
+<p>Keyword arguments (all optional):</p>
+<ul class="simple">
+<li>width              -- pixels width (default=800)</li>
+<li>height             -- pixels height (default=600)</li>
+<li>background_colour  -- (r,g,b) background colour (default=(255,255,255))</li>
+<li>fullscreen         -- set to True to start up fullscreen, not windowed (default=False)</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-PygameDisplay.Inboxes" name="symbol-PygameDisplay.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : NOT USED</li>
+<li><strong>events</strong> : Receive events from source of pygame events</li>
+<li><strong>inbox</strong> : Default inbox, not currently used</li>
+<li><strong>notify</strong> : Receive requests for surfaces, overlays and events</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PygameDisplay.Outboxes" name="symbol-PygameDisplay.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : NOT USED</li>
+<li><strong>signal</strong> : NOT USED</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PygameDisplay.__init__" name="symbol-PygameDisplay.__init__">__init__(self, **argd)</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PygameDisplay.handleDisplayRequest" name="symbol-PygameDisplay.handleDisplayRequest">handleDisplayRequest(self)</a></h4>
+<p>Check &quot;notify&quot; inbox for requests for surfaces, events and overlays and
+process them.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PygameDisplay.handleEvents" name="symbol-PygameDisplay.handleEvents">handleEvents(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PygameDisplay.main" name="symbol-PygameDisplay.main">main(self)</a></h4>
+<p>Main loop.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PygameDisplay.surfacePosition" name="symbol-PygameDisplay.surfacePosition">surfacePosition(self, surface)</a></h4>
+<p>Returns a suggested position for a surface. No guarantees its any good!</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PygameDisplay.updateDisplay" name="symbol-PygameDisplay.updateDisplay">updateDisplay(self, display)</a></h4>
+<p>Render all surfaces and overlays onto the specified display surface.</p>
+<p>Also dispatches events to event handlers.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PygameDisplay.updateOverlays" name="symbol-PygameDisplay.updateOverlays">updateOverlays(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

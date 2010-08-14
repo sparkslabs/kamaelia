@@ -1,0 +1,75 @@
+<html><body><table>
+            <tr><td>[05:03] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[06:07] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[06:09] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[07:56] *** BCarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[07:57] *** MS- yawns</td></tr>
+            <tr><td>[08:38] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[08:49] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[09:19] &lt wyleu&gt What is GStreamer?</td></tr>
+            <tr><td>[09:27] &lt MS-&gt "http://en.wikipedia.org/wiki/GStreamer"</td></tr>
+            <tr><td>[09:27] &lt MS-&gt GStreamer is a multimedia framework written in the C programming language with the type system based on GObject. GStreamer serves a host of multimedia applications, such as video editors, streaming media broadcasters, and media players.</td></tr>
+            <tr><td>[09:27] &lt MS-&gt Designed to be cross-platform, it is known to work on Linux (x86, PowerPC and ARM), Solaris (x86 and SPARC), Mac OS X, Microsoft Windows and OS/400.</td></tr>
+            <tr><td>[09:27] &lt MS-&gt GStreamer has bindings for programming-languages like Python, C++, Perl, GNU Guile and Ruby. GStreamer is free software, licensed under the GNU Lesser General Public License.</td></tr>
+            <tr><td>[10:45] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:12] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:35] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:16] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[15:18] &lt Chong-&gt afternoon, all.</td></tr>
+            <tr><td>[15:18] &lt Chong-&gt Any know if pygame has any function to load image from an url instead of local file?</td></tr>
+            <tr><td>[15:19] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:19] &lt Chong-&gt s/Any/Anyone</td></tr>
+            <tr><td>[15:25] *** vmlemon_ assumes someone will answer later :|</td></tr>
+            <tr><td>[15:25] &lt Chong-&gt hope so :-) thanks, vmlemon_.</td></tr>
+            <tr><td>[15:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:49] &lt MS-&gt (17:35:46) Chong-: Any know if pygame has any function to load image from an url instead of local file?</td></tr>
+            <tr><td>[16:49] &lt MS-&gt No, it doesn't. You'll need to grab it directly.</td></tr>
+            <tr><td>[16:55] &lt Chong-&gt MS-: Thanks. what is the easiest way to do it?</td></tr>
+            <tr><td>[17:03] &lt Chong-&gt MS-: I just saw urllib, I think urlopen should do the job. I'll try it first.</td></tr>
+            <tr><td>[17:17] &lt vmlemon_&gt I'm not too sure, but can't you use one of the HTTP components with LikeFile and pass that into PyGame?</td></tr>
+            <tr><td>[17:20] &lt Chong-&gt vmlemon_: thanks, I'll have a look :-)</td></tr>
+            <tr><td>[17:20] &lt vmlemon_&gt It was just an idle thought, and I have no idea if it'll work or not</td></tr>
+            <tr><td>[17:20] &lt vmlemon_&gt It's always with a try, that said...</td></tr>
+            <tr><td>[17:21] &lt Chong-&gt vmlemon_: yep. thanks.</td></tr>
+            <tr><td>[17:22] &lt vmlemon_&gt No problem</td></tr>
+            <tr><td>[17:22] *** vmlemon_ throws kamlogbot some cat biscuits ;)</td></tr>
+            <tr><td>[17:39] &lt MS-&gt Chong-: The kamaelia HTTP components spring to mind as the most sensible option</td></tr>
+            <tr><td>[17:48] &lt Chong-&gt MS-: thanks. just managed to do it by using urllib.urlopen and cStringIO.StringIO. I'll try kamaelia HTTP components later.</td></tr>
+            <tr><td>[17:50] &lt MS-&gt You realise that you have to now put that code inside a thread?</td></tr>
+            <tr><td>[17:50] &lt MS-&gt Since urllib is blocking?</td></tr>
+            <tr><td>[17:50] *** vmlemon_ just had an idea for a HTTP server component-based system that takes a HTTP URL like /record/outputfile.ts?freq=498.000000&pid=0x2000, tuned the DVB component as specified and records it in the named file, until the user goes to the URL /record/stop/outputfile.ts</td></tr>
+            <tr><td>[17:50] &lt MS-&gt (hence the reason for the HTTP components existing)</td></tr>
+            <tr><td>[17:51] &lt MS-&gt vmlemon_: That's an interesting idea</td></tr>
+            <tr><td>[17:53] &lt vmlemon_&gt (it could then make the browser download the finished TS file after the stop request is issued)</td></tr>
+            <tr><td>[17:53] &lt vmlemon_&gt In theory, you could also have it handle named channels, too</td></tr>
+            <tr><td>[18:04] &lt MS-&gt yep</td></tr>
+            <tr><td>[18:04] &lt Chong-&gt MS-: not sure what you mean "urllib is blocking". other parts of the code can still run after calling urllib.urlopen</td></tr>
+            <tr><td>[18:05] *** MS- is in the middle of stuff right now</td></tr>
+            <tr><td>[18:05] &lt MS-&gt urllib is blocking though</td></tr>
+            <tr><td>[18:05] &lt MS-&gt (just because one operation "returns" immediately doesn't mean it's not blocking)</td></tr>
+            <tr><td>[18:08] &lt Chong-&gt MS-: I see. sometimes bad network connection would cause it to block the whole program</td></tr>
+            <tr><td>[18:12] &lt Chong-&gt and this is one advantage of kamaelia components :-)</td></tr>
+            <tr><td>[18:14] &lt MS-&gt Yep - can either fling urllib into a thread (easily) or use the http components</td></tr>
+            <tr><td>[18:16] *** MS- is getting bored of going through the stuff he's going through at the moment</td></tr>
+            <tr><td>[18:16] &lt MS-&gt it's taking forever</td></tr>
+            <tr><td>[18:17] &lt MS-&gt (started about a week ago)</td></tr>
+            <tr><td>[18:17] &lt vmlemon_&gt If only Kamaelia could handle/automate physical tasks like filling in paperwork, and other menial things ;)</td></tr>
+            <tr><td>[18:20] &lt Chong-&gt MS-: thanks, i'll try both. Can the outbox data of kamaelia HTTP components be handled by StringIO?</td></tr>
+            <tr><td>[18:20] &lt MS-&gt vmlemon_: I'd prefer that at the moment</td></tr>
+            <tr><td>[18:21] &lt Chong-&gt vmlemon_: it needs a hardware kambot ;)</td></tr>
+            <tr><td>[18:21] &lt MS-&gt Chong-: "(20:22:06) ***MS- is in the middle of stuff right now"</td></tr>
+            <tr><td>[18:21] &lt vmlemon_&gt Hehe</td></tr>
+            <tr><td>[18:21] &lt MS-&gt (sorry)</td></tr>
+            <tr><td>[18:21] &lt Chong-&gt MS-: sorry :/</td></tr>
+            <tr><td>[18:22] &lt MS-&gt (believe me, I'd rather be answering your q's, packaging up the new release etc)</td></tr>
+            <tr><td>[18:25] &lt Chong-&gt hehe, poor MS- ;)</td></tr>
+            <tr><td>[18:26] &lt vmlemon_&gt Cool, http://googletalk.blogspot.com/2007/12/merry-christmas-god-jul-and.html</td></tr>
+            <tr><td>[18:34] &lt Chong-&gt vmlemon_: very interesting. Not aware of google talk before :/</td></tr>
+            <tr><td>[19:31] *** MS- starts his forager going now on a third different machine</td></tr>
+            <tr><td>[19:32] &lt MS-&gt sigh</td></tr>
+            <tr><td>[20:57] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:56] *** MS- has parted #kamaelia</td></tr>

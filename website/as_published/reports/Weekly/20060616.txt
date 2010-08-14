@@ -1,0 +1,394 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060616 ======
+1. Note of Agenda
+
+2. Participants
+
+Participants: Matt, Michael, c-ryan, devendra_l, thomasFx
+Attending: salfield
+
+3. Activity Reports
+
+Matt:
+
+    DONE:
+        Experimental synchronous boxes for threadedcomponent (branch)
+        Write tests for the system inversion
+        Minor bugfixes to scheduler
+        Bugfixes and improvements for vorbissimple bindings
+        Synced late changes missed from flow control inversion branch to head
+        prodded IT services wrt. bbc.kamaelia.org visibility
+    BLOCKED:
+        none
+    TODO:
+        Release vorbissimple bindings (update changelogs etc as appropriate)
+        Write tests for the system inversion
+        Write tests for linkage removal on component shutdown
+        Add self.pause() support back into threadedcomponent
+        Audit/update documentation as needed
+        extract broken HP motherboard and issue support req.
+        Set up 2nd HP tower & rackmount
+        Purchase DVB-T cards for HPs
+        Improve Now and Next change detection
+        CAT needs thread safety
+        Improve box destruction to handle when a box is still linked to another
+        Mod various components to utilise inversion (timer component?)
+        Move sys-status from Macro.py, into the introspection code.
+        Improve website component documentation to include long spiely stuff
+        Add polling rate reduction to Introspector
+        Allow physics to be turned off [automagically?] in AxonVisualiser
+        Remove inheritance from axon visualiser
+
+Devendra:
+
+    DONE:
+        Created simple UDP component
+        Draft readme file for kamaelia
+    TODO:
+        Create a basic security component using pycrypto
+    BLOCKED:
+        Setting up of developer environment (Hardware problems - Disk
+        failure)
+
+Michael:
+
+    DONE:
+        Discussed with legal changes to the contributor agreement to match
+            their concerns.
+        Checked in BitTorrent mainline code, and tagged as BITTORRENT_4_4_0
+            - for doing diffs against with Ryan's code.
+        Jim Burnes - "Control/Signals in Axon" - Replied
+        Added & checked in the proposed components into RELEASE branch.
+        Release details
+        Build build mechanism for viewing the website offline
+        Made Sketcher & Presentation tool "Show" releasable.
+    TODO:
+        Get release out the door.
+        Deal with aftermath of release issues
+        Test release on GP2X :-)
+        On the bliki: 4b Describe the requirement for the Database component
+        Write detailed design document for Proper Macro
+        Improve website documentation - long spiely text and how its used.
+        Move Alsa components into Kamaelia.Devices
+    BLOCKED:
+        Internal BBC meetings (taking up 1 1/2 days)
+        Waiting for legal to come back with yes/no on contributor agreement.
+        Macro kit, waiting for TL, BB
+        Fix fedora box - requires hardware.
+
+Thomas:
+
+    DONE:
+        Display3D handles pygame components (2D)
+        Ray/plane, ray/polygon intersection
+    TODO:
+        Wrapper for pygame objects to show them on 3D planes
+        Map 3D intersection to point on 2D surface (half done)
+        Movement classes
+        Billboards
+        Useful example program (image viewer)
+    BLOCKED:
+        None
+
+Ryan:
+
+    DONE:
+        proof of concept HTTPClient
+        Separated HTTPParser from HTTPServer
+        Add response and request support to HTTPParser
+        Basic tests for HTTPParser and HTTPParser, websiteMinimal.py -
+            barebones version of website.py suitable for any site (used
+            by HTTPServer)
+        TorrentClient twisted compatibility
+        Increased status feedback from TorrentClient
+    TODO:
+        Finish multi-torrent client
+        Uploading support in HTTPClient
+    BLOCKED:
+        Exams/revision
+
+Michael noted that generally things are fine, but there's a little bit of
+prodding in the right direction that needs to happen.
+
+4. Discussion items (max 3 or 4)
+
+4.1 Releases
+
+Michael thanked everyone for the feedback on the candidate release. He'd also spent
+some time on building a mechanism to pull in the general docs into the release as well
+
+Essentially it pulls in the following sections:
+    Axon Examples Components.html GettingStarted.html MiniAxon.html
+    Components Axon.html Cookbook.html Introduction.html
+    Axon/
+    Components/
+    Examples/
+    Axon.html
+    Components.html
+    Cookbook.html
+    GettingStarted.html
+    Introduction.html
+    MiniAxon.html
+
+Matt noted that Axon.html needs updating and michael noted that the bulk of
+user level information is correct.
+
+Michael then ran by name changes for various things.
+    * KamaeliaPresent --> Show - uncontroversial
+    * WhiteboardSketcher --> Whiteboard - uncontroversial
+    * VisualPipebuilder --> No consensus.
+
+(The idea is to have a single word to describe a Kamaelia Tool)
+
+This left us with the following contents for Tools/
+    PipeBuilder/
+    README
+    Show/
+    ShowExample/
+    Whiteboard/
+    kamaelia_logo.png
+    axonshell.py
+    AxonVisualiser.py
+    Show.py
+    VisualPipeBuilder.py
+    Whiteboard.py
+
+Michael noted that these projects are now amassing a collection of
+components that could sit in the main tree somewhere to encourage reuse.
+At present the decision was to not put them in the main tree yet, but to
+revisit this decision periodically.
+
+Michael asked for comments on the new README. Matt suggested moving install
+stuff to an INSTALL file. Matt made a comment on making the two sets of
+examples more explicit in how they differentiate.
+
+Thomas queried the lack of a Makefile, so Michael explained that python's
+default expectation is to use a setup.py file.
+
+The summary of must haves & would likes for the release looked like this:
+
+    MUST HAVES
+
+    DONE  Sort out next Axon/Kamaelia release
+    DONE  Modify internet subsystem to be compliant with selector changes
+    DONE  Merge inversion branch onto head
+    DONE  add linkage removal when components shutdown
+          components that Macro.py depends on should be included in the
+          release, even if we tag them as being experimental
+    DONE  Anybox problem - looks at final destination inbox in a passthrough
+          chain, this is broken :)
+
+    WOULD LIKE TO HAVES
+
+          Now and Next change detection needs to distinguish between
+          programme update and programme junction.
+    DONE  Move threading branch axon tests to right location & notify
+          Michael.
+          Merge tests from threading branch
+          Write tests for the system inversion changes
+    DONE  Synchronised boxes need reimplementing
+          Many components don't play nicely with the inversion right now due
+          to busy wait.
+
+          Audit/update documentation as needed
+          Propose candidate components to move into release tree.
+
+4.2 Summer of Code Community Points
+
+Michael reiterated that components are generated from working systems.
+ie Get something working, that's usable, then componentise it, then make
+it possible to use those components.
+
+Example: the bittorrent component is nice, but there's no clear description for usage
+         No example of use.
+
+Michael also noted that many components in Kamaelia's core have been
+developed by "application spikes" Which means we aim to build something
+simple, and then drill all the way down through the layers to build it.
+
+Michael also noted that components are only useful if they can be reused,
+and rather unsubtly reminded people that people that they should be
+focussed on their projects they said they would do for summer of code.
+
+Michael then also noted that in practice, you tend to get what's happened
+with Ryan's HTTP & Thomas's 3D work both have been extremely well done and
+pushed forwardbut neither have really quite followed a linear model that
+devendra outlined when querying this. ie design can (and should be IMO)
+top down however implementation should be bottom up, and aim for "get
+something working ASAP".
+
+Michael then also stated that  he didn't really have a huge problem with
+the work people are doing, ryan's HTTP server is great, thomas's work is
+cool, and what I've seen from you (devendra) is also good, and that he was
+more stating a general principle at the moment, but it is one I really want
+people to be aware of "How can I make an example of how this is used" partly
+because that final step actually changes how you think of your code.
+
+Michael also wanted it noted that he didn't want anyone to think I'm
+dissing what they've done - I've been nicely stunned by everyone's
+progress so far :-) and what's been achieved.
+
+Michael stated that the aim for the next release was the end of August and
+should focus on summer of code.
+
+Michael then asked for similar criticism/feedback back. Ryan noted that he
+would like more technical guidance. Otherwise people were generally happy.
+
+5. Date/Time of next meeting
+
+Thursday 22nd June 2006, 11am BST (GMT+0100)
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060616 ======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060616 ======
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+
+   (11:06:42) MS-: DONE - Discussed with legal changes to the contributor agreement to match their concerns. Checked in
+   BitTorrent mainline code, and tagged as BITTORRENT_4_4_0 - for doing diffs against with Ryan's code. Jim Burnes -
+   "Control/Signals in Axon" - Replied,
+   (11:06:46) MS-: 2b Add & checkin the proposed components into RELEASE branch. Release details, build build mechanism
+   for viewing the website offline. Made Sketcher & Presentation tool "Show" releasable.
+   (11:06:52) MS-: TODO - Get release out the door.
+   (11:06:52) MS-: Deal with aftermath of release issues
+   (11:06:52) MS-: Test release on GP2X :-)
+   (11:06:52) MS-: On the bliki: 4b Describe the requirement for the Database component
+   (11:06:52) MS-: Write detailed design document for Proper Macro
+   (11:06:52) MS-: Improve website documentation - long spiely text and how its used.
+   (11:06:52) MS-: Move Alsa components into Kamaelia.Devices
+   (11:06:59) MS-: BLOCKED - Internal BBC meetings (taking up 1 1/2 days)
+   (11:06:59) MS-: Waiting for legal to come back with yes/no on contributor agreement.
+   (11:06:59) MS-: Macro kit, waiting for TL, BB
+   (11:06:59) MS-: Fix fedora box - requires hardware.
+
+
+   (11:06:35) mhrd: DONE - experimental synchronous boxes for threadedcomponent (branch)
+   (11:06:35) mhrd: Write tests for the system inversion
+   (11:06:35) mhrd: Minor bugfixes to scheduler
+   (11:06:35) mhrd: Bugfixes and improvements for vorbissimple bindings
+   (11:06:35) mhrd: Synced late changes missed from flow control inversion branch to head
+   (11:06:36) mhrd: prodded IT services wrt. bbc.kamaelia.org visibility
+   (11:06:38) mhrd: BLOCKED -
+   (11:06:44) mhrd: Release vorbissimple bindings (update changelogs etc as appropriate)
+   (11:06:46) mhrd: Write tests for the system inversion
+   (11:06:40) mhrd: none
+   (11:06:42) mhrd: TODO -
+   (11:06:48) mhrd: Write tests for linkage removal on component shutdown
+   (11:06:50) mhrd: Add self.pause() support back into threadedcomponent
+   (11:06:52) mhrd: Audit/update documentation as needed
+   (11:06:54) mhrd: extract broken HP motherboard and issue support req.
+   (11:06:56) mhrd: Set up 2nd HP tower & rackmount
+   (11:06:58) mhrd: Purchase DVB-T cards for HPs
+   (11:07:00) mhrd: Improve Now and Next change detection
+   (11:07:02) mhrd: CAT needs thread safety
+   (11:07:04) mhrd: Improve box destruction to handle when a box is still linked to another
+   (11:07:06) mhrd: Mod various components to utilise inversion (timer component?)
+   (11:07:08) mhrd: Move sys-status from Macro.py, into the introspection code.
+   (11:07:10) mhrd: Improve website component documentation to include long spiely stuff
+   (11:07:12) mhrd: Add polling rate reduction to Introspector
+   (11:07:14) mhrd: Allow physics to be turned off [automagically?] in AxonVisualiser
+   (11:07:16) mhrd: Remove inheritance from axon visualiser
+
+   (11:06:38) devendra_l: DONE - Created simple UDP component
+   (11:06:39) devendra_l: Draft readme file for kamaelia
+   (11:06:39) devendra_l: TODO - Create a basic security component using pycrypto
+   (11:06:39) devendra_l: BLOCKED - Setting up of developer environment (Hardware problems- Disk failure)
+
+   (11:07:01) thomasFx: DONE - Display3D handles pygame components (2D)
+   (11:07:01) thomasFx: Ray/plane, ray/polygon intersection
+   (11:07:01) thomasFx: TODO - Wrapper for pygame objects to show them on 3D planes
+   (11:07:01) thomasFx: Map 3D intersection to point on 2D surface (half done)
+   (11:07:01) thomasFx: Movement classes
+   (11:07:02) thomasFx: Billboards
+   (11:07:04) thomasFx: Useful example program (image viewer)
+   (11:07:06) thomasFx: BLOCKED - None
+
+
+
+   (11:07:21) c-ryan: DONE: proof of concept HTTPClient, separated HTTPParser from HTTPServer, add response and request
+   support to HTTPParser, basic tests for HTTPParser and HTTPParser, websiteMinimal.py - barebones version of
+   website.py suitable for any site (used by HTTPServer), TorrentClient twisted compatibility, increased status
+   feedback from TorrentClient
+   (11:07:22) c-ryan: TODO: finish multi-torrent client, uploading support in HTTPClient
+   (11:07:22) c-ryan: BLOCKED: exams/revision
+
+   (11:08:11) ***MS- readin
+   (11:08:18) mhrd: anagha submitted his outside of the mtg ... include in the post-meeting notes?
+   (11:08:29) MS-: will do
+
+
+4. Discussion items (max 3 or 4)
+4.1 Releases
+4.2 Summer of Code Community Points
+5. Date/Time of next meeting
+   Proposed: Thursday 22nd June 2006, 11am BST (GMT+0100)
+   (Michael can't make Friday 23rd June)
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060616 ======
+   Participants: Matt, Michael, c-ryan, devendra_l, thomasFx, anagha
+   Attending: tav, Uraeus
+
+Michael.
+   DONE - Discussed with legal changes to the contributor agreement to match their concerns. Checked in BitTorrent mainline code, and tagged as BITTORRENT_4_4_0 - for doing diffs against with Ryan's code. Jim Burnes - "Control/Signals in Axon" - Replied, 2b Add & checkin the proposed components into RELEASE branch. Release details, build build mechanism for viewing the website offline. Made Sketcher & Presentation tool "Show" releasable. 
+
+   TODO - Get release out the door.
+          Deal with aftermath of release issues
+          Test release on GP2X :-)
+          On the bliki: 4b Describe the requirement for the Database component
+          Write detailed design document for Proper Macro
+          Improve website documentation - long spiely text and how its used.
+          Move Alsa components into Kamaelia.Devices
+   BLOCKED - Internal BBC meetings (taking up 1 1/2 days)
+             Waiting for legal to come back with yes/no on contributor agreement.
+             Macro kit, waiting for TL, BB
+             Fix fedora box - requires hardware.
+
+
+
+Bank holiday weekend, earlier meeting than usual, No access to Macro
+          kit, bbc.kamaelia.org still not accessible inside BBC(!), several day
+          long meetings this coming week. Sourceforge down again for 1/2 day.
+
+
+
+    MUST HAVES
+    
+    DONE  Sort out next Axon/Kamaelia release
+    DONE  Modify internet subsystem to be compliant with selector changes
+    DONE  Merge inversion branch onto head
+    DONE  add linkage removal when components shutdown
+          components that Macro.py depends on should be included in the release, even if we tag them as being experimental
+    DONE  Anybox problem - looks at final destination inbox in a passthrough chain, this is broken :)
+
+    WOULD LIKE TO HAVES
+    
+          Now and Next change detection needs to distinguish between programme update and programme junction.
+    DONE  Move threading branch axon tests to right location & notify Michael.
+          Merge tests from threading branch
+          Write tests for the system inversion changes
+    DONE  Synchronised boxes need reimplementing
+          Many components don't play nicely with the inversion right now due to busy wait.
+
+          Audit/update documentation as needed
+          Propose candidate components to move into release tree.

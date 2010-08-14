@@ -1,0 +1,141 @@
+<html><body><table>
+            <tr><td>[08:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:50] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:55] *** MS- Working on Axon 1.6 release notes</td></tr>
+            <tr><td>[10:59] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:02] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[11:03] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[11:33] &lt Davbo&gt Haskell is weird.</td></tr>
+            <tr><td>[11:36] &lt MS-&gt It's a functional language. Most functional languages are similar to each other and a different mindset</td></tr>
+            <tr><td>[11:36] *** vmlemon_ wonders what a dysfunctional language would look like, if someone had the chance to write one (Java?) ;)</td></tr>
+            <tr><td>[11:37] &lt MS-&gt The one I learnt in detail (did multi-thousand line programs in) was SML - which uses strict evaluation rather than lazy evaluation (which of course haskell uses)</td></tr>
+            <tr><td>[11:37] &lt MS-&gt vmlemon_: It'd look like datfuncational language</td></tr>
+            <tr><td>[11:37] *** Davbo didn't really *get* the strict and lazy stuff</td></tr>
+            <tr><td>[11:38] &lt MS-&gt heh, you of all people should :)</td></tr>
+            <tr><td>[11:38] &lt MS-&gt &gt&gt&gt X = [1,2,3]</td></tr>
+            <tr><td>[11:38] &lt MS-&gt &gt&gt&gt X</td></tr>
+            <tr><td>[11:38] &lt MS-&gt [1, 2, 3]</td></tr>
+            <tr><td>[11:38] &lt MS-&gt X is a value that is a list</td></tr>
+            <tr><td>[11:39] *** Davbo nods</td></tr>
+            <tr><td>[11:39] &lt MS-&gt &gt&gt&gt def X():</td></tr>
+            <tr><td>[11:39] &lt MS-&gt ... return [1,2,3]</td></tr>
+            <tr><td>[11:39] &lt MS-&gt ...</td></tr>
+            <tr><td>[11:39] &lt MS-&gt &gt&gt&gt for i in X():</td></tr>
+            <tr><td>[11:39] &lt MS-&gt ... print i,</td></tr>
+            <tr><td>[11:39] &lt MS-&gt ...</td></tr>
+            <tr><td>[11:39] &lt MS-&gt 1 2 3</td></tr>
+            <tr><td>[11:39] &lt MS-&gt X() is a function that strictly returns a list of values</td></tr>
+            <tr><td>[11:40] &lt MS-&gt Or rather X() returns the entire iterable</td></tr>
+            <tr><td>[11:40] &lt MS-&gt as a strict response</td></tr>
+            <tr><td>[11:40] &lt vmlemon_&gt *disfunctional</td></tr>
+            <tr><td>[11:40] &lt vmlemon_&gt Stupid typo</td></tr>
+            <tr><td>[11:40] &lt MS-&gt &gt&gt&gt def X():</td></tr>
+            <tr><td>[11:40] &lt MS-&gt ... yield 1</td></tr>
+            <tr><td>[11:40] &lt MS-&gt ... yield 2</td></tr>
+            <tr><td>[11:40] &lt MS-&gt ... yield 3</td></tr>
+            <tr><td>[11:40] &lt MS-&gt ...</td></tr>
+            <tr><td>[11:40] &lt MS-&gt &gt&gt&gt for i in X():</td></tr>
+            <tr><td>[11:40] &lt vmlemon_&gt kamlogbot: poke</td></tr>
+            <tr><td>[11:40] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[11:40] &lt MS-&gt ... print i,</td></tr>
+            <tr><td>[11:40] &lt MS-&gt ...</td></tr>
+            <tr><td>[11:40] &lt MS-&gt 1 2 3</td></tr>
+            <tr><td>[11:41] &lt MS-&gt X() still returns an iterable, but it lazily generates values on demand</td></tr>
+            <tr><td>[11:41] &lt Davbo&gt oh i see, yeah</td></tr>
+            <tr><td>[11:41] &lt MS-&gt put another way, X() is value which is a strict list</td></tr>
+            <tr><td>[11:41] &lt Davbo&gt it doesn't evaluate until you ask</td></tr>
+            <tr><td>[11:41] &lt MS-&gt in the first case</td></tr>
+            <tr><td>[11:41] &lt MS-&gt and X() is a lazy list</td></tr>
+            <tr><td>[11:41] &lt MS-&gt in the second case</td></tr>
+            <tr><td>[11:44] &lt Davbo&gt thanks MS- i get it now</td></tr>
+            <tr><td>[11:46] &lt Davbo&gt this explains lambda functions too</td></tr>
+            <tr><td>[11:48] &lt MS-&gt Python lambda's aren't quite the same as true lambda's by the way</td></tr>
+            <tr><td>[11:48] &lt MS-&gt They're not as .. clean</td></tr>
+            <tr><td>[11:48] &lt MS-&gt neither the expression form, nor the closure form</td></tr>
+            <tr><td>[11:48] &lt MS-&gt It's something that annoys me about python occasionally</td></tr>
+            <tr><td>[11:48] &lt Davbo&gt Yeah, it's different in Haskell</td></tr>
+            <tr><td>[11:49] &lt MS-&gt Proper lambda's are nice</td></tr>
+            <tr><td>[11:50] &lt MS-&gt Have you done currying yet?</td></tr>
+            <tr><td>[11:50] &lt Davbo&gt it also explains why my lecturer goes on about tree's so much...(the data structure, not the plant)</td></tr>
+            <tr><td>[11:50] &lt Davbo&gt reading about lazy evaluation now it looks like it's all handled in an expression tree</td></tr>
+            <tr><td>[11:50] *** MS- nods</td></tr>
+            <tr><td>[11:50] &lt Davbo&gt i don't think we've done that</td></tr>
+            <tr><td>[11:50] &lt MS-&gt yep, you don't evaluate it until you need the alue</td></tr>
+            <tr><td>[11:50] &lt MS-&gt /alue/value/</td></tr>
+            <tr><td>[11:51] &lt MS-&gt Currying is in a similar vein</td></tr>
+            <tr><td>[11:52] &lt Davbo&gt this is cool: http://en.wikipedia.org/wiki/Functional_programming#Coding_styles</td></tr>
+            <tr><td>[11:54] &lt MS-&gt compactness does not always equate to comprehensibility though</td></tr>
+            <tr><td>[11:54] &lt MS-&gt Clearest example of that as a language is prolog</td></tr>
+            <tr><td>[11:54] &lt MS-&gt You can do more in less lines in prolog than in many other languages and exponentially less people understand it</td></tr>
+            <tr><td>[11:55] &lt Davbo&gt i suppose so</td></tr>
+            <tr><td>[11:56] *** Davbo is amazed by how many students didn't seem to *get* recursion of lists in Prolog</td></tr>
+            <tr><td>[11:56] &lt Davbo&gt after 2 lectures on it</td></tr>
+            <tr><td>[11:57] &lt Davbo&gt the pattern is always same, act on the head then post the tail back to the function..</td></tr>
+            <tr><td>[11:57] &lt Davbo&gt My Prolog lecturer is learning Python, I might offer him some lectures ;-)</td></tr>
+            <tr><td>[12:12] &lt MS-&gt heh</td></tr>
+            <tr><td>[12:12] &lt MS-&gt Recursion is a surprisingly difficult concept for people to grasp</td></tr>
+            <tr><td>[12:13] &lt MS-&gt Probably because it's really identical to iteration, but rarely taught that way</td></tr>
+            <tr><td>[12:13] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:13] &lt Davbo&gt lists in haskell == http://learnyouahaskell.com/listmonster.png</td></tr>
+            <tr><td>[12:15] &lt MS-&gt Loading for that website == FAIL</td></tr>
+            <tr><td>[12:17] &lt Davbo&gt it's appeared on reddit and hacker news (where all the old redditors have gone, http://news.ycombinator.com )</td></tr>
+            <tr><td>[12:17] &lt Davbo&gt so probably having somewhat of a /. effect</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt oh that's awesome! infinite lists</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt didn't know you could do that</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt side-effect of being lazy i guess</td></tr>
+            <tr><td>[12:22] &lt vmlemon_&gt Hmm, anyone familiar with Google Code?</td></tr>
+            <tr><td>[12:22] &lt MS-&gt vmlemon_: Depends on what you want to know :-)</td></tr>
+            <tr><td>[12:23] *** vmlemon_ assumes that http://projectname.googlecode.com/svn/ is the "repository URL" for the purposes of configuring the Drupal SVN module...</td></tr>
+            <tr><td>[12:24] &lt vmlemon_&gt Aah, seemed to work</td></tr>
+            <tr><td>[12:27] &lt vmlemon_&gt Meh, they don't seem to give revision numbers in URLs, from what I can tell, unless there's a Special Tecnique</td></tr>
+            <tr><td>[12:27] &lt vmlemon_&gt *Technique</td></tr>
+            <tr><td>[12:27] &lt vmlemon_&gt (Although I'm not that familiar with SVN)</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt don't think that'd be anything to do with svn since it's googles frontend</td></tr>
+            <tr><td>[12:28] &lt vmlemon_&gt Damn</td></tr>
+            <tr><td>[12:28] &lt Davbo&gt right, i'm off to this: http://www.sheffieldoktoberfest.co.uk/</td></tr>
+            <tr><td>[12:30] &lt Davbo&gt cya later chaps!</td></tr>
+            <tr><td>[12:30] &lt vmlemon_&gt See you Davbo</td></tr>
+            <tr><td>[12:31] *** vmlemon_ didn't know they had an Oktoberfest in Sheffield...</td></tr>
+            <tr><td>[12:34] &lt MS-&gt OK</td></tr>
+            <tr><td>[12:34] &lt MS-&gt An advert for an electronic potato peeler</td></tr>
+            <tr><td>[12:34] &lt MS-&gt That's strange</td></tr>
+            <tr><td>[12:34] &lt MS-&gt "the best a potato can get"</td></tr>
+            <tr><td>[12:34] &lt vmlemon_&gt Where?</td></tr>
+            <tr><td>[12:34] &lt MS-&gt On TV</td></tr>
+            <tr><td>[12:34] &lt MS-&gt gone now</td></tr>
+            <tr><td>[12:34] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[12:34] &lt MS-&gt I mean</td></tr>
+            <tr><td>[12:35] &lt MS-&gt *WHY* ?</td></tr>
+            <tr><td>[12:35] &lt MS-&gt It's not like it's any different from a normal potato peeler</td></tr>
+            <tr><td>[12:35] &lt MS-&gt (ie same shape, just has a shaking blade AFAICT)</td></tr>
+            <tr><td>[12:35] &lt vmlemon_&gt Will it magically revive mouldy potatoes, or make them taste better somehow? ;)</td></tr>
+            <tr><td>[12:36] &lt MS-&gt I mean it was a slly add - a mick take of the Gillette razor ads</td></tr>
+            <tr><td>[12:36] &lt MS-&gt but they clearly meant it too</td></tr>
+            <tr><td>[12:36] &lt MS-&gt which is *wierd*</td></tr>
+            <tr><td>[12:37] *** vmlemon_ wonders if there's ever going to be viable replacement for FAT* that doesn't chew data, and is at least as interoperable between OSes...</td></tr>
+            <tr><td>[12:38] &lt vmlemon_&gt (I've had to repair the FS on my phone's MMC card at least 5 times in the last week, after it somehow ended up getting corrupt and damaged a load of MP3 files in the process)</td></tr>
+            <tr><td>[12:38] &lt MS-&gt SMB is the closest you get really</td></tr>
+            <tr><td>[12:38] &lt MS-&gt but hardly counts</td></tr>
+            <tr><td>[12:39] &lt vmlemon_&gt Although it's been used with at least 4 different implementations, each probably with their own bugs and quirks...</td></tr>
+            <tr><td>[12:40] &lt vmlemon_&gt (Windows XP, Symbian OS, Linux and Mac OS X Leopard, and Mac OS 9 briefly)</td></tr>
+            <tr><td>[12:42] &lt vmlemon_&gt I've seen Linux's dmesg spammed with panic messages whilst trying to read it, long random garbage filenames on Mac OS 9 (just before that box locked up entirely), and lost quite a bit of data in the process (although it wasn't exactly crucial stuff)</td></tr>
+            <tr><td>[12:44] *** vmlemon_ wonders if there's a problem with the Flash memory chips being crappy/out of spec</td></tr>
+            <tr><td>[12:54] &lt MS-&gt It could be that</td></tr>
+            <tr><td>[12:54] &lt MS-&gt Windows tends to try and mask such error AFAICT</td></tr>
+            <tr><td>[12:56] &lt MS-&gt http://www.kamaelia.org/ReleaseNotes060 - complete release notes for the release</td></tr>
+            <tr><td>[12:56] &lt MS-&gt includes the Axon 1.6 release notes which are here:</td></tr>
+            <tr><td>[12:56] &lt MS-&gt http://www.kamaelia.org/ReleaseNotesAxon160</td></tr>
+            <tr><td>[13:12] *** MS- goes off for a while</td></tr>
+            <tr><td>[13:12] &lt MS-&gt (though feedback on the new release notes would be very welcome)</td></tr>
+            <tr><td>[13:12] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[13:14] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:19] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:22] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:31] &lt eikenberry&gt 3rd Paragraph... first sentence... this bit doesn't sound right.</td></tr>
+            <tr><td>[15:31] &lt eikenberry&gt [...] does mean that you can exceptions thrown if the component [...]</td></tr>
+            <tr><td>[15:31] &lt eikenberry&gt "you can exceptions thrown"?</td></tr>
+            <tr><td>[16:35] &lt ms-afk&gt ta, I'll fix that :)</td></tr>
+            <tr><td>[17:06] &lt vmlemon_&gt Exceptions Pong! ;)</td></tr>
+            <tr><td>[17:39] *** vmlemon_ has joined #kamaelia</td></tr>

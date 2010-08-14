@@ -1,0 +1,106 @@
+<html>
+<head>
+<title> Docs/NotationForVisualisingAxon </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/NotationForVisualisingAxon">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1>A Notation For Visualising Axon Systems<br></h1>
+<p><b>Summary:</b></p><div style="text-align: justify;"><blockquote style="width: 60%;"><p>This document presents a notation for diagrams to describe Axon systems. The notation is intended as both a design tool and documentation aid. Axon allows extraction of the information necessary to reconstruct the design from an active system. An overview of Axon - a software component system - is included.</p><p><b>Keywords:</b> Axon, Component, Software, Architecture, Parallel Processing, Concurrent, Signal Processing, Message Passing</p></blockquote></div>
+<h2>1 Essential Elements of an Axon System</h2><p>Axon is a component system for creating large-scale highly parallel software systems. The system is designed to operate efficiently inside a single operating system process. (This is equivalent to a cook handling many tasks, rather than many cooks with many tasks.) <br>A system in Axon has the following key elements: <br></p><ul><li>Components</li><li>Inboxes</li><li>Outboxes</li><li>Linkages</li></ul><p>Components perform processing in parallel with other components. A component contains inboxes and outboxes. Inboxes are used by components to receive messages. After processing, the results are placed into an outbox.</p><p>Components may contain other components forming systems. Messages pass between components along linkages which join outboxes to inboxes. (More specifically linkages join data sources to data sinks) This is analogous to internal mail inside an organisation and having the postman know where messages should be delivered.</p><p>Components normally perform processing by providing a means of handling a "pausable" function. Such functions voluntarily pause themselves using a form of return &amp; continue functionality provided by the language. As a result components are simply objects with lists of inboxes, outboxes  and a wrapper for a pausable function. Users of the system customise components by providing alternative functionality for the various parts of the pausable function (initialisation, main loop, shutdown).<br></p><h2>2 Overview of Notation<br></h2>The purpose of this notation is to aid the following:<br><ul><li>Accessibility<br></li></ul>Design<ul><li>Documentation<br></li></ul><p>There are 3 main types of diagram this notation covers:<br></p><ul><li>Black box diagrams for single components. These show the external view of the component.</li><li>Glass box diagrams for component systems. These are used when a component contains other components, forming systems. These diagrams make this internal structure between subcomponents visible.<br></li><li>Lifecycle diagrams. These are a sequence of glass box diagrams showing how the component system changes with time. <br></li></ul><p>It's worth noting that black box diagrams are used on glass box diagrams, and that both black &amp; glass box diagrams are used on Lifecycle diagrams.<br></p><h3>2.1 Black Box Single Component Static View</h3><p>Figure 1 shows a black box view. This form of view does not contain any linkages, and simply shows public inboxes and outboxes. The notation provides clear differences between inboxes and outboxes.</p><p align="center"><img src="../../../t/BasicComponentBlackBox.png"></p><p align="center">Figure 1</p><p>Things to note regarding this diagram:<br></p><ul><li>The boundary of the component we are describing has a thick hexagonal boundary.</li><li><span style="font-weight: bold;">Inboxes</span> are indicated as essentially "arrow lines"<span style="font-weight: bold;"> </span>pointing<span style="font-weight: bold;"> into</span> the component.</li><li><span style="font-weight: bold;">Outboxes</span> are indicated  as essentially "arrow lines"pointing<span style="font-weight: bold;"> out from </span> component.</li><li>This only shows the external view of the object. No private/internal inboxes or outboxes are represented in this diagram.<br></li></ul>Figure 2 describes a sample existing component. A network server uses this component to send and receive data to a specific, already connected, client. For each connected client there is one connected socket adaptor. <br><div align="center"><img src="../../../t/ComplexComponentBlackBox.png"><br>Figure 2<br></div><br>This component has the following inputs and outputs:<br><ul><li>4 inboxes for receiving messages from other components</li><li>4 outboxes for sending messages to other components<br></li><li>Private to the component is a connected socket</li></ul><p>The connected socket forms a functional communication link to a system outside Axon. This behaviour is represented in the name of the component – it is the reason the component is called an adaptor. <br></p>Similarly a component designed to read from a file could have a single outbox, and no inboxes. Internally such a component would have a filehandle for reading data. In such a scenario, the filehandle would be created at component creation time. As data is made available this could be passed to the component’s outbox. Due to the input from a non-Axon system, a file reader component operating in this manner would also be an adaptor.<br><p>A component that wrapped up all interaction with a GUI could have inboxes for receiving details of items to display, and outboxes for describing user events and input. This would also be an adaptor since it would be transforming input/output between the Axon system and the GUI system.</p><ul><li>A component can have no outboxes. This means the component is likely to produce output some other way – as audio, video, text to a screen, file, to a network connection, etc.</li><li>Components can also have no inboxes. Such components can take input from another source – such as from a file, network connection, keyboard, GUI, etc.<br></li></ul><h3>2.2 Glass Box Component System Static View</h3>In the majority of cases, a glass box view will essentially be a snapshot of the system at a given point in time.<br><p>Figure 3 shows a rather complex glass box view.</p><div align="center"><img src="../../../t/ConnectedServerGlassBox.png">
+</div><p align="center">Figure 3<br></p>This diagram contains the following visual cues:<br><ul><li>Once again, the border of the component being described has a thick hexagonal outline.</li><ul><li>For a toplevel component whose internals are being shown, a thick rectangular outline can be used instead to maximise drawing space!<br></li></ul><li>Public inboxes/outboxes are shown on the border of the component.</li><li>Private/internal inboxes or outboxes are shown as attached to the code running the component. The names are all preceded by an underscore.<br></li><li>We have represented the code of the component itself as a labelled hexagon with a dotted outline. If the component has no private inboxes/outboxes, we <i>could</i> omit the code representation from the diagram.</li><li>Linkages are indicated by arrows. <br></li><li>Subcomponents are indicated by hexagonal shapes.</li><li>Subcomponents defined at runtime, using the same interface, are shown with a dashed border. <br></li><ul><li><b>Note:</b> Such things are generally a configuration option when creating the component!<br></li></ul><li>There are clearly things going on here that are outside the scope of this component.<br></li></ul>(Note this component has no outbox – output to an end-user is via the connected socket adaptor.)<br><p>The reasons for using this notation is as follows:<br></p><ul><li>The region we are defining is clear and follows the same notation as a black box interface definition.</li><li>Subcomponents are shown in a different shape to indicate that this diagram does not define them. It defines their usage in a particular context.<br></li><li>Indicating a subcomponent with a dashed border indicates that we are not specifying a particular component in that section. We are defining that a component matching that interface will go there at runtime. Specifically this also requires that we have a method for changing which component this is at runtime.</li><li>Items are defined by functionality in these diagrams. Since all any linkage does is provide structure to the system, and indicate flow of messages, all linkages are drawn the same. That is all the linkages are shown as arrows. However it should be clear from the diagram that linkages fall into 3 categories:</li><ul><li>Linkages between outboxes and inboxes.</li><li>Linkages from a parent component inbox directly to a subcomponent's inbox.<br></li><li>Linkages from a subcomponent's outbox to a parent component's outbox.</li></ul></ul><h3>2.3 Lifecycle Dynamic System View<br></h3><p><div style="float: right; border: solid;" class="twoC"> One way of thinking about this is much like how a comic show time based events!</div> Lifecycle/dynamic views are presented as a sequence of glass box diagrams. The purpose of a lifecycle/dynamic system view is to clearly present how the system changes with time. Since the structure of the system is extractable from an active system verification that the system is following expected behaviour is potentially checkable visually.<br></p>There is no additional notation added for dynamic systems. There is one major difference though: whilst a static view may have subcomponents with dashed borders, a dynamic/lifecycle diagram in general will not. A dashed border for a component indicates this component will be defined at runtime. A dynamic/lifecycle diagram as a whole indicates how the system works when it's running. Unless the entire system is parameterisable (which is possible), there will normally be no subcomponents with dashed borders.<br><p>An example HTTP server component could follow the following lifecycle:<br></p><ol><li>The server component would be created:<br><div align="center"><img src="../../../t/LifeCycle1.png"></div></li><li>The server would allocate a listener:<br>
+<div align="center"><blockquote><img src="../../../t/LifeCycle2.png"></blockquote></div>
+</li><li>A client would connect, the server allocates a protocol handler and makes linkages:<br><div align="center"><img src="../../../t/LifeCycle3.png"></div></li><li>The client disconnects, the protocol handler &amp; connected socket handler are discarded, and the server listens for new connections:<br><div align="center"><img src="../../../t/LifeCycle4.png"></div></li></ol>Steps 3 &amp; 4 then repeat.<br><h2>3 Summary<br></h2><div style="float: right; border: solid;" class="twoC"> Valid reasons (non-exhaustive) for breaking these rules are:<br><ul><li>You're linking all outboxes to inboxes of the next component</li><li>Simplicity - you're writing a tutorial and want to skip details</li><li>Sanity - where it'd be mad to follow the rules</li><li>Experimentation - you're trying something new :)</li></ul></div>This document has presented a notation for diagrams describing Axon components and systems. A summary of the notation is below. (it uses SHOULD/MUST /MAYin the same was an an RFC)<br><p>For all Axon diagrams:<br></p><ul><li>The component being described/defined MUST be represented using a thick black border, and SHOULD use a hexagonal border.</li><li>Inboxes SHOULD be represented using arrow box-lines, pointing into the component.<br></li><li>Outboxes SHOULD be represented using using arrow box-lines, pointing out from the component.</li><ul><li><i>The only exception of inboxes &amp; outboxes is where the diagram would look unnecessarily complicated - if that's the case inboxes/outboxe MAY just the ends of a linkage.</i><br></li></ul><li>Public inboxes/outboxes MUST be attached to the border of the component.<br></li></ul>The following applies to glass box diagrams:<br><ul><li>Subcomponents, linkages, and private inboxes/outboxes SHOULD only appear on glass box diagrams.<br></li><li>Private inboxes/outboxes SHOULD have a preceding underscore in their name and MUST be attached to a representation of the code.</li><li>Subcomponents MUST be represented using hexagons.</li><li>Subcomponents MAY be represented using a dashed border to indicate that a variety of subcomponents with identical inboxes/outboxes can be used in its place at runtime.</li><li>Linkages MUST be indicated using arrows.<br></li><li>The top level component MAY have a rectangular border to help with drawing space!</li></ul><p>Lifecycle diagrams:<br></p><ul><li>Indicate how the system will function at run time</li><li>Are generally glass box, rather than black box<br></li><li>Rarely contain subcomponents with dashed borders, unless the entire system is parameterisable at runtime</li></ul>Why use MAY/SHOULD/MUST? This notation forms a simple language, and by using it consistently we make it easier to pick up and run with Kamaelia systems.<br><h1>Discussion</h1><p>This document has been guiding Kamaelia development for a number of years now. It is likely to be extended for exogenous style components shortly.<br></p><p><br></p>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

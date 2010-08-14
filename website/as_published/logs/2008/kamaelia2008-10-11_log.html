@@ -1,0 +1,57 @@
+<html><body><table>
+            <tr><td>[00:34] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:32] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:56] &lt ms-afk&gt morning</td></tr>
+            <tr><td>[12:50] &lt ms-afk&gt hm. no-one's bothered to think about trying to make prolog type things simpler</td></tr>
+            <tr><td>[12:50] &lt ms-afk&gt simpler for people to use that is</td></tr>
+            <tr><td>[12:51] &lt ms-afk&gt Nor taken into account that whilst prolog is nice, most facts are non-atomic</td></tr>
+            <tr><td>[12:52] &lt ms-afk&gt well, I'm sure they have taken it into account, but very few people understand how</td></tr>
+            <tr><td>[12:56] &lt ms-afk&gt Also, I think that the more I look back at prolog, the more I realise that adding (user modifiable) rules into the database for a web app which also accepts user data *AND* (crucially) runs queries based on those rules</td></tr>
+            <tr><td>[12:56] &lt ms-afk&gt does mean that I've implemented a mini-prolog core.</td></tr>
+            <tr><td>[12:56] &lt ms-afk&gt (having looked at 3 prolog implementations in python now)</td></tr>
+            <tr><td>[12:57] &lt ms-afk&gt It's completely sub-optimal though</td></tr>
+            <tr><td>[12:57] &lt ms-afk&gt tis amusing though.</td></tr>
+            <tr><td>[12:58] &lt ms-afk&gt (relevant to kamaelia since I'll be adding the rule engine, as I've been referring to it, to kamaelia at some point since I need it to be able to run continuously, and K is an easy way to achieve that)</td></tr>
+            <tr><td>[12:59] &lt Davbo&gt sounds interesting ms-afk</td></tr>
+            <tr><td>[13:00] &lt ms-afk&gt Davbo: Well the thing I've done is been doing some digging after last night and found up why micro-prolog was easier to learn than traditional prolog</td></tr>
+            <tr><td>[13:00] &lt ms-afk&gt and its for 2 key reasons</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt firstly it used a more human friendly syntax - which just naturally assists comprehension of what's going on</td></tr>
+            <tr><td>[13:01] &lt ms-afk&gt The other though was that rather than just coming back with "No" or "False"</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt if it would fail because of insufficient information, it's default would be to a) tell you that by b) asking you for the information it needs</td></tr>
+            <tr><td>[13:02] &lt ms-afk&gt That by definition would assist with writing more programs. (And also give you interactivity for free)</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt eg define a term in normal prolog:</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt citizen(X,Y) :- born(X,Y).</td></tr>
+            <tr><td>[13:03] &lt ms-afk&gt and then query:</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt ?- citizen(john, X).</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt ERROR: citizen/2: Undefined procedure: born/2</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt In microprolog, becomes</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt % X citizen-of y if x born-in y</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt User then goes:</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt % User: where John citizen-of x?</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt system then responds:</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt where john born-in x?</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt user responds:</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt England</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt Machine response with:</td></tr>
+            <tr><td>[13:04] &lt ms-afk&gt John citizen-of England.</td></tr>
+            <tr><td>[13:05] &lt ms-afk&gt It's not a *huge* amount better, but it's definitely more person friendly</td></tr>
+            <tr><td>[13:05] &lt Davbo&gt That's a lot better to the "No" we normally get</td></tr>
+            <tr><td>[13:05] &lt ms-afk&gt indeed</td></tr>
+            <tr><td>[13:06] &lt ms-afk&gt Well, given that concurrency is now easy to work with, I have to think about what to add in next</td></tr>
+            <tr><td>[13:06] &lt ms-afk&gt :-)</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt And also I am working on something where I've got some form of very simplistic data/rule/query system based on json objects</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt so that seems a logical thing to bear in mind</td></tr>
+            <tr><td>[13:07] &lt ms-afk&gt Also, the system I'm dealing with does also have the mechanism of being able to pose questions to people to gather the data necessary...</td></tr>
+            <tr><td>[13:08] &lt ms-afk&gt OK, wandering off for a while now</td></tr>
+            <tr><td>[13:08] &lt ms-afk&gt back later</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt http://www.linux.com/feature/149992 "Will Richard Stallman insist that the baby be called GNU/Linux?"</td></tr>
+            <tr><td>[15:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:14] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:49] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:53] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[19:53] Reply: does the macarena</td></tr>
+            <tr><td>[19:53] *** Davbo struggles to uninstall python2.6</td></tr>
+            <tr><td>[19:54] &lt Davbo&gt or at least make 2.5 the main install</td></tr>
+            <tr><td>[21:27] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:37] *** vmlemon_ has joined #kamaelia</td></tr>

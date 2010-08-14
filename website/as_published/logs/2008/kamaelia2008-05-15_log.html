@@ -1,0 +1,777 @@
+<html><body><table>
+            <tr><td>[00:07] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[05:45] &lt Lawouach&gt http://reddit.com/r/programming/info/6j7ed/comments/c040ffa</td></tr>
+            <tr><td>[05:45] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[06:43] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:43] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[06:49] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:01] &lt vmlemon__&gt kamaeliabot: dance</td></tr>
+            <tr><td>[07:01] Reply: does the macarena</td></tr>
+            <tr><td>[08:27] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:36] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:49] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:26] &lt Lawouach_&gt http://groups.google.com/group/comp.lang.lisp/msg/a9a5a462915e94bd</td></tr>
+            <tr><td>[09:26] &lt Lawouach_&gt what a read :)</td></tr>
+            <tr><td>[09:53] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:57] *** edh has joined #kamaelia</td></tr>
+            <tr><td>[09:57] &lt edh&gt hi</td></tr>
+            <tr><td>[09:59] &lt MS-&gt Hiya</td></tr>
+            <tr><td>[10:14] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[10:42] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[10:43] &lt Chong-&gt Morning, all.</td></tr>
+            <tr><td>[10:53] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:54] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[10:54] &lt MS-&gt hi</td></tr>
+            <tr><td>[11:01] &lt Chong-&gt Hey vmlemon__ and MS- .</td></tr>
+            <tr><td>[11:03] &lt mhrd&gt hi chong, hows it going?</td></tr>
+            <tr><td>[11:06] &lt Chong-&gt mhrd: pretty good.</td></tr>
+            <tr><td>[11:06] &lt Chong-&gt I believe that I have finished basic console-&gt topology visualiser and file -&gt topology visualiser</td></tr>
+            <tr><td>[11:07] &lt mhrd&gt cool. in your Sketches folder?</td></tr>
+            <tr><td>[11:07] &lt MS-&gt Chong-: good start</td></tr>
+            <tr><td>[11:07] *** Chong- wondering if MS- and other mentors have checked his SVN sketch codes</td></tr>
+            <tr><td>[11:08] &lt Chong-&gt Thanks, MS- :-)</td></tr>
+            <tr><td>[11:09] &lt Chong-&gt A couple of questions for the upcoming tasks:</td></tr>
+            <tr><td>[11:09] &lt MS-&gt Chong-: It works :)</td></tr>
+            <tr><td>[11:10] &lt Chong-&gt great</td></tr>
+            <tr><td>[11:10] &lt Chong-&gt first, Is the format of custom file fixed?</td></tr>
+            <tr><td>[11:10] &lt MS-&gt It's entirely up to you - this is a learning exercise really</td></tr>
+            <tr><td>[11:10] &lt Chong-&gt I mean, for example, person mum, not person(mum), person-mum or others</td></tr>
+            <tr><td>[11:13] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[11:13] &lt Chong-&gt great. I'll try to make it as flexible as I can.</td></tr>
+            <tr><td>[11:14] &lt mhrd&gt Chong: any particular reason? is there a benefit you can see from the changes you're considering?</td></tr>
+            <tr><td>[11:16] &lt Chong-&gt mhrd: no benefit. I am just thinking that customers could give you different formats of files.</td></tr>
+            <tr><td>[11:18] &lt Chong-&gt If your program is only designed to handle one format, it will fail if users provide one differrent format.</td></tr>
+            <tr><td>[11:20] &lt MS-&gt Chong-: I'd suggest that not making it as flexible as you can</td></tr>
+            <tr><td>[11:20] &lt MS-&gt I would suggest that you aim for a very simple domain specific example format first and then extending that as necessary</td></tr>
+            <tr><td>[11:20] *** mhrd inclined to agree with MS- ...</td></tr>
+            <tr><td>[11:21] &lt MS-&gt Going the other way round generally results in writing code you won't need, and often results in a "I'll put this in just in case" scenario</td></tr>
+            <tr><td>[11:21] &lt MS-&gt It's not always the case, but...</td></tr>
+            <tr><td>[11:21] &lt mhrd&gt I prefer to have well specfied input/output formats (often makes the IO easier to code) ...</td></tr>
+            <tr><td>[11:21] &lt mhrd&gt plus, since Kamaelia's modular, you can always later swap out the input parser, or make a preprocessing component</td></tr>
+            <tr><td>[11:23] &lt Chong-&gt yes. I totally agree. Anyway, we can add a preprocessing component as mhrd said.</td></tr>
+            <tr><td>[11:24] &lt Chong-&gt Another question is also about design. Will the customized thing (pink/blue for gender, pictures of the person/user), be defined in the same cumstom file or a seperate file?</td></tr>
+            <tr><td>[11:31] &lt mhrd&gt you don't necessarily need to worry about that kind of stuff yet - play with this iteratively - get it working hardcoded, then if you see a good way to do it, abstract it out later if you want to</td></tr>
+            <tr><td>[11:34] &lt Chong-&gt mhrd: Thank you very much for your advice.</td></tr>
+            <tr><td>[11:35] &lt mhrd&gt np</td></tr>
+            <tr><td>[11:35] &lt Chong-&gt You're right. As the work proceeds, it would become much clearer to make decision than now.</td></tr>
+            <tr><td>[11:36] &lt MS-&gt Chong-: You also have to be clear on something - any decision taken is likely to prove wrong, if you wait long enough</td></tr>
+            <tr><td>[11:37] &lt mhrd&gt btw: Chong, what platform are you developing on?</td></tr>
+            <tr><td>[11:37] &lt Chong-&gt MS-: I agree.</td></tr>
+            <tr><td>[11:38] &lt Chong-&gt mhrd: eclipse+Pydev</td></tr>
+            <tr><td>[11:38] &lt mhrd&gt sorry, I meant as in OS (win/mac/*nix) ?</td></tr>
+            <tr><td>[11:38] &lt Chong-&gt linux</td></tr>
+            <tr><td>[11:38] &lt mhrd&gt eclipse ... ah, hence the src folder :)</td></tr>
+            <tr><td>[11:38] &lt Chong-&gt yes:-)</td></tr>
+            <tr><td>[11:39] &lt Chong-&gt It's hard to get rid of :-)</td></tr>
+            <tr><td>[11:40] &lt Chong-&gt np. I should have known you refer to os by platform.</td></tr>
+            <tr><td>[11:40] &lt mhrd&gt if you "chmod +x" your python source before first adding them to the repository, then they'll carry the 'execution' flag with them ... making lazy people like me happy, who want to run them by doing "./xxxx.py" :-)</td></tr>
+            <tr><td>[11:41] &lt Chong-&gt mhrd: Got it. Sorry for the trouble. I'll do it not.</td></tr>
+            <tr><td>[11:42] &lt mhrd&gt no need to apologise - its a tiny tiny thing - I'm just too lazy to type "python xxxx.py" :)</td></tr>
+            <tr><td>[11:44] &lt Chong-&gt np:-)</td></tr>
+            <tr><td>[12:11] &lt Chong-&gt mhrd: after I chmod my work copy and commit, the mode of repository hasn't been changed.</td></tr>
+            <tr><td>[12:12] &lt mhrd&gt the change control normally only works on teh contents of the files. the +x flag is stored in another way ...</td></tr>
+            <tr><td>[12:12] &lt mhrd&gt have to confess, I can't remember hwo to ask it to change</td></tr>
+            <tr><td>[12:12] &lt Chong-&gt since there is no svn chmod, do I have to svn delete and then import again?</td></tr>
+            <tr><td>[12:12] &lt mhrd&gt no don't do that</td></tr>
+            <tr><td>[12:12] &lt Chong-&gt Any better way?</td></tr>
+            <tr><td>[12:12] &lt mhrd&gt yes, I'm just looking for it :)</td></tr>
+            <tr><td>[12:13] &lt Chong-&gt thanks.</td></tr>
+            <tr><td>[12:13] &lt mhrd&gt deleting and adding again is generally not good - since that breaks the revision history trail</td></tr>
+            <tr><td>[12:13] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[12:14] &lt MS-&gt mhrd: It's like killing the code and hiding the bodies</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt http://www.alexa.com/data/details/traffic_details/defuze.org</td></tr>
+            <tr><td>[12:14] &lt MS-&gt sorry, i'll get my coat</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt for some reason I attrac viewers from India</td></tr>
+            <tr><td>[12:14] *** mhrd hands MS- a shovel</td></tr>
+            <tr><td>[12:14] &lt MS-&gt Lawouach_: Nice big audience</td></tr>
+            <tr><td>[12:14] &lt mhrd&gt MS-: you dig, I'll keep a lookout</td></tr>
+            <tr><td>[12:14] &lt MS-&gt Second largest going</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt mhrd: lazy bastard :)</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt So I heard it was not an evening to do near Old Trafford yesterday</td></tr>
+            <tr><td>[12:17] &lt mhrd&gt Chong-: svn propset svn:executable ON myfile.py</td></tr>
+            <tr><td>[12:17] &lt mhrd&gt http://svnbook.red-bean.com/en/1.0/re23.html</td></tr>
+            <tr><td>[12:18] &lt Chong-&gt thanks, mhrd.</td></tr>
+            <tr><td>[12:18] *** Chong- reading</td></tr>
+            <tr><td>[12:22] &lt Chong-&gt mhrd: done. it's very cool.</td></tr>
+            <tr><td>[12:23] *** mhrd guesses you probably have to commit the change</td></tr>
+            <tr><td>[12:24] &lt MS-&gt indeed</td></tr>
+            <tr><td>[12:26] &lt Chong-&gt I see. wait</td></tr>
+            <tr><td>[12:26] &lt MS-&gt Chong-: You have to remember that nothing you do is visible on the server without being committed</td></tr>
+            <tr><td>[12:27] &lt Chong-&gt MS-: thanks for your remind :-)</td></tr>
+            <tr><td>[12:39] &lt Chong-&gt It should be ok now. I have tried myself :-)</td></tr>
+            <tr><td>[13:19] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:19] &lt Davbo&gt afternoon all</td></tr>
+            <tr><td>[13:26] &lt Chong-&gt hi Davbo</td></tr>
+            <tr><td>[13:36] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[13:37] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[13:44] &lt MS-&gt Davbo: Afternoon</td></tr>
+            <tr><td>[13:44] &lt MS-&gt biab</td></tr>
+            <tr><td>[13:44] &lt MS-&gt ;)</td></tr>
+            <tr><td>[13:48] &lt vmlemon__&gt kamaeliabot: dance</td></tr>
+            <tr><td>[13:48] Reply: does the macarena</td></tr>
+            <tr><td>[14:21] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:22] *** vmlemon__ is playing with the IMAP client on his phone</td></tr>
+            <tr><td>[14:37] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[14:37] &lt j_baker&gt morning everyone</td></tr>
+            <tr><td>[14:38] &lt MS-&gt j_baker: greetings</td></tr>
+            <tr><td>[14:42] &lt j_baker&gt Hey Chong-, what data format were you planning on using for your topology viewer?</td></tr>
+            <tr><td>[14:43] &lt MS-&gt j_baker: URI -- Identifier, URL -- Location. An URL can be a URI, but not all URI's are URLs</td></tr>
+            <tr><td>[14:43] &lt j_baker&gt Are you commenting on my blog post MS-?</td></tr>
+            <tr><td>[14:44] &lt MS-&gt Yep</td></tr>
+            <tr><td>[14:44] &lt j_baker&gt That's essentially what I was getting at. Or was I incorrect in a certain aspect of it?</td></tr>
+            <tr><td>[14:45] &lt MS-&gt eg pstn:448706030304 is a URI</td></tr>
+            <tr><td>[14:45] &lt MS-&gt as is mailto:sparks.m@gmail.com</td></tr>
+            <tr><td>[14:45] &lt MS-&gt No, I saw that you'd found it difficult to find something stating clearly the difference</td></tr>
+            <tr><td>[14:46] &lt Lawouach_&gt URN's are also URIs :)</td></tr>
+            <tr><td>[14:46] &lt MS-&gt Yep</td></tr>
+            <tr><td>[14:46] &lt MS-&gt And not all URIs are URNs</td></tr>
+            <tr><td>[14:46] &lt j_baker&gt pstn:448706030304 is a URN right?</td></tr>
+            <tr><td>[14:46] &lt Lawouach_&gt yeah though it's usually in that context that we use them</td></tr>
+            <tr><td>[14:47] &lt MS-&gt j_baker: This is worth reading http://www.w3.org/TR/webarch/ if you've not seen it and have questions on this stuff</td></tr>
+            <tr><td>[14:48] &lt j_baker&gt I will definitely check that out. URIs, URNs, and URLs can be confusing. :)</td></tr>
+            <tr><td>[14:49] &lt Lawouach_&gt Indeed</td></tr>
+            <tr><td>[14:50] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:52] &lt j_baker&gt The meeting's at 10 AM my time, correct?</td></tr>
+            <tr><td>[14:53] &lt Davbo&gt It's in 8 minutes time i believe</td></tr>
+            <tr><td>[14:53] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[14:53] &lt mhrd&gt 4pm UK time is 3pm UTC/GMT atm</td></tr>
+            <tr><td>[14:53] &lt j_baker&gt Sweet.</td></tr>
+            <tr><td>[14:53] &lt mhrd&gt Davbo: yep</td></tr>
+            <tr><td>[14:55] &lt Lawouach_&gt drum roll</td></tr>
+            <tr><td>[14:57] &lt Chong-&gt j_baker: hi. the data is just simple text file containing entity, attributes and relations definition so far.</td></tr>
+            <tr><td>[14:57] &lt vmlemon_&gt Are we under BST at the moment?</td></tr>
+            <tr><td>[14:57] &lt mhrd&gt anyone knwo how I can run a recursive chmod that only affects directories, not files?</td></tr>
+            <tr><td>[14:57] &lt orphans&gt hi all</td></tr>
+            <tr><td>[14:58] &lt orphans&gt mhrd, chmod -arrrrghhhhhh ?</td></tr>
+            <tr><td>[14:58] &lt Chong-&gt Later, the data could be from database, xml and so on.</td></tr>
+            <tr><td>[14:58] &lt j_baker&gt Chong- at some point in time, you may want to look at using FOAF.</td></tr>
+            <tr><td>[14:58] &lt j_baker&gt http://www.foaf-project.org/</td></tr>
+            <tr><td>[14:58] &lt j_baker&gt My project may use that to some degree, so we may be able to work together in some respects.</td></tr>
+            <tr><td>[14:59] &lt vmlemon_&gt Hi orphans</td></tr>
+            <tr><td>[14:59] &lt Chong-&gt j_baker: that's interesting</td></tr>
+            <tr><td>[15:00] &lt j_baker&gt Yeah. Plus you would get all kinds of stuff for free. Like compatibility with Google's Social Graph. But that is something you may want to look at in the future. :)</td></tr>
+            <tr><td>[15:00] *** MS- notes his watch says it's time :)</td></tr>
+            <tr><td>[15:01] &lt Lawouach_&gt yeah cake</td></tr>
+            <tr><td>[15:01] &lt Lawouach_&gt huh? no cakes?</td></tr>
+            <tr><td>[15:01] *** Lawouach_ leaves</td></tr>
+            <tr><td>[15:01] &lt MS-&gt heh</td></tr>
+            <tr><td>[15:01] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:01] &lt MS-&gt ====== START OF WEEKLY IRC KAMAELIA MEETING, 20050515 ======</td></tr>
+            <tr><td>[15:02] &lt vmlemon_&gt And coffee/tea, too?</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 2. Participants</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 4.1 Admin/Paperwork</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 4.2 Collaboration Tools (website etc)</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 4.3 Working towards next release</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 4.4 Resolving "blocked"</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:02] &lt MS-&gt Thursday 22nd May 2008, 4pm UK time</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 1. Everyone happy with it?</td></tr>
+            <tr><td>[15:02] &lt MS-&gt (agenda that is)</td></tr>
+            <tr><td>[15:02] &lt MS-&gt OK, everyone happy</td></tr>
+            <tr><td>[15:02] &lt orphans&gt fine by me</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt Looks good to me</td></tr>
+            <tr><td>[15:02] &lt MS-&gt 2. Participants</td></tr>
+            <tr><td>[15:03] &lt orphans&gt me :)</td></tr>
+            <tr><td>[15:03] &lt Chong-&gt Chong</td></tr>
+            <tr><td>[15:03] &lt j_baker&gt good to me</td></tr>
+            <tr><td>[15:03] &lt j_baker&gt (I'm here btw)</td></tr>
+            <tr><td>[15:03] &lt mhrd&gt hi</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt salut</td></tr>
+            <tr><td>[15:04] &lt MS-&gt Participants: MS-, mhrd, Lawouach, Chong-, Davbo, j_baker, orphans,</td></tr>
+            <tr><td>[15:04] &lt MS-&gt MIA: Trun</td></tr>
+            <tr><td>[15:04] &lt MS-&gt Also present: vmlemon_, zaheerm, Uraeus, sadrul, jle, edh, bcarlyon|ubuntu_</td></tr>
+            <tr><td>[15:04] &lt MS-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:04] &lt zaheerm&gt :)</td></tr>
+            <tr><td>[15:04] &lt zaheerm&gt aah there is a meeting</td></tr>
+            <tr><td>[15:05] &lt MS-&gt OK, did everyone get the mail about what Activity reports are?</td></tr>
+            <tr><td>[15:05] &lt orphans&gt yup</td></tr>
+            <tr><td>[15:05] &lt MS-&gt In case you didn't:</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Or rather anyone *not* get it?</td></tr>
+            <tr><td>[15:05] &lt MS-&gt What's an activity report? It's three sentances:</td></tr>
+            <tr><td>[15:05] &lt mhrd&gt DONE: Helped a some GSoCers | Merged MPS and JMB branches | written some untested DVB code TODO: write more DVB code | fix linux-dvb bindings</td></tr>
+            <tr><td>[15:05] &lt MS-&gt DONE: One sentance description of what you've done in the past week.</td></tr>
+            <tr><td>[15:05] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[15:05] &lt MS-&gt TODO: One sentance description of what you're going to do in the next week.</td></tr>
+            <tr><td>[15:05] &lt MS-&gt BLOCKED: One sentance description of what you're blocked on, if anything. (Blocked means "cannot actually work", as opposed to "difficult" :-)</td></tr>
+            <tr><td>[15:06] &lt vmlemon_&gt Didn't everyone on the Group get a copy?</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Regarding "Activity Reports", can you all have these ready to copy and paste into the channel at the same time. We'll do note of agenda, ask for any extra discussion points.</td></tr>
+            <tr><td>[15:06] &lt MS-&gt vmlemon_: yep, I'm checking people have seen it</td></tr>
+            <tr><td>[15:06] &lt mhrd&gt BLOCKED: no</td></tr>
+            <tr><td>[15:06] &lt Trun&gt (hi all, sorry for the delay)</td></tr>
+            <tr><td>[15:06] &lt MS-&gt OK, everyone ready to paste?</td></tr>
+            <tr><td>[15:06] &lt MS-&gt paste!</td></tr>
+            <tr><td>[15:06] &lt orphans&gt DONE: Made UI test output OSC messages and make sounds, sorted out CPU usage issues</td></tr>
+            <tr><td>[15:06] &lt MS-&gt DONE: Merged branches, documented branching, answered variety of q's, held mentor meetings:</td></tr>
+            <tr><td>[15:06] &lt MS-&gt TODO: First meeting with Pablo, sort out website</td></tr>
+            <tr><td>[15:06] &lt MS-&gt BLOCKED: None</td></tr>
+            <tr><td>[15:06] &lt orphans&gt TODO: Work out package structure and layout, and document components</td></tr>
+            <tr><td>[15:06] &lt orphans&gt BLOCKED: Exams :-)</td></tr>
+            <tr><td>[15:07] *** MS- waits for Davbo, Chong-, j_baker, Trun</td></tr>
+            <tr><td>[15:07] &lt j_baker&gt DONE: Fixed some problems with minimal, added some WSGI support</td></tr>
+            <tr><td>[15:07] &lt j_baker&gt TODO: Finalize WSGI support</td></tr>
+            <tr><td>[15:07] &lt j_baker&gt BLOCKED: None atm</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt DONE: Looked through code for MultiPipeline / Magnadoodle</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt TODO: Edit MagnaDoodle.py for Process Pipeline functionality</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt BLOCKED: None</td></tr>
+            <tr><td>[15:08] *** MS- pokes Chong- & Trun :)</td></tr>
+            <tr><td>[15:08] &lt Chong-&gt DONE: basic console-&gt topology visualiser, file -&gt topology visualiser, console or file -&gt topology visualiser</td></tr>
+            <tr><td>[15:09] &lt MS-&gt (Trun if you didn't get the mail - about activity reports it's here: http://groups.google.com/group/kamaelia/browse_frm/thread/300bf67457db3476 )</td></tr>
+            <tr><td>[15:09] *** Davbo would like to echo orphans "BLOCKED" also </td></tr>
+            <tr><td>[15:10] &lt MS-&gt Davbo: so is that actually</td></tr>
+            <tr><td>[15:10] &lt MS-&gt Davbo: BLOCKED: Exams</td></tr>
+            <tr><td>[15:10] &lt MS-&gt ?</td></tr>
+            <tr><td>[15:10] &lt Chong-&gt TODO: custom file format -&gt... -&gttopology visualiser, and extended customised topology visualiser</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt Hah Yeah :)</td></tr>
+            <tr><td>[15:10] &lt MS-&gt k</td></tr>
+            <tr><td>[15:10] &lt Chong-&gt BLOCKED: not yet.</td></tr>
+            <tr><td>[15:11] &lt Trun&gt (MS-, I read the e-mail, I just didn't thought anything like that for the first meeting :-S )</td></tr>
+            <tr><td>[15:11] &lt Trun&gt DONE: Reading documentation, looking code, playing around (KamPlanet)</td></tr>
+            <tr><td>[15:12] &lt Trun&gt TODO: Trying to find out what structures are best to test that code (KamPlanet as a "simple sample")</td></tr>
+            <tr><td>[15:12] &lt Trun&gt BLOCKED: none</td></tr>
+            <tr><td>[15:12] &lt MS-&gt ta</td></tr>
+            <tr><td>[15:12] &lt Lawouach_&gt DONE: created private_SH_SSLCSA branch</td></tr>
+            <tr><td>[15:12] &lt Lawouach_&gt TODO: look at using the ssl module instead of the socket.sslfunction</td></tr>
+            <tr><td>[15:12] &lt Lawouach_&gt BLOCKED: None</td></tr>
+            <tr><td>[15:13] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[15:13] &lt MS-&gt Anyone else?</td></tr>
+            <tr><td>[15:13] &lt mhrd&gt TODO: sweep cobwebs from my sketches dir :)</td></tr>
+            <tr><td>[15:14] &lt MS-&gt OK that's all pretty good - no-one blocked in a way that we can do anything about :)</td></tr>
+            <tr><td>[15:14] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:14] &lt MS-&gt 4.1 Admin/Paperwork</td></tr>
+            <tr><td>[15:15] &lt orphans&gt and there I was thinking you'd give me a hand on my nuclear medicine paper...</td></tr>
+            <tr><td>[15:15] &lt MS-&gt OK, I've chatted to most people about this, but haven't chatted with orphans directly nor with Pablo</td></tr>
+            <tr><td>[15:15] &lt MS-&gt orphans: You wish</td></tr>
+            <tr><td>[15:16] &lt MS-&gt But the short version of this, is in order to make it such that we can reasonably merge what code you're doing, we need you to fill in one of these and post it to me</td></tr>
+            <tr><td>[15:16] &lt MS-&gt http://kamaelia.sourceforge.net/Developers/SampleContributorAgreement</td></tr>
+            <tr><td>[15:16] &lt MS-&gt You change the bits in green</td></tr>
+            <tr><td>[15:16] &lt MS-&gt Change the purple JLB here: "Licensed to the BBC under a Contributor Agreement: JLB"</td></tr>
+            <tr><td>[15:16] &lt MS-&gt to your tag in /Sketches - eg MPS for me</td></tr>
+            <tr><td>[15:16] &lt MS-&gt CL for Chong</td></tr>
+            <tr><td>[15:16] &lt MS-&gt etc</td></tr>
+            <tr><td>[15:17] &lt MS-&gt You remove the purple date</td></tr>
+            <tr><td>[15:17] &lt MS-&gt Print it out, sign and post it to me.</td></tr>
+            <tr><td>[15:17] &lt MS-&gt Either via TVC -</td></tr>
+            <tr><td>[15:17] &lt MS-&gt michael sparks, c/o BBC TV Centre, Wood Lane, London, W12 7RJ</td></tr>
+            <tr><td>[15:17] &lt MS-&gt or via here:</td></tr>
+            <tr><td>[15:18] &lt MS-&gt Both routes will get to me</td></tr>
+            <tr><td>[15:18] &lt orphans&gt you want that asap?</td></tr>
+            <tr><td>[15:18] &lt MS-&gt preferably before you have any code you want merged</td></tr>
+            <tr><td>[15:19] &lt Lawouach_&gt I'll have to fill one too :)</td></tr>
+            <tr><td>[15:19] &lt MS-&gt If I know it's on the way that's OK for merging, or if you normally license stuff under a BSD license, but it really is needed</td></tr>
+            <tr><td>[15:19] &lt MS-&gt Lawouach_: Indeed :)</td></tr>
+            <tr><td>[15:19] &lt orphans&gt k, will sort it out :)</td></tr>
+            <tr><td>[15:19] &lt MS-&gt The agreement is nabbed from the PSF and boils down to giving a BSD license to us on your code, and being happy with us releasing it under the MPL/GPL/LGPL</td></tr>
+            <tr><td>[15:19] &lt j_baker&gt I'll get mine on the way. But to clear up any legalities, I'll just make this a public note saying that I agree to the agreement.</td></tr>
+            <tr><td>[15:20] &lt MS-&gt j_baker: fantastic :)</td></tr>
+            <tr><td>[15:20] &lt orphans&gt I also agree to j_baker agreeing to the agreement</td></tr>
+            <tr><td>[15:20] &lt vmlemon_&gt I thought Lawouach would have already signed one...</td></tr>
+            <tr><td>[15:20] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:20] &lt j_baker&gt I agree to orphans agreeing to my agreement (sorry, I'll quit there)</td></tr>
+            <tr><td>[15:21] &lt MS-&gt If people have problems with the agreement, please take it up with me outside the meeting. There is a plan b :)</td></tr>
+            <tr><td>[15:21] &lt MS-&gt But its more hassle for you</td></tr>
+            <tr><td>[15:21] &lt MS-&gt OK, moving on</td></tr>
+            <tr><td>[15:21] &lt MS-&gt If people are happy</td></tr>
+            <tr><td>[15:21] &lt j_baker&gt no problems here</td></tr>
+            <tr><td>[15:21] &lt MS-&gt If you are scream now</td></tr>
+            <tr><td>[15:21] *** Davbo is happy</td></tr>
+            <tr><td>[15:21] &lt Chong-&gt np</td></tr>
+            <tr><td>[15:22] &lt MS-&gt moving on</td></tr>
+            <tr><td>[15:22] &lt MS-&gt 4.2 Collaboration Tools (website etc)</td></tr>
+            <tr><td>[15:22] &lt Lawouach_&gt vmlemon_: I'm a little prince. I do what I want until told otherwise :)</td></tr>
+            <tr><td>[15:22] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[15:22] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:23] &lt MS-&gt At present this is a problem, and I'm looking to make it easier to deal with - moving to google groups was a good idea, so if anyone has other ideas of that they want, please let me know</td></tr>
+            <tr><td>[15:23] Reply: Hm?</td></tr>
+            <tr><td>[15:23] *** MS- slaps kamaeliabot</td></tr>
+            <tr><td>[15:23] &lt MS-&gt Either now, or via the group</td></tr>
+            <tr><td>[15:24] &lt MS-&gt My aim is to re-enable the wiki first, and getting it publishing back into SVN</td></tr>
+            <tr><td>[15:24] &lt MS-&gt where it used to be. Though this will mean moving the editting off sourceforge</td></tr>
+            <tr><td>[15:24] &lt MS-&gt (Which won't be a bad idea anyway)</td></tr>
+            <tr><td>[15:25] &lt MS-&gt Beyond that though any special requests?</td></tr>
+            <tr><td>[15:25] &lt MS-&gt Anything people think should be there and isn't?</td></tr>
+            <tr><td>[15:25] &lt MS-&gt etc</td></tr>
+            <tr><td>[15:25] &lt Davbo&gt The main problem was with the mailing list, which is fine now, IMO.</td></tr>
+            <tr><td>[15:25] &lt MS-&gt that's good to hear</td></tr>
+            <tr><td>[15:25] &lt mhrd&gt opera compatibility for editing :)</td></tr>
+            <tr><td>[15:25] &lt Lawouach_&gt MS-: have you seen that reddit comment I linked this morning?</td></tr>
+            <tr><td>[15:25] &lt MS-&gt mhrd: Is that still a problem?</td></tr>
+            <tr><td>[15:25] &lt Lawouach_&gt Quite related</td></tr>
+            <tr><td>[15:25] &lt mhrd&gt last time I checked, yep</td></tr>
+            <tr><td>[15:25] &lt j_baker&gt I'm finding working with SVN a challenge.</td></tr>
+            <tr><td>[15:25] &lt mhrd&gt (probably a year or so ago ... will recheck)</td></tr>
+            <tr><td>[15:25] &lt j_baker&gt But that's a learning process</td></tr>
+            <tr><td>[15:26] &lt Lawouach_&gt http://reddit.com/r/programming/info/6j7ed/comments/c040ffa</td></tr>
+            <tr><td>[15:26] &lt j_baker&gt (one I need to complete anyway)</td></tr>
+            <tr><td>[15:26] &lt mhrd&gt and RSS wiki updates :)</td></tr>
+            <tr><td>[15:26] &lt orphans&gt MS-, two things which have probably been mentioned before - the post on style guidelines etc and a page describing what the top level component sets (Internet, Protocol etc) contain</td></tr>
+            <tr><td>[15:27] &lt MS-&gt Lawouach: I hadn't see that -thanks</td></tr>
+            <tr><td>[15:28] &lt MS-&gt orphans: So that really requires me to enable people to do that, rather than assume responsibility for it</td></tr>
+            <tr><td>[15:28] &lt Davbo&gt Changes to the website in the svn are certainly in the right direction also</td></tr>
+            <tr><td>[15:28] &lt MS-&gt Put the tools in place, then a list of stuff</td></tr>
+            <tr><td>[15:28] &lt MS-&gt Davbo: That's much appreciated.</td></tr>
+            <tr><td>[15:28] &lt MS-&gt Any more feedback from people on that sort of thing is welcome</td></tr>
+            <tr><td>[15:28] &lt orphans&gt yup - I'd be very happy to sort them out if I could :)</td></tr>
+            <tr><td>[15:28] &lt MS-&gt cool</td></tr>
+            <tr><td>[15:28] &lt MS-&gt That'll be my focus then</td></tr>
+            <tr><td>[15:29] &lt MS-&gt Sourceforge sucks for these things, so I'll make it a static mirror pushed to nightly</td></tr>
+            <tr><td>[15:29] &lt MS-&gt (expanding what Matt currently does)</td></tr>
+            <tr><td>[15:29] &lt mhrd&gt oh, there are a few other minor bugs with wysiwyg editing; I'll try to summarise them in an email</td></tr>
+            <tr><td>[15:29] &lt j_baker&gt I've noticed that too mhrd</td></tr>
+            <tr><td>[15:29] &lt MS-&gt mhrd: If you know of anyway that *just works* for you that's wysiwyg I'd appreciate it</td></tr>
+            <tr><td>[15:29] &lt mhrd&gt I'll investigate</td></tr>
+            <tr><td>[15:30] &lt j_baker&gt Have you tried FCKEdit (or is that what you're using?)</td></tr>
+            <tr><td>[15:30] &lt MS-&gt (OK, cool, that's probably enough for me to go on)</td></tr>
+            <tr><td>[15:30] &lt MS-&gt j_baker: It uses dojo -since that was the best when we last looked.</td></tr>
+            <tr><td>[15:30] &lt MS-&gt OK, if there's any more feedback, please follow up on the list</td></tr>
+            <tr><td>[15:31] &lt MS-&gt (the meeting gets summarised as minutes so this lot will also be there)</td></tr>
+            <tr><td>[15:31] &lt MS-&gt j_baker: regarding svn the only thing I can suggest is "practice" really</td></tr>
+            <tr><td>[15:31] &lt MS-&gt on, moving on,,,</td></tr>
+            <tr><td>[15:31] &lt MS-&gt 4.3 Working towards next release</td></tr>
+            <tr><td>[15:31] &lt MS-&gt It's been ages since there's been a release.</td></tr>
+            <tr><td>[15:32] &lt MS-&gt This is actually due to the fact that the build process for releases</td></tr>
+            <tr><td>[15:32] &lt MS-&gt was entirely based around CVS and it took me a while to get up to speed with how SVN works, and then dev got stuck in a mode (for various reasons) that precluded it</td></tr>
+            <tr><td>[15:33] &lt MS-&gt In recent months we've had a newer packaging style - Kamaelia { Logger, Grey, Modeller }</td></tr>
+            <tr><td>[15:33] &lt MS-&gt which seems better</td></tr>
+            <tr><td>[15:33] &lt MS-&gt I saw j_baker's comments about packaging and Gloria's in that post</td></tr>
+            <tr><td>[15:34] &lt MS-&gt Any concrete suggestions on what to keep doing, what to stop, what to improve, and what to start doing would be welcome</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt I mentioned to mhrd last night pondering why you haven't proposed to merge some of the things from the mps-scratch branch MS-?</td></tr>
+            <tr><td>[15:34] *** MS- asks mhrd not to snigger regarding that list)</td></tr>
+            <tr><td>[15:34] &lt MS-&gt Davbo: Some of it has been time related really</td></tr>
+            <tr><td>[15:35] &lt MS-&gt I do want to kill the current mps_scratch branch, so suggestions as to what to merge next from there would be welcome</td></tr>
+            <tr><td>[15:35] &lt j_baker&gt MS-: I have one idea, but I think it's better suited for the group list.</td></tr>
+            <tr><td>[15:35] &lt MS-&gt j_baker: Cool - that's great</td></tr>
+            <tr><td>[15:35] &lt j_baker&gt MS- the MoreComplexServer definitely needs to go in (albeit under a different name)</td></tr>
+            <tr><td>[15:35] &lt MS-&gt I quite liked the name you came up with.</td></tr>
+            <tr><td>[15:35] &lt MS-&gt That should go under a different name though</td></tr>
+            <tr><td>[15:36] &lt MS-&gt I'd also like to put in the WSGI server code under Experimental as well</td></tr>
+            <tr><td>[15:36] &lt j_baker&gt It definitely needs some changes, but I agree.</td></tr>
+            <tr><td>[15:36] &lt MS-&gt since I'd find that useful and a useful way of trying out how useful it is in practice</td></tr>
+            <tr><td>[15:37] &lt MS-&gt Anyhow, the core issue I'd like to hear from people is what *date* would people think is a good target release date for the next version?</td></tr>
+            <tr><td>[15:37] &lt MS-&gt Midsummer's day?</td></tr>
+            <tr><td>[15:37] &lt MS-&gt or day before/</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt EvenMoreComplexServer/TheMostComplexServerYet? ;)</td></tr>
+            <tr><td>[15:37] &lt MS-&gt Jun 20/21st ?</td></tr>
+            <tr><td>[15:37] &lt MS-&gt vmlemon_: :-p</td></tr>
+            <tr><td>[15:38] &lt Davbo&gt Seems as good a day as any for me</td></tr>
+            <tr><td>[15:38] &lt j_baker&gt I think that would be a good target as long as it's not set in stone, MS-</td></tr>
+            <tr><td>[15:38] &lt MS-&gt OK, I'll need assistance with packaging, testing packaging and with merging code from my branch though</td></tr>
+            <tr><td>[15:38] &lt Chong-&gt One month away, it seems good.</td></tr>
+            <tr><td>[15:38] &lt Davbo&gt When are you away MS-?</td></tr>
+            <tr><td>[15:39] &lt MS-&gt I'll be splitting functionality off, to make it easier to review & merge</td></tr>
+            <tr><td>[15:39] &lt MS-&gt August</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt ah that's okay then</td></tr>
+            <tr><td>[15:39] &lt mhrd&gt I might have an interest in a new release in time for the BBC Backstage Hack Day event next month - checking the date ...</td></tr>
+            <tr><td>[15:40] &lt MS-&gt mhrd: You'll note an uncanny aspect to the date I picked...</td></tr>
+            <tr><td>[15:40] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:40] &lt mhrd&gt oh my, what a coincidence :)</td></tr>
+            <tr><td>[15:40] &lt MS-&gt It'll be interesting actually since it won't just be a minor release, there a whole slew of large stuff in there.</td></tr>
+            <tr><td>[15:40] &lt MS-&gt Your shot change code for example.</td></tr>
+            <tr><td>[15:41] &lt mhrd&gt lets be fair - thats someone else's algorithm :)</td></tr>
+            <tr><td>[15:41] &lt MS-&gt True</td></tr>
+            <tr><td>[15:41] &lt mhrd&gt I'm hoping to sort DVB bindings; I might try and get dirac/schroedinger bindings refreshed too</td></tr>
+            <tr><td>[15:41] &lt j_baker&gt I may try to refactor the HTTPParser code some.</td></tr>
+            <tr><td>[15:41] &lt Davbo&gt Will we try to push the website at the same time?</td></tr>
+            <tr><td>[15:42] *** zaheer_ has joined #kamaelia</td></tr>
+            <tr><td>[15:44] &lt MS-&gt Davbo: Yes. I'd like all of this to be in place at the same time.</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt Well then, we've got lots of work to do :-) I'm more than happy to help out</td></tr>
+            <tr><td>[15:44] *** zaheer_ is now known as zaheerm</td></tr>
+            <tr><td>[15:45] &lt MS-&gt Excellent - that *really* helps :)</td></tr>
+            <tr><td>[15:45] &lt orphans&gt post-exam I second that :)</td></tr>
+            <tr><td>[15:45] &lt j_baker&gt Agreed. (don't even think about it orphans :P )</td></tr>
+            <tr><td>[15:45] &lt mhrd&gt we probably ought to build a wish list for what hopefully ends up in the release - so we know where the goal posts are?</td></tr>
+            <tr><td>[15:45] &lt MS-&gt Yep</td></tr>
+            <tr><td>[15:45] &lt Chong-&gt count me in as well :-)</td></tr>
+            <tr><td>[15:46] &lt MS-&gt Excellent :-D</td></tr>
+            <tr><td>[15:46] &lt Davbo&gt good idea mhrd, we could do with a working wiki for that</td></tr>
+            <tr><td>[15:46] &lt Davbo&gt ;)</td></tr>
+            <tr><td>[15:46] &lt MS-&gt Yes, that'll be my starting point</td></tr>
+            <tr><td>[15:46] &lt MS-&gt OK, in which case, I think that's clear, so I'll move on</td></tr>
+            <tr><td>[15:46] &lt mhrd&gt the mailing list will be sufficient if thats not possible</td></tr>
+            <tr><td>[15:46] &lt MS-&gt mhrd: yep</td></tr>
+            <tr><td>[15:46] &lt MS-&gt 4.4 Resolving "blocked"</td></tr>
+            <tr><td>[15:47] &lt MS-&gt Well, there weren't any blockeds we *can* resolve</td></tr>
+            <tr><td>[15:47] &lt orphans&gt you can MS-, you can!</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt My block doesn't come in much until next week really. After thinking about it.</td></tr>
+            <tr><td>[15:47] &lt orphans&gt Nuclear Medicine!</td></tr>
+            <tr><td>[15:47] &lt MS-&gt orphans: I'll happy sit your exam for you, but I don't think you'd like the result</td></tr>
+            <tr><td>[15:47] &lt j_baker&gt One thing that's blocked me: what does "munge" mean? :)</td></tr>
+            <tr><td>[15:47] &lt vmlemon_&gt Want a (minor) hand with the site?</td></tr>
+            <tr><td>[15:47] &lt orphans&gt MS-, heh, I'm not sure I'm going to like it much when I sit it either</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt 42</td></tr>
+            <tr><td>[15:48] &lt Lawouach_&gt It'll do</td></tr>
+            <tr><td>[15:48] &lt MS-&gt But regarding exams I will say this: whilst GSOC is a commitment, you did make the commitment to exams first.</td></tr>
+            <tr><td>[15:48] &lt MS-&gt vmlemon_: that would be appreciated :)</td></tr>
+            <tr><td>[15:48] &lt MS-&gt Also, &^%^&ng up exams will have a longer term impact than doing the same with GSOC</td></tr>
+            <tr><td>[15:49] &lt MS-&gt so I know where my priorities would lie in your position.</td></tr>
+            <tr><td>[15:49] &lt mhrd&gt http://www.google.com/search?hl=en&q=define:munge</td></tr>
+            <tr><td>[15:49] &lt MS-&gt Just bear in mind you did make those commitments and when it comes to agreeing "todo's" etc, that you do need to balance them</td></tr>
+            <tr><td>[15:49] &lt orphans&gt I'm working plenty hard enough (probably) - worry not MS-</td></tr>
+            <tr><td>[15:50] &lt MS-&gt Indeed. We will want to see progress, even over the exam period, BUT, *don't* let kamaelia/gsoc cause problems to your exams.</td></tr>
+            <tr><td>[15:51] &lt MS-&gt Personally though, I find switching from "work" to "coding that's not work" a good break, if that works for you, good. Otherwise, do give your brain a chance to rest.</td></tr>
+            <tr><td>[15:51] &lt MS-&gt That's all I really what to say there</td></tr>
+            <tr><td>[15:51] &lt MS-&gt OK, back to j_baker's blocked</td></tr>
+            <tr><td>[15:51] &lt MS-&gt ;)</td></tr>
+            <tr><td>[15:51] &lt MS-&gt http://www.urbandictionary.com/define.php?term=munge</td></tr>
+            <tr><td>[15:52] &lt MS-&gt is probably NOT what you wanted</td></tr>
+            <tr><td>[15:52] &lt MS-&gt actually DON'T read that</td></tr>
+            <tr><td>[15:52] &lt MS-&gt I didn't read it properly before posting</td></tr>
+            <tr><td>[15:52] &lt Davbo&gt Whoa. :|</td></tr>
+            <tr><td>[15:52] &lt Davbo&gt lol</td></tr>
+            <tr><td>[15:52] &lt MS-&gt I was thinking definition 3 & 4</td></tr>
+            <tr><td>[15:52] &lt MS-&gt ^ 5</td></tr>
+            <tr><td>[15:52] &lt Davbo&gt Hahaha poor MS-</td></tr>
+            <tr><td>[15:53] &lt MS-&gt I've never in my life heard the other definitions</td></tr>
+            <tr><td>[15:53] &lt MS-&gt GROSS</td></tr>
+            <tr><td>[15:53] &lt MS-&gt To save people:</td></tr>
+            <tr><td>[15:53] &lt MS-&gt "munge The act of consolidating 2 or more mutually exclusive data sets or sections of computer code, circumventing the requirement to write a shit load of complex code.</td></tr>
+            <tr><td>[15:53] &lt MS-&gt munged Data that lacks structure making it hard to process. The act of munging may in fact create data of this form. 1. munge the data together that should work.</td></tr>
+            <tr><td>[15:53] &lt MS-&gt 2. This data is so munged up I am not sure it is of any use to us.</td></tr>
+            <tr><td>[15:53] &lt MS-&gt "</td></tr>
+            <tr><td>[15:53] &lt MS-&gt Is pretty good</td></tr>
+            <tr><td>[15:53] &lt MS-&gt OK, that's it from me.</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt I am never going to look at the munge_headers method the same again. :)</td></tr>
+            <tr><td>[15:53] &lt MS-&gt Assuming that's OK for everyone</td></tr>
+            <tr><td>[15:53] &lt MS-&gt j_baker: me neither</td></tr>
+            <tr><td>[15:53] &lt MS-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:53] &lt MS-&gt Thursday 22nd May 2008, 4pm UK time</td></tr>
+            <tr><td>[15:53] &lt MS-&gt I presume that's OK for everyone.</td></tr>
+            <tr><td>[15:54] &lt orphans&gt yuppers</td></tr>
+            <tr><td>[15:54] &lt MS-&gt There's a real chance I may not be around on monday - since there's something I'm meant to go to (maybe) on monday) - meaning I'll miss everyone (bar pablo's) meeting</td></tr>
+            <tr><td>[15:54] &lt MS-&gt If that's going to happen I'll send a mail in advance</td></tr>
+            <tr><td>[15:55] &lt MS-&gt and provide days/times for rearrangement</td></tr>
+            <tr><td>[15:55] &lt Davbo&gt Alright</td></tr>
+            <tr><td>[15:55] &lt MS-&gt OK, if no-one has anything else, I declare the meeting done :-)</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt I second the completion of the meeting</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt :P</td></tr>
+            <tr><td>[15:56] &lt MS-&gt ====== END OF WEEKLY IRC KAMAELIA MEETING, 20080514 ======</td></tr>
+            <tr><td>[15:56] &lt MS-&gt Woo :)</td></tr>
+            <tr><td>[15:56] &lt orphans&gt good work guys :)</td></tr>
+            <tr><td>[15:56] &lt Chong-&gt Good meeting.</td></tr>
+            <tr><td>[15:57] &lt MS-&gt Indeed. Having a hard limit of an hour on the length forces things along in my experience</td></tr>
+            <tr><td>[15:57] *** orphans goes to do some work</td></tr>
+            <tr><td>[15:58] *** MS- starts writing up the meeting notes</td></tr>
+            <tr><td>[16:03] &lt vmlemon_&gt Hah, how quaint... The Symbian OS e-mail file format doesn't even store e-mail addresses in the raw message files</td></tr>
+            <tr><td>[16:05] *** MS- notes that Trun has cornered me for the mentor time meeting now :)</td></tr>
+            <tr><td>[16:06] &lt MS-&gt OK, the key things I've covered in the other meetings have been related to the aspects that this "gearing up" period is for</td></tr>
+            <tr><td>[16:07] &lt MS-&gt Which boils down to admin/paperwork - which primarily boils down to the contributor agreement.</td></tr>
+            <tr><td>[16:07] &lt Trun&gt yeah, did you receive the mail with the agreement?</td></tr>
+            <tr><td>[16:07] &lt MS-&gt Since I covered that *really* quickly in the weekly meeting, do you have any questions about it?</td></tr>
+            <tr><td>[16:07] &lt MS-&gt Not yet.</td></tr>
+            <tr><td>[16:07] &lt MS-&gt When did you post it & where did you post it?</td></tr>
+            <tr><td>[16:08] &lt Trun&gt no question, I agree, and I printed it, signed it and sent it through regular mail, something like a couple of weeks ago?</td></tr>
+            <tr><td>[16:08] &lt MS-&gt The address on the agreement is the BBC's formal address you see</td></tr>
+            <tr><td>[16:08] &lt MS-&gt I'm guessing you sent it there?</td></tr>
+            <tr><td>[16:08] &lt MS-&gt Unlike TVC they're not used to forwarding stuff around, so I'm guessing that it was lost in the ether</td></tr>
+            <tr><td>[16:08] &lt Trun&gt yeah, as fas as I recall, let me check</td></tr>
+            <tr><td>[16:09] &lt MS-&gt Trivia note - apparently for legal agreements that's the address that has to be used, since it's the BBC's official address</td></tr>
+            <tr><td>[16:09] *** MS- waits for Trun</td></tr>
+            <tr><td>[16:10] &lt Trun&gt I was checking, yeah, I think I sent it to Broadcasting House, Portland Place, ...</td></tr>
+            <tr><td>[16:10] &lt vmlemon_&gt Yuck, it throws them into a rather fragmented and awkward Index file elsewhere, for some reason that makes little sense</td></tr>
+            <tr><td>[16:10] &lt MS-&gt Yep, that'll be why I've not got it. I've had numerous things through TVC in the past - partly because people assume it's the address of everyone in the beeb, and as a result they're a really good dispatch</td></tr>
+            <tr><td>[16:11] &lt Trun&gt ok, so I'll send it to "michael sparks, c/o BBC TV Centre, Wood Lane, London, W12 7RJ", right?</td></tr>
+            <tr><td>[16:12] &lt Trun&gt oops, sorry, (what does [off] mean before a sentence?)</td></tr>
+            <tr><td>[16:12] &lt vmlemon_&gt Off-the-record</td></tr>
+            <tr><td>[16:12] &lt Trun&gt oh</td></tr>
+            <tr><td>[16:12] &lt MS-&gt np :)</td></tr>
+            <tr><td>[16:12] &lt Trun&gt quite new to IRC :-)</td></tr>
+            <tr><td>[16:13] &lt MS-&gt Trun: No problem, the [off] syntax is to the bot</td></tr>
+            <tr><td>[16:13] &lt Trun&gt oh, ok</td></tr>
+            <tr><td>[16:13] &lt MS-&gt I nabbed it off another bot</td></tr>
+            <tr><td>[16:13] &lt MS-&gt Anyway, much appreciated. :)</td></tr>
+            <tr><td>[16:14] &lt vmlemon_&gt Some call it "innovation" ;)</td></tr>
+            <tr><td>[16:14] &lt MS-&gt heh</td></tr>
+            <tr><td>[16:14] &lt MS-&gt OK, Trun can you talk me through what you're doing at the moment?</td></tr>
+            <tr><td>[16:14] &lt MS-&gt from a coding perspective the aim of this period is really to do stuff that assists you in the main period</td></tr>
+            <tr><td>[16:14] &lt Trun&gt sure, well</td></tr>
+            <tr><td>[16:15] &lt MS-&gt so exploring writing code, writing tests, etc is all valid</td></tr>
+            <tr><td>[16:15] &lt MS-&gt Also, it's worth me mentioning /trunk/Code/Python/Kamaelia/Test/ if you've not seen it</td></tr>
+            <tr><td>[16:15] &lt Trun&gt the first weekend of may I started playing around with the /Sketches/PO/KamPlanet</td></tr>
+            <tr><td>[16:16] &lt MS-&gt I saw - it looks interesting - though I've not had a chance to test it</td></tr>
+            <tr><td>[16:16] &lt Trun&gt and this weekend I added very few more code, haven't uploaded it</td></tr>
+            <tr><td>[16:16] &lt MS-&gt (I saw the "does not work" line you see :) )</td></tr>
+            <tr><td>[16:17] &lt MS-&gt Please check in as you write code</td></tr>
+            <tr><td>[16:17] &lt Trun&gt I'm right now not paying too much attention to the signal/control thing, after having a couple of problems with it</td></tr>
+            <tr><td>[16:17] &lt MS-&gt I've had really nasty experiences with losing stuff due to disk failure and so on, so SVN is set up such that you can do so</td></tr>
+            <tr><td>[16:17] &lt MS-&gt Trun: That's not a bad idea - I tend to deal with shutdown afterwards</td></tr>
+            <tr><td>[16:18] &lt mhrd&gt wrt "signal/control thing" please do ask q's if you need to</td></tr>
+            <tr><td>[16:18] &lt Trun&gt yeah, related with that I wanted to see how often do you upload code</td></tr>
+            <tr><td>[16:19] &lt Trun&gt I usually tend to upload quite often (in the project I'm working on right now have been like 5 commits today), but I didn't want to spam kamaelia-commits :-)</td></tr>
+            <tr><td>[16:19] &lt MS-&gt BTW, I saw you used the "mainBody" form of code in one place. In retrospect that's a component form I'd like to kill off.</td></tr>
+            <tr><td>[16:19] &lt MS-&gt Trun: I'd be more than happy with kamaelia-commits being spammed</td></tr>
+            <tr><td>[16:19] &lt Trun&gt yeah, I read that in your e-mail, was one of the questions</td></tr>
+            <tr><td>[16:19] &lt MS-&gt aside from anything else it's *alot* easier to see what your thinking is :)</td></tr>
+            <tr><td>[16:20] &lt Trun&gt (solved), I actually had used mainBody for all the classes, I think that now there is only one using mainBody instead of main</td></tr>
+            <tr><td>[16:20] &lt MS-&gt indeed :)</td></tr>
+            <tr><td>[16:20] &lt MS-&gt Ahh, the thing about "not wanting to commit to anything at weekends" you mean?</td></tr>
+            <tr><td>[16:20] &lt Trun&gt I haven't either written anything relating the license</td></tr>
+            <tr><td>[16:21] &lt Trun&gt I mean, not for any particular reason, I agree with the license and so on, it's just that I didn't write it in those files</td></tr>
+            <tr><td>[16:21] &lt MS-&gt That was largely about "not wanting to say to people "i'm going to commit every saturday evening or sunday evening or midday or whatever"</td></tr>
+            <tr><td>[16:21] &lt MS-&gt commit in terms of *commiting time*</td></tr>
+            <tr><td>[16:22] &lt MS-&gt because I can't guarantee that.</td></tr>
+            <tr><td>[16:22] &lt MS-&gt I will normally/often be here on the channel</td></tr>
+            <tr><td>[16:22] &lt MS-&gt But can't guarantee it</td></tr>
+            <tr><td>[16:22] &lt Trun&gt yeah, that was.. my english :-) I read "commitment" and I thought on SVN terms :-)</td></tr>
+            <tr><td>[16:22] &lt MS-&gt Regarding code, people are absolutely welcome to commit as often as they see fit.</td></tr>
+            <tr><td>[16:22] &lt MS-&gt :-)</td></tr>
+            <tr><td>[16:22] &lt Trun&gt cool :-)</td></tr>
+            <tr><td>[16:22] &lt MS-&gt In some places it can actually be useful for tutorial purposes :)</td></tr>
+            <tr><td>[16:23] &lt Trun&gt btw, I had a couple of questions...</td></tr>
+            <tr><td>[16:23] &lt MS-&gt go for it</td></tr>
+            <tr><td>[16:23] &lt Trun&gt how often much should I use "yield"? Is there any pattern like "always that you deal with disk/network/cpu-intensive-code/some-other-resource OR you wait for other resources"?</td></tr>
+            <tr><td>[16:23] &lt MS-&gt What we've found gives a good balance is this idiom:</td></tr>
+            <tr><td>[16:24] &lt MS-&gt def main():</td></tr>
+            <tr><td>[16:24] &lt MS-&gt  while not self.shutdown():</td></tr>
+            <tr><td>[16:24] &lt MS-&gt  while self.dataReady("inbox"):</td></tr>
+            <tr><td>[16:24] &lt MS-&gt  # deal with data here</td></tr>
+            <tr><td>[16:24] &lt MS-&gt  while self.dataReady("otherbox"):</td></tr>
+            <tr><td>[16:24] &lt MS-&gt  # deal with data here</td></tr>
+            <tr><td>[16:24] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[16:24] &lt MS-&gt If you *know* you're waiting for something though in any of those "deal with data" bits, yield there</td></tr>
+            <tr><td>[16:25] &lt MS-&gt You get a good balance between throughput and "being a good citizen"</td></tr>
+            <tr><td>[16:25] &lt MS-&gt It also means that you always clear your inbox before releasing control back to whomever is filling your inbox</td></tr>
+            <tr><td>[16:26] &lt MS-&gt That'd be an interesting test actually</td></tr>
+            <tr><td>[16:26] &lt Trun&gt when you say "waiting for something" you mean exclusively resources such as network/disk/etc.? or could it be that there is a routine that will take "long time"?</td></tr>
+            <tr><td>[16:26] &lt MS-&gt Well, there's circumstances where you can request something from another component</td></tr>
+            <tr><td>[16:27] &lt MS-&gt For example, you can make a request for a display surface</td></tr>
+            <tr><td>[16:27] &lt MS-&gt from the pygame display</td></tr>
+            <tr><td>[16:27] &lt MS-&gt and have to wait for a response</td></tr>
+            <tr><td>[16:27] &lt Trun&gt aham</td></tr>
+            <tr><td>[16:28] &lt MS-&gt Is that clear? Might be worth popping that as a q on the list actually, and getting the reply in the email archives as well</td></tr>
+            <tr><td>[16:28] &lt Trun&gt yeah, I think I get it</td></tr>
+            <tr><td>[16:28] &lt MS-&gt cool</td></tr>
+            <tr><td>[16:29] &lt Trun&gt with practice and more code reading I will get it better :-)</td></tr>
+            <tr><td>[16:29] &lt MS-&gt It's always the way :)</td></tr>
+            <tr><td>[16:29] &lt Trun&gt now, I was also wondering if there is anything like trac/jira used in kamaelia</td></tr>
+            <tr><td>[16:30] &lt Trun&gt somewhere to find the tasks, etc.</td></tr>
+            <tr><td>[16:30] &lt mhrd&gt Trun: at the end of the day, there is no hard and fast rule, since to a degree, we're still feeling our way with this one</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt The SourceForge bug tracker</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt I think</td></tr>
+            <tr><td>[16:30] &lt MS-&gt Trun: At present the closet we have are project task pages</td></tr>
+            <tr><td>[16:31] &lt MS-&gt Which really needs formalising/supporting better</td></tr>
+            <tr><td>[16:31] &lt MS-&gt So they're not as heavy handed</td></tr>
+            <tr><td>[16:32] &lt MS-&gt The idea is to subsume the fact that bug tracking is often used also for feature tracking</td></tr>
+            <tr><td>[16:32] &lt MS-&gt as well as large projects</td></tr>
+            <tr><td>[16:32] &lt MS-&gt But at present that's on the wiki...</td></tr>
+            <tr><td>[16:33] &lt MS-&gt which is currently disabled due to spam</td></tr>
+            <tr><td>[16:33] &lt MS-&gt But a project task page looks like this:</td></tr>
+            <tr><td>[16:33] &lt MS-&gt http://kamaelia.sourceforge.net/Developers/Projects/KamaeliaMacro</td></tr>
+            <tr><td>[16:33] &lt MS-&gt or this:</td></tr>
+            <tr><td>[16:33] &lt MS-&gt http://kamaelia.sourceforge.net/Developers/Projects/WebServerConsolidation</td></tr>
+            <tr><td>[16:33] &lt MS-&gt and has the template: http://kamaelia.sourceforge.net/Developers/Projects/ProjectTaskPageTemplate</td></tr>
+            <tr><td>[16:34] *** MS- thinks he scared Trun away</td></tr>
+            <tr><td>[16:34] &lt mhrd&gt aww</td></tr>
+            <tr><td>[16:34] &lt mhrd&gt you considered something like trac or a cms like plone? doesn't manage the docs integration, but would possibly reduce your maintenance workload? trac's generic ticket system looks quite lightweight</td></tr>
+            <tr><td>[16:35] &lt MS-&gt mhrd: Maybe. They don't deal with the Mal I cious Luser issue though</td></tr>
+            <tr><td>[16:36] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[16:36] &lt MS-&gt I'll see what we can do about that - that's kinda why I wanted to raise collaboration tools & stuff like that</td></tr>
+            <tr><td>[16:36] &lt mhrd&gt just restrict to a defined user group?</td></tr>
+            <tr><td>[16:36] &lt MS-&gt maybe</td></tr>
+            <tr><td>[16:36] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:37] &lt mhrd&gt I suppose my main wish is for us to be able to focus on the content (iyswim)</td></tr>
+            <tr><td>[16:37] &lt MS-&gt yep</td></tr>
+            <tr><td>[16:38] &lt MS-&gt With those pages, they're a nice idea (and probably good for work stuff), but to be viable generally, it needs support infrastructure</td></tr>
+            <tr><td>[16:38] &lt MS-&gt making them trivial to work with</td></tr>
+            <tr><td>[16:38] &lt vmlemon_&gt "IYSWIM" = "If You See What I Mean"?</td></tr>
+            <tr><td>[16:39] &lt MS-&gt Rather than as heavyweight as it is</td></tr>
+            <tr><td>[16:39] &lt mhrd&gt yes</td></tr>
+            <tr><td>[16:39] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[16:40] *** MS- notes Trun hasn't come back</td></tr>
+            <tr><td>[16:40] &lt MS-&gt maybe connectivity issues</td></tr>
+            <tr><td>[16:40] &lt MS-&gt or mibbit hasn't told him he's disconnected</td></tr>
+            <tr><td>[16:43] &lt vmlemon_&gt Hmm, anyone seen the Olinda prototype that a BBC department was working on?</td></tr>
+            <tr><td>[16:45] &lt MS-&gt That was BBC Radio - they're based in central london</td></tr>
+            <tr><td>[16:46] &lt MS-&gt Would be interesting to see</td></tr>
+            <tr><td>[16:46] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[16:46] &lt Trun&gt ping?</td></tr>
+            <tr><td>[16:47] &lt mhrd&gt hi Trun ... you ping timeout'ed for a bit there</td></tr>
+            <tr><td>[16:47] &lt Trun&gt oh, really sorry, mibbit does not work at least from the university right now</td></tr>
+            <tr><td>[16:47] &lt MS-&gt Trun: you're back</td></tr>
+            <tr><td>[16:47] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:48] &lt MS-&gt Last thing we saw: http://yeoldeclue.com/logs/kamaelia2008-05-15_log.html</td></tr>
+            <tr><td>[16:48] &lt vmlemon_&gt The PDF on it seemed interesting, and from what I can gather, the BBC have released the materials related to it under a Creative Commons license</td></tr>
+            <tr><td>[16:48] &lt Trun&gt and ports are closed so I had to find something else (connected through web-irc.org)</td></tr>
+            <tr><td>[16:48] &lt Trun&gt (reading)</td></tr>
+            <tr><td>[16:48] &lt MS-&gt Ok, so I guess for the moment, if you hit a bug please post it to the mailing list</td></tr>
+            <tr><td>[16:49] &lt MS-&gt with "BUG" in the title</td></tr>
+            <tr><td>[16:49] &lt MS-&gt At least with Google groups it's relatively easy to find then</td></tr>
+            <tr><td>[16:49] &lt MS-&gt and if we fix and reply with</td></tr>
+            <tr><td>[16:49] &lt MS-&gt BUG FIXED</td></tr>
+            <tr><td>[16:49] &lt MS-&gt in the subject, Google groups will show the status change</td></tr>
+            <tr><td>[16:49] &lt MS-&gt It's less than ideal but pragmatic in the short term</td></tr>
+            <tr><td>[16:50] &lt Trun&gt finished, I was thinking in trac/whatever the tool not for "bugs", but just to see "what it's done, what's in TODO", etc.</td></tr>
+            <tr><td>[16:50] *** mhrd imagines a recursive BUG about the fact that this bug has been logged using google groups as a bug tracking systems :-)</td></tr>
+            <tr><td>[16:51] &lt Trun&gt I mean, I was just wondering</td></tr>
+            <tr><td>[16:51] &lt orphans&gt out of interest you though about using launchpad?</td></tr>
+            <tr><td>[16:52] &lt MS-&gt orphans: I haven't, but then I don't use ubuntu</td></tr>
+            <tr><td>[16:52] &lt MS-&gt I like my hardware to wor</td></tr>
+            <tr><td>[16:53] &lt MS-&gt k</td></tr>
+            <tr><td>[16:53] &lt MS-&gt :-P</td></tr>
+            <tr><td>[16:53] &lt orphans&gt :)</td></tr>
+            <tr><td>[16:53] &lt orphans&gt I guess it's another option on the whole hosting/bug tracking malarky</td></tr>
+            <tr><td>[16:53] &lt MS-&gt It goes back to having sufficient tuits really</td></tr>
+            <tr><td>[16:53] &lt MS-&gt of the appropriate shape</td></tr>
+            <tr><td>[16:54] &lt orphans&gt tuits?</td></tr>
+            <tr><td>[16:54] &lt MS-&gt Yeah, as sold in seaside stores</td></tr>
+            <tr><td>[16:54] &lt MS-&gt round tuits</td></tr>
+            <tr><td>[16:54] &lt MS-&gt round tuit's == round to its == on "when I get around to it.."</td></tr>
+            <tr><td>[16:55] &lt MS-&gt I'll get me coat, sorry</td></tr>
+            <tr><td>[16:55] &lt MS-&gt Trun: OK, any other questions you want to raise?</td></tr>
+            <tr><td>[16:55] &lt orphans&gt MS-, I really wasn't getting there then :)</td></tr>
+            <tr><td>[16:55] &lt Trun&gt MS-: I was finally wondering what tool is used for the diagrams</td></tr>
+            <tr><td>[16:56] &lt mhrd&gt which diagrams? url?</td></tr>
+            <tr><td>[16:56] &lt MS-&gt Anything that spits out pictures really.</td></tr>
+            <tr><td>[16:56] &lt vmlemon_&gt Top secret ;)</td></tr>
+            <tr><td>[16:56] &lt Trun&gt I mean, is there any "template" or sth for inkscape/openoffice/dia or whatever?</td></tr>
+            <tr><td>[16:56] &lt MS-&gt I *did* try producing a template for dia</td></tr>
+            <tr><td>[16:56] &lt MS-&gt But every version of dia I used changed the format</td></tr>
+            <tr><td>[16:56] &lt mhrd&gt I've had marginally more success with inkscape; but its still fiddly to get something clean looking</td></tr>
+            <tr><td>[16:56] &lt MS-&gt so I gave up fighting that</td></tr>
+            <tr><td>[16:57] &lt MS-&gt I like using open office for diagrams these days.</td></tr>
+            <tr><td>[16:57] *** Trun_ has joined #kamaelia</td></tr>
+            <tr><td>[16:57] &lt MS-&gt Version 2 was a massive improvement</td></tr>
+            <tr><td>[16:57] &lt MS-&gt But version 3 is really quite nice - though I've not tried it for diagrams</td></tr>
+            <tr><td>[16:57] &lt MS-&gt Oh that reminds me mhrd you ought to look at the open office 3 beta - I think you'd like it</td></tr>
+            <tr><td>[16:57] &lt mhrd&gt hmm, looks like the last set of diagrams I drew using xaralx</td></tr>
+            <tr><td>[16:58] &lt mhrd&gt oh? any particular reason?</td></tr>
+            <tr><td>[16:58] &lt MS-&gt I really like what they've done with the writer part</td></tr>
+            <tr><td>[16:58] &lt mhrd&gt eg?</td></tr>
+            <tr><td>[16:58] &lt MS-&gt You can now zoom out and see the whole document as a set of pages laid out in front of you</td></tr>
+            <tr><td>[16:58] &lt orphans&gt MS-, fwiw lp looks like it has a fair few of the features you're after - per person feeds, plenty branches etc. Might be another one to look at when your quota of tuits increases some :)</td></tr>
+            <tr><td>[16:58] &lt mhrd&gt at bl***y last :)</td></tr>
+            <tr><td>[16:58] &lt MS-&gt As well as *correct* facing page support</td></tr>
+            <tr><td>[16:59] &lt MS-&gt orphans: My normal approach there is to allow others to do stuff.</td></tr>
+            <tr><td>[16:59] &lt MS-&gt It's a little meta-project work, but does help</td></tr>
+            <tr><td>[16:59] *** zaheerm has joined #kamaelia</td></tr>
+            <tr><td>[16:59] &lt mhrd&gt I'll upload my xara diagrams to my sketches area (should have done that ages ago)</td></tr>
+            <tr><td>[17:00] &lt orphans&gt k - if I get a bit of time I'll have a bit more a thorough gander</td></tr>
+            <tr><td>[17:02] &lt MS-&gt Trun_: My suggestion would be to use open office if you can</td></tr>
+            <tr><td>[17:02] &lt MS-&gt Hm, I wonder if oo3 supports SVG export...</td></tr>
+            <tr><td>[17:02] &lt MS-&gt (that actually works properly..)</td></tr>
+            <tr><td>[17:02] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[17:03] &lt MS-&gt doesn't support import :-(</td></tr>
+            <tr><td>[17:04] &lt Trun&gt MS-: no more question</td></tr>
+            <tr><td>[17:04] &lt MS-&gt supports export</td></tr>
+            <tr><td>[17:04] &lt MS-&gt Trun: Cool</td></tr>
+            <tr><td>[17:05] &lt MS-&gt Please feel free to ask questions/make suggestions any other time as well</td></tr>
+            <tr><td>[17:05] &lt MS-&gt the mentor time thing is intended as a time you can corner me/others really :)</td></tr>
+            <tr><td>[17:05] &lt Trun&gt ok :-)</td></tr>
+            <tr><td>[17:08] &lt Trun&gt ok, I'm leaving then, some work to do for tomorrow morning :-(</td></tr>
+            <tr><td>[17:08] &lt Trun&gt bye all :-)</td></tr>
+            <tr><td>[17:09] *** Trun has parted #kamaelia</td></tr>
+            <tr><td>[17:43] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:44] &lt vmlemon_&gt Hmm, where can one obtain these mystical "tuits"? ;)</td></tr>
+            <tr><td>[17:59] &lt MS-&gt vmlemon_: I believe they involve a lottery win :)</td></tr>
+            <tr><td>[18:06] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[18:31] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:45] *** MS- goes back to editting minutes</td></tr>
+            <tr><td>[19:22] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:22] &lt MS-&gt heh, this is funny: "Make it work, make it right, *then* make it fast."</td></tr>
+            <tr><td>[20:22] &lt MS-&gt quote from the twisted mailing list. Same mantra :)</td></tr>
+            <tr><td>[20:22] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:22] &lt MS-&gt evening</td></tr>
+            <tr><td>[20:23] &lt mhrd-home&gt hi</td></tr>
+            <tr><td>[20:32] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:50] &lt Davbo&gt Evenin' chaps</td></tr>
+            <tr><td>[20:51] &lt bcarlyon|laptop&gt g'day</td></tr>
+            <tr><td>[21:27] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[23:00] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[23:12] &lt Davbo&gt "Orphans also agreed to j_baker agreeing to the agreement. "</td></tr>
+            <tr><td>[23:12] &lt Davbo&gt Glad we got to the bottom of that ;P</td></tr>
+            <tr><td>[23:12] &lt Davbo&gt we're fortunate it stopped there i think</td></tr>
+            <tr><td>[23:14] *** mhrd-home finally gets to the bottom of why the dvb bindings didn't seem to work, and is wondering how on earth it ever worked in the first place</td></tr>
+            <tr><td>[23:16] &lt Davbo&gt How come mhrd-home?</td></tr>
+            <tr><td>[23:16] &lt mhrd-home&gt am about to the mailing list explaining, but short story is:</td></tr>
+            <tr><td>[23:17] &lt Davbo&gt Also; I was pondering this, if you want bindings for something your programming using Kamaelia - is it best to program them with Kamaelia in mind and use all the tools or cook them from pure Python? (if that makes sense)</td></tr>
+            <tr><td>[23:17] &lt mhrd-home&gt there's a flag that we check that says "I've locked onto the signal" ... and our test used a != instead of an ==</td></tr>
+            <tr><td>[23:17] &lt Davbo&gt Ah, that's a big difference :)</td></tr>
+            <tr><td>[23:18] &lt Davbo&gt One could say they're quite the opposite :P</td></tr>
+            <tr><td>[23:18] &lt mhrd-home&gt exactly :)</td></tr>
+            <tr><td>[23:18] &lt mhrd-home&gt wrt writing bindings: normally makes most sense to not try and kamaelia-ise ...</td></tr>
+            <tr><td>[23:18] &lt Davbo&gt Thought so</td></tr>
+            <tr><td>[23:18] &lt mhrd-home&gt usually easiest to make the minimal necessary code to access whatever the library/function is from python</td></tr>
+            <tr><td>[23:19] &lt Davbo&gt When i played with the NXT thing i used OSS bindings that already existed but wasn't sure if that was the right thing to do</td></tr>
+            <tr><td>[23:19] &lt mhrd-home&gt even using lovely beautiful amazinly good tools like pyrex, the act of writing bindings still exposes you to some issues such as memory management, pointers etc</td></tr>
+            <tr><td>[23:19] &lt Davbo&gt it makes more sense to have all your bindings using as little dependencies imo</td></tr>
+            <tr><td>[23:20] &lt Davbo&gt umm pyrex?</td></tr>
+            <tr><td>[23:20] &lt mhrd-home&gt Davbo: sounds like it was the right thing to do - because its pointless reinventing the wheel, unless the shape turns out to be seriously inconvenent</td></tr>
+            <tr><td>[23:20] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[23:20] &lt mhrd-home&gt pyrex is a rather nice python-like language for writing C to python bindings</td></tr>
+            <tr><td>[23:21] &lt Davbo&gt So you'd use that for things that work in C?</td></tr>
+            <tr><td>[23:21] &lt mhrd-home&gt you basically write stuff in a python like syntax, which is able to reference C declarations, variables, types, functions etc ... as well as python ones</td></tr>
+            <tr><td>[23:21] &lt Davbo&gt like this DVB problem?</td></tr>
+            <tr><td>[23:21] &lt mhrd-home&gt it then gets compiled to C</td></tr>
+            <tr><td>[23:21] &lt Davbo&gt Ah i see</td></tr>
+            <tr><td>[23:22] &lt mhrd-home&gt dvb support is in the linux kernel/drivers ... so we use pyrex as the glue to call underlying C functions and reference constants etc. in header files; bringing them up into the python world</td></tr>
+            <tr><td>[23:22] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[23:23] &lt Davbo&gt So you have to look through kernel/driver source code to construct your pyrex?</td></tr>
+            <tr><td>[23:23] &lt mhrd-home&gt http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/</td></tr>
+            <tr><td>[23:23] &lt Davbo&gt thanks</td></tr>
+            <tr><td>[23:24] &lt Davbo&gt And this compiles to C binaries?</td></tr>
+            <tr><td>[23:24] &lt mhrd-home&gt nope, there are excellent docs for the linux-dvb api: http://linuxtv.org/docs/dvbapi</td></tr>
+            <tr><td>[23:24] &lt Davbo&gt ah 'course, cool :)</td></tr>
+            <tr><td>[23:24] &lt mhrd-home&gt you write in pyrex. the pyrex compiler transforms that into C. you then compile the c</td></tr>
+            <tr><td>[23:24] &lt Davbo&gt That seems awfully clever</td></tr>
+            <tr><td>[23:25] &lt mhrd-home&gt it is rather nice :)</td></tr>
+            <tr><td>[23:25] &lt mhrd-home&gt if you want to see seriously clever, then look at shedskin</td></tr>
+            <tr><td>[23:26] &lt Davbo&gt makes me wonder what the difference would be if i wrote something in python and pushed it through pyrex how efficient it would compared to the same thing I hand coded in C</td></tr>
+            <tr><td>[23:26] &lt Davbo&gt I've never wrote a line of C though</td></tr>
+            <tr><td>[23:26] &lt mhrd-home&gt in pyrex, when you reference python data types, it calls the relevant c functions in the python libraries</td></tr>
+            <tr><td>[23:26] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[23:27] &lt mhrd-home&gt if you reference c data types then it writes it in C</td></tr>
+            <tr><td>[23:27] &lt Davbo&gt cool</td></tr>
+            <tr><td>[23:27] &lt mhrd-home&gt and it performs simple type conversions on primitive types</td></tr>
+            <tr><td>[23:27] &lt mhrd-home&gt so writing some python and compiling with pyrex won't make it run faster</td></tr>
+            <tr><td>[23:27] &lt Davbo&gt I had to write a program in Java byte-code for uni the other week</td></tr>
+            <tr><td>[23:27] &lt mhrd-home&gt how lovely for you!</td></tr>
+            <tr><td>[23:28] &lt Davbo&gt So i quickly did it in Java and compiled that, then ran it through javap (the disassembler Sun package in with Java) and it was way more efficient than the way I solved it :/</td></tr>
+            <tr><td>[23:28] &lt mhrd-home&gt not surprising ... writing a compiler is easy</td></tr>
+            <tr><td>[23:29] &lt mhrd-home&gt writing a good compiler is hard</td></tr>
+            <tr><td>[23:29] &lt mhrd-home&gt v hard</td></tr>
+            <tr><td>[23:29] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[23:29] &lt Davbo&gt much easier if you also write the only computer it will be run on though :)</td></tr>
+            <tr><td>[23:29] &lt Davbo&gt I'd guess anyway</td></tr>
+            <tr><td>[23:29] &lt mhrd-home&gt after all, for it to construct the most optimal bytecode/assembler its got to try to understand what your intentions were behind what you were trying to write; or how it will actually behave at runtime</td></tr>
+            <tr><td>[23:30] &lt Davbo&gt although then you get the problem of writing the Virtual Computers also heh</td></tr>
+            <tr><td>[23:30] &lt mhrd-home&gt indeed</td></tr>
+            <tr><td>[23:30] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[23:30] &lt Davbo&gt This is why I don't want to ever write in Assembler :-/</td></tr>
+            <tr><td>[23:30] &lt mhrd-home&gt if you want seriously clever, look at shedskin http://shed-skin.blogspot.com/</td></tr>
+            <tr><td>[23:31] &lt Davbo&gt Whoa??</td></tr>
+            <tr><td>[23:31] &lt Davbo&gt does it work?</td></tr>
+            <tr><td>[23:31] &lt mhrd-home&gt yes</td></tr>
+            <tr><td>[23:31] &lt Davbo&gt The title promises a LOT</td></tr>
+            <tr><td>[23:31] &lt Davbo&gt wow</td></tr>
+            <tr><td>[23:31] &lt Davbo&gt that's awesome</td></tr>
+            <tr><td>[23:32] &lt mhrd-home&gt it couldn't quite do Axon last time we tried ... at least not without a little modification to make the inferences shedskin needed to draw more tractable</td></tr>
+            <tr><td>[23:32] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[23:32] &lt Davbo&gt never done any C++ either tbh</td></tr>
+            <tr><td>[23:32] &lt mhrd-home&gt it analyses the code to work out what data types apply to variables</td></tr>
+            <tr><td>[23:33] &lt Davbo&gt Although i imagine much syntax from Java will exist there?</td></tr>
+            <tr><td>[23:34] &lt mhrd-home&gt c++ and java look superficially syntactically similar; but c++is much more ... expressive ... and correspondingly more complex</td></tr>
+            <tr><td>[23:34] &lt mhrd-home&gt you can define operators, for example</td></tr>
+            <tr><td>[23:34] &lt Davbo&gt Ah, like making your own +?</td></tr>
+            <tr><td>[23:34] &lt mhrd-home&gt yep</td></tr>
+            <tr><td>[23:34] &lt Davbo&gt I can see that being very useful</td></tr>
+            <tr><td>[23:34] &lt mhrd-home&gt double edged sword, as with everything</td></tr>
+            <tr><td>[23:35] &lt Davbo&gt Yeah, Python is a nice language for that</td></tr>
+            <tr><td>[23:35] &lt Davbo&gt I'm interested to see where it goes, with Python 3000 (I think that's what they're calling it)</td></tr>
+            <tr><td>[23:36] &lt Davbo&gt I listened to a talk by the Python guy about the lessons he had learnt and how his design had changed</td></tr>
+            <tr><td>[23:36] &lt mhrd-home&gt guido?</td></tr>
+            <tr><td>[23:37] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[23:37] &lt mhrd-home&gt you got a url for that? or was it in real life?</td></tr>
+            <tr><td>[23:37] &lt Davbo&gt one sec</td></tr>
+            <tr><td>[23:38] &lt Davbo&gt http://twit.tv/floss11</td></tr>
+            <tr><td>[23:38] &lt Davbo&gt As you can see, it's old now :)</td></tr>
+            <tr><td>[23:39] &lt Davbo&gt but when I signed up to Kamaelia I downloaded it, not sure why but I like to know how the designer thinks about what they made</td></tr>
+            <tr><td>[23:40] &lt mhrd-home&gt ta</td></tr>
+            <tr><td>[23:40] &lt mhrd-home&gt I've not paid much attention to 3000 yet</td></tr>
+            <tr><td>[23:41] &lt Davbo&gt Will take a long time for the community to adopt it in any case</td></tr>
+            <tr><td>[23:41] &lt Davbo&gt and that's only if it's worthy :/</td></tr>
+            <tr><td>[23:43] *** mhrd-home ought to sleep now :)</td></tr>
+            <tr><td>[23:43] *** Davbo ought to finish his work now</td></tr>
+            <tr><td>[23:44] &lt Davbo&gt Night mhrd-home :-)</td></tr>
+            <tr><td>[23:44] &lt mhrd-home&gt cya</td></tr>
+            <tr><td>[23:44] *** mhrd-home has parted #kamaelia</td></tr>

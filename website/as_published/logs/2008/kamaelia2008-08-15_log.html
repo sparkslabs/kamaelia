@@ -1,0 +1,109 @@
+<html><body><table>
+            <tr><td>[00:13] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:07] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:13] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:31] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:33] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:33] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[09:33] Reply: does the macarena</td></tr>
+            <tr><td>[09:51] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:55] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:11] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:22] &lt Davbo&gt afternoon all</td></tr>
+            <tr><td>[10:24] &lt vmlemon__&gt Hi Davbo</td></tr>
+            <tr><td>[10:24] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[10:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:21] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[11:52] *** Davbo is lost in WSGI Code</td></tr>
+            <tr><td>[11:52] &lt Davbo&gt j_baker: can you just show me how to run an example app please :-)</td></tr>
+            <tr><td>[12:04] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[12:55] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:48] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:49] &lt j_baker&gt Davbo, I'm writing up a post to help clarify the WSGI code some for you.</td></tr>
+            <tr><td>[13:50] &lt j_baker&gt Which part are you getting lost at?</td></tr>
+            <tr><td>[13:51] &lt Davbo&gt Just got back in, give me a second j_baker :)</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt Shouldn't your example wsgi app's have mains btw? So you could easily run them?</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt or, how do I run them :)</td></tr>
+            <tr><td>[13:53] &lt j_baker&gt Well, first of all, are you running Kamaelia WebServe or are you using a web server like in the example?</td></tr>
+            <tr><td>[13:54] &lt j_baker&gt To answer your question, a WSGI "application" is really just a function, albeit one that is expected to perform certain ways.</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt I thought so</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt I'd expect your examples to have mains which run the Kamaelia WebServe and the app within that though</td></tr>
+            <tr><td>[13:57] &lt j_baker&gt Kamaelia WebServe isn't really anything more than a version of those examples that does more fancy stuff. :)</td></tr>
+            <tr><td>[13:57] &lt j_baker&gt The real meat of the WSGI code is in the WSGI Factories and the WSGI Handler.</td></tr>
+            <tr><td>[13:58] &lt Davbo&gt I've been looking at Handler this morning</td></tr>
+            <tr><td>[13:58] &lt j_baker&gt Yeah, that does the actual grunt work of running the WSGI application</td></tr>
+            <tr><td>[13:59] &lt j_baker&gt SimpleWSGIFactory and WSGIFactory do the part of figuring out which WSGI application to run.</td></tr>
+            <tr><td>[14:00] &lt j_baker&gt (admittedly, WSGIFactory is somewhat uglier than SimpleWSGIFactory partly because of some optimizations that I've made)</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt I mean, it would help if I were familiar with the standards of WSGI (it would help *alot*) so I really just want to get one of your apps running as that's makes up a lot of testing I can do</td></tr>
+            <tr><td>[14:00] &lt j_baker&gt Ok, I'll post that to the board.</td></tr>
+            <tr><td>[14:01] &lt j_baker&gt I just now realized that I didn't actually give you a sample application to run with PasteApp either.</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt Yeah, PasteApp is an interpreter for those PythonPaste app's?</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt is what I gathered from it anyway</td></tr>
+            <tr><td>[14:02] &lt j_baker&gt No, Paste Deploy is a WSGI App that serves to find other WSGI Apps</td></tr>
+            <tr><td>[14:03] &lt j_baker&gt A lot of people use it because it has more advanced URL routing stuff than most WSGI servers.</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt ah i see</td></tr>
+            <tr><td>[14:03] &lt j_baker&gt Actually, I'll tell you what will be the easiest way to get started: move on to Kamaelia WebServer first.</td></tr>
+            <tr><td>[14:04] &lt j_baker&gt I can walk you through getting that set up if you want.</td></tr>
+            <tr><td>[14:04] &lt Davbo&gt Alright, 1 moment</td></tr>
+            <tr><td>[14:06] &lt Davbo&gt Sorry, was sorting some stuff.</td></tr>
+            <tr><td>[14:07] &lt j_baker&gt np</td></tr>
+            <tr><td>[14:07] &lt j_baker&gt First of all, you'll want to go to private_JMB_Wsgi/Apps/Kamaelia-WebServe</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt done</td></tr>
+            <tr><td>[14:09] &lt j_baker&gt Ok, what you'll do next is type ./make-unix.sh That will give you lots of text. :)</td></tr>
+            <tr><td>[14:09] &lt j_baker&gt This will create an executable in dist called kwserve, so all you have to do to run it is type dist/kwserve</td></tr>
+            <tr><td>[14:10] &lt j_baker&gt Then, if you haven't run it before, it should ask if you want to install it.</td></tr>
+            <tr><td>[14:10] &lt j_baker&gt All you have to do is hit y and if all goes as planned, it should run.</td></tr>
+            <tr><td>[14:11] &lt j_baker&gt (FYI, it will put some files in your home directory)</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt alright, running</td></tr>
+            <tr><td>[14:11] &lt j_baker&gt Did it give you "serving on port 8080"?</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[14:12] &lt j_baker&gt Ok, now try going to http://127.0.0.1:8080/simple</td></tr>
+            <tr><td>[14:12] &lt Davbo&gt Hello from the write callable!</td></tr>
+            <tr><td>[14:13] &lt j_baker&gt And I'm assuming there's a lot of other output as well?</td></tr>
+            <tr><td>[14:13] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:13] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[14:13] &lt j_baker&gt FYI, the other output is the contents of the WSGI environment dictionary.</td></tr>
+            <tr><td>[14:13] &lt j_baker&gt (which I don't expect to make much sense to you right now :) )</td></tr>
+            <tr><td>[14:13] &lt Davbo&gt Yeah, I've looked at the code for this</td></tr>
+            <tr><td>[14:13] &lt j_baker&gt Good.</td></tr>
+            <tr><td>[14:14] &lt j_baker&gt Ok, now what you'll want to do is open up ~/kpuser/urls.ini</td></tr>
+            <tr><td>[14:15] &lt j_baker&gt You'll notice that there are three options under the [simple_app]</td></tr>
+            <tr><td>[14:15] &lt j_baker&gt ...section.</td></tr>
+            <tr><td>[14:15] &lt j_baker&gt regex, import_path, and app_obj</td></tr>
+            <tr><td>[14:15] &lt Davbo&gt ah yes, i see</td></tr>
+            <tr><td>[14:16] &lt j_baker&gt essentially what this says is "if the first part of the URL matches regex, from import_path import app_obj"</td></tr>
+            <tr><td>[14:17] &lt j_baker&gt The root section decides which application to run if somebody just goes to http://127.0.0.1:8080/</td></tr>
+            <tr><td>[14:19] &lt j_baker&gt One other thing to note: some applications will require more data than the standard data here.</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt it looks fairly intuitive tbh</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt docs are good too</td></tr>
+            <tr><td>[14:20] &lt j_baker&gt I put some other stuff on the wiki if you get lost.</td></tr>
+            <tr><td>[14:20] &lt j_baker&gt But I'll leave you alone if you've got it from here.</td></tr>
+            <tr><td>[14:21] &lt j_baker&gt (I'll get you a simple paste application though)</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt Thanks j_baker</td></tr>
+            <tr><td>[14:21] &lt j_baker&gt np</td></tr>
+            <tr><td>[14:22] &lt Davbo&gt I can see what's going on with the bit that confused me earlier this morning anyway</td></tr>
+            <tr><td>[14:28] &lt j_baker&gt Yeah. A lot of the stuff in the WSGI code isn't very intuitive. :(</td></tr>
+            <tr><td>[14:29] &lt j_baker&gt Part of it is that Kamaelia's HTTP code was written for a VERY specific purpose and thus has a few foibles. Part of it is that Kamaelia WebServe essentially has two URL routing mechanisms (you just have to deal with one though).</td></tr>
+            <tr><td>[14:30] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:31] &lt Davbo&gt I understand the HTTP stuff, well I understand that you've needed it to be written for WSGI to work</td></tr>
+            <tr><td>[14:33] &lt j_baker&gt Well, it is pretty pluggable, so I didn't necessarily need to make any changes.</td></tr>
+            <tr><td>[14:33] &lt j_baker&gt It's just that I dislike the way you interface with it.</td></tr>
+            <tr><td>[14:34] &lt j_baker&gt And that also just so happens to be the hardest part to change, because you have to worry about breaking older apps.</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt Yeah, it's better to just tag on your own support code</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt seems reasonable anyway :)</td></tr>
+            <tr><td>[14:40] &lt Davbo&gt "﻿j_baker: Well, it is pretty pluggable," /me finds this with a lot of Kamaelia</td></tr>
+            <tr><td>[14:44] &lt j_baker&gt Yup. That's the cool thing about it too. If somebody doesn't like WebServe, they can modify parts of it without modifying the rest of the program.</td></tr>
+            <tr><td>[14:44] &lt j_baker&gt And they even have the tools to go off and just write their own.</td></tr>
+            <tr><td>[14:47] &lt j_baker&gt Hmmm... I may have to hold off on python paste. I really don't know if I have time to get together a sample app before monday.</td></tr>
+            <tr><td>[14:47] *** j_baker had forgotten why he hates Paste.</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt no problem</td></tr>
+            <tr><td>[14:48] &lt j_baker&gt You have to use eggs for everything in paste. Which means even for a simple little "hello world" type application, I have to put together a config file, a distutils setup.py file, and an egg-info file.</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt Heh...I see what you mean</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt Yeah, don't bother</td></tr>
+            <tr><td>[14:50] &lt j_baker&gt Yeah. If someone wants to do that, they can write the 5-6 lines of code themself for now. :)</td></tr>
+            <tr><td>[15:09] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:19] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:53] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:57] *** j_baker has joined #kamaelia</td></tr>

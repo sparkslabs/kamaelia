@@ -1,0 +1,200 @@
+====== START OF WEEKLY IRC KAMAELIA SUMMIT MEETING, 20060421 ======
+
+Agenda
+~~~~~~
+1. Participants
+   MS- - Michael Sparks 
+   mhrd - Matt Hammond
+Also present:
+   tav - (listening)
+   bobo - (mainly chatted after meeting about interest in Kamaelia)
+2. Note of agenda
+3. Activity reports 
+
+Michael's lines:
+
+DONE - Worked on the selector
+     - Documented status of selector work
+     - Invesigated the feasibility of us acting as Summer of code sponsors
+     - Played with Matt's new whiteboard code.
+TODO - Get the selector working with shutdown properly, then todos from last
+       week.
+BLOCKED - Waiting to hear back final confirmation of yes/no on Summer of Code
+          mentoring. 
+        - Finding it a pain to find the problem with the CSA, can't use
+          introspector until fixed (!)
+FOLLOWUP: None
+
+Matt's lines:
+DONE - Documentation Guidelines
+     - Collaborative whiteboard
+TODO - Continue thread optimisations
+     - Implement synchronous boxes
+     - SI capture
+     - Selector threading
+BLOCKED: None
+FOLLOWUP: None  
+
+After reading this, Michael noted that DONE means "done this week", not
+"completed this week", and as a result could/should indicate work in
+progress.
+
+4. Discussion items (3 or 4 max)
+4.1 Todos from last week, any updates.
+
+Michael noted that his Todos from the previous week have been taking longer
+than anticipated. The other work is noted as being on hold until then.
+Michael noted that the DVB-T card item has been reprioritised as higher
+than it was.
+
+Matt noted that synchronised box work is on hold until threading related
+work is complete. Matt also noted that he's leaving the whiteboard code
+for the moment. Michael noted enthusiasm for the whiteboard sketcher, both
+personally and from work. 
+
+Michael noted frustration with the networking code, stating he'd like a
+test first rewrite now that the "correct" API appears to be emerging, in
+the hope of simplifying changes. Not prioritised at present.
+ACTION: describe as a project idea on the bliki.
+
+Matt queried the selector status. Michael noted that the selector's status
+is stable, since it was written test first.
+
+
+4.2 Progress on Work needed for Macro related work. Specifically: Selector, threaded component integration, inversion of control, Merge/Review of box code. (Noting original stated interim desire/deadline) Do we do a quick inversion of Paul's code to have a rewrite of the scheduler?
+
+The interim deadline was May 16th for multiformat encoding. 
+
+Michael noted that he thinks May 16th is still feasible. Michael confirmed
+that he has transcoding was working through a unix pipe component, but only as
+a sketch. For anything to work in anger, it requires the other optimisations,
+and whilst using dual CPU machines can help with the CPU usage issue, the
+control flow inversion is vital. 
+
+Specifically, the system needs to put activity generators into threads, to
+allow the system to become quiescent where practical. Michael noted that
+they could consider inverting Paul's code, which does some of this to an
+extent, but given Matt's time estimate seemed moot (It would take longer
+than the estimate to integrate Paul's code than to do the system
+inversion).
+
+Matt estimated that the thread /scheduler control inversion would be complete
+early next week. Michael noted that revisiting the issue would make sense if
+it wasn't complete by the time of the next meeting.
+FOLLOW UP: Review this next week
+
+4.3 Review of items created by Matt in past week, way forward.
+    * Suggest 3-4 paras on the bliki. Suggest added single paragraph
+      description in http://kamaelia.sf.net/Systems.html
+    * Suggestion: Summer of code project
+
+Michael noted he wanted to discuss this because the collaborative,
+effectively peer to peer, whiteboard written that week was really cool,
+and has some very interesting potential. Part of the reason for this is
+due to working on Mac, Windows & Linux. Mac is presumed but past experience
+shows this is a valid presumption (Linux and Windows known since tested).
+
+Michael suggested that we use this as a basis for some summer of code
+projects, given it's usefulness. Matt agreed. Random ideas:
+   * Confirmation of working on windows, and packaging as a py2exe "binary"
+     install
+   * Confirmation of working on Mac OS X , and packaging as a py2app "binary"
+     install
+   * Nicer distribution for linux (rpms for example)
+   * Server backend - live whiteboard wiki
+   * Backplane as an events broadcast/subscriber with filter for headless
+     server. (Applications beyond the whiteboard) Matt noted that this
+    could be an interesting and meaty project.
+
+Matt noted it really benefits from box optimisations. He also noted that he
+has other ideas.  Documentation of the existing system on the bliki/site was
+discussed. Matt said definitely yes to putting on the bliki, and maybe to
+going on /Systems.html . The maybe was due to a partial misunderstanding
+of the purpose of /Systems.html, and Matt decided to review that decision
+and format of the /Systems.html page.
+
+ACTION: Matt to document in 3-4 paras on the bliki and/or website as he
+        deems appropriate.
+
+* tav left at this point
+* bobo arrived at this point.
+
+4.4 Summer of Code
+
+Michael noted that the reason for the bullet point was to not that he's
+asked for formal approval (internally) for the BBC to be registered as a
+mentor organisation for Kamaelia projects. He noted that he's getting
+positive sounding noise from inside, and has agreement in principle for
+this, but still a couple of hurdles to jump.
+
+Matt agreed that summer of code was a good idea, and that he was happy to
+act as a backup mentor.
+
+Michael also thanked bobo for a couple of comments from the log the
+previous day.
+
+Michael discussed the creation of a separate bliki for project ideas, and
+also to accept new ideas. Matt thought this a good idea.
+
+We noted that the deadline for SoC is May 1st. Michael decided as a result
+to consider next wednesday as a real deadline (for confirmation, project
+ideas etc). Project ideas welcome in the short term on the normal blog/bliki
+instead.
+
+FOLLOW UP: sort through project ideas at next meeting
+
+IPR issues for Summer of Code
+
+To date we haven't had to deal with contribution issues, but have always
+planned to ask for contributor agreements. Specifically this would ask
+contributors to the project to grant the BBC a BSD license on their code.
+The reason for this is similar to the reasons the FSF ask for copyright
+attribution, but would be non-exclusive, and work for countries where
+copyright attribution can't really happen due to local laws (Some
+European countries).
+
+SoC pushes this back to the fore, and Michael wanted to run this by people
+in the meeting.
+   * Michael thinks it's fair
+   * Matt thinks it's fair
+   * bobo stated that he/she didn't have a problem with the idea in this
+     kind of project.
+   * Tav had to go at that point, and said he'd get back to us
+
+Michael noted that this would be needed in order to get agreement for SOC
+mentoring internally, generally speaking.
+
+Michael & Matt noted that they don't really have any options personally
+since their Kamaelia work is automatically owned by the BBC, meaning we
+can only release code under the license terms of the project. 
+
+Final comment on summer of code was that any and all ideas should go up
+on the project bliki which will go like some point "soon"
+
+ACTION: Michael to setup a second projects bliki
+
+4.5 Minor discussion of this weeks work
+
+Michael was querying what Matt meant by "thread optimisations" confirming
+that Matt meant:
+  1 making the API the same as the normal API
+  2 inverting control flow
+
+Matt confirmed this. At that point michael agreed that the existing
+priorities in Matt's todos were right.
+
+5. Date/Time of next meeting
+
+Friday 28th April 2006, 11am UK time
+
+6 Internal Follow up
+
+None
+
+Specific actions arising in meeting:
+ACTION: Matt to document sketcher in 3-4 paras on the bliki and/or website as
+        he deems appropriate.
+ACTION: Michael to setup a second projects bliki
+ACTION: Describe desired test first rewrite of the TCP components on the
+        project bliki.
+====== END OF WEEKLY IRC KAMAELIA SUMMIT MEETING, 20060421 ======

@@ -1,0 +1,425 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.STM </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.STM">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.STM</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.STM.html">STM</a></h2>
+</div>
+</div>
+<div class="section">
+<h1>STM</h1>
+<div class="container">
+<ul class="simple">
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.STM.BusyRetry.html">BusyRetry</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.STM.Collection.html">Collection</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.STM.ConcurrentUpdate.html">ConcurrentUpdate</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.STM.Store.html">Store</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.STM.Value.html">Value</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#52">What IS it?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#53">Why is it useful?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#54">Using It</a><ul>
+<li><a class="reference" href="#55">Accessing/Updating a single shared value in the store</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#56">Accessing/Updating a collection of shared values in the store</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#57">What can (possibly) go wrong?</a><ul>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<p>Support for basic in-process software transactional memory.</p>
+<div class="section">
+<h2 id="52"><a id="what-is-it" name="what-is-it">What IS it?</a></h2>
+<p>Software Transactional Memory (STM) is a technique for allowing multiple
+threads to share data in such a way that they know when something has gone
+wrong. It's been used in databases (just called transactions there really) for
+some time and is also very similar to version control. Indeed, you can think of
+STM as being like variable level version control.</p>
+</div>
+<div class="section">
+<h2 id="53"><a id="why-is-it-useful" name="why-is-it-useful">Why is it useful?</a></h2>
+<p>Why do you need it? Well, in normal code, Global variables are generally
+shunned because it can make your code a pain to work with and a pain to be
+certain if it works properly. Even with linear code, you can have 2 bits of
+code manipulating a structure in surprising ways - but the results are
+repeatable. Not-properly-managed-shared-data is to threaded systems as
+not-properly-managed-globals are to normal code. (This code is one way of
+helping manage shared data)</p>
+<p>Well, with code where you have multiple threads active, having shared data is
+like an even nastier version of globals. Why? Well, when you have 2 (or more)
+running in parallel, the results of breakage can become hard to repeat as two
+pieces of code &quot;race&quot; to update values.</p>
+<p>With STM you make it explicit what the values are you want to update, and only
+once you're happy with the updates do you publish them back to the shared
+storage. The neat thing is, if someone else changed things since you last
+looked, you get told (your commit fails), and you have to redo the work. This
+may sound like extra work (you have to be prepared to redo the work), but it's
+nicer than your code breaking :-)</p>
+<p>The way you get that message is the .commit raises a ConcurrentUpdate
+exception.</p>
+<p>Also, it's designed to work happily in code that requires non-blocking usage -
+which means you may also get a BusyRetry exception under load. If you do, you
+should as the exception suggests retry the action that you just tried. (With or
+without restarting the transaction)</p>
+<p>Apologies if that sounds too noddy :)</p>
+</div>
+<div class="section">
+<h2 id="54"><a id="using-it" name="using-it">Using It</a></h2>
+<div class="section">
+<h3 id="55"><a id="accessing-updating-a-single-shared-value-in-the-store" name="accessing-updating-a-single-shared-value-in-the-store">Accessing/Updating a single shared value in the store</a></h3>
+<p>You can have many single vars in a store of course... If they're related though
+or updated as a group, see the next section:</p>
+<pre class="literal-block">
+from <a class="reference" href="/Docs/Axon/Axon.STM.html">Axon.STM</a> import Store
+
+S = Store()
+greeting = S.usevar(&quot;hello&quot;)
+print repr(greeting.value)
+greeting.set(&quot;Hello World&quot;)
+greeting.commit()
+</pre>
+</div>
+<div class="section">
+<h3 id="56"><a id="accessing-updating-a-collection-of-shared-values-in-the-store" name="accessing-updating-a-collection-of-shared-values-in-the-store">Accessing/Updating a collection of shared values in the store</a></h3>
+<p>Likewise you can use as many collections of values from the store as you like:</p>
+<pre class="literal-block">
+from <a class="reference" href="/Docs/Axon/Axon.STM.html">Axon.STM</a> import Store
+
+S = Store()
+D = S.using(&quot;account_one&quot;, &quot;account_two&quot;, &quot;myaccount&quot;)
+D[&quot;account_one&quot;].set(50)
+D[&quot;account_two&quot;].set(100)
+D.commit()
+S.dump()
+
+D = S.using(&quot;account_one&quot;, &quot;account_two&quot;, &quot;myaccount&quot;)
+D[&quot;myaccount&quot;].set(D[&quot;account_one&quot;].value+D[&quot;account_two&quot;].value)
+D[&quot;account_one&quot;].set(0)
+D[&quot;account_two&quot;].set(0)
+D.commit()
+S.dump()
+</pre>
+</div>
+</div>
+<div class="section">
+<h2 id="57"><a id="what-can-possibly-go-wrong" name="what-can-possibly-go-wrong">What can (possibly) go wrong?</a></h2>
+<p>You can have 2 people trying to update the same values at once. An example of
+this would be - suppose you have the following commands being executed by 2
+threads with this mix of commands:</p>
+<pre class="literal-block">
+S = Store()
+D = S.using(&quot;account_one&quot;, &quot;account_two&quot;, &quot;myaccount&quot;)
+D[&quot;myaccount&quot;].set(0)
+D[&quot;account_one&quot;].set(50)
+D[&quot;account_two&quot;].set(100)
+D.commit() # 1
+S.dump()
+
+D = S.using(&quot;account_one&quot;, &quot;account_two&quot;, &quot;myaccount&quot;)
+D[&quot;myaccount&quot;].set(D[&quot;account_one&quot;].value+D[&quot;account_two&quot;].value)
+E = S.using(&quot;account_one&quot;, &quot;myaccount&quot;)
+E[&quot;myaccount&quot;].set(E[&quot;myaccount&quot;].value-100)
+E[&quot;account_one&quot;].set(100)
+E.commit() # 2
+D[&quot;account_one&quot;].set(0)
+D[&quot;account_two&quot;].set(0)
+D.commit() # 3 - should fail
+S.dump()
+</pre>
+<p>You do actually want this to fail because you have concurrent updates. This
+will fail on the third commit, and fail by throwing a ConcurrentUpdate
+exception. If you get this, you should redo the transaction.</p>
+<p>The other is where there's lots of updates happening at once. Rather than the
+code waiting until it acquires a lock, it is possible for either the .using,
+.usevar or .commit methods to fail with a BusyRetry exception. This means
+exactly what it says on the tin - the system was busy &amp; you need to retry. In
+this case you do not have to redo the transaction. This is hard to replicate
+except under load. The reason we do this however is because most Kamaelia
+components are implemented as generators, which makes blocking operation ( as a
+.acquire() rather than .acquire(0) would be) an expensive operation.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.STM.html">STM</a>.<a class="reference" href="/Docs/Axon/Axon.STM.BusyRetry.html">BusyRetry</a></h1>
+<div class="section">
+<h2 id="symbol-BusyRetry">class BusyRetry(Exception)</h2>
+<div class="section">
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.STM.html">STM</a>.<a class="reference" href="/Docs/Axon/Axon.STM.Collection.html">Collection</a></h1>
+<div class="section">
+<h2 id="symbol-Collection">class Collection(dict)</h2>
+<div class="section">
+<p>Collection() -&gt; new Collection dict</p>
+<p>A dictionary which belongs to a thread-safe store</p>
+<p>Again, you do not instantiate these yourself</p>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-Collection.commit" name="symbol-Collection.commit">commit(self)</a></h4>
+<p>Commit new versions of the collection's items to the store</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Collection.set_store" name="symbol-Collection.set_store">set_store(self, store)</a></h4>
+<p>Set the store to associate the collection with</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.STM.html">STM</a>.<a class="reference" href="/Docs/Axon/Axon.STM.ConcurrentUpdate.html">ConcurrentUpdate</a></h1>
+<div class="section">
+<h2 id="symbol-ConcurrentUpdate">class ConcurrentUpdate(Exception)</h2>
+<div class="section">
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.STM.html">STM</a>.<a class="reference" href="/Docs/Axon/Axon.STM.Store.html">Store</a></h1>
+<div class="section">
+<h2 id="symbol-Store">class Store(object)</h2>
+<div class="section">
+<p>Store() -&gt; new Store object</p>
+<p>A thread-safe versioning store for key-value pairs</p>
+<p>You instantiate this as per the documentation for this module</p>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-Store.__can_update" name="symbol-Store.__can_update">__can_update(self, key, value)</a></h4>
+<p>Returns true if a value can be safely updated.  Potentially not
+thread-safe</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.__do_update" name="symbol-Store.__do_update">__do_update(self, key, value)</a></h4>
+<p>Update a key-value pair and increment the version.  Not thread-safe</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.__get" name="symbol-Store.__get">__get(self, key)</a></h4>
+<p>Retreive a value.  Returns a clone of the Value.  Not thread-safe.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.__init__" name="symbol-Store.__init__">__init__(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.__make" name="symbol-Store.__make">__make(self, key)</a></h4>
+<p>Create a new key-value pair.  Not thread-safe</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.dump" name="symbol-Store.dump">dump(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.set" name="symbol-Store.set">set(self, key, value)</a></h4>
+<p>Tries to update a value in the store.  If the store is already in use
+a BusyRetry error is raised.  If the value has been updated by another
+thread a ConcurrentUpdate error is raised</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.set_values" name="symbol-Store.set_values">set_values(self, D)</a></h4>
+<p>Tries to update a selection of values in the store.  If the store is
+already in use a BusyRetry error is raised.  If one of the values has
+been updated by another thread a ConcurrentUpdate error is raised.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.usevar" name="symbol-Store.usevar">usevar(self, key[, islocked])</a></h4>
+<p>Tries to get an item from the store.  Returns the requested Value
+object.  If the store is already in use a BusyRetry error is raised.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Store.using" name="symbol-Store.using">using(self, *keys)</a></h4>
+<p>Tries to get a selection of items from the store.  Returns a Collection
+dictionary containing the requested values.  If the store is already
+in use a BusyRetry error is raised.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.STM.html">STM</a>.<a class="reference" href="/Docs/Axon/Axon.STM.Value.html">Value</a></h1>
+<div class="section">
+<h2 id="symbol-Value">class Value(object)</h2>
+<div class="section">
+<p>Value(version, value, store, key) -&gt; new Value object</p>
+<p>A simple versioned key-value pair which belongs to a thread-safe store</p>
+<p>Arguments:</p>
+<ul class="simple">
+<li>version -- the initial version of the value</li>
+<li>value -- the object's initial value</li>
+<li>store -- a Store object to hold the value and it's history</li>
+<li>key -- a key to refer to the value</li>
+</ul>
+<p>Note: You do not instantiate these - the Store does that</p>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-Value.__init__" name="symbol-Value.__init__">__init__(self, version, value, store, key)</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Value.__repr__" name="symbol-Value.__repr__">__repr__(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Value.clone" name="symbol-Value.clone">clone(self)</a></h4>
+<p>Returns a clone of the value</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Value.commit" name="symbol-Value.commit">commit(self)</a></h4>
+<p>Commit a new version of the value to the store</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Value.set" name="symbol-Value.set">set(self, value)</a></h4>
+<p>Set the value without storing</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

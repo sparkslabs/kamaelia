@@ -1,0 +1,324 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Protocol.RTP.RTP </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Protocol.RTP.RTP</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.html">RTP</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.RTP.html">RTP</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.RTP.RTPDeframer.html">RTPDeframer</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.RTP.RTPFramer.html">RTPFramer</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#636">RTP Packet Framing and Deframing</a><ul>
+<li><a class="reference" href="#637">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#638">RTPFramer behaviour</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#639">RTPDeframer Behaviour</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="636">RTP Packet Framing and Deframing</h1>
+<p>Send a dict specifying what needs to go into the RTP packet and RTPFramer will
+output it as a RTP frame.</p>
+<p>RTPDeframer parses an RTP packet in binary string format and outputs a
+(seqnum, packet) tuple containing a sequence number and a dict structure
+containing the payload and metadata of the RTP packet. The format is the same as
+that used by RTPFramer.</p>
+<p>These components simply format the data into the RTP packet format or take it
+back out again. They do not understand the specifics of each payload type.
+You must determine for yourself the correct values for each field (eg. payload
+type, timestamps, CSRCS, etc).</p>
+<p>See <a class="reference" href="http://tools.ietf.org/html/rfc3550">RFC 3550</a> and <a class="reference" href="http://tools.ietf.org/html/rfc3551">RFC 3551</a> for information on the RTP speecification and
+the meaning and formats of fields in RTP packets.</p>
+<div class="section">
+<h2 id="637"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Read MPEG Transport Stream packets (188 bytes each) from a file in groups of 7
+at a time (to fill an RTP packet) and send them in RTP packets over multicast to
+224.168.2.9 on port 1600:</p>
+<pre class="literal-block">
+class PrePackage(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+    def main(self):
+        SSRCID = random.randint(0,(2**32) - 1)      # random unique ID for this source
+        while 1:
+            while self.dataReady(&quot;inbox&quot;):
+                recvData = self.recv(&quot;inbox&quot;)
+                self.send(
+                  { 'payloadtype' : 33,             # type 33 for MPEG 2 TS
+                    'payload'     : recvData,
+                    'timestamp'   : time.time() * 90000,
+                    'ssrc'        : SSRCID,
+                  },
+                  &quot;outbox&quot;)
+            yield 1
+
+
+Pipeline( RateControlledFileReader(&quot;transportstream&quot;,chunksize=7*188),
+          PrePackage(),
+          RTPFramer(),
+          Multicast_Transceiver((&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600)
+</pre>
+<p>Timestamps for MPEG TS in RTP are integers at 90KHz resolution (hence the
+x90000 scaling factor). A random value is chosen for the unique source
+identifier (ssrc).</p>
+<p>Save the payload from a stream of RTP packets being received from multicast
+address 224.168.2.9 on port 1600 down to a file:</p>
+<pre class="literal-block">
+Pipeline( Multicast_transceiver(&quot;0.0.0.0&quot;, 1600, &quot;224.168.2.9&quot;, 0),
+          SimpleDetupler(1),                      # discard the source address
+          RTPDeframer(),
+          RecoverOrder(bufsize=64, modulo=65536), # reorder packets
+          SimpleDetupler(1),                      # discard the sequence number
+          SimpleDetupler(&quot;payload&quot;),
+          SimpleFileWriter(&quot;received_stream&quot;),
+        )
+</pre>
+</div>
+<div class="section">
+<h2 id="638"><a id="rtpframer-behaviour" name="rtpframer-behaviour">RTPFramer behaviour</a></h2>
+<p>Send to RTPFramer's &quot;inbox&quot; inbox a dictionary. It must contain these fields:</p>
+<pre class="literal-block">
+{
+    'payloadtype' : integer payload type
+    'payload'     : binary string containing the payload
+    'timestamp'   : integer timestamp (32 bit, unsigned)
+    'ssrc'        : sync source identifier (32 bit, unsigned)
+</pre>
+<p>...and these fields are optional:</p>
+<pre class="literal-block">
+    'csrcs'        : list of contributing source identifiers (default = [])
+    'bytespadding' : number of bytes of padding to be added to the payload (default=0)
+    'extension'    : binary string of any extension data (default = &quot;&quot;)
+    'marker'       : True to set the marker bit, otherwise False (default=False)
+}
+</pre>
+<p>RTPFramer automatically adds a randomised offset to the timestamp, and generates
+the RTP packet sequence numbers, as required in the specification (RFC 3550).</p>
+<p>RTPFramer constructs an RTP packet matching the fields specified and sends it
+as a binary string out of the &quot;outbox&quot; outbox.</p>
+<p>If a producerFinished or shutdownMicroprocess message is received on the
+&quot;control&quot; inbox. It is immediately sent on out of the &quot;signal&quot; outbox and the
+component then immediately terminates.</p>
+</div>
+<div class="section">
+<h2 id="639"><a id="rtpdeframer-behaviour" name="rtpdeframer-behaviour">RTPDeframer Behaviour</a></h2>
+<p>Send to RTPDeframer's &quot;inbox&quot; inbox a binary string of an RTP packet, and the
+packet will be parsed, resulting in a (seqnum, packet_contents) tuple being sent
+to the &quot;outbox&quot; outbox. It will have this structure:</p>
+<pre class="literal-block">
+( sequence_number,
+  {
+    'payloadtype'  : integer payload type
+    'payload'      : binary string containing the payload
+    'timestamp'    : integer timestamp (32 bit, unsigned)
+    'ssrc'         : sync source identifier (32 bit, unsigned)
+    'csrcs'        : list of contributing source identifiers, [] if empty
+    'extension'    : binary string of any extension data, &quot;&quot; if none
+    'marker'       : True if marker bit was set, otherwise False
+  }
+)
+</pre>
+<p>See RFC 3550 for an explanation of the precise purposes of these fields.</p>
+<p>If a producerFinished or shutdownMicroprocess message is received on the
+&quot;control&quot; inbox. It is immediately sent on out of the &quot;signal&quot; outbox and the
+component then immediately terminates.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.html">RTP</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.RTP.html">RTP</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.RTP.RTPDeframer.html">RTPDeframer</a></h1>
+<div class="section">
+<h2 id="symbol-RTPDeframer">class RTPDeframer(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>RTPDeframer() -&gt; new RTPDeframer component.</p>
+<p>Deconstructs an RTP packet, outputting (seqnum, dict) tuple where seqnum
+is for recovering the order of packets, and dict contains the fields from
+the RTP packet.</p>
+<div class="section">
+<h3><a id="symbol-RTPDeframer.Inboxes" name="symbol-RTPDeframer.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-RTPDeframer.Outboxes" name="symbol-RTPDeframer.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-RTPDeframer.main" name="symbol-RTPDeframer.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-RTPDeframer.parsePacket" name="symbol-RTPDeframer.parsePacket">parsePacket(self, packet)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-RTPDeframer.shutdown" name="symbol-RTPDeframer.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.html">RTP</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.RTP.html">RTP</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RTP.RTP.RTPFramer.html">RTPFramer</a></h1>
+<div class="section">
+<h2 id="symbol-RTPFramer">class RTPFramer(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>RTPFramer() -&gt; new RTPFramer component.</p>
+<p>Creates a complete RTP packet based on a dict structure describing the
+packet.</p>
+<div class="section">
+<h3><a id="symbol-RTPFramer.Inboxes" name="symbol-RTPFramer.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-RTPFramer.Outboxes" name="symbol-RTPFramer.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-RTPFramer.constructPacket" name="symbol-RTPFramer.constructPacket">constructPacket(self, content)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-RTPFramer.main" name="symbol-RTPFramer.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-RTPFramer.shutdown" name="symbol-RTPFramer.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

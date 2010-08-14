@@ -1,0 +1,655 @@
+<html><body><table>
+            <tr><td>[00:41] &lt Chong-&gt Night, all.</td></tr>
+            <tr><td>[00:46] &lt Chong-&gt BTW, Michael's talk is pretty cool, there are a lot of interesting stuffs covered.</td></tr>
+            <tr><td>[00:48] *** Chong- has parted #kamaelia</td></tr>
+            <tr><td>[02:36] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[02:37] *** bcarlyon|nub is now known as bcarlyon|laptop</td></tr>
+            <tr><td>[06:46] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:47] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[06:48] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:56] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:06] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[07:07] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[07:07] Reply: does the macarena</td></tr>
+            <tr><td>[07:08] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:08] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:09] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[07:19] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:01] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[09:00] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:02] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:02] *** MS- is now known as ms-away</td></tr>
+            <tr><td>[09:02] &lt ms-away&gt greetings</td></tr>
+            <tr><td>[09:02] &lt ms-away&gt I'm kinda 85% afk during the day today</td></tr>
+            <tr><td>[09:02] &lt orphans&gt morning ms-away</td></tr>
+            <tr><td>[09:02] &lt ms-away&gt orphans: morning</td></tr>
+            <tr><td>[09:02] &lt orphans&gt :) it's alright if the 15% is your hands to type with</td></tr>
+            <tr><td>[09:03] &lt vmlemon&gt Hi</td></tr>
+            <tr><td>[09:03] &lt vmlemon&gt Hah</td></tr>
+            <tr><td>[09:08] &lt ms-away&gt heh</td></tr>
+            <tr><td>[09:27] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:32] &lt bcarlyon|lsrfm&gt g'day</td></tr>
+            <tr><td>[09:33] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:33] &lt Chong-&gt Morning, everyone.</td></tr>
+            <tr><td>[09:38] &lt vmlemon&gt Hi Chong-</td></tr>
+            <tr><td>[09:38] &lt vmlemon&gt and bcarlyon|lsrfm</td></tr>
+            <tr><td>[09:42] &lt Chong-&gt morning, vmlemon.</td></tr>
+            <tr><td>[09:42] &lt bcarlyon|lsrfm&gt morning</td></tr>
+            <tr><td>[09:48] &lt bcarlyon|lsrfm&gt off to a lecture, yay....</td></tr>
+            <tr><td>[10:03] &lt Chong-&gt bcarlyon|lsrfm: cy</td></tr>
+            <tr><td>[10:21] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:05] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:13] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:14] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[11:14] Reply: does the macarena</td></tr>
+            <tr><td>[11:15] &lt vmlemon_&gt Hmm, is the source code for the logbot available?</td></tr>
+            <tr><td>[11:26] &lt ms-away&gt yep</td></tr>
+            <tr><td>[11:26] &lt vmlemon&gt Does it support logging multiple channels?</td></tr>
+            <tr><td>[11:26] &lt ms-away&gt http://thwackety.com/Kamaelia-Logger-1.0.0.tar.gz</td></tr>
+            <tr><td>[11:26] &lt ms-away&gt Could be changed to do so</td></tr>
+            <tr><td>[11:26] &lt vmlemon&gt Aah, thanks</td></tr>
+            <tr><td>[11:29] *** vmlemon assumes that it should run without being installed by root, with minimal changes to the init files</td></tr>
+            <tr><td>[11:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:47] &lt ms-away&gt should do</td></tr>
+            <tr><td>[11:49] &lt vmlemon_&gt Looking at it now, it seems pretty much "drop and go" with the only change being to the bot name and channel</td></tr>
+            <tr><td>[11:51] *** ms-away nod</td></tr>
+            <tr><td>[11:51] &lt ms-away&gt It would be nice to improve it various ways, but I figured the best way of enabling that was to package it up as a seperate tool</td></tr>
+            <tr><td>[11:53] &lt vmlemon_&gt I take it that it uses the supplied Kamaelia included in the directory, provided that it isn't moved...</td></tr>
+            <tr><td>[11:53] &lt ms-away&gt yes</td></tr>
+            <tr><td>[11:53] &lt ms-away&gt The part of svn that tar ball is created from is here:</td></tr>
+            <tr><td>[11:53] &lt ms-away&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/branches/private_MPS_Scratch/Apps/Kamaelia-Logger/</td></tr>
+            <tr><td>[11:54] &lt vmlemon_&gt Cool, I was hoping that I wouldn't need to pester my server admin to install it ;)</td></tr>
+            <tr><td>[11:54] &lt ms-away&gt The tar ball build script is here:</td></tr>
+            <tr><td>[11:54] &lt ms-away&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/branches/private_MPS_Scratch/Apps/Kamaelia-Logger/DistBuild/Logger.build.sh?view=markup</td></tr>
+            <tr><td>[11:54] &lt ms-away&gt as it stands, if you move the script to the place where the setup.py file is, it should (probably) use the Axon/Kamaelia directories directly below</td></tr>
+            <tr><td>[11:55] &lt ms-away&gt Which is an unexpected, useful side effect of that packaging</td></tr>
+            <tr><td>[11:55] &lt ms-away&gt :)</td></tr>
+            <tr><td>[11:55] &lt vmlemon_&gt Although he usually is OK with installing stuff, if requested</td></tr>
+            <tr><td>[11:55] &lt ms-away&gt OK, I'm off to get food</td></tr>
+            <tr><td>[11:55] &lt ms-away&gt biab</td></tr>
+            <tr><td>[11:55] &lt ms-away&gt :)</td></tr>
+            <tr><td>[12:34] *** bcarlyon|nub has joined #kamaelia</td></tr>
+            <tr><td>[12:34] *** bcarlyon|nub is now known as bcarlyon|laptop</td></tr>
+            <tr><td>[12:46] *** ms-away changed the topic to GSOC Announcements from google at ~8pm UK time | GSOC: http://kamaelia.sourceforge.net/SummerOfCode | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/)</td></tr>
+            <tr><td>[12:48] *** bcarlyon|lsrfm waits in anticipation....</td></tr>
+            <tr><td>[12:49] *** orphans quivers in anticipation :)</td></tr>
+            <tr><td>[12:51] *** bcarlyon|laptop also quivers.....</td></tr>
+            <tr><td>[12:51] *** ms-away wonders what arrow holders have to do with anything</td></tr>
+            <tr><td>[12:51] &lt orphans&gt got my first final tomorrow too, and an interview on thursday. I could either have a very good week or a very bad week...</td></tr>
+            <tr><td>[12:51] &lt orphans&gt ms-away, :)</td></tr>
+            <tr><td>[14:30] *** simon89 has joined #kamaelia</td></tr>
+            <tr><td>[14:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:40] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:24] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:26] *** vmlemon_ wonders what the hell vegetarian haggis would consist of</td></tr>
+            <tr><td>[15:30] &lt ms-away&gt probably something more appealing than non-vegetarian haggis ;-)</td></tr>
+            <tr><td>[15:31] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:31] &lt vmlemon_&gt I saw it mentioned on a shop sign, earlier</td></tr>
+            <tr><td>[15:32] &lt vmlemon_&gt I suppose "vegetarian bacon" is another weird wonder</td></tr>
+            <tr><td>[15:41] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:53] &lt Davbo&gt Good afternoon all</td></tr>
+            <tr><td>[15:54] &lt Davbo&gt 3 more hours :)</td></tr>
+            <tr><td>[15:54] *** Davbo sits in suspense :D</td></tr>
+            <tr><td>[16:05] &lt orphans&gt hey Davbo</td></tr>
+            <tr><td>[16:05] *** orphans is revising in suspense</td></tr>
+            <tr><td>[16:05] &lt orphans&gt (please note - suspense, not suspenders :D)</td></tr>
+            <tr><td>[16:18] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:18] &lt j_baker&gt hello guys</td></tr>
+            <tr><td>[16:19] &lt Lawouach&gt hi j_baker</td></tr>
+            <tr><td>[16:22] &lt Davbo&gt hello :)</td></tr>
+            <tr><td>[16:24] &lt orphans&gt hey :)</td></tr>
+            <tr><td>[17:00] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[17:00] &lt Chong-&gt Now, 2 hours to go :-)</td></tr>
+            <tr><td>[17:01] &lt j_baker&gt Sigh... the suspense is killing me.</td></tr>
+            <tr><td>[17:02] &lt Davbo&gt hehe :)</td></tr>
+            <tr><td>[17:04] &lt Chong-&gt :-)</td></tr>
+            <tr><td>[17:05] &lt Chong-&gt Hope the result is worth our waiting.:-)</td></tr>
+            <tr><td>[17:05] &lt Lawouach&gt what should happen in 2 hours?</td></tr>
+            <tr><td>[17:06] &lt Davbo&gt It'll be worth it even if the result is bad Chong-, better chances next year and more experience in applying for things is always useful</td></tr>
+            <tr><td>[17:06] &lt Davbo&gt GSoC announce accepted students Lawouach</td></tr>
+            <tr><td>[17:06] &lt Lawouach&gt ah</td></tr>
+            <tr><td>[17:06] &lt Chong-&gt Lawouach: the student list who have been accepted by GSOC</td></tr>
+            <tr><td>[17:08] *** jle has joined #kamaelia</td></tr>
+            <tr><td>[17:08] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[17:09] &lt Chong-&gt Davbo: that's the experience of making an application, not its result :-)</td></tr>
+            <tr><td>[17:10] &lt Davbo&gt True but you can't have one without the other</td></tr>
+            <tr><td>[17:13] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:13] &lt MS-&gt evening</td></tr>
+            <tr><td>[17:14] &lt Chong-&gt yes. Anyway, we are winners because we have tried and got precious experience.</td></tr>
+            <tr><td>[17:14] &lt Chong-&gt evening, MS-</td></tr>
+            <tr><td>[17:16] *** MS- wonders what #gsoc is right like now</td></tr>
+            <tr><td>[17:16] &lt Davbo&gt Konnichiwa MS-</td></tr>
+            <tr><td>[17:17] &lt MS-&gt Davbo: priviet</td></tr>
+            <tr><td>[17:17] &lt Davbo&gt it's full of drama, i'm spectating the chaos</td></tr>
+            <tr><td>[17:17] &lt MS-&gt I'm guessing it's like an episode of Dad's Army right now</td></tr>
+            <tr><td>[17:18] &lt Davbo&gt Hah :)</td></tr>
+            <tr><td>[17:20] *** Davbo wonders if lh would appreciate her role as a Mannering character</td></tr>
+            <tr><td>[17:20] &lt MS-&gt :)</td></tr>
+            <tr><td>[17:21] &lt orphans&gt evening MS-</td></tr>
+            <tr><td>[17:21] &lt MS-&gt orphans: evening</td></tr>
+            <tr><td>[17:21] &lt orphans&gt and Chong- and everyone else who I haven't said hello to yet</td></tr>
+            <tr><td>[17:22] &lt Davbo&gt back in a bit.</td></tr>
+            <tr><td>[17:22] &lt MS-&gt *: evening</td></tr>
+            <tr><td>[17:22] &lt MS-&gt (saves time :) )</td></tr>
+            <tr><td>[17:22] &lt orphans&gt :)</td></tr>
+            <tr><td>[17:23] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[17:23] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[17:26] &lt Chong-&gt evening, orphans.</td></tr>
+            <tr><td>[17:27] &lt orphans&gt think it might be time to idle on #gsoc for a bit to watch the drama unfold - I saw a bit of conflict resolution and it was pretty mindblowing</td></tr>
+            <tr><td>[17:34] &lt j_baker&gt http://www.evilmadscientist.com/article.php/usbkey</td></tr>
+            <tr><td>[17:34] &lt j_baker&gt That's pretty awesome.</td></tr>
+            <tr><td>[17:34] *** MS- looks</td></tr>
+            <tr><td>[17:34] &lt MS-&gt Ahh, that.</td></tr>
+            <tr><td>[17:34] &lt MS-&gt yes, I liked that :)</td></tr>
+            <tr><td>[17:35] &lt j_baker&gt If there's one thing there's no shortage of for me, it's USB thumb drives and USB cables.</td></tr>
+            <tr><td>[17:35] &lt MS-&gt heh</td></tr>
+            <tr><td>[17:36] &lt orphans&gt I could really do with a USB stick - I've got a 512mb one which is officially full</td></tr>
+            <tr><td>[17:46] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[18:02] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[18:17] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:22] &lt Davbo&gt Anyone read "Python Scripting for Computational Science" ?</td></tr>
+            <tr><td>[18:22] &lt Davbo&gt been flicking through it today, looks pretty good</td></tr>
+            <tr><td>[18:22] &lt Davbo&gt Really shows the benefits of Python over something like MATLAB</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt http://blogs.wsj.com/biztech/2008/04/16/security-is-no-match-for-chocolate-and-good-looking-women/?mod=WSJBlog</td></tr>
+            <tr><td>[18:35] &lt orphans&gt from the title that's gotta be good Lawouach</td></tr>
+            <tr><td>[18:38] &lt Davbo&gt Heh that really doesn't surprise me Lawouach</td></tr>
+            <tr><td>[18:39] &lt Davbo&gt the comments are funny lol</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt I had never witnessed so many people on one single IRC channel</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt That's impressive :)</td></tr>
+            <tr><td>[19:05] &lt orphans&gt heh, it's great to watch atm</td></tr>
+            <tr><td>[19:05] &lt orphans&gt it's like if you dropped a blank cheque for half a million into the middle of a crowded room :)</td></tr>
+            <tr><td>[19:30] &lt Davbo&gt lol</td></tr>
+            <tr><td>[19:31] &lt Davbo&gt Chris DiBona just got a lot of thank you's</td></tr>
+            <tr><td>[19:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:37] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[19:37] &lt Davbo&gt Hey vmlemon_</td></tr>
+            <tr><td>[19:39] &lt Lawouach&gt there's one dude with too much power on #gsoc, the guy bans anyone saying the number of people part of the channel</td></tr>
+            <tr><td>[19:40] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[19:42] *** vmlemon_ is trying to devise a way of multiplexing several services on a single TCP port...</td></tr>
+            <tr><td>[19:42] &lt bcarlyon|laptop&gt here comes the emails.....</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt (HTTP, RTSP, an MSN Messenger server and Jabber)</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt *MSN Messenger-compatible</td></tr>
+            <tr><td>[19:44] &lt Lawouach&gt the channel goes too fast on #gsoc :)</td></tr>
+            <tr><td>[19:45] &lt bcarlyon|laptop&gt lol</td></tr>
+            <tr><td>[19:46] &lt vmlemon_&gt Watching #gentoo is like watching motorway traffic, at least so it seems if you don't enter it often</td></tr>
+            <tr><td>[19:47] &lt bcarlyon|laptop&gt Congrats to those accepted.....</td></tr>
+            <tr><td>[19:48] &lt orphans&gt :) - email is good - webapp still the same</td></tr>
+            <tr><td>[19:48] *** orphans grins</td></tr>
+            <tr><td>[19:48] &lt Lawouach&gt ;)</td></tr>
+            <tr><td>[19:49] &lt orphans&gt cheers Lawouach, MS- and mhrd - can't wait to get going :D</td></tr>
+            <tr><td>[19:49] &lt Davbo&gt Got my email too :D - Congrats orphans!</td></tr>
+            <tr><td>[19:49] &lt orphans&gt you too, banging!</td></tr>
+            <tr><td>[19:49] &lt orphans&gt :)</td></tr>
+            <tr><td>[19:49] &lt bcarlyon|laptop&gt http://code.google.com/soc/bbc/about.html</td></tr>
+            <tr><td>[19:50] &lt vmlemon_&gt You all got in?</td></tr>
+            <tr><td>[19:50] &lt bcarlyon|laptop&gt list on: http://code.google.com/soc/bbc/about.html</td></tr>
+            <tr><td>[19:50] &lt Davbo&gt Yeah, thanks MS-, Lawouach and mhrd :D</td></tr>
+            <tr><td>[19:50] &lt Lawouach&gt Congrats to those who made it and trust me it's been a tough call in many aspects.</td></tr>
+            <tr><td>[19:51] *** orphans is off the the pub now!</td></tr>
+            <tr><td>[19:51] &lt Lawouach&gt For those who didn't make it, I truly hope you'll stick around for a while and I'm pretty sure you'll do great stuff too</td></tr>
+            <tr><td>[19:52] &lt orphans&gt cheers again all - pub calls :)</td></tr>
+            <tr><td>[19:53] &lt Davbo&gt Cya orphans :)</td></tr>
+            <tr><td>[19:53] &lt vmlemon_&gt orphans: Cillit? ;)</td></tr>
+            <tr><td>[19:53] *** vmlemon_ ducks</td></tr>
+            <tr><td>[19:59] &lt Chong-&gt Just saw it, congratulations, guys.:-);):D:p:o</td></tr>
+            <tr><td>[20:00] &lt vmlemon_&gt Yay for those that got in</td></tr>
+            <tr><td>[20:00] &lt Davbo&gt Congrats Chong- :)</td></tr>
+            <tr><td>[20:01] &lt Chong-&gt Davbo: Thanks.:-)</td></tr>
+            <tr><td>[20:02] &lt Chong-&gt yes. Big thanks to MS-, Lawouach and mhrd.</td></tr>
+            <tr><td>[20:06] &lt MS-&gt oh hai, back now</td></tr>
+            <tr><td>[20:06] &lt vmlemon_&gt Anyone familiar with SourceForge project administration?</td></tr>
+            <tr><td>[20:06] &lt MS-&gt Congrats everyone :-)</td></tr>
+            <tr><td>[20:06] &lt Chong-&gt Hey, MS-.</td></tr>
+            <tr><td>[20:07] &lt MS-&gt Damn, simon went</td></tr>
+            <tr><td>[20:07] &lt MS-&gt scuse the language</td></tr>
+            <tr><td>[20:07] &lt Chong-&gt Thanks a lot, MS-.</td></tr>
+            <tr><td>[20:07] &lt MS-&gt Chong-: You're welcome</td></tr>
+            <tr><td>[20:08] *** Davbo hugs MS- :D</td></tr>
+            <tr><td>[20:08] &lt Davbo&gt *aherm*</td></tr>
+            <tr><td>[20:08] &lt MS-&gt indeed</td></tr>
+            <tr><td>[20:08] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:08] &lt Davbo&gt :P</td></tr>
+            <tr><td>[20:08] &lt MS-&gt heh</td></tr>
+            <tr><td>[20:08] *** Chong- hugs MS- and Davbo :-)</td></tr>
+            <tr><td>[20:08] &lt MS-&gt vmlemon_: I'll have to remember how actually - I'll need to add some developers...</td></tr>
+            <tr><td>[20:08] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:08] &lt Chong-&gt ;)</td></tr>
+            <tr><td>[20:09] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[20:09] &lt MS-&gt yay.</td></tr>
+            <tr><td>[20:09] &lt MS-&gt Hiya j_baker - congratulations :)</td></tr>
+            <tr><td>[20:09] &lt j_baker&gt Thank you.... I'm excited now.</td></tr>
+            <tr><td>[20:09] &lt MS-&gt :-)</td></tr>
+            <tr><td>[20:09] &lt Davbo&gt Congratulations j_baker!</td></tr>
+            <tr><td>[20:10] &lt MS-&gt I really think it's a good mix of apps this year, and it was probably the toughest call we've had on this</td></tr>
+            <tr><td>[20:10] &lt j_baker&gt Congrats to everyone else who made it.</td></tr>
+            <tr><td>[20:10] &lt vmlemon_&gt Do I have to use the SCM to upload a file? Or do they have a separate function for uploading tarballs/packages?</td></tr>
+            <tr><td>[20:10] &lt MS-&gt They have different functions for releases from the version control, yes</td></tr>
+            <tr><td>[20:11] &lt MS-&gt You have to create a package and then upload it.</td></tr>
+            <tr><td>[20:11] &lt Chong-&gt Cheers:-)</td></tr>
+            <tr><td>[20:11] &lt MS-&gt If the web front end doesn't like you, you can ftp it and then claim it</td></tr>
+            <tr><td>[20:11] &lt MS-&gt in the release manager</td></tr>
+            <tr><td>[20:11] &lt MS-&gt personally I think the "quick release" system is so named because it's quicker, but I'm not so sure about "quick" :-)</td></tr>
+            <tr><td>[20:12] &lt j_baker&gt MS- I had a couple of questions about my project that don't necessarily need to be answered right away. What email address should I send them to? Or is there another preferred avenue for me to ask?</td></tr>
+            <tr><td>[20:12] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ . Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since</td></tr>
+            <tr><td>[20:12] Reply: the person(s) you asked for reads the logs. Idle on the channel if you want and answer and don't get an immediate one. In the meantime this page is the sort of questions we'd ask you to improve your app are here:</td></tr>
+            <tr><td>[20:12] Reply: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783 . Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news</td></tr>
+            <tr><td>[20:13] *** MS- makes a note to kill that part of kamaeliabot</td></tr>
+            <tr><td>[20:13] &lt MS-&gt In the past we've used an email address that was dedicated specifically for that sort of thing, however I think that was the wrong approach in retrospect</td></tr>
+            <tr><td>[20:14] &lt MS-&gt So this year for email I'm going to encourage everyone to use the main mailing list - kamaelia-list@lists.sourceforge.net</td></tr>
+            <tr><td>[20:14] &lt MS-&gt I will be sending out an "orientation" email either later tonight or tomorrow.</td></tr>
+            <tr><td>[20:14] &lt Lawouach&gt I know it's a lot to ask but I wish we could migrate to google groups</td></tr>
+            <tr><td>[20:14] &lt Lawouach&gt sf lists are awful</td></tr>
+            <tr><td>[20:15] &lt vmlemon_&gt I already have a tarball</td></tr>
+            <tr><td>[20:15] &lt j_baker&gt Do we have to actually subscribe to it? There seems to be a crap load of spam.</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt spammed like hell</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt and just hard to use IMO</td></tr>
+            <tr><td>[20:15] &lt MS-&gt heh</td></tr>
+            <tr><td>[20:15] &lt MS-&gt OK</td></tr>
+            <tr><td>[20:15] &lt MS-&gt done</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt ah well</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt I wish I could have asked for a million quid instead</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt s/could/had</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt meh</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt anyway</td></tr>
+            <tr><td>[20:15] &lt MS-&gt heh</td></tr>
+            <tr><td>[20:15] &lt Lawouach&gt time for reading</td></tr>
+            <tr><td>[20:15] &lt MS-&gt I can't do the million quid :)</td></tr>
+            <tr><td>[20:16] &lt MS-&gt (we'd be able to take the other good students too if I could :) )</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt http://www.amazon.co.uk/Memories-Ice-Malazan-Book-Fallen/dp/0593046242 &lt -- I've been reading this for the past two weeks</td></tr>
+            <tr><td>[20:16] &lt Lawouach&gt Third episode of a great tale</td></tr>
+            <tr><td>[20:17] &lt Lawouach&gt The best one so far :D</td></tr>
+            <tr><td>[20:18] &lt MS-&gt cool</td></tr>
+            <tr><td>[20:18] &lt j_baker&gt What do the red dots next to some students' projects on the BBC gsoc page mean?</td></tr>
+            <tr><td>[20:18] *** MS- looks</td></tr>
+            <tr><td>[20:19] &lt Davbo&gt It's the google maps thing</td></tr>
+            <tr><td>[20:19] &lt MS-&gt ah</td></tr>
+            <tr><td>[20:19] &lt MS-&gt Lawouach: sounds intriguing</td></tr>
+            <tr><td>[20:19] &lt Lawouach&gt the book?</td></tr>
+            <tr><td>[20:20] &lt MS-&gt yep</td></tr>
+            <tr><td>[20:20] &lt Lawouach&gt Well if you are into epic tales, military plots, large scale battles, sorcerers, many different characters (and I mean many!)</td></tr>
+            <tr><td>[20:20] &lt Lawouach&gt then it's for you</td></tr>
+            <tr><td>[20:21] &lt Lawouach&gt But beware, thos books are thick. Around 1000 pages in paperback</td></tr>
+            <tr><td>[20:21] &lt Lawouach&gt I think the story is worth it however.</td></tr>
+            <tr><td>[20:22] &lt MS-&gt Well, I've recently re-read all of eddings stuff, so I'm kinda in the mood for something :)</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt The first book sets the mood immediatly, the second book is slower paced and larger in scope. The third book has been a delight so far.</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt ah, well you want to give the first one a try then</td></tr>
+            <tr><td>[20:22] &lt MS-&gt I'll take a look</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt http://www.amazon.co.uk/Gardens-Moon-Malazan-Book-Fallen/dp/0553812173</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt That's the first one</td></tr>
+            <tr><td>[20:23] &lt Lawouach&gt Personally I'm hooked :)</td></tr>
+            <tr><td>[20:24] *** MS- laughs - matt's going to get an email from code.google.com</td></tr>
+            <tr><td>[20:24] &lt Lawouach&gt Just on a random note, I've been also in love with the work of Kelley Armstrong, as well as Trudi Canavan (The magician trilogy is really nice)</td></tr>
+            <tr><td>[20:24] &lt MS-&gt Project Name Request Your request has been emailed to the existing project owner(s): matth_rd@users.sourceforge.net ... Email will be sent to you at sparks.m@gmail.com when the existing project owner(s) approve or deny your request.</td></tr>
+            <tr><td>[20:25] &lt Lawouach&gt http://www.amazon.co.uk/Haunted-Kelley-Armstrong/dp/1841493414/ &lt -- this book is worth the read</td></tr>
+            <tr><td>[20:25] &lt MS-&gt I'd seen the Trudi Canavan stuff in shops, but not got that yet, but figured it might be good to be given that much shelf space</td></tr>
+            <tr><td>[20:25] &lt MS-&gt I do like recommendations though</td></tr>
+            <tr><td>[20:25] &lt Lawouach&gt Yeap</td></tr>
+            <tr><td>[20:25] &lt MS-&gt ta</td></tr>
+            <tr><td>[20:25] *** MS- looks</td></tr>
+            <tr><td>[20:25] &lt Lawouach&gt The trilogy is easy to read and suitable for teenagers too</td></tr>
+            <tr><td>[20:26] &lt Lawouach&gt The second trilogy is not as good IMO. She tried too much.</td></tr>
+            <tr><td>[20:26] &lt Davbo&gt My friend loves that "The Magician" trilogy</td></tr>
+            <tr><td>[20:26] &lt Lawouach&gt It's a great one indeed.</td></tr>
+            <tr><td>[20:26] &lt MS-&gt Cool.</td></tr>
+            <tr><td>[20:27] *** Davbo may take a look</td></tr>
+            <tr><td>[20:27] &lt Lawouach&gt And before I get to bed, I discovered Neil Gaiman's work a few months back. I just couldn't stop reading Anansi boys. :)</td></tr>
+            <tr><td>[20:28] &lt Lawouach&gt Alright, time for bed :)</td></tr>
+            <tr><td>[20:28] &lt Lawouach&gt See you guys tomorrow</td></tr>
+            <tr><td>[20:28] &lt MS-&gt I still can't get into gaiman, go figure :)</td></tr>
+            <tr><td>[20:28] &lt MS-&gt or sleep :)</td></tr>
+            <tr><td>[20:28] &lt MS-&gt cya tomorrow :)</td></tr>
+            <tr><td>[20:28] &lt j_baker&gt Later Lawouach</td></tr>
+            <tr><td>[20:29] &lt Davbo&gt Night Lawouach</td></tr>
+            <tr><td>[20:29] &lt Lawouach&gt gaiman's work is strange and I can understand one might like or just dislike it. Hard to stay neutral when reading his books.</td></tr>
+            <tr><td>[20:29] &lt Lawouach&gt anyway later</td></tr>
+            <tr><td>[20:29] &lt Davbo&gt Yay! so happy about GSoC :) - It's gonna be fun</td></tr>
+            <tr><td>[20:30] &lt MS-&gt Very pleased to hear it :)</td></tr>
+            <tr><td>[20:31] &lt Davbo&gt Pablo Orduña's project sounds really cool</td></tr>
+            <tr><td>[20:31] &lt Davbo&gt well they all do, but that one i'd not heard of</td></tr>
+            <tr><td>[20:32] &lt MS-&gt He's been on IRC a few times, but also, he put in 2 applications last year - one of which was a less mature version of the same idea put forward this year</td></tr>
+            <tr><td>[20:32] &lt Davbo&gt cool :)</td></tr>
+            <tr><td>[20:32] &lt MS-&gt His full application was really pretty good as a result :)</td></tr>
+            <tr><td>[20:32] &lt j_baker&gt That definitely is a good idea that I think would benefit Kamaelia.</td></tr>
+            <tr><td>[20:32] &lt MS-&gt Indeed.</td></tr>
+            <tr><td>[20:33] &lt MS-&gt We did take on a student last year to work on that, but they didn't turn up, which was really really annoying (and too late for google to do anything about)</td></tr>
+            <tr><td>[20:34] &lt Davbo&gt The other projects are more exemplars of what can be done with Kamaelia that one is a bit different :)</td></tr>
+            <tr><td>[20:34] &lt MS-&gt largely because we knew there were other good apps</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Yep</td></tr>
+            <tr><td>[20:34] &lt MS-&gt All the project proposals grow the project's component set clearly in different directions as well</td></tr>
+            <tr><td>[20:35] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[20:35] &lt MS-&gt In a way, I'm really pleased that bcarlyon|*'s app with PHP came off because it would've meant choosing between you two or having a narrower field, which is a hard choice</td></tr>
+            <tr><td>[20:36] &lt Davbo&gt Had he applied for a similar/same thing as me?</td></tr>
+            <tr><td>[20:37] &lt MS-&gt Basically something very similar.</td></tr>
+            <tr><td>[20:37] &lt MS-&gt Not the same - different in many respects as well</td></tr>
+            <tr><td>[20:37] &lt MS-&gt No two applications are ever really the same</td></tr>
+            <tr><td>[20:38] &lt MS-&gt We didn't even get cookie cutter copies of the web page descriptions this year - but that's perhaps because we didn't put the ideas up in a cookie-cutter style</td></tr>
+            <tr><td>[20:43] &lt Davbo&gt That would have sucked, if we both had similar applications</td></tr>
+            <tr><td>[20:44] &lt Davbo&gt Thankfully events have conspired in our favour though :)</td></tr>
+            <tr><td>[20:45] &lt MS-&gt Indeed</td></tr>
+            <tr><td>[20:47] &lt Davbo&gt how is the mentoring going to take place MS-?</td></tr>
+            <tr><td>[20:48] &lt MS-&gt I'll be sending out a longish email about this, but the short version boils down to this:</td></tr>
+            <tr><td>[20:49] &lt MS-&gt We give you a place (in subversion) where you can write code, and check in often without being afraid of breaking anything - and hence can checkin often.</td></tr>
+            <tr><td>[20:49] &lt Davbo&gt Only reason i ask is because mine says Matt Hammond but i get the impression from you guys that it will be more dynamic than that</td></tr>
+            <tr><td>[20:49] &lt MS-&gt We also expect you to log onto IRC during "working hours" - whatever that works out for you.</td></tr>
+            <tr><td>[20:50] &lt MS-&gt I'll come to that :)</td></tr>
+            <tr><td>[20:51] &lt MS-&gt We also do the following, which seems to work:</td></tr>
+            <tr><td>[20:51] &lt MS-&gt We have a weekly meeting based on a format stolen from pypy & canonical (the ubuntu people)</td></tr>
+            <tr><td>[20:51] &lt MS-&gt Arranged at a time convenient for everyone</td></tr>
+            <tr><td>[20:52] &lt MS-&gt In that meeting every posts 3 sentances all at once:</td></tr>
+            <tr><td>[20:52] &lt MS-&gt DONE, TODO, BLOCKED</td></tr>
+            <tr><td>[20:52] &lt MS-&gt (they can be long sentances, but IRC limits the length to 256 chars)</td></tr>
+            <tr><td>[20:52] &lt Davbo&gt lol :)</td></tr>
+            <tr><td>[20:52] &lt MS-&gt With the aim being actually how blocked are you</td></tr>
+            <tr><td>[20:52] &lt MS-&gt and helping you get unblocked</td></tr>
+            <tr><td>[20:52] &lt MS-&gt etc</td></tr>
+            <tr><td>[20:53] &lt MS-&gt and to have a standard open forum where people can raise things</td></tr>
+            <tr><td>[20:53] &lt Davbo&gt Ah like, stuck not sure how to go about something?</td></tr>
+            <tr><td>[20:53] &lt MS-&gt That sort of thing</td></tr>
+            <tr><td>[20:55] &lt Davbo&gt Suppose we can use that to sort through things on the Mailing list too</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Beyond that we also do something slightly odd - which is to _guarantee_ a specific hour each week where you can have our undivided attention (at least in theory)</td></tr>
+            <tr><td>[20:56] &lt MS-&gt (the idea being that if we're just too pressed for time, for work reasons or similar, that you can *definitely* get hold of us then)</td></tr>
+            <tr><td>[20:56] &lt MS-&gt (in addition to the meeting time)</td></tr>
+            <tr><td>[20:57] &lt MS-&gt It also means we can review progress regularly etc</td></tr>
+            <tr><td>[20:57] &lt MS-&gt As you know we tend to hang out on IRC anyway</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Seems to work out OK</td></tr>
+            <tr><td>[20:57] &lt MS-&gt OK, you specifically asked about matt vs me</td></tr>
+            <tr><td>[20:57] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:57] &lt MS-&gt The way that's normally worked is as a primary/secondary mentoring thing</td></tr>
+            <tr><td>[20:57] &lt MS-&gt rather than mentor/backup</td></tr>
+            <tr><td>[20:57] &lt MS-&gt yep</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Matt's as experienced with Kamaelia as I am really, so the idea is that</td></tr>
+            <tr><td>[20:57] &lt MS-&gt if I'm overloaded or away on leave (since I will be)</td></tr>
+            <tr><td>[20:58] &lt MS-&gt that he can step forward and be the primary person to ask questions/get things sorted/make decisions (eg agree change in priorities etc)</td></tr>
+            <tr><td>[20:58] &lt Davbo&gt I didn't mean it to sound like I wasn't happy with Matt lol, just i recall him saying that he would be around here and there when you're not around</td></tr>
+            <tr><td>[20:58] &lt MS-&gt But generally speaking matt won't say too much</td></tr>
+            <tr><td>[20:58] &lt MS-&gt heh, no I realise that</td></tr>
+            <tr><td>[20:59] &lt MS-&gt But the key thing is this: Matt does listen and I do trust his judgement, so communications about the project do need to either be on a logged channel</td></tr>
+            <tr><td>[20:59] &lt MS-&gt or on the mailing list (or google group when set up)</td></tr>
+            <tr><td>[20:59] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[20:59] &lt MS-&gt Matt's also offered to act as a backup for Lawouach as well</td></tr>
+            <tr><td>[21:00] &lt MS-&gt in a similar way</td></tr>
+            <tr><td>[21:00] &lt MS-&gt What the *webapp* says though is specifically about showing we've thought about the loading</td></tr>
+            <tr><td>[21:00] &lt MS-&gt 3 people mentoring 5 people is just about the limit really</td></tr>
+            <tr><td>[21:00] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[21:01] &lt Davbo&gt I think with the Mailing List / Google group i'll have plenty of ways to communicate any problems</td></tr>
+            <tr><td>[21:01] &lt MS-&gt Indeed.</td></tr>
+            <tr><td>[21:01] &lt Davbo&gt you'll all be able to just check-out what i've done on svn anyway right?</td></tr>
+            <tr><td>[21:02] &lt MS-&gt That's the aim</td></tr>
+            <tr><td>[21:02] &lt MS-&gt The way we structure svn essentially gives everyone a space to play</td></tr>
+            <tr><td>[21:02] &lt MS-&gt and also a way of allowing people space to grow into</td></tr>
+            <tr><td>[21:02] &lt MS-&gt for example, if you want to create branches, you have default permission to do so</td></tr>
+            <tr><td>[21:03] &lt MS-&gt In your case your branches would be named</td></tr>
+            <tr><td>[21:03] &lt MS-&gt  /branches/private_DK_&lt anything you want that's not profane&gt :)</td></tr>
+            <tr><td>[21:03] &lt j_baker&gt How are we going to handle the time difference between me and everyone else?</td></tr>
+            <tr><td>[21:03] &lt MS-&gt It seems to have worked OK so far :)</td></tr>
+            <tr><td>[21:04] &lt Davbo&gt Sounds good MS- :D</td></tr>
+            <tr><td>[21:04] &lt MS-&gt Davbo: you also have /Sketches/DK/&lt here&gt</td></tr>
+            <tr><td>[21:04] &lt j_baker&gt Sweet. Just so you guys know though, I'm not getting up at 4 in the morning for any meetings. :P</td></tr>
+            <tr><td>[21:04] &lt MS-&gt in the same way I have /Sketches/MPS and matt has /Sketches/MH</td></tr>
+            <tr><td>[21:04] &lt MS-&gt j_baker: I think 4 in the afternoon is perfectly reasonable ;)</td></tr>
+            <tr><td>[21:05] &lt MS-&gt I know what you mean though</td></tr>
+            <tr><td>[21:05] &lt MS-&gt You're actually more likely to get more sense out of me at this time of day than you are when it's 4am for you anyway :)</td></tr>
+            <tr><td>[21:05] &lt j_baker&gt I still don't understand morning people.</td></tr>
+            <tr><td>[21:06] &lt Davbo&gt My sleeping pattern will have shifted by about 8 hours in the summer anyway</td></tr>
+            <tr><td>[21:06] &lt Davbo&gt ;)</td></tr>
+            <tr><td>[21:08] &lt MS-&gt j_baker: Yeah, the "dedicated mentor time" is arranged at a time that's convenient for the two of us.</td></tr>
+            <tr><td>[21:09] &lt MS-&gt and the meeting has traditionally been at a particular time, but can be shifted probably.</td></tr>
+            <tr><td>[21:09] &lt MS-&gt What is the time where you are now?</td></tr>
+            <tr><td>[21:09] &lt Davbo&gt Lots of open source development takes place at rather abnormal hours</td></tr>
+            <tr><td>[21:09] &lt MS-&gt (I get timezones muddled, but if I get a specific datapoint that roots me)</td></tr>
+            <tr><td>[21:09] &lt j_baker&gt 4 PM</td></tr>
+            <tr><td>[21:09] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:09] &lt MS-&gt 6 hours out - that's actually pretty good</td></tr>
+            <tr><td>[21:10] &lt j_baker&gt Of course you could always talk the BBC into flying me to England. :)</td></tr>
+            <tr><td>[21:11] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:11] &lt MS-&gt OK, I think I'll be sending out a short series of emails, rather than one megalithic one</td></tr>
+            <tr><td>[21:12] &lt MS-&gt 2 key things though:</td></tr>
+            <tr><td>[21:13] &lt MS-&gt 1, I'll need your sourceforge id's and prefered "tag" which is usually your initials - I'm MPS, Matt is MH, Lawouach has his own server...</td></tr>
+            <tr><td>[21:14] &lt MS-&gt 2, The other is I need you to review the contributor agreement (it's based on python's) which is here...</td></tr>
+            <tr><td>[21:14] &lt MS-&gt http://kamaelia.sourceforge.net/Developers/SampleContributorAgreement</td></tr>
+            <tr><td>[21:15] &lt MS-&gt Without that we can't merge your code into the mainline.</td></tr>
+            <tr><td>[21:15] &lt MS-&gt (If you're not happy about it, we *do* have a plan b)</td></tr>
+            <tr><td>[21:15] &lt MS-&gt The core reasons for the agreement though is that if anyone breaches the license, the BBC goes after them rather than you having to.</td></tr>
+            <tr><td>[21:16] &lt MS-&gt (and it'd be done tastefully if it ever happened ;) :) )</td></tr>
+            <tr><td>[21:16] &lt MS-&gt But the agreement also means you retain full rights</td></tr>
+            <tr><td>[21:17] &lt MS-&gt you just grant us a BSD license over your code, with the ability to re-release under the normal kamaelia license as well</td></tr>
+            <tr><td>[21:17] &lt MS-&gt As I say though I'll send out mails relating to these details</td></tr>
+            <tr><td>[21:17] &lt j_baker&gt One question: What if we use any GPL licensed libraries? Isn't that incompatible with the BSD license?</td></tr>
+            <tr><td>[21:18] &lt MS-&gt No, that's not a problem.</td></tr>
+            <tr><td>[21:18] &lt MS-&gt The explaination is a little convoluted perhaps, but it's not an issue</td></tr>
+            <tr><td>[21:19] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[21:19] &lt MS-&gt The way it works is this:</td></tr>
+            <tr><td>[21:19] &lt MS-&gt by definition if you write something, you own the copyright over what you have written</td></tr>
+            <tr><td>[21:19] &lt MS-&gt You can choose to license that how you like - for example you can choose to give people a CC license to put it on tshirts</td></tr>
+            <tr><td>[21:20] &lt MS-&gt So you can grant us a BSD license over the code you write.</td></tr>
+            <tr><td>[21:20] &lt MS-&gt However.</td></tr>
+            <tr><td>[21:21] &lt MS-&gt If you use a GPL library, then when that gets distributed by *us* then the license we ship under has to be GPL compatible.</td></tr>
+            <tr><td>[21:21] &lt MS-&gt This we can do, because the main Kamaelia license is MPL/GPL/LGPL tri-license</td></tr>
+            <tr><td>[21:21] &lt Chong-&gt MS-: cannot see the SampleContributorAgreement :-)</td></tr>
+            <tr><td>[21:21] &lt Davbo&gt Sorry back, just been trying to explain to my Mum that i'm not working for Google</td></tr>
+            <tr><td>[21:21] &lt MS-&gt Chong-: sourceforge may be being naff, it's there</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Davbo: technically you're contracted by google</td></tr>
+            <tr><td>[21:22] &lt MS-&gt To upload some code at the end of gsoc</td></tr>
+            <tr><td>[21:22] &lt MS-&gt But not contracted</td></tr>
+            <tr><td>[21:22] &lt Chong-&gt MS-: no roblem. In fact you have explain it very well.:-)</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Anyhow, back to j_baker's point</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Using GPL'd libraries isn't an issue.</td></tr>
+            <tr><td>[21:23] &lt MS-&gt The choice of the MPL/GPL/LGPL combo for the main distro was very specifically chosen to make it not an issue</td></tr>
+            <tr><td>[21:24] &lt MS-&gt And the contributor agreement likewise doesn't make it an issue, because you'd be just shipping us your code</td></tr>
+            <tr><td>[21:24] &lt MS-&gt which you wrote and own :)</td></tr>
+            <tr><td>[21:24] &lt Chong-&gt cool:-)</td></tr>
+            <tr><td>[21:25] &lt j_baker&gt I see. This is one of the reasons why I dislike the GPL. It's less a software license and more a political manifesto.</td></tr>
+            <tr><td>[21:25] &lt MS-&gt Exactly my issue with the GPL.</td></tr>
+            <tr><td>[21:25] &lt j_baker&gt I'd be happy just to release all my code under a BSD/MIT license.</td></tr>
+            <tr><td>[21:25] &lt MS-&gt Also precisely one of the reasons why Kamaelia is MPL tri-license</td></tr>
+            <tr><td>[21:25] &lt MS-&gt (The MPL is a non-political license & has explicit patent clause)</td></tr>
+            <tr><td>[21:26] &lt MS-&gt I'd also prefer BSD/MIT</td></tr>
+            <tr><td>[21:26] &lt MS-&gt But hey, I don't own the Kamaelia code I write :)</td></tr>
+            <tr><td>[21:27] &lt MS-&gt The LGPL part of the Kamaelia license *and* the fact you've all written a mini-axon (meaning your code can *completely* stand alone if written properly)</td></tr>
+            <tr><td>[21:27] &lt MS-&gt means unlike me, you *will* own yours :)</td></tr>
+            <tr><td>[21:28] &lt Davbo&gt oooo</td></tr>
+            <tr><td>[21:28] &lt Davbo&gt i see</td></tr>
+            <tr><td>[21:28] &lt Davbo&gt that's clever.</td></tr>
+            <tr><td>[21:28] &lt MS-&gt I've been around this block a few times ;)</td></tr>
+            <tr><td>[21:29] &lt MS-&gt (oh the reason for a non-political license btw isn't personal, it's because the BBC shouldn't play politics...)</td></tr>
+            <tr><td>[21:29] &lt Davbo&gt Heh, i've noticed. My familiarity with the licenses is pretty much nil so i'm glad you're here MS- .</td></tr>
+            <tr><td>[21:30] &lt Davbo&gt What will our association with the BBC be then MS- ?</td></tr>
+            <tr><td>[21:30] &lt j_baker&gt A government organization without a political agenda? Sacrilege!</td></tr>
+            <tr><td>[21:31] &lt MS-&gt j_baker: Both the major opposing political parties say we're the nampy-pampy-supports of their opposition, so I think that's OK</td></tr>
+            <tr><td>[21:31] &lt MS-&gt Davbo: Um, you'll be sullied by association?</td></tr>
+            <tr><td>[21:32] &lt MS-&gt There is a word for it, but I can't remember it right now</td></tr>
+            <tr><td>[21:32] &lt j_baker&gt lol... They should watch the American media.</td></tr>
+            <tr><td>[21:33] &lt Davbo&gt not really MS- it was just out of interest</td></tr>
+            <tr><td>[21:33] &lt MS-&gt Mentor is the best word really. Invigilator is a poor word for it. Essentially our goal is to assist you to achieve the goals you set out</td></tr>
+            <tr><td>[21:34] &lt Davbo&gt I have no problems with the BBC :)</td></tr>
+            <tr><td>[21:34] &lt Davbo&gt in fact that's a lie.</td></tr>
+            <tr><td>[21:34] &lt Davbo&gt What the hell is "The One Show"</td></tr>
+            <tr><td>[21:34] &lt MS-&gt *everyone* has problems with the BBC</td></tr>
+            <tr><td>[21:34] &lt MS-&gt heh</td></tr>
+            <tr><td>[21:34] &lt Davbo&gt but that's a different debate for another time :)</td></tr>
+            <tr><td>[21:35] &lt MS-&gt At least the one where people complain that Doctor Who isn't on TV anymore went away</td></tr>
+            <tr><td>[21:35] &lt MS-&gt Though I do randomly get complaints about audio quality on DAB when I go places (like I can do anything about that ;) ) :)</td></tr>
+            <tr><td>[21:36] &lt Davbo&gt Heh, I'm afraid that I complain when Doctor Who -is- on TV :P</td></tr>
+            <tr><td>[21:36] &lt MS-&gt heheh</td></tr>
+            <tr><td>[21:36] &lt MS-&gt Don't worry. Sontarons next week</td></tr>
+            <tr><td>[21:38] &lt MS-&gt Just don't let Chris Di Bona hear that you complained about Doctor Who being on TV :)</td></tr>
+            <tr><td>[21:39] &lt Davbo&gt Did you see the "Thank you Gamara" roll in on #gsoc earlier?</td></tr>
+            <tr><td>[21:39] &lt Davbo&gt Gamara being Chris</td></tr>
+            <tr><td>[21:39] &lt MS-&gt I missed that I think</td></tr>
+            <tr><td>[21:39] &lt Davbo&gt lh told everyone to thank him</td></tr>
+            <tr><td>[21:39] &lt MS-&gt was afk for a while</td></tr>
+            <tr><td>[21:39] &lt Davbo&gt then hundreds of people were typing thank you to him, it was amusing</td></tr>
+            <tr><td>[21:40] &lt MS-&gt I keep on meaning to send them some Doctor Who swag, if I can ever figure out how to do that.</td></tr>
+            <tr><td>[21:40] &lt Davbo&gt oh that reminds me</td></tr>
+            <tr><td>[21:40] &lt Davbo&gt something about Google swag and asking mentors</td></tr>
+            <tr><td>[21:41] &lt MS-&gt (Failing that it'll be me buying Doctor Who adventures for several weeks to collect the swag off the front and doing it the old fashioned way)</td></tr>
+            <tr><td>[21:41] &lt MS-&gt Ahh, yes</td></tr>
+            <tr><td>[21:41] &lt MS-&gt As well as the money, Google send you swag for participating</td></tr>
+            <tr><td>[21:41] &lt MS-&gt In previous years this has been the GSOC tshirt and random extras for students</td></tr>
+            <tr><td>[21:42] &lt MS-&gt The topic thing about Google swag is that LH has a standing offer to all students who complete their project even if not selected</td></tr>
+            <tr><td>[21:42] &lt MS-&gt that she'll send the same swag (except the tshirt will be a normal google tshirt)</td></tr>
+            <tr><td>[21:42] &lt Davbo&gt ooo! that's nice of them</td></tr>
+            <tr><td>[21:43] &lt Chong-&gt yeah. That's very kind.</td></tr>
+            <tr><td>[21:46] &lt MS-&gt Mentors "just" get a tshirt</td></tr>
+            <tr><td>[21:46] &lt MS-&gt (I say just because we actually get more than that really)</td></tr>
+            <tr><td>[21:46] &lt MS-&gt (incidentally the BBC has normally waived the mentor payment)</td></tr>
+            <tr><td>[21:46] &lt MS-&gt We do this because we think its a good idea :)</td></tr>
+            <tr><td>[21:46] &lt MS-&gt The tshirt last year was really cool though</td></tr>
+            <tr><td>[21:46] &lt MS-&gt The back has a sort of transformer head that glows in the dark</td></tr>
+            <tr><td>[21:46] &lt Davbo&gt :o sweet lol</td></tr>
+            <tr><td>[21:47] &lt MS-&gt Yeah, Google are really cool like this. One day I'm hoping to convince the bbc to do something similar :)</td></tr>
+            <tr><td>[21:47] &lt MS-&gt I just haven't figured out how you do all those sorts of things yet :)</td></tr>
+            <tr><td>[21:47] &lt Davbo&gt You should convince them to pay you to attend the mentor meet-up</td></tr>
+            <tr><td>[21:47] &lt MS-&gt You mean the google one?</td></tr>
+            <tr><td>[21:47] &lt Davbo&gt Yeah :)</td></tr>
+            <tr><td>[21:48] &lt MS-&gt GSOC mentor summit?</td></tr>
+            <tr><td>[21:48] &lt MS-&gt Last couple of years it's just been terrible timing.</td></tr>
+            <tr><td>[21:48] &lt MS-&gt Last year google offered to fly people out and pay basic expenses, which was awesome, but terrible timing</td></tr>
+            <tr><td>[21:48] &lt MS-&gt I can't remember what it was</td></tr>
+            <tr><td>[21:48] &lt Davbo&gt Seriously? Google is remarkable lol</td></tr>
+            <tr><td>[21:49] &lt MS-&gt The previous year it clashed with my birthday, which didn't really work :)</td></tr>
+            <tr><td>[21:49] &lt MS-&gt Yeah, Google are remarkable.</td></tr>
+            <tr><td>[21:49] &lt MS-&gt Which really means the *people* inside google, since these things are always driven by people</td></tr>
+            <tr><td>[21:50] &lt Davbo&gt Yeah, in one of Chris' talks he made it clear how small Google is relative to companies like IBM</td></tr>
+            <tr><td>[21:51] &lt Davbo&gt and things like Microsoft, not that you'd ever see Microsoft "Summer of Patented Development"</td></tr>
+            <tr><td>[21:52] &lt Davbo&gt ;)</td></tr>
+            <tr><td>[21:52] &lt j_baker&gt It depends on what you mean by small. Worldwide google is the most recognized brand name.</td></tr>
+            <tr><td>[21:52] &lt j_baker&gt I would have a heart attack if that happened, Davbo</td></tr>
+            <tr><td>[21:52] &lt Davbo&gt I was just referring to the number of staff really</td></tr>
+            <tr><td>[21:53] &lt j_baker&gt I would imagine. IBM is still gigantic.</td></tr>
+            <tr><td>[21:54] &lt Davbo&gt Yeah they do some good things too</td></tr>
+            <tr><td>[21:54] &lt Davbo&gt Eclipse is IBM i believe</td></tr>
+            <tr><td>[21:54] &lt Davbo&gt or was</td></tr>
+            <tr><td>[21:55] &lt j_baker&gt Developerworks is an awesome website... full of so much reference info.</td></tr>
+            <tr><td>[21:57] &lt Davbo&gt Ah my student home on the web-app has finally updated</td></tr>
+            <tr><td>[21:58] &lt j_baker&gt MS is a spammer now! :O</td></tr>
+            <tr><td>[22:00] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[22:01] &lt MS-&gt Not sure why I can't connect gaim here...</td></tr>
+            <tr><td>[22:02] &lt MS-&gt Anyhoo, as I mentioned before it disconnected me...</td></tr>
+            <tr><td>[22:02] &lt MS-&gt Oh, I can also explain what that vague question was about now the "how does your proposal fit with GSOC goals" if people were curious</td></tr>
+            <tr><td>[22:03] &lt Davbo&gt I thought you already had a gaim session</td></tr>
+            <tr><td>[22:03] *** Davbo points to ms-away </td></tr>
+            <tr><td>[22:04] &lt MS-&gt That session is open at work...</td></tr>
+            <tr><td>[22:04] &lt Davbo&gt oh lol</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt I'd like to know why you asked that question MS- btw</td></tr>
+            <tr><td>[22:05] &lt Davbo&gt I was unsure how to answer it so just rambled abit on each point</td></tr>
+            <tr><td>[22:06] &lt MS-&gt The key problem with GSOC is to gauge "just how interested are the students in their project and in getting interested in open source in general"</td></tr>
+            <tr><td>[22:06] &lt MS-&gt along with (ideally) will they become continuing contributors, either to kamaelia, or randomly in future to other projects</td></tr>
+            <tr><td>[22:07] &lt MS-&gt Now if you just come out and say "OK, tell us your plan for continuing/maintaining your project after GSOC" you don't really get that answer</td></tr>
+            <tr><td>[22:07] &lt Davbo&gt Oh I see</td></tr>
+            <tr><td>[22:07] &lt MS-&gt Where as we really did get a good answer from everyone we've accepted this year regarding these things</td></tr>
+            <tr><td>[22:07] &lt MS-&gt but they were all different</td></tr>
+            <tr><td>[22:08] &lt MS-&gt j_baker's probably wins the prize for being honest - since he said he didn't know if he would/could maintain it afterwards, but there's enough other positive indications elsewhre</td></tr>
+            <tr><td>[22:08] &lt MS-&gt that answers the other aspects really nicely</td></tr>
+            <tr><td>[22:09] &lt MS-&gt Your answer reminded me of dinotopia</td></tr>
+            <tr><td>[22:09] &lt MS-&gt or rather a scene in dinotopia</td></tr>
+            <tr><td>[22:09] &lt MS-&gt The Dragon riders (or whatever) in that have a final exam they have to pass</td></tr>
+            <tr><td>[22:09] &lt MS-&gt and the two brothers get involved and there's a single question</td></tr>
+            <tr><td>[22:10] &lt MS-&gt which they have to answer which normally involves a long essay and they have to choose between them</td></tr>
+            <tr><td>[22:10] &lt MS-&gt and they say "they were both excellent answers - possibly the best we've ever seen, however one was as deep as it was succinct"</td></tr>
+            <tr><td>[22:11] &lt Davbo&gt lol</td></tr>
+            <tr><td>[22:11] &lt MS-&gt The one the latter refers to was the opening lyrics to Bohemium Rapsody (up to the point of "look up to the sky and see")</td></tr>
+            <tr><td>[22:11] &lt MS-&gt Pretty sucky show, but worth watching to see that :)</td></tr>
+            <tr><td>[22:12] &lt MS-&gt Anyhow, for us really the key point we were looking at was what the views were on various aspects including bullet3</td></tr>
+            <tr><td>[22:12] &lt Davbo&gt Ah I see</td></tr>
+            <tr><td>[22:12] &lt MS-&gt You mind if I post so others can see why I'm reminded?</td></tr>
+            <tr><td>[22:13] &lt MS-&gt Specifically it was your response to:</td></tr>
+            <tr><td>[22:13] &lt MS-&gt help open source projects identify and bring in new contributors and committers;</td></tr>
+            <tr><td>[22:13] &lt Davbo&gt this is open source, post where ever you like :P</td></tr>
+            <tr><td>[22:14] &lt MS-&gt It was easily the best answer and only 3 words: "I'm here, hello! :)"</td></tr>
+            <tr><td>[22:14] &lt MS-&gt Really made me laugh :)</td></tr>
+            <tr><td>[22:14] &lt Davbo&gt hehe :D</td></tr>
+            <tr><td>[22:15] &lt MS-&gt I know there's a good chance you'll all just disappear in 4 months time, but hopefully you'll all enjoy your projects and want to expand them and carry on. (ie have fun with them :) )</td></tr>
+            <tr><td>[22:15] &lt MS-&gt So it was about gauging that</td></tr>
+            <tr><td>[22:19] &lt j_baker&gt How long is it until getting disconnected is referred to as being "mibbitted?"</td></tr>
+            <tr><td>[22:22] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[22:22] &lt MS-&gt finally!</td></tr>
+            <tr><td>[22:23] &lt MS-&gt I think freenode must be pretty loaded tonight :)</td></tr>
+            <tr><td>[22:24] &lt j_baker&gt MS-: When I read that I kinda figured that was what you were getting at... On one hand I DO really want to be able to assist with Kamaelia, but I didn't want to promise you anything I can't deliver.</td></tr>
+            <tr><td>[22:24] &lt j_baker&gt (referring to the email you sent out that is)</td></tr>
+            <tr><td>[22:25] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[22:25] *** Davbop has joined #kamaelia</td></tr>
+            <tr><td>[22:26] &lt MS-&gt j_baker: Indeed and the thing I really appreciated there was the honesty :)</td></tr>
+            <tr><td>[22:26] &lt MS-&gt Which was very very clear :)</td></tr>
+            <tr><td>[22:28] &lt Davbop&gt it would be naive to say anything concrete really</td></tr>
+            <tr><td>[22:30] &lt j_baker&gt Well, time for me to log off for the time being. I really appreciate being able to contribute to Kamaelia and look forward to this summer.</td></tr>
+            <tr><td>[22:31] &lt MS-&gt okeydoke. I'll post emails to people and will expect to see people around, rather than disappear completely until the start of coding</td></tr>
+            <tr><td>[22:31] &lt MS-&gt But I'm looking forward to it :)</td></tr>
+            <tr><td>[22:31] &lt MS-&gt I think LH has plans to mail everyone about the next few weeks as well</td></tr>
+            <tr><td>[22:31] &lt j_baker&gt Oh, and one last thing. I have some spare web space that I'd be willing to let some people access to if they need any to set up a blog or do anything like that. If anyone needs it, let me know.</td></tr>
+            <tr><td>[22:32] &lt j_baker&gt Anyway, later guys!</td></tr>
+            <tr><td>[22:32] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[22:32] &lt MS-&gt excellent - read my mind :)</td></tr>
+            <tr><td>[22:32] &lt MS-&gt (running a blog as part of GSOC has always worked out to be a good thing when students have done it)</td></tr>
+            <tr><td>[22:33] &lt Davbop&gt Yeah</td></tr>
+            <tr><td>[22:33] &lt Davbop&gt mine is all set up :)</td></tr>
+            <tr><td>[22:33] &lt MS-&gt indeed :)</td></tr>
+            <tr><td>[22:36] *** Davbop didn't know he could have xchat on windows also</td></tr>
+            <tr><td>[22:36] &lt Davbop&gt get rid of this awful client</td></tr>
+            <tr><td>[22:37] &lt MS-&gt which client&gt</td></tr>
+            <tr><td>[22:37] &lt MS-&gt is that?</td></tr>
+            <tr><td>[22:37] &lt Davbop&gt mIRC</td></tr>
+            <tr><td>[22:37] &lt MS-&gt Ahh</td></tr>
+            <tr><td>[22:37] &lt Davbop&gt i'm quite fond of XChat</td></tr>
+            <tr><td>[22:37] &lt MS-&gt There's also pidgin/gaim</td></tr>
+            <tr><td>[22:37] &lt Davbop&gt can't stand IRSSI</td></tr>
+            <tr><td>[22:37] &lt MS-&gt But each to their own :)</td></tr>
+            <tr><td>[22:38] *** Davbop thinks people which use IRSSI are like the people who insist on using emacs ;)</td></tr>
+            <tr><td>[22:38] &lt MS-&gt no, they're like vi users</td></tr>
+            <tr><td>[22:38] &lt MS-&gt which isn't much different</td></tr>
+            <tr><td>[22:38] &lt Davbop&gt :)</td></tr>
+            <tr><td>[22:38] &lt MS-&gt except you have less help</td></tr>
+            <tr><td>[22:38] &lt Davbop&gt lol</td></tr>
+            <tr><td>[22:39] &lt MS-&gt For the record, I use the editors Kate and Joe</td></tr>
+            <tr><td>[22:39] &lt MS-&gt Having abandoned by Vi & emacs</td></tr>
+            <tr><td>[22:39] &lt MS-&gt but then I abandoned vi asap</td></tr>
+            <tr><td>[22:40] &lt Davbop&gt There's a guy in my Comptuer Science who only uses notepad, and when someone asked him why he said it was the best editor on windows and he used emacs on unix</td></tr>
+            <tr><td>[22:41] &lt MS-&gt riiight</td></tr>
+            <tr><td>[22:41] &lt MS-&gt O...K...</td></tr>
+            <tr><td>[22:41] *** MS- backs away slowly</td></tr>
+            <tr><td>[22:41] &lt Davbop&gt he also has the GNU logo etched onto the back of his laptop.</td></tr>
+            <tr><td>[22:42] &lt MS-&gt Well, that sort of thing does happen</td></tr>
+            <tr><td>[22:42] &lt Davbop&gt Yeah..</td></tr>
+            <tr><td>[22:43] &lt MS-&gt I had glow in the dark K9 & Dalek stickers on mine when I went to OSCON 2 years back</td></tr>
+            <tr><td>[22:43] &lt Davbop&gt haha :)</td></tr>
+            <tr><td>[22:43] &lt MS-&gt got complaints from the audience that I didn't bring any to go around</td></tr>
+            <tr><td>[22:43] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:43] &lt MS-&gt (hadn't sprung to mind)</td></tr>
+            <tr><td>[22:43] &lt Davbop&gt My ex-girlfriend had a little remote control Dalek lol</td></tr>
+            <tr><td>[22:44] &lt Davbop&gt note the correlation of her being my ex-girlfriend and liking Doctor Who ;)</td></tr>
+            <tr><td>[22:44] &lt MS-&gt ahhh</td></tr>
+            <tr><td>[22:47] &lt Davbop&gt You like Firefly MS-?</td></tr>
+            <tr><td>[22:47] *** Davbop is now known as Davbo</td></tr>
+            <tr><td>[22:48] &lt MS-&gt I've not seemed to be in the right mood when I've watched it, however I have the box set to sit down and watch sometime when the right time arises</td></tr>
+            <tr><td>[22:48] &lt MS-&gt I've heard its the best way to watch it, which wouldn't surprise me</td></tr>
+            <tr><td>[22:48] &lt Davbo&gt it's -amazing-</td></tr>
+            <tr><td>[22:49] &lt MS-&gt Oh, speaking of that sort of thing Terminator: Sarah Connor Chronicles had it's season finale last week.</td></tr>
+            <tr><td>[22:49] &lt MS-&gt It was a *very* good ending</td></tr>
+            <tr><td>[22:49] &lt Davbo&gt ooo</td></tr>
+            <tr><td>[22:49] &lt MS-&gt If they don't renewed, it's a really good way to finish</td></tr>
+            <tr><td>[22:49] &lt MS-&gt and if the are, again, it's a really good way to finish</td></tr>
+            <tr><td>[22:51] &lt Davbo&gt how big a fan of terminator do you need to be?</td></tr>
+            <tr><td>[22:52] &lt MS-&gt I suspect it's fairly standalone</td></tr>
+            <tr><td>[22:53] &lt MS-&gt As long as you know the basics I think it hangs together</td></tr>
+            <tr><td>[22:53] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[22:53] &lt Davbo&gt I was worried it might be more of a "fan service" thing</td></tr>
+            <tr><td>[22:53] &lt MS-&gt Also the writers seem to know enough about the computing background of AI</td></tr>
+            <tr><td>[22:53] &lt MS-&gt which is unusual</td></tr>
+            <tr><td>[22:53] &lt Davbo&gt ooo nice</td></tr>
+            <tr><td>[22:53] &lt MS-&gt Yeah, I can see that. Essentially they reboot the storyline sufficiently I think</td></tr>
+            <tr><td>[22:54] &lt MS-&gt References to Moore's Law, the Mechanical Turk chess player, etc</td></tr>
+            <tr><td>[22:54] &lt MS-&gt (and in Moore's Law's case, actually getting it right - noting it was an observation of transistor counts, whereas now treated as a law)</td></tr>
+            <tr><td>[22:55] &lt Davbo&gt hehe the turning point in the war on the machines was certainly when Kasparov got beat at Chess</td></tr>
+            <tr><td>[22:55] &lt MS-&gt (rather than random formulations of CPU speed, memory capacity, disk speed etc)</td></tr>
+            <tr><td>[22:57] &lt Davbo&gt I'll certainly have a look at it</td></tr>
+            <tr><td>[23:13] &lt MS-&gt OK, sent my welcome email - bit longer than intended, but asks for some specific things</td></tr>
+            <tr><td>[23:13] &lt MS-&gt Now I'm off to sleep methinks :-)</td></tr>
+            <tr><td>[23:18] &lt Davbo&gt Night MS- :)</td></tr>
+            <tr><td>[23:18] &lt Davbo&gt I look forwards to summer! :D</td></tr>
+            <tr><td>[23:19] &lt MS-&gt night :)</td></tr>
+            <tr><td>[23:19] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[23:37] &lt Chong-&gt Sleepy. very happy to be able to work with all of you.</td></tr>
+            <tr><td>[23:38] &lt Chong-&gt Have a good night, all.</td></tr>
+            <tr><td>[23:38] *** Chong- has parted #kamaelia</td></tr>

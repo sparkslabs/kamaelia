@@ -1,0 +1,119 @@
+<html><body><table>
+            <tr><td>[08:59] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[09:35] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:31] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[15:32] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[15:32] &lt MS-&gt Greetings</td></tr>
+            <tr><td>[15:33] *** MS- wonder how long this connection will stay OK</td></tr>
+            <tr><td>[15:35] &lt MS-&gt (on train - which I've not tried before. Will probably cut out)</td></tr>
+            <tr><td>[15:40] &lt Patrick`&gt it's fine, it won't lag out</td></tr>
+            <tr><td>[15:40] &lt Patrick`&gt it'll just get arbitrarily slow every so often</td></tr>
+            <tr><td>[15:42] &lt MS-&gt Well, I was trying MSN messenger yesterday using it and that just collapses. We'll see :)</td></tr>
+            <tr><td>[15:44] &lt MS-&gt Should get home in around 2 1/2 hours I guess.</td></tr>
+            <tr><td>[16:14] &lt mhrd&gt heh, safe journey.</td></tr>
+            <tr><td>[16:20] *** ms-- has joined #kamaelia</td></tr>
+            <tr><td>[16:42] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:25] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[19:04] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[19:23] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:23] &lt MS-&gt evening</td></tr>
+            <tr><td>[19:23] &lt MS-&gt back home.</td></tr>
+            <tr><td>[19:23] &lt MS-&gt Always forget just how long that particular journey takes (in practice) :)</td></tr>
+            <tr><td>[19:30] &lt mhrd-home&gt any delays?</td></tr>
+            <tr><td>[19:31] &lt MS-&gt a small one, which meant an intersection between 2 trains was missed (at stockport) so I carried on and changed at manc piccadilly instead</td></tr>
+            <tr><td>[19:31] &lt MS-&gt However I had good luck at Euston, so that's all good :)</td></tr>
+            <tr><td>[19:33] &lt MS-&gt Was nice to see everyone again today though</td></tr>
+            <tr><td>[19:33] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:35] &lt mhrd-home&gt ooh, can restrict a google search to just kamaelia irc logs by putting this into the search box: site:www.kamaelia.org/logs</td></tr>
+            <tr><td>[19:35] *** mhrd-home ponders adding a 'search logs' form to the website somewhere</td></tr>
+            <tr><td>[19:36] &lt MS-&gt that would be useful</td></tr>
+            <tr><td>[19:37] &lt MS-&gt Ah, I found why you thought today's thing started at 10 btw - looking at my calendar that's when it was originally slated for</td></tr>
+            <tr><td>[19:37] &lt mhrd-home&gt cool, so I wasn't just being a bit dumb</td></tr>
+            <tr><td>[19:37] &lt MS-&gt Nope - just efficient :)</td></tr>
+            <tr><td>[19:37] *** MS- will be in London again on the 26th by the looks of things</td></tr>
+            <tr><td>[19:38] &lt mhrd-home&gt oooh, pretty</td></tr>
+            <tr><td>[19:38] &lt mhrd-home&gt and interesting</td></tr>
+            <tr><td>[19:40] &lt MS-&gt indeed.</td></tr>
+            <tr><td>[20:20] &lt mhrd-home&gt magic: http://www.kamaelia.org/irc.html</td></tr>
+            <tr><td>[20:29] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[20:32] *** VanL has joined #kamaelia</td></tr>
+            <tr><td>[20:34] &lt VanL&gt I am looking at implementing an IMAP4 proxy using kamaelia. I need to handle state and multiple concurrent access. Is a Carousel the right way to be handling this?</td></tr>
+            <tr><td>[20:35] &lt mhrd-home&gt hi VanL</td></tr>
+            <tr><td>[20:35] &lt VanL&gt If I read the docs correctly, a carousel instantiates a new instance for each connection, and the "main" loop can go back listening.</td></tr>
+            <tr><td>[20:35] &lt VanL&gt Hello mhrd-home</td></tr>
+            <tr><td>[20:35] &lt VanL&gt Is that right? So I can cache state on the instance?</td></tr>
+            <tr><td>[20:35] &lt mhrd-home&gt not quite - a carousel is like a slide projector that, when asked to, swaps out the current component for a new one</td></tr>
+            <tr><td>[20:36] &lt mhrd-home&gt you want to make a server that spawns a component to handle each client that connects?</td></tr>
+            <tr><td>[20:36] &lt VanL&gt Yes</td></tr>
+            <tr><td>[20:37] &lt mhrd-home&gt Try this one: http://www.kamaelia.org/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html</td></tr>
+            <tr><td>[20:37] &lt mhrd-home&gt its a simple http socket server ... when a client connects, it spawns a component to handle communication with that client</td></tr>
+            <tr><td>[20:38] &lt mhrd-home&gt I believe that documentation describes that component as a "protocol handler"</td></tr>
+            <tr><td>[20:39] *** VanL is looking</td></tr>
+            <tr><td>[20:42] &lt VanL&gt Ok, so this (or maybe ServerCore) will route messages to the instatiated protocol handler? ...That appears to be how the greylisting server handles it. Is that right?</td></tr>
+            <tr><td>[20:42] &lt mhrd-home&gt I believe it probably does, yes.</td></tr>
+            <tr><td>[20:42] &lt mhrd-home&gt MS- wrote the greylisting server, so might be able to provide some insight (he might be afk atm)</td></tr>
+            <tr><td>[20:43] &lt mhrd-home&gt ServerCore and SimpleServer are both components within that file - you can use either:</td></tr>
+            <tr><td>[20:43] &lt mhrd-home&gt from Kamaelia.Chassis.ConnectedServer import ServerCore</td></tr>
+            <tr><td>[20:43] &lt mhrd-home&gt from Kamaelia.Chassis.ConnectedServer import SimpleServer</td></tr>
+            <tr><td>[20:43] &lt mhrd-home&gt s/file/module/</td></tr>
+            <tr><td>[20:44] &lt VanL&gt I also see https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MH/pop3proxy/pop3proxy.py</td></tr>
+            <tr><td>[20:44] &lt VanL&gt which is also similar in spirit. Which one is better style?</td></tr>
+            <tr><td>[20:44] &lt mhrd-home&gt yep. my dubious handiwork :-)</td></tr>
+            <tr><td>[20:44] &lt VanL&gt oh! Thanks for posting it :)</td></tr>
+            <tr><td>[20:44] &lt mhrd-home&gt I've honestly no idea - I've not looked at the greylisting server at all</td></tr>
+            <tr><td>[20:45] &lt mhrd-home&gt MS- has more experience and sometimes makes better long term design decisions.</td></tr>
+            <tr><td>[20:45] &lt mhrd-home&gt both approaches are valid - so do whatever makes most sense to you</td></tr>
+            <tr><td>[20:47] &lt VanL&gt one question which you might know - it looks like I need to make sure I have a complete message - I only receive line-by-line. Is that right?</td></tr>
+            <tr><td>[20:47] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[20:47] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[20:47] &lt mhrd-home&gt I suspect MS-'s code is much more modular, which is a good thing</td></tr>
+            <tr><td>[20:48] *** mhrd-home slaps kamlogbot</td></tr>
+            <tr><td>[20:48] &lt mhrd-home&gt your protocol handler component will receive data in whatever sized chunks it arrives in - that might be whole lines, or even whole messages, or neither</td></tr>
+            <tr><td>[20:49] &lt mhrd-home&gt thats why,in pop3proxy, I wrote a "LineSplit" component that buffers incoming bytes and chunks/splits then into individual lines</td></tr>
+            <tr><td>[20:50] &lt mhrd-home&gt hmm, that component probably ought to be a candidate for the main Kamaelia library</td></tr>
+            <tr><td>[20:51] &lt mhrd-home&gt in the mean time, feel free to copy it if you require it. or do whatever MS- did in his greylisting server :-)</td></tr>
+            <tr><td>[20:51] *** mhrd-home looks to find out</td></tr>
+            <tr><td>[20:51] &lt VanL&gt Thanks, reading both</td></tr>
+            <tr><td>[20:57] &lt mhrd-home&gt VanL: noticed the URL you posted was for our old repository on sourceforge ... we've moved to http://code.google.com/p/kamaelia now</td></tr>
+            <tr><td>[20:57] &lt MS-&gt I'm largely afk, but reading back, it's probably worth looking at these page as well:</td></tr>
+            <tr><td>[20:57] &lt MS-&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1226574014 (basic chat server)</td></tr>
+            <tr><td>[20:57] &lt MS-&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1223342651 (walk through of building a protocol)</td></tr>
+            <tr><td>[20:57] &lt MS-&gt http://www.kamaelia.org/KamaeliaGrey</td></tr>
+            <tr><td>[20:57] &lt MS-&gt The last two have presentations on them as well</td></tr>
+            <tr><td>[20:58] &lt MS-&gt The main reason for that is because it's easier to have diagrams in presentations in a nice way.</td></tr>
+            <tr><td>[20:59] &lt MS-&gt There's also an example of how to go about building a protocol in the layered approach that the Greylisting code uses on this page: http://www.kamaelia.org/GetKamaelia</td></tr>
+            <tr><td>[21:01] &lt MS-&gt oh, perhaps worth mentioning, the approach taken in the greylisting server has worked very nicely now for over a year. I've used it to handle all mail for some time now</td></tr>
+            <tr><td>[21:03] &lt VanL&gt MS-: Thanks</td></tr>
+            <tr><td>[21:03] &lt VanL&gt and mhrd-home: Thanks</td></tr>
+            <tr><td>[21:04] &lt VanL&gt FWIW, my ultimate goal is to have multiple-account IMAP proxy</td></tr>
+            <tr><td>[21:04] &lt VanL&gt so that mail/[Account1] is actually the inbox for Account 1</td></tr>
+            <tr><td>[21:05] &lt mhrd-home&gt np</td></tr>
+            <tr><td>[21:05] &lt VanL&gt and mail/[Account2] for Account2, etc</td></tr>
+            <tr><td>[21:05] &lt VanL&gt proxy commands to the backends as necessary, or between backends for copies</td></tr>
+            <tr><td>[21:06] &lt VanL&gt kamaelia looked like the right set of abstractions for that sort of thing</td></tr>
+            <tr><td>[21:06] &lt VanL&gt but first is getting the basic proxy.</td></tr>
+            <tr><td>[21:07] &lt mhrd-home&gt sounds sensible</td></tr>
+            <tr><td>[21:07] *** MS- nods</td></tr>
+            <tr><td>[21:07] &lt MS-&gt The nice thing is that you can take the basic proxy and then extend it as it does more</td></tr>
+            <tr><td>[21:08] &lt MS-&gt To allow it to do more</td></tr>
+            <tr><td>[21:08] &lt MS-&gt which is essentially what the greylister does - it implements the basic SMTP loop/mechanics, then layers on more aspects of SMTP and proxying and then has an acceptance policy</td></tr>
+            <tr><td>[21:08] &lt MS-&gt etc</td></tr>
+            <tr><td>[21:09] &lt VanL&gt right. I figured that I could wire up a couple different proxies into a component</td></tr>
+            <tr><td>[21:09] &lt VanL&gt with a backplane between then</td></tr>
+            <tr><td>[21:09] &lt MS-&gt Was a few days work, but was really useful :)</td></tr>
+            <tr><td>[21:09] &lt MS-&gt yep</td></tr>
+            <tr><td>[21:09] &lt VanL&gt s/then/them/</td></tr>
+            <tr><td>[21:09] &lt mhrd-home&gt regarding Carousel, Pipeline, Backplanes, etc. take a look at the cookbook if you've not already: http://www.kamaelia.org/Cookbook</td></tr>
+            <tr><td>[21:19] *** MS- gets an early night</td></tr>
+            <tr><td>[21:19] &lt MS-&gt night all :)</td></tr>
+            <tr><td>[21:19] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[21:19] &lt mhrd-home&gt night :)</td></tr>
+            <tr><td>[21:20] &lt VanL&gt Good night :)</td></tr>
+            <tr><td>[21:28] &lt VanL&gt Logging off. Thanks, all.</td></tr>
+            <tr><td>[21:28] *** VanL has parted #kamaelia</td></tr>
+            <tr><td>[21:32] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[21:58] &lt mhrd-home&gt night all</td></tr>
+            <tr><td>[21:58] *** mhrd-home has parted #kamaelia</td></tr>
+            <tr><td>[23:26] *** jae__ has joined #kamaelia</td></tr>
+            <tr><td>[23:50] *** jae__ is now known as eikenberry</td></tr>

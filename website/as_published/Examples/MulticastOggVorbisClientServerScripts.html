@@ -1,0 +1,115 @@
+<html>
+<head>
+<title> Examples/MulticastOggVorbisClientServerScripts </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Examples/MulticastOggVorbisClientServerScripts">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html><head><meta name="qrichtext" content="1" /></head><body style="font-size:10pt;font-family:URW Gothic L">
+<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
+<p align="right"><span style="font-size:18pt">How can I...?</span></p>
+<p dir="ltr">Example 4: Building a very simplistic multicast based streaming system using ogg vorbis. This time using 2 separate scripts. <span style="font-weight:600">Components used in server script: </span><span style="font-style:italic;color:#ff0004">component</span>, <a href="/Components.html/pydoc/Kamaelia.html.ReadFileAdaptor.ReadFileAdaptor.html">ReadFileAdaptor</a>, <a href="/Components.html/pydoc/Kamaelia.html.Internet.html.Multicast_transceiver.Multicast_transceiver.html">Multicast_transceiver</a>. <span style="font-weight:600">Components used in client script:</span> <span style="font-style:italic;color:#ff0004">component</span>, <a href="/Components.html/pydoc/Kamaelia.html.Internet.html.Multicast_transceiver.Multicast_transceiver.html">Multicast_transceiver</a>, <span style="font-style:italic;color:#ff0004">detuple</span> (defined in the example), <a href="/Components.html/pydoc/Kamaelia.html.vorbisDecodeComponent.html.VorbisDecode.html">VorbisDecode</a>, <a href="/Components.html/pydoc/Kamaelia.html.vorbisDecodeComponent.html.AOAudioPlaybackAdaptor.html">AOAudioPlaybackAdaptor</a>. </p>
+<p dir="ltr">Server Script, the easy way</p>
+<ul type="disc"><div dir="ltr"><pre><span style="font-style:italic">#!/usr/bin/python<br /><br /></span><span style="font-weight:600">from</span> Kamaelia.ReadFileAdaptor <span style="font-weight:600">import</span> ReadFileAdaptor<br /><span style="font-weight:600">from</span> Kamaelia.Internet.Multicast_transceiver <span style="font-weight:600">import</span> Multicast_transceiver<br /><span style="font-weight:600">from</span> Kamaelia.Util.PipelineComponent <span style="font-weight:600">import</span> pipeline<br /><br />file_to_stream = &quot;/usr/share/wesnoth/music/wesnoth-1.ogg&quot;<br /><br />pipeline(<br />    ReadFileAdaptor(file_to_stream, readmode=&quot;bitrate&quot;, bitrate=400000, chunkrate=50),<br />    Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),<br />).run()<br /></pre></div></ul>
+<p dir="ltr"></p>
+<p dir="ltr">Server Script, the hard way (but exactly equivalent)</p>
+<ul type="disc"><div dir="ltr"><pre><span style="font-style:italic">#!/usr/bin/python</span><br /><br /><span style="font-weight:600">import</span> Axon<br /><br />file_to_stream = &quot;/usr/share/wesnoth/music/wesnoth-1.ogg&quot;<br /><br /><span style="font-weight:600">def</span> tests():<br />   <span style="font-weight:600">from</span> Axon.Scheduler import scheduler<br />   <span style="font-weight:600">import</span> Kamaelia.ReadFileAdaptor<br />   <span style="font-weight:600">from</span> Kamaelia.Internet.Multicast_transceiver <span style="font-weight:600">import</span> Multicast_transceiver<br /><br />   <span style="font-weight:600">class</span> testComponent(Axon.Component.component):<br />      <span style="font-weight:600">def</span> main(self):<br />        source = Kamaelia.ReadFileAdaptor.ReadFileAdaptor(file_to_stream,<br />                                                          readmode=&quot;bitrate&quot;,<br />                                                          bitrate=400000,<br />                                                          chunkrate=50)<br />        sender   = Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600)<br />        self.link((source,&quot;outbox&quot;), (sender,&quot;inbox&quot;))<br /><br />        self.addChildren(source, sender)<br />        <span style="font-weight:600">yield</span> Axon.Ipc.newComponent(*(self.children))<br />        <span style="font-weight:600">while</span> 1:<br />           <span style="font-weight:600">yield</span> 1<br /><br />   harness = testComponent()<br />   harness.activate()<br />   scheduler.run.runThreads(slowmo=0)<br /><br /><span style="font-weight:600">if</span> __name__==&quot;__main__&quot;:<br /><br />    tests()<br /></pre><br /><span style="font-weight:600">Source: </span>Examples/example4/MulticastStreamingServer.py</div></ul>
+<p dir="ltr"></p>
+<p dir="ltr">Client Script</p>
+<ul type="disc"><div dir="ltr"><pre><span style="font-style:italic">#!/usr/bin/python</span><br /><br /><span style="font-weight:600">from</span> Axon.Component <span style="font-weight:600">import</span> component<br /><span style="font-weight:600">from</span> Kamaelia.vorbisDecodeComponent <span style="font-weight:600">import</span> VorbisDecode, AOAudioPlaybackAdaptor<br /><span style="font-weight:600">from</span> Kamaelia.Internet.Multicast_transceiver <span style="font-weight:600">import</span> Multicast_transceiver<br /><span style="font-weight:600">from</span> Kamaelia.Util.PipelineComponent <span style="font-weight:600">import</span> pipeline<br /><br /><span style="font-weight:600">class</span> detuple(component):<br />   <span style="font-weight:600">def</span> __init__(self, index):<br />      super(detuple, self).__init__()<br />      self.index = index<br />   <span style="font-weight:600">def</span> main(self):<br />      <span style="font-weight:600">while</span> 1:<br />         <span style="font-weight:600">if</span> self.dataReady(&quot;inbox&quot;):<br />            tuple=self.recv(&quot;inbox&quot;)<br />            self.send(tuple[self.index], &quot;outbox&quot;)<br />         <span style="font-weight:600">yield</span> 1<br /><br /><span style="font-style:italic;font-weight:600"># Client</span><br />pipeline(<br />    Multicast_transceiver(&quot;0.0.0.0&quot;, 1600, &quot;224.168.2.9&quot;, 0),<br />    detuple(1),<br />    VorbisDecode(),<br />    AOAudioPlaybackAdaptor(),<br />).run()<br /></pre></div></ul>
+<p dir="ltr">Client Script, the hard way (but exactly equivalent)</p>
+<ul type="disc"><div dir="ltr"><pre><span style="font-style:italic">#!/usr/bin/python</span><br /><br /><span style="font-weight:600">import</span> Axon<br /><br /><span style="font-weight:600">class</span> detuple(Axon.Component.component):<br />   <span style="font-weight:600">def</span> __init__(self, index):<br />      super(detuple,self).__init__()<br />      self.index = index<br />   <span style="font-weight:600">def</span> main(self):<br />      <span style="font-weight:600">while</span> 1:<br />         <span style="font-weight:600">if</span> self.dataReady(&quot;inbox&quot;):<br />            tuple=self.recv(&quot;inbox&quot;)<br />            self.send(tuple[self.index], &quot;outbox&quot;)<br />         <span style="font-weight:600">yield</span> 1<br /><br /><span style="font-weight:600">def</span> tests():<br />   <span style="font-weight:600">from</span> Axon.Scheduler import scheduler<br />   <span style="font-weight:600">import</span> Kamaelia.ReadFileAdaptor<br />   <span style="font-weight:600">from</span> Kamaelia.vorbisDecodeComponent <span style="font-weight:600">import</span> VorbisDecode, AOAudioPlaybackAdaptor<br />   <span style="font-weight:600">from</span> Kamaelia.Internet.Multicast_transceiver <span style="font-weight:600">import</span> Multicast_transceiver<br /><br />   <span style="font-weight:600">class</span> testComponent(Axon.Component.component):<br />      <span style="font-weight:600">def</span> main(self):<br />        receiver = Multicast_transceiver(&quot;0.0.0.0&quot;, 1600, &quot;224.168.2.9&quot;, 0)<br />        detupler = detuple(1)<br />        decoder = VorbisDecode()<br />        player = AOAudioPlaybackAdaptor()<br /><br />        self.link((receiver,&quot;outbox&quot;), (detupler,&quot;inbox&quot;))<br />        self.link((detupler,&quot;outbox&quot;), (decoder,&quot;inbox&quot;))<br />        self.link((decoder,&quot;outbox&quot;), (player,&quot;inbox&quot;))<br /><br />        self.addChildren(receiver, detupler, decoder, player)<br />        <span style="font-weight:600">yield</span> Axon.Ipc.newComponent(*(self.children))<br />        <span style="font-weight:600">while</span> 1:<br />           <span style="font-weight:600">yield</span> 1<br /><br />   harness = testComponent()<br />   harness.activate()<br />   scheduler.run.runThreads(slowmo=0)<br /><br /><span style="font-weight:600">if</span> __name__==&quot;__main__&quot;:<br /><br />    tests()<br /></pre><br /><span style="font-weight:600">Source:</span> Examples/example4/MulticastStreamingClient.py</div></ul>
+<p dir="ltr"></p>
+<p dir="ltr"></p>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

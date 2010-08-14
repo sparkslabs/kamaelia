@@ -1,0 +1,791 @@
+<html><body><table>
+            <tr><td>[00:30] &lt Davbo&gt night all</td></tr>
+            <tr><td>[01:00] *** barrycarlyon has joined #kamaelia</td></tr>
+            <tr><td>[02:02] *** robertofaga has parted #kamaelia</td></tr>
+            <tr><td>[03:14] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[03:14] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[05:29] *** maveriick has joined #kamaelia</td></tr>
+            <tr><td>[05:29] *** maveriick has parted #kamaelia</td></tr>
+            <tr><td>[06:41] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[06:46] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:46] &lt vmlemon__&gt Hi</td></tr>
+            <tr><td>[06:48] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[06:56] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[06:56] Reply: does the macarena</td></tr>
+            <tr><td>[07:00] &lt vmlemon_&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[07:00] Reply: Ptang!</td></tr>
+            <tr><td>[07:29] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[07:30] &lt MS-&gt morning</td></tr>
+            <tr><td>[07:33] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[07:44] &lt jle&gt Good morning.</td></tr>
+            <tr><td>[07:45] &lt vmlemon_&gt Any good libraries for parsing UTF-16?</td></tr>
+            <tr><td>[07:47] &lt vmlemon_&gt As much as I hate the stuff</td></tr>
+            <tr><td>[07:59] &lt vmlemon_&gt kamaeliabot: poke</td></tr>
+            <tr><td>[07:59] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[07:59] *** vmlemon_ pets kamaeliabot</td></tr>
+            <tr><td>[08:31] &lt MS-&gt vmlemon: Sorry, I don't know of any</td></tr>
+            <tr><td>[09:09] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:09] &lt MS-&gt morning</td></tr>
+            <tr><td>[09:09] &lt orphans&gt morning</td></tr>
+            <tr><td>[09:11] &lt orphans&gt how goes it MS-?</td></tr>
+            <tr><td>[09:12] &lt MS-&gt  OK.</td></tr>
+            <tr><td>[09:12] &lt MS-&gt Morning is despam and catch up time normally</td></tr>
+            <tr><td>[09:12] &lt orphans&gt same minus the despamming :)</td></tr>
+            <tr><td>[09:13] &lt orphans&gt and trying to stop my wireless trying to connect to my neighbours every morning</td></tr>
+            <tr><td>[09:13] &lt MS-&gt Home email doesn't need spamming</td></tr>
+            <tr><td>[09:13] &lt MS-&gt despamming rather</td></tr>
+            <tr><td>[09:18] &lt orphans&gt MS-: did you get a preliminary number of SoC slots through? (don't tell if you'd rather keep it til it's set more firmly)</td></tr>
+            <tr><td>[09:18] &lt MS-&gt The number is preliminary and I think if Google wanted them public they'd make them public</td></tr>
+            <tr><td>[09:18] &lt MS-&gt The reality is the number of slots we have may go up or down</td></tr>
+            <tr><td>[09:19] &lt MS-&gt and the same goes for everyone</td></tr>
+            <tr><td>[09:19] &lt orphans&gt yeah, sure. Just curious :)</td></tr>
+            <tr><td>[09:20] &lt MS-&gt There's a number of complaints from some people on the general mentor list about the allocations, but I think that's from people for whom its there first year.</td></tr>
+            <tr><td>[09:20] &lt MS-&gt The reason I say that is because every year everyone asks for X slots and often gets less than X slots. X is based on "we can mentor this many apps"</td></tr>
+            <tr><td>[09:21] &lt MS-&gt I think I can guess what our final number will be, but we'll have to wait and see</td></tr>
+            <tr><td>[09:21] &lt orphans&gt yeah, I saw people like the KDE folks on #gsoc who have got mentors and apps for like 500 students or something crazy saying the wouldn't get anywhere near what they requested</td></tr>
+            <tr><td>[09:22] &lt MS-&gt At the end of the day, you can't please everyone, and the criteria for acceptance isn't the same as some students might think really</td></tr>
+            <tr><td>[09:22] &lt MS-&gt After all there are different motivations at play</td></tr>
+            <tr><td>[09:22] &lt orphans&gt yeah absolutely</td></tr>
+            <tr><td>[09:23] &lt MS-&gt Some students are clearly *just* in it for the money. (money is nice mind ;) ) Whereas google are in it to grow the number of open source developers - whatever the project.</td></tr>
+            <tr><td>[09:23] &lt MS-&gt Those two points are a very interesting contention point</td></tr>
+            <tr><td>[09:24] &lt orphans&gt I guess it's partly good community relations from google too?</td></tr>
+            <tr><td>[09:24] &lt MS-&gt It certainly helps them there I'll admit :)</td></tr>
+            <tr><td>[09:24] &lt orphans&gt not like they're short of resources :)</td></tr>
+            <tr><td>[09:24] &lt MS-&gt Whilst of course orgs have a mixture of needs - do they want to grow their community, grow their codebase, or ...</td></tr>
+            <tr><td>[09:25] &lt orphans&gt yeah</td></tr>
+            <tr><td>[09:26] &lt MS-&gt The reality is as well that lots of students do just disappear at the end of GSOC never to be heard from again, and that means that their code *must* be maintainable, or else rather than contributing, they've created a burden.</td></tr>
+            <tr><td>[09:28] &lt orphans&gt yeah - if you've got 10000 lines of spaghetti which works but isn't maintained it's not much use for anyone</td></tr>
+            <tr><td>[09:28] &lt MS-&gt Kamaelia's very nature helps there of course :)</td></tr>
+            <tr><td>[09:28] &lt MS-&gt (by design :-D )</td></tr>
+            <tr><td>[09:28] &lt orphans&gt :)</td></tr>
+            <tr><td>[09:28] *** orphans wonders how much like spaghetti you could make a graphline look</td></tr>
+            <tr><td>[09:29] &lt MS-&gt Oh you could make it pure spaghetti if you wanted - after all you could just run the AxonVisualiser on it :-)</td></tr>
+            <tr><td>[09:30] &lt orphans&gt http://avanturb.com/news/media/bidule/bid.gif - from an audio patching env</td></tr>
+            <tr><td>[09:30] &lt orphans&gt I've never made anything which looked that bad :D</td></tr>
+            <tr><td>[09:30] &lt MS-&gt The problem with that sort of thing is that it clearly doesn't allow nesting</td></tr>
+            <tr><td>[09:30] &lt MS-&gt Or doesn't provide for it</td></tr>
+            <tr><td>[09:31] &lt orphans&gt it does - the user just decided it was a bad idea :)</td></tr>
+            <tr><td>[09:31] &lt MS-&gt ah</td></tr>
+            <tr><td>[09:36] &lt orphans&gt right, medical x-ray and nmr revision calls *sigh*</td></tr>
+            <tr><td>[09:37] &lt orphans&gt seeyou in a bit MS-</td></tr>
+            <tr><td>[10:25] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[10:25] &lt MS-&gt heya</td></tr>
+            <tr><td>[10:26] &lt Lawouach&gt orphans, what about that http://rafb.net/p/5rw2ba61.html</td></tr>
+            <tr><td>[10:27] &lt Lawouach&gt that's just a simple usecase of my XMPP lib</td></tr>
+            <tr><td>[10:27] &lt Lawouach&gt it misses a lot still</td></tr>
+            <tr><td>[10:27] &lt Lawouach&gt hi MS-</td></tr>
+            <tr><td>[10:30] &lt MS-&gt I think that's a bit like the whiteboard - you could use a bunch of def's to return the graphlines, but for convenience you haven't :)</td></tr>
+            <tr><td>[10:30] &lt Lawouach&gt I don't mind so much the graphline getting big</td></tr>
+            <tr><td>[10:30] &lt Lawouach&gt I believe it's still readable</td></tr>
+            <tr><td>[10:30] &lt MS-&gt Yep</td></tr>
+            <tr><td>[10:31] &lt MS-&gt BTW, did you know that graphlines can automagically add inboxes/outboxes to their exteriors?</td></tr>
+            <tr><td>[10:32] &lt MS-&gt hm. actually reading the code I could be wrong there :)</td></tr>
+            <tr><td>[10:32] &lt MS-&gt I am wrong there</td></tr>
+            <tr><td>[10:32] &lt Lawouach&gt the actual code looks like that</td></tr>
+            <tr><td>[10:32] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[10:33] &lt Lawouach&gt http://rafb.net/p/Y9RGTG43.html</td></tr>
+            <tr><td>[10:33] &lt Lawouach&gt that's just the main of the client</td></tr>
+            <tr><td>[10:33] &lt Lawouach&gt it's a test use case BTW</td></tr>
+            <tr><td>[10:33] &lt Lawouach&gt so not necessarily clean :)</td></tr>
+            <tr><td>[10:34] &lt MS-&gt Oh, hold on, yes it does, it just does it the wrong way (graphline that is)</td></tr>
+            <tr><td>[10:34] &lt MS-&gt Ahh, I see</td></tr>
+            <tr><td>[10:34] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[10:35] &lt Lawouach&gt I'm happy you don't refer to me as "it"</td></tr>
+            <tr><td>[10:35] &lt MS-&gt heh</td></tr>
+            <tr><td>[10:36] &lt Lawouach&gt as you can see I'm still trying to catch the KeyboardInterrupt and stop the client cleanly</td></tr>
+            <tr><td>[10:36] &lt Lawouach&gt doesn't work yet obviously :)</td></tr>
+            <tr><td>[10:38] &lt MS-&gt Hm.</td></tr>
+            <tr><td>[10:39] &lt Lawouach&gt not to worry</td></tr>
+            <tr><td>[10:39] &lt MS-&gt There must be a nice way of handling that</td></tr>
+            <tr><td>[10:39] &lt Lawouach&gt this is not a showstopper</td></tr>
+            <tr><td>[10:39] &lt MS-&gt indeed</td></tr>
+            <tr><td>[10:39] &lt Lawouach&gt and I don't do it right in my code I think</td></tr>
+            <tr><td>[11:56] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[12:26] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:27] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[12:31] &lt Davbo&gt Good afternoon all.</td></tr>
+            <tr><td>[12:32] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt If I get round to programming anything else today it's going to be for Kamaelia now. I programmed a UI in swing this morning and thus hate Java.</td></tr>
+            <tr><td>[12:32] &lt MS-&gt heh</td></tr>
+            <tr><td>[12:34] &lt Davbo&gt had a lecture on Swing - "How to make a window in 9 easy steps"</td></tr>
+            <tr><td>[12:34] &lt MS-&gt right</td></tr>
+            <tr><td>[13:17] &lt Davbo&gt Heh my maths course web page - "&lt meta name="GENERATOR" content="Microsoft FrontPage 5.0"&gt"</td></tr>
+            <tr><td>[13:18] &lt Davbo&gt To say the guy is a wizard on MATLAB he clearly isn't up to scratch with anything else</td></tr>
+            <tr><td>[13:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:25] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:25] &lt Davbo&gt hi vmlemon_</td></tr>
+            <tr><td>[13:26] &lt MS-&gt Most people are skilled in the areas they're interested in or need to be</td></tr>
+            <tr><td>[13:26] &lt MS-&gt If he's not interested in web dev, he's probably just picked up a tool that's useful</td></tr>
+            <tr><td>[13:26] *** vmlemon_ rants too much...</td></tr>
+            <tr><td>[13:27] &lt MS-&gt I once worked somewhere that had a bunch of sales people who we techies were always really angry about due to lack of clue in technical areas</td></tr>
+            <tr><td>[13:27] &lt MS-&gt Until someone put one of the more clueful ones in charge of our area, who explained that they couldn't do our job if they tried nor did they want to and respected us for it</td></tr>
+            <tr><td>[13:27] &lt vmlemon_&gt Sounds bad</td></tr>
+            <tr><td>[13:27] &lt Davbo&gt MS-, sorry I forgot to mention the reason I was ranting is because the site dosen't render correctly so i was blaming frontpage for that</td></tr>
+            <tr><td>[13:28] &lt MS-&gt and turned it around saying we couldn't do theirs if we tried (which was true),nor would we want to and respect them for it</td></tr>
+            <tr><td>[13:28] &lt MS-&gt Actually made a difference to both sides working better with each other</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt I wasn't just pedanticly searching source code to rant, I knew i'd find FrontPage there anyway tbh :)</td></tr>
+            <tr><td>[13:29] &lt MS-&gt (it also made a diference that they were actually good at sales and we were actualy good as techies :-) )</td></tr>
+            <tr><td>[13:29] &lt MS-&gt Davbo: Indeed :)</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt just frustrated because I couldn't get to what i needed</td></tr>
+            <tr><td>[13:29] &lt MS-&gt heh</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt although i worked the URL out anyway</td></tr>
+            <tr><td>[13:30] &lt vmlemon_&gt In another channel, I ended up sticking my nails into UTF-16, and complaining about how it was used for the sake of it, when alternatives exist, although I won't continue it onto this channel...</td></tr>
+            <tr><td>[13:30] &lt Davbo&gt Sales people get a bad stereotype, tbh</td></tr>
+            <tr><td>[13:31] &lt Davbo&gt Techies get a reclusive stereotype but sales people are stereotyped as being just cruel.</td></tr>
+            <tr><td>[13:32] &lt Davbo&gt lol vmlemon_ :)</td></tr>
+            <tr><td>[13:32] &lt vmlemon_&gt Dodgy window floggers, and pushy commission-hungry people in electrical stores spring to mind</td></tr>
+            <tr><td>[13:34] &lt vmlemon_&gt "Would you like an overpriced USB cable with that?"</td></tr>
+            <tr><td>[13:34] &lt MS-&gt "please"</td></tr>
+            <tr><td>[13:34] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[13:34] &lt Davbo&gt Yeah, I have a friend that works in PC World and one that works in the Apple Store. Oh what a difference in sales techniques they get taught</td></tr>
+            <tr><td>[13:35] &lt MS-&gt I was thinking a different sort of sales</td></tr>
+            <tr><td>[13:35] &lt MS-&gt That's "just" retail</td></tr>
+            <tr><td>[13:35] &lt vmlemon_&gt Double-glazing and telesales?</td></tr>
+            <tr><td>[13:35] &lt MS-&gt More sales with 6 or 7 zeroes in the number</td></tr>
+            <tr><td>[13:36] &lt Davbo&gt I was just referring to what vmlemon_ said about the commision hungry staff</td></tr>
+            <tr><td>[13:36] &lt MS-&gt ah</td></tr>
+            <tr><td>[13:37] &lt Davbo&gt MS-, I'm gonna try to make a component that will submit songs to Last.fm, what does the existing HTTPClient do?</td></tr>
+            <tr><td>[13:38] &lt Davbo&gt phone brb</td></tr>
+            <tr><td>[13:38] &lt MS-&gt http://kamaelia.sourceforge.net/Cookbook/HTTPClient</td></tr>
+            <tr><td>[13:39] &lt Davbo&gt oh thanks</td></tr>
+            <tr><td>[13:40] &lt vmlemon_&gt "Want to take out a 5-year extended warranty on the box of CD-Rs you just bought?" ;)</td></tr>
+            <tr><td>[13:40] &lt Davbo&gt lol</td></tr>
+            <tr><td>[13:41] &lt MS-&gt see also https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SoC2006/RJL/P2PStreamSeed/p2pstreamseed.py</td></tr>
+            <tr><td>[13:42] &lt orphans&gt hey all, quick (and almost certainly stupid) python question, can't seem to find an obvious answer: say I have a class a, with a generator method b, how do i find out what a is from b?</td></tr>
+            <tr><td>[13:44] &lt vmlemon_&gt I've had plenty of free stuff from them, over the years (e.g. they ended up giving me giving a second digital camera when I bought only one along with a printer dock, as well as various other trinkets"</td></tr>
+            <tr><td>[13:44] &lt vmlemon_&gt )</td></tr>
+            <tr><td>[13:44] &lt MS-&gt &gt&gt&gt class a(object):</td></tr>
+            <tr><td>[13:44] &lt MS-&gt ... def b(self):</td></tr>
+            <tr><td>[13:44] &lt MS-&gt ... print dir(self)</td></tr>
+            <tr><td>[13:44] &lt MS-&gt ... print self.__class__</td></tr>
+            <tr><td>[13:44] &lt MS-&gt ... yield 1</td></tr>
+            <tr><td>[13:44] &lt MS-&gt &gt&gt&gt a().b().next()</td></tr>
+            <tr><td>[13:44] &lt MS-&gt ['__class__', '__delattr__', '__dict__', '__doc__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__str__', '__weakref__', 'b']</td></tr>
+            <tr><td>[13:44] &lt MS-&gt &lt class '__main__.a'&gt</td></tr>
+            <tr><td>[13:44] &lt MS-&gt 1</td></tr>
+            <tr><td>[13:45] &lt vmlemon_&gt (them being PC World)</td></tr>
+            <tr><td>[13:46] &lt orphans&gt ahh, you have to do it from within the method. I was trying to do a(), c = a.b(), c.__class__, which gives class as a &lt generator&gt</td></tr>
+            <tr><td>[13:47] &lt MS-&gt &gt&gt&gt dir(a().b())</td></tr>
+            <tr><td>[13:47] &lt MS-&gt ['__class__', '__delattr__', '__doc__', '__getattribute__', '__hash__', '__init__', '__iter__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__str__', 'close', 'gi_frame', 'gi_running', 'next', 'send', 'throw']</td></tr>
+            <tr><td>[13:48] &lt Davbo&gt ooo! that dir is clever</td></tr>
+            <tr><td>[13:48] &lt vmlemon_&gt Probably get hammered for this, but does anyone know of a way to use Perl-like syntax in Python?</td></tr>
+            <tr><td>[13:48] Reply: Hm?</td></tr>
+            <tr><td>[13:48] &lt orphans&gt MS-: sorry, don't understand what that bit is useful for?</td></tr>
+            <tr><td>[13:48] &lt MS-&gt &gt&gt&gt a().b().gi_frame.f_locals["self"].__class__</td></tr>
+            <tr><td>[13:48] &lt MS-&gt &lt class '__main__.a'&gt</td></tr>
+            <tr><td>[13:48] &lt orphans&gt other than seeing what's in there :)</td></tr>
+            <tr><td>[13:48] &lt orphans&gt but can you do that if you don't know what a is?</td></tr>
+            <tr><td>[13:49] *** orphans knocks together something</td></tr>
+            <tr><td>[13:49] &lt MS-&gt &gt&gt&gt X=a().b()</td></tr>
+            <tr><td>[13:49] &lt MS-&gt &gt&gt&gt X.gi_frame.f_locals["self"].__class__</td></tr>
+            <tr><td>[13:49] &lt MS-&gt &lt class '__main__.a'&gt</td></tr>
+            <tr><td>[13:49] &lt orphans&gt ahhh</td></tr>
+            <tr><td>[13:50] &lt MS-&gt It's nasty though because you should not rely on gi_frame nor f_locals really</td></tr>
+            <tr><td>[13:50] &lt MS-&gt But it will work</td></tr>
+            <tr><td>[13:50] *** orphans looks up gi_frame and f_locals</td></tr>
+            <tr><td>[13:50] &lt orphans&gt that is hacky looking though - I would have thought there would be an easier way</td></tr>
+            <tr><td>[13:51] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[13:51] Reply: does the macarena</td></tr>
+            <tr><td>[13:53] &lt vmlemon_&gt kamaeliabot: ptang</td></tr>
+            <tr><td>[13:53] &lt vmlemon_&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[13:53] Reply: Ptang!</td></tr>
+            <tr><td>[13:58] &lt vmlemon_&gt kamaeliabot: poke</td></tr>
+            <tr><td>[13:58] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[14:04] &lt vmlemon_&gt Ugh, this week has gone fast</td></tr>
+            <tr><td>[14:09] *** vmlemon_ wonders if Cillit Bang works any good on Windows Vista ;)</td></tr>
+            <tr><td>[14:15] &lt Davbo&gt MS-, i've got a silly question - perhaps it's because i'm coming for java or something but</td></tr>
+            <tr><td>[14:15] &lt Davbo&gt when you use ConsoleReader where is the input going?</td></tr>
+            <tr><td>[14:15] &lt Davbo&gt is there a "main" inbox it gets put onto?</td></tr>
+            <tr><td>[14:23] *** Chong has joined #kamaelia</td></tr>
+            <tr><td>[14:24] &lt Chong&gt Hello everyone.</td></tr>
+            <tr><td>[14:24] &lt vmlemon_&gt Hi Chong</td></tr>
+            <tr><td>[14:26] &lt Chong&gt MS-: Thank you very much for your e-mail. It's a very good idea to select candidates for coding through exercising coding itself.</td></tr>
+            <tr><td>[14:27] &lt Chong&gt vmlemon_: how it goes?</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt Ok</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt *OK</td></tr>
+            <tr><td>[14:27] &lt Chong&gt good</td></tr>
+            <tr><td>[14:39] &lt vmlemon_&gt o.O Someone just ran across the road and yelled "I almost got ran over by a car"</td></tr>
+            <tr><td>[14:41] &lt vmlemon_&gt Hmm, probably not a wise idea...</td></tr>
+            <tr><td>[14:42] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[14:48] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:49] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[14:58] &lt vmlemon_&gt Yay, it's started to rain</td></tr>
+            <tr><td>[15:04] &lt Chong&gt In Manchester, the rain just stopped:-)</td></tr>
+            <tr><td>[15:09] &lt Chong&gt the rain is very short. In the morning, the weather was so nice, but now...</td></tr>
+            <tr><td>[15:10] &lt vmlemon_&gt Looks like it's stopping...</td></tr>
+            <tr><td>[15:11] &lt Chong&gt vmlemon_: which city are you in?</td></tr>
+            <tr><td>[15:12] &lt vmlemon_&gt Currently sat in a bus shelter at Knaresborough</td></tr>
+            <tr><td>[15:12] &lt MS-&gt vmlemon_: What device do you use to use IRC like this?</td></tr>
+            <tr><td>[15:13] &lt Chong&gt MS-: it seems that you know confucianism very well :-)</td></tr>
+            <tr><td>[15:13] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:14] &lt MS-&gt It's either that or the Art of War ;-)</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt It's a Nokia phone with a Java/J2ME IRC client</td></tr>
+            <tr><td>[15:14] &lt MS-&gt I see</td></tr>
+            <tr><td>[15:15] &lt vmlemon_&gt Costs me a quid a day for "unlimited" data</td></tr>
+            <tr><td>[15:15] *** MS- nods</td></tr>
+            <tr><td>[15:17] &lt vmlemon_&gt Although it's an option (they charge 1p/KB otherwise)</td></tr>
+            <tr><td>[15:17] &lt MS-&gt That's better than the cost of data for sending SMS though</td></tr>
+            <tr><td>[15:18] &lt Chong&gt vmlemon_: I know o2 has this offer. So...</td></tr>
+            <tr><td>[15:19] &lt vmlemon_&gt I can use it as a modem, but it's excruciatingly slow (think slow serial cable link with satellite latency, and you won't be too far off) :(</td></tr>
+            <tr><td>[15:20] &lt vmlemon_&gt Orange, here</td></tr>
+            <tr><td>[15:21] &lt vmlemon_&gt I think T-Bag, erm T-Mobile do a similar offer ;)</td></tr>
+            <tr><td>[15:23] &lt Chong&gt vmlemon_: so does O2. Nowadays mobile networks offer similar deals.:)</td></tr>
+            <tr><td>[15:23] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[15:24] &lt vmlemon_&gt I used 3 ages ago, and was fairly happy with the service</td></tr>
+            <tr><td>[15:25] &lt vmlemon_&gt (the UMTS/3G operator, that is)</td></tr>
+            <tr><td>[15:25] &lt Chong&gt I heard 3's offer is very good but signal is not very good</td></tr>
+            <tr><td>[15:26] &lt vmlemon_&gt I can say that their coverage was pretty good, although it's a "your milage may vary" thing</td></tr>
+            <tr><td>[15:28] &lt vmlemon_&gt They used to have a GPRS roaming arrangement with O2</td></tr>
+            <tr><td>[15:29] &lt vmlemon_&gt although Orange happen to have the contract now, although older/pre-negotiation customers could roam on both</td></tr>
+            <tr><td>[15:32] &lt vmlemon_&gt (I used it just after the started their pre-paid service, until I lost my 3 handset on a train, a few months ago, so could use both for roaming)</td></tr>
+            <tr><td>[15:34] &lt Chong&gt I see. but another problem, 3's sim card is a lot bigger than normal, so it is not compatible to normal mobile phones.</td></tr>
+            <tr><td>[15:35] &lt MS-&gt Is it?</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt The SIM card is the same size, but the low-level protocols are incompatible</td></tr>
+            <tr><td>[15:37] &lt Chong&gt MS-: I heard from friends, have not tried it myself :-)</td></tr>
+            <tr><td>[15:37] &lt Davbo&gt MS-, if you're not busy can you have a look at this for me. I'm a bit confused with the scope of the variables declared in __init__</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt so it doesn't always work in a GSM phone</td></tr>
+            <tr><td>[15:38] &lt vmlemon_&gt I did get it working in a Motorola, though once</td></tr>
+            <tr><td>[15:39] &lt Chong&gt Thanks for pointing my misconception, vmlemon_. I see now. 3 uses UMTS before.</td></tr>
+            <tr><td>[15:40] &lt vmlemon_&gt (a family member's L6 - a real heap of junk)</td></tr>
+            <tr><td>[15:40] &lt Chong&gt But now since it also use 3G. so 3G mobile phones should be compatible with others.</td></tr>
+            <tr><td>[15:41] &lt MS-&gt Davbo - just ask away</td></tr>
+            <tr><td>[15:41] &lt Davbo&gt http://pastebin.com/m864f201</td></tr>
+            <tr><td>[15:42] &lt Davbo&gt in handshake i want to invoke the things from __init__ but no luck</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt Most UMTS handsets also support GSM, these days</td></tr>
+            <tr><td>[15:43] &lt Davbo&gt Am I doing something stupid in there?</td></tr>
+            <tr><td>[15:43] &lt MS-&gt Davbo: the code does look exceedingly... odd</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt Ah, lovely.</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt fyi: http://www.audioscrobbler.net/development/protocol/</td></tr>
+            <tr><td>[15:45] &lt MS-&gt Some points</td></tr>
+            <tr><td>[15:45] &lt MS-&gt test.handshake doesn't call anything</td></tr>
+            <tr><td>[15:45] &lt MS-&gt should be</td></tr>
+            <tr><td>[15:45] &lt MS-&gt test.handshake()</td></tr>
+            <tr><td>[15:45] &lt MS-&gt also</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt i thought so but it shouted at me when it was that</td></tr>
+            <tr><td>[15:46] &lt Davbo&gt TypeError: handshake() takes no arguments (1 given)</td></tr>
+            <tr><td>[15:46] &lt MS-&gt I did say "points"</td></tr>
+            <tr><td>[15:46] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:46] &lt Davbo&gt ah</td></tr>
+            <tr><td>[15:46] &lt Davbo&gt :(</td></tr>
+            <tr><td>[15:46] &lt MS-&gt If you do it that way at all,</td></tr>
+            <tr><td>[15:46] &lt MS-&gt def handshake():</td></tr>
+            <tr><td>[15:46] &lt MS-&gt should be</td></tr>
+            <tr><td>[15:46] &lt MS-&gt def handshake(self):</td></tr>
+            <tr><td>[15:46] &lt MS-&gt or else</td></tr>
+            <tr><td>[15:46] &lt MS-&gt test.handshake()</td></tr>
+            <tr><td>[15:46] &lt MS-&gt will give</td></tr>
+            <tr><td>[15:46] &lt MS-&gt TypeError: handshake() takes no arguments (1 given)</td></tr>
+            <tr><td>[15:47] &lt MS-&gt Furthermore....</td></tr>
+            <tr><td>[15:47] &lt MS-&gt SimpleHTTPClient("http://post.audioscrobbler.com/?hs=true&p=1.2&c="+clientid+"&v="+clientver+"&u="+user+"&t="+timestamp+"&a="+auth),</td></tr>
+            <tr><td>[15:47] &lt MS-&gt references</td></tr>
+            <tr><td>[15:47] &lt MS-&gt clientid , clientver , user , timestamp, auth</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt self. on those</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt i see</td></tr>
+            <tr><td>[15:47] &lt MS-&gt yep</td></tr>
+            <tr><td>[15:48] &lt MS-&gt nothing is implicit</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt i tried that too but i hadn't put handshake(self) in there</td></tr>
+            <tr><td>[15:48] &lt MS-&gt yep</td></tr>
+            <tr><td>[15:48] &lt MS-&gt Thing is what you're doing there isn't actually very...</td></tr>
+            <tr><td>[15:48] &lt MS-&gt kamaelia-like</td></tr>
+            <tr><td>[15:49] &lt MS-&gt for want of a good word</td></tr>
+            <tr><td>[15:50] &lt MS-&gt I think you're trying to do something similar to what this code does:</td></tr>
+            <tr><td>[15:50] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/LUGRadio/SimpleSwarm.py?view=markup</td></tr>
+            <tr><td>[15:50] &lt MS-&gt Except that uses TCPClient</td></tr>
+            <tr><td>[15:50] &lt MS-&gt In order to pull in LikeFile, you'll need to use the KamaeliaLogger tar ball I mentioned in my mail</td></tr>
+            <tr><td>[15:51] &lt Davbo&gt How is it similar to that?</td></tr>
+            <tr><td>[15:52] &lt Davbo&gt this will be a component for anyone making a media player to submit their plays to last.fm</td></tr>
+            <tr><td>[15:52] &lt MS-&gt You want to send a request, and get a reply, and then do something else</td></tr>
+            <tr><td>[15:52] &lt MS-&gt If you see</td></tr>
+            <tr><td>[15:53] &lt MS-&gt SimpleSwarm.clientRequest</td></tr>
+            <tr><td>[15:53] &lt MS-&gt You'll see it does that sort of thing</td></tr>
+            <tr><td>[15:53] &lt Davbo&gt Yeah I see</td></tr>
+            <tr><td>[15:54] &lt Davbo&gt I thought the http component could just be used though since that's what i'm sending the request on</td></tr>
+            <tr><td>[15:54] &lt MS-&gt Indeed - all I'm saying is that you'll probably want to do</td></tr>
+            <tr><td>[15:54] &lt MS-&gt LikeFile(&lt  your http client &gt )</td></tr>
+            <tr><td>[15:54] &lt MS-&gt inside a ThreadedComponent</td></tr>
+            <tr><td>[15:55] &lt MS-&gt rather than the way you're doing it there</td></tr>
+            <tr><td>[15:55] &lt MS-&gt Or perhaps more simply</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt I was going to use TCPClient but thought I could just skip it to be honest</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt plus i have little to no knowledge of all these components workings</td></tr>
+            <tr><td>[15:57] &lt MS-&gt indeed.</td></tr>
+            <tr><td>[15:57] &lt MS-&gt To me it looks like you're trying to run here before you can walk</td></tr>
+            <tr><td>[15:57] &lt MS-&gt which is why you're hitting little walls</td></tr>
+            <tr><td>[15:58] &lt MS-&gt http://pastebin.com/m79c9b153</td></tr>
+            <tr><td>[15:59] &lt MS-&gt http://pastebin.com/m6e3be08d rather</td></tr>
+            <tr><td>[15:59] &lt MS-&gt is slightly simpler</td></tr>
+            <tr><td>[15:59] &lt MS-&gt Using the HTTP components is more complex that a) it probably should be b) first appears</td></tr>
+            <tr><td>[15:59] &lt MS-&gt probably because c) I didn't write them ;-)</td></tr>
+            <tr><td>[16:00] &lt Davbo&gt lol</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt You can't blame me for trying to a http component for a simple http request though</td></tr>
+            <tr><td>[16:01] &lt MS-&gt I don't blame you at all :)</td></tr>
+            <tr><td>[16:01] &lt MS-&gt I am aware of their limitations though</td></tr>
+            <tr><td>[16:01] &lt MS-&gt In terms of new components and systems, I was personally thinking more along the lines of "create a new component from scratch of your own"</td></tr>
+            <tr><td>[16:01] &lt MS-&gt However complex or simple</td></tr>
+            <tr><td>[16:02] &lt MS-&gt and plug those together</td></tr>
+            <tr><td>[16:02] &lt Davbo&gt I've no idea what to do though and was reading how audioscrobbler worked so it was more just out of interest really</td></tr>
+            <tr><td>[16:03] &lt MS-&gt Ahh I see</td></tr>
+            <tr><td>[16:03] &lt MS-&gt Well in case it helps</td></tr>
+            <tr><td>[16:03] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/demo_http.py?revision=3850&view=markup</td></tr>
+            <tr><td>[16:03] &lt MS-&gt has an example use of SimpleHTTPClient and LikeFile</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt I tried reading HTTPClient.py but it was rather confusing</td></tr>
+            <tr><td>[16:05] &lt MS-&gt Don't worry, I sympathise :)</td></tr>
+            <tr><td>[16:06] &lt Davbo&gt anyway it was just something out of interest, I always think it's cool when people come up with their own protocols and open up how you talk with them</td></tr>
+            <tr><td>[16:06] &lt MS-&gt indeed</td></tr>
+            <tr><td>[16:06] &lt MS-&gt In order to use audioscrobbler that way you'd need to use likefile in that instance</td></tr>
+            <tr><td>[16:07] &lt MS-&gt The HTTPClient code was created by Ryan for a very specific purpose - single short requests for putting data in a particular place</td></tr>
+            <tr><td>[16:07] &lt vmlemon_&gt Is it required/safe to append a semicolon to each line of code when writing a Python script? So far, I've took an existing start of a Perl script I was working on, stripped the 'my $' from the front of each variable, and could then run it in Python</td></tr>
+            <tr><td>[16:07] &lt MS-&gt As a black box to use, it's OK</td></tr>
+            <tr><td>[16:08] &lt MS-&gt But its internals could be nicer</td></tr>
+            <tr><td>[16:08] &lt MS-&gt vmlemon_: yes</td></tr>
+            <tr><td>[16:08] &lt MS-&gt ; is a statement seperator in python</td></tr>
+            <tr><td>[16:08] &lt MS-&gt but so is newline</td></tr>
+            <tr><td>[16:08] &lt vmlemon_&gt It originally consisted of a few variables and some print statements</td></tr>
+            <tr><td>[16:08] &lt MS-&gt hence why you don't normally see a semicolon</td></tr>
+            <tr><td>[16:09] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt Yeah I did that first, it's like separating them twice really</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt or, what he said. :P</td></tr>
+            <tr><td>[16:09] &lt MS-&gt heh</td></tr>
+            <tr><td>[16:10] &lt MS-&gt sorry :)</td></tr>
+            <tr><td>[16:10] &lt vmlemon_&gt It choked on a comment containing a hex dump, somehow until I removed it...</td></tr>
+            <tr><td>[16:10] *** Davbo feels late to the party with Python</td></tr>
+            <tr><td>[16:11] &lt vmlemon_&gt Same here</td></tr>
+            <tr><td>[16:11] &lt Davbo&gt Perl uses # also for comments right?</td></tr>
+            <tr><td>[16:11] &lt MS-&gt Don't worry, we can have a new party :)</td></tr>
+            <tr><td>[16:11] &lt MS-&gt yes</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt I have a syntactic headache these days - MATLAB from one guy, Prolog and random bursts of Lisp from another and Java from the rest</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt lecturers that is</td></tr>
+            <tr><td>[16:12] &lt vmlemon_&gt I personally prefer Perl's syntax/way of doing things, but file I/O and hex handling seems easier/less convoluted from what I've read</td></tr>
+            <tr><td>[16:12] &lt Davbo&gt then i get home and get a Python lecture from MS- :P</td></tr>
+            <tr><td>[16:13] &lt vmlemon_&gt (in Python)</td></tr>
+            <tr><td>[16:13] &lt MS-&gt worse could it be - forth the mix into could you add.</td></tr>
+            <tr><td>[16:14] &lt vmlemon_&gt COBOL and FORTRAN, anyone?</td></tr>
+            <tr><td>[16:14] &lt MS-&gt no thanks, I'm cutting down</td></tr>
+            <tr><td>[16:15] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[16:16] &lt Davbo&gt MS-, was that your Yoda impersonation?</td></tr>
+            <tr><td>[16:20] &lt MS-&gt No, that's the sentance structure you'd get with forth</td></tr>
+            <tr><td>[16:20] &lt MS-&gt 1 2 plus 3 times</td></tr>
+            <tr><td>[16:20] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:20] &lt MS-&gt ==</td></tr>
+            <tr><td>[16:20] &lt MS-&gt (1+2) *3</td></tr>
+            <tr><td>[16:20] &lt MS-&gt j_baker: hi</td></tr>
+            <tr><td>[16:20] &lt j_baker&gt hello</td></tr>
+            <tr><td>[16:21] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:22] &lt j_baker&gt Have I mentioned how much I hate microsoft?</td></tr>
+            <tr><td>[16:23] &lt Davbo&gt Oh forth is a programming language, i see.</td></tr>
+            <tr><td>[16:23] &lt MS-&gt I believe you've mentioned it a few times. To me they're an interesting irrelevance</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt I'm developing a console app in C# for my final project. And I'd forgotten how much I hate the Windows command line.</td></tr>
+            <tr><td>[16:23] &lt MS-&gt Ahhhh</td></tr>
+            <tr><td>[16:23] &lt MS-&gt I see</td></tr>
+            <tr><td>[16:24] &lt j_baker&gt I may have to try Mono out, but I hear it's nowhere near as stable as MS .NET</td></tr>
+            <tr><td>[16:24] &lt vmlemon_&gt What is this "Microsoft" you speak of? ;)</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt Why are you doing your final project in Windows then j_baker ?</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt Surely you can develop in Linux</td></tr>
+            <tr><td>[16:25] &lt j_baker&gt Because I have to. My university is pretty much owned by MS as is my professor.</td></tr>
+            <tr><td>[16:25] &lt Davbo&gt ouch!</td></tr>
+            <tr><td>[16:26] &lt Davbo&gt All our computers dual boot to Red Hat</td></tr>
+            <tr><td>[16:26] &lt Davbo&gt Where's that j_baker ?</td></tr>
+            <tr><td>[16:26] &lt j_baker&gt Basically, he told me we could use any tools to write the program we wanted, but it has to compile and run under VS 2005</td></tr>
+            <tr><td>[16:26] &lt j_baker&gt Texas Tech University</td></tr>
+            <tr><td>[16:27] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[16:28] &lt j_baker&gt I'm told that once I get past the class I'm in, we're pretty much able to use any environment/language we want to though.</td></tr>
+            <tr><td>[16:28] &lt Davbo&gt Why isn't it the Texas Institute for Technology? :P</td></tr>
+            <tr><td>[16:28] &lt j_baker&gt lol</td></tr>
+            <tr><td>[16:29] &lt vmlemon_&gt Texas Microsoft University? ;)</td></tr>
+            <tr><td>[16:29] &lt j_baker&gt That one I like.</td></tr>
+            <tr><td>[16:29] &lt j_baker&gt Texas Tech.NET</td></tr>
+            <tr><td>[16:29] &lt j_baker&gt I think that would be more fitting.</td></tr>
+            <tr><td>[16:30] &lt Davbo&gt Heh, TIT would suit any institute that forces you to program in VS 2005</td></tr>
+            <tr><td>[16:30] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[16:30] &lt j_baker&gt It doesn't end there.</td></tr>
+            <tr><td>[16:31] &lt j_baker&gt Try connecting a Linux computer or a MacBook running leopard to our wireless network.</td></tr>
+            <tr><td>[16:31] &lt vmlemon_&gt Vertigo Sickness?</td></tr>
+            <tr><td>[16:31] &lt j_baker&gt On my MacBook, I have to spend 20 minutes turning the airport card on and off to be able to connect.</td></tr>
+            <tr><td>[16:32] &lt j_baker&gt And I'm told there's simply no way to connect a Linux machine period.</td></tr>
+            <tr><td>[16:32] &lt vmlemon_&gt Oh really?</td></tr>
+            <tr><td>[16:32] &lt Davbo&gt Sounds like a challenge</td></tr>
+            <tr><td>[16:32] &lt Davbo&gt unfortunately i'm thousands of miles away</td></tr>
+            <tr><td>[16:33] &lt j_baker&gt Yup. And some professors wonder why we have grad students who can't do anything other than develop Windows programs in Visual Studio and are horrified of Command Lines.</td></tr>
+            <tr><td>[16:33] &lt vmlemon_&gt They've tied the Wi-Fi auth in with Active Directory, or use some other demented system?</td></tr>
+            <tr><td>[16:33] *** Chong has joined #kamaelia</td></tr>
+            <tr><td>[16:34] &lt j_baker&gt I have no idea. They keep blaming Apple for the problems with Leopard not working.</td></tr>
+            <tr><td>[16:34] &lt j_baker&gt But I've been told by someone who works in IT help central that it's just an issue of them not having their access points updated (at least for Leopard).</td></tr>
+            <tr><td>[16:35] &lt vmlemon_&gt Prolly their own network is broken, judging by their excuse</td></tr>
+            <tr><td>[16:35] &lt j_baker&gt Heh, yeah.</td></tr>
+            <tr><td>[16:36] &lt j_baker&gt There weren't even instructions on how to connect a Leopard computer to the network on the IT website until about 4 mos after it came out.</td></tr>
+            <tr><td>[16:36] &lt vmlemon_&gt I bet Vista is well catered for</td></tr>
+            <tr><td>[16:37] &lt j_baker&gt I was actually surprised to be honest.</td></tr>
+            <tr><td>[16:37] &lt j_baker&gt I still don't think they recommend Vista over XP to be honest.</td></tr>
+            <tr><td>[16:38] &lt j_baker&gt (not to say that they don't take care of Vista users)</td></tr>
+            <tr><td>[16:39] &lt vmlemon_&gt Very InSecure Testing Area ;)</td></tr>
+            <tr><td>[16:39] &lt MS-&gt j_baker which uni is this again?</td></tr>
+            <tr><td>[16:40] &lt j_baker&gt Texas Tech University</td></tr>
+            <tr><td>[16:41] &lt Davbo&gt What's better, Texas Tech or Texas State?</td></tr>
+            <tr><td>[16:41] &lt Davbo&gt or is that a long running argument?</td></tr>
+            <tr><td>[16:42] &lt j_baker&gt I hear Texas State isn't bad for a party school... Which usually means it's bad academically.</td></tr>
+            <tr><td>[16:42] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[16:42] &lt MS-&gt Looks like your computational physics people are relatively sane</td></tr>
+            <tr><td>[16:42] &lt MS-&gt http://www.phys.ttu.edu/~ritlg/courses/p5322/linux_links.html</td></tr>
+            <tr><td>[16:43] &lt MS-&gt May have some local tips for you - mac os x is closer to linux than it is to windows in many respects</td></tr>
+            <tr><td>[16:43] &lt j_baker&gt Yeah. We have a few departments that are pretty decent. I think our physics department is a little less windows-centric simply because the majority of them were educated elsewhere.</td></tr>
+            <tr><td>[16:43] &lt j_baker&gt I'll have to check it out.</td></tr>
+            <tr><td>[16:44] &lt MS-&gt You never know :)</td></tr>
+            <tr><td>[16:45] &lt j_baker&gt Oh well, that's my rant for the day. :)</td></tr>
+            <tr><td>[16:47] &lt MS-&gt heheh</td></tr>
+            <tr><td>[16:47] &lt Davbo&gt If we didn't have support for Linux the "Free Software Society" would have a riot and probably boycott Uni :p</td></tr>
+            <tr><td>[16:47] &lt MS-&gt "The addition of 16 new faculty members and the on-going graduate site in Abilene"</td></tr>
+            <tr><td>[16:47] &lt MS-&gt Abilene is famous in case you didn't know</td></tr>
+            <tr><td>[16:47] &lt MS-&gt http://en.wikipedia.org/wiki/Abilene_paradox</td></tr>
+            <tr><td>[16:48] &lt j_baker&gt Yeah, I remember one of my professors telling us about that (in my past life as business major).</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt Are you a Computer Science major now j_baker ?</td></tr>
+            <tr><td>[16:49] &lt j_baker&gt Yup.</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt Hurrah!</td></tr>
+            <tr><td>[16:51] &lt Davbo&gt Having said that, i kinda wish i'd chose Philosophy</td></tr>
+            <tr><td>[16:51] &lt j_baker&gt lol</td></tr>
+            <tr><td>[16:52] &lt j_baker&gt I tried Sociology too... It was an easy major, but it just didn't challenge me in the way that I would like.</td></tr>
+            <tr><td>[16:52] &lt Davbo&gt I did Philosophy of the Mind (Cogito ergo sum etc.) last semester</td></tr>
+            <tr><td>[16:52] &lt Davbo&gt We were allowed to pick an extra module from anything though</td></tr>
+            <tr><td>[16:52] &lt j_baker&gt I do better with "Take this, learn it, and apply it" than "Learn this and regurgitate it on the test"</td></tr>
+            <tr><td>[16:53] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[16:53] &lt Davbo&gt Philosophy is damn difficult though.</td></tr>
+            <tr><td>[16:54] &lt Davbo&gt so easy to get a job though if you have a Phi degree, in the UK at least.</td></tr>
+            <tr><td>[16:54] &lt Davbo&gt not that i'll struggle with Computer Science.</td></tr>
+            <tr><td>[16:56] &lt j_baker&gt Really, what kind of job would you get with a philosophy degree?</td></tr>
+            <tr><td>[16:56] &lt MS-&gt burger inversion specialist</td></tr>
+            <tr><td>[16:56] &lt MS-&gt :-D</td></tr>
+            <tr><td>[16:56] &lt Davbo&gt :P</td></tr>
+            <tr><td>[16:56] &lt j_baker&gt lol</td></tr>
+            <tr><td>[16:57] &lt Davbo&gt You had that prepared didn't you MS- :P</td></tr>
+            <tr><td>[16:57] &lt MS-&gt heh</td></tr>
+            <tr><td>[16:57] &lt MS-&gt I just type fast :)</td></tr>
+            <tr><td>[16:58] &lt Davbo&gt It's not really what you learn from doing the degree j_baker, people with it are usually very intelligent about most things</td></tr>
+            <tr><td>[16:58] &lt Davbo&gt it's very much a scientific subject, depending what part of it you go into</td></tr>
+            <tr><td>[16:59] &lt Davbo&gt depends where you read it though, my lecturer was a Chess Grandmaster :D</td></tr>
+            <tr><td>[17:00] &lt j_baker&gt Heh... that's interesting.</td></tr>
+            <tr><td>[17:00] &lt Davbo&gt plus if you stay on as research in a philosophy department your job description reads : "Think about stuff."</td></tr>
+            <tr><td>[17:01] &lt j_baker&gt I could do that all day.</td></tr>
+            <tr><td>[17:01] *** j_baker considers changing to philosophy.</td></tr>
+            <tr><td>[17:01] &lt Davbo&gt Hah :)</td></tr>
+            <tr><td>[17:01] *** j_baker snaps out of it.</td></tr>
+            <tr><td>[17:02] &lt Davbo&gt brb</td></tr>
+            <tr><td>[17:03] *** Davbo is now known as Davbo-afk</td></tr>
+            <tr><td>[17:14] *** j_baker goes to class</td></tr>
+            <tr><td>[17:14] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[17:38] *** Davbo-afk is now known as Davbo</td></tr>
+            <tr><td>[17:59] &lt MS-&gt Chong: Have you done the mini-axon tutorial yet, out of curiosity?</td></tr>
+            <tr><td>[18:05] &lt Davbo&gt Ah, I see what likefile does now</td></tr>
+            <tr><td>[18:05] &lt Davbo&gt it's kinda, cheating.</td></tr>
+            <tr><td>[18:05] &lt MS-&gt Makes a component a bit like a file</td></tr>
+            <tr><td>[18:05] &lt MS-&gt Not really. Kamaelia is about trying to make things easier</td></tr>
+            <tr><td>[18:05] &lt MS-&gt If it makes things easier, it fits :-)</td></tr>
+            <tr><td>[18:05] &lt Davbo&gt You know what i mean though</td></tr>
+            <tr><td>[18:06] &lt MS-&gt I know what you mean</td></tr>
+            <tr><td>[18:06] &lt Davbo&gt it's cheating the paradigm</td></tr>
+            <tr><td>[18:06] &lt MS-&gt Not really - it's actually just doing the same thing the OS does</td></tr>
+            <tr><td>[18:06] &lt MS-&gt When you do</td></tr>
+            <tr><td>[18:06] &lt MS-&gt f = open("some file")</td></tr>
+            <tr><td>[18:06] &lt MS-&gt there's something extraordinarily complex going on behind "open" and friends</td></tr>
+            <tr><td>[18:06] &lt MS-&gt when you stop and think about it</td></tr>
+            <tr><td>[18:06] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[18:07] &lt Davbo&gt I suppose</td></tr>
+            <tr><td>[18:07] &lt MS-&gt But you're masked from the issue - even though there's actually alot of concurrent behaviour there</td></tr>
+            <tr><td>[18:08] &lt MS-&gt You also have to bear in mind that a good reference for making concurrency easy is biology</td></tr>
+            <tr><td>[18:08] &lt MS-&gt (hence axon...)</td></tr>
+            <tr><td>[18:08] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[18:09] &lt MS-&gt The body does a huge amount of communication using the nervous system (which in/outboxes is akin to), also hormonal (which the STM & co-ordinating assistant tracker conciously relate to)</td></tr>
+            <tr><td>[18:09] &lt MS-&gt But then there's higher level things as well - like tactile response</td></tr>
+            <tr><td>[18:09] &lt Davbo&gt Interesting</td></tr>
+            <tr><td>[18:09] &lt MS-&gt which is the closest you get</td></tr>
+            <tr><td>[18:09] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[18:10] &lt MS-&gt My third year project, many moons ago now, related to modelling biological trees in software</td></tr>
+            <tr><td>[18:10] &lt MS-&gt specifically to model growth</td></tr>
+            <tr><td>[18:10] &lt MS-&gt It was unusual in that I included aspects of the hormonal system in there</td></tr>
+            <tr><td>[18:11] *** Davbo nods</td></tr>
+            <tr><td>[18:12] &lt Davbo&gt My tutor is on the research team for things like that i believe</td></tr>
+            <tr><td>[18:12] &lt MS-&gt Anyhow, underneath it all, LikeFile actually ends up being a wrapper for the usual approaches</td></tr>
+            <tr><td>[18:13] &lt MS-&gt so it's really just a convenience</td></tr>
+            <tr><td>[18:13] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[18:13] &lt MS-&gt But I can see how you might say it's a cheat</td></tr>
+            <tr><td>[18:13] &lt MS-&gt It *does* mean you can have a P2P swarming system written from scratch in a evening though ;-)</td></tr>
+            <tr><td>[18:13] &lt Davbo&gt I only meant it in the same way in which writing ASM is cheating from Machine Code ;)</td></tr>
+            <tr><td>[18:13] &lt MS-&gt true</td></tr>
+            <tr><td>[18:14] *** MS- gets dinner</td></tr>
+            <tr><td>[18:14] &lt MS-&gt cya later</td></tr>
+            <tr><td>[18:14] &lt Davbo&gt cya</td></tr>
+            <tr><td>[18:14] *** MS- is now known as MS-afk</td></tr>
+            <tr><td>[18:21] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[18:22] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[18:29] &lt Davbo&gt Hi Lawouach</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt hi Davbo</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt Hrm, would Kamaelia be suitable for writing a script intended for parsing files (mostly binary with chunks of text) created by mobile phones (amongst other devices)?</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt Or would it be overkill?</td></tr>
+            <tr><td>[19:43] *** MS-afk is now known as MS-</td></tr>
+            <tr><td>[19:44] &lt MS-&gt vmlemon_: yes, you can do that - I've done that</td></tr>
+            <tr><td>[19:44] &lt vmlemon_&gt Although it has to support a variety of file formats (and variations)</td></tr>
+            <tr><td>[19:44] &lt MS-&gt I was parsing ~400,000 text messages</td></tr>
+            <tr><td>[19:45] &lt barrycarlyon&gt Hey all, I'm trundling through the miniaxon tutorial, and the first part says "into this put any initialisation you might need", I don't know what this means could someone suggest? I know know what I need to init yet? or could this be down after this part?</td></tr>
+            <tr><td>[19:45] *** barrycarlyon is trying not to look at the answers yet....</td></tr>
+            <tr><td>[19:45] &lt barrycarlyon&gt so Im not sure what commands I need to put in the __init__ method....</td></tr>
+            <tr><td>[19:46] &lt barrycarlyon&gt if any at this point?</td></tr>
+            <tr><td>[19:46] &lt MS-&gt It means "if you use anything in a later method - ie an instance attribute (eg self.foo) - initialise it there"</td></tr>
+            <tr><td>[19:46] &lt MS-&gt eg if you expect to use a list, dict, etc</td></tr>
+            <tr><td>[19:46] &lt barrycarlyon&gt so define and lists or global varibles here?</td></tr>
+            <tr><td>[19:46] &lt Davbo&gt instance variables</td></tr>
+            <tr><td>[19:46] &lt barrycarlyon&gt s/and/any</td></tr>
+            <tr><td>[19:47] &lt barrycarlyon&gt makes sense :-)</td></tr>
+            <tr><td>[19:47] &lt vmlemon_&gt Documentation for the file format I'm working on supporting is non-existant/proprietary, so I have more work to do trying to figure it out</td></tr>
+            <tr><td>[19:47] &lt Davbo&gt What is it vmlemon_ ?</td></tr>
+            <tr><td>[19:48] &lt vmlemon_&gt :(</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt what file format?</td></tr>
+            <tr><td>[19:49] *** barrycarlyon reads the next page of his book, and has a realisation...</td></tr>
+            <tr><td>[19:50] &lt vmlemon_&gt Of course, I can find out the message content, sender number/name and SMS Service Centre number, but the idiot who thought of the file format decided not to store the destination</td></tr>
+            <tr><td>[19:50] &lt vmlemon_&gt A Symbian/Nokia Series 60 raw SMS saved to a memory card</td></tr>
+            <tr><td>[19:50] &lt MS-&gt Ahhhhh</td></tr>
+            <tr><td>[19:51] &lt Davbo&gt "&lt MS-&gt I was parsing ~400,000 text messages" You were getting them from the same file?</td></tr>
+            <tr><td>[19:51] &lt MS-&gt Yep</td></tr>
+            <tr><td>[19:51] &lt Davbo&gt Heh</td></tr>
+            <tr><td>[19:51] &lt MS-&gt They were in an excel spreadsheet with 5 sheets</td></tr>
+            <tr><td>[19:51] &lt vmlemon_&gt The Symbian site has all the utility of a chocolate fireguard</td></tr>
+            <tr><td>[19:51] &lt MS-&gt (1 sheet for one week)</td></tr>
+            <tr><td>[19:51] &lt Davbo&gt Not only can it be done with Kamaelia it's already done :)</td></tr>
+            <tr><td>[19:52] &lt MS-&gt Not the raw format of course</td></tr>
+            <tr><td>[19:52] &lt Davbo&gt Ahh</td></tr>
+            <tr><td>[19:52] &lt MS-&gt But not much difference</td></tr>
+            <tr><td>[19:52] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:52] *** vmlemon_ doesn't have that luxury</td></tr>
+            <tr><td>[19:53] &lt barrycarlyon&gt Once you have done the first exercise and you run it should it output anything, i was expecting it to output the 'yeild'ed 1....</td></tr>
+            <tr><td>[19:54] &lt vmlemon_&gt Seems stupid to store everything *but* the destination, in my view, unless they didn't plan for people to be shuttling raw files around and running hex editors on them</td></tr>
+            <tr><td>[19:55] &lt MS-&gt barrycarlyon: Assuming you're referring to "standing"...</td></tr>
+            <tr><td>[19:55] &lt Davbo&gt yield doesn't print anything barrycarlyon, it makes the function into a generator which is a kind of iterator from what i gather</td></tr>
+            <tr><td>[19:56] &lt MS-&gt Then the class you've created "microprocess"</td></tr>
+            <tr><td>[19:56] &lt barrycarlyon&gt i am referring to standing</td></tr>
+            <tr><td>[19:56] &lt MS-&gt should behaviour exactly as you see in Discussion</td></tr>
+            <tr><td>[19:56] &lt MS-&gt A generator is a thing that can be run and return a value</td></tr>
+            <tr><td>[19:56] *** barrycarlyon hadnt clicked answer till just now....</td></tr>
+            <tr><td>[19:56] &lt vmlemon_&gt Still kudos to them for using vanilla ASCII for the readable strings, and not some other encoding</td></tr>
+            <tr><td>[19:56] &lt MS-&gt vmlemon_: indeed</td></tr>
+            <tr><td>[19:56] &lt MS-&gt barrycarlyon: the canonoical example is the fibonacci example:</td></tr>
+            <tr><td>[19:57] &lt MS-&gt &gt&gt&gt def fib():</td></tr>
+            <tr><td>[19:57] &lt MS-&gt ... a,b = 1,1</td></tr>
+            <tr><td>[19:57] &lt MS-&gt ... while 1:</td></tr>
+            <tr><td>[19:57] &lt MS-&gt ... print a</td></tr>
+            <tr><td>[19:57] &lt MS-&gt ... a,b = b, a+b</td></tr>
+            <tr><td>[19:57] &lt MS-&gt &gt&gt&gt fib()</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 1</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 1</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 2</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 3</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 5</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 8</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 13</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 21</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 34</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 55</td></tr>
+            <tr><td>[19:57] &lt MS-&gt 89</td></tr>
+            <tr><td>[19:58] &lt MS-&gt Then as a generator:</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt def fib():</td></tr>
+            <tr><td>[19:58] &lt MS-&gt ... a,b = 1,1</td></tr>
+            <tr><td>[19:58] &lt MS-&gt ... while 1:</td></tr>
+            <tr><td>[19:58] &lt MS-&gt ... yield a</td></tr>
+            <tr><td>[19:58] &lt MS-&gt ... a,b = b, a+b</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt g = fib()</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt g</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &lt generator object at 0xb7cb9a6c&gt</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt g.next()</td></tr>
+            <tr><td>[19:58] &lt MS-&gt 1</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt g.next()</td></tr>
+            <tr><td>[19:58] &lt MS-&gt 1</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt g.next()</td></tr>
+            <tr><td>[19:58] &lt MS-&gt 2</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt g.next()</td></tr>
+            <tr><td>[19:58] &lt MS-&gt 3</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt g.next()</td></tr>
+            <tr><td>[19:58] &lt MS-&gt 5</td></tr>
+            <tr><td>[19:58] &lt MS-&gt &gt&gt&gt g.next()</td></tr>
+            <tr><td>[19:58] &lt MS-&gt 8</td></tr>
+            <tr><td>[19:59] &lt barrycarlyon&gt what do the ... mean at the start of your lines?</td></tr>
+            <tr><td>[19:59] &lt MS-&gt Those are from the python interactive console</td></tr>
+            <tr><td>[19:59] &lt MS-&gt I'm just copying and pasting what I've typed</td></tr>
+            <tr><td>[19:59] &lt MS-&gt Doing a second run:</td></tr>
+            <tr><td>[19:59] &lt Davbo&gt just type "python" into shell and it'll start a console for you, it's awesome.</td></tr>
+            <tr><td>[19:59] &lt MS-&gt &gt&gt&gt h = fib()</td></tr>
+            <tr><td>[19:59] &lt MS-&gt &gt&gt&gt h.next()</td></tr>
+            <tr><td>[19:59] &lt MS-&gt 1</td></tr>
+            <tr><td>[19:59] &lt MS-&gt &gt&gt&gt h.next()</td></tr>
+            <tr><td>[19:59] &lt MS-&gt 1</td></tr>
+            <tr><td>[19:59] &lt MS-&gt &gt&gt&gt h.next()</td></tr>
+            <tr><td>[19:59] &lt MS-&gt 2</td></tr>
+            <tr><td>[19:59] &lt barrycarlyon&gt o, i was writing the code in a text editor, should i do it on the python command line?</td></tr>
+            <tr><td>[19:59] &lt MS-&gt &gt&gt&gt h.next()</td></tr>
+            <tr><td>[19:59] &lt MS-&gt 3</td></tr>
+            <tr><td>[20:00] &lt MS-&gt Mini axon is best in an editor, but the command line is useful</td></tr>
+            <tr><td>[20:00] &lt MS-&gt I'm just using the commandline to show how generators act</td></tr>
+            <tr><td>[20:00] &lt MS-&gt Both retain their intenal state</td></tr>
+            <tr><td>[20:00] &lt MS-&gt so I can do this:</td></tr>
+            <tr><td>[20:00] &lt MS-&gt &gt&gt&gt g.next() , h.next()</td></tr>
+            <tr><td>[20:00] &lt MS-&gt (13, 5)</td></tr>
+            <tr><td>[20:00] &lt MS-&gt &gt&gt&gt g.next() , h.next()</td></tr>
+            <tr><td>[20:00] &lt MS-&gt (21, 8)</td></tr>
+            <tr><td>[20:00] &lt MS-&gt &gt&gt&gt g.next() , h.next()</td></tr>
+            <tr><td>[20:00] &lt MS-&gt (34, 13)</td></tr>
+            <tr><td>[20:00] &lt MS-&gt &gt&gt&gt g.next() , h.next()</td></tr>
+            <tr><td>[20:00] &lt MS-&gt (55, 21)</td></tr>
+            <tr><td>[20:00] &lt MS-&gt or even:</td></tr>
+            <tr><td>[20:01] &lt barrycarlyon&gt so if done in a editor, do python &gt&gt&gt import miniaxon &gt&gt&gta = microprocess()</td></tr>
+            <tr><td>[20:01] &lt Davbo&gt You can do very similar things with Iterators in Java if you know Java at all</td></tr>
+            <tr><td>[20:01] &lt MS-&gt &gt&gt&gt H = [fib() for x in xrange(5) ]</td></tr>
+            <tr><td>[20:01] &lt vmlemon_&gt Back in a sec</td></tr>
+            <tr><td>[20:01] &lt barrycarlyon&gt i dont know java</td></tr>
+            <tr><td>[20:01] &lt MS-&gt &gt&gt&gt H</td></tr>
+            <tr><td>[20:01] &lt MS-&gt [&lt generator object at 0xb7cb9fcc&gt, &lt generator object at 0xb7cb9dac&gt, &lt generator object at 0xb7cb9fec&gt, &lt generator object at 0xb7cbc02c&gt, &lt generator object at 0xb7cbc04c&gt]</td></tr>
+            <tr><td>[20:01] &lt Davbo&gt hmm, sorry :(</td></tr>
+            <tr><td>[20:02] &lt MS-&gt barrycarlyon: That's a good thing ;-)</td></tr>
+            <tr><td>[20:02] &lt Davbo&gt lol, zing.</td></tr>
+            <tr><td>[20:02] &lt vmlemon_&gt That coffee? ;)</td></tr>
+            <tr><td>[20:02] &lt MS-&gt anyhow it's that aspect of generators being restartable (essentially)</td></tr>
+            <tr><td>[20:02] &lt MS-&gt that allows this:</td></tr>
+            <tr><td>[20:02] &lt MS-&gt &gt&gt&gt [x.next() for x in H]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt [1, 1, 1, 1, 1]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt &gt&gt&gt [x.next() for x in H]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt [1, 1, 1, 1, 1]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt &gt&gt&gt [x.next() for x in H]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt [2, 2, 2, 2, 2]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt &gt&gt&gt [x.next() for x in H]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt [3, 3, 3, 3, 3]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt &gt&gt&gt [x.next() for x in H]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt [5, 5, 5, 5, 5]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt &gt&gt&gt [x.next() for x in H]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt [8, 8, 8, 8, 8]</td></tr>
+            <tr><td>[20:02] &lt MS-&gt Which is 5 generators "running" in parallel</td></tr>
+            <tr><td>[20:02] &lt Davbo&gt If it weren't for Java vmlemon_ wouldn't be able to talk to us from his phone, so shh! :P</td></tr>
+            <tr><td>[20:03] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[20:03] &lt MS-&gt Davbo: Java was invented for other people to write Java applications for vmlemon_ to speak to us from his phone. That's its one good use</td></tr>
+            <tr><td>[20:03] &lt MS-&gt ;-)</td></tr>
+            <tr><td>[20:03] &lt MS-&gt :-)</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt well as far as compiled languages go, it does have some good features imo.</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt for the average programmer though, awful.</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt I did think of making a Java knock-off ages ago (Chamomile) ;)</td></tr>
+            <tr><td>[20:05] &lt Davbo&gt I shall brb, I'm gonna go cry for a bit ;-) (need to restart)</td></tr>
+            <tr><td>[20:05] &lt MS-&gt language advocacy arguments are silly at the best of times :)</td></tr>
+            <tr><td>[20:07] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:07] &lt barrycarlyon&gt If I have written it in an editor, the import command dosent appear to load the file....it says microprocess is undefined, ive missed something obvious havnt i?</td></tr>
+            <tr><td>[20:08] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:08] &lt MS-&gt barrycarlyon: sounds like it</td></tr>
+            <tr><td>[20:08] &lt Davbo&gt Yay, Windows.</td></tr>
+            <tr><td>[20:08] &lt Davbo&gt Now I really am going to go and cry. :P</td></tr>
+            <tr><td>[20:08] &lt MS-&gt A simple hello barry:</td></tr>
+            <tr><td>[20:08] &lt MS-&gt ~&gt echo "print 'hello barry'" &gt barry.py</td></tr>
+            <tr><td>[20:08] &lt MS-&gt ~&gt python</td></tr>
+            <tr><td>[20:08] &lt MS-&gt Python 2.5.1 (r251:54863, Jan 10 2008, 18:01:57)</td></tr>
+            <tr><td>[20:08] &lt MS-&gt [GCC 4.2.1 (SUSE Linux)] on linux2</td></tr>
+            <tr><td>[20:08] &lt MS-&gt Type "help", "copyright", "credits" or "license" for more information.</td></tr>
+            <tr><td>[20:08] &lt MS-&gt &gt&gt&gt import barry</td></tr>
+            <tr><td>[20:08] &lt MS-&gt hello barry</td></tr>
+            <tr><td>[20:08] &lt MS-&gt &gt&gt&gt</td></tr>
+            <tr><td>[20:08] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt Hi again</td></tr>
+            <tr><td>[20:09] &lt Davbo&gt Hello!</td></tr>
+            <tr><td>[20:12] &lt vmlemon_&gt If it doesn't make someone want to gouge their eyes out with a stick, I've uploaded a raw dump to http://house404.co.uk/fileparser/00101ed2</td></tr>
+            <tr><td>[20:12] *** barrycarlyon figured it out then solved a syntax error :-)</td></tr>
+            <tr><td>[20:13] &lt barrycarlyon&gt and crashed :-(</td></tr>
+            <tr><td>[20:13] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:13] &lt MS-&gt Well one step forward at a time</td></tr>
+            <tr><td>[20:13] &lt MS-&gt vmlemon_: That's a "fun" looking file</td></tr>
+            <tr><td>[20:14] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:15] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:16] &lt barrycarlyon&gt I used microprocess.__init__(self) as suggested by the book, but it threw a recursion error, and I dont know why?</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt Meh, the cat just knocked the USB cable out and killed off my PPP session</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt great stuff...</td></tr>
+            <tr><td>[20:16] &lt MS-&gt hah</td></tr>
+            <tr><td>[20:17] &lt MS-&gt ah, sounds like a bad or old book</td></tr>
+            <tr><td>[20:17] &lt MS-&gt not bad for getting there though</td></tr>
+            <tr><td>[20:17] &lt MS-&gt It should be</td></tr>
+            <tr><td>[20:18] &lt MS-&gt class microprocess(object):</td></tr>
+            <tr><td>[20:18] &lt MS-&gt  def microprocess(self):</td></tr>
+            <tr><td>[20:18] &lt MS-&gt  super(microprocess, self).__init__()</td></tr>
+            <tr><td>[20:18] &lt MS-&gt ... then the rest</td></tr>
+            <tr><td>[20:18] &lt barrycarlyon&gt learning python, 2nd edition covers python 2.3, (hmm not 2.5)</td></tr>
+            <tr><td>[20:18] &lt barrycarlyon&gt using the answer it works :-)</td></tr>
+            <tr><td>[20:18] &lt MS-&gt that book should know better</td></tr>
+            <tr><td>[20:18] &lt barrycarlyon&gt since i import i have to put miniaxon. before microprocess() (miniaxon is the filename of my externally edited)</td></tr>
+            <tr><td>[20:19] &lt barrycarlyon&gt silly leeds library....</td></tr>
+            <tr><td>[20:19] &lt MS-&gt from miniaxon import microprocess</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt Bad Book! Now sit in the cupboard under the stairs ;)</td></tr>
+            <tr><td>[20:19] &lt MS-&gt (ie that's valid code - just realised it may sound like english)</td></tr>
+            <tr><td>[20:20] &lt MS-&gt Oh, it's learning python - I have an earlier version of that book</td></tr>
+            <tr><td>[20:20] &lt barrycarlyon&gt ah yes from, i hant considered doing that</td></tr>
+            <tr><td>[20:20] &lt MS-&gt It put me off python for about 4 years</td></tr>
+            <tr><td>[20:20] &lt barrycarlyon&gt i got 2nd edition out from the library....</td></tr>
+            <tr><td>[20:20] &lt barrycarlyon&gt all we have</td></tr>
+            <tr><td>[20:21] &lt barrycarlyon&gt theres an online version, of one of the python books i forget which....</td></tr>
+            <tr><td>[20:21] &lt MS-&gt http://www.greenteapress.com/thinkpython/</td></tr>
+            <tr><td>[20:21] &lt MS-&gt Much better book IMO</td></tr>
+            <tr><td>[20:21] &lt MS-&gt You can skip all the explanations of CS stuff you know</td></tr>
+            <tr><td>[20:21] &lt MS-&gt and get straight to the stuff in context</td></tr>
+            <tr><td>[20:21] &lt barrycarlyon&gt CS stuff?</td></tr>
+            <tr><td>[20:21] &lt vmlemon_&gt Anyone recommend/have anything against Dive Into Python?</td></tr>
+            <tr><td>[20:22] &lt barrycarlyon&gt o computer scientist...</td></tr>
+            <tr><td>[20:23] &lt barrycarlyon&gt when it does a generator object at is that sorta like a resource id when you do a mysql query in php?</td></tr>
+            <tr><td>[20:24] &lt MS-&gt vmlemon_: some people really like it. I didn't particularly like it</td></tr>
+            <tr><td>[20:24] &lt MS-&gt but that's more a matter of taste I think</td></tr>
+            <tr><td>[20:24] &lt MS-&gt I don't do PHP - nasty language</td></tr>
+            <tr><td>[20:24] *** barrycarlyon is good at php :-(</td></tr>
+            <tr><td>[20:24] &lt MS-&gt had to work with a few PHP systems, but not really enjoyed it</td></tr>
+            <tr><td>[20:25] &lt MS-&gt np</td></tr>
+            <tr><td>[20:25] &lt MS-&gt People should use languages they like</td></tr>
+            <tr><td>[20:25] &lt barrycarlyon&gt agreed</td></tr>
+            <tr><td>[20:25] &lt MS-&gt They should use them *well* and *cleanly* but nonetheless I see little reason to use a language people don't like these days</td></tr>
+            <tr><td>[20:25] &lt barrycarlyon&gt but i like learning new ones :0)</td></tr>
+            <tr><td>[20:25] &lt MS-&gt indeed - people should learn new languages</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt Hmm, is it a Bad Idea to use linebreaks in variables?</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt NoServiceCentreNumber = "Unable to extract the Service Centre Number from this message\n";</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt is one line I have here</td></tr>
+            <tr><td>[20:34] &lt MS-&gt I would generally view the \n as a bad idea</td></tr>
+            <tr><td>[20:34] &lt MS-&gt personally</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:35] &lt vmlemon_&gt I can see it breaking something later, for some reason</td></tr>
+            <tr><td>[20:36] &lt vmlemon_&gt Although the script has a ton of Perlisms in it at the moment</td></tr>
+            <tr><td>[20:36] &lt vmlemon_&gt (since it was pretty much a "retargeting")</td></tr>
+            <tr><td>[20:39] &lt barrycarlyon&gt when you do varible.next() does it put the result back it to varible? or should one do varible = varible.next() ??</td></tr>
+            <tr><td>[20:40] &lt vmlemon_&gt o.O "(Always remember to be reasonably polite when sending these emails [no threatening to use the Holy Hand Grenade] and make some effort to find the info on the website before emailing. It's just courteous and makes the whole process flow more smoothly.)"</td></tr>
+            <tr><td>[20:41] &lt MS-&gt barrycarlyon: It's probably quicker just to try things rather than ask that :-)</td></tr>
+            <tr><td>[20:41] &lt barrycarlyon&gt Holy Hand Grenade, I got a secondlife action that does the line....</td></tr>
+            <tr><td>[20:41] &lt barrycarlyon&gt ok :-) will try</td></tr>
+            <tr><td>[20:41] &lt MS-&gt If you consider fib() above...</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &gt&gt&gt a.next() ; a</td></tr>
+            <tr><td>[20:42] &lt MS-&gt 1</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &lt generator object at 0x8086b4c&gt</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &gt&gt&gt a.next() ; a</td></tr>
+            <tr><td>[20:42] &lt MS-&gt 1</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &lt generator object at 0x8086b4c&gt</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &gt&gt&gt a.next() ; a</td></tr>
+            <tr><td>[20:42] &lt MS-&gt 2</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &lt generator object at 0x8086b4c&gt</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &gt&gt&gt a.next() ; a</td></tr>
+            <tr><td>[20:42] &lt MS-&gt 3</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &lt generator object at 0x8086b4c&gt</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &gt&gt&gt a.next() ; a</td></tr>
+            <tr><td>[20:42] &lt MS-&gt 5</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &lt generator object at 0x8086b4c&gt</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &gt&gt&gt a.next() ; a</td></tr>
+            <tr><td>[20:42] &lt MS-&gt 8</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &lt generator object at 0x8086b4c&gt</td></tr>
+            <tr><td>[20:42] &lt MS-&gt a is an instance of the generator defined by</td></tr>
+            <tr><td>[20:42] &lt MS-&gt &gt&gt&gt def fib():</td></tr>
+            <tr><td>[20:42] &lt MS-&gt ... a,b = 1,1</td></tr>
+            <tr><td>[20:42] &lt MS-&gt ... while 1:</td></tr>
+            <tr><td>[20:42] &lt MS-&gt ... yield a</td></tr>
+            <tr><td>[20:42] &lt MS-&gt ... a,b = b, a+b</td></tr>
+            <tr><td>[20:43] &lt MS-&gt and each time you call "next" it runs the generator until the next "yield" and returns the value</td></tr>
+            <tr><td>[20:44] &lt barrycarlyon&gt thats what I thought :-)</td></tr>
+            <tr><td>[21:06] &lt MS-&gt I could give you more detail if you want, but I think that's silly myself :)</td></tr>
+            <tr><td>[21:15] &lt barrycarlyon&gt Its ok :-)</td></tr>
+            <tr><td>[21:16] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:13] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[22:20] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:22] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[22:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:57] &lt barrycarlyon&gt had a break coz i ran in to a glitch fixed it now, and checked my walking code its not that different from the answer, tho using the commands from the discussion i dont get nay output...</td></tr>
+            <tr><td>[23:07] &lt barrycarlyon&gt nm</td></tr>
+            <tr><td>[23:07] &lt barrycarlyon&gt never mind :-)</td></tr>
+            <tr><td>[23:07] &lt barrycarlyon&gt got my code to do the same as the answer, id let a line of code out that caused an infinity loop</td></tr>

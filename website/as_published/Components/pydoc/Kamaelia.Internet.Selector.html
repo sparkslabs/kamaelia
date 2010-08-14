@@ -1,0 +1,269 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Internet.Selector </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Internet.Selector</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Internet.html">Internet</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Internet.Selector.html">Selector</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Internet.Selector.Selector.html">Selector</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#115">NOTIFICATION OF SOCKET AND FILE EVENTS</a><ul>
+<li><a class="reference" href="#116">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#117">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="115">NOTIFICATION OF SOCKET AND FILE EVENTS</h1>
+<p>The Selector component listens for events on sockets and sends out notifications.
+It is effectively a wrapper around the unix 'select' statement. Components
+request that the Selector component notify them when a supplied socket or file
+object is ready.</p>
+<p>The selectorComponent is a service that registers with the Coordinating
+Assistant Tracker (CAT).</p>
+<p>NOTE: The behaviour and API of this component changed in Kamaelia 0.4 and is
+likely to change again in the near future.</p>
+<div class="section">
+<h2 id="116"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>See the source code for TCPClient for an example of how the Selector component
+can be used.</p>
+</div>
+<div class="section">
+<h2 id="117"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>Selector is a service. Obtain it by calling the static method
+Selector.getSelectorService(...). Any existing instance will be returned,
+otherwise a new one is automatically created.</p>
+<p>This component ignores anything sent to its &quot;inbox&quot; and &quot;control&quot; inboxes. This
+component does not terminate.</p>
+<p>Register socket or file objects with the selector, to receive a one-shot
+notification when that file descriptor is ready. The file descriptor can be
+a python file object or socket object. The notification is one-shot - meaning
+you must resubmit your request every time you wish to receive a notification.</p>
+<p>Ensure you deregister the file object when closing the file/socket. You may do
+this even if you have already received the notification. The Selector component
+will be unable to handle notifications for any other descriptors if it still has
+a registered descriptor that has closed.</p>
+<p>Register for a notification by sending an one of the following messages to the
+&quot;notify&quot; inbox, as returned by Selector.getSelectorService():</p>
+<ul class="simple">
+<li>Kamaelia.KamaeliaIpc.newReader(caller, (component,inboxname), descriptor)</li>
+<li>Kamaelia.KamaeliaIpc.newWriter(caller, (component,inboxname), descriptor)</li>
+<li>Kamaelia.KamaeliaIpc.newExceptional(caller, (component,inboxname), descriptor)</li>
+</ul>
+<p>Choose which as appropriate:</p>
+<ul class="simple">
+<li>a newReader() request will notify when there is data ready to be read on
+the descriptor</li>
+<li>a newWriter() request will notify when writing to the descriptor will not
+block.</li>
+<li>a newExceptional() request will notify when an exceptional event occurs on
+the specified descriptor.</li>
+</ul>
+<p>Selector will notify the taret component by sending the file/socket descriptor
+object to the target inbox the component provided. It then automatically
+deregisters the descriptor, unlinking from the target component's inbox.</p>
+<p>For a given descriptor for a given type of event (read/write/exceptional) only
+one notification will be sent when the event occurs. If multiple notification
+requests have been received, only the first is listened to; all others are
+ignored.</p>
+<p>Of course, once the notification as happened, or someone has requested that
+descriptor be deregistered, then someone can register for it once again.</p>
+<p>Deregister by sending on of the following messages to the &quot;notify&quot; inbox of
+Selector:</p>
+<ul class="simple">
+<li>Kamaelia.KamaeliaIpc.removeReader(caller, descriptor)</li>
+<li>Kamaelia.KamaeliaIpc.removeWriter(caller, descriptor)</li>
+<li>Kamaelia.KamaeliaIpc.removeExceptional(caller, descriptor)</li>
+</ul>
+<p>It is advisable to send a deregister message when the corresponding file
+descriptor closes, in case you registered for a notification, but it has not
+occurred.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Internet.html">Internet</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Internet.Selector.html">Selector</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Internet.Selector.Selector.html">Selector</a></h1>
+<div class="section">
+<h2 id="symbol-Selector">class Selector(<a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedadaptivecommscomponent.html">Axon.ThreadedComponent.threadedadaptivecommscomponent</a>)</h2>
+<p>Selector() -&gt; new Selector component</p>
+<p>Use Selector.getSelectorService(...) in preference as it returns an
+existing instance, or automatically creates a new one.</p>
+<div class="section">
+<h3><a id="symbol-Selector.Inboxes" name="symbol-Selector.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Recieving a <a class="reference" href="/Docs/Axon/Axon.Ipc.shutdown.html">Axon.Ipc.shutdown</a>() message here causes shutdown</li>
+<li><strong>inbox</strong> : Not used at present</li>
+<li><strong>notify</strong> : Used to be notified about things to select</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-Selector.Outboxes" name="symbol-Selector.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-Selector.__init__" name="symbol-Selector.__init__">__init__(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Selector.addLinks" name="symbol-Selector.addLinks">addLinks(self, replyService, selectable, meta, selectables, boxBase)</a></h4>
+<p>Adds a file descriptor (selectable).</p>
+<p>Creates a corresponding outbox, with name based on boxBase; links it to
+the component that wants to be notified; adds the file descriptor to the
+set of selectables; and records the box and linkage info in meta.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Selector.handleNotify" name="symbol-Selector.handleNotify">handleNotify(self, meta, readers, writers, exceptionals)</a></h4>
+<p>Process requests to add and remove file descriptors (selectables) that
+arrive at the &quot;notify&quot; inbox.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Selector.main" name="symbol-Selector.main">main(self)</a></h4>
+<p>Main loop</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Selector.removeLinks" name="symbol-Selector.removeLinks">removeLinks(self, selectable, meta, selectables)</a></h4>
+<p>Removes a file descriptor (selectable).</p>
+<p>Removes the corresponding entry from meta and selectables; unlinks from
+the component to be notified; and deletes the corresponding outbox.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-Selector.stop" name="symbol-Selector.stop">stop(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-Selector.trackedBy" name="symbol-Selector.trackedBy">trackedBy(self, tracker)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

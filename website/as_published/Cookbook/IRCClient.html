@@ -1,0 +1,122 @@
+<html>
+<head>
+<title> Cookbook/IRCClient </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/IRCClient">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Cookbook: IRCClient<br></h1>
+<h2>The Interface</h2>The IRCClient module provides an inbox/outbox interface to IRC. Call SimpleIRCClientPrefab to obtain a connection to an IRC server. <br><br><h2>Sending messages</h2>Send tuples in the form *(cmd, [arg1] [,arg2] [,arg3...])* to SimpleIRCClientPrefab's "inbox". *cmd* should be an IRC command specified in RFC 1459 or RFC 2812. The first parameter specified by the RFCs should be *arg1*, the second should be *arg2*, and so on. Example messages to "inbox"::<br><br><ul><li>('NICK', 'Zorknpals')</li><li>('USER', 'jlei', 'nohost', 'noserver', 'Kamaelia IRC Client')</li><li>('JOIN', '#kamaelia')</li><li>('PRIVMSG', '#kamtest', 'hey, how's it going?')</li><li>('TOPIC', '#cheese', "Mozzerella vs. Parmesan")</li><li>('QUIT')</li><li>('QUIT', "Konversation terminated!")</li><li>('BERSERKER', "Lvl. 10")</li></ul><br>Note that "BERSERKER" is not a recognized IRC command. IRC_Client will not<br>complain about this, as it treats commands uniformly, but you might get<br>an error 421, "ERR_UNKNOWNCOMMAND" back from the server.<br><br><br><h3>Sending CTCP commands</h3>IRC_Client also handles a few CTCP commands:<br><br>:ACTION: <br>    ("ME", channel-or-user, the-action-that-you-do). <br>:MSG:<br>    If you use the outformat function defined here, 'MSG' commands are<br>    treated as 'PRIVMSGs'.<br><br>No other CTCP commands are implemented.<br><br><br><h2>A simple client that logs in</h2>...and spams the channel #kamtest with 10 "Hello world" messages. (It's okay because no one else is ever on this channel) <br><br><blockquote><pre>class Spammer(component):<br>    def main(self):<br>        """spams channel #kamtest"""<br>        self.send(("NICK", "TheKamaeliaBot"))<br>        self.send(("USER", "KamaeliaIRC", "stuff", "stuff", "Kamaelia IRC tester"))<br>        self.send(("JOIN", "#kamtest"))<br>    for _ in range(10):<br>        self.send(("PRIVMSG", "#kamtest", "Hello world"))<br>        yield 1<br><br>Pipeline(Spammer(), SimpleIRCClientPrefab()).run()</pre></blockquote><br>Now you will want to receive messages too, so your client isn't doomed to be a spammer. Lucky for you, SimpleIRCClientPrefab transmits IRC messages it receives in the form (cmd, sender, receiver, anything else). Simply link your component up to its "outbox" to receive these messages. <br><br><br><br><h2>Logger</h2>Logs in to a channel and writes all IRC traffic it hears to a text file.<br><pre>from Kamaelia.File.Writing import SimpleFileWriter<br>from Kamaelia.Chassis.Graphline import Graphline<br>from Axon.Component import component<br>import IRCClient<br><br>class BasicLogger(component):<br><br>    Outboxes = {"irc" : "to IRC, for user responses and login",<br>                "outbox" : "What we're interested in, the traffic over the channel",<br>                "signal" : "Shutdown handling in the future",<br>                }<br><br>    def __init__(self, channel, name, formatter=IRCClient.outformat):<br>        super(BasicLogger, self).__init__()<br>        self.channel = channel<br>        self.format = formatter <br>        self.name = name<br>        <br>    def login(self):<br>        """registers with the IRC server"""<br>        self.send(("NICK", self.name), "irc")<br>        self.send(("USER", self.name, self.name, self.name, self.name), "irc")<br>        self.send(("JOIN", self.channel), "irc")<br>        <br>    def main(self):<br>        "Main loop"<br>        self.login()<br>        while True:<br>            yield 1 <br>            while self.dataReady("inbox"):<br>                data = self.recv("inbox")<br>                formatted_data = self.format(data)<br>                if formatted_data:<br>                    self.send(formatted_data, "outbox")<br>                    self.respondToPings(data) <br><br>    def respondToPings(self, msg):<br>        if msg[0] == 'PING':<br>            self.send(('PONG', msg[1]), 'irc')<br>            self.send("Sent PONG to %s \n" % msg[1], "outbox")<br><br><br>#now define a prefab to wire everything up<br><br>def Logger(channel, name, server='irc.freenode.net'):<br>    return Graphline(irc = IRCClient.SimpleIRCClientPrefab(server),<br>                     logger = BasicLogger(channel, name),<br>                     log = SimpleFileWriter("%s_log.txt" % channel.lstrip('#')),<br>                     linkages = {("logger", "irc") : ("irc", "inbox"),<br>                                 ("irc", "outbox") : ("logger", "inbox"),<br>                                 ("logger", "outbox") : ("log", "inbox"),<br>                                 }<br><br>                     )<br><br>Logger('#test', 'coolLoggerDude').run() #we're assuming that no other user has this nickname! There's no error checking otherwise. <br><br></pre><br>That's all there is! Have fun using the IRC components!    <br>
+<br>
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

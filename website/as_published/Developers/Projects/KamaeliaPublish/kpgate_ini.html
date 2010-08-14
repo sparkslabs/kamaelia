@@ -1,0 +1,145 @@
+<html>
+<head>
+<title> Developers/Projects/KamaeliaPublish/kpgate_ini </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/KamaeliaPublish/kpgate_ini">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Kamaelia Publish Gateway config file</h1>The config file format is very similar to the one used by <a href="../../../cgi-bin/Wiki/edit/Developers/Projects/KamaeliaPublish/kp_ini">Kamaelia WebServe and the Kamaelia Publish peer</a>.<h2>SERVER</h2>This section holds most of the data required to configure the server in general.<br><br><ul><li><b>Port</b>
+- This is the port that Kamaelia WebServe will listen on for HTTP
+requests.&nbsp; Note that using port 80 (typically used for HTTP) will
+require elevated privileges on most *NIX systems.&nbsp; <b>It is not
+recommended that you use port 80 currently as this is a potential
+security problem since Kamaelia WebServe does not de-escalate
+privileges.</b></li><li><b>pypath_append</b> - This is a list of
+entries to add to the python path, separated by colons (:).&nbsp; Entries
+added here will be added to the end of the python path.&nbsp; This is useful
+if you would like to put WSGI applications somewhere where the system
+can get to them.</li><li><b>pypath_prepend</b> - This is a list of
+entries to be added to the front of the python path, separated by
+colons.&nbsp; You probably don't need to use this except for testing and
+debugging purposes.</li><li><b>log</b> - This is the location where the log will go.&nbsp; Note that you may get errors if this file does not already exist.</li><li><b>db</b> - This is URI of the database to connect to.&nbsp; See <a href="http://www.sqlalchemy.org/docs/05/dbengine.html#dbengine_establishing">this page</a> for more info.&nbsp; Note that there is a sample database file in private_JMB_Wsgi/Apps/Kamaelia-Publish/Gateway/util named kpgate.db.&nbsp; You will probably have to edit in the JID that you're wanting to use in the Peer in manually (Ubuntu has sqlitebrowser in its package management system that can be used to do this).<a href="http://www.sqlalchemy.org/docs/05/dbengine.html#dbengine_establishing"><br></a></li></ul><br><h2>STATIC</h2>This section holds the data necessary to configure server to handle static content (javascript, images, HTML, etc).&nbsp; <b>NOTE:&nbsp; This is likely to either be changed or moved elsewhere (likely the urls file) to simplify URL routing.</b><br><br><ul><li><b>url </b>- The url prefix that will handle static content (set to '/static' by default).</li><li><b>indexfilename</b> - If no filename is specified in the URI, this is what to assume (set to 'index.html' by default).</li><li><b>homedirectory</b> - The directory to look in for static content in.&nbsp; The "root" of the static handler's "file system."</li></ul><h2>WSGI</h2>This
+section holds the configuration data for the WSGI handler.&nbsp; Most of the
+keys are self explanitory, but are explained here for completeness's
+sake.&nbsp; <b>NOTE: This section currently doesn't do anything.&nbsp; But it may do something when a website where people can register is set up.</b><br><br><ul><li><b>SERVER_SOFTWARE</b> - Currently set to 'Kamaelia WSGI Server v 0.0.1'</li><li><b>SERVER_ADMIN</b> - The person who runs the server.</li><li><b>WSGI_VER</b> - You want to leave this at 1.0 unless you have a really, really good reason for changing it.</li><li><b>URL_LIST</b> - The URLs file to use to route URLs.&nbsp; For more info on URLs files, see <a href="../../../Developers/Projects/KamaeliaPublish/UrlsFile">http://edit.kamaelia.org/Developers/Projects/KamaeliaPublish/UrlsFile</a></li></ul><h2>XMPP</h2>This
+section is relevant only in the Kamaelia Publish Peer.&nbsp; For this
+section, we'll assume that we're using the JID kamaelia_user@jabber.org.<br><ul><li><b>username </b>- This is your username (the part of your JID before the @ symbol).&nbsp; For kamaelia_user@jabber.org, you would put kamaelia_user.</li><li><b>domain</b>
+- This is the domain of your JID (the part after the @, but before the
+/ if there is one).&nbsp; For the above example, this would be jabber.org.</li><li><b>server</b> - This depends on which server you're using.&nbsp; For the above example, it will be jabber.org:5222.<br></li><li><b>resource </b>-
+This key is optional.&nbsp; It represents the resource in your jid (the part
+after the /).&nbsp; This is typically used to indicate the instant
+messenging program you're using and is useful if you want to be logged
+into the same jabber account on two different computers or programs.</li><li><b>password</b> - You should know this one already.&nbsp; :)&nbsp;</li><li><b>usetls</b>
+- This will also be dependent on the server.&nbsp; This is a boolean value,
+so it doesn't matter what you set it to.&nbsp; If it's present and the value
+is anything but a blank key, it will evaluate to True.<br></li></ul>
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

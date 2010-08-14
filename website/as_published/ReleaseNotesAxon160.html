@@ -1,0 +1,114 @@
+<html>
+<head>
+<title> ReleaseNotesAxon160 </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - ReleaseNotesAxon160">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+<h1>Axon Release Notes: 1.6.0</h1><h2>New Files &amp; Functionality<br>
+</h2>
+<pre>Index: Axon/Handle.py</pre>
+<pre><br>Rewritten replacement for LikeFile. Intended to be used with<br>Axon.background. Handle and code using it is experimental at<br>present. See Examples/Handle for how to use this.<br><br>Handle is specifically designed to allow you to use Kamaelia components<br>and subsystem in non-kamaelia systems. It does this by providing you<br>with a "Axon.Handle" which is conceptually similar to a "file handle".<br>The interface allows you to start components in the background, and<br>read from it's outboxes, and write to it's inboxes in a non-blocking<br>fashion.<br><br>The fact that it's non-blocking does mean that exceptions can be thrown<br>if the component isn't ready for some reason, but this is intentionally<br>similar to talking a non-blocking file handle.<br><br>Note: whilst Handle is conceptually similar to a file handle, since you<br>have multiple data sources and data sinks inside a component, the interface<br>is not the same as the file interface since it wouldn't be appropriate.<br>However, given the usage style is similar, that's why the name of this<br>facility is "Handle".<br><br>Limitations:<br> * It currently will only allow access to components with the<br>   default/standard inboxes of inbox/control/signal/outbox.<br> * This is a known limitation, but covers a wide class of situations.<br><br>Please look at the examples for details.<br><br>Index: Axon/background.py<br>    * This provides facilities for running the Axon scheduler in a<br>      background thread. This is useful for integrating Kamaelia code<br>      with non-Kamaelia based systems - especially those that MUST own<br>      the primary thread (eg various windowing systems).<br>    * Expected to be used with Axon.background.<br>    * Please see Examples/Handle for examples of usage.<br>    * Simplest usage:<br>          from Axon.background import background<br>          from Kamaelia.UI.Pygame.MagnaDoodle import MagnaDoodle<br>          import time<br><br>          background = background().start()<br><br>          MagnaDoodle().activate()<br>          while 1:<br>              time.sleep(1)<br>              print "."<br><br>Index: Axon/STM.py<br>   * Support for basic in-process software transactional memory.<br><br>   * Software Transactional Memory (STM) is a technique for allowing<br>     multiple threads to share data in such a way that they know when<br>     something has gone wrong. It's been used in databases (just called<br>     transactions there really) for some time and is also very similar<br>     to version control. Indeed, you can think of STM as being like<br>     variable level version control. (If you ignore history and are<br>     just after version numbers(!))<br><br>   * This is provided for those times when you really DO need to share<br>     values between threads/component.<br><br>Index: Axon/experimental/_pprocess_support.py<br>   * The internals of this are strictly private from an API perspective.<br>     It's actually based on an older version of Axon.Handle which works<br>     sufficiently well for Axon.experiment.Process, but not for general<br>     support. (essentially it's the old Axon.LikeFile code, which was<br>     experimented with between Axon 1.5 and 1.6)<br><br>Index: Axon/experimental/Process.py<br>   * Provides the core for multiprocess support in Kamaelia.<br>     Specifically provides ProcessPipeline and ProcessGraphline. At<br>     present thse are limited in the inboxes/outboxes you can use for<br>     linkages to just inbox/outbox/control/signal. This is a<br>     limitation, but sufficient in many contexts.<br>
+Index: Examples/STM/Philosophers.py<br>   * An example of how to implement dining philosophers with pure<br>     python threads and Axon's STM code.<br><br>Index: Examples/STM/Axon.Philosophers.py<br>   * An example of how to implement dining philosophers with<br>     Axon ThreadedComponents and Axon's STM code.<br><br>Index: Examples/SystemShutdown.py<br>    * Example of how to use the new self.scheduler.stop() facility in<br>      Axon, both in terms of shutting down the system and also in terms<br>      of shutting down components that don't actually support shutting<br>      down directly.<br><br>Index: Examples/Handles/TestHandle.py<br>    * An acceptance test for using Axon.Handle to act as a manual<br>      intermediary between 2 Kamaelia components in a non-Kamaelia<br>      system.<br><br>      Ie read from this one, pass onto that one - core of the code for<br>      that is this:<br>           while 1:<br>               time.sleep(1)<br>               try:<br>                  data = TB.get("outbox")<br>                  print data<br>                  message = data<br>               except Queue.Empty:<br>                  pass<br>               TD.put(message, "inbox")<br><br>Index: Examples/Handles/reverser.py<br>   * And example of how to use Handle with a trivial component that<br>     reverses lines of data passed to it. (The aim is not to demo the<br>     component, but how to use the component in a non-Kamaelia system)<br>     After all, the component could be accessing a remote web service<br>     instead.<br></pre>
+<h2>Axon Files Changed and Changes in this release<br></h2><pre>Index: Axon/Component.py<br>    * Copyright notice change<br>    * Documentation changed to REST format<br>    * Extensive Documentation improvements<br>    * change to support this:<br>    * +      self.__dict__.update(argd)<br>       -- Major change/improvement despite appearances<br>    * Components can now be awoken when a component<br>      *leaves* an outbox again.<br>    * New method:<br>           def setInboxSize(self, boxname, size):<br>                "boxname - some boxname, must be an inbox ;<br>                 size - maximum number of items we're happy<br>                 with"<br>    * Extra debugging assistance in some unusual situations,<br>      specifically designed to catch where someone uses the<br>      class where they should be using an instance when<br>      creating sub components.<br>    * New method:<br>    +   def Inbox(self, boxname="inbox"):<br>    +       while self.dataReady(boxname):<br>    +           yield self.recv(boxname)<br><br>Index: Axon/Box.py<br>   * Copyright notice<br>   * Module documentation added - REST format<br>     * nullsink Class documentation added<br>        * Method documentation added<br>     * realsink Class documentation added<br>        * Method documentation added<br><br>     * postbox Class documentation clarified<br>        * Init gains notify method<br>        * Ahhh, "wake on object taken from outbox implemented",<br>          this is implemented using notify and following down<br>          the chain of linkages.<br>        * Notify on pop added<br>           * Variety of knockons in lots of places.<br>           - Cause of many of the changes to this module.<br>        * Method documentation added<br><br>Index: Axon/Introspector.py<br>    * Documentation changed to REST format<br>    * Documentation improvements<br>    * Added documentation of internals<br><br>Index: Axon/__init__.py<br>    * Documentation changed to REST format<br>    * Documentation added, matching new autodocs system<br>    * Code tidying<br><br>Index: Axon/Postoffice.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * Adds in BoxAlreadyLinkedToDestination error<br>       - thrown if the user tries to link an outbox to a<br>         destination, when it is already linked to a<br>         destination.<br><br>Index: Axon/ThreadedComponent.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * Minor bugfix ( _threadrunning flag)<br>    * stuffWaiting = True commented out<br>    * Fixes regarding waking a thread back up when a message is<br>      taken from it's outbox. (ie improvements to unpausing<br>      when message taken from outbox)<br>      (hence removal of stuffWaiting flag)<br>    * Unpauses on recv from inbox.<br>    * Unpauses on send to outbox<br>    * Minor changes to improve responsiveness when pausing<br><br>Index: Axon/debugConfigDefaults.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br><br>Index: Axon/Axon.py<br>    * Documentation changed to REST format<br>    * Removed the metaclass created __super() method<br>      convenience function - it's been deprecated for<br>      a long time since there's boundary issues where<br>      it would go wrong.<br><br>Index: Axon/AxonExceptions.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * New exception: BoxAlreadyLinkedToDestination<br>      The inbox/outbox already has a linkage going *from* it<br>      to a destination.<br><br>      Possible causes:<br>          - Are you trying to make a linkage going from an<br>            inbox/outbox to more than one destination?<br>          - perhaps another component has already made a<br>            linkage from that inbox/outbox?<br><br>Index: Axon/Microprocess.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * Added extra argument to microprocess, specifically tag=<br>      this allows the name of the microprocess to be tagged.<br>      This is useful in conjunction with WaitComplete and The<br>      Introspector and pausing to understand why a piece of<br>      code is staying in a particular WaitComplete loop/state.<br>    * When .stop() is called the microprocess, it's scheduler<br>      is set to a null scheduler.<br>    * Extra error messages when you call WaitComplete with a<br>      function rather than a generator. (you should only pass<br>      a generator object into WaitComplete, rather than a<br>      function).<br><br>Index: Axon/Linkage.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * Extra debugging provided in the case of trying to make a<br>      link from an outbox that doesn't exist. This is possible<br>      to do accidentally by having a trailing comma in the<br>      linkage description. (So this possible causes is<br>      described in the error message)<br><br>Index: Axon/Ipc.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * Signature of WaitComplete changed from:<br>       def __init__(self, *args):<br>       to <br>       def __init__(self, *args,**argd):<br>       Copies of args/argd copied in as attributes. <br><br>Index: Axon/debugConfigFile.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br><br>Index: Axon/util.py<br>    * Documentation changed to REST format<br>    * Documentation improvements.<br><br>Index: Axon/Scheduler.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * import os<br>    * Signature changed to include **argd rather than no args.<br>    * Added "wait_for_one" attribute<br>       - Means the scheduler can be started without any<br>         components/microprocesses being ready to run.<br>    * Added in a stopRequests queue (for safely recieving<br>      method calls from users of the system)<br>    * The wait_for_one class flag causes an internal flag to<br>      note that we have to wait for at least one microprocess<br>      to start before the scheduler exits.<br>    * New method waitForOne to allow the same flag to be set<br>    * This flag is cleared when a new microprocess is started.<br>    * listAllThreads method now switches on local debugging as<br>       well.<br>    * Handling of WaitComplete extended to allow passing<br>      through any tag provided by the user. Otherwise a default<br>      tag is created based on the parent's microprocess name.<br>    * Support for .stop() requests changes the logic in the<br>      main loop for the scheduler to allow clean shutdown and<br>      exit of loops. After exitting the main loop, the<br>      scheduler calls the .stop() method of all<br>      microprocesses &amp; components in the run queue.<br>      One key use case for this is to allow clean close and<br>      shutdown of TCP sockets when someone calls<br>      self.scheduler.stop()<br>    * The self.stop() method however doesn't directly<br>      maniplate this flag, but in fact updates a threadsafe<br>      queue. The reason for that is to allow threaded<br>      components as well as generator components to cleanly<br>      call this method.<br><br>Index: Axon/AdaptiveCommsComponent.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * Change to _AdaptiveCommsable.__init__ signature to<br>      support class based system configuration.<br>    * addOutbox defaults to also ensuring that the<br>      self.unpause callback gets added as the notification<br>      callback when a message is removed from an outbox.<br>    * Change to AdaptiveCommsableComponent.__init__ signature<br>      to support class based system configuration.<br><br>Index: Axon/CoordinatingAssistantTracker.py<br>    * Documentation changed to REST format<br>    * Major documentation improvements.<br>    * New .zap() method to clear the services and information<br>      logged by the co-ordinating assistant tracker. This was<br>      added to assist with multiple process support.<br><br>Index: Axon/debug.py<br>    * Documentation changed to REST format<br>    * Documentation improvements.<br><br>Index: Axon/idGen.py<br>    * Documentation changed to REST format<br>    * Documentation improvements.<br><br>Index: setup.py<br>    * Annotated slightly to assist building targetted<br>      application tar balls.<br><br>Index: CHANGELOG<br>+<br>+   * Added support for *basic* software transactional memory<br>+    * Software transactional memory is a fancy phrase for something<br>+      that boils down to something similar to version control for<br>+      variables. You can checkout the current state, make modifications<br>+      and try to commit them back. If the commit succeeds, you<br>+      successfully updated it. If it doesn't, you didn't.<br>+<br>+      This implements it, and provides a mechanism for making the CAT<br>+      safe for threads to use as well as standard components.<br>+<br>+    Added in LikeFile --&gt; renamed to Handle<br>+    Added in support for monkey patching the internals of a component<br>+    system.<br><br>+1.5.1 -&gt; 1.x.x<br>+    An exception is now raised if you try to create a linkage going<br>+    from an inbox/outbox that already has a linkage going from it.<br>+<br>+    Waking up of producer components re-introduced (bugfix)<br>+<br>+    * When a component collects a message from an inbox; all producer<br>+      components with outboxes linked to that inbox will be woken.<br>+<br>+    Additions to the Axon Test Suite providing test coverage of this<br>+    facility.</pre>
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

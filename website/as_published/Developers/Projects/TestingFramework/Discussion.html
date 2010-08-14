@@ -1,0 +1,114 @@
+<html>
+<head>
+<title> Developers/Projects/TestingFramework/Discussion </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/TestingFramework/Discussion">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Developers/Projects/TestingFramework/Discussion</h1>These are ideas gathered for the testing framework. This ideas are still being discussed, I just write this wiki page to be able to effectively reference them in an easy way (saying [foo1] instead of saying "that thing Foo said in the list that day..."). I'll update this page during the discussion.<br><br><h2>Convention</h2><br>I'm using the convention [xxxY] being xxx the first three letters of the nick of somebody and Y the number of the idea of this someone.<br><br>[orp?] -&gt; orphans<br>[dav?] -&gt; Davbo<br>[law?] -&gt; Lawouach<br>[cho?] -&gt; Chong<br>[jba?] -&gt; j_baker<br><br><h2>Ideas</h2><br>So the ideas, if I understood them correctly, are:<br><br>&nbsp; [orp1] Provide a given input to a components and check the outputs to check that the format is correct.<br>&nbsp; [orp2] Make sure that when you ask for it, it finishes.<br>&nbsp; [orp3] Check that a component has called the pause() method at some time<br><br>&nbsp; [dav1] A random set of pygame interrupts to the display<br>&nbsp; [dav2] A logging engine that can be enable/disable certain components so you can keep the printing of the messages in the code, but it will just not be showed if not wanted.<br><br>&nbsp; [law1] Be able to unit test components independently.<br><br>&nbsp; [cho1] Provide inputs for the component and expect output from it.<br>&nbsp; [cho2] Check variables in runtime.<br>&nbsp; [cho3] try..except helpful to prevent program from crashing but harmful when finding bugs. It would be nice if it could be disabled.<br>&nbsp; [cho4] Check which components are still running and which components are not.<br><br>&nbsp; [jba1] logging engine that can be enable/disable certain components so you can keep the printing of the messages in the code, but it will just not be showed if not wanted.<br><br><h2>Ordering the ideas</h2><br>Ordering them by functionality, we get:<br><br><ul><li>&nbsp;[orp1], [orp2], [law1], [cho1] essentially refer to a basic Axon-based testing framework.</li><li>[orp3] refers to a cool feature of the testing framework.</li><li>[cho4] refers to another cool feature of the testing framework.</li></ul><br><ul><li>[dav2] and [jba1] are essentially a logging engine, which may not be part of the testing framework (but it's still interesting since that's the other part of my GSOC project :-D )</li><li>[cho2] may be closer to what a debugger would offer, but since even local variables in a generator can be easily retrieved (see <a href="http://pastebin.com/m7a316728" target="_blank">here</a>), it might be interesting to consider it for accessing local variables in the component. This would be really cool, but I will not add it to a first stage.<br></li><li>[cho3] may use a method "independent of the testing framework" (in order to call something like "self.raiseExceptions" which re-raise the raised exception only if a certain variable is set), although later the testing framework would use that variable, I'm not sure if it's something tied to it.<br></li><li>[dav1] refers to an interesting feature that may not be integrated in an automated testing framework, although it may be possible through a virtual X server such as Xvfb. I have to give it another thought though.<br></li></ul><br><br><br>
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

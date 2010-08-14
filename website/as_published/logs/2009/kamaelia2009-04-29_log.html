@@ -1,0 +1,61 @@
+<html><body><table>
+            <tr><td>[04:53] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[05:31] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:47] *** MS-- has joined #kamaelia</td></tr>
+            <tr><td>[06:55] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:40] *** Uraeus_ has joined #kamaelia</td></tr>
+            <tr><td>[07:42] &lt Lawouach_&gt grumble, KeyboardInterrupt and Axon aren't friends</td></tr>
+            <tr><td>[08:06] *** Lawouach__ has joined #kamaelia</td></tr>
+            <tr><td>[08:43] &lt MS--&gt Lawouach: what behaviour would you expect OOI?</td></tr>
+            <tr><td>[08:44] &lt MS--&gt I'm guessing "DIE DIE DIE!" :-)</td></tr>
+            <tr><td>[08:44] &lt Lawouach&gt MS--: It seems that the scheduler doesn't trap it an escape abruptely when it happens</td></tr>
+            <tr><td>[08:45] &lt Lawouach&gt No I'd like "Let me clean it up and then DIE"</td></tr>
+            <tr><td>[08:46] &lt MS--&gt :)</td></tr>
+            <tr><td>[08:46] &lt MS--&gt ie it should call .stop() on all components.</td></tr>
+            <tr><td>[08:46] &lt MS--&gt and then shutdown</td></tr>
+            <tr><td>[08:46] &lt MS--&gt That is a bit nasty really isn't it</td></tr>
+            <tr><td>[08:47] &lt Lawouach&gt yeah but currently it makes things rather harsh as it is</td></tr>
+            <tr><td>[08:47] &lt Lawouach&gt I'm running a script that will create hundreds of XMPP account which I'd like to be deleted whenever the script stops or is stopped</td></tr>
+            <tr><td>[08:48] &lt Lawouach&gt I've banged my head at it for a couple of days now and it's almost impossible to predict what can happen on KeayboardInterrupt</td></tr>
+            <tr><td>[08:49] &lt MS--&gt Just trying to think where to put KeyboardInterrupt handling</td></tr>
+            <tr><td>[08:50] &lt MS--&gt If it happens inside a component, it's fairly obvious where to catch it</td></tr>
+            <tr><td>[08:50] &lt MS--&gt if it happens outside, it's less obvious</td></tr>
+            <tr><td>[08:50] &lt MS--&gt (ie in the scheduler)</td></tr>
+            <tr><td>[08:51] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[08:51] &lt Lawouach&gt it'd be nice if you could think about it in your refactoring :)</td></tr>
+            <tr><td>[08:52] &lt MS--&gt Will do</td></tr>
+            <tr><td>[08:52] &lt MS--&gt currently thinking about fwiw</td></tr>
+            <tr><td>[08:52] &lt Lawouach&gt ta :)</td></tr>
+            <tr><td>[08:54] &lt MS--&gt Early versions of the scheduler were designed such that instead of simply catching StopIteration and removing the component, that they would catch everything and remove the component. ie not crash</td></tr>
+            <tr><td>[08:54] &lt MS--&gt the system (that is)</td></tr>
+            <tr><td>[08:54] &lt MS--&gt That was at a much earlier stage though, when it was useful for debugging the system</td></tr>
+            <tr><td>[08:55] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:55] &lt MS--&gt Naturally that was a problem with KeyboardInterrupt as well</td></tr>
+            <tr><td>[08:55] &lt MS--&gt so that led to the decision to simply catch StopIteration and then left I guess</td></tr>
+            <tr><td>[08:56] &lt MS--&gt I think we're probably getting to the stage where resilience in servers/etc is preferable over debugging - especially given it's clearer how you would insert that.</td></tr>
+            <tr><td>[09:44] &lt Lawouach__&gt Seems fair</td></tr>
+            <tr><td>[13:17] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:01] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[15:47] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:49] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:03] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[17:13] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[17:13] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:34] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[18:05] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[18:10] &lt vmlemon_&gt Hi eikenberry</td></tr>
+            <tr><td>[18:10] &lt eikenberry&gt hey</td></tr>
+            <tr><td>[18:12] *** vmlemon_ is surprised by how buggy the Symbian Foundation Developer site is, even for an "early-look" closed beta </td></tr>
+            <tr><td>[18:13] *** vmlemon_ wonders what's happening with Kamaelia, these days</td></tr>
+            <tr><td>[18:27] *** Davbo is strugling to pick a dissertaion project</td></tr>
+            <tr><td>[18:29] &lt MS--&gt Davbo: "The importance of cheese in the developmental history of 3D gaming systems"</td></tr>
+            <tr><td>[18:29] &lt MS--&gt (bonus points if anyone gets the reference)</td></tr>
+            <tr><td>[18:30] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[18:37] &lt Davbo&gt Did John Carmack do a bit of curdling on the side?</td></tr>
+            <tr><td>[18:37] *** Davbo doesn't get the reference</td></tr>
+            <tr><td>[18:37] &lt Davbo&gt :)</td></tr>
+            <tr><td>[18:52] &lt Davbo&gt looking at the list of possible projects and tempted by semantic web stuff, but it's not very "computer sciency"</td></tr>
+            <tr><td>[18:54] &lt MS--&gt Davbo: http://www.angusm.demon.co.uk/AGDB/DBM1/Merc.html</td></tr>
+            <tr><td>[18:56] &lt Davbo&gt haha, Kraft, awesome.</td></tr>
+            <tr><td>[20:12] *** Davbo has joined #kamaelia</td></tr>

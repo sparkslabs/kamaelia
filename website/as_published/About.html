@@ -1,0 +1,238 @@
+<html>
+<head>
+<title> About </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - About">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    
+<h1>Kamaelia, A fast overview</h1>
+<p> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a> is a Python library by <a href="http://www.bbc.co.uk/opensource/projects/kamaelia/">BBC Research</a>
+for concurrent programming using a simple pattern of components that send and receive data from each other. 
+
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                     <div class="button twoC darkgreen right"><a href="About"><b>Technical Overview</b></a> </div>
+                </div>
+                <div class="eightC column">
+                
+
+
+
+ 
+
+<h1>A quick overview</h1>
+
+<p>The following is an example of a system made by piping the output of one component into another:<br>
+
+<blockquote>
+<pre>
+<b>from</b> Kamaelia.Chassis.Pipeline <b>import</b> Pipeline
+<b>from</b> Kamaelia.Util.Console <b>import</b> ConsoleReader, ConsoleEchoer
+
+Pipeline(
+         ConsoleReader(),
+         ConsoleEchoer(),
+).run()
+</pre>
+</blockquote>
+
+<p>Or maybe you want to build a presentation tool? (imports &amp; setup excluded here - <a href="../../../Examples/SimplestPresentationTool">full example</a>)<br>
+
+<blockquote>
+<pre>Graphline(
+     CHOOSER = Chooser(items = files),
+     IMAGE = Image(size=(800,600), position=(8,48)),
+     NEXT = Button(caption="Next", msg="NEXT", position=(72,8)),
+     PREVIOUS = Button(caption="Previous", msg="PREV",position=(8,8)),
+     FIRST = Button(caption="First", msg="FIRST",position=(256,8)),
+     LAST = Button(caption="Last", msg="LAST",position=(320,8)),
+     linkages = {
+        ("NEXT","outbox") : ("CHOOSER","inbox"),
+        ("PREVIOUS","outbox") : ("CHOOSER","inbox"),
+        ("FIRST","outbox") : ("CHOOSER","inbox"),
+        ("LAST","outbox") : ("CHOOSER","inbox"),
+        ("CHOOSER","outbox") : ("IMAGE","inbox"),
+     }
+).run()
+</pre>
+</blockquote>
+
+<p>That's all well and good, but how is a component written? What's inside it?<br>
+
+<blockquote>
+<pre><b>from</b> Axon.Component <b>import</b> component
+<b>from</b> Axon.Ipc <b>import</b> shutdownMicroprocess, producerFinished
+
+<b>class</b> MyComponent(component):    
+    Inboxes = {<b>"inbox"</b>        : <b>"some data in"</b>,
+               <b>"control"</b>      : <b>"stops the component"</b>}
+    Outboxes = {<b>"outbox"</b>      : <b>"some data out"</b>,
+                <b>"signal"</b>      : <b>"Shutdown signal"</b>}
+
+    <b>def</b> <b>__init__</b>(self, **argd):
+        super(MyComponent, self).__init__(**argd)
+
+    <b>def</b> <b>main</b>(self):
+        <b>while</b> not self.doShutdown():
+            <b>if</b> self.dataReady(<b>"inbox"</b>):
+                data = self.recv(<b>"inbox"</b>)
+                <i># let's echo what we received...</i>
+                self.send(data, <b>'outbox'</b>)
+
+            <b>if</b> <b>not</b> self.anyReady():
+                self.pause()
+
+            yield 1
+
+    <b>def</b> <b>doShutdown</b>(self):
+        <b>if</b> self.dataReady(<b>"control"</b>):
+            mes = self.recv(<b>"control"</b>)
+            <b>if</b> isinstance(mes, shutdownMicroprocess) <b>or</b> isinstance(mes, producerFinished):
+                self.send(producerFinished(), <b>"signal"</b>)
+                <b>return True</b>
+        <b>return False</b>
+</pre>
+</blockquote>
+
+<p>This is the simplest form a component can take. A component:
+
+</p><ul>
+<li>is a class that inherits from <tt>Axon.Component.component</tt>
+</li><li>has inboxes and outboxes
+</li></ul>
+
+<p> By inheriting from <tt>Axon.Component.component</tt> you make your class usable by the <a href="/MiniAxon.html/.html">Axon</a> library which is at the core of the Kamaelia library. It allows for your class to be used with other components.
+
+</p><p>Inboxes and outboxes allow your component to be linked to and from by other components.
+
+</p><p>Then your class defines a main method that simple loop until a
+specific kind of message is put into the "control" inbox of the
+component. During the looping it checks for any inboxes and process
+data read from them. Eventually it yields to the Axon scheduler that
+goes to the next available component. By using a generator we allow the
+shceduler to come back to the component's loop eventually.
+
+</p><p>Note that inboxes and outboxes are pure Python dictionary hence they
+allow for any Python objects and are not limited to strings. The
+component described above is simple, complex components have many
+inboxes and outboxes to link to and from.
+
+</p><h2>Kamaelia</h2>
+
+<p> Kamaelia is a library of components for <a href="/Components.html">all kind of tasks and topics</a>:
+
+</p><p> For example taking the previous example we could write:
+
+</p><blockquote>
+<pre><b>from</b> Kamaelia.Chassis.Pipeline <b>import</b> Pipeline
+<b>from</b> Kamaelia.Util.Console <b>import</b> ConsoleReader, ConsoleEchoer
+
+Pipeline(
+         ConsoleReader(),
+         MyComponent(),
+         ConsoleEchoer(),
+).run()
+</pre>
+</blockquote>
+
+<p> <a href="/Components.html/pydoc/Kamaelia.html.Experimental.Chassis.html.Pipeline.html.html">Pipeline</a>
+is component that automatically links outboxes to inboxes of each
+provided component. The console components allow for reading and
+writing data from and to the command line. Because <tt>Pipeline</tt> is also a component itself it could in turns be used in another component.
+
+
+</p><p> Note that calling the <tt>run()</tt> method on a component blocks
+the process until it is killed. You can also simply activate a
+component which will then be in an active state but will run only when
+eventually <tt>run</tt> is called on another component.
+
+
+</p><p> Now that you have the basics of Kamaelia you should dive into the <a href="/Cookbook.html.html">documentation</a> and have fun with this library.
+
+<br>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

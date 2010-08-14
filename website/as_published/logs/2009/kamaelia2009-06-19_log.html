@@ -1,0 +1,187 @@
+<html><body><table>
+            <tr><td>[04:20] &lt Lawouach&gt heya</td></tr>
+            <tr><td>[04:20] &lt Lawouach&gt quickly before I forget, MS-, in regards to the bulletin board you plan on demo-ing at EuroPython, I would suggest showing support for Handle too</td></tr>
+            <tr><td>[04:21] &lt Lawouach&gt that way people will see you can easily offer a more traditionnal api to Kamaelia without losing functionnalities</td></tr>
+            <tr><td>[04:32] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:33] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[04:38] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[04:51] &lt Lawouach_&gt morning but from work this time :p</td></tr>
+            <tr><td>[05:57] &lt MS-&gt Lawouach: Re Handle - Good Point.</td></tr>
+            <tr><td>[05:58] &lt MS-&gt Very good point.</td></tr>
+            <tr><td>[05:58] &lt MS-&gt I'd planned to show how to use the python console with a normal python application as well</td></tr>
+            <tr><td>[05:58] &lt MS-&gt Since that's a very obvious "win"</td></tr>
+            <tr><td>[05:58] &lt MS-&gt But handle is a very good point :)</td></tr>
+            <tr><td>[06:26] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[06:52] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:00] &lt MS-&gt FWIW, now having Seq & PAR in kamaelia, as I've been writing these notes, I'm rapidly coming to the conclusion that we're likely to need a "Do" component.</td></tr>
+            <tr><td>[08:01] &lt MS-&gt The reason for this is that it'd enable all sorts of funky stuff to happen :)</td></tr>
+            <tr><td>[08:01] &lt MS-&gt Especially when combining things together and writing more complex network protocols.</td></tr>
+            <tr><td>[08:08] &lt MS-&gt http://pastebin.com/m67f8c8c2</td></tr>
+            <tr><td>[08:09] &lt MS-&gt OK, that's a but bust thinking about it, but you get the idea from that</td></tr>
+            <tr><td>[08:10] &lt MS-&gt Will post to the list later :)</td></tr>
+            <tr><td>[08:21] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:21] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[09:24] *** vmlemon_1 is now known as vmlemon_</td></tr>
+            <tr><td>[09:28] &lt MS-&gt Oooooooh</td></tr>
+            <tr><td>[09:28] &lt MS-&gt PAR is really nice for cleaning up top level code.</td></tr>
+            <tr><td>[09:29] &lt MS-&gt http://pastebin.com/m28e72d32</td></tr>
+            <tr><td>[09:29] &lt MS-&gt Note the lack of and lack of need for repeated .activate() calls</td></tr>
+            <tr><td>[09:39] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:19] &lt vmlemon_&gt Meh, I was going to ask about DVB-T firmware, although I managed to find it anyway</td></tr>
+            <tr><td>[10:20] *** vmlemon_ accidentally asked in another channel, without a reply, and ended up Googling to find it</td></tr>
+            <tr><td>[10:39] &lt vmlemon_&gt Just poking through the /DVB_Systems/TransportStreamCapture.py example now (it's been a long time since I last looked at this code)...</td></tr>
+            <tr><td>[10:41] &lt vmlemon_&gt Not sure, but I take it that 642000 (frequency value ripped from the Kaffeine settings window) converted to 642.000000 should work?</td></tr>
+            <tr><td>[10:41] &lt vmlemon_&gt (Multiplex-wise, if I remember correctly)</td></tr>
+            <tr><td>[10:42] *** vmlemon_ tries it</td></tr>
+            <tr><td>[10:47] *** vmlemon_ has parted #kamaelia</td></tr>
+            <tr><td>[11:21] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:24] &lt MS-&gt vmlemon: Yes</td></tr>
+            <tr><td>[12:48] &lt MS-&gt OK, example for Axon.Handle is using it to debug a GTK application</td></tr>
+            <tr><td>[12:49] &lt MS-&gt ie using it to wrap a TCPClient</td></tr>
+            <tr><td>[12:49] &lt MS-&gt That then sends messages to another Kamaelia application, running on a different machine, so that you can use Kamaelia for user testing as to what buttons a user is actually hitting and when</td></tr>
+            <tr><td>[12:50] &lt MS-&gt Additions to the GTK code:</td></tr>
+            <tr><td>[12:50] &lt MS-&gt from Axon.background import background</td></tr>
+            <tr><td>[12:50] &lt MS-&gt from Axon.Handle import Handle</td></tr>
+            <tr><td>[12:50] &lt MS-&gt from Kamaelia.Internet.TCPClient import TCPClient</td></tr>
+            <tr><td>[12:50] &lt MS-&gt background(slowmo=0.01).start()</td></tr>
+            <tr><td>[12:50] &lt MS-&gt our_client= Handle(TCPClient(host = "192.168.2.5", port = 1500)).activate()</td></tr>
+            <tr><td>[12:50] &lt MS-&gt and to GTK event handlers:</td></tr>
+            <tr><td>[12:50] &lt MS-&gt our_client.put(“Hello World Clicked”)</td></tr>
+            <tr><td>[12:50] &lt MS-&gt I think that's pretty nice & sweet</td></tr>
+            <tr><td>[12:52] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:06] &lt MS-&gt I'm also inserting a Python Console inside the same application to show why kamaelia may have practical value to people even if they don't use kamaelia for anything other than that :-)</td></tr>
+            <tr><td>[13:07] &lt MS-&gt As you can imagine that code is rather simple :)</td></tr>
+            <tr><td>[13:07] &lt Lawouach_&gt eh eh</td></tr>
+            <tr><td>[13:08] &lt MS-&gt may of course cause head explosion, but we'll see :-D</td></tr>
+            <tr><td>[13:11] &lt Lawouach_&gt :D</td></tr>
+            <tr><td>[13:25] *** Lawouach_ has parted #kamaelia</td></tr>
+            <tr><td>[13:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:45] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:04] &lt MS-&gt hi</td></tr>
+            <tr><td>[15:20] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[15:27] &lt MS-&gt Task for this evening - finish off writing the tutorial handout. Nearly done.</td></tr>
+            <tr><td>[15:29] &lt MS-&gt it's nearly there. Just needs finishing off the walkthrough of the bulletin board example.</td></tr>
+            <tr><td>[16:01] &lt eikenberry&gt Any idea if they are they recording the tutorials?</td></tr>
+            <tr><td>[16:01] &lt eikenberry&gt I'd like to see it but there is no way I can my it there live.</td></tr>
+            <tr><td>[16:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:50] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:50] *** [1]Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[16:50] *** [1]Lawouach is now known as Lawouach_</td></tr>
+            <tr><td>[17:06] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[17:28] &lt MS-&gt eikenberry: I'm not sure what the plans are regarding recording. I think the plan is to not record the tutorials because a) no video cameras b) audio issues.</td></tr>
+            <tr><td>[17:28] &lt MS-&gt That said, I'm planning of recording at least the audio of mine :)</td></tr>
+            <tr><td>[17:28] &lt MS-&gt Probably using kamaelia :)</td></tr>
+            <tr><td>[17:28] &lt eikenberry&gt Cool. :)</td></tr>
+            <tr><td>[17:31] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:14] &lt vmlemon_1&gt Hmm, it looks like the link to Pyrex on http://www.kamaelia.org/GettingStarted is broken, MS-</td></tr>
+            <tr><td>[18:14] &lt MS-&gt Cheers</td></tr>
+            <tr><td>[18:14] &lt vmlemon_1&gt Goes to http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/Pyrex-0.9.5.1a.tar.gz, which gives a 404</td></tr>
+            <tr><td>[18:15] &lt vmlemon_1&gt No problem</td></tr>
+            <tr><td>[18:16] &lt MS-&gt Added it to the todo list :)</td></tr>
+            <tr><td>[18:16] &lt MS-&gt Hm. Could get kamlogbot to do that for me.</td></tr>
+            <tr><td>[18:16] &lt MS-&gt That'd be handy</td></tr>
+            <tr><td>[18:16] &lt MS-&gt http://twitter.com/kamaeliabugs is the todo list btw</td></tr>
+            <tr><td>[18:16] &lt MS-&gt :)</td></tr>
+            <tr><td>[18:17] &lt vmlemon_1&gt Now to find another copy of Pyrex, without resorting to grabbing the whole MegaBundle ;)</td></tr>
+            <tr><td>[18:17] &lt vmlemon_1&gt Cool</td></tr>
+            <tr><td>[18:17] &lt vmlemon_1&gt Sounds like a good idea</td></tr>
+            <tr><td>[18:17] &lt MS-&gt here: http://www.kamaelia.org/release/deps/</td></tr>
+            <tr><td>[18:17] &lt vmlemon_1&gt Thanks</td></tr>
+            <tr><td>[18:17] &lt vmlemon_1&gt Grabbing it now</td></tr>
+            <tr><td>[18:18] &lt vmlemon_1&gt The joys of being on a relatively new system, and never getting round to reconfiguring stuff like that</td></tr>
+            <tr><td>[18:18] &lt vmlemon_1&gt Although it never even crossed my mind, at the time</td></tr>
+            <tr><td>[18:19] &lt MS-&gt This tutorial is probably the biggest document on Kamaelia ever written.</td></tr>
+            <tr><td>[18:19] &lt MS-&gt Hopefully one of the most useful too.</td></tr>
+            <tr><td>[18:19] &lt vmlemon_1&gt Grm, it looks like compiling the DVB bindings conks out here</td></tr>
+            <tr><td>[18:20] &lt MS-&gt I'm aiming to make sure anyone who's contributed to Kamaelia gets a printed copy at some point :-)</td></tr>
+            <tr><td>[18:20] &lt vmlemon_1&gt The Kamaelia Bible? ;)</td></tr>
+            <tr><td>[18:21] &lt MS-&gt Nah, it's a tutorial introduction</td></tr>
+            <tr><td>[18:21] &lt MS-&gt But goes into alot of depth</td></tr>
+            <tr><td>[18:21] &lt MS-&gt In lots of places</td></tr>
+            <tr><td>[18:21] &lt vmlemon_1&gt setup.py vomit at http://paster.dazjorz.com/?p=4441</td></tr>
+            <tr><td>[18:21] &lt vmlemon_1&gt Not sure if it helps, though</td></tr>
+            <tr><td>[18:21] &lt MS-&gt That setup.py vomit is standard Pyrex warnings</td></tr>
+            <tr><td>[18:22] &lt vmlemon_1&gt Aah</td></tr>
+            <tr><td>[18:22] &lt vmlemon_1&gt It should still work?</td></tr>
+            <tr><td>[18:22] &lt MS-&gt It'd be nice if it didn't vomit, but its safe</td></tr>
+            <tr><td>[18:22] &lt MS-&gt Yep</td></tr>
+            <tr><td>[18:22] &lt vmlemon_1&gt Although I'd expect it to not yield "error: command 'gcc' failed with exit status 1"</td></tr>
+            <tr><td>[18:22] &lt MS-&gt Oh, I missed that</td></tr>
+            <tr><td>[18:22] &lt vmlemon_1&gt Aah, there's a frontend.so file</td></tr>
+            <tr><td>[18:22] &lt vmlemon_1&gt But nothing else of use</td></tr>
+            <tr><td>[18:22] &lt vmlemon_1&gt And no suggestion of anything being copied</td></tr>
+            <tr><td>[18:23] &lt MS-&gt Could you put a gcc -v</td></tr>
+            <tr><td>[18:23] &lt MS-&gt into a pastebin somewhere ?</td></tr>
+            <tr><td>[18:23] &lt vmlemon_1&gt Sure</td></tr>
+            <tr><td>[18:24] &lt vmlemon_1&gt Just 'CC="gcc -v" python setup.py install' as root?</td></tr>
+            <tr><td>[18:24] &lt MS-&gt like this:</td></tr>
+            <tr><td>[18:24] &lt MS-&gt ~&gt gcc -v</td></tr>
+            <tr><td>[18:24] &lt MS-&gt Using built-in specs.</td></tr>
+            <tr><td>[18:24] &lt MS-&gt Target: i586-suse-linux</td></tr>
+            <tr><td>[18:24] &lt MS-&gt ...</td></tr>
+            <tr><td>[18:24] &lt MS-&gt gcc version 4.2.1 (SUSE Linux)</td></tr>
+            <tr><td>[18:24] &lt MS-&gt ie just in the shell</td></tr>
+            <tr><td>[18:24] &lt vmlemon_1&gt Aah</td></tr>
+            <tr><td>[18:25] &lt vmlemon_1&gt I thought you wanted verbose compilation output</td></tr>
+            <tr><td>[18:25] &lt vmlemon_1&gt Sorry</td></tr>
+            <tr><td>[18:25] &lt vmlemon_1&gt Doing that now</td></tr>
+            <tr><td>[18:25] &lt vmlemon_1&gt http://paster.dazjorz.com/?p=4443</td></tr>
+            <tr><td>[18:25] &lt MS-&gt It's probably not an obvious fix if it's actually failing, so I'll probably need to come back to that, but details are useful :)</td></tr>
+            <tr><td>[18:25] &lt MS-&gt As suspected you're using a more up to date version</td></tr>
+            <tr><td>[18:26] &lt vmlemon_1&gt http://paster.dazjorz.com/?p=4442 mentions non-existent files, but I assume they're not the problem</td></tr>
+            <tr><td>[18:26] &lt vmlemon_1&gt Hmm, will a GCC 3.x version be too old?</td></tr>
+            <tr><td>[18:26] &lt vmlemon_1&gt *3.4.x</td></tr>
+            <tr><td>[18:26] &lt MS-&gt That I don't know</td></tr>
+            <tr><td>[18:26] &lt vmlemon_1&gt Heh</td></tr>
+            <tr><td>[18:26] &lt vmlemon_1&gt It's a complete non-starter</td></tr>
+            <tr><td>[18:26] &lt MS-&gt It could also be distutils being anal :)</td></tr>
+            <tr><td>[18:26] &lt vmlemon_1&gt cc1: error: unrecognized command line option "-fstack-protector"</td></tr>
+            <tr><td>[18:26] &lt vmlemon_1&gt cc1: error: invalid parameter `ssp-buffer-size'</td></tr>
+            <tr><td>[18:26] &lt vmlemon_1&gt dvb3/dmx.c:1: error: bad value (generic) for -mtune= switch</td></tr>
+            <tr><td>[18:27] &lt vmlemon_1&gt error: command 'gcc34' failed with exit status 1</td></tr>
+            <tr><td>[18:27] &lt MS-&gt That I have no idea what that means :)</td></tr>
+            <tr><td>[18:27] &lt vmlemon_1&gt Aye</td></tr>
+            <tr><td>[18:28] &lt vmlemon_1&gt I assume that it's trying to pass an unsupported argument to GCC</td></tr>
+            <tr><td>[18:29] &lt MS-&gt Quite possibly</td></tr>
+            <tr><td>[18:30] &lt vmlemon_1&gt Although GCC 3.4.6 20060404 (Red Hat 3.4.6-9) isn't exactly up-to-the nanosecond, as far as support for various bells-and-whistles goes</td></tr>
+            <tr><td>[18:32] &lt MS-&gt That's newer than the original version of the DVB bindings</td></tr>
+            <tr><td>[18:32] &lt MS-&gt Which have hardly changed since that date</td></tr>
+            <tr><td>[18:32] &lt MS-&gt Which is intriguing</td></tr>
+            <tr><td>[18:36] &lt vmlemon_1&gt Hah, http://imgbit.com/i638</td></tr>
+            <tr><td>[19:03] *** tdobson has joined #kamaelia</td></tr>
+            <tr><td>[19:51] &lt MS-&gt tdobson: Hiya :)</td></tr>
+            <tr><td>[20:37] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:08] &lt MS-&gt Think I've finished the first draft (and last for this run unfortunately...) of the Kamaelia tutorial</td></tr>
+            <tr><td>[21:09] &lt MS-&gt 84 pages of pure unmitigated kamaelia :)</td></tr>
+            <tr><td>[21:09] &lt MS-&gt (divided into manageable chunks)</td></tr>
+            <tr><td>[21:25] &lt eikenberry&gt wow</td></tr>
+            <tr><td>[21:31] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:31] &lt aa_&gt wow, my tutorial was only 20 pages</td></tr>
+            <tr><td>[21:31] &lt aa_&gt MS-: what day are you, I might pop along</td></tr>
+            <tr><td>[21:31] &lt MS-&gt Sunday morning</td></tr>
+            <tr><td>[21:32] &lt aa_&gt oh, I won't be there until sunday pm</td></tr>
+            <tr><td>[21:32] &lt MS-&gt basically it's more or less "everything"</td></tr>
+            <tr><td>[21:32] &lt MS-&gt If you have a mail address, I'll forward you a link?</td></tr>
+            <tr><td>[21:32] &lt aa_&gt aafshar at gmail</td></tr>
+            <tr><td>[21:33] &lt MS-&gt sent the link</td></tr>
+            <tr><td>[21:33] &lt MS-&gt or I could've gotten a clue</td></tr>
+            <tr><td>[21:34] &lt aa_&gt wow, taking a while to grab that one</td></tr>
+            <tr><td>[21:34] &lt MS-&gt It's 15 meg. Has pictures in</td></tr>
+            <tr><td>[21:34] &lt MS-&gt Lots of care and thought too :)</td></tr>
+            <tr><td>[21:35] &lt aa_&gt MS-: that is a *lot* of content!</td></tr>
+            <tr><td>[21:36] &lt MS-&gt Yep.</td></tr>
+            <tr><td>[21:36] &lt MS-&gt My intent is to go through most stuff in a fairly high level way, but then to point to the docs for more detail</td></tr>
+            <tr><td>[21:36] &lt MS-&gt Also means that if I get stuck for time, I can use that phrase to skip ahead.</td></tr>
+            <tr><td>[21:37] &lt MS-&gt The real "meat" IMO is sections 4 & 5</td></tr>
+            <tr><td>[21:37] &lt aa_&gt MS-: and what an awesome resource!</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Thanks :)</td></tr>
+            <tr><td>[21:37] &lt MS-&gt I drew the picture on the first page too :)</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Took me days :)</td></tr>
+            <tr><td>[21:37] &lt aa_&gt MS-: there should be a concurrency BOF</td></tr>
+            <tr><td>[21:37] &lt MS-&gt That's a good idea.</td></tr>
+            <tr><td>[21:43] &lt MS-&gt OK, that's a mail to the europython people with a pointer to it</td></tr>
+            <tr><td>[23:04] &lt eikenberry&gt hey... chance of getting a look at that?</td></tr>
+            <tr><td>[23:07] &lt eikenberry&gt jae@zhar.net</td></tr>
+            <tr><td>[23:07] &lt eikenberry&gt :)</td></tr>
+            <tr><td>[23:21] *** MS- gets some sleep</td></tr>

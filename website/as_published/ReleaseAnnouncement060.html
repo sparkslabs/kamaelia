@@ -1,0 +1,224 @@
+<html>
+<head>
+<title> ReleaseAnnouncement060 </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - ReleaseAnnouncement060">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+<h1>Kamaelia 0.6.0 Release Announcement</h1>
+<p></p><p>With great pleasure I'd like to announce the release of Kamaelia 0.6.0 and Axon 1.6.0<br></p><h3>Release overview</h3>For the short of time:<br><blockquote>Overview:
+library/framework for concurrency using message passing components as
+the concurrency metaphor. Consists of a kernel (Axon) and collection of
+components (Kamaelia). Support for generator, thread &amp; process
+based components. Targetted towards supporting maintenance, so
+/accessible/ to novices, but general purpose. Uses concurrency to make
+life simpler, not harder. Designed as a <i><b>practical</b></i> toolkit.<br></blockquote>Download:<br><blockquote><a href="http://www.kamaelia.org/GetKamaelia">http://www.kamaelia.org/GetKamaelia</a><br><a href="http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz">http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz</a><br>sudo easy_install Kamaelia&nbsp;&nbsp;  <br></blockquote>Change Summary:<br><blockquote>Major
+update, multicore, STM, easy concurrency, creation of Kamaelia.Apps
+namespace for reuse of applications, significant amounts of new
+functionality, major documentation improvements (including full offline
+reference docs), support for using Kamaelia components cleanly in
+non-Kamaelia apps. (ie a clean linear -&gt; concurrent interface
+(Handle))<br></blockquote>Release notes: <a href="http://www.kamaelia.org/ReleaseNotes060">http://www.kamaelia.org/ReleaseNotes060</a><br>Deltas: Kamaelia 0.5.0 -&gt; 0.6.0, Axon 1.5 -&gt; Axon 1.6.0<br>Last full release: October 2006<br>
+
+<br>Mailing list: <a href="http://groups.google.com/group/kamaelia">http://groups.google.com/group/kamaelia</a> *CHANGED*<br>New website: <a href="http://www.kamaelia.org/Home.html">http://www.kamaelia.org/Home</a><br>Reference: <a href="http://www.kamaelia.org/Components">http://www.kamaelia.org/Components</a><br>Cookbook: <a href="http://www.kamaelia.org/Cookbook">http://www.kamaelia.org/Cookbook</a><br><br>Detailed Version...<br><h2>What is Kamaelia?</h2>Kamaelia
+is a library/framework for building systems from simple components that
+talk to each other. This is primarily targetted at aiding maintenance,
+but also assists in the creation of systems in the first place. It also
+means you build naturally concurrent software. It's intended to be
+powerful, but also accessible by any developer, including novices.<br><br>We also find it makes it fun to build and work with concurrent systems.<br><br>What
+sort of systems? Network servers, clients, desktop applications, pygame
+based games, transcode systems and pipelines, digital TV systems, spam
+eradicators, teaching tools, and a fair bit more :)<br><br>Whilst it comes out of a research project at <a href="http://www.bbc.co.uk/rd/index.shtml">BBC Research</a>, it is designed as a /practical/ toolkit. This clearly affects the set of components we've created.<br><br>In order to do this, Kamaelia is divided into two main namespaces:<br><ul><li><a href="http://www.kamaelia.org/Docs/Axon/Axon">Axon</a>
+- this provides the core component &amp; concurrency framework.&nbsp; You
+use to build components which communicate with one another.</li><li><a href="http://www.kamaelia.org/Components">Kamaelia</a>
+- this is the collection of components that exist. The vast majority of
+these come from systems created for a variety of purposes.<br>As of this release, a second major carve up of name spaces has been added:</li><ul><li><b>Kamaelia.Apps</b>
+- this is where components from some Kamaelia based applications
+reside. The purpose behind this is to provide an experimental staging
+ground for new components to migrate into the main Kamaelia namespace.
+This also means you can use components from other Kamaelia applications
+sooner rather than later. As a result, these components may be lacking
+in two main areas - documentation or generality, but putting them here
+allows for components to migrate to a more generally useful state.</li></ul><ul><li><b>Kamaelia.{anything else}</b>
+- this is where components will migrate to when we are happy with the
+fact they are sufficiently general and useful outside their original
+application.<br>It's worth noting that the bulk of components are in this second category!<br></li></ul></ul><br><h3>What's New &amp; Changed?</h3>Kamaelia
+0.6.0 represent a update over the 0.5.0 release, and should mark the
+return to regular releases. (Work has been continuing constantly since
+the 0.5.0 release, but numbers of releases slowed)<br><br><b>Major to changes reflected in both Axon &amp; Kamaelia:</b><br><ul><li>New home/website :-)</li><ul><li>http://www.kamaelia.org/Home</li></ul><li>New getting started page:</li><ul><li>http://www.kamaelia.org/GetKamaelia</li></ul><li>Support for easy_install ...</li><ul><li>sudo easy_install Kamaelia</li></ul><li>... but with caveats that you don't get the docs, tools, or examples that way...</li><li>Large scale documentation improvements</li><li>Results of nightly documentation generation now included in the tar ball.</li><li>Core autogenerated docs:</li><ul><li><a href="http://www.kamaelia.org/Docs/Axon/Axon">http://www.kamaelia.org/Docs/Axon/Axon</a></li></ul><ul><li><a href="http://www.kamaelia.org/Components">http://www.kamaelia.org/Components</a></li></ul></ul><b>Key changes to Axon - Kamaelia's core:</b><br><ul><li>Bumped to version 1.6.0</li><li>Support for simplified software transactional memory</li><ul><li><a href="http://www.kamaelia.org/STM">http://www.kamaelia.org/STM</a></li></ul><ul><li>If you've never heard/understood the term, think (a bit like) "version control for variables"</li></ul><ul><li>Useful if you MUST share data between components.<br><br></li></ul><li>Experimental multicore support</li><ul><li><a href="http://www.kamaelia.org/MulticoreExample">http://www.kamaelia.org/MulticoreExample</a></li></ul><ul><li>Largely
+boils down to put "Process" in front of "Pipeline" to make all the
+subcomponents of the pipeline run in seperate processes&nbsp; </li></ul><ul><li>Practical benefit for pygame components - it allows multiwindow pygame apps.<br><br></li></ul><li>Inheritable default values for component initialisers.</li><ul><li>The core aim of this is to allow declarative config for systems rather than something less clear.</li></ul><ul><li>&nbsp;This allows you to turn this sort of code:</li></ul><ul><ul><li><font face="Courier New, monospace">def ReusableSocketAddrServer(port=100,</font><br><font face="Courier New, monospace">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; protocol=EchoProtocol):<br>&nbsp;&nbsp;&nbsp; return ServerCore(protocol=protocol,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; port=port,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; socketOptions=(socket.SOL_SOCKET,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; socket.SO_REUSEADDR, 1))</font></li></ul></ul><ul><li>Into this:</li></ul><ul><ul><li><font face="Courier New, monospace">class ReusableSocketAttrServer(ServerCore):</font><br><font face="Courier New, monospace">&nbsp;&nbsp;&nbsp; socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)<br></font></li></ul></ul><ul><li>Full discussion here:</li></ul><ul><ul><li><a href="http://www.kamaelia.org/InheritableDefaultValues">http://www.kamaelia.org/InheritableDefaultValues</a><br><a href="http://www.kamaelia.org/InheritableDefaultValues"><br></a></li></ul></ul><li>Added in "<a href="http://www.kamaelia.org/AxonHandle">Handle</a>" support. This provides two key pieces of functionality:</li><ul><li>The ability to run Kamaelia systems in the background, via:</li></ul><ul><ul><li><font face="Courier New, monospace">from Axon.background import background</font><br><font face="Courier New, monospace">background().start()</font></li></ul></ul><ul><li>The ability to wrap Kamaelia components or systems in a Handle for use in non-Kamaelia systems.</li></ul><ul><ul><li><font face="Courier New, monospace">from Axon.Handle import Handle</font><br><font face="Courier New, monospace">from Kamaelia.Internet.TCPClient import TCPClient</font><br><font face="Courier New, monospace">conn = Handler(TCPClient("www.kamaelia.org", 80)).activate()<br>conn.put("GET / HTTP/1.0\r\n", "inbox")<br>conn.put("Host: www.kamaelia.org\r\n", "inbox")<br>conn.put("\r\n", "inbox")</font></li></ul></ul><ul><li>More detail:</li></ul><ul><ul><li><a href="http://www.kamaelia.org/AxonHandle">http://www.kamaelia.org/AxonHandle<br><br></a></li></ul></ul><li>Simplified
+system shutdown. If you want to close down an entire Kamaelia based
+system rapidly from inside a component, just do this:</li><ul><li>self.scheduler.stop()</li></ul><ul><li>This puts the scheduler into a "shutting down mode" in which:</li></ul><ul><ul><li>It calls the .stop() method on all the things it's running</li></ul></ul><ul><ul><li>It then shuts down.</li></ul></ul><ul><li>The Kamaelia.Internet components take this as an opportunity to close all the connections they have open cleanly for example.</li></ul><ul><li>Example usage: <a href="http://tinyurl.com/AxonShutdown">http://tinyurl.com/AxonShutdown<br><br></a></li></ul><li>Support for <a href="http://www.kamaelia.org/WaitComplete">WaitComplete</a>
+extended, allowing better handling of more complex protocols which are
+not stateless in a debuggable fashion. It also simplifies working with
+Pygame, etc.</li><ul><li><a href="http://www.kamaelia.org/WaitComplete">http://www.kamaelia.org/WaitComplete<br><br></a></li></ul><li>As
+well as unpausing a component when a message is delivered tothe
+component, it gets unpaused when a message is taken from its outbox.
+This allows better synchronous behaviour for rate limited in/out-boxes.</li></ul><h4>Overview of Changes to Kamaelia itself</h4>Key changes to Kamaelia itself:<br><ul><li>Creation of the Kamaelia.Apps namespace</li><li>Shifting of the core code for Kamaelia tools into Kamaelia.Apps</li><li>Significant numbers of new components</li><li>Significant number of bugfixes</li><li>SimpleServer code changed to "ServerCore", representing it's more general structure.</li><li>... and a lot more besides... :)</li></ul>In
+this release there is a slew of extra components and bug fixes, a
+variety of new tools - from video shot change detection, through to
+SMTP greylisting, but also perhaps the biggest extra: Multiprocess
+&amp; hence multicore support (experimental at this stage, but so far
+so good :) )<br><br>OK, here's the dive into the summary of changes. (<a href="http://www.kamaelia.org/ReleaseNotes060">Full release notes here</a>)<br><h4>New files in Kamaelia.*</h4>
+This represents significant amounts of new components and new abilities added into Kamaelia.<br>
+<ul><li>Kamaelia/</li><ul><li>Chassis/Seq.py</li></ul><ul><li>Codec/</li></ul><ul><ul><li>WAV.py YUV4MPEG.py</li></ul></ul><ul><li>Device/DVB/</li></ul><ul><ul><li>SoftDemux.py</li></ul></ul><ul><ul><li>Parse/</li></ul></ul><ul><ul><ul><li>{ lots of components for working with DVB information tables }</li></ul></ul></ul><ul><li>Experimental/</li></ul><ul><ul><li>Chassis.py ERParsing.py</li></ul></ul><ul><li>File/</li></ul><ul><ul><li>MaxSpeedFileReader.py UnixProcess2.py</li></ul></ul><ul><li>Internet/</li></ul><ul><ul><li>TimeOutCSA.py UDP_ng.py</li></ul></ul><ul><li>Protocol/</li></ul><ul><ul><li>MimeRequestComponent.py RecoverOrder.py SDP.py</li></ul></ul><ul><ul><li>SimpleVideoCookieServer.py (demo/example)<br>
+      </li></ul></ul><ul><li>AIM/</li></ul><ul><ul><li>AIMHarness.py ChatManager.py LoginHandler.py OSCARClient.py</li></ul></ul><ul><li>HTTP/</li></ul><ul><ul><li>HTTPRequestHandler.py</li><li>Handlers/</li></ul></ul><ul><ul><ul><li>Minimal.py SessionExample.py UploadTorrents.py</li></ul></ul></ul><ul><li>IRC/IRCClient.py&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <br>
+    </li></ul><ul><li>RTP/</li></ul><ul><ul><li>NullPayloadPreFramer.py NullPayloadRTP.py RTCPHeader.py RTPHeader.py RtpPacker.py RTP.py</li></ul></ul><ul><li>UI/</li></ul><ul><ul><li>Pygame/</li></ul></ul><ul><ul><ul><li>Text.py VideoSurface.py</li></ul></ul></ul><ul><li>Util/</li></ul><ul><ul><li>Collate.py FirstOnly.py Max.py OneShot.py
+PromptedTurnstile.py RangeFilter.py RateChunker.py
+SequentialTransformer.py Sync.py TagWithSequenceNumber.py
+TwoWaySplitter.py</li></ul></ul><ul><ul><li>Tokenisation/</li></ul></ul><ul><ul><ul><li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Simple.py</li></ul></ul></ul><ul><li>Video/</li></ul><ul><ul><li>PixFormatConversion.py DetectShotChanges.py CropAndScale.py</li></ul></ul><ul><li>Visualisation/ER/</li></ul><ul><ul><li>ERLaws.py ERVisualiserServer.py ExtraWindowFurniture.py PAttribute.py PEntity.py PISA.py PRelation.py</li></ul></ul><ul><li>XML/SimpleXMLParser.py</li></ul><ul><li>Support/</li></ul><ul><ul><li>OscarUtil2.py OscarUtil.py DVB/DateTime.py Protocol/IRC.py</li></ul></ul></ul>
+<h4>New files in Kamaelia.Apps</h4>
+Functionality in here represents code that can be standardised for use
+in other apps if there's a desire to do so. Many of these components
+are reuseable in their current form, though may have limitations.<br>
+<ul><li>Kamaelia/Apps/</li><ul><li>Compose/</li></ul><ul><ul><li>BuildViewer.pyCodeGen.py GUI.py PipeBuild.py PipelineWriter.py</li></ul></ul><ul><ul><li>GUI/</li></ul></ul><ul><ul><ul><li>ArgumentsPanel.py BuilderControlsGUI.py TextOutputGUI.py</li></ul></ul></ul><ul><li>Games4Kids/</li></ul><ul><li>BasicSprite.py MyGamesEventsComponent.py SpriteScheduler.py</li></ul><ul><li>Grey/</li></ul><ul><ul><li>ConcreteMailHandler.py GreyListingPolicy.py MailHandler.py PeriodicWakeup.py Support.py WakeableIntrospector.py</li></ul></ul><ul><li>Whiteboard/</li></ul><ul><ul><li>Audio.py Canvas.py CheckpointSequencer.py CommandConsole.py
+Entuple.py Options.py Painter.py Palette.py Router.py Routers.py
+SingleShot.py TagFiltering.py Tokenisation.py TwoWaySplitter.py UI.py</li></ul></ul><ul><li>IRCLogger/Support.py</li></ul><ul><li>Show/GraphSlides.py</li></ul></ul>
+<h4>Deleted files in Kamaelia.*</h4>
+A number of files which were deprecated in the last release have been
+deleted from this release. (See full release notes for details)<br>
+<h4>
+Changed files in Kamaelia.*</h4>
+
+
+
+
+Largely small improvements, changes to meta data about components,
+often major documentation improvements - see full release notes for
+details. Occasional bugfixes. Largest overall change to existing files
+is improvement of documentation, REsT fixes, and addition of metadata
+to files.<br>
+<ul><li>Kamaelia/</li><ul><li>Audio/</li></ul><ul><ul><li>Filtering.py RawAudioMixer.py</li></ul></ul><ul><ul><li>Codec/PyMedia/</li></ul></ul><ul><ul><ul><li>Decoder.py Encoder.py</li></ul></ul></ul><ul><ul><li>PyMedia/</li></ul></ul><ul><ul><ul><li>Input.py Output.py Resample.py</li></ul></ul></ul><ul><li>Chassis/</li></ul><ul><ul><li>Carousel.py ConnectedServer.py Graphline.py Pipeline.py Prefab.py</li></ul></ul><ul><li>Codec/</li></ul><ul><li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Dirac.py RawYUVFramer.py Speex.py</li></ul><ul><li>Device/</li></ul><ul><ul><li>DVB/</li></ul></ul><ul><ul><ul><li>Core.py DemuxerService.py EIT.py NowNext.py PSITables.py Receiver.py Tuner.py</li></ul></ul></ul><ul><li>File/</li></ul><ul><ul><li>BetterReading.py ReadFileAdaptor.py Reading.py UnixProcess.py</li></ul></ul><ul><li>Internet/</li></ul><ul><ul><li>ConnectedSocketAdapter.py Selector.py SingleServer.py TCPClient.py TCPServer.py UDP.py</li></ul></ul><ul><li>Protocol/</li></ul><ul><ul><li>EchoProtocol.py FortuneCookieProtocol.py Framing.py SimpleReliableMulticast.py</li></ul></ul><ul><ul><li>HTTP/</li></ul></ul><ul><ul><ul><li>ErrorPages.py HTTPClient.py HTTPHelpers.py HTTPParser.py HTTPResourceGlue.py HTTPServer.py IcecastClient.py MimeTypes.py</li></ul></ul></ul><ul><ul><li>Torrent/</li></ul></ul><ul><ul><ul><li>TorrentClient.py TorrentMaker.py TorrentPatron.py TorrentService.py</li></ul></ul></ul><ul><li>UI/</li></ul><ul><ul><li>GraphicDisplay.py</li></ul></ul><ul><ul><li>OpenGL/</li></ul></ul><ul><ul><ul><li>Button.py Movement.py SimpleTranslationInteractor.py OpenGLComponent.py</li></ul></ul></ul><ul><ul><li>Pygame/</li></ul></ul><ul><ul><ul><li>Button.py Display.py Image.py KeyEvent.py Multiclick.py Ticker.py VideoOverlay.py</li></ul></ul></ul><ul><li>Util/</li></ul><ul><ul><li>Backplane.py Chooser.py Chunkifier.py ChunkNamer.py Clock.py
+Comparator.py ConsoleEcho.py Console.py DataSource.py Fanout.py
+Filter.py Introspector.py MarshallComponent.py Marshalling.py
+NullSink.py PassThrough.py PureTransformer.py RateFilter.py Splitter.py
+Stringify.py UnseenOnly.py</li></ul></ul><ul><li>Visualisation/</li></ul><ul><ul><li>Axon/</li></ul></ul><ul><ul><ul><li>AxonVisualiserServer.py ExtraWindowFurniture.py PComponent.py</li></ul></ul></ul><ul><ul><li>PhysicsGraph/</li></ul></ul><ul><ul><ul><li>TopologyViewer.py TopologyViewerServer.py chunks_to_lines.py GridRenderer.py lines_to_tokenlists.py RenderingParticle.py</li></ul></ul></ul><ul><li>Kamaelia/Experimental/Services.py</li></ul><ul><li>Kamaelia/Automata/Behaviours.py</li></ul><ul><li>Kamaelia/Support/</li></ul><ul><ul><li>Deprecate.py</li></ul></ul><ul><ul><li>DVB/</li></ul></ul><ul><ul><ul><li>CRC.py Descriptors.py</li></ul></ul></ul><ul><ul><li>Data/</li></ul></ul><ul><ul><ul><li>bitfieldrec.py Experimental.py Repository.py</li></ul></ul></ul><ul><ul><li>Particles/</li></ul></ul><ul><ul><ul><li>SpatialIndexer.py</li></ul></ul></ul></ul>
+<h3>Platforms</h3>Kamaelia has been used successfully under both Linux, Windows and Mac OS X. (mostly developed/tested under Linux &amp; Mac OS X)<br><br><h3>Where can I get it? &amp; Docs?</h3>Download:<br>
+<blockquote><a href="http://www.kamaelia.org/GetKamaelia">http://www.kamaelia.org/GetKamaelia</a><br>
+  <a href="http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz">http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz</a><br>
+</blockquote>
+
+
+Docs:<br>
+<blockquote><a href="http://www.kamaelia.org/Docs/Axon/Axon">http://www.kamaelia.org/Docs/Axon/Axon</a><br>
+  <a href="http://www.kamaelia.org/Components">http://www.kamaelia.org/Components</a><br>
+  <a href="http://www.kamaelia.org/Cookbook">http://www.kamaelia.org/Cookbook</a><br>
+  <a href="http://www.kamaelia.org/MiniAxon">http://www.kamaelia.org/MiniAxon</a><br>
+</blockquote>
+
+Presentations:<br>
+<blockquote><a href="http://www.slideshare.net/kamaelian">http://www.slideshare.net/kamaelian</a></blockquote>
+
+Get involved: (all locations changed since last major release)<br>
+<blockquote><a href="http://www.kamaelia.org/Developers/">http://www.kamaelia.org/Developers/</a><br>
+  <a href="http://groups.google.com/group/kamaelia">http://groups.google.com/group/kamaelia</a><br>
+  <a href="http://groups.google.com/group/kamaelia">http://code.google.com/p/kamaelia/</a><br>
+</blockquote>
+
+
+<h3>Licensing</h3>Kamaelia is released under the Mozilla tri-license scheme (MPL1.1/GPL2.0/LGPL2.1). See http://www.kamaelia.org/Licensing<br><h3>Thanks &amp; acknowledgements<br></h3>
+Finally, many thanks to everyone who's contributed to this release,
+especially including: Matt Hammond, Sylvain Hellegouarch, Jinna Lei,
+Jason Baker, Dave King, Patrick Thomson, Ryan Lothian<br><br>As always, Feedback, improvements, corrections &amp; suggestions as usual, very welcome - via the mailing list :)<br><br>Michael, October 2008<br><br>
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

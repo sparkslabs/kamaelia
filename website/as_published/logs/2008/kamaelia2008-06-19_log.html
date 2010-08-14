@@ -1,0 +1,366 @@
+<html><body><table>
+            <tr><td>[00:47] *** ms-afk goes to sleep, having finished the code he said he would get done today</td></tr>
+            <tr><td>[07:24] *** mhrd-afk is now known as mhrd-afk-panic</td></tr>
+            <tr><td>[07:27] &lt ms-afk&gt morning</td></tr>
+            <tr><td>[07:36] &lt mhrd-afk-panic&gt hi :)</td></tr>
+            <tr><td>[07:36] &lt mhrd-afk-panic&gt email purge complete; back to panic mode :)</td></tr>
+            <tr><td>[07:41] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:46] &lt Lawouach_&gt http://news.bbc.co.uk/2/hi/technology/7460870.stm</td></tr>
+            <tr><td>[07:46] &lt Lawouach_&gt not surprising considering how Universities favour courses that are more likely to have more students therefore more money</td></tr>
+            <tr><td>[07:47] &lt Lawouach_&gt I assume the most advanced courses are left out</td></tr>
+            <tr><td>[08:29] &lt ms-afk&gt I've got a random text from one of these games courses - bought from the local bookstore (ie waterstones, not even an academic one)</td></tr>
+            <tr><td>[08:29] &lt ms-afk&gt It's pretty dire - focusses on the history of games and design rather than anything concretely beneficial</td></tr>
+            <tr><td>[08:30] &lt ms-afk&gt This is a rather surreal comment though: "staff say that prospective students are often put off by the requirement for Maths A-Level"</td></tr>
+            <tr><td>[08:30] &lt ms-afk&gt Quite how you handle the maths involved even with single maths these days would be beyond me. I'm surprised that they don't have the requirement being double maths TBH</td></tr>
+            <tr><td>[08:31] &lt ms-afk&gt Ah, I see, the real problem they're talking about is lack of take up of maths.</td></tr>
+            <tr><td>[09:17] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:56] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:14] &lt orphans&gt morning all</td></tr>
+            <tr><td>[10:15] &lt orphans&gt just seen that one of the pygame SoC projects is to port it to nintendo ds - Jam on DS=super cool sounding :)</td></tr>
+            <tr><td>[10:21] &lt ms-afk&gt Morning</td></tr>
+            <tr><td>[10:24] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:24] &lt orphans&gt how goes it ms-afk?</td></tr>
+            <tr><td>[10:25] &lt ms-afk&gt Not bad - I met a work deadline, which was a little front loaded, which is handy, meaning I can take the next few days _relatively_ easy whilst I work on the next bit</td></tr>
+            <tr><td>[10:26] &lt ms-afk&gt Meaning I've got my own time back to work on the release :)</td></tr>
+            <tr><td>[10:26] &lt orphans&gt thats cool :)</td></tr>
+            <tr><td>[10:29] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:34] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[10:47] *** ms-afk really goes afk for a bit</td></tr>
+            <tr><td>[10:47] &lt ms-afk&gt back shortly</td></tr>
+            <tr><td>[10:53] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[10:55] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:49] &lt Lawouach_&gt ah</td></tr>
+            <tr><td>[11:50] &lt Lawouach_&gt Well it seems the CherryPy Essentials book has sold 612 hard copies and 66 soft copies in 12 months</td></tr>
+            <tr><td>[11:51] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:51] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[12:04] &lt Davbo&gt ooo, you happy with that Lawouach_</td></tr>
+            <tr><td>[12:04] &lt Davbo&gt it'd creep me out knowing that many people read my book</td></tr>
+            <tr><td>[12:05] &lt Davbo&gt like how i get freaked out reading stats on my blog</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt That's the game :)</td></tr>
+            <tr><td>[12:06] &lt Lawouach_&gt You put yourself out there</td></tr>
+            <tr><td>[12:07] &lt Lawouach_&gt I'm happy yeah even though I would write the book differently today</td></tr>
+            <tr><td>[12:09] *** PJ_Coudert_ has joined #kamaelia</td></tr>
+            <tr><td>[12:09] *** PJ_Coudert_ is now known as PJ_Coudert</td></tr>
+            <tr><td>[12:09] &lt Davbo&gt Good stuff Lawouach_</td></tr>
+            <tr><td>[12:18] &lt Lawouach_&gt ta</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt My flood-fill works :D</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt however, since it's recursive it doesn't need a large area before it crashes out</td></tr>
+            <tr><td>[12:49] &lt ms-afk&gt woo</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt so just need to solve that :P</td></tr>
+            <tr><td>[12:49] &lt ms-afk&gt changing recursive to non recursive is relatively straightforward though</td></tr>
+            <tr><td>[12:49] &lt ms-afk&gt (just a loop with a stack if needed after all)</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt self.floodFill(x + 1, y, newColour, oldColour)</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt self.floodFill(x - 1, y, newColour, oldColour)</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt self.floodFill(x, y + 1, newColour, oldColour)</td></tr>
+            <tr><td>[12:49] &lt Davbo&gt self.floodFill(x, y - 1, newColour, oldColour)</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt 4 calls to itself for every pixel</td></tr>
+            <tr><td>[12:50] &lt ms-afk&gt Yeah, it's a lazy way to express an algorithm but it makes proof simpler</td></tr>
+            <tr><td>[12:50] &lt ms-afk&gt Rarely a practical implementation approach</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt Yeah, nice to see it work though</td></tr>
+            <tr><td>[12:50] &lt ms-afk&gt Indeed</td></tr>
+            <tr><td>[12:50] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt so you're on the right lines</td></tr>
+            <tr><td>[12:58] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[14:14] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:30] &lt Chong-&gt hi, vmlemon_</td></tr>
+            <tr><td>[14:34] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[14:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:59] *** Davbo realises the time</td></tr>
+            <tr><td>[14:59] *** Davbo writes done/todo/blocked</td></tr>
+            <tr><td>[15:00] &lt orphans&gt afternoon all :)</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt afternoon orphans</td></tr>
+            <tr><td>[15:01] &lt orphans&gt how goes it Davbo?</td></tr>
+            <tr><td>[15:01] &lt Davbo&gt it goes well! yourself?</td></tr>
+            <tr><td>[15:01] &lt orphans&gt not too bad ta</td></tr>
+            <tr><td>[15:02] *** orphans tries out paint whilst waiting for the meeting :)</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt I had it drawing anti-aliased lines yesterday, was pretty cool.</td></tr>
+            <tr><td>[15:04] &lt orphans&gt mm, need pprocess</td></tr>
+            <tr><td>[15:05] &lt j_baker&gt morning everyone</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt orphans: http://pypi.python.org/pypi/pprocess</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt Good afternoon j_baker</td></tr>
+            <tr><td>[15:08] &lt orphans&gt afternoon j_baker</td></tr>
+            <tr><td>[15:08] &lt orphans&gt Davbo, unexpected keyword argument 'zap'?</td></tr>
+            <tr><td>[15:09] &lt Davbo&gt Ah, you need to install Axon from ms-afk's scratch</td></tr>
+            <tr><td>[15:10] &lt j_baker&gt I think Axon from trunk should work as well.</td></tr>
+            <tr><td>[15:10] &lt orphans&gt k :)</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt afaik it doesn't j_baker</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt install with --force too orphans</td></tr>
+            <tr><td>[15:10] &lt j_baker&gt I merged some of the changes to Axon with the TCPImprovements branch.</td></tr>
+            <tr><td>[15:11] &lt Davbo&gt ah right</td></tr>
+            <tr><td>[15:11] &lt j_baker&gt ServerCore relies on being able to pass keyword arguments.</td></tr>
+            <tr><td>[15:12] &lt j_baker&gt But then again, you know your project better than I do. :)</td></tr>
+            <tr><td>[15:13] &lt orphans&gt I'm guessing multipipeline is in MPS_Scratch too?</td></tr>
+            <tr><td>[15:13] &lt Davbo&gt don't be silly orphans :-)</td></tr>
+            <tr><td>[15:13] &lt Davbo&gt that's in Sketches/MPS/pprocess</td></tr>
+            <tr><td>[15:13] &lt Davbo&gt :P</td></tr>
+            <tr><td>[15:13] &lt orphans&gt :) this is fun!</td></tr>
+            <tr><td>[15:14] &lt Davbo&gt My code points to it though</td></tr>
+            <tr><td>[15:14] &lt orphans&gt ahh, was in the wrong directory</td></tr>
+            <tr><td>[15:14] &lt orphans&gt works now :)</td></tr>
+            <tr><td>[15:14] &lt Davbo&gt import sys; sys.path.append("../../../MPS/pprocess/");</td></tr>
+            <tr><td>[15:14] &lt Davbo&gt rather elegant if you ask me ;-)</td></tr>
+            <tr><td>[15:15] &lt orphans&gt heh</td></tr>
+            <tr><td>[15:16] &lt orphans&gt looks cool though :)</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt if you draw a very small circle</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt then right click in the middle</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt it'll fill it red</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt if it's too big you'll get a recursion error</td></tr>
+            <tr><td>[15:20] &lt orphans&gt hum, think ms-afk might be actually afk here...</td></tr>
+            <tr><td>[15:21] &lt j_baker&gt Oh hell yes. I just found out my university subscribes to Safari.</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt If he is shall we just stick our progress done/todo/blocked things in here at 16:40? or something</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt then one of us post it to the ML</td></tr>
+            <tr><td>[15:22] &lt orphans&gt yeah, sounds useful</td></tr>
+            <tr><td>[15:24] &lt Lawouach_&gt goto home</td></tr>
+            <tr><td>[15:24] &lt j_baker&gt :o</td></tr>
+            <tr><td>[15:24] &lt j_baker&gt Lawouach_ used a goto statement</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt hah</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt he lives in BASIC</td></tr>
+            <tr><td>[15:25] &lt j_baker&gt http://xkcd.com/292/</td></tr>
+            <tr><td>[15:25] &lt j_baker&gt I &lt 3 xkcd</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt hehe me too. The Python ones are funny :-)</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt import antigravity</td></tr>
+            <tr><td>[15:29] &lt j_baker&gt Sigh... Did you ever try to use ctrl c at the command line to try and copy and paste and screw something up?</td></tr>
+            <tr><td>[15:32] &lt j_baker&gt Fortunately, I just made the gnome installer stop installing diveintopython (which I don't even know why that's included)</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt Yeah you have to be careful copying things lol</td></tr>
+            <tr><td>[15:35] &lt Davbo&gt Made that mistake a few times</td></tr>
+            <tr><td>[15:35] &lt Chong-&gt j_baker: I have also made the mistake</td></tr>
+            <tr><td>[15:35] &lt Chong-&gt not understand why ctrl+c is binded to end programs, why not ctrl+e or something else :-)</td></tr>
+            <tr><td>[15:37] &lt Chong-&gt BTW, afternoon, all. :-)</td></tr>
+            <tr><td>[15:37] &lt j_baker&gt It's good morning. &gt:(</td></tr>
+            <tr><td>[15:37] &lt j_baker&gt :-P</td></tr>
+            <tr><td>[15:37] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[15:38] &lt Trun&gt yeah... it's like deleting complete words with ctrl + backspace, and accidentally pressing "alt" for some other reason</td></tr>
+            <tr><td>[15:38] &lt Trun&gt and you see the X with all your programs getting restarted... so much adrenaline in a moment :-)</td></tr>
+            <tr><td>[15:38] &lt Chong-&gt j_baker: haha. Did you just get up? :p</td></tr>
+            <tr><td>[15:38] &lt j_baker&gt About an hour ago.</td></tr>
+            <tr><td>[15:38] &lt Davbo&gt Okay, shall everyone put their progress things (done/todo/blocked) in here and I'll post it to the group?</td></tr>
+            <tr><td>[15:38] &lt Trun&gt (yeah, afternoon/morning all)</td></tr>
+            <tr><td>[15:38] &lt Davbo&gt ms-afk must be busy</td></tr>
+            <tr><td>[15:39] &lt j_baker&gt DONE: Fixed HTTP POST methods, fixed URI routing, made packaging branch</td></tr>
+            <tr><td>[15:39] &lt Chong-&gt Davbo: good idea :-)</td></tr>
+            <tr><td>[15:39] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[15:39] &lt j_baker&gt TODO: Get MoinMoin working, Get any other WSGI software to work</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt DONE: Recursive flood-fill algorithm for a "paint bucket fill" tool. Turned an XYPad into a nice colour selector and hooked that up to Kamaelia - Paint. Cleaned up code.</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt TODO: Improve the code for flood-fill, removing recusion. Write doc's for what I have. Add simple tools window with some buttons for different tools.</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt BLOCKED: Some problems with getting buttons working with ProcessGraphline but nothing blocking work.</td></tr>
+            <tr><td>[15:39] &lt j_baker&gt BLOCKED: none</td></tr>
+            <tr><td>[15:39] &lt Trun&gt DONE: Moved all the test framework to internally use LikeFile, replaced the previous implementations. Adapted all the KamPlanet tests to the new implementation. Started integration testing kamplanet.</td></tr>
+            <tr><td>[15:39] &lt Trun&gt TODO: Finish integration testing kamplanet. Test Kamaelia.Protocol.HTTP.SimpleHTTPClient, Kamaelia.Chassis.* (except for Graphline, which is used in the kamtest module), start testing other app (probably j_baker WSGI code).</td></tr>
+            <tr><td>[15:39] &lt Trun&gt BLOCKED: None</td></tr>
+            <tr><td>[15:40] &lt Chong-&gt DONE: Extend viewer to be able to update the figure dynamically; add link arrow and text; clean up codes and finish up the PyGame practice; prepare for OpenGL version coding, experiment with PyOpenGL and Kamaelia OpenGL modules, create particles</td></tr>
+            <tr><td>[15:40] &lt Chong-&gt BLOCKED: None</td></tr>
+            <tr><td>[15:40] &lt Chong-&gt TODO: Develop TopologyViewer3D, modify physical laws and others to make a simple but workable Topology 3D Viewer</td></tr>
+            <tr><td>[15:41] &lt orphans&gt DONE: Automate the building of Jam sdists, and create a py2exe setup file. Make multiple jam instances connect and communicate using p2p. Start to create step sequencer UI.</td></tr>
+            <tr><td>[15:41] &lt orphans&gt TODO: Resolve issues with scheduler. Finish making step sequencer, and use to give networking a full test. Make PureJam use step sequencer output.</td></tr>
+            <tr><td>[15:41] &lt orphans&gt BLOCKED: None</td></tr>
+            <tr><td>[15:42] &lt Davbo&gt Okay, thanks guys.</td></tr>
+            <tr><td>[15:43] &lt Chong-&gt Davbo: thank you for deliver our messages to ms-afk :-)</td></tr>
+            <tr><td>[15:43] &lt orphans&gt yup, cheers Davbo</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt no problem</td></tr>
+            <tr><td>[15:45] &lt Chong-&gt Trun: in my shell, it's alt + backspace deleting complete words</td></tr>
+            <tr><td>[15:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:46] &lt Trun&gt Chong-: yeah, I was thinking in evolution when writing an e-mail :-)</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt Nobody has anything blocking work so I imagine all ms-afk would want to really add is things to do with the release. So, get merging etc etc ;-)</td></tr>
+            <tr><td>[15:47] &lt orphans&gt :)</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt You know, I'm sure all of us have SOMETHING that we can get into the trunk in the next couple of days.</td></tr>
+            <tr><td>[15:48] &lt Lawouach&gt back</td></tr>
+            <tr><td>[15:48] &lt Chong-&gt Trun: I see :-)</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt I'm willing to merge as many branches as I can in the next two days if everyone else will.</td></tr>
+            <tr><td>[15:50] &lt Davbo&gt Yeah i've got something to merge j_baker</td></tr>
+            <tr><td>[15:51] &lt Davbo&gt something i said i would but I've left it for a bit due to a merging conflict</td></tr>
+            <tr><td>[15:51] &lt Davbo&gt (Tools2Apps)</td></tr>
+            <tr><td>[15:52] &lt Davbo&gt difficult to pull something from Paint though due to the nature of the app, ms-afk wants to get MultiPipline in though, which i'll review</td></tr>
+            <tr><td>[15:52] &lt Lawouach&gt sorry for leaving in the middle of the meeting.</td></tr>
+            <tr><td>[15:55] &lt Davbo&gt ms-afk isn't about anyway Lawouach, so i just collected Activity reports - about to post to the list</td></tr>
+            <tr><td>[15:57] *** mhrd-afk-panic has parted #kamaelia</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt Guys, next meeting 4pm 26th June. If anyone can't make it just post here now or to the Group please</td></tr>
+            <tr><td>[16:01] &lt Lawouach&gt Davbo: very well</td></tr>
+            <tr><td>[16:01] &lt Lawouach&gt thanks to you guys</td></tr>
+            <tr><td>[16:01] *** mhrd-afk-panic has joined #kamaelia</td></tr>
+            <tr><td>[16:02] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:03] *** mhrd-afk-panic is now known as mhrd</td></tr>
+            <tr><td>[16:03] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[16:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:40] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[17:18] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[17:18] &lt j_baker&gt Hmmm... I'm actually amazed at how much stuff on linux works exactly the same in gnome AND KDE</td></tr>
+            <tr><td>[17:23] &lt ms-afk&gt OK, that's work out the way, now for release stuff</td></tr>
+            <tr><td>[17:23] &lt ms-afk&gt (sorry about the meeting earlier - I completely forgot about it - which is dumb - was in the drudges of work)</td></tr>
+            <tr><td>[17:24] *** ms-afk is now known as ms-</td></tr>
+            <tr><td>[17:24] &lt ms-&gt first things first, packaging</td></tr>
+            <tr><td>[17:45] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:46] *** ms- wonders if there's anyone he's missed off....</td></tr>
+            <tr><td>[17:47] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:48] &lt j_baker&gt Ubuntu definitely runs a lot better with gnome.</td></tr>
+            <tr><td>[17:49] &lt ms-&gt To be fair Ubuntu was fairly heavily optimised towards gnome</td></tr>
+            <tr><td>[17:49] &lt ms-&gt and to a fair extent vice versa</td></tr>
+            <tr><td>[17:49] &lt ms-&gt KDE is a second class citizen there by choice really (which is fine)</td></tr>
+            <tr><td>[17:49] &lt ms-&gt whereas KDE is a first class one in SuSE due to the fact they fund a fair amount of dev</td></tr>
+            <tr><td>[17:50] &lt j_baker&gt Yeah. Plus I don't really have much problem running a lot of the KDE apps I like in gnome on ubuntu.</td></tr>
+            <tr><td>[17:51] &lt j_baker&gt Like Kate and KDevelop work perfectly.</td></tr>
+            <tr><td>[17:52] *** ms- nods</td></tr>
+            <tr><td>[18:01] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[18:20] &lt ms-&gt Hm. stack trace bombs from Compose in /trunk</td></tr>
+            <tr><td>[18:20] &lt ms-&gt Wonder if that's due to the versions in use.</td></tr>
+            <tr><td>[18:20] &lt ms-&gt or something else</td></tr>
+            <tr><td>[18:20] &lt ms-&gt Could yank out as a seperate app release of its own</td></tr>
+            <tr><td>[18:20] &lt ms-&gt and have it pull in the version of kamaelia/axon it requires for stability</td></tr>
+            <tr><td>[18:20] &lt ms-&gt Actually getting a *C* stack trace is a symptom of something else though (!)</td></tr>
+            <tr><td>[18:21] &lt ms-&gt (something unrelated to K. code)</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt orphans: pong</td></tr>
+            <tr><td>[18:22] &lt Lawouach&gt sorry I was getting some food</td></tr>
+            <tr><td>[18:23] &lt orphans&gt no probs</td></tr>
+            <tr><td>[18:24] &lt orphans&gt how's it going?</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt ready :)</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt good</td></tr>
+            <tr><td>[18:24] &lt orphans&gt coolio</td></tr>
+            <tr><td>[18:25] &lt orphans&gt right, so this (half) week I've got the p2p networking stuff working</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt nice</td></tr>
+            <tr><td>[18:25] &lt orphans&gt so each instance distributes a list of other peers for a new instance to connect to</td></tr>
+            <tr><td>[18:26] &lt orphans&gt at the moment it's just set up so everyone connects to everyone. All seems to work ok though, which is cool</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt that's a good start</td></tr>
+            <tr><td>[18:26] &lt Lawouach&gt I don't think putting too much filtering would be in scope for now anyhow</td></tr>
+            <tr><td>[18:27] &lt orphans&gt yeah, I thought that was a lot easier for now</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt good move</td></tr>
+            <tr><td>[18:27] &lt orphans&gt it's a bit difficult to test it out fully just using XY pads at the moment - they don't particularly lend themselves to having lots of users, so I've made a start on getting the step sequencer up and running</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt why do you think they don't work well with multiple users?</td></tr>
+            <tr><td>[18:31] &lt orphans&gt well, they'll be ok, but I need to write a decent chunk of code to make it nice (i.e. creating new XY Pads for each user, making sure it doesn't go iffy if two users are dragging the puck at once). I think that'll be about the same amount of effort to do as the step sequencer, so I thought it'd be good to get a new bit going to test out some different situations as well</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt yes I agree</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt That's the right decision</td></tr>
+            <tr><td>[18:34] &lt orphans&gt for the moment XY pads work ok (just not super well), and I'm fed up of working with bouncing pucks too :D</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:35] &lt Lawouach&gt In any was it seems about right time to start moving to the step sequencer anyway</td></tr>
+            <tr><td>[18:35] &lt ms-&gt Downside of building a release - the need to grab and test *everything*</td></tr>
+            <tr><td>[18:36] &lt orphans&gt Lawouach, yeah, I thought so too</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt ms-: ouch</td></tr>
+            <tr><td>[18:37] &lt ms-&gt (more integration testing really - should be set up for it all the time really, my own silly fault for not being the case)</td></tr>
+            <tr><td>[18:39] &lt orphans&gt Lawouach, come up against a bit of a nasty thing doing the step sequencer already I wanted to ask you about</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt ms-: http://www.logilab.org/project/apycot &lt -- I was curious about that the other day. Might want to have a look too</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt orphans: go ahead</td></tr>
+            <tr><td>[18:40] *** ms- looks</td></tr>
+            <tr><td>[18:40] &lt orphans&gt you know I'm using the scheduler from python's standard library</td></tr>
+            <tr><td>[18:41] *** ms- throws it Pablo's way :-)</td></tr>
+            <tr><td>[18:41] &lt orphans&gt well, it all works pretty much exactly how I want/need it to, except I could do with the run loop not being a loop (and being handled in the component's main loop)</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[18:41] &lt orphans&gt so I can do one of quite a lot of things to change it, but am not really sure which the best way to do it is</td></tr>
+            <tr><td>[18:42] &lt orphans&gt 1) subclass and overwrite. 2) monkey patch it. 3) Take all the code and make it into a component with the changes</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt Might emit a short opinion on each option?</td></tr>
+            <tr><td>[18:44] &lt orphans&gt well, subclassing seems a bit crazy to me - I'm not really making a different type of object, just having it work a slightly different way</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt so let's cross that one off</td></tr>
+            <tr><td>[18:44] &lt orphans&gt monkey patching seems kinda conceptually right, but is pretty ugly</td></tr>
+            <tr><td>[18:45] &lt orphans&gt and rewriting the code into a component seems like a bit of a waste of time in a way - especially as it's part of the standard library. Just seems like extra effort to maintain</td></tr>
+            <tr><td>[18:45] &lt orphans&gt although would perhaps be the cleanest way of doing it</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt I would vote for 3 really</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt Specially once having glanced at the sched.py module source code</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt the API screams for being written directly as an Axon component I think</td></tr>
+            <tr><td>[18:46] &lt orphans&gt yeah, it's pretty straightforward code-wise</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt and it has a benefit</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt actually two :)</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt remember what I told you about respecting the way a package has been designed?</td></tr>
+            <tr><td>[18:47] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt using the sched module was a good enough solution but not very respecting Axon in spirit</td></tr>
+            <tr><td>[18:48] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt the other benefit is that you might realize that writing your own component for that task might open new perspective in how it can be used within your application</td></tr>
+            <tr><td>[18:49] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt Now it's up to you</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt Depends on your current planning, schedule, goals</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt looking at the sched source code</td></tr>
+            <tr><td>[18:51] &lt Lawouach&gt don't go and rewrite the heapq module :)</td></tr>
+            <tr><td>[18:51] &lt orphans&gt hah, I wouldn't dream of it</td></tr>
+            <tr><td>[18:52] &lt vmlemon_&gt o.O http://code.reddit.com/chrome/common/fixxit.png</td></tr>
+            <tr><td>[18:52] &lt orphans&gt I think it should actually integrate quite a lot better too. So the pause method of the component will work like an extension of the threadedcomponent pause</td></tr>
+            <tr><td>[18:52] &lt orphans&gt waking on inboxes and scheduled events</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt see</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt already opening new windows ;)</td></tr>
+            <tr><td>[18:53] &lt orphans&gt yeah :)</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt rise and ye shall see the light</td></tr>
+            <tr><td>[18:54] &lt orphans&gt heh, something like that anyway</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt dude!</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt coding is like seeing some kind of light</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt don't voodoo the style</td></tr>
+            <tr><td>[18:55] &lt orphans&gt :D</td></tr>
+            <tr><td>[18:56] *** Lawouach gets started on a voodoo doll looking like orphans</td></tr>
+            <tr><td>[18:56] &lt orphans&gt Not the eye!</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt hah!</td></tr>
+            <tr><td>[18:57] &lt Lawouach&gt the eye reminds me of that Little Britain character who hypnotises his girlfriend in the restaurant</td></tr>
+            <tr><td>[18:57] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:57] &lt orphans&gt I see you get all the finest British exports</td></tr>
+            <tr><td>[18:57] &lt Lawouach&gt That. Only fools and horses too.</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt Quality content.</td></tr>
+            <tr><td>[18:58] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:59] &lt orphans&gt right, so is there anything else you or I need to know before you're off holidaying whilst I'm stuck here slaving away :)</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt now but I hope my shoes will be shiny clean when I'm back</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt you monkey</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt Kidding ;)</td></tr>
+            <tr><td>[19:00] &lt orphans&gt heh</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt more seriously no you made the right choice and I think you're moving in the right direction</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt I'll be back next Wednesday</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt I'll ping you then</td></tr>
+            <tr><td>[19:01] &lt orphans&gt ok, cool. Have a nice time :)</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt Thank you :)</td></tr>
+            <tr><td>[19:02] &lt orphans&gt right, I think I'm going to migrate to the pub. Cheers for the help Lawouach</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt take care :)</td></tr>
+            <tr><td>[19:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:07] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:10] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt meh</td></tr>
+            <tr><td>[20:22] &lt Lawouach&gt it seems ConnectedSocketServer has changed since my patch for SSL and now it looks broken :)</td></tr>
+            <tr><td>[20:23] &lt Lawouach&gt it seems the stop method breaks it</td></tr>
+            <tr><td>[20:25] &lt Lawouach&gt right</td></tr>
+            <tr><td>[20:25] *** likefile has joined #kamaelia</td></tr>
+            <tr><td>[20:26] &lt Lawouach&gt I have first patch but not sure that'll be enough</td></tr>
+            <tr><td>[20:26] &lt vmlemon_&gt It's magically turned into a DisconnectedServer? ;)</td></tr>
+            <tr><td>[20:27] &lt ms-&gt Lawouach: If you can identify which version it worked with and which version it breaks with, and a small example I can fix that</td></tr>
+            <tr><td>[20:27] &lt ms-&gt probably</td></tr>
+            <tr><td>[20:27] &lt ms-&gt :)</td></tr>
+            <tr><td>[20:28] &lt Lawouach&gt Well</td></tr>
+            <tr><td>[20:28] &lt Lawouach&gt it definitely has a different behavior between two similar setup I have</td></tr>
+            <tr><td>[20:29] &lt Lawouach&gt my own machine and a Ubuntu residing in a Virtual Box</td></tr>
+            <tr><td>[20:29] &lt Lawouach&gt Same Ubuntu</td></tr>
+            <tr><td>[20:29] &lt Lawouach&gt the only component that changes is the server version it connects too</td></tr>
+            <tr><td>[20:29] &lt Lawouach&gt anyway I just sent a patch for some missing bit in the last commit independantly from the bug I ran into</td></tr>
+            <tr><td>[20:32] &lt Lawouach&gt alright the patch should be good enough</td></tr>
+            <tr><td>[20:32] &lt Lawouach&gt The bug I'm now running into has nothing to do with that anymore</td></tr>
+            <tr><td>[20:54] &lt ms-&gt Lawouach: ta</td></tr>
+            <tr><td>[21:02] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:22] &lt ms-&gt Release Candidate 1:</td></tr>
+            <tr><td>[21:22] &lt ms-&gt http://edit.kamaelia.org/release/Kamaelia-0.6.0-rc1.tar.gz - 2.2MB</td></tr>
+            <tr><td>[21:22] &lt ms-&gt Has known issues: http://edit.kamaelia.org/ReleaseJune2008/Checklist</td></tr>
+            <tr><td>[21:22] &lt ms-&gt Working through those now</td></tr>
+            <tr><td>[21:24] &lt ms-&gt Several of the groups of issues will be solved by merging the branches</td></tr>
+            <tr><td>[21:25] &lt Lawouach&gt that's great work you guys have done!</td></tr>
+            <tr><td>[21:35] &lt ms-&gt Lawouach: Cheers :)</td></tr>
+            <tr><td>[21:36] &lt ms-&gt Was particularly nice to see the meeting happening/occurring without me needing to push/prod for it too earlier :)</td></tr>
+            <tr><td>[21:36] &lt Lawouach&gt yeah :)</td></tr>
+            <tr><td>[21:42] &lt ms-&gt bugfix merged :)</td></tr>
+            <tr><td>[21:53] *** ms- reviewing orphans changes</td></tr>
+            <tr><td>[21:55] *** ms- merging branches/private_MPS_STM</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt ta :)</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt Right before going to bed:</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt http://trac.defuze.org/wiki/headstock/Microblogging</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt Dumping a few notes :)</td></tr>
+            <tr><td>[21:59] *** ms- looks</td></tr>
+            <tr><td>[21:59] &lt j_baker&gt Sigh... even with POST methods fixed moin won't save changes.</td></tr>
+            <tr><td>[22:00] &lt ms-&gt j_baker: Don't worry too much - it'll work when it works</td></tr>
+            <tr><td>[22:00] &lt ms-&gt I'm planning a post-summer release as well - pre pycon uk (which is near start of sept) so it'll get released, working :-)</td></tr>
+            <tr><td>[22:01] &lt j_baker&gt That's probably best. It'd be better than shoving a poorly working version out now.</td></tr>
+            <tr><td>[22:01] *** ms- nods</td></tr>
+            <tr><td>[22:02] &lt ms-&gt You merged private_MPS_TCPServerImprovments in the end didn't you?</td></tr>
+            <tr><td>[22:02] &lt ms-&gt IIRC ?</td></tr>
+            <tr><td>[22:02] &lt ms-&gt (looks like it)</td></tr>
+            <tr><td>[22:05] *** ms- notes the change in branches/merged</td></tr>
+            <tr><td>[22:05] &lt ms-&gt cheers :)</td></tr>
+            <tr><td>[22:08] &lt j_baker&gt Ah, so we're supposed to make a note there as well?</td></tr>
+            <tr><td>[22:08] &lt ms-&gt No, you moved the branch there - that's an implicit note :)</td></tr>
+            <tr><td>[22:09] &lt ms-&gt (I'd just missed it :) )</td></tr>
+            <tr><td>[22:12] *** ms- does the actual merge of "private_MPS_Tools2AppsConsolidation" given review by Davbo</td></tr>
+            <tr><td>[22:20] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[23:49] &lt ms-&gt New candidate http://edit.kamaelia.org/release/Kamaelia-0.6.0-rc2.tar.gz</td></tr>
+            <tr><td>[23:49] &lt ms-&gt (last one based on multi-person reviews)</td></tr>

@@ -1,0 +1,274 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.UI.MH.PyGameApp </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.UI.MH.PyGameApp</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.MH.html">MH</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.MH.PyGameApp.html">PyGameApp</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.UI.MH.PyGameApp.PyGameApp.html">PyGameApp</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#352">Simple Pygame application framework</a><ul>
+<li><a class="reference" href="#353">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#354">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="352">Simple Pygame application framework</h1>
+<p>A component that sets up a pygame display surface and provides a main loop and
+simple event dispatch framework.</p>
+<p>The rendering surface is requested from the Pygame Display service component, so
+this component can coexist with other components using pygame.</p>
+<div class="section">
+<h2 id="353"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<dl class="docutils">
+<dt>::</dt>
+<dd><p class="first">class SimpleApp1(PyGameApp):</p>
+<blockquote>
+<dl class="docutils">
+<dt>def initialiseComponent(self):</dt>
+<dd>self.addHandler(MOUSEBUTTONDOWN, lambda event : self.mousedown(event))</dd>
+<dt>def mainLoop(self):</dt>
+<dd>... draw and do other stuff here...
+return 1</dd>
+<dt>def mousedown(self, event):</dt>
+<dd>print &quot;Mouse down!&quot;</dd>
+</dl>
+</blockquote>
+<p class="last">app = SimpleApp1( (800,600) ).run()</p>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h2 id="354"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>Subclass this component to implement your own pygame 'app'. Replace the
+mainLoop() stub with your own code to redraw the display surface etc. This
+method will be called every cycle - do not incorporate your own loop!</p>
+<p>The self.screen attribute is the pygame surface you should render to.</p>
+<p>The component provides a simple event dispatch framework. Call addHandler and
+removeHandler to register and deregister handlers from events.</p>
+<p>More than one handler can be registered for a given event. They are called in
+the order in which they were registered. If a handler returns True then the
+event is 'claimed' and no further handlers will be called.</p>
+<p>The component will terminate if the user clicks the close button on the pygame
+display window, however your mainLoop() method will not be notified, and there
+is no specific 'quit' event handler.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.html">UI</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.MH.html">MH</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.MH.PyGameApp.html">PyGameApp</a>.<a class="reference" href="/Components/pydoc/Kamaelia.UI.MH.PyGameApp.PyGameApp.html">PyGameApp</a></h1>
+<div class="section">
+<h2 id="symbol-PyGameApp">class PyGameApp(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>PyGameApp(screensize[,caption][,transparency][,position]) -&gt; new PyGameApp component.</p>
+<p>Creates a PyGameApp component that obtains a pygame display surface and provides
+an internal pygame event dispatch mechanism.</p>
+<p>Subclass to implement your own pygame &quot;app&quot;.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>screensize    -- (width,height) of the display area (default = (800,600))</li>
+<li>caption       -- Caption for the pygame window (default = &quot;Topology Viewer&quot;)</li>
+<li>fullscreen    -- True to start up in fullscreen mode (default = False)</li>
+<li>transparency  -- None, or (r,g,b) colour to make transparent</li>
+<li>position      -- None, or (left,top) position for surface within pygame window</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-PyGameApp.Inboxes" name="symbol-PyGameApp.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : NOT USED</li>
+<li><strong>displaycontrol</strong> : Replies from Pygame Display service</li>
+<li><strong>inbox</strong> : NOT USED</li>
+<li><strong>events</strong> : Event notifications from Pygame Display service</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PyGameApp.Outboxes" name="symbol-PyGameApp.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : NOT USED</li>
+<li><strong>signal</strong> : NOT USED</li>
+<li><strong>displaysignal</strong> : Requests to Pygame Display service</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.__init__" name="symbol-PyGameApp.__init__">__init__(self, screensize[, caption][, fullscreen][, depth][, transparency][, position])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp._dispatch" name="symbol-PyGameApp._dispatch">_dispatch(self)</a></h4>
+<p>Internal pygame event dispatcher.</p>
+<p>For all events received, it calls all event handlers in sequence
+until one returns True.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.addHandler" name="symbol-PyGameApp.addHandler">addHandler(self, eventtype, handler)</a></h4>
+<p>Add an event handler, for a given PyGame event type.</p>
+<p>The handler is passed the pygame event object as its argument when called.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.events" name="symbol-PyGameApp.events">events(self)</a></h4>
+<p>Generator. Receive events on &quot;events&quot; inbox and yield then one at a time.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.go" name="symbol-PyGameApp.go">go(self)</a></h4>
+<p>Call this to run the pygame app, without using an <a class="reference" href="/Docs/Axon/Axon.html">Axon</a> scheduler.</p>
+<p>Returns when the app 'quits'</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.initialiseComponent" name="symbol-PyGameApp.initialiseComponent">initialiseComponent(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.main" name="symbol-PyGameApp.main">main(self)</a></h4>
+<p>Main loop. Do not override</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.mainLoop" name="symbol-PyGameApp.mainLoop">mainLoop(self)</a></h4>
+<p>Implement your runtime loop in this method here.
+FIXME: This is less than ideal.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.quit" name="symbol-PyGameApp.quit">quit(self[, event])</a></h4>
+<p>Call this method/event handler to finish</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.removeHandler" name="symbol-PyGameApp.removeHandler">removeHandler(self, eventtype, handler)</a></h4>
+<p>Remove the specified pygame event handler from the specified event.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-PyGameApp.waitBox" name="symbol-PyGameApp.waitBox">waitBox(self, boxname)</a></h4>
+<p>Generator. Yields until data ready on the named inbox.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

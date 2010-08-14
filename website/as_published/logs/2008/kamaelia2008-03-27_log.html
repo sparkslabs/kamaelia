@@ -1,0 +1,993 @@
+<html><body><table>
+            <tr><td>[00:00] &lt MS-&gt There are bindings for all sorts of things which are on windows only</td></tr>
+            <tr><td>[00:00] &lt MS-&gt PyTTS is one example that springs to mind</td></tr>
+            <tr><td>[00:00] &lt MS-&gt Though in linux you could use UnixProcess("espeak -")</td></tr>
+            <tr><td>[00:00] &lt MS-&gt (and I do for silly reasons)</td></tr>
+            <tr><td>[00:00] &lt MS-&gt and on mac os you can do the same, but different binary</td></tr>
+            <tr><td>[00:03] &lt vmlemon__&gt I wouldn't be too shocked if bindings for stuff specific to stuff like OpenVMS or Be OS existed</td></tr>
+            <tr><td>[00:04] &lt MS-&gt I'm sure there is</td></tr>
+            <tr><td>[00:04] &lt MS-&gt Pretty much any example that is written in python can be easily adapted as a component version of the example</td></tr>
+            <tr><td>[00:05] &lt MS-&gt which makes integrating new things scarily easy</td></tr>
+            <tr><td>[00:05] &lt MS-&gt exceptions tend to windowing libraries</td></tr>
+            <tr><td>[00:06] &lt MS-&gt specifically wxPython is a major exception because of really nasty things it does with regards to threads and hidden threads, meaning code that looks like it should work, doesn't</td></tr>
+            <tr><td>[00:07] &lt vmlemon__&gt I'm not too familiar with Kamaelia at present, but UnixProcess can hand-off to/call processes on non-UNIXy platforms, too?</td></tr>
+            <tr><td>[00:08] &lt MS-&gt Should work, yes</td></tr>
+            <tr><td>[00:08] &lt MS-&gt (it uses the subprocess module)</td></tr>
+            <tr><td>[00:10] &lt vmlemon__&gt Something I ought to learn when I have time, since it seems like a natural breeding ground for ideas...</td></tr>
+            <tr><td>[00:12] &lt vmlemon__&gt (Python & Kamaelia, that is)</td></tr>
+            <tr><td>[00:13] &lt MS-&gt :)</td></tr>
+            <tr><td>[00:13] *** vmlemon__ has plenty of ideas, but falls short when it comes to trying to implement them :(</td></tr>
+            <tr><td>[00:13] &lt MS-&gt I certainly find it easier sometimes just to write some code these days to be able to explain something than it is to discuss whether its a good idea</td></tr>
+            <tr><td>[00:14] &lt MS-&gt yeah, but ideas are useful.</td></tr>
+            <tr><td>[00:14] &lt MS-&gt especially since they tend to spark other ideas</td></tr>
+            <tr><td>[00:16] &lt vmlemon__&gt I often get inspiration when playing with various semi-related technologies, but I really want to try and fuse it all together</td></tr>
+            <tr><td>[00:17] &lt vmlemon__&gt (e.g. Bluetooth, Wi-Fi and Web services stuff)</td></tr>
+            <tr><td>[00:18] &lt MS-&gt bluetooth is pretty simple fwiw.</td></tr>
+            <tr><td>[00:20] *** MS- goes for sleep</td></tr>
+            <tr><td>[00:20] &lt MS-&gt cya</td></tr>
+            <tr><td>[00:21] &lt vmlemon__&gt Seems like an unlikely combo, but an MMS and Bluetooth-enabled online media gallery could be interesting</td></tr>
+            <tr><td>[00:21] *** MS- is now known as MS-sleeping</td></tr>
+            <tr><td>[00:21] &lt vmlemon__&gt Night</td></tr>
+            <tr><td>[01:21] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[02:20] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[02:51] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[03:51] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[03:53] &lt j_baker&gt ms- if you get a chance to read this (or if anyone else is paying attention that may have an question:</td></tr>
+            <tr><td>[03:54] &lt j_baker&gt Sigh - if you get a chance to read this (or anyone else is paying attention that may have an answer) I have a question</td></tr>
+            <tr><td>[03:56] &lt j_baker&gt Would it be possible or feasible to get Kamaelia to run PHP?</td></tr>
+            <tr><td>[03:56] &lt j_baker&gt Or better yet, would it be able to get Kamaelia to run PHP and expose its API to it?</td></tr>
+            <tr><td>[03:57] &lt robertofaga&gt j_baker: do you mean expose on browser?</td></tr>
+            <tr><td>[03:57] &lt j_baker&gt No</td></tr>
+            <tr><td>[03:57] &lt j_baker&gt I mean so that PHP could call the Python code</td></tr>
+            <tr><td>[03:58] &lt robertofaga&gt maybe there is some PHP module to call python modules</td></tr>
+            <tr><td>[03:59] &lt j_baker&gt I may have to research that. I think that would be pretty interesting for what I'm doing.</td></tr>
+            <tr><td>[04:02] &lt robertofaga&gt I'm curious, what do you want to do with PHP?</td></tr>
+            <tr><td>[04:03] &lt j_baker&gt Well, it may be easiest to direct you to my webpage: http://www.csdconline.com/kamconnect</td></tr>
+            <tr><td>[04:04] &lt j_baker&gt As the proposal is set up right now, one user can host content on their own computer without having to have a webhost, static IP, or Domain name.</td></tr>
+            <tr><td>[04:04] &lt j_baker&gt But the current design only allows the user to host HTML.</td></tr>
+            <tr><td>[04:04] &lt j_baker&gt So we were thinking about using WSGI to allow users to script content in Python.</td></tr>
+            <tr><td>[04:05] &lt j_baker&gt But I was thinking it may be possible to do that and/or use PHP to allow users to script their content.</td></tr>
+            <tr><td>[04:08] &lt robertofaga&gt content you mean a dynamic page? That's why to use php?</td></tr>
+            <tr><td>[04:11] &lt robertofaga&gt and where the content will be stored? In a server? I read users will store into their own computers, but how can they publish this to the others?</td></tr>
+            <tr><td>[04:13] &lt j_baker&gt Through an intermediary (basically a web proxy)</td></tr>
+            <tr><td>[04:14] &lt j_baker&gt Think of it kind of like myspace but you can store your pages on your own computer</td></tr>
+            <tr><td>[04:14] &lt j_baker&gt And do a lot of things that aren't possible in myspace.</td></tr>
+            <tr><td>[04:14] &lt robertofaga&gt yes, that's nice, but I didn't find anything saying how other users access it</td></tr>
+            <tr><td>[04:14] &lt j_baker&gt But to access someone's page, you would basically go to http://intermediary_name.com/peer_id</td></tr>
+            <tr><td>[04:15] &lt robertofaga&gt ah, so there is a portal involved</td></tr>
+            <tr><td>[04:15] &lt robertofaga&gt even for indexing only</td></tr>
+            <tr><td>[04:15] &lt j_baker&gt Yup.</td></tr>
+            <tr><td>[04:15] &lt robertofaga&gt indexing users</td></tr>
+            <tr><td>[04:15] &lt robertofaga&gt it's nice to put this too, a hint for you :)</td></tr>
+            <tr><td>[04:15] &lt robertofaga&gt on the plan I mean</td></tr>
+            <tr><td>[04:16] &lt robertofaga&gt and about the PHP, isn't easier to call PHP executable from kamaelia?</td></tr>
+            <tr><td>[04:16] &lt j_baker&gt I'm not sure</td></tr>
+            <tr><td>[04:16] &lt robertofaga&gt I think you will access PHP from Python, not Python from PHP, right?</td></tr>
+            <tr><td>[04:17] &lt j_baker&gt Well, I can think of ways to do it both ways.</td></tr>
+            <tr><td>[04:17] &lt j_baker&gt (although one way would probably be more inefficient than another)</td></tr>
+            <tr><td>[04:18] &lt j_baker&gt The simplest way would be to have python simply parse the PHP text, find a certain template or variable name and essentially cut and paste.</td></tr>
+            <tr><td>[04:18] &lt j_baker&gt Hmmmm....</td></tr>
+            <tr><td>[04:19] &lt j_baker&gt Now that I think about it, if I do it that way, it may not even be necessary for the PHP to call the Python</td></tr>
+            <tr><td>[04:19] &lt j_baker&gt or vice versa</td></tr>
+            <tr><td>[04:19] &lt j_baker&gt (at least not directly)</td></tr>
+            <tr><td>[04:20] &lt robertofaga&gt I think php has an executable that you only pass the source to it and he returns the html version (that's how, in general, apache works with PHP)</td></tr>
+            <tr><td>[04:21] &lt robertofaga&gt but you also need this new dependence, php-cli</td></tr>
+            <tr><td>[04:22] &lt j_baker&gt There isn't an API so that PHP the source can be sent to the interpreter programmatically?</td></tr>
+            <tr><td>[04:22] &lt robertofaga&gt I think for kamaelia you can explore more of its resources than extern resources (for an example, use video and animations instead of a php server), but this is only my opinion, and I'm just a student</td></tr>
+            <tr><td>[04:22] &lt robertofaga&gt I never saw one, but it can exist</td></tr>
+            <tr><td>[04:23] &lt robertofaga&gt maybe ms- knows about it</td></tr>
+            <tr><td>[04:23] &lt j_baker&gt Well, and now that I think about it, I wasn't even wanting to have to install apache.</td></tr>
+            <tr><td>[04:24] &lt j_baker&gt Hmmmm.... I suppose I'll have to see what ms-says.</td></tr>
+            <tr><td>[04:24] &lt robertofaga&gt python have some webservers, but they aren's so advanced enough as apache</td></tr>
+            <tr><td>[04:26] &lt j_baker&gt I would imagine.</td></tr>
+            <tr><td>[04:26] &lt j_baker&gt Anyway, I'm going to hit the sack. Talk to you later.</td></tr>
+            <tr><td>[04:50] *** FrisbeeBilly has joined #kamaelia</td></tr>
+            <tr><td>[07:54] *** LawAtWork has joined #kamaelia</td></tr>
+            <tr><td>[07:55] &lt LawAtWork&gt hello</td></tr>
+            <tr><td>[08:54] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:03] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:03] &lt MS-&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[10:03] 'Kamaelia.Apps.IRCLogger.Support' reloaded</td></tr>
+            <tr><td>[10:03] &lt MS-&gt any mentors here</td></tr>
+            <tr><td>[10:03] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[10:03] Reply: Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[10:03] Reply: or post your idea, you are likely to get a response from someone - either from someone on the channel or</td></tr>
+            <tr><td>[10:03] Reply: from someone reading the logs. If you leave asking a GSOC question beyond friday you are unlikely to get a</td></tr>
+            <tr><td>[10:03] Reply: personal response quickly for sheer practicality reasons.</td></tr>
+            <tr><td>[10:03] Reply: The GSOC ideas page is here: http://kamaelia.sourceforge.net/SummerOfCode2008</td></tr>
+            <tr><td>[10:03] Reply: The application template is here: http://kamaelia.sourceforge.net/SummerOfCode2006Template</td></tr>
+            <tr><td>[10:03] Reply: This shorter page links to all ideas pages, including previous years: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[10:04] &lt MS-&gt Testing - are there any mentors ?</td></tr>
+            <tr><td>[10:04] &lt MS-&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[10:04] 'Kamaelia.Apps.IRCLogger.Support' reloaded</td></tr>
+            <tr><td>[10:04] &lt MS-&gt Testing - are there any mentors ?</td></tr>
+            <tr><td>[10:04] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[10:04] Reply: Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[10:04] Reply: or post your idea, you are likely to get a response from someone - either from someone on the channel or</td></tr>
+            <tr><td>[10:04] Reply: from someone reading the logs. If you leave asking a GSOC question beyond friday you are unlikely to get a</td></tr>
+            <tr><td>[10:04] Reply: personal response quickly for sheer practicality reasons.</td></tr>
+            <tr><td>[10:04] Reply: The GSOC ideas page is here: http://kamaelia.sourceforge.net/SummerOfCode2008</td></tr>
+            <tr><td>[10:04] Reply: The application template is here: http://kamaelia.sourceforge.net/SummerOfCode2006Template</td></tr>
+            <tr><td>[10:04] Reply: This shorter page links to all ideas pages, including previous years: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[10:07] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:08] &lt MS-&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[10:08] 'Kamaelia.Apps.IRCLogger.Support' isn't a module, or at least not one I can reload.</td></tr>
+            <tr><td>[10:08] &lt MS-&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[10:08] 'Kamaelia.Apps.IRCLogger.Support' reloaded</td></tr>
+            <tr><td>[10:08] &lt MS-&gt anyone know who I can ask about GSOC ?</td></tr>
+            <tr><td>[10:08] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[10:08] Reply: Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[10:08] Reply: or post your idea, you are likely to get a response from someone - either from someone on the channel or</td></tr>
+            <tr><td>[10:08] Reply: from someone reading the logs. If you leave asking a GSOC question beyond friday you are unlikely to get a</td></tr>
+            <tr><td>[10:08] Reply: personal response quickly for sheer practicality reasons.</td></tr>
+            <tr><td>[10:08] Reply: The GSOC ideas page is here: http://kamaelia.sourceforge.net/SummerOfCode2008</td></tr>
+            <tr><td>[10:08] Reply: The application template is here: http://kamaelia.sourceforge.net/SummerOfCode2006Template</td></tr>
+            <tr><td>[10:08] Reply: This shorter page links to all ideas pages, including previous years: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[10:08] &lt MS-&gt OK that works</td></tr>
+            <tr><td>[10:15] &lt MS-&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[10:15] 'Kamaelia.Apps.IRCLogger.Support' reloaded</td></tr>
+            <tr><td>[10:16] &lt MS-&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[10:16] 'Kamaelia.Apps.IRCLogger.Support' reloaded</td></tr>
+            <tr><td>[10:16] &lt MS-&gt anyone seen mhrd</td></tr>
+            <tr><td>[10:16] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[10:16] Reply: Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since the person(s) you asked for</td></tr>
+            <tr><td>[10:16] Reply: reads the logs. Idle on the channel if you want and answer and don't get an immediate one.</td></tr>
+            <tr><td>[10:16] &lt MS-&gt is MS- around ?</td></tr>
+            <tr><td>[10:16] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[10:16] Reply: Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since the person(s) you asked for</td></tr>
+            <tr><td>[10:16] Reply: reads the logs. Idle on the channel if you want and answer and don't get an immediate one.</td></tr>
+            <tr><td>[10:17] &lt MS-&gt is Uraeus around ?</td></tr>
+            <tr><td>[10:17] &lt MS-&gt woo</td></tr>
+            <tr><td>[10:17] &lt MS-&gt are any mentors here ?</td></tr>
+            <tr><td>[10:17] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[10:17] Reply: Please don't ask 'any mentors here' since I'm logging for them. Yes, there is. If you just ask you question</td></tr>
+            <tr><td>[10:17] Reply: or post your idea, you are likely to get a response from someone - either from someone on the channel or</td></tr>
+            <tr><td>[10:17] Reply: from someone reading the logs. If you leave asking a GSOC question beyond friday you are unlikely to get a</td></tr>
+            <tr><td>[10:17] Reply: personal response quickly for sheer practicality reasons.</td></tr>
+            <tr><td>[10:17] Reply: The GSOC ideas page is here: http://kamaelia.sourceforge.net/SummerOfCode2008</td></tr>
+            <tr><td>[10:17] Reply: The application template is here: http://kamaelia.sourceforge.net/SummerOfCode2006Template</td></tr>
+            <tr><td>[10:17] Reply: This shorter page links to all ideas pages, including previous years: http://kamaelia.sourceforge.net/SummerOfCode</td></tr>
+            <tr><td>[10:17] &lt MS-&gt excellent</td></tr>
+            <tr><td>[10:17] &lt MS-&gt kamaeliabot: dance</td></tr>
+            <tr><td>[10:17] Reply: does the macarena</td></tr>
+            <tr><td>[10:17] &lt Uraeus&gt MS-: I am</td></tr>
+            <tr><td>[10:18] &lt MS-&gt Uraeus: Sorry, I was testing the bot. :)</td></tr>
+            <tr><td>[10:18] &lt Uraeus&gt hehe :)</td></tr>
+            <tr><td>[10:20] &lt MS-&gt ok, back later cya</td></tr>
+            <tr><td>[10:20] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[10:25] *** barrycarlyon has joined #kamaelia</td></tr>
+            <tr><td>[10:26] *** BazNet has joined #kamaelia</td></tr>
+            <tr><td>[10:55] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:00] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[11:01] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:03] &lt orphans&gt hey</td></tr>
+            <tr><td>[11:04] &lt orphans&gt hows it going?</td></tr>
+            <tr><td>[11:04] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[11:04] *** vmlemon_ is tired</td></tr>
+            <tr><td>[11:05] &lt orphans&gt same. moved back to uni this morning so I had to get up at about 7</td></tr>
+            <tr><td>[11:05] &lt orphans&gt two cups of coffee later and I'm still struggling</td></tr>
+            <tr><td>[11:05] *** vmlemon_ wonders why an FM radio app would be trying to access the Internet</td></tr>
+            <tr><td>[11:06] &lt orphans&gt heh, voodoo</td></tr>
+            <tr><td>[11:08] &lt vmlemon_&gt Shame there's no record function ;)</td></tr>
+            <tr><td>[11:09] &lt vmlemon_&gt Aah, looks like it wants to access a Visual Radio directory, and it can't</td></tr>
+            <tr><td>[11:11] &lt vmlemon_&gt Whatever that involves</td></tr>
+            <tr><td>[11:13] &lt vmlemon_&gt Still no coffee here</td></tr>
+            <tr><td>[11:13] &lt vmlemon_&gt But we at least have a jar, now</td></tr>
+            <tr><td>[11:13] &lt orphans&gt you must be dying! I can't operate without a cup in the morning</td></tr>
+            <tr><td>[11:15] *** vmlemon_ couldn't sleep since 11:30 last night</td></tr>
+            <tr><td>[11:16] *** vmlemon_ wonders why the presenter is discussing putting keys in the fridge</td></tr>
+            <tr><td>[11:18] &lt Lawouach&gt hello</td></tr>
+            <tr><td>[11:19] &lt orphans&gt hey lawouach</td></tr>
+            <tr><td>[11:19] &lt orphans&gt how goes it?</td></tr>
+            <tr><td>[11:19] &lt vmlemon_&gt Ugh, a "do you want to sue a random person for a staged/fake accident and let us take a huge cut of the winnings" ad</td></tr>
+            <tr><td>[11:20] &lt Lawouach&gt doing good</td></tr>
+            <tr><td>[11:20] &lt orphans&gt vmlemon_: you seen the recent one which says that it's karma repaying you if you sue someone?</td></tr>
+            <tr><td>[11:21] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[11:21] &lt orphans&gt kamaeliabot: you seen it? :D</td></tr>
+            <tr><td>[11:21] &lt orphans&gt psh, must be busy</td></tr>
+            <tr><td>[11:22] &lt vmlemon_&gt "Lawyers are going without champagne and yachts every day. Please help, your money could help."</td></tr>
+            <tr><td>[11:23] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[11:24] &lt vmlemon_&gt *donate</td></tr>
+            <tr><td>[11:25] &lt vmlemon_&gt (makes it sound more charity guilt trip-like)</td></tr>
+            <tr><td>[11:28] &lt vmlemon_&gt I haven't checked my e-mail for weeks, now</td></tr>
+            <tr><td>[11:29] &lt vmlemon_&gt Probably chock full of spam</td></tr>
+            <tr><td>[11:35] *** vmlemon_ wonders who the hell would join the army...</td></tr>
+            <tr><td>[11:51] *** MS-not-really-al has joined #kamaelia</td></tr>
+            <tr><td>[11:52] &lt MS-not-really-al&gt anyone seen ms-</td></tr>
+            <tr><td>[11:52] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/</td></tr>
+            <tr><td>[11:52] Reply: Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since the person(s) you asked for</td></tr>
+            <tr><td>[11:52] Reply: reads the logs. Idle on the channel if you want and answer and don't get an immediate one.</td></tr>
+            <tr><td>[11:52] *** MS-not-really-al hugs kamaeliabot</td></tr>
+            <tr><td>[11:52] *** MS-not-really-al is now known as MS-not-here-much</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt kamaeliabot, do you speak French?</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt kamaeliabot, racist!</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt I knew it</td></tr>
+            <tr><td>[11:58] &lt MS-not-here-much&gt kamaeliabot barely speaks english</td></tr>
+            <tr><td>[11:58] &lt MS-not-here-much&gt :)</td></tr>
+            <tr><td>[11:58] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[11:58] &lt MS-not-here-much&gt Mind you, same goes for me really :-D</td></tr>
+            <tr><td>[11:58] &lt Lawouach&gt american then would be appropriate</td></tr>
+            <tr><td>[11:58] &lt vmlemon_&gt Hi MS-, in your many forms</td></tr>
+            <tr><td>[11:59] &lt vmlemon_&gt Bonjour kamaeliabot</td></tr>
+            <tr><td>[11:59] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[12:06] &lt MS-not-here-much&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[12:06] 'Kamaelia.Apps.IRCLogger.Support' reloaded</td></tr>
+            <tr><td>[12:06] &lt MS-not-here-much&gt bonjour kamaeliabot</td></tr>
+            <tr><td>[12:06] Reply: Bonjour</td></tr>
+            <tr><td>[12:06] &lt MS-not-here-much&gt parrot kamaeliabot</td></tr>
+            <tr><td>[12:06] Reply: ['parrot', 'kamaeliabot']</td></tr>
+            <tr><td>[12:06] &lt vmlemon_&gt Oui?</td></tr>
+            <tr><td>[12:06] &lt MS-not-here-much&gt non</td></tr>
+            <tr><td>[12:12] &lt vmlemon_&gt Parlez-vouz Franglais? ;)</td></tr>
+            <tr><td>[12:13] &lt MS-not-here-much&gt fish?</td></tr>
+            <tr><td>[12:18] &lt Lawouach&gt lol</td></tr>
+            <tr><td>[12:18] &lt Lawouach&gt poisson</td></tr>
+            <tr><td>[12:18] &lt MS-not-here-much&gt not before lunch ta :)</td></tr>
+            <tr><td>[12:18] &lt Lawouach&gt anyhow gotta go back to work :)</td></tr>
+            <tr><td>[12:18] &lt Lawouach&gt ah ah</td></tr>
+            <tr><td>[12:22] *** MattJ_ has joined #kamaelia</td></tr>
+            <tr><td>[12:56] *** maveriick has joined #kamaelia</td></tr>
+            <tr><td>[12:56] &lt maveriick&gt hi evreybody</td></tr>
+            <tr><td>[13:02] &lt MS-not-here-much&gt hi</td></tr>
+            <tr><td>[13:05] *** MattJ has joined #kamaelia</td></tr>
+            <tr><td>[13:06] &lt MS-not-here-much&gt kamaeliabot: reload Kamaelia.Apps.IRCLogger.Support</td></tr>
+            <tr><td>[13:06] 'Kamaelia.Apps.IRCLogger.Support' reloaded</td></tr>
+            <tr><td>[13:07] &lt MS-not-here-much&gt hi everybody</td></tr>
+            <tr><td>[13:07] Reply: hi</td></tr>
+            <tr><td>[13:07] &lt MS-not-here-much&gt k</td></tr>
+            <tr><td>[13:07] &lt MS-not-here-much&gt back to what I was doing</td></tr>
+            <tr><td>[13:37] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:51] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:51] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:30] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[14:31] &lt j_baker&gt hello everybody</td></tr>
+            <tr><td>[14:33] &lt j_baker&gt is there any command I can run from the CLI to make sure Axon is installed on my system?</td></tr>
+            <tr><td>[14:38] &lt MS-not-here-much&gt ~&gt python</td></tr>
+            <tr><td>[14:38] &lt MS-not-here-much&gt Python 2.4.2 (#1, May 2 2006, 08:13:46)</td></tr>
+            <tr><td>[14:38] &lt MS-not-here-much&gt [GCC 4.1.0 (SUSE Linux)] on linux2</td></tr>
+            <tr><td>[14:38] &lt MS-not-here-much&gt Type "help", "copyright", "credits" or "license" for more information.</td></tr>
+            <tr><td>[14:38] &lt MS-not-here-much&gt &gt&gt&gt import Axon</td></tr>
+            <tr><td>[14:38] &lt MS-not-here-much&gt &gt&gt&gt</td></tr>
+            <tr><td>[14:39] &lt MS-not-here-much&gt &gt&gt&gt Axon</td></tr>
+            <tr><td>[14:39] &lt MS-not-here-much&gt &lt module 'Axon' from '/usr/local/lib/python2.4/site-packages/Axon/__init__.pyc'&gt</td></tr>
+            <tr><td>[14:40] &lt j_baker&gt It gives me an error message...</td></tr>
+            <tr><td>[14:41] &lt j_baker&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[14:41] &lt j_baker&gt  File "/Library/Python/2.5/site-packages/Axon/__init__.py", line 25, in &lt module&gt</td></tr>
+            <tr><td>[14:41] &lt j_baker&gt  import Component, Ipc, Linkage, Microprocess, Postman, Scheduler, debug, util, AdaptiveCommsComponent, AxonExceptions, CoordinatingAssistantTracker, debugConfigFile</td></tr>
+            <tr><td>[14:41] &lt j_baker&gt and so on...</td></tr>
+            <tr><td>[14:42] &lt j_baker&gt Does this just mean that the files aren't in the right directory?</td></tr>
+            <tr><td>[14:42] &lt MS-not-here-much&gt How did you install things?</td></tr>
+            <tr><td>[14:42] &lt j_baker&gt I ran setup.py</td></tr>
+            <tr><td>[14:43] &lt j_baker&gt Hmmm... the files are in the directory it specifies.</td></tr>
+            <tr><td>[14:44] &lt j_baker&gt Hold on a sec and I'll give you the full error</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt I can't force the same error</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt And I've tried 3 machines</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt two different OSs</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt including Mac OS X</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt ....:~/Dev/Y/private_MPS_Scratch michaelsparks$ python</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt Python 2.3 (#1, Sep 13 2003, 00:49:11)</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt [GCC 3.3 20030304 (Apple Computer, Inc. build 1495)] on darwin</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt Type "help", "copyright", "credits" or "license" for more information.</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt &gt&gt&gt import Axon</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt &gt&gt&gt Axon</td></tr>
+            <tr><td>[14:45] &lt MS-not-here-much&gt &lt module 'Axon' from '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/site-packages/Axon/__init__.pyc'&gt</td></tr>
+            <tr><td>[14:46] &lt j_baker&gt www.csdconline.com/error1.txt</td></tr>
+            <tr><td>[14:46] &lt j_baker&gt See if you can at least get an idea what that means...</td></tr>
+            <tr><td>[14:46] &lt MS-not-here-much&gt OSError: dlopen(/lib/libc.so.6, 6): image not found</td></tr>
+            <tr><td>[14:46] &lt MS-not-here-much&gt is a rather bizarre error to see</td></tr>
+            <tr><td>[14:47] &lt MS-not-here-much&gt That's a problem with ctypes in Mac OS X</td></tr>
+            <tr><td>[14:48] &lt MS-not-here-much&gt what version have you got installed ?</td></tr>
+            <tr><td>[14:48] &lt j_baker&gt Of OS X?</td></tr>
+            <tr><td>[14:48] &lt j_baker&gt 10.5.2</td></tr>
+            <tr><td>[14:48] &lt MS-not-here-much&gt hm. 1.1.2</td></tr>
+            <tr><td>[14:48] &lt MS-not-here-much&gt or so</td></tr>
+            <tr><td>[14:50] &lt j_baker&gt Well, /lib isn't even a directory on my machine.</td></tr>
+            <tr><td>[14:51] &lt MS-not-here-much&gt  No, whcih version of axon are you using</td></tr>
+            <tr><td>[14:51] &lt j_baker&gt 1.1.2</td></tr>
+            <tr><td>[14:52] &lt j_baker&gt It may just be that I don't have the ctype library installed</td></tr>
+            <tr><td>[14:52] &lt MS-not-here-much&gt No, you probably do</td></tr>
+            <tr><td>[14:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:52] &lt vmlemon_&gt Hi again</td></tr>
+            <tr><td>[14:53] &lt MS-not-here-much&gt I'm going to confirm why you're seeing the error before confirming why you shouldn't be seeing it</td></tr>
+            <tr><td>[14:53] &lt j_baker&gt It's not in /Library/Python/2.5/site-support</td></tr>
+            <tr><td>[14:53] &lt j_baker&gt hi vmlemon_</td></tr>
+            <tr><td>[14:54] &lt MS-not-here-much&gt ~/Incoming/Axon-1.1.2/Axon&gt grep -i ctype *</td></tr>
+            <tr><td>[14:54] &lt MS-not-here-much&gt Scheduler.py: from ctypes import *</td></tr>
+            <tr><td>[14:54] &lt MS-not-here-much&gt confirmed in 1.1.2</td></tr>
+            <tr><td>[14:54] &lt MS-not-here-much&gt which is positively ancient</td></tr>
+            <tr><td>[14:55] &lt MS-not-here-much&gt Confirmed *NOT* in latest release, nor in</td></tr>
+            <tr><td>[14:55] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[14:55] &lt MS-not-here-much&gt (14:55:07) MS-not-here-much: ~/Incoming/Axon-1.1.2/Axon&gt grep -i ctype *</td></tr>
+            <tr><td>[14:55] &lt MS-not-here-much&gt (14:55:07) MS-not-here-much: Scheduler.py: from ctypes import *</td></tr>
+            <tr><td>[14:55] &lt MS-not-here-much&gt (14:55:12) MS-not-here-much: confirmed in 1.1.2</td></tr>
+            <tr><td>[14:55] &lt MS-not-here-much&gt (14:55:24) MS-not-here-much: which is positively ancient</td></tr>
+            <tr><td>[14:55] &lt MS-not-here-much&gt (14:56:20) MS-not-here-much: Confirmed *NOT* in latest release, nor in trunk</td></tr>
+            <tr><td>[14:55] &lt MS-not-here-much&gt Tip of the day</td></tr>
+            <tr><td>[14:56] &lt MS-not-here-much&gt when working with code, work with either latest release (even if ancient)</td></tr>
+            <tr><td>[14:56] &lt MS-not-here-much&gt If you followed a link with that, let us know where</td></tr>
+            <tr><td>[14:56] &lt MS-not-here-much&gt it was</td></tr>
+            <tr><td>[14:56] &lt j_baker&gt Weird....</td></tr>
+            <tr><td>[14:56] &lt j_baker&gt I downloaded the megabundle</td></tr>
+            <tr><td>[14:58] &lt j_baker&gt I'm trying to re run the installer package for Axon 1.5.1</td></tr>
+            <tr><td>[14:58] &lt j_baker&gt And it gives me error: package directory Axon does not exist</td></tr>
+            <tr><td>[14:58] &lt MS-not-here-much&gt OK, try this file</td></tr>
+            <tr><td>[14:58] &lt MS-not-here-much&gt http://thwackety.com/Kamaelia-Logger-1.0.0.tar.gz</td></tr>
+            <tr><td>[14:58] &lt MS-not-here-much&gt It's part of the new way I'm looking at packaging things up</td></tr>
+            <tr><td>[14:59] &lt MS-not-here-much&gt as a one step install for axon & kamaelia</td></tr>
+            <tr><td>[14:59] &lt MS-not-here-much&gt "sudo python setup.py install"</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt Can you sudo in OS X?</td></tr>
+            <tr><td>[15:00] &lt MS-not-here-much&gt Davbo: yes</td></tr>
+            <tr><td>[15:00] &lt MS-not-here-much&gt To be honest I don't know where you're getting 1.1.2 from http://sourceforge.net/project/showfiles.php?group_id=122494</td></tr>
+            <tr><td>[15:01] &lt MS-not-here-much&gt shows only things (even stuff that's out of date there)</td></tr>
+            <tr><td>[15:01] &lt MS-not-here-much&gt which are much later than 1.1.2</td></tr>
+            <tr><td>[15:01] &lt j_baker&gt I think I figured out the directory error</td></tr>
+            <tr><td>[15:02] *** barrycarlyon has joined #kamaelia</td></tr>
+            <tr><td>[15:02] &lt MS-not-here-much&gt http://thwackety.com/Kamaelia-Logger-1.0.0.tar.gz was built under OS X</td></tr>
+            <tr><td>[15:02] &lt j_baker&gt setup.py apparently looks for the Axon directory from the current working directory instead of the directory its in</td></tr>
+            <tr><td>[15:02] &lt j_baker&gt so I changed directory to where the downloaded files are and it worked</td></tr>
+            <tr><td>[15:02] &lt MS-not-here-much&gt and is precisely the same code (sans a few changes to Kamaelia.Apps.IRCLogger/Support.py )</td></tr>
+            <tr><td>[15:03] &lt j_baker&gt It appears to be working now though</td></tr>
+            <tr><td>[15:03] &lt MS-not-here-much&gt j_baker: What are you talking about?</td></tr>
+            <tr><td>[15:03] &lt j_baker&gt I reran setup.py for Axon in the megabundle</td></tr>
+            <tr><td>[15:04] &lt j_baker&gt And cd'ed to that directory and ran it</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt you were running it without cd to the directory?</td></tr>
+            <tr><td>[15:04] &lt j_baker&gt and it worked</td></tr>
+            <tr><td>[15:04] &lt j_baker&gt yes</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt oh</td></tr>
+            <tr><td>[15:04] &lt MS-not-here-much&gt j_baker: That's called "PEBKAC"</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[15:05] &lt orphans&gt :) not heard that acronym in ages</td></tr>
+            <tr><td>[15:05] &lt j_baker&gt Is it not supposed to work if I say do /path/to/setup.py</td></tr>
+            <tr><td>[15:05] &lt MS-not-here-much&gt j_baker: You would have saved everyone time if you'd read http://kamaelia.sourceforge.net/GettingStarted</td></tr>
+            <tr><td>[15:05] *** MS-not-here-much goes for food</td></tr>
+            <tr><td>[15:05] &lt Davbo&gt good idea</td></tr>
+            <tr><td>[15:05] *** Davbo goes for food also</td></tr>
+            <tr><td>[15:16] *** xmlhacker_ has joined #kamaelia</td></tr>
+            <tr><td>[15:18] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:23] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[15:23] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:28] &lt vmlemon__&gt Hi again, after several network mode switches and TCP/IP stack weirdness...</td></tr>
+            <tr><td>[15:28] &lt MS-not-here-much&gt vmlemon__: :)</td></tr>
+            <tr><td>[15:30] &lt vmlemon__&gt Yay for apps fighting over which GPRS access point to connect to, which ends up blocking my IRC client</td></tr>
+            <tr><td>[15:32] &lt vmlemon__&gt Doesn't help that it keeps trying to access a 3G network that doesn't exist, either</td></tr>
+            <tr><td>[15:32] &lt MS-not-here-much&gt :)</td></tr>
+            <tr><td>[15:35] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:37] &lt vmlemon_&gt Ouch, the music player app went on a rampage and took everything with it. So much for process isolation</td></tr>
+            <tr><td>[15:38] &lt vmlemon_&gt Makes Windows look ultra-stable, somehow</td></tr>
+            <tr><td>[15:41] &lt vmlemon_&gt Maybe Microsoft could license it ;)</td></tr>
+            <tr><td>[15:45] &lt vmlemon_&gt If they didn't already attempt to emulate the Windows experience on embedded devices</td></tr>
+            <tr><td>[15:47] *** MS-not-here-much is now known as MS-</td></tr>
+            <tr><td>[15:54] &lt Davbo&gt Argh Lost is the most ridiculous TV show ever</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt MS-, you tried to do a state machine model with Kamaelia before?</td></tr>
+            <tr><td>[15:57] *** MS- smiles</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt i'm trying to make a Moore Machine with MiniAxon</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt i thought it would work well? why have you made one before?</td></tr>
+            <tr><td>[15:58] &lt vmlemon_&gt Looks like someone ported a mouldy version of Python to an old version of Symbian ages ago, but I doubt Kamaelia would run on it...</td></tr>
+            <tr><td>[15:58] &lt MS-&gt It made me smile because of one of kamaelia's design goals</td></tr>
+            <tr><td>[15:59] &lt MS-&gt You see normally to allow yourself high levels of concurrency in a server, you'd ignore threads and processes</td></tr>
+            <tr><td>[15:59] &lt MS-&gt and build your system out of statemachines connected by buffers</td></tr>
+            <tr><td>[15:59] &lt MS-&gt And then have something prodding them along</td></tr>
+            <tr><td>[15:59] &lt Davbo&gt ah</td></tr>
+            <tr><td>[16:00] &lt MS-&gt (which is another view of an event wheel/reactor loop)</td></tr>
+            <tr><td>[16:00] &lt MS-&gt But yes, you can do state machines using kamaelia</td></tr>
+            <tr><td>[16:00] &lt vmlemon_&gt Could be interesting on a new multi-core SPARC box</td></tr>
+            <tr><td>[16:00] *** jgustak has joined #kamaelia</td></tr>
+            <tr><td>[16:00] &lt MS-&gt It's just a mildly amusing thing, because normally you'd have to :)</td></tr>
+            <tr><td>[16:00] *** Davbo looks up event wheel/reactor loop</td></tr>
+            <tr><td>[16:00] &lt MS-&gt rather than want to</td></tr>
+            <tr><td>[16:01] &lt MS-&gt event wheel terminology comes from simulation</td></tr>
+            <tr><td>[16:01] &lt Davbo&gt I wanted to do something to quickly demo MiniAxon so i thought it would be easy</td></tr>
+            <tr><td>[16:01] &lt MS-&gt It should be</td></tr>
+            <tr><td>[16:01] &lt vmlemon_&gt Kamaelia on Blue Gene/L?</td></tr>
+            <tr><td>[16:02] &lt MS-&gt I'd just not heard of a moore state machine before.</td></tr>
+            <tr><td>[16:02] &lt Davbo&gt it's a finite state machine</td></tr>
+            <tr><td>[16:02] &lt MS-&gt Oh that's interesting, you could probably model (in a wierd way) each state in a Moore SM as a component</td></tr>
+            <tr><td>[16:02] &lt MS-&gt I think</td></tr>
+            <tr><td>[16:03] &lt MS-&gt AHh, I see</td></tr>
+            <tr><td>[16:03] &lt MS-&gt yes</td></tr>
+            <tr><td>[16:03] &lt MS-&gt definitely</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt :D</td></tr>
+            <tr><td>[16:03] &lt MS-&gt Looks like it was specifically designed to enable modelling/analysis of asynchronous hardware</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt mini axon is kinda a Moore machine regardless i thought</td></tr>
+            <tr><td>[16:04] &lt MS-&gt Kamaelia's kinda inspired by asynchronous hardware since i worked on an async hardware compiler/verification project</td></tr>
+            <tr><td>[16:04] &lt MS-&gt Davbo: yes</td></tr>
+            <tr><td>[16:04] &lt MS-&gt Does rather appear to be :)</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt ah nice to see these lectures i'm having aren't completely useless</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt only £3070/year</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt bargain!</td></tr>
+            <tr><td>[16:05] *** Davbo sighs</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt :p</td></tr>
+            <tr><td>[16:06] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:06] &lt vmlemon_&gt What's a "bargain" at that price?</td></tr>
+            <tr><td>[16:07] &lt Davbo&gt tuition fee's (i was being sarcastic)</td></tr>
+            <tr><td>[16:07] &lt MS-&gt The formal definition for the wikipedia page could do with cleaning up</td></tr>
+            <tr><td>[16:07] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[16:07] &lt Davbo&gt formal definition of what MS- ?</td></tr>
+            <tr><td>[16:08] &lt MS-&gt your moore machine</td></tr>
+            <tr><td>[16:09] &lt Davbo&gt oh, well there isn't really much to it anyway</td></tr>
+            <tr><td>[16:11] &lt Davbo&gt for my Embedded systems model we program little asynchronous boxes with LED's on them to do stuff, we have to model it all with moore/mealy machines</td></tr>
+            <tr><td>[16:12] *** MS- nods</td></tr>
+            <tr><td>[16:12] *** xmlhacker_ has joined #kamaelia</td></tr>
+            <tr><td>[16:13] &lt vmlemon_&gt Hmm, is there a Kamaelia version of "$Number $Colour Bottles"?</td></tr>
+            <tr><td>[16:13] &lt Davbo&gt reminds me of the micro-processes and transitions made by the scheduler</td></tr>
+            <tr><td>[16:13] &lt MS-&gt Davbo: yes, I can see why</td></tr>
+            <tr><td>[16:14] &lt Davbo&gt vmlemon_, i have that programmed on my calculator :P</td></tr>
+            <tr><td>[16:14] &lt MS-&gt The yields are essentially switches between states</td></tr>
+            <tr><td>[16:14] &lt MS-&gt That's clearer with the C++ proof of concept of kamaelia</td></tr>
+            <tr><td>[16:14] &lt Davbo&gt Yeah, if you yield the output then you have a Mealy machine</td></tr>
+            <tr><td>[16:15] &lt MS-&gt since it uses preprocessor directives to mask a bizarre use of duffs devices</td></tr>
+            <tr><td>[16:15] &lt MS-&gt but what's generated is actually a state machine</td></tr>
+            <tr><td>[16:16] &lt Davbo&gt interesting</td></tr>
+            <tr><td>[16:16] &lt MS-&gt switch statements and everything</td></tr>
+            <tr><td>[16:16] &lt MS-&gt ;)</td></tr>
+            <tr><td>[16:16] &lt Davbo&gt :D</td></tr>
+            <tr><td>[16:17] &lt Davbo&gt so for a state component for mini axon, should i just initialise it with a bool saying if it's on or off and the main can hold whatever it outputs right?</td></tr>
+            <tr><td>[16:17] &lt Davbo&gt then you'd need something to poke them from one state to another</td></tr>
+            <tr><td>[16:17] &lt MS-&gt eg:</td></tr>
+            <tr><td>[16:17] &lt MS-&gt struct Counter : public Generator {</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  int i;</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  int next() {</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  if (this-&gt__generator_state == -1) { throw StopIteration(); } switch(this-&gt__generator_state) { default:</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  for (i=0; i&lt 10; i++) {</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  this-&gt__generator_state = 17; return (i); case 17:;</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  };</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  this-&gt__generator_state = 19; return (2); case 19:;</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  }; this-&gt__generator_state = -1; throw StopIteration();</td></tr>
+            <tr><td>[16:17] &lt MS-&gt  };</td></tr>
+            <tr><td>[16:17] &lt MS-&gt };</td></tr>
+            <tr><td>[16:18] &lt MS-&gt That's generated from</td></tr>
+            <tr><td>[16:18] &lt MS-&gt struct Counter : public Generator {</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  int i;</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  int next() {</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  GENERATOR_CODE_START</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  for (i=0; i&lt 10; i++) {</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  YIELD(i);</td></tr>
+            <tr><td>[16:18] &lt Davbo&gt ah right</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  };</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  YIELD(2);</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  GENERATOR_CODE_END</td></tr>
+            <tr><td>[16:18] &lt MS-&gt  };</td></tr>
+            <tr><td>[16:18] &lt MS-&gt };</td></tr>
+            <tr><td>[16:19] &lt Davbo&gt oh i see now</td></tr>
+            <tr><td>[16:20] &lt MS-&gt Yeah, bit nasty :)</td></tr>
+            <tr><td>[16:20] &lt Davbo&gt i prefer the one with the generator lol</td></tr>
+            <tr><td>[16:21] &lt Davbo&gt what it generates, is..ugly</td></tr>
+            <tr><td>[16:21] &lt MS-&gt It's nicer than the C version</td></tr>
+            <tr><td>[16:22] &lt Davbo&gt c++ has peculiar exceptions</td></tr>
+            <tr><td>[16:24] *** vmlemon_ wonders if a self-replicting Kamaelia app would work</td></tr>
+            <tr><td>[16:25] &lt MS-&gt That reminds me, Sarah Connor Chronicles is on tonight</td></tr>
+            <tr><td>[16:25] *** Davbo wonders if he made the inbox/outbox into stacks if he could call them recursively</td></tr>
+            <tr><td>[16:26] &lt MS-&gt What do you mean?</td></tr>
+            <tr><td>[16:26] &lt Davbo&gt can't explain, will try in a bit</td></tr>
+            <tr><td>[16:26] *** MS- wonders if its as useful, but as brain bending an idea as the way the carousel works</td></tr>
+            <tr><td>[16:27] &lt MS-&gt let it mull. Then explain</td></tr>
+            <tr><td>[16:27] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:27] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:27] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[16:27] &lt Davbo&gt i was thinking</td></tr>
+            <tr><td>[16:28] &lt vmlemon_&gt downloads the channel log</td></tr>
+            <tr><td>[16:29] &lt Davbo&gt if you tried to do the fibonacci sequence with recursive calls (it would die eventually from combinatorial explosion?) but since you stack the work to do on the inbox you could be calling a method that takes i and returns i+1</td></tr>
+            <tr><td>[16:30] &lt Davbo&gt hmm don't know if i'm saying it correctly</td></tr>
+            <tr><td>[16:31] &lt Davbo&gt so result=fib(i-1)+fib(i-2) for a result at i</td></tr>
+            <tr><td>[16:32] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[16:32] &lt MS-&gt That will indeed be rather nasty from a recursion perspective</td></tr>
+            <tr><td>[16:32] &lt Davbo&gt Yeah i've done it before</td></tr>
+            <tr><td>[16:33] &lt Davbo&gt less lines of code than an iterative solution though :P</td></tr>
+            <tr><td>[16:33] &lt Davbo&gt shame you use more calls than known atoms in the universe at around 40-50</td></tr>
+            <tr><td>[16:34] &lt MS-&gt Only if you don't cache the results</td></tr>
+            <tr><td>[16:34] &lt Davbo&gt uh-huh, i wanted to see if i could crash my computer though</td></tr>
+            <tr><td>[16:35] &lt vmlemon_&gt Be sure to disable swap, then ;)</td></tr>
+            <tr><td>[16:35] &lt Davbo&gt :)</td></tr>
+            <tr><td>[16:38] &lt Davbo&gt lost my train of thought now gah.</td></tr>
+            <tr><td>[16:38] *** Davbo goes back to his state machine</td></tr>
+            <tr><td>[16:43] &lt MS-&gt Davbo: FWIW</td></tr>
+            <tr><td>[16:43] &lt MS-&gt @cached</td></tr>
+            <tr><td>[16:43] &lt MS-&gt def fib(i):</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  if i == 1 or i == 2: return 1</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  return fib(i-1) + fib(i -2)</td></tr>
+            <tr><td>[16:43] &lt MS-&gt where cached is defined:</td></tr>
+            <tr><td>[16:43] &lt MS-&gt def cached(fun):</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  cache = {}</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  def wrapped(i):</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  try:</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  return cache[i]</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  except:</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  cache[i] = fun(i)</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  return cache[i]</td></tr>
+            <tr><td>[16:43] &lt MS-&gt  return wrapped</td></tr>
+            <tr><td>[16:43] &lt MS-&gt avoids your combinatorial explosion</td></tr>
+            <tr><td>[16:43] &lt MS-&gt but keeps the code clean</td></tr>
+            <tr><td>[16:43] &lt Davbo&gt Yay!</td></tr>
+            <tr><td>[16:44] &lt Davbo&gt whats the @ mean in python?</td></tr>
+            <tr><td>[16:44] &lt MS-&gt It means</td></tr>
+            <tr><td>[16:44] &lt MS-&gt (by example)</td></tr>
+            <tr><td>[16:44] &lt MS-&gt def fib(i):</td></tr>
+            <tr><td>[16:44] &lt MS-&gt  if i == 1 or i == 2: return 1</td></tr>
+            <tr><td>[16:44] &lt MS-&gt  return fib(i-1) + fib(i -2)</td></tr>
+            <tr><td>[16:44] &lt MS-&gt fib = cached(fib)</td></tr>
+            <tr><td>[16:45] &lt MS-&gt It's called a decorator</td></tr>
+            <tr><td>[16:45] &lt Davbo&gt I see</td></tr>
+            <tr><td>[16:45] &lt Davbo&gt that's cool MS-</td></tr>
+            <tr><td>[16:48] &lt MS-&gt interestingly my really scary book on the sort of thing that contains state machies doesn't mention either mealy or moore machines</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt strange, I think they're a useful model at times</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt too much computational theory is bad for the brain though</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt they probably left it out to spare the reader</td></tr>
+            <tr><td>[16:50] &lt MS-&gt heh</td></tr>
+            <tr><td>[16:50] &lt MS-&gt No</td></tr>
+            <tr><td>[16:50] &lt MS-&gt It's not that kinda of book</td></tr>
+            <tr><td>[16:50] *** phatmonkey has joined #kamaelia</td></tr>
+            <tr><td>[16:50] &lt MS-&gt it's very much a "take no prisoners" book</td></tr>
+            <tr><td>[16:50] &lt Davbo&gt ah, nice.</td></tr>
+            <tr><td>[16:50] &lt MS-&gt (Floyd & Beigel, the language of machines)</td></tr>
+            <tr><td>[16:52] &lt Davbo&gt heh sounds familiar, might be on a reading list for part of my course</td></tr>
+            <tr><td>[16:53] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[17:03] &lt Lawouach&gt back again</td></tr>
+            <tr><td>[17:06] &lt Davbo&gt hi Lawouach</td></tr>
+            <tr><td>[17:07] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:07] &lt j_baker&gt This may be a dumb question, but once the scheduler in Kamaelia starts running components, how does it know when to stop? Does one of the components have to call sys.exit()?</td></tr>
+            <tr><td>[17:07] *** barrycarlyon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:09] &lt MS-&gt It knows because the components exit their main function</td></tr>
+            <tr><td>[17:09] &lt MS-&gt Try running a component that looks like this:</td></tr>
+            <tr><td>[17:09] &lt MS-&gt class Dies(Axon.Component.component):</td></tr>
+            <tr><td>[17:09] &lt MS-&gt  def main(self):</td></tr>
+            <tr><td>[17:09] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[17:09] &lt MS-&gt  print dropping off</td></tr>
+            <tr><td>[17:10] &lt MS-&gt and running it:</td></tr>
+            <tr><td>[17:10] &lt MS-&gt Dies().run()</td></tr>
+            <tr><td>[17:10] &lt MS-&gt that will exit</td></tr>
+            <tr><td>[17:10] &lt MS-&gt probably need quotes in there :-)</td></tr>
+            <tr><td>[17:10] &lt MS-&gt (untested code)</td></tr>
+            <tr><td>[17:11] &lt vmlemon_&gt "Once you pop, you just can't stop" ;)</td></tr>
+            <tr><td>[17:11] &lt j_baker&gt I see. Might I make a suggestion? I think that would be something that the MiniAxon tutorial could be a little more clear about.</td></tr>
+            <tr><td>[17:12] &lt MS-&gt Go on</td></tr>
+            <tr><td>[17:12] &lt j_baker&gt Perhaps instead of running the task 100 times in the scheduler, it could run the loop 100 times in each of the main functions&gt</td></tr>
+            <tr><td>[17:12] &lt j_baker&gt That way that it's a little bit more clear where the execution is ended.</td></tr>
+            <tr><td>[17:13] &lt MS-&gt It's a starting exercise really</td></tr>
+            <tr><td>[17:15] &lt MS-&gt I don't see how that simplifies things</td></tr>
+            <tr><td>[17:15] &lt MS-&gt It makes the scheduler more complex at that point in time</td></tr>
+            <tr><td>[17:16] &lt MS-&gt Which is fine for a real scheduler, but as a toy saying</td></tr>
+            <tr><td>[17:16] &lt MS-&gt "the scheduler goes round in circles and prods the microrocesses to give them CPU"</td></tr>
+            <tr><td>[17:16] &lt MS-&gt but *guaranteeing* it exits</td></tr>
+            <tr><td>[17:17] &lt MS-&gt (due to being a fixed loop of 100 loops round)</td></tr>
+            <tr><td>[17:17] &lt MS-&gt Means that the things being scheduled can be things that are simple as well</td></tr>
+            <tr><td>[17:18] &lt MS-&gt It's a balance against realism and a balance against learning</td></tr>
+            <tr><td>[17:18] &lt MS-&gt After all, I wouldn't *really* say</td></tr>
+            <tr><td>[17:18] &lt MS-&gt that this is a complex scheduling algorithm:</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  def main(self):</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  for i in xrange(100):</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  for current in self.active:</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  try:</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  result = current.next()</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  if result is not -1:</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  self.newqueue.append(current)</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  except StopIteration:</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  pass</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  self.active = self.newqueue</td></tr>
+            <tr><td>[17:19] &lt MS-&gt  self.newqueue = []</td></tr>
+            <tr><td>[17:19] &lt MS-&gt But it is guaranteed to exit</td></tr>
+            <tr><td>[17:19] &lt MS-&gt (assuming current.next() returns)</td></tr>
+            <tr><td>[17:19] &lt j_baker&gt Perhaps you're right. At any rate, the way the tutorial is set up, it gave me the impression that I would have to call some code in the scheduler or override some method in it.</td></tr>
+            <tr><td>[17:20] &lt MS-&gt ?</td></tr>
+            <tr><td>[17:20] &lt MS-&gt what do you mean?</td></tr>
+            <tr><td>[17:20] &lt j_baker&gt Well, the way the script is set up, the scheduler runs it 100 times.</td></tr>
+            <tr><td>[17:20] &lt MS-&gt yes...</td></tr>
+            <tr><td>[17:21] &lt j_baker&gt Thus, I was thinking something along the lines of having to create a class that would inherit from scheduler</td></tr>
+            <tr><td>[17:21] &lt MS-&gt why?</td></tr>
+            <tr><td>[17:22] &lt MS-&gt (seriously, I do want to know why, so I can evaluate if the tutorial needs changing or something rewording)</td></tr>
+            <tr><td>[17:22] &lt j_baker&gt Well, because the way the tutorial is set up, you insert code into the scheduler to run the process 100 times.</td></tr>
+            <tr><td>[17:22] &lt j_baker&gt Thus, I figured in the real world if I wanted to set a process to run 100 times, I'd have to put code into the scheduler to do that somehow.</td></tr>
+            <tr><td>[17:23] &lt MS-&gt No, its a toy example to explain how the system works</td></tr>
+            <tr><td>[17:23] &lt j_baker&gt Either by subclassing it or calling some kind of method of the scheduler</td></tr>
+            <tr><td>[17:23] &lt MS-&gt http://kamaelia.sourceforge.net/MiniAxon/?tab=3&sat=2 is very different from ...</td></tr>
+            <tr><td>[17:24] &lt Davbo&gt MS-, will you be around to look at my application and give some feedback tomorrow?</td></tr>
+            <tr><td>[17:24] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Axon/Axon/Scheduler.py?revision=3108&view=markup</td></tr>
+            <tr><td>[17:24] &lt Davbo&gt I'm not so worried since i'm just making the changes we discussed and resubmitting should be okay then i hope</td></tr>
+            <tr><td>[17:25] &lt MS-&gt Davbo: reliably? I can look tonight and feedback tonight. Tomorrow? Maybe</td></tr>
+            <tr><td>[17:25] &lt MS-&gt j_baker: however the earliest form of the scheduler</td></tr>
+            <tr><td>[17:25] &lt MS-&gt wasn't *much* different from http://kamaelia.sourceforge.net/MiniAxon/?tab=3&sat=2</td></tr>
+            <tr><td>[17:25] &lt j_baker&gt That's understandable, and I can understand why you would want to do that. But I was assuming that the purpose of that toy example was to illustrate a picture. And for me, it illustrated the picture wrong.</td></tr>
+            <tr><td>[17:26] &lt j_baker&gt But maybe that's just me. :)</td></tr>
+            <tr><td>[17:26] &lt MS-&gt Quite possibly. People who are introduced to OO in a particular way do tend to overuse inheritance</td></tr>
+            <tr><td>[17:27] &lt MS-&gt here is one of the oldest bits of code: http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/Old/microProcess.py?revision=11&view=markup</td></tr>
+            <tr><td>[17:27] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/Old/microProcess.py?revision=11&view=markup#l_207</td></tr>
+            <tr><td>[17:27] &lt MS-&gt specifically (like207) is the equivalent</td></tr>
+            <tr><td>[17:27] &lt MS-&gt (equivalent to the scheduler)</td></tr>
+            <tr><td>[17:28] &lt j_baker&gt I'll have to review that later, got to get to class. Later!</td></tr>
+            <tr><td>[17:28] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[17:29] &lt MS-&gt really wierd to look at that code</td></tr>
+            <tr><td>[17:32] &lt MS-&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/Old/ipc.py?revision=11&view=markup</td></tr>
+            <tr><td>[17:32] &lt MS-&gt is the oldest version of the component system on top of the concurrency handling</td></tr>
+            <tr><td>[17:37] &lt orphans&gt surely inbox and outbox should be postbox and letterbox. And I see no class BlackAndWhiteCat :D</td></tr>
+            <tr><td>[17:37] &lt MS-&gt orphans: CoordinatingAssistantTracker == CAT</td></tr>
+            <tr><td>[17:38] &lt orphans&gt :)</td></tr>
+            <tr><td>[17:39] &lt MS-&gt Should really just be assistant or tracker</td></tr>
+            <tr><td>[17:39] &lt MS-&gt but it got named on a friday afternoon</td></tr>
+            <tr><td>[17:40] &lt orphans&gt heh. it'd be funny to see a graph of how much silliness enters into code over a week</td></tr>
+            <tr><td>[17:41] *** MS- leaves for home</td></tr>
+            <tr><td>[17:41] &lt MS-&gt back laer</td></tr>
+            <tr><td>[17:41] &lt MS-&gt later</td></tr>
+            <tr><td>[17:41] &lt MS-&gt cya</td></tr>
+            <tr><td>[17:41] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[17:59] *** simon has joined #kamaelia</td></tr>
+            <tr><td>[18:38] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:46] *** jgustak has parted #kamaelia</td></tr>
+            <tr><td>[18:54] *** barrycarlyon_ is now known as barrycarlyon</td></tr>
+            <tr><td>[18:56] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[19:17] *** xotaku has joined #kamaelia</td></tr>
+            <tr><td>[19:18] *** xotaku has parted #kamaelia</td></tr>
+            <tr><td>[19:32] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:33] &lt MS-&gt kamaeliabot: dance</td></tr>
+            <tr><td>[19:33] Reply: does the macarena</td></tr>
+            <tr><td>[19:34] &lt vmlemon__&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[19:34] Reply: Ptang!</td></tr>
+            <tr><td>[19:37] &lt Lawouach&gt kamaeliabot: grab me a beer</td></tr>
+            <tr><td>[19:37] &lt Lawouach&gt bah useless :)</td></tr>
+            <tr><td>[19:38] &lt vmlemon__&gt Bar/order component?</td></tr>
+            <tr><td>[19:39] &lt Lawouach&gt unlimited tab</td></tr>
+            <tr><td>[19:41] *** Davbo is now known as Davbo-pub</td></tr>
+            <tr><td>[19:41] &lt Davbo-pub&gt off to the pub cya later all</td></tr>
+            <tr><td>[19:42] &lt Lawouach&gt Davbo-pub: grab me a beer</td></tr>
+            <tr><td>[19:42] &lt Lawouach&gt might work better with a human :)</td></tr>
+            <tr><td>[19:44] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[19:55] &lt MS-&gt Guys. If there's anyone on the channel who is intending to apply but hasn't put their application in yet, by not doing so you're reducing your chances of getting a place</td></tr>
+            <tr><td>[19:56] &lt MS-&gt The reality of GSOC is that part of open source is communication, and putting ideas out</td></tr>
+            <tr><td>[19:56] *** stan26ans has joined #kamaelia</td></tr>
+            <tr><td>[19:56] &lt Lawouach&gt I had rarely seen so many people on this channel :)</td></tr>
+            <tr><td>[19:57] &lt Lawouach&gt That's cool</td></tr>
+            <tr><td>[19:57] &lt MS-&gt Lawouach: Indeedy</td></tr>
+            <tr><td>[19:57] *** orphans waves at everyone :)</td></tr>
+            <tr><td>[19:58] &lt orphans&gt in a non-creepy way obviously...</td></tr>
+            <tr><td>[19:58] &lt MS-&gt :-)</td></tr>
+            <tr><td>[19:59] &lt MS-&gt The reason for the general announcement is because putting in applications is almost the opposite of an ebay auction</td></tr>
+            <tr><td>[19:59] &lt MS-&gt whilst a *dreadful* analogy</td></tr>
+            <tr><td>[19:59] &lt MS-&gt if you put in your app soon enough we can discuss it to get a better idea of what it will be like working with you.</td></tr>
+            <tr><td>[19:59] &lt MS-&gt That's kinda hard to do in the last few days</td></tr>
+            <tr><td>[20:04] &lt MS-&gt :-D</td></tr>
+            <tr><td>[20:04] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[20:04] &lt Lawouach&gt just let kamaeliabot randomly answer people</td></tr>
+            <tr><td>[20:05] &lt orphans&gt i do find it every so slightly worrying when it says huh? to me</td></tr>
+            <tr><td>[20:05] &lt orphans&gt suddenly put on the spot with no comeback...to a machine</td></tr>
+            <tr><td>[20:06] &lt orphans&gt I'm sure my social faux-pas' should be with humans :S</td></tr>
+            <tr><td>[20:06] &lt vmlemon__&gt Hah</td></tr>
+            <tr><td>[20:10] &lt vmlemon__&gt It's probably just after more Cillit Bang ;)</td></tr>
+            <tr><td>[20:10] *** vmlemon__ ducks</td></tr>
+            <tr><td>[20:13] &lt vmlemon__&gt Haha, the Orange billing system seems broken, since it let me download about 3 MB of stuff, even though I only have 54p credit, which hasn't changed</td></tr>
+            <tr><td>[20:17] &lt orphans&gt heh, you think that's bad. (starts long story, feel free to doze of at any point)</td></tr>
+            <tr><td>[20:18] &lt orphans&gt a couple of months ago three burly guys in yellow came to my door, saying that they needed to have a look at my electricity meter. I let them in and they peered at it.</td></tr>
+            <tr><td>[20:18] &lt orphans&gt I asked them what they needed. They said that they were going to put in one of those meters where you have to stick money in because we hadn't been paying the bills</td></tr>
+            <tr><td>[20:18] &lt orphans&gt which we had...</td></tr>
+            <tr><td>[20:19] &lt orphans&gt turns out there are two meters in our house, one for upstairs (which we were paying), one for downstairs, with no bills being sent to us, and the occasional threat of unspecified legal action not addressed to us (and hence unopened)</td></tr>
+            <tr><td>[20:20] &lt orphans&gt to add to that, the downstairs meter was being charged at commercial rates despite our house quite obviously being, well, a house</td></tr>
+            <tr><td>[20:21] &lt orphans&gt three burly guys consult, phone someone, and say that it's alright, we'll get sent a bill soon</td></tr>
+            <tr><td>[20:21] &lt simon&gt MS-: When we first talked about my idea about a "mmorpg" you said it would need some more flesh and bones but I thinks I never got your suggestions on what it could be?</td></tr>
+            <tr><td>[20:22] &lt orphans&gt three months later and I get a letter through saying that we will not be billed for a bit because of administrative issues, but theyll issue one in July, a month after we move out</td></tr>
+            <tr><td>[20:22] &lt orphans&gt upshot = one years free electricity for half our house</td></tr>
+            <tr><td>[20:22] &lt orphans&gt sillyness</td></tr>
+            <tr><td>[20:22] &lt orphans&gt simon: sorry for ranting through valid questions</td></tr>
+            <tr><td>[20:25] &lt MS-&gt simon: I think my view was that the flesh and bones was up to you</td></tr>
+            <tr><td>[20:25] &lt MS-&gt To be honest, you've shown a willingness to cut code to get an idea how easy/difficult things are</td></tr>
+            <tr><td>[20:25] &lt MS-&gt and that's a very positive thing to see</td></tr>
+            <tr><td>[20:26] &lt MS-&gt I'm more comfortable with your ideas as a result of seeing your code</td></tr>
+            <tr><td>[20:26] &lt MS-&gt and having had a chance to discuss things with you</td></tr>
+            <tr><td>[20:26] &lt MS-&gt Have you got a copy of your idea handy?</td></tr>
+            <tr><td>[20:27] &lt simon&gt MS-: you looked at my seconde version to? (the one with trees)</td></tr>
+            <tr><td>[20:27] &lt MS-&gt Yes, I liked that. I've got some ideas how to improve that, and if I get a chance this evening I'll make some of those changes to give you come ideas.</td></tr>
+            <tr><td>[20:27] &lt MS-&gt (essentially it revolves around using the tracker to manage a map)</td></tr>
+            <tr><td>[20:28] &lt MS-&gt Since you'll need to share non-changing (or little changing information) like that</td></tr>
+            <tr><td>[20:29] &lt MS-&gt Also, you have a small fan of your code - I've got a 6 year old son - and he really likes it :)</td></tr>
+            <tr><td>[20:29] &lt simon&gt MS-: i have a copy of the first presentation of the idea if you want</td></tr>
+            <tr><td>[20:29] &lt simon&gt :)</td></tr>
+            <tr><td>[20:29] &lt MS-&gt please</td></tr>
+            <tr><td>[20:30] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:31] &lt simon&gt http://pastebin.com/m597d8fab</td></tr>
+            <tr><td>[20:32] *** phatmonkey has joined #kamaelia</td></tr>
+            <tr><td>[20:32] &lt simon&gt MS-: made a draft for the real presentation yesterday but its on an server i cant acess now :(</td></tr>
+            <tr><td>[20:32] &lt MS-&gt np</td></tr>
+            <tr><td>[20:34] *** MS- looks</td></tr>
+            <tr><td>[20:35] &lt MS-&gt Ah, yes. Well, code walks :)</td></tr>
+            <tr><td>[20:36] &lt simon&gt have to cut the connection, brb</td></tr>
+            <tr><td>[20:36] &lt MS-&gt np</td></tr>
+            <tr><td>[20:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:38] *** simon loves irssi how ingnore that the connection got cut :P</td></tr>
+            <tr><td>[20:39] &lt vmlemon_&gt Great timing...</td></tr>
+            <tr><td>[20:39] &lt MS-&gt simon: suggestion - put that pastebin into the GSOC application</td></tr>
+            <tr><td>[20:39] &lt MS-&gt then when I put comments in (currently writing)</td></tr>
+            <tr><td>[20:40] &lt MS-&gt the app will bounce back to you for editting when you can access your draft</td></tr>
+            <tr><td>[20:40] &lt MS-&gt But at least you'll have comments in</td></tr>
+            <tr><td>[20:40] &lt simon&gt ok, will do</td></tr>
+            <tr><td>[20:49] &lt simon&gt MS-: have submited it to gsoc now</td></tr>
+            <tr><td>[20:52] &lt MS-&gt simon: cool</td></tr>
+            <tr><td>[20:53] *** MS- still writing comments</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Incidentally, all the comments are suggestions, and at the end of the day, your ideas and direction are what will make the project fun and cool. Hopefully the comments/ideas will be useful :)</td></tr>
+            <tr><td>[21:00] *** simon thinks the comments will be usefull</td></tr>
+            <tr><td>[21:01] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[21:02] &lt j_baker&gt MS- you said that the wsgi code is partly implemented?</td></tr>
+            <tr><td>[21:02] &lt Lawouach&gt I read through the applications for Kamaelia and they look cool</td></tr>
+            <tr><td>[21:02] &lt Lawouach&gt That's great to see you guys having those non trivial ideas</td></tr>
+            <tr><td>[21:03] &lt Lawouach&gt I'll have questions to ask though :)</td></tr>
+            <tr><td>[21:05] *** orphans looks nervous</td></tr>
+            <tr><td>[21:05] &lt Lawouach&gt nah</td></tr>
+            <tr><td>[21:05] &lt Lawouach&gt well since you ask :)</td></tr>
+            <tr><td>[21:05] &lt orphans&gt heh</td></tr>
+            <tr><td>[21:06] &lt Lawouach&gt I assume you're the owner of the "networked music sequencer" idea, right?</td></tr>
+            <tr><td>[21:06] &lt orphans&gt yeah</td></tr>
+            <tr><td>[21:07] &lt Lawouach&gt I like the idea very much. I'll be honest when I first went though your proposal I thought "seems a bit too much for GSoC timeframe". It seems though that you're already well used to the different bricks you'd use so I guess it sounds realistic :)</td></tr>
+            <tr><td>[21:08] &lt Lawouach&gt What is OSC in a few words?</td></tr>
+            <tr><td>[21:08] &lt Lawouach&gt I mean what is it used for?</td></tr>
+            <tr><td>[21:08] &lt Lawouach&gt (I read their website but I'd like your take ;))</td></tr>
+            <tr><td>[21:09] &lt orphans&gt it's used as a simple protocol to send data over a network basically</td></tr>
+            <tr><td>[21:09] &lt orphans&gt mainly numerical stuff, with timestamps and the like so you can control events in the future</td></tr>
+            <tr><td>[21:09] &lt Lawouach&gt It looks like an application level protocol, or is it lower level?</td></tr>
+            <tr><td>[21:09] &lt MS-&gt simon: http://pastebin.com/m9faa39c</td></tr>
+            <tr><td>[21:10] &lt orphans&gt lawouach: sorry, I don't understand levels :)</td></tr>
+            <tr><td>[21:10] *** orphans wikis</td></tr>
+            <tr><td>[21:10] &lt Lawouach&gt no worries</td></tr>
+            <tr><td>[21:11] &lt Lawouach&gt This isn't a trick question, just being curious. Don't worry I'll look up what I need: )</td></tr>
+            <tr><td>[21:11] &lt MS-&gt Lawouach: http://pyduino.pastebin.com/m5d9aca8d</td></tr>
+            <tr><td>[21:11] &lt MS-&gt (courtesy of orphans yesterday)</td></tr>
+            <tr><td>[21:14] &lt orphans&gt ahh right, read a bit more. You'll have to correct me here cause I might be getting my terminology very wrong</td></tr>
+            <tr><td>[21:15] &lt orphans&gt I think it's still application level, cause it just sends a binary representation of the data over a socket</td></tr>
+            <tr><td>[21:15] &lt orphans&gt does that make sense?</td></tr>
+            <tr><td>[21:15] &lt Lawouach&gt it does</td></tr>
+            <tr><td>[21:16] &lt Lawouach&gt MS-, that is interesting</td></tr>
+            <tr><td>[21:16] &lt Lawouach&gt Now, there is one thing that worries me a bit.</td></tr>
+            <tr><td>[21:16] &lt MS-&gt baker: "MS- you said that the wsgi code is partly implemented?"</td></tr>
+            <tr><td>[21:17] &lt MS-&gt yes</td></tr>
+            <tr><td>[21:17] &lt MS-&gt partly</td></tr>
+            <tr><td>[21:17] &lt orphans&gt lawouach: yeah</td></tr>
+            <tr><td>[21:17] &lt Lawouach&gt From my own experience of Kamaelia, it can be quickly frustrating to have to mix non-Kamaelia-aware code with Kamaelia's components</td></tr>
+            <tr><td>[21:17] &lt j_baker&gt MS- Where is the code that we have so far?</td></tr>
+            <tr><td>[21:18] &lt Lawouach&gt Here you seem to be interested in writing a great application using Kamaelia's design with lots of non Kamaelia's library.</td></tr>
+            <tr><td>[21:19] &lt Lawouach&gt The mismatch may or may not be too high</td></tr>
+            <tr><td>[21:19] &lt Lawouach&gt I don't know enough of those libraries you mention so I can't really judge</td></tr>
+            <tr><td>[21:19] &lt orphans&gt lawouach: I think the libraries should (hopefully) slot in OK. For example the OSC library constructs an OSC Message and then all it does is fire it through a UDP socket it creates in python</td></tr>
+            <tr><td>[21:19] &lt Lawouach&gt But be aware of the problem</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Lawouach: My feeling is that they probably will slot in OK</td></tr>
+            <tr><td>[21:20] &lt Lawouach&gt That's fine by me, I wanted to highlight that fact ;)</td></tr>
+            <tr><td>[21:20] &lt Lawouach&gt well that's cool :)</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Though its likely that many may be threaded components rather than generator ones</td></tr>
+            <tr><td>[21:20] *** orphans finds the bit of code</td></tr>
+            <tr><td>[21:20] &lt MS-&gt But your concern is noted</td></tr>
+            <tr><td>[21:20] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:21] &lt MS-&gt You're probably the most experienced kamaelia dev beyond myself & matt after all :)</td></tr>
+            <tr><td>[21:21] &lt Lawouach&gt we do have a huge community, don't we? :D</td></tr>
+            <tr><td>[21:21] &lt Lawouach&gt bah quantity is nothing, quality is the real thing</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Most "real" open source projects have a small number of devs anyway</td></tr>
+            <tr><td>[21:22] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[21:22] &lt MS-&gt which is probably why GSOC is such a good idea</td></tr>
+            <tr><td>[21:22] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[21:22] &lt Lawouach&gt That actually leads me to a more generic question to you orphans</td></tr>
+            <tr><td>[21:22] &lt MS-&gt j_baker: just finding things up</td></tr>
+            <tr><td>[21:23] &lt orphans&gt http://trac.v2.nl/browser/OSC/trunk/pyOSC/OSC.py (~line 1083)</td></tr>
+            <tr><td>[21:23] &lt j_baker&gt np :)</td></tr>
+            <tr><td>[21:23] *** MS- thinks he must be going mad. I DID do some work on making kamaelia more WSGI friendly</td></tr>
+            <tr><td>[21:23] &lt MS-&gt last year</td></tr>
+            <tr><td>[21:23] &lt orphans&gt lawouach: go ahead</td></tr>
+            <tr><td>[21:23] &lt MS-&gt november sort of time frame</td></tr>
+            <tr><td>[21:24] &lt Lawouach&gt Your idea really interests me, however I wonder, considering that is a real/usable application you'd want to create, have you tought about after GSoC?</td></tr>
+            <tr><td>[21:24] &lt Lawouach&gt Do you want to carry on that project? Is it more a proof of concept?</td></tr>
+            <tr><td>[21:24] &lt Lawouach&gt MS-, you did :)</td></tr>
+            <tr><td>[21:24] &lt orphans&gt I guess I saw it more as a proof of concept which makes it easy to build more on top of it</td></tr>
+            <tr><td>[21:25] &lt orphans&gt making nice usable audio apps isn't easy, and I'm not 100% that the way of making music will work/make nice results</td></tr>
+            <tr><td>[21:25] &lt orphans&gt but it'll mean that the base is there to keep trying things out until something does work well</td></tr>
+            <tr><td>[21:26] &lt Lawouach&gt I think that idea could succeed provided that it's feature complete and easy to deploy for non programmers.</td></tr>
+            <tr><td>[21:27] &lt MS-&gt Ah, yes, last september</td></tr>
+            <tr><td>[21:27] &lt orphans&gt yeah, I do really want it to be as simple as possible</td></tr>
+            <tr><td>[21:27] &lt Lawouach&gt To me this means that you have to strongly consider the extend of your goals (but it seems your proposal shows that you have already) and allow for some testing/deployment</td></tr>
+            <tr><td>[21:27] &lt Lawouach&gt actually that triggers another question, considering this is a network application, how are you going to test it?</td></tr>
+            <tr><td>[21:27] &lt Lawouach&gt You have several machines? testing locally?</td></tr>
+            <tr><td>[21:28] &lt orphans&gt I have a horrible feeling yeah, running between computers</td></tr>
+            <tr><td>[21:28] &lt MS-&gt j_baker: It was more the fact that I was changing the http code to support wsgi better</td></tr>
+            <tr><td>[21:28] &lt simon&gt MS-: did you see my message in private chat?</td></tr>
+            <tr><td>[21:28] &lt MS-&gt simon: nope</td></tr>
+            <tr><td>[21:28] &lt Lawouach&gt "horrible feeling"? what do you mean?</td></tr>
+            <tr><td>[21:28] &lt orphans&gt also I play live with one of my friends who's not technical, so I think I'll try and get him to do some real usage testing with me</td></tr>
+            <tr><td>[21:28] &lt Lawouach&gt simon, make sure you're logged in with nickserv</td></tr>
+            <tr><td>[21:28] &lt orphans&gt lawouach: I can see myself getting too into it and spending about an hour running backwards and forwards adding notes :D</td></tr>
+            <tr><td>[21:28] &lt Lawouach&gt orphans, that could be relevant yes (at least to me)</td></tr>
+            <tr><td>[21:29] &lt Lawouach&gt orphans, that's why you mentors are here</td></tr>
+            <tr><td>[21:29] &lt Lawouach&gt s/you/your</td></tr>
+            <tr><td>[21:29] &lt orphans&gt keep my on the straight and narrow :)</td></tr>
+            <tr><td>[21:30] &lt orphans&gt you said earlier about the extent of the goals, I'd much rather have one less UI component, but have the networking setup well and easy to implement</td></tr>
+            <tr><td>[21:30] &lt simon&gt ill take it here then: looked throw the google faq, and begining to wounder if I im allowed to join gsoc, the type of school im and every other swede betwen 16 and 19 is enrolled in (upper secondary school) is considerd an "accredited institution</td></tr>
+            <tr><td>[21:30] &lt Lawouach&gt well, personally (and maybe MS- will shed a different light here), I want to see GSoC as much as a way for students to discover the OSS world as a way to work on a real project with deadlines.</td></tr>
+            <tr><td>[21:31] &lt orphans&gt yeah, obviously I'd really like to get it all sorted :)</td></tr>
+            <tr><td>[21:31] &lt Lawouach&gt So mentors are here to guide, not to punish. But at the end of the day, you are responsible for the project you carry :)</td></tr>
+            <tr><td>[21:31] &lt j_baker&gt MS- I did find this... http://www.owlfish.com/software/wsgiutils/</td></tr>
+            <tr><td>[21:32] &lt j_baker&gt Since it's based on python's SimpleHTTPServer, it shouldn't be too difficult to wrap in Kamaelia should it?</td></tr>
+            <tr><td>[21:32] &lt MS-&gt That wouldn't make any sense</td></tr>
+            <tr><td>[21:32] &lt MS-&gt since we already *have* an http server</td></tr>
+            <tr><td>[21:32] &lt MS-&gt The aim is to change that to support wsgi</td></tr>
+            <tr><td>[21:32] &lt MS-&gt that involved a number of structural changes</td></tr>
+            <tr><td>[21:33] &lt MS-&gt such as capturing & setting various environment variables</td></tr>
+            <tr><td>[21:33] &lt j_baker&gt I see.</td></tr>
+            <tr><td>[21:33] &lt MS-&gt AH</td></tr>
+            <tr><td>[21:33] &lt MS-&gt found what I was looking for</td></tr>
+            <tr><td>[21:33] &lt MS-&gt So many lines of code</td></tr>
+            <tr><td>[21:34] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/KamaeliaWebServer.py</td></tr>
+            <tr><td>[21:34] &lt MS-&gt You'll note that runs a simple WSGI app</td></tr>
+            <tr><td>[21:34] &lt MS-&gt And also does this:</td></tr>
+            <tr><td>[21:34] &lt MS-&gt class _WSGIHandler(Axon.ThreadedComponent.threadedcomponent): """Choosing to run the WSGI app in a thread rather than the same context, this means we don't have to worry what they get up to really"""</td></tr>
+            <tr><td>[21:34] &lt MS-&gt Should've remembered I'd've done that in /Sketches</td></tr>
+            <tr><td>[21:35] &lt MS-&gt That *is* where speculative dev like that is supposed to happen after all :)</td></tr>
+            <tr><td>[21:37] &lt MS-&gt j_baker: The reason why it makes more sense to us kamaelia's webserver btw is that it allows for greater reconfigurability</td></tr>
+            <tr><td>[21:38] &lt MS-&gt due to the fact that kamaelia components can (if written well) be dived into and have major changes to them</td></tr>
+            <tr><td>[21:38] &lt j_baker&gt I see. Do you think that adding this would be enough to "de-trivialize" my project?</td></tr>
+            <tr><td>[21:38] &lt MS-&gt Replacing TCP with UDP for example would be a bit of a pain, but doable with kamaelia (and once done one trivial for every other protocol on top of TCP)</td></tr>
+            <tr><td>[21:39] &lt MS-&gt Not sure, it depends on how you change it really</td></tr>
+            <tr><td>[21:39] &lt MS-&gt It's a fine balance between ambitious & impossible vs ambitious sounding but trivial (the Scotty dilemma)</td></tr>
+            <tr><td>[21:40] &lt Lawouach&gt j_baker, I read your proposal and was intrigued by its first two paragraphs in ths abstract. That being said I have to agree with MS-'s comments.</td></tr>
+            <tr><td>[21:40] &lt Lawouach&gt I'm still intrigued :)</td></tr>
+            <tr><td>[21:40] &lt MS-&gt "Ya canna change the laws of physics jim" vs "' It'll take 6 weeks, but ya nae have six weeks, so I'll do it for you in two.' 'You have 48 hours' 'OK' "</td></tr>
+            <tr><td>[21:40] *** simon logging of soon...</td></tr>
+            <tr><td>[21:41] &lt MS-&gt simon: Not seen any private messages from you</td></tr>
+            <tr><td>[21:41] &lt MS-&gt Oh, you reposted here</td></tr>
+            <tr><td>[21:41] &lt simon&gt MS-: yes</td></tr>
+            <tr><td>[21:41] &lt MS-&gt simon: I really don't know</td></tr>
+            <tr><td>[21:42] &lt MS-&gt My feeling is that if you've been accepted onto a university level course that starts in september then you're probably OK, since Ryan Lothian was in that situation in 2006</td></tr>
+            <tr><td>[21:42] &lt j_baker&gt How difficult do you think it would be to get my peer running PHP? I know there's a way to do that from the Command Line, but is there a more efficient way to do that?</td></tr>
+            <tr><td>[21:42] &lt MS-&gt j_baker: Next to impossible</td></tr>
+            <tr><td>[21:43] &lt MS-&gt kamaelia is allergic to php</td></tr>
+            <tr><td>[21:43] &lt j_baker&gt lol</td></tr>
+            <tr><td>[21:43] &lt MS-&gt as am I</td></tr>
+            <tr><td>[21:43] &lt Lawouach&gt j_baker, I guess my first question what is the problem you want to solve here?</td></tr>
+            <tr><td>[21:43] &lt MS-&gt *dreadful* language</td></tr>
+            <tr><td>[21:43] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:43] &lt vmlemon_&gt Gets furballs?</td></tr>
+            <tr><td>[21:44] &lt j_baker&gt I don't disagree MS-. But there is a HUGE amount of code for it.</td></tr>
+            <tr><td>[21:44] &lt simon&gt MS-: the problem is that i wont be accepted onto a univerity cource before April 14, probobly sometime in may:(</td></tr>
+            <tr><td>[21:45] &lt vmlemon_&gt A CKAN would be useful, if interest was high enough</td></tr>
+            <tr><td>[21:45] &lt j_baker&gt Lawouach, I suppose the problem that I want to solve is that I think people want to host a webpage with dynamic content, but I think the barrier for entry is to high.</td></tr>
+            <tr><td>[21:45] &lt j_baker&gt They can do myspace, but well... myspace sucks.</td></tr>
+            <tr><td>[21:45] &lt MS-&gt simon: hm.</td></tr>
+            <tr><td>[21:46] &lt j_baker&gt You only have the option of cookie cutter templates, you have to use myspace's crappy servers, and there isn't any way to script it.</td></tr>
+            <tr><td>[21:46] &lt MS-&gt :-/</td></tr>
+            <tr><td>[21:46] &lt simon&gt MS-: but it starts in september</td></tr>
+            <tr><td>[21:46] &lt Lawouach&gt j_baker, I think I prefer when you use the term "publish" instead of "host".</td></tr>
+            <tr><td>[21:46] &lt Lawouach&gt If you tell me host, I think "well install a LAMP on your machine and be done with it"</td></tr>
+            <tr><td>[21:47] &lt MS-&gt simon: it's a *very* similar story as to that which happened with Ryan IMO</td></tr>
+            <tr><td>[21:47] &lt Lawouach&gt Whereas "publish" as you use in the first part of the abstract does carry the meaning of "well I can't care less about the how, I just want to make that available"</td></tr>
+            <tr><td>[21:47] &lt MS-&gt Which *was* OK last time round</td></tr>
+            <tr><td>[21:47] &lt Lawouach&gt See for instance Tim Bray's Publish article.</td></tr>
+            <tr><td>[21:47] &lt j_baker&gt Yeah, there you go Lawouach</td></tr>
+            <tr><td>[21:48] &lt Lawouach&gt http://www.tbray.org/ongoing/When/200x/2006/09/14/Why-Atom</td></tr>
+            <tr><td>[21:48] &lt simon&gt MS-: Ok, hope its ok this time to</td></tr>
+            <tr><td>[21:48] &lt MS-&gt simon: Drop me a mail about it off list</td></tr>
+            <tr><td>[21:48] &lt MS-&gt ms@cerenity.org</td></tr>
+            <tr><td>[21:48] &lt MS-&gt brief, to the point</td></tr>
+            <tr><td>[21:48] &lt simon&gt ok</td></tr>
+            <tr><td>[21:48] &lt Lawouach&gt well then one might argue that there has been considerable amount of work done by Google and others to offer P2P filesystem integration so that you could just do that.</td></tr>
+            <tr><td>[21:48] &lt MS-&gt Explain briefly what the applications process is where you are</td></tr>
+            <tr><td>[21:49] &lt Lawouach&gt Like Wuala</td></tr>
+            <tr><td>[21:49] &lt Lawouach&gt http://www.youtube.com/watch?v=3xKZ4KGkQY8</td></tr>
+            <tr><td>[21:49] &lt MS-&gt (uni applications process that is)</td></tr>
+            <tr><td>[21:49] &lt MS-&gt If it's like the UK, we'll see</td></tr>
+            <tr><td>[21:50] &lt MS-&gt That said, GSOC *has* grown over the past few years, and things were really feeling their way round</td></tr>
+            <tr><td>[21:50] &lt MS-&gt I'll do what I can</td></tr>
+            <tr><td>[21:50] &lt MS-&gt no promises :)</td></tr>
+            <tr><td>[21:51] *** simon cross his fingers</td></tr>
+            <tr><td>[21:51] &lt MS-&gt (any mail to that email address will take around an hour or more to get to me btw if its your first mail to me)</td></tr>
+            <tr><td>[21:51] &lt MS-&gt (due to a greylisting server)</td></tr>
+            <tr><td>[21:51] &lt MS-&gt (so don't worry if you say "sent" and you don't get an immediate "got it!" :) )</td></tr>
+            <tr><td>[21:53] &lt Lawouach&gt j_baker, I'm not saying your idea is the wrong one but it may require a bit more thinking in regards to what is already available that could do the same thing and what they are lacking in your opinion.</td></tr>
+            <tr><td>[21:54] &lt orphans&gt right, I'm off to the pub. Cheers for the help/feedback MS- and lawouach</td></tr>
+            <tr><td>[21:54] &lt orphans&gt and bye all :)</td></tr>
+            <tr><td>[21:55] &lt Lawouach&gt I totally agree with your comment that Kamaelia is a good fit for that idea</td></tr>
+            <tr><td>[21:55] &lt Lawouach&gt bye orphans</td></tr>
+            <tr><td>[21:55] &lt j_baker&gt Hmm... this is a good point Lawouach.</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt See you orphans</td></tr>
+            <tr><td>[21:55] &lt Lawouach&gt never apparently :)</td></tr>
+            <tr><td>[21:56] &lt Lawouach&gt keep working your idea as I'm interested about it</td></tr>
+            <tr><td>[21:56] &lt simon&gt MS-: mail sent</td></tr>
+            <tr><td>[21:57] &lt Lawouach&gt one more thing, consider whether or not installing Python and dependencies would be a barrier to the project</td></tr>
+            <tr><td>[21:57] &lt j_baker&gt Lawouach, what are some other projects that do this that you can think of?</td></tr>
+            <tr><td>[21:57] &lt MS-&gt simon: thanks!</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt j_baker, I'm not sure but I guess Google Desktop?</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt maybe Opera's widget too</td></tr>
+            <tr><td>[21:58] &lt MS-&gt Lawouach: Skydrive?</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[21:58] &lt simon&gt MS-: ill beter get some sleep now if im going to be able to work tomorrow, bye</td></tr>
+            <tr><td>[21:58] &lt MS-&gt not quite the same, but similar space</td></tr>
+            <tr><td>[21:58] &lt MS-&gt indeed</td></tr>
+            <tr><td>[21:58] &lt MS-&gt cya,</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt MS-, totally</td></tr>
+            <tr><td>[21:59] &lt Lawouach&gt bye simon</td></tr>
+            <tr><td>[21:59] &lt Lawouach&gt anyway</td></tr>
+            <tr><td>[21:59] &lt Lawouach&gt I shall go too</td></tr>
+            <tr><td>[21:59] &lt MS-&gt okey doke</td></tr>
+            <tr><td>[21:59] &lt MS-&gt cya :)</td></tr>
+            <tr><td>[21:59] &lt Lawouach&gt j_baker, please think about it and ask questions on the channeml</td></tr>
+            <tr><td>[21:59] &lt Lawouach&gt salut :)</td></tr>
+            <tr><td>[21:59] &lt j_baker&gt Thanks for the advice</td></tr>
+            <tr><td>[21:59] &lt Lawouach&gt np</td></tr>
+            <tr><td>[22:03] *** vmlemon_ had an idea for a "globally shared" files/aggregator that scanned the network using various protocols as well as Bluetooth devices nearby, and listed all the shared objects that it sees by hostname, as well as providing a browser... </td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt *files/directories</td></tr>
+            <tr><td>[22:05] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[22:05] &lt vmlemon_&gt (An enhanced Network Neighbourhood/Chooser, pretty much)</td></tr>
+            <tr><td>[22:05] &lt j_baker&gt MS- do you think there's anything that my project can do with OpenSocial?</td></tr>
+            <tr><td>[22:08] &lt vmlemon_&gt Be a host for other OpenSocial components?</td></tr>
+            <tr><td>[22:10] &lt j_baker&gt That's one idea.</td></tr>
+            <tr><td>[22:12] &lt vmlemon_&gt Or produce an OpenSocial component somehow</td></tr>
+            <tr><td>[22:13] *** vmlemon_ finds a conflict of interest in Tesco running a shopping price comparison tool/website...</td></tr>
+            <tr><td>[22:20] *** phatmonkey has joined #kamaelia</td></tr>
+            <tr><td>[22:34] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:47] &lt j_baker&gt This is interesting</td></tr>
+            <tr><td>[22:47] &lt j_baker&gt http://code.google.com/apis/socialgraph/docs/</td></tr>
+            <tr><td>[22:47] &lt j_baker&gt I may have to try and implement this.</td></tr>
+            <tr><td>[22:52] &lt vmlemon__&gt Wasn't someone working on Jabber components for Kamaelia?</td></tr>
+            <tr><td>[22:53] &lt j_baker&gt Dunno.</td></tr>
+            <tr><td>[22:53] &lt j_baker&gt I seem to vaguely remember seeing that somewhere.</td></tr>
+            <tr><td>[22:53] &lt MS-&gt j_baker: opensocial is interesting</td></tr>
+            <tr><td>[22:53] &lt vmlemon__&gt I was thinking of Amplee for some reason, but that's probably not related</td></tr>
+            <tr><td>[22:54] &lt MS-&gt vmlemon__: You were thinking of Lawouach</td></tr>
+            <tr><td>[22:54] &lt MS-&gt XMPP is javver</td></tr>
+            <tr><td>[22:54] &lt MS-&gt jabber</td></tr>
+            <tr><td>[22:54] &lt vmlemon__&gt Aah</td></tr>
+            <tr><td>[22:54] &lt MS-&gt open social is a nice idea to implement in some fashion</td></tr>
+            <tr><td>[22:55] &lt j_baker&gt I don't know that it would be feasible.</td></tr>
+            <tr><td>[22:55] &lt MS-&gt dunno</td></tr>
+            <tr><td>[22:55] &lt j_baker&gt Unless it's easy to interface javascript and python.</td></tr>
+            <tr><td>[22:55] &lt MS-&gt (sorry, been afk for a while, and will be for more)</td></tr>
+            <tr><td>[22:55] &lt j_baker&gt The API for hosting opensocial components is javascript.</td></tr>
+            <tr><td>[22:55] &lt j_baker&gt np :)</td></tr>
+            <tr><td>[22:55] &lt MS-&gt well javascript is client side</td></tr>
+            <tr><td>[22:55] &lt MS-&gt and makes API calls over HTTP</td></tr>
+            <tr><td>[22:55] &lt MS-&gt so the interface is a web request</td></tr>
+            <tr><td>[22:56] &lt MS-&gt which so if you have wsgi in the python side, supporting an API there is relatively trivial</td></tr>
+            <tr><td>[22:56] *** MS- ms-only-1/2-here</td></tr>
+            <tr><td>[22:56] *** MS- is now known as ms-only-1</td></tr>
+            <tr><td>[22:56] *** ms-only-1 is now known as ms-only-0</td></tr>
+            <tr><td>[22:56] &lt ms-only-0&gt gah</td></tr>
+            <tr><td>[22:57] &lt ms-only-0&gt ms-only-halfhere</td></tr>
+            <tr><td>[22:57] *** ms-only-0 is now known as ms-only-halfhere</td></tr>
+            <tr><td>[23:01] &lt vmlemon__&gt 0.5?</td></tr>
+            <tr><td>[23:02] &lt j_baker&gt Or he could be diet MS</td></tr>
+            <tr><td>[23:02] &lt vmlemon__&gt MS Lite?</td></tr>
+            <tr><td>[23:02] &lt j_baker&gt Same great MS taste but half the calories.</td></tr>
+            <tr><td>[23:04] &lt vmlemon__&gt and they replace the sugar with something else?</td></tr>
+            <tr><td>[23:05] &lt vmlemon__&gt Now with added water!</td></tr>
+            <tr><td>[23:05] &lt j_baker&gt Aspartame probably.</td></tr>
+            <tr><td>[23:05] &lt j_baker&gt Wow. MS could potentially cause cancer....</td></tr>
+            <tr><td>[23:06] &lt vmlemon__&gt Chia MS?</td></tr>
+            <tr><td>[23:06] &lt vmlemon__&gt (just add water to get your very own pet MS)</td></tr>
+            <tr><td>[23:07] &lt j_baker&gt lol</td></tr>
+            <tr><td>[23:07] &lt j_baker&gt Well, MS is going to have no shortage of half-away messages now</td></tr>
+            <tr><td>[23:08] &lt vmlemon__&gt Always that chlorinated sugar stuff (Splenda/sucralose)</td></tr>
+            <tr><td>[23:09] &lt vmlemon__&gt or sodium saccharine(?), as bitter as it is</td></tr>
+            <tr><td>[23:10] &lt vmlemon__&gt Back in a mo</td></tr>
+            <tr><td>[23:28] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:29] &lt vmlemon__&gt Hi again</td></tr>
+            <tr><td>[23:31] &lt j_baker&gt hola</td></tr>
+            <tr><td>[23:32] *** vmlemon__ wonders how long it'll take for the music player to implode and take the network stack down with it ;)</td></tr>
+            <tr><td>[23:33] &lt j_baker&gt Bah. Network stacks are overrated anyway.</td></tr>
+            <tr><td>[23:33] &lt vmlemon__&gt Any more flavour/variety suggestions after last time?</td></tr>
+            <tr><td>[23:34] &lt vmlemon__&gt Following from MS Lite/Diet ;)</td></tr>
+            <tr><td>[23:34] &lt j_baker&gt MS- zero?</td></tr>
+            <tr><td>[23:34] &lt vmlemon__&gt Doctor MS?</td></tr>
+            <tr><td>[23:35] &lt j_baker&gt Cherry MS</td></tr>
+            <tr><td>[23:36] &lt vmlemon__&gt Vanilla MS?/MS Cino? (coffee flavour)</td></tr>
+            <tr><td>[23:37] &lt j_baker&gt I think coffee flavor would be awesome.</td></tr>
+            <tr><td>[23:37] &lt j_baker&gt Do they have coffee flavored Coke in the UK?</td></tr>
+            <tr><td>[23:38] &lt vmlemon__&gt I think it took part of the GUI with it last time it crashed too, so I couldn't start any other apps</td></tr>
+            <tr><td>[23:39] &lt vmlemon__&gt They did for a while</td></tr>
+            <tr><td>[23:39] &lt vmlemon__&gt At least Pepsi did one</td></tr>
+            <tr><td>[23:40] &lt vmlemon__&gt There was Coke Blak, too</td></tr>
+            <tr><td>[23:40] &lt j_baker&gt We got the Coke version now that I think about it.</td></tr>
+            <tr><td>[23:40] &lt j_baker&gt I heard it was nasty.</td></tr>
+            <tr><td>[23:40] &lt j_baker&gt I don't recall the pepsi one.</td></tr>
+            <tr><td>[23:41] &lt vmlemon__&gt (yes, it was mis-spelt on the label)</td></tr>
+            <tr><td>[23:41] &lt vmlemon__&gt The Pepsi one was nice</td></tr>
+            <tr><td>[23:43] *** vmlemon__ is listening to a selection of Matsutoya Yumi songs...</td></tr>
+            <tr><td>[23:44] &lt vmlemon__&gt I'm amazed that Orange have her music on their store</td></tr>
+            <tr><td>[23:45] &lt vmlemon__&gt Since it's pretty obscure/almost unheard of outside Japan</td></tr>
+            <tr><td>[23:46] &lt vmlemon__&gt Woohoo! The music player has conked out/crashed</td></tr>
+            <tr><td>[23:47] &lt vmlemon__&gt (displays a white screen with the signal level)</td></tr>
+            <tr><td>[23:49] &lt vmlemon__&gt and the process terminated cleanly</td></tr>
+            <tr><td>[23:49] &lt vmlemon__&gt for once</td></tr>
+            <tr><td>[23:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:55] &lt vmlemon_&gt Damn, a whiteout</td></tr>
+            <tr><td>[23:56] &lt vmlemon_&gt Thanks crappy bugheap that also happens to play audio</td></tr>
+            <tr><td>[23:57] &lt vmlemon_&gt Yup, took down the GUI and stack</td></tr>
+            <tr><td>[23:59] &lt vmlemon_&gt Argh, damn GSM/UMTS mode switch</td></tr>

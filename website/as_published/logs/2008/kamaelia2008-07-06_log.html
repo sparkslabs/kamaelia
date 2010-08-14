@@ -1,0 +1,750 @@
+<html><body><table>
+            <tr><td>[07:07] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[08:16] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:00] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:32] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:34] &lt orphans&gt aa_, have a look at DataSource (http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Util.DataSource.html) and OneShot (http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Util.OneShot.html) - I think one of them will do what you want it to</td></tr>
+            <tr><td>[09:40] &lt Lawouach&gt hello orphans</td></tr>
+            <tr><td>[09:40] &lt Lawouach&gt how is it going?</td></tr>
+            <tr><td>[09:41] &lt orphans&gt morning, not too bad ta</td></tr>
+            <tr><td>[09:41] &lt orphans&gt trying to write a funding application and failing miserably :)</td></tr>
+            <tr><td>[09:43] &lt orphans&gt but currently my life seems to consist mainly of trying to write reports/applications/personal statements and failing miserably. I'm going to finish this one this morning, and I'm not having lunch til it's done :)</td></tr>
+            <tr><td>[09:43] &lt orphans&gt how about you?</td></tr>
+            <tr><td>[09:44] &lt Lawouach&gt ah well. I had a lovely quiet weekend which I needed</td></tr>
+            <tr><td>[09:44] &lt Lawouach&gt Coded a bunch nonetheless :)</td></tr>
+            <tr><td>[09:45] &lt orphans&gt :) cool</td></tr>
+            <tr><td>[09:45] &lt orphans&gt you still working on crazy xmpp stuff?</td></tr>
+            <tr><td>[09:50] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:51] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[09:52] &lt Lawouach&gt I've started a PyQt lib that maps headstock and PyQt</td></tr>
+            <tr><td>[09:52] &lt Lawouach&gt Makes it easier to write XMPP gui application based on PyQt</td></tr>
+            <tr><td>[09:52] &lt Lawouach&gt rather cool</td></tr>
+            <tr><td>[09:53] &lt Lawouach&gt I also coded a few stuff for a O'Reilly book a friend of mine is writing</td></tr>
+            <tr><td>[09:53] &lt Lawouach&gt Head First Programming book actually</td></tr>
+            <tr><td>[09:53] &lt orphans&gt ahh yeah, I remember seeing you posted a bit of code for the QT stuff</td></tr>
+            <tr><td>[09:53] &lt orphans&gt what's the book on?</td></tr>
+            <tr><td>[09:54] &lt orphans&gt or would you have to kill me?</td></tr>
+            <tr><td>[09:57] &lt Lawouach&gt http://oreilly.com/catalog/9780596514181/index.html#top &lt -- that's the one although it's not the author that they suggest</td></tr>
+            <tr><td>[09:57] &lt Lawouach&gt I'm rather confused :)</td></tr>
+            <tr><td>[09:57] &lt Lawouach&gt anyhow</td></tr>
+            <tr><td>[09:57] &lt Lawouach&gt The book is using Python</td></tr>
+            <tr><td>[09:58] &lt orphans&gt cool :)</td></tr>
+            <tr><td>[10:21] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[10:25] &lt Chong-&gt mhrd-afk: I have changed the rotation behavior and fixed the link problem. Please have a check if it does what you suggested when you get time. Thanks.</td></tr>
+            <tr><td>[10:39] &lt Chong-&gt Just remembered, because the trunk hasn't been changed, you need to find gluPickMatrix(pos[0], self.height-pos[1], 1, 1) in kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/UI/OpenGL/OpenGLDisplay.py</td></tr>
+            <tr><td>[10:41] &lt Chong-&gt and replace it with gluPickMatrix(pos[0], self.height-pos[1], 1, 1, glGetIntegerv(GL_VIEWPORT)) so that you can use your mouse to pick objects. It works for orphans.</td></tr>
+            <tr><td>[10:42] &lt orphans&gt and if it's good enough for me... :D</td></tr>
+            <tr><td>[10:43] &lt Chong-&gt orphans: thanks a lot :-)</td></tr>
+            <tr><td>[10:48] &lt Chong-&gt orphans: * a --- viewer position move left * d --- viewer position move right * w --- viewer position move up * s --- viewer position move down * pgup --- viewer position move forward * pgdn --- viewer position move backward * left --- particles rotate to left around y axis * right --- particles rotate to right around y axis * up --- particles rotate to up around x axis * down --- particles rotate to down around x axis &lt</td></tr>
+            <tr><td>[10:49] &lt orphans&gt ohh, only knew about udlr - I'll try it out now</td></tr>
+            <tr><td>[10:50] &lt Chong-&gt not in a hurry :-)</td></tr>
+            <tr><td>[10:50] &lt orphans&gt works well :)</td></tr>
+            <tr><td>[10:51] &lt orphans&gt can you get it so you can press and hold the buttons and it'll keep going?</td></tr>
+            <tr><td>[10:52] &lt Chong-&gt That's a good idea. thanks. It should be not hard.</td></tr>
+            <tr><td>[10:53] &lt Chong-&gt And you can also drag and drop, add new/delete old nodes and links through console.</td></tr>
+            <tr><td>[10:54] &lt orphans&gt yeah, it's looking really cool :)</td></tr>
+            <tr><td>[10:54] &lt Chong-&gt orphans: thanks :-). any other suggestions to improve?</td></tr>
+            <tr><td>[10:56] &lt orphans&gt get that thing scraping databases - I want to see millions of names flying around my head :D</td></tr>
+            <tr><td>[10:57] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[11:13] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:20] &lt aa_&gt orphans: thanks</td></tr>
+            <tr><td>[11:21] &lt orphans&gt aa_, np, if you have any other questions post them up and I'm sure someone will have a shot at answering them :)</td></tr>
+            <tr><td>[11:21] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[11:22] &lt mhrd-home&gt greetings ... anyone know if MS- is coming online today?</td></tr>
+            <tr><td>[11:22] &lt aa_&gt orphans: ok, will do</td></tr>
+            <tr><td>[11:22] &lt orphans&gt aa_, if no-one's around the mailing list is good too (http://groups.google.com/group/kamaelia)</td></tr>
+            <tr><td>[11:23] &lt orphans&gt mhrd-home, hey, sorry, no idea</td></tr>
+            <tr><td>[11:23] &lt aa_&gt orphans: at the moment kamaelia is cool, but I can't think of anything to use it for</td></tr>
+            <tr><td>[11:23] &lt mhrd-home&gt orphans: ta</td></tr>
+            <tr><td>[11:24] &lt orphans&gt aa_, the next time you need something writing (just something simple even - a quick hack) try it out - it takes a bit of getting your head around but is really nice to use</td></tr>
+            <tr><td>[11:25] &lt aa_&gt orphans: right</td></tr>
+            <tr><td>[11:25] &lt aa_&gt orphans: the thing slightly reminds me of erlang</td></tr>
+            <tr><td>[11:26] &lt orphans&gt mhm, I think that's deliberate in places</td></tr>
+            <tr><td>[11:26] *** orphans knows nothing about erlang</td></tr>
+            <tr><td>[11:26] &lt orphans&gt it gets mentioned quite a lot though :)</td></tr>
+            <tr><td>[11:27] &lt aa_&gt well its strong on message passing, let's just say that</td></tr>
+            <tr><td>[11:28] &lt orphans&gt http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1215258472 - that says a little bit about it (and is interesting too)</td></tr>
+            <tr><td>[11:31] &lt aa_&gt orphans: yeah its michael's recent blogging blitz that reminded me about kamaelia</td></tr>
+            <tr><td>[11:31] &lt aa_&gt but really it did take me 3 times of downloading and playing to get it</td></tr>
+            <tr><td>[11:32] &lt orphans&gt yeah, it's very different for 'traditional' python programming</td></tr>
+            <tr><td>[11:33] &lt orphans&gt I'm one of the SoC students, so it's all I've been writing for the past couple of months - I think I'm going to find it really hard to change back to OO thinking if/when I need to</td></tr>
+            <tr><td>[11:34] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[11:35] &lt orphans&gt Lawouach, I had to think really hard what a normal python program might look like the other day. It was a very strange experience :)</td></tr>
+            <tr><td>[11:35] &lt Lawouach&gt I bet</td></tr>
+            <tr><td>[11:44] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:46] &lt Lawouach&gt orphans: I'll be looking at your application later on today</td></tr>
+            <tr><td>[11:46] &lt Lawouach&gt may I expect sound? :)</td></tr>
+            <tr><td>[11:46] &lt Lawouach&gt or even better, music? :)</td></tr>
+            <tr><td>[11:46] &lt orphans&gt yeah, you should do :)</td></tr>
+            <tr><td>[11:47] &lt orphans&gt (depending on how much Pure Data likes your PC really)</td></tr>
+            <tr><td>[11:47] &lt Davbo&gt Hey guys</td></tr>
+            <tr><td>[11:48] &lt Lawouach&gt orphans: okay. Could you describe me step by step how I may run three instances of your application so that they interact with each other?</td></tr>
+            <tr><td>[11:48] &lt Lawouach&gt Bonjour Davbo</td></tr>
+            <tr><td>[11:48] &lt Davbo&gt Salut Lawouach :-)</td></tr>
+            <tr><td>[11:48] &lt Lawouach&gt ;)</td></tr>
+            <tr><td>[11:48] &lt orphans&gt Lawouach, first go from the quick start guide (/Sketches/JT/Jam/docs/getting_started.txt) for making sound, and let me know if you get stuck</td></tr>
+            <tr><td>[11:49] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[11:49] &lt orphans&gt oh, and I'll quickly post up three lines to start it up with so you get three talking</td></tr>
+            <tr><td>[11:49] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[11:49] *** orphans checks that it's still working :D</td></tr>
+            <tr><td>[11:52] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:52] &lt Lawouach&gt hello MS-</td></tr>
+            <tr><td>[11:52] &lt MS-&gt Afternoon</td></tr>
+            <tr><td>[11:52] &lt orphans&gt Lawouach, python jam</td></tr>
+            <tr><td>[11:53] &lt orphans&gt python jam -p 3001 --remote-address=127.0.0.1 --remote-port=2001 --listen-port=2002</td></tr>
+            <tr><td>[11:53] &lt MS-&gt Chong-: Heya - just been playing with your new version - have another test case that breaks your current version.</td></tr>
+            <tr><td>[11:53] &lt orphans&gt python jam -p 3002 --remote-address=127.0.0.1 --remote-port=2002 --listen-port=2003</td></tr>
+            <tr><td>[11:53] &lt MS-&gt (as an fyi if you're around)</td></tr>
+            <tr><td>[11:53] &lt orphans&gt MS-, mhrd was looking for you earlier</td></tr>
+            <tr><td>[11:53] &lt Lawouach&gt orphans: ta</td></tr>
+            <tr><td>[11:54] &lt orphans&gt [12:23] &lt mhrd-home&gt greetings ... anyone know if MS- is coming online today?</td></tr>
+            <tr><td>[11:54] &lt MS-&gt ah ta</td></tr>
+            <tr><td>[11:55] &lt orphans&gt Lawouach, MS-, np :)</td></tr>
+            <tr><td>[11:55] &lt MS-&gt Chong-: FYI - it looks like your rotation around the X axis is out of sync</td></tr>
+            <tr><td>[11:55] &lt Davbo&gt Thank you MS-, your fix was spot on :-)</td></tr>
+            <tr><td>[11:55] &lt MS-&gt For objects rotated around the Y axis it's fine</td></tr>
+            <tr><td>[11:55] &lt MS-&gt Davbo: cool</td></tr>
+            <tr><td>[11:55] &lt Lawouach&gt rather cool to see both bouncing balls :)</td></tr>
+            <tr><td>[11:56] &lt Davbo&gt (I wasn't aware of that syntax)</td></tr>
+            <tr><td>[11:56] &lt MS-&gt Chong-: ie you can move stuff around, and when rotated left or right with left/right arrow keys the left/right rotation around the Y axis looks about right (though it is odd that the centre of rotation is centred on the objects, not on the field of view</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt orphans: weird, when I just called "jam" without parameters I can see the yellow beat moving</td></tr>
+            <tr><td>[11:57] &lt MS-&gt (or rather centred on Node1)</td></tr>
+            <tr><td>[11:57] &lt Lawouach&gt with the parameters I don't see it</td></tr>
+            <tr><td>[11:58] &lt MS-&gt However your rotations around the X axis (eg to look like it's rolling away from you)</td></tr>
+            <tr><td>[11:58] &lt orphans&gt that's strange - it works here</td></tr>
+            <tr><td>[11:58] &lt orphans&gt let me check whether there's something I've not checked in yet</td></tr>
+            <tr><td>[11:58] &lt Lawouach&gt orphans: also I assume I need to ensure my MIDI output works well (can't hear a sound right now)</td></tr>
+            <tr><td>[11:58] &lt orphans&gt Lawouach, oop, my bad</td></tr>
+            <tr><td>[11:58] &lt MS-&gt have a mistake - in that the /position/ of the objects is correct - ie they are correctly rotated around the global X axis</td></tr>
+            <tr><td>[11:58] &lt orphans&gt Lawouach, no it doesn't use midi yet</td></tr>
+            <tr><td>[11:58] &lt MS-&gt However the individual objects are rotating around a /local/ X axis as well</td></tr>
+            <tr><td>[11:58] &lt MS-&gt which means they're not doing the right thing</td></tr>
+            <tr><td>[11:59] &lt Chong-&gt Hey MS-</td></tr>
+            <tr><td>[11:59] &lt MS-&gt Heya</td></tr>
+            <tr><td>[11:59] &lt Lawouach&gt orphans: could you explain how I should be setting my environment to hear something? even noise would be good ;)</td></tr>
+            <tr><td>[11:59] &lt orphans&gt Lawouach, it talks to PD using OSC atm, the midi stuff will be after I have all the basics in place</td></tr>
+            <tr><td>[11:59] &lt MS-&gt The easiest way to see that in action, is add a collection of objects</td></tr>
+            <tr><td>[12:00] &lt MS-&gt and link them</td></tr>
+            <tr><td>[12:00] &lt MS-&gt then turn them using either left or right</td></tr>
+            <tr><td>[12:00] &lt MS-&gt so you can only see the ends</td></tr>
+            <tr><td>[12:00] &lt orphans&gt right, first of all you need PD extended (from http://puredata.info/downloads)</td></tr>
+            <tr><td>[12:00] &lt MS-&gt and then to tumble them forwards or backwards using up/down</td></tr>
+            <tr><td>[12:00] &lt MS-&gt and then to watch what Node1 is doing</td></tr>
+            <tr><td>[12:01] &lt orphans&gt Lawouach, it's basically just PD with a collection of extra objects packaged up (including the OSC ones which you need)</td></tr>
+            <tr><td>[12:01] &lt Chong-&gt currently, I change the position to the destination position and then rotate it around local axis when do rotating</td></tr>
+            <tr><td>[12:01] &lt MS-&gt It's particularly stark with this:</td></tr>
+            <tr><td>[12:01] &lt MS-&gt http://pastebin.org/48998</td></tr>
+            <tr><td>[12:01] &lt Lawouach&gt orphans: I got that from your doc but I still don't quite get how to set my environment up to be honest</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Which is a hexagonal shape in a star formation</td></tr>
+            <tr><td>[12:01] &lt Lawouach&gt I can download it but then what?</td></tr>
+            <tr><td>[12:01] &lt MS-&gt star topology</td></tr>
+            <tr><td>[12:02] &lt Lawouach&gt until now I looked at the code you wrote and it is good. I'd like to start using the application now :)</td></tr>
+            <tr><td>[12:02] &lt orphans&gt Lawouach, then if you run pd Sketches/JT/Jam/application/trunk/PD/PureJam.pd</td></tr>
+            <tr><td>[12:02] &lt MS-&gt Chong-: What I'm saying is what you're doing appears correct for the Y axis, but incorrect for X</td></tr>
+            <tr><td>[12:02] &lt orphans&gt Lawouach, it should open up the PD sketch which lets it all work</td></tr>
+            <tr><td>[12:03] &lt Lawouach&gt so I open up the PureJam.pd with "pd", then start jam</td></tr>
+            <tr><td>[12:03] &lt Chong-&gt MS-: got it. It seems Node1 is over rotated, right?</td></tr>
+            <tr><td>[12:03] &lt Lawouach&gt that's it?</td></tr>
+            <tr><td>[12:03] &lt orphans&gt s/lets it all work/turns the OSC messages into sound</td></tr>
+            <tr><td>[12:03] &lt orphans&gt Lawouach, should be - you might need to mess with the audio settings in PD</td></tr>
+            <tr><td>[12:03] &lt Lawouach&gt k</td></tr>
+            <tr><td>[12:04] &lt orphans&gt Lawouach, but you shouldn't need to do anything else</td></tr>
+            <tr><td>[12:04] &lt Lawouach&gt Hmm my ubuntu has pd 0.40, your link offers 0.39.3</td></tr>
+            <tr><td>[12:04] &lt MS-&gt Chong-: No, Node1 is the obvious one to watch</td></tr>
+            <tr><td>[12:04] &lt Lawouach&gt interesting</td></tr>
+            <tr><td>[12:04] &lt MS-&gt However, start up your topology viewer</td></tr>
+            <tr><td>[12:04] &lt Lawouach&gt ah okay</td></tr>
+            <tr><td>[12:04] &lt MS-&gt ~/kamaelia/trunk/Sketches/CL/Topology3D/Utils&gt ./TopologyViewer3D.py</td></tr>
+            <tr><td>[12:04] &lt Lawouach&gt not pd-extended</td></tr>
+            <tr><td>[12:04] &lt Lawouach&gt sorry</td></tr>
+            <tr><td>[12:05] &lt MS-&gt Chong-: Then paste http://pastebin.org/48998</td></tr>
+            <tr><td>[12:05] &lt MS-&gt As a topology</td></tr>
+            <tr><td>[12:05] &lt MS-&gt Then do the following</td></tr>
+            <tr><td>[12:05] &lt orphans&gt Lawouach, yeah. Really you only need PD and two externals (like extra objects) from PD's svn, but the easiest way to get it is just to install pd-extended</td></tr>
+            <tr><td>[12:05] &lt MS-&gt "left, left, left, left, up, up, up, up"</td></tr>
+            <tr><td>[12:06] &lt Lawouach&gt orphans: doing so</td></tr>
+            <tr><td>[12:06] *** Chong- trying</td></tr>
+            <tr><td>[12:06] &lt MS-&gt then memorise the position/orientation of what you're seeing</td></tr>
+            <tr><td>[12:06] &lt Davbo&gt Whoa i've sent the TopologyViewer3D insane</td></tr>
+            <tr><td>[12:07] &lt MS-&gt Then go back to the start by doing</td></tr>
+            <tr><td>[12:07] &lt MS-&gt down,down,down,down, right,right,right,right</td></tr>
+            <tr><td>[12:07] &lt MS-&gt then do</td></tr>
+            <tr><td>[12:07] &lt MS-&gt "up, up, up, up,left, left, left, left"</td></tr>
+            <tr><td>[12:08] &lt Davbo&gt KSnapshot might be in order MS- ;-)</td></tr>
+            <tr><td>[12:08] &lt MS-&gt You'll note that with your system:</td></tr>
+            <tr><td>[12:08] &lt MS-&gt "left, left, left, left, up, up, up, up" != "up, up, up, up,left, left, left, left"</td></tr>
+            <tr><td>[12:08] &lt MS-&gt But if you pick up a book and do:</td></tr>
+            <tr><td>[12:08] &lt MS-&gt rotate-90-about-Y-axis, rotate-90-about-X-axis</td></tr>
+            <tr><td>[12:08] &lt MS-&gt or : rotate-90-about-X-axis, rotate-90-about-Y-axis</td></tr>
+            <tr><td>[12:08] &lt MS-&gt that:</td></tr>
+            <tr><td>[12:08] &lt MS-&gt rotate-90-about-Y-axis, rotate-90-about-X-axis == rotate-90-about-X-axis, rotate-90-about-Y-axis</td></tr>
+            <tr><td>[12:09] &lt MS-&gt essentially you're doing something wrong for rotation about X-Axis</td></tr>
+            <tr><td>[12:09] &lt MS-&gt the fact that it's centred on Node1 strikes me as a symptom</td></tr>
+            <tr><td>[12:09] &lt MS-&gt Since you're not rotating relative to the centre of the system</td></tr>
+            <tr><td>[12:10] &lt MS-&gt (also, I suspect that you're rotating the objects, rather than the view of the objects)</td></tr>
+            <tr><td>[12:10] &lt MS-&gt The latter is quicker than the former</td></tr>
+            <tr><td>[12:10] &lt Davbo&gt I've got the topolgyviewer doing some mad vibration thing too btw Chong-.</td></tr>
+            <tr><td>[12:10] &lt Davbo&gt thought i've no idea how i managed it</td></tr>
+            <tr><td>[12:12] &lt Davbo&gt is there a "zoom" function yet?</td></tr>
+            <tr><td>[12:12] &lt Chong-&gt MS- : yes, you're right. I have seen the problem.</td></tr>
+            <tr><td>[12:13] &lt MS-&gt Chong-: I *THINK* actually what you want to do is different from what you're doing</td></tr>
+            <tr><td>[12:13] &lt MS-&gt You're tumbling the objects in space aren't you?</td></tr>
+            <tr><td>[12:13] &lt MS-&gt Rather than moving the viewer?</td></tr>
+            <tr><td>[12:13] &lt Chong-&gt MS-: yes. currently I rotate the objects, rather than camera/ view</td></tr>
+            <tr><td>[12:13] &lt MS-&gt (This is cool/useful btw since it's harder to do)</td></tr>
+            <tr><td>[12:13] &lt MS-&gt k</td></tr>
+            <tr><td>[12:14] &lt MS-&gt I'd suggest figuring out to solve things the way you're doing it now</td></tr>
+            <tr><td>[12:14] &lt MS-&gt But then looking at how you rotate the entire world view instead :)</td></tr>
+            <tr><td>[12:14] &lt MS-&gt Even if this means looking at changing OpenGLDisplay</td></tr>
+            <tr><td>[12:15] &lt MS-&gt That said, what you're doing...</td></tr>
+            <tr><td>[12:15] &lt MS-&gt should play nicely with other OpenGL components</td></tr>
+            <tr><td>[12:15] &lt MS-&gt which is important</td></tr>
+            <tr><td>[12:15] &lt Chong-&gt MS- : I tried moving viewer first, but it doesn't work very well because it would affect dragging.</td></tr>
+            <tr><td>[12:15] &lt MS-&gt Was that the reason?</td></tr>
+            <tr><td>[12:16] &lt MS-&gt Well, dragging should always take into account the view position</td></tr>
+            <tr><td>[12:16] &lt Chong-&gt Since rotating particles is prone to problems, I will try to move viewer again.</td></tr>
+            <tr><td>[12:16] &lt MS-&gt But anyway, what you're doing should play nicely with other components I guess</td></tr>
+            <tr><td>[12:16] &lt orphans&gt Lawouach, any luck?</td></tr>
+            <tr><td>[12:16] &lt MS-&gt Chong-: You're more than 1/2 way there already</td></tr>
+            <tr><td>[12:16] &lt Lawouach&gt installing the gazillion dependencies for pd-extended</td></tr>
+            <tr><td>[12:17] &lt MS-&gt You have rotation about the Y axis working correctly</td></tr>
+            <tr><td>[12:17] &lt MS-&gt Making that work for X as well should not be a major proble</td></tr>
+            <tr><td>[12:17] &lt MS-&gt You've probably just missed something small :)</td></tr>
+            <tr><td>[12:17] &lt Davbo&gt MS-: if you co Paint now you can play with a couple of layers</td></tr>
+            <tr><td>[12:17] &lt orphans&gt Lawouach, bah, if I could find a source for just the OSC objects I'd point you to it, but all the links seem to be dead</td></tr>
+            <tr><td>[12:17] &lt MS-&gt I'd looks at that before changing the viewer</td></tr>
+            <tr><td>[12:17] &lt MS-&gt If you get that working as well as changing the viewer, that'd be awesome</td></tr>
+            <tr><td>[12:17] &lt Chong-&gt MS-: probably :-) Thanks for helping me debug :-)</td></tr>
+            <tr><td>[12:18] &lt MS-&gt (you'd be able to have 2 topology viewers active in the same space for example, rotated seperately as well as rotating the view space)</td></tr>
+            <tr><td>[12:18] &lt Chong-&gt MS-: I would try both :-)</td></tr>
+            <tr><td>[12:18] &lt MS-&gt That'd be fantastic</td></tr>
+            <tr><td>[12:18] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:18] &lt MS-&gt It's really quite fun as it is :)</td></tr>
+            <tr><td>[12:18] &lt MS-&gt Davbo: /me looks</td></tr>
+            <tr><td>[12:19] &lt Davbo&gt toggle between them with c</td></tr>
+            <tr><td>[12:19] &lt Chong-&gt MS-: cool. I had also thought about rotating just selected particles.</td></tr>
+            <tr><td>[12:19] &lt MS-&gt Chong-: That'd be really useful too</td></tr>
+            <tr><td>[12:20] &lt Chong-&gt cool</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt Example of layer usage: draw a circle (with the line tool) change layer (with C) then put a line through it then change layer again and bucket fill the circle</td></tr>
+            <tr><td>[12:20] &lt Lawouach&gt ALSA lib pcm_dmix.c:874:(snd_pcm_dmix_open) unable to open slave &lt -- we're moving :)</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt you'll note it ignores the line through the circle</td></tr>
+            <tr><td>[12:20] &lt MS-&gt Chong-: In fact, do know things like an artists mannequin?</td></tr>
+            <tr><td>[12:20] &lt MS-&gt Chong-: You're very close to being able to make something like that :)</td></tr>
+            <tr><td>[12:21] &lt Chong-&gt no. what's that?:-)</td></tr>
+            <tr><td>[12:21] &lt MS-&gt Chong-: http://images.google.com/images?q=artists%20mannequin</td></tr>
+            <tr><td>[12:21] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:21] &lt MS-&gt Lots of piccies of them</td></tr>
+            <tr><td>[12:21] &lt MS-&gt Davbo: trying</td></tr>
+            <tr><td>[12:22] &lt Chong-&gt MS-: interesting. Thanks :-)</td></tr>
+            <tr><td>[12:22] &lt Davbo&gt They won them on the Generation Game.</td></tr>
+            <tr><td>[12:22] &lt Davbo&gt :P</td></tr>
+            <tr><td>[12:22] &lt MS-&gt Cool</td></tr>
+            <tr><td>[12:22] &lt Chong-&gt Davbo: sorry for just noticed your comments :/. How did the 'mad vibration' happen?</td></tr>
+            <tr><td>[12:22] &lt MS-&gt works</td></tr>
+            <tr><td>[12:23] &lt Davbo&gt Will start a proper interface for it</td></tr>
+            <tr><td>[12:23] &lt MS-&gt Suggestion:</td></tr>
+            <tr><td>[12:23] &lt MS-&gt 3 windows</td></tr>
+            <tr><td>[12:23] &lt Davbo&gt yeah 1 for layers?</td></tr>
+            <tr><td>[12:23] &lt MS-&gt 1 for each layer</td></tr>
+            <tr><td>[12:23] &lt orphans&gt Lawouach, is that good or bad?</td></tr>
+            <tr><td>[12:23] &lt MS-&gt (so 2 paint windows for the layers)</td></tr>
+            <tr><td>[12:23] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[12:23] &lt MS-&gt and one compositing window</td></tr>
+            <tr><td>[12:24] &lt MS-&gt with fader control</td></tr>
+            <tr><td>[12:24] &lt Davbo&gt interesting</td></tr>
+            <tr><td>[12:24] &lt MS-&gt s</td></tr>
+            <tr><td>[12:24] &lt Lawouach&gt well I don't hear sound because of it</td></tr>
+            <tr><td>[12:24] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[12:24] &lt Lawouach&gt but at least it means it tries</td></tr>
+            <tr><td>[12:24] &lt MS-&gt merging the contents</td></tr>
+            <tr><td>[12:24] &lt MS-&gt Sounds a pain</td></tr>
+            <tr><td>[12:24] &lt Davbo&gt sounds good to me MS-</td></tr>
+            <tr><td>[12:24] &lt MS-&gt but isn't</td></tr>
+            <tr><td>[12:24] &lt MS-&gt there's example code...</td></tr>
+            <tr><td>[12:24] *** MS- rummages</td></tr>
+            <tr><td>[12:24] &lt Davbo&gt sharing surfaces will be okay</td></tr>
+            <tr><td>[12:24] *** Davbo thinks of way to do it</td></tr>
+            <tr><td>[12:24] &lt orphans&gt Lawouach, you tried just using OSS for now?</td></tr>
+            <tr><td>[12:24] &lt Lawouach&gt yeah just changed to alsa to try</td></tr>
+            <tr><td>[12:25] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Tools/Show.py</td></tr>
+            <tr><td>[12:25] &lt Davbo&gt Chong-: I'm not sure, i pasted in what MS- said and then one of the nodes was "right up near the camera" if that makes sense and it started vibrating</td></tr>
+            <tr><td>[12:25] &lt MS-&gt and</td></tr>
+            <tr><td>[12:25] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/UI/Pygame/Image.py</td></tr>
+            <tr><td>[12:25] &lt orphans&gt Lawouach, heh, how come all the sound making programs I give you to try don't work? :)</td></tr>
+            <tr><td>[12:26] &lt Lawouach&gt because ubuntu sucks at audio</td></tr>
+            <tr><td>[12:26] &lt Lawouach&gt even Ubuntu Studio</td></tr>
+            <tr><td>[12:26] &lt MS-&gt There's obviously lots of approaches</td></tr>
+            <tr><td>[12:26] &lt MS-&gt The reason I mention show.py is because it uses that fader approach for a few things</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt Yeah, time Animation will work with multiple windows like this anyway. and a composition window but instead of fading it would cycle through the layers</td></tr>
+            <tr><td>[12:27] &lt MS-&gt But boils down to what the Pygame/Display is doing</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt so it's core code anyway MS-</td></tr>
+            <tr><td>[12:27] &lt MS-&gt I'll let you fiddle around :)</td></tr>
+            <tr><td>[12:27] &lt orphans&gt Lawouach, you got any ideas on it?</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt I'm happy with the progress though</td></tr>
+            <tr><td>[12:28] &lt MS-&gt Davbo: You're definitely progressing</td></tr>
+            <tr><td>[12:28] &lt Davbo&gt I'll test your code orphans see if it's a Lawouach-specific bug</td></tr>
+            <tr><td>[12:28] &lt MS-&gt I think the thing I'd (personall) really like to see (though this may be at the end of the project of course)</td></tr>
+            <tr><td>[12:28] &lt orphans&gt Lawouach, from a thread on an ubuntu ml:</td></tr>
+            <tr><td>[12:28] &lt orphans&gt try</td></tr>
+            <tr><td>[12:28] &lt orphans&gt ~# killall pulseaudio</td></tr>
+            <tr><td>[12:28] &lt orphans&gt then try again</td></tr>
+            <tr><td>[12:29] &lt orphans&gt or try from the Sound control preferences to change your sound devise,</td></tr>
+            <tr><td>[12:29] &lt orphans&gt alsa will work fine as i guess</td></tr>
+            <tr><td>[12:29] &lt MS-&gt is working with layers of different sizes, compositing them with various levels of transparency, and then flattening them together</td></tr>
+            <tr><td>[12:29] &lt MS-&gt Along with a blurring</td></tr>
+            <tr><td>[12:29] &lt Davbo&gt certainly feasible MS-</td></tr>
+            <tr><td>[12:30] &lt MS-&gt And, perhaps as a slightly bizarre idea, the option to switch an entire paint layer to being stuck in "pick colour/eyedropper"</td></tr>
+            <tr><td>[12:30] &lt MS-&gt mode</td></tr>
+            <tr><td>[12:30] &lt orphans&gt I should really upgrade to hardy and see whether I get the same problem</td></tr>
+            <tr><td>[12:30] &lt MS-&gt blurring meaning smudging really</td></tr>
+            <tr><td>[12:30] &lt MS-&gt ie to be able to use an actual layer the way an artist would use a paint palette</td></tr>
+            <tr><td>[12:30] &lt Davbo&gt uh-huh</td></tr>
+            <tr><td>[12:30] &lt MS-&gt All very random ideas</td></tr>
+            <tr><td>[12:30] &lt Davbo&gt this should all be doable imo</td></tr>
+            <tr><td>[12:30] &lt Chong-&gt Davbo: thanks. will it stop vibrating after a while or it keep vibrating?</td></tr>
+            <tr><td>[12:31] &lt MS-&gt You're very much getting a good base</td></tr>
+            <tr><td>[12:31] &lt Davbo&gt it just kept doing it while i had it open Chong-</td></tr>
+            <tr><td>[12:31] &lt MS-&gt for doing all these things, but it's your app - you should head off in the direction you think is fun :)</td></tr>
+            <tr><td>[12:31] &lt Davbo&gt I've fallen in love with Pyhon anyway MS- so I'll stick around after SoC to add other cool stuff ;-)</td></tr>
+            <tr><td>[12:31] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt Chong-: when i start the app there are 3 things, can i get rid of them?</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt 4 things sorry</td></tr>
+            <tr><td>[12:32] *** MS- wonders what would happen if Chong- Did make an artists dummy and was able to take snapshots and export them as pygame surfaces</td></tr>
+            <tr><td>[12:33] *** MS- starts wondering what would happen if Chong's app ran as another window attached to Davbos...</td></tr>
+            <tr><td>[12:33] &lt Davbo&gt Yeah I'd guessed you were thinking something along those lines when you suggested an artists Mannequin</td></tr>
+            <tr><td>[12:33] &lt MS-&gt I've thought of that a few times tbh</td></tr>
+            <tr><td>[12:34] &lt orphans&gt Lawouach, or try asoundconf set-pulseaudio</td></tr>
+            <tr><td>[12:34] &lt Davbo&gt interesting thought, wouldn't be as easy due to it being an opengl so we'd literally have to screenshot it</td></tr>
+            <tr><td>[12:34] &lt Lawouach&gt I have uninstalled pulseaudio :)</td></tr>
+            <tr><td>[12:34] &lt MS-&gt indeed :)</td></tr>
+            <tr><td>[12:34] &lt Lawouach&gt but the pd thing is really not straightforward mate :)</td></tr>
+            <tr><td>[12:35] &lt orphans&gt :)</td></tr>
+            <tr><td>[12:35] &lt MS-&gt An automated mannequin though that can accept rotations though also open up from interesting other options (eg animations and all sorts)</td></tr>
+            <tr><td>[12:35] &lt Chong-&gt MS- and Davbo: that would be very interesting</td></tr>
+            <tr><td>[12:36] &lt orphans&gt Lawouach, *sigh*</td></tr>
+            <tr><td>[12:36] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[12:36] &lt Lawouach&gt I'm a user ;)</td></tr>
+            <tr><td>[12:36] &lt Lawouach&gt complaining more than I ought to :D</td></tr>
+            <tr><td>[12:37] &lt orphans&gt problem is now I've tried the two main OSC-using music apps for linux, and neither of them work for you</td></tr>
+            <tr><td>[12:37] &lt orphans&gt both with the same alsa error</td></tr>
+            <tr><td>[12:37] &lt Lawouach&gt that's my system which is not configured properly I think</td></tr>
+            <tr><td>[12:37] &lt Lawouach&gt not your own fault</td></tr>
+            <tr><td>[12:38] &lt Lawouach&gt up to me to make it work</td></tr>
+            <tr><td>[12:38] &lt orphans&gt yeah, it's crappy linux audio</td></tr>
+            <tr><td>[12:38] &lt orphans&gt just wish you could hear the lovelyness which I'm currently playing guitar along to</td></tr>
+            <tr><td>[12:38] *** orphans overstates slightly on the lovelyness and his guitar playing</td></tr>
+            <tr><td>[12:38] &lt Chong-&gt Davbo: I see the problem. the problem is that you redefine the nodes and links of 1-4 which is not supported currently.</td></tr>
+            <tr><td>[12:39] &lt Davbo&gt thought so Chong- :)</td></tr>
+            <tr><td>[12:39] &lt Chong-&gt Davbo: find DATASOURCE = DataSource, and comment the statement, it should work.</td></tr>
+            <tr><td>[12:39] &lt Davbo&gt hence "get rid of these ones i start with"</td></tr>
+            <tr><td>[12:40] &lt orphans&gt Lawouach, does the multiple jam instances work at least?</td></tr>
+            <tr><td>[12:40] &lt orphans&gt (although it's little consolation)</td></tr>
+            <tr><td>[12:40] &lt Lawouach&gt well they interact with each other</td></tr>
+            <tr><td>[12:40] &lt orphans&gt good :)</td></tr>
+            <tr><td>[12:41] &lt Lawouach&gt though even with a svn up, I can't see the yellow beat</td></tr>
+            <tr><td>[12:41] &lt Chong-&gt yes. or you can use del command to remove them. DEL NODE &lt id&gt , DEL LINK &lt id from&gt &lt id to&gt</td></tr>
+            <tr><td>[12:41] &lt orphans&gt Lawouach, strange</td></tr>
+            <tr><td>[12:43] &lt Lawouach&gt ah</td></tr>
+            <tr><td>[12:43] &lt Lawouach&gt there it goes</td></tr>
+            <tr><td>[12:43] &lt Lawouach&gt I had forgotten to setup.py it :)</td></tr>
+            <tr><td>[12:43] &lt orphans&gt :)</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt :-(</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt usr/local/lib/pd/bin/pd-gui: error while loading shared libraries: libtk8.4.so: cannot open shared object file: No such file or directory</td></tr>
+            <tr><td>[12:43] &lt Lawouach&gt I'm using the jam it installs systsem-wide rather than locally to the sketches directory</td></tr>
+            <tr><td>[12:44] &lt orphans&gt yeah</td></tr>
+            <tr><td>[12:44] &lt Lawouach&gt orphans: is that expected however that the beat is not at the same location at one given time between two clients?</td></tr>
+            <tr><td>[12:44] &lt orphans&gt Lawouach, yeah, it is</td></tr>
+            <tr><td>[12:45] &lt Lawouach&gt okay so it works as expected ;)</td></tr>
+            <tr><td>[12:45] &lt orphans&gt I'm could make it happen, but I'm not sure there's much value in it</td></tr>
+            <tr><td>[12:45] &lt orphans&gt if you have two step sequencers in the same instance they sync though</td></tr>
+            <tr><td>[12:46] &lt orphans&gt Davbo, how did you install pd-extended?</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt make install :)</td></tr>
+            <tr><td>[12:47] &lt orphans&gt not packaged for your distro?</td></tr>
+            <tr><td>[12:47] &lt Lawouach&gt orphans: I notice on my machine than every instance consumes quite a lot of CPU</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt indeed</td></tr>
+            <tr><td>[12:47] &lt Lawouach&gt You might want to look at that</td></tr>
+            <tr><td>[12:47] &lt Davbo&gt i was hoping for an rpm</td></tr>
+            <tr><td>[12:47] &lt orphans&gt Davbo, maybe alien the .deb</td></tr>
+            <tr><td>[12:48] &lt orphans&gt Lawouach, how much (ish)?</td></tr>
+            <tr><td>[12:48] &lt orphans&gt and does it happen straight away, or only if you use the XY pads</td></tr>
+            <tr><td>[12:48] &lt orphans&gt I've got a sneaking suspicion that there's a but in them somewhere</td></tr>
+            <tr><td>[12:48] &lt orphans&gt s/but/bug</td></tr>
+            <tr><td>[12:48] &lt Davbo&gt good idea orphans :)</td></tr>
+            <tr><td>[12:49] &lt Lawouach&gt orphans: about 4/7%</td></tr>
+            <tr><td>[12:49] &lt Lawouach&gt doesn't sound like much maybe</td></tr>
+            <tr><td>[12:49] &lt Lawouach&gt but for a simple program I expect less than 1%</td></tr>
+            <tr><td>[12:49] &lt orphans&gt Lawouach, what about if you set FPS (a constant in jam) to 30?</td></tr>
+            <tr><td>[12:50] &lt Lawouach&gt also Axon is usually a low consumer of CPU</td></tr>
+            <tr><td>[12:50] &lt Lawouach&gt trying</td></tr>
+            <tr><td>[12:51] &lt MS-&gt Wow /trunk is getting big now</td></tr>
+            <tr><td>[12:51] &lt Lawouach&gt MS-: yeah :/</td></tr>
+            <tr><td>[12:51] &lt Lawouach&gt I usually just grabe the Code sub-directory</td></tr>
+            <tr><td>[12:51] &lt Lawouach&gt trunk is way too big otherwise</td></tr>
+            <tr><td>[12:51] &lt Lawouach&gt s/grabe/grab</td></tr>
+            <tr><td>[12:51] &lt MS-&gt Probably ought to think about what to do about that</td></tr>
+            <tr><td>[12:51] &lt Lawouach&gt orphans: no difference</td></tr>
+            <tr><td>[12:52] &lt Davbo&gt sounds like a good topic for ML discussion MS-</td></tr>
+            <tr><td>[12:52] &lt MS-&gt  Perhaps find out if we can make /Sketches at the same level as /branches, /tags & /trunk</td></tr>
+            <tr><td>[12:52] &lt Davbo&gt back in a bit chaps.</td></tr>
+            <tr><td>[12:52] &lt MS-&gt possibly</td></tr>
+            <tr><td>[12:52] &lt orphans&gt Lawouach, k, in that case I'm not sure where that's from.</td></tr>
+            <tr><td>[12:52] &lt MS-&gt 146 M</td></tr>
+            <tr><td>[12:52] &lt orphans&gt are there any python tools to track cpu usage?</td></tr>
+            <tr><td>[12:52] &lt Lawouach&gt orphans: usually from a component main loop that never really pause</td></tr>
+            <tr><td>[12:53] &lt Lawouach&gt make sure all your components don't loop more often than they ought to</td></tr>
+            <tr><td>[12:53] &lt MS-&gt Hah! Orphans has more stuff in his directories than I do!</td></tr>
+            <tr><td>[12:54] &lt orphans&gt k, I'll have a look through everything and see if there's anything which should be better</td></tr>
+            <tr><td>[12:54] &lt orphans&gt MS-, is that purely on size? Theres about 6Meg of wavs in there :)</td></tr>
+            <tr><td>[12:54] &lt MS-&gt Based on size, yes</td></tr>
+            <tr><td>[13:06] &lt aa_&gt man, no wonder I was having trouble, for some reason I had mega bundle 1.0.1</td></tr>
+            <tr><td>[13:07] &lt aa_&gt which had kamaelia 0.3</td></tr>
+            <tr><td>[13:07] &lt aa_&gt and nothing was working :)</td></tr>
+            <tr><td>[13:25] &lt MS-&gt That would explain things</td></tr>
+            <tr><td>[13:25] &lt MS-&gt You probably want to try the most recent release candidate</td></tr>
+            <tr><td>[13:25] &lt MS-&gt http://edit.kamaelia.org/release/Kamaelia-0.6.0-rc7.tar.gz</td></tr>
+            <tr><td>[13:25] &lt MS-&gt Linked/described/introduced here: http://edit.kamaelia.org/GetKamaelia</td></tr>
+            <tr><td>[13:26] &lt MS-&gt We're currently testing that out and fixing things as raised, but it's a stable release</td></tr>
+            <tr><td>[13:26] &lt MS-&gt Includes Axon as well, so installing Axon/Kamaelia should just be a matter of:</td></tr>
+            <tr><td>[13:26] &lt MS-&gt sudo python setup.py install --force</td></tr>
+            <tr><td>[13:26] &lt MS-&gt --force is a force of habit for me :)</td></tr>
+            <tr><td>[13:35] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:35] *** Lawouach wonders if Graphline allows to dynamically add new components</td></tr>
+            <tr><td>[13:36] &lt MS-&gt I can't actually remember :)</td></tr>
+            <tr><td>[13:36] &lt MS-&gt There's no reason it couldn't be made to do that</td></tr>
+            <tr><td>[13:36] &lt Lawouach&gt I can't deny it'd be great</td></tr>
+            <tr><td>[13:36] &lt Lawouach&gt ok I'll look into it</td></tr>
+            <tr><td>[13:38] &lt MS-&gt I think it doesn't at present tbh. So you'd probably want to add an inbox that accepted a message containing:</td></tr>
+            <tr><td>[13:38] &lt MS-&gt  "NAME", &lt component&gt, extra_linkages = { mapping like graphline already does }</td></tr>
+            <tr><td>[13:38] &lt MS-&gt Kinda reminiscient of the ADD NODE/DEL NODE, ADD LINK/ DEL LINK stuff the topology visualiser does TBH</td></tr>
+            <tr><td>[13:39] &lt Lawouach&gt um</td></tr>
+            <tr><td>[13:40] &lt MS-&gt If that sounds like nonsense, ignore me :)</td></tr>
+            <tr><td>[13:41] &lt orphans&gt Lawouach, http://www.box.net/shared/xgv5tp3kc0</td></tr>
+            <tr><td>[13:41] &lt Lawouach&gt wow</td></tr>
+            <tr><td>[13:41] &lt Lawouach&gt a specific edition :)</td></tr>
+            <tr><td>[13:41] &lt orphans&gt that version might at least let you see that jam would be making noise even if you don't get to hear it</td></tr>
+            <tr><td>[13:41] &lt Lawouach&gt I'm flattered</td></tr>
+            <tr><td>[13:42] &lt orphans&gt :)</td></tr>
+            <tr><td>[13:43] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:45] &lt Lawouach&gt orphans: if I can't hear the sound, how can I see it happening anyway?</td></tr>
+            <tr><td>[13:46] &lt orphans&gt there's a graph thingy - I'm not 100% whether it'll work or not</td></tr>
+            <tr><td>[13:46] &lt orphans&gt shows you what you might be hearing :)</td></tr>
+            <tr><td>[13:47] &lt Lawouach&gt ahem</td></tr>
+            <tr><td>[13:47] &lt Lawouach&gt right</td></tr>
+            <tr><td>[13:47] &lt Lawouach&gt well I have a feeling I'll be waiting for MIDI support :)</td></tr>
+            <tr><td>[13:47] &lt Lawouach&gt ;D</td></tr>
+            <tr><td>[13:48] &lt vmlemon_&gt Nay for cryptic error messages</td></tr>
+            <tr><td>[13:49] &lt orphans&gt Lawouach, I'll get some basic support in next if you want - shouldn't take very long and hydrogen works for you iirc</td></tr>
+            <tr><td>[13:49] &lt Lawouach&gt it does</td></tr>
+            <tr><td>[13:49] &lt Lawouach&gt but don't change your schedule for me</td></tr>
+            <tr><td>[13:49] &lt Lawouach&gt it isn't critical for now</td></tr>
+            <tr><td>[13:49] &lt Lawouach&gt your application works as I would have expected in the sense that you have several jam instances conversing</td></tr>
+            <tr><td>[13:50] &lt Lawouach&gt that was the main goal</td></tr>
+            <tr><td>[13:50] &lt orphans&gt ok, cool. If I get a moment I'll put something really simple in</td></tr>
+            <tr><td>[13:50] &lt Lawouach&gt OSC support seems really flacky under Linux</td></tr>
+            <tr><td>[13:50] &lt Lawouach&gt so just move on</td></tr>
+            <tr><td>[13:50] &lt orphans&gt new technology and that :)</td></tr>
+            <tr><td>[13:50] &lt Lawouach&gt ;)</td></tr>
+            <tr><td>[13:50] &lt aa_&gt MS-: I just checked out trunk in the end</td></tr>
+            <tr><td>[13:51] &lt orphans&gt ok, I'm off out now, biab</td></tr>
+            <tr><td>[13:51] &lt aa_&gt orphans: cheers for all your helps :)</td></tr>
+            <tr><td>[13:55] &lt MS-&gt aa_: Trunk is a good idea - the release candidate is taken off there anyway :)</td></tr>
+            <tr><td>[14:47] *** MS- thinks twitter sucks so far</td></tr>
+            <tr><td>[14:48] *** MS- rapidly thinking it's a dumb thing</td></tr>
+            <tr><td>[14:48] &lt aa_&gt "MS is scratching his nose"</td></tr>
+            <tr><td>[14:48] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:49] &lt MS-&gt Not quite as bad as that. I'd tried to get a straight answer from someone as to what twitter is useful for, trying it and it seems like a bad/broken combo</td></tr>
+            <tr><td>[14:49] &lt MS-&gt of facebook wall & facebook status</td></tr>
+            <tr><td>[14:49] &lt MS-&gt Someone is claiming it's as good as IRC</td></tr>
+            <tr><td>[14:49] &lt MS-&gt which strikes me as laughable really</td></tr>
+            <tr><td>[14:50] &lt MS-&gt especially vs a logged channel like this one.. (logs are at http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[14:50] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:52] &lt Lawouach&gt hey</td></tr>
+            <tr><td>[14:52] &lt Lawouach&gt http://www.defuze.org/oss/jlib/jlibscreen.png</td></tr>
+            <tr><td>[14:52] &lt Lawouach&gt this is written like this:</td></tr>
+            <tr><td>[14:52] &lt Lawouach&gt http://rafb.net/p/5nLUTS87.html</td></tr>
+            <tr><td>[14:52] &lt Lawouach&gt rough</td></tr>
+            <tr><td>[14:52] &lt Lawouach&gt but basically it's using a set of Qt objects and widgets that map headstock to Qt and vice versa</td></tr>
+            <tr><td>[14:52] &lt MS-&gt What's jlib?</td></tr>
+            <tr><td>[14:53] &lt Lawouach&gt a lib I'm writing :)</td></tr>
+            <tr><td>[14:53] &lt MS-&gt Oh something new</td></tr>
+            <tr><td>[14:53] &lt MS-&gt cool :)</td></tr>
+            <tr><td>[14:53] &lt Lawouach&gt yeah :)</td></tr>
+            <tr><td>[14:53] &lt MS-&gt That's quite shiny :)</td></tr>
+            <tr><td>[14:54] &lt Lawouach&gt the cool thing is that I'm making as sure as I can that one could re-use the Qt objects mapped to headstock reusable with different widgets from the one jlib offer by default</td></tr>
+            <tr><td>[14:54] &lt Lawouach&gt meaning the widgets aren't directly responsible for accessing headstock</td></tr>
+            <tr><td>[14:54] &lt MS-&gt Always a good idea</td></tr>
+            <tr><td>[14:55] &lt MS-&gt Should simplify testing to say the least :)</td></tr>
+            <tr><td>[14:56] &lt MS-&gt I see you're using background() the way I expected it to be used there</td></tr>
+            <tr><td>[14:56] &lt MS-&gt which is cool</td></tr>
+            <tr><td>[14:56] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:56] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[14:56] &lt MS-&gt Much more useful to see in practice rather than theory :)</td></tr>
+            <tr><td>[14:56] &lt Lawouach&gt http://trac.defuze.org/browser/oss/jlib</td></tr>
+            <tr><td>[14:56] *** MS- looks</td></tr>
+            <tr><td>[14:57] &lt Lawouach&gt regarding adding components dynamically to a graph, I had for now to copy paste part of what the main() method of Graphline does</td></tr>
+            <tr><td>[14:57] &lt Lawouach&gt and it works just as well</td></tr>
+            <tr><td>[14:57] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:57] &lt MS-&gt cool</td></tr>
+            <tr><td>[14:57] &lt Lawouach&gt I'm also (ab)using PassThrough probably</td></tr>
+            <tr><td>[14:58] &lt MS-&gt pass through is there for those awkward scenarios really</td></tr>
+            <tr><td>[14:58] &lt MS-&gt In theory there's no use for it :-)</td></tr>
+            <tr><td>[14:59] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[14:59] &lt Lawouach&gt well here, like I was saying the other day, I'm using it to deliver data in inboxes</td></tr>
+            <tr><td>[15:00] &lt Lawouach&gt for instance</td></tr>
+            <tr><td>[15:00] *** MS- nods</td></tr>
+            <tr><td>[15:00] &lt Lawouach&gt http://trac.defuze.org/browser/oss/jlib/jlib/core/chat.py#L38*</td></tr>
+            <tr><td>[15:00] &lt Lawouach&gt http://trac.defuze.org/browser/oss/jlib/jlib/core/chat.py#L38</td></tr>
+            <tr><td>[15:00] &lt MS-&gt I did say in theory :)</td></tr>
+            <tr><td>[15:00] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[15:00] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:01] &lt Lawouach&gt basically I'm linking PassThrough components with headstock components inboxes. Whenever I need to deliver data to one inbox, I send it via the outbox of the PassThrough it's linked with.</td></tr>
+            <tr><td>[15:02] &lt MS-&gt Yep</td></tr>
+            <tr><td>[15:31] *** MS- packages up his transcode engine</td></tr>
+            <tr><td>[15:31] &lt MS-&gt Though that's a bit of a silly phrase for it</td></tr>
+            <tr><td>[15:32] &lt MS-&gt since it just runs ffmpeg & imagemagick's convert when files are added to directories</td></tr>
+            <tr><td>[15:33] &lt MS-&gt Mind you people do pay silly amounts of cash for something that simple</td></tr>
+            <tr><td>[15:34] &lt vmlemon_&gt Ugh, I know certain people pay through the nose for things like text editors and basic calculator apps... (as stupid as it sounds)</td></tr>
+            <tr><td>[15:36] &lt vmlemon_&gt Hmm, "Without password there is no computing power in the world, that would be able to decrypt your file."</td></tr>
+            <tr><td>[15:37] *** vmlemon_ bets that's already a "fixed" problem</td></tr>
+            <tr><td>[15:39] &lt MS-&gt What['s that from?</td></tr>
+            <tr><td>[15:40] &lt vmlemon_&gt Some README file for a Windows-based zip archiving and encryption tool</td></tr>
+            <tr><td>[15:40] &lt MS-&gt I see</td></tr>
+            <tr><td>[15:41] &lt vmlemon_&gt "BXTOOLS uses IDEA(tm) algorithm. According to scientists estimates for 1,000,000,000 machines that could try 1,000,000,000 keys/sec,it would still take all these machines longer than the age of the universe to find the right key to decrypt data, encrypted with IDEA algorithm."</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt Wow, turns out that it's already semi-cracked</td></tr>
+            <tr><td>[15:42] &lt MS-&gt That's nice. Completely a unsupported statement,</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt and it's infested with patents</td></tr>
+            <tr><td>[15:42] &lt MS-&gt since it's of the form</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt "s of 2007, the best attack which applies to all keys can break IDEA reduced to 6 rounds (the full IDEA cipher uses 8.5 rounds)[3]." (according to Wikipedia)</td></tr>
+            <tr><td>[15:42] &lt MS-&gt According to &lt random source picked to sound authoritative&gt &lt randomfactoid&gt</td></tr>
+            <tr><td>[15:42] &lt MS-&gt without reference</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt *As</td></tr>
+            <tr><td>[15:44] &lt vmlemon_&gt I'd assume that there are folks cracking it, although I haven't done much Googling</td></tr>
+            <tr><td>[15:44] &lt vmlemon_&gt It's probably possible to break a single character password in no time, although that's my £0.02</td></tr>
+            <tr><td>[15:52] &lt vmlemon_&gt And what do I find...?</td></tr>
+            <tr><td>[15:52] &lt vmlemon_&gt http://www.klabs.org/richcontent/MAPLDCon03/abstracts/michalski_a.pdf</td></tr>
+            <tr><td>[15:53] &lt vmlemon_&gt Looks like they won't let folks view the whole thing though :(</td></tr>
+            <tr><td>[15:55] &lt vmlemon_&gt Probably more theory than proof, though</td></tr>
+            <tr><td>[15:55] &lt vmlemon_&gt (as is usual for that sort of stuff)</td></tr>
+            <tr><td>[16:00] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:06] *** MS- nods</td></tr>
+            <tr><td>[16:14] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[16:14] &lt Chong-&gt MS-: I think the order of rotation matters.</td></tr>
+            <tr><td>[16:15] &lt MS-&gt probably - it often does :-)</td></tr>
+            <tr><td>[16:15] &lt Chong-&gt So, rotate around x frist and then rotate around y is not necessary the same with rotate around y frist and then rotate around x.</td></tr>
+            <tr><td>[16:15] &lt MS-&gt If you pick up a book</td></tr>
+            <tr><td>[16:15] &lt MS-&gt rotate it around X</td></tr>
+            <tr><td>[16:15] &lt MS-&gt and rotate it around Y</td></tr>
+            <tr><td>[16:15] &lt Chong-&gt yes. another example, suppose a point is in (1,0,0). [rotate around x 90 degree frist and then rotate around y 90 degree] leads to (0,0,-1); but [rotate around y 90 degree frist and then rotate around x 90 degree] leads to (0,1,0)</td></tr>
+            <tr><td>[16:16] &lt MS-&gt No, pick up a book</td></tr>
+            <tr><td>[16:16] &lt MS-&gt Something real</td></tr>
+            <tr><td>[16:16] &lt MS-&gt You'll see what I mean</td></tr>
+            <tr><td>[16:18] &lt Chong-&gt So, I think the behaviour of "left, left, left, left, up, up, up, up" != "up, up, up, up,left, left, left, left" maybe normal</td></tr>
+            <tr><td>[16:19] &lt MS-&gt No, it's not</td></tr>
+            <tr><td>[16:19] &lt MS-&gt You're wrong</td></tr>
+            <tr><td>[16:19] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:19] &lt MS-&gt Pick up a book</td></tr>
+            <tr><td>[16:19] &lt MS-&gt tumble it forward 90 degrees</td></tr>
+            <tr><td>[16:20] *** MS- wonders if he really has to point out that parts of an object don't rotate in mid-object</td></tr>
+            <tr><td>[16:21] &lt Chong-&gt MS-: np :-)</td></tr>
+            <tr><td>[16:21] &lt MS-&gt No, seriously</td></tr>
+            <tr><td>[16:21] &lt MS-&gt If I took a book</td></tr>
+            <tr><td>[16:21] &lt MS-&gt chopped it up</td></tr>
+            <tr><td>[16:21] &lt MS-&gt and reconnected it with sticks</td></tr>
+            <tr><td>[16:21] &lt Chong-&gt so do you mean the problem is from up and down, not left and right or clockwise and anticlockwise</td></tr>
+            <tr><td>[16:22] &lt MS-&gt The individual parts would not change *SHAPE* relative to each other</td></tr>
+            <tr><td>[16:22] &lt Chong-&gt MS-: yes.</td></tr>
+            <tr><td>[16:22] &lt MS-&gt Your code does change the shape of the composite object</td></tr>
+            <tr><td>[16:23] &lt MS-&gt you can see this very clear</td></tr>
+            <tr><td>[16:23] &lt MS-&gt clearly</td></tr>
+            <tr><td>[16:23] &lt MS-&gt I'm surprised you can't see your code is bust</td></tr>
+            <tr><td>[16:24] &lt MS-&gt Example</td></tr>
+            <tr><td>[16:24] &lt MS-&gt I run your current checked in code</td></tr>
+            <tr><td>[16:24] &lt MS-&gt press "left, left, left, left"</td></tr>
+            <tr><td>[16:24] &lt MS-&gt Then I press up repeatedly</td></tr>
+            <tr><td>[16:24] &lt Chong-&gt It's very strange indeed. there is no problem for one axis rotation, but have problems for more than one axis rotations.</td></tr>
+            <tr><td>[16:25] &lt MS-&gt The rotation of all the objects is completely broken</td></tr>
+            <tr><td>[16:25] &lt MS-&gt It's most obvious with Node 1</td></tr>
+            <tr><td>[16:25] &lt MS-&gt The *positions* in 3D space look correct</td></tr>
+            <tr><td>[16:25] &lt MS-&gt But Node1 is spinning *COMPLETELY* wrong</td></tr>
+            <tr><td>[16:26] &lt MS-&gt relatively to world coordinate</td></tr>
+            <tr><td>[16:26] &lt MS-&gt s</td></tr>
+            <tr><td>[16:26] &lt MS-&gt Same for all the others as well</td></tr>
+            <tr><td>[16:26] &lt MS-&gt but pressing "up" for node1 should not result in it spinning about the Z axis</td></tr>
+            <tr><td>[16:26] &lt MS-&gt which is what is happening</td></tr>
+            <tr><td>[16:27] &lt MS-&gt The other objects are likewise spinning about Z</td></tr>
+            <tr><td>[16:27] &lt MS-&gt Whilst moving position correctly around the X axis</td></tr>
+            <tr><td>[16:27] &lt MS-&gt The reason is because you're not applying your transforms correctly</td></tr>
+            <tr><td>[16:28] &lt Chong-&gt yes. it's a problem because currently it spins around its local axis. But it should not be the reason which causes the problem.</td></tr>
+            <tr><td>[16:29] &lt MS-&gt No, it's *PRECISELY* why that's the problem</td></tr>
+            <tr><td>[16:29] &lt Chong-&gt Because, even I comment the spins code, the problem still exists</td></tr>
+            <tr><td>[16:29] &lt MS-&gt He says, noting he said that earlier</td></tr>
+            <tr><td>[16:29] &lt MS-&gt sigh</td></tr>
+            <tr><td>[16:29] &lt MS-&gt If I rotate a book by 90 degrees in WORLD space</td></tr>
+            <tr><td>[16:30] &lt MS-&gt Around the Y axis</td></tr>
+            <tr><td>[16:30] &lt MS-&gt rotating about the *LOCA* X -axis is then wrong</td></tr>
+            <tr><td>[16:30] &lt MS-&gt because the *LOCAL* X-axis is now parallel with the *WORLD* Z-Axis</td></tr>
+            <tr><td>[16:32] &lt Chong-&gt yep. I can understand the spin problem. But I set the position seperately with spins</td></tr>
+            <tr><td>[16:33] &lt MS-&gt So you understand you have a bug, yes?</td></tr>
+            <tr><td>[16:33] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[16:33] &lt MS-&gt *because* you're rotating relative to LOCAL co-ords</td></tr>
+            <tr><td>[16:33] &lt Chong-&gt Thanks. I will check it again.</td></tr>
+            <tr><td>[16:34] &lt MS-&gt And your assertion here is worng: "But it should not be the reason which causes the problem"</td></tr>
+            <tr><td>[16:34] &lt MS-&gt Because it's *precisely* the problem :)</td></tr>
+            <tr><td>[16:38] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:46] &lt Chong-&gt MS-: I have comment/disabled local spins in r4813, you can see the problem of "left, left, left, left, up, up, up, up" != "up, up, up, up,left, left, left, left" still exists</td></tr>
+            <tr><td>[16:53] &lt Lawouach&gt a friend of mine wants to try Kamaelia on OS X, there shouldn't be any known issue about it right?</td></tr>
+            <tr><td>[16:55] &lt MS-&gt Not particularly no</td></tr>
+            <tr><td>[16:55] &lt MS-&gt I run my greylisting mail server on mac os x</td></tr>
+            <tr><td>[16:55] &lt MS-&gt Pygame stuff can sometimes assume multiple mouse buttons</td></tr>
+            <tr><td>[16:55] &lt MS-&gt which confuses mac people</td></tr>
+            <tr><td>[16:56] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:56] &lt MS-&gt But that's the only issue I can think of</td></tr>
+            <tr><td>[16:56] &lt MS-&gt DVB is linux specific</td></tr>
+            <tr><td>[17:01] &lt Lawouach&gt that's fine</td></tr>
+            <tr><td>[17:01] &lt Lawouach&gt I don't think he's interested in that area for now</td></tr>
+            <tr><td>[17:02] &lt MS-&gt Cool</td></tr>
+            <tr><td>[17:02] &lt MS-&gt All the networking stuff should be OK for example</td></tr>
+            <tr><td>[17:06] &lt Lawouach&gt I assumed so much</td></tr>
+            <tr><td>[17:06] &lt Lawouach&gt pure Python afterall</td></tr>
+            <tr><td>[17:18] &lt Lawouach&gt http://springpython.webfactional.com/</td></tr>
+            <tr><td>[17:20] &lt MS-&gt There's a project which I've been involved with which uses Spring in Java. It wasn't a fun experience.</td></tr>
+            <tr><td>[17:20] &lt MS-&gt Banging my head against a brick wall would've been more fun :-(</td></tr>
+            <tr><td>[17:20] &lt MS-&gt So that kinda colours my views of anything called "spring" :)</td></tr>
+            <tr><td>[17:21] &lt Lawouach&gt A friend of mine works for them. He agreed there was a rather steep learning curve.</td></tr>
+            <tr><td>[17:21] &lt Lawouach&gt But he likes it</td></tr>
+            <tr><td>[17:21] &lt MS-&gt That's nice :)</td></tr>
+            <tr><td>[17:21] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:21] &lt MS-&gt Each to their own after all :)</td></tr>
+            <tr><td>[17:22] &lt MS-&gt They do have a nice logo :)</td></tr>
+            <tr><td>[17:23] &lt Lawouach&gt hah!</td></tr>
+            <tr><td>[17:40] &lt aa_&gt everything I code is gtk-based, so how would I integrate kamaelia into gtk's main loop, or vice versa?</td></tr>
+            <tr><td>[17:41] &lt MS-&gt I've not used gtk, but my suggestion would be to use something called "background" now</td></tr>
+            <tr><td>[17:41] &lt MS-&gt What that does is it runs the scheduler that runs the kamaelia components in the background :)</td></tr>
+            <tr><td>[17:42] &lt aa_&gt sounds perfect</td></tr>
+            <tr><td>[17:42] &lt aa_&gt gtk hates not being in first place in the foreground</td></tr>
+            <tr><td>[17:42] &lt MS-&gt from Axon.background import background</td></tr>
+            <tr><td>[17:42] &lt MS-&gt background().start()</td></tr>
+            <tr><td>[17:42] &lt MS-&gt The exact syntax for that may change in the near future. But that's a may, rather than anything definite at this stage</td></tr>
+            <tr><td>[17:43] &lt MS-&gt You can then launch arbitrary components by doing</td></tr>
+            <tr><td>[17:43] &lt MS-&gt SomeComponent().activate()</td></tr>
+            <tr><td>[17:43] &lt aa_&gt that could be a graphline couldn't it</td></tr>
+            <tr><td>[17:43] &lt MS-&gt Yep</td></tr>
+            <tr><td>[17:43] &lt MS-&gt Anything :)</td></tr>
+            <tr><td>[17:44] &lt aa_&gt I wonder if I could write a messagy-inboxy-outboxy interface to gtk</td></tr>
+            <tr><td>[17:44] &lt MS-&gt That'd be great if you could :)</td></tr>
+            <tr><td>[17:44] &lt MS-&gt In the meantime you can go the other way though</td></tr>
+            <tr><td>[17:44] &lt MS-&gt As long as you're only talking to these boxes: inbox/outbox control/signal</td></tr>
+            <tr><td>[17:44] &lt MS-&gt By using Axon.Handle</td></tr>
+            <tr><td>[17:45] &lt MS-&gt There's examples of how to use that here:...</td></tr>
+            <tr><td>[17:45] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Axon/Examples/Handles</td></tr>
+            <tr><td>[17:45] &lt MS-&gt and here</td></tr>
+            <tr><td>[17:45] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/Handles</td></tr>
+            <tr><td>[17:45] &lt aa_&gt MS-: you are a Brit right?</td></tr>
+            <tr><td>[17:45] &lt MS-&gt yep</td></tr>
+            <tr><td>[17:45] &lt aa_&gt you watching this tennis final?</td></tr>
+            <tr><td>[17:45] &lt aa_&gt OT!!!</td></tr>
+            <tr><td>[17:46] &lt MS-&gt I don't watch tennis :)</td></tr>
+            <tr><td>[17:46] &lt aa_&gt it's a good one!</td></tr>
+            <tr><td>[17:46] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[17:46] &lt aa_&gt MS-: also, were you at pyconuk last year?</td></tr>
+            <tr><td>[17:47] &lt MS-&gt Yep - I'm on the committee for that :)</td></tr>
+            <tr><td>[17:47] &lt aa_&gt because I think that's where I first heard of the thing</td></tr>
+            <tr><td>[17:47] &lt aa_&gt kamaelia</td></tr>
+            <tr><td>[17:47] &lt aa_&gt oh cool</td></tr>
+            <tr><td>[17:47] &lt aa_&gt I am giving a tutorial about gtk on the tutorials day</td></tr>
+            <tr><td>[17:47] &lt MS-&gt Cool - glad to hear that it works</td></tr>
+            <tr><td>[17:47] &lt MS-&gt Ah right cool</td></tr>
+            <tr><td>[17:48] &lt aa_&gt sorry, I'll leave you in peace now ;)</td></tr>
+            <tr><td>[17:48] &lt aa_&gt desperate to find something cool to write with kamaelia</td></tr>
+            <tr><td>[17:49] &lt MS-&gt I'm currently packaging up a transcoding engine at the moment - to make it easier to use with a system at work :)</td></tr>
+            <tr><td>[17:49] &lt MS-&gt Been testing it for a while, and it works, so packaging up to move to the beta system</td></tr>
+            <tr><td>[17:50] &lt MS-&gt Recently built a the speak N write tool which is designed for assisting my daughter to learn to read & write :)</td></tr>
+            <tr><td>[17:50] &lt MS-&gt (waiting for a touch screen gp2x at the moment for that)</td></tr>
+            <tr><td>[17:50] &lt aa_&gt yeah, noticed that somewhere</td></tr>
+            <tr><td>[17:50] &lt aa_&gt MS-: you must have been building kamaelia for *years*</td></tr>
+            <tr><td>[17:50] &lt MS-&gt Yep :)</td></tr>
+            <tr><td>[17:50] &lt aa_&gt well, good for you</td></tr>
+            <tr><td>[17:51] &lt aa_&gt do you "own" it or is it the beeb's?</td></tr>
+            <tr><td>[17:51] &lt MS-&gt Not doing it day in day out at work at the moment - but do work on it most days</td></tr>
+            <tr><td>[17:51] &lt MS-&gt For the first few years it was day in day out at work</td></tr>
+            <tr><td>[17:51] &lt MS-&gt So it's actually "owned" by the beeb</td></tr>
+            <tr><td>[17:51] &lt MS-&gt went through 9 months of paperwork/etc to get it released as open source :)</td></tr>
+            <tr><td>[17:52] &lt aa_&gt ouch</td></tr>
+            <tr><td>[17:52] &lt MS-&gt Then 4 months to get a contributer agreement sorted (basically the same as pythons)</td></tr>
+            <tr><td>[17:52] &lt MS-&gt yeah, but it makes life easier for everyone else :)</td></tr>
+            <tr><td>[17:52] &lt aa_&gt oh wait, I am a tv license holder!</td></tr>
+            <tr><td>[17:52] &lt MS-&gt Yep, so you get something back :)</td></tr>
+            <tr><td>[17:53] &lt aa_&gt MS-: does all the iPlayer stuff run on kamaelia?</td></tr>
+            <tr><td>[17:53] &lt MS-&gt Nope. It could, but doesn't.</td></tr>
+            <tr><td>[17:53] &lt aa_&gt oh, shame</td></tr>
+            <tr><td>[17:53] &lt MS-&gt We've got two systems which if joined together would work fine there.</td></tr>
+            <tr><td>[17:54] &lt MS-&gt But you can easily build something like iPlayer for yourself using kamaelia.</td></tr>
+            <tr><td>[17:54] &lt MS-&gt And aside from anything else, alot of what happens in the beeb only happens if people get a demonstration of what's possible</td></tr>
+            <tr><td>[17:54] &lt MS-&gt So, K helps from that perspective.</td></tr>
+            <tr><td>[17:55] &lt aa_&gt oh I see</td></tr>
+            <tr><td>[17:55] &lt MS-&gt For example, the BBC podcasts are probably attributable to kamaelia on at least one level</td></tr>
+            <tr><td>[17:55] &lt MS-&gt One of the people in audio & music wanted a radio PVR (essentially)</td></tr>
+            <tr><td>[17:55] &lt aa_&gt "pvr" ?</td></tr>
+            <tr><td>[17:56] &lt MS-&gt and made one using K that recorded everything broadcast on radio</td></tr>
+            <tr><td>[17:56] &lt MS-&gt digital recorder</td></tr>
+            <tr><td>[17:56] &lt aa_&gt oh I see</td></tr>
+            <tr><td>[17:56] &lt MS-&gt ie recorded 1, 2,3,4,5,6,7</td></tr>
+            <tr><td>[17:56] &lt MS-&gt transcoded them as AAC & MP3</td></tr>
+            <tr><td>[17:56] *** aa_ would love to lsiten to r5 on the iphone</td></tr>
+            <tr><td>[17:56] &lt MS-&gt and then used that to put on iPods</td></tr>
+            <tr><td>[17:57] &lt MS-&gt showed this to heads of radio, and then they realised it was just a small box in the corner doing it</td></tr>
+            <tr><td>[17:57] &lt MS-&gt so they realised they had to change their strategy</td></tr>
+            <tr><td>[17:57] &lt aa_&gt hah</td></tr>
+            <tr><td>[17:57] &lt MS-&gt That was before we'd done our performance optimisations so K was only used for prototyping that, but it was crucial to show it was realistic/doable</td></tr>
+            <tr><td>[17:58] &lt MS-&gt and it changed some people's views on something important :)</td></tr>
+            <tr><td>[17:58] &lt MS-&gt It's fun turning software into lego though - each new component opens up new options :)</td></tr>
+            <tr><td>[17:58] *** MS- gets dinner :)</td></tr>
+            <tr><td>[17:58] &lt MS-&gt biab</td></tr>
+            <tr><td>[18:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:28] *** MS- has a fun thought about versioning for kamaelia. </td></tr>
+            <tr><td>[18:28] &lt MS-&gt next release is 0.6, and whilst the period for ensuring that release is stable is longer than others, the periods for releases after that should be quicker</td></tr>
+            <tr><td>[18:29] &lt MS-&gt So my intent would be to aim for a 0.7 release in early-mid autumn and aim for a 0.8 release at Christmas or so</td></tr>
+            <tr><td>[18:29] &lt MS-&gt Then in 2009 switch to a model similar to ubuntu & friends</td></tr>
+            <tr><td>[18:29] &lt MS-&gt except base the version on the last two digits</td></tr>
+            <tr><td>[18:30] &lt MS-&gt So Jan 09 becomes version 0.9.1</td></tr>
+            <tr><td>[18:30] &lt MS-&gt Jun would be 0.9.6</td></tr>
+            <tr><td>[18:30] &lt MS-&gt Assuming I'm still doing this in 2010, that would be the year it hits version 1.0 , and there's specific things I want in place for that</td></tr>
+            <tr><td>[18:31] &lt MS-&gt so that makes sense :)</td></tr>
+            <tr><td>[18:35] &lt vmlemon_&gt The cat's Crimbo hat should be coming out again? ;)</td></tr>
+            <tr><td>[18:35] &lt MS-&gt :)</td></tr>
+            <tr><td>[18:37] &lt vmlemon_&gt Easter Kitty!</td></tr>
+            <tr><td>[18:37] &lt MS-&gt oh, that's quite tempting</td></tr>
+            <tr><td>[18:37] &lt MS-&gt :-)</td></tr>
+            <tr><td>[18:37] &lt vmlemon_&gt Obviously carrying a basket of eggs, erm Kamaelia ;)</td></tr>
+            <tr><td>[18:38] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:41] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:49] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:13] *** MS- tries something that allows this:</td></tr>
+            <tr><td>[22:13] &lt MS-&gt  yield self.Inline( UnixProcess("ls;sleep 0.1"), control="_unixprocessdone" )</td></tr>
+            <tr><td>[22:13] &lt MS-&gt  for i in self.Inbox("inbox"):</td></tr>
+            <tr><td>[22:13] &lt MS-&gt  print i</td></tr>
+            <tr><td>[22:13] &lt MS-&gt Seems more general than this:</td></tr>
+            <tr><td>[22:13] &lt MS-&gt  yield self.system("fortune")</td></tr>
+            <tr><td>[22:13] &lt MS-&gt  for i in self.Inbox("inbox"):</td></tr>
+            <tr><td>[22:13] &lt MS-&gt  print i</td></tr>
+            <tr><td>[22:13] &lt MS-&gt but not as pretty</td></tr>
+            <tr><td>[22:14] &lt MS-&gt (the sleep 0.1 is there because it seems that the subprocess module does something a little odd (appears to close the connection too quickly?)</td></tr>
+            <tr><td>[22:21] *** MS- chooses both</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt How odd, seeing as the conference was only created 2 minutes ago</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt  Entry Name Unseen Last new note Topics Update status</td></tr>
+            <tr><td>[22:24] &lt vmlemon_&gt  TESTING 1 17-NOV-1858 00:00 0 Never accessed</td></tr>
+            <tr><td>[22:24] &lt MS-&gt unusual</td></tr>
+            <tr><td>[22:25] *** vmlemon_ is still trying to figure out how to reply to the damn testing notes...</td></tr>
+            <tr><td>[22:25] &lt MS-&gt 42</td></tr>
+            <tr><td>[22:25] &lt MS-&gt "I am a fish"</td></tr>
+            <tr><td>[22:26] &lt vmlemon_&gt Hah, " Testing only -- no real content, please. " happens to be the conference's title</td></tr>
+            <tr><td>[22:27] &lt vmlemon_&gt Damn, "No privilege to reply to this note (set nowrite)"</td></tr>
+            <tr><td>[22:27] &lt vmlemon_&gt Looks like I've broken the 'DIRECTORY/CONFERENCES' command by deleting the notebook from my home directory</td></tr>
+            <tr><td>[22:27] &lt vmlemon_&gt (Gives a not-so-nice permissions error, now)</td></tr>
+            <tr><td>[22:30] *** vmlemon_ has only used DEC Notes twice, so puts it down to unfamiliarity and stupidity on his part</td></tr>
+            <tr><td>[22:31] &lt vmlemon_&gt Wow, how un-user friendly - "Qualifiers not allowed - supply only verb and parameters"</td></tr>
+            <tr><td>[22:56] &lt MS-&gt &gt</td></tr>
+            <tr><td>[22:56] &lt MS-&gt ?</td></tr>
+            <tr><td>[22:56] &lt MS-&gt odd</td></tr>
+            <tr><td>[22:57] *** vmlemon_ is surprised that the OpenVMS mail app actually interoperates both ways with SMTP, albeit with an annoying greylisting system in the middle (delays delivery inside by 3 minutes)...</td></tr>
+            <tr><td>[23:38] *** vmlemon_ has joined #kamaelia</td></tr>

@@ -1,0 +1,330 @@
+<html>
+<head>
+<title> Cookbook/DVB/PersonalVideoRecorder </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/DVB/PersonalVideoRecorder">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<h1 align="left">Cookbook : Recording named programmes from a DVB broadcast</h1>
+<p align="left">Find the code for this here:<br><a href="http://svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Examples/DVB_Systems/PersonalVideoRecorder.py?view=markup">/Code/Python/Kamaelia/Examples/DVB_Systems/PersonalVideoRecorder.py</a><br></p><p>So we can record a <a href="../../../Cookbook/DVB/TransportStreamCapture">whole broadcast</a>, or a single channel <a href="../../../Cookbook/DVB/RecordNamedChannel">determined by its name</a>; but what about recording individual programmes?<br>
+</p><h2><a name='recordForMe'> </a>recordForMe component<br></h2><p>We can create a component to handle each recording we want to make.The <i>recordForMe</i> component takes a channel name, programme name, and filename and will record anything broadcast on that channel with that name:</p><blockquote><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>programmes_to_record <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(255, 0, 255);">[</span><br>       <span style="color: rgb(0, 128, 2);"><i>#  Channel     programme   filename</i></span><br>       <span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 0);">"BBC ONE"</span>, <span style="color: rgb(255, 0, 0);">"Neighbours"</span>, <span style="color: rgb(255, 0, 0);">"/data/neighbours.ts"</span> <span style="color: rgb(255, 0, 255);">)</span>,<br>       <span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 0);">"BBC TWO"</span>, <span style="color: rgb(255, 0, 0);">"Newsnight"</span>,  <span style="color: rgb(255, 0, 0);">"/data/Newsnight.ts"</span> <span style="color: rgb(255, 0, 255);">)</span>,<br>    <span style="color: rgb(255, 0, 255);">]<br><br></span>...<br></pre><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre><b>for</b> <span style="color: rgb(255, 0, 255);">(</span>channel, programme,filename<span style="color: rgb(255, 0, 255);">)</span> <b>in</b> programmes_to_record<span style="color: rgb(255, 0, 255);">:</span><br>    recordForMe<span style="color: rgb(255, 0, 255);">(</span>channel,programme,filename<span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span><br><br><span style="color: rgb(255, 0, 255);"></span>...<br><br>scheduler.run.runThreads<span style="color: rgb(255, 0, 255);">()</span><br></pre></blockquote><p>What does <i>recordForMe</i> need to do:</p><ul><li>work out when the programme starts and stops (programme junctions)</li><li>work out what packet IDs contain the audio and video for the named channel</li><li>ask to be sent packets with those IDs</li><li>write the packets to a file<br></li></ul><p>The <i>recordForMe</i> component is therefore a simple pipeline:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><blockquote><pre><b>def</b> recordForMe<span style="color: rgb(255, 0, 255);">(</span>channel, programme, filename<span style="color: rgb(255, 0, 255);">):<br></span><b>    return</b> \<br>        Pipeline<span style="color: rgb(255, 0, 255);">(</span> SubscribeTo<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"nowEvents"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                  ProgrammeDetector<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 255);"> <font color="#000000">channel_name</font>=</span>channel, programme_name<span style="color: rgb(255, 0, 255);">=</span>programme,<br>                                     fromChannelLookup<span style="color: rgb(255, 0, 255);">=</span><span style="color: rgb(255, 0, 0);">"LookupChannelName"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                  ControllableRecorder<span style="color: rgb(255, 0, 255);">(</span> channel_name<span style="color: rgb(255, 0, 255);">=</span>channel,<br>                                        fromDemuxer<span style="color: rgb(255, 0, 255);">=</span><span style="color: rgb(255, 0, 0);">"DEMUXER"</span>,<br>                                        fromPSI<span style="color: rgb(255, 0, 255);">=</span><span style="color: rgb(255, 0, 0);">"PSI_Tables"</span>,<br>                                        fromChannelLookup<span style="color: rgb(255, 0, 255);">=</span><span style="color: rgb(255, 0, 0);">"LookupChannelName"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                  SimpleFileWriter<span style="color: rgb(255, 0, 255);">(</span>filename<span style="color: rgb(255, 0, 255);">)</span>,<br>        <span style="color: rgb(255, 0, 255);">)</span></pre></blockquote><p>It does the following:<br></p><ol><li>It subscribes to a source of events that happen at junctions, when one programme finishes and another begins;</li><li><i><a href="#ProgrammeDetector">ProgrammeDetector</a></i> examines the events to see whether it indicates the start or end of the programme and sends out "START" and "STOP" messages;</li><li><a href="#ControllableRecorder"><i>ControllableRecorder</i></a> works out what packet IDs contain the audio and video for the channel so it can request them from the demuxer. It can then respond to the "START" and "STOP" by requesting the audio and video packets and sending them on;</li><li><i>SimpleFileWriter</i> simply dumps the packets it receives to a file.</li></ol>Already we can see that each <i>recordForMe</i> instance will need to share access to the received DVB broadcast - specifically to do the following:<br><ul><li>Get programme junction events information (<a href="#nowEvents">"nowEvents"</a> named service)</li><li>Convert channel names to service IDs (<a href="#LookupChannelName">"LookupChannelName"</a> named service)</li><li>Ask to be sent audio and video packets (<a href="#DEMUXER">"DEMUXER"</a> named service)</li><li>Possibly reconstruct other broadcast data tables (<a href="#PSI_Tables">"PSI_Tables"</a> named service)<br></li></ul><h2>Supporting services: demuxer, PSI tables, &amp; channel names</h2><p>The supporting services are implemented as named services that components can talk to.</p><h3><a name='DEMUXER'> </a>Demuxing packets from the broadcast</h3><p>The most basic service needed is the ability to request to be sent packets (with specific IDs) that have been received from the broadcast stream:</p><blockquote><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre><span style="color: rgb(255, 0, 255);">import</span> dvb3.frontend<br><br>FREQUENCY <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(0, 0, 255);">505833330</span><span style="color: rgb(255, 0, 255);">/</span><span style="color: rgb(128, 0, 128);">1000000.0</span><br>FE_PARAMS <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(255, 0, 255);">{</span> <span style="color: rgb(255, 0, 0);">"inversion"</span> <span style="color: rgb(255, 0, 255);">:</span> dvb3.frontend.INVERSION_AUTO,<br>              <span style="color: rgb(255, 0, 0);">"constellation"</span> <span style="color: rgb(255, 0, 255);">:</span> dvb3.frontend.QAM_16,<br>              <span style="color: rgb(255, 0, 0);">"coderate_HP"</span> <span style="color: rgb(255, 0, 255);">:</span> dvb3.frontend.FEC_3_4,<br>              <span style="color: rgb(255, 0, 0);">"coderate_LP"</span> <span style="color: rgb(255, 0, 255);">:</span> dvb3.frontend.FEC_3_4,<br>            <span style="color: rgb(255, 0, 255);">}</span><br>...</pre><pre><span style="color: rgb(255, 0, 255);">from</span> Kamaelia.Device.DVB.Receiver <span style="color: rgb(255, 0, 255);">import</span> Receiver<br><br>...</pre><pre>RegisterService<span style="color: rgb(0, 128, 2);"></span><span style="color: rgb(0, 128, 2);"></span><span style="color: rgb(255, 0, 255);">(</span> Receiver<span style="color: rgb(255, 0, 255);">(</span> FREQUENCY, FE_PARAMS, <span style="color: rgb(0, 0, 255);">0</span> <span style="color: rgb(255, 0, 255);">)</span>,<br>                 <span style="color: rgb(255, 0, 255);">{</span><span style="color: rgb(255, 0, 0);">"DEMUXER"</span><span style="color: rgb(255, 0, 255);">:</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">}</span>,<br>               <span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span></pre></blockquote><p>The <i>Receiver</i> component is a combined tuner and demulipliexer service, capable of handling requests from multiple client components asking to be sent packets. Its "inbox" inbox is registered as a named service for clients to access it by.<br></p><p>Note that this system is hard wired to tune to a single broadcast multiplex. If the programmes you want to record are on a different channel, then its tough luck!<br></p><h3><a name='PSI_Tables'> </a>Reconstruction of Program Specific Information (PSI) tables</h3>PSI tables, containing information about the broadcast stream, will be needed by several parts of the system. The <i>ReassemblePSITablesService</i> component can provide this as a service that other components can subscribe to:<br><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><blockquote><pre><span style="color: rgb(255, 0, 255);">from</span> Kamaelia.Device.DVB.Parse.ReassemblePSITables <span style="color: rgb(255, 0, 255);">import</span> ReassemblePSITablesService<br><br>RegisterService<span style="color: rgb(255, 0, 255);">(</span> \<br>     Graphline<span style="color: rgb(255, 0, 255);">(</span> PSI     <span style="color: rgb(255, 0, 255);">=</span> ReassemblePSITablesService<span style="color: rgb(255, 0, 255);">()</span>,<br>                DEMUXER <span style="color: rgb(255, 0, 255);">=</span> ToService<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"DEMUXER"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                linkages <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(255, 0, 255);">{</span><span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PSI"</span>, <span style="color: rgb(255, 0, 0);">"pid_request"</span><span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"DEMUXER"</span>, <span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                            <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">""</span>,    <span style="color: rgb(255, 0, 0);">"request"</span><span style="color: rgb(255, 0, 255);">)</span>     <span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PSI"</span>,     <span style="color: rgb(255, 0, 0);">"request"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                <span style="color: rgb(255, 0, 255);">}<br>              </span><span style="color: rgb(255, 0, 255);">)</span>,<br>     <span style="color: rgb(255, 0, 255);">{</span><span style="color: rgb(255, 0, 0);">"PSI_Tables"</span><span style="color: rgb(255, 0, 255);">:</span><span style="color: rgb(255, 0, 0);">"request"</span><span style="color: rgb(255, 0, 255);">}</span><span style="color: rgb(255, 0, 255);"><br>)</span>.activate<span style="color: rgb(255, 0, 255);">()</span></pre></blockquote><p>The component is linked to the "DEMUXER" service so it can request packets as it needs them to be able to service requests for tables from clients. Its "request" inbox is then registered as a named service for clients to access it by.<br></p><h3><a name='nowEvents'> </a>'Now' event information</h3><p>We are now in a position to extract and parse the Event Information Tables (EIT), process it down to individual events for when programmes start, and make them available on a "nowEvent" Backplane:<br></p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><blockquote><pre>Pipeline<span style="color: rgb(255, 0, 255);">(</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PSI_Tables"</span>, <span style="color: rgb(255, 0, 255);">[</span>EIT_PID<span style="color: rgb(255, 0, 255);">])</span>,<br>          ParseEventInformationTable_Subset<span style="color: rgb(255, 0, 255);">(</span> True, False, False, False<span style="color: rgb(255, 0, 255);">)</span>,<br>          FilterOutNotCurrent<span style="color: rgb(255, 0, 255);">()</span>,<br>          SimplifyEIT<span style="color: rgb(255, 0, 255);">()</span>,<br>          NowNextProgrammeJunctionDetect<span style="color: rgb(255, 0, 255);">()</span>,<br>          PublishTo<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"nowEvents"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>        <span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()<br><br></span><span style="color: rgb(255, 0, 255);"><font color="#000000">Backplane</font>(</span><span style="color: rgb(255, 0, 0);">"nowEvents"</span><span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span></pre></blockquote><p>The steps involved, above, are:</p><ol><li>Requesting to be sent Event Information Tables<br></li><li>Parsing them (only those containing 'now &amp; next' information for all services - channels - on <u>this</u> multiplex)</li><li>Ignoring any tables that are not currently applicable</li><li>Simplifying the tables down to messages containing individual events</li><li>Filtering down to only those events that indicate the start of a new programme (a programme junction)</li><li>Making the events available to other components via a Backplane<br></li></ol><h3><a name='LookupChannelName'> </a>Looking up channel names</h3><p>The final service needed is one for mapping a channel name to its numeric service ID. Again, this is implemented as a named service:<br></p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><blockquote><pre>RegisterService<span style="color: rgb(255, 0, 255);">(</span> \<br>    Graphline<span style="color: rgb(255, 0, 255);">(</span> TABLE_SOURCE <span style="color: rgb(255, 0, 255);">=</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PSI_Tables"</span>, <span style="color: rgb(255, 0, 255);">[</span>SDT_PID<span style="color: rgb(255, 0, 255);">])</span>,<br>               PARSING <span style="color: rgb(255, 0, 255);">=<font color="#000000">ParseServiceDescriptionTable_ActualTS</font></span><span style="color: rgb(255, 0, 255);">()</span>,<br>               LOOKUP <span style="color: rgb(255, 0, 255);">=</span> ChannelNameLookupService<span style="color: rgb(255, 0, 255);">()</span>,<br>               linkages <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(255, 0, 255);">{</span><span style="color: rgb(255, 0, 255);"><br>                   (</span><span style="color: rgb(255, 0, 0);">""</span>,<span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>               <span style="color: rgb(255, 0, 255);">:</span><span style="color: rgb(255, 0, 255);"> (</span><span style="color: rgb(255, 0, 0);">"LOOKUP"</span>, <span style="color: rgb(255, 0, 0);">"request"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                   <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"TABLE_SOURCE"</span>, <span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PARSING"</span>, <span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>                   <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"PARSING"</span>, <span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>      <span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"LOOKUP"</span>, <span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<br>               <span style="color: rgb(255, 0, 255);">}<br>             </span><span style="color: rgb(255, 0, 255);">)</span>,<br>    <span style="color: rgb(255, 0, 255);">{</span><span style="color: rgb(255, 0, 0);">"LookupChannelName"</span> <span style="color: rgb(255, 0, 255);">:</span> <span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">}</span><span style="color: rgb(255, 0, 255);"><br>)</span>.activate<span style="color: rgb(255, 0, 255);">()</span></pre></blockquote>The mappings needed are in the Service Description Table, so that table is requested from the "PSI_Tables" reconstruction service and is parsed by an <i>ParseServiceDescriptionTable_ActualTS</i> component.<p><i>ChannelNameLookupService</i> component is fed the parsed tables, and keeps a note of the most recent, so it can perform lookups when requested by clients.</p><p>The key aspects of the ChannelNameLookupService component is its main loop, for handling requests and receiving new tables:</p><pre>    <b>def</b> main<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span><span style="color: rgb(255, 0, 255);">):</span><br>        <span style="color: rgb(128, 128, 128);">self</span>.sdt_table <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">None</span><br>        <br>        <b>while</b> <b>not</b> <span style="color: rgb(128, 128, 128);">self</span>.shutdown<span style="color: rgb(255, 0, 255);">():</span><br>            <br>            <b>while</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"request"</span><span style="color: rgb(255, 0, 255);">):</span><br>                <span style="color: rgb(128, 128, 128);">self</span>.handleSubscribeUnsubscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"request"</span><span style="color: rgb(255, 0, 255);">))</span><br>                    <br>            <b>while</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">):</span><br>                <span style="color: rgb(128, 128, 128);">self</span>.sdt_table <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span><br>                <br>                <b>for</b> channelname <b>in</b> <span style="color: rgb(128, 128, 128);">self</span>.destinations.keys<span style="color: rgb(255, 0, 255);">():</span><br>                    lookup <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.lookup<span style="color: rgb(255, 0, 255);">(</span>channelname<span style="color: rgb(255, 0, 255);">)</span><br>                    <b>if</b> lookup<span style="color: rgb(255, 0, 255);">:</span><br>                        <b>for</b> boxname <b>in</b> <span style="color: rgb(128, 128, 128);">self</span>.destinations<span style="color: rgb(255, 0, 255);">[</span>channelname<span style="color: rgb(255, 0, 255);">]:</span><br>                            <span style="color: rgb(128, 128, 128);">self</span>.send<span style="color: rgb(255, 0, 255);">(</span>lookup,boxname<span style="color: rgb(255, 0, 255);">)</span><br><br>            <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span><br>            <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span><br></pre><p>... and how it resolves the channel name to its corresponding service ID and transport stream ID:</p><pre>    <b>def</b> lookup<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>, channelname<span style="color: rgb(255, 0, 255);">):</span><br>        <b>if</b> <span style="color: rgb(128, 128, 128);">self</span>.sdt_table <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">None</span><span style="color: rgb(255, 0, 255);">:</span><br>            <b>return</b> <span style="color: rgb(128, 128, 128);">None</span><br>        <br>        <span style="color: rgb(0, 128, 2);"><i># enumerate all channels</i></span><br>        <b>for</b> <span style="color: rgb(255, 0, 255);">(</span>sid,service<span style="color: rgb(255, 0, 255);">)</span> <b>in</b> <span style="color: rgb(128, 128, 128);">self</span>.sdt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'services'</span><span style="color: rgb(255, 0, 255);">]</span>.items<span style="color: rgb(255, 0, 255);">():</span><br>            <b>for</b> <span style="color: rgb(255, 0, 255);">(</span>dtype,descriptor<span style="color: rgb(255, 0, 255);">)</span> <b>in</b> service<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'descriptors'</span><span style="color: rgb(255, 0, 255);">]:</span><br>                <b>if</b> descriptor<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'type'</span><span style="color: rgb(255, 0, 255);">]</span> <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(255, 0, 0);">"service"</span><span style="color: rgb(255, 0, 255);">:</span><br>                    <b>if</b> descriptor<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'service_name'</span><span style="color: rgb(255, 0, 255);">]</span> <span style="color: rgb(255, 0, 255);">==</span> channelname<span style="color: rgb(255, 0, 255);">:</span><br>                        service_id <span style="color: rgb(255, 0, 255);">=</span> sid<br>                        transport_stream_id <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.sdt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'transport_stream_id'</span><span style="color: rgb(255, 0, 255);">]</span><br>                        <b>return</b> <span style="color: rgb(255, 0, 255);">(</span>channelname, service_id, transport_stream_id<span style="color: rgb(255, 0, 255);">)</span>
+</pre><br><p>The rest of the code for this component handles adding and removing subscribers. Client subscribe, rather than issue a single-shot request, because it is always possible the mappings may change during the broadcast.<br></p><h2><a name='ProgrammeDetector'> </a>ProgrammeDetector component</h2><p>Needed by <a href="#recordForMe"><i>recordForMe</i></a><i></i>, this component examines the programme junction events it is sent, and determines when to start and stop recording.</p><p>It looks up the channel name it has been given using the <a href="#LookupChannelName">channel name lookup service</a>, so it can know which events to watch for:<br></p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>    <b>def</b> main<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span><span style="color: rgb(255, 0, 255);">):<br><br>       </span> <i>...</i><span style="color: rgb(0, 128, 2);"></span>
+        <span style="color: rgb(0, 128, 2);"></span>
+        channelLookup <span style="color: rgb(255, 0, 255);">=</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>.fromChannelLookup, <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(128, 128, 128);">self</span>.channel_name<span style="color: rgb(255, 0, 255);">])</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span>channelLookup,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>, <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>, <span style="color: rgb(255, 0, 0);">"_fromChannelLookup"</span><span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">)</span>
+        <b>while</b> <b>not</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_fromChannelLookup"</span><span style="color: rgb(255, 0, 255);">):</span>
+            <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+            <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+        
+        channel_name, service_id, ts_id <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_fromChannelLookup"</span><span style="color: rgb(255, 0, 255);">)</span>
+</pre><p>It can then go into a loop, waiting until it sees an event for the start of a programme with the right programme name and service ID. It can then send on a message to instruct the recorder to start:<br></p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>        <b>while</b> <span style="color: rgb(0, 0, 255);">1</span><span style="color: rgb(255, 0, 255);">:</span>
+            
+            recording<span style="color: rgb(255, 0, 255);">=</span>False
+            <b>while</b> <b>not</b> recording<span style="color: rgb(255, 0, 255);">:</span>
+                <b>if</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">):</span>
+                    newNowEvent <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>
+                    <b>if</b> newNowEvent<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'service'</span><span style="color: rgb(255, 0, 255);">]</span> <span style="color: rgb(255, 0, 255);">==</span> service_id<span style="color: rgb(255, 0, 255);">:</span>
+                        recording <span style="color: rgb(255, 0, 255);">=</span> newNowEvent<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'name'</span><span style="color: rgb(255, 0, 255);">]</span>.lower<span style="color: rgb(255, 0, 255);">()</span>.strip<span style="color: rgb(255, 0, 255);">()</span> <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">self</span>.programme_name
+                <b>else</b><span style="color: rgb(255, 0, 255);">:</span>
+                    <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+                    
+            <span style="color: rgb(0, 128, 2);"><i># start recording</i></span>
+            service_id <span style="color: rgb(255, 0, 255);">=</span> newNowEvent<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'service'</span><span style="color: rgb(255, 0, 255);">]</span>
+            <span style="color: rgb(128, 128, 128);">self</span>.send<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"START"</span>, <span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>
+</pre><p>The component then waits for an event signalling the start of another programme with the same service ID but a different programme name. It can then signal the recorder to stop:<br></p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>            <b>while</b> recording<span style="color: rgb(255, 0, 255);">:</span>
+                <b>if</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">):</span>
+                    newNowEvent <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span>
+                    <b>if</b> newNowEvent<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'service'</span><span style="color: rgb(255, 0, 255);">]</span> <span style="color: rgb(255, 0, 255);">==</span> service_id<span style="color: rgb(255, 0, 255);">:</span>
+                        recording <span style="color: rgb(255, 0, 255);">=</span> newNowEvent<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'name'</span><span style="color: rgb(255, 0, 255);">]</span>.lower<span style="color: rgb(255, 0, 255);">()</span>.strip<span style="color: rgb(255, 0, 255);">()</span> <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">self</span>.programme_name
+                <b>else</b><span style="color: rgb(255, 0, 255);">:</span>
+                    <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+            
+            <span style="color: rgb(0, 128, 2);"><i># stop recording</i></span>
+            <span style="color: rgb(128, 128, 128);">self</span>.send<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"STOP"</span>, <span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>
+</pre><h2><a name='ControllableRecorder'> </a>ControllableRecorder component<br></h2><p>Needed by <a href="richtextframe.html#recordForMe"><i>recordForMe</i></a>, this component works out what packet IDs contain the audio and video data for the channel, then waits to be instructed to start or stop. It requests the audio and video packets from the demuxer whilst it is supposed to be recording.<br></p><p>First it looks up the channel name it has been given using the <a href="richtextframe.html#LookupChannelName">channel name lookup service</a>:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>    <b>def</b> main<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span><span style="color: rgb(255, 0, 255);">):</span>
+        <span style="color: rgb(0, 128, 2);"><i>...<br></i></span><span style="color: rgb(0, 128, 2);"></span>
+        channelLookup <span style="color: rgb(255, 0, 255);">=</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>.fromChannelLookup, <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(128, 128, 128);">self</span>.channel_name<span style="color: rgb(255, 0, 255);">])</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span>channelLookup,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>, <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>, <span style="color: rgb(255, 0, 0);">"_fromChannelLookup"</span><span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">)</span>
+        <b>while</b> <b>not</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_fromChannelLookup"</span><span style="color: rgb(255, 0, 255);">):</span>
+            <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+            <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+        
+        channel_name, service_id, ts_id <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_fromChannelLookup"</span><span style="color: rgb(255, 0, 255);">)</span>
+</pre>Armed with the service ID, it can then look in the Program Association Table (PAT) to find the packet ID for the corresponding Program Map Table (PMT). The PMT lists what packet IDs contain the audio and video data.<br><p>A ParseProgramAssociationTable component is fed the table from the <a href="#PSI_Tables">"PSI_Tables"</a> service, to parse it: (the service name is in <i>self.fromPSI</i>)<br></p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>        pat_parser <span style="color: rgb(255, 0, 255);">=</span> Pipeline<span style="color: rgb(255, 0, 255);">(</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>.fromPSI, <span style="color: rgb(255, 0, 255);">[</span>PAT_PID<span style="color: rgb(255, 0, 255);">])</span>,
+                               ParseProgramAssociationTable<span style="color: rgb(255, 0, 255);">()</span>
+                             <span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        
+        fromPAT_linkage <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span>pat_parser,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>,<span style="color: rgb(255, 0, 0);">"_fromPAT"</span><span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">)</span>
+</pre>The parsed table is collected, then searched for the packet ID of the PMT for the given service ID:<br><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>        <span style="color: rgb(0, 128, 2);"><i># wait until we get data back from the PAT</i></span>
+        PMT_PID <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">None</span>
+        <b>while</b> PMT_PID <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">None</span><span style="color: rgb(255, 0, 255);">:</span>
+            <b>while</b> <b>not</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_fromPAT"</span><span style="color: rgb(255, 0, 255);">):</span>
+                <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+        
+            pat_table <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_fromPAT"</span><span style="color: rgb(255, 0, 255);">)</span>
+            <span style="color: rgb(0, 128, 2);"></span>
+            <b>for</b> transport_stream_id <b>in</b> pat_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'transport_streams'</span><span style="color: rgb(255, 0, 255);">]:</span>
+                ts_services <span style="color: rgb(255, 0, 255);">=</span> pat_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'transport_streams'</span><span style="color: rgb(255, 0, 255);">[]</span>transport_stream_id<span style="color: rgb(255, 0, 255);">]</span>
+                <b>if</b> service_id <b>in</b> ts_services<span style="color: rgb(255, 0, 255);">:</span>
+                    PMT_PID <span style="color: rgb(255, 0, 255);">=</span> ts_services<span style="color: rgb(255, 0, 255);">[</span>service_id<span style="color: rgb(255, 0, 255);">]</span>
+                    <b>break</b>
+</pre>It then sets up another parser component to parse the right PMT:<p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>        pmt_parser <span style="color: rgb(255, 0, 255);">=</span> Pipeline<span style="color: rgb(255, 0, 255);">(</span> Subscribe<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>.fromPSI, <span style="color: rgb(255, 0, 255);">[</span>PMT_PID<span style="color: rgb(255, 0, 255);">])</span>,<br>                               ParseProgramMapTable<span style="color: rgb(255, 0, 255);">()</span>
+                             <span style="color: rgb(255, 0, 255);">)</span>.activate<span style="color: rgb(255, 0, 255);">()</span>
+        
+        fromPMT_linkage <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span>pmt_parser,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>,<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>,<span style="color: rgb(255, 0, 0);">"_fromPMT"</span><span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">)<br><br>        <font color="#000000"><b>print</b></font> </span><span style="color: rgb(255, 0, 0);">"Found PMT PID for this service:"<font color="#000000">,PMT_PID</font></span></pre>The parsed table is collected, then searched for the packet IDs for the audio and video:<br><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>        audio_pid <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">None</span>
+        video_pid <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">None</span>
+        <b>while</b> audio_pid <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">None</span> <b>and</b> video_pid <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(128, 128, 128);">None</span><span style="color: rgb(255, 0, 255);">:</span>
+            <b>while</b> <b>not</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_fromPMT"</span><span style="color: rgb(255, 0, 255);">):</span>
+                <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+
+            pmt_table <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_fromPMT"</span><span style="color: rgb(255, 0, 255);">)</span>
+            <b>if</b> service_id <b>in</b> pmt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'services'</span><span style="color: rgb(255, 0, 255);">]:</span>
+                service <span style="color: rgb(255, 0, 255);">=</span> pmt_table<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'services'</span><span style="color: rgb(255, 0, 255);">][</span>service_id<span style="color: rgb(255, 0, 255);">]</span>
+                <b>for</b> stream <b>in</b> service<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'streams'</span><span style="color: rgb(255, 0, 255);">]:</span>
+                    <b>if</b>   stream<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'type'</span><span style="color: rgb(255, 0, 255);">]</span> <b>in</b> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(0, 0, 255);">3</span>,<span style="color: rgb(0, 0, 255);">4</span><span style="color: rgb(255, 0, 255);">]</span> <b>and</b> <b>not</b> audio_pid<span style="color: rgb(255, 0, 255);">:</span>
+                        audio_pid <span style="color: rgb(255, 0, 255);">=</span> stream<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'pid'</span><span style="color: rgb(255, 0, 255);">]</span>
+                    <b>elif</b> stream<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'type'</span><span style="color: rgb(255, 0, 255);">]</span> <b>in</b> <span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(0, 0, 255);">1</span>,<span style="color: rgb(0, 0, 255);">2</span><span style="color: rgb(255, 0, 255);">]</span> <b>and</b> <b>not</b> video_pid<span style="color: rgb(255, 0, 255);">:</span>
+                        video_pid <span style="color: rgb(255, 0, 255);">=</span> stream<span style="color: rgb(255, 0, 255);">[</span><span style="color: rgb(255, 0, 0);">'pid'</span><span style="color: rgb(255, 0, 255);">]</span>
+
+        <b>print</b> <span style="color: rgb(255, 0, 0);">"Found audio PID:"</span>,audio_pid
+        <b>print</b> <span style="color: rgb(255, 0, 0);">"Found video PID:"</span>,video_pid
+</pre><p><i>ControllableRecorder</i> is now ready, so it links up to the <a href="#DEMUXER">"DEMUXER" service</a>, and waits to receive the "START" order:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>        <span style="color: rgb(0, 128, 2);"><i># get the demuxer service</i></span>
+        cat <span style="color: rgb(255, 0, 255);">=</span> CAT.getcat<span style="color: rgb(255, 0, 255);">()</span>
+        service <span style="color: rgb(255, 0, 255);">=</span> cat.retrieveService<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>.fromDemuxer<span style="color: rgb(255, 0, 255);">)</span>
+        <span style="color: rgb(128, 128, 128);">self</span>.link<span style="color: rgb(255, 0, 255);">((</span><span style="color: rgb(128, 128, 128);">self</span>,<span style="color: rgb(255, 0, 0);">"_toDemuxer"</span><span style="color: rgb(255, 0, 255);">)</span>,service<span style="color: rgb(255, 0, 255);">)</span>
+        
+        <b>while</b> <span style="color: rgb(0, 0, 255);">1</span><span style="color: rgb(255, 0, 255);">:</span>
+            <span style="color: rgb(0, 128, 2);"><i># now wait for the go signal</i></span>
+            recording <span style="color: rgb(255, 0, 255);">=</span> False
+            <b>while</b> <b>not</b> recording<span style="color: rgb(255, 0, 255);">:</span>
+                <b>if</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">):</span>
+                    recording <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(255, 0, 0);">"START"</span>
+                <b>else</b><span style="color: rgb(255, 0, 255);">:</span>
+                    <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+</pre><p>To start recording, it sends a request to the demultiplexer, asking to be sent the audio and video packets for the service:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>            <span style="color: rgb(0, 128, 2);"><i># request audio and video data</i></span>
+            <span style="color: rgb(128, 128, 128);">self</span>.send<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"ADD"</span>,<span style="color: rgb(255, 0, 255);">[</span>audio_pid,video_pid<span style="color: rgb(255, 0, 255);">]</span>, <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>,<span style="color: rgb(255, 0, 0);">"_av_packets"</span><span style="color: rgb(255, 0, 255);">))</span>, <span style="color: rgb(255, 0, 0);">"_toDemuxer"</span><span style="color: rgb(255, 0, 255);">)</span>
+</pre><p>And forwards them out of its "outbox" outbox until it receives the "STOP" command:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>            <b>while</b> recording<span style="color: rgb(255, 0, 255);">:</span>
+                <b>while</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_av_packets"</span><span style="color: rgb(255, 0, 255);">):</span>
+                    packet <span style="color: rgb(255, 0, 255);">=</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"_av_packets"</span><span style="color: rgb(255, 0, 255);">)</span>
+                    <span style="color: rgb(128, 128, 128);">self</span>.send<span style="color: rgb(255, 0, 255);">(</span>packet,<span style="color: rgb(255, 0, 0);">"outbox"</span><span style="color: rgb(255, 0, 255);">)</span>
+                    
+                <b>while</b> <span style="color: rgb(128, 128, 128);">self</span>.dataReady<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">):</span>
+                    recording <span style="color: rgb(255, 0, 255);">=</span> <b>not</b> <span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(128, 128, 128);">self</span>.recv<span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"inbox"</span><span style="color: rgb(255, 0, 255);">)</span> <span style="color: rgb(255, 0, 255);">==</span> <span style="color: rgb(255, 0, 0);">"STOP"</span> <span style="color: rgb(255, 0, 255);">)</span>
+                    
+                <b>if</b> recording<span style="color: rgb(255, 0, 255);">:</span>
+                    <span style="color: rgb(128, 128, 128);">self</span>.pause<span style="color: rgb(255, 0, 255);">()</span>
+                <b>yield</b> <span style="color: rgb(0, 0, 255);">1</span>
+</pre><p>Once it has been told to stop, it sends another request to the demultiplexer, asking to stop being sent audio and video packets:</p><p>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="Generator" content="Kate, the KDE Advanced Text Editor">
+
+</p><pre>            <span style="color: rgb(128, 128, 128);">self</span>.send<span style="color: rgb(255, 0, 255);">(</span> <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(255, 0, 0);">"REMOVE"</span>, <span style="color: rgb(255, 0, 255);">[</span>audio_pid,video_pid<span style="color: rgb(255, 0, 255);">]</span>, <span style="color: rgb(255, 0, 255);">(</span><span style="color: rgb(128, 128, 128);">self</span>,<span style="color: rgb(255, 0, 0);">"_av_packets"</span><span style="color: rgb(255, 0, 255);">))</span>, <span style="color: rgb(255, 0, 0);">"_toDemuxer"</span><span style="color: rgb(255, 0, 255);">)</span>
+</pre><p>This is quite a long example, but demonstrates that you can build quite complex systems, like a PVR in quite a modular fashion.</p><blockquote> </blockquote>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

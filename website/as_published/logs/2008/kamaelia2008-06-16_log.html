@@ -1,0 +1,571 @@
+<html><body><table>
+            <tr><td>[00:29] *** MS- gets sleep</td></tr>
+            <tr><td>[00:29] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[06:36] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:36] &lt Lawouach_&gt hello</td></tr>
+            <tr><td>[07:23] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:23] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[07:25] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:32] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[07:32] Reply: does the macarena</td></tr>
+            <tr><td>[07:45] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:33] *** mhrd-afk is now known as mhrd-sometimes-a</td></tr>
+            <tr><td>[08:33] &lt mhrd-sometimes-a&gt ( I'll, yet again, be in and out of my office all day :-/ )</td></tr>
+            <tr><td>[09:18] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[09:18] &lt Chong-&gt Morning, all.</td></tr>
+            <tr><td>[09:37] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:37] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[09:42] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:43] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:43] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[09:51] &lt Davbo&gt Great, package manager crashed installing new kernel</td></tr>
+            <tr><td>[09:52] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[09:58] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:45] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:59] &lt Davbo&gt Hey MS-</td></tr>
+            <tr><td>[11:04] &lt MS-&gt heya</td></tr>
+            <tr><td>[11:04] &lt MS-&gt Oh, it's monday isn't it</td></tr>
+            <tr><td>[11:04] &lt MS-&gt sorry!</td></tr>
+            <tr><td>[11:04] &lt Davbo&gt Have a good weekend?</td></tr>
+            <tr><td>[11:04] &lt MS-&gt completely passed my mind</td></tr>
+            <tr><td>[11:04] &lt Davbo&gt s'ok</td></tr>
+            <tr><td>[11:04] &lt MS-&gt Yes, I did actually, a very good one</td></tr>
+            <tr><td>[11:04] &lt Davbo&gt Good stuff, get everything sorted?</td></tr>
+            <tr><td>[11:05] &lt MS-&gt Not sorted as such</td></tr>
+            <tr><td>[11:05] &lt MS-&gt but definite progression</td></tr>
+            <tr><td>[11:05] &lt Davbo&gt Cool :-)</td></tr>
+            <tr><td>[11:05] &lt MS-&gt I also got lots of stuff done regarding my work work - mainly by nabbing stuff I've done for the kamaelia website</td></tr>
+            <tr><td>[11:06] &lt MS-&gt and then adding lots of knobs onto it</td></tr>
+            <tr><td>[11:06] &lt Davbo&gt ah right</td></tr>
+            <tr><td>[11:09] &lt Davbo&gt could you have a look at my checkin i just did /DK/Paint/Kamaelia/Apps/Paint/UI/XYPad.py</td></tr>
+            <tr><td>[11:09] &lt Davbo&gt when you get a chance</td></tr>
+            <tr><td>[11:10] &lt Davbo&gt need an efficient way of redrawing the bg around the puck when it moves without drawing the whole thing each time :s</td></tr>
+            <tr><td>[11:15] &lt MS-&gt I will do :)</td></tr>
+            <tr><td>[11:44] &lt MS-&gt Davbo: so that have a better idea of what you're after, can you tell me what's inefficient about what's currently happening & why it's an issue?</td></tr>
+            <tr><td>[11:44] &lt MS-&gt (can't really look at it at this moment, but I know that'll be a question that'll spring to mind)</td></tr>
+            <tr><td>[11:46] &lt Davbo&gt Well I use a for and nested for loops to plot all the colours</td></tr>
+            <tr><td>[11:46] &lt Davbo&gt I don't want to have to run that everytime someone clicks (clicking places a marker on the colour you want</td></tr>
+            <tr><td>[11:46] &lt Davbo&gt I could just get rid of the "puck" which is what i had before</td></tr>
+            <tr><td>[11:47] &lt Davbo&gt but it's nice to see where you're selected</td></tr>
+            <tr><td>[11:51] &lt MS-&gt I'll take a look</td></tr>
+            <tr><td>[11:51] &lt Davbo&gt the Packaging thread on the group has got rather confusing</td></tr>
+            <tr><td>[11:51] &lt MS-&gt ?</td></tr>
+            <tr><td>[11:52] &lt MS-&gt hadn't even spotted updates</td></tr>
+            <tr><td>[11:52] &lt Davbo&gt http://groups.google.com/group/kamaelia/browse_thread/thread/5c10266994f2e276?hl=en</td></tr>
+            <tr><td>[11:53] &lt MS-&gt Yes, it has gotten a little confusing</td></tr>
+            <tr><td>[11:53] &lt MS-&gt It's really actually about j_baker's approach</td></tr>
+            <tr><td>[11:53] &lt MS-&gt which is suitable for j_baker's project</td></tr>
+            <tr><td>[11:53] &lt MS-&gt Personally, I'm actually happy with the approach taken by the ER Modeller code</td></tr>
+            <tr><td>[11:53] &lt MS-&gt which is on /trunk</td></tr>
+            <tr><td>[11:54] &lt MS-&gt and would be more than happy to see that be the approach you take as well</td></tr>
+            <tr><td>[11:54] &lt Davbo&gt right</td></tr>
+            <tr><td>[11:54] &lt MS-&gt Two things which are the same are easier to change to something else than 4 or 5 completely different approaches</td></tr>
+            <tr><td>[11:55] &lt MS-&gt It's very easy for people to get things confused.</td></tr>
+            <tr><td>[11:55] &lt MS-&gt the core of the approach taken by the modeller is</td></tr>
+            <tr><td>[11:56] &lt Davbo&gt Yeah it has confused me a bit</td></tr>
+            <tr><td>[11:57] &lt MS-&gt Code/Python/Apps/ERModeller/App/&lt this is the application&gt</td></tr>
+            <tr><td>[11:57] &lt MS-&gt Which is worth looking at</td></tr>
+            <tr><td>[11:57] &lt MS-&gt you'll see that what that does is import a bunch of components</td></tr>
+            <tr><td>[11:57] &lt MS-&gt and wire them up</td></tr>
+            <tr><td>[11:57] &lt MS-&gt in a graphline and then runs it</td></tr>
+            <tr><td>[11:57] &lt MS-&gt It imports them from</td></tr>
+            <tr><td>[11:57] &lt Davbo&gt especially with the mention of setuptools/easy_install because i recall you saying that wasn't suitable</td></tr>
+            <tr><td>[11:57] &lt MS-&gt Kamaelia.Apps.&lt ...?</td></tr>
+            <tr><td>[11:58] &lt Davbo&gt perhaps you even posted that to the list</td></tr>
+            <tr><td>[11:59] &lt MS-&gt I'm aware of setuptools/easy_install, but in practice I'm not sure that I want to go with anything at this instant that works on the _assumption_ that you can download, install and run random software without even checking or the (simple) ability to audit it first</td></tr>
+            <tr><td>[11:59] &lt MS-&gt Especially code that requires priviledged access to the system to install in standard locations</td></tr>
+            <tr><td>[12:00] &lt Davbo&gt indeed</td></tr>
+            <tr><td>[12:00] &lt MS-&gt It's never been acceptable on any server systems I've run and having that as a *requirement* for installing kamaelia is not where I want to go</td></tr>
+            <tr><td>[12:00] &lt MS-&gt Having it as an extra *option* is nice</td></tr>
+            <tr><td>[12:00] &lt Davbo&gt it's nice to have packaging systems up for debate but at some point we need a decision / or do we?</td></tr>
+            <tr><td>[12:01] &lt MS-&gt and I believe standard distutils these days will integrate cleanly as an option for eggs and if you provide the right info, then easy_install/setuptools can take something intended as distutils, but it's a pain</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Personally, I would decide in favour of a distutils based approach because it matches how I think as a sysadmin in a previous life</td></tr>
+            <tr><td>[12:01] &lt Davbo&gt heh</td></tr>
+            <tr><td>[12:01] &lt MS-&gt Which boils down to "I want to know in advance what's getting instanlled upfront"</td></tr>
+            <tr><td>[12:02] &lt MS-&gt I've done sysadmin for & trouble shooting on large scale systems</td></tr>
+            <tr><td>[12:02] &lt MS-&gt When you're doing that, you really do want to know what's going onto them upfront</td></tr>
+            <tr><td>[12:02] &lt MS-&gt That's actually where the megabundle thinking comes from - because it guarantees "if you use all of these together, I know it will work"</td></tr>
+            <tr><td>[12:03] &lt MS-&gt rather than saying "X with version greater than Y"</td></tr>
+            <tr><td>[12:03] &lt MS-&gt also, you can map from distutils approaches to setuptools & eggs, whereas going back the other way appears harder#</td></tr>
+            <tr><td>[12:03] &lt Davbo&gt Yeah Uni has a very clever way of handling those things</td></tr>
+            <tr><td>[12:03] &lt MS-&gt (appears, not looked in detail - not had time)</td></tr>
+            <tr><td>[12:04] &lt Davbo&gt The sysadmin in our dept was explaining how they do distributed applications</td></tr>
+            <tr><td>[12:06] &lt MS-&gt There's a wide variety of approaches that get taken really</td></tr>
+            <tr><td>[12:07] &lt MS-&gt But often the core thing that remains the same throughout all of them is "I know precisely what is installed where, why, and how"</td></tr>
+            <tr><td>[12:09] &lt Davbo&gt I think I'm just tired of reading about the various methods</td></tr>
+            <tr><td>[12:09] &lt MS-&gt Just copy what I did then</td></tr>
+            <tr><td>[12:09] &lt MS-&gt It works :)</td></tr>
+            <tr><td>[12:09] &lt Davbo&gt Yeah I wll</td></tr>
+            <tr><td>[12:10] &lt Davbo&gt s/wll/will</td></tr>
+            <tr><td>[12:10] &lt MS-&gt If j_baker's approach turns out to be a good approach for these sorts of apps as well in practice, I can integrate that</td></tr>
+            <tr><td>[12:11] &lt MS-&gt To be honest I've also realised just how nasty it is to work with installing packages under windows as well - now that I've been playing with XP in a VirtualBox (virtualbox.org)</td></tr>
+            <tr><td>[12:11] &lt Davbo&gt it wants to be in the same layout as ERModeller if it's going to be in /trunk anyway imo</td></tr>
+            <tr><td>[12:11] &lt MS-&gt yep</td></tr>
+            <tr><td>[12:12] &lt MS-&gt Should also make packaging for ubuntu easier to test/play with as well</td></tr>
+            <tr><td>[12:13] &lt Davbo&gt I'll be trying openSUSE 11.0 on wednesday hopefully</td></tr>
+            <tr><td>[12:13] &lt Davbo&gt I believe that's the release day they've set</td></tr>
+            <tr><td>[12:14] &lt Davbo&gt i've got a separate partition/mountpoint for /home anyway</td></tr>
+            <tr><td>[12:17] &lt MS-&gt That's not a bad idea</td></tr>
+            <tr><td>[12:17] &lt MS-&gt I'll try that in a virtual machine as well</td></tr>
+            <tr><td>[12:17] *** Davbo will try the live CD</td></tr>
+            <tr><td>[12:18] *** MS- will try the live CD without rebooting</td></tr>
+            <tr><td>[12:18] &lt MS-&gt :-D</td></tr>
+            <tr><td>[12:18] &lt Davbo&gt if it doesn't detect my wireless card (which has open source drivers) then i'll not bother</td></tr>
+            <tr><td>[12:18] &lt MS-&gt (it's the latest shiny piece of free software)</td></tr>
+            <tr><td>[12:18] &lt MS-&gt :)</td></tr>
+            <tr><td>[12:18] &lt MS-&gt (for me anyway(</td></tr>
+            <tr><td>[12:18] &lt MS-&gt )</td></tr>
+            <tr><td>[12:18] *** MS- goes for food</td></tr>
+            <tr><td>[12:18] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[12:18] &lt MS-&gt biab</td></tr>
+            <tr><td>[12:18] &lt Davbo&gt cya</td></tr>
+            <tr><td>[13:01] &lt j_baker&gt MS-: do you happen to know much about cgitb?</td></tr>
+            <tr><td>[13:04] &lt orphans&gt j_baker, did you ever find out a sensible way to work out the external IP address of a PC using python?</td></tr>
+            <tr><td>[13:04] &lt orphans&gt iirc you were looking at it for wcgi?</td></tr>
+            <tr><td>[13:05] &lt j_baker&gt Nope. There's not really any way to do that that's even portable across different unices.</td></tr>
+            <tr><td>[13:05] &lt j_baker&gt Plus you've also got to figure: do they want IPv4 or IPv6?</td></tr>
+            <tr><td>[13:06] &lt orphans&gt fair enough, it's not vital :)</td></tr>
+            <tr><td>[13:06] &lt j_baker&gt So for me, I figured if anybody writing a WSGI app needs it bad enough, they're better off finding it themselves.</td></tr>
+            <tr><td>[13:06] &lt orphans&gt yeah, me too</td></tr>
+            <tr><td>[13:07] &lt orphans&gt although I am one of those people who'd need to, my ISP has transparent proxies spying all over me</td></tr>
+            <tr><td>[13:07] &lt Davbo&gt You could try importing some html stuff and parsing a site like showmyip.com ?</td></tr>
+            <tr><td>[13:08] &lt Davbo&gt clumsy though</td></tr>
+            <tr><td>[13:08] &lt orphans&gt yeah, too ugly for me I think</td></tr>
+            <tr><td>[13:08] &lt j_baker&gt Well, the proxying may just be for HTTP. Or is it?</td></tr>
+            <tr><td>[13:08] &lt orphans&gt mm, you may well be right actually...</td></tr>
+            <tr><td>[13:08] &lt orphans&gt I remember I had to do stuff to get slsk working back in the day</td></tr>
+            <tr><td>[13:09] &lt Davbo&gt I don't know of any subtle ways to find it i'm afraid orphans :-)</td></tr>
+            <tr><td>[13:09] &lt orphans&gt who knows :)</td></tr>
+            <tr><td>[13:10] &lt Davbo&gt bin/ifconfig/ doesn't even necessarily show your external ip right?</td></tr>
+            <tr><td>[13:11] &lt orphans&gt nopers</td></tr>
+            <tr><td>[13:11] &lt j_baker&gt Yeah. I think most Red Hat systems will just have that show your loopback address.</td></tr>
+            <tr><td>[13:11] &lt orphans&gt definitely sticking to "put it in a config you lazy bum"</td></tr>
+            <tr><td>[13:12] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[13:13] &lt Davbo&gt Why do you need it orphans?</td></tr>
+            <tr><td>[13:13] &lt orphans&gt as an address for one client to send to another one</td></tr>
+            <tr><td>[13:14] &lt orphans&gt so Jam A sends Jam B a message saying "send me stuff to this port"</td></tr>
+            <tr><td>[13:14] &lt Davbo&gt How does Jam A get to Jam B?</td></tr>
+            <tr><td>[13:14] &lt orphans&gt and Jam A says "well, the message came from this address, so we'll try there"</td></tr>
+            <tr><td>[13:15] &lt orphans&gt but if there's a proxy Jam B sends it to the proxy rather than Jam A</td></tr>
+            <tr><td>[13:15] &lt orphans&gt euargh, the second line should have read "and Jam B says"</td></tr>
+            <tr><td>[13:16] &lt orphans&gt Jam A -&gt UDP Pipe -&gt Jam B</td></tr>
+            <tr><td>[13:16] &lt Davbo&gt Ah</td></tr>
+            <tr><td>[13:16] &lt Davbo&gt Proxies don't like UDP</td></tr>
+            <tr><td>[13:16] &lt orphans&gt but it's not too bad, cause Jam A can say "send me stuff to this address and this port" at the start</td></tr>
+            <tr><td>[13:16] &lt j_baker&gt You're sending binary data aren't you?</td></tr>
+            <tr><td>[13:16] &lt orphans&gt yeah</td></tr>
+            <tr><td>[13:16] &lt j_baker&gt Hmmm...</td></tr>
+            <tr><td>[13:17] &lt Lawouach_&gt orphans: maybe for the scope of this project you should consider (at least in a first release) that you run on a local network</td></tr>
+            <tr><td>[13:17] &lt Lawouach_&gt I'd rather have a working applictaions over a local network than a broken one over the Internet</td></tr>
+            <tr><td>[13:17] &lt Davbo&gt "Surprise packets" my lecturer described it as. :-)</td></tr>
+            <tr><td>[13:18] &lt Davbo&gt You could always test it with a VPN if you do it Lawouach_'s way</td></tr>
+            <tr><td>[13:18] &lt orphans&gt Lawouach_, all my testing is happening locally, so I wouldn't be surprised if it was pretty sketchy over the internet. That said it's only another couple of lines of code to get it (theoretically) working over the internet</td></tr>
+            <tr><td>[13:18] &lt orphans&gt it's no big problem, just interested whether there was a nice way to do it :)</td></tr>
+            <tr><td>[13:19] &lt Davbo&gt How do Whiteboards work orphans? you had a look at that?</td></tr>
+            <tr><td>[13:19] &lt orphans&gt no - I should do really</td></tr>
+            <tr><td>[13:20] &lt Davbo&gt I've looked but not at the networking code really</td></tr>
+            <tr><td>[13:20] &lt Lawouach_&gt orphans: I'd rather if we pushed those two lines back nonetheless.</td></tr>
+            <tr><td>[13:20] &lt Lawouach_&gt Unless you can assure it would not slow you down</td></tr>
+            <tr><td>[13:21] &lt Lawouach_&gt Up to you really but I don't consider it being a priority</td></tr>
+            <tr><td>[13:21] &lt Lawouach_&gt I'd rather seeing solid code running locally</td></tr>
+            <tr><td>[13:21] &lt orphans&gt no, the two lines are in already - literally no effort</td></tr>
+            <tr><td>[13:22] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[13:24] &lt j_baker&gt MS-: I posted my question to the list fyi. I've got to take care of a couple of things atm, so I'll be back.</td></tr>
+            <tr><td>[13:40] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[13:44] &lt Lawouach_&gt j_baker: replied</td></tr>
+            <tr><td>[13:51] &lt Davbo&gt orphans: what's my best bet for getting 2 XYPads talking (locally) I just want 1 for saturation and 1 for colour selection</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt A graphline would make more sense than what you've setup already, looks like that will be fine</td></tr>
+            <tr><td>[13:53] &lt orphans&gt if you hook up the localChanges outbox on one to the remoteChanges inbox on the other the position on one will follow the other</td></tr>
+            <tr><td>[13:53] &lt orphans&gt you'll probably need to do a bit of fiddling with what you do with the data coming in on remoteChanges</td></tr>
+            <tr><td>[13:53] &lt orphans&gt so it tracks how you want it to</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt right</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt thanks</td></tr>
+            <tr><td>[13:54] &lt orphans&gt I think that should work anyway, if it doesn't shout and I'll find out where I've messed up :)</td></tr>
+            <tr><td>[13:56] &lt Chong-&gt Lawouach_: it seems that setuptools has been around for a long time.</td></tr>
+            <tr><td>[13:56] &lt Chong-&gt I just notice it when I tried to install PyDispatcher and OpenGLContext. :-)</td></tr>
+            <tr><td>[13:56] *** MS- back</td></tr>
+            <tr><td>[13:57] &lt MS-&gt Hi Chong-</td></tr>
+            <tr><td>[13:57] &lt Chong-&gt afternoon, MS-</td></tr>
+            <tr><td>[13:57] &lt MS-&gt So, tell me what you've got up to :-)</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt Heh Chong-, thought that was funny when you posted it to the ML :-)</td></tr>
+            <tr><td>[13:58] &lt Chong-&gt MS- : now I am starting OpenGL viewer coding</td></tr>
+            <tr><td>[13:58] &lt MS-&gt k</td></tr>
+            <tr><td>[13:59] &lt Chong-&gt Have you seen my project page? I just made some changes.</td></tr>
+            <tr><td>[13:59] &lt MS-&gt I saw what looked like a reversion</td></tr>
+            <tr><td>[14:00] &lt MS-&gt What changes did you make?</td></tr>
+            <tr><td>[14:00] &lt Chong-&gt Davbo: I thought some may be interested in it. I remembered you had ever asked j_baker if his package system could integrate PyGame.</td></tr>
+            <tr><td>[14:01] &lt MS-&gt Chong-: setuptools can't in any shape or form work correctly with something like pygame in all cases. It can make some guesses, but it'd be wrong</td></tr>
+            <tr><td>[14:01] &lt MS-&gt anyhow, tht's by the by</td></tr>
+            <tr><td>[14:01] &lt MS-&gt what changes did you make?</td></tr>
+            <tr><td>[14:02] &lt MS-&gt have you checked in any code?</td></tr>
+            <tr><td>[14:02] &lt Chong-&gt MS-: first, move OpenGL extention work ahead</td></tr>
+            <tr><td>[14:02] &lt MS-&gt http://cia.vc/stats/author/toplch suggests nothing new</td></tr>
+            <tr><td>[14:03] &lt MS-&gt grep -i import.*gl `find |grep py$|grep -v svn`</td></tr>
+            <tr><td>[14:03] &lt MS-&gt agrees</td></tr>
+            <tr><td>[14:03] &lt Chong-&gt Second, start working with OpenGLApp (maybe not necessary), TopologyViewer3D and particles first, and then extend GridRenderer, ParticleSystem, ParticleDragger and physical laws wherever necessary</td></tr>
+            <tr><td>[14:03] &lt MS-&gt no checkins</td></tr>
+            <tr><td>[14:03] &lt MS-&gt so I can't help</td></tr>
+            <tr><td>[14:03] &lt MS-&gt oh well</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt no. I just play with PyOpenGL and did some preparation, have not started coding yet.</td></tr>
+            <tr><td>[14:06] &lt MS-&gt I take it by "Playig with pyopenGL" this means just "running the existing open gl components" ?</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt MS-: I have saw your reply about setuptools. I am with you. I also thought that it's not a good idea to install something users even don't know.</td></tr>
+            <tr><td>[14:06] &lt MS-&gt Since that's the bare minimum there really</td></tr>
+            <tr><td>[14:07] &lt MS-&gt at minimum the ones for moving cubes around and looking at THF's sketches as well as his final examples/demos</td></tr>
+            <tr><td>[14:08] &lt Chong-&gt yes. run and read the existing open gl components and also check PyOpenGL and OpenGLContext modules</td></tr>
+            <tr><td>[14:08] &lt MS-&gt But you haven't actually tried copying any into your Sketches area, changing them and playing with them?</td></tr>
+            <tr><td>[14:08] &lt MS-&gt playing == modifying code</td></tr>
+            <tr><td>[14:09] &lt MS-&gt please correct me if I'm wrong</td></tr>
+            <tr><td>[14:10] *** MS- feels that he's micromanaging your project when it should just be proceeding sensibly</td></tr>
+            <tr><td>[14:10] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[14:10] *** MS- doesn't understand why you're not actually proceeding</td></tr>
+            <tr><td>[14:10] &lt MS-&gt Are you not spending your daytime on this?</td></tr>
+            <tr><td>[14:11] &lt MS-&gt Or is it some other problem?</td></tr>
+            <tr><td>[14:12] &lt Chong-&gt I have been working on it, but have not started my coding.</td></tr>
+            <tr><td>[14:12] &lt MS-&gt What have you been doing then?</td></tr>
+            <tr><td>[14:13] &lt MS-&gt Tell you what</td></tr>
+            <tr><td>[14:13] &lt MS-&gt come back when you start writing code</td></tr>
+            <tr><td>[14:14] &lt MS-&gt I can't help if you don't actually communicate</td></tr>
+            <tr><td>[14:14] &lt Chong-&gt check the existing codes and review my OpenGL knowledge. BTW, I only started it on last Friday.</td></tr>
+            <tr><td>[14:14] &lt MS-&gt I'm not trying to be awkward or abrasive, or anything, but it isn't actually possible to review or do anything</td></tr>
+            <tr><td>[14:14] &lt MS-&gt Mentoring is not meant to be managing</td></tr>
+            <tr><td>[14:15] &lt MS-&gt it's meant to be mentoring</td></tr>
+            <tr><td>[14:15] &lt MS-&gt whilst a good manager is normally also a good mentor</td></tr>
+            <tr><td>[14:15] &lt MS-&gt a good mentor is not necessarily always a manager</td></tr>
+            <tr><td>[14:15] &lt MS-&gt Indeed the best mentors often aren't</td></tr>
+            <tr><td>[14:15] &lt Chong-&gt Last week, in most time, i did Extend viewer to be able to update the figure dynamically; add link arrow and text; clean up codes and finish up the PyGame version extention;</td></tr>
+            <tr><td>[14:16] &lt MS-&gt So, if you've "finished up", where's the communication to the list saying what you've done (clearly) ?</td></tr>
+            <tr><td>[14:16] &lt MS-&gt (for example)</td></tr>
+            <tr><td>[14:17] &lt Chong-&gt Sorry, I have not. I thought it's just an exercise, so I have not.</td></tr>
+            <tr><td>[14:17] &lt MS-&gt I'm not going to chase after you for information</td></tr>
+            <tr><td>[14:17] &lt MS-&gt I'm expecting you (all incidentally) to let me know what you're doing, to let me know when I'm not giving you enough information, and also to search for answers yourselves</td></tr>
+            <tr><td>[14:18] &lt MS-&gt So far, I've been chasing you for information and that's entirely the wrong way round</td></tr>
+            <tr><td>[14:18] &lt MS-&gt I don't expect Lawouach to chase me for details for example, nor does he expect to</td></tr>
+            <tr><td>[14:18] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:18] *** MS- says picking a random target who will more than defend himself ;)</td></tr>
+            <tr><td>[14:19] &lt Chong-&gt I thought last Thursday or Friday, I had asked you to check my codes I have committed</td></tr>
+            <tr><td>[14:19] &lt Lawouach_&gt French like being chased. But you're not girly enough.</td></tr>
+            <tr><td>[14:19] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:19] &lt Lawouach_&gt i have a feeling that didn't come out as well as I'd wanted to</td></tr>
+            <tr><td>[14:19] &lt MS-&gt Chong-: and I said that last week was going to be a nightmare, and that I would (maybe) start catching up at the weekend</td></tr>
+            <tr><td>[14:19] &lt Davbo&gt no Lawouach_, it was perfect :P</td></tr>
+            <tr><td>[14:19] &lt MS-&gt Lawouach_: That's what they all say :-p</td></tr>
+            <tr><td>[14:19] &lt orphans&gt :D</td></tr>
+            <tr><td>[14:20] &lt Chong-&gt haha</td></tr>
+            <tr><td>[14:20] &lt Lawouach_&gt I won't say more.</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt biab :-)</td></tr>
+            <tr><td>[14:20] *** Davbo is now known as Davbo-afk</td></tr>
+            <tr><td>[14:21] &lt MS-&gt Chong-: I also have repeatedly said to you "make your checkins followable"</td></tr>
+            <tr><td>[14:21] &lt MS-&gt "make your code followable"</td></tr>
+            <tr><td>[14:21] &lt MS-&gt I've said I can't review stuff in you don't make it possible to see what's going on</td></tr>
+            <tr><td>[14:21] &lt Chong-&gt yes. I'll.:/</td></tr>
+            <tr><td>[14:22] &lt MS-&gt You've said that every week</td></tr>
+            <tr><td>[14:22] &lt MS-&gt Anyone can write code in a cave</td></tr>
+            <tr><td>[14:22] &lt Chong-&gt From last Friday, I have not started real coding, so I have not checked in any.</td></tr>
+            <tr><td>[14:22] &lt MS-&gt and get something working</td></tr>
+            <tr><td>[14:23] &lt MS-&gt Why not?</td></tr>
+            <tr><td>[14:23] &lt MS-&gt No, seriously.</td></tr>
+            <tr><td>[14:23] &lt MS-&gt Why haven't you taken the code examples which exist, copied them into your scratch area and experimented with how to move forward?</td></tr>
+            <tr><td>[14:23] *** MS- ponders</td></tr>
+            <tr><td>[14:23] &lt Chong-&gt It's not related with project, just learning PyOpenGL codes.</td></tr>
+            <tr><td>[14:24] *** MS- gives up</td></tr>
+            <tr><td>[14:24] *** MS- goes off to do work</td></tr>
+            <tr><td>[14:24] &lt MS-&gt back later</td></tr>
+            <tr><td>[14:24] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:24] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:26] &lt Chong-&gt In fact, I really have some questions to ask you. But I haven't got chance yet.</td></tr>
+            <tr><td>[14:26] *** Lawouach_ goes to get some tea</td></tr>
+            <tr><td>[14:28] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:28] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:28] *** MS- changed the topic to Don't forget you can ask questions on the mailing list as well | Claim a branch for review and (maybe) merge! :-) | Update and review the release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 19th June 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[14:29] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[15:05] &lt orphans&gt ye gods, I think I've actually managed to write the single worst bit of code ever. So far it's errored out on every one of the last 10 lines :D</td></tr>
+            <tr><td>[15:06] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:10] &lt Davbo-afk&gt lol :D</td></tr>
+            <tr><td>[15:10] &lt Davbo-afk&gt nice one orphans :p</td></tr>
+            <tr><td>[15:10] &lt Davbo-afk&gt I'll remember that before asking to use your code in future ;-)</td></tr>
+            <tr><td>[15:10] &lt Davbo-afk&gt also: hi vmlemon_</td></tr>
+            <tr><td>[15:11] &lt orphans&gt :)</td></tr>
+            <tr><td>[15:12] &lt Lawouach_&gt orphans: talking about that revomit script of yours?</td></tr>
+            <tr><td>[15:12] &lt orphans&gt no, thankfully!</td></tr>
+            <tr><td>[15:12] &lt orphans&gt although that is pure evil</td></tr>
+            <tr><td>[15:12] &lt orphans&gt and I realised I could have just used replace all the way through :)</td></tr>
+            <tr><td>[15:12] &lt orphans&gt revomit works surprisingly well actually...</td></tr>
+            <tr><td>[15:13] &lt Lawouach_&gt Ultimately I won't mind if you find a more suitable name ;)</td></tr>
+            <tr><td>[15:14] &lt orphans&gt heh, ultimately I wouldn't mind if I could work out how to use sed to do it. But yeah, point taken :)</td></tr>
+            <tr><td>[15:14] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[15:14] &lt orphans&gt I was quite frustrated by that point :)</td></tr>
+            <tr><td>[15:14] &lt Lawouach_&gt BTW, regarding string substitutions, Python has a nice Template in built-in</td></tr>
+            <tr><td>[15:14] &lt Davbo-afk&gt "﻿(16:13:30) orphans: and I realised I could have just used replace all the way through :)" is this what you wanted to use sed for?</td></tr>
+            <tr><td>[15:14] &lt Lawouach_&gt that works well in many cases</td></tr>
+            <tr><td>[15:15] *** Lawouach_ shakes head on radiohead - Climbing up the wall</td></tr>
+            <tr><td>[15:15] &lt Lawouach_&gt orphans: http://docs.python.org/lib/node40.html</td></tr>
+            <tr><td>[15:15] &lt Lawouach_&gt Just in case you need it</td></tr>
+            <tr><td>[15:15] &lt orphans&gt Davbo-afk, I should be using sed really, but switched to python because I could actually work it. Then used about the worst way to do it in python :)</td></tr>
+            <tr><td>[15:16] *** Davbo-afk is now known as Davbo</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt Hah :-)</td></tr>
+            <tr><td>[15:16] &lt orphans&gt Lawouach_, ahh, interesting. I never knew about that</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt I love that about Python if you don't get it the "right way" it's usually hilariously wrong ;-)</td></tr>
+            <tr><td>[15:16] &lt Lawouach_&gt The python documentation sucks in the way its organised</td></tr>
+            <tr><td>[15:16] &lt Lawouach_&gt Most of the time Python has what you need but doesn't advertise it</td></tr>
+            <tr><td>[15:17] &lt orphans&gt I'll rewrite that all when I get a moment - it's a real hack atm</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt s/its/it's</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt orphans: no worries</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt I hope you guys keep some kind of internal todo for those things</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt There are plenty of small tools or even a pad+pen to support that :)</td></tr>
+            <tr><td>[15:18] &lt Davbo&gt http://www.rememberthemilk.com/</td></tr>
+            <tr><td>[15:18] *** Davbo loves remember the milk</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt You guys know about intriguing sites</td></tr>
+            <tr><td>[15:18] &lt orphans&gt tomboy here :)</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt TomBoy? is that the equivalent of KNotes?</td></tr>
+            <tr><td>[15:21] &lt orphans&gt yeah</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt thought so</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt anyway, brb again</td></tr>
+            <tr><td>[15:21] *** Davbo is now known as Davbo-afk</td></tr>
+            <tr><td>[15:42] &lt Lawouach_&gt http://pyinstaller.python-hosting.com/ &lt -- I didn't know about that one</td></tr>
+            <tr><td>[15:42] &lt Lawouach_&gt Looks interesting at first glance</td></tr>
+            <tr><td>[15:51] &lt orphans&gt [('/Jam/PeerList', [], 0.0), ('127.0.0.1', 32947)] =&gt that comes from Jam when you connect to it :-)</td></tr>
+            <tr><td>[15:52] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:52] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:52] &lt Lawouach_&gt goto home</td></tr>
+            <tr><td>[16:01] &lt Davbo-afk&gt orphans: what happens on localChanges?</td></tr>
+            <tr><td>[16:03] &lt Davbo-afk&gt Oh right I see, thats for linking them up</td></tr>
+            <tr><td>[16:03] &lt Davbo-afk&gt ignore that :-)</td></tr>
+            <tr><td>[16:06] &lt orphans&gt :)</td></tr>
+            <tr><td>[16:07] &lt orphans&gt you could just use outbox, but it sends loads of messages which would be bad for my app, whereas localChanges sends out the minimum you need to keep the position the same</td></tr>
+            <tr><td>[16:10] &lt Davbo-afk&gt nah, I'm putting some buttons on it so just added a buttons inbox</td></tr>
+            <tr><td>[16:10] &lt orphans&gt it working OK?</td></tr>
+            <tr><td>[16:10] &lt Davbo-afk&gt Yeah</td></tr>
+            <tr><td>[16:10] &lt Davbo-afk&gt fine</td></tr>
+            <tr><td>[16:10] &lt orphans&gt cool :)</td></tr>
+            <tr><td>[16:11] &lt Davbo-afk&gt I might get rid of the puck for now</td></tr>
+            <tr><td>[16:12] &lt Davbo-afk&gt make a little box displaying selected colour or something</td></tr>
+            <tr><td>[16:12] &lt orphans&gt yeah, I guess a crosshair or something would be better</td></tr>
+            <tr><td>[16:12] &lt orphans&gt or that :)</td></tr>
+            <tr><td>[16:12] &lt Davbo-afk&gt need to work out how to just redraw the area effected really</td></tr>
+            <tr><td>[16:16] &lt orphans&gt maybe have a second surface which holds the puck/box?</td></tr>
+            <tr><td>[16:16] &lt orphans&gt then you won't need to go through all the colour filling code again, just the box drawing</td></tr>
+            <tr><td>[16:18] &lt Davbo-afk&gt oh oh</td></tr>
+            <tr><td>[16:18] &lt Davbo-afk&gt good idea</td></tr>
+            <tr><td>[16:21] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:22] *** orphans goes to make a jerker</td></tr>
+            <tr><td>[16:23] &lt orphans&gt http://en.wikipedia.org/wiki/Jamaican_jerk_spice#Modern_day_.22Jerkers.22 for those of you looking to make crude jokes :)</td></tr>
+            <tr><td>[16:26] &lt Davbo-afk&gt As though we'd do such a thing ;-)</td></tr>
+            <tr><td>[16:32] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[16:34] *** vmlemon is now known as vmlemon_</td></tr>
+            <tr><td>[16:36] &lt Davbo-afk&gt coool!!</td></tr>
+            <tr><td>[16:36] &lt vmlemon_&gt Hmm, stupid question, but does anyone have the correct date and time?</td></tr>
+            <tr><td>[16:37] &lt Davbo-afk&gt 17:37 16th June</td></tr>
+            <tr><td>[16:37] &lt vmlemon_&gt (The clock on this machine is set to 10:00pm at some date in 2002, since the CMOS battery is knackered)</td></tr>
+            <tr><td>[16:37] &lt vmlemon_&gt Thanks</td></tr>
+            <tr><td>[16:37] &lt Davbo-afk&gt I hate it when that happens too, they're a bugger to replace too</td></tr>
+            <tr><td>[16:40] &lt vmlemon_&gt Haha, I just got a "cpu overload: aborting" error from the aRts server, for some reason</td></tr>
+            <tr><td>[16:41] &lt Davbo-afk&gt lol</td></tr>
+            <tr><td>[16:43] &lt vmlemon_&gt Meh, it won't change :|</td></tr>
+            <tr><td>[16:44] &lt vmlemon_&gt (It keeps auto-reverting back to 2nd March 2007)</td></tr>
+            <tr><td>[16:44] *** vmlemon_ grumbles</td></tr>
+            <tr><td>[16:50] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[16:56] *** Davbo-afk thinks it's a shame "The Best of: Radiohead" doesn't have much / anything from Kid A or post-Kid A</td></tr>
+            <tr><td>[16:57] &lt Lawouach&gt "best of" suck most of the time IMO</td></tr>
+            <tr><td>[16:57] &lt Davbo-afk&gt Yeah, I think they were just going for the more popular ones / easier to listen to ones</td></tr>
+            <tr><td>[16:58] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[16:58] &lt Lawouach&gt AFAIK, most bands don't have their say in best of</td></tr>
+            <tr><td>[16:59] &lt Davbo-afk&gt Which is what confused me really, of all the bands to release one I'd expect Thom Yorke to make sure he had a say in what goes on it</td></tr>
+            <tr><td>[16:59] &lt vmlemon_&gt "Worst Of" albums, anyone? ;)</td></tr>
+            <tr><td>[17:00] &lt Davbo-afk&gt reminds me of that Alan Partridge sketch where he says his favourite Beatles album is "Probably, the best of The Beatles"</td></tr>
+            <tr><td>[17:01] &lt Davbo-afk&gt http://www.youtube.com/watch?v=tyZspqjtG2k</td></tr>
+            <tr><td>[17:03] &lt Davbo-afk&gt on that note, i'm off to get something to eat</td></tr>
+            <tr><td>[18:03] &lt Lawouach&gt orphans: ping</td></tr>
+            <tr><td>[18:07] *** orphans_ has joined #kamaelia</td></tr>
+            <tr><td>[18:07] &lt orphans_&gt hmm, this working now?</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt orphans_: burp</td></tr>
+            <tr><td>[18:08] &lt orphans_&gt hey Lawouach, sorry, internet is being silly</td></tr>
+            <tr><td>[18:08] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:09] *** orphans_ is now known as orphans</td></tr>
+            <tr><td>[18:09] &lt orphans&gt right, should be all sorted now :)</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[18:10] &lt orphans&gt how's it going?</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt I feel like I just saw Face/Off</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt You killed your alter</td></tr>
+            <tr><td>[18:11] &lt Lawouach&gt orphans_ is now dead!</td></tr>
+            <tr><td>[18:11] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:12] &lt Lawouach&gt I'm doing well and I'm ready</td></tr>
+            <tr><td>[18:12] &lt orphans&gt I never liked that orphans_ anyway</td></tr>
+            <tr><td>[18:12] &lt orphans&gt cool</td></tr>
+            <tr><td>[18:13] &lt orphans&gt ok, so I think I told you already but last week was quite a lot of maintenance which I think I'm pretty much back up to date with</td></tr>
+            <tr><td>[18:13] &lt orphans&gt and I can now create sdists and exes simply, which is cool</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt That's great</td></tr>
+            <tr><td>[18:14] &lt orphans&gt and the next stage of networking stuff is coming along I think - it's kinda how you said it would be :)</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt ;)</td></tr>
+            <tr><td>[18:15] &lt orphans&gt so at the moment I can get a client to send a connect message to a Jam instance, it'll receive a list of other connected clients and then any other messages sent out from Jam</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt I looked at your UDPDistributor module</td></tr>
+            <tr><td>[18:16] &lt orphans&gt what do you think?</td></tr>
+            <tr><td>[18:16] &lt Lawouach&gt I think it's a good start. It's clean and simple</td></tr>
+            <tr><td>[18:17] &lt orphans&gt yeah, it seems to work OK so far but I've not done much with it</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt I wasn't sure about the name but Kamaelia has always been quite liberal in the sense that what matters is more the functionnality of the component than the theory</td></tr>
+            <tr><td>[18:17] &lt Lawouach&gt So for instance you could have called it "UDPDispatcher"</td></tr>
+            <tr><td>[18:17] &lt orphans&gt ahh, yeah, that's almost certainly subject to change - I just couldn't think of what to call it</td></tr>
+            <tr><td>[18:18] &lt Lawouach&gt dispatcher being quite a common term for such function</td></tr>
+            <tr><td>[18:18] &lt orphans&gt yeah, that's a lot better :)</td></tr>
+            <tr><td>[18:19] &lt orphans&gt I don't suppose you've looked at the TransformerSplitter too have you?</td></tr>
+            <tr><td>[18:20] &lt orphans&gt I'm not sure whether that's a huge hack or something which will save me a lot of code</td></tr>
+            <tr><td>[18:20] &lt Lawouach&gt What is the goal of that component?</td></tr>
+            <tr><td>[18:21] &lt orphans&gt it's really so I can do splitting and filtering in one without too much hassle</td></tr>
+            <tr><td>[18:21] &lt orphans&gt and stuff like rearranging tuples etc. Otherwise I fear I'm going to get lost in a jumble of filters just to seperate out which OSC messages I want to listen to</td></tr>
+            <tr><td>[18:22] &lt orphans&gt you can see it working in jam</td></tr>
+            <tr><td>[18:23] &lt orphans&gt (albeit with only one function going at the moment)</td></tr>
+            <tr><td>[18:23] &lt Lawouach&gt where?</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[18:24] &lt Lawouach&gt I see</td></tr>
+            <tr><td>[18:24] &lt orphans&gt in /Sketches/JT/Jam/application/trunk/jam</td></tr>
+            <tr><td>[18:25] &lt Lawouach&gt talking about that, there is an error in setup.py of the application</td></tr>
+            <tr><td>[18:25] &lt orphans&gt I think it'll help to keep the component fairly generic rather than really focused around OSC too. But it doesn't feel particularly Kamaelia-like in a way</td></tr>
+            <tr><td>[18:25] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:25] &lt orphans&gt *£^$ thing</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt messageSplitter = TransformerSplitter(((addPeer, "addPeer"),)),</td></tr>
+            <tr><td>[18:27] &lt Lawouach&gt I can't find where addPeer comes from :)</td></tr>
+            <tr><td>[18:27] &lt orphans&gt up the top</td></tr>
+            <tr><td>[18:28] &lt Lawouach&gt damln</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt I'm stoopid :)</td></tr>
+            <tr><td>[18:29] &lt Lawouach&gt Okay</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt Well the splitter idea is not bad actually</td></tr>
+            <tr><td>[18:30] &lt Lawouach&gt But</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt well</td></tr>
+            <tr><td>[18:31] &lt Lawouach&gt actually it's not so bad</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt It might be better if the filter was a component</td></tr>
+            <tr><td>[18:32] &lt Lawouach&gt rather than a function</td></tr>
+            <tr><td>[18:32] &lt orphans&gt yeah, I was going with that because that's how PureTransformer works</td></tr>
+            <tr><td>[18:33] &lt Lawouach&gt I think that'd be good to put that on your TODO for this week</td></tr>
+            <tr><td>[18:33] &lt orphans&gt and then Filter takes a class with a filter() function</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt This is task that could have side effects if you don't clean it sooner than later</td></tr>
+            <tr><td>[18:34] &lt orphans&gt yeah. It seemed useful but not quite "right"</td></tr>
+            <tr><td>[18:34] &lt Lawouach&gt PureTransformer?</td></tr>
+            <tr><td>[18:35] &lt orphans&gt Kamaelia.Util.PureTransformer</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt &lt orphans&gt and then Filter takes a class with a filter() function &lt -- I'm not sure about that</td></tr>
+            <tr><td>[18:36] &lt Lawouach&gt It doesn't feel Kamaelia compliant</td></tr>
+            <tr><td>[18:37] &lt orphans&gt http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Util.Filter.html</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt One way that it could be done is by using a BackPlane</td></tr>
+            <tr><td>[18:37] &lt orphans&gt it's old fwiw</td></tr>
+            <tr><td>[18:37] &lt Lawouach&gt heh not evrything in Kamaelia is Kamaelia compliant ;)</td></tr>
+            <tr><td>[18:38] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:38] &lt orphans&gt using a Backplane how?</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt I'm not against the idea but this looks more like a "quick needy component" rather than a solid long term design decision</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt Well</td></tr>
+            <tr><td>[18:38] &lt Lawouach&gt You know how Backplanes work right?</td></tr>
+            <tr><td>[18:39] &lt orphans&gt ish - I've glanced over the docs a couple of times</td></tr>
+            <tr><td>[18:39] &lt Lawouach&gt They allow for one outbox to be linked to many inboxes via an intermediary component, a backplan.</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt I'll give you an example</td></tr>
+            <tr><td>[18:40] &lt orphans&gt yeah, so you publish to it and subscribe to it</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt Currently I'm using it in headstock for one simple task.</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt So</td></tr>
+            <tr><td>[18:40] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:40] &lt Lawouach&gt When a client connects to a XMPP server, the server returns a specific piece of data which is a full JID</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt A JID is just a XMPP id.</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt That value is critical for further communication between the client and the network.</td></tr>
+            <tr><td>[18:41] &lt Lawouach&gt So in an application using headstock it's equally critical to be aware of that value when it arrives.</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt Because I don't want to create strong coupling between components that shouldn't be coupled in the first place</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt I use a backplane</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt The JID is published to that backplane</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt and any component that needs that value just subscribe to the backplane</td></tr>
+            <tr><td>[18:42] &lt Lawouach&gt This allows for much more loosely coupled design between components.</td></tr>
+            <tr><td>[18:43] &lt orphans&gt yeah, I was looking at using it for the list of peers which is needed in a couple of fairly unrelated places</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt So in your case, what I was considering is that you publish the data you are trying to split.</td></tr>
+            <tr><td>[18:43] &lt Lawouach&gt Components that are interested will subscribe to it</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt And only process if the data they receive concern them</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt in other words transform the addPeer function into a component</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt Make one inbox of that component be linked to that backplane</td></tr>
+            <tr><td>[18:44] &lt Lawouach&gt and you're good to go</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt one example:</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt http://trac.defuze.org/browser/oss/headstock/headstock/example/microblog/microblog/jabber/client.py#L68</td></tr>
+            <tr><td>[18:45] &lt Lawouach&gt Look at the initComponents() method</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt http://trac.defuze.org/browser/oss/headstock/headstock/example/microblog/microblog/jabber/client.py#L571</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt http://trac.defuze.org/browser/oss/headstock/headstock/example/microblog/microblog/jabber/client.py#L639</td></tr>
+            <tr><td>[18:46] &lt Lawouach&gt http://trac.defuze.org/browser/oss/headstock/headstock/example/microblog/microblog/jabber/client.py#L654</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt In those four places you have an illustration of what I'm talking about</td></tr>
+            <tr><td>[18:47] &lt Lawouach&gt You wouldn't have to change much</td></tr>
+            <tr><td>[18:47] &lt orphans&gt yeah, I see</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt Okay cool</td></tr>
+            <tr><td>[18:48] &lt Lawouach&gt So that'd be a good thing to do this week if you feel it makes sense.</td></tr>
+            <tr><td>[18:49] &lt orphans&gt yeah, I think it probably does. I'll give it a try anyway, and see if I end up swimming in filters</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt ;)</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt I think you ought to go that way:</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt 1. Make addPeer a component. A simple one.</td></tr>
+            <tr><td>[18:49] &lt Lawouach&gt 2. Create a backplane with a meaningful name</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt 3. Follow the first linke above to link the Backplane to your component using a SubscribeTo component</td></tr>
+            <tr><td>[18:50] &lt orphans&gt subscribeTo("incommiiinnnnggggg!!!!!")</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt 4. Add the publishTo component wherever it makes sense</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt orphans: :)</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt yeah kind of ;)</td></tr>
+            <tr><td>[18:50] &lt Lawouach&gt To be honest you already have the code in place.</td></tr>
+            <tr><td>[18:50] &lt orphans&gt yeah, I see how it'd fit in, shouldn't take me long</td></tr>
+            <tr><td>[18:51] &lt Lawouach&gt Just modify the TransformSplitter into a PublishTo component in some fashion</td></tr>
+            <tr><td>[18:51] &lt orphans&gt yeah</td></tr>
+            <tr><td>[18:51] &lt Lawouach&gt I wouldn't expect it to take too long</td></tr>
+            <tr><td>[18:51] &lt Lawouach&gt One thing I wanted to talk to you about actually</td></tr>
+            <tr><td>[18:52] &lt Lawouach&gt Your TransformSplitter is the second place where I see that</td></tr>
+            <tr><td>[18:52] &lt orphans&gt yup</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt To preface this however, I'd like to say that it's nice to see your mind is flexible and fast enough to adapt to Kamaelia. This is good because with my long OOP background it took much longer to get my head around Axon :)</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt From what I've seen from the others I think the same of everyone.</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt That's really fun :)</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt I guess Michael and Matt would agree.</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt Anyhow</td></tr>
+            <tr><td>[18:54] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt In two places I've seen you doing loops inside a main() method whenever you received data into an inbox</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt Although loops are perfectly fine you should try to consider if you can make such loop a more Axon-like design</td></tr>
+            <tr><td>[18:55] &lt orphans&gt should I be yielding somewhere?</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt Do you remember how you called components in MiniAxon?</td></tr>
+            <tr><td>[18:56] &lt orphans&gt nope :)</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt not a trick question BTW</td></tr>
+            <tr><td>[18:56] *** orphans looks</td></tr>
+            <tr><td>[18:57] &lt orphans&gt don't really see what you're getting at?</td></tr>
+            <tr><td>[18:57] &lt Lawouach&gt Well</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt you called them microprocess</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt Right?</td></tr>
+            <tr><td>[18:58] &lt orphans&gt then calling microprocess.next()?</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt Well it's more than just a naming convention</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[18:58] &lt Lawouach&gt I'll explain</td></tr>
+            <tr><td>[18:58] &lt orphans&gt :)</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt a microprocess really means that it's a discrete piece of code being called and giving back the hand to the scheduler, in a rather constant time fashion</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt The last bit is important because it's part of the implicit promise made by Axon</td></tr>
+            <tr><td>[18:59] &lt orphans&gt uh huh</td></tr>
+            <tr><td>[18:59] &lt Lawouach&gt If you create components you make the promise of being constant in the time you require for each pass</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt With a loop that promise may be broken when the loop gets too large</td></tr>
+            <tr><td>[19:00] &lt Lawouach&gt That's what I'm getting at.</td></tr>
+            <tr><td>[19:00] &lt orphans&gt ok, I see</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt Whenever you write a loop inside a component</td></tr>
+            <tr><td>[19:01] &lt orphans&gt so by having too large a loop without ever yielding I'm effectively starving other microprocesses</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt yeah you may</td></tr>
+            <tr><td>[19:01] &lt Lawouach&gt So whenever you write a loop inside a component, ask yourself:</td></tr>
+            <tr><td>[19:02] &lt Lawouach&gt 1. can I predict it'll be constant in how much time it'll require?</td></tr>
+            <tr><td>[19:02] &lt Lawouach&gt 2. could this loop be translated to a set of components?</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt By doing 2. you ensure that a loop is broken so that it keeps that promise a microprocess makes.</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt Yielding inside a loop is one other way too</td></tr>
+            <tr><td>[19:03] &lt Lawouach&gt Although I prefer breaking down to a set of components</td></tr>
+            <tr><td>[19:04] &lt Lawouach&gt For instance we've transformed your TransformSplitter from a loop to a set of components</td></tr>
+            <tr><td>[19:04] &lt Lawouach&gt haven't we?</td></tr>
+            <tr><td>[19:04] &lt orphans&gt yeah</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt right. So please keep it in mind.</td></tr>
+            <tr><td>[19:05] &lt Lawouach&gt Beyond Kamaelia, this is important</td></tr>
+            <tr><td>[19:05] &lt orphans&gt yeah, I will do. It's not really something I've every really thought about before</td></tr>
+            <tr><td>[19:06] &lt Lawouach&gt Being a good developer is demonstrated whenever you start using the idioms of the platform, tools, environment you are using rather than your own idioms :)</td></tr>
+            <tr><td>[19:06] &lt orphans&gt :)</td></tr>
+            <tr><td>[19:07] &lt orphans&gt definitely still on the rocky road to being an okay developer :)</td></tr>
+            <tr><td>[19:07] &lt Lawouach&gt I'm still walking the path too ;)</td></tr>
+            <tr><td>[19:08] &lt Lawouach&gt I think that'll do for this this evening.</td></tr>
+            <tr><td>[19:08] &lt Lawouach&gt Unless you have more questions</td></tr>
+            <tr><td>[19:08] &lt orphans&gt no, I think I'm pretty sorted for stuff to do for the next week</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[19:09] &lt Lawouach&gt so in a nutshell, what's the plan this week?</td></tr>
+            <tr><td>[19:10] &lt orphans&gt Backplaneize, three peers connecting to each other without knowing where they all live explicitly, make sure that works with more than three</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt that sounds good</td></tr>
+            <tr><td>[19:11] &lt Lawouach&gt moving forward well</td></tr>
+            <tr><td>[19:11] &lt orphans&gt yeah, seems to be going ok</td></tr>
+            <tr><td>[19:12] &lt orphans&gt right, I'm off to see how my food's doing</td></tr>
+            <tr><td>[19:12] &lt orphans&gt cheers for all the help Lawouach</td></tr>
+            <tr><td>[19:12] &lt Lawouach&gt np :)</td></tr>
+            <tr><td>[19:12] &lt Lawouach&gt take care</td></tr>
+            <tr><td>[19:13] &lt orphans&gt you too</td></tr>
+            <tr><td>[19:22] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:36] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:17] *** Trun has joined #kamaelia</td></tr>

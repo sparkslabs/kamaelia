@@ -1,0 +1,546 @@
+<html><body><table>
+            <tr><td>[05:12] &lt Rigolo&gt NITo and NITa both work also for DVB-C</td></tr>
+            <tr><td>[07:28] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[08:00] &lt mhrd&gt Rigolo: cool - thanks for testing that :)</td></tr>
+            <tr><td>[08:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[08:48] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[08:50] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[09:11] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:23] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:59] &lt Lawouach&gt morning all</td></tr>
+            <tr><td>[09:59] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:01] &lt MS-&gt morning</td></tr>
+            <tr><td>[10:54] *** MS- is doesd up on lempis today</td></tr>
+            <tr><td>[10:57] &lt vmlemon_&gt Got a cold?</td></tr>
+            <tr><td>[10:57] &lt mhrd&gt aww</td></tr>
+            <tr><td>[11:17] *** Suv123 has joined #kamaelia</td></tr>
+            <tr><td>[11:52] *** Suv123__ has joined #kamaelia</td></tr>
+            <tr><td>[14:13] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[15:50] &lt MS-&gt mhrd: How about this: http://www.kamaelia.org/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseNetworkInformationTable.html?...</td></tr>
+            <tr><td>[15:51] *** mhrd looks</td></tr>
+            <tr><td>[15:51] &lt mhrd&gt ooh, its wider!</td></tr>
+            <tr><td>[15:51] &lt MS-&gt Yep.</td></tr>
+            <tr><td>[15:52] &lt MS-&gt Changed the logic for templates to include this@</td></tr>
+            <tr><td>[15:52] &lt mhrd&gt and I was just starting to get used to having the big margins :-) ... probably more convenient like this tho</td></tr>
+            <tr><td>[15:52] &lt MS-&gt this:</td></tr>
+            <tr><td>[15:52] &lt MS-&gt  #</td></tr>
+            <tr><td>[15:52] &lt MS-&gt  try:</td></tr>
+            <tr><td>[15:52] &lt MS-&gt  f = open("templates/%s/%s.tmpl%s"% (stem,mode,subtype) )</td></tr>
+            <tr><td>[15:52] &lt MS-&gt Which allows per directory templates</td></tr>
+            <tr><td>[15:52] &lt MS-&gt in addition to (existing) per page templates</td></tr>
+            <tr><td>[15:52] &lt mhrd&gt ah</td></tr>
+            <tr><td>[15:52] &lt MS-&gt  try:</td></tr>
+            <tr><td>[15:52] &lt MS-&gt  # First of all, try page specific template</td></tr>
+            <tr><td>[15:52] &lt MS-&gt  f = open("templates/%s.%s.tmpl%s"% (context["pagename"],mode,subtype) )</td></tr>
+            <tr><td>[15:53] &lt MS-&gt So MiniAxon has the same thing</td></tr>
+            <tr><td>[15:54] &lt mhrd&gt the flow around the "Warning" callout box is a bit wierd now (3/4 way down)</td></tr>
+            <tr><td>[15:54] *** mhrd will ponder possible fixes</td></tr>
+            <tr><td>[15:54] &lt Lawouach&gt evening</td></tr>
+            <tr><td>[15:54] &lt MS-&gt mhrd: It matches where it used to be</td></tr>
+            <tr><td>[15:54] &lt MS-&gt Lawouach: evening</td></tr>
+            <tr><td>[15:55] &lt MS-&gt Though it's formatting could be improved :)</td></tr>
+            <tr><td>[15:55] &lt Lawouach&gt how are things?</td></tr>
+            <tr><td>[15:55] &lt mhrd&gt MS- : so it does, my bad :)</td></tr>
+            <tr><td>[15:56] &lt mhrd&gt looks like there are similar overflow problems with &lt h4&gt headings (component names) ... though I'm less sure how to fix those</td></tr>
+            <tr><td>[15:56] &lt mhrd&gt ( "Kamaelia.Device.DVB.Parse.ParseNetworkInformationTable.ParseNetworkInf ..." )</td></tr>
+            <tr><td>[15:56] &lt MS-&gt mhrd: Also, per directory release notes mean that things like this page are unchanged: http://www.kamaelia.org/ReleaseProgress070</td></tr>
+            <tr><td>[15:56] &lt MS-&gt and same for this: http://www.kamaelia.org/About</td></tr>
+            <tr><td>[15:56] &lt MS-&gt Yeah, saw that</td></tr>
+            <tr><td>[15:56] &lt mhrd&gt MS- : cool</td></tr>
+            <tr><td>[15:56] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:56] &lt MS-&gt Lawouach: I'm fluey</td></tr>
+            <tr><td>[15:57] &lt Lawouach&gt That bites</td></tr>
+            <tr><td>[15:58] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:58] &lt vmlemon_&gt Hah, http://news.bbc.co.uk/go/rss/-/newsbeat/hi/technology/newsid_7693000/7693050.stm</td></tr>
+            <tr><td>[15:58] &lt vmlemon_&gt and http://news.bbc.co.uk/go/rss/-/1/hi/entertainment/7688705.stm</td></tr>
+            <tr><td>[16:00] &lt mhrd&gt might propose fixing the &lt h4&gt thing in the doc generation - we already kinda separate the path from the leafname ... so could simply strip off the leafname from the path, and change the compnoent/prefab name already appears on the next line anyway. Would also reduce the size of the path, so its the smaller of the two (reverse of now)</td></tr>
+            <tr><td>[16:00] &lt mhrd&gt (latter bit about font sizes would be a css thing, rather than doc generation)</td></tr>
+            <tr><td>[16:00] &lt mhrd&gt vmlemon_ + Lawouach : hi</td></tr>
+            <tr><td>[16:00] &lt MS-&gt Well, the current form allows for copy and paste, which is handy...</td></tr>
+            <tr><td>[16:01] &lt mhrd&gt good point :)</td></tr>
+            <tr><td>[16:01] &lt vmlemon_&gt Hi mhrd</td></tr>
+            <tr><td>[16:01] &lt mhrd&gt hmm, could simply shrink the font size of h4 then :)</td></tr>
+            <tr><td>[16:05] &lt MS-&gt Ahh, I see - they're H1's</td></tr>
+            <tr><td>[16:05] &lt MS-&gt Not h4s</td></tr>
+            <tr><td>[16:06] &lt mhrd&gt oh, so they are!</td></tr>
+            <tr><td>[16:06] &lt MS-&gt That'll need a rethink :)</td></tr>
+            <tr><td>[16:06] &lt mhrd&gt yep :)</td></tr>
+            <tr><td>[16:10] &lt aa_&gt 3 orders in a day! that deserv es a night off hacking on open source</td></tr>
+            <tr><td>[16:14] &lt vmlemon_&gt Heh</td></tr>
+            <tr><td>[16:15] &lt vmlemon_&gt BBC's fabulous SlowOrder-? ;)</td></tr>
+            <tr><td>[16:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:08] &lt Rigolo&gt good evening</td></tr>
+            <tr><td>[17:09] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:09] &lt Rigolo&gt what DVB table contains the Frequency of the transport streams?</td></tr>
+            <tr><td>[17:10] &lt Rigolo&gt I thought that was in the NITa or NITo tables .. but I do not see them there ..</td></tr>
+            <tr><td>[17:10] &lt Rigolo&gt at least .. not in the parsed and pretty NIT tables</td></tr>
+            <tr><td>[17:11] *** mhrd looks at spec documents :-)</td></tr>
+            <tr><td>[17:11] &lt Rigolo&gt thanks ..</td></tr>
+            <tr><td>[17:12] &lt Rigolo&gt My provider gives you a base frequency and a network ID. on their supported STB's they are able to find all other Transport streams within that network</td></tr>
+            <tr><td>[17:12] &lt mhrd&gt EN 300 468 says its in the Cable Delivery Descriptor. That descriptor's tag is 0x44.</td></tr>
+            <tr><td>[17:12] &lt mhrd&gt If it appears anywhere it'll be in the NIT.</td></tr>
+            <tr><td>[17:12] &lt mhrd&gt Question is whether we wrote a parser for that descriptor! I'll check ...</td></tr>
+            <tr><td>[17:12] &lt vmlemon_&gt Just walk the NIT and you'll find it</td></tr>
+            <tr><td>[17:13] &lt vmlemon_&gt providing that you have enough data</td></tr>
+            <tr><td>[17:13] &lt vmlemon_&gt (and are willing to wade through 100MB-*GB of raw data to find it)</td></tr>
+            <tr><td>[17:14] &lt Rigolo&gt mmm cable delivery descriptor .. looks like something that might not been implemented in the parsers :-)</td></tr>
+            <tr><td>[17:14] &lt mhrd&gt heh, the parser is a stub: http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Kamaelia/Kamaelia/Support/DVB/Descriptors.py#738</td></tr>
+            <tr><td>[17:14] &lt mhrd&gt (we didn't write it)</td></tr>
+            <tr><td>[17:14] &lt mhrd&gt see if you can see that descriptor listed in the output for the NITa or NITo</td></tr>
+            <tr><td>[17:15] &lt Rigolo&gt in the raw tables .. so not the pretty one?</td></tr>
+            <tr><td>[17:15] &lt vmlemon_&gt VirgiNTeLewest Media?</td></tr>
+            <tr><td>[17:15] &lt mhrd&gt umm, not sure :)</td></tr>
+            <tr><td>[17:15] &lt Rigolo&gt nope .. Ziggo .. in .nl</td></tr>
+            <tr><td>[17:15] &lt mhrd&gt either I think</td></tr>
+            <tr><td>[17:17] &lt Rigolo&gt okee ... I will look later one ... I'm in the train right now ... (long live HSDPA cards .. (And a boss who pays the bill))</td></tr>
+            <tr><td>[17:20] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:22] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[17:22] Reply: does the macarena</td></tr>
+            <tr><td>[20:03] *** Rigolo has joined #kamaelia</td></tr>
+            <tr><td>[20:03] &lt Rigolo&gt good evening ....</td></tr>
+            <tr><td>[20:04] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:04] &lt Rigolo&gt goog evening matt</td></tr>
+            <tr><td>[20:05] &lt mhrd-home&gt hi Rigolo, did you identify if that descriptor was present in your NITa/NITo ?</td></tr>
+            <tr><td>[20:05] &lt Rigolo&gt well ... I found this ...</td></tr>
+            <tr><td>[20:05] &lt Rigolo&gt http://rigolo.googlepages.com/NIT-Ziggo.txt</td></tr>
+            <tr><td>[20:05] &lt Rigolo&gt that is the NITo and NITa after prettyfy</td></tr>
+            <tr><td>[20:05] &lt mhrd-home&gt yep, its there:</td></tr>
+            <tr><td>[20:05] &lt mhrd-home&gt """</td></tr>
+            <tr><td>[20:05] &lt mhrd-home&gt  Descriptor 0x44 : satellite_delivery_system</td></tr>
+            <tr><td>[20:05] &lt mhrd-home&gt  contents : '\x03\x13\x00\x00\xff\xf2\x03\x00hu\x0f'</td></tr>
+            <tr><td>[20:05] &lt mhrd-home&gt """</td></tr>
+            <tr><td>[20:05] &lt Rigolo&gt exactly ...</td></tr>
+            <tr><td>[20:05] &lt mhrd-home&gt ahem - typo in the Descriptors.py :-)</td></tr>
+            <tr><td>[20:06] &lt Rigolo&gt but I use dvb-c :-)</td></tr>
+            <tr><td>[20:06] &lt mhrd-home&gt should say "cable_delivery_system"</td></tr>
+            <tr><td>[20:06] &lt Rigolo&gt and then what should I do with that code then?</td></tr>
+            <tr><td>[20:06] &lt Rigolo&gt if that HEX for the frequency?</td></tr>
+            <tr><td>[20:07] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:07] &lt mhrd-home&gt its the hex for the descriptor - it contains the freq and other tuning parameters ...</td></tr>
+            <tr><td>[20:08] &lt mhrd-home&gt I'm starting a branch into which I'll put a fixed Descriptors.py in a little while</td></tr>
+            <tr><td>[20:08] &lt Rigolo&gt okee .. and I guess in the dvb spec document it tells me what it really means?</td></tr>
+            <tr><td>[20:08] &lt mhrd-home&gt ...you'd be able to test it?</td></tr>
+            <tr><td>[20:08] &lt mhrd-home&gt ETSI EN 300 468 again :-) yeah</td></tr>
+            <tr><td>[20:08] &lt Rigolo&gt Yes ...</td></tr>
+            <tr><td>[20:09] &lt Rigolo&gt depends when you can have that branch up ...</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt Hmm, anyone know if DVB-H hardware exists?</td></tr>
+            <tr><td>[20:09] Reply: Hm?</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt (Or Linux-compatible DVB-*2 stuff, for that matter)</td></tr>
+            <tr><td>[20:09] &lt mhrd-home&gt I'm thinking, if I make good progress ... maybe 1/2 hour if there are no interruptions ;-)</td></tr>
+            <tr><td>[20:09] &lt Rigolo&gt making less then 6 hour nights is getting harder with each year :-)</td></tr>
+            <tr><td>[20:09] &lt Rigolo&gt okee</td></tr>
+            <tr><td>[20:09] &lt Rigolo&gt vmlemon_: there are dvb-s2 cards out there ...</td></tr>
+            <tr><td>[20:10] &lt vmlemon_&gt Ugh, the sunset-at-4pm thing's really getting to me now</td></tr>
+            <tr><td>[20:10] &lt mhrd-home&gt Nokia N96 does DVB-H</td></tr>
+            <tr><td>[20:10] &lt Rigolo&gt and dvb-h hardware is what you get in a nokia N96</td></tr>
+            <tr><td>[20:10] &lt Rigolo&gt right ..</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt I doubt there'd be PCI or USB devices supporting it though</td></tr>
+            <tr><td>[20:11] *** vmlemon_ Googles</td></tr>
+            <tr><td>[20:11] &lt Rigolo&gt vmlemon_: but for the dvb-*2 hardware you also need the new S2API v4l drivers</td></tr>
+            <tr><td>[20:11] &lt Rigolo&gt have a look at linuxtv.org</td></tr>
+            <tr><td>[20:11] &lt Rigolo&gt and then at supported hardware</td></tr>
+            <tr><td>[20:11] &lt vmlemon_&gt Thanks</td></tr>
+            <tr><td>[20:12] &lt Rigolo&gt PCI support for dvb-h might be difficult yes</td></tr>
+            <tr><td>[20:12] *** vmlemon_ wonders if the Freesat folks are going to lift the lid on their "enhancements"/provide a publicly available spec soon</td></tr>
+            <tr><td>[20:13] &lt Rigolo&gt but you can always get a USRP and use GNU Radio to receive the signals :-)</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt Ooh, http://www.everythingusb.com/huawei-e510-hsdpa-tv-pebble-14404.html</td></tr>
+            <tr><td>[20:13] &lt vmlemon_&gt Not sure if it works outside of Korea, but it's something</td></tr>
+            <tr><td>[20:13] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt if it really is dvb-h via usb</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt why use dvb-h .. svb-t gives better signal anyway</td></tr>
+            <tr><td>[20:14] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt svb-t = dvb-t ofcourse</td></tr>
+            <tr><td>[20:14] &lt vmlemon_&gt I'll be amazed, although I presume that each country with a DVB-H network uses different frequencies, and not all of them will be compatible</td></tr>
+            <tr><td>[20:15] &lt vmlemon_&gt Yes, it's supposed to be an open standard and all that jazz</td></tr>
+            <tr><td>[20:15] &lt Rigolo&gt mhrd-home: when you are making changes ... are those additional "print" statments that MS- put in the code already removed from trunk?</td></tr>
+            <tr><td>[20:16] &lt Rigolo&gt vmlemon_: I think the frequency range for DVB-H is global .. because they are in the normal analog TV bands anyway</td></tr>
+            <tr><td>[20:16] &lt Rigolo&gt just as DVB-T</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:16] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[20:16] *** vmlemon_ is only familiar with the DVB-T side of it</td></tr>
+            <tr><td>[20:17] &lt Rigolo&gt infact .. our DVB-T company (KPN) is holding back on mre channels/transports for DVB-T because it is rolling out DVB-H</td></tr>
+            <tr><td>[20:17] &lt vmlemon_&gt Although they're interesting specifications and technologies, in my view</td></tr>
+            <tr><td>[20:17] &lt Rigolo&gt and they are the only company that have a license to use DVB-T and DVB-H</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt (and they are also our old ex government phone company .. talking about too much in one hand)</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt can you imagine BT having the DVB-T license ..</td></tr>
+            <tr><td>[20:18] &lt vmlemon_&gt You're Dutch, I take it?</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt yes</td></tr>
+            <tr><td>[20:18] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[20:18] *** aa__ has joined #kamaelia</td></tr>
+            <tr><td>[20:18] &lt vmlemon_&gt That'd be fun</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt They already only just manage to run the phone network, and they're struggling to run a national broadband data network</td></tr>
+            <tr><td>[20:19] &lt vmlemon_&gt (excluding crap like Phorm and what have you)</td></tr>
+            <tr><td>[20:19] &lt mhrd-home&gt Rigolo: can you give me an example of you specifying tuning parameters in kamaelia?</td></tr>
+            <tr><td>[20:19] &lt Rigolo&gt vmlemon_: but if you really like to play with signals for where there is no real linux supported hardware ... you can really use the GNU radio Software Defined Radio stuff</td></tr>
+            <tr><td>[20:20] &lt Rigolo&gt feparams = { "inversion" : dvb3.frontend.INVERSION_AUTO, "symbol_rate" : 6875000, "fec_inner" : dvb3.frontend.FEC_AUTO, "modulation" :dvb3.frontend.QAM_64,</td></tr>
+            <tr><td>[20:20] &lt vmlemon_&gt I've had a look at the software, which seems nifty, although I assume that it requires Special Hardware...</td></tr>
+            <tr><td>[20:20] &lt Rigolo&gt }</td></tr>
+            <tr><td>[20:20] &lt vmlemon_&gt (Not cheap, either)</td></tr>
+            <tr><td>[20:20] &lt Rigolo&gt yes .. the MSRP ...</td></tr>
+            <tr><td>[20:21] &lt Rigolo&gt mhrd-home: and frequency 618Mhz for the transport</td></tr>
+            <tr><td>[20:21] &lt vmlemon_&gt The RFID and ZigBee stuff looks interesting</td></tr>
+            <tr><td>[20:21] &lt mhrd-home&gt you don't specify the outer_fec ?</td></tr>
+            <tr><td>[20:21] &lt Rigolo&gt nope .. not used in DVB-C</td></tr>
+            <tr><td>[20:22] &lt Rigolo&gt have a look at frontend.pyx .. there you can find the 3 different settings for the FE parameters</td></tr>
+            <tr><td>[20:22] &lt mhrd-home&gt yep - am doing so ... just wanted to check :-)</td></tr>
+            <tr><td>[20:22] &lt vmlemon_&gt http://www.gnuradio.org/trac/wiki/USRP I take it?</td></tr>
+            <tr><td>[20:24] &lt Rigolo&gt vmlemon_: yes .. that one</td></tr>
+            <tr><td>[20:24] *** vmlemon_ wonders what the upper and lower frequency limits are on it, if any...</td></tr>
+            <tr><td>[20:24] &lt Rigolo&gt it connects via USB ... and you can get extensionboards for it</td></tr>
+            <tr><td>[20:24] &lt Rigolo&gt depends on that extension board</td></tr>
+            <tr><td>[20:24] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[20:24] &lt Rigolo&gt I think you can get a range of 20 Mhz or so</td></tr>
+            <tr><td>[20:25] &lt Rigolo&gt they were able to capture the COMPLETE FM band ..</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt Ooh</td></tr>
+            <tr><td>[20:25] &lt Rigolo&gt and then later on splitout the different stations</td></tr>
+            <tr><td>[20:25] &lt Rigolo&gt all in software</td></tr>
+            <tr><td>[20:25] *** vmlemon_ thinks trying to capture all of 2.4GHz might be interesting</td></tr>
+            <tr><td>[20:25] &lt Rigolo&gt they started out with the tuners from cablemodems</td></tr>
+            <tr><td>[20:25] &lt vmlemon_&gt (in local vicinity, of course)</td></tr>
+            <tr><td>[20:26] &lt vmlemon_&gt Probably would be hell to figure out modulations and things, though</td></tr>
+            <tr><td>[20:27] &lt Rigolo&gt well ... all that stuff is done in software ofcourse ..</td></tr>
+            <tr><td>[20:27] &lt vmlemon_&gt Unless it can also detect that stuff</td></tr>
+            <tr><td>[20:28] &lt Rigolo&gt did you have a look at www.ettus.com .. they build the hardware ...</td></tr>
+            <tr><td>[20:28] &lt vmlemon_&gt Looking at the wiki at the moment</td></tr>
+            <tr><td>[20:28] &lt Rigolo&gt vmlemon_: no idea ... I know the basics ... not the fine details</td></tr>
+            <tr><td>[20:28] &lt vmlemon_&gt Waiting for the Ettus link to load</td></tr>
+            <tr><td>[20:28] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[20:29] &lt vmlemon_&gt Hmm, "Daughterboards are available from DC to 2.9 GHz at this time."</td></tr>
+            <tr><td>[20:29] &lt vmlemon_&gt Answers that question then</td></tr>
+            <tr><td>[20:29] &lt Rigolo&gt yes ... but not the total band I think ...</td></tr>
+            <tr><td>[20:29] &lt Rigolo&gt no idea what the max bandwith is ...</td></tr>
+            <tr><td>[20:29] &lt vmlemon_&gt Meh</td></tr>
+            <tr><td>[20:30] &lt Rigolo&gt They were doing something with HD channels and software ... and they can be quite large bandwith wise</td></tr>
+            <tr><td>[20:33] &lt vmlemon_&gt Looks like they have boards for most things, and some also have crossover presumably</td></tr>
+            <tr><td>[20:33] &lt Rigolo&gt crossover?</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt (e.g. The "800 MHz to 2.4 GHz receiver" presumably also has people who want 2.4GHz support covered, as does the "2.3-2.9 GHz transceiver (including ISM band)")</td></tr>
+            <tr><td>[20:34] &lt vmlemon_&gt *presumably has</td></tr>
+            <tr><td>[20:35] &lt Rigolo&gt then I think it comes down to price ... or capabilities ...</td></tr>
+            <tr><td>[20:35] &lt vmlemon_&gt Very true</td></tr>
+            <tr><td>[20:35] &lt vmlemon_&gt Not all of the boards transmit either</td></tr>
+            <tr><td>[20:35] &lt Rigolo&gt transceiver means you can also broadcast on that frequency</td></tr>
+            <tr><td>[20:35] &lt vmlemon_&gt Yup</td></tr>
+            <tr><td>[20:35] &lt Rigolo&gt exactly</td></tr>
+            <tr><td>[20:36] &lt Rigolo&gt so if you want to experiment with your own local DVB-T station .... :-)</td></tr>
+            <tr><td>[20:36] &lt vmlemon_&gt Of course, there's usually a legal or technical reason for that</td></tr>
+            <tr><td>[20:37] &lt vmlemon_&gt (i.e. I could trample on 96.6MHz if I wanted, so that no-one else in the immediate area could listen to the FM radio station on that frequency)</td></tr>
+            <tr><td>[20:38] &lt Rigolo&gt well .. then you start talking about broadcast power ..and I thing that is measured in mW .. so blowing away radio 1 might be difficult :-)</td></tr>
+            <tr><td>[20:38] &lt Rigolo&gt did you ever have a look at this btw: http://bellard.org/dvbt/</td></tr>
+            <tr><td>[20:38] &lt Rigolo&gt much cheaper way to broadcast dvb-t I think</td></tr>
+            <tr><td>[20:39] &lt Rigolo&gt although the sourcecode is still not open :-)</td></tr>
+            <tr><td>[20:40] &lt vmlemon_&gt Cantennas! ;)</td></tr>
+            <tr><td>[20:41] &lt vmlemon_&gt (Never used one, but they sound like fun to play with)</td></tr>
+            <tr><td>[20:41] &lt vmlemon_&gt Looking now</td></tr>
+            <tr><td>[20:42] &lt vmlemon_&gt Presumably, you could substitute an antenna for a cable, and connect it into another device (e.g. two Wi-Fi adapters), since the air is pretty much used as a Big Cable (without going into precise technical details)...</td></tr>
+            <tr><td>[20:43] &lt Rigolo&gt that is exactly what he did ... but the "broadcasting antenna" was his video card :-)</td></tr>
+            <tr><td>[20:44] &lt vmlemon_&gt Nifty</td></tr>
+            <tr><td>[20:44] &lt vmlemon_&gt Tempest for Elisa looked interesting too</td></tr>
+            <tr><td>[20:44] &lt vmlemon_&gt although I could never get it to compile</td></tr>
+            <tr><td>[20:45] &lt vmlemon_&gt (Essentially MW/AM transmission using patterns displayed on a monitor, and receiving the excess radiation)</td></tr>
+            <tr><td>[20:45] &lt vmlemon_&gt with a standard radio receiver</td></tr>
+            <tr><td>[20:45] &lt Rigolo&gt I bet we could use Kamaelia to make something similair ... Kamaelia can do almost anything I feel :-</td></tr>
+            <tr><td>[20:47] &lt mhrd-home&gt Rigolo: interesting ... in the example you posted ... service with transport stream ID 1 is reporting outer_fec of RS(204/188)</td></tr>
+            <tr><td>[20:48] &lt vmlemon_&gt I was using it a while ago to separate out parts of DVB-T broadcasts to get to the Fun Stuff® (i.e. MHEG-5 carousels, DVB subtitles, and individual tables (e.g. EIT and NIT))</td></tr>
+            <tr><td>[20:49] &lt vmlemon_&gt Also resulted in me hacking up a component for appending data to an existing file (as opposed to replacing the contents between runs), which I submitted for inclusion</td></tr>
+            <tr><td>[20:50] &lt vmlemon_&gt (Should hopefully be in for the next release, if the deluge of mail I have from the Kamaelia Google Group is anything to go by) ;)</td></tr>
+            <tr><td>[20:51] &lt Rigolo&gt mhrd-home: in my ziggo-NIT?</td></tr>
+            <tr><td>[20:51] &lt mhrd-home&gt yep</td></tr>
+            <tr><td>[20:51] &lt vmlemon_&gt Hah, "Your monitor will of course not be able to display anything because the timings are far from correct VESA timings. Unless you are using a very old monitor, there is no chance you can destroy it..."</td></tr>
+            <tr><td>[20:52] &lt mhrd-home&gt could be malformed descriptors, or non standard extensions ... I've just been doule checking my interpretation of the spec, and I'm pretty sure I'm not wrong</td></tr>
+            <tr><td>[20:52] &lt Rigolo&gt mhrd-home: so in one of the first lines you mean ?? when you decode that descriptor ...</td></tr>
+            <tr><td>[20:52] &lt Rigolo&gt this string: Descriptor 0x44 : satellite_delivery_system contents : '\x03\x13\x00\x00\xff\xf2\x03\x00hu\x0f'</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt yep</td></tr>
+            <tr><td>[20:53] &lt mhrd-home&gt currently decoding as: {'params': {'inversion': 2, 'modulation': 3, 'symbol_rate': 6875000, 'fec_outer': 'RS(204/188)', 'fec_inner': 0, 'frequency': 313000000}, 'type': 'cable_delivery_system'}</td></tr>
+            <tr><td>[20:54] &lt Rigolo&gt mmm when you use the scan tool from dvb-utils it converts to AUTO i think .. or NONE</td></tr>
+            <tr><td>[20:55] &lt Rigolo&gt that first line is for other network ID 9001 .. can you have a look at network ID 9003 (that is my network)</td></tr>
+            <tr><td>[20:55] &lt Rigolo&gt not sure if I have a transport stream on 313Mhz</td></tr>
+            <tr><td>[20:56] &lt mhrd-home&gt network 9003 : {'params': {'inversion': 2, 'modulation': 3, 'symbol_rate': 6875000, 'fec_outer': 'RS(204/188)', 'fec_inner': 0, 'frequency': 313000000}, 'type': 'cable_delivery_system'}</td></tr>
+            <tr><td>[20:57] &lt Rigolo&gt same ...</td></tr>
+            <tr><td>[20:57] &lt Rigolo&gt when i build my channesl.conf with scan ... I get this records for 313Mhz transport stream</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt ARD:313000000:INVERSION_AUTO:6875000:FEC_NONE:QAM_64:101:102:1001</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt Kabel 1:313000000:INVERSION_AUTO:6875000:FEC_NONE:QAM_64:767:768:1004</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt NDR:313000000:INVERSION_AUTO:6875000:FEC_NONE:QAM_64:2401:2402:1005</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt RTL Television:313000000:INVERSION_AUTO:6875000:FEC_NONE:QAM_64:163:104:1006</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt Pro Sieben:313000000:INVERSION_AUTO:6875000:FEC_NONE:QAM_64:511:512:1007</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt Sat.1:313000000:INVERSION_AUTO:6875000:FEC_NONE:QAM_64:255:256:1008</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt WDR:313000000:INVERSION_AUTO:6875000:FEC_NONE:QAM_64:37:602:1009</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt SWF Fernsehen:313000000:INVERSION_AUTO:6875000:FEC_NONE:QAM_64:3101:3102:1010</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt maybe only fec_inner is used .. and fec_outer has some other code that is not used??</td></tr>
+            <tr><td>[20:59] &lt mhrd-home&gt yep, it matches the inner FEC. The code they're using for th eouter FEC is marked in the spec as "undefined"</td></tr>
+            <tr><td>[20:59] &lt mhrd-home&gt in the interests of compatilibty, i'll implement as FEC_NONE :-)</td></tr>
+            <tr><td>[21:00] &lt Rigolo&gt I think you can get the other values from python-dvb3 ... from cfrontend.pyx or frontend.pyx if I am not mistaken</td></tr>
+            <tr><td>[21:00] &lt Rigolo&gt if I google for that code I get this page ...</td></tr>
+            <tr><td>[21:01] &lt Rigolo&gt http://www.digitalradiotech.co.uk/fec_coding.htm</td></tr>
+            <tr><td>[21:01] &lt Rigolo&gt so it must mean something :-)</td></tr>
+            <tr><td>[21:01] &lt mhrd-home&gt "other values"?</td></tr>
+            <tr><td>[21:02] &lt Rigolo&gt RS stands for Reed-Solomon</td></tr>
+            <tr><td>[21:02] &lt mhrd-home&gt yep - I know ... RS204/188 is used by DVB-T</td></tr>
+            <tr><td>[21:02] &lt mhrd-home&gt :)</td></tr>
+            <tr><td>[21:03] &lt Rigolo&gt okee ...</td></tr>
+            <tr><td>[21:03] &lt mhrd-home&gt I'm just suprised to see it on a cable system I guess :)</td></tr>
+            <tr><td>[21:03] &lt Rigolo&gt me too .. maybe it was just left in there ..</td></tr>
+            <tr><td>[21:03] &lt mhrd-home&gt the inner-fec being marked in the spec as 'undefined' is the one that concerns me more</td></tr>
+            <tr><td>[21:04] &lt Rigolo&gt mmm maybe I should ask a person on a forum that I visit to also have a look at Kamaelia</td></tr>
+            <tr><td>[21:05] &lt Rigolo&gt I know he has written some Java code him self to analyse transportstream captures of dutch dvb-c networks</td></tr>
+            <tr><td>[21:05] &lt Rigolo&gt maybe he can shed some light on this ...</td></tr>
+            <tr><td>[21:05] &lt Rigolo&gt he is also noticeing problems in some EIT informations .. or other tables that have "weird" values</td></tr>
+            <tr><td>[21:06] &lt mhrd-home&gt ok, new descriptor code checked in</td></tr>
+            <tr><td>[21:06] &lt vmlemon_&gt Out of interest, is VBI-based Teletext available on the Dutch DVB-C network?</td></tr>
+            <tr><td>[21:06] &lt Rigolo&gt in trunk? or in your own branche</td></tr>
+            <tr><td>[21:06] &lt Rigolo&gt I think so ...</td></tr>
+            <tr><td>[21:06] &lt mhrd-home&gt checkout the branch private_MH_EnhancementsForDVB-C</td></tr>
+            <tr><td>[21:06] &lt vmlemon_&gt I know we don't have it on DVB-T here</td></tr>
+            <tr><td>[21:06] &lt Rigolo&gt okee .. and what svn co command is that ?</td></tr>
+            <tr><td>[21:06] &lt vmlemon_&gt although BSkyB implement it on certain DVB-S channels</td></tr>
+            <tr><td>[21:07] &lt mhrd-home&gt svn checkout http://kamaelia.googlecode.com/svn/private_MH_EnhancementsForDVB-C &lt directory-you-want-to-put-it-in&gt</td></tr>
+            <tr><td>[21:07] &lt Rigolo&gt you should be able to find those teletext PID's then in that table that I posted</td></tr>
+            <tr><td>[21:08] &lt vmlemon_&gt Which table?</td></tr>
+            <tr><td>[21:08] &lt Rigolo&gt oke .. and can I just install that branch over my current trunk installation</td></tr>
+            <tr><td>[21:08] &lt Rigolo&gt that NIT-Ziggo.txt file</td></tr>
+            <tr><td>[21:08] &lt mhrd-home&gt yep ... I made it not long ago, so should include all the fixes MS- did yesterday</td></tr>
+            <tr><td>[21:08] &lt Rigolo&gt mmm</td></tr>
+            <tr><td>[21:08] &lt vmlemon_&gt (Probably missed it, since I only came at 21:34GMT)</td></tr>
+            <tr><td>[21:08] &lt Rigolo&gt not really I just realised</td></tr>
+            <tr><td>[21:08] *** vmlemon_ looks on his shell account client's scrollback</td></tr>
+            <tr><td>[21:09] &lt Rigolo&gt thougth that the PID's where also in the NIT .. but they are not ofcourse ..</td></tr>
+            <tr><td>[21:09] &lt Rigolo&gt (still trying to get my head around the relation between all DVB Tables</td></tr>
+            <tr><td>[21:09] &lt mhrd-home&gt it is a bit messy :-)</td></tr>
+            <tr><td>[21:10] &lt mhrd-home&gt Rigolo: http://www.kamaelia.org/Cookbook/DVB/RecordNamedChannel and http://www.kamaelia.org/Cookbook/DVB/PersonalVideoRecorder may give you an idea of how the table relate together</td></tr>
+            <tr><td>[21:10] &lt Rigolo&gt mhrd-home: is your URL correct for the svn co?</td></tr>
+            <tr><td>[21:10] &lt mhrd-home&gt The intro sections of EN 300 468 aren't too horrendous to read either</td></tr>
+            <tr><td>[21:11] &lt mhrd-home&gt oops</td></tr>
+            <tr><td>[21:11] &lt mhrd-home&gt svn checkout http://kamaelia.googlecode.com/svn/brances/private_MH_EnhancementsForDVB-C &lt directory-you-want-to-put-it-in&gt</td></tr>
+            <tr><td>[21:11] &lt Rigolo&gt okee ... I was reading RecordNamedChannel on the train this morning</td></tr>
+            <tr><td>[21:11] &lt mhrd-home&gt svn checkout http://kamaelia.googlecode.com/svn/branches/private_MH_EnhancementsForDVB-C &lt directory-you-want-to-put-it-in&gt</td></tr>
+            <tr><td>[21:11] &lt mhrd-home&gt gah :-)</td></tr>
+            <tr><td>[21:12] &lt vmlemon_&gt You could build your own Kamaelia Macro ;)</td></tr>
+            <tr><td>[21:12] &lt Rigolo&gt again ... sure that is complete?</td></tr>
+            <tr><td>[21:12] &lt mhrd-home&gt Rigolo: I think so now .. apologies for typos</td></tr>
+            <tr><td>[21:13] &lt Rigolo&gt I think i forgot a / at the end ....</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt should I limit it to the Kamaelia subdir only ... or get Axon etc also ?</td></tr>
+            <tr><td>[21:14] &lt mhrd-home&gt you can just take kamaelia</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt (and do I need to reinstall that too?)</td></tr>
+            <tr><td>[21:14] &lt mhrd-home&gt just Kamaelia</td></tr>
+            <tr><td>[21:14] &lt MS-&gt Oh hello</td></tr>
+            <tr><td>[21:14] &lt mhrd-home&gt I've only changed one file: kamaelia/kamaelia/Support/DVB/Descriptors.py</td></tr>
+            <tr><td>[21:16] *** MS- notices the read back is pretty long and keeps quiet :)</td></tr>
+            <tr><td>[21:16] &lt mhrd-home&gt MS- : hi</td></tr>
+            <tr><td>[21:16] &lt Rigolo&gt mmm still gives me: svn: URL 'http://kamaelia.googlecode.com/svn/private_MH_EnhancementsForDVB-C/Kamaelia' doesn't exist</td></tr>
+            <tr><td>[21:16] &lt Rigolo&gt never mind ...</td></tr>
+            <tr><td>[21:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:16] &lt Rigolo&gt ctrl-c did not do its work :-)</td></tr>
+            <tr><td>[21:17] &lt mhrd-home&gt was going to say ... where did that trailing /Kamaelia come from?</td></tr>
+            <tr><td>[21:17] &lt vmlemon_&gt Hi again</td></tr>
+            <tr><td>[21:18] &lt mhrd-home&gt MS-: new branch adding support for a DVB-C descriptor.Rigolo points out how complicated all this DVB-SI tables stuff is. People chatted about DVB-H</td></tr>
+            <tr><td>[21:18] *** MS- nodss</td></tr>
+            <tr><td>[21:18] &lt mhrd-home&gt MS- : still lemsipped?</td></tr>
+            <tr><td>[21:18] &lt MS-&gt yep</td></tr>
+            <tr><td>[21:18] &lt MS-&gt probably not working tomorrow. (today was pretty ineffective)</td></tr>
+            <tr><td>[21:18] &lt MS-&gt idling here is relaxing</td></tr>
+            <tr><td>[21:19] &lt Rigolo&gt lemsipped?</td></tr>
+            <tr><td>[21:19] &lt vmlemon_&gt Drinking Lemsip, presumably having a cold or flu</td></tr>
+            <tr><td>[21:19] &lt MS-&gt Rigolo: lemsip == a brand name of paracetamol + vitamin c + lemon flavouring which you have with hot water. It's disgusting, but helps</td></tr>
+            <tr><td>[21:20] &lt mhrd-home&gt "all you need is lemsip" .. http://www.lemsip.co.uk/</td></tr>
+            <tr><td>[21:20] &lt MS-&gt No idea if you have lemsip where you are :)</td></tr>
+            <tr><td>[21:20] &lt Rigolo&gt I think we have something here called: Hot Coldrex of something like that</td></tr>
+            <tr><td>[21:21] &lt Rigolo&gt I usually try to OD myself on vitamin C when I feel a cold comming</td></tr>
+            <tr><td>[21:21] &lt vmlemon_&gt kamlogbot: give MS- a cold cure</td></tr>
+            <tr><td>[21:22] &lt vmlemon_&gt Meh, didn't work ;)</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt no chatterbot included in kamlogbot ? :-)</td></tr>
+            <tr><td>[21:23] *** Rigolo is using a very crude and hacked way to get that NIT capture ...</td></tr>
+            <tr><td>[21:23] &lt Rigolo&gt but it works :-)</td></tr>
+            <tr><td>[21:23] &lt vmlemon_&gt It does a few things</td></tr>
+            <tr><td>[21:23] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[21:23] Reply: does the macarena</td></tr>
+            <tr><td>[21:23] &lt mhrd-home&gt hacked?</td></tr>
+            <tr><td>[21:23] &lt vmlemon_&gt kamlogbot: poke</td></tr>
+            <tr><td>[21:23] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt http://rigolo.googlepages.com/Ziggo-NIT-new.txt</td></tr>
+            <tr><td>[21:26] &lt mhrd-home&gt having glanced at the first 1 or 2% of that file, can we tentatively declare that a success?</td></tr>
+            <tr><td>[21:26] &lt Rigolo&gt mhrd-home: yes ... looks good to me</td></tr>
+            <tr><td>[21:27] &lt mhrd-home&gt \o\ /o/</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt mhrd-home: I noticed that some service types are not parsed ...</td></tr>
+            <tr><td>[21:27] &lt vmlemon_&gt Heh, cool</td></tr>
+            <tr><td>[21:27] &lt mhrd-home&gt eg.</td></tr>
+            <tr><td>[21:27] &lt mhrd-home&gt ?</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt type 17 and 25 are used here</td></tr>
+            <tr><td>[21:28] &lt Rigolo&gt "reserved for future use (17)" is HDTV in MPEG2</td></tr>
+            <tr><td>[21:28] &lt Rigolo&gt "reserved for future use (25)" is eigenlijk "advanced codec HD digital television service", HDTV in MPEG4.</td></tr>
+            <tr><td>[21:28] &lt Rigolo&gt forgive me the dutch :-)</td></tr>
+            <tr><td>[21:28] &lt Rigolo&gt so you could add those to the service_type mapping if you want too</td></tr>
+            <tr><td>[21:28] &lt mhrd-home&gt can you give me a search pattern I can use to find it in that file?</td></tr>
+            <tr><td>[21:29] &lt Rigolo&gt [{'service_id': 22001, 'service_type': (25,)},</td></tr>
+            <tr><td>[21:29] &lt mhrd-home&gt ah, found it</td></tr>
+            <tr><td>[21:29] &lt Rigolo&gt [{'service_id': 29, 'service_type': (17,)},</td></tr>
+            <tr><td>[21:29] &lt vmlemon_&gt Does it recognise OpenTV services, out of interest?</td></tr>
+            <tr><td>[21:30] &lt Rigolo&gt so 17 is HDTVin MPEG2 and 25 in MPEG4</td></tr>
+            <tr><td>[21:30] &lt Rigolo&gt vmlemon_: that is addressed to mhrd-home I assume :-)</td></tr>
+            <tr><td>[21:30] &lt vmlemon_&gt Yup</td></tr>
+            <tr><td>[21:31] &lt vmlemon_&gt Although it's an open question</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt mhrd-home: there is also a 128 in that list ... they use that for software updates for the decoders</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt {'service_id': 987, 'service_type': (128,)},</td></tr>
+            <tr><td>[21:31] &lt mhrd-home&gt can you point me at any documents/specs that indicate these service_types ?</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt well .. it is from a dutch page ...</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt http://www.digitalekabeltelevisie.nl/techniek/tvhome.shtml</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt official name for 17 = MPEG-2 HD digital television service</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt and for 25 advanced codec HD digital television service</td></tr>
+            <tr><td>[21:33] &lt Rigolo&gt but the official list is probably on dvb.org (or something like that I guess)</td></tr>
+            <tr><td>[21:33] &lt mhrd-home&gt ah EN £00 468 is now a more recent version - seems to have 17 and 25 in it</td></tr>
+            <tr><td>[21:33] &lt mhrd-home&gt 128 is "user defined"</td></tr>
+            <tr><td>[21:33] &lt Rigolo&gt correct ...</td></tr>
+            <tr><td>[21:34] &lt Rigolo&gt leave it a that ..</td></tr>
+            <tr><td>[21:34] &lt Rigolo&gt 128 I mean</td></tr>
+            <tr><td>[21:34] &lt MS-&gt mhrd-home: Don't you love standards with "this bit is random"</td></tr>
+            <tr><td>[21:34] &lt Rigolo&gt because you never know what other people have used it for</td></tr>
+            <tr><td>[21:34] &lt mhrd-home&gt "undefined" doesn't necessarily mean "random" ... but then it doesn't really mean anything :-)</td></tr>
+            <tr><td>[21:34] &lt mhrd-home&gt Rigolo: agreed</td></tr>
+            <tr><td>[21:35] &lt Rigolo&gt dvbsnoop and other utils must have similair mapping means .. no idea where they keep their mapping tables</td></tr>
+            <tr><td>[21:35] &lt Rigolo&gt must be in the HG repository for dvb-utils I guess</td></tr>
+            <tr><td>[21:38] &lt mhrd-home&gt Rigolo: have just checked in a mod to include the missing service types</td></tr>
+            <tr><td>[21:38] &lt mhrd-home&gt do svn update in the branch and reinstall kamaelia from it</td></tr>
+            <tr><td>[21:38] &lt Rigolo&gt will do</td></tr>
+            <tr><td>[21:38] &lt MS-&gt mhrd-home: size of Axon with comments/docs/etc: 7717 lines</td></tr>
+            <tr><td>[21:38] &lt MS-&gt size of Axon without those: 2274 lines</td></tr>
+            <tr><td>[21:38] &lt Rigolo&gt and then I really need to go to bed ..</td></tr>
+            <tr><td>[21:38] &lt mhrd-home&gt MS- : umm, yeah :-)</td></tr>
+            <tr><td>[21:38] &lt mhrd-home&gt Rigolo: k</td></tr>
+            <tr><td>[21:39] &lt MS-&gt Size of miniaxonfull: 100 lines :)</td></tr>
+            <tr><td>[21:39] &lt Rigolo&gt alarm clock at 6am ... need to get some kids to school in time</td></tr>
+            <tr><td>[21:39] &lt MS-&gt Rigolo: I know the feeling :)</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt Weren't the DVB specs only available under restrictive terms, and only then after payment, not so long ago?</td></tr>
+            <tr><td>[21:39] &lt mhrd-home&gt not sure - some maybe</td></tr>
+            <tr><td>[21:39] &lt mhrd-home&gt general specs - eg DVB-SI have been freely available for years</td></tr>
+            <tr><td>[21:40] &lt MS-&gt vmlemon_: yes. We have the advantage of being employed by someone who has access to them :)</td></tr>
+            <tr><td>[21:40] &lt MS-&gt and easy access to people who helped write them :)</td></tr>
+            <tr><td>[21:40] &lt vmlemon_&gt At least until recently</td></tr>
+            <tr><td>[21:40] &lt mhrd-home&gt ones specific to implementations are restricted. Eg. the UK "D-Book" that defines what a freeview-compliant STB or broadcast is expected to implement ... that is more restricted</td></tr>
+            <tr><td>[21:41] &lt Rigolo&gt who "owns" freeview now? is it a Ltd owned by the BBC?</td></tr>
+            <tr><td>[21:41] &lt mhrd-home&gt BBC part owns Freeview iirc .. along with others</td></tr>
+            <tr><td>[21:42] *** vmlemon_ isn't a fan of folks who call the Compact Disc specifications an open standard</td></tr>
+            <tr><td>[21:42] &lt mhrd-home&gt http://freeview.co.uk/freeview/About-Us ... "Freeview is managed by DTV Services Ltd, a company owned and run by its five shareholders - BBC, BSkyB, Channel 4, ITV and Arqiva. Launched in October 2002, the Freeview service provides free-to-air digital TV channels, radio stations and interactive services through an aerial."</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt Didn't BSkyB own part of the consortium, somewhat ironically?</td></tr>
+            <tr><td>[21:43] &lt Rigolo&gt  [{'service_id': 29, 'service_type': ('MPEG-2 HD digital television service',)},</td></tr>
+            <tr><td>[21:43] &lt mhrd-home&gt Rigolo: jolly good :-)</td></tr>
+            <tr><td>[21:43] &lt Rigolo&gt you can do a reload on Ziggo-Nit-new.txt if you like</td></tr>
+            <tr><td>[21:43] &lt mhrd-home&gt jolly good #2 :-)</td></tr>
+            <tr><td>[21:43] &lt MS-&gt Oh, Matt - did I point you at this: http://async.org.uk/Hugo.Simpson/MASCOT-3.1-Manual-June-1987.pdf ??</td></tr>
+            <tr><td>[21:44] &lt MS-&gt I'm sure I must've done</td></tr>
+            <tr><td>[21:44] &lt Rigolo&gt mmm looks good ... each day an other step further ...</td></tr>
+            <tr><td>[21:44] &lt vmlemon_&gt (Since their business is selling access to a competitive digital TV service)</td></tr>
+            <tr><td>[21:45] &lt Rigolo&gt mhrd-home: here the dvb-t license was owned by the company that owns all the TV broadcast towers and radio's etc</td></tr>
+            <tr><td>[21:46] &lt Rigolo&gt but then KPN bought that company .. and basically got the monopoly for dvb-t here in .nl</td></tr>
+            <tr><td>[21:46] &lt mhrd-home&gt MS- : not seen that before ... circuit schematics for software ?</td></tr>
+            <tr><td>[21:46] &lt Rigolo&gt so for internet you can choose between cable or copper (=kpn)</td></tr>
+            <tr><td>[21:46] &lt MS-&gt It's Kamaelia, from 30-35 years ago</td></tr>
+            <tr><td>[21:47] &lt MS-&gt It's got the same concepts</td></tr>
+            <tr><td>[21:47] &lt Rigolo&gt and for tv you can choose between cable or dvb-t (=kpn)</td></tr>
+            <tr><td>[21:47] &lt MS-&gt Plus a couple we don't</td></tr>
+            <tr><td>[21:47] &lt vmlemon_&gt ONdigital/ITV Digital had the "monopoly" on DVB-T services, I take it?</td></tr>
+            <tr><td>[21:47] &lt vmlemon_&gt Yay, the choice of no choice</td></tr>
+            <tr><td>[21:47] &lt MS-&gt Different names, but clearly the same thing</td></tr>
+            <tr><td>[21:47] &lt mhrd-home&gt sort of ... the bbc owned its multiplex ... independent of ONdigital/ITV-digital</td></tr>
+            <tr><td>[21:48] &lt Rigolo&gt so we are getting a duopoly here .. one side the cable companies (basically 2 covering different geograhical regions) and the KPN</td></tr>
+            <tr><td>[21:48] &lt MS-&gt mhrd-home: his home page: http://async.org.uk/Hugo.Simpson/</td></tr>
+            <tr><td>[21:48] &lt mhrd-home&gt much as we do now ... but was happy for it to be subsumed to the larger brand iiuc</td></tr>
+            <tr><td>[21:48] &lt vmlemon_&gt (You can have KPN, KPN, KPN or maybe even KPN, or nothing at all) ;)</td></tr>
+            <tr><td>[21:49] &lt Rigolo&gt mhrd-home: didn dvb-t in the UK do not so well at first?</td></tr>
+            <tr><td>[21:49] &lt mhrd-home&gt MS- : oh, just up the road</td></tr>
+            <tr><td>[21:49] &lt mhrd-home&gt yep</td></tr>
+            <tr><td>[21:49] &lt Rigolo&gt vmlemon_: well ... ziggo/upc (depends where you live) or KPN</td></tr>
+            <tr><td>[21:49] &lt MS-&gt http://www.object-forge.com/Other_Pages/ExampleACPDiagram/ExampleACP_page.htm</td></tr>
+            <tr><td>[21:49] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[21:49] &lt Rigolo&gt and there is a new company running fiber to lot's of homes .. but now KPN bought 50% stake in them</td></tr>
+            <tr><td>[21:50] &lt Rigolo&gt and our anti-competivness office approved that .. ggrrrr</td></tr>
+            <tr><td>[21:50] &lt vmlemon_&gt Still no other DVB-C operators here</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt Except VirgiNTeLewest Media, erm Virgin Media</td></tr>
+            <tr><td>[21:51] &lt Rigolo&gt I'm happy that I have ziggo ... they use Irdeto and you can "choose" your own STB</td></tr>
+            <tr><td>[21:51] &lt MS-&gt mhrd-home: Also : http://www.object-forge.com/Other_Pages/DiningPhils/DiningPhils_page.htm</td></tr>
+            <tr><td>[21:51] &lt vmlemon_&gt (after they subsumed Virgin Mobile and NTL, after NTL ate Telewest)</td></tr>
+            <tr><td>[21:51] &lt Rigolo&gt with UPC you have to use their STB and they have Nagra</td></tr>
+            <tr><td>[21:52] &lt MS-&gt Two things they have which we don't:</td></tr>
+            <tr><td>[21:52] &lt MS-&gt disconnected boxes (though we have something close/similar using backplanes)</td></tr>
+            <tr><td>[21:53] &lt MS-&gt Another is the equivalent of .notify() on elements inside the STM</td></tr>
+            <tr><td>[21:53] &lt mhrd-home&gt .notify() ... being told of value changes?</td></tr>
+            <tr><td>[21:53] &lt mhrd-home&gt be cool to implement that as a linkage .. delivering data to an inbox on your component</td></tr>
+            <tr><td>[21:54] &lt Rigolo&gt okee ... deep hardcode Kamaelia discussions ... then I better go to bed .. :-)</td></tr>
+            <tr><td>[21:54] &lt MS-&gt mhrd-home: yep</td></tr>
+            <tr><td>[21:54] *** mhrd-home missing NetBeans Java autocompletion whilst editing python now :-)</td></tr>
+            <tr><td>[21:54] &lt vmlemon_&gt Still, we've got a cat, and real-world testing, so all is well ;)</td></tr>
+            <tr><td>[21:54] &lt MS-&gt Rigolo: Night :)</td></tr>
+            <tr><td>[21:54] &lt Rigolo&gt thanks again for the help ...</td></tr>
+            <tr><td>[21:55] &lt MS-&gt vmlemon_: Indeed :)</td></tr>
+            <tr><td>[21:55] &lt mhrd-home&gt dammit gnome-text-editor ... why should I have to *think*!!! :-)</td></tr>
+            <tr><td>[21:55] &lt mhrd-home&gt Rigolo: no problem :-)</td></tr>
+            <tr><td>[21:55] &lt Rigolo&gt I will see if I can get some other people to start playing with Kamaelia and DVB-C</td></tr>
+            <tr><td>[21:55] &lt MS-&gt :-D</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt Interesting discussion by the way</td></tr>
+            <tr><td>[21:55] *** Rigolo will also try to put his "Dream Backend" mediaserver thought on the net somewhere</td></tr>
+            <tr><td>[21:55] &lt vmlemon_&gt from what I managed to catch</td></tr>
+            <tr><td>[21:56] &lt Rigolo&gt and I will start to read about that superduper Kamaelia Macro.py :-)</td></tr>
+            <tr><td>[21:57] &lt vmlemon_&gt There was a running version for people to play with at one time</td></tr>
+            <tr><td>[21:58] &lt vmlemon_&gt Although only BBC folks could download the transcoded video</td></tr>
+            <tr><td>[21:58] &lt MS-&gt Rigolo: If you rip out the transcoding, then you'll be able to grab probably all the channels on a multiplex</td></tr>
+            <tr><td>[21:58] &lt MS-&gt mhrd-home: http://orestis.gr/blog/2008/09/15/pysmell-v05-released/ might be of use to you</td></tr>
+            <tr><td>[21:58] &lt vmlemon_&gt There was a Magic PID</td></tr>
+            <tr><td>[21:59] &lt mhrd-home&gt 0x2000</td></tr>
+            <tr><td>[21:59] &lt MS-&gt Implements duck inferencing</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt That's the one</td></tr>
+            <tr><td>[21:59] &lt vmlemon_&gt Interesting name</td></tr>
+            <tr><td>[22:00] &lt MS-&gt vmlemon_: its idea is this</td></tr>
+            <tr><td>[22:00] &lt MS-&gt given 2 lines of code:</td></tr>
+            <tr><td>[22:00] &lt mhrd-home&gt MS- : ta ... however """for now only the Vim integration works""" ... hmmm, I might stick with gnome-text-editor for the moment after all :-)</td></tr>
+            <tr><td>[22:00] &lt Rigolo&gt MS-: I want to have 4 transport streams at the same Time I think ... :-)</td></tr>
+            <tr><td>[22:00] &lt Rigolo&gt did you guys ever thing about that ... scheduling conflicts with multiple DVB cards etc?</td></tr>
+            <tr><td>[22:00] &lt MS-&gt mhrd-home: You may be able to encourage aa__ to add it to PIDA</td></tr>
+            <tr><td>[22:01] &lt MS-&gt vmlemon_: given this:</td></tr>
+            <tr><td>[22:01] &lt MS-&gt  o.walk()</td></tr>
+            <tr><td>[22:01] &lt MS-&gt  o.quack()</td></tr>
+            <tr><td>[22:01] &lt vmlemon_&gt I think there's a limit, if you only have one tuner</td></tr>
+            <tr><td>[22:01] &lt mhrd-home&gt aa__ .... have I ever told you what a lovely nick that is? ;-) :-)</td></tr>
+            <tr><td>[22:01] &lt vmlemon_&gt Not sure about DVB-C, though</td></tr>
+            <tr><td>[22:01] &lt MS-&gt it can look through all the classes it knows about, and figure out that o has to be something that walk()s and quack()s</td></tr>
+            <tr><td>[22:02] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[22:02] &lt MS-&gt And then if you next type</td></tr>
+            <tr><td>[22:02] &lt MS-&gt o.</td></tr>
+            <tr><td>[22:02] &lt vmlemon_&gt Coo</td></tr>
+            <tr><td>[22:02] &lt MS-&gt it can offer you the alternatives</td></tr>
+            <tr><td>[22:02] &lt MS-&gt which is quite neat</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt Argh, damn Symbian IRC client is eating keypresses</td></tr>
+            <tr><td>[22:03] &lt MS-&gt mhrd-home: Yeah, being vim only is it's achilles heel</td></tr>
+            <tr><td>[22:03] &lt mhrd-home&gt vmlemon_ you're irc'ing on a phone?</td></tr>
+            <tr><td>[22:04] &lt vmlemon_&gt (It seems to drop them whilst typing, if a message arrives, for some reason)</td></tr>
+            <tr><td>[22:04] &lt vmlemon_&gt At the moment, yes</td></tr>
+            <tr><td>[22:06] &lt vmlemon_&gt Just set "Don't update the screen whilst typing" in the options menu</td></tr>
+            <tr><td>[22:06] &lt vmlemon_&gt Seems fine now</td></tr>
+            <tr><td>[22:07] &lt vmlemon_&gt Ugh, UMTS seems to drain the battery faster than EDGE/GPRS here</td></tr>
+            <tr><td>[22:07] &lt vmlemon_&gt How delightfully efficient</td></tr>
+            <tr><td>[22:08] &lt vmlemon_&gt (Was at 6 bars, now at 3)</td></tr>
+            <tr><td>[22:09] *** vmlemon_ wonders if HSDPA/HSUPA is any better, but doesn't have a compatible phone</td></tr>
+            <tr><td>[22:11] &lt vmlemon_&gt kamlogbot: ecky</td></tr>
+            <tr><td>[22:11] Reply: Ptang!</td></tr>
+            <tr><td>[22:12] &lt mhrd-home&gt my housemate has just pointed out that it is snowing here (south london)</td></tr>
+            <tr><td>[22:12] &lt vmlemon_&gt Amazing</td></tr>
+            <tr><td>[22:13] &lt vmlemon_&gt No snow here</td></tr>
+            <tr><td>[22:13] &lt mhrd-home&gt bit early in the year for that kind of weather!</td></tr>
+            <tr><td>[22:13] &lt vmlemon_&gt I'm bemused at hearing Christmas ads so early</td></tr>
+            <tr><td>[22:14] &lt vmlemon_&gt especially for stuff that people probably only buy every 5 years like carpets and sofas</td></tr>
+            <tr><td>[22:15] &lt vmlemon_&gt (It's not Crimbo yet, damn it!)</td></tr>
+            <tr><td>[22:16] &lt vmlemon_&gt Never really got the hype about Halloween, either</td></tr>
+            <tr><td>[22:18] &lt vmlemon_&gt Nice, an MP3 file with a corrupt piece of another at the end</td></tr>
+            <tr><td>[22:19] &lt mhrd-home&gt MS- : I'm tempted to leave that DVB-C branch for a few days - see if Rigolo comes up with anything more - before putting it up for merging</td></tr>
+            <tr><td>[22:19] &lt MS-&gt mhrd-home: Seems sensible</td></tr>
+            <tr><td>[22:21] &lt vmlemon_&gt Any regressions or known issues for S and T, out of interest?</td></tr>
+            <tr><td>[22:22] &lt mhrd-home&gt not tested, but extremely unlikely with mods this evening .... only affected data structures not used in S and T</td></tr>
+            <tr><td>[22:22] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[22:23] &lt mhrd-home&gt Descriptors.py ... big pile of helper functions for parsing individual data structures in DVB-SI tables. The mod was to fill out the implementation of a DVB-C specific one that was previously just a stub.</td></tr>
+            <tr><td>[22:23] &lt mhrd-home&gt plus updated a mapping table by adding some newer entries to it ... was well exercised by Rigolo's tests</td></tr>
+            <tr><td>[22:24] &lt MS-&gt k, night all</td></tr>
+            <tr><td>[22:24] *** vmlemon_ ponders the seemingly limited choices for DAB, DAB+ and DRM in comparison</td></tr>
+            <tr><td>[22:24] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[22:24] &lt mhrd-home&gt ms-afk: night</td></tr>
+            <tr><td>[22:26] &lt vmlemon_&gt (The "other DRM"/Digital Radio Mondial, of course) ;)</td></tr>
+            <tr><td>[22:27] &lt vmlemon_&gt *Mondiale</td></tr>
+            <tr><td>[22:42] &lt vmlemon_&gt Night</td></tr>
+            <tr><td>[23:06] &lt mhrd-home&gt night all</td></tr>
+            <tr><td>[23:06] *** mhrd-home has parted #kamaelia</td></tr>

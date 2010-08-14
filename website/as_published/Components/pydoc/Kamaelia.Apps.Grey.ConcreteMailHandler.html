@@ -1,0 +1,363 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Apps.Grey.ConcreteMailHandler</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.html">Apps</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.html">Grey</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html">ConcreteMailHandler</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler.html">ConcreteMailHandler</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#66">Concrete Mail Core</a><ul>
+<li><a class="reference" href="#67">Note</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#68">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#69">How does it work?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#70">Configuration</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="66">Concrete Mail Core</h1>
+<p>This code enforces the basic statemachine that SMTP expects, switching
+between the various commands and finally results in forwarding on the SMTP
+command to the appropriate SMTP server. By itself, this can be used as a
+simple SMTP Proxy server.</p>
+<p>This class is a subclass of MailHandler, and as such largely consists of
+methods overriding methods from MailHandler which are designed to be
+overridden.</p>
+<p>Furthermore, it expects to forward any mail it accepts to another SMTP mail
+server, as transparently as possible. Thus this concrete mail core
+effectively forms the core of an SMTP proxy.</p>
+<div class="section">
+<h2 id="67"><a id="note" name="note">Note</a></h2>
+<p>As it stands however, by default this mail proxy will <em>not</em> forward any mails
+to the internal server. In order to change this, you would need to subclass
+this server and replace the method &quot;shouldWeAcceptMail&quot; since that defaults
+to returning False</p>
+</div>
+<div class="section">
+<h2 id="68"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>As noted, you are not expected to use this ConcreteMailHandler directly, but
+if you did, you would use it like this:</p>
+<pre class="literal-block">
+ServerCore(protocol=ConcreteMailHandler, port=1025)
+</pre>
+<dl class="docutils">
+<dt>At minimum, you would need to do this::</dt>
+<dd><dl class="first docutils">
+<dt>class SpamMeHandler(ConcreteMailHandler):</dt>
+<dd><dl class="first last docutils">
+<dt>def shouldWeAcceptMail(self):</dt>
+<dd>return True</dd>
+</dl>
+</dd>
+</dl>
+<p class="last">ServerCore(protocol=SpamMeHandler, port=1025)</p>
+</dd>
+<dt>You could alternatively do this::</dt>
+<dd><dl class="first docutils">
+<dt>class SpamMeMailServer(ServerCore):</dt>
+<dd><dl class="first last docutils">
+<dt>class protcol(ConcreteMailHandler):</dt>
+<dd><dl class="first last docutils">
+<dt>def shouldWeAcceptMail(self):</dt>
+<dd>return True</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="last">ServerCore(port=1025)</p>
+</dd>
+</dl>
+</div>
+<div class="section">
+<h2 id="69"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>As noted this overrides all the methods relating to handling SMTP commands,
+and enforces the state machine that SMTP requires. It's particularly strict
+about this, in breach of Postel's law for two reasons -</p>
+<blockquote>
+<ul class="simple">
+<li>It helps eradicate spam</li>
+<li>because most spam systems are generally lax these days and most non-spam systems are generally strict</li>
+</ul>
+</blockquote>
+<p>It was also primarily written in the context of a greylisting server.</p>
+<dl class="docutils">
+<dt>Some core values it tracks with regard to a mail -</dt>
+<dd><ul class="first last simple">
+<li>a list of recipients</li>
+<li>the (claimed) sender</li>
+<li>the (claimed) remote/client name</li>
+<li>the actual client &amp; local port/ip addresses</li>
+</ul>
+</dd>
+</dl>
+<p>Once the client has finished sending the data for an email, the proxy
+forwards the mail to the local real SMTP server. Fundamentally this happens
+by making a connection to the real server using the TCPClient component, and
+then replaying all the lines the original server sent us to the local
+server.</p>
+<p>(ie an inbox_log is built up with all data recieved from inbox &quot;inbox&quot; and
+then the contents of this are replayed when being sent to the local (real)
+SMTP mail server)</p>
+</div>
+<div class="section">
+<h2 id="70"><a id="configuration" name="configuration">Configuration</a></h2>
+<p>This class provides a large number of configuration options. You can either
+change this through subclassing or by providing as named arguments to the
+__init__ function. The options you have -</p>
+<blockquote>
+<ul class="simple">
+<li>servername - The name this server will choose to use to identify itself</li>
+<li>serverid - The string this server will use to identify itself (in terms of software in use)</li>
+<li>smtp_ip - the ip address of the server you're proxying for/to</li>
+<li>smtp_port - this is the port the server you're proxying for/to is listening on</li>
+</ul>
+</blockquote>
+<p>The following attributes get set when a client connects -</p>
+<blockquote>
+<ul class="simple">
+<li>peer - the IP address of the client</li>
+<li>peerport - the port which the peer is connected from</li>
+<li>local - the IP address the client has connected to</li>
+<li>localport - the port which they're connected to</li>
+</ul>
+</blockquote>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.html">Apps</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.html">Grey</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html">ConcreteMailHandler</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler.html">ConcreteMailHandler</a></h1>
+<div class="section">
+<h2 id="symbol-ConcreteMailHandler">class ConcreteMailHandler(<a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html">Kamaelia.Apps.Grey.MailHandler.MailHandler</a>)</h2>
+<div class="section">
+<h3><a id="symbol-ConcreteMailHandler.Inboxes" name="symbol-ConcreteMailHandler.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : Shutdown &amp; control messages regarding client side socket handling</li>
+<li><strong>tcp_inbox</strong> : This is where we get respones from the real SMTP server</li>
+<li><strong>tcp_control</strong> : This is where we get shutdown information from the real SMTP server</li>
+<li><strong>inbox</strong> : Data from the client connecting to the server comes in here</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-ConcreteMailHandler.Outboxes" name="symbol-ConcreteMailHandler.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : Data sent here goes back the the client connecting to the server</li>
+<li><strong>signal</strong> : Shutdown &amp; control messages regarding client side socket handling</li>
+<li><strong>tcp_outbox</strong> : Data sent here is sent to the real SMTP server</li>
+<li><strong>tcp_signal</strong> : We send messages here to shutdown the connection to the real SMTP connection</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.RelayError" name="symbol-ConcreteMailHandler.RelayError">RelayError(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.__init__" name="symbol-ConcreteMailHandler.__init__">__init__(self, **argv)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.acceptMail" name="symbol-ConcreteMailHandler.acceptMail">acceptMail(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.connectToRealSMTPServer" name="symbol-ConcreteMailHandler.connectToRealSMTPServer">connectToRealSMTPServer(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.deferMail" name="symbol-ConcreteMailHandler.deferMail">deferMail(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.error" name="symbol-ConcreteMailHandler.error">error(self, message)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.getline_fromsmtpserver" name="symbol-ConcreteMailHandler.getline_fromsmtpserver">getline_fromsmtpserver(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleConnect" name="symbol-ConcreteMailHandler.handleConnect">handleConnect(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleData" name="symbol-ConcreteMailHandler.handleData">handleData(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleDisconnect" name="symbol-ConcreteMailHandler.handleDisconnect">handleDisconnect(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleEhlo" name="symbol-ConcreteMailHandler.handleEhlo">handleEhlo(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleHelo" name="symbol-ConcreteMailHandler.handleHelo">handleHelo(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleHelp" name="symbol-ConcreteMailHandler.handleHelp">handleHelp(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleMail" name="symbol-ConcreteMailHandler.handleMail">handleMail(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleNoop" name="symbol-ConcreteMailHandler.handleNoop">handleNoop(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleQuit" name="symbol-ConcreteMailHandler.handleQuit">handleQuit(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleRcpt" name="symbol-ConcreteMailHandler.handleRcpt">handleRcpt(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleRset" name="symbol-ConcreteMailHandler.handleRset">handleRset(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.handleVrfy" name="symbol-ConcreteMailHandler.handleVrfy">handleVrfy(self, command)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-ConcreteMailHandler.shouldWeAcceptMail" name="symbol-ConcreteMailHandler.shouldWeAcceptMail">shouldWeAcceptMail(self)</a></h4>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html">Kamaelia.Apps.Grey.MailHandler.MailHandler</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.noteToDebugLog">noteToDebugLog</a>(self, line)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.noteToLog">noteToLog</a>(self, line)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.lastline">lastline</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.main">main</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.getline">getline</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.handleCommand">handleCommand</a>(self, command)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.netPrint">netPrint</a>(self, *args)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.logging_recv_connection">logging_recv_connection</a>(self)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.logResult">logResult</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

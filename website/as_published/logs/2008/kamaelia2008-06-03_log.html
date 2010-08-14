@@ -1,0 +1,370 @@
+<html><body><table>
+            <tr><td>[04:55] *** jlei_ has joined #kamaelia</td></tr>
+            <tr><td>[05:10] &lt jlei_&gt hey</td></tr>
+            <tr><td>[05:11] &lt jlei_&gt was just wondering whether the issues j_baker raised about the AIM branch have been resolved</td></tr>
+            <tr><td>[05:11] &lt jlei_&gt I've meant to take a look at it every day since I saw the email</td></tr>
+            <tr><td>[05:11] &lt jlei_&gt sorry</td></tr>
+            <tr><td>[05:11] &lt jlei_&gt taking a look at it now</td></tr>
+            <tr><td>[05:50] &lt jlei_&gt question: how did you people get OneBuddyMessenger to run at all? the Text component isn't in this branch...</td></tr>
+            <tr><td>[05:50] &lt j_baker&gt I moved it from private_MPS_Scratch</td></tr>
+            <tr><td>[05:51] &lt jlei_&gt okay</td></tr>
+            <tr><td>[05:51] &lt jlei_&gt hacky, though :)</td></tr>
+            <tr><td>[05:51] &lt jlei_&gt j_baker: I suppose you haven't resolved your issues?</td></tr>
+            <tr><td>[05:52] &lt j_baker&gt Nope. I was curious if maybe it was a NAT issue somewhere.</td></tr>
+            <tr><td>[05:52] &lt j_baker&gt I can try to set up port forwarding, but I couldn't figure out which port it was using.</td></tr>
+            <tr><td>[05:53] &lt jlei_&gt network address translation?</td></tr>
+            <tr><td>[05:53] &lt jlei_&gt hmm</td></tr>
+            <tr><td>[05:53] &lt jlei_&gt I don't really remember</td></tr>
+            <tr><td>[05:53] &lt jlei_&gt &gt&gt.&lt &lt</td></tr>
+            <tr><td>[05:54] &lt j_baker&gt Hmmmm... I don't know why I didn't think about it at first, but I suppose I could just try to connect without my router.</td></tr>
+            <tr><td>[05:55] &lt j_baker&gt I'll have to give that a try tomorrow. I was about to go to bed actually.</td></tr>
+            <tr><td>[05:55] &lt jlei_&gt okay, go ahead</td></tr>
+            <tr><td>[05:55] &lt jlei_&gt meanwhile I'll have a crack at this</td></tr>
+            <tr><td>[05:56] &lt j_baker&gt Have fun. :)</td></tr>
+            <tr><td>[05:56] &lt jlei_&gt why thank you</td></tr>
+            <tr><td>[05:56] &lt jlei_&gt for the good wishes</td></tr>
+            <tr><td>[05:57] &lt j_baker&gt np and good night (or morning depending on where you are)</td></tr>
+            <tr><td>[05:57] *** j_baker has parted #kamaelia</td></tr>
+            <tr><td>[06:12] &lt jlei_&gt &gt&gt&gt&gt&gt&gt&gt&gt&gt&gt&gt</td></tr>
+            <tr><td>[06:12] &lt jlei_&gt &gt.</td></tr>
+            <tr><td>[06:36] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[06:36] &lt jlei_&gt morning</td></tr>
+            <tr><td>[06:36] &lt jlei_&gt out of curiosity, what time is it over there?</td></tr>
+            <tr><td>[06:38] &lt Lawouach_&gt depends by which over there you're referring to</td></tr>
+            <tr><td>[06:39] &lt jlei_&gt whereever you are :)</td></tr>
+            <tr><td>[06:39] &lt Lawouach_&gt I'm in France and it's 8:40am</td></tr>
+            <tr><td>[06:39] &lt jlei_&gt haha, okay</td></tr>
+            <tr><td>[06:40] &lt Lawouach_&gt where are you from yourself?</td></tr>
+            <tr><td>[06:41] &lt jlei_&gt california, it's 11:40 pm</td></tr>
+            <tr><td>[06:41] &lt jlei_&gt *42, that would be</td></tr>
+            <tr><td>[06:42] &lt Lawouach_&gt okay... quite far away from me :)</td></tr>
+            <tr><td>[06:42] &lt Lawouach_&gt what did bring you here?</td></tr>
+            <tr><td>[06:48] &lt jlei_&gt oh, I was one of the SOC students last year</td></tr>
+            <tr><td>[06:48] &lt jlei_&gt I did the AIM code</td></tr>
+            <tr><td>[06:49] &lt jlei_&gt been meaning to get back into it for a while</td></tr>
+            <tr><td>[06:49] &lt jlei_&gt but sitting down and staying sitting down has never been one of my greatest strengths</td></tr>
+            <tr><td>[06:49] &lt Lawouach_&gt damn</td></tr>
+            <tr><td>[06:49] &lt Lawouach_&gt My memory's gone lost then</td></tr>
+            <tr><td>[06:50] &lt Lawouach_&gt I do remember now :)</td></tr>
+            <tr><td>[06:50] &lt Lawouach_&gt jlei_: that's not so bad as a weakness. Life happens mostly outside :)</td></tr>
+            <tr><td>[06:52] &lt jlei_&gt it's okay, we didn't talk much</td></tr>
+            <tr><td>[06:52] &lt jlei_&gt I'll remember that :)</td></tr>
+            <tr><td>[06:54] &lt jlei_&gt j_baker: the OneBuddy client uses port 5190 at first, to connect to login.oscar.aol.com</td></tr>
+            <tr><td>[06:55] &lt jlei_&gt j_baker: then after a waltz with the AOL server, it receives a secret server address and a secret port</td></tr>
+            <tr><td>[08:01] *** mhrd-afk is now known as hrd</td></tr>
+            <tr><td>[08:02] *** hrd is now known as mhrd</td></tr>
+            <tr><td>[08:03] &lt mhrd&gt hi jlei_ how are things</td></tr>
+            <tr><td>[08:03] &lt jlei_&gt hi mhrd</td></tr>
+            <tr><td>[08:03] &lt jlei_&gt I'm trying to refamiliarize myself with the AIM components</td></tr>
+            <tr><td>[08:03] &lt jlei_&gt but good overall</td></tr>
+            <tr><td>[08:03] &lt jlei_&gt mhrd: yourself?</td></tr>
+            <tr><td>[08:04] &lt mhrd&gt bit stressed (took on a few too many additional side projects) but otherwise okay :)</td></tr>
+            <tr><td>[08:04] &lt jlei_&gt mhrd: are you still officially with Kamaelia? As I remember there was a bit of reshuffling at the BBC last summer</td></tr>
+            <tr><td>[08:05] &lt mhrd&gt thats right there was - MS- and I are not longer officially allocated any time to work on K</td></tr>
+            <tr><td>[08:05] &lt mhrd&gt however that doesn't stop us doing a little anyway; and it certainly doesn't dictate what we can do with our free time ;-)</td></tr>
+            <tr><td>[08:05] &lt mhrd&gt (the latter being particularly applicable in MS-'s case as it was his pet project idea to start with)</td></tr>
+            <tr><td>[08:05] &lt jlei_&gt haha cool</td></tr>
+            <tr><td>[08:05] &lt jlei_&gt yes</td></tr>
+            <tr><td>[08:06] &lt jlei_&gt the lists seem as prolific as ever</td></tr>
+            <tr><td>[08:06] &lt mhrd&gt I believe MS- does perhaps have some time allocated to GSoC though</td></tr>
+            <tr><td>[08:06] &lt mhrd&gt :)</td></tr>
+            <tr><td>[08:06] &lt mhrd&gt oh, thats a point, I ought to check it!</td></tr>
+            <tr><td>[08:06] &lt jlei_&gt haha</td></tr>
+            <tr><td>[08:07] &lt jlei_&gt that would explain the sudden increase in Kamaelia-related messages in my inbox</td></tr>
+            <tr><td>[08:07] &lt mhrd&gt I've onyl just started the daily email cleansing ritual</td></tr>
+            <tr><td>[08:07] &lt jlei_&gt besides gsoc...</td></tr>
+            <tr><td>[08:07] &lt mhrd&gt ?</td></tr>
+            <tr><td>[08:07] &lt jlei_&gt gsoc would also explain it</td></tr>
+            <tr><td>[08:07] &lt jlei_&gt but I notice a lot of messages aren't related to gsoc</td></tr>
+            <tr><td>[08:07] &lt Lawouach_&gt jlei_: Kamaelia has moved to Google groups</td></tr>
+            <tr><td>[08:08] &lt jlei_&gt Lawouach_: I know</td></tr>
+            <tr><td>[08:08] &lt jlei_&gt um, never mind me</td></tr>
+            <tr><td>[08:08] &lt Lawouach_&gt right so you have register to it, or otherwise I fail to see how you could get more traffic in your box :)</td></tr>
+            <tr><td>[08:08] &lt Lawouach_&gt I'm confused by your logic here :D</td></tr>
+            <tr><td>[08:09] &lt Lawouach_&gt mhrd: hello</td></tr>
+            <tr><td>[08:09] &lt mhrd&gt hi Lawouach_</td></tr>
+            <tr><td>[08:09] &lt jlei_&gt Lawouach: okay, so this was kind of stupid logic</td></tr>
+            <tr><td>[08:09] &lt Lawouach_&gt Let's hope the BBC Research department picks up on K. once again some dya</td></tr>
+            <tr><td>[08:09] &lt Lawouach_&gt jlei_: no just confusing :D</td></tr>
+            <tr><td>[08:10] &lt jlei_&gt but after the switch to google groups</td></tr>
+            <tr><td>[08:10] &lt jlei_&gt I thought I saw a lot more messages to kamaelia-commits</td></tr>
+            <tr><td>[08:10] &lt jlei_&gt that were MS-'s</td></tr>
+            <tr><td>[08:11] &lt jlei_&gt so I thought that if he had more time to dedicate to it now -- "official GSOC time" -- that would explain the sudden increase</td></tr>
+            <tr><td>[08:12] &lt jlei_&gt but maybe I'm just noticing them because the kamaelia lists used to be so full of spam that I hardly paid any attention to them</td></tr>
+            <tr><td>[08:14] *** Lawouach_ likes PyQt but the Qt MVC approach is so confusing it's almost useless</td></tr>
+            <tr><td>[08:14] &lt Lawouach_&gt sigh</td></tr>
+            <tr><td>[08:17] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:45] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:45] &lt Chong-&gt Morning, all.</td></tr>
+            <tr><td>[08:46] &lt mhrd&gt hi Chong-</td></tr>
+            <tr><td>[08:48] &lt orphans&gt morning</td></tr>
+            <tr><td>[08:50] &lt Chong-&gt hey mhrd and orphans</td></tr>
+            <tr><td>[09:02] &lt Lawouach_&gt hi boys</td></tr>
+            <tr><td>[09:02] &lt orphans&gt morning Lawouach</td></tr>
+            <tr><td>[09:04] &lt jlei_&gt morning :)</td></tr>
+            <tr><td>[09:14] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:26] &lt Davbo&gt Another module passed yay :-)</td></tr>
+            <tr><td>[09:28] &lt mhrd&gt congratulations :)</td></tr>
+            <tr><td>[09:29] &lt orphans&gt long kamaelia variable of the day: numberOfFailedSelectsDueToBadFileDescriptor :)</td></tr>
+            <tr><td>[09:29] &lt jlei_&gt there's some self-documenting code for you</td></tr>
+            <tr><td>[09:32] &lt jlei_&gt well, it's very early in the morning, which is my cue to go to bed. night.</td></tr>
+            <tr><td>[09:33] &lt orphans&gt mhrd, you busy?</td></tr>
+            <tr><td>[09:40] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:48] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:54] &lt mhrd&gt hi</td></tr>
+            <tr><td>[09:54] &lt mhrd&gt sorry - was afk for a bit</td></tr>
+            <tr><td>[09:54] &lt mhrd&gt whats up?</td></tr>
+            <tr><td>[09:55] &lt orphans&gt ah, just a bit confused about what your changes to selector actually do :)</td></tr>
+            <tr><td>[09:56] &lt mhrd&gt and you expect me to remember? ;-) ... anything specific? or just generally?</td></tr>
+            <tr><td>[09:56] &lt orphans&gt erm, generally really. I'm not sure what notifysocket is used for</td></tr>
+            <tr><td>[09:57] &lt mhrd&gt I'll take a look and refresh my memory</td></tr>
+            <tr><td>[09:58] &lt orphans&gt I think it's something to do with send the selector a message ("X") to tell it to wake up</td></tr>
+            <tr><td>[09:58] &lt orphans&gt but then I'm not really sure what the selector is up to fully, so am a bit clueless :)</td></tr>
+            <tr><td>[09:59] &lt mhrd&gt ok, give me a few mins - you'll notice the last checkin on that was a year and a half ago .. I need to work it out myself :)</td></tr>
+            <tr><td>[09:59] &lt orphans&gt yeah - I thought that might be the case :)</td></tr>
+            <tr><td>[10:00] &lt Lawouach_&gt the selector component is simply mapping events from the select module to axon messages</td></tr>
+            <tr><td>[10:00] &lt Lawouach_&gt so first you have to understand what the select module does :)</td></tr>
+            <tr><td>[10:01] &lt orphans&gt From what I understand select polls sockets to see if anything has turned up?</td></tr>
+            <tr><td>[10:02] &lt Lawouach_&gt it doesn't poll</td></tr>
+            <tr><td>[10:02] &lt Lawouach_&gt the OS uses a low level interuption to inform the select module that something happened on a socket</td></tr>
+            <tr><td>[10:02] &lt Lawouach_&gt it can be a recv ready event</td></tr>
+            <tr><td>[10:02] &lt Lawouach_&gt a write ready event</td></tr>
+            <tr><td>[10:02] &lt Lawouach_&gt or an error</td></tr>
+            <tr><td>[10:03] &lt Lawouach_&gt once select is notified the selector component maps those into messages and propagate them upstream</td></tr>
+            <tr><td>[10:03] &lt orphans&gt ok, so it receives interrupts and tells your program do get off it's behind and do something</td></tr>
+            <tr><td>[10:03] &lt Lawouach_&gt the CSA is then used to either read/write on the socket</td></tr>
+            <tr><td>[10:04] &lt orphans&gt yeah, I understand the CSA more than the selector</td></tr>
+            <tr><td>[10:04] &lt Lawouach_&gt you shouldn't really have to understand the selector component</td></tr>
+            <tr><td>[10:05] &lt orphans&gt but if I need to use mhrd's changes I do, cause I have a lot more time to sort out getting it cleaned up and merged :)</td></tr>
+            <tr><td>[10:05] &lt mhrd&gt ok; iirc there's two sets of things I did there - one related to UDP support, the other is a performance optimisation</td></tr>
+            <tr><td>[10:05] &lt orphans&gt ok, cool</td></tr>
+            <tr><td>[10:06] &lt mhrd&gt context: I was trying to increase the efficiency so I could deal with several megabits per second of data - which it wasn't quite up to on the target hardware at the time</td></tr>
+            <tr><td>[10:06] &lt mhrd&gt the modifications to Selector, afaict, are performance optimisations -</td></tr>
+            <tr><td>[10:06] &lt orphans&gt ahh, ok</td></tr>
+            <tr><td>[10:07] &lt orphans&gt so nothing to concern me too much :)</td></tr>
+            <tr><td>[10:07] &lt orphans&gt (for now)</td></tr>
+            <tr><td>[10:08] &lt mhrd&gt its worth briefly explaining though, since it might affect the CSA implementation in there too:</td></tr>
+            <tr><td>[10:08] &lt orphans&gt ok, cool</td></tr>
+            <tr><td>[10:09] &lt mhrd&gt in the current trunk/Code selector implementation, the call to select:</td></tr>
+            <tr><td>[10:09] &lt mhrd&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Internet/Selector.py?view=markup#l_266</td></tr>
+            <tr><td>[10:09] &lt mhrd&gt has a timeout attached (0.05 seconds)</td></tr>
+            <tr><td>[10:10] &lt orphans&gt ahh, and you changed to 5</td></tr>
+            <tr><td>[10:10] &lt orphans&gt I saw that</td></tr>
+            <tr><td>[10:10] &lt mhrd&gt so if another component has send the Selector component a message, requesting to add another socket to those being selected over ...</td></tr>
+            <tr><td>[10:10] &lt mhrd&gt then it might have to wait at least 0.05 seconds before the Selector component gets round to it</td></tr>
+            <tr><td>[10:11] &lt mhrd&gt when you're receiving a 2+ Mbps stream in 188 byte chunks over UDP, 0.05 seconds is a long time</td></tr>
+            <tr><td>[10:11] &lt mhrd&gt so I added that extra 'notifysocket' you noticed</td></tr>
+            <tr><td>[10:13] &lt mhrd&gt and split the selector into two components</td></tr>
+            <tr><td>[10:13] &lt mhrd&gt the core select loop is now in a threaded component</td></tr>
+            <tr><td>[10:14] &lt mhrd&gt and the original Selector component now simply passes requests through to it; but also sends a byte to the notifySocket, thereby waking it up, ensuring it deals with the request promptly</td></tr>
+            <tr><td>[10:14] &lt orphans&gt ahh, I see</td></tr>
+            <tr><td>[10:15] &lt mhrd&gt so notice the old loop is now in a component called _SelectorCore : http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MH/RTP/Selector.py?view=markup#l_127</td></tr>
+            <tr><td>[10:15] &lt orphans&gt yeah</td></tr>
+            <tr><td>[10:16] &lt mhrd&gt and the component called Selector is a simple kind-of wrapper http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MH/RTP/Selector.py?view=markup#l_294</td></tr>
+            <tr><td>[10:16] &lt mhrd&gt cool</td></tr>
+            <tr><td>[10:16] &lt mhrd&gt ok, now I've understood it again whilst talking through it with you; I reckon those optimisations should be pretty much independent of the UDP stuff, so you can probably ignore them :)</td></tr>
+            <tr><td>[10:16] &lt orphans&gt yeah, that makes it a lot clearer for that bit</td></tr>
+            <tr><td>[10:17] &lt mhrd&gt Selector behaves exactly as it did before; but inside its lots different :)</td></tr>
+            <tr><td>[10:17] &lt orphans&gt I think the chances of me making it to 2Mbps are slim to none unless I accidentally get stuck in a loop :)</td></tr>
+            <tr><td>[10:18] &lt mhrd&gt heh, I think I never quite got it fast enough in the end :-( but it was pushing the abilities of a dynamic interpreted scripting language :)</td></tr>
+            <tr><td>[10:18] &lt mhrd&gt I think I was undecided over whether those Selector 'improvements' actually gave a worthwhile performance gain, so I've not pushed to merge them</td></tr>
+            <tr><td>[10:19] &lt orphans&gt ok, in that case I'll probably leave them in limbo for now if that's ok :)</td></tr>
+            <tr><td>[10:19] &lt mhrd&gt np</td></tr>
+            <tr><td>[10:19] &lt mhrd&gt CSA - the mods are much simpler</td></tr>
+            <tr><td>[10:20] &lt mhrd&gt there's a line or two in __init__ that sets socket options to increase buffer sizes - I think that might have been a performance thing too : http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MH/RTP/ConnectedSocketAdapter.py?view=markup#l_142</td></tr>
+            <tr><td>[10:21] &lt orphans&gt yeah, in the pyOSC code they do that too (albeit a little lower than you set it)</td></tr>
+            <tr><td>[10:21] &lt mhrd&gt the one to note is the new optional 'sendTo' argument</td></tr>
+            <tr><td>[10:21] &lt mhrd&gt heh, good to know I was on the right track then :)</td></tr>
+            <tr><td>[10:22] &lt mhrd&gt being a UDP socket object you (may) need to specify the destination when sending, not just the payload - hence the extra optional parameter</td></tr>
+            <tr><td>[10:24] &lt mhrd&gt the rest of the changes in there are the logical consequence of that - using that parameter in the _safesend() method - http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MH/RTP/ConnectedSocketAdapter.py?view=markup#l_184</td></tr>
+            <tr><td>[10:24] &lt orphans&gt yeah, cool - so for stuff like targettedpeer</td></tr>
+            <tr><td>[10:25] &lt mhrd&gt MulticastTransciever was then basically a rip-off of Kamaelia.Internet.TCPClient - just changing the type of socket it created</td></tr>
+            <tr><td>[10:25] &lt orphans&gt yeah, I'm pretty sure I understand that code now</td></tr>
+            <tr><td>[10:26] &lt orphans&gt so I need to rip-off MulticastTransceiver (and/or TCPClient) to get UDP using the CSA</td></tr>
+            <tr><td>[10:26] &lt mhrd&gt yep</td></tr>
+            <tr><td>[10:27] &lt orphans&gt awesome - that was a lot less scary than I thought without all the socket stuff :)</td></tr>
+            <tr><td>[10:27] &lt mhrd&gt well, its 'an' approach - whether its the best, I've no idea; but it should work okay</td></tr>
+            <tr><td>[10:27] &lt orphans&gt yeah</td></tr>
+            <tr><td>[10:27] &lt mhrd&gt the short story is that CSA was already pretty generic - it just didn't have the support for specifying a destination when sending</td></tr>
+            <tr><td>[10:27] &lt mhrd&gt cool - sounds like you're happy then?</td></tr>
+            <tr><td>[10:28] &lt orphans&gt yup, that's great</td></tr>
+            <tr><td>[10:28] &lt orphans&gt thanks a lot mhrd</td></tr>
+            <tr><td>[10:28] &lt mhrd&gt np</td></tr>
+            <tr><td>[10:28] &lt mhrd&gt if only everyone could be that easy to please :)</td></tr>
+            <tr><td>[10:28] &lt orphans&gt heh</td></tr>
+            <tr><td>[10:29] &lt mhrd&gt btw: it might be worth starting from CSA and other components in trunk ... as I said mine are at least 18 months old - so may not have more recent features in them</td></tr>
+            <tr><td>[10:30] &lt mhrd&gt you can still use those in my Sketches area for testing, or to steal appropriate code fragments from though</td></tr>
+            <tr><td>[10:30] &lt mhrd&gt :)</td></tr>
+            <tr><td>[11:15] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:15] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:54] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:54] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:54] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:55] &lt mhrd&gt hi</td></tr>
+            <tr><td>[12:47] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[13:23] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[13:23] &lt Davbo&gt http://en.wikipedia.org/wiki/Vrms</td></tr>
+            <tr><td>[13:23] &lt Davbo&gt Just heard about it on this weeks LugRadio</td></tr>
+            <tr><td>[13:24] &lt Davbo&gt I think it should be improved. Given a nice visual 3d RMS pointing at things on your desktop</td></tr>
+            <tr><td>[13:26] &lt Davbo&gt Anyway, i'm not feeling too great so going to relax for a bit. Exam tomorrow and want to be feeling better :-)</td></tr>
+            <tr><td>[15:38] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:38] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:47] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:47] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:05] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:29] &lt Chong-&gt Anyone know why it doesn't work? L =`ls *pyc`</td></tr>
+            <tr><td>[16:29] Reply: Hm?</td></tr>
+            <tr><td>[16:29] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:29] &lt Chong-&gt hey Lawouach</td></tr>
+            <tr><td>[16:30] &lt mhrd&gt you got spaces before or after the '=' sign?</td></tr>
+            <tr><td>[16:30] &lt mhrd&gt take them out if you have</td></tr>
+            <tr><td>[16:31] &lt Chong-&gt I see. so it is thought as command. :-)</td></tr>
+            <tr><td>[16:32] &lt Chong-&gt Thank you very much, mhrd.</td></tr>
+            <tr><td>[16:32] &lt mhrd&gt np</td></tr>
+            <tr><td>[16:39] &lt mhrd&gt blimey that was painful (working out how to be notified of when a checkbox changes state in an win32 MFC dialog)</td></tr>
+            <tr><td>[16:39] &lt Chong-&gt mhrd: after I did L='ls *pyc' then I try: svn rm $L it shows "svn: 'ls' does not exist"</td></tr>
+            <tr><td>[16:40] &lt mhrd&gt you're using ' when you shoudl be using `</td></tr>
+            <tr><td>[16:40] &lt Chong-&gt I see. What's the difference?</td></tr>
+            <tr><td>[16:40] &lt mhrd&gt Chong: suggestion: before executing a command on the basis of what is stored in a variable, its a good idea to echo $L first to check what is in the variable is sensible :)</td></tr>
+            <tr><td>[16:41] &lt vmlemon_&gt Quotation mark and backtick...</td></tr>
+            <tr><td>[16:41] &lt mhrd&gt Chong- : you're using a UK keyboard?</td></tr>
+            <tr><td>[16:41] &lt Chong-&gt yes</td></tr>
+            <tr><td>[16:42] &lt mhrd&gt ' is a single-quote mark and shares a key with @</td></tr>
+            <tr><td>[16:42] &lt mhrd&gt ` is the key at the top left, just below the ESC key :)</td></tr>
+            <tr><td>[16:44] &lt Chong-&gt yes. I know the sign difference :-). What I don't know is the difference of their function</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt X='echo hi'</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt echo $X</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt hi</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt doh</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt ignore that!</td></tr>
+            <tr><td>[16:45] *** mhrd tries again ...</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt matteh@r44116:~$ X='echo hi'</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt matteh@r44116:~$ echo $X</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt echo hi</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt matteh@r44116:~$ X=`echo hi`</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt matteh@r44116:~$ echo $X</td></tr>
+            <tr><td>[16:45] &lt mhrd&gt hi</td></tr>
+            <tr><td>[16:46] &lt mhrd&gt ' just passes through whatever is inside teh quotation marks, as a single string</td></tr>
+            <tr><td>[16:46] &lt mhrd&gt ` executes whatever is within the backtick marks; then captures the output (stdout) from it and returns that instead</td></tr>
+            <tr><td>[16:47] &lt Chong-&gt yep, I see. thanks. ` is like " in php or eval in other languages</td></tr>
+            <tr><td>[16:48] &lt mhrd&gt yep, you can use ' or " in a shell; however they do behave slightly differently - " will expand any references to variables within it, whereas ' will not</td></tr>
+            <tr><td>[16:48] &lt mhrd&gt matteh@r44116:~/tmp$ X=hello</td></tr>
+            <tr><td>[16:48] &lt mhrd&gt matteh@r44116:~/tmp$ echo '$X'</td></tr>
+            <tr><td>[16:48] &lt mhrd&gt $X</td></tr>
+            <tr><td>[16:48] &lt mhrd&gt matteh@r44116:~/tmp$ echo "$X"</td></tr>
+            <tr><td>[16:48] &lt mhrd&gt hello</td></tr>
+            <tr><td>[16:49] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[16:49] &lt Trun&gt btw, watch out with spaces when doing L=$(ls *pyc)</td></tr>
+            <tr><td>[16:49] &lt Trun&gt nctrun@ord3p:/tmp/foo$ touch "hello world"</td></tr>
+            <tr><td>[16:49] &lt Trun&gt nctrun@ord3p:/tmp/foo$ rm $(ls)</td></tr>
+            <tr><td>[16:49] &lt Trun&gt rm: no se puede borrar `hello': No existe el fichero ó directorio</td></tr>
+            <tr><td>[16:49] &lt Trun&gt rm: no se puede borrar `world': No existe el fichero ó directorio</td></tr>
+            <tr><td>[16:49] &lt Trun&gt nctrun@ord3p:/tmp/foo$</td></tr>
+            <tr><td>[16:49] &lt mhrd&gt indeed!</td></tr>
+            <tr><td>[16:49] &lt mhrd&gt if there are spaces in your filenames it'll get mixed up</td></tr>
+            <tr><td>[16:50] &lt Chong-&gt yes, my first mistake is the space:(</td></tr>
+            <tr><td>[16:50] &lt mhrd&gt this is a different issue</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt matteh@r44116:~/tmp$ ls</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt file with spaces in its name</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt matteh@r44116:~/tmp$ X=`ls *`</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt matteh@r44116:~/tmp$ for filename in $X; do echo $filename; done</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt file</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt with</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt spaces</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt in</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt its</td></tr>
+            <tr><td>[16:51] &lt mhrd&gt name</td></tr>
+            <tr><td>[16:53] &lt Chong-&gt I see. this is there are spaces in file name.</td></tr>
+            <tr><td>[16:53] &lt Chong-&gt Another question, do you know how to find a file and then use an editor to open it in one command line?</td></tr>
+            <tr><td>[16:53] &lt Chong-&gt say find . -name xxx | kate</td></tr>
+            <tr><td>[16:53] &lt Chong-&gt but it doesn't work :(</td></tr>
+            <tr><td>[16:53] &lt mhrd&gt find . -name * -exec echo {} \;</td></tr>
+            <tr><td>[16:54] &lt mhrd&gt find . -name xxx -exec kate {} \;</td></tr>
+            <tr><td>[16:54] &lt mhrd&gt at a guess</td></tr>
+            <tr><td>[16:54] *** Chong- trying</td></tr>
+            <tr><td>[16:55] &lt Chong-&gt mhrd: it works. awsome :-)</td></tr>
+            <tr><td>[16:56] &lt mhrd&gt cool</td></tr>
+            <tr><td>[16:56] &lt mhrd&gt out of interest: what are you working on atm?</td></tr>
+            <tr><td>[16:57] &lt Chong-&gt Working on checking in my codes now</td></tr>
+            <tr><td>[16:58] &lt Chong-&gt And try to remove all .pyc files first</td></tr>
+            <tr><td>[16:58] &lt mhrd&gt ah :)</td></tr>
+            <tr><td>[16:59] &lt mhrd&gt you could just do "svn rm *.pyc" if there aren't too many directories to do it in</td></tr>
+            <tr><td>[17:00] &lt Chong-&gt cool. thanks, mhrd.</td></tr>
+            <tr><td>[17:00] &lt Trun&gt maybe you can do "svn propedit svn:ignore (the directory)", and in the editor that gets open add a line "*.pyc"</td></tr>
+            <tr><td>[17:01] &lt Trun&gt that way svn st and other svn tools will not consider the .pyc files of that folder (not recursively)</td></tr>
+            <tr><td>[17:01] &lt mhrd&gt cunning</td></tr>
+            <tr><td>[17:02] &lt Chong-&gt Trun: cool</td></tr>
+            <tr><td>[17:04] &lt Chong-&gt Trun: anyway to make it recursively? :-)</td></tr>
+            <tr><td>[17:04] &lt Trun&gt nope, AFAIK :-(</td></tr>
+            <tr><td>[17:05] &lt Trun&gt well, except for: for i in $(find -type d|grep -v ".svn"|grep -v "^\.$"); do svn propedit svn:ignore $i; done :-)</td></tr>
+            <tr><td>[17:06] &lt Trun&gt actually, better without the grep -v "^\.$" (current directory should be interesting)</td></tr>
+            <tr><td>[17:07] &lt Chong-&gt Will it open n (directory number) editor windows?</td></tr>
+            <tr><td>[17:09] &lt mhrd&gt Chong-: you referring to when you commit the changes to the svn repository?</td></tr>
+            <tr><td>[17:09] &lt Trun&gt yep, one by one :-(</td></tr>
+            <tr><td>[17:09] &lt mhrd&gt aah, ignore me</td></tr>
+            <tr><td>[17:10] &lt Chong-&gt Trun: np. It's better than type commands for every directory :-)</td></tr>
+            <tr><td>[17:11] &lt Chong-&gt mhrd: hehe. I was talking about the svn propedit svn:ignore</td></tr>
+            <tr><td>[17:11] &lt Chong-&gt thank both of you, mhrd and Trun</td></tr>
+            <tr><td>[17:13] &lt mhrd&gt I thought propedit would act like propset, then realised it wouldn't</td></tr>
+            <tr><td>[17:15] &lt Trun&gt oh, I didn't know propset, it's really cool!</td></tr>
+            <tr><td>[17:16] &lt Trun&gt you can just type for i in $(find -type d|grep -v ".svn"); do svn propset svn:ignore "*.pyc" $i; done</td></tr>
+            <tr><td>[17:17] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[17:17] &lt mhrd&gt nor did I about svn:ignore - kinda useful (thanks!)</td></tr>
+            <tr><td>[17:17] &lt Chong-&gt I see, propset won't open editor. that's great.</td></tr>
+            <tr><td>[17:26] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[17:41] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[18:24] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:29] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:34] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[18:59] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:59] &lt j_baker&gt Hello Davbo</td></tr>
+            <tr><td>[19:00] &lt Davbo&gt Hi j_baker, all</td></tr>
+            <tr><td>[19:11] &lt orphans&gt Lawouach, Lawouach_ ping?</td></tr>
+            <tr><td>[19:12] &lt Lawouach&gt pong</td></tr>
+            <tr><td>[19:12] &lt orphans&gt hey, quick question about a bit of code</td></tr>
+            <tr><td>[19:13] &lt Lawouach&gt sure</td></tr>
+            <tr><td>[19:13] &lt orphans&gt in TCPClient safeConnect tries to do sock.connect() and then tests for a whole bunch of errors. mhrd-afk's code for Multicast binds to the socket so it can receive and checks for the same errors</td></tr>
+            <tr><td>[19:13] &lt orphans&gt is connecting and binding pretty much the same thing from the sockets point of view?</td></tr>
+            <tr><td>[19:14] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[19:14] &lt orphans&gt struck me as a bit odd that binding and connecting are treated exactly the same</td></tr>
+            <tr><td>[19:14] &lt Lawouach&gt I have not looked at the Multicast bind</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt From what mhrd-afk said before I have a feeling he copy/pasted because he needed it working swiftly</td></tr>
+            <tr><td>[19:15] &lt orphans&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MH/RTP/Multicast_transceiver_threaded.py?revision=2687&view=markup - it's line by line the same except for sock.connect() =&gt sock.bind()</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt Just an intuition</td></tr>
+            <tr><td>[19:15] &lt orphans&gt yeah, I thought that might be the case</td></tr>
+            <tr><td>[19:15] &lt Lawouach&gt So I would say "this sounds odd"</td></tr>
+            <tr><td>[19:15] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[19:16] &lt Lawouach&gt Now I don't know that component enough to make a better guess than that.</td></tr>
+            <tr><td>[19:16] &lt Lawouach&gt You'll have to ask him :)</td></tr>
+            <tr><td>[19:16] &lt orphans&gt ok, cool. thought it might be some simple bind ~= connect thing</td></tr>
+            <tr><td>[19:17] &lt orphans&gt but yeah, that'd make sense</td></tr>
+            <tr><td>[19:18] &lt j_baker&gt Making Debs is such a PITA</td></tr>
+            <tr><td>[19:18] &lt Davbo&gt packaging in general is a PITA imo.</td></tr>
+            <tr><td>[19:19] &lt j_baker&gt It's not too bad. I can type in one line and get an RPM. Here is how to get a deb out of distutils:</td></tr>
+            <tr><td>[19:19] &lt j_baker&gt https://wiki.ubuntu.com/PackagingGuide/Python</td></tr>
+            <tr><td>[19:20] &lt Davbo&gt Yay for using Mandriva ;-)</td></tr>
+            <tr><td>[19:20] &lt Davbo&gt openSUSE has that new packaging thing don't they?</td></tr>
+            <tr><td>[19:20] &lt j_baker&gt I thought openSUSE used RPMs?</td></tr>
+            <tr><td>[19:21] &lt Davbo&gt they have that build service thing</td></tr>
+            <tr><td>[19:21] &lt Davbo&gt not sure if that will do it for you</td></tr>
+            <tr><td>[19:22] &lt j_baker&gt Oh yeah, I remember the build service. That was pretty easy. I have to say that I like Ubuntu/Debian's packaging system best of all.</td></tr>
+            <tr><td>[19:22] &lt j_baker&gt At least as an end user...</td></tr>
+            <tr><td>[19:22] &lt Davbo&gt https://build.opensuse.org/</td></tr>
+            <tr><td>[19:23] &lt Davbo&gt I've never used it</td></tr>
+            <tr><td>[19:23] &lt j_baker&gt As a developer.... it's another story entirely.</td></tr>
+            <tr><td>[19:23] &lt Davbo&gt nor am i sure what exactly it does as i've never actually got beyond packaging anything :)</td></tr>
+            <tr><td>[19:25] &lt j_baker&gt Well, it seems to handle dependencies better.</td></tr>
+            <tr><td>[19:25] &lt j_baker&gt (openSUSE was a PITA about dependencies)</td></tr>
+            <tr><td>[19:26] &lt j_baker&gt Granted, that was the PPC version of openSUSE.</td></tr>
+            <tr><td>[19:28] &lt Davbo&gt Hehe, I'd be using openSUSE now if I could but it doesn't like my network card</td></tr>
+            <tr><td>[20:56] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:56] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:37] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[22:13] *** Davbo is revising Process Pipelining for his exam tomorrow :)</td></tr>
+            <tr><td>[22:13] &lt Davbo&gt Should be easy considering ;-)</td></tr>
+            <tr><td>[22:38] &lt j_baker&gt Heh... so you get dual credit then?</td></tr>
+            <tr><td>[22:38] &lt j_baker&gt For your school and for GSoC :)</td></tr>
+            <tr><td>[22:55] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[22:55] &lt Davbo&gt hopefully,</td></tr>
+            <tr><td>[22:55] &lt Davbo&gt Well the exam is early tomorrow morning. So i'm off to bed</td></tr>
+            <tr><td>[22:55] &lt Davbo&gt night all</td></tr>

@@ -1,0 +1,616 @@
+<html><body><table>
+            <tr><td>[00:18] *** Davbo has an exam tomorrow</td></tr>
+            <tr><td>[00:18] &lt Davbo&gt :-(</td></tr>
+            <tr><td>[00:24] &lt Davbo&gt night all!</td></tr>
+            <tr><td>[02:07] *** pwnguin has joined #kamaelia</td></tr>
+            <tr><td>[02:07] &lt pwnguin&gt so i am a bit confused about kamaelia -- is it textual or visual?</td></tr>
+            <tr><td>[02:53] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[02:57] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[06:41] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:35] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:39] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[07:44] &lt orphans&gt pwnguin: Kamaelia's textual, although it does have an introspection visualiser thingumy which lets you see your programs visually</td></tr>
+            <tr><td>[07:49] &lt Lawouach_&gt orphans: hi mate</td></tr>
+            <tr><td>[07:49] &lt orphans&gt hi Lawouach_</td></tr>
+            <tr><td>[07:49] &lt Lawouach_&gt I'm sorry I didn't get a chance to reply to your schedule</td></tr>
+            <tr><td>[07:49] &lt Lawouach_&gt I will today however</td></tr>
+            <tr><td>[07:49] &lt orphans&gt cool, np</td></tr>
+            <tr><td>[07:49] &lt Lawouach_&gt some question to ask :)</td></tr>
+            <tr><td>[07:49] &lt Lawouach_&gt +s</td></tr>
+            <tr><td>[07:50] &lt orphans&gt heh, hopefully I'll have coherent answers :D</td></tr>
+            <tr><td>[07:53] &lt orphans&gt Lawouach_, a bit of early notice on something too - around the end of June I'll be moving, so might be internet-less for a week or so. I'll do my best to get bits and pieces done online at uni, but probably won't be on as much then</td></tr>
+            <tr><td>[07:54] &lt Lawouach_&gt Okay.</td></tr>
+            <tr><td>[07:55] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[07:55] &lt orphans&gt then I will be at the whim of Richard Branson :)</td></tr>
+            <tr><td>[08:12] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:12] *** MS- is now known as ms-despamming</td></tr>
+            <tr><td>[08:19] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[08:20] *** orphans makes the unhappy transition from email-checking to revising</td></tr>
+            <tr><td>[08:28] &lt Lawouach_&gt One day you'll have your diploma, you'll find a job and you'll say:</td></tr>
+            <tr><td>[08:28] &lt Lawouach_&gt orphans makes the unhappy transition from email-checking to working</td></tr>
+            <tr><td>[08:29] &lt mhrd&gt heh</td></tr>
+            <tr><td>[08:30] *** ms-despamming notes that JMB is making yet more random checkins and not doing the basic things asked for</td></tr>
+            <tr><td>[08:33] &lt ms-despamming&gt Mind you Chong & Pablo are AWOL</td></tr>
+            <tr><td>[08:33] &lt mhrd&gt ms-despamming: fyi: not sure if I can be non-afk for mtg this afternoon</td></tr>
+            <tr><td>[08:33] &lt ms-despamming&gt np</td></tr>
+            <tr><td>[08:34] &lt ms-despamming&gt thanks for the warning :)</td></tr>
+            <tr><td>[08:34] &lt mhrd&gt np</td></tr>
+            <tr><td>[08:39] &lt ms-despamming&gt Can I just as a question, does anyone else have a clue what j_baker's schedule says it will *actually* do (functionality wise) by what times?</td></tr>
+            <tr><td>[08:42] &lt ms-despamming&gt Mind you at least Jason has tried.</td></tr>
+            <tr><td>[08:42] &lt ms-despamming&gt I don't what's gotten into Chong</td></tr>
+            <tr><td>[08:42] *** ms-despamming checks the dates pablo said he was away</td></tr>
+            <tr><td>[08:42] &lt Lawouach_&gt I think your last message might help Jason understanding what you look for</td></tr>
+            <tr><td>[08:42] *** ms-despamming should be doing work rather than kamaelia stuff</td></tr>
+            <tr><td>[08:42] &lt ms-despamming&gt Cool</td></tr>
+            <tr><td>[08:43] &lt ms-despamming&gt I'm not looking for "this will absolutely be delivered by &lt time&gt"</td></tr>
+            <tr><td>[08:43] &lt ms-despamming&gt Just an idea of what will be aimed to be done by when</td></tr>
+            <tr><td>[08:44] &lt ms-despamming&gt since aside from anything else, laying out the overall "what" will make a huge difference to expectation of direction</td></tr>
+            <tr><td>[08:44] &lt Lawouach_&gt Mind you I'm going to responjd to Joe's for a bit more clarification in some areas too :)</td></tr>
+            <tr><td>[08:44] &lt ms-despamming&gt Sure.</td></tr>
+            <tr><td>[09:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:48] *** ms-despamming now wonders why ConsoleEchoer works</td></tr>
+            <tr><td>[09:48] &lt ms-despamming&gt in a process pipeline</td></tr>
+            <tr><td>[09:51] *** Lawouach_ wonders if putting up a Trac to follow projects wouldn't be a good idea</td></tr>
+            <tr><td>[09:51] &lt Lawouach_&gt Students could create tickets of their planned actions and follow their roadmap</td></tr>
+            <tr><td>[09:52] &lt ms-despamming&gt I doubt it</td></tr>
+            <tr><td>[09:52] &lt ms-despamming&gt Chong & Pablo haven't even posted a textual description</td></tr>
+            <tr><td>[09:53] &lt ms-despamming&gt of their timeline</td></tr>
+            <tr><td>[09:53] &lt Lawouach_&gt Right but Trac (and similar tools) have become common in OSS projects, heck it's even used internally in companies. Why preventing those who try (whether they do it well or not) because some don't show up?</td></tr>
+            <tr><td>[09:54] &lt Lawouach_&gt I understand it could be too soon right now</td></tr>
+            <tr><td>[09:54] &lt Lawouach_&gt But maybe in a couple of weeks time?</td></tr>
+            <tr><td>[09:54] &lt ms-despamming&gt No, I don't want to be tracking trac</td></tr>
+            <tr><td>[09:55] &lt ms-despamming&gt I don't actually see what's wrong with just asking people to talk initially</td></tr>
+            <tr><td>[09:55] &lt ms-despamming&gt About what they're planning building</td></tr>
+            <tr><td>[09:56] &lt ms-despamming&gt In terms of actual functionality</td></tr>
+            <tr><td>[09:56] &lt ms-despamming&gt actually I need to kill the bot</td></tr>
+            <tr><td>[09:56] &lt ms-despamming&gt hold on</td></tr>
+            <tr><td>[09:56] *** Lawouach_ is holding on while ms-despamming shakes the boat</td></tr>
+            <tr><td>[09:57] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[09:57] &lt ms-despamming&gt Crap</td></tr>
+            <tr><td>[09:57] &lt ms-despamming&gt I forgot it auto-respawned</td></tr>
+            <tr><td>[10:35] *** kamaeliabot has joined #kamaelia</td></tr>
+            <tr><td>[10:41] &lt Lawouach&gt reading the log</td></tr>
+            <tr><td>[10:42] &lt Lawouach&gt David's wiki page is a good start</td></tr>
+            <tr><td>[10:42] &lt Lawouach&gt I was not advocating for a website change nor for trac specifically</td></tr>
+            <tr><td>[10:42] &lt Lawouach&gt My point was that since we're here to tell them how OSS works and since Trac-like products are common these days, it made sense to think about it</td></tr>
+            <tr><td>[10:43] &lt Lawouach&gt I know you can totally carry a project without those tools as well of course</td></tr>
+            <tr><td>[10:44] &lt Lawouach&gt What I see your point is that we ask students to, at the very least, be able to describe and schedule their project in a way that other can understand and follow</td></tr>
+            <tr><td>[10:44] &lt Lawouach&gt They're not there yet indeed</td></tr>
+            <tr><td>[10:44] &lt Lawouach&gt So I can understand why a bigger tool wouldn't help now</td></tr>
+            <tr><td>[10:44] &lt Lawouach&gt the now has its relevancy ;)</td></tr>
+            <tr><td>[10:51] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[10:52] &lt Lawouach&gt Anyhow let's forget about it. I *do* understand your reason Michael.</td></tr>
+            <tr><td>[11:37] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[11:44] *** ms-despamming has joined #kamaelia</td></tr>
+            <tr><td>[11:45] &lt Lawouach_&gt welcome back ms-despamming</td></tr>
+            <tr><td>[11:45] &lt ms-despamming&gt hiya</td></tr>
+            <tr><td>[11:45] &lt ms-despamming&gt still despamming</td></tr>
+            <tr><td>[11:45] &lt ms-despamming&gt :)</td></tr>
+            <tr><td>[11:45] &lt ms-despamming&gt :-(</td></tr>
+            <tr><td>[11:45] &lt ms-despamming&gt 3 days off work + weekend == 3000 spams.</td></tr>
+            <tr><td>[11:46] &lt ms-despamming&gt If I could control BBC email infrastructure...</td></tr>
+            <tr><td>[11:49] &lt ms-despamming&gt (problem is that the mail server I have to talk to is exchange as well, and for various reasons need to leave mail on the server some of the time, meaning that I have no simple way of auto despamming it there)</td></tr>
+            <tr><td>[11:49] &lt ms-despamming&gt (I'm very liable to sit down and figure out how to do IMAP in kamaelia, to route the messages through a spam system so I can then auto-refolder the spam to somewhere else)</td></tr>
+            <tr><td>[11:50] &lt ms-despamming&gt (The real problem there incidentally is actually meeting requests in exchange - which I do need to be able to check in a different way)</td></tr>
+            <tr><td>[11:52] &lt ms-despamming&gt You're right btw about *a* tracking tool</td></tr>
+            <tr><td>[11:52] &lt ms-despamming&gt ignoring the issue of *which* one</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt I repeat myself but try Thunderbird out since you can install it</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt It's built-in filter is quite good once trained (which is quite quick to do too)</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[11:53] &lt Lawouach_&gt ouch</td></tr>
+            <tr><td>[11:53] &lt Lawouach_&gt pain</td></tr>
+            <tr><td>[11:53] &lt ms-despamming&gt Yeah</td></tr>
+            <tr><td>[11:55] &lt ms-despamming&gt Mind you, it's definitely gotten to the stage at work where it really needs to get sorted though</td></tr>
+            <tr><td>[11:56] &lt ms-despamming&gt And I've actually logged the time I've had to take with despamming</td></tr>
+            <tr><td>[11:56] &lt ms-despamming&gt So I'll be able to say clearly - "if I spend time writing things, and it works, I'll save this much of my own time"</td></tr>
+            <tr><td>[11:57] &lt ms-despamming&gt Which is important</td></tr>
+            <tr><td>[11:57] &lt ms-despamming&gt Given my time at work isn't mine ...</td></tr>
+            <tr><td>[11:58] &lt ms-despamming&gt Doesn't help with spam mentioning Eurovision</td></tr>
+            <tr><td>[11:58] &lt ms-despamming&gt (given I get real emails mentioning it)</td></tr>
+            <tr><td>[12:01] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:02] &lt ms-despamming&gt Well, that's 1000 down so far</td></tr>
+            <tr><td>[12:02] &lt ms-despamming&gt only 2000 to go</td></tr>
+            <tr><td>[12:03] &lt ms-despamming&gt Oh, and random BBC start email threads with:</td></tr>
+            <tr><td>[12:03] &lt ms-despamming&gt Subject: Hi</td></tr>
+            <tr><td>[12:03] &lt ms-despamming&gt Hi, I would like to chat with you about ....</td></tr>
+            <tr><td>[12:03] &lt ms-despamming&gt Can we talk</td></tr>
+            <tr><td>[12:03] &lt ms-despamming&gt &lt name&gt</td></tr>
+            <tr><td>[12:04] &lt ms-despamming&gt Which matches the format of many spams at this instant</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt http://akismet.com/stats/</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt crazy :)</td></tr>
+            <tr><td>[12:23] &lt ms-despamming&gt Looks like it's overestimating the ham somewhat</td></tr>
+            <tr><td>[12:52] &lt ms-despamming&gt OK, mailbox checking written</td></tr>
+            <tr><td>[12:52] &lt ms-despamming&gt I figure I've had enough</td></tr>
+            <tr><td>[12:53] &lt ms-despamming&gt I'm reusing code from the greylister to make the chat/response code cleaner</td></tr>
+            <tr><td>[12:53] *** orphans_ has joined #kamaelia</td></tr>
+            <tr><td>[12:55] *** orphans_ is now known as orphans</td></tr>
+            <tr><td>[13:22] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[13:22] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[13:23] &lt ms-despamming&gt Can now stat my inbox properly</td></tr>
+            <tr><td>[13:23] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:23] &lt ms-despamming&gt hi</td></tr>
+            <tr><td>[13:24] *** vmlemon_ wonders how long it'll be until it's been lovingly respammed...</td></tr>
+            <tr><td>[13:29] &lt ms-despamming&gt I'm wondering how long before the speed at which it can be filled it is quicker than I can empty it</td></tr>
+            <tr><td>[13:46] &lt ms-despamming&gt OK, can now retrieve mail headers for a mail :-)</td></tr>
+            <tr><td>[14:09] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:10] &lt ms-despamming&gt OK, I now have parsed headers.</td></tr>
+            <tr><td>[14:13] &lt ms-despamming&gt hideously inefficient, but faster at it than me</td></tr>
+            <tr><td>[14:25] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:26] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:43] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt Woo!</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt 1 exam down</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt 2 to go</td></tr>
+            <tr><td>[14:43] &lt vmlemon_&gt Yay</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt 3 of the questions on the exam had appeared on past papers lol :-)</td></tr>
+            <tr><td>[14:44] *** vmlemon_ officially hates the Windows "disk utilities" now...</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt So when they said pick 3 out of 4 questions to answer....it was an easy decision</td></tr>
+            <tr><td>[14:50] &lt Davbo&gt Meeting in 10 minutes?</td></tr>
+            <tr><td>[14:50] &lt Davbo&gt ah there we are. Reminder text message from Google</td></tr>
+            <tr><td>[14:56] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt Afternoon Trun</td></tr>
+            <tr><td>[14:57] &lt Trun&gt Afternoon :-)</td></tr>
+            <tr><td>[15:00] &lt j_baker&gt Hello everyone</td></tr>
+            <tr><td>[15:00] &lt Lawouach_&gt hi</td></tr>
+            <tr><td>[15:00] &lt Davbo&gt Hello :-)</td></tr>
+            <tr><td>[15:01] &lt orphans&gt afternoon all</td></tr>
+            <tr><td>[15:02] *** vmlemon_ is playing with OpenSolaris 2008.05...</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt Any good vmlemon_?</td></tr>
+            <tr><td>[15:02] &lt vmlemon_&gt It certainly has the Ooh Shiny Factor...</td></tr>
+            <tr><td>[15:02] *** ms-despamming has just deleted 900 emails using a despamming assistant tool written in kamaelia</td></tr>
+            <tr><td>[15:02] &lt vmlemon_&gt It seems quite fast, too</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt good stuff</td></tr>
+            <tr><td>[15:03] &lt vmlemon_&gt Only one minor gripe so far</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt There are a few disks with it on here, I'm in the lab at university</td></tr>
+            <tr><td>[15:03] &lt orphans&gt ms-despamming, congrats :)</td></tr>
+            <tr><td>[15:03] *** ms-despamming is now known as MS_</td></tr>
+            <tr><td>[15:03] *** MS_ is now known as ms-</td></tr>
+            <tr><td>[15:03] &lt ms-&gt OK meeting time</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt Hey ms-.</td></tr>
+            <tr><td>[15:03] &lt vmlemon_&gt At least on the LiveCD, it boots into a resolution that's too large to use comfortably in a VMware window, and I can't full screen it, without hacking up the host's X11 config file :|</td></tr>
+            <tr><td>[15:03] &lt ms-&gt ==============================================</td></tr>
+            <tr><td>[15:03] &lt ms-&gt START OF WEEKLY IRC KAMAELIA MEETING, 20080529</td></tr>
+            <tr><td>[15:03] &lt ms-&gt ==============================================</td></tr>
+            <tr><td>[15:03] &lt ms-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[15:03] &lt ms-&gt -----------------</td></tr>
+            <tr><td>[15:03] &lt ms-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[15:04] &lt ms-&gt 2. Participants</td></tr>
+            <tr><td>[15:04] &lt ms-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:04] &lt ms-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:04] &lt ms-&gt 4.1 Project Plans, Admin</td></tr>
+            <tr><td>[15:04] &lt ms-&gt 4.2 Next Release : June 21st</td></tr>
+            <tr><td>[15:04] &lt ms-&gt 4.3 Progress with branch merges</td></tr>
+            <tr><td>[15:04] &lt ms-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:04] &lt ms-&gt Thursday 5th June 2008, 4pm UK time</td></tr>
+            <tr><td>[15:04] &lt ms-&gt Any suggestion for an extra item&gt</td></tr>
+            <tr><td>[15:04] &lt ms-&gt ?</td></tr>
+            <tr><td>[15:04] *** ms- waits briefly</td></tr>
+            <tr><td>[15:04] &lt vmlemon_&gt The new package manager certainly looks interesting, though, and it has ZFS and DTrace...</td></tr>
+            <tr><td>[15:05] &lt ms-&gt 2. Participants</td></tr>
+            <tr><td>[15:05] &lt ms-&gt ---------------</td></tr>
+            <tr><td>[15:05] &lt ms-&gt Participants: MS-, mhrd, Lawouach, j_baker, orphans, Trun, Davbo</td></tr>
+            <tr><td>[15:05] &lt ms-&gt Not present, but should be: Chong</td></tr>
+            <tr><td>[15:05] &lt ms-&gt Also present: vmlemon_, sadrul, jle_, edh, bcarlyon|ubuntu_, pwnguin,</td></tr>
+            <tr><td>[15:05] &lt ms-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:05] &lt ms-&gt -------------------</td></tr>
+            <tr><td>[15:05] &lt ms-&gt Ready?</td></tr>
+            <tr><td>[15:05] &lt Davbo&gt Yup</td></tr>
+            <tr><td>[15:05] &lt vmlemon_&gt Steady?</td></tr>
+            <tr><td>[15:05] &lt ms-&gt DONE: Worked with DK on issues with MulitProcess/Likefile. Tried to get a clear understanding of what people's revised schedulers. Started test harness for testing emerging issues with multiprocess code. Beginning of client side spam killer.</td></tr>
+            <tr><td>[15:05] &lt ms-&gt go</td></tr>
+            <tr><td>[15:05] &lt vmlemon_&gt Cook! ;)</td></tr>
+            <tr><td>[15:05] &lt orphans&gt DONE: Added timing code, restructured sketches directory</td></tr>
+            <tr><td>[15:05] &lt orphans&gt TODO: Work out distribution and have a first shot at a setup file. Re-restructure sketches directory</td></tr>
+            <tr><td>[15:05] &lt orphans&gt BLOCKED: Exams</td></tr>
+            <tr><td>[15:05] &lt ms-&gt TODO: Build tools for building release packaging.</td></tr>
+            <tr><td>[15:05] &lt ms-&gt BLOCKED: None (shortage of time)</td></tr>
+            <tr><td>[15:06] &lt Trun&gt DONE: KamPlanet completed (pending some features), code documented, manually tested with few weblogs (two bugs found when trying all planet python feeds). Started unit-testing KamPlanet, working on the unit-testing infrastructure.</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt TODO: Add another window with buttons to control the current paint tool selected. (brush, circle etc) - add another window to control selected colour.</td></tr>
+            <tr><td>[15:06] &lt Trun&gt TODO: End unit-testing and functionally-testing KamPlanet (with this first approach). Find&fix problems when trying all planet python feeds. Documenting KamPlanet deployment. Still look at ﻿[/Code/Python/Kamaelia/Tests and /Tests, selector, PygameDisplay]. Writing the schedule 0:-)</td></tr>
+            <tr><td>[15:06] &lt Trun&gt BLOCKED: None (Last classes and homework (yuhu!!!))</td></tr>
+            <tr><td>[15:06] &lt j_baker&gt DONE: Fixed some more stuff with the Minimal request handler, got MoinMoin working</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt DONE: Got ProcessGraphline to clear one window when right click in the other (really cool :D) - this can be easily extended but encountered some problems with ProcessGraphline</td></tr>
+            <tr><td>[15:06] &lt j_baker&gt TODO: Get the server to respond to POST requests</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt BLOCKED: Blocked on some points due to current bugs with ProcessGraphline. Partial blockage due to exams.</td></tr>
+            <tr><td>[15:06] *** ms- reads </td></tr>
+            <tr><td>[15:06] &lt j_baker&gt BLOCKED: Getting the server to work with POST requests</td></tr>
+            <tr><td>[15:07] &lt j_baker&gt Oh, also TODO: get the URI routing of the WSGI part to not suck. :)</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt j_baker: http://wsgi.org/wsgi/Specifications/routing_args &lt -- that might help</td></tr>
+            <tr><td>[15:08] &lt j_baker&gt That does help Lawouach_</td></tr>
+            <tr><td>[15:09] &lt ms-&gt (sorry was briefly interrupted)</td></tr>
+            <tr><td>[15:10] &lt Lawouach_&gt Please make sure you do ask on the Web-Sig when you have a blocker that is not related to kamaelia per se but to WSGI. They will help and it's part of what you can learn from GSoC. (sorry ms- to overstep ;))</td></tr>
+            <tr><td>[15:10] &lt ms-&gt OK, Trun, j_baker - neither of you have the following listed and you should - I'll add them to the minutes</td></tr>
+            <tr><td>[15:11] &lt ms-&gt A timeline/schedule based on functionality</td></tr>
+            <tr><td>[15:11] &lt ms-&gt (I'm coming back to this)</td></tr>
+            <tr><td>[15:11] &lt ms-&gt Trun your smiley does not amuse</td></tr>
+            <tr><td>[15:11] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:11] &lt ms-&gt If I ask for something specific, I would appreciate it done.</td></tr>
+            <tr><td>[15:12] &lt ms-&gt OK, moving on</td></tr>
+            <tr><td>[15:12] &lt ms-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:12] &lt ms-&gt --------------------------------</td></tr>
+            <tr><td>[15:12] &lt ms-&gt 4.1 Project Plans, Admin</td></tr>
+            <tr><td>[15:12] &lt ms-&gt ^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:12] &lt ms-&gt I'm still waiting for contributor agreements. Please ensure they get to me ASAP.</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt You get mine ms-?</td></tr>
+            <tr><td>[15:12] &lt orphans&gt ms-, sorry - bad at admin in rl :(</td></tr>
+            <tr><td>[15:12] &lt ms-&gt When did you post it?</td></tr>
+            <tr><td>[15:12] &lt orphans&gt I'll get it off next week</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt like 2 weeks ago</td></tr>
+            <tr><td>[15:13] &lt j_baker&gt Mine is on the way, but international mail takes a couple of weeks.</td></tr>
+            <tr><td>[15:13] &lt ms-&gt Davbo: I think I did actually</td></tr>
+            <tr><td>[15:13] &lt ms-&gt j_baker: Cool</td></tr>
+            <tr><td>[15:13] &lt Davbo&gt oh</td></tr>
+            <tr><td>[15:13] &lt ms-&gt I just wanted to make sure</td></tr>
+            <tr><td>[15:13] &lt Davbo&gt Good stuff ms- :) Could you confirm that for me though when possible</td></tr>
+            <tr><td>[15:13] &lt ms-&gt will do</td></tr>
+            <tr><td>[15:13] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:13] &lt ms-&gt I've seen project schedules from Jason, David & Joe.</td></tr>
+            <tr><td>[15:13] &lt ms-&gt David's was sufficiently detailed for me to create:</td></tr>
+            <tr><td>[15:13] &lt ms-&gt  * http://edit.kamaelia.org/Developers/Projects/KamaeliaPaint</td></tr>
+            <tr><td>[15:14] &lt j_baker&gt I'm working on mine. I'll get you a better version shortly after the meeting.</td></tr>
+            <tr><td>[15:14] &lt ms-&gt It's pretty close to the sort of thing I'd like. I'd prefer it to be clearer/more specific, but I think in David's case ambiguity reflects abiguity on detail</td></tr>
+            <tr><td>[15:15] &lt ms-&gt j_baker: Cool :-) I'm very pleased that you have been trying different iterations of it</td></tr>
+            <tr><td>[15:15] &lt ms-&gt I'm sure my lack of seeing what you mean is probably frustrating, so please don't hesitate to tell me that :)</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt Thanks for that btw ms-, I spotted this morning but had to run for my exam.</td></tr>
+            <tr><td>[15:16] &lt Davbo&gt I'll add to it</td></tr>
+            <tr><td>[15:16] &lt j_baker&gt It is, but you're right. It's better to be clear now than unclear later.</td></tr>
+            <tr><td>[15:16] &lt ms-&gt Pablo: I would like a first pass (at minimum as skimpy as Jasons) by the end of today, and something more like David's by the time you disappear for the weekend</td></tr>
+            <tr><td>[15:16] &lt ms-&gt (since I have remembered you mentioned that :) )</td></tr>
+            <tr><td>[15:16] &lt Trun&gt ok, I'll try to have mine done by midnight</td></tr>
+            <tr><td>[15:17] &lt Trun&gt (or before)</td></tr>
+            <tr><td>[15:17] &lt ms-&gt I would suggest somewhat sooner.</td></tr>
+            <tr><td>[15:17] &lt Trun&gt yeah, as soon as I go out from class (~ 9:00pm) I'll work on it</td></tr>
+            <tr><td>[15:17] &lt ms-&gt The times/dates are really to assist with ordering and figuring out "will this take that long, or will it take longer than that chunk or less than"</td></tr>
+            <tr><td>[15:18] &lt ms-&gt But aside from anything else it's really aimed to assist both yourselves and us</td></tr>
+            <tr><td>[15:18] &lt ms-&gt ie all of us :)</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt ms-, orphans: I'll revise orphans schedule asap but I'm off until from this evening until Sunday morning. Joe your schedule was better already even though I still want some minor clarifications.</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt Going through it earlier on, I couldn't see anything majorly blocking me.</td></tr>
+            <tr><td>[15:19] &lt Lawouach_&gt ms-: Who is supposed to create that page on the wiki?</td></tr>
+            <tr><td>[15:19] &lt orphans&gt Lawouach_, cool, cheers</td></tr>
+            <tr><td>[15:19] &lt ms-&gt Lawouach_: I think that's mainly between you & orphans - largely because its for you two primarily, but also in the event of the something going horribly wrong with someone</td></tr>
+            <tr><td>[15:20] &lt ms-&gt Ideally that page should be created and owned by the students in question</td></tr>
+            <tr><td>[15:20] &lt orphans&gt Lawouach_, I'll stick it up over the weekend</td></tr>
+            <tr><td>[15:20] &lt Lawouach_&gt alright.</td></tr>
+            <tr><td>[15:20] &lt orphans&gt :)</td></tr>
+            <tr><td>[15:20] &lt ms-&gt (or indeed anyone writing a project that they want to put up there - i'll be adding a page for the pop3 spam killer I'm writting :) )</td></tr>
+            <tr><td>[15:20] &lt ms-&gt I created David's as an example</td></tr>
+            <tr><td>[15:21] &lt ms-&gt It's designed to be refineable to something more detailed.</td></tr>
+            <tr><td>[15:21] *** Davbo already plans on changing it :P</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt much appreciated though</td></tr>
+            <tr><td>[15:21] &lt ms-&gt Ideally they should head towards this:</td></tr>
+            <tr><td>[15:21] &lt ms-&gt http://edit.kamaelia.org/Developers/Projects/KamaeliaMacro</td></tr>
+            <tr><td>[15:21] &lt ms-&gt http://edit.kamaelia.org/Developers/Projects/MulticastRtpMpegRemultiplexer</td></tr>
+            <tr><td>[15:22] &lt ms-&gt Largely because that's designed to allow someone to quickly tell "what who what why where when how"</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt seems reasonable</td></tr>
+            <tr><td>[15:22] &lt ms-&gt The guide to the format is here:</td></tr>
+            <tr><td>[15:22] &lt ms-&gt http://edit.kamaelia.org/Developers/Projects/ProjectTaskPageTemplate</td></tr>
+            <tr><td>[15:23] &lt ms-&gt There's a number of pages like that here: http://edit.kamaelia.org/Developers/Projects</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt ms-:</td></tr>
+            <tr><td>[15:24] &lt ms-&gt I'm not asking for that format this instant, just focussing on the core of *what*, by suggesting listing *what by when* since that's often easier</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt Could i also make http://edit.kamaelia.org/Users/Projects/KamaeliaPaint</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt as more of a user-guide than the developer thing</td></tr>
+            <tr><td>[15:24] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[15:24] Reply: does the macarena</td></tr>
+            <tr><td>[15:24] &lt ms-&gt I'd suggest http://edit.kamaelia.org/KamaeliaPaint</td></tr>
+            <tr><td>[15:24] &lt ms-&gt personally</td></tr>
+            <tr><td>[15:25] &lt Davbo&gt alright</td></tr>
+            <tr><td>[15:25] &lt ms-&gt But, yes, it's a wiki as far as I'm concerned which means you can (and should) change stuff</td></tr>
+            <tr><td>[15:26] &lt ms-&gt To be clear on the schedule</td></tr>
+            <tr><td>[15:26] &lt ms-&gt What I really need to see is a series of bullet points which state clearly</td></tr>
+            <tr><td>[15:26] &lt ms-&gt  * DATE - What *functionality* you hope to achieve completion of that week.</td></tr>
+            <tr><td>[15:26] &lt ms-&gt This can be a weekly schedule or bi-weekly. The detail for *functionality should be the same for either.</td></tr>
+            <tr><td>[15:26] &lt ms-&gt ie:</td></tr>
+            <tr><td>[15:26] &lt ms-&gt  * Week 1 - Build packaging system for release management</td></tr>
+            <tr><td>[15:26] &lt ms-&gt  * Week 2 - Take experiments from core of system and merge</td></tr>
+            <tr><td>[15:26] &lt ms-&gt Could be combined in a bi-weekly schedule as:</td></tr>
+            <tr><td>[15:26] &lt ms-&gt  * End Week 2 - Build packaging system for release management Take experiments from core of system and merge</td></tr>
+            <tr><td>[15:26] &lt Lawouach_&gt orphans: What I suggest then is that you write the page on the wiki following KamaeliaPaint's model.</td></tr>
+            <tr><td>[15:26] &lt Lawouach_&gt I will directly discuss it with you when I'm back.</td></tr>
+            <tr><td>[15:27] &lt ms-&gt I'd like to be very clear on one thing about the schedule from my perspective:</td></tr>
+            <tr><td>[15:27] &lt ms-&gt The aim isn't to check for compliance with your schedule timewise, but more to enable understanding of what you want to do by when</td></tr>
+            <tr><td>[15:27] &lt orphans&gt Lawouach_, ok, I'll clean it all up a bit and put it on the wiki. Hopefully make it a bit nicer/clearer etc</td></tr>
+            <tr><td>[15:27] &lt ms-&gt Also, sometimes writing down detail gives better ideas :)</td></tr>
+            <tr><td>[15:28] &lt ms-&gt That said: we're in the coding period - you should be working on this full time unless you've already pre-declared mitigating circumstances and had this agreed.</td></tr>
+            <tr><td>[15:28] &lt ms-&gt After all, none of myself, mhrd nor Lawouach_ have that benefit :)</td></tr>
+            <tr><td>[15:28] &lt ms-&gt Schedule and packaging really help us to help you :)</td></tr>
+            <tr><td>[15:28] &lt ms-&gt Any other q's on this?</td></tr>
+            <tr><td>[15:29] &lt ms-&gt (I don't want to labour the point too much :) )</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt Fair enough, could you remind me, was it KamaeliaGrey with hte good packaging?</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt s/hte/the</td></tr>
+            <tr><td>[15:29] &lt mhrd&gt "Thank you for helping us help you help us all." :-)</td></tr>
+            <tr><td>[15:30] *** orphans goes cross eyed</td></tr>
+            <tr><td>[15:30] &lt ms-&gt Logger, Grey & ERModeller</td></tr>
+            <tr><td>[15:30] &lt orphans&gt Davbo: yes</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt Thanks ms-, orphans</td></tr>
+            <tr><td>[15:30] &lt ms-&gt ERModeller is now on /trunk</td></tr>
+            <tr><td>[15:30] &lt ms-&gt thanks to mhrd :)</td></tr>
+            <tr><td>[15:30] &lt ms-&gt OK, moving on</td></tr>
+            <tr><td>[15:30] &lt ms-&gt 4.2 Next Release : June 21st</td></tr>
+            <tr><td>[15:30] &lt ms-&gt ^^^^^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:31] &lt ms-&gt Just want to keep this in the plan since it is happening :-)</td></tr>
+            <tr><td>[15:31] &lt ms-&gt If people have opinions as to what they feel should go in this release, please go to here: http://edit.kamaelia.org/ReleaseJune2008</td></tr>
+            <tr><td>[15:31] &lt ms-&gt It doesn't bite and should be nice and fast now :)</td></tr>
+            <tr><td>[15:31] &lt ms-&gt Also, I know there's gripes, suggestions and ideas for improvement</td></tr>
+            <tr><td>[15:31] &lt ms-&gt Also: http://edit.kamaelia.org/WebsiteSuggestions</td></tr>
+            <tr><td>[15:32] &lt ms-&gt Is for that :)</td></tr>
+            <tr><td>[15:32] &lt Davbo&gt the multicore stuff is going in experimental now right?</td></tr>
+            <tr><td>[15:32] &lt ms-&gt Also this: http://edit.kamaelia.org/Developers/Tasks</td></tr>
+            <tr><td>[15:32] &lt ms-&gt Davbo: Maybe.</td></tr>
+            <tr><td>[15:32] &lt ms-&gt I've been running test cases based on your work</td></tr>
+            <tr><td>[15:32] &lt ms-&gt It seems rather strange that complex/large objects go through OK</td></tr>
+            <tr><td>[15:33] &lt ms-&gt But not necessarily the same thing seems to go for non-complex objects</td></tr>
+            <tr><td>[15:33] &lt ms-&gt which is rather odd</td></tr>
+            <tr><td>[15:33] &lt Davbo&gt Humm</td></tr>
+            <tr><td>[15:33] &lt ms-&gt eg producerFinished goes through fine</td></tr>
+            <tr><td>[15:33] &lt Davbo&gt really?</td></tr>
+            <tr><td>[15:33] &lt ms-&gt Yep</td></tr>
+            <tr><td>[15:33] &lt Lawouach_&gt Alright</td></tr>
+            <tr><td>[15:33] &lt Lawouach_&gt I have to go.</td></tr>
+            <tr><td>[15:33] &lt Lawouach_&gt I'll be back for one hour this evening in case...</td></tr>
+            <tr><td>[15:34] &lt Lawouach_&gt Then I'll host two English friends for the weekend</td></tr>
+            <tr><td>[15:34] &lt ms-&gt Lawouach_: Cool</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt Perhaps because that's a shallow copy ie. reference to a box in memory or something? the more primitive things are actual objects? (speculation)</td></tr>
+            <tr><td>[15:34] &lt ms-&gt Davbo: https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/DK/MultiPipeTest.py</td></tr>
+            <tr><td>[15:34] &lt Lawouach_&gt I hope no one is thinking I'm having holiday! :)</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt Will look when i get home ms-</td></tr>
+            <tr><td>[15:34] &lt ms-&gt No, it's pickling - i have suspicons</td></tr>
+            <tr><td>[15:34] &lt ms-&gt But want to test first</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt fair enough</td></tr>
+            <tr><td>[15:35] &lt ms-&gt Your testing of these things is much appreciated btw</td></tr>
+            <tr><td>[15:35] &lt Davbo&gt Anyway that's besides the point, MultiPipe stuff will make it to the release</td></tr>
+            <tr><td>[15:35] &lt Davbo&gt i'll add to the wiki when i'm home</td></tr>
+            <tr><td>[15:35] &lt ms-&gt OK, anyone else have suggestions ?</td></tr>
+            <tr><td>[15:35] &lt ms-&gt or comments on that ?</td></tr>
+            <tr><td>[15:35] &lt ms-&gt (the release that is)</td></tr>
+            <tr><td>[15:36] *** ms- moves on</td></tr>
+            <tr><td>[15:36] &lt ms-&gt 4.3 Progress with branch merges</td></tr>
+            <tr><td>[15:36] &lt ms-&gt ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:36] &lt ms-&gt Last week, there were volunteers:</td></tr>
+            <tr><td>[15:36] &lt ms-&gt  private_MPS_JL_PygameText/ - Joe</td></tr>
+            <tr><td>[15:36] &lt ms-&gt  private_MPS_JL_AIMSupport/ - Jason</td></tr>
+            <tr><td>[15:36] &lt ms-&gt  private_MPS_JL_IRCSupport/ - Chong</td></tr>
+            <tr><td>[15:36] &lt ms-&gt I think Joe is waiting for me, and Jason's posted back "doesn't work for me". Not heard anything fron Chong.</td></tr>
+            <tr><td>[15:36] &lt ms-&gt Does that match people's current expectations?</td></tr>
+            <tr><td>[15:36] &lt j_baker&gt Yes</td></tr>
+            <tr><td>[15:36] &lt ms-&gt cool</td></tr>
+            <tr><td>[15:36] &lt ms-&gt orphans: ?</td></tr>
+            <tr><td>[15:36] &lt orphans&gt yup - but look when you have time - I know you're super busy</td></tr>
+            <tr><td>[15:37] &lt orphans&gt as am I, for my sins :)</td></tr>
+            <tr><td>[15:37] &lt ms-&gt cool</td></tr>
+            <tr><td>[15:38] &lt ms-&gt In which case that's cool.</td></tr>
+            <tr><td>[15:38] &lt ms-&gt If the AIM support doesn't work at that point it's simply less likely to get in the release</td></tr>
+            <tr><td>[15:38] &lt ms-&gt which would be a shame, but there are only so many hours in a day</td></tr>
+            <tr><td>[15:39] &lt ms-&gt OK, moving on</td></tr>
+            <tr><td>[15:39] &lt ms-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:39] &lt ms-&gt -----------------------------------</td></tr>
+            <tr><td>[15:39] &lt ms-&gt Thursday 5th June 2008, 4pm UK time</td></tr>
+            <tr><td>[15:39] &lt ms-&gt Who can't make it?</td></tr>
+            <tr><td>[15:39] &lt j_baker&gt No problem for me.</td></tr>
+            <tr><td>[15:39] &lt ms-&gt j_baker: cool</td></tr>
+            <tr><td>[15:39] &lt orphans&gt might be a little hungover but I'm there :)</td></tr>
+            <tr><td>[15:39] &lt ms-&gt heh,</td></tr>
+            <tr><td>[15:39] &lt orphans&gt &lt = officially finishes on the 4th</td></tr>
+            <tr><td>[15:40] &lt ms-&gt Ahhhh</td></tr>
+            <tr><td>[15:40] &lt orphans&gt but maybe sooner - it's all up in the air atm</td></tr>
+            <tr><td>[15:40] &lt ms-&gt Well, if you're not here we'll assume you're comatose, and have bigger problems to worry about than a meeting :)</td></tr>
+            <tr><td>[15:40] &lt orphans&gt heh, ty</td></tr>
+            <tr><td>[15:41] &lt ms-&gt Maybe worth writing your TODO/DONE/etc on the 3rd then</td></tr>
+            <tr><td>[15:41] &lt orphans&gt TODO: sober up</td></tr>
+            <tr><td>[15:41] &lt ms-&gt And possibly revising them if you're capable on thursday</td></tr>
+            <tr><td>[15:41] &lt ms-&gt heh</td></tr>
+            <tr><td>[15:41] &lt ms-&gt OK, cool</td></tr>
+            <tr><td>[15:41] &lt ms-&gt done</td></tr>
+            <tr><td>[15:41] &lt ms-&gt ============================================</td></tr>
+            <tr><td>[15:41] &lt ms-&gt END OF WEEKLY IRC KAMAELIA MEETING, 20080529</td></tr>
+            <tr><td>[15:41] &lt ms-&gt ============================================</td></tr>
+            <tr><td>[15:41] &lt ms-&gt Many thanks everyone</td></tr>
+            <tr><td>[15:41] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:41] &lt Davbo&gt Good stuff</td></tr>
+            <tr><td>[15:42] &lt Davbo&gt back in a bit.</td></tr>
+            <tr><td>[15:42] &lt ms-&gt 38 minutes, not bad</td></tr>
+            <tr><td>[15:42] *** orphans buries his head in a book</td></tr>
+            <tr><td>[15:42] &lt ms-&gt 34 if you exclude the interruption :)</td></tr>
+            <tr><td>[15:43] &lt j_baker&gt ms- about my blocker. Are there any problems with the body of HTTP requests getting through to the handler?</td></tr>
+            <tr><td>[15:43] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel. You can find the logs at http://yeoldeclue.com/logs/ . Yes, the person(s) you asked for may be around. The best way to ask a q is to just ask it since</td></tr>
+            <tr><td>[15:43] Reply: the person(s) you asked for reads the logs. Idle on the channel if you want and answer and don't get an immediate one. In the meantime this page is the sort of questions we'd ask you to improve your app are here:</td></tr>
+            <tr><td>[15:43] Reply: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1206709783 . Regarding applications we will be discussing applications (and maybe asking for improvements) until April 7th or 8th - remember no news may well be good news</td></tr>
+            <tr><td>[15:43] &lt j_baker&gt As far as I can tell, they don't seem to be getting through. My code doesn't (intentionally) touch the body.</td></tr>
+            <tr><td>[15:44] &lt ms-&gt There shouldn't be any problem that I'm aware of</td></tr>
+            <tr><td>[15:44] *** ms- makes a note to kill the code that sends out those messages</td></tr>
+            <tr><td>[15:45] &lt j_baker&gt Hmmmm... I'll have to get you a demonstration then. I notice that when I do something in MoinMoin like edit a page, it doesn't work. And the body of the request it received is blank.</td></tr>
+            <tr><td>[15:45] *** vmlemon_ thinks that feature of kamaeliabot could use a wee bit more tuning...</td></tr>
+            <tr><td>[15:46] &lt ms-&gt That sounds like POST requests being bust</td></tr>
+            <tr><td>[15:47] &lt ms-&gt That should be easy enough to make into a small testcase</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt Will do. I'll also try to get some instructions on getting MoinMoin up and running as well as on configuring and running the server in the first place.</td></tr>
+            <tr><td>[15:51] &lt ms-&gt MoinMoin running etc, is very much running before working</td></tr>
+            <tr><td>[15:51] &lt ms-&gt You really need to have packaging a core aspect of what you're doing.</td></tr>
+            <tr><td>[15:52] &lt ms-&gt Even if it's just for one platform, it will make a huge difference to the way your project goes.</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt Ok. I've been doing a little bit of reading on py2exe and py2app. They don't seem to be difficult. But distutils seems like it can be.</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt (since the former 2 rely on the latter, that's a problem either way)</td></tr>
+            <tr><td>[15:53] &lt ms-&gt Heh, the irony is that the distutils stuff is pretty much "copy what Kamaelia-Grey/Logger/ERModeller" are doing</td></tr>
+            <tr><td>[15:54] &lt ms-&gt since they are distutils based</td></tr>
+            <tr><td>[15:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:54] &lt ms-&gt It's why I've suggested starting there</td></tr>
+            <tr><td>[15:54] &lt j_baker&gt Ok. I'll examine those in more detail as well. I've taken a percursory glance, but not much more than that.</td></tr>
+            <tr><td>[15:54] &lt j_baker&gt So are you saying that I focus on that before focusing on POST methods and refining Moin?</td></tr>
+            <tr><td>[15:54] &lt ms-&gt Definitely</td></tr>
+            <tr><td>[15:55] &lt j_baker&gt Ok. After a couple of revisions to my schedule, it looks like I can have some time to free up for doing packaging.</td></tr>
+            <tr><td>[15:56] &lt ms-&gt I'd say that given the pitch "web publishing for the rest of us"</td></tr>
+            <tr><td>[15:56] &lt ms-&gt kinda makes packaging for at least one common platform a must :)</td></tr>
+            <tr><td>[15:56] &lt ms-&gt Even if it's just "the one I own", which in your case is a mac :o)</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt I agree 100%. You said you have a Mac that you can test it on? Or would it be better to get something Linux-ified?</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt (I can do Linux as well)</td></tr>
+            <tr><td>[15:57] &lt ms-&gt If necessary I have a Mac :)</td></tr>
+            <tr><td>[15:57] &lt ms-&gt If you have to choose, given that aspect of your project I would use a Mac</td></tr>
+            <tr><td>[15:58] &lt j_baker&gt Alright. I think that's the best starter platform for web publishing for the rest of us anyway. :)</td></tr>
+            <tr><td>[15:58] &lt ms-&gt the distutils parts will probably work out to be cross platform (or cross platform enough)</td></tr>
+            <tr><td>[15:58] &lt ms-&gt :)</td></tr>
+            <tr><td>[15:58] &lt vmlemon_&gt Still, Macs are probably more popular than Linux, in the general "the rest of us" world...</td></tr>
+            <tr><td>[15:58] &lt ms-&gt vmlemon_: Precisely</td></tr>
+            <tr><td>[15:59] &lt ms-&gt I don't think I'm clear re-reading what I've just written. I'd prefer you to look at mac packaging, since it's the one that matches your description best out of {linux, mac }</td></tr>
+            <tr><td>[16:00] &lt j_baker&gt I get the feeling Windows will be the biggest pain out of all of them.</td></tr>
+            <tr><td>[16:01] &lt ms-&gt Ditto</td></tr>
+            <tr><td>[16:01] &lt ms-&gt I'm leaving that for David</td></tr>
+            <tr><td>[16:01] &lt ms-&gt ;-)</td></tr>
+            <tr><td>[16:01] &lt j_baker&gt So much stuff I look at in the libraries says "this will work for POSIX only"</td></tr>
+            <tr><td>[16:01] &lt ms-&gt he says picking random person not here :-D</td></tr>
+            <tr><td>[16:01] &lt j_baker&gt :P</td></tr>
+            <tr><td>[16:01] &lt vmlemon_&gt Does Cygwin count?</td></tr>
+            <tr><td>[16:02] &lt j_baker&gt Well, Cygwin is a bit overboard for what I'm wanting to do.</td></tr>
+            <tr><td>[16:03] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[16:03] &lt vmlemon_&gt It's just a thought...</td></tr>
+            <tr><td>[16:03] &lt ms-&gt j_baker: On windows some people have resorted to shipping vmware systems around to do what you want to do....</td></tr>
+            <tr><td>[16:03] &lt vmlemon_&gt What about something like LINA?</td></tr>
+            <tr><td>[16:04] &lt vmlemon_&gt It's probably less bulky than 100+MB VMware images, although I don't know how it works at the moment</td></tr>
+            <tr><td>[16:04] &lt vmlemon_&gt *how well</td></tr>
+            <tr><td>[16:04] &lt j_baker&gt LINA looks interesting.</td></tr>
+            <tr><td>[16:05] &lt j_baker&gt It is in beta though.</td></tr>
+            <tr><td>[16:05] &lt vmlemon_&gt You get a multi-platform installer for free, pretty much</td></tr>
+            <tr><td>[16:05] &lt vmlemon_&gt Just for building it for Linux</td></tr>
+            <tr><td>[16:26] &lt j_baker&gt ms- is it alright with you if I make the last two weeks of my schedule a kind of a "Misc" section? I mean, can I devote that to tying up any loose ends that may come up between now and then and work on any "would be nices" from my proposal that I didn't get to?</td></tr>
+            <tr><td>[16:26] &lt ms-&gt Yes</td></tr>
+            <tr><td>[16:26] &lt ms-&gt It may be worth saying what some of those would be nices are</td></tr>
+            <tr><td>[16:26] &lt ms-&gt and allowing those to extend</td></tr>
+            <tr><td>[16:26] &lt ms-&gt The idea isn't really to constrain to a schedule</td></tr>
+            <tr><td>[16:27] &lt ms-&gt The idea of the schedule is to make it clear really what sort of order seems reasonable right now for the list of things you're doing</td></tr>
+            <tr><td>[16:27] &lt ms-&gt an estimate of time is really an estimate of effort/complexity for a thing</td></tr>
+            <tr><td>[16:27] &lt j_baker&gt Oh yes, I agree. I'm working on a list of those would be nices.</td></tr>
+            <tr><td>[16:27] &lt ms-&gt Rather than leaving it as a ball of string :-)</td></tr>
+            <tr><td>[17:00] &lt j_baker&gt brb Lunch</td></tr>
+            <tr><td>[17:01] *** j_baker is now known as j_baker-away</td></tr>
+            <tr><td>[17:01] *** ms- is finding his spam deletion assistant useful</td></tr>
+            <tr><td>[17:02] &lt Lawouach&gt back</td></tr>
+            <tr><td>[17:02] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:33] *** ms- is now known as ms-away</td></tr>
+            <tr><td>[17:33] *** ms-away is now known as MS-</td></tr>
+            <tr><td>[17:42] &lt MS-&gt Finally caught up</td></tr>
+            <tr><td>[17:42] &lt MS-&gt out of 3000 emails, 50 weren't spam</td></tr>
+            <tr><td>[17:43] &lt vmlemon_&gt Hmm, is the assistant a complement to Kamaelia Grey? Or does it serve a different purpose?</td></tr>
+            <tr><td>[17:44] &lt MS-&gt Different purpose</td></tr>
+            <tr><td>[17:44] &lt vmlemon_&gt Aah, OK</td></tr>
+            <tr><td>[17:44] &lt MS-&gt Kamaelia Grey blocks spam before it hits the mail box, and I can run it at home</td></tr>
+            <tr><td>[17:44] &lt MS-&gt Means I get virtually zero spam at home</td></tr>
+            <tr><td>[17:44] &lt MS-&gt At work, I don't control the mail relays so I can't put it there</td></tr>
+            <tr><td>[17:44] &lt MS-&gt and it's there that it's reached epic proportions</td></tr>
+            <tr><td>[17:45] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[17:45] &lt MS-&gt So I need something that can pull headers off the server, and make then candidates for deletion to speed up the process there</td></tr>
+            <tr><td>[17:45] &lt MS-&gt There is in theory spam filtering there, but it doesn't work</td></tr>
+            <tr><td>[17:46] &lt MS-&gt Or if it does, I don't know how much it blocks</td></tr>
+            <tr><td>[17:46] &lt MS-&gt email is rapidly reaching the point of unusability there</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt Hopefully should maintain a healthy "Ham to Spam ratio"? ;)</td></tr>
+            <tr><td>[17:47] &lt MS-&gt You'd hope :)</td></tr>
+            <tr><td>[17:47] &lt MS-&gt I'm then going to try to hook it up to a filtering system that I can run which deletes the mail on the server</td></tr>
+            <tr><td>[17:48] &lt MS-&gt eg whilst we've just been chatting 3 more trickled in</td></tr>
+            <tr><td>[17:50] &lt vmlemon_&gt Don't they have a POP3/IMAP interface for it?</td></tr>
+            <tr><td>[17:52] &lt MS-&gt Yep, that's what I'm connecting to for this filter</td></tr>
+            <tr><td>[17:53] *** pwnguin has parted #kamaelia</td></tr>
+            <tr><td>[17:54] &lt MS-&gt It's despite that I still need this</td></tr>
+            <tr><td>[17:56] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:18] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:21] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:40] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[18:41] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:44] &lt Davbo&gt good evening gentlemen</td></tr>
+            <tr><td>[18:45] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[18:51] &lt MS-&gt evening</td></tr>
+            <tr><td>[18:54] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[19:13] &lt j_baker&gt MS- I've found ERModeller (in trunk/Code/Apps), but not Grey or Logger. Could you point me in the right direction?</td></tr>
+            <tr><td>[19:14] &lt Davbo&gt ERModeller is the only one in the trunk i think</td></tr>
+            <tr><td>[19:14] &lt Davbo&gt rest are in branches afaik</td></tr>
+            <tr><td>[19:14] &lt Davbo&gt probably have a look at MS- scratch</td></tr>
+            <tr><td>[19:14] &lt j_baker&gt Ah. I'll look there.</td></tr>
+            <tr><td>[19:14] &lt Davbo&gt /mps-scratch/Apps</td></tr>
+            <tr><td>[19:15] &lt j_baker&gt Found them. Thanks.</td></tr>
+            <tr><td>[19:15] &lt Davbo&gt no problem</td></tr>
+            <tr><td>[20:00] &lt MS-&gt Yeah, they're in scratch because I've been cautious about testing stuff or using it before releasing</td></tr>
+            <tr><td>[20:00] &lt MS-&gt But that packaging setup has definitely been the best thing/benefit in the past 6 months (or so)</td></tr>
+            <tr><td>[20:13] &lt Davbo&gt MS-: MultiPipeTest.py you tested ProcessGraphline with this too?</td></tr>
+            <tr><td>[20:29] &lt MS-&gt I decided to start with ProcessPipeline first</td></tr>
+            <tr><td>[20:29] &lt MS-&gt The odd thing is that the demos work</td></tr>
+            <tr><td>[20:30] &lt MS-&gt Which I don't understand</td></tr>
+            <tr><td>[20:31] &lt Davbo&gt hmm it's strange</td></tr>
+            <tr><td>[20:31] &lt Davbo&gt but strings go over ProcessPipeline fine right?</td></tr>
+            <tr><td>[20:32] &lt Davbo&gt I mean that's what your first pygame demo does</td></tr>
+            <tr><td>[20:32] &lt Davbo&gt but with ProcessGraphline on my MagnaDoodle i get this peculiar bug</td></tr>
+            <tr><td>[20:35] &lt MS-&gt Strings should go through</td></tr>
+            <tr><td>[20:35] &lt Davbo&gt I don't want to sound like i'm moaning, just curious :-)</td></tr>
+            <tr><td>[20:35] &lt MS-&gt And it appears that they do</td></tr>
+            <tr><td>[20:35] &lt MS-&gt I'm curious too</td></tr>
+            <tr><td>[20:35] &lt Davbo&gt how come my MagnaDoodle behaves as it does then?</td></tr>
+            <tr><td>[20:36] &lt MS-&gt I think there's a race hazard somewhere which isn't expected</td></tr>
+            <tr><td>[20:36] &lt Davbo&gt sorry, "race hazard" ?</td></tr>
+            <tr><td>[20:37] &lt MS-&gt It's where 2 (or more) things can be happening at the same time</td></tr>
+            <tr><td>[20:37] &lt MS-&gt Because of a lack of co-ordination, it can mean one can finish before the other</td></tr>
+            <tr><td>[20:37] &lt Davbo&gt oh right</td></tr>
+            <tr><td>[20:37] &lt MS-&gt With the result being different depending on which one finishes first</td></tr>
+            <tr><td>[20:37] &lt MS-&gt hence it's a "race"</td></tr>
+            <tr><td>[20:37] &lt Davbo&gt ah i see</td></tr>
+            <tr><td>[20:38] &lt MS-&gt And you don't want it, so it becomes a hazard :)</td></tr>
+            <tr><td>[20:38] &lt MS-&gt I can get about 50:50 success/failure with the current test</td></tr>
+            <tr><td>[20:39] &lt MS-&gt which is pretty extreme</td></tr>
+            <tr><td>[20:40] &lt Davbo&gt hmm</td></tr>
+            <tr><td>[20:40] &lt Davbo&gt i'm still poking about with it all so if i flag up any more bugs i'll let you know,</td></tr>
+            <tr><td>[20:40] &lt Davbo&gt might help you diagnose it</td></tr>
+            <tr><td>[20:42] &lt MS-&gt ta</td></tr>
+            <tr><td>[20:48] &lt Davbo&gt back in a bit</td></tr>
+            <tr><td>[20:52] &lt MS-&gt There seems to be a race hazard related to data being sent across the channel...</td></tr>
+            <tr><td>[20:53] &lt MS-&gt Which could explain why Davbo is seeing partial data</td></tr>
+            <tr><td>[20:54] &lt vmlemon_&gt Let me guess, part of it is still in Dover, and the other part is in Calais? ;)</td></tr>
+            <tr><td>[20:54] *** vmlemon_ ducks</td></tr>
+            <tr><td>[20:54] *** MS- has an odd concept emerging of "Process Safe" to mirror "thread safe"</td></tr>
+            <tr><td>[20:55] &lt MS-&gt Bingo</td></tr>
+            <tr><td>[20:55] &lt MS-&gt heh</td></tr>
+            <tr><td>[20:55] &lt MS-&gt maybe</td></tr>
+            <tr><td>[20:56] &lt MS-&gt If I change one of my processes to this:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  def main(self):</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  tosend = self.ToSend[:]</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  while len(tosend) &gt 0:</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  self.send( tosend.pop(0), "outbox")</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  self.send(producerFinished(), "signal")</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  time.sleep(1)</td></tr>
+            <tr><td>[20:56] &lt MS-&gt  yield 1</td></tr>
+            <tr><td>[20:56] &lt MS-&gt (ie insert that time.sleep(1) )</td></tr>
+            <tr><td>[20:56] &lt MS-&gt to keep it alive a little bit longer</td></tr>
+            <tr><td>[20:56] &lt MS-&gt It allows the data to reach the other end</td></tr>
+            <tr><td>[20:57] &lt MS-&gt And the test...</td></tr>
+            <tr><td>[20:57] &lt MS-&gt  ProcessPipeline(</td></tr>
+            <tr><td>[20:57] &lt MS-&gt  Source(),</td></tr>
+            <tr><td>[20:57] &lt MS-&gt  Expecter(),</td></tr>
+            <tr><td>[20:57] &lt MS-&gt  ).run()</td></tr>
+            <tr><td>[20:57] &lt MS-&gt succeeds every time</td></tr>
+            <tr><td>[20:59] &lt MS-&gt cool</td></tr>
+            <tr><td>[20:59] &lt MS-&gt that's a jump forward</td></tr>
+            <tr><td>[21:07] &lt MS-&gt This means that each side of the *internals* of the pipeline channel handling</td></tr>
+            <tr><td>[21:07] &lt MS-&gt need to be able to signal to the other "OK, shutting down"</td></tr>
+            <tr><td>[21:08] &lt MS-&gt So that one doesn't try to shutdown before the other</td></tr>
+            <tr><td>[21:08] &lt MS-&gt That's probably the problem</td></tr>
+            <tr><td>[21:08] &lt MS-&gt That probably doesn't directly explain Davbo's issue</td></tr>
+            <tr><td>[21:08] &lt MS-&gt but it's an issue</td></tr>
+            <tr><td>[21:09] &lt MS-&gt I suppose the interesting issue is the difference between 2 threads on a single CPU</td></tr>
+            <tr><td>[21:09] &lt MS-&gt and 2 processes on 2 CPUs</td></tr>
+            <tr><td>[21:10] &lt MS-&gt Since the latter gives true simultaneity</td></tr>
+            <tr><td>[21:10] &lt MS-&gt Rather than fake</td></tr>
+            <tr><td>[21:19] &lt j_baker&gt MS-: So when packaging all this up, am I correct in understanding that ideally we want to only include a main script file or two in the App directory and put everything else in the Kamaelia tree somewhere?</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Yes</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Kamaelia.Apps.Publish for example</td></tr>
+            <tr><td>[21:23] &lt MS-&gt If you do that (recommended), you'll need to add to</td></tr>
+            <tr><td>[21:23] &lt MS-&gt the setup.py file</td></tr>
+            <tr><td>[21:24] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:24] *** MS- is really quite pleased to have figured out where that race hazard is</td></tr>
+            <tr><td>[21:24] &lt MS-&gt Have to do something about it still, but knowing where the problem is, is more than 1/2 the battle won</td></tr>
+            <tr><td>[21:25] &lt j_baker&gt Indeed. What really bugs me is when I know _WHERE_ the bug is but not exactly what's causing it.</td></tr>
+            <tr><td>[21:25] &lt MS-&gt This actually implies that this sort of code also belongs in Axon, rather than in Kamaelia, even if we thunk it over to Kamaelia for actual usage (ala the Introspection code)</td></tr>
+            <tr><td>[21:25] &lt MS-&gt Yeah, But knowing *where* a bug is can also sometimes be a challenge</td></tr>
+            <tr><td>[21:25] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:26] &lt MS-&gt So knowing the where is useful, even if the why is a PITA</td></tr>
+            <tr><td>[21:26] &lt MS-&gt :-)</td></tr>
+            <tr><td>[21:26] *** MS- decides to watch a bit of BSG :)</td></tr>
+            <tr><td>[21:26] &lt j_baker&gt Agreed.</td></tr>
+            <tr><td>[21:26] *** MS- is now known as ms-abit-away</td></tr>
+            <tr><td>[22:36] *** ms-abit-away has parted #kamaelia</td></tr>
+            <tr><td>[23:00] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:00] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[23:31] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[23:40] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:40] *** vmlemon__ is now known as vmlemon_</td></tr>

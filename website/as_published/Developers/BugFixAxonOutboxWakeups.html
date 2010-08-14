@@ -1,0 +1,100 @@
+<html>
+<head>
+<title> Developers/BugFixAxonOutboxWakeups </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/BugFixAxonOutboxWakeups">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+<h1>Feature: AxonOutboxWakeups</h1>
+<p>(This page describes an implementation of the above)<br></p>If you're interested, this branch in the <font face="Arial, Helvetica, sans-serif">repository</font> contains:<br> <br>1) (Long awaited) unpausing of components with outboxes in a chain of  linkages whenever messages are collected from the destination inbox.<br> <br>2) Additions to the axon test suite to cover this, and aspects of  size-limited boxes that previously lacked unittests.<br> <br>Apologies for the length of this posting, read the sections you're interested in:<br>     WHAT DOES THIS FIX?<br>     ABOUT THE IMPLEMENTATION<br>     TIME COMPLEXITY<br>     TEST SUITE ADDITIONS<br> <br>If anyone has some spare time to take a look, I'd be really grateful for a  sanity check on the implementation. In particular, checking whether it   breaks any code you've written. It shouldn't, but you never know!<br> <br>Constructive criticism of the implementation is also welcome - the   rationale is explained below.<br> <br><b>WHAT DOES THIS FIX?</b><br> <br>(1) is a bugfix ... this capability existed in the orginal 1.0 release of  Axon, before we make the message delivery optimisations. The optimised  version removed the postman from the equation, so messages would be   delivered immediately and directly into the destination inbox.<br> <br>What has actually been implemented? Here's a concrete example, or what   this bugfix makes possible:<br> <font face="Courier New, monospace"><br></font><pre><font face="Courier New, monospace">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from Axon.Component import component<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from Axon.ThreadedComponent import threadedcomponent<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from Axon.AxonExceptions import noSpaceInBox<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; class Producer(component):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; def main(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for i in range(100):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sent=False<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while not sent:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.send(i, "outbox")<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sent=True<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; except noSpaceInBox:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.pause()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yield 1<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; class SlowConsumer(threadedcomponent):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; def __init__(self):<br>      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; super(SlowConsumer,self).__init__(queuelengths=5)<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; def main(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.inboxes['inbox'].setSize(5)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; time.sleep(0.5)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while not self.dataReady("inbox"):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; self.pause()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; print self.recv("inbox")<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from Kamaelia.Pipeline import Pipeline<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Pipeline(Producer(),SlowConsumer()).run()</font></pre><font face="Courier New, monospace"></font> <br>The slow consumer restricts its inbox to hold a maximum of 5 items (and  the internal queues to also a maximum of 5 items). This means the producer receives noSpaceInBox exceptions when the box it is trying to send to is full.<br> <br>This bugfix means that if the Producer pauses, it will be woken when the Consumer consumes an item (implying there may[*] now be space for it to send more)<br> <br>[*] "may" rather than "is" becuase if there are multiple Producers sending  to the same inbox, all are woken, but there might not be enough free space for them all to send. Plus there are no fairness guarantees at present.<br> <br>There are more complete examples like this in the branch in:<br>      .../Tests/Python/Axon/wakeuptest.py<br>      .../Tests/Python/Axon/wakeuptest2.py<br> <br> <br><b>ABOUT THE IMPLEMENTATION</b><br> <br>This implementation is mainly changes to Box.py ... enabling postbox  objects to build and maintain a list of notification callbacks to be  triggered when a message is 'pop'ed from a box.<br> <br>The postbox class now lets you specify a notification callback when it is  constructed. This will be called whenever a message is collected (popped)  in the chain of linkages this box is part of.<br> <br>Inboxes, obviously, do not use this notification callback. Outboxes do.<br> <br>Each postbox maintains, a list of all callback it needs to call if a  message is collected from it. When a linkage is added (addsource method  called on the destination of the linkage), it collects this list from the  new source, adds it to its own list, and instructs the next component down the chain of linkages to do the same, ie. it recurses down the chain to  make sure all downstream boxes update their list of callbacks.<br> <br>For example:<br> <br><font face="Courier New, monospace">     outboxA ----&gt;<br>     outboxB ----&gt; inbox1 ----&gt; inbox2 ----&gt; inbox3<br><br>     outboxC ----&gt; inbox4</font> <br> <br>The callbacks lists for all boxes will be:<br><font face="Courier New, monospace">     outboxA : []<br>     outboxB : []<br>     inbox1  : [A,B]<br>     inbox2  : [A,B]<br>     inbox3  : [A,B]<br>     outboxC : []<br>     inbox4  : [C]</font><br> <br>If a linkage is added from inbox4 ---&gt; inbox2:<br> <br><font face="Courier New, monospace">     outboxA ----&gt;<br>     outboxB ----&gt; inbox1 ----&gt; inbox2 ----&gt; inbox3<br>                                  A<br>                                  |<br>     outboxC ----&gt; inbox4 --------' new linkage<br></font> <br>Then the callback lists change for inbox2 and inbox3 only:<br> <br><font face="Courier New, monospace">     outboxA : []<br>     outboxB : []<br>     inbox1  : [A,B]<br>     inbox2  : [A,B,C]   # C added<br>     inbox3  : [A,B,C]   # C added<br>     outboxC : []<br>     inbox4  : [C]</font><br> <br>When a linkage is removed, the exact reverse process happens - the list of  callbacks is obtained from the soon-to-be-no-longer source, and is then removed from the list of local callbacks. The same happens for all downstream boxes.<br> <br>To facilitate this implementation, the existing 'retarget' method that is  used to establish the linkages had to be modified slightly to enable each  postbox to know which postbox it is linked to next along the chain of linkages (held in self.target). Previously it did not maintain this, as  all that was needed was direct references to the final destination box,  for delivering messages.<br> <br>threadedcomponent has also been modified to ensure it wakes up the thread  if it gets unpaused.<br> <br> <br><b>TIME COMPLEXITY</b><br> <br>The additional time complexity of all three aspects (issuing the  notification, creating a linkage, removing a linkage) is O(n) worst case.<br> <br>Issuing the notifications is, I suspect, by far the most common task. I  reckon this implementation is as cheap as it can be (simply iteration  through a list and making the call backs) without more radical changes to  Axon/Axon's behaviour (eg. reducing the circumstances in which unpausing  should happen)<br> <br>Creating and removing linkages is therefore more expensive - since it is  effectively collating and updating lists of callbacks. But my personal  feeling is that this tradeoff is acceptable. Particuarly for a first cut  implementation.<br> <br> <br><b>TEST SUITE ADDITIONS</b><br> <br>Tests have been added to cover the bugfix, for both ordinary and threaded  components.<br> <br>Tests have also been added to cover setting size limits on inboxes - and  the consequent expectation that when a box becomes full, a noSpaceInBox  exception is raised. The tests again cover both ordinary and threaded  components.<br><br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

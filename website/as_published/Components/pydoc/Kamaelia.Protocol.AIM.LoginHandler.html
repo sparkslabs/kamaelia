@@ -1,0 +1,314 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Protocol.AIM.LoginHandler </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Protocol.AIM.LoginHandler</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.html">AIM</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.LoginHandler.html">LoginHandler</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.LoginHandler.LoginHandler.html">LoginHandler</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#620">AIM Login</a><ul>
+<li><a class="reference" href="#621">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#622">How it works</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="620">AIM Login</h1>
+<p>This component logs into to AIM with the given screenname and password. It then
+sends its logged-in OSCAR connection out of its &quot;signal&quot; outbox, followed by a
+list of any non-login-related messages it has received.</p>
+<div class="section">
+<h2 id="621"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Login and wire the resulting OSCARClient up to a ChatManager:</p>
+<pre class="literal-block">
+class AIMHarness(component):
+    def main(self):
+        self.loginer = LoginHandler('sitar63112', 'sitar63112').activate()
+        self.link((self.loginer, &quot;signal&quot;), (self, &quot;internal inbox&quot;))
+        self.addChildren(self.loginer)
+        while not self.dataReady(&quot;internal inbox&quot;):
+            yield 1
+        self.oscar = self.recv(&quot;internal inbox&quot;)
+        queued = self.recv(&quot;internal inbox&quot;)
+        self.unlink(self.oscar)
+
+        self.chatter = ChatManager().activate()
+        self.link((self.chatter, &quot;heard&quot;), (self, &quot;outbox&quot;), passthrough=2)
+        self.link((self, &quot;inbox&quot;), (self.chatter, &quot;talk&quot;), passthrough=1)
+        self.link((self.chatter, &quot;outbox&quot;), (self.oscar, &quot;inbox&quot;))
+        self.link((self.oscar, &quot;outbox&quot;), (self.chatter, &quot;inbox&quot;))
+        self.link((self, &quot;internal outbox&quot;), (self.chatter, &quot;inbox&quot;))
+        while len(queued):
+            self.send(queued[0], &quot;internal outbox&quot;)
+            del(queued[0])
+        while True:
+            yield 1
+
+AIMHarness().run()
+</pre>
+<p>You can also run LoginHandler by itself. This is useful for debugging:</p>
+<pre class="literal-block">
+LoginHandler(&quot;kamaelia1&quot;, &quot;abc123&quot;).run()
+</pre>
+</div>
+<div class="section">
+<h2 id="622"><a id="how-it-works" name="how-it-works">How it works</a></h2>
+<p>First, LoginHandler connects to the authorization server at login.oscar.aol.com
+and gets the address of the Basic Oscar Service server, the port to connect on,
+and an authorization cookie. It connects to the BOS server, which after some
+negotiation sends LoginHandler a list of the services it supports and their
+service versions. LoginHandler then finds out rate limits and service
+limitations. Then LoginHandler tells the server it is ready to begin normal
+operation as an AIM client.</p>
+<p>At this point the server recognizes us as a functioning AIM client. LoginHandler
+unlinks its internal OSCARClient and passes the OSCARClient out of the &quot;signal&quot;
+outbox. LoginHandler also collects any additional messages from OSCARClient and
+sends them out of its &quot;signal&quot; outbox. Now any component that connects to that
+OSCARClient will be able to send and receive AIM messages.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.html">AIM</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.LoginHandler.html">LoginHandler</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.LoginHandler.LoginHandler.html">LoginHandler</a></h1>
+<div class="section">
+<h2 id="symbol-LoginHandler">class LoginHandler(<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.OSCARClient.SNACExchanger.html">Kamaelia.Protocol.AIM.OSCARClient.SNACExchanger</a>)</h2>
+<p>LoginHandler(screenname, password, [versionNumber]) -&gt; new LoginHandler
+component</p>
+<p>Once started, LoginHandler logs in to AIM and sends the primed connection
+out of its &quot;signal&quot; outbox.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>versionNumber  -- the version of OSCAR protocol we are using. Default 1.</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-LoginHandler.Inboxes" name="symbol-LoginHandler.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+<li><strong>control</strong> : NOT USED</li>
+<li><strong>_clock</strong> : Receives timout messages</li>
+<li><strong>inbox</strong> : Receives messages from the server</li>
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-LoginHandler.Outboxes" name="symbol-LoginHandler.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+<li><strong>outbox</strong> : Send messages to the server</li>
+<li><strong>signal</strong> : Also sends messages to the server</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.__init__" name="symbol-LoginHandler.__init__">__init__(self, screenname, password[, versionNumber])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.activateConnection" name="symbol-LoginHandler.activateConnection">activateConnection(self)</a></h4>
+<p>Send some parameters up to the server, then signal that we're ready to
+begin receiving data.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.connectAuth" name="symbol-LoginHandler.connectAuth">connectAuth(self)</a></h4>
+<p>Connects to the AIM authorization server, says hi, and waits for
+acknowledgement.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.extractBOSandCookie" name="symbol-LoginHandler.extractBOSandCookie">extractBOSandCookie(self, reply)</a></h4>
+<p>Extracts BOS server, port, and auth cookie from server reply.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.getBOSandCookie" name="symbol-LoginHandler.getBOSandCookie">getBOSandCookie(self)</a></h4>
+<p>Gets BOS and auth cookie.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.getCookie" name="symbol-LoginHandler.getCookie">getCookie(self)</a></h4>
+<p>Requests and waits for MD5 key.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.getRateLimits" name="symbol-LoginHandler.getRateLimits">getRateLimits(self)</a></h4>
+<p>Request rate limits, wait for reply, and send acknowledgement to the
+server.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.getRights" name="symbol-LoginHandler.getRights">getRights(self)</a></h4>
+<p>.
+Get the server's reply on rights and limitations</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.main" name="symbol-LoginHandler.main">main(self)</a></h4>
+<p>Gets BOS and auth cookie, negotiates protocol, and then passes the
+connection + any non-login-related messages out.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.negotiateProtocol" name="symbol-LoginHandler.negotiateProtocol">negotiateProtocol(self)</a></h4>
+<p>Negotiates protocol.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.parseRateInfo" name="symbol-LoginHandler.parseRateInfo">parseRateInfo(self, data, numClasses)</a></h4>
+<p>Does something useful with the information about rate classes that the
+server sends us and returns the acknowledgement we are supposed to send
+back to the server.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.passTheReins" name="symbol-LoginHandler.passTheReins">passTheReins(self)</a></h4>
+<p>Unlink the internal OSCARClient and send it to &quot;signal&quot;.
+Also collect any unused messages from OSCARClient and send them out
+through &quot;signal&quot;.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.reconnect" name="symbol-LoginHandler.reconnect">reconnect(self, server, port, cookie)</a></h4>
+<p>Discards old connection to authorization server, connects to BOS, says
+hi, and waits for acknowledgement.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.requestRights" name="symbol-LoginHandler.requestRights">requestRights(self)</a></h4>
+<p>Request that the server tell us our rights and limitations for the
+services that were accepted.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-LoginHandler.setServiceVersions" name="symbol-LoginHandler.setServiceVersions">setServiceVersions(self)</a></h4>
+<p>Waits for supported services list from server, requests service
+versions, and waits for server acknowledgement of accepted service
+versions.</p>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.OSCARClient.SNACExchanger.html">Kamaelia.Protocol.AIM.OSCARClient.SNACExchanger</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.OSCARClient.html#symbol-SNACExchanger.waitSnac">waitSnac</a>(self, fam, sub)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.OSCARClient.html#symbol-SNACExchanger.sendSnac">sendSnac</a>(self, fam, sub, body)</li>
+<li><a class="reference" href="/Components/pydoc/Kamaelia.Protocol.AIM.OSCARClient.html#symbol-SNACExchanger.recvSnac">recvSnac</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

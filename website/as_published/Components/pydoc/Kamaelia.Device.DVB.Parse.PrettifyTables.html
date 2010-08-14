@@ -1,0 +1,436 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Device.DVB.Parse.PrettifyTables</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.html">PrettifyTables</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyEventInformationTable.html">PrettifyEventInformationTable</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyNetworkInformationTable.html">PrettifyNetworkInformationTable</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyProgramAssociationTable.html">PrettifyProgramAssociationTable</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyProgramMapTable.html">PrettifyProgramMapTable</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyServiceDescriptionTable.html">PrettifyServiceDescriptionTable</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyTimeAndDateTable.html">PrettifyTimeAndDateTable</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyTimeOffsetTable.html">PrettifyTimeOffsetTable</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#491">Pretty printing of parsed DVB PSI tables</a><ul>
+<li><a class="reference" href="#492">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#493">Behaviour</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="491">Pretty printing of parsed DVB PSI tables</h1>
+<p>A selection of components for creating human readable strings of the output of
+the various components in <a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Kamaelia.Device.DVB.Parse</a> that parse data tables
+in DVB MPEG Transport Streams.</p>
+<div class="section">
+<h2 id="492"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Pretty printing of a Program Association Table (PAT):</p>
+<pre class="literal-block">
+FREQUENCY = 505.833330
+feparams = {
+    &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+    &quot;constellation&quot; : dvb3.frontend.QAM_16,
+    &quot;code_rate_HP&quot; : dvb3.frontend.FEC_3_4,
+    &quot;code_rate_LP&quot; : dvb3.frontend.FEC_3_4,
+}
+
+PAT_PID = 0x0
+
+Pipeline( DVB_Multiplex(FREQUENCY, [PAT_PID], feparams),
+          DVB_Demuxer({ PAT_PID:[&quot;outbox&quot;]}),
+          ReassemblePSITables(),
+          ParseProgramAssociationTable(),
+          PrettifyProgramAssociationTable(),
+          ConsoleEchoer(),
+        ).run()
+</pre>
+<p>Example output:</p>
+<pre class="literal-block">
+PAT received:
+    Table ID           : 0
+    Table is valid for : CURRENT (valid)
+    NIT is in PID      : 16
+    For transport stream id : 4100
+        For service 4228 : PMT is in PID 4228
+        For service 4351 : PMT is in PID 4351
+        For service 4479 : PMT is in PID 4479
+        For service 4164 : PMT is in PID 4164
+        For service 4415 : PMT is in PID 4415
+        For service 4671 : PMT is in PID 4671
+</pre>
+<p>This data came from  an instantaneous snapshot of the PAT for Crystal Palace MUX
+1 transmission (505.8MHz) in the UK on 20th Dec 2006.</p>
+</div>
+<div class="section">
+<h2 id="493"><a id="behaviour" name="behaviour">Behaviour</a></h2>
+<p>The components available are:</p>
+<pre class="literal-block">
+PrettifyProgramAssociationTable
+PrettifyNetworkInformationTable
+PrettifyProgramMapTable
+PrettifyServiceDescriptionTable
+PrettifyEventInformationTable
+PrettifyTimeAndDateTable
+PrettifyTimeOffsetTable
+</pre>
+<p>Send to the &quot;inbox&quot; inbox of any of these components the relevant parsed table,
+and a string will be sent out the &quot;outbox&quot; outbox containing a 'prettified'
+human readable equivalent of the table data.</p>
+<p>If a shutdownMicroprocess or producerFinished message is received on the
+&quot;control&quot; inbox, then it will immediately be sent on out of the &quot;signal&quot; outbox
+and the component will then immediately terminate.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.html">PrettifyTables</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyEventInformationTable.html">PrettifyEventInformationTable</a></h1>
+<div class="section">
+<h2 id="symbol-PrettifyEventInformationTable">class PrettifyEventInformationTable(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>PrettifyEventInformationTable() -&gt; new PrettifyEventInformationTable component.</p>
+<p>Send parsed event information tables to the &quot;inbox&quot; inbox and a human
+readable string version will be sent out the &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-PrettifyEventInformationTable.Inboxes" name="symbol-PrettifyEventInformationTable.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PrettifyEventInformationTable.Outboxes" name="symbol-PrettifyEventInformationTable.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PrettifyEventInformationTable.main" name="symbol-PrettifyEventInformationTable.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PrettifyEventInformationTable.shutdown" name="symbol-PrettifyEventInformationTable.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.html">PrettifyTables</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyNetworkInformationTable.html">PrettifyNetworkInformationTable</a></h1>
+<div class="section">
+<h2 id="symbol-PrettifyNetworkInformationTable">class PrettifyNetworkInformationTable(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>PrettifyNetworkInformationTable() -&gt; new PrettifyNetworkInformationTable component.</p>
+<p>Send parsed network information tables to the &quot;inbox&quot; inbox and a human
+readable string version will be sent out the &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-PrettifyNetworkInformationTable.Inboxes" name="symbol-PrettifyNetworkInformationTable.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PrettifyNetworkInformationTable.Outboxes" name="symbol-PrettifyNetworkInformationTable.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PrettifyNetworkInformationTable.main" name="symbol-PrettifyNetworkInformationTable.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PrettifyNetworkInformationTable.shutdown" name="symbol-PrettifyNetworkInformationTable.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.html">PrettifyTables</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyProgramAssociationTable.html">PrettifyProgramAssociationTable</a></h1>
+<div class="section">
+<h2 id="symbol-PrettifyProgramAssociationTable">class PrettifyProgramAssociationTable(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>PrettifyProgramAssociationTable() -&gt; new PrettifyProgramAssociationTable component.</p>
+<p>Send parsed program association tables to the &quot;inbox&quot; inbox and a human
+readable string version will be sent out the &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-PrettifyProgramAssociationTable.Inboxes" name="symbol-PrettifyProgramAssociationTable.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PrettifyProgramAssociationTable.Outboxes" name="symbol-PrettifyProgramAssociationTable.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PrettifyProgramAssociationTable.main" name="symbol-PrettifyProgramAssociationTable.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PrettifyProgramAssociationTable.shutdown" name="symbol-PrettifyProgramAssociationTable.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.html">PrettifyTables</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyProgramMapTable.html">PrettifyProgramMapTable</a></h1>
+<div class="section">
+<h2 id="symbol-PrettifyProgramMapTable">class PrettifyProgramMapTable(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>PrettifyProgramMapTable() -&gt; new PrettifyProgramMapTable component.</p>
+<p>Send parsed program map tables to the &quot;inbox&quot; inbox and a human
+readable string version will be sent out the &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-PrettifyProgramMapTable.Inboxes" name="symbol-PrettifyProgramMapTable.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PrettifyProgramMapTable.Outboxes" name="symbol-PrettifyProgramMapTable.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PrettifyProgramMapTable.main" name="symbol-PrettifyProgramMapTable.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PrettifyProgramMapTable.shutdown" name="symbol-PrettifyProgramMapTable.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.html">PrettifyTables</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyServiceDescriptionTable.html">PrettifyServiceDescriptionTable</a></h1>
+<div class="section">
+<h2 id="symbol-PrettifyServiceDescriptionTable">class PrettifyServiceDescriptionTable(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>PrettifyServiceDescriptionTable() -&gt; new PrettifyServiceDescriptionTable component.</p>
+<p>Send parsed service description tables to the &quot;inbox&quot; inbox and a human
+readable string version will be sent out the &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-PrettifyServiceDescriptionTable.Inboxes" name="symbol-PrettifyServiceDescriptionTable.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PrettifyServiceDescriptionTable.Outboxes" name="symbol-PrettifyServiceDescriptionTable.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PrettifyServiceDescriptionTable.main" name="symbol-PrettifyServiceDescriptionTable.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PrettifyServiceDescriptionTable.shutdown" name="symbol-PrettifyServiceDescriptionTable.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.html">PrettifyTables</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyTimeAndDateTable.html">PrettifyTimeAndDateTable</a></h1>
+<div class="section">
+<h2 id="symbol-PrettifyTimeAndDateTable">class PrettifyTimeAndDateTable(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>PrettifyTimeAndDateTable() -&gt; new PrettifyTimeAndDateTable component.</p>
+<p>Send parsed time and date tables to the &quot;inbox&quot; inbox and a human
+readable string version will be sent out the &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-PrettifyTimeAndDateTable.Inboxes" name="symbol-PrettifyTimeAndDateTable.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PrettifyTimeAndDateTable.Outboxes" name="symbol-PrettifyTimeAndDateTable.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PrettifyTimeAndDateTable.main" name="symbol-PrettifyTimeAndDateTable.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PrettifyTimeAndDateTable.shutdown" name="symbol-PrettifyTimeAndDateTable.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.html">Device</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.html">DVB</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html">Parse</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.html">PrettifyTables</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Device.DVB.Parse.PrettifyTables.PrettifyTimeOffsetTable.html">PrettifyTimeOffsetTable</a></h1>
+<div class="section">
+<h2 id="symbol-PrettifyTimeOffsetTable">class PrettifyTimeOffsetTable(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>PrettifyTimeOffsetTable() -&gt; new PrettifyTimeOffsetTable component.</p>
+<p>Send parsed time offset tables to the &quot;inbox&quot; inbox and a human
+readable string version will be sent out the &quot;outbox&quot; outbox.</p>
+<div class="section">
+<h3><a id="symbol-PrettifyTimeOffsetTable.Inboxes" name="symbol-PrettifyTimeOffsetTable.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-PrettifyTimeOffsetTable.Outboxes" name="symbol-PrettifyTimeOffsetTable.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-PrettifyTimeOffsetTable.main" name="symbol-PrettifyTimeOffsetTable.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-PrettifyTimeOffsetTable.shutdown" name="symbol-PrettifyTimeOffsetTable.shutdown">shutdown(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

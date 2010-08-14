@@ -1,0 +1,65 @@
+<html><body><table>
+            <tr><td>[01:02] *** skylarS is now known as biouser</td></tr>
+            <tr><td>[01:52] &lt biouser&gt http://dpaste.com/97199/</td></tr>
+            <tr><td>[06:59] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:59] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[09:07] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:35] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:30] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[12:38] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[12:48] *** SamHasler has joined #kamaelia</td></tr>
+            <tr><td>[13:45] *** MS- notes the bug report from last night</td></tr>
+            <tr><td>[13:45] &lt MS-&gt Probably ought to add in an error message regarding that (specifically one stating what the code requirement is)</td></tr>
+            <tr><td>[13:45] *** MS- ponders</td></tr>
+            <tr><td>[13:46] &lt MS-&gt could also give the opportunity to easy_install dependencies not found at run time</td></tr>
+            <tr><td>[13:46] &lt MS-&gt Mind you that would scare me witless as a sys admin (since it's a clear attack vector</td></tr>
+            <tr><td>[13:47] &lt MS-&gt Though you could take the ubuntu route of saying "to fix this, install this, by doing this"</td></tr>
+            <tr><td>[14:16] &lt Lawouach_&gt Can't you easy_install without installing required dependencies?</td></tr>
+            <tr><td>[14:16] &lt Lawouach_&gt as a command line parameter</td></tr>
+            <tr><td>[14:16] &lt Lawouach_&gt so that you keep control over what you must install</td></tr>
+            <tr><td>[14:17] &lt MS-&gt No idea to be honest</td></tr>
+            <tr><td>[14:17] &lt MS-&gt I do like the idea of finding a nice way of dealing with the dependencies we need to pull in</td></tr>
+            <tr><td>[14:18] &lt MS-&gt And this is a nice relatively simple contained example</td></tr>
+            <tr><td>[14:19] &lt Lawouach_&gt --no-deps</td></tr>
+            <tr><td>[14:42] &lt MS-&gt That could work</td></tr>
+            <tr><td>[14:43] &lt MS-&gt maybe</td></tr>
+            <tr><td>[14:43] &lt MS-&gt I'd still have a fit though (with a sys admin hat on)</td></tr>
+            <tr><td>[14:52] &lt Lawouach_&gt Mind you, you could remove the dependency list from the setup module altogether</td></tr>
+            <tr><td>[14:52] &lt Lawouach_&gt And simply document them</td></tr>
+            <tr><td>[14:56] &lt MS-&gt At present we don't encode any dependencies at all and just document them.</td></tr>
+            <tr><td>[14:57] &lt MS-&gt I'm more thinking about how to make errors more meaningful</td></tr>
+            <tr><td>[14:57] &lt MS-&gt eg typing this in ubuntu</td></tr>
+            <tr><td>[14:57] &lt MS-&gt michaels@r44116:~$ figlet hello</td></tr>
+            <tr><td>[14:57] &lt MS-&gt on a system without it installed gives this:</td></tr>
+            <tr><td>[14:57] &lt MS-&gt The program 'figlet' can be found in the following packages:</td></tr>
+            <tr><td>[14:57] &lt MS-&gt  * figlet</td></tr>
+            <tr><td>[14:57] &lt MS-&gt  * toilet</td></tr>
+            <tr><td>[14:57] &lt MS-&gt Try: sudo apt-get install &lt selected package&gt</td></tr>
+            <tr><td>[14:57] &lt MS-&gt -bash: figlet: command not found</td></tr>
+            <tr><td>[14:58] &lt MS-&gt Which is really quite novel</td></tr>
+            <tr><td>[14:59] *** elvum waves</td></tr>
+            <tr><td>[14:59] *** elvum has parted #kamaelia</td></tr>
+            <tr><td>[14:59] &lt Lawouach_&gt What are you suggesting?</td></tr>
+            <tr><td>[14:59] &lt Lawouach_&gt I don't quite follow you here</td></tr>
+            <tr><td>[15:03] &lt MS-&gt Oh I was starting off from just having more meaningful errors really</td></tr>
+            <tr><td>[15:03] &lt MS-&gt  from Kamaelia.Support.Optimised.Video.PixFormatConvert import rgbi_to_yuv420p # RGB_interleaved to YUV420_planar ImportError: No module named Optimised.Video.PixFormatConvert</td></tr>
+            <tr><td>[15:03] &lt MS-&gt is rather unclear really</td></tr>
+            <tr><td>[15:03] &lt MS-&gt But I know that's because a different kamaelia support module (which uses pyrex) hasn't been installed</td></tr>
+            <tr><td>[15:03] &lt MS-&gt because it's not part of the core distro</td></tr>
+            <tr><td>[15:04] &lt MS-&gt Also, the file</td></tr>
+            <tr><td>[15:04] &lt MS-&gt  from Kamaelia.Video.PixFormatConversion import ToRGB_interleaved</td></tr>
+            <tr><td>[15:04] &lt MS-&gt which is earlier in the traceback will be aware of this</td></tr>
+            <tr><td>[15:16] &lt Lawouach_&gt Right</td></tr>
+            <tr><td>[15:16] &lt Lawouach_&gt all you can really do is list all the direct dependencies to Kamaelia</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt you cannot really list n+1 degree dependency</td></tr>
+            <tr><td>[15:18] &lt MS-&gt Indeed.</td></tr>
+            <tr><td>[15:18] &lt MS-&gt That's as far as I was thinking of going really</td></tr>
+            <tr><td>[15:56] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[16:54] &lt Lawouach&gt back</td></tr>
+            <tr><td>[17:06] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[17:30] *** plaes has joined #kamaelia</td></tr>
+            <tr><td>[17:37] *** plaes has joined #kamaelia</td></tr>
+            <tr><td>[18:42] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:35] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:43] *** plaes has joined #kamaelia</td></tr>
+            <tr><td>[19:55] *** plaes has joined #kamaelia</td></tr>

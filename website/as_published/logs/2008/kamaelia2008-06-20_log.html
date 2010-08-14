@@ -1,0 +1,355 @@
+<html><body><table>
+            <tr><td>[01:15] &lt ms-&gt New likefile code merged onto private_MPS_LikeFileRewrite</td></tr>
+            <tr><td>[01:16] &lt ms-&gt Demos/examples changed to work</td></tr>
+            <tr><td>[01:16] &lt ms-&gt Now to rename to "handle"</td></tr>
+            <tr><td>[01:26] &lt j_baker&gt Wow. You're still up?</td></tr>
+            <tr><td>[01:26] &lt ms-&gt yep</td></tr>
+            <tr><td>[01:31] &lt ms-&gt Probably for not much longer though!</td></tr>
+            <tr><td>[01:32] &lt j_baker&gt I actually just got the POST methods figured out. I'll probably spend tomorrow figuring out how to get the thing to stay logged in.</td></tr>
+            <tr><td>[01:32] &lt ms-&gt Cool :)</td></tr>
+            <tr><td>[01:32] &lt ms-&gt Congrats :)</td></tr>
+            <tr><td>[01:32] &lt ms-&gt I've just merged onto private_MPS_LikeFileRewrite the rewrite (and rename) of LikeFile</td></tr>
+            <tr><td>[01:43] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[07:49] *** ms- aims to work for about 3-4 hours then travel</td></tr>
+            <tr><td>[07:52] *** ms- notes this change on Scratch which is going onto trunk:</td></tr>
+            <tr><td>[07:52] &lt ms-&gt + def Inbox(self, boxname="inbox"):</td></tr>
+            <tr><td>[07:52] &lt ms-&gt + while self.dataReady("inbox"):</td></tr>
+            <tr><td>[07:52] &lt ms-&gt + yield self.recv("inbox")</td></tr>
+            <tr><td>[07:52] &lt ms-&gt will all this</td></tr>
+            <tr><td>[07:52] &lt ms-&gt for data in self.Inbox("inbox"):</td></tr>
+            <tr><td>[07:52] &lt ms-&gt  print "data"</td></tr>
+            <tr><td>[07:52] &lt ms-&gt (or rather does allow this)</td></tr>
+            <tr><td>[07:59] &lt Lawouach&gt that's rather interesting</td></tr>
+            <tr><td>[07:59] &lt Lawouach&gt makes Axon look more and more pythonic in a way ;)</td></tr>
+            <tr><td>[08:00] &lt Lawouach&gt if you fancy the word</td></tr>
+            <tr><td>[08:00] &lt ms-&gt Indeed - the fact that I went the way of the application (tried to find out the appropriate idioms) rather than the pythonic way was a criticism levelled by Tommi Virtinan (sp?) a couple of years back</td></tr>
+            <tr><td>[08:01] &lt ms-&gt Which was valid, but I didn't want to add sugar before finding out whether the sugar was appropriate</td></tr>
+            <tr><td>[08:01] &lt Lawouach&gt fair point</td></tr>
+            <tr><td>[08:01] &lt Lawouach&gt you migh even consider adding a way for properties</td></tr>
+            <tr><td>[08:01] &lt Lawouach&gt so you would have:</td></tr>
+            <tr><td>[08:01] &lt Lawouach&gt for data in self.inbox:</td></tr>
+            <tr><td>[08:01] &lt Lawouach&gt  print data</td></tr>
+            <tr><td>[08:02] &lt Lawouach&gt here inbox is not the inboxes dict</td></tr>
+            <tr><td>[08:02] &lt Lawouach&gt but a property like this</td></tr>
+            <tr><td>[08:02] &lt Lawouach&gt @property</td></tr>
+            <tr><td>[08:02] &lt Lawouach&gt def Inbox(self):</td></tr>
+            <tr><td>[08:02] &lt Lawouach&gt  ...</td></tr>
+            <tr><td>[08:02] &lt ms-&gt Yep.</td></tr>
+            <tr><td>[08:02] &lt Lawouach&gt oops make the def name lower case</td></tr>
+            <tr><td>[08:02] &lt ms-&gt Though if I was to do that, I'd probably use Inbox not inbox and that would rile some people.</td></tr>
+            <tr><td>[08:03] &lt Lawouach&gt sure</td></tr>
+            <tr><td>[08:03] &lt ms-&gt Largely because it matches Inboxes - which is the public interface for defining them :)</td></tr>
+            <tr><td>[08:03] &lt Lawouach&gt but that could be done easily in the LikeHandle-whatever</td></tr>
+            <tr><td>[08:03] *** ms- nods</td></tr>
+            <tr><td>[08:03] &lt Lawouach&gt since you're already inspecting boxes</td></tr>
+            <tr><td>[08:03] &lt Lawouach&gt you might as well add properties for each automatically</td></tr>
+            <tr><td>[08:03] &lt ms-&gt LikeHandle has been merged as simply "Handle" btw</td></tr>
+            <tr><td>[08:03] &lt Lawouach&gt I assume it's doable in Python</td></tr>
+            <tr><td>[08:03] &lt Lawouach&gt alright</td></tr>
+            <tr><td>[08:03] &lt Lawouach&gt that's cool :)</td></tr>
+            <tr><td>[08:04] &lt Lawouach&gt Haven't kept track of all the changes lately</td></tr>
+            <tr><td>[08:04] &lt ms-&gt I've made a pre-release checkpoint BTW, so if we discover I'm merging a ton of stupid stuff it'll be easy to revert :)</td></tr>
+            <tr><td>[08:04] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[08:04] &lt ms-&gt http://edit.kamaelia.org/ReleaseJune2008 - tracks the high level changes</td></tr>
+            <tr><td>[08:16] &lt ms-&gt Interesting - this works :</td></tr>
+            <tr><td>[08:16] &lt ms-&gt svn ci -m "`cat commit_message.txt`"</td></tr>
+            <tr><td>[08:16] &lt ms-&gt Useful</td></tr>
+            <tr><td>[08:16] &lt ms-&gt private_MPS_AxonCoreImprovements_mashed/ - merged</td></tr>
+            <tr><td>[08:23] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:43] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:57] &lt ms-&gt biab</td></tr>
+            <tr><td>[08:57] *** ms- has parted #kamaelia</td></tr>
+            <tr><td>[09:25] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:30] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:32] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:43] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:27] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:30] *** Davb1 has joined #kamaelia</td></tr>
+            <tr><td>[11:33] *** Davb1 is now known as Davbo</td></tr>
+            <tr><td>[11:34] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[12:31] &lt Davbo&gt wooo!! flood-fill tool done :D</td></tr>
+            <tr><td>[12:31] &lt Davbo&gt non-recursively</td></tr>
+            <tr><td>[12:31] *** Davbo loves open-source</td></tr>
+            <tr><td>[12:38] &lt vmlemon_&gt Hah, [13:09] &lt timsf&gt I take it that slide 4 that says "Flush out desktop"</td></tr>
+            <tr><td>[13:18] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[13:18] &lt MS-&gt orphans: thanks for the "up for review bit"</td></tr>
+            <tr><td>[13:18] &lt MS-&gt I'll probably merge but as a new namespace</td></tr>
+            <tr><td>[13:19] &lt MS-&gt (at least initially)</td></tr>
+            <tr><td>[13:19] *** MS- munches lunch</td></tr>
+            <tr><td>[13:20] &lt MS-&gt http://edit.kamaelia.org/release/ contains release candidates</td></tr>
+            <tr><td>[13:20] &lt MS-&gt highest numbered/most recent == most recent</td></tr>
+            <tr><td>[13:23] &lt Davbo&gt when's that mashed thing?</td></tr>
+            <tr><td>[13:25] &lt MS-&gt tomorrow & sunday - there's a free coach from Sheffield, Newcastle,. manchester & liverpool</td></tr>
+            <tr><td>[13:26] &lt MS-&gt Attendees need a laptop & a sleeping bag</td></tr>
+            <tr><td>[13:26] &lt MS-&gt Apparently food & drink will be available (gratis)</td></tr>
+            <tr><td>[13:27] &lt Davbo&gt ah</td></tr>
+            <tr><td>[13:27] &lt MS-&gt this is when the bus details are: http://mashed08.backnetwork.com/event/?articleid=16</td></tr>
+            <tr><td>[13:28] &lt MS-&gt I've been mentioning it periodically</td></tr>
+            <tr><td>[13:29] &lt MS-&gt if it wasn't for the release and the fact I'm talking as a result I'd blow it off and go to Digital 60 tonight - which is a thingy celebrating "the baby"</td></tr>
+            <tr><td>[13:31] &lt MS-&gt (cf http://radar.oreilly.com/archives/2008/06/babys-60th-birthday.html )</td></tr>
+            <tr><td>[13:32] &lt Davbo&gt I'd have probably tried to go to this Mashed thing, but circumstances mean it's just not possible</td></tr>
+            <tr><td>[13:33] &lt Davbo&gt I'm looking at going to PyCon UK though</td></tr>
+            <tr><td>[13:33] &lt MS-&gt i seem to remember a few weeks back you mentioning that may be the case</td></tr>
+            <tr><td>[13:33] &lt MS-&gt Cool</td></tr>
+            <tr><td>[13:33] &lt MS-&gt Come give a talk :)</td></tr>
+            <tr><td>[13:34] &lt MS-&gt "this is what I didn't know 6 months ago"</td></tr>
+            <tr><td>[13:34] &lt Davbo&gt Heh</td></tr>
+            <tr><td>[13:34] &lt MS-&gt ;)</td></tr>
+            <tr><td>[13:36] &lt MS-&gt Must admit though I'm travelling down tonight. Chances of me being even vaguely sane tomorrow if I'm on a bus at 4am are non-existent</td></tr>
+            <tr><td>[13:36] &lt MS-&gt Kinda useful to not talk complete twaddle</td></tr>
+            <tr><td>[13:37] &lt Davbo&gt Yeah it's 4:30am tomorrow for that bus from Sheffield</td></tr>
+            <tr><td>[13:37] &lt Davbo&gt Should I feel the urge I could be down there :p</td></tr>
+            <tr><td>[13:37] &lt MS-&gt Just not very plausible</td></tr>
+            <tr><td>[13:37] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[13:38] &lt MS-&gt For me that's more a "time to stay up until" rather than "get up for"</td></tr>
+            <tr><td>[13:38] &lt MS-&gt Which probably means I'm not old yet if I still think *that* way</td></tr>
+            <tr><td>[13:38] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:38] &lt Davbo&gt hehe :-)</td></tr>
+            <tr><td>[13:46] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[14:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt http://www.davbo.org/images/snapshot10.png woo!</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt on that note, back later</td></tr>
+            <tr><td>[15:19] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[15:30] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:30] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:37] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:37] &lt MS-&gt Evening</td></tr>
+            <tr><td>[17:37] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:38] *** MS- notes Davbo's flood fill appears to be working well :)</td></tr>
+            <tr><td>[17:38] &lt MS-&gt That's actually pretty impressive - I kinda expected that sort of thing to come later</td></tr>
+            <tr><td>[17:38] &lt MS-&gt since it's harder than the basics of circles, lines, dots etc</td></tr>
+            <tr><td>[17:39] *** MS- makes a note to show davbo how to make pygame windows which are *smaller*</td></tr>
+            <tr><td>[17:39] &lt MS-&gt :)</td></tr>
+            <tr><td>[17:41] &lt vmlemon_&gt Hmm, what was Davbo making again?</td></tr>
+            <tr><td>[17:41] &lt MS-&gt A multiwindow paint program using pygame</td></tr>
+            <tr><td>[17:41] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[17:41] &lt MS-&gt I might suggest he looks at smudging next</td></tr>
+            <tr><td>[17:42] &lt MS-&gt (leaving what that might mean open to relative intepretation, but with the assumption its a bit like a blobby movable blur)</td></tr>
+            <tr><td>[17:42] &lt MS-&gt Since that'd open up interesting options</td></tr>
+            <tr><td>[17:42] &lt MS-&gt (especially if every window could be a pallete for setting the colour)</td></tr>
+            <tr><td>[17:43] &lt vmlemon_&gt An Airbrush tool might be interesting, assuming that it isn't already implemented/in progress</td></tr>
+            <tr><td>[17:43] *** MS- nods</td></tr>
+            <tr><td>[17:43] &lt MS-&gt In terms of "is it new and amazing", the answer will be a "not really", but I really want the emphasis to be on "stuff that makes it nice and easy to do two specific things"</td></tr>
+            <tr><td>[17:44] &lt MS-&gt One is "manual stitching together of pictures"</td></tr>
+            <tr><td>[17:44] &lt MS-&gt (which is something I do fairly often)</td></tr>
+            <tr><td>[17:44] &lt vmlemon_&gt Networked image editing?</td></tr>
+            <tr><td>[17:44] &lt MS-&gt The other being "easy to create new things that look nice"</td></tr>
+            <tr><td>[17:44] &lt MS-&gt That too</td></tr>
+            <tr><td>[17:44] &lt MS-&gt But that's relatively easy given its kamaelia :)</td></tr>
+            <tr><td>[17:45] &lt vmlemon_&gt Does it have file import and export functionality already?</td></tr>
+            <tr><td>[17:45] &lt vmlemon_&gt That could always come in handy</td></tr>
+            <tr><td>[17:45] &lt MS-&gt I doubt it.</td></tr>
+            <tr><td>[17:45] &lt MS-&gt It would</td></tr>
+            <tr><td>[17:45] &lt MS-&gt The way the whiteboard does that is it automatically saves everything in a known area (pads if you like)</td></tr>
+            <tr><td>[17:45] &lt MS-&gt which you can flick back and forth</td></tr>
+            <tr><td>[17:45] &lt MS-&gt And since that's just a directory, you can add stuff</td></tr>
+            <tr><td>[17:45] &lt MS-&gt but that's hardly the same as load/save</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[17:47] &lt MS-&gt Davbo's program is completely new though</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt Wow, my connection is flaky as hell today</td></tr>
+            <tr><td>[17:47] &lt vmlemon_&gt It seems that I can download 20KB-1MB files, but I can't download small webpages without them only being half-loaded</td></tr>
+            <tr><td>[17:48] &lt MS-&gt The point behind it it's worth bearing in mind is that it's a demo of multiwindow stuff</td></tr>
+            <tr><td>[17:48] &lt MS-&gt and just intended to be fun/basically useful</td></tr>
+            <tr><td>[17:48] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[17:48] &lt MS-&gt which is always a good starting point of course</td></tr>
+            <tr><td>[17:48] &lt MS-&gt But means that the focus is on fun stuff</td></tr>
+            <tr><td>[17:48] &lt MS-&gt (multiwindow pygame requires multiprocess due to pygame limitations)</td></tr>
+            <tr><td>[17:56] &lt vmlemon_&gt Hmm, the limit is due to no-one implementing support for single-process multiwindow apps? Or is it more of an architectural/legacy issue?</td></tr>
+            <tr><td>[17:56] &lt MS-&gt It's an SDL limitation</td></tr>
+            <tr><td>[17:57] &lt MS-&gt Which I think is being removed in a new version at some point</td></tr>
+            <tr><td>[17:57] &lt MS-&gt But until it is, it's essentially "proof" that the system is using multiple processes</td></tr>
+            <tr><td>[17:57] &lt MS-&gt since it simply wouldn't work otherwise</td></tr>
+            <tr><td>[17:57] &lt MS-&gt which is why it's a nice example</td></tr>
+            <tr><td>[17:57] &lt vmlemon_&gt Sounds fun</td></tr>
+            <tr><td>[17:58] &lt MS-&gt It also means that then the system has basic image editting available for any application</td></tr>
+            <tr><td>[17:59] &lt MS-&gt which is a nice side effect of it being kamaelia based :)</td></tr>
+            <tr><td>[18:00] &lt MS-&gt Something I really ought to do, if I don't put anything else in the release is to put the first version of multiprocess stuff in</td></tr>
+            <tr><td>[18:09] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:12] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:53] &lt j_baker&gt MS-: Is there anything that a web server needs to do HTTP-wise to deal with sessions?</td></tr>
+            <tr><td>[18:54] &lt MS-&gt Not particularly no - HTTP is stateless - sessions are an application level concept</td></tr>
+            <tr><td>[18:54] &lt MS-&gt Though the web server can do interesting sessions</td></tr>
+            <tr><td>[18:55] &lt MS-&gt Kamaelia/Protocol/HTTP/Handlers/SessionExample.py</td></tr>
+            <tr><td>[18:55] &lt MS-&gt class SessionExample(component):</td></tr>
+            <tr><td>[18:55] &lt MS-&gt is a component that gets reactivated for the user</td></tr>
+            <tr><td>[18:55] &lt MS-&gt Meaning that when that while loop yields,</td></tr>
+            <tr><td>[18:56] &lt MS-&gt it's actually sending a page back to the user</td></tr>
+            <tr><td>[18:56] &lt MS-&gt It's a pity that core python doesn't support pickling of generators like Stackless Python does really</td></tr>
+            <tr><td>[18:56] &lt MS-&gt since that'd open up some really neat options</td></tr>
+            <tr><td>[18:56] &lt j_baker&gt That would be pretty interesting.</td></tr>
+            <tr><td>[18:57] &lt MS-&gt But as long as the server doesn't restart, it does open up some very novel applications</td></tr>
+            <tr><td>[18:57] &lt MS-&gt OK, Post about the new release & Mashed: http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1213988026</td></tr>
+            <tr><td>[18:57] &lt MS-&gt I think I'm right in saying alot is going in the new release ...</td></tr>
+            <tr><td>[18:58] &lt MS-&gt Doesn't even cover any of the detail, like ssl support (should add that I guess)</td></tr>
+            <tr><td>[18:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:38] &lt j_baker&gt MS-: Is the peer variable that ServerCore passes to a protocol (like the HTTPServer) equivalent to the CGI REMOTE_ADDR variable?</td></tr>
+            <tr><td>[19:39] &lt MS-&gt OK, let's chat about that briefly, then I'll get dinner</td></tr>
+            <tr><td>[19:39] &lt MS-&gt I promised to explain what's going on</td></tr>
+            <tr><td>[19:39] &lt j_baker&gt cool</td></tr>
+            <tr><td>[19:39] &lt MS-&gt because I noted you thought there was a request/response thing going on in ServerCore, and there isn't</td></tr>
+            <tr><td>[19:39] &lt MS-&gt So I'll go to basics if I may</td></tr>
+            <tr><td>[19:40] &lt MS-&gt ServerCore, starts off by creating a TCPServer component</td></tr>
+            <tr><td>[19:40] &lt MS-&gt This opens a port on the server. The combination of port & IP forms a socket.</td></tr>
+            <tr><td>[19:40] &lt MS-&gt That socket, is a LISTEN socket</td></tr>
+            <tr><td>[19:40] &lt MS-&gt the sort of thing that shows up like this:</td></tr>
+            <tr><td>[19:40] &lt MS-&gt tcp4 0 0 *.25 *.* LISTEN</td></tr>
+            <tr><td>[19:41] &lt MS-&gt when you type netstat -nat|grep LISTEN</td></tr>
+            <tr><td>[19:41] &lt MS-&gt When a client connects, the socket becomes read-ready</td></tr>
+            <tr><td>[19:41] &lt MS-&gt The TCPServer component goes "aha!"</td></tr>
+            <tr><td>[19:41] &lt MS-&gt and calls accept, creating a connected socket</td></tr>
+            <tr><td>[19:41] &lt MS-&gt that looks like this in netstat -nat</td></tr>
+            <tr><td>[19:41] &lt MS-&gt tcp4 0 0 192.168.2.9.22 84.201.167.186.43858 ESTABLISHED</td></tr>
+            <tr><td>[19:42] &lt MS-&gt To handle traffic (just raw bytes)</td></tr>
+            <tr><td>[19:42] &lt MS-&gt to/from that socket, the server creates a ConnectedSocketAdapter</td></tr>
+            <tr><td>[19:42] &lt MS-&gt which does just that</td></tr>
+            <tr><td>[19:42] &lt MS-&gt it "adapts" from in/out-boxes</td></tr>
+            <tr><td>[19:42] &lt MS-&gt to the socket in/out directions</td></tr>
+            <tr><td>[19:42] &lt MS-&gt bytes recieved on the socket get forwarded to the CSA's outbox</td></tr>
+            <tr><td>[19:43] &lt MS-&gt bytes recieved on the CSA's inbox get forwarded to the connected socket</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt Hmm, could Kamaelia systems/apps be extended in general to work in a "network transparent" way?</td></tr>
+            <tr><td>[19:43] &lt MS-&gt vmlemon_: yes</td></tr>
+            <tr><td>[19:43] &lt MS-&gt It's worth noting that whilst this will come in chunks</td></tr>
+            <tr><td>[19:43] &lt MS-&gt some bug</td></tr>
+            <tr><td>[19:43] &lt MS-&gt big</td></tr>
+            <tr><td>[19:43] &lt MS-&gt some small</td></tr>
+            <tr><td>[19:43] &lt MS-&gt BUT, no matter the size chunks</td></tr>
+            <tr><td>[19:43] &lt MS-&gt The data is *not framed*</td></tr>
+            <tr><td>[19:43] &lt MS-&gt and *nothing can be inferred from the chunks*</td></tr>
+            <tr><td>[19:44] &lt MS-&gt Often you may be lucky and have them terminate on a \n though</td></tr>
+            <tr><td>[19:44] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:44] &lt MS-&gt OK, so that gives you a basic "server" that provides something that will accept bytes and send them on</td></tr>
+            <tr><td>[19:44] &lt MS-&gt and something that can send on</td></tr>
+            <tr><td>[19:44] &lt MS-&gt However that's not really enough</td></tr>
+            <tr><td>[19:44] &lt MS-&gt So, as well as creating the CSA and activating it</td></tr>
+            <tr><td>[19:45] &lt MS-&gt The TCPServer component sends a copy of the CSA to anyone interested</td></tr>
+            <tr><td>[19:45] &lt MS-&gt In this instance the interested party is the ServerCore component</td></tr>
+            <tr><td>[19:45] &lt MS-&gt the message the ServerCore gets looks like this:</td></tr>
+            <tr><td>[19:46] &lt MS-&gt newCSAMessage.object</td></tr>
+            <tr><td>[19:46] &lt MS-&gt newCSAMessage rather</td></tr>
+            <tr><td>[19:46] &lt MS-&gt That inside it has this:</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  def __init__(self, caller, CSA, sock=None):</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  super(newCSA, self).__init__(caller, CSA)</td></tr>
+            <tr><td>[19:46] &lt MS-&gt  self.sock = sock</td></tr>
+            <tr><td>[19:47] &lt MS-&gt That call to the super class means that</td></tr>
+            <tr><td>[19:47] &lt MS-&gt the newCSAMessage has attributes</td></tr>
+            <tr><td>[19:47] &lt MS-&gt sock - which is the ACTUAL connect socket the CSA manages</td></tr>
+            <tr><td>[19:47] &lt MS-&gt CSA - which is the CSA which manages and OWNs the connected socket</td></tr>
+            <tr><td>[19:47] &lt MS-&gt caller - which is the TCPServer</td></tr>
+            <tr><td>[19:48] &lt MS-&gt Now, the socket is provided for *information* purposes only</td></tr>
+            <tr><td>[19:48] &lt MS-&gt since it contains this information :</td></tr>
+            <tr><td>[19:48] &lt MS-&gt tcp4 0 0 192.168.2.9.22 84.201.167.186.43858 ESTABLISHED</td></tr>
+            <tr><td>[19:48] &lt MS-&gt ie 4 key pieces of information:</td></tr>
+            <tr><td>[19:49] &lt MS-&gt local address : 192.168.2.9</td></tr>
+            <tr><td>[19:49] &lt MS-&gt local port : 22</td></tr>
+            <tr><td>[19:49] &lt MS-&gt peer address : 84.201.167.186</td></tr>
+            <tr><td>[19:49] &lt MS-&gt peer port : 43858</td></tr>
+            <tr><td>[19:49] &lt MS-&gt And that's *all* the information the ServerCore has</td></tr>
+            <tr><td>[19:49] &lt MS-&gt But now it can make a decision</td></tr>
+            <tr><td>[19:50] &lt MS-&gt It's been told "this CSA is connected to someone"</td></tr>
+            <tr><td>[19:50] &lt MS-&gt "if you connect something else to it, that something else can send and receive bytes to/from them"</td></tr>
+            <tr><td>[19:50] &lt MS-&gt So it has to decide what to do - create something or not</td></tr>
+            <tr><td>[19:50] &lt MS-&gt It always chooses the former</td></tr>
+            <tr><td>[19:50] &lt MS-&gt and how to do that?</td></tr>
+            <tr><td>[19:51] &lt MS-&gt Well, it makes the call that you've now found</td></tr>
+            <tr><td>[19:51] &lt MS-&gt (self.protocol)(peer = sock_info["peer"],</td></tr>
+            <tr><td>[19:51] &lt MS-&gt  peerport = sock_info["peerport"],</td></tr>
+            <tr><td>[19:51] &lt MS-&gt  localip = sock_info["localip"],</td></tr>
+            <tr><td>[19:51] &lt MS-&gt  localport = sock_info["localport"])</td></tr>
+            <tr><td>[19:51] &lt MS-&gt Now that *could* be written like this:</td></tr>
+            <tr><td>[19:52] &lt MS-&gt protocolHandlerMaker = self.protocol</td></tr>
+            <tr><td>[19:52] &lt MS-&gt protocolHandlerMaker ( peer = sock_info["peer"],</td></tr>
+            <tr><td>[19:52] &lt MS-&gt  peerport = sock_info["peerport"],</td></tr>
+            <tr><td>[19:52] &lt MS-&gt  localip = sock_info["localip"],</td></tr>
+            <tr><td>[19:52] &lt MS-&gt  localport = sock_info["localport"])</td></tr>
+            <tr><td>[19:53] &lt MS-&gt But either way, it means "call this function, with all the information we have available, and ask it to create a component capable of understanding bytes in and bytes out"</td></tr>
+            <tr><td>[19:53] &lt MS-&gt and capable of running the protocol</td></tr>
+            <tr><td>[19:53] &lt MS-&gt whether it's request oriented or otherwise</td></tr>
+            <tr><td>[19:53] &lt MS-&gt After all, it may just choose to send out a stream of bytes</td></tr>
+            <tr><td>[19:54] &lt MS-&gt (like chargen for example)</td></tr>
+            <tr><td>[19:54] &lt MS-&gt Or it may just choose to take all the bytes and dump them to disk</td></tr>
+            <tr><td>[19:54] &lt MS-&gt Or ...</td></tr>
+            <tr><td>[19:54] &lt MS-&gt etc</td></tr>
+            <tr><td>[19:54] &lt j_baker&gt Interesting. So you could theoretically hook up any Kamaelia component to it.</td></tr>
+            <tr><td>[19:54] &lt MS-&gt But that's the core of lifecycle in a nutshell</td></tr>
+            <tr><td>[19:54] &lt MS-&gt Correct</td></tr>
+            <tr><td>[19:54] &lt MS-&gt Any</td></tr>
+            <tr><td>[19:54] &lt MS-&gt the output from a magnadoodle for example</td></tr>
+            <tr><td>[19:55] &lt MS-&gt as input to a voice recognition tool which feeds into a ticker</td></tr>
+            <tr><td>[19:55] &lt MS-&gt *any*</td></tr>
+            <tr><td>[19:56] &lt MS-&gt So, does that now make more sense?</td></tr>
+            <tr><td>[19:56] &lt MS-&gt This will amuse BTW</td></tr>
+            <tr><td>[19:56] &lt j_baker&gt So if it receives another connection on the socket before the last one completes, does it make another protocol handler and process them concurrently, or does it wait for the first one to complete?</td></tr>
+            <tr><td>[19:56] &lt j_baker&gt Yeah, that makes a lot more sense.</td></tr>
+            <tr><td>[19:56] &lt MS-&gt there's no reason why that "protocolHandlerMaker" could be a function that's a method of a class that has a wrapped LikeFile component to be used to do something interesting</td></tr>
+            <tr><td>[19:57] &lt MS-&gt That q goes back to the fundamentals of the system</td></tr>
+            <tr><td>[19:57] &lt MS-&gt think: what does the TCPServer do?</td></tr>
+            <tr><td>[19:57] &lt MS-&gt It creates a listener socket</td></tr>
+            <tr><td>[19:57] &lt MS-&gt waits for connections</td></tr>
+            <tr><td>[19:57] &lt MS-&gt when a connection occurs, it creates a CSA, activates it, throws it out an outbox and goes back to waiting for connection</td></tr>
+            <tr><td>[19:58] &lt MS-&gt The CSA and TCPServer run concurrently</td></tr>
+            <tr><td>[19:58] &lt MS-&gt So if there's 2 CSAs or 100 or ...</td></tr>
+            <tr><td>[19:58] &lt MS-&gt it makes no difference</td></tr>
+            <tr><td>[19:58] &lt MS-&gt Likewise the ServerCore is just waiting for "Is there a CSA? "</td></tr>
+            <tr><td>[19:58] &lt MS-&gt "There is?! Cool, let's wire up something to control it/talk to it"</td></tr>
+            <tr><td>[19:58] &lt MS-&gt "Ok, back to sleep"</td></tr>
+            <tr><td>[19:59] &lt MS-&gt Meaning it handles as many as it can simultaneously until you run out of resources</td></tr>
+            <tr><td>[19:59] &lt MS-&gt ie no limit & not sequential</td></tr>
+            <tr><td>[19:59] &lt MS-&gt The default is concurrent & scalable</td></tr>
+            <tr><td>[20:00] &lt MS-&gt The selector component is an optimisation BTW</td></tr>
+            <tr><td>[20:00] &lt MS-&gt You could have the same behaviour using threads</td></tr>
+            <tr><td>[20:00] &lt MS-&gt But without the selector</td></tr>
+            <tr><td>[20:00] &lt MS-&gt The selector being a *service* is another optimisation</td></tr>
+            <tr><td>[20:00] &lt j_baker&gt I spent a little time studying that trying to figure out why the IntelligentFileReader wouldn't close files.</td></tr>
+            <tr><td>[20:00] &lt MS-&gt It allows the selector to be shared between ServerCores etc</td></tr>
+            <tr><td>[20:01] &lt MS-&gt As well as TCPClient, Unix Process - rather than them creating their own etc</td></tr>
+            <tr><td>[20:02] &lt MS-&gt the interesting thing in a way, is that these components:</td></tr>
+            <tr><td>[20:02] &lt MS-&gt TCPServer</td></tr>
+            <tr><td>[20:02] &lt MS-&gt ConnectedSocketAdapter</td></tr>
+            <tr><td>[20:02] &lt MS-&gt Selector</td></tr>
+            <tr><td>[20:02] &lt MS-&gt ServerCore</td></tr>
+            <tr><td>[20:02] &lt MS-&gt Protocol Handlers</td></tr>
+            <tr><td>[20:02] &lt MS-&gt are all what you expect to see but they're rarely as clearly delineated or named</td></tr>
+            <tr><td>[20:02] &lt MS-&gt esp the ServerCore part.</td></tr>
+            <tr><td>[20:02] &lt MS-&gt Let alone the specialisations we can do</td></tr>
+            <tr><td>[20:03] *** vmlemon_ waits for a massively multiplayer version of the Bouncing Cat Game ;)</td></tr>
+            <tr><td>[20:03] &lt MS-&gt OK, if I may, I'll let you chew on that for a while since I ought to get food :-)</td></tr>
+            <tr><td>[20:03] &lt j_baker&gt Well, that clarifies things a little.</td></tr>
+            <tr><td>[20:03] &lt MS-&gt vmlemon_: Oh, you had to say it</td></tr>
+            <tr><td>[20:03] &lt MS-&gt It's mashed tomorrow</td></tr>
+            <tr><td>[20:03] &lt MS-&gt and you HAD to say it</td></tr>
+            <tr><td>[20:03] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[20:03] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:04] &lt MS-&gt OK, j_baker - I may have a use for the webserver</td></tr>
+            <tr><td>[20:04] &lt MS-&gt Like tonight/tomorrow</td></tr>
+            <tr><td>[20:04] &lt MS-&gt I might well just implement that for tomorrow</td></tr>
+            <tr><td>[20:04] &lt MS-&gt they will think I am mad</td></tr>
+            <tr><td>[20:04] &lt vmlemon_&gt It could be the new "World of Warcraft", or something like that ;)</td></tr>
+            <tr><td>[20:04] &lt MS-&gt World of Warcraft for children</td></tr>
+            <tr><td>[20:04] &lt j_baker&gt lol</td></tr>
+            <tr><td>[20:05] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:05] &lt MS-&gt OK, I REALLY ought to get food</td></tr>
+            <tr><td>[20:05] &lt MS-&gt biab</td></tr>
+            <tr><td>[20:05] *** MS- really has to do that </td></tr>
+            <tr><td>[20:05] *** MS- is now known as MS-afk</td></tr>
+            <tr><td>[20:05] &lt vmlemon_&gt With surround sound?</td></tr>
+            <tr><td>[20:09] *** vmlemon_ is experimenting with D-BUS and CORBA/Bonobo over TCP/IP</td></tr>
+            <tr><td>[21:14] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:16] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:29] &lt j_baker&gt Note to self: When putting debug print statements in code, make sure to make it print WHERE the debug statement is for future removal.</td></tr>
+            <tr><td>[21:31] &lt MS-afk&gt Commenting out is often a good idea BTW</td></tr>
+            <tr><td>[21:31] &lt MS-afk&gt rather than just deletion</td></tr>
+            <tr><td>[21:40] &lt MS-afk&gt BTW, regarding your changes in your mail...</td></tr>
+            <tr><td>[21:41] &lt MS-afk&gt I don't think they're sufficiently major/necessary for the immediate release, but if I get a chance I'll pull them in</td></tr>
+            <tr><td>[21:41] &lt MS-afk&gt (want to get multiprocess in)</td></tr>
+            <tr><td>[21:53] &lt j_baker&gt I understand. The only one that would be big enough to get in would be the deadlock issue.</td></tr>
+            <tr><td>[21:53] &lt j_baker&gt And even that isn't necessarily a huge deal.</td></tr>
+            <tr><td>[21:53] &lt MS-afk&gt That's the one I'll consider :)</td></tr>
+            <tr><td>[21:54] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:55] &lt j_baker&gt BTW, is it safe to call a component's stop() method twice in a row?</td></tr>
+            <tr><td>[21:58] &lt j_baker&gt Actually, I found a bug in the ServerCore. I have no idea how I didn't catch it when I merged the branch.</td></tr>
+            <tr><td>[21:59] &lt j_baker&gt At the end of the method is super(SimpleServer, self).stop()...</td></tr>
+            <tr><td>[22:01] &lt MS-afk&gt Ah thanks</td></tr>
+            <tr><td>[22:02] &lt MS-afk&gt fixed /merged</td></tr>
+            <tr><td>[22:03] &lt vmlemon_&gt o.O http://lolinator.com/lol/www.google.com/</td></tr>

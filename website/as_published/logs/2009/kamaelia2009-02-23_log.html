@@ -1,0 +1,147 @@
+<html><body><table>
+            <tr><td>[00:07] *** erikcw has joined #kamaelia</td></tr>
+            <tr><td>[08:40] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:21] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[09:21] &lt MS-&gt greetings</td></tr>
+            <tr><td>[09:28] &lt Lawouach&gt heya mate</td></tr>
+            <tr><td>[09:29] &lt MS-&gt How's things?</td></tr>
+            <tr><td>[09:37] &lt Lawouach&gt good</td></tr>
+            <tr><td>[09:37] &lt Lawouach&gt sitting at home on the bench</td></tr>
+            <tr><td>[09:38] &lt Lawouach&gt watching Ramsay's kitchen nightmare</td></tr>
+            <tr><td>[09:38] &lt Lawouach&gt while coding</td></tr>
+            <tr><td>[09:40] *** MS- nods</td></tr>
+            <tr><td>[09:40] &lt MS-&gt That's good to hear</td></tr>
+            <tr><td>[09:40] &lt MS-&gt Today I'm mostly working on polishing up and packaging some work code</td></tr>
+            <tr><td>[09:41] &lt MS-&gt (packaging up ideally so I never have to work on again)</td></tr>
+            <tr><td>[09:42] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[09:42] &lt MS-&gt The kamaelia bits (where interesting) will get merged onto somewhere convenient</td></tr>
+            <tr><td>[09:42] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[09:43] &lt MS-&gt This time of year is both good & bad at r&d. If you're working on a good project, it's bad - you risk it being shutdown in favour of something else.</td></tr>
+            <tr><td>[09:43] &lt MS-&gt If you're working on a bad project, it's good - you're likely to be able to move over to something better :)</td></tr>
+            <tr><td>[09:44] &lt MS-&gt I'm in the latter camp at the moment :)</td></tr>
+            <tr><td>[09:44] &lt Lawouach&gt ah ah</td></tr>
+            <tr><td>[09:44] &lt Lawouach&gt great :)</td></tr>
+            <tr><td>[09:44] &lt Lawouach&gt well today I'll be coding on amplee (atompub lib)</td></tr>
+            <tr><td>[09:44] &lt Lawouach&gt the next version is going to be more like an atom toolbox</td></tr>
+            <tr><td>[09:45] &lt Lawouach&gt stripped down of all the useless bits</td></tr>
+            <tr><td>[09:45] &lt Lawouach&gt also switching to amara2 which is rather great (even if still in early beta stage)</td></tr>
+            <tr><td>[09:45] &lt Lawouach&gt I've been using whoosh to index atom documents</td></tr>
+            <tr><td>[09:46] &lt Lawouach&gt and though whoosh has great stuff it also suffers from a lack of feedback in its API IMO</td></tr>
+            <tr><td>[09:46] &lt Lawouach&gt I'm fighting against it at the moment</td></tr>
+            <tr><td>[09:55] &lt MS-&gt interesting</td></tr>
+            <tr><td>[09:56] &lt MS-&gt makes sense. Is whoosh that recent pure python search thingy ?</td></tr>
+            <tr><td>[09:56] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[09:56] &lt Lawouach&gt but internally the code is not that efficient</td></tr>
+            <tr><td>[09:56] &lt Lawouach&gt not just in terms of speed but in the way it does things</td></tr>
+            <tr><td>[09:56] *** MS- nods</td></tr>
+            <tr><td>[09:57] &lt Lawouach&gt what pisses me off right now is the following use case</td></tr>
+            <tr><td>[09:57] &lt Lawouach&gt I index atom entries using their aom id as the unique key to distinguish between them</td></tr>
+            <tr><td>[09:57] &lt Lawouach&gt but when I want to update the indexed values for that atom entry, what whoosh does is a "delete+add"</td></tr>
+            <tr><td>[09:58] &lt Lawouach&gt the problem is that if you try to delete several times the same indexed document, it'll raise an error</td></tr>
+            <tr><td>[09:58] &lt Lawouach&gt but if you don't delete it, you end up with several indexed documents all pointing at the same entity so to speak</td></tr>
+            <tr><td>[09:59] &lt Lawouach&gt it's just inconvenient</td></tr>
+            <tr><td>[09:59] *** MS- nods</td></tr>
+            <tr><td>[09:59] &lt MS-&gt seems a little odd</td></tr>
+            <tr><td>[09:59] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[09:59] &lt MS-&gt probably matches some original usecase/scenario they had at a guess</td></tr>
+            <tr><td>[09:59] &lt Lawouach&gt My thoughts too</td></tr>
+            <tr><td>[10:00] &lt MS-&gt or at least as a boundary case or perhaps a "gap behind the sofa" case (ie didn't think of it and code fell down the back... :) )</td></tr>
+            <tr><td>[10:00] &lt Lawouach&gt yeah</td></tr>
+            <tr><td>[10:01] &lt Lawouach&gt but what interests me in whoosh is its various index and query algorithms</td></tr>
+            <tr><td>[10:01] &lt Lawouach&gt I could index entries myself but I wouldn't do that as well</td></tr>
+            <tr><td>[10:01] *** MS- nods</td></tr>
+            <tr><td>[10:06] &lt Lawouach&gt oh MS-</td></tr>
+            <tr><td>[10:06] &lt MS-&gt ?</td></tr>
+            <tr><td>[10:06] &lt Lawouach&gt I have something that could be fun with Kamaelia</td></tr>
+            <tr><td>[10:06] &lt Lawouach&gt hang on</td></tr>
+            <tr><td>[10:06] *** MS- waits :)</td></tr>
+            <tr><td>[10:07] &lt Lawouach&gt http://pyevolve.sourceforge.net/wordpress/?p=203</td></tr>
+            <tr><td>[10:07] &lt Lawouach&gt could that be done with K?</td></tr>
+            <tr><td>[10:07] &lt Lawouach&gt I found it fun :)</td></tr>
+            <tr><td>[10:08] *** MS- looks</td></tr>
+            <tr><td>[10:09] &lt Lawouach&gt brb</td></tr>
+            <tr><td>[10:10] &lt MS-&gt yes. Definitely. Using Chong's new 3D topology code.</td></tr>
+            <tr><td>[10:31] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[10:32] &lt Lawouach&gt and I was thinking, you could display the messages of a user then click on one to be read aloud by a synthetiser voice</td></tr>
+            <tr><td>[10:32] &lt Lawouach&gt could be quite fun</td></tr>
+            <tr><td>[10:32] &lt MS-&gt heh, that could be quite fun</td></tr>
+            <tr><td>[10:32] &lt MS-&gt Quite simple too</td></tr>
+            <tr><td>[10:32] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[10:32] &lt Lawouach&gt most of the code is probably there</td></tr>
+            <tr><td>[10:33] &lt MS-&gt interesting. Thinking about it that's the sort of thing that many people would not consider simple.</td></tr>
+            <tr><td>[10:33] &lt MS-&gt I like that</td></tr>
+            <tr><td>[10:33] &lt MS-&gt (that's the underlying core goal I have with all code that I write really)</td></tr>
+            <tr><td>[10:33] &lt MS-&gt (if it doesn't make it easy to do hard stuff, it doesn't add)</td></tr>
+            <tr><td>[10:34] &lt Lawouach&gt indeed</td></tr>
+            <tr><td>[10:35] &lt MS-&gt I'll try not to spend today writing that, but I think I ought to write that example up. :)</td></tr>
+            <tr><td>[10:35] &lt MS-&gt esp given the twitter API makes this sort of thing easy.</td></tr>
+            <tr><td>[10:36] &lt Lawouach&gt sorry if I kill your efficiency :)</td></tr>
+            <tr><td>[10:37] &lt MS-&gt hehe</td></tr>
+            <tr><td>[10:37] &lt MS-&gt It's hard to concentrate on annoying things when interesting things are thrown your way ;-) :-D</td></tr>
+            <tr><td>[10:37] &lt MS-&gt But I would rather get the interesting things thrown my way rather than not :)</td></tr>
+            <tr><td>[10:41] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[12:39] &lt MS-&gt Ha! Have now figured out (finally) the config options on my mobile for sending MMS :-)</td></tr>
+            <tr><td>[12:40] &lt MS-&gt (since it wasn't ever configured for my mobile network I feeling vaguely happy about that :-) )</td></tr>
+            <tr><td>[12:56] &lt Lawouach&gt :p</td></tr>
+            <tr><td>[15:31] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[16:31] *** MS- leaves for home</td></tr>
+            <tr><td>[16:31] &lt MS-&gt back later</td></tr>
+            <tr><td>[16:31] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:50] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:51] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[19:11] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:12] &lt MS-&gt evening</td></tr>
+            <tr><td>[19:21] &lt Davbo&gt Hey MS-</td></tr>
+            <tr><td>[20:48] *** TheBashar has joined #kamaelia</td></tr>
+            <tr><td>[20:49] &lt TheBashar&gt I'm new to kamaelia. I'd like to write a simple tcp server bound to multiple ports. I can do this easily with twisted ( http://pastebin.com/m764fb662 ), but my brain doesn't fit twisted in general. Is there an analogous way to do this in Kamaelia?</td></tr>
+            <tr><td>[22:21] &lt Patrick`&gt sounds easy enough</td></tr>
+            <tr><td>[22:27] &lt TheBashar&gt Any pointers on how to bind a simple server to a block of ports?</td></tr>
+            <tr><td>[22:28] &lt MS-&gt Oh, just seen this q.</td></tr>
+            <tr><td>[22:30] &lt MS-&gt 2 secs</td></tr>
+            <tr><td>[22:31] &lt MS-&gt OK, given a protocol handler getting created either by a class or factory function:</td></tr>
+            <tr><td>[22:31] &lt MS-&gt ie</td></tr>
+            <tr><td>[22:31] &lt MS-&gt def myProtocol():</td></tr>
+            <tr><td>[22:31] &lt MS-&gt  ...</td></tr>
+            <tr><td>[22:31] &lt MS-&gt or</td></tr>
+            <tr><td>[22:31] &lt MS-&gt class myProtoco(...)</td></tr>
+            <tr><td>[22:31] &lt MS-&gt ...</td></tr>
+            <tr><td>[22:31] &lt MS-&gt http://pastebin.com/m48140445</td></tr>
+            <tr><td>[22:32] &lt MS-&gt ie simply loop through the ports you wish to listen on an pass it the same factory</td></tr>
+            <tr><td>[22:32] &lt MS-&gt If you wanted you could customise them such that it knows which port the handers are created on as well</td></tr>
+            <tr><td>[22:34] &lt TheBashar&gt Thank you. That helps. For resource conservation, is there any way to have a single handler listen on all the ports? As apposed to creating a bunch of individual handlers.</td></tr>
+            <tr><td>[22:35] &lt MS-&gt Well, under the hood what's really happening is you're creating a socket and each socket in practice only listens to one port</td></tr>
+            <tr><td>[22:35] &lt MS-&gt As a result TCPServer which is the raw component that creates the listener socket only watches one such socket</td></tr>
+            <tr><td>[22:35] &lt TheBashar&gt I see, so there's no really way to multiplex to a single handler.</td></tr>
+            <tr><td>[22:35] &lt MS-&gt In practice though that's then handed back to a select statement which them will listen to it</td></tr>
+            <tr><td>[22:36] &lt MS-&gt Well, if you want to send all the inputs on all ports to a single component, then the easiest way to do that is to use a backplane component</td></tr>
+            <tr><td>[22:36] &lt MS-&gt Backplane is kinda a swiss army component for plumbing things</td></tr>
+            <tr><td>[22:37] &lt MS-&gt Backplane("somename") creates a backplane</td></tr>
+            <tr><td>[22:37] &lt MS-&gt PublishTo("somename") does the obvious</td></tr>
+            <tr><td>[22:37] &lt MS-&gt SubscribeTo("somename") also does the obvious</td></tr>
+            <tr><td>[22:37] &lt MS-&gt so if you really want every connection to end up going to one place you can do that</td></tr>
+            <tr><td>[22:38] *** MS- finds a link to a splitting server</td></tr>
+            <tr><td>[22:38] &lt MS-&gt from the systems perspective though btw, whether you have 10 connections on one port or 10 on different ones it doesn't make much difference :)</td></tr>
+            <tr><td>[22:39] &lt MS-&gt (if you hook them up to a backplane that is)</td></tr>
+            <tr><td>[22:39] &lt TheBashar&gt I'll give that a shot. Thank you for the help!</td></tr>
+            <tr><td>[22:40] &lt MS-&gt you're welcome :)</td></tr>
+            <tr><td>[22:40] &lt MS-&gt btw, simple swarming radio source:</td></tr>
+            <tr><td>[22:40] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/MPS/Examples/LUGRadio/SimpleSwarmRadioSource.py</td></tr>
+            <tr><td>[22:40] &lt MS-&gt This is the generic client: http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/MPS/Examples/LUGRadio/SimpleSwarm.py</td></tr>
+            <tr><td>[22:41] &lt TheBashar&gt Yes, true. I'm just trying to make a very simple QOTD type server that can listen on blocks of ports. Then I'll use my client to scan through the ports trying to connect to the server. The idea is to find any ports that my corporate firewall will let me get out on.</td></tr>
+            <tr><td>[22:41] &lt MS-&gt Ahhhh. I see :)</td></tr>
+            <tr><td>[22:44] &lt MS-&gt untested, but perhaps what you want:</td></tr>
+            <tr><td>[22:44] &lt MS-&gt http://pastebin.com/m4e34eb3a</td></tr>
+            <tr><td>[22:46] &lt TheBashar&gt Yes, that looks like it. Thank you very much. I know it's a silly little thing, but as things get more complicated twisted really buries me, so I'm trying to start with the little things with kamaelia. Thanks so much!</td></tr>
+            <tr><td>[22:46] &lt MS-&gt You're very welcome :)</td></tr>
+            <tr><td>[22:47] &lt MS-&gt It's nice to make people's lives simpler :)</td></tr>
+            <tr><td>[22:48] &lt MS-&gt OK, I'm calling it a night :) If you have further q's btw, the channel is logged and there's also the mailing list :)</td></tr>
+            <tr><td>[22:48] &lt TheBashar&gt Thanks!</td></tr>
+            <tr><td>[22:48] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[22:49] *** TheBashar has parted #kamaelia</td></tr>
+            <tr><td>[23:50] *** TheBashar has joined #kamaelia</td></tr>
+            <tr><td>[23:52] &lt TheBashar&gt I can't install kamaelia on vista with python 2.6.1. Anybody seen this problem before?</td></tr>
+            <tr><td>[23:52] &lt TheBashar&gt  File "C:\Program Files\Python26\lib\distutils\util.py", line 164, in convert_p</td></tr>
+            <tr><td>[23:52] &lt TheBashar&gt ath</td></tr>
+            <tr><td>[23:52] &lt TheBashar&gt  raise ValueError, "path '%s' cannot be absolute" % pathname</td></tr>
+            <tr><td>[23:52] &lt TheBashar&gt ValueError: path '/usr/local/share/kamaelia' cannot be absolute</td></tr>

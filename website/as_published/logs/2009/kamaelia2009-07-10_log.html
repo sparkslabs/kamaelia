@@ -1,0 +1,100 @@
+<html><body><table>
+            <tr><td>[00:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[01:35] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[02:03] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[02:33] *** eikenberry_ is now known as eikenberry</td></tr>
+            <tr><td>[05:49] &lt Lawouach_&gt hmm</td></tr>
+            <tr><td>[05:49] &lt Lawouach_&gt MemoryError in the CSA</td></tr>
+            <tr><td>[06:10] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:12] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[10:12] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[10:16] &lt Lawouach_&gt heya</td></tr>
+            <tr><td>[10:17] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:20] &lt Lawouach_&gt doing some micro optimisation</td></tr>
+            <tr><td>[10:20] &lt Lawouach_&gt crazy stuff :)</td></tr>
+            <tr><td>[10:40] &lt MS-&gt Cool</td></tr>
+            <tr><td>[10:41] &lt MS-&gt If there's anything you want merged back, just let me know :)</td></tr>
+            <tr><td>[10:42] &lt Lawouach_&gt will do</td></tr>
+            <tr><td>[10:42] &lt Lawouach_&gt for now I'm focusing on headstock and bridge (the xml parser)</td></tr>
+            <tr><td>[10:42] &lt MS-&gt cool</td></tr>
+            <tr><td>[10:48] &lt MS-&gt I appear to be trying to write a test that a time source that ticks every second does so within a certain time accuracy.</td></tr>
+            <tr><td>[10:48] &lt MS-&gt Realised that a "debug" outbox could be useful for testing purposes as well as debug</td></tr>
+            <tr><td>[10:49] &lt Lawouach_&gt probably</td></tr>
+            <tr><td>[10:49] &lt MS-&gt No idea if approach is useful beyond this context of course :)</td></tr>
+            <tr><td>[10:49] &lt Lawouach_&gt It's funny because I'm hammeing the ejabberd server with XMPP stanzas</td></tr>
+            <tr><td>[10:49] &lt Lawouach_&gt and it's the bottleneck of my system right now</td></tr>
+            <tr><td>[10:49] &lt MS-&gt ejabberd is ?</td></tr>
+            <tr><td>[10:49] &lt Lawouach_&gt I think it's not erlang's fault but the way ejabberd is architecture doesn't always make the best of erlang</td></tr>
+            <tr><td>[10:49] &lt MS-&gt Interesting</td></tr>
+            <tr><td>[10:53] &lt Lawouach_&gt but it's only the case when ejabberd is really under stress</td></tr>
+            <tr><td>[10:53] &lt Lawouach_&gt at low volume, it's very fast and my code becomes the bottleneck of my throughput</td></tr>
+            <tr><td>[10:54] *** MS- nods</td></tr>
+            <tr><td>[10:54] &lt MS-&gt That's really interesting</td></tr>
+            <tr><td>[10:55] &lt Lawouach_&gt Just to give you an idea of how it works</td></tr>
+            <tr><td>[10:55] &lt Lawouach_&gt Like I explained the other day, XMPP allows a server to register new external components as services</td></tr>
+            <tr><td>[10:55] &lt Lawouach_&gt With ejabberd, once your service is registered, ejabberd forwards all stanzas of the namespace the service support to the service</td></tr>
+            <tr><td>[10:55] &lt Lawouach_&gt over a regular socket</td></tr>
+            <tr><td>[10:56] &lt Lawouach_&gt So I have such a service running headstock in a process</td></tr>
+            <tr><td>[10:56] &lt Lawouach_&gt and connexted to ejabberd via a socket</td></tr>
+            <tr><td>[10:57] &lt Lawouach_&gt Now it does appear that internally ejabberd doesn't make the best of erlang in that specific case and it would appear (but I have to confirm it yet) that every stanza is bufferized by ejabberd</td></tr>
+            <tr><td>[10:57] &lt Lawouach_&gt so that it is sent like a FIFO to the external service</td></tr>
+            <tr><td>[10:58] &lt Lawouach_&gt I'm wondering if that's the best idea</td></tr>
+            <tr><td>[10:58] &lt Lawouach_&gt erlang is fantastic to spawn simple erlang processes that could write to the socket in parallel</td></tr>
+            <tr><td>[10:58] &lt Lawouach_&gt increasing the socket throughput</td></tr>
+            <tr><td>[10:59] &lt Lawouach_&gt But then again, there would probably need some sort of synchronising element on the socket</td></tr>
+            <tr><td>[10:59] &lt Lawouach_&gt so that each stanza is written to the socket as a whole</td></tr>
+            <tr><td>[11:02] &lt MS-&gt I see</td></tr>
+            <tr><td>[11:03] &lt MS-&gt Is it possible to tell ejabberd to make multiple connections in parallel to a service handler?</td></tr>
+            <tr><td>[11:03] &lt MS-&gt It's possible it's working on the assumption that sending stanzas in parallel risking out of order processing is potentially problematic</td></tr>
+            <tr><td>[11:07] &lt Lawouach_&gt 1. Not that I'm aware of. It's a limitation in the spec rather than in ejabberd IMO</td></tr>
+            <tr><td>[11:07] &lt MS-&gt k</td></tr>
+            <tr><td>[11:07] &lt Lawouach_&gt 2. I'm not sure message ordering is compulsory</td></tr>
+            <tr><td>[11:07] *** MS- nods</td></tr>
+            <tr><td>[11:08] &lt MS-&gt It's not something I've looked at, hence the basic qs :)</td></tr>
+            <tr><td>[11:08] &lt Lawouach_&gt The thing is, to become a valid service, the external process must open a stream (similar to what a XMPP client would do)</td></tr>
+            <tr><td>[11:08] &lt Lawouach_&gt however it would be interesting if ejabberd could perform some load balancing itself and allow several external components to serve the same namespace</td></tr>
+            <tr><td>[11:10] &lt MS-&gt I see</td></tr>
+            <tr><td>[11:10] &lt MS-&gt yes</td></tr>
+            <tr><td>[11:16] &lt Lawouach_&gt Mind you, ejabberd is good at being clustered</td></tr>
+            <tr><td>[11:16] &lt Lawouach_&gt I can only load-balnce using TCP between several ejabberd nodes</td></tr>
+            <tr><td>[11:20] &lt MS-&gt I see</td></tr>
+            <tr><td>[11:20] &lt MS-&gt k</td></tr>
+            <tr><td>[11:21] &lt Lawouach_&gt That being said, it shows that erlang isn't magic</td></tr>
+            <tr><td>[11:21] &lt Lawouach_&gt You need:</td></tr>
+            <tr><td>[11:21] &lt Lawouach_&gt 1. To really know the language to make the best of it</td></tr>
+            <tr><td>[11:21] &lt Lawouach_&gt 2. Have to deal with things that fundamentally can't be made concurrent like a single socket</td></tr>
+            <tr><td>[11:22] &lt Lawouach_&gt at least the socket can, but the protocol can't in this case :)</td></tr>
+            <tr><td>[11:22] &lt MS-&gt Absolutely</td></tr>
+            <tr><td>[11:39] &lt MS-&gt OFFS. I've made a such a stable time source I can't break it</td></tr>
+            <tr><td>[11:39] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:39] &lt MS-&gt Accuracy is sub millisecond. Want to increase that to &gt30ms</td></tr>
+            <tr><td>[11:39] &lt MS-&gt lunch perhaps and come back later</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt I had not considered it but it seems I can open more than one connection to the ejabberd service listener</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt ejabberd will load-balance internally apparently</td></tr>
+            <tr><td>[11:42] &lt MS-&gt :)</td></tr>
+            <tr><td>[11:42] &lt Lawouach_&gt let's see</td></tr>
+            <tr><td>[11:42] &lt MS-&gt cool</td></tr>
+            <tr><td>[11:51] &lt MS-&gt yay, I have successfully created an accurately crappy timesource, that's always out by about 1 frame per second :)</td></tr>
+            <tr><td>[11:53] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:21] &lt MS-&gt now not so sure. I think it's autocorrecting itself for drift now</td></tr>
+            <tr><td>[12:28] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[12:42] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[13:14] &lt vmlemon_1&gt Hi</td></tr>
+            <tr><td>[13:18] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[13:24] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[14:45] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[15:18] *** Davbo_ has joined #kamaelia</td></tr>
+            <tr><td>[15:35] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:08] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:28] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:34] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:09] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:43] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:34] *** vmlemon_1 has joined #kamaelia</td></tr>
+            <tr><td>[18:41] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[19:14] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:01] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:49] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[23:12] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[23:59] *** eikenberry_ is now known as eikenberry</td></tr>

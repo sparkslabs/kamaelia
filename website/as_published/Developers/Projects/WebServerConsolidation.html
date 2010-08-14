@@ -1,0 +1,126 @@
+<html>
+<head>
+<title> Developers/Projects/WebServerConsolidation </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/WebServerConsolidation">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Project Task Page: Web Server Consolidation<br></h2>
+<p><div style="float: right; border: solid;" class="twoC"><b> Status:</b> Started<br><b>Current Developers: </b> G0SUB<br><b>Current "inflight" dev location:</b> /Sketches/BG/<br><b>Start Date:</b> 12th April 2007<br><b>Major Milestone date:</b> -<br><b>Expected End Date:</b> <i>-</i><br><b>End Date:</b> <i>-</i><br><b>Date this page last updated:</b> April 14th 2007<br><b>Estimated effort so far:</b> 1hr<br></div><b><br></b></p><h2><b>Description</b></h2>This task will extend the web-server component in Kamaelia to make it useful as a general purpose web-server component.<br><br>It will be possible at the end of this task to use the Kamaelia Web Server to server both static pages and run CGI scripts within the Kamaelia webserver. This will result in a pure python webserver that should hopefully be deployable on both servers and clients. Support of WSGI is likely to be explored as well, given sufficient time, which would allow tools like Django &amp; Pylons to be run in a scalable manner on the client side, not just in test mode.<br><br>The current web-server component in Kamaelia was written as a part of Google Summer of Code 2006 program. It is largely functional but it still needs a few more features before it can be used as a single threaded, general purpose web-server component. Besides that, it has a few things hard coded into the web-server which makes it less flexible.<br><br>This project will add a few new features to the web-server component (like full HTTP/1.0 support) and will make it more flexible and user-friendly (user configurable options, over-ridable error handling), etc. This way, the web-server component in Kamaelia will be useful as a stand alone web-server and could be used in a wide range of situations.<br><h2>Inputs</h2>This section is largely about
+WHO has influenced this task to do WHAT, and where possible WHY. It is
+also about WHO to contact with regard to this task to influence what's
+going on.<br><ul><li>Task Sponsor: Michael</li><li>Task Owner: G0SUB</li><li>Developers involved in the task at some point<br></li><ul><li>G0SUB</li></ul><li>Users:</li><ul><li>Michael</li><li>Sylvain</li></ul><li>Interested third parties</li><ul><li>Sylvain</li></ul><li>Requirements</li><ul><li>Each requirement should have who the requirement came from attached to it</li><li>Each requirement should have an indication of MUST/SHOULD/MAY/WOULD LIKE attached.</li></ul></ul><i><b>Initial project plan</b></i><br><br>I will extend the web-server component in Kamaelia to support all HTTP/1.0 methods (like GET, PUT, POST, etc.), add configurable options, like document root, port to listen on, additional mime-types, etc. I will also add CGI support to the web-server. I will also make the server extensible so that the user can override customise the behaviour of the server in case of errors, etc.<br><br>I would like to restructure the existing code a bit to make the component easily importable and usable from other modules.<br><br>There are a few other things which I intend to work on, like adding support for requests with byte ranges, etc.<br><br>I will also investigate the possibility of adding WSGI support and a generic interface to add custom methods to the web-server given sufficient time.<br><br><i>Deliverables:</i><br><br>The Project deliverables are --<br><ul><li>Full HTTP/1.0 support in the web-server</li><li>Configurable CGI support</li><li>User defined error handling</li><li>Test cases for the above</li><li>Documentation and recipes for the CookBook</li></ul>And given sufficient time --<br><ul><li>WSGI support</li><li>Support for byte range, cache control</li><li>An interface to add extra methods to HTTP</li></ul><i>Project Details:</i><br><br>The web-server already uses Axon as its core infrastructure, and that is what I will use too. The CGI part of the web-server will be implemented using the already available UnixProcess component though it may need to be adapted slightly to accommodate custom environment variables for the CGI program to execute.<br><br>The other implementation aspects of the project have already been covered above.<br><br><i>Project Schedule:</i><br><br>I will start with discussing the implementation with the Kamaelia developer community and my mentor. Then I will read the <a href="http://www.faqs.org/rfcs/rfc1945.html">HTTP/1.0</a> and <a href="http://www.faqs.org/rfcs/rfc2616.html">HTTP/1.1</a> standards and learn more about the various aspects of the protocol. I also need to read up the <a href="../../../MiniAxon/">Axon tutorial</a> to understand more about the workings of the core infrastructure. I will then start implementing the missing aspects of the protocols. Once that is done, I will take up adding CGI support to the component. Meanwhile I will also clean up the code and add some features to make it more user friendly and extensible.<br><br>This should take around 4 weeks to be implemented but in keeping with the various issues involved with Software Engineering, may take up to Pi times more than estimated. After that I will write the test cases and add documentation for the newly implemented features.<br><br>If I am left with sufficient time, I will investigate implementing <a href="http://wsgi.org/wsgi">WSGI</a> support in the web-server, so that it works across various implementations of Python web frameworks. I will also implement byte range support and cache control given time.<br><br>The development will be done completely in the open and the code will be hosted on sourceforge.net or somewhere else if available. I intend to do one Alpha and two Beta releases before doing the stable release to ensure better testing of the code.<br><h2>Outputs</h2>This section is largely about WHAT has been produced, normally by WHO (in order to provide a point of contact)<br>(for help see <a href="../../../Developers/Projects/ProjectTaskPageTemplate">template</a>)<br><h3>Expected</h3><ul><li>A pure python webserver capable of being used as a standalone server relatively easily<br></li></ul><h3>Actual</h3>(for help see <a href="../../../Developers/Projects/ProjectTaskPageTemplate">template</a>)<ul><li>Code - <i>what does it do, where is it?</i><br></li><li>Reports - <i>where is it, who wrote it, what was it about, when?</i><br></li><li><i>Presentation - where is it, where was it presented, what was it about, who presented it, when?</i><br></li><li>Events - <i>eg The Brussels open space event</i></li></ul>Note: Especially with speculative tasks,actual outputs may be substantially different from expected.<br><h3>Realistic possibilities arising as a result of activity on this task</h3><p>Add speculation as it becomes apparent as realistic. Can be related to usage or future development.<br></p><h2>Related Tasks</h2><h3>Tasks that directly enable this task (dependencies)<br></h3><ul><li>PTP : WebServer (for help see <a href="../../../Developers/Projects/ProjectTaskPageTemplate">template</a>)</li></ul><h3>Sub Tasks</h3><ul><li>If appropriate add subtask descriptions here. (for help see <a href="../../../Developers/Projects/ProjectTaskPageTemplate">template</a>)</li><li>Each subtask here should ideally be a link to a project task page for that project</li><li>It would be <i>nice</i> but not mandatory to note the subtask status</li><li>For small subtasks, it <b>IS</b>
+acceptable to merely have subtasks as bullet points with the sort of
+information you'd put on a project task page, but for which it seems
+overkill to create a project task page for. (It can always become a
+full PTP later on)<br></li></ul><h2>Task Log</h2><i><b>When a task is running, then this is where most updates will occur. </b></i><b>(for help see <a href="../../../Developers/Projects/ProjectTaskPageTemplate">template</a> for what goes here, level of terseness and content)</b><i><br><br></i><ul><li>Created the PTP page for the project Michael. April 14th 2007. Time spent 1 hour</li></ul><h2>Discussion</h2><p>Comments ? :-)<br></p><br>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

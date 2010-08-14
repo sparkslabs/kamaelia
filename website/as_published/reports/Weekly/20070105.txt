@@ -1,0 +1,234 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20070105 ======
+1. Note of Agenda
+2. Participants
+3. Activity Reports
+4. Discussion items (max 3 or 4)
+4.1 Website docs - what do we want (what Cookbook entries? What PTPs?
+    PTP for the cookbook?)
+4.2 Janus - Key things for review of year, Key things want in next
+    years review
+5. Date/Time of next weekly meeting
+Friday 12th January 2007, 11am GMT 
+
+2. Participants
+Participants: MS-, mhrd, Lawouach(?)
+Present: G0SUB, tav, Uraeus, Lawouach
+
+3. Activity Reports
+
+Michael:
+[11:20] <MS-> (BTW, I did play with audio handling, but got stuck in linux 
+audio hardware hell)
+    DONE:
+        * Santa hat for cat
+        * Feedparser component
+        * HTTP Client improvements
+        * Cookbook entries: HTTPServer, HTTPClient, AxonDiagramming
+        * PTPs: Fedback on Pipeline/Graphline/Backplane/Carousel &
+                SimpleBitTorrentExample
+        * First Exogneous connector component
+        * Started review document
+        * Oh, wxwidgets work & MVC example
+        * Replied to someone who emailed kamaelia-list-owner about where
+          to find the kamaelia source, docs and downloads, etc
+    TODO:
+        * Backplane Cookbook entry
+        * RSS demuxer/remuxer
+        * Initial pass at DB Components
+        * Find a beter name for exogenous components
+        * Finish GSOC2006 page
+    BLOCKED:
+        * Leave (been)
+        * TVNR (been & will be)
+
+Matt:
+    DONE
+        * Webpages: how to use mobile reframer and video cut detector
+        * Wrote test code for software MPEG TS demuxer. Fixed bug.
+        * Written cookbook/tutorial pages for: Pipeline, Graphline,
+          Carousel, some DVB examples
+        * Substantially improved docstrings for DVB components.
+          Precursor to writing tutorials/cookbook entries.
+    BLOCKED
+        * Christmas and New Year holidays
+        * allocated to work on VoIP project (non Kamaelia)
+    TODO
+        * finish cookbook articles and tutorials for DVB components
+        * rehash Backplane cookbook entry
+
+Discussion regarding  Wx:
+   * Fixing wx would require changing the scheduler - or creating
+     a special scheduler for wx since it REALLY wants to take
+     control.
+
+Michael noted the video cut stuff strikes me as particularly interesting
+with regard to assisting programme segmentation.
+
+
+4. Discussion items (max 3 or 4)
+4.1 Website docs - what do we want (what Cookbook entries? What PTPs?
+    PTP for the cookbook?)
+
+Cookbook Entries
+
+Clarification on cookbook entries was made due to some recent issues with
+cookbook contents. Cookbook entries are "how to achieve a particular goal"
+rather than general tutorials - ie much like a proper cookbook. A cookbook
+doesn't teach you to cook, but it can be a good way to learn to cook,
+where as you can get books that teach you cooking.
+
+Most pages Michael has written have been largely based around as a result
+"this is a recipe - small app - that I've needed for some purpose and this
+is how it was built and works". Matt noted he was really wanting to add in
+the "how to cook" instructions. Michael noted that various cookbook pages
+had been made better when the examples became more real as a result.
+
+Issue: Need to have pages on "how to cook" as well.
+
+Any other cookbook entries we should have:
+   * Examples/DVB_Systems/
+   * Pygame
+   * OpenGL would be useful
+   * TCP Servers & clients (servers largely written)
+   * UDP & Multicast
+
+Things Matt feels are missing/important are the more detailed docs for
+each component (since there's alot of explanatory stuff, and minimalistic
+examples in there). Tutorials on topics, to provide the introduction
+eg. saying "you want to do networking, look at these components, here's
+the cookbook entries, etc".
+
+Tutorials don't belong outside the cookbook, but concrete is more useful
+than abstract, in general, but sometimes exceptions often exist:
+   * Sometimes examples that are a bit useless are good because you can
+     keep them really really simple, eg. "hello world"
+
+General principle arose in discussion:
+   * If the person who came up with a concept writes the page on the
+     component writes the initial cookbook entry - it explains the
+     thinking behind the component better.
+   * eg Carousel explains the thinking behind the component (at present)
+     much better than the backplane page, even though both pages are
+     good/useful. (see logs for detail on this)
+   * Will always have exceptions.
+
+Michael requested a review of PureTransformer page.
+Noted that a PTP for the cookbook is necessary - Matt offered to start.
+
+Suggestion: Generally speaking not to do cookbook entries for stuff in
+            /Sketches. (though good to harvest for examples for cookbook
+            entries)
+
+PTP Pages
+
+Michael wants the PTP pages (at minimum) to reflect the work done over
+the past year. The reason is be he started writing a review of the year,
+pulling in the text spiel from the PTPs from the past yearand noticed
+that Google SOC was a big gap. Matt agreed and Michael asked for any
+major gaps. (esp if "outputs" is viewed as "outcomes")
+
+Test for less tangible things: does it contribute somehow
+tangibly/intangibly
+to the OSS project? 
+
+Conference involvement ?  "Oscon ... probably yes"
+Outputs are at minimum the presentation
+
+Discussion, outputs --> outcomes. inputs --> influences.
+
+Other PTP's for major subsystems ...
+   * pygame, visualisation
+   * introspection
+
+over past year:
+   * visualisation: experiments , graphline builder
+   * Compose
+   * the eurooscon release, releases generally (discrete chunks and
+     need managing) - major conferences as release points
+   * Optimisations (box delivery, quiescence)
+
+For retroactive ones, the most important part is the text spiel at the
+top (since actually retrospective ones provide context* for future
+development). Any historical parts that are useful: "this was not
+done because", "this was done because"
+
+SoC pages will be culled from SoC logs.
+
+Core priorities (for retrospective writing)
+   * Conferences
+   * Optimisations
+   * Releases
+   * The Linux Format article
+
+Matt asked about the auto generated component docs. Michael confirmed
+he had plans for the longer docs, but time had conspired, and he
+shouldn't be a bottle neck. Matt noted he had some ideas there.
+
+4.2 Janus - Key things for review of year, Key things want in next
+    years review
+
+Why? It's january :)
+
+Michael is writing a review of the past year for the website - so we can
+see the achievements of the past year. It's entirely reusing text from
+the PTPs the sections so far:
+   * Kamaelia Macro
+   * DVB Tools
+   * Mobile Reframer
+   * Multicast RTP MPEG Remultiplexer
+   * Multicast Proxy Tools
+   * Whiteboard
+   * Compose
+   * Video Cut Detector
+   * Web Server
+   * Web Client
+   * Google & Summer of Code 2006
+      * Creation of an integrated BitTorrent component for Kamaelia
+      * 3D widget framework
+      * Trusted Communications for Kamaelia Components
+      * Key Predistribution Infrastructure (KPI) base trusted
+        communication framework for Kamaelia
+
+... quite a lot - and virtually everything is new, with the possible
+exception of Compose (though substantially improved this year).
+
+So, what would we like in next year's review ?
+
+Michael:
+   * Would like to to see Kamaelia version of the scribble on the
+     Radio Times to programme your PVR - ie definitely usable for
+     Christmas 2008 (since clearly now doable)
+   * Trusted communications written *and* usable
+   * Kamaelia as an RSS/pub/sub linkage
+   * Exogenous connector components, with a more friendly name
+   * To make the weaker projects from SoC mergeable and merged
+   * The core projects we didn't get any coverage of from SoC due to lack of 
+     slots
+   * WSGI integration for the webserver
+   * Video capture components
+   * Ruby Axon
+   * SSL for the webserver/client
+   * Tuner application
+   * Nesting for Compose
+   * Qt Integration
+   * Components abstracting specific web services 
+     - eg flickr upload/flickr download etc component.
+     - eg Accessing google maps for textures is another
+
+Matt:
+   * An end-to-end iPlayer like demo (Michael also wants)
+   * Kamaelia on Ironpython
+   * Improved threading handling (maybe using Ruby Axon instead)
+   * Improved visualisation for large systems
+   * Improved introspection (to tie in)
+   * Improved graphical UI (again linked in)
+
+Suggestions from Lawouach:
+   * Integrate third party webservers/clients. eg CherryPy's
+     (Michael agreed it could be interesting - similar benefits to PyMedia)
+
+5. Date/Time of next weekly meeting
+Friday 12th January 2007, 11am GMT 
+
+Matt commented he wouldn't be able to make it for reasons already discussed.
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20070105 ======

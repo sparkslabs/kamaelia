@@ -1,0 +1,227 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060728 ======
+
+1. Note of Agenda
+
+2. Participants
+
+Participating: mhrd, thomasfx, c-ryan
+Attending: G0SUB, Uraeus
+
+3. Activity Reports
+
+Thomas:
+    DONE:
+        Code restructure
+        New intersection tests (Picking)
+        Eliminated shared state
+        Interactors for event/movement translation
+        Converted most components to new framework
+        Reimplemented pygame component handling
+        Started packaging
+    TODO:
+        Convert remaining components
+        Container component
+        Packaging
+        More interactors
+        3D GUI for Ryans bittorrent package
+    BLOCKED:
+        none
+
+Matt:
+    DONE:
+        tracked down alsa+speex problem (alsa bindings issues, misleading docs)
+        graphline update (request from Thomas)
+        revisiting pymedia: made audio capture, encode, decode, playback components
+        debugged pymedia input (patch submitted to pymedia project)
+    BLOCKED:
+        the odd BBC meeting or two :)
+    TODO:
+        make more pymedia wrappers (video)
+        integrate speex into whiteboard
+        continue with DVB components
+        review/revisit experimental Timer component
+        Improve box destruction to handle when a box is still linked to another
+        review/merge sync boxes support for threaded component
+
+Ryan:
+    DONE:
+        Lots of "packaging":
+            - putting stuff where it belongs in Kamaelia.Community.RJL-
+            - sorting out the imports
+            - code commenting/documentation
+            - conversion of print statements to send to a debug outbox
+        Chunkifier should now run in O(n) time (uses a character queue that will be useful elsewhere)
+        Mentioned Fanout not pausing
+        Suggested making subcomponent classes default parameters
+    TODO:
+        shutdown support for TorrentService,
+        component test scripts,
+        reconnecting kambot,
+    BLOCKED:
+        Need feedback - what more needs doing?
+
+4. Discussion items (max 3 or 4)
+
+4.1 SoC Progress Check
+
+Matt critiqued Ryan & Thomas's code base. Noted he liked the display lists
+approach to shared data. Matt suggested it might be interesting to show
+to people who understand opengl/game design.
+
+Matt positivey commented on the readability of Ryan's code.
+
+Matt noted: don't forget to document whilst you're both packaging
+Provided some hints:
+   * It'll be good to have installation notes: "first install bit torrent,
+     by doing X,Y,Z, then install my stuff by doing A,B,C, etc"
+   * There's lots of kinds of docs that are useful:
+      * docstrings - explaining individual components, how they work, etc...
+      * some webpages woudl be very cool to explain the systems you've both
+        built - at the very least how to run them up, what to type at their
+        command line etc...
+
+        its also good adverts for the work you've both done and is something
+        you can point people at - eg. prospective employers, universities
+        etc :)
+
+   * and also - like I said, README's INSTALL notes etc...
+   * Don't forget to include example snippets in your docstrings - they're
+     always really useful for people who read them
+
+The key point Matt finished on was "basically, both continue with packaging,
+make sure there's good docs in there ... so someone coming to it fresh knows
+how to get it working and can also find out how it works".
+
+4.2 Improvements to Axon/Kamaelia
+
+Matt thought it would be good to talk about what the group thought was
+good/bad things about Axon/Kamaelia ... Essentially a brainstorming
+exercise.
+
+And if we want, discuss some of the possible changes in the pipeline
+(ryan's subcomponent suggestion, Timers, Services, etc)
+
+Ryan noted:
+    Timers useful
+    Services are a bit of a pain
+    Shutting down services awkward
+    Services take too much effort to use
+    Doesn't like inconsistent capitalisation
+        Matt asked for a list here
+
+Matt noted:
+    Ryan found it simpler to build his own 'tick' outputting threaded
+    component
+    Services are a bit of a pain
+    Liked Ryan's subcomponent idea
+    Shutting down services awkward
+    Services take too much effort to use
+
+Thomas noted:
+    Liked Ryan's subcomponent idea
+
+Questions raised: (with answers where known)
+    Is there a good Timer in the main tree? - not one that is CPU friendly
+        That's why Ryan wrote one
+        That's why Matt wrote one
+        Ryan complimented Matt's, Matt complimented Ryan's --> both are
+        useful for different reasons.
+
+Comments:
+    We've been basically blocked by things like the svnnotify issue, holding
+    up the cleanup of the repository we meant to do after migration
+
+    mhrd wouldn't feel comfortable making bigger changes until that was
+    out of the way
+
+    Namespace proliferation seemed to be annoying, and backwards
+    compatibility seemed to be a phrase treated with disdain.
+        Caused by the factthat some things are in multiple locations
+        due to the change to SVN needing to happen very fast.
+        (offset time vs effort)
+
+    Deprecation needed to be done properly in next release.
+    Matt hoped we'll deprecate (delete) all legacy versions by end
+    of year.
+
+    c-ryan would like : It would be nice if all versions but the
+    preferred form would print a message to the console whenever you
+    rename/move a component.
+
+Matt asked if Thomas & Ryan plan on being around after SoC - both said yes.
+Obviously not as much though!
+
+Matt noted that the worst (but unlikely with you two) situation would be
+to get really useful code from you, but licensed such that its not practical
+for us to modify it when we change something in the core.
+
+
+   * Desire for a nice developer app.
+   * A graphical development environment - doesn't have to be a full blown
+     one to start with just adding functionality to the visualiser. eg see
+     whats going across links.
+
+   * Would be really cool to have a set of components which you can connect
+     and run just to see what happens
+
+   * Noted we do have some experiments already, but that the visualiser needs
+     an overhaul/rewrite anyway.
+
+   * Desire to have have something equivalent to ConsoleEchoer and
+     ConsoleReader but each in its own window - usabled as simple
+     components, esp given two ConsoleReaders can't work (shared
+     screen). (2 console readers not working is anti-kamaelia ethos,
+     no matter how pragmatic)
+
+     Would like this to be able to fall back to curses, for non-gui people.
+
+     Matt: The existing component is still useful - maybe if it were called
+     BasicConsoleReader it woudl give a better flavour for its (lack of)
+     capability.  However, its important to keep the really simple stuff
+     in there, as well as the shiny, more complex, stuff - since that
+     improves flexibility for people who want/need that lower level of
+     control.
+
+Matt pointed thomas at the newer axoneditor2 sketch.
+    * Thomas likes
+    * matt: its *messy* inside, but makes a nice demo
+
+Matt asked for feedback on his sketch of auto-shutting down services.
+   * No useful comments.
+
+C-Ryan wanted people to look at his IPC class since he thinks it's cool
+and generic. Worth considering as a replacement base class for IPC? Maybe,
+discussion is worthwhile - especially since it gives human readable output.
+
+Matt decided to chew on whether its a good idea. Queried IPC class creation
+over that of using a plain dictionary.
+    * You can get a nice string representation
+    * Creation of an IPC message is a little neater than a dictionary
+      (ryan's opinion)
+    * Limits what keys you can use eg: 'x = IPCDeleteFile(filename="test")'
+      enforces the right names, and includes some semantics.
+    * Also you can give an IPC message some methods if you want
+         - which may or may not be a good thing
+
+Also, Ryan laid out how it evolved into existance (more useful):
+    * I had some IPC classes
+    * Then I ended up making a base class that had most of the
+      functionality it does allow some nice stuff that admittedly
+      you could do with dicts such as  mapping IPC classes to handler
+      functions so rather than the oft-seen
+          if isinstance(...):
+               ...
+          elif isinstance(....
+      you have a mapping table instead which is handy when you have a
+      lot of IPC classes it's also clear to the userwhat parameters they
+      should use for that type of IPC are instances of their parents?
+
+Matt careful - isintance does have an advantage - subclasses. However Matt
+also noted that it show it has some worth - it naturally evolved out of
+the code you were writing so it merits serious consideration
+
+5. Date/Time of next weekly meeting
+
+Thu 3rd August 2006, 11am BST (GMT+0100)
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060728 ======

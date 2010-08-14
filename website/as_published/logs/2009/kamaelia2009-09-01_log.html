@@ -1,0 +1,74 @@
+<html><body><table>
+            <tr><td>[00:21] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[04:02] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:04] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[07:00] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:02] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[13:42] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[15:14] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:23] &lt MS-&gt Monthyly tarball for august - 0.9.8.0 has been uploaded. It's not a huge delta from 0.9.7.0</td></tr>
+            <tr><td>[15:23] &lt MS-&gt Most effort this month has been expended on trying to get one of JMB's branches into a state it can be merged.</td></tr>
+            <tr><td>[15:26] &lt MS-&gt I did however add this component to /trunk because I really needed it in a project at work:</td></tr>
+            <tr><td>[15:27] &lt MS-&gt http://code.google.com/p/kamaelia/source/browse/trunk/Code/Python/Kamaelia/Kamaelia/Apps/MPS/TPipe.py</td></tr>
+            <tr><td>[15:29] &lt MS-&gt Delta against 0.9.6.0 though is pretty large though</td></tr>
+            <tr><td>[16:30] &lt MS-&gt Yay, I can now get part of JMB's system working.</td></tr>
+            <tr><td>[16:31] &lt MS-&gt Trying to figure out what messages like:</td></tr>
+            <tr><td>[16:31] &lt MS-&gt DEBUG/kamaelia.publish.gateway.interface: kamaelia.testing@googlemail.com/headstock-3DDD4B04 available.</td></tr>
+            <tr><td>[16:31] &lt MS-&gt mean</td></tr>
+            <tr><td>[16:43] &lt MS-&gt On the upside I can see messages going *from* a google chat window to the kamaelia publish process, and then falling on the floor</td></tr>
+            <tr><td>[16:43] &lt MS-&gt Not sure why messages *from* kamaelia publish aren't reaching the google talk/chat client</td></tr>
+            <tr><td>[17:05] &lt MS-&gt OK, now I can see how headstock receives messages, which is a start</td></tr>
+            <tr><td>[17:14] &lt MS-&gt OK, going back to basics, I can now use headstock's simplechat example to send messages back and forth</td></tr>
+            <tr><td>[17:14] &lt MS-&gt which is a good start</td></tr>
+            <tr><td>[17:22] &lt MS-&gt OK, looks like jason's code is correctly making a headstock message. I think</td></tr>
+            <tr><td>[17:39] &lt MS-&gt OK, it looks like jason's code very nearly passes it's message onto headstock...</td></tr>
+            <tr><td>[17:40] &lt MS-&gt ("webhandler", "xmpp.outbox"): ('msgdisp', 'forward') Seems to be where some stuff is happening...</td></tr>
+            <tr><td>[17:41] &lt MS-&gt So it passes it onto the "forward" inbox of this:</td></tr>
+            <tr><td>[17:41] &lt MS-&gt msgdisp = MessageDispatcher(),</td></tr>
+            <tr><td>[17:42] &lt MS-&gt Which comes in here:</td></tr>
+            <tr><td>[17:42] &lt MS-&gt from headstock.protocol.core.message import MessageDispatcher, MessageEchoer</td></tr>
+            <tr><td>[17:42] &lt MS-&gt OK, so far so good</td></tr>
+            <tr><td>[17:42] &lt MS-&gt I can now trace a request through from jason's code through to code that I know works</td></tr>
+            <tr><td>[17:43] &lt MS-&gt So clearly, jason's code is doing something that the MessageDispatcher doesn't like</td></tr>
+            <tr><td>[17:44] &lt MS-&gt OK, so far so good</td></tr>
+            <tr><td>[17:58] &lt Lawouach&gt *hmm</td></tr>
+            <tr><td>[17:58] &lt Lawouach&gt sorry MS- I was away, if you're using the latest headstock trunk, that'll probably won't work</td></tr>
+            <tr><td>[17:59] &lt Lawouach&gt Things have changed quite a bit</td></tr>
+            <tr><td>[17:59] &lt Lawouach&gt Unfortunately, Jason had to use the very early API which has been quite improved since then</td></tr>
+            <tr><td>[17:59] &lt MS-&gt That's fine. I've got a working version of simplechat, and a nearly working version of Jason's code. I think I can probably adapt one to talk to the other :-)</td></tr>
+            <tr><td>[17:59] *** MS- nods</td></tr>
+            <tr><td>[17:59] &lt Lawouach&gt oh nice</td></tr>
+            <tr><td>[17:59] &lt Lawouach&gt so things haven't changed that much then</td></tr>
+            <tr><td>[17:59] &lt Lawouach&gt well if simplechat works</td></tr>
+            <tr><td>[17:59] &lt Lawouach&gt you've got the core working fine</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt that's cool</td></tr>
+            <tr><td>[18:00] &lt MS-&gt Ah, no simplechat from your current headstock works</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt ping me back tomorrow if you can, I'll have more time</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt MS-: right-o</td></tr>
+            <tr><td>[18:00] &lt MS-&gt But the thing that gives me some hope is that his code is able to use your code to log in correctly</td></tr>
+            <tr><td>[18:00] &lt MS-&gt and can receive messages</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt right</td></tr>
+            <tr><td>[18:00] &lt MS-&gt which is a huge amount of the battle done :-)</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt then that's enough</td></tr>
+            <tr><td>[18:00] &lt Lawouach&gt yeap</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt the rest of headstock is just other xmpp extensions</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt and a new api that Jason couldn't use at the time as it didn't exist :)</td></tr>
+            <tr><td>[18:01] &lt Lawouach&gt headstock needs a massive refactoring but it'll do for now</td></tr>
+            <tr><td>[18:03] &lt MS-&gt :-)</td></tr>
+            <tr><td>[18:03] &lt MS-&gt I'd noticed there'd been a fair amount of change :)</td></tr>
+            <tr><td>[18:04] &lt MS-&gt I suspect what's going wrong is that Jason's just creating "Wrong" messages.</td></tr>
+            <tr><td>[18:04] &lt MS-&gt Or rather his code is</td></tr>
+            <tr><td>[18:04] &lt MS-&gt I think he wants to stay away from the code as much as he can :-)</td></tr>
+            <tr><td>[18:04] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:06] &lt Lawouach&gt does it mean you can't process those messages?</td></tr>
+            <tr><td>[18:08] &lt MS-&gt Essentially, I've traced through his code, and found that his messages are reaching the MessageDispatcher correctly - which is good, so they just need adapting to be correct.</td></tr>
+            <tr><td>[18:08] &lt MS-&gt On the flip side messages coming in are also reaching his code in the right place</td></tr>
+            <tr><td>[18:08] &lt MS-&gt But because he doesn't know how to parse them, the system is getting confused.</td></tr>
+            <tr><td>[18:08] &lt MS-&gt Which again, I can deal with now :-)</td></tr>
+            <tr><td>[18:11] &lt MS-&gt Mind you, now that I know that, I think I might sleep on it. I think I'm missing a very obvious trick here.</td></tr>
+            <tr><td>[18:12] &lt MS-&gt Also, when I do get this working, I'll eliminate the 100% CPU utilisation issue which it currently has, and then leave it running on kamaelia.org</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt k</td></tr>
+            <tr><td>[18:14] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[18:15] &lt Lawouach&gt ping me tomorrow then</td></tr>
+            <tr><td>[18:22] &lt MS-&gt Cheers :-)</td></tr>
+            <tr><td>[19:54] *** dsoul has joined #kamaelia</td></tr>

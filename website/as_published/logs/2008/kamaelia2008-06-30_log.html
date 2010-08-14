@@ -1,0 +1,714 @@
+<html><body><table>
+            <tr><td>[00:45] *** MS- calls it a night</td></tr>
+            <tr><td>[00:45] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[06:35] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:35] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:24] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:24] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[07:27] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[08:28] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[08:37] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:52] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:21] &lt Lawouach_&gt Photographs I took yesterday that I quite like:</td></tr>
+            <tr><td>[09:21] &lt Lawouach_&gt http://www.flickr.com/photos/lawouach/2621390411/</td></tr>
+            <tr><td>[09:21] &lt Lawouach_&gt http://www.flickr.com/photos/lawouach/2622214580/</td></tr>
+            <tr><td>[09:21] &lt Lawouach_&gt http://www.flickr.com/photos/lawouach/2621389403/</td></tr>
+            <tr><td>[09:21] &lt Lawouach_&gt http://www.flickr.com/photos/lawouach/2621393211/</td></tr>
+            <tr><td>[09:36] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:02] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:10] &lt Chong-&gt Lawouach_: nice shots. I especially like the last one, a sapling under the sunrise</td></tr>
+            <tr><td>[10:11] &lt mhrd&gt I like the one of the red/yellow flower with the small depth of field</td></tr>
+            <tr><td>[10:15] &lt Chong-&gt mhrd: the flower is very beautiful</td></tr>
+            <tr><td>[10:35] &lt Lawouach&gt mhrd: me too actually :)</td></tr>
+            <tr><td>[10:35] &lt Lawouach&gt those flowers are all in my parent's garden. Life is sweet in Brittany :)</td></tr>
+            <tr><td>[10:36] &lt mhrd&gt they're nice pictures</td></tr>
+            <tr><td>[10:36] &lt mhrd&gt heh</td></tr>
+            <tr><td>[10:37] &lt mhrd&gt if anyone is interested: http://www.bbc.co.uk/blogs/bbcilabs/2008/06/mashed_digital_tv.html (the formatting issues ain't our fault :-) )</td></tr>
+            <tr><td>[11:27] *** bobo72 has joined #kamaelia</td></tr>
+            <tr><td>[11:29] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[11:43] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[12:42] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[12:48] &lt Chong-&gt mhrd: I have watched *click* reports about mashed_digital_tv competition, doing real-time TV subtitle translation. Is it the same event?</td></tr>
+            <tr><td>[13:01] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[13:05] &lt mhrd&gt yes</td></tr>
+            <tr><td>[13:05] &lt mhrd&gt they were using subtitles and video from something different ("bbc redux") - which was much easier to access that trying to learn how to capture live broadcasts - however the data formats are all very similar/related</td></tr>
+            <tr><td>[13:13] &lt Chong-&gt mhrd: I see. It seems a very interesting event.</td></tr>
+            <tr><td>[13:14] &lt mhrd&gt http://mashed08.backnetwork.com/</td></tr>
+            <tr><td>[13:18] *** Chong- seeing the photos :-)</td></tr>
+            <tr><td>[13:19] &lt mhrd&gt I wasn't actually there :)</td></tr>
+            <tr><td>[13:19] &lt mhrd&gt various colleagues (including MS-) were there though</td></tr>
+            <tr><td>[13:20] &lt Chong-&gt mhrd: I see. trying to find MS- :-)</td></tr>
+            <tr><td>[13:20] &lt mhrd&gt the event was not specifically a digital-tv thing. It just so happened that we made available various digital tv related things for people to use. Most things didn't</td></tr>
+            <tr><td>[13:24] &lt Chong-&gt yes, I have seen NASA ANTS in the schedule</td></tr>
+            <tr><td>[13:25] &lt Chong-&gt and *How to get started hacking with Kamaelia* :-)</td></tr>
+            <tr><td>[13:25] *** mhrd watching that one now (re-ingesting it because we had a mishap that lost teh file :-( )</td></tr>
+            <tr><td>[13:26] &lt mhrd&gt I believe the talks will be going up on youtube eventually</td></tr>
+            <tr><td>[13:27] &lt Chong-&gt it would be nice if able to see it on youtube :-)</td></tr>
+            <tr><td>[13:33] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[13:33] &lt MS-&gt pants</td></tr>
+            <tr><td>[13:33] &lt MS-&gt forgot about meetings</td></tr>
+            <tr><td>[13:33] &lt MS-&gt sorry Davbo</td></tr>
+            <tr><td>[13:33] &lt MS-&gt :-(</td></tr>
+            <tr><td>[13:33] *** MS- apologises profusely</td></tr>
+            <tr><td>[13:34] *** MS- hopes he doesn't have to do any java as penance</td></tr>
+            <tr><td>[13:40] &lt Davbo&gt Hah!</td></tr>
+            <tr><td>[13:40] &lt Davbo&gt Grr! you just made me panic</td></tr>
+            <tr><td>[13:41] &lt Davbo&gt did an svn update then my stuff all changed surprise commit from MS-</td></tr>
+            <tr><td>[13:42] &lt MS-&gt I did mention it last week!</td></tr>
+            <tr><td>[13:42] &lt MS-&gt mhrd: Actually the northenders people were OCR'ing the subtitles themselves - they weren't taking them from redux</td></tr>
+            <tr><td>[13:42] &lt MS-&gt At least that's what they said in their presentation</td></tr>
+            <tr><td>[13:43] &lt MS-&gt with diagrams and boxes and everything</td></tr>
+            <tr><td>[13:43] &lt Davbo&gt Sorry missed it :)</td></tr>
+            <tr><td>[13:43] &lt MS-&gt np</td></tr>
+            <tr><td>[13:43] &lt Davbo&gt I couldn't figure out how to do that though</td></tr>
+            <tr><td>[13:43] &lt MS-&gt Does it help ?</td></tr>
+            <tr><td>[13:43] &lt Davbo&gt the window sizes that is</td></tr>
+            <tr><td>[13:43] *** MS- nods</td></tr>
+            <tr><td>[13:44] &lt Davbo&gt Yeah, just made me panic when it cut off my slider bar</td></tr>
+            <tr><td>[13:44] &lt MS-&gt mhrd: They're ingesting the video?</td></tr>
+            <tr><td>[13:44] &lt MS-&gt Could I get a copy of the raw video?</td></tr>
+            <tr><td>[13:44] &lt MS-&gt Davbo: ahh I see</td></tr>
+            <tr><td>[13:44] &lt MS-&gt sorry :)</td></tr>
+            <tr><td>[13:45] &lt MS-&gt mhrd: by raw I mean "whatever it gets encoded at, at a decent quality" :)</td></tr>
+            <tr><td>[13:45] &lt MS-&gt Not SDI style saw</td></tr>
+            <tr><td>[13:45] &lt MS-&gt s/saw/raw/</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt Finding another problem straight away too unfortunately</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt They aint talking while wrapped in an extra Pipeline</td></tr>
+            <tr><td>[13:46] &lt MS-&gt ?</td></tr>
+            <tr><td>[13:46] &lt MS-&gt What isn't?</td></tr>
+            <tr><td>[13:46] &lt Davbo&gt Selecting a colour is having no effect</td></tr>
+            <tr><td>[13:46] &lt MS-&gt odd</td></tr>
+            <tr><td>[13:46] &lt MS-&gt It was working for me when I checked in</td></tr>
+            <tr><td>[13:46] &lt Davbo&gt XYPad outbox != Pipeline outbox?</td></tr>
+            <tr><td>[13:46] &lt Davbo&gt humm</td></tr>
+            <tr><td>[13:46] &lt MS-&gt (checked that I wasn't changing behaviour...)</td></tr>
+            <tr><td>[13:47] &lt MS-&gt Well, you can always rip it out and curse on my grave of course</td></tr>
+            <tr><td>[13:47] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[13:48] &lt MS-&gt It looks like you're making good progress though BTW</td></tr>
+            <tr><td>[13:48] &lt MS-&gt You may want to start thinking about icons for buttons and making your controls look prettier...</td></tr>
+            <tr><td>[13:48] &lt MS-&gt If only because the longer you leave it, the more there will be to do :)</td></tr>
+            <tr><td>[13:49] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[13:49] &lt Davbo&gt Did you see my message yesterday?</td></tr>
+            <tr><td>[13:49] &lt MS-&gt About lines?</td></tr>
+            <tr><td>[13:49] &lt Davbo&gt I wanted to resolve that issue</td></tr>
+            <tr><td>[13:49] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[13:49] &lt MS-&gt I saw it but didn't get a chance to look</td></tr>
+            <tr><td>[13:49] &lt Davbo&gt the people in #pygame don't seem to think using pygame.draw.* is good for this kind of thing</td></tr>
+            <tr><td>[13:50] &lt Davbo&gt they suggest make pygame surfaces for each "brush" and then blit them</td></tr>
+            <tr><td>[13:50] &lt MS-&gt Try it and see what you think :-)</td></tr>
+            <tr><td>[13:50] &lt MS-&gt It's not the worlds best suggestion I know, but it's pragmatic</td></tr>
+            <tr><td>[13:51] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt as for UI elements, if anyone wants a pygame slider bar I have some horrible code that can make one :)</td></tr>
+            <tr><td>[13:53] &lt MS-&gt :)</td></tr>
+            <tr><td>[13:53] &lt Davbo&gt as soon as my code did something different i did svn blame which made me laugh</td></tr>
+            <tr><td>[13:53] &lt MS-&gt Have you considered looking at PGU by any chance?</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt Yeah i've looked at it</td></tr>
+            <tr><td>[13:54] &lt Davbo&gt I was already familiar with XYPad so I just changed that</td></tr>
+            <tr><td>[13:54] &lt MS-&gt Just fiddled with pygame.draw. Tis a little odd</td></tr>
+            <tr><td>[13:55] &lt MS-&gt &gt&gt&gt import pygame</td></tr>
+            <tr><td>[13:55] &lt MS-&gt &gt&gt&gt pygame.init()</td></tr>
+            <tr><td>[13:55] &lt MS-&gt &gt&gt&gt X = pygame.display.set_mode((640,480))</td></tr>
+            <tr><td>[13:55] &lt MS-&gt &gt&gt&gt pygame.draw.line(X, (255,255,255), (100,100),( 200,200))</td></tr>
+            <tr><td>[13:55] &lt MS-&gt &gt&gt&gt pygame.display.flip()</td></tr>
+            <tr><td>[13:55] &lt Davbo&gt http://www.davbo.org/images/snapshot13.png</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt hardly an ideal way for it to work</td></tr>
+            <tr><td>[13:56] &lt MS-&gt It's makes sense what it's doing, but it's naturally to assume a circular thing instead</td></tr>
+            <tr><td>[13:56] &lt MS-&gt You could also do this FWIW</td></tr>
+            <tr><td>[13:56] &lt Davbo&gt pygame.draw.circle instead of line is no better unfortunately</td></tr>
+            <tr><td>[13:56] &lt MS-&gt Draw a rectangle which is aligned with the direction you want</td></tr>
+            <tr><td>[13:57] &lt MS-&gt then put circles on the end</td></tr>
+            <tr><td>[13:57] &lt MS-&gt with the same radius</td></tr>
+            <tr><td>[13:57] &lt MS-&gt diameter rather</td></tr>
+            <tr><td>[13:57] &lt MS-&gt eg</td></tr>
+            <tr><td>[13:57] &lt MS-&gt if you have a line from</td></tr>
+            <tr><td>[13:57] &lt MS-&gt (100,100) to (200, 100)</td></tr>
+            <tr><td>[13:57] &lt MS-&gt width 10</td></tr>
+            <tr><td>[13:57] &lt MS-&gt draw a rect</td></tr>
+            <tr><td>[13:57] &lt Davbo&gt For a "line" tool that'd be fine but not as a brush</td></tr>
+            <tr><td>[13:58] &lt MS-&gt with corners (100, 90), (200,90), (200, 110), (100, 110),</td></tr>
+            <tr><td>[13:58] &lt MS-&gt Then circles centred on each radius 10</td></tr>
+            <tr><td>[13:58] &lt MS-&gt OK that's width 20, but you get what I mean</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt yeah</td></tr>
+            <tr><td>[13:59] &lt MS-&gt Doing a brush for the line would mean implementing bresenham's algorithm BTW</td></tr>
+            <tr><td>[13:59] &lt MS-&gt with could be *slow* depending on how you do the brush blitting</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt You think?</td></tr>
+            <tr><td>[14:00] &lt MS-&gt Yep</td></tr>
+            <tr><td>[14:00] &lt MS-&gt *could*</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt I would take the args from the tool box ie. colour size etc then make a "brush" surface and just blit that while you hold down the mouse</td></tr>
+            <tr><td>[14:01] &lt MS-&gt That's a different matter</td></tr>
+            <tr><td>[14:01] &lt MS-&gt I thought you meant actually drawing a line with it</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt Ah sorry, I wasn't following you</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt Yeah with a line it would be different</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt I'll play about with it and then come back to you MS-</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt Davbo: so have you finished your meeting? :-)</td></tr>
+            <tr><td>[14:04] &lt MS-&gt cool</td></tr>
+            <tr><td>[14:04] &lt Davbo&gt meeting?</td></tr>
+            <tr><td>[14:04] &lt Chong-&gt meeting with MS-? :-)</td></tr>
+            <tr><td>[14:05] &lt Davbo&gt Ah if this is your mentor time I apologise :-)</td></tr>
+            <tr><td>[14:05] &lt Chong-&gt Davbo: np. I can wait. :-)</td></tr>
+            <tr><td>[14:05] &lt Davbo&gt nah it's okay, i'm done</td></tr>
+            <tr><td>[14:06] &lt Chong-&gt Just now, seeing you say "I'll play about with it and then come back to you MS-", I thought you have finished your meeting.</td></tr>
+            <tr><td>[14:06] *** MS- waits for the confusion to grow</td></tr>
+            <tr><td>[14:07] &lt Lawouach_&gt ahem</td></tr>
+            <tr><td>[14:07] &lt MS-&gt Chong - about the only thing I was going to suggest today was how to make your own branch for hacking about the OpenGL code for debugging purposes</td></tr>
+            <tr><td>[14:07] &lt MS-&gt Which is actually quite simple</td></tr>
+            <tr><td>[14:08] &lt MS-&gt I do all my checkouts in ~/kamaelia</td></tr>
+            <tr><td>[14:08] &lt MS-&gt so if I do this:</td></tr>
+            <tr><td>[14:08] &lt MS-&gt ~/kamaelia&gt ls</td></tr>
+            <tr><td>[14:08] &lt MS-&gt branches/ tags/ trunk/</td></tr>
+            <tr><td>[14:08] &lt MS-&gt That's what I get</td></tr>
+            <tr><td>[14:08] &lt MS-&gt OK</td></tr>
+            <tr><td>[14:08] &lt MS-&gt to make a branch</td></tr>
+            <tr><td>[14:08] &lt MS-&gt ~/kamaelia&gt cd branches/</td></tr>
+            <tr><td>[14:08] &lt MS-&gt you'd name it</td></tr>
+            <tr><td>[14:09] &lt MS-&gt private_CL_&lt anything you like&gt</td></tr>
+            <tr><td>[14:09] &lt MS-&gt you there?</td></tr>
+            <tr><td>[14:09] &lt Chong-&gt maybe private_CL_Topology3D</td></tr>
+            <tr><td>[14:09] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[14:10] &lt MS-&gt yep</td></tr>
+            <tr><td>[14:10] *** Chong- listening :-)</td></tr>
+            <tr><td>[14:10] &lt MS-&gt So the way you create a branch in svn is actually through doing a subversion copy</td></tr>
+            <tr><td>[14:10] &lt MS-&gt the section of the code tree we usually branch is</td></tr>
+            <tr><td>[14:10] &lt MS-&gt  /trunk/Code/Python</td></tr>
+            <tr><td>[14:11] &lt MS-&gt so to make a branch called private_CL_Topology3D</td></tr>
+            <tr><td>[14:11] &lt MS-&gt you'd do this:</td></tr>
+            <tr><td>[14:11] &lt MS-&gt ~/kamaelia/branches&gt svn cp ../trunk/Code/Python private_CL_Topology3D</td></tr>
+            <tr><td>[14:11] &lt MS-&gt That creates the branch locally</td></tr>
+            <tr><td>[14:11] &lt MS-&gt You then immediately check it into the repository:</td></tr>
+            <tr><td>[14:11] &lt MS-&gt ~/kamaelia/branches&gt svn ci private_CL_Topology3D</td></tr>
+            <tr><td>[14:12] &lt MS-&gt And describe why you've created it</td></tr>
+            <tr><td>[14:12] &lt MS-&gt If you mistype the name, _don't_ rename the branch since that'll cause problems later on</td></tr>
+            <tr><td>[14:12] &lt MS-&gt From then on inside that branch you can change and add and delete anything you like</td></tr>
+            <tr><td>[14:12] &lt Chong-&gt cool :-)</td></tr>
+            <tr><td>[14:12] &lt Davbo&gt http://groups.google.com/group/kamaelia/browse_thread/thread/119ef450e6a56b81</td></tr>
+            <tr><td>[14:12] &lt MS-&gt Much like private_MPS_Scratch is radically different</td></tr>
+            <tr><td>[14:12] &lt MS-&gt You can also have as many of them as you like</td></tr>
+            <tr><td>[14:13] &lt MS-&gt as long as you name them correctly</td></tr>
+            <tr><td>[14:13] &lt Davbo&gt (that post on the list is relevant)</td></tr>
+            <tr><td>[14:13] &lt Chong-&gt yes. Thanks for the link, Davbo.</td></tr>
+            <tr><td>[14:13] &lt MS-&gt Davbo: Thanks :)</td></tr>
+            <tr><td>[14:13] &lt mhrd&gt MS- : we've got the video as DV - on tape and as files (our playout system's ingester keeps the originals)</td></tr>
+            <tr><td>[14:13] &lt MS-&gt I see</td></tr>
+            <tr><td>[14:13] &lt MS-&gt Doesn't ffmpeg transide DV?</td></tr>
+            <tr><td>[14:13] &lt MS-&gt transcode</td></tr>
+            <tr><td>[14:13] &lt MS-&gt even</td></tr>
+            <tr><td>[14:13] &lt mhrd&gt I'm currently shoehorning them onto a 60GB 2.5" external HDD to pass them to Matt Cashmore tomorrow</td></tr>
+            <tr><td>[14:13] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:13] &lt MS-&gt OK</td></tr>
+            <tr><td>[14:13] &lt MS-&gt cool</td></tr>
+            <tr><td>[14:13] &lt mhrd&gt MS- : yes it does :)</td></tr>
+            <tr><td>[14:14] &lt mhrd&gt we used ffmpeg to ingest incoming video and MPEG2 encode it</td></tr>
+            <tr><td>[14:14] &lt MS-&gt How big is the DV original of my session out of interest?</td></tr>
+            <tr><td>[14:14] &lt MS-&gt heheh</td></tr>
+            <tr><td>[14:14] &lt MS-&gt k</td></tr>
+            <tr><td>[14:14] &lt mhrd&gt umm, it'll be *big* ... checking ...</td></tr>
+            <tr><td>[14:14] &lt MS-&gt Oh it's MP2?</td></tr>
+            <tr><td>[14:14] &lt MS-&gt I can guess the rough size</td></tr>
+            <tr><td>[14:14] &lt MS-&gt mpeg 2 rather not mp2</td></tr>
+            <tr><td>[14:14] &lt mhrd&gt 5 or 10 gigs or so</td></tr>
+            <tr><td>[14:15] &lt MS-&gt About a couple of gig if that. If DV then I was about to guess that</td></tr>
+            <tr><td>[14:15] &lt mhrd&gt mpeg2 encoded for playout it'll be smaller</td></tr>
+            <tr><td>[14:15] *** MS- nods</td></tr>
+            <tr><td>[14:15] &lt MS-&gt up to a couple of gig I'd guess</td></tr>
+            <tr><td>[14:15] &lt MS-&gt Can't remember how long the session was</td></tr>
+            <tr><td>[14:15] &lt MS-&gt Less than an hour so should be less that a couple of gig</td></tr>
+            <tr><td>[14:16] &lt mhrd&gt I'm tearing my hair out trying to understand *what* kino is exporting ... the original I've just captured from tape, or with the trimming of the start and finish that I tried to get it to do</td></tr>
+            <tr><td>[14:16] &lt mhrd&gt :)</td></tr>
+            <tr><td>[14:16] &lt MS-&gt If it's small enough could you pop the data (whatever format) it onto a DVD in the internal post ? :)</td></tr>
+            <tr><td>[14:16] &lt mhrd&gt sure ... I'm guessing you'd rather have the mpeg 2?</td></tr>
+            <tr><td>[14:16] &lt MS-&gt yep :)</td></tr>
+            <tr><td>[14:17] &lt MS-&gt Anyway chong, if you do that and have your own branch to do that stuff with, you can fiddle to your hearts content with the existing open GL code to add/remove debug stuff</td></tr>
+            <tr><td>[14:17] &lt mhrd&gt hmm, mpeg2 file on a DVD (heh)</td></tr>
+            <tr><td>[14:17] &lt MS-&gt without affecting anyone else</td></tr>
+            <tr><td>[14:17] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:18] &lt MS-&gt Who owns the recordings ? Was it made by only BBC staff or was there anyone involved who wasn't a full time person?</td></tr>
+            <tr><td>[14:18] &lt mhrd&gt made by bbc staff</td></tr>
+            <tr><td>[14:18] &lt MS-&gt (full time continuing contract person that is)</td></tr>
+            <tr><td>[14:18] &lt MS-&gt All on continuing contracts?</td></tr>
+            <tr><td>[14:18] &lt mhrd&gt think so - KWers</td></tr>
+            <tr><td>[14:18] &lt MS-&gt cool</td></tr>
+            <tr><td>[14:18] &lt MS-&gt That means we (bbc) own the rights outright and can what we like with it.</td></tr>
+            <tr><td>[14:19] &lt mhrd&gt yep</td></tr>
+            <tr><td>[14:19] &lt MS-&gt Chong-: You there?</td></tr>
+            <tr><td>[14:19] &lt MS-&gt You can chime in...</td></tr>
+            <tr><td>[14:19] &lt MS-&gt (multiple conversations at once is fairly normal... - you just ignore the stuff you're not listening to :) )</td></tr>
+            <tr><td>[14:20] &lt Chong-&gt yes</td></tr>
+            <tr><td>[14:20] &lt MS-&gt Chong-: BTW your checkin messaes have improved by several orders of magnitude in the past week - much appreciated :)</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt Could someone suggest a set of icons that are under some kind of friendly license I could look through for things like paint brushes and stuff</td></tr>
+            <tr><td>[14:20] &lt Chong-&gt In fact, I'm interested in the topic too :-)</td></tr>
+            <tr><td>[14:20] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:21] &lt MS-&gt Davbo: I tend to "borrow" from KDE or GNOME or similar</td></tr>
+            <tr><td>[14:21] &lt Chong-&gt Thanks :-)</td></tr>
+            <tr><td>[14:21] &lt MS-&gt Chong-: I would suggest making the messages slightly longer though</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt duh! The Gimp :)</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt I'll just use those ones</td></tr>
+            <tr><td>[14:21] &lt Chong-&gt MS-: got it. I will.</td></tr>
+            <tr><td>[14:22] &lt MS-&gt As I say, think of it as a mini-email</td></tr>
+            <tr><td>[14:22] &lt MS-&gt (since it *is* after all, just with some default recipients)</td></tr>
+            <tr><td>[14:22] &lt Chong-&gt yes. That's very similar in this sense.</td></tr>
+            <tr><td>[14:23] &lt Chong-&gt MS-: Do you have any comments on the code of Topology3D so far? And what functions do you suggest to add?</td></tr>
+            <tr><td>[14:23] &lt MS-&gt Ooh, sproingies in 3D</td></tr>
+            <tr><td>[14:23] &lt MS-&gt I note that cursor keys move your view</td></tr>
+            <tr><td>[14:24] &lt MS-&gt But aren't updating the thing that maps clicks to positions in space</td></tr>
+            <tr><td>[14:24] &lt MS-&gt meaning that things you grab goes a bit wierd if you change position</td></tr>
+            <tr><td>[14:24] &lt MS-&gt My suggestion would be to add in rotations around the 3 axes</td></tr>
+            <tr><td>[14:24] &lt MS-&gt (ie around x,y & z) for changing view</td></tr>
+            <tr><td>[14:25] &lt MS-&gt Also can you move in/out?</td></tr>
+            <tr><td>[14:25] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[14:25] *** MS- looks at code to find where...</td></tr>
+            <tr><td>[14:25] &lt MS-&gt ahh</td></tr>
+            <tr><td>[14:25] &lt MS-&gt page up/down</td></tr>
+            <tr><td>[14:25] &lt Chong-&gt yes.</td></tr>
+            <tr><td>[14:26] &lt MS-&gt Dragging isn't quite 100% matched to mouse position is it?</td></tr>
+            <tr><td>[14:26] &lt MS-&gt Probably worth looking at the how THF implemented the matched interactor</td></tr>
+            <tr><td>[14:26] &lt MS-&gt This is quite fun :)</td></tr>
+            <tr><td>[14:27] &lt MS-&gt Zooming in/out and spinning round would be very cool</td></tr>
+            <tr><td>[14:27] &lt MS-&gt That would be my suggestion for now</td></tr>
+            <tr><td>[14:27] &lt MS-&gt focus on fleshing out features at this stage</td></tr>
+            <tr><td>[14:27] &lt MS-&gt specifically like that</td></tr>
+            <tr><td>[14:27] &lt Chong-&gt MS-: I have already referred to his matched interactor</td></tr>
+            <tr><td>[14:27] &lt MS-&gt Yep, I guessed that</td></tr>
+            <tr><td>[14:28] &lt Chong-&gt That's a good idea.</td></tr>
+            <tr><td>[14:28] &lt MS-&gt But it's when you move things (via arrow keys or page up/down)</td></tr>
+            <tr><td>[14:28] &lt MS-&gt it loses the "match"</td></tr>
+            <tr><td>[14:28] &lt MS-&gt And I know it doesn't have to (having seen some of the demos and Matt's page turning code)</td></tr>
+            <tr><td>[14:29] &lt Chong-&gt MS-: do you mean the link doesn't match?</td></tr>
+            <tr><td>[14:30] &lt Chong-&gt I have updated the link code, it should match if you update your work copy</td></tr>
+            <tr><td>[14:31] &lt MS-&gt ~/kamaelia/trunk/Sketches/CL/Topology3D/Utils&gt socksify svn update</td></tr>
+            <tr><td>[14:31] &lt MS-&gt At revision 4708.</td></tr>
+            <tr><td>[14:31] &lt MS-&gt No, things match *UNTIL*</td></tr>
+            <tr><td>[14:31] &lt MS-&gt I press cursor keys</td></tr>
+            <tr><td>[14:31] &lt MS-&gt then things jump around wrong</td></tr>
+            <tr><td>[14:31] &lt MS-&gt I'm guessing that what's happening is you're changing the view position</td></tr>
+            <tr><td>[14:31] &lt MS-&gt whereas the matched interacter code is expecting the object to move instead</td></tr>
+            <tr><td>[14:32] &lt MS-&gt or vice versa</td></tr>
+            <tr><td>[14:32] &lt MS-&gt and somethings out of sync</td></tr>
+            <tr><td>[14:32] &lt MS-&gt Example</td></tr>
+            <tr><td>[14:32] &lt MS-&gt Do this:</td></tr>
+            <tr><td>[14:32] &lt MS-&gt ~/kamaelia/trunk/Sketches/CL/Topology3D/Utils&gt ./TopologyViewer3D.py</td></tr>
+            <tr><td>[14:32] &lt MS-&gt Then</td></tr>
+            <tr><td>[14:32] &lt MS-&gt press page down</td></tr>
+            <tr><td>[14:32] &lt MS-&gt 6 times</td></tr>
+            <tr><td>[14:32] &lt MS-&gt then right arrow key</td></tr>
+            <tr><td>[14:33] &lt MS-&gt 6 times</td></tr>
+            <tr><td>[14:33] &lt MS-&gt Then grab a node without moving the mouse pointer</td></tr>
+            <tr><td>[14:33] &lt MS-&gt Then whilst still holding down, moving mouse pointer a couple of pixels left</td></tr>
+            <tr><td>[14:33] &lt MS-&gt you'll see what I mean</td></tr>
+            <tr><td>[14:33] &lt MS-&gt It bouncese away</td></tr>
+            <tr><td>[14:34] &lt MS-&gt If you then drag it around you'll find it doesn't match the mouse point</td></tr>
+            <tr><td>[14:34] &lt MS-&gt er</td></tr>
+            <tr><td>[14:34] *** Chong- trying it</td></tr>
+            <tr><td>[14:34] &lt MS-&gt Whereas if you simply restart, grab a node and drag, then it does match the mouse pointer</td></tr>
+            <tr><td>[14:35] &lt MS-&gt Should be fairly easily resolvable - but you'll need to do that before you spin the view on x,y,z axes</td></tr>
+            <tr><td>[14:35] &lt MS-&gt It probably needs to be changed in the matched interactor FWIW</td></tr>
+            <tr><td>[14:36] &lt MS-&gt since it's easiest to shift and rotate the view than it is the do the model as a whole really.</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt ImportError: No module named THF.Kamaelia.UI.OpenGL.OpenGLComponent</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt :-(</td></tr>
+            <tr><td>[14:36] &lt Chong-&gt MS- : I see what you mean. I think it should be due to the application of law (repulse)</td></tr>
+            <tr><td>[14:36] &lt MS-&gt Chong-: I don't think it has anything to do with the physics laws at all</td></tr>
+            <tr><td>[14:37] &lt MS-&gt nope, it doesn't</td></tr>
+            <tr><td>[14:37] &lt MS-&gt Changing your graphline to this:</td></tr>
+            <tr><td>[14:37] &lt MS-&gt  Graphline(</td></tr>
+            <tr><td>[14:37] &lt MS-&gt  CONSOLEREADER = ConsoleReader("&gt&gt&gt "),</td></tr>
+            <tr><td>[14:37] &lt MS-&gt  DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -']),</td></tr>
+            <tr><td>[14:38] &lt MS-&gt ie only having one thing results in the same behaviour</td></tr>
+            <tr><td>[14:38] &lt MS-&gt Looks like you also do this:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  if event.key == pygame.K_PAGEUP:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  self.display.viewerposition.z -= 0.5</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  elif event.key == pygame.K_PAGEDOWN:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  self.display.viewerposition.z += 0.5</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  elif event.key == pygame.K_UP:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  self.display.viewerposition.y += 0.5</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  elif event.key == pygame.K_DOWN:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  self.display.viewerposition.y -= 0.5</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  elif event.key == pygame.K_LEFT:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  self.display.viewerposition.x -= 0.5</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  elif event.key == pygame.K_RIGHT:</td></tr>
+            <tr><td>[14:38] &lt MS-&gt  self.display.viewerposition.x += 0.5</td></tr>
+            <tr><td>[14:38] &lt Chong-&gt yes. you're right</td></tr>
+            <tr><td>[14:40] &lt MS-&gt Yes, it's definitely that</td></tr>
+            <tr><td>[14:40] &lt MS-&gt The *Interactor.py* file will need faffing about with</td></tr>
+            <tr><td>[14:41] &lt MS-&gt Though actually I can't see where that deals with intersection</td></tr>
+            <tr><td>[14:42] &lt MS-&gt Ahh - HERE: z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [self.position, p1, p2])</td></tr>
+            <tr><td>[14:42] &lt Chong-&gt I'll check it.</td></tr>
+            <tr><td>[14:42] &lt MS-&gt  def handleEvents(self):</td></tr>
+            <tr><td>[14:43] &lt MS-&gt  while self.dataReady("events"):</td></tr>
+            <tr><td>[14:43] &lt MS-&gt  event = self.recv("events")</td></tr>
+            <tr><td>[14:43] &lt MS-&gt ...</td></tr>
+            <tr><td>[14:43] &lt MS-&gt  z = Intersect.ray_Plane(Vector(0,0,0), event.direction, [self.position, p1, p2])</td></tr>
+            <tr><td>[14:43] &lt MS-&gt If you add an inbox to</td></tr>
+            <tr><td>[14:43] &lt MS-&gt MatchedTranslationInteractor</td></tr>
+            <tr><td>[14:43] &lt MS-&gt To update the hardcoded values</td></tr>
+            <tr><td>[14:43] &lt MS-&gt and then that should help</td></tr>
+            <tr><td>[14:43] &lt MS-&gt I would guess</td></tr>
+            <tr><td>[14:44] &lt MS-&gt That's where I would start</td></tr>
+            <tr><td>[14:44] *** Davbo is in icon-heaven http://tango.freedesktop.org/ArtLibreSet</td></tr>
+            <tr><td>[14:44] &lt Chong-&gt I'll try it.</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt Am I okay to use these MS-?</td></tr>
+            <tr><td>[14:44] &lt MS-&gt Once you've got that (it'll either be quick or a nightmare)</td></tr>
+            <tr><td>[14:44] &lt MS-&gt I'd suggest adding a teapot particle type</td></tr>
+            <tr><td>[14:45] &lt MS-&gt since that's an easy win with Open GL given it's a hardcoded object :)</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt cool</td></tr>
+            <tr><td>[14:45] &lt Chong-&gt yes :-)</td></tr>
+            <tr><td>[14:45] &lt MS-&gt I think matching, spinning, zooming in/out and stuff will be a good start</td></tr>
+            <tr><td>[14:45] &lt MS-&gt Davbo: It's your project :)</td></tr>
+            <tr><td>[14:45] &lt MS-&gt What license is it?</td></tr>
+            <tr><td>[14:46] &lt Davbo&gt I meant license wise</td></tr>
+            <tr><td>[14:46] *** MS- looks</td></tr>
+            <tr><td>[14:46] &lt MS-&gt GPL</td></tr>
+            <tr><td>[14:46] &lt Davbo&gt GPL</td></tr>
+            <tr><td>[14:46] &lt MS-&gt It'll mean that your *application* will be GPL only.</td></tr>
+            <tr><td>[14:46] &lt MS-&gt I'd suggest in that case you also have a plan B if the images aren't there...</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt right</td></tr>
+            <tr><td>[14:47] &lt MS-&gt I'd prefer cc-by license for the images myself</td></tr>
+            <tr><td>[14:47] &lt MS-&gt Or BSD/LGPL</td></tr>
+            <tr><td>[14:47] &lt MS-&gt simply because it makes things more easily reusable for more people</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt I agree</td></tr>
+            <tr><td>[14:47] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[14:47] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[14:47] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:48] &lt MS-&gt actual license for the icons is http://creativecommons.org/licenses/by-sa/2.5/</td></tr>
+            <tr><td>[14:48] &lt MS-&gt So now I'm unclear whether it's GPL or by-sa</td></tr>
+            <tr><td>[14:48] &lt MS-&gt vmlemon_: hi</td></tr>
+            <tr><td>[14:48] &lt MS-&gt by-sa would be OK, since it would only refer to the images themselves</td></tr>
+            <tr><td>[14:48] &lt Davbo&gt Maybe the Tango chaps know</td></tr>
+            <tr><td>[14:49] &lt MS-&gt I don't like it when someone does that</td></tr>
+            <tr><td>[14:49] &lt MS-&gt It just makes things unclear :-(</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt Where does it say it's by-sa MS-?</td></tr>
+            <tr><td>[14:49] &lt vmlemon_&gt Hmm, what's the current discussion about?</td></tr>
+            <tr><td>[14:49] &lt MS-&gt http://tango.freedesktop.org/Frequently_Asked_Questions</td></tr>
+            <tr><td>[14:49] &lt MS-&gt vmlemon_: licensing of icons</td></tr>
+            <tr><td>[14:50] &lt MS-&gt of a particular library</td></tr>
+            <tr><td>[14:50] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[14:50] &lt MS-&gt and whether it's something that is reasonable or a PITA</td></tr>
+            <tr><td>[14:50] &lt MS-&gt http://tango.freedesktop.org/Frequently_Asked_Questions#Terms_of_Use.3F</td></tr>
+            <tr><td>[14:51] &lt j_baker_&gt The Tango base icon theme is licensed under the Creative Commons Attribution Share-Alike license. The palette is in public domain. Developers, feel free to ship it along with your application. The icon naming utilities are licensed under the GPL.</td></tr>
+            <tr><td>[14:51] &lt j_baker_&gt http://tango.freedesktop.org/Tango_Desktop_Project</td></tr>
+            <tr><td>[14:52] &lt MS-&gt Ahh fantastic - thanks j_baker_</td></tr>
+            <tr><td>[14:52] &lt MS-&gt Davbo: They're fine :)</td></tr>
+            <tr><td>[14:52] &lt MS-&gt The by-sa would hit you if you want to make your own derivatives of their icons, but that's fine IMO.</td></tr>
+            <tr><td>[14:53] &lt MS-&gt icons changing the license of source using it would just be a pain</td></tr>
+            <tr><td>[14:53] &lt Davbo&gt Hah: ﻿(15:53:49) monreal: those art icons are from gimp, they are gpl</td></tr>
+            <tr><td>[14:53] &lt MS-&gt heh</td></tr>
+            <tr><td>[14:53] &lt vmlemon_&gt Sounds fun</td></tr>
+            <tr><td>[14:53] &lt Davbo&gt I guess they're not in the "base" icon set</td></tr>
+            <tr><td>[14:55] *** Davbo thinks that's ridiculous </td></tr>
+            <tr><td>[14:56] &lt vmlemon_&gt Yay for ToxIcons - Magically Relicensing Your Code! ;)</td></tr>
+            <tr><td>[14:56] &lt Davbo&gt ﻿Looks like I'll fire up gimp and draw my own icons, 'least I'll have the gimp icons there for reference while I'm doing it.</td></tr>
+            <tr><td>[14:56] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[14:57] &lt Lawouach_&gt I usually use the Tango icons too</td></tr>
+            <tr><td>[14:57] &lt Davbo&gt I don't really want my app to be GPL though Lawouach_ and those are from GIMP which is GPL and ... *headache*</td></tr>
+            <tr><td>[14:58] &lt MS-&gt It's entirely up to you what you do/don't do. I don't tend to want to foist any opinion on people except "think practicalities"</td></tr>
+            <tr><td>[14:58] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:59] &lt MS-&gt If you do make your own ones, kolourpaint is quite nice</td></tr>
+            <tr><td>[14:59] &lt MS-&gt Not what I want from a general image app, but OK for iconeditting IIRC</td></tr>
+            <tr><td>[15:00] &lt Lawouach_&gt I don't understand the link between Gimp being GPL and the Tango icons.</td></tr>
+            <tr><td>[15:01] &lt MS-&gt Lawouach_: Up above, Davbo_ said:</td></tr>
+            <tr><td>[15:01] &lt MS-&gt (16:00:09) Davbo: Hah: ﻿(15:53:49) monreal: those art icons are from gimp, they are gpl</td></tr>
+            <tr><td>[15:01] &lt Lawouach_&gt Doesn't make much sense to me</td></tr>
+            <tr><td>[15:02] &lt vmlemon_&gt Why GPL an icon? It seems stupid/counterproductive...</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt Just because the tool used to create them is GPL doesn't make the produced work GPL</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt nah Lawouach_ they're *from* gimp</td></tr>
+            <tr><td>[15:02] &lt MS-&gt Lawouach_: Nod</td></tr>
+            <tr><td>[15:02] &lt Lawouach_&gt ah</td></tr>
+            <tr><td>[15:02] &lt MS-&gt I believe that that was the claim</td></tr>
+            <tr><td>[15:03] &lt vmlemon_&gt Would displaying them in a screenshot as a file icon GPL the screenshot?</td></tr>
+            <tr><td>[15:04] &lt MS-&gt vmlemon_: I have no idea</td></tr>
+            <tr><td>[15:04] &lt MS-&gt nor really care tbh</td></tr>
+            <tr><td>[15:04] &lt MS-&gt They're diddy pictures</td></tr>
+            <tr><td>[15:04] &lt MS-&gt Diddy pictures should not cause problems</td></tr>
+            <tr><td>[15:05] &lt MS-&gt they should sit there being diddy and pretty</td></tr>
+            <tr><td>[15:05] &lt Lawouach_&gt Davbo: keep in mind the Gimp team could perfectly license the program under GPL and the icons under a CC license</td></tr>
+            <tr><td>[15:05] &lt MS-&gt indeed</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt Davbo: Beside I can't find any pointer regarding those icons coming FROM Gimp.</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt So I'm dubious</td></tr>
+            <tr><td>[15:10] &lt MS-&gt I'm going to leave shortly - looks like trams are bust here</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt You got Gimp installed Lawouach_?</td></tr>
+            <tr><td>[15:11] &lt Davbo&gt ﻿(16:11:27) dobey: Davbo: actually, ArtLibre is LGPL iirc... the icons in gimp are LGPL</td></tr>
+            <tr><td>[15:11] *** Davbo sighs</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt ﻿(16:12:38) dobey: yes i believe so. because they are in libgimp iirc, which is i believe LGPL</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt lol</td></tr>
+            <tr><td>[15:12] &lt Lawouach_&gt right</td></tr>
+            <tr><td>[15:12] &lt MS-&gt That's fine</td></tr>
+            <tr><td>[15:12] &lt Lawouach_&gt doesn't actually help you at all since you are considering using the Tango icons which are under CC</td></tr>
+            <tr><td>[15:13] &lt MS-&gt heh</td></tr>
+            <tr><td>[15:13] &lt Lawouach_&gt meh</td></tr>
+            <tr><td>[15:13] &lt Lawouach_&gt I hate license issue :)</td></tr>
+            <tr><td>[15:13] &lt Davbo&gt me too.</td></tr>
+            <tr><td>[15:13] &lt j_baker_&gt Yeah. Wasn't FOSS made to circumvent restrictive licensing?</td></tr>
+            <tr><td>[15:14] &lt vmlemon_&gt Good point</td></tr>
+            <tr><td>[15:14] &lt MS-&gt j_baker_: In the beginning was the BSD licence and friends and all was simple</td></tr>
+            <tr><td>[15:14] &lt Lawouach_&gt That's a bit bitter ;)</td></tr>
+            <tr><td>[15:15] &lt MS-&gt Then along came the GPL and fucked things about for everyone confusing the hell out of everyon</td></tr>
+            <tr><td>[15:15] &lt MS-&gt e</td></tr>
+            <tr><td>[15:15] &lt MS-&gt *ahem*</td></tr>
+            <tr><td>[15:15] &lt MS-&gt (BSD style licensing does predate the GPL though by a wide margin and was always simple)</td></tr>
+            <tr><td>[15:16] &lt j_baker_&gt Yeah. But FOSS is the superior way to develop software. Anyone who thinks differently is evil incarnate. &lt /Stallman&gt</td></tr>
+            <tr><td>[15:16] &lt Lawouach_&gt Actually the GPL does make sense in some contexts.</td></tr>
+            <tr><td>[15:16] &lt j_baker_&gt I can see that Lawouach_. I just think a good dose of cynicism is healthy. :P</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt For instance, say I was a company producing closed source software and i want to get some of that OSS market everyone talks about. The GPL would protect me from my competitors while making me look good</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt The GPL is the new patent ;)</td></tr>
+            <tr><td>[15:17] &lt Davbo&gt Hah Lawouach_</td></tr>
+            <tr><td>[15:17] &lt j_baker_&gt Especially if you're using it like google. Just put the software on a computer on a network and you don't have to release the source to anyone.</td></tr>
+            <tr><td>[15:18] &lt vmlemon_&gt "Freedom (R)" as RMS brands it? ;)</td></tr>
+            <tr><td>[15:18] &lt MS-&gt I don't have a problem with the GPL, just with the problems it causes with interoperability</td></tr>
+            <tr><td>[15:18] &lt MS-&gt That's why I prefer doing everything BSD /etc</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt I agree.</td></tr>
+            <tr><td>[15:18] &lt MS-&gt since you can just give stuff out and not make anyone have to think "can I or can I not use it"</td></tr>
+            <tr><td>[15:19] &lt MS-&gt LGPL is the closest I could get for release of Kamaelia</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt ﻿(16:18:44) dobey: oh, ok, so the icons in GIMP are GPLv2</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt (16:19:12) dobey: they aren't part of libgimp</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt (16:19:30) dobey: the gimp application is themable and the icons are part of the default theme for the app</td></tr>
+            <tr><td>[15:20] *** MS- leaves you to untangle the mess</td></tr>
+            <tr><td>[15:20] &lt MS-&gt I'm off home :)</td></tr>
+            <tr><td>[15:20] &lt MS-&gt back later</td></tr>
+            <tr><td>[15:20] &lt MS-&gt cya</td></tr>
+            <tr><td>[15:20] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[15:20] &lt Davbo&gt Hah</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt I'm not using these icons now</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt There are plenty of open source paint apps with nice icons i'm sure</td></tr>
+            <tr><td>[15:23] &lt vmlemon_&gt Bad icons! ;)</td></tr>
+            <tr><td>[15:25] &lt vmlemon_&gt What about the Paint.NET one?</td></tr>
+            <tr><td>[15:29] &lt Davbo&gt Ah that's MIT</td></tr>
+            <tr><td>[15:30] &lt Davbo&gt MIT is quite friendly afaik</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt To be honest though, I can't be arsed with this now.</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt The icons can wait</td></tr>
+            <tr><td>[15:35] &lt j_baker_&gt Just use stick figures.</td></tr>
+            <tr><td>[15:35] &lt j_baker_&gt I think that would be appropriate for a paint app. :P</td></tr>
+            <tr><td>[15:35] &lt Davbo&gt lol</td></tr>
+            <tr><td>[15:36] &lt j_baker_&gt Perhaps our apps should have some kind of common theme though. I think that would be cool.</td></tr>
+            <tr><td>[15:36] &lt j_baker_&gt (that is if I ever get around to designing a GUI for my app)</td></tr>
+            <tr><td>[15:36] &lt Davbo&gt is there a gui planned for yours j_baker_?</td></tr>
+            <tr><td>[15:37] &lt j_baker_&gt At some point. Either that or a webapp that will handle all the configuration.</td></tr>
+            <tr><td>[15:37] &lt j_baker_&gt It's just that there's so much to do with my app and so little time to do it in. :(</td></tr>
+            <tr><td>[15:38] &lt Davbo&gt i'm sure it will come together</td></tr>
+            <tr><td>[15:38] &lt j_baker_&gt I agree. It's just a matter of priorities.</td></tr>
+            <tr><td>[15:38] &lt Davbo&gt it's amazing how productive I can be in the last few weeks of a project :-)</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt not that I encourage such an approach but it does happen</td></tr>
+            <tr><td>[15:39] &lt j_baker_&gt A GUI is a necessity for an app that was designed for computer-stupid people, but it's better to make sure the thing WORKS RIGHT before going too far into it.</td></tr>
+            <tr><td>[15:39] &lt vmlemon_&gt Hehe</td></tr>
+            <tr><td>[15:39] &lt j_baker_&gt Hey, I'm the same way. I complete a lot of projects in the last few days before they're due. :P</td></tr>
+            <tr><td>[15:40] &lt vmlemon_&gt Procrastination? ;)</td></tr>
+            <tr><td>[15:40] &lt j_baker_&gt There was one that I did almost entirely the day before it was due and didn't meet any of my professor's documentation guidelines. So I put a comment in the source file basically saying that the documentation wasn't where I wanted it to be.</td></tr>
+            <tr><td>[15:41] &lt j_baker_&gt The prof wrote a note on my paper saying "Thank you, honesty is a value" and gave me a B. :)</td></tr>
+            <tr><td>[15:41] &lt j_baker_&gt Which is cool considering that documentation was almost half the grade for my prof. :)</td></tr>
+            <tr><td>[15:43] &lt Davbo&gt Hah, I'm generally awful at documentation. Actually, that's a lie. I suck at over-documenting which is what we end up doing at university IMO.</td></tr>
+            <tr><td>[15:43] &lt j_baker_&gt Meh. I think it's better to over-document than to under-document. It's just a PITA. :)</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt I like documenting code, I can't stand designing, analysis and rubbish like that.</td></tr>
+            <tr><td>[15:44] &lt j_baker_&gt I do have to say though, I've spent a lot of time going through open source python apps' source code in the last couple of weeks, and I do have to say that Kamaelia is the best documented I've come across.</td></tr>
+            <tr><td>[15:44] &lt vmlemon_&gt Meh, I'm almost at the end of college (only have a week or so left, if that), and I still have a load of stuff to hand in :(</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt For the most part Kamaelia is great, it's a bit spotty here and there though :)</td></tr>
+            <tr><td>[15:45] &lt j_baker_&gt Indeed.</td></tr>
+            <tr><td>[15:45] &lt j_baker_&gt I suppose that's important considering Kamaelia's goals.</td></tr>
+            <tr><td>[15:46] &lt mhrd&gt anywhere in particular you found it to be spotty?</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt In particular? My code :-P</td></tr>
+            <tr><td>[15:47] &lt mhrd&gt heh</td></tr>
+            <tr><td>[15:47] &lt Davbo&gt Would you like to write me some mhrd? ;-)</td></tr>
+            <tr><td>[15:47] *** mhrd politely declines</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[15:48] &lt j_baker_&gt I've not found a module that was undocumented or underdocumented, but I've found a couple of "historical" notes that aren't true anymore in Ryan's code (I think most of it was in the Minimal handler which is its own set of issues anyway)</td></tr>
+            <tr><td>[15:49] &lt mhrd&gt j_baker_ : feel free to suggest corrections to those - run the gist of it past MS- when he's around and he'll probably be happy with you modifying /trunk/Code directly</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt mhrd: since lots of what i'm working with is the very new stuff i expect it to be spotty</td></tr>
+            <tr><td>[15:49] &lt mhrd&gt indeed - nothing is ever perfect first time - including docs :)</td></tr>
+            <tr><td>[15:50] &lt mhrd&gt any documentation holes you spot in /trunk/code/Python - particularly for components that have been around a while - mention them and I might get round to doing something about it</td></tr>
+            <tr><td>[15:50] &lt j_baker_&gt Are there any guidelines for documentation?</td></tr>
+            <tr><td>[15:50] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:50] &lt j_baker_&gt Other than "do it." :P</td></tr>
+            <tr><td>[15:50] &lt Davbo&gt 1 second humm</td></tr>
+            <tr><td>[15:50] &lt mhrd&gt "do it" is the most important :)</td></tr>
+            <tr><td>[15:51] &lt mhrd&gt http://edit.kamaelia.org/DocumentationGuidelines</td></tr>
+            <tr><td>[15:51] &lt Davbo&gt Blah beat me too it</td></tr>
+            <tr><td>[15:51] &lt mhrd&gt they are just recommendations - its better you write something than nothing at all; and sometimes these guidelines won't be the best way</td></tr>
+            <tr><td>[15:51] &lt mhrd&gt :)</td></tr>
+            <tr><td>[15:51] *** Davbo was searching his del.iciou.us for that link</td></tr>
+            <tr><td>[15:53] *** mhrd guessed the url</td></tr>
+            <tr><td>[15:54] &lt Davbo&gt My way was far more web 2.0, and your way got it done faster. Go figure ;-)</td></tr>
+            <tr><td>[15:54] &lt mhrd&gt lol</td></tr>
+            <tr><td>[15:55] &lt j_baker_&gt That was such a hard to guess URI. :P</td></tr>
+            <tr><td>[15:55] &lt vmlemon_&gt "Remember The del.icio.us Milk" (Not sure what happens if you forget it) ;)</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[15:58] &lt vmlemon_&gt Or what happens if the milk happens to be dis.gust.in</td></tr>
+            <tr><td>[15:59] &lt vmlemon_&gt Fridge 2.0(TM)!</td></tr>
+            <tr><td>[16:04] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[16:16] *** Davbo has had enough for today</td></tr>
+            <tr><td>[16:16] &lt Davbo&gt Cya tomorrow chaps.</td></tr>
+            <tr><td>[16:17] &lt mhrd&gt cya</td></tr>
+            <tr><td>[16:19] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:19] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[16:19] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[16:20] &lt orphans&gt Lawouach, Lawouach_, ping?</td></tr>
+            <tr><td>[16:20] &lt Lawouach&gt pong</td></tr>
+            <tr><td>[16:20] &lt Lawouach&gt how are you?</td></tr>
+            <tr><td>[16:20] &lt Lawouach&gt nice weekend?</td></tr>
+            <tr><td>[16:20] &lt orphans&gt eargh, horrible</td></tr>
+            <tr><td>[16:20] &lt orphans&gt I've had flu and had to move houses manually (carry stuff from one to the other)</td></tr>
+            <tr><td>[16:20] &lt Lawouach&gt oh?</td></tr>
+            <tr><td>[16:21] &lt Lawouach&gt oh :(</td></tr>
+            <tr><td>[16:21] &lt orphans&gt just wanted to apologise for not being round much :)</td></tr>
+            <tr><td>[16:21] &lt orphans&gt move now done, and flu is (hopefully) on the mend</td></tr>
+            <tr><td>[16:21] &lt Lawouach&gt dopn't worry I understand</td></tr>
+            <tr><td>[16:22] &lt Lawouach&gt that's okay</td></tr>
+            <tr><td>[16:22] &lt orphans&gt cheers</td></tr>
+            <tr><td>[16:22] &lt Lawouach&gt Actually I wanted to ask you whether or not we could move the meeting forward by one hour this evening? Or if you'd rather move it to tomorrow evening.</td></tr>
+            <tr><td>[16:22] &lt Lawouach&gt Either way</td></tr>
+            <tr><td>[16:22] &lt orphans&gt tomorrow evening is probably a bit better for me tbh - I'm a bit knackered</td></tr>
+            <tr><td>[16:24] &lt Lawouach&gt sure</td></tr>
+            <tr><td>[16:24] &lt Lawouach&gt I understand</td></tr>
+            <tr><td>[16:24] &lt Lawouach&gt it'd be better for me as well</td></tr>
+            <tr><td>[16:24] &lt Lawouach&gt so let's do that tomorrow at the usual time</td></tr>
+            <tr><td>[16:24] &lt Lawouach&gt go get some rest</td></tr>
+            <tr><td>[16:24] &lt orphans&gt ok, cool. thanks, I will</td></tr>
+            <tr><td>[16:36] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[16:36] Reply: does the macarena</td></tr>
+            <tr><td>[17:10] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[17:10] &lt MS-&gt hi</td></tr>
+            <tr><td>[17:14] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:18] *** MS- reads back what he missed</td></tr>
+            <tr><td>[17:19] *** MS- agrees with "GUI is a necessity for an app that was designed for computer-stupid people, but it's better to make sure the thing WORKS RIGHT before going too far into it."</td></tr>
+            <tr><td>[17:19] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[17:19] &lt MS-&gt But there is an anti-corollary - specifically gold, jewellery stores and shiny things in general</td></tr>
+            <tr><td>[17:19] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[17:20] &lt MS-&gt Gold has driven economies the world over for hundreds of years, and is valuable, but only in the last hundred or so has a good *use* for gold really been found</td></tr>
+            <tr><td>[17:20] &lt MS-&gt (electronics etc)</td></tr>
+            <tr><td>[17:22] *** MS- notes he agrees with many of the docs comments</td></tr>
+            <tr><td>[17:26] *** bobo has joined #kamaelia</td></tr>
+            <tr><td>[18:34] &lt j_baker_&gt MS-: I have a doctor's appointment at 3. Is it alright if we have our meeting now?</td></tr>
+            <tr><td>[18:34] &lt MS-&gt sure</td></tr>
+            <tr><td>[18:35] &lt MS-&gt I think I'd find it useful to get a brief discussion of which code branches & code bases I should be looking at BTW</td></tr>
+            <tr><td>[18:37] &lt j_baker_&gt It's private_JMB_Wsgi. I should probably delete private_JMB_KamaeliaPublish.</td></tr>
+            <tr><td>[18:37] &lt MS-&gt Cool</td></tr>
+            <tr><td>[18:37] &lt j_baker_&gt That's really the only place I've been making changes.</td></tr>
+            <tr><td>[18:37] &lt MS-&gt Multiple branches can be useful, but make life harder to figure out where the starting point is</td></tr>
+            <tr><td>[18:37] &lt MS-&gt :)</td></tr>
+            <tr><td>[18:37] *** sadrul has joined #kamaelia</td></tr>
+            <tr><td>[18:38] &lt MS-&gt One thing I may look at is to see if I can get my current work stuff running on top of it</td></tr>
+            <tr><td>[18:38] &lt j_baker_&gt Yeah. At any rate, I did a little optimization over the weekend, and for the most part I'm satisfied speedwise and memory-wise. There are probably a few optimizations that could be made to both areas, but it runs pretty well for a low load server.</td></tr>
+            <tr><td>[18:38] &lt MS-&gt It'd make a nice test</td></tr>
+            <tr><td>[18:38] &lt MS-&gt That's good to hear</td></tr>
+            <tr><td>[18:38] &lt j_baker_&gt I'm actually working on an autoinstall system that should make it easier to install.</td></tr>
+            <tr><td>[18:39] &lt MS-&gt I saw that - what's your thinking behind the autoinstall?</td></tr>
+            <tr><td>[18:39] &lt j_baker_&gt But all you'd really need is the urls.ini file and .kp</td></tr>
+            <tr><td>[18:39] *** MS- nods</td></tr>
+            <tr><td>[18:40] &lt j_baker_&gt Well, I wanted to just make it so that I'd only have to distribute one executable file.</td></tr>
+            <tr><td>[18:40] &lt j_baker_&gt The autoinstaller determines if the appropriate files exist and asks to install them if necessary.</td></tr>
+            <tr><td>[18:42] &lt MS-&gt I see</td></tr>
+            <tr><td>[18:42] &lt MS-&gt It's a good idea</td></tr>
+            <tr><td>[18:43] &lt j_baker_&gt It's turning out to be a bit more of a PITA than I had imagined though. Primarily because it's kinda difficult to keep the directory structure intact since as far as I know zip files don't have a directory structure.</td></tr>
+            <tr><td>[18:43] &lt MS-&gt Really?</td></tr>
+            <tr><td>[18:43] &lt MS-&gt I know you can store multiple files/directories in a zip</td></tr>
+            <tr><td>[18:44] &lt MS-&gt but internally it's not modelled that way?</td></tr>
+            <tr><td>[18:44] &lt j_baker_&gt You kinda can.</td></tr>
+            <tr><td>[18:44] &lt j_baker_&gt Say I have a data directory and I store the file "foo" from it in a zip file.</td></tr>
+            <tr><td>[18:44] &lt j_baker_&gt It just stores the file as 'data/foo'</td></tr>
+            <tr><td>[18:44] *** MS- nods</td></tr>
+            <tr><td>[18:45] &lt j_baker_&gt (at least as far as the python zipfile module is concerned anyway)</td></tr>
+            <tr><td>[18:45] &lt MS-&gt I see</td></tr>
+            <tr><td>[18:45] &lt MS-&gt Well, there always was going to be limitations really</td></tr>
+            <tr><td>[18:45] &lt MS-&gt The zipfile stuff is good for imports I think, but doing it well beyond that being harder doesn't surprise me</td></tr>
+            <tr><td>[18:46] &lt MS-&gt (even if .odp, .odt, .ods etc files are zip files)</td></tr>
+            <tr><td>[18:46] &lt MS-&gt Actually that may be worth your while looking at if you've not done so</td></tr>
+            <tr><td>[18:46] &lt j_baker_&gt I'm guessing those are Open Office formats?</td></tr>
+            <tr><td>[18:46] &lt MS-&gt Yep</td></tr>
+            <tr><td>[18:47] &lt j_baker_&gt Interesting. I may have to look into that.</td></tr>
+            <tr><td>[18:47] &lt MS-&gt It's an interesting approach - inside them they files (eg images etc)</td></tr>
+            <tr><td>[18:47] &lt MS-&gt are stored seperately</td></tr>
+            <tr><td>[18:47] &lt MS-&gt and the body etc is just XML</td></tr>
+            <tr><td>[18:47] &lt MS-&gt but to bundle it all together they just zip it up</td></tr>
+            <tr><td>[18:48] &lt MS-&gt It sounds like you're converging on a similar idea</td></tr>
+            <tr><td>[18:48] &lt j_baker_&gt Well, it would be worth it if there are python libraries for them.</td></tr>
+            <tr><td>[18:49] &lt j_baker_&gt But once I'm done with that, I should be ready to move on to the next part of my project (migrating it to XMPP).</td></tr>
+            <tr><td>[18:49] &lt MS-&gt I was more thinking to have a rummage around inside to have a look at for ideas really</td></tr>
+            <tr><td>[18:49] &lt MS-&gt "unzip" gets inside the file fine :)</td></tr>
+            <tr><td>[18:50] &lt MS-&gt That plan sounds sensible FWIW</td></tr>
+            <tr><td>[18:50] &lt j_baker_&gt Interesting. I hadn't tested the file with unzip.</td></tr>
+            <tr><td>[18:51] &lt MS-&gt :)</td></tr>
+            <tr><td>[18:52] &lt MS-&gt Sometimes unzip will complain about the extension being wrong</td></tr>
+            <tr><td>[18:52] &lt MS-&gt depending on the version of unzip</td></tr>
+            <tr><td>[18:52] &lt j_baker_&gt The biggest challenge I see going ahead will be determining if there's a protocol for sending HTTP data over XMPP or if I'll have to write my own. I suppose I'll have to discuss that one with Lawouach.</td></tr>
+            <tr><td>[18:53] &lt MS-&gt Well, HTTP is technically transport agnostic</td></tr>
+            <tr><td>[18:53] &lt MS-&gt ie it can be sent of UDP for example - at least in theory</td></tr>
+            <tr><td>[18:53] &lt j_baker_&gt So is XMPP.</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt well</td></tr>
+            <tr><td>[18:53] &lt MS-&gt I've yet to see an implementation that did that thought</td></tr>
+            <tr><td>[18:53] &lt Lawouach&gt you'll have to explain what you want to do :)</td></tr>
+            <tr><td>[18:54] &lt j_baker_&gt Well, I'm using XMPP to serve webpages. The idea is to eventually make a gateway that would convert an HTTP request into XMPP.</td></tr>
+            <tr><td>[18:54] &lt MS-&gt j_baker_: cf:</td></tr>
+            <tr><td>[18:54] &lt MS-&gt http 80/tcp # World Wide Web HTTP</td></tr>
+            <tr><td>[18:54] &lt MS-&gt http 80/udp # World Wide Web HTTP</td></tr>
+            <tr><td>[18:54] &lt MS-&gt from /etc/services (assigned numbers)</td></tr>
+            <tr><td>[18:54] &lt j_baker_&gt (or I'm going to anyway)</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[18:54] &lt j_baker_&gt I know there's a way to do it the other way around (serve XMPP over HTTP)</td></tr>
+            <tr><td>[18:54] &lt Lawouach&gt is there any existing client that'd be able to do anything about it?</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt I don't know any XMPP client that could cleanly display your web pages over XMPP</td></tr>
+            <tr><td>[18:55] &lt MS-&gt Lawouach - I'm not sure I see that as a problem :)</td></tr>
+            <tr><td>[18:55] &lt Lawouach&gt I don't know :)</td></tr>
+            <tr><td>[18:55] &lt MS-&gt me neither really :)</td></tr>
+            <tr><td>[18:55] &lt j_baker_&gt I suppose I could just put the body of the HTTP request into the XMPP message.</td></tr>
+            <tr><td>[18:55] &lt j_baker_&gt Or rather the whole HTTP request</td></tr>
+            <tr><td>[18:56] &lt MS-&gt If no-one's defined anything, that's what I would do. (the whole request)</td></tr>
+            <tr><td>[18:56] &lt MS-&gt (ignoring requests with a body for a moment)</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt http://www.xmpp.org/extensions/xep-0124.html &lt -- you have that but it's the other way around</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt serving XMPP over HTTP</td></tr>
+            <tr><td>[18:56] &lt Lawouach&gt and I haven't implemented it personally :)</td></tr>
+            <tr><td>[18:56] *** MS- wonders if j_baker_'s is reinventing BXXP/BEEP, but from the perspective of actually having a usecase</td></tr>
+            <tr><td>[18:57] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[18:57] &lt j_baker_&gt BXXP/BEEP? Those sound vaguely familiar.</td></tr>
+            <tr><td>[18:57] &lt MS-&gt The BEEP book was very odd - it never appeared to actually have a usecase</td></tr>
+            <tr><td>[18:57] &lt MS-&gt Blocks Extensible &lt something&gt protocol</td></tr>
+            <tr><td>[18:58] &lt MS-&gt Intended to be the lego of protocols, and I've yet to see anything use it</td></tr>
+            <tr><td>[18:58] &lt MS-&gt Perhaps because it didn't ever seem to have a usecase (not even one a sensible one described in the O'Reilly book, oddly)</td></tr>
+            <tr><td>[18:59] &lt MS-&gt The odd thing is I can see a certain value of slinging HTTP requests around inside XMPP in a slightly twisted way</td></tr>
+            <tr><td>[18:59] &lt j_baker_&gt Well, I suppose the advantage there would be that XMPP already has an established framework.</td></tr>
+            <tr><td>[18:59] &lt MS-&gt Not quite sure what would come from it, but can definitely see something there</td></tr>
+            <tr><td>[18:59] *** MS- nods</td></tr>
+            <tr><td>[19:00] &lt MS-&gt I suppose it's a bit like email for HTTP ?</td></tr>
+            <tr><td>[19:00] &lt MS-&gt in it's own way</td></tr>
+            <tr><td>[19:00] &lt MS-&gt Yes, actually it is</td></tr>
+            <tr><td>[19:00] &lt j_baker_&gt Not unless I want to run BEEP over HTTP over XMPP (or some other combination of the three).</td></tr>
+            <tr><td>[19:00] &lt MS-&gt It's exactly what you want</td></tr>
+            <tr><td>[19:00] &lt MS-&gt BEEP is a white elephant</td></tr>
+            <tr><td>[19:00] &lt MS-&gt XMPP is probably precisely what you what.</td></tr>
+            <tr><td>[19:01] &lt MS-&gt It gives you routing of requests</td></tr>
+            <tr><td>[19:01] &lt MS-&gt Based on an id, rather than based on DNS</td></tr>
+            <tr><td>[19:01] &lt MS-&gt That's a very slightly wierd concept</td></tr>
+            <tr><td>[19:02] &lt MS-&gt I quite like those however</td></tr>
+            <tr><td>[19:02] &lt j_baker_&gt Sweet. That's what I'll focus on. It would be awesome to be able to just pull the HTTP request and use the existing HTTPServer that I already have.</td></tr>
+            <tr><td>[19:03] *** MS- finally sees how the parts of j_baker_'s ideas and project can fall inline together</td></tr>
+            <tr><td>[19:03] &lt j_baker_&gt And then once that's done, I could try to send the body through a file. That way I already have a premade wsgi.input.</td></tr>
+            <tr><td>[19:03] &lt MS-&gt Your intemediaries being XMPP things also make sense too</td></tr>
+            <tr><td>[19:03] &lt MS-&gt Perhaps the most wierd thing: The concept of "remote IP" totally disappears</td></tr>
+            <tr><td>[19:04] &lt MS-&gt I like this. It'd break people. BUT it deals with the issue of</td></tr>
+            <tr><td>[19:04] &lt j_baker_&gt For standard web pages, I don't forsee that as being too bad a concept. But some other types of content would require some hacking.</td></tr>
+            <tr><td>[19:04] &lt MS-&gt "how does someone access the server on my &lt random device that can speak HTTP but not IP&gt"</td></tr>
+            <tr><td>[19:05] &lt MS-&gt I can see it working for lots of things</td></tr>
+            <tr><td>[19:05] &lt MS-&gt Streaming flash would be an issue :)</td></tr>
+            <tr><td>[19:05] &lt MS-&gt This is a really wierd, but potentially very neat idea</td></tr>
+            <tr><td>[19:05] &lt j_baker_&gt Meh. The world's better off without it anyway. :) But that will be a problem for a lot of webpages.</td></tr>
+            <tr><td>[19:06] &lt MS-&gt Yeah, but not for a place that's never had it</td></tr>
+            <tr><td>[19:07] &lt j_baker_&gt I'll have to think of a succinct name for it because HTTP over XMPP is just too much of an alphabet soup mouthful.</td></tr>
+            <tr><td>[19:08] &lt MS-&gt We'll figure that out</td></tr>
+            <tr><td>[19:08] &lt MS-&gt :)</td></tr>
+            <tr><td>[19:09] &lt MS-&gt The interesting thing also is that it would deal with the issue of "how do I migrate from IPV4 to IPV6"</td></tr>
+            <tr><td>[19:10] &lt MS-&gt whilst also dealing with "I'm stuck behind a double nat on an ISP who hasn't got enough public IPs because we've round out of IPV4 addresses - which is happening soon"</td></tr>
+            <tr><td>[19:10] &lt MS-&gt I like this aspect for a number of reasons</td></tr>
+            <tr><td>[19:10] &lt MS-&gt It would be well worth searching to see if anyone has done this already though</td></tr>
+            <tr><td>[19:11] &lt MS-&gt If only to find out what they did wrong (if they did)</td></tr>
+            <tr><td>[19:11] &lt j_baker_&gt Plus it opens up a lot of other neat possibilities. Two servers could talk to each other, you could push RSS info out instead of requiring polling, etc.</td></tr>
+            <tr><td>[19:11] &lt j_baker_&gt (granted I suppose the server talking is already possible via XMLRPC)</td></tr>
+            <tr><td>[19:13] &lt j_baker_&gt Anyway, I've got to go get ready for my dr's appt, so I've got to take off. Talk to you guys later. :)</td></tr>
+            <tr><td>[19:13] &lt MS-&gt Cheers chat later :)</td></tr>
+            <tr><td>[19:27] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:10] *** xmlhacker has joined #kamaelia</td></tr>
+            <tr><td>[20:18] *** xmlhacker has joined #kamaelia</td></tr>
+            <tr><td>[20:36] *** j_baker_ wonders if python's tarfile library works on windows.</td></tr>
+            <tr><td>[20:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:40] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[21:13] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:16] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:18] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt yeah CherryPy 3.1 final is now out!</td></tr>
+            <tr><td>[21:58] &lt Lawouach&gt so sweet</td></tr>
+            <tr><td>[21:58] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[22:20] *** vmlemon_ has joined #kamaelia</td></tr>

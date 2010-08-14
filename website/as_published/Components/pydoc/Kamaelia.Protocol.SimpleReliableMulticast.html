@@ -1,0 +1,282 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Protocol.SimpleReliableMulticast</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.html">SimpleReliableMulticast</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.Annotator.html">Annotator</a></strong></li>
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.RecoverOrder.html">RecoverOrder</a></strong></li>
+<li><strong>prefab <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.SRM_Receiver.html">SRM_Receiver</a></strong></li>
+<li><strong>prefab <a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.SRM_Sender.html">SRM_Sender</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#606">Simple Reliable Multicast</a><ul>
+<li><a class="reference" href="#607">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#608">How does it work?</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="606">Simple Reliable Multicast</h1>
+<p>A pair of Pipelines for encoding (and decoding again) a stream of data such that
+is can be transported over an unreliable connection that may lose, duplicate or
+reorder data.</p>
+<p>These components will ensure that data arrives in the right order and that
+duplicates are removed. However it cannot recover lost data.</p>
+<div class="section">
+<h2 id="607"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Reliably transporting a file over multicast (assuming no packets are lost):</p>
+<pre class="literal-block">
+Pipeline(RateControlledFileReader(&quot;myfile&quot;),
+         SRM_Sender(),
+         Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;1.2.3.4&quot;, 1000),
+        ).activate()
+</pre>
+<p>On the client:</p>
+<pre class="literal-block">
+class discardSeqnum(component):
+    def main(self):
+        while 1:
+            if self.dataReady(&quot;inbox&quot;):
+                (_, data) = self.recv(&quot;inbox&quot;)
+                self.send(data,&quot;outbox&quot;)
+
+Pipeline( Multicast_transceiver(&quot;0.0.0.0&quot;, 1000, &quot;1.2.3.4&quot;, 0)
+          SRM_Receiver(),
+          discardSeqnum(),
+          ConsoleEchoer()
+        ).activate()
+</pre>
+</div>
+<div class="section">
+<h2 id="608"><a id="how-does-it-work" name="how-does-it-work">How does it work?</a></h2>
+<p>SRM_Sender is a Pipeline of three components:</p>
+<ul class="simple">
+<li>Annotator    -- annotates a data stream with sequence numbers</li>
+<li>Framer       -- frames the data</li>
+<li>DataChunker  -- inserts markers between frames</li>
+</ul>
+<p>SRM_Receiver is a Pipeline of three components:</p>
+<ul class="simple">
+<li>DataDeChunker  -- recovers chunks based on markers</li>
+<li>DeFramer       -- removes framing</li>
+<li>RecoverOrder   -- sorts data by sequence numbers</li>
+</ul>
+<p>These components will ensure that data arrives in the right order and that
+duplicates are removed. However it cannot recover lost data. But the final
+output is (seqnum,data) pairs - so there is enough information for the
+receiver to know that data has been lost.</p>
+<p>The Annotator component receives data on its &quot;inbox&quot; inbox, and emits
+(seqnum, data) tuples on its &quot;outbox&quot; outbox. The sequence numbers start at 1
+and increments by 1 for each item.</p>
+<p>The Annotator component does not terminate and ignores messages arriving on its
+&quot;control&quot; inbox.</p>
+<p>See documentation for the other components for details of their design and
+behaviour.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.html">SimpleReliableMulticast</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.Annotator.html">Annotator</a></h1>
+<div class="section">
+<h2 id="symbol-Annotator">class Annotator(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>Annotator() -&gt; new Annotator component.</p>
+<p>Takes incoming data and outputs (n, data) where n is an incrementing sequence
+number, starting at 1.</p>
+<div class="section">
+<h3><a id="symbol-Annotator.Inboxes" name="symbol-Annotator.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-Annotator.Outboxes" name="symbol-Annotator.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-Annotator.main" name="symbol-Annotator.main">main(self)</a></h4>
+<p>Main loop</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.html">SimpleReliableMulticast</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.RecoverOrder.html">RecoverOrder</a></h1>
+<div class="section">
+<h2 id="symbol-RecoverOrder">class RecoverOrder(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>RecoverOrder() -&gt; new RecoverOrder component.</p>
+<p>Receives and buffers (seqnum, data) pairs, and reorders them by ascending
+sequence number and emits them (when its internal buffer is full).</p>
+<div class="section">
+<h3><a id="symbol-RecoverOrder.Inboxes" name="symbol-RecoverOrder.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-RecoverOrder.Outboxes" name="symbol-RecoverOrder.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-RecoverOrder.main" name="symbol-RecoverOrder.main">main(self)</a></h4>
+<p>Main loop.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.html">SimpleReliableMulticast</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.SRM_Receiver.html">SRM_Receiver</a></h1>
+<div class="section">
+<h2 id="symbol-SRM_Receiver">prefab: SRM_Receiver</h2>
+<p>Simple Reliable Multicast receiver.</p>
+<p>Dechunks, deframes and recovers the order of a data stream that has been
+encoded by SRM_Sender.</p>
+<p>Final emitted data is (seqnum, data) pairs.</p>
+<p>This is a Pipeline of components.</p>
+</div>
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.html">SimpleReliableMulticast</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast.SRM_Sender.html">SRM_Sender</a></h1>
+<div class="section">
+<h2 id="symbol-SRM_Sender">prefab: SRM_Sender</h2>
+<p>Simple Reliable Multicast sender.</p>
+<p>Sequence numbers, frames and chunks a data stream, making it suitable for
+sending over an unreliable connection that may lose, reorder or duplicate
+data. Can be decoded by SRM_Receiver.</p>
+<p>This is a Pipeline of components.</p>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,561 @@
+<html><body><table>
+            <tr><td>[06:52] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:52] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[07:59] &lt aa_&gt that bug chong was having is in xscreensaver, and its fixed in later ubuntu</td></tr>
+            <tr><td>[08:10] &lt MS-&gt morning</td></tr>
+            <tr><td>[08:10] &lt MS-&gt aa_: Ahh, cool</td></tr>
+            <tr><td>[09:13] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:29] &lt MS-&gt Gosh, a language that really does look like line noise (and isn't a joke language) : http://www.vector.org.uk/archive/v214/sudoku.htm</td></tr>
+            <tr><td>[09:30] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:32] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[09:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:19] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:04] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:36] &lt MS-&gt Trying to understand this clojure program...</td></tr>
+            <tr><td>[12:36] &lt MS-&gt http://pastebin.com/m69744d5b</td></tr>
+            <tr><td>[12:37] &lt MS-&gt Quite why lisp people think the brackets are a pain, I don't understand</td></tr>
+            <tr><td>[12:37] &lt MS-&gt For example, it turns out that this:</td></tr>
+            <tr><td>[12:37] &lt MS-&gt (def world      (apply vector             (map (fn [_]                    (apply vector (map (fn [_] (ref (struct cell 0 0)))                                       (range dim))))                  (range dim))))  </td></tr>
+            <tr><td>[12:37] &lt MS-&gt means this (in python)</td></tr>
+            <tr><td>[12:38] &lt MS-&gt world = [ [cell(0,0) for x in xrange(dim) ] for y in xrange(dim) ]</td></tr>
+            <tr><td>[12:39] &lt MS-&gt or</td></tr>
+            <tr><td>[12:40] &lt MS-&gt world = [[None]*5]*5</td></tr>
+            <tr><td>[12:40] &lt MS-&gt for i in range(5):</td></tr>
+            <tr><td>[12:40] &lt MS-&gt  for j in range(5):</td></tr>
+            <tr><td>[12:40] &lt MS-&gt  world[i][j] = cell(0,0)</td></tr>
+            <tr><td>[12:44] &lt MS-&gt trying to follow what 58-70 does right now</td></tr>
+            <tr><td>[12:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:13] *** eikenberry has joined #kamaelia</td></tr>
+            <tr><td>[13:30] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[13:37] &lt eikenberry&gt MS-. Where'd that clojure program come from. Looks like a nice example.</td></tr>
+            <tr><td>[13:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:16] &lt MS-&gt eikenberry: I found it underneath this: http://clojure.blip.tv/file/812787</td></tr>
+            <tr><td>[14:17] &lt MS-&gt I haven't had the time/patience to sit through that 2.5 hour presentation yet</td></tr>
+            <tr><td>[14:45] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:49] &lt eikenberry&gt MS-. Thanks.</td></tr>
+            <tr><td>[14:59] &lt MS-&gt yw</td></tr>
+            <tr><td>[15:00] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:14] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[16:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:07] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[17:13] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:22] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:49] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:51] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[17:53] &lt MS-&gt evening</td></tr>
+            <tr><td>[17:55] *** vmlemon_ doesn't think that UMTS is doing his phone's battery any good, considering that the underspec temporary replacement charger's had it...</td></tr>
+            <tr><td>[17:55] &lt vmlemon_&gt Still, it's certainly fast</td></tr>
+            <tr><td>[17:57] &lt vmlemon_&gt Thanks for committing the hacky file appender by the way</td></tr>
+            <tr><td>[17:57] &lt vmlemon_&gt (Probably my 2nd code contribution to a project)</td></tr>
+            <tr><td>[17:59] *** vmlemon_ assumes that it's changed in positive ways since I chucked it over the wall, and into the Kamaelia melting pot ;)</td></tr>
+            <tr><td>[18:03] &lt vmlemon_&gt Well, it's technically the 5th or 6th contribution, if you count the changes I submitted for an IRC bot</td></tr>
+            <tr><td>[18:43] &lt MS-&gt Yep, it's changed a fair amount</td></tr>
+            <tr><td>[18:51] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[19:04] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:14] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:16] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[19:42] *** Davbo finally gets to write some Python for University work</td></tr>
+            <tr><td>[19:42] &lt aa_&gt yay!</td></tr>
+            <tr><td>[19:42] *** Davbo is happy :-)</td></tr>
+            <tr><td>[19:42] *** aa_ had to write all his "university" work in java so the lecturorers/tutors could understand it :)</td></tr>
+            <tr><td>[19:43] &lt aa_&gt but then that really was not a good "university"</td></tr>
+            <tr><td>[19:43] &lt Davbo&gt They'd probably understand the Python code better than the Java in most cases</td></tr>
+            <tr><td>[19:43] &lt Davbo&gt even if they're not "python programmers"</td></tr>
+            <tr><td>[19:44] &lt aa_&gt I think they used to mark the assignments with regular expressions</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt Wow.</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt just...wow.</td></tr>
+            <tr><td>[19:44] &lt aa_&gt well, I am being mean</td></tr>
+            <tr><td>[19:44] &lt aa_&gt but have you ever had the feeling your tutors are holding you back?</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt all the time, i just ignore it and do things my way</td></tr>
+            <tr><td>[19:45] &lt Davbo&gt generally argue it out</td></tr>
+            <tr><td>[19:45] &lt aa_&gt ah yes, the arguments</td></tr>
+            <tr><td>[19:48] &lt Davbo&gt I asked my "Systems Analysis and Design" lecturer if he'd read Kent Beck's book on TDD, ended up in an argument where he basically ended it saying "Well Kent Beck developed that on a project that failed" and laughed at me..</td></tr>
+            <tr><td>[19:49] &lt Davbo&gt This same lecturer has a book about the "Discovery Method" which is the biggest waste of time I've ever seen</td></tr>
+            <tr><td>[19:50] &lt Davbo&gt but since none of the students know the alternatives they just go along with it</td></tr>
+            <tr><td>[19:50] &lt aa_&gt that infuriates me</td></tr>
+            <tr><td>[19:51] &lt aa_&gt my "mathematics for computer science teacher" was the worst</td></tr>
+            <tr><td>[19:51] &lt aa_&gt he also had his own book</td></tr>
+            <tr><td>[19:51] &lt aa_&gt and he would insist on us using his title</td></tr>
+            <tr><td>[19:51] &lt aa_&gt Dr Dupee</td></tr>
+            <tr><td>[19:51] &lt aa_&gt (which of course was a huge mistake, because I insisted on him using my title. Which is also "Dr")</td></tr>
+            <tr><td>[19:52] &lt Davbo&gt Haha</td></tr>
+            <tr><td>[19:52] &lt aa_&gt that was a messy afternoon ;)</td></tr>
+            <tr><td>[19:52] &lt Davbo&gt well played, well played. :-)</td></tr>
+            <tr><td>[19:53] &lt aa_&gt especially good because he refused to believe me, and tried to make a big thing of it</td></tr>
+            <tr><td>[19:53] *** aa_ sighs</td></tr>
+            <tr><td>[19:53] &lt aa_&gt still it beat having a real job, I'll say that much</td></tr>
+            <tr><td>[19:56] &lt Davbo&gt I'm terrified of finishing Uni, no idea what I'll end up doing</td></tr>
+            <tr><td>[19:57] &lt aa_&gt Davbo: want to be a developer?</td></tr>
+            <tr><td>[19:57] &lt Davbo&gt I'm not sure really</td></tr>
+            <tr><td>[19:58] &lt Davbo&gt I enjoy it so will most likely give it a go after uni</td></tr>
+            <tr><td>[20:01] &lt Davbo&gt it would have to be in the right environment though</td></tr>
+            <tr><td>[20:01] &lt aa_&gt well, you might have to do a couple of years worth of wok you don't enjoy</td></tr>
+            <tr><td>[20:02] &lt aa_&gt I was quite lucky, I got a pygtk job right away on the strength of my open source work</td></tr>
+            <tr><td>[20:02] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[20:03] &lt Davbo&gt I like the idea of working for some crazy high risk start-up, but I think they're few and far between over here.</td></tr>
+            <tr><td>[20:03] &lt aa_&gt yeah</td></tr>
+            <tr><td>[20:03] &lt aa_&gt I have an idea for a start up</td></tr>
+            <tr><td>[20:03] &lt Davbo&gt i don't think you really get the chance of that sort of thing when you get older though</td></tr>
+            <tr><td>[20:04] &lt aa_&gt just not sure what to do with it</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt and you know, have to be responsible</td></tr>
+            <tr><td>[20:04] &lt aa_&gt very much so</td></tr>
+            <tr><td>[20:04] &lt aa_&gt I have responsibilities</td></tr>
+            <tr><td>[20:04] &lt aa_&gt and the current economic climate is not exactly helpful</td></tr>
+            <tr><td>[20:04] &lt Davbo&gt idea's are cheap in this industry though aa_, unless it's a particularly good idea ;-)</td></tr>
+            <tr><td>[20:05] &lt aa_&gt Davbo: it's a Nobel prize-winning idea :)</td></tr>
+            <tr><td>[20:05] &lt aa_&gt I could be wrong, of course!</td></tr>
+            <tr><td>[20:05] &lt aa_&gt I once thought providing men with hormones to allow them to breast-feed was a good idea too.</td></tr>
+            <tr><td>[20:05] &lt Davbo&gt well investing in tech start-ups is probably safer than the banks or stock market aa_</td></tr>
+            <tr><td>[20:06] &lt aa_&gt hah, possibly true</td></tr>
+            <tr><td>[20:07] &lt Davbo&gt I could just go for it after university and try to get some venture capital ;-)</td></tr>
+            <tr><td>[20:08] &lt aa_&gt you may as well try</td></tr>
+            <tr><td>[20:08] &lt aa_&gt as you say, nothing to lose</td></tr>
+            <tr><td>[20:10] &lt Davbo&gt "This time next year we'll be millionaires"</td></tr>
+            <tr><td>[20:12] &lt Davbo&gt Oh I recall my best argument with a lecturer now, he was complaining about open source in reference to a commercial plug-in for Eclipse.....good times.</td></tr>
+            <tr><td>[20:12] *** Rigolo has joined #kamaelia</td></tr>
+            <tr><td>[20:12] &lt Rigolo&gt good evening</td></tr>
+            <tr><td>[20:12] &lt Davbo&gt Evenin' Rigolo</td></tr>
+            <tr><td>[20:12] &lt Rigolo&gt mmm let me see if I can get a proper window for irssi ... be right back</td></tr>
+            <tr><td>[20:13] *** Rigolo has joined #kamaelia</td></tr>
+            <tr><td>[20:13] &lt Rigolo&gt that is better :-)</td></tr>
+            <tr><td>[20:14] &lt Rigolo&gt okee ... now letś see what I needed to do in order to get kamalia working with dvb-c</td></tr>
+            <tr><td>[20:18] &lt Davbo&gt Ah I spotted something about that on the list, I assume that was either you or you've seen it Rigolo?</td></tr>
+            <tr><td>[20:18] &lt Rigolo&gt I've seen it ....</td></tr>
+            <tr><td>[20:19] &lt Rigolo&gt I worked on it last night with MS- .. but then it was late ... and I needed the trunk version of Kamaelia</td></tr>
+            <tr><td>[20:19] *** Davbo nods</td></tr>
+            <tr><td>[20:19] &lt Rigolo&gt so I did a clean reinstall of mythbuntu 8.10 beta .. and using that now</td></tr>
+            <tr><td>[20:19] &lt Rigolo&gt Just compiled Pyrex 0.9.3.1</td></tr>
+            <tr><td>[20:19] &lt Rigolo&gt no move to python-dvb3</td></tr>
+            <tr><td>[20:19] &lt Rigolo&gt now I mean</td></tr>
+            <tr><td>[20:22] &lt Rigolo&gt mmmm probably forgot some other packages ....</td></tr>
+            <tr><td>[20:23] &lt Rigolo&gt Pyrex worked ... doing a python setup.py install for python-dvb3 did not ....</td></tr>
+            <tr><td>[20:26] &lt Davbo&gt I don't know much about dvb I'm afraid</td></tr>
+            <tr><td>[20:26] &lt Davbo&gt What does it complain about when you try to install it?</td></tr>
+            <tr><td>[20:27] &lt Rigolo&gt lotś of errors ... too much to mention</td></tr>
+            <tr><td>[20:27] &lt Rigolo&gt so probably a package that I also need</td></tr>
+            <tr><td>[20:27] &lt Rigolo&gt mmm let met guess ... gettext I guess :-)</td></tr>
+            <tr><td>[20:27] &lt Rigolo&gt I will just check what I did yesterday</td></tr>
+            <tr><td>[20:27] &lt Rigolo&gt then it worked</td></tr>
+            <tr><td>[20:29] &lt Rigolo&gt python2.5-dev</td></tr>
+            <tr><td>[20:29] &lt Rigolo&gt mm i mean ....</td></tr>
+            <tr><td>[20:29] &lt Rigolo&gt python2.5-dev</td></tr>
+            <tr><td>[20:29] &lt Rigolo&gt mmm weird copy thing again</td></tr>
+            <tr><td>[20:29] &lt Rigolo&gt sudo apt-get install python-all python-all-dev python-dev python2.5-dev</td></tr>
+            <tr><td>[20:30] &lt Rigolo&gt that is more like it</td></tr>
+            <tr><td>[20:30] &lt Davbo&gt what you did yesterday?</td></tr>
+            <tr><td>[20:30] &lt Davbo&gt Did you have it working yesterday?</td></tr>
+            <tr><td>[20:31] &lt Rigolo&gt I installed python-pyrex from the standard repositories .. but python-dvb3 does not work with that latest version</td></tr>
+            <tr><td>[20:31] &lt Rigolo&gt but it was installed .. and then I uninstalled only that package .</td></tr>
+            <tr><td>[20:31] &lt Rigolo&gt but the dependecies remaind ...</td></tr>
+            <tr><td>[20:31] &lt MS-&gt Rigolo: Pyrex worked ... doing a python setup.py install for python-dvb3 did not ....</td></tr>
+            <tr><td>[20:31] &lt MS-&gt Have you got the linux kernel headers installed ? IIRC the dvb3 headers get pulled in from there</td></tr>
+            <tr><td>[20:31] &lt Rigolo&gt so now I just installed them</td></tr>
+            <tr><td>[20:32] &lt Rigolo&gt and now python-dvb3 installed :-)</td></tr>
+            <tr><td>[20:32] &lt Rigolo&gt headers are standard on mythbuntu</td></tr>
+            <tr><td>[20:32] &lt Rigolo&gt good evning MS- ... btw :-)</td></tr>
+            <tr><td>[20:33] &lt MS-&gt Rigolo: Indeed - evening :)</td></tr>
+            <tr><td>[20:33] &lt Davbo&gt Evenin' MS-, hopefully you can be of more use than me! :-)</td></tr>
+            <tr><td>[20:33] &lt MS-&gt Davbo: "Well Kent Beck developed that on a project that failed" - well, there's also Fred Brooks "The Mythical Man Month"</td></tr>
+            <tr><td>[20:34] &lt Rigolo&gt 16 new updated packages since this morning 9 ... must be almost ready for a release I guess .. ubunut 8.10</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Rigolo: cool</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Davbo: Whilst being one of the most cited computing books of all time it's actually interesting if you stop and think about it</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Davbo: How can you know that adding more people to a *failing* project doesn't help, unless you've repeatedly tried it?</td></tr>
+            <tr><td>[20:34] &lt MS-&gt Davbo: and therefore had multiple failed projects :-)</td></tr>
+            <tr><td>[20:35] &lt Rigolo&gt MS-: that is why they are most likely consultants .... :-)</td></tr>
+            <tr><td>[20:35] &lt Rigolo&gt MS .. btw ..if you get a new kernel .. do you need to recompile pything-dvb3 each time?</td></tr>
+            <tr><td>[20:36] &lt MS-&gt Not normally no, it's just due to the headers</td></tr>
+            <tr><td>[20:36] &lt Davbo&gt interesting MS-, I'll have a look in the library for that one</td></tr>
+            <tr><td>[20:37] &lt Rigolo&gt okee ...</td></tr>
+            <tr><td>[20:37] &lt Rigolo&gt going to a co of svn right now .. and install the svn version</td></tr>
+            <tr><td>[20:37] &lt MS-&gt Davbo:: do you mean this: http://www.dcs.shef.ac.uk/~ajhs/discovery/ ?</td></tr>
+            <tr><td>[20:37] &lt MS-&gt Rigolo: k</td></tr>
+            <tr><td>[20:38] &lt Davbo&gt Yeah that's what we have to follow :-(</td></tr>
+            <tr><td>[20:38] &lt MS-&gt Davbo: It's the only relevant link I've seen from this: http://www.google.com/search?q=%22Discovery+Method%22</td></tr>
+            <tr><td>[20:38] &lt Davbo&gt it has some good point sthough</td></tr>
+            <tr><td>[20:38] &lt MS-&gt Sounds like it's his local pet approach</td></tr>
+            <tr><td>[20:38] &lt MS-&gt (which isn't necessarily a bad thing)</td></tr>
+            <tr><td>[20:39] &lt Davbo&gt not really, he tries to promote it everywhere</td></tr>
+            <tr><td>[20:40] &lt Davbo&gt he's part of the OPEN Consortium or something and they developed it together</td></tr>
+            <tr><td>[20:40] &lt Rigolo&gt got rev 5447 right here ....</td></tr>
+            <tr><td>[20:40] &lt MS-&gt Rigolo: k</td></tr>
+            <tr><td>[20:41] &lt MS-&gt Davbo: I'm not so sure - I've never heard of it, and he's been promoting it for 14 years?</td></tr>
+            <tr><td>[20:41] &lt Davbo&gt It's just *that* good.</td></tr>
+            <tr><td>[20:41] &lt MS-&gt (and I actively take an interest in that sort of thing)</td></tr>
+            <tr><td>[20:41] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[20:42] &lt Rigolo&gt MS ... when I do a new checkout .. can I just do a sudo python setup.py install again? or should I first do a uninstall or something like that?</td></tr>
+            <tr><td>[20:42] &lt Davbo&gt I'm not sure really MS-, but he really tries to pedal that book on us</td></tr>
+            <tr><td>[20:45] &lt MS-&gt Rigolo: Yes, you can just do an install over the top</td></tr>
+            <tr><td>[20:46] &lt MS-&gt Davbo: Is there a good reference to his method there?</td></tr>
+            <tr><td>[20:46] &lt Rigolo&gt MS-: okee .. got the trunk version .. and Axon also from svn</td></tr>
+            <tr><td>[20:47] &lt Rigolo&gt going to make that same change that I did yesterday to Capturesingle...</td></tr>
+            <tr><td>[20:48] &lt MS-&gt k</td></tr>
+            <tr><td>[20:50] &lt Rigolo&gt MS-: you have a typo in line 275 of DVB/Core.py :-)</td></tr>
+            <tr><td>[20:50] &lt Rigolo&gt sefl.card = card ...</td></tr>
+            <tr><td>[20:50] &lt MS-&gt ta</td></tr>
+            <tr><td>[20:51] &lt MS-&gt fixed</td></tr>
+            <tr><td>[20:52] &lt Rigolo&gt  File "/usr/lib/python2.5/site-packages/Kamaelia/Device/DVB/Core.py", line 290, in main</td></tr>
+            <tr><td>[20:52] &lt Rigolo&gt  tune_DVB(fe, self.freq, self.feparams)</td></tr>
+            <tr><td>[20:52] &lt Rigolo&gt  File "/usr/lib/python2.5/site-packages/Kamaelia/Device/DVB/Core.py", line 216, in tune_DVB</td></tr>
+            <tr><td>[20:52] &lt Rigolo&gt  if fe.t == dvb3.frontend.OFDMParameters:</td></tr>
+            <tr><td>[20:52] &lt Rigolo&gt AttributeError: 'frontend.Frontend' object has no attribute 't'</td></tr>
+            <tr><td>[20:53] &lt MS-&gt hm. Well, it was worth a try...</td></tr>
+            <tr><td>[20:53] &lt MS-&gt OK, will add in something else, and ask you to test it - I don't have my DVB hardware handy</td></tr>
+            <tr><td>[20:55] &lt Rigolo&gt no problem ... ready when you are</td></tr>
+            <tr><td>[20:55] &lt MS-&gt OK, I've added in a print dir(fe) statement above that line</td></tr>
+            <tr><td>[20:55] &lt MS-&gt since I thought it would be something else</td></tr>
+            <tr><td>[20:55] &lt Rigolo&gt ['__class__', '__delattr__', '__doc__', '__getattribute__', '__hash__', '__init__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__str__', 'diseqc_recv_slave_reply', 'diseqc_reset_overload', 'diseqc_send_burst', 'diseqc_send_master_cmd', 'enable_high_lnb_voltage', 'fileno', 'get_event', 'get_frontend', 'get_info', 'read_ber', 'read_signal_strength', 'read_snr', 'read_status', 'read_uncorrected_blocks', 'set_blocking',</td></tr>
+            <tr><td>[20:56] &lt MS-&gt I probably should've also done</td></tr>
+            <tr><td>[20:56] &lt Rigolo&gt that was what you were looking for right?</td></tr>
+            <tr><td>[20:57] &lt MS-&gt OK, added in a couple of extra lines to dump out a touch more detail</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt ['__class__', '__delattr__', '__doc__', '__getattribute__', '__hash__', '__init__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__str__', 'diseqc_recv_slave_reply', 'diseqc_reset_overload', 'diseqc_send_burst', 'diseqc_send_master_cmd', 'enable_high_lnb_voltage', 'fileno', 'get_event', 'get_frontend', 'get_info', 'read_ber', 'read_signal_strength', 'read_snr', 'read_status', 'read_uncorrected_blocks', 'set_blocking',</td></tr>
+            <tr><td>[20:58] &lt MS-&gt OK, def get_event(self):</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt &lt type 'frontend.Frontend'&gt</td></tr>
+            <tr><td>[20:58] &lt MS-&gt is a method of</td></tr>
+            <tr><td>[20:58] &lt Rigolo&gt &lt type 'frontend.Frontend'&gt</td></tr>
+            <tr><td>[20:58] &lt MS-&gt that :)</td></tr>
+            <tr><td>[20:59] &lt MS-&gt OK, is fd there...</td></tr>
+            <tr><td>[20:59] &lt MS-&gt no</td></tr>
+            <tr><td>[20:59] &lt MS-&gt hm</td></tr>
+            <tr><td>[20:59] &lt MS-&gt You see that "t" is defined here:</td></tr>
+            <tr><td>[20:59] &lt MS-&gt cdef class Frontend:</td></tr>
+            <tr><td>[20:59] &lt MS-&gt  cdef int fd</td></tr>
+            <tr><td>[20:59] &lt MS-&gt  cdef object t</td></tr>
+            <tr><td>[21:00] &lt MS-&gt So if the t isn't visible the fd wouldn't be either</td></tr>
+            <tr><td>[21:00] &lt MS-&gt despite both being used like this:</td></tr>
+            <tr><td>[21:00] &lt MS-&gt  self.fd = open(filename, flags)</td></tr>
+            <tr><td>[21:00] &lt MS-&gt  self.t = QPSKParameters</td></tr>
+            <tr><td>[21:00] &lt MS-&gt So that does indeed track</td></tr>
+            <tr><td>[21:01] *** MS- thinks</td></tr>
+            <tr><td>[21:01] *** Rigolo waits ...</td></tr>
+            <tr><td>[21:01] &lt Rigolo&gt (and builds a one line svn up and install command)</td></tr>
+            <tr><td>[21:02] &lt MS-&gt Wondering how to get at self.t</td></tr>
+            <tr><td>[21:04] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[21:04] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[21:04] &lt Rigolo&gt isńt that t coming from cfrontend?</td></tr>
+            <tr><td>[21:04] &lt Rigolo&gt looking at the source of frontend.pyx</td></tr>
+            <tr><td>[21:07] &lt MS-&gt OK, I've added in a method to frontend.pyx, so that needs rebuilding</td></tr>
+            <tr><td>[21:07] &lt MS-&gt and also changed DVB/Core.py to use that new method</td></tr>
+            <tr><td>[21:07] &lt Rigolo&gt mmm okee .. but I got python-dvb3 as a tarball .. not from svn</td></tr>
+            <tr><td>[21:08] &lt Rigolo&gt so should I get the svn version now?</td></tr>
+            <tr><td>[21:08] &lt MS-&gt I see</td></tr>
+            <tr><td>[21:08] &lt MS-&gt svn co http://kamaelia.googlecode.com/svn/trunk/Code/Python/Bindings/python-dvb3</td></tr>
+            <tr><td>[21:08] &lt MS-&gt cd python-dvb3</td></tr>
+            <tr><td>[21:08] &lt MS-&gt sudo python setup.py install</td></tr>
+            <tr><td>[21:09] &lt Rigolo&gt not a force .. because I now have that tarball?</td></tr>
+            <tr><td>[21:09] &lt Rigolo&gt and that was version 0.0.5 .. and i just looked at the code ..and it still says version 0.0.4(correct?)</td></tr>
+            <tr><td>[21:10] &lt Rigolo&gt okee .. version 0.0.5 in setup.py now :-)</td></tr>
+            <tr><td>[21:10] &lt MS-&gt ~/code.google/kamaelia/trunk/Code/Python/Bindings/python-dvb3&gt grep version setup.py</td></tr>
+            <tr><td>[21:10] &lt MS-&gt  name="python-dvb3", version="0.0.5",</td></tr>
+            <tr><td>[21:10] &lt Rigolo&gt but __init__.py says 0.0.4</td></tr>
+            <tr><td>[21:12] &lt MS-&gt so it does</td></tr>
+            <tr><td>[21:12] &lt Rigolo&gt does it harm?</td></tr>
+            <tr><td>[21:12] &lt MS-&gt I didn't realise a version had gone in there</td></tr>
+            <tr><td>[21:12] &lt MS-&gt no, no harm, but useful to know</td></tr>
+            <tr><td>[21:12] &lt MS-&gt since someone may look for it</td></tr>
+            <tr><td>[21:12] &lt Rigolo&gt okee ..</td></tr>
+            <tr><td>[21:13] &lt Rigolo&gt no need to add a --force?</td></tr>
+            <tr><td>[21:13] &lt MS-&gt nope</td></tr>
+            <tr><td>[21:13] &lt Rigolo&gt okee</td></tr>
+            <tr><td>[21:13] &lt Rigolo&gt done .. build</td></tr>
+            <tr><td>[21:13] &lt Rigolo&gt kamaelia also right?</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt  File "/usr/lib/python2.5/site-packages/Kamaelia/Device/DVB/Core.py", line 295, in main</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt  tune_DVB(fe, self.freq, self.feparams)</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt  File "/usr/lib/python2.5/site-packages/Kamaelia/Device/DVB/Core.py", line 231, in tune_DVB</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt  fe.set_frontend(params)</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt  File "frontend.pyx", line 446, in frontend.Frontend.set_frontend</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt  File "frontend.pyx", line 364, in frontend.raise_ioerror</td></tr>
+            <tr><td>[21:14] &lt Rigolo&gt TypeError: exceptions must be strings, classes, or instances, not exceptions.IOError</td></tr>
+            <tr><td>[21:16] &lt MS-&gt not</td></tr>
+            <tr><td>[21:16] &lt Rigolo&gt you set the dvb card number fixed to card 0 right?</td></tr>
+            <tr><td>[21:16] &lt MS-&gt defaults to card 0</td></tr>
+            <tr><td>[21:17] &lt Rigolo&gt okee .. so that is good</td></tr>
+            <tr><td>[21:17] &lt MS-&gt It's clearly doing something as well</td></tr>
+            <tr><td>[21:18] &lt MS-&gt Since it would've failed before then</td></tr>
+            <tr><td>[21:18] &lt Rigolo&gt some steps further down the line yes ...</td></tr>
+            <tr><td>[21:18] *** MS- nods</td></tr>
+            <tr><td>[21:18] &lt MS-&gt OK, what's the error</td></tr>
+            <tr><td>[21:18] &lt MS-&gt let's see</td></tr>
+            <tr><td>[21:18] &lt MS-&gt  fet = fe.get_dvbtype()</td></tr>
+            <tr><td>[21:18] &lt MS-&gt is giving us fe.t</td></tr>
+            <tr><td>[21:18] &lt Rigolo&gt going to check my dvb hardware .. see if I can record using czap and cat to eliminate error there</td></tr>
+            <tr><td>[21:18] &lt MS-&gt which means it's either going down: if fet == dvb3.frontend.OFDMParameters:</td></tr>
+            <tr><td>[21:19] &lt MS-&gt or it's using whatever class is stored directly</td></tr>
+            <tr><td>[21:19] &lt MS-&gt  else:</td></tr>
+            <tr><td>[21:19] &lt MS-&gt  build_params = fet</td></tr>
+            <tr><td>[21:19] &lt MS-&gt  params = build_params( **feparams )</td></tr>
+            <tr><td>[21:19] &lt MS-&gt We identified yesterday that it would need to go down that latter side</td></tr>
+            <tr><td>[21:19] &lt MS-&gt and therefore that's working, or else that would have failed</td></tr>
+            <tr><td>[21:19] &lt Rigolo&gt it should yes ...</td></tr>
+            <tr><td>[21:20] &lt MS-&gt Ah, this is handy:</td></tr>
+            <tr><td>[21:20] &lt MS-&gt The failure is here:</td></tr>
+            <tr><td>[21:20] &lt MS-&gt  def set_frontend(self, parameters):</td></tr>
+            <tr><td>[21:20] &lt MS-&gt  global cfrontend</td></tr>
+            <tr><td>[21:20] &lt MS-&gt  cdef cfrontend.dvb_frontend_parameters p</td></tr>
+            <tr><td>[21:20] &lt MS-&gt  if pack_parameters(&p, parameters) == 0:</td></tr>
+            <tr><td>[21:20] &lt MS-&gt  raise ParameterError, "Incorrect parameter type"</td></tr>
+            <tr><td>[21:20] &lt MS-&gt  if ioctl(self.fd, cfrontend.FE_SET_FRONTEND, &p) == -1:</td></tr>
+            <tr><td>[21:20] &lt MS-&gt  raise_ioerror() # &lt -------------------------- line 446</td></tr>
+            <tr><td>[21:21] &lt MS-&gt Which means the correct paramter type is being used</td></tr>
+            <tr><td>[21:21] &lt MS-&gt which is good</td></tr>
+            <tr><td>[21:21] &lt MS-&gt ha! that means there's two problems here</td></tr>
+            <tr><td>[21:21] &lt mhrd&gt Rigolo: what tuning parameters are you passing?</td></tr>
+            <tr><td>[21:21] &lt MS-&gt 1) the parameters being passed are wrong</td></tr>
+            <tr><td>[21:21] &lt mhrd&gt s/tuning/fe/</td></tr>
+            <tr><td>[21:21] &lt mhrd&gt (hi btw)</td></tr>
+            <tr><td>[21:21] &lt MS-&gt 2) the handling of the errors is borked :)</td></tr>
+            <tr><td>[21:22] &lt MS-&gt mhrd: hiya</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt feparams = {</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt  "inversion" : dvb3.frontend.INVERSION_AUTO,</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt  "symbol_rate" : 6875000,</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt  "fec_inner" : dvb3.frontend.FEC_AUTO,</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt  "modulation" :dvb3.frontend.QAM_64,</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt }</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt Pipeline(</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt  DVB_Multiplex(618, [88, 89], feparams), # Nederland 1</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt 618 will be expanded to 618000000</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt 88 and 89 are the PIDs</td></tr>
+            <tr><td>[21:22] &lt mhrd&gt 618 MHz?</td></tr>
+            <tr><td>[21:22] &lt Rigolo&gt yes ... dvb-c</td></tr>
+            <tr><td>[21:22] &lt mhrd&gt k</td></tr>
+            <tr><td>[21:23] &lt MS-&gt Ooooooh</td></tr>
+            <tr><td>[21:23] &lt Rigolo&gt http://www.digitalekabeltelevisie.nl/techniek/tvhome.shtml</td></tr>
+            <tr><td>[21:24] &lt MS-&gt I was mistakenly under the impression of jow this worked:</td></tr>
+            <tr><td>[21:24] &lt MS-&gt  params = dvb3.frontend.OFDMParameters(</td></tr>
+            <tr><td>[21:24] &lt MS-&gt  frequency = frequency * 1000 * 1000,</td></tr>
+            <tr><td>[21:24] &lt MS-&gt  **feparams</td></tr>
+            <tr><td>[21:24] &lt MS-&gt  )</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt there is a list of transport streams .. and services in them .. and what freq they are on for my network 9003</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt mmm so if I include frequency in my feparams ... :-)</td></tr>
+            <tr><td>[21:24] &lt mhrd&gt yep</td></tr>
+            <tr><td>[21:24] &lt mhrd&gt (hopefully)</td></tr>
+            <tr><td>[21:24] &lt Rigolo&gt because of the else .. it does not multiply :-)</td></tr>
+            <tr><td>[21:25] &lt MS-&gt OK, updated the logic</td></tr>
+            <tr><td>[21:25] &lt MS-&gt in DVB/Core.py</td></tr>
+            <tr><td>[21:25] &lt Rigolo&gt mmm okee .. I was going to include the frequency in my feparams ...</td></tr>
+            <tr><td>[21:25] &lt MS-&gt mhrd: The confusion was caused because DVB-C doesn't use dvb3.frontend.OFDMParameters</td></tr>
+            <tr><td>[21:26] &lt mhrd&gt MS- : yep, I see</td></tr>
+            <tr><td>[21:26] &lt MS-&gt Rigolo: I've done the arguably more appropriate fix</td></tr>
+            <tr><td>[21:26] &lt Rigolo&gt as always :-)</td></tr>
+            <tr><td>[21:26] &lt MS-&gt mhrd: Replying to your mail on the list</td></tr>
+            <tr><td>[21:26] &lt Rigolo&gt I need to wait untill my scan is finished ... otherwise my card0 is busy :-)</td></tr>
+            <tr><td>[21:26] &lt MS-&gt basically it boils down to "i agree"</td></tr>
+            <tr><td>[21:26] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:26] &lt mhrd&gt MS- : ta, thought I'd float here in case you wanted to discuss :)</td></tr>
+            <tr><td>[21:27] &lt mhrd&gt cool -short discussion then :)</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt should have done that scan on card1</td></tr>
+            <tr><td>[21:27] &lt Rigolo&gt going to update svn kamaelia already</td></tr>
+            <tr><td>[21:28] &lt Rigolo&gt version 5454 .. nice number .. must work now :-)</td></tr>
+            <tr><td>[21:29] &lt Rigolo&gt your prints are still in the code .. and I see no errors yes :-)</td></tr>
+            <tr><td>[21:29] &lt Rigolo&gt and I see a Nederland1.ts file in my home dir :-)</td></tr>
+            <tr><td>[21:29] &lt Rigolo&gt did a ctrl-c to stop recording ...</td></tr>
+            <tr><td>[21:29] &lt Rigolo&gt let's see if I can play it back</td></tr>
+            <tr><td>[21:30] &lt MS-&gt woo</td></tr>
+            <tr><td>[21:30] &lt MS-&gt mhrd: There's a few edge cases, but I think they're clear</td></tr>
+            <tr><td>[21:30] &lt Rigolo&gt I can see the stream ....</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt no sounds .. but that is because sound is not yet setup on my test desktop :-)</td></tr>
+            <tr><td>[21:31] &lt mhrd&gt MS-, Rigolo: cool :-)</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt it is ....</td></tr>
+            <tr><td>[21:31] &lt Rigolo&gt so that also means I can use the NIT parsers etc .. right?</td></tr>
+            <tr><td>[21:32] &lt MS-&gt You have pictures?</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt must be .. because dvb/core.py was changed ...</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt yes ...</td></tr>
+            <tr><td>[21:32] &lt MS-&gt Fantastic! :-D</td></tr>
+            <tr><td>[21:32] &lt MS-&gt wooooo :-D !</td></tr>
+            <tr><td>[21:32] &lt Rigolo&gt so .. you can say you support dvb-c also now ...</td></tr>
+            <tr><td>[21:32] &lt mhrd&gt Rigolo: possibly. they were taken from the DVB-SI spec, so so long as the service is compliant, it may work. They've only ever been tested on DVB-T though!</td></tr>
+            <tr><td>[21:32] &lt mhrd&gt "ETSI EN 300 468" iirc</td></tr>
+            <tr><td>[21:33] &lt MS-&gt So, the bindings are now known to work with DVB-T, DVB-S and DVB-C, and the components with DVB-T and DVB-C :-)</td></tr>
+            <tr><td>[21:33] &lt Rigolo&gt mhrd: mmm compliant is something my provider does not always understand :-)</td></tr>
+            <tr><td>[21:33] &lt Rigolo&gt Ms .. only some components :-)</td></tr>
+            <tr><td>[21:33] &lt Rigolo&gt let's have a look at those parser tomorrow ...</td></tr>
+            <tr><td>[21:34] &lt Rigolo&gt midnight again :-)</td></tr>
+            <tr><td>[21:34] &lt mhrd&gt I suppose I mean that I've never checked if 300 468 is a spec for any DVB service, or only DVB-T ... will be interested to hear how you get on</td></tr>
+            <tr><td>[21:34] &lt mhrd&gt someone's tested with DVB-S ?</td></tr>
+            <tr><td>[21:34] &lt MS-&gt Rigolo: Thanks for the feedback, I'll tidy the code up a touch & add the notes to the new release notes</td></tr>
+            <tr><td>[21:34] &lt MS-&gt mhrd: the bindings were originally built using DVB-S by A&Mi</td></tr>
+            <tr><td>[21:34] &lt Rigolo&gt MS-: next step ... update the bidings to the latest version of pyrex ...</td></tr>
+            <tr><td>[21:35] &lt mhrd&gt aah</td></tr>
+            <tr><td>[21:35] &lt Rigolo&gt would be handy for really easy installation etc</td></tr>
+            <tr><td>[21:36] &lt Rigolo&gt so I will look at the parsers tomorrow .. because I can use them to create correct tuning files and other handy things like populating mythtv tables</td></tr>
+            <tr><td>[21:38] &lt MS-&gt cool</td></tr>
+            <tr><td>[21:38] &lt MS-&gt mhrd: I'm hitting a quandry regarding passing on of signals.</td></tr>
+            <tr><td>[21:39] &lt mhrd&gt oh?</td></tr>
+            <tr><td>[21:40] &lt MS-&gt I'll post my reply as is, and you'll see my thinking</td></tr>
+            <tr><td>[21:40] &lt mhrd&gt k</td></tr>
+            <tr><td>[21:40] &lt MS-&gt sent</td></tr>
+            <tr><td>[21:40] &lt mhrd&gt ta</td></tr>
+            <tr><td>[21:40] &lt MS-&gt basically in principle I agree with your point</td></tr>
+            <tr><td>[21:40] &lt MS-&gt s</td></tr>
+            <tr><td>[21:40] &lt MS-&gt that if we do control, why not signal</td></tr>
+            <tr><td>[21:40] &lt MS-&gt Your example provides a clear case for it as well</td></tr>
+            <tr><td>[21:41] &lt MS-&gt And I think the quandry comes from 2 locations</td></tr>
+            <tr><td>[21:41] &lt MS-&gt since a graphline deals with things inside and outside</td></tr>
+            <tr><td>[21:41] &lt MS-&gt from outside, producerFinished should not kill the graphline</td></tr>
+            <tr><td>[21:41] &lt MS-&gt from outside shutdown* should kill the graphline since it's a "shutdown now" message</td></tr>
+            <tr><td>[21:42] &lt MS-&gt it switching to a "shutting down waiting for dieing children" mode though is appropriate for the debugging reason you mention</td></tr>
+            <tr><td>[21:42] &lt MS-&gt It's more the what do you mean by the subcomponent's outbox "signal"</td></tr>
+            <tr><td>[21:43] &lt MS-&gt subcomponents' even</td></tr>
+            <tr><td>[21:43] &lt mhrd&gt yeah :)</td></tr>
+            <tr><td>[21:44] &lt MS-&gt There is a case for doing what this does:</td></tr>
+            <tr><td>[21:44] &lt MS-&gt ~&gt ( echo one; echo two; echo three) | wc -l</td></tr>
+            <tr><td>[21:44] &lt MS-&gt 3</td></tr>
+            <tr><td>[21:44] &lt MS-&gt which is to take unwired outputs and pass them to the outside world</td></tr>
+            <tr><td>[21:45] &lt MS-&gt But that feels like a major behavioural change for pipeline & graphline</td></tr>
+            <tr><td>[21:45] &lt mhrd&gt quickie: just to clear up misinterpretation: the behaviour I was suggesting was that, if no linkages are specified that go to the graphline's "signal" outbox, then when graphline receivies a shutdown msg, it'll do this:</td></tr>
+            <tr><td>[21:45] &lt MS-&gt Would be a useful *extra* chasis though</td></tr>
+            <tr><td>[21:45] *** MS- listens</td></tr>
+            <tr><td>[21:45] &lt mhrd&gt 1) send shutdown to "control " inbox of all children whose control inboxes are not wired to anything</td></tr>
+            <tr><td>[21:46] &lt mhrd&gt 2) send shutdown out if graphline's own "signal" outbox</td></tr>
+            <tr><td>[21:46] &lt mhrd&gt if I understood your reply to my email correctly, I think you misunderstood ... does this clarify?</td></tr>
+            <tr><td>[21:47] &lt MS-&gt 1) is currently done, yes?</td></tr>
+            <tr><td>[21:47] &lt mhrd&gt yes</td></tr>
+            <tr><td>[21:47] &lt MS-&gt 2) is something that (ironically) I was doing during testing :)</td></tr>
+            <tr><td>[21:47] &lt mhrd&gt lol</td></tr>
+            <tr><td>[21:47] &lt MS-&gt So I agree :)</td></tr>
+            <tr><td>[21:48] &lt MS-&gt and then shifted the shutdown into the "right" place</td></tr>
+            <tr><td>[21:48] &lt mhrd&gt its a good point about producerFinished vs shutdown though</td></tr>
+            <tr><td>[21:48] &lt MS-&gt I think passing on producerFinished when all the children have finished is a good idea</td></tr>
+            <tr><td>[21:49] &lt mhrd&gt you could make a case to say that if the author wants specific producerFinished behaviour, then they should choose to wire the 'control'-'signal' boxes manually, so shutdown is controlled/preedicatable</td></tr>
+            <tr><td>[21:50] *** mhrd ponders MS-'s suggestion ... it feels a little like imposing behaviour, but I can't think of any good counter examples :-)</td></tr>
+            <tr><td>[21:51] &lt MS-&gt OK, how about</td></tr>
+            <tr><td>[21:51] &lt MS-&gt in the absence of any message being passed on by a child component, in it's dying gasp a graphline puffs out a producerFinished message if no-one else announces their passing ?</td></tr>
+            <tr><td>[21:52] &lt MS-&gt passing on == passing on outside</td></tr>
+            <tr><td>[21:52] &lt mhrd&gt when you put it like that, it doesn't sound so bad :-)</td></tr>
+            <tr><td>[21:52] &lt MS-&gt Well, it's communication vs documentation ;)</td></tr>
+            <tr><td>[21:52] &lt MS-&gt That's the problem here, context</td></tr>
+            <tr><td>[21:52] &lt mhrd&gt *slightly* more complex to implement: graphline would need to intercept the outgoing msg iiuc</td></tr>
+            <tr><td>[21:53] &lt MS-&gt OK, an outgoing message would go out via signal</td></tr>
+            <tr><td>[21:54] &lt MS-&gt ah, actually *yes*</td></tr>
+            <tr><td>[21:54] &lt MS-&gt If the outgoing message is going out via signal</td></tr>
+            <tr><td>[21:54] &lt MS-&gt then someone has done this:</td></tr>
+            <tr><td>[21:54] &lt MS-&gt ("FOO", "signal") : ("self", "signal")</td></tr>
+            <tr><td>[21:54] &lt MS-&gt which means whether or not they send a message, we don't intefere</td></tr>
+            <tr><td>[21:54] &lt MS-&gt UNLESS</td></tr>
+            <tr><td>[21:55] &lt MS-&gt we were sent a shutdownMicroprocess, which we pass on</td></tr>
+            <tr><td>[21:55] &lt MS-&gt But, if linkages doesn't contain:</td></tr>
+            <tr><td>[21:55] &lt MS-&gt ("FOO", "signal") : ("self", "signal")</td></tr>
+            <tr><td>[21:55] &lt MS-&gt then unless we send a message (even producerFinished)</td></tr>
+            <tr><td>[21:56] &lt MS-&gt then the graphline & all it's components would shutdown without telling anyone</td></tr>
+            <tr><td>[21:56] &lt MS-&gt This leads me to suggest that</td></tr>
+            <tr><td>[21:57] &lt MS-&gt if OUTSIDE sends GRAPHLINE any-message-not-shutdownMicroprocess:</td></tr>
+            <tr><td>[21:57] &lt MS-&gt  pass that onto appropriate sub-components</td></tr>
+            <tr><td>[21:57] &lt MS-&gt if OUTSIDE sends GRAPHLINE :</td></tr>
+            <tr><td>[21:57] &lt MS-&gt  pass that onto appropriate sub-components</td></tr>
+            <tr><td>[21:57] &lt MS-&gt  switch to shutdown mode</td></tr>
+            <tr><td>[21:57] &lt MS-&gt  pass on shutdownMicroprocess when done</td></tr>
+            <tr><td>[21:58] &lt MS-&gt If no message from outside:</td></tr>
+            <tr><td>[21:58] &lt MS-&gt  if subcomponents all exit:</td></tr>
+            <tr><td>[21:58] &lt MS-&gt  if pass-through-linkage-for-signal:</td></tr>
+            <tr><td>[21:58] &lt MS-&gt  just exit quietly</td></tr>
+            <tr><td>[21:59] &lt MS-&gt  if no-pass-through-linkage-for-signal:</td></tr>
+            <tr><td>[21:59] &lt MS-&gt  pass on producerFinished to GRAPHLINE-signal</td></tr>
+            <tr><td>[21:59] &lt mhrd&gt umm .. no indentation showing in IRC :-)</td></tr>
+            <tr><td>[21:59] &lt MS-&gt Oh</td></tr>
+            <tr><td>[21:59] *** mhrd suggests prefixing all lines with a non-space char, eg '.' :-)</td></tr>
+            <tr><td>[22:00] &lt MS-&gt http://pastebin.com/m3137106c</td></tr>
+            <tr><td>[22:00] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:00] &lt mhrd&gt lol</td></tr>
+            <tr><td>[22:00] &lt MS-&gt if OUTSIDE sends GRAPHLINE :</td></tr>
+            <tr><td>[22:00] &lt MS-&gt should be</td></tr>
+            <tr><td>[22:00] &lt MS-&gt if OUTSIDE sends GRAPHLINE shutdown-message:</td></tr>
+            <tr><td>[22:01] &lt MS-&gt updated: http://pastebin.com/m743eb75d</td></tr>
+            <tr><td>[22:02] &lt mhrd&gt I'd suggest that if pass-through-linkage-for-signal: never send any shutdown messages out of graphline's "signal" outbox, because the graphline's author has expressed the intention to handle shutdown themselves ?</td></tr>
+            <tr><td>[22:02] &lt mhrd&gt (logic feels simpler too)</td></tr>
+            <tr><td>[22:04] *** mhrd ponders</td></tr>
+            <tr><td>[22:04] &lt MS-&gt You mean don't pass on the shutdownMicroprocess if we receive it in that scenario?</td></tr>
+            <tr><td>[22:05] &lt mhrd&gt yep ... if graphline receives a shutdown msg on its "control" inbox, don't pass it on out of graphline's "signal" outbox</td></tr>
+            <tr><td>[22:06] &lt mhrd&gt only pass it to subcomponents whose "control" inbox is not wired up to anything (as per what this branch adds, functionality wise)</td></tr>
+            <tr><td>[22:07] &lt mhrd&gt if, on the other had, there are no linkages to the graphline's "signal" outbox; then we do everything you suggest:</td></tr>
+            <tr><td>[22:07] &lt mhrd&gt shutdownMicroprocess msgs get passed on imediately</td></tr>
+            <tr><td>[22:07] &lt MS-&gt ie so this would happen:</td></tr>
+            <tr><td>[22:07] &lt mhrd&gt producerFinished would be held back until all subcomponents have terminated</td></tr>
+            <tr><td>[22:07] *** mhrd listens</td></tr>
+            <tr><td>[22:09] &lt MS-&gt if from OUTSIDE, get shutdownMicroprocess:</td></tr>
+            <tr><td>[22:09] &lt MS-&gt ____pass on to subcomponents</td></tr>
+            <tr><td>[22:09] &lt MS-&gt ____break out of loop (as per current branch)</td></tr>
+            <tr><td>[22:09] &lt MS-&gt ____if no-component-links-to-graphline's signal</td></tr>
+            <tr><td>[22:09] &lt MS-&gt ________ pass on shutdownMicroprocess via graphline's signal</td></tr>
+            <tr><td>[22:09] &lt MS-&gt where as the alternative is:</td></tr>
+            <tr><td>[22:09] &lt MS-&gt if from OUTSIDE, get NOT-shutdownMicroprocess:</td></tr>
+            <tr><td>[22:09] &lt MS-&gt ___pass on to subcomponente</td></tr>
+            <tr><td>[22:10] &lt MS-&gt Overall logic I suppose is this:</td></tr>
+            <tr><td>[22:10] &lt MS-&gt while not self.childrenDone():</td></tr>
+            <tr><td>[22:10] &lt MS-&gt ____always pass on messages from our control to appropriate sub-component's control</td></tr>
+            <tr><td>[22:11] &lt MS-&gt ____if message is shutdown, set shutdown flag and break out of loop</td></tr>
+            <tr><td>[22:11] &lt MS-&gt then after loop</td></tr>
+            <tr><td>[22:12] &lt MS-&gt if no component-has-linkage-to-graphline's signal_</td></tr>
+            <tr><td>[22:12] &lt MS-&gt ___if shutdown flag set:</td></tr>
+            <tr><td>[22:12] &lt MS-&gt ______pass on shutdownMicroprocess</td></tr>
+            <tr><td>[22:12] &lt MS-&gt ___else:</td></tr>
+            <tr><td>[22:12] &lt MS-&gt ______pass on producerFinished</td></tr>
+            <tr><td>[22:12] &lt MS-&gt I think that's the whole think</td></tr>
+            <tr><td>[22:12] &lt MS-&gt s/think/thing/</td></tr>
+            <tr><td>[22:13] &lt MS-&gt http://pastebin.com/m7d4d2ba0 - if easier to read there</td></tr>
+            <tr><td>[22:13] &lt mhrd&gt I think that behaviour would pretty much make sense to me ... both as a user of a component based on a graphline, and as someone writing a graphline</td></tr>
+            <tr><td>[22:14] &lt mhrd&gt only bit I'd not be sure about is whether that producerFinsihed message should be sent after all chidlren have terminated</td></tr>
+            <tr><td>[22:14] &lt mhrd&gt or immediately, as shown in the logic you just described.</td></tr>
+            <tr><td>[22:14] &lt MS-&gt producerFinsihed message is after all have terminated</td></tr>
+            <tr><td>[22:15] &lt MS-&gt if message is shutdown, set shutdown flag and break out of loop</td></tr>
+            <tr><td>[22:15] &lt MS-&gt means shutdownMicroprocess</td></tr>
+            <tr><td>[22:15] &lt MS-&gt You can easily argue it (and you did and I agreed)</td></tr>
+            <tr><td>[22:15] &lt MS-&gt that it could/should be</td></tr>
+            <tr><td>[22:15] &lt MS-&gt if message is shutdown, set shutdown flag</td></tr>
+            <tr><td>[22:15] &lt MS-&gt doh :)</td></tr>
+            <tr><td>[22:15] &lt mhrd&gt :)</td></tr>
+            <tr><td>[22:16] &lt MS-&gt I think that means this:</td></tr>
+            <tr><td>[22:16] &lt MS-&gt http://pastebin.com/m3b5541e9</td></tr>
+            <tr><td>[22:16] &lt MS-&gt Actually that's probably a good idea.</td></tr>
+            <tr><td>[22:16] &lt mhrd&gt yes</td></tr>
+            <tr><td>[22:17] &lt MS-&gt If we keep the graphline alive & waiting</td></tr>
+            <tr><td>[22:17] &lt mhrd&gt (that was a "yes" to "I think that means this:" :-) )</td></tr>
+            <tr><td>[22:17] &lt MS-&gt we can actually add in debugging support to get graphlines to tell us when they're dying</td></tr>
+            <tr><td>[22:17] &lt mhrd&gt good point - better introspection</td></tr>
+            <tr><td>[22:17] &lt MS-&gt and they have children that refuse to die</td></tr>
+            <tr><td>[22:17] &lt MS-&gt yep</td></tr>
+            <tr><td>[22:17] &lt MS-&gt It's also not a huge change</td></tr>
+            <tr><td>[22:18] &lt MS-&gt  if isinstance(msg, shutdownMicroprocess) or (msg==shutdownMicroprocess):</td></tr>
+            <tr><td>[22:18] &lt MS-&gt # print "oooh, we got a you must shutdown message, okeydokey, doing so"</td></tr>
+            <tr><td>[22:18] &lt MS-&gt  break</td></tr>
+            <tr><td>[22:18] &lt mhrd&gt I think what you suggest covers all cases that I can think of</td></tr>
+            <tr><td>[22:18] &lt MS-&gt becomes a message#</td></tr>
+            <tr><td>[22:18] &lt MS-&gt s/message/flag/</td></tr>
+            <tr><td>[22:18] &lt MS-&gt I think it also allows existing systems to operate cleanly as well</td></tr>
+            <tr><td>[22:19] &lt mhrd&gt yep - I really didn't like the idea that if I had wired up "control" "signal" paths myself, that the graphline might decide to unilaterally inject extra msgs</td></tr>
+            <tr><td>[22:19] &lt MS-&gt (mind you with a version of 0.6, I'm not *too* worried about that if it improves the system, as this would)</td></tr>
+            <tr><td>[22:19] *** MS- nods</td></tr>
+            <tr><td>[22:19] &lt MS-&gt Oh, that's a point</td></tr>
+            <tr><td>[22:19] &lt mhrd&gt you want me to add the change? (will probably test tomorrow evening ... bed soon)</td></tr>
+            <tr><td>[22:20] &lt MS-&gt I don't actually check for passthrough INBOUND</td></tr>
+            <tr><td>[22:20] &lt mhrd&gt ooh</td></tr>
+            <tr><td>[22:20] &lt MS-&gt which should equally be avoid being touched</td></tr>
+            <tr><td>[22:20] &lt MS-&gt If you're willing to do the changes please feel free. When you're done I'll review and merge</td></tr>
+            <tr><td>[22:21] &lt MS-&gt But no rush :)</td></tr>
+            <tr><td>[22:21] &lt mhrd&gt hmm, iirc because of the way the boxes are implemented, you'll never receive a msg on "control" if a passthrough is wired</td></tr>
+            <tr><td>[22:21] &lt mhrd&gt (the message will skip straight pass the graphline's "control" inbox)</td></tr>
+            <tr><td>[22:21] &lt mhrd&gt probably better to make that logic explicit tho</td></tr>
+            <tr><td>[22:21] *** MS- nods</td></tr>
+            <tr><td>[22:21] *** mhrd gets coding</td></tr>
+            <tr><td>[22:22] &lt MS-&gt no rush :)</td></tr>
+            <tr><td>[22:22] &lt MS-&gt thanks ! :)</td></tr>
+            <tr><td>[22:22] &lt mhrd&gt np - good to spend some time pondering these kinds of semantic pedantry :-D</td></tr>
+            <tr><td>[22:23] &lt MS-&gt indeed :)</td></tr>
+            <tr><td>[22:23] &lt MS-&gt It feels simpler as well as a resul</td></tr>
+            <tr><td>[22:23] &lt MS-&gt t</td></tr>
+            <tr><td>[22:24] &lt mhrd&gt cool</td></tr>
+            <tr><td>[22:34] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[22:38] *** mhrd spots a (independent) bug and fixes first</td></tr>
+            <tr><td>[22:40] &lt MS-&gt k</td></tr>
+            <tr><td>[22:41] &lt mhrd&gt Q: components (object) can be used as dict keys in python can't they?</td></tr>
+            <tr><td>[22:43] &lt MS-&gt yes</td></tr>
+            <tr><td>[22:46] &lt mhrd&gt (too much Java recently)</td></tr>
+            <tr><td>[22:46] &lt MS-&gt heh</td></tr>
+            <tr><td>[22:53] &lt MS-&gt btw, I'm pondering this: http://www.computer.org/portal/site/micro/menuitem.5b23ac137537a1b5084840898bcd45f3/index.jsp?&pName=micro_level1&path=micro/content&file=cfpmayjun09.xml&xsl=article.xsl&;jsessionid=JBR5NhrXpk0cPlThrvbVlDsYsBTpyXn9YmhfNgv8qZXsQTyYHRXz!-325771431</td></tr>
+            <tr><td>[22:53] &lt MS-&gt http://tinyurl.com/6ouzvw</td></tr>
+            <tr><td>[23:09] &lt MS-&gt watching the checkins</td></tr>
+            <tr><td>[23:09] &lt MS-&gt The nice thing about these changes is that they're *much* cleaner with regard to shutdown behaviour, potentially making testing simpler :-D</td></tr>
+            <tr><td>[23:10] &lt mhrd&gt ok, last checkin done now</td></tr>
+            <tr><td>[23:11] &lt mhrd&gt will reply to the email thread so others know whats up</td></tr>
+            <tr><td>[23:13] &lt MS-&gt cool</td></tr>
+            <tr><td>[23:39] *** mhrd -&gt bed</td></tr>

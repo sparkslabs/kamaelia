@@ -1,0 +1,715 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.Component </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.Component">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.Component</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Component.html">Component</a></h2>
+</div>
+</div>
+<div class="section">
+<h1>Components - the basic building block</h1>
+<div class="container">
+<ul class="simple">
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Component.component.html">component</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#18">The basics of writing a component</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#19">Running a component</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#20">Communicating with other components - creating linkages</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#21">Child components</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#22">Going to sleep (pausing)</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#23">Old style main thread</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#24">Internal Implementation</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#25">Test documentation</a><ul>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<p>A component is a microprocess with a microthread of control and input/output
+queues (inboxes and outboxes) which can be connected by linkages to other
+components. Ie. it has code that runs whilst the component is active, and
+mechanisms for sending and receiving data to and from other components.</p>
+<ul class="simple">
+<li>A component is based on a microprocess - giving it its thread of execution.</li>
+</ul>
+<p>There are other variants on the basic component:</p>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</a></li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html">Axon.ThreadedComponent.threadedcomponent</a></li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedadaptivecommscomponent.html">Axon.ThreadedComponent.threadedadaptivecommscomponent</a></li>
+</ul>
+<p>If your component needs to block - eg. wait on a system call; then make it a
+'threaded' component. If it needs to change what inboxes or outboxes it has at
+runtime, then make it an 'adaptive' component.</p>
+<div class="section">
+<h2 id="18"><a id="the-basics-of-writing-a-component" name="the-basics-of-writing-a-component">The basics of writing a component</a></h2>
+<p>Here's a simple example:</p>
+<pre class="literal-block">
+class MyComponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    Inboxes = { &quot;inbox&quot;   : &quot;Send the FOO objects to here&quot;,
+                &quot;control&quot; : &quot;NOT USED&quot;,
+              }
+    Outboxes = { &quot;outbox&quot; : &quot;Emits BAA objects from here&quot;,
+                 &quot;signal&quot; : &quot;NOT USED&quot;,
+               }
+
+    def main(self):
+        while 1:
+            if self.dataReady(&quot;inbox&quot;):
+                msg = self.recv(&quot;inbox&quot;)
+                result = ... do something to msg ...
+                self.send(result, &quot;outbox&quot;)
+
+            yield 1
+</pre>
+<p>Or, more specifically:</p>
+<ol class="arabic">
+<li><p class="first"><strong>Subclass the component class</strong>. Don't forget to call the superclass
+initializer if you write your own __init__ method:</p>
+<pre class="literal-block">
+class MyComponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    def __init__(self, myArgument, ...):
+        super(MyComponent, self).__init__()
+        ...
+</pre>
+</li>
+<li><p class="first"><strong>Declare any inboxes or outboxes you expect it to have</strong> - do this as
+static members of the class called &quot;Inbox&quot; and &quot;Outbox&quot;. They should be
+dictionaries where the key is the box name and the value serves as documentation
+describing what the box is for:</p>
+<pre class="literal-block">
+Inboxes = { &quot;inbox&quot;   : &quot;Send the FOO objects to here&quot;,
+            &quot;control&quot; : &quot;NOT USED&quot;,
+          }
+Outboxes = { &quot;outbox&quot; : &quot;Emits BAA objects from here&quot;,
+             &quot;signal&quot; : &quot;NOT USED&quot;,
+           }
+</pre>
+<p>You can also do this as lists, but doing it as a dictionary with documentation
+values is much more useful to people wanting to use your component.</p>
+<p>If you don't specify any then you get the default &quot;inbox&quot; and &quot;control&quot;
+inboxes and &quot;outbox&quot; and &quot;signal&quot; outboxes.</p>
+</li>
+<li><p class="first"><strong>Write the main() method</strong> - it must be a generator - namely just like an
+ordinary method or function, but with 'yield' statements regularly
+interspersed through it. This is the thread of execution in the component -
+just use yield statements regularly so other components get time to execute.</p>
+<p>If you need to know more, these might help you:</p>
+<ul class="simple">
+<li><a class="reference" href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1113495151">A tutorial on &quot;How to write components&quot;</a></li>
+<li><a class="reference" href="http://kamaelia.sourceforge.net/MiniAxon/">the Mini Axon tutorial</a></li>
+<li>the <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> class</li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section">
+<h2 id="19"><a id="running-a-component" name="running-a-component">Running a component</a></h2>
+<p>Once you have written your component class; simply create instances and activate
+them; then start the scheduler to begin execution:</p>
+<pre class="literal-block">
+x = MyComponent()
+y = MyComponent()
+z = AnotherComponent()
+x.activate()
+y.activate()
+z.activate()
+
+scheduler.run.runThreads()
+</pre>
+<p>If the scheduler is already running, then simply activating a component will
+start it executing.</p>
+</div>
+<div class="section">
+<h2 id="20"><a id="communicating-with-other-components-creating-linkages" name="communicating-with-other-components-creating-linkages">Communicating with other components - creating linkages</a></h2>
+<p>Components have inboxes and outboxes. The main() thread of execution in a
+component communicates with others by picking up messages that arrive in its
+inboxes and sending out messages to its outboxes. For example here is a simple
+block of code for the main() method of a component that echoes anything it
+receives to the console and also sends it on:</p>
+<pre class="literal-block">
+if self.dataReady(&quot;inbox&quot;):
+    msg = self.recv(&quot;inbox&quot;)
+    print str(msg)
+    self.send(msg,&quot;outbox&quot;)
+
+yield 1
+</pre>
+<p>Use the dataReady() method to find out if there is (one or more items of) data
+waiting at the inbox you name. recv() lets you collect a message from an inbox.
+Use the send() method to send a message to the outbox you name. There is also an
+anyReady() method that will tell you if <em>any</em> inbox has data waiting in it.</p>
+<p>A message gets from one component's outbox to another one's inbox if there is a
+linkage between them (going from the outbox to the inbox). A component can
+create and destroy linkages by using the link() and unlink() methods.</p>
+<p>For example, we could create a linkage from a component's outbox called &quot;outbox&quot;
+to a different component's inbox called &quot;inbox&quot;:</p>
+<pre class="literal-block">
+theLink = self.link( (self, &quot;outbox&quot;), (otherComponent, &quot;inbox&quot;) )
+</pre>
+<p>Using the handle that we were given, we can destroy that linkage later:</p>
+<pre class="literal-block">
+self.unlink(theLinkage = theLink)
+</pre>
+<p>Linkages normally go from an outbox to an inbox - after all the whole idea is
+to get messages that one component sends to its own outbox to arrive at another
+component's inbox. However you can also create 'passthrough' linkages from an
+inbox to another inbox; or from an outbox to another outbox.</p>
+<p>This is particularly useful if you want to encapsulate a child component - hide
+it from view so other components only need to be wired up to you.</p>
+<p>For example, your component may want any data being sent to one of its inboxes
+to be forwarded automatically onto an inbox on the child. This is a type '1'
+passthrough linkage:</p>
+<pre class="literal-block">
+thelink = self.link( (self,&quot;inbox&quot;), (myChild,&quot;inbox&quot;), passthrough=1 )
+</pre>
+<p>Or if you want anything a child sends to its outbox to be sent out of one of
+your own outboxes, which is a type '2' passthrough:</p>
+<pre class="literal-block">
+thelink = self.link( (myChild,&quot;outbox&quot;), (self,&quot;outbox&quot;), passthrough=2 )
+</pre>
+<p>The alternative, of course, is to add extra inboxes and outboxes to communicate
+with the child, and to write a main() method that simply passes the data on.
+Passthrough linkages are more efficient and quicker to code!</p>
+<p>There is no performance penalty for delivering a message along a such a chain of
+linkages (eg. outbox ---&gt; outbox ---&gt; inbox ---&gt; inbox ---&gt; inbox). Axon
+resolves the chain and delivers straight to the final destination inbox!</p>
+</div>
+<div class="section">
+<h2 id="21"><a id="child-components" name="child-components">Child components</a></h2>
+<p>Components can create and activate other components. They can adopt them as
+children:</p>
+<pre class="literal-block">
+newComponent = FooComponent()
+self.addChildren(newComponent)
+newComponent.activate()
+</pre>
+<p>Making a component your child means that:</p>
+<ul class="simple">
+<li>you will be woken (if asleep) when your child terminates</li>
+<li>the removeChild() method provides a convenient way to make sure any linkages
+you have made involving that child are destroyed.</li>
+<li>calling childComponents() lists all children you currently have</li>
+</ul>
+<p>Whether another component is your child or not, you can tell if it has
+terminated yet by calling its _isStopped() method.</p>
+<p>For example, a component might want to create a child component, make a linkage
+to it then wait until that child terminates before cleaning it up. Achieve this
+by writing code like this in the main() body of the component:</p>
+<pre class="literal-block">
+src = RateControlledFileReader(&quot;myTextFile&quot;,readmode=&quot;lines&quot;)
+dst = ConsoleEchoer()
+
+lnk = self.link( (src,&quot;outbox&quot;), (dst,&quot;inbox&quot;) )
+
+self.addChildren(src,dst)    # we will be woken if they terminate
+src.activate()
+dst.activate()
+
+while not dst._isStopped() and not src._isStopped():
+    self.pause()
+    yield 1
+
+self.unlink(thelinkage = lnk)
+self.removeChild(src)
+self.removeChild(dst)
+</pre>
+</div>
+<div class="section">
+<h2 id="22"><a id="going-to-sleep-pausing" name="going-to-sleep-pausing">Going to sleep (pausing)</a></h2>
+<p>When a component has nothing to do it can pause. This means it will not be
+executed again until it is woken up. Pausing is a good thing since it
+relinquishes cpu time for other parts of the system instead of just wasting it.</p>
+<p><strong>When would you want to pause?</strong> - usually when there is nothing left waiting
+in any of your inboxes and there is nothing else for your component to do:</p>
+<pre class="literal-block">
+class Echoer(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    def main(self):
+        while 1:
+            if self.dataReady(&quot;inbox&quot;):
+                msg = self.recv(&quot;inbox&quot;)
+                print str(msg)
+                self.send(msg,&quot;outbox&quot;)
+
+            if not self.anyReady():
+                self.pause()
+
+            yield 1
+</pre>
+<p>Calling the pause() method means that <em>at the next yield statement</em> your
+component will be put to sleep. It doesn't happen as soon as you call pause() -
+only when execution reaches the next <tt class="docutils literal"><span class="pre">yield</span></tt>.</p>
+<p><strong>What will wake up a paused component?</strong> - any of the following:</p>
+<ul class="simple">
+<li>a message arriving at any inbox (even one with messages already waiting in it)</li>
+<li>a message being collected from an inbox that is linked to one of our outboxes</li>
+<li>a child component terminating</li>
+</ul>
+<p>Your component <em>cannot</em> wake itself up - only the actions of other components
+can cause it to be woken. Why? You try writing some code that stops executing
+(pauses) yet can issue a method call to ask to be woken! :-)</p>
+</div>
+<div class="section">
+<h2 id="23"><a id="old-style-main-thread" name="old-style-main-thread">Old style main thread</a></h2>
+<p>Components also currently support an 'old' style for writing their main thread
+of execution.</p>
+<p><strong>This way of writing components is likely to be deprecated in the near future.
+We suggest you write a main() method as a generator instead.</strong></p>
+<p>To do old-style; instead of writing a generator you write 3 functions - one for
+initialisation, main execution and termination. The thread of execution for the
+component is therefore effectively this:</p>
+<pre class="literal-block">
+self.initialiseComponent()
+
+while 1:
+    result = self.mainBody()
+    if not result:
+        break
+
+self.closeDownComponent()
+</pre>
+<p>initialiseComponent() is called once when the component first starts to
+execute.</p>
+<p>mainBody() is called every execution cycle whilst it returns a non zero
+value. If it returns a zero value then the component starts to shut down.</p>
+<p>closeDownComponent() is called when the component is about to shut down.</p>
+<p>A simple echo component might look like this:</p>
+<pre class="literal-block">
+class EchoComponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    def initialiseComponent(self):
+        # We can perform pre-loop initialisation here!
+        # In this case there is nothing really to do
+        return 1
+
+    def mainBody(self):
+        # We're now in the main loop
+        if self.dataReady(&quot;inbox&quot;):
+            msg = self.recv(&quot;inbox&quot;)
+            print msg
+            self.send(msg,&quot;outbox&quot;)
+
+        if not self.anyReady():
+            self.pause()
+
+        # If we wanted to exit the loop, we return a false value
+        # at the end of this function
+        # If we want to continue round, we return a true, non-None,
+        # value. This component is set to run &amp; run...
+        return 1
+
+  def closeDownComponent(self):
+        # We can't get here since mainLoop above always returns true
+        # If it returned false however, we would get sent here for
+        # shutdown code.
+        # After executing this, the component stops execution
+        return
+</pre>
+</div>
+<div class="section">
+<h2 id="24"><a id="internal-implementation" name="internal-implementation">Internal Implementation</a></h2>
+<p>Component is a subclass of microprocess (from which it inherits the ability to
+have a thread of execution). It includes its own postoffice object for creating
+and destroying linkages. It has a collection of inboxes and outboxes.</p>
+<p>Attributes:</p>
+<ul class="simple">
+<li><strong>Inboxes</strong> and <strong>Outboxes</strong> - static members defining the list of names for
+inboxes and outboxes a component should be given when it is created.</li>
+<li><strong>inboxes</strong> and <strong>outboxes</strong> - the actual collections of inboxes and outboxes
+that are set up when the component is initialised. Implemented as dictionaries
+mapping names to the postbox objects.</li>
+<li><strong>postoffice</strong> - a postoffice object, used to create, destroy and manage
+linkages.</li>
+<li><strong>children</strong> - list of components registered as children of this component.</li>
+<li><strong>_callOnCloseDown</strong> - list of callback functions to be called when this
+component terminates. Used to notify parents of children that their child has
+terminated.</li>
+</ul>
+</div>
+<h1 id="25">Test documentation</h1>
+<p>Tests passed:</p>
+<ul class="simple">
+<li>__init__ - Class constructor is expected to be called without arguments.</li>
+<li>__addChild - Registers the component as a child of the component. Internal function. ttbw</li>
+<li>__str__ - Returns a string that contains the fact that it is a component object and the name of it.</li>
+<li>__str__ - Returns a string representation of the component- consisting of Component,representation of inboxes, representation of outboxes.</li>
+<li>_closeDownMicroprocess - Checks the message returned is None (no knockons).</li>
+<li>_closeDownMicroprocess - Returns a shutdownMicroprocess. Internal Function.</li>
+<li>addChildren - All arguments are added as child components of the component.</li>
+<li>childComponents - Returns the list of children components of this component.</li>
+<li>closeDownComponent - stub method, returns 1, expected to be overridden by clients.</li>
+<li>dataReady - Returns true if the supplied inbox has data ready for processing.</li>
+<li>initialiseComponent - Stub method, returns 1, expected to be overridden by clients.</li>
+<li>link - Creates a link, handled by the component's postoffice, that links a source component to it's sink, honouring passthrough, pipewidth and synchronous attributes.</li>
+<li>The _closeDownMicroprocess method ensures any linkages the component has made that still exist are removed.</li>
+<li>mainBody - stub method, returns None, expected to be overridden by clients as the main loop.</li>
+<li>main - This ensures that the closeDownComponent method is called at the end of the loop.  It also repeats the above test.</li>
+<li>main - Returns a generator that implements the documented behaviour of a highly simplistic approach component statemachine.</li>
+<li>recv - Takes the first item available off the specified inbox, and returns it.</li>
+<li>removeChild - Removes the specified component from the set of child components and deregisters it from the postoffice.</li>
+<li>send - Takes the message and places it into the specified outbox.</li>
+<li>In a chain of linkages, all owners of outboxes are notified when a message is picked up.</li>
+<li>In a chain of linkages with more than one inbox, only the final destination is woken when a message is sent.</li>
+<li>In a chain of linkages, only the owners of outboxes are notified when a message is picked up.</li>
+<li>A paused component is unpaused when a message is delivered to its inbox.</li>
+<li>If the linkage chain breaks before a message is collected, the owners of outboxes that are no longer in the chain are not notified.</li>
+<li>If a message is sent, then a new linkage added before a message is collected, the owner of the newly linked in outbox will notified too.</li>
+<li>If the linkage chain breaks and is then re-established before a message is collected, the owners of outboxes that are no longer in the chain are not notified, but ones that are will be.</li>
+<li>A paused component stays paused if nothing happens</li>
+<li>A paused component is not unpaused when it sends a message.</li>
+<li>A paused component is unpaused when a consumer picks up a message it has sent.</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Component.html">Component</a>.<a class="reference" href="/Docs/Axon/Axon.Component.component.html">component</a></h1>
+<div class="section">
+<h2 id="symbol-component">class component(<a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a>)</h2>
+<div class="section">
+<p>Base class for an Axon component. Subclass to make your own.</p>
+<p>A simple example:</p>
+<pre class="literal-block">
+class IncrementByN(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    Inboxes = { &quot;inbox&quot; : &quot;Send numbers here&quot;,
+                &quot;control&quot; : &quot;NOT USED&quot;,
+              }
+    Outboxes = { &quot;outbox&quot; : &quot;Incremented numbers come out here&quot;,
+                 &quot;signal&quot; : &quot;NOT USED&quot;,
+               }
+
+    def __init__(self, N):
+        super(IncrementByN,self).__init__()
+        self.n = N
+
+    def main(self):
+        while 1:
+            while self.dataReady(&quot;inbox&quot;):
+                value = self.recv(&quot;inbox&quot;)
+                value = value + self.n
+                self.send(value,&quot;outbox&quot;)
+
+            if not self.anyReady():
+                self.pause()
+
+            yield 1
+</pre>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-component.Inbox" name="symbol-component.Inbox">Inbox(self[, boxname])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-component.__addChild" name="symbol-component.__addChild">__addChild(self, child)</a></h4>
+<p>Register component as a child.</p>
+<p>This takes a child component, and adds it to the children list of this
+component. It also registers to be woken up by the child if it terminates.</p>
+<p>This has a number of effects internally, and includes
+registering the component as capable of recieving and sending messages.
+It doesn't give the child a thread of control however!</p>
+<p>You will want to call this function if you create child components of your
+component.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.__init__" name="symbol-component.__init__">__init__(self, *args, **argd)</a></h4>
+<p>You want to overide this method locally.</p>
+<p>You MUST remember to call the superconstructor for things to work however.
+The way you do this is: super(YourClass,self).__init__()</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.__str__" name="symbol-component.__str__">__str__(self)</a></h4>
+<p>Provides a useful string representation of the component.
+You probably want to override this, and append this description using
+something like: 'component.__str__(self)'</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component._closeDownMicroprocess" name="symbol-component._closeDownMicroprocess">_closeDownMicroprocess(self)</a></h4>
+<p>Overrides original in microprocess class.</p>
+<p>Ensures callbacks are deregistered, and all linkages created by
+this component are destroyed.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component._deliver" name="symbol-component._deliver">_deliver(self, message[, boxname])</a></h4>
+<p>For tests and debugging ONLY - delivers message to an inbox.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.addChildren" name="symbol-component.addChildren">addChildren(self, *children)</a></h4>
+<p>Register the specified component(s) as children of this component</p>
+<p>This component will be woken if any of its children terminate.</p>
+<p>Note that any children still need to be activated!</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.anyReady" name="symbol-component.anyReady">anyReady(self)</a></h4>
+<p>Returns true if <em>any</em> inbox has any data waiting in it.</p>
+<p>Used by a component to check an inbox for ready data.</p>
+<p>You are unlikely to want to override this method.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.childComponents" name="symbol-component.childComponents">childComponents(self)</a></h4>
+<p>Returns list of child components</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.closeDownComponent" name="symbol-component.closeDownComponent">closeDownComponent(self)</a></h4>
+<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.dataReady" name="symbol-component.dataReady">dataReady(self[, boxname])</a></h4>
+<p>Returns true if data is available in the requested inbox.</p>
+<p>Used by a component to check an inbox for ready data.</p>
+<p>Call this method to periodically check whether you've been sent any
+messages to deal with!</p>
+<p>You are unlikely to want to override this method.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.initialiseComponent" name="symbol-component.initialiseComponent">initialiseComponent(self)</a></h4>
+<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.link" name="symbol-component.link">link(self, source, sink, *optionalargs, **kwoptionalargs)</a></h4>
+<p>Creates a linkage from one inbox/outbox to another.</p>
+<p>-- source  - a tuple (component, boxname) of where the link should start from
+-- sink    - a tuple (component, boxname) of where the link should go to</p>
+<p>Other optional arguments:</p>
+<ul class="simple">
+<li>passthrough=0  - (the default) link goes from an outbox to an inbox</li>
+<li>passthrough=1  - the link goes from an inbox to another inbox</li>
+<li>passthrough=2  - the link goes from an outbox to another outbox</li>
+</ul>
+<p>See <a class="reference" href="/Docs/Axon/Axon.Postoffice.postoffice.link.html">Axon.Postoffice.postoffice.link</a>() for more information.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.main" name="symbol-component.main">main(self)</a></h4>
+<p>Override this method, writing your own main thread of control as a generator.
+When the component is activated and the scheduler is running, this what
+gets executed.</p>
+<p>Write it as a python generator with regular yield statements returning a
+non zero value.</p>
+<p>If you do not override it, then a default main method exists instead that
+will:</p>
+<ol class="arabic simple">
+<li>Call self.initialiseComponent()</li>
+<li>Loop forever calling self.mainBody() yielding the return value each time
+until mainBody() returns a False/zero result.</li>
+<li>Call self.closeDownComponent()</li>
+</ol>
+</div>
+<div class="section">
+<h4><a id="symbol-component.mainBody" name="symbol-component.mainBody">mainBody(self)</a></h4>
+<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.recv" name="symbol-component.recv">recv(self[, boxname])</a></h4>
+<p>returns the first piece of data in the requested inbox.</p>
+<p>Used by a component to recieve a message from the outside world.
+All comms goes via a named box/input queue</p>
+<p>You will want to call this method to actually recieve messages you've been
+sent. You will want to check for new messages using dataReady first
+though.</p>
+<p>You are unlikely to want to override this method.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.removeChild" name="symbol-component.removeChild">removeChild(self, child)</a></h4>
+<p>Deregister component as a child.</p>
+<p>Removes the child component, and deregisters it from notifying us when it
+terminates. Also removes any linkages this component has made that
+involve this child.</p>
+<p>You probably want to do this when you enter a closedown state
+of some kind for either your component, or the child component.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.send" name="symbol-component.send">send(self, message[, boxname])</a></h4>
+<p>appends message to the requested outbox.</p>
+<p>Used by a component to send a message to the outside world.
+All comms goes via a named box/output queue.</p>
+<p>You will want to call this method to send messages.</p>
+<p>Raises <a class="reference" href="/Docs/Axon/Axon.AxonExceptions.noSpaceInBox.html">Axon.AxonExceptions.noSpaceInBox</a> if this outbox is linked to a
+destination inbox that is full.</p>
+<p>You are unlikely to want to override this method.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.setInboxSize" name="symbol-component.setInboxSize">setInboxSize(self, boxname, size)</a></h4>
+<p>boxname - some boxname, must be an inbox ; size - maximum number of items we're happy with</p>
+</div>
+<div class="section">
+<h4><a id="symbol-component.unlink" name="symbol-component.unlink">unlink(self[, thecomponent][, thelinkage])</a></h4>
+<p>Destroys all linkages to/from the specified component or destroys the
+specific linkage specified.</p>
+<p>Only destroys linkage(s) that were created <em>by</em> this component itself.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>thecomponent -- None or a component object</li>
+<li>thelinkage   -- None or the linkage to remove</li>
+</ul>
+<p>See <a class="reference" href="/Docs/Axon/Axon.Postoffice.postoffice.unlink.html">Axon.Postoffice.postoffice.unlink</a>() for more information.</p>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.pause">pause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop">stop</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.activate">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

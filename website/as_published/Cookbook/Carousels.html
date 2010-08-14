@@ -1,0 +1,108 @@
+<html>
+<head>
+<title> Cookbook/Carousels </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/Carousels">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<blockquote><br></blockquote><h1>Cookbook : Carousels</h1>
+<p>So you've built your components and wired them up using  <a href='/Cookbook/Pipelines '> Pipelines </a> and <a href='/Cookbook/Graphlines '> Graphlines </a>. But what do you do if you want to create or initialise a component at runtime?</p><p>Perhaps you can't know the value of some arguments until you start reading that input file. Or maybe you want to process several streams of data in sequence, but the component you want to use isn't designed to process several streams back to back. This is where a component like the <i>Carousel</i> comes in.</p>The Carousel gives us a way to create a component on-the-fly in response to being sent a message.<br><h3>For example...</h3>Suppose we want to play an MP3 file ... we could use a simple pipeline like this:<br><blockquote><pre>from Kamaelia.File.Reading import RateControlledFileReader<br>from Kamaelia.Audio.Codec.PyMedia.Decoder import Decoder<br>from Kamaelia.Audio.PyMedia.Output import Output<br>from Kamaelia.Chassis.Pipeline import Pipeline<br><br>import sy<filename>s<br>mp3filename=sys.argv[1]<br></filename></pre><pre><filename>Pipeline( RateControlledFileReader( mp3filename, readmode="bytes", rate=256000/8),<br>          Decoder("mp3"),<br>          Output(sample_rate=44100, channels=2, format="S16_LE"),<br>        ).run()<br></filename></pre></blockquote><br>That is all very nice; but what if we get the sample rate, number of channels or format wrong? We can't get this information until we start decoding it. If we get it wrong then the audio may be corrupted or played at the wrong speed!<br><br>It would be great if, at runtime, we could create the audio playback (Output) component in response to receiving a message from the MP3 decoder containing the audio format:<br><br><div align="center"><img src="/images/carousel1_idea.gif"><br></div><br>The PyMedia MP3 Decoder component we are using helpfully sends out a message containing the information we need, so we can use the Carousel component to do it like this:<br><blockquote><pre>from Kamaelia.Chassis.Graphline import Graphline<br>from Kamaelia.Chassis.Carousel import Carousel<br><br><filename>def makeAudioOutput(metadata):<br>    return Output( metadata["sample_rate"],<br>                   metadata["channels"],<br>                   metadata["format"]<br>                 )</filename></pre><pre><filename></filename></pre><pre><filename>Graphline( READ = RateControlledFileReader( mp3filename, readmode="bytes", rate=256000/8),<br>           DECODE = Decoder("mp3"),<br>           <b>OUTPUT = Carousel( makeAudioOutput ),</b><br>           linkages = {<br>               ("READ",   "outbox") : ("DECODE", "inbox"),</filename><br>              <filename> ("DECODE", "outbox") : ("OUTPUT", "inbox"),</filename>
+<filename>               <b>("DECODE", "format") : ("OUTPUT", "next"),</b></filename><br><br>              <filename> ("READ",   "signal") : ("DECODE", "control"),<br>               ("DECODE", "signal") : ("OUTPUT", "control"),<br>           }<br>         ).run()<br></filename></pre></blockquote><p><filename>This example is wired up using a Graphline component - find out more about Graphlines <a href='/Cookbook/Graphlines '> here </a>.<br></filename></p><p><filename></filename></p><h3><filename>So what does this do?</filename></h3><h3><filename></filename></h3><p><filename>The MP3 Decoder component we are using helpfully sends out the format of the decoded audio out of its "format" outbox, so we link this to the Carousel's "next" inbox to control it. A message from the decoder wil look like this:<br></filename></p><blockquote><pre><filename>{ "sample_rate" : 44100, "channels":2, "format":"S16_LE" }<br></filename></pre></blockquote><p>We've also written a function makeAudioOutput(). When called with the message as its argument; it returns a new
+Output component set up with the right sample rate, number of
+channels, and format.</p><p>We give this function to the Carousel. Note
+that we don't call it - we just give it the function. The Carousel
+calls it when it receives a message on its "next" inbox and therefore needs to create the component:</p><filename><br></filename><div align="center"><img src="/images/carousel_anim.gif"></div><filename><br></filename><ol><li><filename>The Carousel receives a message on its "next" inbox, containing the format of the audio<br></filename></li><li><filename>The Carousel calls our <i>makeAudioOutput</i> function, passing it this message as its parameter<br></filename></li><li><filename>Our function returns a new Output component, ready to be used.<br></filename></li><li>Carousel links the new Output component up to use its own inboxes and outboxes</li></ol>So when the raw audio samples start to arrive at its inbox, there will be a new Output component already linked in to receive them.<br>Note that it does not link the "signal" outbox - this is so that when the component finishes and sends its own shutdown message, this doesn't get passed on - after all, you might want to reuse the Carousel with another component.<br><h3><filename>So why is it called a "Carousel" then?</filename></h3><h3><filename></filename></h3><filename>If you send another message to the "next" inbox, then the component gets replaced. Any existing component is told to shutdown and is thrown away as soon as possible, and a new one is created, by calling our function with the new message as the parameter.<br><br>This kind of behaviour is a little like the carousel on an old slide projector - when you want to move on, the old item is swapped for the next one. Alternatively think of a fairground merry-go-round carousel - where one horse comes by after another.<br></filename><filename><br>For example, suppose we want to improve our MP3 player by making it play multiple files back to back. We could put everything in a Carousel, then when it has finished, it could send us a message. We could then respond by sending it the next filename to play, and letting it start again. Something like this:<br></filename><div align="center"><img src="/images/carousel_anim2.gif"><br><div align="left"><p>We can do this by using a Chooser component for the playlist and putting our existing player inside a Carousel. When all the player components finish, our Carousel will send out a "next" message from its "requestNext" outbox, which we can use to cause our Chooser to send back the next filename:</p><p align="center"><img src="/images/carousel3.gif"></p><p>Notice that we can also wire up the "signal" and "control" boxes, so that when the Chooser has no more names in its playlist, it can tell our player Carousel to shut down.<br></p><p>So now lets build this! First, lets make a function that we will give to the Carousel for it to use to create our player:<br></p><blockquote><pre><filename>def makePlayer(mp3filename):<br>    return Graphline(<br>        READ = RateControlledFileReader( mp3filename, readmode="bytes", rate=256000/8),<br>        DECODE = Decoder("mp3"),<br>        OUTPUT = Carousel( makeAudioOutput ),<br>        linkages = {<br>            ("READ",   "outbox") : ("DECODE", "inbox"),</filename><br>           <filename> ("DECODE", "outbox") : ("OUTPUT", "inbox"),</filename><br><filename>            ("DECODE", "format") : ("OUTPUT", "next"),</filename><br><br>            ("",      "control") : ("READ",   "control"),<br>           <filename> ("READ",   "signal") : ("DECODE", "control"),<br>            ("DECODE", "signal") : ("OUTPUT", "control"),<br>            ("OUTPUT", "signal") : ("",       "signal"),<br>        }<br>      )<br></filename></pre></blockquote><p> </p></div></div><filename>This is almost identical to our player from before. Notice we've added extra links to make sure shutdown messages can get into and out of the Graphline. This is important, as Carousel will be listening for our Graphline sending the shutdown message.<br><br>Now lets wire it all up! We will use a <i>ForwardIteratingChooser</i> because it will send a shutdown message once all the filenames have been iterated over:<br></filename><blockquote><pre><filename>from Kamaelia.Util.Chooser import ForwardIteratingChooser<br><br>filenames = argv[1:]<br><br>Graphline( PLAYLIST = </filename>ForwardIterating<filename>Chooser(filenames),<br>           PLAYER   = Carousel( makePlayer, <b>make1stRequest=True</b> ),<br>           linkages = {<br>               ("PLAYER",   "requestNext") : ("PLAYLIST", "inbox"),<br>               ("PLAYLIST", "outbox")      : ("PLAYER",   "next"),<br><br>               ("PLAYLIST", "signal") : ("PLAYER", "control"),<br>           }<br>         ).run()<br></filename></pre></blockquote><blockquote><pre><filename></filename></pre></blockquote><filename>Notice that we have asked the Carousel to make the 1st request. What this means is that as soon as it starts it will send out its request for the next item - instead of just waiting. This gets things going.<br><br>So there we have it, a simple mp3 playlist system, built entirely in Kamaelia, using Carousels to create components with the right settings when we need them.<br></filename><p>-- 19 Dec 2006 - Matt Hammond<br>
+</p>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,103 @@
+<html>
+<head>
+<title> Cookbook/SimpleBitTorrentExample </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/SimpleBitTorrentExample">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<p><br></p><h1>A Simple BitTorrent Helper<br></h1><p>This cookbook is based on a small tool that I built to solve a problem I had that required the use of BitTorrent. I wanted a script that would do the following:</p><ul><li>'Publish' files to a BitTorrent network when given a file name<br></li><li>Download files from the network when given a *.torrent file name</li><li>Accept all input from stdin</li><li>Send meaningful messages to stdout that could be parsed by another tool</li></ul>The idea was to use this from another Python program and to communicate via pipes (hence the need for IO to happen via stdin and stdout. Using components found in the Kamaelia MegaBundle along with a couple of small modifications, a reliable and robust tool was put together in very little time and very few lines of code. The network needed is as follows:<br><br><img src="/images/ktorrent_network_cookbook.png" alt="BitTorrent Helper graph"><br><br>Let's consider each component in turn.<br><br><h2>reader and parser<br></h2><p>This pair takes in commands from the parent program. It reads from the console, so we use the ready made Kamaelia <b>ConsoleReader</b> to get the input  and pass it to the <b>InstructionParser</b>. <br></p><p>The <b>InstructionParser</b> will take a kind of URI and, based on what it is given, put it in one of three outboxes:</p><ul><li>"outbox" if the URI starts '<i>file:</i>' - a torrent must be made of this file and then seeding must commence</li><li> "retrieveHtml" if the URI starts '<i>torrent:http:</i> - a torrent file must be retrieved from the web and the file(s) downloaded</li><li> "retrieveFile" if the URI starts 'torrent:' - a *.torrent file
+must be read from the file system and passed to BitTorrent to start
+downloading the file(s)</li></ul><br>The code is as follows:<br><br><pre>class InstructionParser(component):<br>    """<br>    Instructions on the inbox are processed according to the following rules:<br>    <br>    - If starts with 'file:' this is a path to a file that needs seeding. The <br>      name is put on the outbox for the torrent making process to start. This<br>      leads to the TorrentPatron seeding the file<br>      <br>    - If starts with 'torrent:http://...' then the torrent file is obtained from <br>      the http URL supplied and passed to the patron<br>      <br>    - If starts with 'torrent:...' (not http) then the torrent file is obtained<br>      from the filesystem and passed to the patron<br>    """<br>    Inboxes = ["inbox", "control"]<br>    Outboxes = ["outbox", "retrieveHtml", "retrieveFile", "signal"]<br>    def main(self):<br>        self.running = True<br>        while 1:<br>            if self.dataReady():<br>                d = chop(self.recv())<br>                if d.startswith("file:"):<br>                    self.send(d[5:])<br>                elif d.startswith("torrent:http"):<br>                    self.send(d[8:], "retrieveHtml")<br>                elif d.startswith("torrent:"):<br>                    self.send(d[8:], "retrieveFile")<br>                else:<br>                    print("Message not understood: %s" % d)<br>                <br>            if not self.anyReady() and self.running:<br>                self.pause()<br>            if self.running:<br>                yield 1<br><br></pre><p>Notes:</p><ul><li>The chop(f) function simply removes trailing <i>\r</i> and <i>\n</i> characters</li></ul><h2>Reading *.torrent files</h2>If a torrent file URI has been given it needs to be downloaded. Fortunately the components already exist: to download an HTML file, we use the <b>SimpleHTTPClient</b> and reading a file is done with the <b>TriggeredFileReader</b>. No code needed there!<br><br><h2>Making a torrent file</h2>If the name of a local file has been given, we need (a) to make a torrent file, (b) to publish this to the BitTorrent tracker and (c) to start seeding. In the network diagram above we have a number of components to do this. Firstly <b>fnSplitter</b> is simply a Kamelia <b>Fanout </b>component. This takes input on its inbox and <i>fans it out</i> to a number of outboxes specified when the component is instantiated (which we'll see later). We use this because we want the ready-made <b>TorrentMaker</b> component to know what file it needs to make a torrent from, and another set of components to create a new file named as per the source file with a '.torrent' suffix into which we can write the torrent so that we can pass it to anyone who may wish to download the file we're publishing. <br><br><b>suffixTorrent</b> is a Kamaelia <b>PureTransformer</b> which takes a function (can be a lambda) with which it  transforms input into output. We will use it to append '.torrent' to the string on the inbox. <b>torrentNamer</b> is a <b>TwoSourceListifier</b> which takes input on two inboxes and pairs them up to output them as a list. This component was copied from Ryan Lothian's <b>torrentseeder.py</b> and is copied without permission as follows:<br><br><pre>class TwoSourceListifier(component):<br>    """Wait until inboxes "a" and "b" have messages, then<br>    take the first from each and combine them into a new list<br>    of the form [a,b]. Repeat.<br>    """<br>    Inboxes = ["a", "b", "control"]<br>    def main(self):<br>        while 1:<br>            yield 1<br>            <br>            while self.dataReady("a") and self.dataReady("b"):<br>                self.send([self.recv("a"), self.recv("b")], "outbox")<br>                <br>            while self.dataReady("control"):<br>                msg = self.recv("control")<br>                if isinstance(msg, producerFinished) or isinstance(msg, shutdown):<br>                    self.send(producerFinished(self), "signal")<br>                    return<br>            <br>            self.pause()<br></pre>The final component, the <b>torrentWriter</b>, takes this list as input and writes to disk the file named in element 0 with content in element 1 of the list.<br><br><h2>Meanwhile... let's seed or download</h2>Now we have a torrent file. It may have been generated just now to describe a local file that we wish to seed, or it may have been obtained from elsewhere and describe a file we wish to download. Either way, the <b>TorrentPatron</b> needs to know about it. TorrentPatron is a Kamaelia component written by Ryan Lothian that manages the Mainline BitTorrent code for Kamaelia. All we need to do is give it the torrent file <i>et voila!</i> Any BitTorrent client givent torrent files generated by this utility will now be able to download your file!<br><br>The output is OK, but it could be made easier for upstream tools to process. What I'd like is to pass output of the form '<i>id:file:percentage complete</i>' and this is just what the <b>MonitorParser</b> does. Output from the <b>TorrentPatron</b> appears on its inbox. The lines are re-formatted and sent to the outbox whereupon they can be sent to the <b>ConsoleEchoer </b>(as in this case) or split off to any other interested components (how about an <b>EmailEchoer</b>, or an <b>IRCEchoer</b>? Or perhaps status messages could go to your phone - just need an <b>SMSEchoer</b>!). The <b>MonitorParser</b> is simply as follows:<br><br><pre>class MonitorParser(component):<br>    """Parses output from the TorrentPatron, keeping track of what torrents<br>are made and how they are progressing. Outputs structured messages only when<br>changes are observed."""<br>    def main(self):<br>        self.running = True<br>        # map torrent id to properties<br>        self.torrentMapper = {} <br>        while 1:<br>            if self.dataReady():<br>                d = chop(str(self.recv()))<br>                tokens = d.split()<br>                if tokens[0]=='New':<br>                    fn=tokens[5][2:]<br>                    id = int(tokens[2])<br>                    self.torrentMapper[id] = [fn, -1]<br>                    self.send(self.fmtOutput(id))<br>                elif tokens[0]=='Torrent':<br>                    id = int(tokens[1])<br>                    finished = int(tokens[-1][:-1])<br>                    if self.torrentMapper[id][1] &lt; finished:<br>                        self.torrentMapper[id][1] = finished<br>                        self.send(self.fmtOutput(id))<br>                <br>            if not self.anyReady() and self.running:<br>                self.pause()<br>            if self.running:<br>                yield 1<br><br>    def fmtOutput(self, id):<br>        details = self.torrentMapper[id]<br>        return "%d:%s:%d" % (id,details[0],details[1])<br><br></pre><h2>Putting it all together</h2>Now that we have all the components we need, we must link them together with a <b>GraphLine</b>. <br><br><pre>    tracker = 'http://my.tracker.host:6969/announce'<br>    torrentdir = '/var/torrent'<br><br>    Graphline( reader = ConsoleReader(prompt=''),<br>                       parser = InstructionParser(),<br>                       fnsplitter = Fanout(['torrentmaker','torrentwriter']),<br>                       suffixtorrent = PureTransformer(lambda x : torrentdir + x + ".torrent"),<br>                       torrentNamer = TwoSourceListifier(),<br>                       torrentMaker = TorrentMaker(defaulttracker=tracker),<br>                       torrentWriter = WholeFileWriter(),<br>                       metasplitter = Fanout(['torrentwriter','patron']),<br>                       fileReader = DefaultTriggeredFileReader(torrentdir),<br>                       httpReader = SimpleHTTPClient(),<br>                       patron = TorrentPatron(),<br>                       console = ConsoleEchoer(),<br>                       monitor = MonitorParser(),<br>                       addCR = PureTransformer(lambda x : x+"\n"),<br>                       linkages = {<br>                               ("reader","outbox") : ("parser","inbox"),<br>                               ("parser","outbox") : ("fnsplitter","inbox"),<br>                               ("fnsplitter","torrentmaker") : ("torrentMaker","inbox"),<br>                               ("fnsplitter","torrentwriter") : ("suffixtorrent", "inbox"),<br>                               ("suffixtorrent","outbox") : ("torrentNamer", "a"),<br>                               ("torrentNamer","outbox") : ("torrentWriter","inbox"),<br>                               ("parser","retrieveHtml") : ("httpReader","inbox"),<br>                               ("parser","retrieveFile") : ("fileReader","inbox"),<br>                               ("torrentMaker","outbox") : ("metasplitter","inbox"),<br>                               ("metasplitter","torrentwriter") : ("torrentNamer","b"),<br>                               ("metasplitter","patron") : ("patron","inbox"),<br>                               ("fileReader", "outbox") : ("patron", "inbox"),<br>                               ("httpReader","outbox") : ("patron", "inbox"),<br>                               ("patron", "outbox") : ("Monitor", "inbox"),<br>                               ("monitor", "outbox") : ("addCR","inbox"),<br>                               ("addCR", "outbox") : ("console", "inbox"),<br>                           }<br>                      ).run()<br><br></pre><p>This puts the components into the graph structure described in the image at the top of this document, then commands the Kamaelia system to start running.</p><pre></pre><h2>Required infrastructure</h2>None of this will work unless you have access to a BitTorrent tracker. The tracker is a server application that lets all clients know where to find files and which chunks to download from which machines. You can use either a public server or, perhaps better for experimentation, simply run one of your own. The BitTorrent package in the Kamaelia MegaBundle that you must install for any of this to work contains a tracker; start it with:<br><br><pre>	bittorrent-tracker --port <port number=""><port number=""><i>port_number</i><br><br></port></port></pre><p><port number="">You may encounter some problems with BitTorrent as it can be a touch sensitive. Make note of the following:</port></p><ol><li><port number="">You cannot run more than one client on one machine. In otherwords, Host_A can run a tracker and one seeder/downloader, Host_B another seeder/downloader. Neither can run a second seeder/downloader.</port></li><li>The Mainline BitTorrent code seems ony to want to seed files in the current working directory and only downloads files to the cwd also. However, you can use softlinks to collect files in one place without moving them from their normal location.</li><li>Once downloaded do not immediately move the file away - this will prevent other clients downloading from a host that has the full file. As with collecting files together for seeding, if a downloaded file needs to reside elsewhere, soft-linking may provide the solution.<br></li><li>Occasionaly the tracker will ignore requests to seed a torrent. This may occur if you've been testing and seeded the same torrent a few times. To rectify I've found it best to stop the tracker, delete <i>~/.bittorrent  </i>and <i>/tmp/dfile*</i>, then re-start the tracker. I'm not sure where the tracker keeps its config and state files when run under Windows (please edit if you know!)<br></li></ol><p><port number=""></port></p><br>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

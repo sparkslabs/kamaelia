@@ -1,0 +1,459 @@
+<html><body><table>
+            <tr><td>[06:50] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:54] *** mhrd-sometimes-a has joined #kamaelia</td></tr>
+            <tr><td>[09:12] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:47] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:21] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:31] &lt Davbo&gt hi all</td></tr>
+            <tr><td>[10:33] &lt orphans&gt hey Davbo</td></tr>
+            <tr><td>[10:55] &lt Davbo&gt Hey orphans, not many people around today</td></tr>
+            <tr><td>[11:04] &lt orphans&gt nah, quiet :)</td></tr>
+            <tr><td>[11:05] &lt orphans&gt I'm literally dying of hayfever too - it's quite fun to try and hold a tissue and type at the same time</td></tr>
+            <tr><td>[11:08] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[11:09] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[11:09] &lt Davbo&gt me too orphans</td></tr>
+            <tr><td>[11:09] &lt Davbo&gt Afternoon, MS-</td></tr>
+            <tr><td>[11:10] &lt Davbo&gt orphans, you should co my XYPad, got a cool way to keep track of the selected colour</td></tr>
+            <tr><td>[11:11] &lt Davbo&gt /Sketches/DK/Kamaelia-Paint/App</td></tr>
+            <tr><td>[11:11] &lt orphans&gt cool, I'll check it out</td></tr>
+            <tr><td>[11:11] &lt Davbo&gt You alright MS-?</td></tr>
+            <tr><td>[11:12] &lt orphans&gt hey MS-</td></tr>
+            <tr><td>[11:12] &lt MS-&gt yep - I'm fine - just rather busy - I have some tight deadlines at the moment, that's all :)</td></tr>
+            <tr><td>[11:12] &lt Davbo&gt I'll leave you to it then</td></tr>
+            <tr><td>[11:13] &lt orphans&gt wooh, that's pretty fancy Davbo</td></tr>
+            <tr><td>[11:14] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[11:15] &lt Davbo&gt your code gave me the idea, so you can take all the credit ;-)</td></tr>
+            <tr><td>[11:16] &lt orphans&gt :)</td></tr>
+            <tr><td>[11:20] *** orphans goes to eat chilli sauce for lunch - hayfever will be defeated by chilli</td></tr>
+            <tr><td>[11:35] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[12:37] &lt Davbo&gt MS-: ImportError: No module named MultiPipeline :-(</td></tr>
+            <tr><td>[12:37] *** Davbo wonders why it's died again</td></tr>
+            <tr><td>[12:41] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:41] &lt Davbo&gt weird</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt hmm, is my IRC working?</td></tr>
+            <tr><td>[12:42] &lt orphans&gt Davbo, pong!</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt Pidgin just went insane</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt ty orphans</td></tr>
+            <tr><td>[12:42] &lt Davbo&gt Agh what's it doing lol. brb</td></tr>
+            <tr><td>[12:43] &lt MS-&gt Davbo wonders why it's died again</td></tr>
+            <tr><td>[12:43] &lt MS-&gt probably your sys.path is askew</td></tr>
+            <tr><td>[12:43] &lt MS-&gt or missing something</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt Yeah, 1 moment MS- I got to just restart Pidgin</td></tr>
+            <tr><td>[12:43] &lt Davbo&gt Again</td></tr>
+            <tr><td>[12:43] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[12:44] &lt Davbo&gt This will do</td></tr>
+            <tr><td>[12:44] &lt Davbo&gt Oh yes MS-</td></tr>
+            <tr><td>[12:44] &lt Davbo&gt sorry</td></tr>
+            <tr><td>[12:44] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[12:46] &lt Davbo&gt Thanks MS-</td></tr>
+            <tr><td>[12:50] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:50] &lt Davbo&gt MS-: Since MagnaDoodle has changed quite a lot, well my copy. I've put # Licensed to the BBC under a Contributor Agreement: THF/DK</td></tr>
+            <tr><td>[12:52] &lt Davbo&gt Since I don't want to get in any bother, is it alright to put down 2 like that?</td></tr>
+            <tr><td>[12:57] *** matthew-p has joined #kamaelia</td></tr>
+            <tr><td>[13:01] &lt matthew-p&gt Hi michael?</td></tr>
+            <tr><td>[13:02] &lt Davbo&gt ping MS-</td></tr>
+            <tr><td>[13:03] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[13:05] &lt Davbo&gt I think he's busy atm matthew-p</td></tr>
+            <tr><td>[13:56] &lt matthew-p&gt no worries - thanks :)</td></tr>
+            <tr><td>[13:58] &lt MS-&gt matthew-p: hiya</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt quick question MS- if you've got time</td></tr>
+            <tr><td>[14:01] &lt Davbo&gt will rgbutton.link( (rgbutton,"outbox"), (self,"buttons") ) do what i expect it to</td></tr>
+            <tr><td>[14:02] &lt Davbo&gt I want some buttons on this thing but I want to define them in the main code</td></tr>
+            <tr><td>[14:02] &lt MS-&gt it's better to do</td></tr>
+            <tr><td>[14:02] &lt MS-&gt self.link( (subcomponent, "outbox"), (self, "inbox"))</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt ah yes, i've seen that</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt thank you, sorry</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt I'd forgot how that would be appropriate for the buttons :-)</td></tr>
+            <tr><td>[14:03] &lt MS-&gt doing</td></tr>
+            <tr><td>[14:03] &lt MS-&gt foo = SomeComponent()</td></tr>
+            <tr><td>[14:03] &lt MS-&gt foo.link( (foo, "out"), (bar, "in") )</td></tr>
+            <tr><td>[14:03] &lt MS-&gt will work, but isn't defined to work that way - and as a result IIRC isn't tested that way</td></tr>
+            <tr><td>[14:04] &lt MS-&gt How goes things btw?</td></tr>
+            <tr><td>[14:04] &lt Davbo&gt Going well</td></tr>
+            <tr><td>[14:04] &lt MS-&gt Looks like you're steadily moving forward</td></tr>
+            <tr><td>[14:04] &lt MS-&gt which is good to see :)</td></tr>
+            <tr><td>[14:04] &lt MS-&gt I'll get the multiprocess stuff merged this week btw, since it's going in the release candidate</td></tr>
+            <tr><td>[14:04] &lt Davbo&gt Picking up speed now MS-</td></tr>
+            <tr><td>[14:05] &lt MS-&gt cool</td></tr>
+            <tr><td>[14:05] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[14:06] &lt Davbo&gt Happy with how the XYPad worked out</td></tr>
+            <tr><td>[14:06] &lt Davbo&gt Thanks to some friendly code on orphans side</td></tr>
+            <tr><td>[14:07] &lt MS-&gt cool</td></tr>
+            <tr><td>[14:07] &lt MS-&gt I saw that - it looked nice. I've got some ideas for how to develop it, but it does look good</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt cool</td></tr>
+            <tr><td>[14:09] &lt MS-&gt (will mail you about them though on the usual "take them or leave them" basis :) )</td></tr>
+            <tr><td>[14:09] &lt MS-&gt might not fit in with your plans after all :)</td></tr>
+            <tr><td>[14:09] &lt Davbo&gt Yeah, sounds good. I didn't want to redraw the background which is why it has worked out like it has</td></tr>
+            <tr><td>[14:10] *** MS- nods</td></tr>
+            <tr><td>[14:10] &lt MS-&gt There is probably a nice cheat to be had, thinking about it - using alpha channels/transparency</td></tr>
+            <tr><td>[14:10] &lt MS-&gt (he says realising that just at that instant)</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt needs another bit for controlling Saturation too but it can wait</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt rather get it functional</td></tr>
+            <tr><td>[14:11] *** MS- nods</td></tr>
+            <tr><td>[14:18] &lt matthew-p&gt right - I'm back - Hi MS - I've got a completely off-topic question</td></tr>
+            <tr><td>[14:18] *** Lawouach_ shakes head as how the French media handle the Euro and the mess the French team put itself</td></tr>
+            <tr><td>[14:18] &lt matthew-p&gt do you know anything about the BBC p2p-next project?</td></tr>
+            <tr><td>[14:19] &lt matthew-p&gt and is it something that might be interesting to work on!?</td></tr>
+            <tr><td>[14:20] &lt MS-&gt a little - I know the person running it - George Wright. It strikes me as something interesting to work on</td></tr>
+            <tr><td>[14:21] &lt MS-&gt It's something that I may get dragged into (voluntarily) after my current project is over.</td></tr>
+            <tr><td>[14:21] &lt MS-&gt It's likely because it's a python heavy project, and as a result we're likely to bring kamaelia to the table, so it's not entirely off topic :-)</td></tr>
+            <tr><td>[14:22] &lt MS-&gt If so, it'll be justification for me getting to spend my day time work on Kamaelia (in addition to george's team I'd guess), so to me it's a highly interesting project</td></tr>
+            <tr><td>[14:22] &lt MS-&gt It's core technology at present is tribler from Delft university</td></tr>
+            <tr><td>[14:23] &lt MS-&gt Which is based on bit torrent</td></tr>
+            <tr><td>[14:24] &lt MS-&gt There was a workshop in Delft on May 27th actually - I wasn't able to go due to personal commitments, but there's a large wadge of docs online</td></tr>
+            <tr><td>[14:24] &lt MS-&gt http://www.tribler.org/TriblerCourse</td></tr>
+            <tr><td>[14:24] &lt matthew-p&gt right-o. Sounds interesting.</td></tr>
+            <tr><td>[14:24] &lt matthew-p&gt Looking at this job posting: http://jobs.bbc.co.uk/fe/tpl_bbc01.asp?newms=jj&id=22405&aid=15172</td></tr>
+            <tr><td>[14:25] &lt MS-&gt Guessed that might be the case :-)</td></tr>
+            <tr><td>[14:26] &lt MS-&gt FWIW, George has IMO very much got his head screwed on the right way and has championed all sorts of new and good working practices as well</td></tr>
+            <tr><td>[14:26] &lt matthew-p&gt that's encouraging</td></tr>
+            <tr><td>[14:26] &lt MS-&gt He's pro-open source, pro python as well :)</td></tr>
+            <tr><td>[14:26] &lt matthew-p&gt all good then</td></tr>
+            <tr><td>[14:27] &lt MS-&gt But also very focussed on doing stuff directly relevant and useful to the business</td></tr>
+            <tr><td>[14:28] &lt Lawouach_&gt Hah. Lucky I'm not in London, that job would have interested me :)</td></tr>
+            <tr><td>[14:29] &lt Lawouach_&gt Damn the guys at Radio Labs really do foxy stuff:</td></tr>
+            <tr><td>[14:29] &lt Lawouach_&gt http://www.bbc.co.uk/blogs/radiolabs/2008/06/wikipedia_plus_lucene_morelikethis.shtml</td></tr>
+            <tr><td>[14:30] &lt MS-&gt Lawouach_: he'd probably be more than interested in multiple good people I suspect. He's happy about people commuting periodically depending on where they're based, but I'm not sure he'd go for international...</td></tr>
+            <tr><td>[14:30] &lt Lawouach_&gt Well I'd be surprised about that too. The problem anyway is that currently I'm not looking at moving.</td></tr>
+            <tr><td>[14:31] &lt Lawouach_&gt I've moved so many times in the last few years that I need to settle a bit.</td></tr>
+            <tr><td>[14:31] &lt Lawouach_&gt and London is too expensive</td></tr>
+            <tr><td>[14:31] *** MS- nods</td></tr>
+            <tr><td>[14:31] &lt Lawouach_&gt I had a contract over there in January, a permanent job, I declined because London is just too expensive right now</td></tr>
+            <tr><td>[14:31] *** matthew-p nods sadly</td></tr>
+            <tr><td>[14:32] &lt matthew-p&gt thanks for the appraisal Michael</td></tr>
+            <tr><td>[14:33] &lt MS-&gt you're welcome.</td></tr>
+            <tr><td>[14:33] &lt MS-&gt fwiw, if I was still based in london, there's an internally advertised post as well which I think is part of the same group, and I'd probably've been relatively seriously interested in</td></tr>
+            <tr><td>[14:34] &lt MS-&gt Fair amount of opportunity for growing things up here at the moment, which is often the case if you're an early mover :)</td></tr>
+            <tr><td>[14:34] &lt Lawouach_&gt I find interesting that the BBC wastes so much money in keeping their IT in London when they could consider going outside</td></tr>
+            <tr><td>[14:34] &lt matthew-p&gt sounds like you made a good choice on a number of grounds</td></tr>
+            <tr><td>[14:35] &lt Lawouach_&gt Business parks are so common in the UK</td></tr>
+            <tr><td>[14:35] &lt MS-&gt Lawouach_: http://www.guardian.co.uk/media/2008/jun/08/bbc.radio</td></tr>
+            <tr><td>[14:35] &lt Lawouach_&gt Hah!</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt is BBC Manchester the biggest site after London?</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt I don't think they have much in Sheffield</td></tr>
+            <tr><td>[14:36] &lt MS-&gt Davbo: It probably will be in 2011, though I think Birmgham is biggest outside london at present</td></tr>
+            <tr><td>[14:36] &lt Davbo&gt Oh cool</td></tr>
+            <tr><td>[14:37] &lt Lawouach_&gt It's one thing to move out of London and another to go as far as Manchester</td></tr>
+            <tr><td>[14:37] &lt Lawouach_&gt It's not just about money and houses, it's also the life people have built where they are</td></tr>
+            <tr><td>[14:37] &lt MS-&gt That article isn't very fair BTW - they haven't actually made that package generally available yet. Its only in R&I that anyone has had any offer, and there's all sorts of catches</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt I really like Sheffield so will preferably stay here, lots of tech stuff here anywho.</td></tr>
+            <tr><td>[14:38] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[14:38] &lt MS-&gt also, it's not quite as few as the numbers indicated</td></tr>
+            <tr><td>[14:38] &lt MS-&gt Lawouach_: That said, the BBC web infrastructure is run out of maidenhead</td></tr>
+            <tr><td>[14:38] &lt MS-&gt In terms of infrastructure.</td></tr>
+            <tr><td>[14:42] &lt orphans&gt Lawouach_, hey, saw the email about your holiday, do you want to have a quick meeting on thurs?</td></tr>
+            <tr><td>[14:44] &lt MS-&gt matthew-p: How's life been since Pycon UK btw? Been a while since we've chatted. Hope it's been treating you well :)</td></tr>
+            <tr><td>[14:50] &lt Lawouach_&gt orphans: if you're up for it yeah :)</td></tr>
+            <tr><td>[14:51] &lt Lawouach_&gt MS-: maidenhead. Dang. I used to live in Reading and never knew that</td></tr>
+            <tr><td>[14:51] &lt orphans&gt Lawouach_, cool, what time?</td></tr>
+            <tr><td>[14:52] &lt MS-&gt It's mainly operations stuff there (network infrastructure level) though rather than application level (or higher) infrastructure</td></tr>
+            <tr><td>[14:52] &lt MS-&gt AIUI</td></tr>
+            <tr><td>[14:52] &lt Davbo&gt lots of "Data Centres" and that in Maidenhead aren't there?</td></tr>
+            <tr><td>[14:53] &lt Davbo&gt My traceroutes usually hop through it</td></tr>
+            <tr><td>[14:53] &lt MS-&gt That may be due to your ISP</td></tr>
+            <tr><td>[14:53] &lt MS-&gt (where they have their transit routes etc)</td></tr>
+            <tr><td>[14:57] &lt Lawouach_&gt orphans: usual time if you're okay with it</td></tr>
+            <tr><td>[14:58] &lt orphans&gt Lawouach_, yeah, np</td></tr>
+            <tr><td>[14:58] &lt Lawouach_&gt cool</td></tr>
+            <tr><td>[15:05] &lt matthew-p&gt I'm back again MS: Life's been good since Pycon UK. I left MPC, had a child, got to write a new version of the system I presented at MPC but in the public domain...</td></tr>
+            <tr><td>[15:05] &lt MS-&gt cool</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Do you have a link anychance ?</td></tr>
+            <tr><td>[15:06] &lt matthew-p&gt I'm really looking for contract work whilst I get some other business off the ground, but equally if really interesting opportunities turn up I take a look, and the job we were just looking at seemed interesting.</td></tr>
+            <tr><td>[15:06] &lt MS-&gt I see</td></tr>
+            <tr><td>[15:06] &lt matthew-p&gt I do have a link... and in fact you are about to receive a mail as you're on my 'to notify' list - I pushed out a version 0.0.1 last night</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Cool :-)</td></tr>
+            <tr><td>[15:06] &lt MS-&gt you knew I'd be interested then :)</td></tr>
+            <tr><td>[15:07] &lt matthew-p&gt I'm psychic :)</td></tr>
+            <tr><td>[15:08] &lt matthew-p&gt it's very 'early release' code, if you see what I mean. Going in the right direction though.</td></tr>
+            <tr><td>[15:08] &lt matthew-p&gt http://www.peloton-grid.net/</td></tr>
+            <tr><td>[15:09] &lt Lawouach_&gt Twisted!</td></tr>
+            <tr><td>[15:09] &lt Lawouach_&gt where's my cross?</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt Hah Lawouach_</td></tr>
+            <tr><td>[15:11] &lt Lawouach_&gt http://www.peloton-grid.net/docs/api/peloton.plugins.amqpQpid.AMQPEventBus-class.html</td></tr>
+            <tr><td>[15:11] &lt Lawouach_&gt That's nice</td></tr>
+            <tr><td>[15:12] *** MS- looks</td></tr>
+            <tr><td>[15:14] &lt MS-&gt one little silly/trivial suggestion : change "Last modified April 1st 2008" to "Last modified April 2nd 2008" - I always look at pages with that date with suspicion. :)</td></tr>
+            <tr><td>[15:14] *** MS- keeps looking :)</td></tr>
+            <tr><td>[15:14] &lt matthew-p&gt ha ha!!</td></tr>
+            <tr><td>[15:14] &lt matthew-p&gt ok :)</td></tr>
+            <tr><td>[15:16] &lt matthew-p&gt Lawouach: AMQP is really nice, I think, but ideally in a twisted app we could do with a twisted implentation of the client end. Still, the code works :)</td></tr>
+            <tr><td>[15:17] &lt matthew-p&gt bit too much in the way of thread-work going on though</td></tr>
+            <tr><td>[15:17] &lt MS-&gt The system looks good - a solid starting point</td></tr>
+            <tr><td>[15:17] &lt matthew-p&gt thanks</td></tr>
+            <tr><td>[15:18] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:18] &lt matthew-p&gt trying to concentrate on robust implementation rather than just adding features</td></tr>
+            <tr><td>[15:18] &lt matthew-p&gt so done a lot of testing with many nodes, randomly killing them and so on</td></tr>
+            <tr><td>[15:18] &lt matthew-p&gt all good fun</td></tr>
+            <tr><td>[15:18] &lt MS-&gt Yes, that stage is always the hardest point.</td></tr>
+            <tr><td>[15:19] &lt matthew-p&gt it'll be interesting to see if anyone takes it to do things completely different to what I imagined</td></tr>
+            <tr><td>[15:19] &lt MS-&gt We're mainly at the fleshing out components stage at the moment</td></tr>
+            <tr><td>[15:19] &lt MS-&gt Indeed</td></tr>
+            <tr><td>[15:19] &lt matthew-p&gt met James Gardner, the Pylons author, the other night and he had some interesting ideas</td></tr>
+            <tr><td>[15:19] &lt matthew-p&gt I mentioned Kamaelia to him as well as it had relevance to some of his projects</td></tr>
+            <tr><td>[15:19] &lt MS-&gt Cool.</td></tr>
+            <tr><td>[15:20] &lt MS-&gt Incidentally, we have a gsoc student this summer working on our wsgi implementation, getting it to a robust/deployable stage (in the context of a more general project)</td></tr>
+            <tr><td>[15:20] &lt MS-&gt which should be useful for pylons as well</td></tr>
+            <tr><td>[15:21] &lt matthew-p&gt that's neat - I must have a look at the new work going on in Kamaelia-land</td></tr>
+            <tr><td>[15:22] &lt matthew-p&gt I need a good project to use it on really!</td></tr>
+            <tr><td>[15:22] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:23] &lt MS-&gt We've got nascent multicore support in the system now btw</td></tr>
+            <tr><td>[15:23] &lt MS-&gt Which is possibly the largest small addition to the system</td></tr>
+            <tr><td>[15:23] &lt MS-&gt It's still settling down, but will be in a release candidate this weekend</td></tr>
+            <tr><td>[15:23] &lt MS-&gt The usage for the release candidate will be limited (probably) to just pipelines of the following form:</td></tr>
+            <tr><td>[15:24] &lt MS-&gt ProcessPipeline(Source, Transformer, Transformer, Transformer, Sink)</td></tr>
+            <tr><td>[15:24] &lt MS-&gt ie exactly the same usage as Pipeline:</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Pipeline(Source, Transformer, Transformer, Transformer, Sink)</td></tr>
+            <tr><td>[15:25] &lt MS-&gt Just that the components in the pipeline are shipped off to their own process, and hence able to use a different core</td></tr>
+            <tr><td>[15:25] &lt matthew-p&gt that's very cute</td></tr>
+            <tr><td>[15:25] &lt matthew-p&gt will make it attractive for a new range of problems I'd have thought</td></tr>
+            <tr><td>[15:25] &lt Davbo&gt Speaking of which: http://www.davbo.org/images/snapshot9.png</td></tr>
+            <tr><td>[15:25] &lt MS-&gt There was support for Graphlines, but it exposed an issue with one of the mechanisms used, so i've rewritten it, and taking merging slow :)</td></tr>
+            <tr><td>[15:26] &lt MS-&gt but it does work :)</td></tr>
+            <tr><td>[15:26] &lt MS-&gt Davbo: hah! :-)</td></tr>
+            <tr><td>[15:26] &lt MS-&gt Cool</td></tr>
+            <tr><td>[15:26] *** Davbo wonders why his buttons aren't showing up</td></tr>
+            <tr><td>[15:26] &lt orphans&gt Davbo, I can hear photoshop quaking in their boots :)</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt hah :-D</td></tr>
+            <tr><td>[15:27] &lt MS-&gt matthew-p: Davbo's writing a paint program using Kamaelia - which means it can open multiple pygame windows happily :)</td></tr>
+            <tr><td>[15:27] &lt matthew-p&gt also cute :)</td></tr>
+            <tr><td>[15:27] &lt MS-&gt (and it kinda proves it's using multiple cores, since you wouldn't be able to open the multiple pygame windows otherwise due to pygame/SDL restrictions :) )</td></tr>
+            <tr><td>[15:28] &lt matthew-p&gt image processing via graphs of processes... GEGL in Kamaelia, no!?</td></tr>
+            <tr><td>[15:28] &lt MS-&gt heh :)</td></tr>
+            <tr><td>[15:29] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:29] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:30] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:30] *** MS- goes to catch a tram</td></tr>
+            <tr><td>[15:30] &lt MS-&gt biab</td></tr>
+            <tr><td>[15:30] &lt MS-&gt cya</td></tr>
+            <tr><td>[15:30] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[16:07] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:30] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[16:30] &lt MS-&gt back :)</td></tr>
+            <tr><td>[16:47] &lt Lawouach&gt so am I</td></tr>
+            <tr><td>[16:48] &lt Davbo&gt Hmm...where did that .pyc come from?</td></tr>
+            <tr><td>[16:48] &lt Davbo&gt Will investigate later! Time to get food</td></tr>
+            <tr><td>[16:48] &lt MS-&gt Davbo: behind the sofa</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt Back later chaps</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[16:49] &lt j_baker&gt I always find things under the cushions</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt MS-: Try running Paint.py you'll see what I mean</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt Back later</td></tr>
+            <tr><td>[16:50] *** MS- does an svn update</td></tr>
+            <tr><td>[16:53] *** MS- notes that the paint program does what it says on the tin</td></tr>
+            <tr><td>[16:54] &lt MS-&gt I see</td></tr>
+            <tr><td>[16:54] *** MS- notes that Davbo didn't realise that XYPad.pyc would get created</td></tr>
+            <tr><td>[17:01] &lt vmlemon_&gt "Argh! There's a snake! In my sofa!" ;)</td></tr>
+            <tr><td>[17:07] *** vmlemon_ found one of the old Usbourne(?) books with the box-hopping robots, last night</td></tr>
+            <tr><td>[17:19] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[17:21] &lt vmlemon_&gt I don't have it handy, but it contains BASIC and assembler/"machine code" examples, if I remember correctly</td></tr>
+            <tr><td>[17:22] &lt MS-&gt Yep</td></tr>
+            <tr><td>[17:22] &lt MS-&gt I would expect that</td></tr>
+            <tr><td>[17:22] &lt MS-&gt the Usborne books used to have both Z80 and 6502 assembler in</td></tr>
+            <tr><td>[17:22] &lt MS-&gt 6502 always truck me as the nicer of the two</td></tr>
+            <tr><td>[17:56] *** mhrd-sometimes-a liked 6502</td></tr>
+            <tr><td>[17:57] &lt MS-&gt Oh, hiya</td></tr>
+            <tr><td>[17:58] &lt mhrd-sometimes-a&gt MASHED-TV is up and running in the downstairs lab (it stopped crashing :-) ) ... tune into it when broadcasting starts at MASHED in Ally Pally this weekend :-)</td></tr>
+            <tr><td>[17:58] &lt mhrd-sometimes-a&gt greetings</td></tr>
+            <tr><td>[17:58] &lt MS-&gt Cool</td></tr>
+            <tr><td>[17:58] &lt MS-&gt I don't suppose you have the frequencies and pids do you?</td></tr>
+            <tr><td>[17:58] &lt mhrd-sometimes-a&gt steve is preparing instructions and an initial channel scan tuning file for linux users</td></tr>
+            <tr><td>[17:59] &lt MS-&gt I've found this:</td></tr>
+            <tr><td>[17:59] &lt MS-&gt http://mashed08.backnetwork.com/event/?articleid=24</td></tr>
+            <tr><td>[17:59] &lt MS-&gt Which has a tuning file with this in:</td></tr>
+            <tr><td>[17:59] &lt MS-&gt T 594000000 8MHz 2/3 NONE QAM64 2k 1/32 NONE</td></tr>
+            <tr><td>[17:59] &lt mhrd-sometimes-a&gt ah, he's already done it</td></tr>
+            <tr><td>[17:59] &lt mhrd-sometimes-a&gt yep, those are the params</td></tr>
+            <tr><td>[17:59] &lt vmlemon_&gt Mashed?</td></tr>
+            <tr><td>[17:59] &lt MS-&gt But having pids would enable a nice quick and dirty example in kamaelia's tree for (say) capturing bbc one</td></tr>
+            <tr><td>[17:59] &lt MS-&gt Or is it on the usual pids</td></tr>
+            <tr><td>[18:00] &lt MS-&gt vmlemon_: A hack day thing in london</td></tr>
+            <tr><td>[18:00] &lt vmlemon_&gt Aah, cool</td></tr>
+            <tr><td>[18:00] &lt mhrd-sometimes-a&gt you should be able to use that as input to dvbscan to get a channels.conf (btw: do you want to put that into the release? - I can flesh out its docs)</td></tr>
+            <tr><td>[18:00] &lt mhrd-sometimes-a&gt not sure about pids</td></tr>
+            <tr><td>[18:00] &lt mhrd-sometimes-a&gt will have to check ...</td></tr>
+            <tr><td>[18:00] &lt MS-&gt vmlemon_ : Sigh up page http://mashed08.eventbrite.com/</td></tr>
+            <tr><td>[18:00] &lt mhrd-sometimes-a&gt there is an unholy alliance of windows and linux involved in putting the channel together ;-)</td></tr>
+            <tr><td>[18:01] &lt vmlemon_&gt Any Smash involved? ;)</td></tr>
+            <tr><td>[18:01] &lt mhrd-sometimes-a&gt *@£! ... must have forgotten to set up the network connection properly ... will check tomorrow, but iirc they are probably the usual crystal palace pids</td></tr>
+            <tr><td>[18:01] &lt MS-&gt free buses between from liverpool, manchester, sheffield, newcastle, cardiff & bristol</td></tr>
+            <tr><td>[18:01] &lt MS-&gt cheers</td></tr>
+            <tr><td>[18:02] &lt mhrd-sometimes-a&gt I've got to get round to documenting the playout system ... so that others who will actually be there can operate it ;-)</td></tr>
+            <tr><td>[18:02] &lt MS-&gt That said, given the buses are at an unholy time of the night, I'll be going down on friday</td></tr>
+            <tr><td>[18:02] &lt MS-&gt cool</td></tr>
+            <tr><td>[18:03] &lt MS-&gt mhrd-sometimes-a: This'll be the first time that kamaelia's been used on the playout side :)</td></tr>
+            <tr><td>[18:03] &lt MS-&gt Even if it's just a part of the puzzle :)</td></tr>
+            <tr><td>[18:04] &lt mhrd-sometimes-a&gt there is just a teeny smidgen of kamaelia in there - used to get clock synchonisation between transport streams</td></tr>
+            <tr><td>[18:04] &lt MS-&gt What happened with all the code you wrote?</td></tr>
+            <tr><td>[18:04] &lt MS-&gt OOI?</td></tr>
+            <tr><td>[18:04] &lt mhrd-sometimes-a&gt ?</td></tr>
+            <tr><td>[18:04] &lt mhrd-sometimes-a&gt s/happened/will happen/ ?</td></tr>
+            <tr><td>[18:04] &lt MS-&gt You were writing what looked like a ton of code :)</td></tr>
+            <tr><td>[18:05] &lt MS-&gt which looked like for mashed :)</td></tr>
+            <tr><td>[18:05] &lt mhrd-sometimes-a&gt I've written nearly an order of magnitude more than that :)</td></tr>
+            <tr><td>[18:05] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MH/DVB_PSI</td></tr>
+            <tr><td>[18:06] &lt MS-&gt well, yes, I know you're written metric buttloads of DVB code for kamaelia :)</td></tr>
+            <tr><td>[18:06] &lt MS-&gt Which is cool :)</td></tr>
+            <tr><td>[18:06] &lt mhrd-sometimes-a&gt I stopped checking into there after a while since we set up a separate repository for mashed tv code</td></tr>
+            <tr><td>[18:06] &lt MS-&gt I was merely referring to the check in cide bombs ;)</td></tr>
+            <tr><td>[18:06] &lt mhrd-sometimes-a&gt but some stuff can be rolled back into kamaelia</td></tr>
+            <tr><td>[18:06] &lt MS-&gt ahh, I see</td></tr>
+            <tr><td>[18:06] &lt MS-&gt It'd be great to see that stuff merged back in</td></tr>
+            <tr><td>[18:07] &lt mhrd-sometimes-a&gt indeed</td></tr>
+            <tr><td>[18:07] &lt MS-&gt I know George Wright has plans for kamaelia (at least on some level), so having that stuff there would just make his life easier :)</td></tr>
+            <tr><td>[18:07] &lt mhrd-sometimes-a&gt the vast majority is not kamaelia code</td></tr>
+            <tr><td>[18:07] &lt mhrd-sometimes-a&gt and some is very hacky</td></tr>
+            <tr><td>[18:07] &lt mhrd-sometimes-a&gt but I'm happy to 'donate' pretty much anything that we reckon could be of use</td></tr>
+            <tr><td>[18:07] &lt mhrd-sometimes-a&gt back to kamaelia</td></tr>
+            <tr><td>[18:07] &lt MS-&gt hacky == not a problem (in sketches :)</td></tr>
+            <tr><td>[18:07] &lt MS-&gt not kamaelia related - only a problem if you think it is</td></tr>
+            <tr><td>[18:07] &lt MS-&gt :)</td></tr>
+            <tr><td>[18:08] &lt mhrd-sometimes-a&gt the EIT generator can probably be kamaeliafied relatively easily</td></tr>
+            <tr><td>[18:08] &lt MS-&gt i personally don't since it could either be componentised or made into support code to make it easier to be reused</td></tr>
+            <tr><td>[18:08] &lt mhrd-sometimes-a&gt the playout scheduler is a mess and would take alot more engineering</td></tr>
+            <tr><td>[18:08] &lt mhrd-sometimes-a&gt sure</td></tr>
+            <tr><td>[18:09] &lt MS-&gt It's your call, but just saying it'd be really cool to see it available - I'm actually on planning on making something using your gesture recognition code now BTW</td></tr>
+            <tr><td>[18:09] &lt mhrd-sometimes-a&gt I noticed :) cool</td></tr>
+            <tr><td>[18:10] &lt MS-&gt So putting random stuff in sketches is a really good idea :)</td></tr>
+            <tr><td>[18:10] &lt mhrd-sometimes-a&gt noted :)</td></tr>
+            <tr><td>[18:10] &lt MS-&gt Specifically it's based on vmlemon's comment of a kamaelia based speak and spell</td></tr>
+            <tr><td>[18:10] &lt mhrd-sometimes-a&gt heh, v. cool :)</td></tr>
+            <tr><td>[18:10] &lt mhrd-sometimes-a&gt "write 'a' ... that is correct. now, write 'b' ..." :)</td></tr>
+            <tr><td>[18:10] &lt MS-&gt I figure a talking, handwriting recognising thing would be a really neat learning tool for reading, writing and spelling :)</td></tr>
+            <tr><td>[18:10] &lt MS-&gt absolutely :)</td></tr>
+            <tr><td>[18:11] &lt MS-&gt precisely what I'm thinking</td></tr>
+            <tr><td>[18:11] &lt MS-&gt the fact it's fussy is a real bonus</td></tr>
+            <tr><td>[18:11] &lt mhrd-sometimes-a&gt heh</td></tr>
+            <tr><td>[18:11] *** mhrd-sometimes-a ought to go ... cya</td></tr>
+            <tr><td>[18:11] &lt MS-&gt cya :)</td></tr>
+            <tr><td>[18:11] &lt mhrd-sometimes-a&gt &lt /advertising mashed&gt</td></tr>
+            <tr><td>[18:12] *** mhrd-sometimes-a is now known as mhrd-afk</td></tr>
+            <tr><td>[18:21] &lt j_baker&gt MS-: Will you get a moment today for our meeting?</td></tr>
+            <tr><td>[18:40] &lt MS-&gt sure</td></tr>
+            <tr><td>[18:43] &lt j_baker&gt Is right now good for you?</td></tr>
+            <tr><td>[18:44] &lt MS-&gt Maybe in about 1/2 hour or so</td></tr>
+            <tr><td>[18:45] &lt MS-&gt (often I'm "done" with early evening stuff before 8pm local, but not always)</td></tr>
+            <tr><td>[18:45] &lt MS-&gt Definitly before 9 local time</td></tr>
+            <tr><td>[18:45] &lt MS-&gt (it's ~19:50 for me btw)</td></tr>
+            <tr><td>[18:46] &lt j_baker&gt np... I should be here, so let me know when you're ready.</td></tr>
+            <tr><td>[19:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:33] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:37] &lt mhrd-home&gt evening</td></tr>
+            <tr><td>[20:37] &lt MS-&gt evening</td></tr>
+            <tr><td>[20:47] &lt j_baker&gt Are we still doing the release on the 21st?</td></tr>
+            <tr><td>[20:48] &lt MS-&gt j_baker: I'm still planning that, yes. I'm going to declare it a beta release or release candidate rather than 0.6.0 final, but it'll be a release</td></tr>
+            <tr><td>[20:48] &lt MS-&gt I feel that hard deadlines tend to encourage me to focus</td></tr>
+            <tr><td>[20:48] &lt MS-&gt Problem is I have an unrelated deadline tomorrow, so won't be able to full focus on it until tomorrow</td></tr>
+            <tr><td>[20:48] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[20:49] &lt MS-&gt But I think there's more than enough already in, but will keep putting stuff in and packaging until we're done really</td></tr>
+            <tr><td>[20:49] &lt mhrd-home&gt cool</td></tr>
+            <tr><td>[20:49] &lt MS-&gt (and testing it for stability along the way naturally)</td></tr>
+            <tr><td>[20:49] &lt MS-&gt (last thing you want is to say to a large number of people "hey look at this cool stuff" and for it to fail when you show people :) )</td></tr>
+            <tr><td>[20:51] &lt j_baker&gt I've made a couple of changes to the HTTPServer based of private_MPS_Scratch. Do you think if I spun that off into a branch, there would be enough time to merge it before the 21st?</td></tr>
+            <tr><td>[20:51] &lt MS-&gt Let's try and see</td></tr>
+            <tr><td>[20:51] &lt MS-&gt :)</td></tr>
+            <tr><td>[20:52] &lt MS-&gt The only way to find out is to not say "no"</td></tr>
+            <tr><td>[20:53] &lt j_baker&gt Works for me. I'll also try to get the WsgiHandler in under Experimental. I've fixed most of what I wanted to accomplish with that. I just need to add some documentation, run some tests, and make a simple example.</td></tr>
+            <tr><td>[20:54] &lt mhrd-home&gt also cool</td></tr>
+            <tr><td>[20:54] &lt MS-&gt Under experimental is perfect</td></tr>
+            <tr><td>[20:55] &lt MS-&gt I'm probably going to move the gesture recognition stuff under Kamaelia.Apps since it's even more experimental, but useful.</td></tr>
+            <tr><td>[20:56] &lt MS-&gt (people will be naturally less likely to use something in an "Apps" location since they'll think "that's an internal thing" until it's been scavenged into the main tree)</td></tr>
+            <tr><td>[20:56] &lt mhrd-home&gt MS-: just ask if the 'grammar' and 'pattern' stuff doesn't make sense</td></tr>
+            <tr><td>[20:57] &lt MS-&gt I've had a look before at some of it and it at least vaguely made sense - but the nice thing is I should be able to use it relatively as a black box</td></tr>
+            <tr><td>[20:58] *** MS- is distracted by bsg at the moment</td></tr>
+            <tr><td>[20:58] &lt mhrd-home&gt you may need to be aware of the grammar stuff since thats what converts multiple consecutive strokes into a single letter (just warning :-) )</td></tr>
+            <tr><td>[20:58] &lt mhrd-home&gt aaah</td></tr>
+            <tr><td>[20:58] &lt MS-&gt (final ep before "mid season" break)</td></tr>
+            <tr><td>[20:58] &lt MS-&gt (which means "back in 2009" in practice)</td></tr>
+            <tr><td>[20:59] &lt MS-&gt Yep, I'd noted the grammar converts an "l" or "i" into a "t" :)</td></tr>
+            <tr><td>[21:06] *** MS- avoids spoilering matt now that's over</td></tr>
+            <tr><td>[21:08] &lt MS-&gt Sorry j_baker was rather distracted</td></tr>
+            <tr><td>[21:11] &lt MS-&gt If you're still there, I'd be interested in hearing how you're doing, what your current status is (though I have been following checkins etc), and what you're planning on immediately next & longer term</td></tr>
+            <tr><td>[21:12] &lt MS-&gt And if there's anything you need from me which I can help with or direct you to</td></tr>
+            <tr><td>[21:13] &lt j_baker&gt Well, the only thing I really want to do is make it so that my program can pull configuration data from the zipfile executable before I start doing more thorough testing.</td></tr>
+            <tr><td>[21:15] &lt j_baker&gt I would also like to daemonize the program and make it run in a similar fashion to mod_wsgi's "daemon mode" (ie, each program gets its own process), but those are probably further down the road (if they get done at all during GSOC).</td></tr>
+            <tr><td>[21:15] &lt j_baker&gt I did have a couple of questions though: 1) I remember you telling me that my wsgi.input environ variable could be vulnerable to a DOS attack (since it uses cStringIO). How would I solve that? Could I use a tempfile, or would that be worse?</td></tr>
+            <tr><td>[21:16] &lt j_baker&gt 2) Do you have any advice on what to do to test the program other than to try it with different WSGI apps and stress test it?</td></tr>
+            <tr><td>[21:16] &lt MS-&gt The DOS attack really revolves around "what happens if I post 10 1G videos at your server at once"</td></tr>
+            <tr><td>[21:17] &lt j_baker&gt Ah. So perhaps there should be a limit on the size of the memory file?</td></tr>
+            <tr><td>[21:17] &lt MS-&gt Using a tempfile would help offset that to an extent, but the correct approach is to just not read wsgi.input before you should. For the moment it's best to note it and then deal with it properly in the next version</td></tr>
+            <tr><td>[21:17] &lt MS-&gt You could do that as well, and note that as a limitation.</td></tr>
+            <tr><td>[21:18] &lt MS-&gt Regarding 2) I think that the approach you've described is the one I'd look at - since it's a practical approach. I'd also look for a compliance test suite, but fundamentally the only real test is against apps</td></tr>
+            <tr><td>[21:19] &lt MS-&gt I'd suggest 2 particular apps though as worth testing: Django & pylons</td></tr>
+            <tr><td>[21:19] &lt MS-&gt Both should run on top of WSGI and if they run, that should mean that it covers a wide set of problems</td></tr>
+            <tr><td>[21:19] &lt MS-&gt I'd pick the simplest possible apps for each though</td></tr>
+            <tr><td>[21:20] &lt j_baker&gt wsgiref has a validator, but I believe my code should already pass it.</td></tr>
+            <tr><td>[21:20] *** MS- nods</td></tr>
+            <tr><td>[21:21] &lt MS-&gt regarding stress testing, it's also worth bearing in mind that for personal sites the level of traffic you're likely to get is low per server</td></tr>
+            <tr><td>[21:21] &lt MS-&gt It could be more of an issue for your "intemediary" later on though</td></tr>
+            <tr><td>[21:22] &lt MS-&gt But one thing at a time, and at the moment, given the "make it work, make it work right, make it fast" rule of thumb, I'd suggest we're at stage 2</td></tr>
+            <tr><td>[21:22] &lt MS-&gt Since you still have open issues (that you've been raising)</td></tr>
+            <tr><td>[21:24] &lt j_baker&gt Ok. Is there also anything I should worry about security-wise? I know that my simple app is probably insecure as hell since it doesn't escape input, but that's more of a test than anything else.</td></tr>
+            <tr><td>[21:25] &lt MS-&gt I think at this stage no. What it may be worth doing is going through it and marking the parts that you think need reviewing and adding either</td></tr>
+            <tr><td>[21:25] &lt MS-&gt # FIXME: &lt ...&gt</td></tr>
+            <tr><td>[21:25] &lt MS-&gt or</td></tr>
+            <tr><td>[21:25] &lt MS-&gt # NOTE: &lt ...&gt</td></tr>
+            <tr><td>[21:25] &lt MS-&gt marks into there</td></tr>
+            <tr><td>[21:25] &lt MS-&gt since then it's easier to grep through the files to extract those things later on</td></tr>
+            <tr><td>[21:26] &lt MS-&gt and collate them for review</td></tr>
+            <tr><td>[21:27] &lt j_baker&gt Ok. I think that should be all the questions I have for now. If I think of any others, I'll post them to the list.</td></tr>
+            <tr><td>[21:27] *** MS- is writing a reply regarding your "ready for merge link"</td></tr>
+            <tr><td>[21:34] &lt j_baker&gt Hey, have you also been able to test my program out? I added a urls file that needs to be put in your home directory.</td></tr>
+            <tr><td>[21:36] &lt MS-&gt I haven't had a chance yet - I've really been swamped recently</td></tr>
+            <tr><td>[21:37] &lt MS-&gt (still am actually)</td></tr>
+            <tr><td>[21:37] &lt MS-&gt (which is a pain, but hey :) )</td></tr>
+            <tr><td>[21:37] &lt MS-&gt (that's life :) )</td></tr>
+            <tr><td>[21:37] &lt MS-&gt At minimum I should *definitely* be able to have a good look on sunday :)</td></tr>
+            <tr><td>[21:37] &lt j_baker&gt np... I'll make sure to put up installation instructions for when you do.</td></tr>
+            <tr><td>[21:38] &lt MS-&gt (which is a bit irritating for me - I'd prefer sooner)</td></tr>
+            <tr><td>[21:39] &lt j_baker&gt Hey, GSOC pays the bills for me, not you. It's understandable for you to have outside commitments.</td></tr>
+            <tr><td>[21:40] &lt MS-&gt cheers :)</td></tr>
+            <tr><td>[21:40] &lt MS-&gt Yeah, but I do actually *want* to get a chance to play with what you're doing</td></tr>
+            <tr><td>[21:41] &lt MS-&gt I'm hoping also (for example) to be able to host my current (day) work ontop of your work, primarily to see if I can move my work's hosted application off the server to client side</td></tr>
+            <tr><td>[21:41] &lt MS-&gt Whether or not that's useful for work is by the by (might well not be), but it would make a very nicer, very real test of your code - since it's a real app</td></tr>
+            <tr><td>[21:41] &lt MS-&gt :)</td></tr>
+            <tr><td>[21:42] &lt MS-&gt Much like your moinmoin test was a good one, since that's a real app</td></tr>
+            <tr><td>[21:42] &lt j_baker&gt That would be pretty interesting. I'd been thinking that there may also be uses for my code for business purposes too.</td></tr>
+            <tr><td>[21:42] &lt j_baker&gt I'll be giving MoinMoin another shot now that I SHOULD have POST methods fixed.</td></tr>
+            <tr><td>[21:44] &lt MS-&gt That's a good step forward.</td></tr>
+            <tr><td>[21:44] &lt MS-&gt My work code should be an interesting test in itself because I *am* posting video at the server.</td></tr>
+            <tr><td>[21:46] &lt j_baker&gt Heh... well, that will definitely be an optimization challenge when I get to that point. The handler is set up currently to wait for the body in its entirety before it starts working.</td></tr>
+            <tr><td>[21:49] &lt MS-&gt That's kinda what I'm aiming for really - the best way to get code working well is once it gets past the "working" and "right" stage is to keep throwing stuff at it that it gets progressively harder for it to keep going</td></tr>
+            <tr><td>[21:50] &lt j_baker&gt True. One thing that I did learn from the book they sent me: it's a good idea to attack the hardest problem first.</td></tr>
+            <tr><td>[21:51] &lt j_baker&gt (I believe that was in the chapter about deadlocks in the Solaris kernel)</td></tr>
+            <tr><td>[21:52] &lt MS-&gt It's one approach</td></tr>
+            <tr><td>[21:52] &lt MS-&gt Though sometimes that can lock you completely</td></tr>
+            <tr><td>[21:52] &lt MS-&gt In a way though, that's what kamaelia does address though "how do I make concurrency easy(or easier) to work with"</td></tr>
+            <tr><td>[21:53] &lt MS-&gt everything else kinda follows really from that</td></tr>
+            <tr><td>[21:53] &lt MS-&gt and things get simpler</td></tr>
+            <tr><td>[21:53] &lt MS-&gt It's a bit like tin openers as well</td></tr>
+            <tr><td>[21:53] &lt MS-&gt People used to make a particular kind which were difficult for most people to use, but worked OK</td></tr>
+            <tr><td>[21:54] &lt MS-&gt Then someone tried make some for people with weak hands (ie the harder problem)</td></tr>
+            <tr><td>[21:54] &lt MS-&gt That worked, and now that design is the more popular one because it works better for everyone</td></tr>
+            <tr><td>[21:54] &lt MS-&gt Applies in lots of domains</td></tr>
+            <tr><td>[21:55] &lt MS-&gt Sometimes though you attempt the intractable and just get demoralised and can't move forward - so accepting a partial solution to the hard problem is often a good idea initially</td></tr>
+            <tr><td>[21:55] &lt MS-&gt since you make progress</td></tr>
+            <tr><td>[21:55] &lt MS-&gt (all IMO)</td></tr>
+            <tr><td>[21:55] &lt j_baker&gt Indeed. I still laugh every time I hear a C++ zealot complain about how younguns these days can't do anything without a garbage collector.</td></tr>
+            <tr><td>[21:55] &lt j_baker&gt (regarding the tin opener thing)</td></tr>
+            <tr><td>[21:57] &lt MS-&gt The best C++ code I've seen tends to reuse someone elses garbage collector :)</td></tr>
+            <tr><td>[21:58] &lt j_baker&gt Using a garbage collector with C++ is almost like trying to put an engine on a bike IMO. It makes it go faster and easier, but the two just weren't made for each other.</td></tr>
+            <tr><td>[21:59] &lt j_baker&gt But I'm FAR from being a C++ guru.</td></tr>
+            <tr><td>[21:59] &lt MS-&gt Take a look at shedskin if you ever get the chance - it may change your views there</td></tr>
+            <tr><td>[21:59] &lt MS-&gt It's a python to C++ compiler</td></tr>
+            <tr><td>[21:59] &lt MS-&gt But it works really quite well</td></tr>
+            <tr><td>[21:59] &lt j_baker&gt Really? Interesting.</td></tr>
+            <tr><td>[22:00] &lt MS-&gt and that's the code that I'm thinking of that uses the GC</td></tr>
+            <tr><td>[22:00] &lt j_baker&gt I'm taking a very C++ intensive class next semester so that may help.</td></tr>
+            <tr><td>[22:00] &lt MS-&gt It may well do</td></tr>
+            <tr><td>[22:02] *** MS- goes afk</td></tr>
+            <tr><td>[22:03] &lt MS-&gt many thanks for keeping momentum up btw</td></tr>
+            <tr><td>[22:03] &lt MS-&gt it's very cool/good to see :)</td></tr>
+            <tr><td>[22:04] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[22:09] &lt j_baker&gt np... thanks for getting around to me with your busy schedule.</td></tr>
+            <tr><td>[22:11] &lt ms-afk&gt :)</td></tr>
+            <tr><td>[22:12] *** ms-afk gets back to work...</td></tr>
+            <tr><td>[22:12] &lt ms-afk&gt (I said I'd get something done by tomorrow, so .. hence .. well .. :)</td></tr>
+            <tr><td>[22:12] &lt ms-afk&gt )</td></tr>
+            <tr><td>[22:30] *** jlei_ has joined #kamaelia</td></tr>
+            <tr><td>[22:53] *** jlei_ has parted #kamaelia</td></tr>
+            <tr><td>[23:27] *** mhrd-home has parted #kamaelia</td></tr>

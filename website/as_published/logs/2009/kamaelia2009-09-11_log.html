@@ -1,0 +1,32 @@
+<html><body><table>
+            <tr><td>[04:05] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:11] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[12:02] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[15:17] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[15:17] &lt MS-&gt evening</td></tr>
+            <tr><td>[16:12] &lt Lawouach&gt evening</td></tr>
+            <tr><td>[16:12] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:12] &lt Lawouach&gt http://developers.facebook.com/news.php?blog=1&story=301 wondering how K. would have performed</td></tr>
+            <tr><td>[16:19] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[16:22] &lt Lawouach&gt hi vmlemon_</td></tr>
+            <tr><td>[16:22] *** vmlemon_ was surprised to see that code released so soon, after the acquisition of FriendFeed </td></tr>
+            <tr><td>[16:48] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:49] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:59] *** eikenberry_ has joined #kamaelia</td></tr>
+            <tr><td>[17:12] &lt MS-&gt I think Kamaelia would've performed awful on that test for what it's worth, for a couple of reasons.</td></tr>
+            <tr><td>[17:12] &lt MS-&gt Firstly, we've not really done the optimisations that would make that test fly</td></tr>
+            <tr><td>[17:12] &lt MS-&gt secondly, we use select, not epoll</td></tr>
+            <tr><td>[17:12] &lt MS-&gt thirdly, I'm not convinced of the performance of the HTTP code</td></tr>
+            <tr><td>[17:13] &lt MS-&gt That said, I don't think the performance would be bad really - awful in terms of comparison, but not bad</td></tr>
+            <tr><td>[17:14] &lt MS-&gt Also, I think when I get a chance to work on axon2 properly for merging that would change things quite dramatically since that is a significant performance difference</td></tr>
+            <tr><td>[17:14] &lt MS-&gt However without _trying_ these things it's pure speculation.</td></tr>
+            <tr><td>[17:14] *** salmon_ has joined #kamaelia</td></tr>
+            <tr><td>[17:15] &lt MS-&gt I think though, I'm not too worried about that tbh</td></tr>
+            <tr><td>[17:15] &lt MS-&gt My aim really was always for the system to be _optimisable_ to something very fast, rather than to build something optimised up front</td></tr>
+            <tr><td>[17:16] &lt MS-&gt But then that goes with my general ethos of "get something working; check you're doing the right thing; make it fast"</td></tr>
+            <tr><td>[17:42] *** eikenberry_ is now known as eikenberry</td></tr>
+            <tr><td>[18:05] *** vmlemon_ wonders if it'd integrate cleanly as a Kamaelia component </td></tr>
+            <tr><td>[18:06] &lt vmlemon_&gt *encapsulated as a</td></tr>
+            <tr><td>[18:06] &lt vmlemon_&gt *within a</td></tr>
+            <tr><td>[18:06] &lt vmlemon_&gt Meh</td></tr>
+            <tr><td>[19:05] &lt MS-&gt Oh, yes, you'd be able to make their code a component.</td></tr>

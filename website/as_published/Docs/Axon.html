@@ -1,0 +1,178 @@
+<html>
+<head>
+<title> Docs/Axon </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="qrichtext" content="1">
+<h1><span style="font-size: 24pt; font-weight: 600;">Axon</span></h1>
+<h2 align="right"><span style="font-style: italic; font-size: 18pt;">Axon is the core subsystem in Kamaelia</span></h2><ul><li><b><a href='/MiniAxon/'>the mini-axon tutorial</a></b></li><li><b><a href='NotationForVisualisingAxon'>a document about a notation</a></b></li><li><b><a href='/Docs/Axon/Axon'>reference documentation</a></b></li></ul><h2>Introduction &amp; Visual Notation<br>
+</h2>
+<p>Axon forms the core of Kamaelia. There are two possible introductions you may wish to follow:</p><ul><li>One is <b><a href='/MiniAxon/'>the mini-axon tutorial</a></b> - a series of exercises which encourage you to build your own Axon Core.<br></li><li>The other is really <b><a href='NotationForVisualisingAxon'>a document about a notation</a></b>
+for visualising Axon systems. However this does also mean it needs to
+introduce the essential elements as well. By way of an example, it
+shows you how the SimpleServer component works inside when the system
+starts up. This is a lightly revamped version of an internal document -
+about 6 months into the project.<br></li></ul><p>It is highly recommend to <i><b>do</b></i> the former, and to <i>read</i> the latter :-). If you are pushed for time, reading the latter is recommended.<br></p><h2>Reference Documentation<br>
+</h2>
+<p>There is comprehensive <b><a href='/Docs/Axon/Axon'>reference documentation</a></b>
+for Axon. This includes detailed explanations and simple examples and
+is useful both if you are writing components and also if you want to
+gain a deeper understanding of Axon.</p><p>This documentation is regularly automatically rebuilt from our latest code in the repository.<br></p><h2>Installation and other ways to find documentation</h2><p>The following text is adapted from the README bundle that accompanies Axon's separate download...</p>
+<p>Axon is the core of Kamaelia. The contents of this directory must be
+installed before the rest of Kamaelia can be used. It can also be used
+independently of Kamaelia.</p>
+<p>The install procedure is python's usual dance:</p>
+<ul type="disc"><li><pre>python setup.py install</pre></li></ul>
+<p>Documentation is held in two places: (until this section is complete)</p>
+<ul type="disc"><li>The usual 'pydoc name' - probably worth starting with:<br>pydoc Axon.Component</li><li>The test suite is designed to allow you to get low level API
+behaviour information - "should X,Y, Z work? If so, what happens?".
+It's a partly retrofitted test suite, but some is TDD. (TDD took over
+late in the project) As a result, for example, passing a -v flag result
+in the docstring for each test to be dumped in a form that allows
+collation, and summarisation. (For an example of what we expect to
+automate from the test suite, see the end of this README file)</li></ul>
+
+<p>Sample producer/consumber &amp; wrapper component system:</p>
+
+<ul type="disc"><div><pre><span style="">/-- testComponent -----------------------------------------------\<br>|                                                                |<br>|  +-- Producer ----+          +-- Consumer ----+                |<br>|  |            &gt;outbox&gt; --&gt; &gt;inbox&gt;        &gt;outbox&gt; --&gt; &gt;_input&gt;|<br>|  +----------------+          +----------------+                |<br>|                                                                |<br>\----------------------------------------------------------------/<br><br></span></pre></div></ul>
+
+<p>The testComponent creates 2 subcomponents, creates the links in
+place, and takes the output from the consumer and links it to its own
+private/internal _input inbox. When it recieves a value from the
+consumer, it reports this fact and ceases operation.</p>
+<ul type="disc"><li>Producer sends values to its result outbox</li><li>Consumer takes values from its source, does some work and sends results to its outbox</li></ul>
+<p>(It's probably worth noting that an introspection system would be
+possible to write/nice to see that would be able to derive the above
+diagram from the running system)</p>
+<p>Example code:</p>
+<ul type="disc"><div><pre><span style=""><b>from</b> Axon.Component <b>import</b> component<br><br></span><span style="font-weight: 600;">class</span><span style=""> Producer(component):<br></span><span style="">    Inboxes={<br></span><span style="">         "inbox" : "default inbox - not used by producer", <br></span><span style="">       "control" : "default control inbox - we should really be looking for shutdown messages here", <br></span><span style="">    }<br>    Outboxes= {<br>        "outbox" : "This is where we send our bulk data to",<br>        "signal" : "We should probably be sending producerFinished messages here",<br>    }<br></span><span style="">    </span><span style="font-weight: 600;">def</span><span style=""> __init__(self):<br>        super(<b>Producer</b>, self).__init__()<br>    </span><span style="font-weight: 600;">def</span><span style=""> main(self):<br>        i = 100<br>        </span><span style="font-weight: 600;">while</span><span style="">(i):<br>            i = i -1<br>            self.send("hello", "</span><span style="">outbox</span><span style="">")<br>            </span><span style="font-weight: 600;">yield</span><span style=""> 1<br><br></span><span style="font-weight: 600;">class</span><span style=""> Consumer(component):<br></span><span style="">    Inboxes={<br></span><span style="">         "inbox" : "This is where we get messges to consume", <br></span><span style="">       "control" : "default control inbox - we should really be looking for shutdown messages here", <br></span><span style="">    }<br>    Outboxes= {<br>        "outbox" : "default outbox - unused",<br>        "signal" : "It would be nice if we forwarded any shutdown message we recieved here",<br>    }<br></span><span style="">    </span><span style="font-weight: 600;">def</span><span style=""> __init__(self):<br>        super(<b>Consumer</b>, self).__init__()<br>        self.count = 0<br>        self.i = 30<br>    </span><span style="font-weight: 600;">def</span><span style=""> doSomething(self):<br>        </span><span style="font-weight: 600;">print</span><span style=""> self.name, "Woo",self.i<br>        </span><span style="font-weight: 600;">if</span><span style=""> self.dataReady("</span><span style="">inbox</span><span style="">"):<br>            self.recv("</span><span style="">inbox</span><span style="">")<br>            self.count = self.count +1<br>            self.send(self.count, "</span><span style="">outbox</span><span style="">")<br>    </span><span style="font-weight: 600;">def</span><span style=""> main(self):<br>        </span><span style="font-weight: 600;">yield</span><span style=""> 1<br>        </span><span style="font-weight: 600;">while</span><span style="">(self.i):<br>            self.i = self.i -1<br>            self.doSomething()<br>            </span><span style="font-weight: 600;">yield</span><span style=""> 1<br><br></span><span style="font-weight: 600;">class</span><span style=""></span><span style=""> testComponent</span><span style="">(component):<br>    Inboxes=["_input"]<br>    Outboxes=[]<br>    </span><span style="font-weight: 600;">def</span><span style=""> __init__(self):<br>        super(</span><span style=""></span><span style="">testComponent</span>, <span style="">self).__init__()<br>        self.producer = Producer()</span><span style=""><span style="">.activate() #</span></span><span style=""><span style=""> This is a change to the way we used to do things</span></span>
+<span style=""><span style=""></span>        self.consumer = Consumer()</span><span style="">.activate() #</span><span style=""><span style=""> This is a change to the way we used to do things</span></span><br><span style="">        self.addChildren(self.producer, self.consumer)<br>        self.link((self.producer, </span><span style="">"</span><span style="">outbox</span><span style="">"</span><span style="">), (self.consumer, "inbox"))<br>        self.link((self.consumer,</span><span style="">"</span><span style="">outbox</span><span style="">"</span><span style="">), (</span><span style="">self,"_input") )<br>    </span><span style="font-weight: 600;">def</span><span style=""> childComponents(self):<br>        return [self.producer, self.consumer]<br>    </span><span style="font-weight: 600;">def</span><span style=""> mainBody(self):<br>        </span><span style="font-weight: 600;">while</span><span style=""> len(self.inboxes["_input"]) &lt; 1:<br>            </span><span style="font-weight: 600;">yield</span><span style=""> 1<br>        result = self.recv("_input")<br>        </span><span style="font-weight: 600;">print</span><span style=""> "Consumer finished with result:", result, "!"<br><br>p = </span><span style="">testComponent</span><span style="">()<br>p.run()</span><span style=""><br></span></pre></div></ul><p><div style="float: right; border: solid;" class="twoC"> <b>NOTE: </b>You
+are recommended where possible to use Pipeline or it's friend Graphline
+where-ever possible these days since it is a) efficient b) shows your
+intention clearer. It also saves with messing around with
+scheduler.run.runThreads! :-)</div> Kamaelia provides a pipeline component
+that provides syntactic sugar for testHarness above. The above shows
+how you would use Axon by itself without any other components to build
+a simple producer consumer. We can replace the testComponent (and
+everything below!) with the following:</p>
+<ul type="disc"><div><pre><span style="">from Kamaelia.Chassis.Pipeline import Pipeline<br><br>Pipeline(<br>   Producer(),<br>   Consumer(),<br>).run()<br><br></span></pre></div></ul>
+
+Michael, Matt, Lightly updated October 2005, December 2006, April 2007<br><br>
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

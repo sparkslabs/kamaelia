@@ -1,0 +1,59 @@
+<html><body><table>
+            <tr><td>[01:36] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[02:25] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[02:25] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[02:25] *** aa_ has joined #kamaelia</td></tr>
+            <tr><td>[05:31] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[06:11] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[08:10] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:29] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:52] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:40] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:44] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[10:45] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[10:46] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[10:46] *** ian_brasil_ has joined #kamaelia</td></tr>
+            <tr><td>[10:54] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:03] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:07] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:34] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[11:34] Reply: does the macarena</td></tr>
+            <tr><td>[11:37] *** bcarlyon|laptop is now known as BarryCarlyon</td></tr>
+            <tr><td>[12:08] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[13:17] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[13:33] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[14:18] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:46] &lt Lawouach&gt back</td></tr>
+            <tr><td>[14:46] &lt Lawouach&gt j_baker, ping</td></tr>
+            <tr><td>[15:01] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[15:32] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[15:34] &lt Davbo&gt j_baker: I've got to go in 5 minutes but will be about later</td></tr>
+            <tr><td>[15:36] &lt j_baker&gt Ok. The main thing that I was curious about is which exceptions are you talking about that don't get logged?</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt Ah, sorry I'm not very familiar with Exceptions in Python, it just looked like your Exceptions were placeholders for something more....to actually handle them when they're raised</td></tr>
+            <tr><td>[15:41] &lt j_baker&gt np... I'll look back over the code and see what's going on. (and python exceptions can be a tad difficult to pick up compared to other languages)</td></tr>
+            <tr><td>[15:41] &lt Davbo&gt Just seen this: raise WsgiError("write() called before start_response()!") - What happens to that parameter? it just seems odd to me</td></tr>
+            <tr><td>[15:42] &lt j_baker&gt That parameter is just the message that's displayed in the traceback.</td></tr>
+            <tr><td>[15:42] &lt Davbo&gt Ohh.</td></tr>
+            <tr><td>[15:43] &lt j_baker&gt It will get logged though. Once the stack gets popped up to the main function, self._error will get called and that will log it.</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt I apologise, but I've got to go. Back later.</td></tr>
+            <tr><td>[15:44] &lt j_baker&gt np</td></tr>
+            <tr><td>[15:44] *** Davbo is now known as Dav-afk</td></tr>
+            <tr><td>[16:03] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:19] &lt Dav-afk&gt I think I get it now j_baker, I also see what send fragment does</td></tr>
+            <tr><td>[16:19] &lt Dav-afk&gt which was also confusing me</td></tr>
+            <tr><td>[16:20] *** Dav-afk is now known as Davbo</td></tr>
+            <tr><td>[16:20] &lt j_baker&gt :) Yeah.</td></tr>
+            <tr><td>[16:20] &lt j_baker&gt Programming that would be so much simpler if you didn't have to take into account what a poorly written WSGI application can do.</td></tr>
+            <tr><td>[16:21] &lt Davbo&gt with lots of the support code it looks like you've wrote it once you encountered a limitation with the existing HTML stuff</td></tr>
+            <tr><td>[16:22] &lt Davbo&gt which is why I didn't comment much once i read it, it only makes sense with the context of where that support code is called</td></tr>
+            <tr><td>[16:23] &lt Davbo&gt (I was just comparing the old cookbook stuff with the new)</td></tr>
+            <tr><td>[16:24] &lt j_baker&gt Oh yeah. That cookbook example really confused me at first.</td></tr>
+            <tr><td>[16:25] &lt Lawouach&gt which one?</td></tr>
+            <tr><td>[16:25] &lt j_baker&gt The HTTPServer cookbook example.</td></tr>
+            <tr><td>[16:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:26] &lt Davbo&gt http://edit.kamaelia.org/Cookbook/HTTPServer Lawouach</td></tr>
+            <tr><td>[18:41] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[20:12] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[21:43] *** vmlemon_ has joined #kamaelia</td></tr>

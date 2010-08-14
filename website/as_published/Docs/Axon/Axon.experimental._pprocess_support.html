@@ -1,0 +1,593 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.experimental._pprocess_support </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.experimental._pprocess_support">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.experimental._pprocess_support</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.experimental.html">experimental</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.html">_pprocess_support</a></h2>
+</div>
+</div>
+<div class="section">
+<h1>likefile - file-like interaction with components</h1>
+<div class="container">
+<ul class="simple">
+<li><strong><a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.addBox.html">addBox</a></strong>(names, boxMap, addBox)</li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.background.html">background</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.componentWrapperInput.html">componentWrapperInput</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.componentWrapperOutput.html">componentWrapperOutput</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.dummyComponent.html">dummyComponent</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.likefile.html">likefile</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#72">Using this code</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#73">Advanced likefile usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#74">Diagram of likefile's functionality</a><ul>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<p>likefile is a way to run Axon components with code that is not Axon-aware. It
+does this by running the scheduler and all associated microprocesses in a
+separate thread, and using a custom component to communicate if so desired.</p>
+<div class="section">
+<h2 id="72"><a id="using-this-code" name="using-this-code">Using this code</a></h2>
+<p>With a normal kamaelia system, you would start up a component and start
+running the Axon scheduler as follows, either:</p>
+<pre class="literal-block">
+from <a class="reference" href="/Docs/Axon/Axon.Scheduler.html">Axon.Scheduler</a> import scheduler
+component.activate()
+scheduler.run.runThreads()
+someOtherCode()
+</pre>
+<p>or simply:</p>
+<pre class="literal-block">
+component.run()
+someOtherCode()
+</pre>
+<p>In both cases, someOtherCode() only run when the scheduler exits. What do you
+do if you want to (e.g.) run this alongside another external library that has
+the same requirement?</p>
+<p>Well, first we start the Axon scheduler in the background as follows:</p>
+<pre class="literal-block">
+from likefile import background
+background().start()
+</pre>
+<p>The scheduler is now actively running in the background, and you can start
+components on it from the foreground, in the same way as you would from inside
+kamaelia (don't worry, activate() is threadsafe):</p>
+<pre class="literal-block">
+component.activate()
+someOtherCode()
+</pre>
+<p>&quot;component&quot; will immediately start running and processing. This is fine if it's
+something non-interactive like a TCP server, but what do we do if we want to
+interact with this component from someOtherCode?</p>
+<p>In this case, we use 'likefile', instead of activating. This is a wrapper
+which sits around a component and provides a threadsafe way to interact
+with it, whilst it is running in the backgrounded scheduler:</p>
+<pre class="literal-block">
+from Axon.LikeFile import likefile
+wrappedComponent = likefile(component)
+someOtherCode()
+</pre>
+<p>Now, wrappedComponent is an instance of the likefile wrapper, and you can
+interact with &quot;component&quot; by calling get() on wrappedComponent, to get data
+from the outbox on &quot;component&quot;, or by calling put(data) to put &quot;data&quot; into
+the inbox of &quot;component&quot; like so:</p>
+<pre class="literal-block">
+p = likefile( SimpleHTTPClient() )
+p.put(&quot;http://google.com&quot;)
+google = p.get()
+p.shutdown()
+print &quot;google's homepage is&quot;, len(google), &quot;bytes long.
+</pre>
+<p>for both get() and put(), there is an optional extra parameter boxname,
+allowing you to interact with different boxes, for example to send a message
+with the text &quot;RELOAD&quot; to a component's control inbox, you would do:</p>
+<pre class="literal-block">
+wrappedComponent.put(&quot;RELOAD&quot;, &quot;control&quot;)
+wrappedComponent.get(&quot;signal&quot;)
+</pre>
+<p>Finally, likefile objects have a shutdown() method that sends the usual Axon
+IPC shutdown messages to a wrapped component, and prevents further IO.</p>
+</div>
+<div class="section">
+<h2 id="73"><a id="advanced-likefile-usage" name="advanced-likefile-usage">Advanced likefile usage</a></h2>
+<p>likefile has some optional extra arguments on creation, for handling custom
+boxes outside the &quot;basic 4&quot;. For example, to wrap a component with inboxes
+called &quot;secondary&quot; and &quot;tertiary&quot; and an outbox called &quot;debug&quot;, You would do:</p>
+<pre class="literal-block">
+p = likefile( componentMaker,
+              extraInboxes = (&quot;secondary&quot;, &quot;tertiary&quot;),
+              extraOutboxes = &quot;debug&quot;, )
+</pre>
+<p>Either strings or tuples of strings will work.</p>
+<p>It may be the case that the component you are trying to wrap will link its own
+inbox/outbox/signal/control, and this will result in a BoxAlreadyLinkedToDestination
+exception. To stop likefile from wrapping the default 4 boxes, pass the parameter
+wrapDefault = False. Note that you will need to manually wrap every box you want to use,
+for example to wrap a component that has its own linkages for signal/control:</p>
+<pre class="literal-block">
+p = likefile( myComponent,
+              wrapDefault = False,
+              extraInboxes = &quot;inbox&quot;,
+              extraOutboxes = &quot;outbox&quot;, )
+</pre>
+</div>
+<div class="section">
+<h2 id="74"><a id="diagram-of-likefile-s-functionality" name="diagram-of-likefile-s-functionality">Diagram of likefile's functionality</a></h2>
+<p>likefile is constructed from components like so:</p>
+<pre class="literal-block">
+     +----------------------------------+
+     |             likefile             |
+     +----------------------------------+
+          |                      / \
+          |                       |
+      InQueues                 OutQueues
+          |                       |
++---------+-----------------------+---------+
+|        \ /                      |         |
+|    +---------+               +--------+   |
+|    |  Input  |   Shutdown    | Output |   |
+|    | Wrapper | ------------&gt; |        |   |
+|    | (thread)|   Message     |Wrapper |   |
+|    +---------+               +--------+   |
+|         |                      / \        |
+|         |                       |         |
+|     Inboxes                 Outboxes      |
+|         |                       |         |
+|        \ /                      |         |
+|    +----------------------------------+   |
+|    |      the wrapped component       |   |
+|    +----------------------------------+   |
+|                                           |
+|    +----------------------------------+   |
+|    |       Some other component       |   |
+|    |     that was only activated      |   |
+|    +----------------------------------+   |
+|                                           |
+|  AXON SCHEDULED COMPONENTS                |
++-------------------------------------------+
+</pre>
+<p>Note 1: Threadsafeness of activate().</p>
+<p>when a component is activated, it calls the method inherited from microprocess, which calls _addThread(self)
+on an appropriate scheduler. _addThread calls wakeThread, which places the request on a threadsafe queue.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.experimental.html">experimental</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.html">_pprocess_support</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.addBox.html">addBox</a></h1>
+<div class="section">
+<h2><a id="symbol-addBox" name="symbol-addBox">addBox(names, boxMap, addBox)</a></h2>
+<p>Add an extra wrapped box called name, using the addBox function provided
+(either self.addInbox or self.addOutbox), and adding it to the box mapping
+which is used to coordinate message routing within component wrappers.</p>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.experimental.html">experimental</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.html">_pprocess_support</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.background.html">background</a></h1>
+<div class="section">
+<h2 id="symbol-background">class background(threading.Thread)</h2>
+<div class="section">
+A python thread which runs a scheduler. Takes the same arguments at creation that scheduler.run.runThreads accepts.</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-background.__init__" name="symbol-background.__init__">__init__(self[, slowmo][, zap])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-background.run" name="symbol-background.run">run(self)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.experimental.html">experimental</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.html">_pprocess_support</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.componentWrapperInput.html">componentWrapperInput</a></h1>
+<div class="section">
+<h2 id="symbol-componentWrapperInput">class componentWrapperInput(<a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedadaptivecommscomponent.html">Axon.ThreadedComponent.threadedadaptivecommscomponent</a>)</h2>
+<div class="section">
+A wrapper that takes a child component and waits on an event from the foreground, to signal that there is
+queued data to be placed on the child's inboxes.</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-componentWrapperInput.__init__" name="symbol-componentWrapperInput.__init__">__init__(self, child[, inboxes])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-componentWrapperInput.main" name="symbol-componentWrapperInput.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-componentWrapperInput.pollQueue" name="symbol-componentWrapperInput.pollQueue">pollQueue(self, whatInbox)</a></h4>
+<p>This method checks all the queues from the outside world, and forwards any waiting data
+to the child component. Returns False if we propogated a shutdown signal, true otherwise.</p>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedadaptivecommscomponent.html">Axon.ThreadedComponent.threadedadaptivecommscomponent</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedadaptivecommscomponent.deleteOutbox">deleteOutbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedadaptivecommscomponent._unsafe_addOutbox">_unsafe_addOutbox</a>(self, *args)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedadaptivecommscomponent._unsafe_deleteInbox">_unsafe_deleteInbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedadaptivecommscomponent.addInbox">addInbox</a>(self, *args)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedadaptivecommscomponent.deleteInbox">deleteInbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedadaptivecommscomponent._unsafe_addInbox">_unsafe_addInbox</a>(self, *args)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedadaptivecommscomponent._unsafe_deleteOutbox">_unsafe_deleteOutbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedadaptivecommscomponent.addOutbox">addOutbox</a>(self, *args)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html">Axon.ThreadedComponent.threadedcomponent</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.initialiseComponent">initialiseComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent._handlemessagefromthread">_handlemessagefromthread</a>(self, msg)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.activate">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.mainBody">mainBody</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.recv">recv</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.forwardInboxToThread">forwardInboxToThread</a>(self, box)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.closeDownComponent">closeDownComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.unlink">unlink</a>(self[, thecomponent][, thelinkage])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.sync">sync</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.send">send</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent._threadmain">_threadmain</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.pause">pause</a>(self[, timeout])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent._localmain">_localmain</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent._do_threadsafe">_do_threadsafe</a>(self, cmd, argL, argD)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.link">link</a>(self, source, sink[, passthrough])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html#symbol-threadedcomponent.dataReady">dataReady</a>(self[, boxname])</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__str__">__str__</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents">childComponents</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize">setInboxSize</a>(self, boxname, size)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady">anyReady</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild">__addChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess">_closeDownMicroprocess</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._deliver">_deliver</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild">removeChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox">Inbox</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren">addChildren</a>(self, *children)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop">stop</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent._AdaptiveCommsable.html">Axon.AdaptiveCommsComponent._AdaptiveCommsable</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.retrieveTrackedResource">retrieveTrackedResource</a>(self, inbox)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable._newOutboxName">_newOutboxName</a>(self[, name])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.ceaseTrackingResource">ceaseTrackingResource</a>(self, resource)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.trackResource">trackResource</a>(self, resource, inbox)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.retrieveTrackedResourceInformation">retrieveTrackedResourceInformation</a>(self, resource)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable._newInboxName">_newInboxName</a>(self[, name])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.trackResourceInformation">trackResourceInformation</a>(self, resource, inboxes, outboxes, information)</li>
+</ul>
+</div>
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.experimental.html">experimental</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.html">_pprocess_support</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.componentWrapperOutput.html">componentWrapperOutput</a></h1>
+<div class="section">
+<h2 id="symbol-componentWrapperOutput">class componentWrapperOutput(<a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html">Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</a>)</h2>
+<div class="section">
+A component which takes a child component and connects its outboxes to queues, which communicate
+with the likefile component.</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-componentWrapperOutput.__init__" name="symbol-componentWrapperOutput.__init__">__init__(self, child, inputHandler[, outboxes])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-componentWrapperOutput.main" name="symbol-componentWrapperOutput.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-componentWrapperOutput.sendPendingOutput" name="symbol-componentWrapperOutput.sendPendingOutput">sendPendingOutput(self)</a></h4>
+<p>This method will take any outgoing data sent to us from a child component and stick it on a queue
+to the outside world.</p>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.mainBody">mainBody</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__str__">__str__</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents">childComponents</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize">setInboxSize</a>(self, boxname, size)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.send">send</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.dataReady">dataReady</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.initialiseComponent">initialiseComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady">anyReady</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild">__addChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.closeDownComponent">closeDownComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess">_closeDownMicroprocess</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.link">link</a>(self, source, sink, *optionalargs, **kwoptionalargs)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.unlink">unlink</a>(self[, thecomponent][, thelinkage])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.recv">recv</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._deliver">_deliver</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild">removeChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox">Inbox</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren">addChildren</a>(self, *children)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.pause">pause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop">stop</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.activate">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent._AdaptiveCommsable.html">Axon.AdaptiveCommsComponent._AdaptiveCommsable</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.retrieveTrackedResource">retrieveTrackedResource</a>(self, inbox)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.deleteOutbox">deleteOutbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable._newOutboxName">_newOutboxName</a>(self[, name])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.ceaseTrackingResource">ceaseTrackingResource</a>(self, resource)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.addInbox">addInbox</a>(self, *args)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.trackResource">trackResource</a>(self, resource, inbox)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.retrieveTrackedResourceInformation">retrieveTrackedResourceInformation</a>(self, resource)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.deleteInbox">deleteInbox</a>(self, name)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable._newInboxName">_newInboxName</a>(self[, name])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.trackResourceInformation">trackResourceInformation</a>(self, resource, inboxes, outboxes, information)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.AdaptiveCommsComponent.html#symbol-_AdaptiveCommsable.addOutbox">addOutbox</a>(self, *args)</li>
+</ul>
+</div>
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.experimental.html">experimental</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.html">_pprocess_support</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.dummyComponent.html">dummyComponent</a></h1>
+<div class="section">
+<h2 id="symbol-dummyComponent">class dummyComponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<div class="section">
+A dummy component. Functionality: None. Prevents the scheduler from dying immediately.</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-dummyComponent.main" name="symbol-dummyComponent.main">main(self)</a></h4>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.mainBody">mainBody</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__str__">__str__</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents">childComponents</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__init__">__init__</a>(self, *args, **argd)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize">setInboxSize</a>(self, boxname, size)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.send">send</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.dataReady">dataReady</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.initialiseComponent">initialiseComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady">anyReady</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild">__addChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.closeDownComponent">closeDownComponent</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess">_closeDownMicroprocess</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.link">link</a>(self, source, sink, *optionalargs, **kwoptionalargs)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.unlink">unlink</a>(self[, thecomponent][, thelinkage])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.recv">recv</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._deliver">_deliver</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild">removeChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox">Inbox</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren">addChildren</a>(self, *children)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.pause">pause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop">stop</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.activate">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.experimental.html">experimental</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.html">_pprocess_support</a>.<a class="reference" href="/Docs/Axon/Axon.experimental._pprocess_support.likefile.html">likefile</a></h1>
+<div class="section">
+<h2 id="symbol-likefile">class likefile(object)</h2>
+<div class="section">
+An interface to the message queues from a wrapped component, which is activated on a backgrounded scheduler.</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-likefile.__del__" name="symbol-likefile.__del__">__del__(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-likefile.__init__" name="symbol-likefile.__init__">__init__(self, child[, extraInboxes][, extraOutboxes][, wrapDefault])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-likefile.anyReady" name="symbol-likefile.anyReady">anyReady(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-likefile.empty" name="symbol-likefile.empty">empty(self[, boxname])</a></h4>
+<p>Return True if there is no data pending collection on boxname, False otherwise.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-likefile.get" name="symbol-likefile.get">get(self[, boxname][, blocking][, timeout])</a></h4>
+<p>Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
+raises AttributeError if the likefile is not alive. Optional parameters blocking and timeout function
+the same way as in Queue objects, since that is what's used under the surface.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-likefile.get_nowait" name="symbol-likefile.get_nowait">get_nowait(self[, boxname])</a></h4>
+<p>Equivalent to get(boxname, False)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-likefile.put" name="symbol-likefile.put">put(self, msg[, boxname])</a></h4>
+<p>Places an object on a queue which will be directed to a named inbox on the wrapped component.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-likefile.qsize" name="symbol-likefile.qsize">qsize(self[, boxname])</a></h4>
+<p>Returns the approximate number of pending data items awaiting collection from boxname. Will never be smaller than the actual amount.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-likefile.shutdown" name="symbol-likefile.shutdown">shutdown(self)</a></h4>
+<p>Sends terminatory signals to the wrapped component, and shut down the componentWrapper.
+will warn if the shutdown took too long to confirm in action.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

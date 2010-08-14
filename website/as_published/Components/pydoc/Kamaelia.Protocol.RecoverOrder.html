@@ -1,0 +1,214 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Protocol.RecoverOrder </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Protocol.RecoverOrder</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.html">Protocol</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Protocol.RecoverOrder.html">RecoverOrder</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#640">Recover Order of Sequence Numbered Items</a><ul>
+<li><a class="reference" href="#641">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#642">Behaviour</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#643">Implementation details</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="640">Recover Order of Sequence Numbered Items</h1>
+<p>Recovers the order of data tagged with sequence numbers. Designed to cope with
+sequence numbers that have to eventually wrap.</p>
+<p>Send (seqnum, data) tuples to the &quot;inbox&quot; inbox and they will be sent out of the
+&quot;outbox&quot; outbox ordered by ascending sequence number.</p>
+<div class="section">
+<h2 id="641"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Recovering the order of RTP packets received over multicast:</p>
+<pre class="literal-block">
+Pipeline( Multicast_transceiver(&quot;0.0.0.0&quot;, 1600, &quot;224.168.2.9&quot;, 0),
+          SimpleDetupler(1),              # discard the source address
+          RTPDeframer(),
+          RecoverOrder(bufsize=64, modulo=65536),
+          SimpleDetupler(1),              # discard sequence numbers
+        ).activate()
+</pre>
+</div>
+<div class="section">
+<h2 id="642"><a id="behaviour" name="behaviour">Behaviour</a></h2>
+<p>At initialisation, specify the size of buffer and the modulo (wrapping point)
+for sequence numbers.</p>
+<p>Send (seqnum, data) tuples to the &quot;inbox&quot; inbox and they will be buffered. Once
+the buffer is full, for every item sent to the &quot;inbox&quot; inbox, one will be
+emitted from the &quot;outbox&quot; outbox. The ones that are emitted will have been
+reordered by their sequence number.</p>
+<p>You must ensure you choose a sufficiently large buffer size for the expected
+amount of reordering required. If an item arrives too late, it RecoverOrder
+will not be able to place it in its correct position in the sequence. It will
+still be emitted, but out of order.</p>
+<p>This component does not terminate. It ignores any messages sent to its &quot;control&quot;
+inbox.</p>
+</div>
+<div class="section">
+<h2 id="643"><a id="implementation-details" name="implementation-details">Implementation details</a></h2>
+<p>The items are held in an internal buffer. The buffer is always in order - with
+the earliest sequence number at the front. Once the buffer is full, items are
+taken out from the front - thereby ensuring any delayed out-of-order items are
+given every possible chance to make it.</p>
+<p>Since sequence numbers eventually wrap, a given sequence number could equally
+represent a data item that is very late, or very early.</p>
+<p>This decision is made about a threshold - which is chosen to be the point in
+the sequence number line roughly furthest from the sequence numbers of the
+items in the buffer. This point is the sequence number of the middle item in
+the buffer, plus modulo/2:</p>
+<pre class="literal-block">
+      Data in the buffer
+      .-------^--------.
+      '                '
+|=====XX=X==XXXXXX=XX==X==================================================|
+|             ^                                    ^                      |
+0             |                                    |                    modulo
+           midpoint                             midpoint
+              |                                + modulo/2
+|&lt;---LATE----&gt;|&lt;--------------EARLY---------------&gt;|&lt;------------LATE----&gt;|
+      A       |                 B                  |              C
+                                             (aka. threshold)
+</pre>
+<p>Items with a sequence number after this threshold point are deemed to be late
+(rather than ridiculously early). An item arriving with sequence number B
+(marked above) has arrived early, and so should be appended to the end of the
+data items in the buffer. Conversely, items arriving with sequence numbers A
+or C (also marked above) must be late, so will be inserted at the front of the
+buffer.</p>
+<p>This is implemented by adding modulo to all sequence numbers below the threshold
+when performing comparisons to determine where to insert the new sequence
+number into the buffer (the insertion point is found by doing a binary search).
+You can think of this as moving ranges A and B after range C.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

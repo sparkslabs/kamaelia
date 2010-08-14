@@ -1,0 +1,104 @@
+<html>
+<head>
+<title> Projects/Soc2006/PeerToPeerStreaming </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Projects/Soc2006/PeerToPeerStreaming">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+<h1>SoC Projects : Peer To Peer Streaming</h1><p>There was one  project application in this area that is summarised
+here. This page contains the depersonalised content, which can be
+consolidated as necessary. The depersonalisation is for privacy
+reasons, credit is here due to those who spent the time writing these
+descriptions. 
+</p><h3>Peer-to-Peer streaming architecture using Kamaelia<br></h3><p>*Project motivation*<br>In recent years the concept of peer-to-peer streaming has received increased attention from the academic and<br>research communities, partly because the Internet doesn't widely support multicast, and because of the need for<br>a large scale content distribution system.<br><br>The project I would like to work on is an experiment with such an architecture. The core idea is that each peer<br>that takes part in such an architecture can receive data segments from several other peers, aggregate and play them,<br>and also server data segments (at various rates), to other peers. The Kamaelia-based approach is to have a component<br>that receives media streaming segments from a number of similar components, and can also serve a number of other components with the media it receives. It should be able to take advantage of local multicast facilities.<br><br>From the perspective of the challenges that BBC Research is facing, this project would be an attempt to integrate<br>P2P and Multicast, because it provide a way to deliver media streaming information between smaller multicast islands,<br>where effective communication will be achieved by more efficient, lower-level, mechanisms.<br><br>Here is a selected list of papers regarding these topics:<br><br>http://citeseer.ist.psu.edu/xu02peertopeer.html<br>http://citeseer.ist.psu.edu/575162.html<br>http://www-unix.mcs.anl.gov/fl/flevents/wace/wace2005/papers/eetemadhi.pdf<br><br>*Architecture*<br><br>The core component to the architecture is a component that can receive data segments from N other components, aggregate them, and send them to a "player" component. Also, based on the underlying allocation algorithm, it can serve data segments to other peers itself. For the beginning the streaming data will be a simple integer stream, and the "player" a checker for consistency (mainly, whether the segments are in the right order, and whether there are missing segments).<br><br>A subset of peers will have only one input, from a component named a "seeder", which will generate the data. The discovery and the process of building the architecture still present some challenges, and I will probably start with a statically specified architecture; using a "building" utility, that reads this topology's description from a file and builds its logical structure in Python by interconnecting the "peer" components. Also, I will try to explore different algorithms and strategies for initial building of the topology, and its maintenance.<br><br>A special case is that of the multicast islands. Because they support more efficient ways of communication, it is reasonable that they are treated as a single peer by the external network. This possibility suggests the following architecture choice: each peer can be linked to its own Multicast_transceiver, that communicates to the multicast island this peer takes part in. This separation allows us to receive data "into" the multicast island through more than one peers, a more realistic approach to a high demand network.<br><br>To sum up we have:<br>* seeders, that generate the data<br>* peers, that have a sense of the topology surrounding them; they receive streaming data from several other peers and feed it into the player; moreover, it can be connected to a Multicast_transceiver in case it takes part in a multicast island, and can relay streaming data to a number of other peers<br>* player, which will aggregate the data segments in the correct order, perform buffering, if required, and "play" the data, depending on its type<br><br>Problems that need to be addressed:<br>* initial topology setup<br>* topology maintenance<br>* multicast islands identification<br>* from a peer's point of view, the network discovery<br><br>Finally, I would like to try some experiments using "real" audio or video streaming, as opposed to simplified mock-up data.<br><br>*Timeline*<br><br>* 20 June - detailed specifications for the architecture and the peer component<br>* 30 June - implementation of the peer, seeder and player components, for a simplified data stream<br>* 20 July - multicast and support for audio or video data<br>* 1 August - automatic topology discovering, using one or more directories<br>* 20 August - documentation, testing, experimenting<br><br>*Deliverables*<br><br>* the implementation of the "peer", "seeder" and "player" components, with documentation<br>* the utilities used to set up a topology<br>* a detailed report describing the approach and algorithms used<br>* a tutorial for using the components<br><br></p>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

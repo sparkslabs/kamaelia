@@ -1,0 +1,78 @@
+====== START OF WEEKLY KAMAELIA MEETING, 20060519 ======
+
+Michael:
+DONE: Wrote initial version of Macro.py - single channel grab, demux, transcode, dump
+      Wrote basic description/design/spec of Macro for website
+      Wrote one sider description of the project aims, goals, and milestones
+      Installed & customised front end for macro
+      Created tool to convert EIT info to blog entries & automated the process
+      Checked in and debugged DVB_Multiplexer, DVB_Demux
+      Optimised DVB_Demux to get to realtime for single channel on moderate capacity CPU.
+      Modified Unix pipe very heavily to make better use of the selector component.
+      Corresponding changes to selector
+      Email all summer of code candidates letting them know that no news
+      is not bad news, but not good news either, why and time scales.
+      Fending off a late applicant to summer of code
+      Encouraging Ryan to continue developing his Kamaelia skills (has
+      now implement an IRC client, and a web server in Kamaelia)
+
+TODO: *Google SoC - get Thomas/Student to assign students to himself (or else he won't have any)*
+      Modify internet subsystem to be compliant with selector changes
+      Merge inversion branch onto head
+      Merge tests from threading branch
+      Write detailed design document for Proper Macro
+      Follow up with Kevin regarding one sider
+      Update Huw, Ela, Kevin on SoC (project descriptions)
+      Sort out next Axon/Kamaelia release
+      Audit/update documentation as needed
+      Propose candidate components to move into release tree.
+      Improve website documentation - long spiely text and how its used.
+      Summer of code: communicate results of summer code
+
+BLOCKED: Internet connectivity: problems going through socks proxy to servers for copying files.
+         Issue of inability to put servers on the internet despite requests from Senior Managers.
+         Sourceforge: they can't run a service - CVS bust, new "resilient" architecture simply means more pieces to break.
+
+Matt:
+DONE: EIT Parsing (now & next data)
+      Set up and installed HP/Macro demonstrator box
+      Wrote an initial software demuxer in pyrex
+      Copying of files from demonstrator to front end
+      Debugging demux code
+      Minor fixes to carousel, unix pipe, selector
+      Extended upon michael's initial version & design of Macro.
+      Minor change to DVB multiplex to control Front end parameters
+      Implementation of crash first approach to programme segmentation
+
+TODO: Anybox problem - looks at final destination inbox in a passthrough
+      chain, this is broken :)
+      (11:09:48) mhrd: change self.dataReady() to examine only storage directly local to the inbox
+      Move threading branch axon tests to right location & notify Michael.
+      Diagnose and debug issue with programme transcoder.
+      Now and Next change detection needs to distinguish between programme
+      update and programme junction.
+      Write tests for the system inversion changes
+      Synchronised boxes need reimplementing (needed really for UnixPipe
+      code, would also simplify reading AND the selector)
+      Many components don't play nicely with the inversion right now due to busy wait.
+      Implementation of blocking based on a timer service of some kind
+      (perhaps as component).
+      Extraction of sys-status from Macro.py, into the introspection code.
+      (Logical knockon, could be provided in Axon, and accessed through
+      introspection code) NB: could become a route in to something equivalent
+      to "top/ps"
+      Audit/update documentation as needed
+      Propose candidate components to move into release tree.
+      Improve website documentation - long spiely text and how its used.
+
+(note the todo list is a general list)
+
+BLOCKED: Issues with stopping/restarting programme transcoder (let to crash first work around)
+         (restarting at programme junctions)
+         Internet connectivity: problems going through socks proxy to servers for copying files.
+         Issue of inability to put servers on the internet despite requests from Senior Managers.
+         Sourceforge: they can't run a service - CVS bust, new "resilient" architecture simply means more pieces to break.
+
+Rest of meeting isn't relevant this week due to bimonthly meeting.
+
+====== END OF WEEKLY KAMAELIA MEETING, 20060519 ======

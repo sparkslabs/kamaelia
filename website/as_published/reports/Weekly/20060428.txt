@@ -1,0 +1,209 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060428 ======
+
+Agenda
+~~~~~~
+1. Participants: Michael Sparks, Matt Hammond
+2. Note of agenda
+3. Activity reports 
+
+Michael's lines:
+
+DONE - Michael to setup a second projects bliki
+       Completed work on the selector
+       Got the selector working with shutdown properly,
+       Reviewed/merged the box code
+       Got approval from management for summer of code
+       Gained acceptance from Google for summer of code
+       Pulled together summer of code projects
+       Coordinated with Dirac team on SOC
+       Created nexus page for summer of code
+       Met the SOC deadline
+TODO - Install debian & fedora box
+       Install DVB-T card
+       Describe desired test first rewrite of the TCP components on the project bliki
+       Add in NotImplementedErrors for code removed by Box merge
+       If Matt agrees, take over threading rewrite and optimisation
+       Update BBC Research SoC page
+       /document/ Kamaelia Macro better?
+       Get approval for OSCON
+       Get approval for EuroOSCON
+BLOCKED - Nothing right now. Liable to be blocked by threads work. 
+FOLLOWUP - none
+
+Matt's lines:
+
+DONE - Worked on Threading
+       Wrote website content about whiteboard code.
+TODO - Finish threading.
+       Merge Michael's selector upgrades.
+       Invert control flow.
+       DVB SI extraction.
+BLOCKED - None
+FOLLOWUP - None  
+
+4. Discussion items (3 or 4 max)
+
+4.1 Todos, actions from last week, any updates.
+Actions from the previous week were:
+
+   * Matt to document sketcher in 3-4 paras on the bliki and/or website as
+     he deems appropriate. - DONE
+   * Michael to setup a second projects bliki - DONE
+   * Describe desired test first rewrite of the TCP components on the
+     project bliki - TODO
+
+We noted that there's nothing really outstanding here, though Matt's NLP
+course had been missed as a blocking issue last week. (Updated Matt's lines
+above based on this conversation) We're treating BLOCKED also as unblocked
+really.
+
+Both noted that there wasn't anything new here to discuss really, but it
+seemed worth carrying forward a a sensible discussion item.
+
+4.2 Threading
+
+We discussed the possibility of moving Matt's work over onto Michael due
+to priorities and because Michael had noted that Matt had gone down what
+looked like a dead end and decided to revert his code and start again.
+However, Matt noted that the API was fully implemented in his previous
+version and reverted to get something cleaner. He noted it should therefore
+be very fast process.
+
+Matt confirmed that a threaded component's main thread could look like:
+    def main(self):
+        """Main thread loop."""
+        while 1:
+            line = raw_input(self.prompt)
+            line = line + self.eol
+            self.send(line, "outbox")
+
+And from a user perspective operate the way they expect. From an Axon
+perspective this would be threadsafe.
+
+Decision on the system inversion was to get the API sorted (see above). Then
+the idea was to branch again afterwards. ie lots of little branches rather
+than long lived branches.
+
+Matt noted that no code had really been done regarding the system inversion
+at this stage (Not sketches style code for example).
+
+ACTION: To discuss the structure of inversion outside the meeting.
+DECISION: Matt to carry on with threads work.
+
+
+4.3 Progress on other work needed for Macro related work (May 16th...)
+
+Brief recap of things needed for Macro that are vital for the May 16th
+deadline:
+    * Stream Capture
+    * SI Information
+    * Efficient transcoding to multiple formats - requires:
+       * Efficient data transfer - box code, merged
+       * Selector code merging - for shell out code
+       * System inversion - to free up CPU for encoders
+       * Requires the thread API
+
+Michael noted that this set of items is very heavy on Matt's side of things
+risking leaving Michael blocked. The work around this follows on from the
+system inversion discussion. The plan is for Michael to produce a proof
+of concept sketch, based on one of the miniaxons.
+
+This should reduce the bottleneck by bootstrapping Matt's work on system
+inversion. Leave's Matt's workplan unchanged, potentially speeds up and
+avoids blocking Michael.
+
+
+4.4 Summer of Code
+
+We've been accepted - yay! Management gave us a fast an answer which really helped.
+Some notes:
+
+   * Michael's been hanging around on IRC on the following channels/networks:
+      * #summer-discuss on slashnet
+      * ##summer-google on freenode
+     Fairly happy doing it alone, purpose is to generate interest. 
+
+   * Michael's prioritised the list of potential ideas/projects, suggested
+     changing the page to update priorities rather than block on Michael.
+
+   * Matt noted the Bit Torrent component should shift up the list
+     significantly
+
+Other outstanding issues arising:
+   * We need to configure our SOC page on google.com
+
+ACTION: Configure our SOC page on google.com
+
+Michael then discussed briefly some outlines for adding ideas and slotting
+in the priorities. Focus was "what do we want done by June 30th", "what do
+we want past that?". Noted: What sort of component work do we want started
+*after* May 22nd.
+
+We need this for evaluations, but also just generally useful.
+
+ACTION: Database component - add to Projects Bliki
+        Design and Implementation of a Network API.
+
+Macro on May 16th:
+   * Single channel, multiple formats, simple front end. Potentially looking
+     like a blog. (Somewhere for SI infomation for example, we also have
+     stuff set up for display of content in that format)
+
+   * By 30th June that should be a search engine with a backend of lots of
+     programmes. Requires a DB and backend of programmes. Front end can and
+     should be trivial. Allows API design & testing.
+
+Notes arising 
+   * Who to advertise list at - aside from online groups: Kent University,
+     Manchester University
+
+   * We've got until May 22nd to finalise projects and match them to students.
+     Realistically, that means the week after the Macro deadline will be needed
+     to sort it.
+
+We noted we were moving into territory that needs a longer discussion format, so
+moved on.
+
+
+5. Date/Time of next meeting:
+
+    Friday 5th May 2006, 11am UK time
+
+5.1 Date/Time of first bimonthly meeting - May 19th OK? Location?
+
+Decision was Manchester:
+    * <mhrd> I'd be very happy to come up to manchester - am interested to see the place & people
+    * <MS-> OK, Project Sponsor isn't likely to be around given XTech, so MHS has less appeal (can invite, unlikely to be able to come)
+    * Advantages of London instead:
+       * It's useful if we want to invite someone from the london area.
+       * We should still invite people, even if they can't come.
+    * Matt noted open plan in W12, and network might be hard.
+
+ACTION: Michael to find out about rooms.
+
+5.2 Monthly report
+    * STARTED, IN PROGRESS, DONE, BLOCKED/UNBLOCKED, OPTIONS (whiteboard etc), NOTABLE
+    * Who to send to ? (perhaps off channel)
+
+Who to send to:
+   * JP
+   * RC (TC for NM&T)
+   * TL (Sponsor)
+   * TH (TC for N&R - where Michael is located)
+   * Pete.
+   * Ian
+
+Put list of projects in report?
+   * Yes, the prioritised items - the ones we view as the ones we'd like to
+     see people working on. Specifically, the ones supporting project goals,
+     etc
+   * Link to the full list.
+   * Rationale: the actual list is wiki like and dynamic, ought to be
+     distilled to the important info which people are interested in.
+
+Michael also posted to the channel to the aggregate list of DONE, INPROGRESS,
+BLOCKED & UNBLOCKED. Will leave for monthly report rather than here.
+
+6 Internal Follow up
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060428 ======

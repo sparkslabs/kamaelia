@@ -1,0 +1,383 @@
+<html><body><table>
+            <tr><td>[00:10] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[05:08] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[05:34] &lt Lawouach_&gt http://www.kde.org/announcements/4.1/ &lt -- via reddit</td></tr>
+            <tr><td>[05:34] &lt Lawouach_&gt wonder if distributions will make the update available</td></tr>
+            <tr><td>[06:22] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[06:40] &lt Lawouach_&gt meh</td></tr>
+            <tr><td>[06:40] &lt Lawouach_&gt One can't read the kamaelia mailing-list without being a member</td></tr>
+            <tr><td>[06:40] &lt Lawouach_&gt That's not good</td></tr>
+            <tr><td>[07:03] &lt wyleu&gt http://svn.sourceforge.net/viewvc/viewcvs.cgi/kamaelia/ doesn't seem to be there. It's a link on the CVS page.</td></tr>
+            <tr><td>[07:14] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[07:33] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[07:48] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:12] &lt Lawouach_&gt orphans: soun?</td></tr>
+            <tr><td>[08:12] &lt Lawouach_&gt sound</td></tr>
+            <tr><td>[08:14] &lt orphans&gt hey Lawouach_</td></tr>
+            <tr><td>[08:15] &lt orphans&gt need a little more time - I think I know what's going on</td></tr>
+            <tr><td>[08:57] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:21] &lt orphans&gt Lawouach_, :D</td></tr>
+            <tr><td>[09:21] &lt orphans&gt sound!</td></tr>
+            <tr><td>[09:29] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[09:34] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:43] &lt wyleu&gt morning Kamaelians...</td></tr>
+            <tr><td>[09:55] &lt MS-&gt greetings</td></tr>
+            <tr><td>[10:11] &lt Davbo&gt Afternoon all</td></tr>
+            <tr><td>[10:11] &lt Davbo&gt Congrats orphans</td></tr>
+            <tr><td>[10:12] &lt Davbo&gt MS-: I got my branch up yesterday, after a checkout on /branches which took about 3 hours and stalled about 4 times</td></tr>
+            <tr><td>[10:13] &lt Davbo&gt it's odd, my original checkout on /trunk took about 15mins and was perfectly fine.</td></tr>
+            <tr><td>[10:14] &lt Davbo&gt i seem to get varying mileage from code.google</td></tr>
+            <tr><td>[10:18] *** orphans_ has joined #kamaelia</td></tr>
+            <tr><td>[10:18] *** orphans_ is now known as orphans</td></tr>
+            <tr><td>[10:18] *** orphans_ has joined #kamaelia</td></tr>
+            <tr><td>[10:41] &lt MS-&gt Davbo: Interesting</td></tr>
+            <tr><td>[10:41] &lt MS-&gt maybe they use a different system for who system checkouts rather than just /trunk</td></tr>
+            <tr><td>[10:45] &lt Davbo&gt Where can I find the wiki so I can look at adding something</td></tr>
+            <tr><td>[10:46] &lt Davbo&gt infact, ignore that. I'll wait till we go across to the new one you worked on</td></tr>
+            <tr><td>[10:52] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:53] &lt Lawouach_&gt afternoon</td></tr>
+            <tr><td>[10:54] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:18] &lt MS-&gt Davbo: huh?</td></tr>
+            <tr><td>[11:19] &lt MS-&gt The wiki is edit.kamaelia.org</td></tr>
+            <tr><td>[11:19] &lt MS-&gt Oh, do you mean the one which code.google supply?</td></tr>
+            <tr><td>[11:19] &lt MS-&gt I've disabled that since it doesn't match where I want to take things really.</td></tr>
+            <tr><td>[11:20] &lt Davbo&gt Nah sorry, I was wondering where you actually had cerenity</td></tr>
+            <tr><td>[11:20] &lt Davbo&gt if i could find it in svn</td></tr>
+            <tr><td>[11:21] &lt vmlemon_&gt MS-: I'll try and get the CA in the post some time this week, if not next week</td></tr>
+            <tr><td>[11:21] &lt MS-&gt That's gret :)</td></tr>
+            <tr><td>[11:21] &lt MS-&gt Ahh</td></tr>
+            <tr><td>[11:22] &lt MS-&gt vmlemon_: That's great rather :)</td></tr>
+            <tr><td>[11:22] &lt MS-&gt Davbo: Ah, that code is here...</td></tr>
+            <tr><td>[11:22] *** MS- digs out reference</td></tr>
+            <tr><td>[11:22] &lt MS-&gt http://code.google.com/p/facilitate/</td></tr>
+            <tr><td>[11:22] &lt Lawouach_&gt MS-: I assume we'll be making a final decision about which provider we go for any day now?</td></tr>
+            <tr><td>[11:23] &lt Lawouach_&gt Personally from what I've read from everyone I'm not convinced Google Code is better than SF in this case</td></tr>
+            <tr><td>[11:23] &lt MS-&gt Me neither for that matter FWIW</td></tr>
+            <tr><td>[11:24] &lt MS-&gt It's the sort of thing that should be decided this week IMO</td></tr>
+            <tr><td>[11:24] &lt MS-&gt For day to day tasks it's OK</td></tr>
+            <tr><td>[11:24] &lt MS-&gt which is OK</td></tr>
+            <tr><td>[11:24] &lt MS-&gt But for a full checkout including /branches it's really less than optimal</td></tr>
+            <tr><td>[11:24] &lt MS-&gt he says politely</td></tr>
+            <tr><td>[11:25] &lt MS-&gt It seems OK for *small* codebases</td></tr>
+            <tr><td>[11:25] *** MS- needs lunch</td></tr>
+            <tr><td>[11:27] &lt Davbo&gt thanks MS-</td></tr>
+            <tr><td>[11:32] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt orphans: pong</td></tr>
+            <tr><td>[11:59] &lt orphans&gt hey, you got a minute?</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt yeap</td></tr>
+            <tr><td>[12:00] &lt orphans&gt cool, right I'm really close now (I think) - have sound output working ok, but was wondering whether you had any idea why something was happening</td></tr>
+            <tr><td>[12:01] &lt orphans&gt basically from python I call a c function, giving it a pointer to a python method (like self.registerCallback(self.aFunction))</td></tr>
+            <tr><td>[12:02] &lt orphans&gt that's all cool, so I store the address of self.aFunction in a struct, which gets passed on, and used by another function which calls self.aFunction</td></tr>
+            <tr><td>[12:03] &lt orphans&gt but by the time that's happened the pointer no longer points at self.aFunction, but at a different function (self.unpause - I'm trying to get it working in a component)</td></tr>
+            <tr><td>[12:04] &lt orphans&gt so it calls the wrong thing and everything goes wrong</td></tr>
+            <tr><td>[12:04] &lt vmlemon_&gt It now sounds somewhat musical, instead of screeching and cracking?</td></tr>
+            <tr><td>[12:04] &lt orphans&gt Lawouach_, and I have no idea why the function it points to changes</td></tr>
+            <tr><td>[12:04] &lt orphans&gt vmlemon_, yes, but only if you use a function as a callback and not a method :D</td></tr>
+            <tr><td>[12:05] &lt vmlemon_&gt Aah, cool</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt well can't tell you why without seeing the code mate</td></tr>
+            <tr><td>[12:08] &lt orphans&gt :)</td></tr>
+            <tr><td>[12:08] *** orphans finds the lines</td></tr>
+            <tr><td>[12:09] &lt orphans&gt http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/JT/RtAudioBindings/RtAudio.sip</td></tr>
+            <tr><td>[12:10] &lt orphans&gt if you print the name of the function at line 205 it gives you the name of the function you put in</td></tr>
+            <tr><td>[12:10] &lt orphans&gt then when it's called at line 158 it points to a different function</td></tr>
+            <tr><td>[12:11] &lt orphans&gt giving you "TypeError: unpause() takes exactly 1 argument (7 given)"</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt whers ithis code called in your application?</td></tr>
+            <tr><td>[12:13] &lt orphans&gt it's called in RtAudioBindings/test/saw.py where it works fine because it's a function rather than a method (I assume)</td></tr>
+            <tr><td>[12:14] &lt orphans&gt and it fails in Jam/library/trunk/Apps/Jam/Kamaelia/Audio/RTOutput.py</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt damn it the code browsre of google is really buggy</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt it gets lost in paths</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt sigh</td></tr>
+            <tr><td>[12:15] &lt orphans&gt you want me to pastebin it?</td></tr>
+            <tr><td>[12:16] &lt vmlemon_&gt Wow, has anyone seen the state of Google Maps as of late?</td></tr>
+            <tr><td>[12:16] &lt vmlemon_&gt It looks like they "improved" it so that it barely renders here, and spews random bits of JavaScript</td></tr>
+            <tr><td>[12:16] &lt orphans&gt Lawouach_, http://orphans.pastebin.com/m75964bd4 -&gt that works</td></tr>
+            <tr><td>[12:16] &lt vmlemon_&gt not to mention that it takes several refreshes to actually load map tiles</td></tr>
+            <tr><td>[12:17] &lt orphans&gt http://orphans.pastebin.com/m3b2a05e9 -&gt that doesn't</td></tr>
+            <tr><td>[12:19] &lt orphans&gt so from the non working one at line 205 data-&gtfunction points to streamCallback, whereas at line 158 it points to unpause</td></tr>
+            <tr><td>[12:19] &lt Lawouach_&gt hmm</td></tr>
+            <tr><td>[12:20] &lt Lawouach_&gt that is weird</td></tr>
+            <tr><td>[12:20] &lt orphans&gt yeah, seemed right funky to me</td></tr>
+            <tr><td>[12:21] &lt orphans&gt the address it's pointing to is the same at both points</td></tr>
+            <tr><td>[12:22] &lt orphans&gt just that address is mapped to different functions, which seems pretty messed up</td></tr>
+            <tr><td>[12:22] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[12:24] &lt Lawouach_&gt I don't understand why "unpause"</td></tr>
+            <tr><td>[12:24] &lt orphans&gt no, me neither</td></tr>
+            <tr><td>[12:25] &lt orphans&gt I'd be happier if it pointed me at complete garbage</td></tr>
+            <tr><td>[12:27] &lt Lawouach_&gt I wonder if there is a threading issue</td></tr>
+            <tr><td>[12:27] &lt Lawouach_&gt I'm really not the best person about this type of things though</td></tr>
+            <tr><td>[12:28] &lt orphans&gt threading issue how?</td></tr>
+            <tr><td>[12:29] &lt MS-&gt (14:40:33) Lawouach_: I don't understand why "unpause"</td></tr>
+            <tr><td>[12:29] &lt MS-&gt ?</td></tr>
+            <tr><td>[12:29] &lt MS-&gt I don't understand the question</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt Why specirfically that method</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt rather than garbage or another method</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt orphans: I don't know. I'm just throwing ideas :)</td></tr>
+            <tr><td>[12:30] &lt MS-&gt Mind you I'm only just reading the end of the conversation...</td></tr>
+            <tr><td>[12:30] &lt MS-&gt Oh,</td></tr>
+            <tr><td>[12:30] &lt orphans&gt :) - it's a distinct possibility - I'm very hazy on how all the threading in there is happening</td></tr>
+            <tr><td>[12:30] *** MS- reads upwards</td></tr>
+            <tr><td>[12:31] &lt MS-&gt giving you "TypeError: unpause() takes exactly 1 argument (7 given)"</td></tr>
+            <tr><td>[12:31] *** orphans knocks up a class-based example rather than a component-based one</td></tr>
+            <tr><td>[12:31] &lt MS-&gt You're aware Axon.Component.component has an "unpause()" method?</td></tr>
+            <tr><td>[12:32] &lt orphans&gt MS-, yeah, I am. The thing is that the pointer should be pointing at a user defined method, but it's actually pointing at the unpause() method</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt MS-: that doesn't explain really his problem :)</td></tr>
+            <tr><td>[12:32] &lt MS-&gt You could add</td></tr>
+            <tr><td>[12:32] &lt MS-&gt def unpause(self, *junk):</td></tr>
+            <tr><td>[12:32] &lt MS-&gt  print "what IS this junk we're being sent here???", repr(junk)</td></tr>
+            <tr><td>[12:32] &lt MS-&gt  super(WhateverClass, self).unpause()</td></tr>
+            <tr><td>[12:32] &lt MS-&gt as a means of finding out what junk is being sent there</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt wow, checkout from google code of the whole trunk took only a few minutes.</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt MS-: I think you misunderstand the problem.</td></tr>
+            <tr><td>[12:33] &lt orphans&gt MS-, I know what the junk is - I'm the one who puts it there :)</td></tr>
+            <tr><td>[12:33] &lt MS-&gt maybe I should be quiet for a bit then :)</td></tr>
+            <tr><td>[12:33] *** MS- so tempted to make unhelpful statements at this point and deciding against it :)</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt His binding uses a callback to perform some task, this works well when the callback is a function but when it's a method in a component the specific callback isn't applied. Instead the unpause() method is.</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt Which is rather unexpected :)</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt Both pastbins do explain it well :)</td></tr>
+            <tr><td>[12:35] &lt MS-&gt Only if you know the code :)</td></tr>
+            <tr><td>[12:36] &lt MS-&gt OK, so is</td></tr>
+            <tr><td>[12:36] &lt MS-&gt def streamCallback(self, inputBuffer, bufferSize, streamTime, streamStatus, extraData):</td></tr>
+            <tr><td>[12:36] &lt MS-&gt the non-beasty in question?</td></tr>
+            <tr><td>[12:36] &lt orphans&gt yup</td></tr>
+            <tr><td>[12:36] &lt MS-&gt Does http://orphans.pastebin.com/m3b2a05e9 work?</td></tr>
+            <tr><td>[12:36] &lt orphans&gt it exists at a location in the memory for a while, then if you look at that location a bit later unpause() is there</td></tr>
+            <tr><td>[12:36] &lt MS-&gt No</td></tr>
+            <tr><td>[12:36] &lt MS-&gt that doesn't does it</td></tr>
+            <tr><td>[12:36] &lt MS-&gt the other one does, yes?</td></tr>
+            <tr><td>[12:37] &lt orphans&gt yup</td></tr>
+            <tr><td>[12:37] &lt MS-&gt So, as a test, I'd try this</td></tr>
+            <tr><td>[12:38] &lt MS-&gt def SillyCallback(callbackFunc):</td></tr>
+            <tr><td>[12:38] &lt MS-&gt  def wrapper(*args):</td></tr>
+            <tr><td>[12:38] &lt MS-&gt  return callbackFunc(*args)</td></tr>
+            <tr><td>[12:38] &lt MS-&gt  return wrapper</td></tr>
+            <tr><td>[12:38] &lt MS-&gt as a def (normal function) outside the class</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt orphans: does it work with a method of a regular Python class (not one inherting from component)?</td></tr>
+            <tr><td>[12:38] &lt MS-&gt then insteads of:</td></tr>
+            <tr><td>[12:38] &lt MS-&gt         self.io.openStream(self.outputDevice, self.channels, 0, 0, 2, 0,                            self.type, self.sampleRate, self.bufferSize,                            self.streamCallback, None)</td></tr>
+            <tr><td>[12:38] &lt MS-&gt do</td></tr>
+            <tr><td>[12:38] &lt orphans&gt Lawouach_, just trying that now</td></tr>
+            <tr><td>[12:39] &lt MS-&gt         self.io.openStream(self.outputDevice, self.channels, 0, 0, 2, 0,</td></tr>
+            <tr><td>[12:39] &lt MS-&gt                             self.type, self.sampleRate, self.bufferSize,</td></tr>
+            <tr><td>[12:39] &lt MS-&gt                             SillyCallback(self.streamCallback), None)</td></tr>
+            <tr><td>[12:39] &lt orphans&gt MS-, ok, will try that</td></tr>
+            <tr><td>[12:39] &lt MS-&gt My guess is that unpause is picked because it's the first one spat out of self.__dict__.keys() or something dumb</td></tr>
+            <tr><td>[12:40] &lt MS-&gt Even though I know it shouldn't be :)</td></tr>
+            <tr><td>[12:42] &lt orphans&gt Traceback (most recent call last):</td></tr>
+            <tr><td>[12:42] &lt orphans&gt  File "/usr/lib/python2.5/site-packages/Kamaelia/Apps/Jam/Audio/RTOutput.py", line 8, in wrapper</td></tr>
+            <tr><td>[12:42] &lt orphans&gt  return callbackFunc(*args)</td></tr>
+            <tr><td>[12:42] &lt orphans&gt SystemError: ../Objects/cellobject.c:24: bad argument to internal function</td></tr>
+            <tr><td>[12:44] &lt orphans&gt bah, I'll simplify everything down to the basics and see where we go from there</td></tr>
+            <tr><td>[12:47] &lt orphans&gt fwiw this doesn't work either, so it's a method thing rather than a kamaelia thing -&gt http://orphans.pastebin.com/d241237a7</td></tr>
+            <tr><td>[12:48] &lt MS-&gt I doubt it's a kamaelia thing fwiw</td></tr>
+            <tr><td>[12:49] &lt orphans&gt yeah, it's definitely not</td></tr>
+            <tr><td>[12:49] &lt MS-&gt I would've been rather shocked if it was</td></tr>
+            <tr><td>[12:50] &lt orphans&gt my money rests firmly on an "I can't write c++, and the documentation is a little skimpy" thing</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt what's the behavior with the Saw test?</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt it can't be calling unpause that one</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt so what does it do?</td></tr>
+            <tr><td>[12:51] &lt orphans&gt calls main() :)</td></tr>
+            <tr><td>[12:55] &lt orphans&gt and I've got it :)</td></tr>
+            <tr><td>[12:55] &lt Lawouach_&gt ?</td></tr>
+            <tr><td>[12:56] &lt orphans&gt needed to pass round a pointer to the method's function object</td></tr>
+            <tr><td>[12:56] &lt orphans&gt I have no idea what that means, but it works...</td></tr>
+            <tr><td>[12:56] &lt orphans&gt PyObject* PyMethod_Function( PyObject *meth)</td></tr>
+            <tr><td>[12:56] &lt orphans&gt  Return value: Borrowed reference.</td></tr>
+            <tr><td>[12:56] &lt orphans&gt  Return the function object associated with the method meth.</td></tr>
+            <tr><td>[12:57] &lt vmlemon_&gt Filling the CA in now</td></tr>
+            <tr><td>[12:57] &lt Lawouach_&gt well the problem with memory pointers is that once the memory is allocated you can't be certain how the program will be using a space of memory it was allocated</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt I assume that function maps the pointer to the right function address in memory</td></tr>
+            <tr><td>[12:58] &lt orphans&gt what's a method's function object? I thought that methods and functions were equivalent apart from one being class-based?</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt everything is an object in python</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt a function is an object</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt a class is an object</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt a method is also an object</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt a method is simply a function scoped within the instance of a class</td></tr>
+            <tr><td>[12:59] &lt orphans&gt so a method keeps a reference to a function object rather than owning the function itself?</td></tr>
+            <tr><td>[12:59] &lt Lawouach_&gt That would be my understanding yes.</td></tr>
+            <tr><td>[13:00] &lt Lawouach_&gt Though I'm not a CPython expert</td></tr>
+            <tr><td>[13:00] &lt orphans&gt :)</td></tr>
+            <tr><td>[13:00] &lt orphans&gt there's my new thing for the day learnt</td></tr>
+            <tr><td>[13:00] &lt Lawouach_&gt That makes sense however</td></tr>
+            <tr><td>[13:01] *** MS- is watching this and pleased he normally uses pyrex :)</td></tr>
+            <tr><td>[13:01] &lt Lawouach_&gt Because if you were not doing that, each instance of a class would have its copy in memory of the function object</td></tr>
+            <tr><td>[13:01] &lt Lawouach_&gt what a waste :)</td></tr>
+            <tr><td>[13:01] &lt Lawouach_&gt MS-: how's pyrex different?</td></tr>
+            <tr><td>[13:01] &lt orphans&gt :)</td></tr>
+            <tr><td>[13:02] &lt vmlemon_&gt Secret, probably;)</td></tr>
+            <tr><td>[13:03] &lt Lawouach_&gt pyrex is for C only isn't it?</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Lawouach_: It's really quite nice and simple to work with and handles most of the awkward cases</td></tr>
+            <tr><td>[13:03] *** Davbo thinks orphans deserves a beer for getting *any* sound working</td></tr>
+            <tr><td>[13:03] &lt MS-&gt You can have a c wrapper on the outside</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Which is how we wrap dirac - which is C++</td></tr>
+            <tr><td>[13:04] &lt MS-&gt That's either nicer or an extra problem, depending on perspective</td></tr>
+            <tr><td>[13:07] &lt MS-&gt Mind you pyrex has been forked a while back to make cython</td></tr>
+            <tr><td>[13:27] &lt Lawouach_&gt MS-: BTW, I haven't congratulated you for PyCon yet</td></tr>
+            <tr><td>[13:28] &lt Lawouach_&gt So here we go: Congrats for the talk :)</td></tr>
+            <tr><td>[13:28] &lt Lawouach_&gt Though you had an edge ;)</td></tr>
+            <tr><td>[13:28] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt Lawouach_: s/talk/talks wonder how he managed that ;-)</td></tr>
+            <tr><td>[13:31] &lt MS-&gt Lawouach - cheers :)</td></tr>
+            <tr><td>[13:31] &lt MS-&gt If there's things that people would particularly like mentioned, the sooner that's mentioned the better</td></tr>
+            <tr><td>[13:32] &lt MS-&gt There's a balance between plugs for things and giving information :)</td></tr>
+            <tr><td>[13:32] &lt MS-&gt But "things" can be useful in explaining stuff</td></tr>
+            <tr><td>[13:33] &lt Lawouach_&gt Like how the French should have won the last World cup?</td></tr>
+            <tr><td>[13:35] &lt aa_&gt they would have won if it was awarded for head-butting?</td></tr>
+            <tr><td>[13:35] &lt Lawouach_&gt That was just showing off. :)</td></tr>
+            <tr><td>[13:37] &lt Davbo&gt Showing off the famous French cranial diameter?</td></tr>
+            <tr><td>[13:37] &lt Lawouach_&gt ah come on, who never wanted to kick some Italian'arse during a football game? :)</td></tr>
+            <tr><td>[13:38] &lt Lawouach_&gt throw me the first stone ;)</td></tr>
+            <tr><td>[13:39] &lt Davbo&gt Hehe, I'll give you this one Lawouach_ ;-)</td></tr>
+            <tr><td>[13:43] &lt vmlemon_&gt Hmm, where do I send the CA to, and what is my developer stub?</td></tr>
+            <tr><td>[13:45] &lt vmlemon_&gt (I take it that it consists of my initials?)</td></tr>
+            <tr><td>[13:47] &lt Davbo&gt becoming a contributor vmlemon_?</td></tr>
+            <tr><td>[13:47] &lt vmlemon_&gt Contributing the FileAppender, after talking to MS- about it last night</td></tr>
+            <tr><td>[13:47] &lt Davbo&gt Yes, the convention now is using initials</td></tr>
+            <tr><td>[13:47] &lt MS-&gt vmlemon_: Yep, just your initials. I know it's at minimum TK, but if it's more, that's useful. (mine is MPS for example, rather than MS)</td></tr>
+            <tr><td>[13:48] &lt MS-&gt post to here:</td></tr>
+            <tr><td>[13:48] &lt vmlemon_&gt Thanks</td></tr>
+            <tr><td>[13:48] &lt MS-&gt likewise :)</td></tr>
+            <tr><td>[13:49] *** vmlemon_ goes to look for his pen, wherever it fell</td></tr>
+            <tr><td>[13:50] &lt Davbo&gt MS-: I'm going to have an "animator mode" which you can toggle</td></tr>
+            <tr><td>[13:50] &lt Davbo&gt so I can switch the layers to frames essentially, and make adjustments to some other behaviour</td></tr>
+            <tr><td>[13:51] &lt Davbo&gt Probably have a simple animation where you can have a couple of layers, ie. background then all the frames are consistent with the background.</td></tr>
+            <tr><td>[13:52] &lt Davbo&gt more complex ways could have more functionality but I think in the end will just not be as much fun as "drawing your background" then "drawing your characters doing things"</td></tr>
+            <tr><td>[14:03] &lt Lawouach_&gt damn you implementation details</td></tr>
+            <tr><td>[14:03] &lt Davbo&gt umm?</td></tr>
+            <tr><td>[14:05] &lt Lawouach_&gt talking to myself :)</td></tr>
+            <tr><td>[14:07] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[14:08] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[14:08] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[14:08] &lt Davbo&gt me too apparently ;-)</td></tr>
+            <tr><td>[14:09] &lt Davbo&gt != works in python right? I could swear I've used that before</td></tr>
+            <tr><td>[14:09] *** Davbo tests</td></tr>
+            <tr><td>[14:09] &lt Davbo&gt oh i see, oops :-)</td></tr>
+            <tr><td>[14:10] &lt MS-&gt Yes, it does</td></tr>
+            <tr><td>[14:11] &lt Davbo&gt simple animations working nicely MS-</td></tr>
+            <tr><td>[14:11] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[14:12] &lt Davbo&gt what do you think to my idea above?</td></tr>
+            <tr><td>[14:13] &lt MS-&gt Oh, was that a question?</td></tr>
+            <tr><td>[14:13] &lt MS-&gt so you're planning on having 2 layers essentyially</td></tr>
+            <tr><td>[14:14] &lt Davbo&gt Well I wanted feedback</td></tr>
+            <tr><td>[14:14] &lt MS-&gt one background, non-animated</td></tr>
+            <tr><td>[14:14] &lt MS-&gt one foreground animated</td></tr>
+            <tr><td>[14:14] &lt MS-&gt with foreground what you bibble with, and animate.</td></tr>
+            <tr><td>[14:14] &lt MS-&gt Is that right?</td></tr>
+            <tr><td>[14:14] &lt MS-&gt s/bibble/something more sensible/</td></tr>
+            <tr><td>[14:14] &lt Davbo&gt It should be easy enough to mark some frames as "background frames"</td></tr>
+            <tr><td>[14:15] &lt MS-&gt If so that sounds very similar to how cell animation works, which should work well as an initial version</td></tr>
+            <tr><td>[14:15] &lt Davbo&gt to me it seems like the most fun way to do it</td></tr>
+            <tr><td>[14:15] &lt MS-&gt Then follow the fun :)</td></tr>
+            <tr><td>[14:15] &lt MS-&gt It strikes me as a good ide</td></tr>
+            <tr><td>[14:15] &lt MS-&gt a</td></tr>
+            <tr><td>[14:15] &lt MS-&gt as a starting point</td></tr>
+            <tr><td>[14:15] &lt Davbo&gt I'm pondering when you "add a frame" to blit the contents of the last frame to it too</td></tr>
+            <tr><td>[14:15] &lt MS-&gt I can think of others as well</td></tr>
+            <tr><td>[14:15] &lt Davbo&gt or atleast have that as an option</td></tr>
+            <tr><td>[14:16] &lt Davbo&gt so you can erase and move body parts for example</td></tr>
+            <tr><td>[14:16] &lt MS-&gt Have you tried running the whiteboard ?</td></tr>
+            <tr><td>[14:16] &lt MS-&gt That's got a "checkpoint" button that kinda works like that</td></tr>
+            <tr><td>[14:16] &lt Davbo&gt not since I moved to Ubuntu tbh</td></tr>
+            <tr><td>[14:16] &lt Davbo&gt perhaps it works better now for me though</td></tr>
+            <tr><td>[14:16] &lt MS-&gt np</td></tr>
+            <tr><td>[14:18] *** MS- is having a busy day</td></tr>
+            <tr><td>[14:18] &lt MS-&gt Will try and take a good look this evening :-)</td></tr>
+            <tr><td>[14:18] &lt Davbo&gt If Pablo were still about I'd tell him this setup I've got for testing functions easily. Just binding keys to little chunks of code for a good luck at them in runtime.</td></tr>
+            <tr><td>[14:19] &lt Davbo&gt s/luck/look</td></tr>
+            <tr><td>[14:19] &lt MS-&gt He wasn't about when he was doing his project though</td></tr>
+            <tr><td>[14:20] &lt MS-&gt Sorry, I just feel I wasted a slot</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt Hmm, KamPlanet?</td></tr>
+            <tr><td>[14:20] &lt vmlemon_&gt Or the presumed/speculative testing framework?</td></tr>
+            <tr><td>[14:20] &lt MS-&gt vmlemon_: No, he was meant to be building a testing framework and wasted his time IMO</td></tr>
+            <tr><td>[14:21] &lt vmlemon_&gt Aah :(</td></tr>
+            <tr><td>[14:22] &lt Davbo&gt Agreed MS-, a real shame</td></tr>
+            <tr><td>[14:23] &lt MS-&gt The sad thing is even if you'd told him, I don't know if he'd've listened to the way you were testing :-(</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt I heard a story about a student who was on a project that used git, he didn't go to and of the meetings or hang around on IRC so they failed him. Then he comes on IRC and says what about all this work I've done. Obviously because it's git he's not realised nobody else had seen it :/</td></tr>
+            <tr><td>[14:25] &lt vmlemon_&gt What happened next?</td></tr>
+            <tr><td>[14:26] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[14:26] &lt MS-&gt That's a mixture of his fault and his mentors IMO without hearing any more details</td></tr>
+            <tr><td>[14:26] Reply: Hi, I'm a bot. I've been put here to answer faq's and log the channel.</td></tr>
+            <tr><td>[14:26] Reply: I've not really been configured yet, so I won't do much here yet :-)</td></tr>
+            <tr><td>[14:26] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[14:26] &lt vmlemon_&gt Oops</td></tr>
+            <tr><td>[14:26] &lt Davbo&gt They contacted google, got him back on the course and forced him onto IRC lol</td></tr>
+            <tr><td>[14:26] &lt Davbo&gt That's horribly paraphrased MS-</td></tr>
+            <tr><td>[14:26] &lt vmlemon_&gt Hmm, weren't there struggles with Chong's check-ins, initially, too?</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt Although I'm sure his project is better off than Pablo's</td></tr>
+            <tr><td>[14:27] &lt vmlemon_&gt (at the moment)</td></tr>
+            <tr><td>[14:27] &lt Davbo&gt I'm pretty sure they did a lot to get hold of him</td></tr>
+            <tr><td>[14:27] &lt Lawouach_&gt This things happen like you can hire the wrong guy for a job.</td></tr>
+            <tr><td>[14:28] *** vmlemon_ wished Firefox had some level of integration with KWallet</td></tr>
+            <tr><td>[14:30] &lt MS-&gt vmlemon_: Different people are different. Chong's been great - he listened to what was needed and changed his behaviour :)</td></tr>
+            <tr><td>[14:30] &lt MS-&gt which was a very positive thing to see happen</td></tr>
+            <tr><td>[14:31] &lt MS-&gt :)</td></tr>
+            <tr><td>[14:32] &lt MS-&gt Also, I learnt that I have certain core assumptions surrounding checkin messages, which I hadn't realised in depth before, but now I do, I'll be able to help people better in future, since other people have core assumptions as well</td></tr>
+            <tr><td>[14:33] &lt MS-&gt But it's not nice to rake things over when people aren't around.</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt I have a fear of console text editors, and missing out a ci message pops up nano i think. I've had nightmares ever since.</td></tr>
+            <tr><td>[14:35] &lt vmlemon_&gt I couldn't agree more...</td></tr>
+            <tr><td>[14:35] &lt MS-&gt Both Pablo & Chong worked very hard.</td></tr>
+            <tr><td>[14:35] &lt MS-&gt If you cock up a check in, just follow up with an email</td></tr>
+            <tr><td>[14:35] &lt MS-&gt We all do it :)</td></tr>
+            <tr><td>[14:42] &lt MS-&gt anyway, you know you can do this:</td></tr>
+            <tr><td>[14:42] &lt MS-&gt ~&gt svn ci FileName.py -n "bla bla</td></tr>
+            <tr><td>[14:42] &lt MS-&gt bla bla bla</td></tr>
+            <tr><td>[14:42] &lt MS-&gt bla bla bla bla</td></tr>
+            <tr><td>[14:42] &lt MS-&gt bla bla</td></tr>
+            <tr><td>[14:42] &lt MS-&gt bla</td></tr>
+            <tr><td>[14:42] &lt MS-&gt bla bla bla bla"</td></tr>
+            <tr><td>[14:42] &lt MS-&gt ?</td></tr>
+            <tr><td>[14:42] &lt MS-&gt is just continue over multiple lines if you don't like using an editor</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt That was a very recent discovery, like, last week :-)</td></tr>
+            <tr><td>[14:43] &lt vmlemon_&gt You can fill it with the first chapter from the bible without issues? ;)</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt todays discovery for me: mkdir -p blah/blah/blah</td></tr>
+            <tr><td>[14:45] &lt Davbo&gt also, shouldn't that be</td></tr>
+            <tr><td>[14:45] &lt Davbo&gt ﻿~&gt svn ci FileName.py -m "bla bla etc" ;-)</td></tr>
+            <tr><td>[15:01] &lt MS-&gt no, you can do that over multiple lines fine</td></tr>
+            <tr><td>[15:03] &lt Davbo&gt Oh, i know I was just point out s/-n/-m</td></tr>
+            <tr><td>[15:05] *** Davbo shuts up</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Oh</td></tr>
+            <tr><td>[15:06] &lt MS-&gt typoe earlier then</td></tr>
+            <tr><td>[15:19] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[15:57] *** MS- looks at j_baker's boxbundle code</td></tr>
+            <tr><td>[16:03] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:15] &lt vmlemon_&gt kamlogbot: ecky</td></tr>
+            <tr><td>[16:15] Reply: Ptang!</td></tr>
+            <tr><td>[16:31] &lt MS-&gt decides not to post about it.</td></tr>
+            <tr><td>[16:31] *** mhrd-afk has parted #kamaelia</td></tr>
+            <tr><td>[16:41] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[16:41] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[16:42] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[16:55] &lt Lawouach&gt I start understanding Jason's will for making microprocess and component more explicitely distinct than they are now</td></tr>
+            <tr><td>[17:26] &lt MS-&gt That I don't have an issue with. The BoxBundle code is a hideous mess though</td></tr>
+            <tr><td>[17:26] &lt vmlemon_&gt Hmm, what's BoxBundle?</td></tr>
+            <tr><td>[17:28] &lt MS-&gt It's some code that I'm struggling to see the point of</td></tr>
+            <tr><td>[17:28] &lt MS-&gt And failing</td></tr>
+            <tr><td>[17:28] &lt MS-&gt since I think the problem it's solving is well solved in the past</td></tr>
+            <tr><td>[17:28] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[17:28] &lt MS-&gt  jason&gt I need a component that will be able to manage a connection with</td></tr>
+            <tr><td>[17:28] &lt MS-&gt  jason&gt a variable number of components that will continually be being</td></tr>
+            <tr><td>[17:28] &lt MS-&gt  jason&gt deleted and/or created.</td></tr>
+            <tr><td>[17:28] &lt MS-&gt Composing a reply at present</td></tr>
+            <tr><td>[17:28] &lt MS-&gt That above comment is a very common need</td></tr>
+            <tr><td>[17:28] &lt MS-&gt or common enough</td></tr>
+            <tr><td>[17:29] &lt MS-&gt And there's code that does that</td></tr>
+            <tr><td>[17:49] *** MS- wanders of</td></tr>
+            <tr><td>[17:57] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[18:25] &lt j_baker&gt Am I the only one who's having problems updating Davbo's branch?</td></tr>
+            <tr><td>[18:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:06] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:14] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[19:49] &lt MS-&gt 35% price increase for gas this winter ?</td></tr>
+            <tr><td>[19:49] &lt MS-&gt eek</td></tr>
+            <tr><td>[19:50] &lt MS-&gt I ought to start saving for winter...</td></tr>
+            <tr><td>[19:57] &lt MS-&gt If previous quarters in this house are anything to go by that'll mean the coldest quarter's gas bill will easily go over £500 :-(</td></tr>
+            <tr><td>[20:00] &lt Lawouach&gt I've dropped owning a car a year ago.</td></tr>
+            <tr><td>[20:00] &lt Lawouach&gt But I don't have kids either so I can handle it.</td></tr>
+            <tr><td>[20:01] &lt MS-&gt Never owned a car, so that's not an issue</td></tr>
+            <tr><td>[20:01] &lt MS-&gt Oh, gas.</td></tr>
+            <tr><td>[20:01] &lt MS-&gt No, I mean the stuff that powers the heating & cooker</td></tr>
+            <tr><td>[20:01] &lt MS-&gt Not petrol</td></tr>
+            <tr><td>[20:02] &lt Lawouach&gt oh ok</td></tr>
+            <tr><td>[21:22] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[21:27] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:31] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:48] *** vmlemon_ has joined #kamaelia</td></tr>

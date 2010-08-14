@@ -1,0 +1,294 @@
+<html>
+<head>
+<title> Developers/Projects/KamaeliaJam </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Developers/Projects/KamaeliaJam">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Kamaelia Jam</h2>
+<h3>What is it?</h3><p>Kamaelia Jam is a music sequencer designed to be used simultaneously by more than one user over a network.  It will also act as a toolkit for quickly prototyping networked music applications.</p><h3>Where do I get and install it?</h3><br>Barely tested pre-alpha packages (marking the end of GSoC '08) can be downloaded below:<br><br><a href="http://www.box.net/shared/mle3bl31on">Linux</a> - See INSALL instructions in the Docs folder<br><br><a href="http://www.box.net/shared/mpov64vgx0">Windows</a> - Run through the installer<br><br><p>The latest version of jam is available from a branch in svn.  Instructions for installing the dependencies are available <a href="http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/JT/INSTALL?revision=3916&amp;view=markup">here</a>.<br></p><p><b>SVN<br></b></p><b></b><ul><li><p><tt>svn checkout <strong><em>http:</em></strong>//kamaelia.googlecode.com/svn/</tt>branches/private_JT_JamDev jam<br></p></li><li>cd jam/Apps/Kamaelia-Jam/DistBuild</li><li>./Jam.build.sh<br></li><li>cd ../</li><li>python setup.py install (as root)<br></li></ul><b></b><h3>Documentation for developers</h3><a href="KamaeliaJam/GraphlineDiagram">High-level diagram of the major pipe and graphlines within Jam</a><br><br><h3>Planned Schedule</h3>
+<p><tt>&lt; 6 Jun - Rearrange directory structure, start to look at packaging, sit</tt><br>
+
+<tt>exams</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>Become the proud owner of a degree :)</tt><br>
+
+<br>
+
+<tt>6 </tt><tt>Jun</tt><tt> -Improve and test timing code.  Begin to work out details of</tt><br>
+
+<tt>extenally controlling components.  Get Matt's modified CSA working with</tt><br>
+
+<tt>UDP.</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* Basically this week will be mainly setting the groundwork.  The timing</tt><br>
+
+<tt>code will let me write components which talk nicely and accurately</tt><br>
+
+<tt>(&lt;1ms) in music timing (beats, bars, bpm etc).</tt><br>
+
+<tt>* Externally controlling components = getting data from an inbox (the</tt><br>
+
+<tt>network eventually) to control UI elements.  I think this will take a</tt><br>
+
+<tt>couple of goes to get right, so start to look at it here.</tt><br>
+
+<tt>* Modified CSA with UDP.  This will let me receive data over a UDP port</tt><br>
+
+<tt>without using 100% CPU.</tt><br>
+
+<br>
+
+<tt>16</tt><tt> </tt><tt>Jun</tt><tt> - Write basic networking code, allowing two users to communicate.</tt><br>
+
+<tt>Test out network communication, and make strange twiddly noises with</tt><br>
+
+<tt>someone :)</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* At the end of the week there should be two people at different</tt><br>
+
+<tt>computers controlling XY pads on each others computers.  As you say this</tt><br>
+
+<tt>is probably a bit pessimistic timing-wise, but I'm not very hot on</tt><br>
+
+<tt>networking, so have given a bit of leeway here for me to get up to</tt><br>
+
+<tt>speed.</tt></p><p><br>============================================================</p><p>
+<br><tt>9 </tt><tt>Jun</tt><tt> - Various bits of documentation.  Package everything up and test it out.</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* Packaging everything - in the week before I should have got to the</tt><br>
+
+<tt>point where I have a (albeit unexciting) working networked music app.</tt><br>
+
+<tt>Seems like a good point to test out packaging - so I should have a</tt><br>
+
+<tt>working distribution of it for the big three, which can be easily</tt><br>
+
+<tt>tested.</tt><br>
+
+<br><tt>16 </tt><tt>Jun</tt><tt> - Get multiple client networking code working - sort out how having</tt><br>
+
+<tt>lots of users will work practically.</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* Again, maybe a bit pessimistic.  By the end of the week have a system</tt><br>
+
+<tt>where multiple users can join in a session and control XY pads.  Again I</tt><br>
+
+<tt>think this may take a couple of goes to get right practically.</tt><br>
+
+<br><tt>23 Jun - Write the step sequencer</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* Working step sequencer which can be used by as many users as you like.</tt><br>
+
+<br>30 Jun<tt> - Write the piano roll (add/delete functionality)</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* Working piano roll, where users can add and delete notes.</tt><br>
+
+<br><tt>7 Jul</tt><tt> - Extend the piano roll (move/resize functionality)</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* Users will be able to move and resize notes at will - basically a</tt><br>
+
+<tt>complete network enabled step sequencer</tt></p><p>14 Jul - Add in various filters to make Jam work with midi out, and make sure midi component is up to scratch and working.</p><p>Functionality:<br>* A version of Jam which can switch between MIDI and OSC output for local control<br></p><p>
+<br>21 <tt>Jul</tt><tt> - Write "glue" code and fix up details (peer select widget, any</tt><br>
+
+<tt>extra UI niceness, port/socket configuration etc.)</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* Deliver the above - program should be basically "complete" and ready</tt><br>
+
+<tt>for packaging here.</tt><br>
+
+<br>28 <tt>Jul - Finish off detail, have a look at "extra" components (hopefully)</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* Detail = package it up, make sure everything is well tested, prepare</tt><br>
+
+<tt>things which need to be merged but haven't, any other stuff which needs</tt><br>
+
+<tt>doing and I've overlooked :)</tt></p><p>4 Aug - End - Any overrun fits here.  Also work on extra components (Arduino, Multitouch etc)<br></p><p>
+
+===============================================================<br>
+
+<tt>11</tt><tt> Aug</tt><tt> - Code cleanup, write documentation and test cases</tt><br>
+
+<tt>Functionality:</tt><br>
+
+<tt>* I'll do this as I go along - put this in because Google recommend it</tt><br>
+
+<tt>as your "pens down" date.  I guess this week can work as a bit of a</tt><br>
+
+<tt>buffer for overrun, or to sort out any of my extras stuff a bit more.</tt>
+</p>
+<br>
+
+
+
+
+
+
+
+
+
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,544 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.Ipc </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.Ipc">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.Ipc</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a></h2>
+</div>
+</div>
+<div class="section">
+<h1>IPC message classes</h1>
+<div class="container">
+<ul class="simple">
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.WaitComplete.html">WaitComplete</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.errorInformation.html">errorInformation</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.ipc.html">ipc</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.newComponent.html">newComponent</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.notify.html">notify</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.producerFinished.html">producerFinished</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.reactivate.html">reactivate</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.shutdown.html">shutdown</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">shutdownMicroprocess</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.status.html">status</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Ipc.wouldblock.html">wouldblock</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#65">Shutting down components</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#66">Knock-on shutdowns between microprocesses</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#67">shutdown vs shutdownMicroprocess</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#68">Setting off a new microprocess and waiting for it to complete</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#69">Test documentation</a><ul>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<p>Some standard IPC messages used by Axon. The base class for all IPC classes is
+ipc.</p>
+<p>Some purposes for which these can be used are described below. This is not
+exhaustive and does <em>not</em> cover all of the Ipc classes defined here!</p>
+<div class="section">
+<h2 id="65"><a id="shutting-down-components" name="shutting-down-components">Shutting down components</a></h2>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a></li>
+<li><a class="reference" href="/Docs/Axon/Axon.Ipc.producerFinished.html">Axon.Ipc.producerFinished</a></li>
+</ul>
+<p>If you want to order a component to stop, most will do so if you send either of
+these ipc objects to their &quot;control&quot; inbox. When a component does stop, most
+send on the same message they received out of their &quot;signal&quot; outbox (or a
+message of their own creation if they decided to shutdown without external
+prompting)</p>
+<p>Producer components, such as file readers or network connections will send a
+producerFinished() ipc object rather than shutdownMicroprocess() to indicate
+that the shutdown is due to them finishing producing data.</p>
+<p>You can therefore link up components in a chain - linking &quot;signal&quot; outboxes to
+&quot;control&quot; inboxes to allow shutdown messages to cascade - making it easier to
+shutdown and clean up a system.</p>
+<p>How should components behave when they receive either of these Ipc messages?
+In most cases, components simply shut down as soon as possible and send the same
+message on out of their &quot;signal&quot; outbox. However many components behave slightly
+more subtley to ensure the last few items of data passing throuhg a chain of
+components are not accidentally lost:</p>
+<ul class="simple">
+<li>If the message is a producerFinished() message, then a component may wish to
+finish processing any data still left in its inboxes or internal buffers
+before terminating and passing on the producerFinished() message.</li>
+<li>If the message is a shutdownMicroprocess() message, then a component should
+ideally try to terminate rather than finish what it is doing.</li>
+</ul>
+<p>Many components therefore containg logic similar to this:</p>
+<pre class="literal-block">
+class MyComponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    def main(self):
+
+        while still got things to do and not received &quot;shutdownMicroprocess&quot;:
+            ..do things..
+            ..check &quot;control&quot; inbox..
+            yield 1
+
+        if not received any shutdown message:
+            self.send(<a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a>(), &quot;signal&quot;)
+        else:
+            self.send(message received, &quot;signal&quot;)
+</pre>
+<p>producerFinished() can be likened to notification of a clean shutdown - rather
+like a unix process closing its stdout file handle when it finishes.
+shutdownMicroproces() is more like a hard termination due to a system being
+interrupted.</p>
+</div>
+<div class="section">
+<h2 id="66"><a id="knock-on-shutdowns-between-microprocesses" name="knock-on-shutdowns-between-microprocesses">Knock-on shutdowns between microprocesses</a></h2>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a></li>
+</ul>
+<p>When a microprocess terminates, the scheduler calls its <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess._closeDownMicroprocess.html">Axon.Microprocess.microprocess._closeDownMicroprocess</a>()
+method. This method can return an <a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a> ipc object, for
+example:</p>
+<pre class="literal-block">
+def _closeDownMicroprocess(self):
+    return <a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a>(anotherMicroprocess)
+</pre>
+<p>The scheduler will ensure that other microprocess is also shut down.</p>
+</div>
+<div class="section">
+<h2 id="67"><a id="shutdown-vs-shutdownmicroprocess" name="shutdown-vs-shutdownmicroprocess">shutdown vs shutdownMicroprocess</a></h2>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Ipc.shutdown.html">Axon.Ipc.shutdown</a></li>
+<li><a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a></li>
+</ul>
+<p>You may notice that shutdownMicroprocess appears to be used for two purposes -
+knock-on shutdowns and signalling component shutdown.</p>
+<p><a class="reference" href="/Docs/Axon/Axon.Ipc.shutdown.html">Axon.Ipc.shutdown</a> was originally intended to be used rather than
+<a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">Axon.Ipc.shutdownMicroprocess</a>; however because most components support the
+latter (which was an accidental mistake) the latter should continue to be used.</p>
+<p>Axon may at some stage make these two Ipc classes synonyms for each other to
+resolve this issue, but this decision has not been taken yet.</p>
+</div>
+<div class="section">
+<h2 id="68"><a id="setting-off-a-new-microprocess-and-waiting-for-it-to-complete" name="setting-off-a-new-microprocess-and-waiting-for-it-to-complete">Setting off a new microprocess and waiting for it to complete</a></h2>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Ipc.WaitComplete.html">Axon.Ipc.WaitComplete</a></li>
+<li><a class="reference" href="/Docs/Axon/Axon.Ipc.reactivate.html">Axon.Ipc.reactivate</a></li>
+</ul>
+<p>Used by:</p>
+<ul class="simple">
+<li>components / microprocesses</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Scheduler.scheduler.html">Axon.Scheduler.scheduler</a></li>
+</ul>
+<p>A microprocess can yield a WaitComplete() Ipc message to the scheduler to ask
+for another microprocess to be started. When that second microprocess completes,
+the original one resumes - it waits until the second one completes.</p>
+<p>This is a nice little way to sidestep the restriction in python that you can't
+nest yield statements for a given generator inside methods/functions it calls.</p>
+<p>For example, here's a clean way to wait for data arriving at the &quot;inbox&quot; inbox
+of a component:</p>
+<pre class="literal-block">
+class MyComponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>):
+
+    def main(self):
+        ...
+        yield WaitComplete(self.waitForInbox())
+        msg = self.recv(&quot;inbox&quot;)
+
+    def waitForInbox(self):
+        while not self.dataReady(&quot;inbox&quot;):
+            yield 1
+</pre>
+<p>Internally, the scheduler uses <a class="reference" href="/Docs/Axon/Axon.Ipc.reactivate.html">Axon.Ipc.reactivate</a> to ensure the original
+microprocess is resumed after the one that was launched terminates.</p>
+</div>
+<h1 id="69">Test documentation</h1>
+<p>Tests passed:</p>
+<ul class="simple">
+<li>errorInformation.__init__ - Takes the supplied caller, and creates an errorInformation object. Checks errorInformation object is an instance of ipc.</li>
+<li>errorInformation.__init__ - An exception &amp; message (any object) in addition to the caller to provide a more meaningful errorInformation message where appropriate. ttbw</li>
+<li>errorInformation.__init__ - Called without arguments fails - must include caller.</li>
+<li>ipc - Should be derived from object.</li>
+<li>newComponent.__init__ - Groups all the arguments as a tuple of components that need to be activated/added to the run queue. Order is unimportant, scheduler doesn't care.</li>
+<li>newComponent.__init__ - Should work without problems.</li>
+<li>newComponent.components - Returns a tuple of components that need to be added to the run queue/activated. Same test as for __init__ as they are counterparts.</li>
+<li>notify.__init__ - Creates a message from a specific caller with some data payload to notify part of the system of an event.</li>
+<li>notify.__init__ - Called without arguments fails.</li>
+<li>test_SmokeTest.__init__ - Creates a producerFinished message with specified caller &amp; shutdown 'last' message.</li>
+<li>producerFinished.__init__ - Called without arguments defaults to a caller of None, message of None.  Checks producerFinished is a subclass of ipc</li>
+<li>shutdownMicroprocess.__init__ - Treats all the arguments as a tuple of microprocesses that need to be shutdown.</li>
+<li>shutdownMicroprocess.__init__ - Should work without problems.</li>
+<li>shutdownMicroprocess.microprocesses- Returns the list of microprocesses that need to be shutdown. This is essentially the counterpart to the __init__ test.</li>
+<li>status.__init__ - Stores the status message - for extraction by the recipient of the message.  Checks object is instance of ipc.</li>
+<li>status.__init__ - Called without arguments fails.</li>
+<li>status.status - Returns the status message stored inside the status object.  Counterpart to __init__ test.</li>
+<li>wouldblock.__init__ - Stores the caller in the wouldblock message. Allows the scheduler to make a decision.  Checks wouldblock is a subclass of ipc.</li>
+<li>wouldblock.__init__ - Called without arguments fails.</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.WaitComplete.html">WaitComplete</a></h1>
+<div class="section">
+<h2 id="symbol-WaitComplete">class WaitComplete(ipc)</h2>
+<div class="section">
+<p>WaitComplete(generator) -&gt; new WaitComplete object.</p>
+<p>Message to ask the scheduler to temporarily suspect this microprocess and
+run a new one instead based on the generator provided; resuming the original
+when the new one completes.</p>
+<p>Use within a microprocess by yielding one back to the scheduler.</p>
+<p>Arguments:</p>
+<ul class="simple">
+<li>the generator to be run as the separate microprocess</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-WaitComplete.__init__" name="symbol-WaitComplete.__init__">__init__(self, *args, **argd)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.errorInformation.html">errorInformation</a></h1>
+<div class="section">
+<h2 id="symbol-errorInformation">class errorInformation(ipc)</h2>
+<div class="section">
+<p>errorInformation(caller[,exception][,message]) -&gt; new errorInformation ipc message.</p>
+<p>A message to indicate that a non fatal error has occured in the component.
+It may skip processing errored data but should respond correctly to future
+messages.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>caller     -- the source of the error information. Assigned to self.caller</li>
+<li>exception  -- Optional. None, or the exception that caused the error. Assigned to self.exception</li>
+<li>message    -- Optional. None, or a message describing the problem. Assigned to self.message</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-errorInformation.__init__" name="symbol-errorInformation.__init__">__init__(self, caller[, exception][, message])</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.ipc.html">ipc</a></h1>
+<div class="section">
+<h2 id="symbol-ipc">class ipc(object)</h2>
+<div class="section">
+Message base class</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.newComponent.html">newComponent</a></h1>
+<div class="section">
+<h2 id="symbol-newComponent">class newComponent(ipc)</h2>
+<div class="section">
+<p>newComponent(*components) -&gt; new newComponent ipc message.</p>
+<p>Message used to inform the scheduler of a new component that needs a thread
+of control and activating.</p>
+<p>Use within a microprocess by yielding one back to the scheduler.</p>
+<p>Arguments:</p>
+<ul class="simple">
+<li>the components to be activated</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-newComponent.__init__" name="symbol-newComponent.__init__">__init__(self, *components)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-newComponent.components" name="symbol-newComponent.components">components(self)</a></h4>
+<p>Returns the list of components to be activated</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.notify.html">notify</a></h1>
+<div class="section">
+<h2 id="symbol-notify">class notify(ipc)</h2>
+<div class="section">
+<p>notify(caller,payload) -&gt; new notify ipc message.</p>
+<p>Message used to notify the system of an event. Subclass to implement your own
+specific notification messages.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>caller   -- a reference to whoever/whatever issued this notification. Assigned to self.caller</li>
+<li>payload  -- any relevant payload relating to the notification. Assigned to self.object</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-notify.__init__" name="symbol-notify.__init__">__init__(self, caller, payload)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.producerFinished.html">producerFinished</a></h1>
+<div class="section">
+<h2 id="symbol-producerFinished">class producerFinished(ipc)</h2>
+<div class="section">
+<p>producerFinished([caller][,message]) -&gt; new producerFinished ipc message.</p>
+<p>Message to indicate that the producer has completed its work and will produce
+no more output. The receiver may wish to shutdown.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>caller   -- Optional. None, or the producer who has finished. Assigned to self.caller</li>
+<li>message  -- Optional. None, or a message giving any relevant info. Assigned to self.message</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-producerFinished.__init__" name="symbol-producerFinished.__init__">__init__(self[, caller][, message])</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.reactivate.html">reactivate</a></h1>
+<div class="section">
+<h2 id="symbol-reactivate">class reactivate(ipc)</h2>
+<div class="section">
+<p>reactivate(original) -&gt; new reactivate ipc message.</p>
+<p>Returned by <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess._closeDownMicroprocess.html">Axon.Microprocess.microprocess._closeDownMicroprocess</a>() to the
+scheduler to get another microprocess reactivated.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>original  -- The original microprocess to be resumed. Assigned to self.original</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-reactivate.__init__" name="symbol-reactivate.__init__">__init__(self, original)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.shutdown.html">shutdown</a></h1>
+<div class="section">
+<h2 id="symbol-shutdown">class shutdown(ipc)</h2>
+<div class="section">
+<p>Message used to indicate that the component recieving it should shutdown.</p>
+<p>Due to legacy mistakes, use shutdownMicroprocess instead.</p>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.shutdownMicroprocess.html">shutdownMicroprocess</a></h1>
+<div class="section">
+<h2 id="symbol-shutdownMicroprocess">class shutdownMicroprocess(ipc)</h2>
+<div class="section">
+<p>shutdownMicroprocess(*microprocesses) -&gt; new shutdownMicroprocess ipc message.</p>
+<p>Message used to indicate that the component recieving it should shutdown.
+Or to indicate to the scheduler a shutdown knockon from a terminating
+microprocess.</p>
+<p>Arguments:</p>
+<ul class="simple">
+<li>the microprocesses to be shut down (when used as a knockon)</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-shutdownMicroprocess.__init__" name="symbol-shutdownMicroprocess.__init__">__init__(self, *microprocesses)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-shutdownMicroprocess.microprocesses" name="symbol-shutdownMicroprocess.microprocesses">microprocesses(self)</a></h4>
+<p>Returns the list of microprocesses to be shut down</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.status.html">status</a></h1>
+<div class="section">
+<h2 id="symbol-status">class status(ipc)</h2>
+<div class="section">
+<p>status(status) -&gt; new status ipc message.</p>
+<p>General Status message.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>status  -- the status.</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-status.__init__" name="symbol-status.__init__">__init__(self, status)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-status.status" name="symbol-status.status">status(self)</a></h4>
+<p>Returns what the status is</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.html">Ipc</a>.<a class="reference" href="/Docs/Axon/Axon.Ipc.wouldblock.html">wouldblock</a></h1>
+<div class="section">
+<h2 id="symbol-wouldblock">class wouldblock(ipc)</h2>
+<div class="section">
+<p>wouldblock(caller) -&gt; new wouldblock ipc message.</p>
+<p>Message used to indicate to the scheduler that the system is likely to block
+now.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>caller  -- who it is who is likely to block (presumably a microprocess). Assigned to self.caller</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-wouldblock.__init__" name="symbol-wouldblock.__init__">__init__(self, caller)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

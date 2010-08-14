@@ -1,0 +1,97 @@
+<html><body><table>
+            <tr><td>[01:46] *** [1]Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[02:04] *** [1]Lawouach is now known as Lawouach</td></tr>
+            <tr><td>[07:28] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:28] *** Lawouach_ has parted #kamaelia</td></tr>
+            <tr><td>[07:28] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[08:21] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:28] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:50] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[09:51] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[09:55] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[10:29] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[10:53] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[10:55] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:49] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:28] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[13:30] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[13:31] &lt Davbo&gt Hey all.</td></tr>
+            <tr><td>[13:33] &lt orphans&gt hey folks</td></tr>
+            <tr><td>[13:33] &lt orphans&gt how's anyones understanding of json?</td></tr>
+            <tr><td>[15:19] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[15:22] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[15:44] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[15:45] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:18] *** robertofaga has parted #kamaelia</td></tr>
+            <tr><td>[16:27] *** robertofaga has joined #kamaelia</td></tr>
+            <tr><td>[16:34] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:37] &lt Davbo&gt j_baker: looked through your stuff in examples made some remarks here: http://edit.kamaelia.org/Developers/Projects/KamaeliaPublish/Review</td></tr>
+            <tr><td>[16:38] &lt j_baker&gt Awesome. I'll take a look at it.</td></tr>
+            <tr><td>[16:39] &lt j_baker&gt That error that you got is an internal error for the URL routing.</td></tr>
+            <tr><td>[16:40] &lt j_baker&gt I'll take a look at it and see what went wrong.</td></tr>
+            <tr><td>[16:40] &lt Davbo&gt "Page found, but app object missing." is what it says fwiw</td></tr>
+            <tr><td>[16:41] &lt j_baker&gt I suppose a better error message would have been "module found, but app object missing"</td></tr>
+            <tr><td>[16:42] &lt Davbo&gt Yeah, something not so contrary to the 404</td></tr>
+            <tr><td>[16:42] &lt j_baker&gt Well, what probably needs to be done is just show a regular old 404 or 500 error message to the end user, but make a more pertinent message in the log.</td></tr>
+            <tr><td>[16:43] &lt Davbo&gt Yes, good idea</td></tr>
+            <tr><td>[16:44] &lt j_baker&gt Did you try installing Kamaelia and Axon from my branch?</td></tr>
+            <tr><td>[16:44] &lt Davbo&gt Yeah have done</td></tr>
+            <tr><td>[16:44] &lt Davbo&gt ﻿That or a debug/production flag when you create the server. So more verbose errors can be given from a development server</td></tr>
+            <tr><td>[16:45] &lt j_baker&gt Yup, that's actually what Kamaelia WebServe does. You can turn the message level up or down to change the verbosity.</td></tr>
+            <tr><td>[16:46] &lt Davbo&gt wait a second, I installed from private_JMB_Wsgi, ...you have a few branches</td></tr>
+            <tr><td>[16:46] &lt j_baker&gt That's the correct one.</td></tr>
+            <tr><td>[16:46] &lt j_baker&gt I'm probably just going to delete the other two.</td></tr>
+            <tr><td>[16:47] &lt j_baker&gt Actually, mhrd-afk: If I want to remove a branch, can I just svn rm it or should I move it to the rejected folder? (when you get a chance to answer me)</td></tr>
+            <tr><td>[16:49] *** j_baker is deleting something from his site-packages directory. Wish me luck.</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[16:49] &lt Davbo&gt There must be a better way to manage site-packages</td></tr>
+            <tr><td>[16:49] &lt j_baker&gt I agree. It would be awesome if there was an easy_remove in addition to easy_install</td></tr>
+            <tr><td>[16:50] &lt vmlemon_&gt impossible_remove! ;)</td></tr>
+            <tr><td>[16:53] &lt j_baker&gt I'm an idiot. :P</td></tr>
+            <tr><td>[16:53] &lt Davbo&gt what's up?</td></tr>
+            <tr><td>[16:53] &lt Davbo&gt you didn't delete site-packages again did you?</td></tr>
+            <tr><td>[16:53] &lt j_baker&gt I wanted to test out the error handling in my WSGI URL routing, so I changed the application object to something that doesn't exist.</td></tr>
+            <tr><td>[16:54] &lt j_baker&gt And forgot to change it back. :)</td></tr>
+            <tr><td>[16:54] &lt j_baker&gt Give me a couple minutes and I'll check the changes in.</td></tr>
+            <tr><td>[16:54] &lt Davbo&gt simple_foop?</td></tr>
+            <tr><td>[16:55] &lt j_baker&gt Yup. I meant to just change it to "foo", but somehow, that's what I got.</td></tr>
+            <tr><td>[16:56] &lt Davbo&gt hehe, i was going to suggest it might be that as it looked like an odd name :)</td></tr>
+            <tr><td>[16:56] &lt j_baker&gt Ok, if you update now, it should work (you can also change it to 'simple_app' if you don't want to wait on that)</td></tr>
+            <tr><td>[16:58] &lt Davbo&gt ah here we are, that's one bug sorted :)</td></tr>
+            <tr><td>[17:00] &lt j_baker&gt I'll work on the documentation some in the cookbook example.</td></tr>
+            <tr><td>[17:01] &lt j_baker&gt I deleted a significant chunk of the code that was in it and moved it into the Kamaelia branch. But that means that I also deleted a significant amound of the documentation too.</td></tr>
+            <tr><td>[17:01] &lt Davbo&gt the first one is fine, just a bit more on the second would be appreciated</td></tr>
+            <tr><td>[17:01] *** Davbo feels hypocritical :-)</td></tr>
+            <tr><td>[17:02] &lt j_baker&gt No need to. Programming's kind of like solitaire: it's always easiest when you're not the one doing it. :)</td></tr>
+            <tr><td>[17:03] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[17:17] &lt j_baker&gt FYI, I added to cookbook_2.py's documentation some.</td></tr>
+            <tr><td>[17:45] &lt j_baker&gt Lawouach, Lawouach_: Are there any release notes for headstock 0.2.0 (just so I have an idea of what changed)?</td></tr>
+            <tr><td>[17:53] &lt Lawouach&gt the trac timeline is your best bet</td></tr>
+            <tr><td>[17:53] &lt Lawouach&gt not much happened except from the PubSub components</td></tr>
+            <tr><td>[17:54] &lt Lawouach&gt a few other minor feature fixing</td></tr>
+            <tr><td>[17:54] &lt Lawouach&gt nothing changed api/design wise</td></tr>
+            <tr><td>[17:55] &lt j_baker&gt Ok. I tried it out with the updated version, but everything ran fine without modification.</td></tr>
+            <tr><td>[17:55] &lt Lawouach&gt sounds good to me :)</td></tr>
+            <tr><td>[17:55] &lt j_baker&gt But it's nice to make sure there's not something I'm missing.</td></tr>
+            <tr><td>[18:00] &lt Davbo&gt j_baker: you tested the performance of your http stuff?</td></tr>
+            <tr><td>[18:00] &lt Davbo&gt something like httperf</td></tr>
+            <tr><td>[18:00] &lt j_baker&gt Which parts of it?</td></tr>
+            <tr><td>[18:00] &lt j_baker&gt Do you mean the system as a whole?</td></tr>
+            <tr><td>[18:00] &lt Davbo&gt load testing the server</td></tr>
+            <tr><td>[18:01] &lt j_baker&gt I did run some stress tests on Kamaelia WebServe (but not on Kamaelia Publish)</td></tr>
+            <tr><td>[18:01] &lt Davbo&gt Well, FYI: http://www.linux.com/feature/143896</td></tr>
+            <tr><td>[18:01] &lt Davbo&gt if you're interested :)</td></tr>
+            <tr><td>[18:01] &lt j_baker&gt Ah, that is helpful.</td></tr>
+            <tr><td>[18:02] &lt j_baker&gt I used siege, but it's nice to know there are others.</td></tr>
+            <tr><td>[18:02] &lt j_baker&gt You may want to run some stress tests as I haven't run any in a while.</td></tr>
+            <tr><td>[18:02] &lt j_baker&gt But keep in mind that as of right now, I'm designing this for low load systems, so it will probably have problems on high levels of concurrency.</td></tr>
+            <tr><td>[18:03] &lt Davbo&gt Yeah, I was going to anyway. Just checking if you'd already done any</td></tr>
+            <tr><td>[18:03] *** Davbo nods</td></tr>
+            <tr><td>[18:03] &lt j_baker&gt Cool. Let me know how it goes.</td></tr>
+            <tr><td>[18:04] &lt Davbo&gt I'm not doing it as a test, just for fun really.</td></tr>
+            <tr><td>[18:04] &lt j_baker&gt :)</td></tr>
+            <tr><td>[18:05] &lt j_baker&gt It really is the part of programming that you should avoid doing the most if you don't have to, but we always seem to do it. Being able to have a fast webserver is just so cool. :)</td></tr>
+            <tr><td>[20:33] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:02] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[21:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:52] *** vmlemon_ has joined #kamaelia</td></tr>

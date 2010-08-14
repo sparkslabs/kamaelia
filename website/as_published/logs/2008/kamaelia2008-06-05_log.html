@@ -1,0 +1,784 @@
+<html><body><table>
+            <tr><td>[00:04] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[06:42] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[06:49] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[06:49] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[07:22] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[07:42] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[07:42] &lt Chong-&gt Morning, all.</td></tr>
+            <tr><td>[08:01] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[08:01] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[08:09] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[08:20] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:42] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[08:45] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[08:52] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[09:13] &lt MS-&gt Excellent, spam deletion tool is now a spam grabber/saver as well as deleter. (enabling the next step - which is to use it to train the part that assists with deletions)</td></tr>
+            <tr><td>[09:14] &lt MS-&gt The nice thing as well about *this* version is that testing it & debugging it also deletes spam</td></tr>
+            <tr><td>[09:14] &lt MS-&gt and if it gets it wrong, I can undo</td></tr>
+            <tr><td>[09:27] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:31] &lt Chong-&gt MS- : congratulations :-)</td></tr>
+            <tr><td>[09:34] *** Chong- wondering what rules the spam deletion tool uses to detect spams from normal mails</td></tr>
+            <tr><td>[09:43] &lt MS-&gt It remembers a decision I make</td></tr>
+            <tr><td>[09:43] &lt MS-&gt Essentially</td></tr>
+            <tr><td>[09:44] &lt MS-&gt It provides me a list of mail subject lines & from lines as candidates for deletion</td></tr>
+            <tr><td>[09:44] &lt MS-&gt those are chosen based on a phrases.txt</td></tr>
+            <tr><td>[09:44] &lt MS-&gt file which contains "known spam" subject lines</td></tr>
+            <tr><td>[09:44] &lt MS-&gt So that's essentially a blacklist file</td></tr>
+            <tr><td>[09:45] &lt MS-&gt The subject lines for things not scheduled for deletion are also shown, making it easy for me to copy and paste that into another file for whittling down</td></tr>
+            <tr><td>[09:45] &lt MS-&gt I copy and paste back the known spam lines and rerun</td></tr>
+            <tr><td>[09:45] &lt MS-&gt I repeat until I get to the end of the mails, left with just non-spam</td></tr>
+            <tr><td>[09:46] &lt MS-&gt But the key thing is rather than it making the decisions, it remembers the decisions I've already made and asks for confirmation</td></tr>
+            <tr><td>[09:46] &lt MS-&gt It now also remembers the mails it will delete</td></tr>
+            <tr><td>[09:46] &lt MS-&gt Beyond that, I've decided to leave my out of office mailer on *all the time* instead of hardly ever</td></tr>
+            <tr><td>[09:47] &lt MS-&gt This almost doubles the number of emails I get because sending an out of office message in response to a spam</td></tr>
+            <tr><td>[09:47] &lt MS-&gt usually results in an undeliverable error message</td></tr>
+            <tr><td>[09:47] &lt MS-&gt That's often called "backscatter" and can be considered a problem</td></tr>
+            <tr><td>[09:48] &lt MS-&gt However, if you delay picking up mail, those "undeliverable" error messages suddenly contain useful information</td></tr>
+            <tr><td>[09:48] &lt MS-&gt because they tell you (with a very high likelihood) which emails you've received are spam</td></tr>
+            <tr><td>[09:49] &lt MS-&gt so you can use those mails to train the blacklister</td></tr>
+            <tr><td>[09:49] &lt MS-&gt I've not done that yet</td></tr>
+            <tr><td>[09:49] &lt MS-&gt Beyond that, this also means that after you've cleaned the inbox of all spam, you could also create a "ham collector" to grab a copy of all "non-spam"</td></tr>
+            <tr><td>[09:50] &lt Chong-&gt cool :)</td></tr>
+            <tr><td>[09:50] &lt MS-&gt leaving you with 2 very different directories - one with spam, one with ham, and use that to train a bayesian filter to capture the rest of the mails that aren't spam that aren't caught by the other method</td></tr>
+            <tr><td>[09:50] &lt MS-&gt Again, that's not done yet</td></tr>
+            <tr><td>[09:51] &lt MS-&gt If I go out of the office for 1 day though and come back to ~900 mails, 95-99% of which are spam, and the non-spam ones are urgent</td></tr>
+            <tr><td>[09:51] &lt MS-&gt that's a very very real problem</td></tr>
+            <tr><td>[09:51] &lt MS-&gt The nice thing about *testing* this software is that it makes my life easier as I do so</td></tr>
+            <tr><td>[09:51] &lt MS-&gt (since it reduces the spam in my inbox quicker than I could get rid of it otherwise)</td></tr>
+            <tr><td>[09:52] &lt Chong-&gt yes. it's awesome.</td></tr>
+            <tr><td>[09:52] &lt MS-&gt And yes, work *DOES* have a spam scanner</td></tr>
+            <tr><td>[09:52] &lt MS-&gt It does set X-Spam headers</td></tr>
+            <tr><td>[09:52] &lt Chong-&gt I heard of using bayesian learning for spam detection before</td></tr>
+            <tr><td>[09:52] &lt MS-&gt Big problem with it though:</td></tr>
+            <tr><td>[09:53] &lt MS-&gt X-Spam-Flag: NO</td></tr>
+            <tr><td>[09:53] &lt MS-&gt X-Spam-Score: 0</td></tr>
+            <tr><td>[09:53] &lt MS-&gt X-Spam-Level:</td></tr>
+            <tr><td>[09:53] &lt MS-&gt X-Spam-Status: No, score=0 tagged_above=-5 required=6.3 tests=[none]</td></tr>
+            <tr><td>[09:53] &lt MS-&gt For a mail that is clearly spam</td></tr>
+            <tr><td>[09:53] &lt MS-&gt For another mail, that should get scanned</td></tr>
+            <tr><td>[09:53] &lt MS-&gt And has the subjectL</td></tr>
+            <tr><td>[09:54] &lt MS-&gt Sorry, sender:</td></tr>
+            <tr><td>[09:54] &lt MS-&gt From: VIAGRA fficial Site</td></tr>
+            <tr><td>[09:54] &lt MS-&gt It doesn't even hit the spam scanning system for some reason, even though it *should*</td></tr>
+            <tr><td>[09:57] &lt Chong-&gt because X-Spam-Flag is NO ?</td></tr>
+            <tr><td>[09:57] &lt MS-&gt No, that's two seperate mails</td></tr>
+            <tr><td>[09:57] &lt MS-&gt Both should have those headers</td></tr>
+            <tr><td>[09:58] &lt MS-&gt The former should have those headers, and much higher numbers, and be flagged as spam</td></tr>
+            <tr><td>[09:58] &lt MS-&gt the latter which doesn't have them indicates it's bypassed the spam scanning completely</td></tr>
+            <tr><td>[09:58] &lt MS-&gt which is a real PITA</td></tr>
+            <tr><td>[09:59] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[09:59] &lt Chong-&gt X-Spam headers are set by the detector.</td></tr>
+            <tr><td>[09:59] &lt MS-&gt and it's falsely setting them to "it's not spam"</td></tr>
+            <tr><td>[10:00] &lt MS-&gt And it's also being bypassed by other spams</td></tr>
+            <tr><td>[10:01] &lt Chong-&gt Is it because it does not fit the spam rule or not scanned by the detector at all?</td></tr>
+            <tr><td>[10:01] &lt MS-&gt Both</td></tr>
+            <tr><td>[10:01] &lt MS-&gt Both issues are happening for some reason</td></tr>
+            <tr><td>[10:02] &lt MS-&gt As well as the fact my email bounces through 2 completely independent mail systems at work</td></tr>
+            <tr><td>[10:02] &lt MS-&gt ...@rd.bbc & ...@bbc</td></tr>
+            <tr><td>[10:02] &lt MS-&gt These issues are just with the former one</td></tr>
+            <tr><td>[10:02] &lt MS-&gt I believe the latter one has issue too - great huh?</td></tr>
+            <tr><td>[10:03] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[10:04] &lt Chong-&gt What's the percentage of the misdetect?</td></tr>
+            <tr><td>[10:04] &lt MS-&gt Of what ? The official system or my system?</td></tr>
+            <tr><td>[10:04] &lt MS-&gt My system seems pretty good so far, but that's because it's simply remembering every decision I make</td></tr>
+            <tr><td>[10:05] &lt MS-&gt The official system leaves me with 99% mails being spam *being actually delivered*</td></tr>
+            <tr><td>[10:05] &lt MS-&gt So I go out the office for a day, come back to 900 mails, and out of those, maybe 10-15 are *not* spam</td></tr>
+            <tr><td>[10:05] &lt MS-&gt I'm essentially hacking to make my email usable again</td></tr>
+            <tr><td>[10:06] &lt Chong-&gt is it because two message come at almost the same time and the second one escape the scan?</td></tr>
+            <tr><td>[10:06] &lt MS-&gt No</td></tr>
+            <tr><td>[10:06] &lt MS-&gt I don't maintain those systems</td></tr>
+            <tr><td>[10:06] &lt MS-&gt If I did, I would not have this problem</td></tr>
+            <tr><td>[10:07] &lt MS-&gt My home email runs a greylisting server I wrote, and I get zero spam directly there</td></tr>
+            <tr><td>[10:07] &lt Chong-&gt the result is awsome ;)</td></tr>
+            <tr><td>[10:07] &lt MS-&gt The only spam I get there is from mailing lists with bad spam filtering</td></tr>
+            <tr><td>[10:07] &lt MS-&gt (eg sourceforge lists)</td></tr>
+            <tr><td>[10:09] &lt Chong-&gt yes. most of sourceforge lists mails are annoying adverts.</td></tr>
+            <tr><td>[10:10] &lt MS-&gt If they *weren't* doing spam filtering there BTW, there would be *significantly* higher traffic through sourceforge</td></tr>
+            <tr><td>[10:12] &lt Chong-&gt yes. it's bad to become famous: target of spams :p</td></tr>
+            <tr><td>[10:13] &lt MS-&gt No, that has nothing to do with it.</td></tr>
+            <tr><td>[10:13] &lt MS-&gt Anyone who runs any domain will get spams</td></tr>
+            <tr><td>[10:13] &lt MS-&gt I have domain names which haven't been announced *anywhere* that get spammed</td></tr>
+            <tr><td>[10:14] &lt Chong-&gt heh :o</td></tr>
+            <tr><td>[10:15] &lt Chong-&gt MS- : I am considering create my branch. Which package/ directory do you suggest me to put my codes into?</td></tr>
+            <tr><td>[10:15] &lt MS-&gt The problem also is that the spammers are using markov chains (by the looks of things) to generate subject lines which doesn't help</td></tr>
+            <tr><td>[10:15] &lt MS-&gt Please look at what I did yesterday in private_MPS_JT</td></tr>
+            <tr><td>[10:16] *** Chong- looking</td></tr>
+            <tr><td>[10:18] &lt Chong-&gt So, maybe put them into Experimental/ first?</td></tr>
+            <tr><td>[10:29] &lt MS-&gt Chong-: It's your project, not mine. Please take ownership of it. Find somewhere that looks sensible and try it</td></tr>
+            <tr><td>[10:29] &lt MS-&gt If you're working in your own branch it doesn't affect anyone else</td></tr>
+            <tr><td>[10:29] &lt MS-&gt I wonder</td></tr>
+            <tr><td>[10:29] &lt MS-&gt I wonder how many people have heard the phrase "better to ask forgiveness, than to seek denial" ?</td></tr>
+            <tr><td>[10:30] &lt MS-&gt Kamaelia's SVN tree is specifically set up to allow people to NOT have to ask questions :)</td></tr>
+            <tr><td>[10:31] &lt MS-&gt Or rather to not have to ask permission. With the glaring exception being when you're treading on someone else's area or a shared area</td></tr>
+            <tr><td>[10:31] &lt MS-&gt  /trunk is a shared area, so requires discussion</td></tr>
+            <tr><td>[10:31] &lt MS-&gt  and /Sketches/&lt tag&gt and /branches/private_&lt tag&gt_anything is owned by specific people</td></tr>
+            <tr><td>[10:32] &lt MS-&gt so if you don't own those areas you have to ask</td></tr>
+            <tr><td>[10:32] &lt MS-&gt Whereas if you're creating anything in your own /Sketches/&lt tag&gt and /branches/private_&lt tag&gt_anything areas</td></tr>
+            <tr><td>[10:32] &lt MS-&gt you don't have to ask, try something and see what makes sense</td></tr>
+            <tr><td>[10:33] &lt MS-&gt My feeling is that your code should not be targetting Kamaelia.Experimental - it should be targetting the main tree</td></tr>
+            <tr><td>[10:33] &lt MS-&gt probably somewhere in Kamaelia.Visualisation</td></tr>
+            <tr><td>[10:33] &lt orphans&gt morning folks</td></tr>
+            <tr><td>[10:33] &lt MS-&gt And also in Kamaelia.UI.OpenGL</td></tr>
+            <tr><td>[10:33] &lt MS-&gt orphans: morning</td></tr>
+            <tr><td>[10:35] &lt orphans&gt MS-, what's the shell command which lets you see network traffic etc</td></tr>
+            <tr><td>[10:35] &lt Chong-&gt MS: thank you very much for your suggestion.</td></tr>
+            <tr><td>[10:35] &lt MS-&gt netstat -natp</td></tr>
+            <tr><td>[10:35] &lt Chong-&gt morning, orphans</td></tr>
+            <tr><td>[10:35] &lt orphans&gt morning Chong-</td></tr>
+            <tr><td>[10:35] &lt MS-&gt will tell you what connections are currently active and what's listening</td></tr>
+            <tr><td>[10:35] &lt orphans&gt brilliant - can never remember all them net tools</td></tr>
+            <tr><td>[10:36] &lt orphans&gt I'd be the worst sysadmin ever</td></tr>
+            <tr><td>[10:36] &lt MS-&gt man -k network</td></tr>
+            <tr><td>[10:36] &lt MS-&gt is your friend</td></tr>
+            <tr><td>[10:36] &lt MS-&gt apropos network</td></tr>
+            <tr><td>[10:36] &lt MS-&gt is the same thing</td></tr>
+            <tr><td>[10:36] &lt orphans&gt ooh, never knew that existed :)</td></tr>
+            <tr><td>[10:37] &lt MS-&gt And now I no longer need to perform that functionality :-)</td></tr>
+            <tr><td>[10:38] &lt orphans&gt :)</td></tr>
+            <tr><td>[10:38] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[10:48] &lt orphans&gt MS-, you got a minute to look at some code?</td></tr>
+            <tr><td>[10:51] &lt MS-&gt Not at the moment I'm afraid</td></tr>
+            <tr><td>[10:51] &lt MS-&gt This evening, yes</td></tr>
+            <tr><td>[10:52] &lt orphans&gt no probs - it's not something too difficult, I'll try and corner Lawouach, Lawouach_ or mhrd :D</td></tr>
+            <tr><td>[10:52] &lt orphans&gt only asked cause you were around</td></tr>
+            <tr><td>[10:52] &lt Lawouach&gt I'll be available once back at work. About to go back so in 30 mns or so</td></tr>
+            <tr><td>[10:53] &lt orphans&gt cheers Lawouach</td></tr>
+            <tr><td>[11:20] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:27] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[11:58] &lt Lawouach_&gt I'm back BTW</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt Forgot to ping you back orphans</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[11:59] &lt orphans&gt ahh, hey :)</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt well you did too :à)</td></tr>
+            <tr><td>[11:59] &lt orphans&gt can you see anything obvious wrong with NewDP.py?</td></tr>
+            <tr><td>[12:00] &lt orphans&gt Sketches/JT/Jam/library/trunk/Kamaelia/Apps/Jam/Internet/NewDP.py</td></tr>
+            <tr><td>[12:00] &lt Lawouach_&gt I'm at work</td></tr>
+            <tr><td>[12:00] &lt Lawouach_&gt do you have the HTTP url?</td></tr>
+            <tr><td>[12:00] &lt orphans&gt it all seems to run OK, but I never get any messages on ReadReady</td></tr>
+            <tr><td>[12:01] &lt orphans&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/JT/Jam/library/trunk/Kamaelia/Apps/Jam/Internet/NewDP.py?revision=4187&view=markup</td></tr>
+            <tr><td>[12:02] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[12:02] &lt Lawouach_&gt looking</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt orphans: try adding a yield 1 right before the while loop</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt sometimes it helps</td></tr>
+            <tr><td>[12:04] &lt Lawouach_&gt Don't believe so here but costs nothing to try :)</td></tr>
+            <tr><td>[12:05] &lt orphans&gt no difference</td></tr>
+            <tr><td>[12:05] &lt orphans&gt fwiw I'm using Jam.py as a client - don't think it should make any difference</td></tr>
+            <tr><td>[12:07] &lt orphans&gt does the use of selector look right - I didn't know whether I needed to make the new selector a child of the component?</td></tr>
+            <tr><td>[12:08] &lt orphans&gt or whether that was done for some other reason in CSA</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt I'm trying to understand what you wrote</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[12:08] &lt orphans&gt :)</td></tr>
+            <tr><td>[12:09] &lt orphans&gt the selector docs tell you to look at TCPClient, but that's got a load of CSA stuff in, so I'm not 100% that I'm doing it right at all :)</td></tr>
+            <tr><td>[12:10] &lt Lawouach_&gt have you checked with wireshark you were having data accross the wire?</td></tr>
+            <tr><td>[12:10] &lt orphans&gt no. netstat shows that it binds to the port OK</td></tr>
+            <tr><td>[12:10] &lt orphans&gt I'll try it now</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt AFAIK, the CSA and TCPClient should be almost exactly the same with UDP</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt except you wouldn't use safeConnect but justa bind as you did</td></tr>
+            <tr><td>[12:12] &lt orphans&gt MS- said I shouldn't be using CSA for this though</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt and that from the CSA you call readFrom/sendTo instead</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt Hmm.</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt Wonder why</td></tr>
+            <tr><td>[12:12] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[12:12] &lt orphans&gt I think just that it's a bit overkill</td></tr>
+            <tr><td>[12:12] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt The socket module abstracts enough so that you really don't care much about the low level differences between UDP and TCP</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt so those components are very similar</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt CSA would be renamed BSA for BoundSocketAdapter for instance :)</td></tr>
+            <tr><td>[12:14] &lt orphans&gt yeah, that was what I was doing before MS- said to just use Selector :)</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt Right. He must have had good reasons :)</td></tr>
+            <tr><td>[12:15] &lt orphans&gt I think it's cause UDP doesn't use connect etc, so you can do it easier without</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt Side, unrelated note, I don't usually call self.pause() without a if not self.anyReady():</td></tr>
+            <tr><td>[12:16] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt orphans: the CSA's main point is to deal and propagate correctly any issues on the socket</td></tr>
+            <tr><td>[12:17] &lt Lawouach_&gt It simply wraps the socket calls</td></tr>
+            <tr><td>[12:17] &lt Lawouach_&gt Doesn't actually domuch more</td></tr>
+            <tr><td>[12:17] &lt Lawouach_&gt and you'll probably need that safety later on</td></tr>
+            <tr><td>[12:17] &lt Lawouach_&gt But I guess to start up with it's easier without the CSA burden indeed</td></tr>
+            <tr><td>[12:18] &lt Lawouach_&gt For now keep your design as he adevised and let's try to see why you can't read data</td></tr>
+            <tr><td>[12:18] &lt vmlemon_&gt Hmm, any idea where stuff like SCTP, UDP-Lite and IPv6 fit in to the big picture?</td></tr>
+            <tr><td>[12:18] &lt orphans&gt yeah. the safeRecv is pretty much copied line for line from it anyway</td></tr>
+            <tr><td>[12:18] &lt Lawouach_&gt vmlemon_: Refine.</td></tr>
+            <tr><td>[12:19] &lt orphans&gt Lawouach_: how do you get wireshark to work over localhost?</td></tr>
+            <tr><td>[12:20] &lt Lawouach_&gt 127.0.0.1</td></tr>
+            <tr><td>[12:20] &lt Lawouach_&gt uset he loopback</td></tr>
+            <tr><td>[12:20] &lt Lawouach_&gt s/he/the</td></tr>
+            <tr><td>[12:21] &lt orphans&gt dumpcap: There are no interfaces on which a capture can be done</td></tr>
+            <tr><td>[12:21] &lt orphans&gt :(</td></tr>
+            <tr><td>[12:22] &lt orphans&gt ahh, gotta run as root</td></tr>
+            <tr><td>[12:22] &lt Lawouach_&gt yes</td></tr>
+            <tr><td>[12:23] &lt orphans&gt mm, stuff is definitely getting sent. It says that the UDP checksums are incorrect though</td></tr>
+            <tr><td>[12:24] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[12:25] &lt orphans&gt ahh, from a google that seems to not matter though - just some crazy hardware checksumming thing</td></tr>
+            <tr><td>[12:25] &lt Lawouach_&gt alright</td></tr>
+            <tr><td>[12:25] &lt Lawouach_&gt so that means it's your receiver that is indeed not working properly</td></tr>
+            <tr><td>[12:25] &lt orphans&gt :)</td></tr>
+            <tr><td>[12:25] &lt Lawouach_&gt the good ol' print statement is there to help you</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt ensure you run through the different stages of your main function</td></tr>
+            <tr><td>[12:26] &lt orphans&gt I've done that - it gets to pause(), then stops, because no ReadReady message ever gets sent</td></tr>
+            <tr><td>[12:27] &lt orphans&gt think I might have to put some debug stuff into Selector and see what's happening ther</td></tr>
+            <tr><td>[12:28] &lt Lawouach_&gt what do you mean by "stop"?</td></tr>
+            <tr><td>[12:28] &lt Lawouach_&gt does it hang or does it exit the main()?</td></tr>
+            <tr><td>[12:28] &lt orphans&gt well, pauses and never gets any message to wake</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt so it hangs</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt if not self.anyReady(): self.pause()</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt try that instead of just a call to pause</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt see if that helps</td></tr>
+            <tr><td>[12:30] &lt orphans&gt no different</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt okay</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt your selector doesn't wake up</td></tr>
+            <tr><td>[12:30] &lt Lawouach_&gt I assume you do send more than one message? :)</td></tr>
+            <tr><td>[12:30] &lt orphans&gt yeah, one every 1/60 seconds :)</td></tr>
+            <tr><td>[12:31] &lt Lawouach_&gt meh</td></tr>
+            <tr><td>[12:31] &lt Lawouach_&gt I think I understand</td></tr>
+            <tr><td>[12:31] &lt Lawouach_&gt you do an inner loop</td></tr>
+            <tr><td>[12:31] &lt Lawouach_&gt while data:</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt you never seem to exit that loop</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt meh</td></tr>
+            <tr><td>[12:32] &lt orphans&gt does safeRecv returning None not exit that?</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt maybe a</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt else:</td></tr>
+            <tr><td>[12:32] &lt Lawouach_&gt  break</td></tr>
+            <tr><td>[12:33] &lt orphans&gt it never even enters the loop</td></tr>
+            <tr><td>[12:34] &lt orphans&gt if self.dataReady("ReadReady"): never evaluates to be true</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt hmm</td></tr>
+            <tr><td>[12:38] &lt Lawouach_&gt shouldn't you be activating the selector component?</td></tr>
+            <tr><td>[12:38] &lt orphans&gt maybe...</td></tr>
+            <tr><td>[12:39] &lt Lawouach_&gt try selectorServices[2].activate()</td></tr>
+            <tr><td>[12:39] &lt Lawouach_&gt the symptoms you have usually comes from either a wrong linkage or a compenent that has not been activated yet</td></tr>
+            <tr><td>[12:39] &lt Lawouach_&gt Your linkages look correct at first sight</td></tr>
+            <tr><td>[12:39] &lt orphans&gt TypeError: '_socketobject' object is not iterable</td></tr>
+            <tr><td>[12:40] &lt Lawouach_&gt where?when?</td></tr>
+            <tr><td>[12:41] &lt orphans&gt  File "/usr/lib/python2.5/site-packages/Kamaelia/Internet/Selector.py", line 262, in main</td></tr>
+            <tr><td>[12:41] &lt orphans&gt  self.handleNotify(meta, readers,writers, exceptionals)</td></tr>
+            <tr><td>[12:41] &lt orphans&gt  File "/usr/lib/python2.5/site-packages/Kamaelia/Internet/Selector.py", line 191, in handleNotify</td></tr>
+            <tr><td>[12:41] &lt orphans&gt  replyService, selectable = message.object</td></tr>
+            <tr><td>[12:41] &lt orphans&gt looks better thought, stuff is actually getting done in Selector :)</td></tr>
+            <tr><td>[12:41] &lt Lawouach_&gt okay so now your linkage is maybe not correct afterall :)</td></tr>
+            <tr><td>[12:43] &lt Lawouach_&gt wrong indeed</td></tr>
+            <tr><td>[12:43] &lt Lawouach_&gt self.send(newReader(self, ((self, "ReadReady"), self.sock)), "_selectorSignal")</td></tr>
+            <tr><td>[12:43] &lt Lawouach_&gt try that</td></tr>
+            <tr><td>[12:44] &lt orphans&gt yay!</td></tr>
+            <tr><td>[12:45] &lt orphans&gt heh, I retyped that send line about three times too - still didn't get it right :)</td></tr>
+            <tr><td>[12:45] &lt Lawouach_&gt I take that as "it's alive! alivvvvee"</td></tr>
+            <tr><td>[12:45] &lt orphans&gt it sure is!</td></tr>
+            <tr><td>[12:46] &lt orphans&gt ta Lawouach_, that one had me really stumped</td></tr>
+            <tr><td>[12:47] &lt Lawouach_&gt np</td></tr>
+            <tr><td>[12:47] &lt orphans&gt right, now that works it's time for a celebratory lunch methinks :)</td></tr>
+            <tr><td>[12:47] &lt orphans&gt thanks again</td></tr>
+            <tr><td>[12:47] &lt Lawouach_&gt the lesson is to always double check your linkages and ensure your components are all activated</td></tr>
+            <tr><td>[12:47] &lt Lawouach_&gt :D</td></tr>
+            <tr><td>[12:49] &lt orphans&gt lesson learnt</td></tr>
+            <tr><td>[12:49] &lt MS-&gt From TCPServer btw:</td></tr>
+            <tr><td>[12:49] &lt MS-&gt  def main(self):</td></tr>
+            <tr><td>[12:49] &lt MS-&gt  selectorService, selectorShutdownService, newSelector = Selector.getSelectorServices(self.tracker)</td></tr>
+            <tr><td>[12:49] &lt MS-&gt  if newSelector:</td></tr>
+            <tr><td>[12:49] &lt MS-&gt  newSelector.activate()</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt ah :)</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt thanks :)</td></tr>
+            <tr><td>[12:50] &lt MS-&gt (sorry, been catching up)</td></tr>
+            <tr><td>[12:50] &lt MS-&gt I do like to close the barn door after the horse has bolted</td></tr>
+            <tr><td>[12:50] &lt Lawouach_&gt orphans: I think the real lesson here when you're stuck with a behavior you don't understand is to eliminate every possibility one by one.</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt The step-by-step approach is a must in OSS software whenever you have a problem.</td></tr>
+            <tr><td>[12:51] &lt Lawouach_&gt People do OSS for many reasons but one thing that truly matters is that you always show you've done your homework</td></tr>
+            <tr><td>[12:52] &lt Lawouach_&gt I've worked in a technical support center and you're more likely to help someone 1) who is friendly 2) who has done his research</td></tr>
+            <tr><td>[12:53] *** MS- nods</td></tr>
+            <tr><td>[12:54] &lt Lawouach_&gt Yesterday on #cherrypy someone came asking questions. I started helping and at some point I siad stop because I was basically spelling every line he was writing. Doesn't help anyone :)</td></tr>
+            <tr><td>[12:55] &lt Lawouach_&gt anyway, MS-, how are you?</td></tr>
+            <tr><td>[12:57] &lt MS-&gt I'm pretty good. Really quite busy, but when isn't that the case :)</td></tr>
+            <tr><td>[12:57] &lt MS-&gt How's things yourself ?</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt too much coding :)</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt but that's all fun really</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt doing some PyQt and pysvn stuff at work</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt and still on my XMPP+AtomPub at home</td></tr>
+            <tr><td>[12:58] &lt Lawouach_&gt and Euro Cup starting this weekend</td></tr>
+            <tr><td>[13:00] &lt MS-&gt Cool</td></tr>
+            <tr><td>[13:02] &lt MS-&gt I think my spam problem at work now is beginning to make sense - now that I have a means of automating and grabbing stuff which makes randomly checking headers easier too</td></tr>
+            <tr><td>[13:02] &lt MS-&gt There's at least 3 routes through the systems at work my mail is taking</td></tr>
+            <tr><td>[13:03] &lt MS-&gt One is essentially pre-approving it for forwarding by not setting X-Spam headers correctly. Another is bypassing all spam filtering and another is just a pain</td></tr>
+            <tr><td>[13:03] &lt MS-&gt Which combined with the fact that I often need to use a web front end is why I've written these tools</td></tr>
+            <tr><td>[13:04] &lt MS-&gt I think I'm going to be able to end up writing a client side greylisting module</td></tr>
+            <tr><td>[13:04] &lt MS-&gt Which is a little odd, but will be helpful</td></tr>
+            <tr><td>[13:06] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[13:29] &lt Davbo&gt Enjoy your Euro 2008 Lawouach_ &lt /bitter&gt ;-)</td></tr>
+            <tr><td>[13:30] &lt Davbo&gt Stupid England team failing to qualify :(</td></tr>
+            <tr><td>[13:38] &lt Lawouach_&gt yeah well you can support Germany if you want</td></tr>
+            <tr><td>[13:38] *** Lawouach_ runs</td></tr>
+            <tr><td>[13:38] &lt Davbo&gt lol :-)</td></tr>
+            <tr><td>[13:39] &lt Davbo&gt The BBC is advertising it to us in that fashion "Who will you support?"</td></tr>
+            <tr><td>[13:40] *** Davbo wonders if MS-/mhrd know if the BBC purchased rights to Euro 2008 before the qualification round?</td></tr>
+            <tr><td>[13:43] &lt orphans&gt back</td></tr>
+            <tr><td>[13:45] &lt orphans&gt Lawouach_, yeah, sorry about this one - I'm normally a bit better at tracking stuff down, but I'm feeling really crummy atm (hayfever is killing me) and didn't particularly fancy liberally sprinking debug prints over Kamaelia if I was doing something obviously wrong</td></tr>
+            <tr><td>[13:46] &lt Lawouach_&gt I didn't want to sound like I was neat picking on you</td></tr>
+            <tr><td>[13:46] &lt Lawouach_&gt Sorry about that</td></tr>
+            <tr><td>[13:46] &lt Lawouach_&gt Just the general case :)</td></tr>
+            <tr><td>[13:47] &lt orphans&gt no, not at all, I know I was a bit lax with tracking it down that's all :)</td></tr>
+            <tr><td>[13:48] &lt Lawouach_&gt orphans: that happens all the time :)</td></tr>
+            <tr><td>[13:49] &lt Lawouach_&gt When you have your head down to it for too long</td></tr>
+            <tr><td>[13:49] &lt Lawouach_&gt You miss some details</td></tr>
+            <tr><td>[13:49] &lt Lawouach_&gt abnyway</td></tr>
+            <tr><td>[13:49] &lt Lawouach_&gt go grabe some tea :)</td></tr>
+            <tr><td>[13:49] &lt Lawouach_&gt grab</td></tr>
+            <tr><td>[13:49] &lt Davbo&gt Reminds me I got to pick up some anti-histamines. You finished your exams now orphans?</td></tr>
+            <tr><td>[13:50] &lt orphans&gt Davbo, yeah, thankfully. Hayfever drugs are currently doing me no good at all :)</td></tr>
+            <tr><td>[13:51] &lt orphans&gt how about you, you done yet?</td></tr>
+            <tr><td>[13:53] &lt Davbo&gt 1 more, tomorrow.</td></tr>
+            <tr><td>[13:53] &lt Davbo&gt Maths :-(</td></tr>
+            <tr><td>[13:55] &lt orphans&gt mm, lovely maths...</td></tr>
+            <tr><td>[13:58] &lt Lawouach_&gt Maths are easy</td></tr>
+            <tr><td>[13:58] &lt Lawouach_&gt just put 42</td></tr>
+            <tr><td>[13:58] &lt Lawouach_&gt done</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt http://www.davbo.org/images/snapshot6.png</td></tr>
+            <tr><td>[13:59] &lt orphans&gt meh, if I've learn anything from maths (and I haven't) you'll get more marks if you do the integral of 42 between 0 and 1</td></tr>
+            <tr><td>[13:59] &lt orphans&gt Davbo, awesome :)</td></tr>
+            <tr><td>[13:59] &lt Davbo&gt :P</td></tr>
+            <tr><td>[14:00] &lt Davbo&gt "﻿if I've learn anything from maths (and I haven't)" I hope you're not offended if I ignore that advice then :P</td></tr>
+            <tr><td>[14:00] &lt orphans&gt not at all</td></tr>
+            <tr><td>[14:04] &lt Lawouach_&gt Davbo: doing LOLat programming?</td></tr>
+            <tr><td>[14:04] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[14:07] &lt Davbo&gt Yeah Lawouach_, it's my "DONE" for today ;-)</td></tr>
+            <tr><td>[14:09] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[14:17] &lt MS-&gt 40 minute or so reminder</td></tr>
+            <tr><td>[14:47] &lt Davbo&gt Lawouach_, do you think we'll see you addicted to Twitter anytime soon then?</td></tr>
+            <tr><td>[14:48] &lt Davbo&gt I signed up a while ago and haven't encountered a problem yet</td></tr>
+            <tr><td>[14:48] &lt Davbo&gt I think you need a lot of friends using it for it to be near useful</td></tr>
+            <tr><td>[14:49] &lt Davbo&gt Although I am following you :p</td></tr>
+            <tr><td>[14:50] &lt Davbo&gt ..that sounds rather ominous, s/i am following you/ I am subscribed to your Twitter feed</td></tr>
+            <tr><td>[14:56] *** Trun has joined #kamaelia</td></tr>
+            <tr><td>[14:59] &lt Davbo&gt Hi Trun</td></tr>
+            <tr><td>[14:59] &lt Trun&gt Hi Davbo and all</td></tr>
+            <tr><td>[15:01] &lt Chong-&gt hey Trun and Davbo</td></tr>
+            <tr><td>[15:02] &lt Davbo&gt You should hang around on IRC more Trun, don't just come for the meetings. We have exciting conversations you're missing :-)</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt All the juicy bits are said with [off] so you miss out if you're reading logs ;-)</td></tr>
+            <tr><td>[15:04] &lt Trun&gt ooops :-)</td></tr>
+            <tr><td>[15:04] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Gah, sorry, time for meeting</td></tr>
+            <tr><td>[15:05] &lt MS-&gt k</td></tr>
+            <tr><td>[15:05] &lt MS-&gt ==============================================</td></tr>
+            <tr><td>[15:05] &lt MS-&gt START OF WEEKLY IRC KAMAELIA MEETING, 20080605</td></tr>
+            <tr><td>[15:05] &lt MS-&gt ==============================================</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[15:05] &lt MS-&gt -----------------</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 1. Note of Agenda</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 2. Participants</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 4.1 Next Release : June 21st</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 4.2 Progress with branch merges</td></tr>
+            <tr><td>[15:05] &lt MS-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Thursday 12th June 2008, 4pm UK time</td></tr>
+            <tr><td>[15:05] &lt MS-&gt Any extra items?</td></tr>
+            <tr><td>[15:05] *** MS- waits for 30 seconds for a "y"</td></tr>
+            <tr><td>[15:06] &lt MS-&gt 2. Participants</td></tr>
+            <tr><td>[15:06] &lt MS-&gt ---------------</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Participants: MS-, mhrd, Lawouach, Chong-, j_baker, orphans, Davbo, Trun,</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Not present, but should be:</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Also present: vmlemon, Uraeus, sadrul, jle_, bcarlyon|ubuntu_</td></tr>
+            <tr><td>[15:06] &lt MS-&gt 3. Activity Reports</td></tr>
+            <tr><td>[15:06] &lt MS-&gt -------------------</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Ready?</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Set?</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Go!</td></tr>
+            <tr><td>[15:06] &lt MS-&gt DONE: Extended spam killer, basic web cam component, kernel fix for webcam, discussed various packaging issues. Discovered a variety of major issues in likefile. Rewrote LikeFile & discussed rename (Handle),re-enabled recent changes</td></tr>
+            <tr><td>[15:06] &lt orphans&gt TODO: Finish changing UDP and multicast code to use Selector. Make XYPads talk to each other over UDP. Start to look at having multiple clients. Write getting started doc.</td></tr>
+            <tr><td>[15:06] &lt MS-&gt updated various web pages on wiki, printable option clearer, Various GSOC related q's</td></tr>
+            <tr><td>[15:06] &lt MS-&gt TODO: Packaging for release, merge of code from branches, check webcam code into svn, get kernel fix into linux-uvc project,</td></tr>
+            <tr><td>[15:06] &lt orphans&gt DONE: Rearranged sketches directory. Rewritten timing code. Written simple UDP receiver. Written initial setup.py file.</td></tr>
+            <tr><td>[15:06] &lt orphans&gt BLOCKED: None</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt DONE: I got the 2 MagnaDoodles talking, you can draw on the blue and it paints also on the Red. Abstracted away pygame events from the drawing for more flexibility.</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt TODO: Add a tool / colour selection window - doing this over weekend. Look at problems with unconventional box naming and possible solutions for this. Then start to move Kamaelia - Paint.</td></tr>
+            <tr><td>[15:06] &lt Davbo&gt BLOCKED: Final exam this Friday. Then clear of blocks.</td></tr>
+            <tr><td>[15:06] &lt MS-&gt BLOCKED: Been blocked due to work meetings. Next week will be impacted by work as well (deadlines on at work). General shortage of time really.</td></tr>
+            <tr><td>[15:06] &lt Chong-&gt DONE: Added picture, shape and size customable support of RelationTopology, wrote project page, reviewed private_MPS_JL_IRCSupport/)</td></tr>
+            <tr><td>[15:07] &lt Chong-&gt BLOCKED: None</td></tr>
+            <tr><td>[15:07] &lt MS-&gt (oh, j_baker is absent, missed that)</td></tr>
+            <tr><td>[15:07] &lt Chong-&gt TODO: Modify particle random position produce mechanism, enable particle update, create my own branch (private_CL_Scratch) and experiment with packaging, make particles hierarchicable</td></tr>
+            <tr><td>[15:07] &lt Trun&gt DONE: KamPlanet modules mostly unit-tested with the new infrastructure. Tools and doc to deploy KamPlanet () and more KamPlanet tests added. Mock infrastructure started and used. Testing Framework project page & schedule.</td></tr>
+            <tr><td>[15:07] &lt Trun&gt TODO: Look at [/Code/Python/Kamaelia/Tests and /Tests, selector, PygameDisplay]... today. Finish using mock infrastructure in KamPlanet + changes on both infrastructure. KamPlanet integration tests with a real HTTP Server. Couple of bugfixes in. Start unit-testing other app (pending to choose).</td></tr>
+            <tr><td>[15:07] *** MS- reads</td></tr>
+            <tr><td>[15:07] &lt Trun&gt BLOCKED: None</td></tr>
+            <tr><td>[15:10] &lt MS-&gt Trun: You may want to check your DONE's against your TODO's from last week, and your TODO's against your schedule</td></tr>
+            <tr><td>[15:11] &lt MS-&gt Davbo: You may wish to look at revisiting how your schedule is affected by current progress</td></tr>
+            <tr><td>[15:11] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:11] &lt MS-&gt (i think)</td></tr>
+            <tr><td>[15:11] &lt Davbo&gt I do</td></tr>
+            <tr><td>[15:11] &lt MS-&gt (you'd never guess what I'm doing this instant :) )</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt lol, no comment.</td></tr>
+            <tr><td>[15:12] &lt MS-&gt OK, moving on</td></tr>
+            <tr><td>[15:13] &lt MS-&gt (Unless any q's from anyone else of course)</td></tr>
+            <tr><td>[15:13] &lt MS-&gt (this should be for everyone to query stuff after all - so we can all see what everyone's doing :) )</td></tr>
+            <tr><td>[15:14] &lt MS-&gt Trun: You appear to have a choice for example:</td></tr>
+            <tr><td>[15:14] &lt orphans&gt MS-, link for webcam stuff?</td></tr>
+            <tr><td>[15:14] &lt MS-&gt Start unit-testing other app (pending to choose).</td></tr>
+            <tr><td>[15:14] &lt Trun&gt yeah</td></tr>
+            <tr><td>[15:14] &lt MS-&gt I would suggest taking a *snapshot* of someone's code</td></tr>
+            <tr><td>[15:14] &lt Davbo&gt I underestimated how much revision would need to be done, and some unexpected things have happened you're aware of. So i'll tweak schedule this weekend</td></tr>
+            <tr><td>[15:14] &lt MS-&gt (perhaps j_baker's WSGI code)</td></tr>
+            <tr><td>[15:14] &lt MS-&gt and looking at that</td></tr>
+            <tr><td>[15:15] &lt MS-&gt Also I've been building various systems/test harnesses</td></tr>
+            <tr><td>[15:15] &lt MS-&gt for LikeFile</td></tr>
+            <tr><td>[15:15] &lt Davbo&gt it's on the mailing list orphans - the webcam stuff, i believe</td></tr>
+            <tr><td>[15:15] &lt MS-&gt which could bear examination/automation :-)</td></tr>
+            <tr><td>[15:15] &lt Trun&gt oh, ok, that sounds cool</td></tr>
+            <tr><td>[15:15] &lt MS-&gt orphans: Yep, I've not posted it yet</td></tr>
+            <tr><td>[15:15] &lt MS-&gt And of course there's the whole pile of existing tests for both Axon & Kamaelia which are worth looking at ;-)</td></tr>
+            <tr><td>[15:16] &lt MS-&gt But that's a different issue</td></tr>
+            <tr><td>[15:16] &lt Lawouach_&gt orphans: from your TODO list it appears you're not that bad based on what you had scheduled. Considering we do not enforce working over week-end, I shall hope seeing some XYPads interaction by tomorrow evening. Sounds doable?</td></tr>
+            <tr><td>[15:16] &lt Trun&gt yeah, I started looking at that code half an hour ago, I don't want to have it in my TODO anymore :-)</td></tr>
+            <tr><td>[15:17] *** MS- waits for orphans for 30 seconds</td></tr>
+            <tr><td>[15:17] &lt orphans&gt Lawouach_, yeah, might come over the weekend though - I've had a couple of other things to do this weekend and would quite like to get the UDP stuff to a point where it can duplicate what's already available</td></tr>
+            <tr><td>[15:17] &lt orphans&gt s/this weekend/this week</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt That's fair. The schedule is set for tomorrow however ;)</td></tr>
+            <tr><td>[15:17] &lt orphans&gt if you'd prefer the pads first then I'll do that :)</td></tr>
+            <tr><td>[15:17] &lt Lawouach_&gt I think I'd rather have functionnality for now yes.</td></tr>
+            <tr><td>[15:17] &lt orphans&gt (it's more fun after all :))</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt So if the UDP component works well enough for now, let it be.</td></tr>
+            <tr><td>[15:18] &lt MS-&gt orphans: To simulate UDP, you'll want to look at the code that drops random data</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt Good point MS-</td></tr>
+            <tr><td>[15:18] &lt Lawouach_&gt anyway that's all for me.</td></tr>
+            <tr><td>[15:19] &lt MS-&gt https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Internet/Simulate</td></tr>
+            <tr><td>[15:19] &lt MS-&gt me too</td></tr>
+            <tr><td>[15:19] *** MS- moves on in 30 secs if nothing else</td></tr>
+            <tr><td>[15:19] &lt MS-&gt moves on</td></tr>
+            <tr><td>[15:20] &lt MS-&gt 4. Discussion items (max 3 or 4)</td></tr>
+            <tr><td>[15:20] &lt MS-&gt --------------------------------</td></tr>
+            <tr><td>[15:20] &lt MS-&gt 4.1 Next Release : June 21st</td></tr>
+            <tr><td>[15:20] &lt MS-&gt ^^^^^^^^^^^^^^^^^^^^^^^^^^^^</td></tr>
+            <tr><td>[15:20] &lt MS-&gt Only issue I have here at this instant is that no-one appears to have updated/added to: http://edit.kamaelia.org/ReleaseJune2008</td></tr>
+            <tr><td>[15:20] &lt MS-&gt Please do update it based on what you'd like to see, what you think should go in, shouldn't go in, what you're doing to help and prepared to do to help</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt I had a question about this, what's happening with recent changes to LikeFile and the release?</td></tr>
+            <tr><td>[15:21] &lt MS-&gt (note, huge assumption in that last sentence)</td></tr>
+            <tr><td>[15:21] &lt MS-&gt I'd still like the new version of LikeFile to go in</td></tr>
+            <tr><td>[15:21] &lt MS-&gt It seems reliable enough to do so</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[15:21] &lt Davbo&gt I agree</td></tr>
+            <tr><td>[15:22] &lt MS-&gt I just need someone to second Lawouach's suggestion of Handle at the moment as far as I'm concerned</td></tr>
+            <tr><td>[15:22] &lt MS-&gt as a sanity check</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt I read through the code and it seems fine, took a while and explanations from you and Lawouach_ for me to understand it but seems good</td></tr>
+            <tr><td>[15:22] &lt MS-&gt Cool</td></tr>
+            <tr><td>[15:23] &lt MS-&gt It's simpler than the other code, and I may add some checks into this version to specifically look for components that have extra inboxes and outboxes</td></tr>
+            <tr><td>[15:23] &lt Davbo&gt I'd second that, given Python's LikeFile and what's expected from that naming Handle is much better</td></tr>
+            <tr><td>[15:23] &lt MS-&gt and specifically cause it to print a warning stating you can't get at those</td></tr>
+            <tr><td>[15:23] &lt orphans&gt assuming all goes to plan I'd quite like to see the selector-based UDP going in. Seems to me that as long as it works it'll be better (i.e. more error checking, using selector) than the current version</td></tr>
+            <tr><td>[15:23] *** MS- nods - good point</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Please add these comments to the wiki - it should be quick enough for this sort of thing these days :)</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Recentchanges now works correctly too</td></tr>
+            <tr><td>[15:24] &lt MS-&gt Hm.</td></tr>
+            <tr><td>[15:24] *** MS- has had a thought.</td></tr>
+            <tr><td>[15:24] &lt MS-&gt will add that to http://edit.kamaelia.org/WebsiteSuggestions though</td></tr>
+            <tr><td>[15:25] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:25] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:25] &lt MS-&gt My point here is please do discuss here (especially after the meeting) what you'd like to see in the release</td></tr>
+            <tr><td>[15:26] &lt MS-&gt but please ensure it gets onto the wiki as well, since that's the key point of reference</td></tr>
+            <tr><td>[15:26] &lt MS-&gt Assistance with the change log would be very much appreciated too...</td></tr>
+            <tr><td>[15:26] *** MS- moves on</td></tr>
+            <tr><td>[15:26] &lt MS-&gt 4.2 Progress with branch merges</td></tr>
+            <tr><td>[15:27] &lt MS-&gt Chong, to be blunt - your review isn't clear. Are any of the issues you've raised blockers? Does the code work the way the docs state or not? Are you sure the issues you've raised are issues. (I'm very unclear since your review is so terse)</td></tr>
+            <tr><td>[15:27] &lt MS-&gt Similarly, I note or joe's review:</td></tr>
+            <tr><td>[15:27] &lt Davbo&gt Worth noting here that the new LikeFile seems to be up for merging?</td></tr>
+            <tr><td>[15:27] &lt MS-&gt "Ok, made a few more changes, from my end it's almost ready to merge."</td></tr>
+            <tr><td>[15:27] &lt MS-&gt Davbo: Yes.</td></tr>
+            <tr><td>[15:28] &lt MS-&gt Once I'm happy with it, I'll put it into a branch and put it ready for merge</td></tr>
+            <tr><td>[15:28] &lt MS-&gt It'll probably need documenting though, and that can be largely cribbed from current code.</td></tr>
+            <tr><td>[15:28] &lt Davbo&gt Since I've familiarised myself with it, let me know and I'll review</td></tr>
+            <tr><td>[15:28] &lt MS-&gt The examples will also need changing btw</td></tr>
+            <tr><td>[15:28] &lt MS-&gt Unless it finalises with exactly the same API</td></tr>
+            <tr><td>[15:29] &lt MS-&gt Sorry,</td></tr>
+            <tr><td>[15:29] &lt MS-&gt orphans: "Ok, made a few more changes, from my end it's almost ready to merge."</td></tr>
+            <tr><td>[15:29] &lt MS-&gt was the last thing you said on the list/thread with regard to it</td></tr>
+            <tr><td>[15:29] &lt Chong-&gt MS-: I think the main issue is</td></tr>
+            <tr><td>[15:29] &lt Chong-&gt For other channels, say #kamaelia, #gsoc, can only be joined, messages cannot reach others</td></tr>
+            <tr><td>[15:29] &lt MS-&gt so I'm unclear as to whether it's ready to be used</td></tr>
+            <tr><td>[15:29] &lt MS-&gt kamaeliabot: poke</td></tr>
+            <tr><td>[15:29] Reply: Not the eye! Not the eye!</td></tr>
+            <tr><td>[15:29] &lt orphans&gt sorry MS-, I'm really lost here - what bit of all that was to me?</td></tr>
+            <tr><td>[15:29] &lt MS-&gt Chong-: kamaeliabot disagrees</td></tr>
+            <tr><td>[15:30] &lt MS-&gt orphans: Sorry - the last thing you wrote on the list about your merge was this: "Ok, made a few more changes, from my end it's almost ready to merge."</td></tr>
+            <tr><td>[15:30] &lt Chong-&gt hehe ;)</td></tr>
+            <tr><td>[15:30] &lt MS-&gt As a result its unclear what state it's in</td></tr>
+            <tr><td>[15:30] &lt MS-&gt Chong-: I believe your review is probably based on misusing the component basically, so I'm not sure of it's validity at present</td></tr>
+            <tr><td>[15:30] &lt orphans&gt oh, right. Yeah, it works, and the example code runs how it's supposed to, but I'd like someone to look through and check I haven't done anything horrible</td></tr>
+            <tr><td>[15:31] &lt MS-&gt Given kamaeliabot can and does talk on channels</td></tr>
+            <tr><td>[15:31] &lt MS-&gt orphans: Cool, for my sanity can you just post that in the thread ?</td></tr>
+            <tr><td>[15:31] &lt MS-&gt :-)</td></tr>
+            <tr><td>[15:31] &lt orphans&gt yup, np</td></tr>
+            <tr><td>[15:31] &lt MS-&gt Very much appreciated :)</td></tr>
+            <tr><td>[15:31] &lt Chong-&gt MS-: if so, I will double check it.</td></tr>
+            <tr><td>[15:31] &lt MS-&gt Chong-: Well, your statement here:</td></tr>
+            <tr><td>[15:31] &lt MS-&gt (16:34:19) Chong-: For other channels, say #kamaelia, #gsoc, can only be joined, messages cannot reach others</td></tr>
+            <tr><td>[15:32] &lt MS-&gt Is completely at odds with the fact that kamaeliabot is able to talk on the channe;l</td></tr>
+            <tr><td>[15:32] &lt Chong-&gt I am not sure what this does</td></tr>
+            <tr><td>[15:32] &lt Chong-&gt --- /user uname server host realname</td></tr>
+            <tr><td>[15:32] &lt Davbo&gt Perhaps Chong- could put up a test case which shows this problem he's having? since it's a bit confusing</td></tr>
+            <tr><td>[15:32] &lt MS-&gt (please take it up on the list)</td></tr>
+            <tr><td>[15:32] &lt MS-&gt Davbo: perfect suggestion :)</td></tr>
+            <tr><td>[15:32] &lt MS-&gt thank you</td></tr>
+            <tr><td>[15:33] &lt Chong-&gt Davbo: good point</td></tr>
+            <tr><td>[15:33] &lt MS-&gt Trun: All these test cases we're providing each other would be wonderful to automate ;-)</td></tr>
+            <tr><td>[15:33] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[15:36] &lt MS-&gt So</td></tr>
+            <tr><td>[15:36] &lt MS-&gt orphans: will mail list with comment from above</td></tr>
+            <tr><td>[15:36] &lt MS-&gt Chong-: to produce test case so we can understand clearly what's "broken"</td></tr>
+            <tr><td>[15:37] &lt Chong-&gt I will :-)</td></tr>
+            <tr><td>[15:37] &lt MS-&gt BTW, the other comment I had was</td></tr>
+            <tr><td>[15:37] &lt MS-&gt regarding "design", that's really for whatever comes next</td></tr>
+            <tr><td>[15:37] &lt MS-&gt If the component works, and the API works, then design of implementation is a detail for improvement</td></tr>
+            <tr><td>[15:37] &lt MS-&gt (unless it's really bad)</td></tr>
+            <tr><td>[15:38] &lt MS-&gt However, if there's a statement</td></tr>
+            <tr><td>[15:38] &lt Chong-&gt MS-: I see.</td></tr>
+            <tr><td>[15:38] &lt MS-&gt Design</td></tr>
+            <tr><td>[15:38] &lt MS-&gt "Prompt users to type their nickname before connection"</td></tr>
+            <tr><td>[15:38] &lt MS-&gt "Give a random nickname and users can change after connection"</td></tr>
+            <tr><td>[15:38] &lt MS-&gt is rather odd</td></tr>
+            <tr><td>[15:38] &lt MS-&gt Without any explanation of why</td></tr>
+            <tr><td>[15:38] &lt MS-&gt (not *now* - on the list)</td></tr>
+            <tr><td>[15:39] &lt MS-&gt Mentioning here because it's going to be a shared issue</td></tr>
+            <tr><td>[15:39] &lt MS-&gt Say it once here, I say it once.</td></tr>
+            <tr><td>[15:39] &lt MS-&gt Don't say it here, I repeat myself to everyone :)</td></tr>
+            <tr><td>[15:39] &lt MS-&gt which is a bit :-( really</td></tr>
+            <tr><td>[15:40] &lt MS-&gt The other thing regarding coding style is that the files should be self-consistent</td></tr>
+            <tr><td>[15:40] &lt MS-&gt So "Bad indention: 7, 11, 15, 25 spaces" is an odd comment - since there's no context</td></tr>
+            <tr><td>[15:41] &lt MS-&gt Something nasty that works can be merged, but should either be labelled FIXME</td></tr>
+            <tr><td>[15:41] &lt MS-&gt in the form</td></tr>
+            <tr><td>[15:41] &lt MS-&gt FIXME: &lt why&gt</td></tr>
+            <tr><td>[15:41] &lt MS-&gt or in extreme cases</td></tr>
+            <tr><td>[15:41] &lt MS-&gt VOMIT: &lt why&gt</td></tr>
+            <tr><td>[15:41] &lt MS-&gt The latter is where you REALLY think it changes</td></tr>
+            <tr><td>[15:42] &lt MS-&gt after all, we really don't want vomit everywhere</td></tr>
+            <tr><td>[15:42] &lt MS-&gt Any q's from anyone?</td></tr>
+            <tr><td>[15:42] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[15:42] &lt MS-&gt Or suggestions ?</td></tr>
+            <tr><td>[15:42] *** MS- waits 30s before moving on</td></tr>
+            <tr><td>[15:43] &lt Davbo&gt Which code review is this for?</td></tr>
+            <tr><td>[15:43] &lt Davbo&gt Sorry</td></tr>
+            <tr><td>[15:43] &lt MS-&gt j_baker: If you get your todo/blocked/done in, the minutes will look nice.</td></tr>
+            <tr><td>[15:43] &lt MS-&gt ;-)</td></tr>
+            <tr><td>[15:43] &lt MS-&gt Davbo: Do you mean Chong?</td></tr>
+            <tr><td>[15:43] &lt Davbo&gt what review are these comments in regards to MS-?</td></tr>
+            <tr><td>[15:43] &lt MS-&gt Davbo: Or generally?</td></tr>
+            <tr><td>[15:43] &lt Davbo&gt Or are you just generally saying what you'd like?</td></tr>
+            <tr><td>[15:43] &lt MS-&gt My comments are really general ones to try and help improve them all</td></tr>
+            <tr><td>[15:43] &lt Davbo&gt Ah thought so</td></tr>
+            <tr><td>[15:44] &lt MS-&gt Chong's is just handy for comments that's all</td></tr>
+            <tr><td>[15:44] &lt j_baker&gt DONE: Got an executable for Linux and Mac OS X</td></tr>
+            <tr><td>[15:44] &lt j_baker&gt TODO: Get a windows version ready</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt The code review up by Chong looked a bit like a film review to me ;-)</td></tr>
+            <tr><td>[15:44] &lt j_baker&gt BLOCKED: None</td></tr>
+            <tr><td>[15:44] &lt MS-&gt j_baker's & orphans's efforts to improve the code they're reviewing is really cool</td></tr>
+            <tr><td>[15:45] &lt MS-&gt Davbo: Yeah, the key things are: does it work, does it have bugs, are they blockers, are they documented, is the code documented</td></tr>
+            <tr><td>[15:45] &lt orphans&gt ty MS-</td></tr>
+            <tr><td>[15:45] &lt Chong-&gt Davbo: really :/</td></tr>
+            <tr><td>[15:45] &lt MS-&gt Chong-: I don't think it was meant negatively :)</td></tr>
+            <tr><td>[15:45] &lt MS-&gt My comments aren't either fwiw :)</td></tr>
+            <tr><td>[15:45] &lt Davbo&gt Oh no Chong- I didn't mean it badly</td></tr>
+            <tr><td>[15:45] &lt MS-&gt After all, these are the first code reviews you've done here :)</td></tr>
+            <tr><td>[15:46] &lt MS-&gt Personally I think the characterisation of Kamaelia Bot could do with improvement myself</td></tr>
+            <tr><td>[15:46] &lt Davbo&gt you make fair points, they just need context / suggestions for changes / changes</td></tr>
+            <tr><td>[15:46] &lt MS-&gt Though the python references are very well inkeeping</td></tr>
+            <tr><td>[15:47] &lt Chong-&gt np. I will learn j_baker's & orphans' review</td></tr>
+            <tr><td>[15:47] &lt MS-&gt I suppose the one cultural thing that can be problematic about code reviews is that many of us are just too polite</td></tr>
+            <tr><td>[15:47] &lt MS-&gt we don't like to say "this is bust" and then to go in detail, chapter and verse about precisely how</td></tr>
+            <tr><td>[15:47] &lt MS-&gt But unless you do, it's impossible to really fix</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt Oh don't worry about that, I'm not at all polite ;-)</td></tr>
+            <tr><td>[15:48] &lt MS-&gt In some cultures, that can be a real problem</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt (joking)</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt I can vouch for what Davbo just said. :-P</td></tr>
+            <tr><td>[15:48] &lt Davbo&gt Haha :-)</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt You second it j_baker? - Anyway, this meeting has took a diversion (wrap it up MS-)</td></tr>
+            <tr><td>[15:49] &lt MS-&gt Davbo: Yeah, british people don't seem to be too bad at that part. It can be very "interesting" though when it comes to posting code review/bug report to a project owned by either someone japanese or has spent lots of time in a japan and</td></tr>
+            <tr><td>[15:49] &lt MS-&gt  picked up the face saving cultural thing</td></tr>
+            <tr><td>[15:49] &lt Davbo&gt Interesting</td></tr>
+            <tr><td>[15:49] &lt MS-&gt The key thing is to separate a review of your code from whether you're pleased/ashamed/etc of it</td></tr>
+            <tr><td>[15:50] &lt MS-&gt since the goal is to improve the code</td></tr>
+            <tr><td>[15:50] &lt MS-&gt As a result, if something sucks, please do say.</td></tr>
+            <tr><td>[15:51] &lt MS-&gt For example, I've had to throw away all the LikeFile code (bar a small piece) from GSOC last summer as a result of Davbo's poking around :)</td></tr>
+            <tr><td>[15:51] &lt MS-&gt Which is a positivething, since it improves the code</td></tr>
+            <tr><td>[15:51] &lt MS-&gt (but the code from last year proved it was useful to do)</td></tr>
+            <tr><td>[15:52] &lt MS-&gt OK, that's getting way off topic</td></tr>
+            <tr><td>[15:52] &lt MS-&gt 30s for any further q's on that</td></tr>
+            <tr><td>[15:52] &lt MS-&gt 5. Date/Time of next weekly meeting</td></tr>
+            <tr><td>[15:52] &lt MS-&gt -----------------------------------</td></tr>
+            <tr><td>[15:52] &lt MS-&gt Thursday 12th June 2008, 4pm UK time</td></tr>
+            <tr><td>[15:52] &lt MS-&gt Anyone not able to make it?</td></tr>
+            <tr><td>[15:52] &lt MS-&gt (you have 30s ;) )</td></tr>
+            <tr><td>[15:53] &lt orphans&gt bit of advance - there's a chance I won't be able to make the 26th</td></tr>
+            <tr><td>[15:53] &lt MS-&gt ta :)</td></tr>
+            <tr><td>[15:53] &lt MS-&gt ============================================</td></tr>
+            <tr><td>[15:53] &lt MS-&gt END OF WEEKLY IRC KAMAELIA MEETING, 20080605</td></tr>
+            <tr><td>[15:53] &lt MS-&gt ============================================</td></tr>
+            <tr><td>[15:53] &lt orphans&gt have external VIVAs for our degree :)</td></tr>
+            <tr><td>[15:53] &lt MS-&gt and we're done :)</td></tr>
+            <tr><td>[15:53] &lt MS-&gt orphans: Cool</td></tr>
+            <tr><td>[15:53] &lt MS-&gt How did your exams go?</td></tr>
+            <tr><td>[15:53] &lt MS-&gt How's the head ?</td></tr>
+            <tr><td>[15:53] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:54] &lt orphans&gt the head is surprisingly well, I finished a bit earlier than I thought, but all of my mate's got together for a bit of bbq frolicing last night</td></tr>
+            <tr><td>[15:54] &lt orphans&gt so not perfect :)</td></tr>
+            <tr><td>[15:54] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:54] &lt orphans&gt but yeah, the exams were OK I think</td></tr>
+            <tr><td>[15:55] &lt orphans&gt a solid 2.1 I hope...</td></tr>
+            <tr><td>[15:55] &lt MS-&gt j_baker: could you review the meeting btw in the logs and let me know if you have any q's ?</td></tr>
+            <tr><td>[15:55] &lt MS-&gt orphans: Cool :)</td></tr>
+            <tr><td>[15:55] &lt j_baker&gt Yeah. Sorry. I overslept. :(</td></tr>
+            <tr><td>[15:55] &lt MS-&gt I wish I could do that right now :)</td></tr>
+            <tr><td>[15:55] &lt Davbo&gt Until 4 o'clock!? ;-)</td></tr>
+            <tr><td>[15:56] &lt MS-&gt Davbo: Yeah, I'd like to oversleep to 4pm :-D</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[15:56] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[15:56] &lt j_baker&gt Well, it is only 11 AM here.</td></tr>
+            <tr><td>[15:56] &lt MS-&gt j_baker: It's still early for you :)</td></tr>
+            <tr><td>[15:56] &lt MS-&gt I don't normally like a schedule a meeting before 11 for anyone, so it's appreciated :)</td></tr>
+            <tr><td>[15:57] &lt j_baker&gt Oh and fyi, I'm not going to be taking summer classes MS-. My school decided to cut my financial aid in half at the last minute. :(</td></tr>
+            <tr><td>[15:57] &lt MS-&gt :-(</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt Ouch</td></tr>
+            <tr><td>[15:57] &lt MS-&gt That's really quite nasty</td></tr>
+            <tr><td>[15:57] &lt Davbo&gt That seems harsh</td></tr>
+            <tr><td>[15:58] &lt j_baker&gt Yeah. I wasn't happy. Although I should say that screaming at school administrators is a great stress reliever. :)</td></tr>
+            <tr><td>[15:58] &lt j_baker&gt Ok, maybe not quite screaming, but you get the idea.</td></tr>
+            <tr><td>[15:58] &lt MS-&gt Yeah, I get the idea</td></tr>
+            <tr><td>[15:58] &lt MS-&gt I'd probably feel much the same way</td></tr>
+            <tr><td>[16:00] &lt Davbo&gt I have to pay over $6000 per year j_baker, that similar to your fee's?</td></tr>
+            <tr><td>[16:00] &lt j_baker&gt That's pretty close.</td></tr>
+            <tr><td>[16:02] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:02] &lt Davbo&gt My friend in London pays about $300 per week for rent. Fortunately I can stay at home</td></tr>
+            <tr><td>[16:02] &lt j_baker&gt 300 a week?!</td></tr>
+            <tr><td>[16:02] &lt MS-&gt $300 pw?</td></tr>
+            <tr><td>[16:03] &lt MS-&gt That's cheap</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt Yeah, £144</td></tr>
+            <tr><td>[16:03] &lt MS-&gt Really?</td></tr>
+            <tr><td>[16:03] &lt MS-&gt That low?</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt he's in halls</td></tr>
+            <tr><td>[16:03] &lt MS-&gt Ah</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt He's paying a bit more next year, splitting with 2 others for a tiny flat</td></tr>
+            <tr><td>[16:04] &lt j_baker&gt Heh... I pay $175/mo. Granted it's in a really small house with three roommates...</td></tr>
+            <tr><td>[16:04] &lt MS-&gt I rented a small/tiny/cheap flat when I moved down to london and most of those were £300 per week</td></tr>
+            <tr><td>[16:04] &lt MS-&gt and that was considered cheap</td></tr>
+            <tr><td>[16:04] &lt MS-&gt ~$600 USD I guess</td></tr>
+            <tr><td>[16:04] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[16:05] &lt j_baker&gt I can only imagine. I bet London's expensive.</td></tr>
+            <tr><td>[16:05] &lt MS-&gt It was the reason I wouldn't've gone to uni in London</td></tr>
+            <tr><td>[16:05] &lt MS-&gt j_baker: Stupidly expensive.</td></tr>
+            <tr><td>[16:05] &lt Davbo&gt It's so expensive they're allowed to take out a bigger student loan than everyone else :-/</td></tr>
+            <tr><td>[16:06] &lt MS-&gt Davbo: It's an intelligence test</td></tr>
+            <tr><td>[16:06] *** Davbo wonders how much better Imperial College can be than Sheffield for that price </td></tr>
+            <tr><td>[16:08] &lt Davbo&gt what do you mean by that MS-?</td></tr>
+            <tr><td>[16:15] &lt MS-&gt Well, anyone intelligent would realise that for an undergrad course, they'll come out of university with excessive levels of debt</td></tr>
+            <tr><td>[16:16] &lt MS-&gt "ah you mug enough to pick up much greater levels of debt"</td></tr>
+            <tr><td>[16:17] &lt Davbo&gt Sorry, of course. I've been reading too much Maths</td></tr>
+            <tr><td>[16:18] &lt MS-&gt heheh</td></tr>
+            <tr><td>[16:32] &lt Davbo&gt time to get something to eat</td></tr>
+            <tr><td>[16:40] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:40] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[17:38] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[17:48] *** MS- goes afk</td></tr>
+            <tr><td>[17:48] *** MS- has parted #kamaelia</td></tr>
+            <tr><td>[17:58] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:01] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:10] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[18:22] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[18:23] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[18:25] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:29] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[18:29] Reply: does the macarena</td></tr>
+            <tr><td>[18:57] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[19:12] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[19:15] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[19:24] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[19:30] &lt Davbo&gt vmlemon_</td></tr>
+            <tr><td>[19:31] *** Davbo bets heads</td></tr>
+            <tr><td>[19:31] &lt Davbo&gt http://cointossr.com/?t=e155c89b42a35ff1b3460364e48fc0ac</td></tr>
+            <tr><td>[19:31] *** Davbo waits for someone to click</td></tr>
+            <tr><td>[19:33] *** j_baker debates whether or not he really wants to click Davbo's link.</td></tr>
+            <tr><td>[19:33] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[19:34] &lt Davbo&gt A question pondered by many.</td></tr>
+            <tr><td>[19:34] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[19:34] *** vmlemon_ has clicked it, but is waiting for the page to load</td></tr>
+            <tr><td>[19:34] &lt Davbo&gt Awww</td></tr>
+            <tr><td>[19:34] &lt Davbo&gt I lost :(</td></tr>
+            <tr><td>[19:35] &lt vmlemon_&gt "This toss was already completed."</td></tr>
+            <tr><td>[19:35] &lt vmlemon_&gt Not sure what the result was</td></tr>
+            <tr><td>[19:35] &lt Davbo&gt Someone else must have got it before you</td></tr>
+            <tr><td>[19:37] *** Davbo wonders who beat him :(</td></tr>
+            <tr><td>[19:40] &lt Davbo&gt All project disputes should be solved with that site</td></tr>
+            <tr><td>[19:40] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[19:41] &lt Davbo&gt I'm not sure if MS would go along with that though ;-)</td></tr>
+            <tr><td>[19:42] &lt Davbo&gt We'll have to put it to a coin toss!</td></tr>
+            <tr><td>[19:43] &lt vmlemon_&gt o.O "Flipping a coin online is risky business, especially when your friends are fucking liars."</td></tr>
+            <tr><td>[19:44] *** vmlemon_ is surprised that they didn't use "tossers" instead ;)</td></tr>
+            <tr><td>[19:44] &lt Davbo&gt lol, sounds like he made the sight to scratch his own itch</td></tr>
+            <tr><td>[19:45] &lt vmlemon_&gt Hah, they're working on an API for it, too</td></tr>
+            <tr><td>[20:07] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[20:17] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:24] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:39] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[20:49] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:49] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:14] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[21:20] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[21:46] *** aNickName has joined #kamaelia</td></tr>
+            <tr><td>[21:50] *** aNickName has joined #kamaelia</td></tr>
+            <tr><td>[22:10] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[22:11] *** cNickName has joined #kamaelia</td></tr>
+            <tr><td>[22:15] *** aNickName changed the topic to Testing IRC client</td></tr>
+            <tr><td>[22:18] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[22:43] &lt aNickName&gt test1</td></tr>
+            <tr><td>[22:44] &lt Davbo&gt lol can't you do that in another channel Chong-? :P</td></tr>
+            <tr><td>[22:45] *** Davbo changed the topic to gsoc coding period has started :-) | Release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 29th May 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[22:45] &lt Chong-&gt hehe</td></tr>
+            <tr><td>[22:46] *** Davbo changed the topic to gsoc coding period has started :-) | Release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 12th June 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[22:46] &lt Chong-&gt I was just kick off from another channel ;)</td></tr>
+            <tr><td>[22:46] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[22:46] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[22:48] &lt cNickName&gt test2</td></tr>
+            <tr><td>[22:48] &lt vmlemon_&gt Hmm, what are you trying to do?</td></tr>
+            <tr><td>[22:48] &lt Davbo&gt (although it is good to see you got them working)</td></tr>
+            <tr><td>[22:48] &lt vmlemon_&gt See if the nick colour changes in the client?</td></tr>
+            <tr><td>[22:48] &lt Davbo&gt He's reviewing the Kamaelia IRC client code</td></tr>
+            <tr><td>[22:49] &lt Davbo&gt afaik</td></tr>
+            <tr><td>[22:49] &lt Chong-&gt no way :-)</td></tr>
+            <tr><td>[22:49] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[22:51] &lt aNickName&gt t/PRIVMSG #kamaelia the last test :-)</td></tr>
+            <tr><td>[22:53] &lt cNickName&gt one problem</td></tr>
+            <tr><td>[22:53] &lt aNickName&gt try again</td></tr>
+            <tr><td>[22:54] &lt cNickName&gt the last test :-)</td></tr>
+            <tr><td>[22:54] &lt aNickName&gt the last test :-)/PRIVMSG #kamaelia the last test :-)</td></tr>
+            <tr><td>[22:55] &lt j_baker&gt Sigh. So I just discovered a bug in my new packaging toolkit that just so happened to break my local svn working copy. :(</td></tr>
+            <tr><td>[22:55] &lt Davbo&gt Shouldn't privmsg be directed at someone in the channel Chong-?</td></tr>
+            <tr><td>[22:56] &lt Davbo&gt ie. /PRIVMSG Davbo Hi</td></tr>
+            <tr><td>[22:56] &lt Davbo&gt Did you destroy your .svn's j_baker?</td></tr>
+            <tr><td>[22:56] &lt j_baker&gt Yup.</td></tr>
+            <tr><td>[22:56] &lt Davbo&gt Heh.</td></tr>
+            <tr><td>[22:56] &lt Chong-&gt the recipient is #kamaelia, so...</td></tr>
+            <tr><td>[22:57] &lt Davbo&gt Thought it looked risky in the doc's you posted on the mailing list TBH j_baker</td></tr>
+            <tr><td>[22:57] &lt j_baker&gt One of the scripts strips out all the .svns to save room in the final package.</td></tr>
+            <tr><td>[22:57] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[22:57] &lt Chong-&gt j_baker: maybe you need svn update</td></tr>
+            <tr><td>[22:57] &lt j_baker&gt It can be fixed, but I'll have to get my working copy fixed.</td></tr>
+            <tr><td>[22:59] &lt j_baker&gt Well, the problem is that when I try to update it, it tells me a working directory's broke. When I try to do anything with that directory, it tells me the working copy is locked and to cleanup.</td></tr>
+            <tr><td>[22:59] &lt j_baker&gt And of course cleanup does nothing. I hate svn's circular errors.</td></tr>
+            <tr><td>[22:59] &lt Chong-&gt svn update can restore you work copy to the last checkin status</td></tr>
+            <tr><td>[23:00] &lt Chong-&gt I see.</td></tr>
+            <tr><td>[23:01] &lt j_baker&gt So that means I'll probably have to just wipe the whole thing and start over again.</td></tr>
+            <tr><td>[23:04] &lt j_baker&gt I suppose I should have just learned to be happy with a 2MB executable until optimization. :)</td></tr>
+            <tr><td>[23:05] &lt Davbo&gt Maybe if you just co into the same dir?</td></tr>
+            <tr><td>[23:05] &lt Chong-&gt j_baker: have you done to svn operation at the same time?</td></tr>
+            <tr><td>[23:05] &lt Chong-&gt to -- two</td></tr>
+            <tr><td>[23:05] &lt j_baker&gt That's probably what I'll do Davbo. Fortunately, I haven't done anything major since the last checkin.</td></tr>
+            <tr><td>[23:06] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[23:06] &lt Chong-&gt I met the situation once. But after svn cleanup and svn update, it seems ok.</td></tr>
+            <tr><td>[23:08] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[23:08] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[23:32] &lt aNickName&gt the last test :-)/PRIVMSG #kamaelia one more test</td></tr>
+            <tr><td>[23:34] &lt Chong-&gt found one more problem :-)</td></tr>
+            <tr><td>[23:36] &lt aNickName&gt msg one more</td></tr>
+            <tr><td>[23:36] &lt cNickName&gt msg anther one</td></tr>
+            <tr><td>[23:47] &lt Chong-&gt Sorry, all. I may need to do more tests ;)</td></tr>
+            <tr><td>[23:48] &lt cNickName&gt the 1 test</td></tr>
+            <tr><td>[23:48] &lt aNickName&gt the 2 test</td></tr>
+            <tr><td>[23:49] &lt cNickName&gt the 3 test</td></tr>
+            <tr><td>[23:49] &lt aNickName&gt the 4 test :-)</td></tr>
+            <tr><td>[23:49] &lt cNickName&gt the 5 test :-)</td></tr>
+            <tr><td>[23:50] &lt aNickName&gt the 6 test :-)</td></tr>
+            <tr><td>[23:50] &lt cNickName&gt the 6 test :-)65</td></tr>

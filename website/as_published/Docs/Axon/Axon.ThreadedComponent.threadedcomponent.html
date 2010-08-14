@@ -1,0 +1,344 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.ThreadedComponent.threadedcomponent </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.ThreadedComponent.threadedcomponent">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.ThreadedComponent.threadedcomponent</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html">ThreadedComponent</a>.<a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html">threadedcomponent</a></h2>
+</div>
+<p>For examples and more explanations, see the <a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.html">module level docs.</a></p>
+<hr class="docutils" />
+<div class="section">
+<h2 id="symbol-threadedcomponent">class threadedcomponent(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<div class="section">
+<p>threadedcomponent([queuelengths]) -&gt; new threadedcomponent</p>
+<p>Base class for a version of an Axon component that runs main() in a separate
+thread (meaning it can, for example, block). Subclass to make your own.</p>
+<p>Internal queues buffer data between the thread and the Axon inboxes and
+outboxes of the component. Set the default queue length at initialisation
+(default=1000).</p>
+<p>A simple example:</p>
+<pre class="literal-block">
+class IncrementByN(<a class="reference" href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html">Axon.ThreadedComponent.threadedcomponent</a>):
+
+    Inboxes = { &quot;inbox&quot; : &quot;Send numbers here&quot;,
+                &quot;control&quot; : &quot;NOT USED&quot;,
+              }
+    Outboxes = { &quot;outbox&quot; : &quot;Incremented numbers come out here&quot;,
+                 &quot;signal&quot; : &quot;NOT USED&quot;,
+               }
+
+    def __init__(self, N):
+        super(IncrementByN,self).__init__()
+        self.n = N
+
+    def main(self):
+        while 1:
+            while self.dataReady(&quot;inbox&quot;):
+                value = self.recv(&quot;inbox&quot;)
+                value = value + self.n
+                self.send(value,&quot;outbox&quot;)
+
+            if not self.anyReady():
+                self.pause()
+</pre>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.__init__" name="symbol-threadedcomponent.__init__">__init__(self, queuelengths, **argd)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent._do_threadsafe" name="symbol-threadedcomponent._do_threadsafe">_do_threadsafe(self, cmd, argL, argD)</a></h4>
+<p>Internal method for ensuring a method call takes place in the main
+scheduler's thread.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent._handlemessagefromthread" name="symbol-threadedcomponent._handlemessagefromthread">_handlemessagefromthread(self, msg)</a></h4>
+<p>Unpacks a message containing a request to run a method of the form
+(objectToCall, argList, argDict) then calls it and places the result
+in the axontothreadqueue queue.</p>
+<p>Used to execute methods on behalf of the separate thread. Results are
+returned to it via the return queue.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent._localmain" name="symbol-threadedcomponent._localmain">_localmain(self)</a></h4>
+<p>Do not overide this unless you reimplement the pass through of the boxes
+to the threads, and state management.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent._threadmain" name="symbol-threadedcomponent._threadmain">_threadmain(self)</a></h4>
+<p>Exception trapping wrapper for main().</p>
+<p>Runs in the separate thread. Catches any raised exceptions and attempts
+to pass them back to _localmain() to be re-raised.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.activate" name="symbol-threadedcomponent.activate">activate(self[, Scheduler][, Tracker][, mainmethod])</a></h4>
+<p>Call to activate this microprocess, so it can start to be executed by a
+scheduler. Usual usage is to simply call x.activate().</p>
+<p>See <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.activate.html">Axon.Microprocess.microprocess.activate</a>() for more info.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.closeDownComponent" name="symbol-threadedcomponent.closeDownComponent">closeDownComponent(self)</a></h4>
+<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.dataReady" name="symbol-threadedcomponent.dataReady">dataReady(self[, boxname])</a></h4>
+<p>Returns true if data is available in the requested inbox.</p>
+<p>Used by the main() method of a component to check an inbox for ready data.</p>
+<p>Call this method to periodically check whether you've been sent any
+messages to deal with!</p>
+<p>You are unlikely to want to override this method.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.forwardInboxToThread" name="symbol-threadedcomponent.forwardInboxToThread">forwardInboxToThread(self, box)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.initialiseComponent" name="symbol-threadedcomponent.initialiseComponent">initialiseComponent(self)</a></h4>
+<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.link" name="symbol-threadedcomponent.link">link(self, source, sink[, passthrough])</a></h4>
+<p>Creates a linkage from one inbox/outbox to another.</p>
+<p>-- source  - a tuple (component, boxname) of where the link should start from
+-- sink    - a tuple (component, boxname) of where the link should go to</p>
+<p>Other optional arguments:</p>
+<ul class="simple">
+<li>passthrough=0  - (the default) link goes from an outbox to an inbox</li>
+<li>passthrough=1  - the link goes from an inbox to another inbox</li>
+<li>passthrough=2  - the link goes from an outbox to another outbox</li>
+</ul>
+<p>See Axon.Postoffice.link(...) for more information.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.main" name="symbol-threadedcomponent.main">main(self)</a></h4>
+<p>Override this method, writing your own main thread of control as an
+ordinary method. When the component is activated and the scheduler is
+running, this what gets executed.</p>
+<p>Write it as an ordinary method. Because it is run in a separate thread, it
+can block.</p>
+<p>If you do not override it, then a default main method exists instead that
+will:</p>
+<ol class="arabic simple">
+<li>Call self.initialiseComponent()</li>
+<li>Loop forever calling self.mainBody() repeatedly until mainBody()
+returns a False/zero result.</li>
+<li>Call self.closeDownComponent()</li>
+</ol>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.mainBody" name="symbol-threadedcomponent.mainBody">mainBody(self)</a></h4>
+<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.pause" name="symbol-threadedcomponent.pause">pause(self[, timeout])</a></h4>
+<p>Pauses the thread and blocks - does not return until the something
+happens to re-awake it, or until it times out (if the optional timeout
+is specified)</p>
+<p>Must only be called from within the main() method - ie. from within the
+separate thread.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>timeout  -- Optional. None, or the number of seconds after which this call should unblock itself (default=None)</li>
+</ul>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.recv" name="symbol-threadedcomponent.recv">recv(self[, boxname])</a></h4>
+<p>returns the first piece of data in the requested inbox.</p>
+<p>Used by the main() method to recieve a message from the outside world.
+All comms goes via a named box/input queue</p>
+<p>You will want to call this method to actually recieve messages you've been
+sent. You will want to check for new messages using dataReady first
+though.</p>
+<p>You are unlikely to want to override this method.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.send" name="symbol-threadedcomponent.send">send(self, message[, boxname])</a></h4>
+<p>appends message to the requested outbox.</p>
+<p>Used by the main() method to send a message to the outside world.
+All comms goes via a named box/output queue</p>
+<p>You will want to call this method to send messages.</p>
+<p>Raises <a class="reference" href="/Docs/Axon/Axon.AxonExceptions.noSpaceInBox.html">Axon.AxonExceptions.noSpaceInBox</a> if this outbox is linked to a
+destination inbox that is full, or if your component is producing messages
+faster than Axon can pass them on.</p>
+<p>You are unlikely to want to override this method.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.sync" name="symbol-threadedcomponent.sync">sync(self)</a></h4>
+<p>Call this from main() to synchronise with the main scheduler's thread.</p>
+<p>You may wish to do this to throttle your component's behaviour
+This is akin to posix.sched_yield or shoving extra &quot;yield&quot;
+statements into a component's generator.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-threadedcomponent.unlink" name="symbol-threadedcomponent.unlink">unlink(self[, thecomponent][, thelinkage])</a></h4>
+<p>Destroys all linkages to/from the specified component or destroys the
+specific linkage specified.</p>
+<p>Only destroys linkage(s) that were created <em>by</em> this component itself.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>thecomponent -- None or a component object</li>
+<li>thelinakge   -- None or the linkage to remove</li>
+</ul>
+</div>
+</div>
+<div class="section">
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__str__">__str__</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents">childComponents</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize">setInboxSize</a>(self, boxname, size)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady">anyReady</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild">__addChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess">_closeDownMicroprocess</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component._deliver">_deliver</a>(self, message[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild">removeChild</a>(self, child)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox">Inbox</a>(self[, boxname])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren">addChildren</a>(self, *children)</li>
+</ul>
+</div>
+<div class="section">
+<h4>Methods inherited from <a class="reference" href="/Docs/Axon/Axon.Microprocess.microprocess.html">Axon.Microprocess.microprocess</a> :</h4>
+<ul class="simple">
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause">_unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped">_isStopped</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop">stop</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next">next</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause">unpause</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run">run</a>(self)</li>
+<li><a class="reference" href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable">_isRunnable</a>(self)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

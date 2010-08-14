@@ -1,0 +1,276 @@
+<html><body><table>
+            <tr><td>[02:03] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[07:14] &lt Lawouach_&gt morning</td></tr>
+            <tr><td>[07:16] &lt Lawouach_&gt Received my daily spam and this morning one has the following subject</td></tr>
+            <tr><td>[07:16] &lt Lawouach_&gt Too hard to overcome hangovers?</td></tr>
+            <tr><td>[07:17] &lt Lawouach_&gt Which is damn appropriate this morning</td></tr>
+            <tr><td>[07:51] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:15] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[08:16] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:22] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:14] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[10:12] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[10:23] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[10:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:20] *** matthew-p has joined #kamaelia</td></tr>
+            <tr><td>[12:03] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:08] &lt Davbo&gt Hi vmlemon_</td></tr>
+            <tr><td>[12:10] &lt bcarlyon|laptop&gt HI!</td></tr>
+            <tr><td>[12:51] *** Davbo can't work out why this method isn't running</td></tr>
+            <tr><td>[12:51] &lt Davbo&gt I'm probably doing something stupid could someone take a look please?</td></tr>
+            <tr><td>[12:51] &lt Davbo&gt http://davbo.pastebin.com/d3adfa64b</td></tr>
+            <tr><td>[12:53] &lt Davbo&gt when i call self.addLayer() nothing happens</td></tr>
+            <tr><td>[13:01] &lt orphans&gt do you need to break out of waitBox?</td></tr>
+            <tr><td>[13:01] *** orphans forgets how it works</td></tr>
+            <tr><td>[13:02] &lt Davbo&gt it doesn't even print "adding layer" when i call it though</td></tr>
+            <tr><td>[13:03] &lt Davbo&gt seems odd</td></tr>
+            <tr><td>[13:04] &lt orphans&gt ahh</td></tr>
+            <tr><td>[13:04] &lt orphans&gt you got a bigger snippet?</td></tr>
+            <tr><td>[13:05] &lt Davbo&gt it's commited if you want to update and have a look</td></tr>
+            <tr><td>[13:05] &lt orphans&gt file?</td></tr>
+            <tr><td>[13:05] &lt Davbo&gt Paint.py</td></tr>
+            <tr><td>[13:06] &lt orphans&gt cool, will have a gander now</td></tr>
+            <tr><td>[13:06] &lt Davbo&gt alternately http://davbo.pastebin.com/d7eb916e8</td></tr>
+            <tr><td>[13:06] &lt Davbo&gt thanks orphans</td></tr>
+            <tr><td>[13:08] &lt orphans&gt :)</td></tr>
+            <tr><td>[13:08] &lt orphans&gt got it</td></tr>
+            <tr><td>[13:08] &lt orphans&gt it is working - it should be self.activeLayer = self.layers[0] on line 187</td></tr>
+            <tr><td>[13:09] &lt orphans&gt zero indexing is funnnn</td></tr>
+            <tr><td>[13:09] &lt orphans&gt ohh, but it still doesn't print I don't think - hmm</td></tr>
+            <tr><td>[13:10] &lt Davbo&gt nah it's not that</td></tr>
+            <tr><td>[13:10] &lt Davbo&gt there should be 2 things on the list</td></tr>
+            <tr><td>[13:10] &lt orphans&gt oh, sorry, I'm being an idiot</td></tr>
+            <tr><td>[13:10] &lt orphans&gt I should really read the code :)</td></tr>
+            <tr><td>[13:10] &lt Davbo&gt nah it's ugly code just in stages of "getting to work"</td></tr>
+            <tr><td>[13:12] &lt vmlemon_&gt Hah, http://paster.dazjorz.com/?p=3344</td></tr>
+            <tr><td>[13:14] &lt orphans&gt ahh, Davbo, it's cause it's a generator</td></tr>
+            <tr><td>[13:14] &lt Davbo&gt thought it might have been</td></tr>
+            <tr><td>[13:14] *** Davbo was still expecting it to print</td></tr>
+            <tr><td>[13:15] &lt orphans&gt try changing it to self.addLayer().next()</td></tr>
+            <tr><td>[13:16] &lt Davbo&gt Okay, it's doing something now lol</td></tr>
+            <tr><td>[13:16] &lt Davbo&gt Thanks orphans</td></tr>
+            <tr><td>[13:16] &lt orphans&gt not entirely sure that's right still, but at least it prints :D</td></tr>
+            <tr><td>[13:17] &lt orphans&gt despite writing them every day I'm still a bit hazy on generators</td></tr>
+            <tr><td>[13:17] &lt orphans&gt should really read some stuff :)</td></tr>
+            <tr><td>[13:18] &lt Davbo&gt Yeah me too</td></tr>
+            <tr><td>[13:26] &lt vmlemon_&gt Ugh, RISC OS has the worst CLI of any OS I've ever used. "Clunky" and "Archaic" spring to mind as the only way I can think of to describe it...</td></tr>
+            <tr><td>[13:42] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[14:05] &lt Davbo&gt Hah, http://blog.micropledge.com/2008/07/adobe-reader-9/</td></tr>
+            <tr><td>[14:05] &lt Davbo&gt (via reddit)</td></tr>
+            <tr><td>[14:10] &lt Lawouach_&gt Yeah I saw that</td></tr>
+            <tr><td>[14:11] &lt Lawouach_&gt funny but so true</td></tr>
+            <tr><td>[14:11] &lt Lawouach_&gt I have switched to Foxit long ago</td></tr>
+            <tr><td>[14:13] &lt vmlemon_&gt Hah, "You broke my sarcasmeter."</td></tr>
+            <tr><td>[14:14] *** vmlemon_ is still using Adobe Reader 8 on Linux, seeing as it's one of the few apps that actually renders PDFs properly in a predictable manner</td></tr>
+            <tr><td>[14:14] &lt Davbo&gt never had a problem with kpdf</td></tr>
+            <tr><td>[14:19] &lt Lawouach_&gt me neither</td></tr>
+            <tr><td>[14:20] &lt Davbo&gt Lawouach_: you busy?</td></tr>
+            <tr><td>[14:21] &lt Davbo&gt nevermind! :)</td></tr>
+            <tr><td>[14:21] &lt Lawouach_&gt oh well</td></tr>
+            <tr><td>[14:33] &lt Davbo&gt Lawouach_ could you have a look at some code for me when you get chance?</td></tr>
+            <tr><td>[14:35] &lt Davbo&gt http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/DK/Kamaelia-Paint/App/Paint.py?view=markup</td></tr>
+            <tr><td>[14:37] &lt Lawouach_&gt what am I looking at?</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt Around line 117</td></tr>
+            <tr><td>[14:38] &lt Davbo&gt i wanted an alternative to that little method</td></tr>
+            <tr><td>[14:39] &lt Davbo&gt because like that it just yields 1 and breaks leaves the method when the data is ready</td></tr>
+            <tr><td>[14:40] &lt Lawouach_&gt why have you wrapped the dataReady into a new method?</td></tr>
+            <tr><td>[14:40] &lt Lawouach_&gt why not:</td></tr>
+            <tr><td>[14:41] &lt Lawouach_&gt while not self.dataReady('callback'): self.pause()</td></tr>
+            <tr><td>[14:42] &lt Davbo&gt Ahh!</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt I'd tried doing that earlier but was still treating it like a generatoer</td></tr>
+            <tr><td>[14:43] &lt Davbo&gt it's not a generator without the yield is it (of course)</td></tr>
+            <tr><td>[14:44] &lt Davbo&gt oh the waitbox is there for something else i just though I could use it here too</td></tr>
+            <tr><td>[14:46] &lt Davbo&gt heh, thought i'd already tried that</td></tr>
+            <tr><td>[14:46] &lt Davbo&gt it pauses it indefinitely</td></tr>
+            <tr><td>[15:04] &lt j_baker&gt Hey Lawouach_: Does headstock use the selector for anything other than the CSA?</td></tr>
+            <tr><td>[15:05] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[15:05] *** MS- is likely to remove checkin privileges from Pablo this weekend</td></tr>
+            <tr><td>[15:05] &lt MS-&gt I've not had one status update</td></tr>
+            <tr><td>[15:06] &lt MS-&gt or heard what he actually plans to do next</td></tr>
+            <tr><td>[15:06] &lt MS-&gt After all:</td></tr>
+            <tr><td>[15:06] &lt MS-&gt [14:09] &lt  MS-&gt Can I have daily (short) status updates to the list for the next week in that case as well? [14:09] &lt  MS-&gt (Or at minimum every other day?) [14:09] &lt  Trun&gt ok</td></tr>
+            <tr><td>[15:06] &lt MS-&gt Actually I'll do that now</td></tr>
+            <tr><td>[15:07] &lt Davbo&gt Removing checkin privileges == kicking off project / GSoC?</td></tr>
+            <tr><td>[15:07] &lt MS-&gt No.</td></tr>
+            <tr><td>[15:08] &lt MS-&gt Forcing him to actually communicate what he's doing</td></tr>
+            <tr><td>[15:08] &lt Davbo&gt Ah good idea then</td></tr>
+            <tr><td>[15:08] &lt MS-&gt rather than check in a load of crap that no-ones going to use</td></tr>
+            <tr><td>[15:08] &lt MS-&gt He's still checking in KamPlanet stuff after the rather extensive conversation earlier in the week</td></tr>
+            <tr><td>[15:09] &lt Davbo&gt Yeah i noticed those ci's when i updated</td></tr>
+            <tr><td>[15:10] &lt j_baker&gt What exactly is KamPlanet anyway?</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt it's a blog aggregator thing</td></tr>
+            <tr><td>[15:10] &lt Davbo&gt like Python Planet</td></tr>
+            <tr><td>[15:11] &lt Davbo&gt gsoc planet etc</td></tr>
+            <tr><td>[15:11] &lt MS-&gt j_baker: It was intended to be a *small* test system for Pablo to experiment with</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt You would expect him to listen more, since you could just sit back let him do whatever then just fail him on SoC</td></tr>
+            <tr><td>[15:12] &lt MS-&gt Which would enable him to start testing his test frameowrk</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt but since he's getting so much feedback he's not really got an excuse</td></tr>
+            <tr><td>[15:12] &lt MS-&gt However he's ending up building a test framework for KamPlanet, rather than a testing framework useful to the rest of us.</td></tr>
+            <tr><td>[15:12] &lt j_baker&gt I don't think just sitting back and failing him on his project would be in MS-'s best interest anyway.</td></tr>
+            <tr><td>[15:13] &lt MS-&gt No, not particularly</td></tr>
+            <tr><td>[15:13] &lt MS-&gt He's working hard and producing code, but hasn't learnt a lesson yet - that he needs to listen and actually look for what people need</td></tr>
+            <tr><td>[15:13] &lt MS-&gt (in his code)</td></tr>
+            <tr><td>[15:13] &lt Davbo&gt I agree, just saying he should take on board what is being said more</td></tr>
+            <tr><td>[15:14] *** mhrd-afk has joined #kamaelia</td></tr>
+            <tr><td>[15:15] &lt Davbo&gt it sounded like he understands TDD, i don't see why he's wasting time KamPlanet. Although it's true when some people work on a project they get attached and end up endlessly fixing bugs with it and playing with it</td></tr>
+            <tr><td>[15:18] &lt j_baker&gt Either that or he's not quite sure how to proceed and is too afraid to ask for help.</td></tr>
+            <tr><td>[15:18] &lt MS-&gt j_baker: He's producing too much code for that to be the case</td></tr>
+            <tr><td>[15:18] &lt MS-&gt Davbo: Much more likely IMO</td></tr>
+            <tr><td>[15:18] &lt MS-&gt The problem is, that he hasn't bothered researching what test suites we *DO* already have</td></tr>
+            <tr><td>[15:19] &lt Davbo&gt What I was talking about does tend to happen over years not weeks heh</td></tr>
+            <tr><td>[15:20] &lt MS-&gt and what parts of continuous integration type stuff we do have</td></tr>
+            <tr><td>[15:20] &lt MS-&gt For example</td></tr>
+            <tr><td>[15:20] &lt MS-&gt http://kamaelia.sourceforge.net/Docs/Axon/Axon.Component.html</td></tr>
+            <tr><td>[15:20] &lt MS-&gt has a section:</td></tr>
+            <tr><td>[15:20] &lt MS-&gt Test documentation</td></tr>
+            <tr><td>[15:20] &lt MS-&gt which has stuff like</td></tr>
+            <tr><td>[15:20] &lt MS-&gt Tests passed:</td></tr>
+            <tr><td>[15:20] &lt MS-&gt  * __init__ - Class constructor is expected to be called without arguments.</td></tr>
+            <tr><td>[15:20] &lt MS-&gt  * __addChild - Registers the component as a child of the component. Internal function. ttbw</td></tr>
+            <tr><td>[15:20] &lt MS-&gt  * __str__ - Returns a string that contains the fact that it is a component object and the name of it.</td></tr>
+            <tr><td>[15:20] &lt MS-&gt  * _closeDownMicroprocess - Checks the message returned is None (no knockons).</td></tr>
+            <tr><td>[15:20] &lt MS-&gt  * _closeDownMicroprocess - Returns a shutdownMicroprocess. Internal Function.</td></tr>
+            <tr><td>[15:21] &lt MS-&gt  * addChildren - All arguments are added as child components of the component.</td></tr>
+            <tr><td>[15:21] &lt MS-&gt Which is actually generated *directly* from the test suite</td></tr>
+            <tr><td>[15:21] &lt MS-&gt (the output from it)</td></tr>
+            <tr><td>[15:21] &lt MS-&gt ~/kamaelia/trunk/Tests/Python/Axon&gt ./test_Component.py -v</td></tr>
+            <tr><td>[15:21] &lt MS-&gt __init__ - Class constructor is expected to be called without arguments. ... ok</td></tr>
+            <tr><td>[15:21] &lt MS-&gt __addChild - Registers the component as a child of the component. Internal function. ttbw ... ok</td></tr>
+            <tr><td>[15:21] &lt MS-&gt __str__ - Returns a string that contains the fact that it is a component object and the name of it. ... ok</td></tr>
+            <tr><td>[15:21] &lt MS-&gt __str__ - Returns a string representation of the component- consisting of Component,representation of inboxes, representation of outboxes. ... FAIL</td></tr>
+            <tr><td>[15:22] &lt MS-&gt And the irony is that THAT uses unittest</td></tr>
+            <tr><td>[15:22] &lt Davbo&gt Yeah, I had a look through quite a bit of the testing stuff just OOI</td></tr>
+            <tr><td>[15:23] &lt Davbo&gt (when i got the email about them failing or something)</td></tr>
+            <tr><td>[15:24] &lt Davbo&gt I've got layers now MS- btw. Seems to be fine with just using Pygame Surfaces (which is good news) just implementing them properly now (but stuck a bit atm)</td></tr>
+            <tr><td>[15:25] &lt MS-&gt cool</td></tr>
+            <tr><td>[15:38] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt MS-: what boxes does self.pause() check?</td></tr>
+            <tr><td>[15:39] &lt Davbo&gt inbox/control/outbox/signal?</td></tr>
+            <tr><td>[15:40] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[15:40] &lt MS-&gt self.pause() sets a flag in the microprocess that says "OK, pause me"</td></tr>
+            <tr><td>[15:40] &lt MS-&gt to the scheduler</td></tr>
+            <tr><td>[15:40] &lt MS-&gt a delivery to any inbox</td></tr>
+            <tr><td>[15:40] &lt MS-&gt or a delivery from any outbox</td></tr>
+            <tr><td>[15:41] &lt MS-&gt calls the components unpause()</td></tr>
+            <tr><td>[15:41] &lt MS-&gt method</td></tr>
+            <tr><td>[15:41] &lt MS-&gt That's why you should do</td></tr>
+            <tr><td>[15:41] &lt MS-&gt if not self.anyReady():</td></tr>
+            <tr><td>[15:41] &lt MS-&gt  self.pause()</td></tr>
+            <tr><td>[15:41] &lt MS-&gt rather than</td></tr>
+            <tr><td>[15:41] &lt MS-&gt just self.pause()</td></tr>
+            <tr><td>[15:41] &lt Lawouach_&gt indeed</td></tr>
+            <tr><td>[15:42] *** Davbo wonders why his code wont work then :-(</td></tr>
+            <tr><td>[15:42] &lt Lawouach_&gt goto home</td></tr>
+            <tr><td>[15:42] &lt MS-&gt comment out your self.pause() lines</td></tr>
+            <tr><td>[15:43] &lt MS-&gt self.pause() is an optimisation to make the system more friendly</td></tr>
+            <tr><td>[15:43] &lt MS-&gt optimisations come later, so commenting it out may make things clearer</td></tr>
+            <tr><td>[15:43] &lt j_baker&gt Just out of curiosity, how could data go out on an outbox if the component is paused?</td></tr>
+            <tr><td>[15:44] &lt MS-&gt zero copy delivery</td></tr>
+            <tr><td>[15:44] &lt MS-&gt for Axon.Component's</td></tr>
+            <tr><td>[15:44] &lt MS-&gt an inbox is implemented as a list</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt self.send( self.layer, "display_signal")</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt if not self.dataReady('callback'):</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt  self.pause()</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt x = self.recv("callback")</td></tr>
+            <tr><td>[15:44] &lt MS-&gt that list is safe to share between Axon.Components</td></tr>
+            <tr><td>[15:44] &lt MS-&gt since they run in the same thread</td></tr>
+            <tr><td>[15:44] &lt Davbo&gt says i'm popping from an empty list MS-, must be something on another box?</td></tr>
+            <tr><td>[15:45] &lt MS-&gt and can't accidentally be updating the list simultaeniously</td></tr>
+            <tr><td>[15:45] &lt MS-&gt self.pause() sets a flag</td></tr>
+            <tr><td>[15:45] &lt MS-&gt it doesn't pause you</td></tr>
+            <tr><td>[15:45] &lt MS-&gt It's perhaps a misleading name</td></tr>
+            <tr><td>[15:45] &lt MS-&gt (it is one of the oldest names)</td></tr>
+            <tr><td>[15:45] &lt MS-&gt self.pauseNextTimeIYield()</td></tr>
+            <tr><td>[15:45] &lt MS-&gt is more accurate</td></tr>
+            <tr><td>[15:46] &lt MS-&gt j_baker: when you do self.link</td></tr>
+            <tr><td>[15:46] &lt MS-&gt under the hood essentially what happens is the inbox and outbox actually end up sharing the same list</td></tr>
+            <tr><td>[15:46] &lt MS-&gt as a result under all the metaphors the implementation boils down to generators connected by a single list</td></tr>
+            <tr><td>[15:47] &lt MS-&gt called on one side and inbox and outbox on the other side.</td></tr>
+            <tr><td>[15:47] &lt MS-&gt If we'd known we were going to do that originally, we'd've just called it "Box"</td></tr>
+            <tr><td>[15:47] &lt MS-&gt I suspect</td></tr>
+            <tr><td>[15:47] &lt MS-&gt (which is what the underlying code now does, and what the mini-axon tutorial encourages)</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt Meh, it helps keep me from doing stupid things like self.send(data, 'inbox') if you have separate inboxes and outboxes.</td></tr>
+            <tr><td>[15:48] &lt j_baker&gt Or does it?</td></tr>
+            <tr><td>[15:48] &lt MS-&gt That's actually encouraging to hear :)</td></tr>
+            <tr><td>[15:48] &lt MS-&gt to me that sounds reasonable :)</td></tr>
+            <tr><td>[15:49] &lt MS-&gt I've wondered in recent weeks what an inbox/outbox metaphor would look like if we used bidirectional request/response semantics (ie more like HTTP than like UDP)</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt Davbo: did you try doing while not self.dataReady('callback'): self.pause(); yield 1; ?</td></tr>
+            <tr><td>[15:50] &lt MS-&gt incidentally....</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt I think stackless python does that, doesn't it?</td></tr>
+            <tr><td>[15:50] &lt j_baker&gt (the bidirectional thing)</td></tr>
+            <tr><td>[15:51] &lt MS-&gt (Not sure actually)</td></tr>
+            <tr><td>[15:51] &lt MS-&gt while self.dataReady("inbox"):</td></tr>
+            <tr><td>[15:51] &lt MS-&gt  message = self.recv("inbox")</td></tr>
+            <tr><td>[15:51] &lt MS-&gt  #do something with mesage</td></tr>
+            <tr><td>[15:51] &lt MS-&gt can also now be written:</td></tr>
+            <tr><td>[15:51] &lt MS-&gt for message in self.Inbox("inbox"):</td></tr>
+            <tr><td>[15:51] &lt MS-&gt  #do something with</td></tr>
+            <tr><td>[15:52] &lt MS-&gt Doesn't really help Davbo's example above, but worth bearing in mind</td></tr>
+            <tr><td>[15:53] &lt j_baker&gt That's actually pretty helpful. I'd been using a getInbox method that returns an iterator over the inbox.</td></tr>
+            <tr><td>[15:53] &lt Davbo&gt j_baker: that causes another problem :-(</td></tr>
+            <tr><td>[15:54] &lt Davbo&gt MS-: is it okay if i commit this and you take a look when you get chance please?</td></tr>
+            <tr><td>[15:54] &lt MS-&gt sure</td></tr>
+            <tr><td>[15:54] &lt MS-&gt It'll be more obvious if you do</td></tr>
+            <tr><td>[15:54] &lt MS-&gt :)</td></tr>
+            <tr><td>[15:54] &lt Davbo&gt thanks</td></tr>
+            <tr><td>[15:55] *** Davbo is really sick of this little bit of code</td></tr>
+            <tr><td>[15:55] &lt Davbo&gt Lawouach and orphans and now j_baker has all helped me with it too lol :-)</td></tr>
+            <tr><td>[15:56] &lt j_baker&gt Is it possible for a selector to be created but not register itself with the CAT? I'm getting a weird MultipleServiceDeletion exception.</td></tr>
+            <tr><td>[16:00] &lt MS-&gt I think you'd need to look at the source tbh</td></tr>
+            <tr><td>[16:01] &lt j_baker&gt I'll look at it more in depth. The thing is that I'm not entirely sure what part of the code is using the selector (other than the CSA).</td></tr>
+            <tr><td>[16:02] &lt MS-&gt TCPServer, TCPClient & CSA</td></tr>
+            <tr><td>[16:02] &lt MS-&gt And UnixProcess</td></tr>
+            <tr><td>[16:02] &lt MS-&gt all have a relationship with it</td></tr>
+            <tr><td>[16:02] &lt MS-&gt depending on what you're looking at</td></tr>
+            <tr><td>[16:03] &lt j_baker&gt I think headstock uses the TCPClient.</td></tr>
+            <tr><td>[16:03] &lt Davbo&gt Hah I think I had the same problem the other day j_baker, registering 2 pygame displays with CAT. That was a problem in my code though</td></tr>
+            <tr><td>[16:04] &lt j_baker&gt I don't see any reason for headstock to use it any other place, but that's sheer conjecture.</td></tr>
+            <tr><td>[16:06] &lt MS-&gt dumb q if the answer is yes - do you know how to use grep?</td></tr>
+            <tr><td>[16:06] &lt MS-&gt (not a dumb q if you do know :-) )</td></tr>
+            <tr><td>[16:06] &lt MS-&gt (not a dumb q if you DON'T know I mean)</td></tr>
+            <tr><td>[16:07] &lt Lawouach&gt back</td></tr>
+            <tr><td>[16:08] &lt j_baker&gt TBH, I've only used it once or twice for trivial tasks</td></tr>
+            <tr><td>[16:18] &lt j_baker&gt Ah, I figured it out. I'm just using an outdated version of the selector. :)</td></tr>
+            <tr><td>[16:19] &lt MS-&gt *slap*</td></tr>
+            <tr><td>[16:19] &lt MS-&gt :-)</td></tr>
+            <tr><td>[16:20] &lt MS-&gt Just realised</td></tr>
+            <tr><td>[16:20] &lt MS-&gt j_baker: Are you working today because you want to, or because you feel you should?</td></tr>
+            <tr><td>[16:20] &lt MS-&gt If its the former, very cool. If it's the latter very uncool</td></tr>
+            <tr><td>[16:21] &lt MS-&gt Happy Independence Day :)</td></tr>
+            <tr><td>[16:21] &lt j_baker&gt Because I want to. :) I honestly hadn't even noticed it was July 4.</td></tr>
+            <tr><td>[16:21] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[16:21] &lt MS-&gt Just checking. :)</td></tr>
+            <tr><td>[16:22] &lt MS-&gt fwiw, I often end up doing kamaelia stuff on holidays, but that's for "because I want to" reasons rather than "because I should"</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt Yeah. Plus I'm actually kind of looking forward to what I get with this.</td></tr>
+            <tr><td>[16:23] &lt MS-&gt Cool :)</td></tr>
+            <tr><td>[16:23] &lt MS-&gt Now that we've looked in more detail about the specifics of what you actually meant by using XMPP and how it integrates,</td></tr>
+            <tr><td>[16:23] &lt j_baker&gt Lawouach's done a pretty good job of making headstock fairly easy to use and making sure I actually know how to use it.</td></tr>
+            <tr><td>[16:24] &lt MS-&gt I'm really interested about how your project can work and some of the possibilities</td></tr>
+            <tr><td>[16:24] &lt MS-&gt That was always a bit hazy for me :)</td></tr>
+            <tr><td>[16:24] &lt MS-&gt But the WSGI work part was the primary compelling part - combined with the fact it looked like at least you understood what you wanted ;)</td></tr>
+            <tr><td>[16:24] &lt MS-&gt :-)</td></tr>
+            <tr><td>[16:25] &lt j_baker&gt I understand. I now kinda realize that I had focused on a lot of the wrong areas in my application at least in regards to the technical aspects.</td></tr>
+            <tr><td>[16:26] &lt j_baker&gt (and part of that was my own lack of knowledge of XMPP. I wasn't sure exactly how to use it, but I knew that the model it uses is basically my "peer"/"intermediary" model.)</td></tr>
+            <tr><td>[16:27] &lt MS-&gt There were weaknesses there, but there was the strength that you sat down and started building stuff, and turning round and saying "how does this look, does that make sense"</td></tr>
+            <tr><td>[16:27] &lt MS-&gt :)</td></tr>
+            <tr><td>[16:30] &lt j_baker&gt Yeah. Plus I think the "sandboxed" filesystem idea was kinda cool. Even if it would be kind of difficult technically.</td></tr>
+            <tr><td>[16:33] &lt j_baker&gt In regards to the AdaptiveCommsComponent, if I set a resource to track, I notice it puts it in a dictionary for tracking (that begins with a _). Is there any reason why I can't access that directly?</td></tr>
+            <tr><td>[16:34] &lt j_baker&gt Like suppose I want to iterate over the resources I've stored.</td></tr>
+            <tr><td>[16:59] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[18:01] &lt vmlemon_&gt o.O http://news.bbc.co.uk/1/hi/business/7490346.stm</td></tr>
+            <tr><td>[18:01] &lt vmlemon_&gt How strange...</td></tr>
+            <tr><td>[19:03] &lt MS-&gt Interesting: http://www.jvuletich.org/Squeak/IntroductionToMorphic/Morphic.html</td></tr>
+            <tr><td>[19:03] *** Lawouach has joined #kamaelia</td></tr>
+            <tr><td>[19:04] &lt Lawouach&gt evening</td></tr>
+            <tr><td>[19:04] &lt MS-&gt evening</td></tr>
+            <tr><td>[19:19] &lt MS-&gt Chong's system is certainly getting there</td></tr>
+            <tr><td>[19:20] &lt MS-&gt The rotation is a little odd at present - which I'm sure he knows - but he's definitely making progress</td></tr>
+            <tr><td>[19:30] &lt MS-&gt One for Davbo: http://bomomo.com/</td></tr>
+            <tr><td>[19:40] &lt vmlemon_&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[19:40] Reply: Ptang!</td></tr>
+            <tr><td>[20:21] *** j_baker-laptop has joined #kamaelia</td></tr>
+            <tr><td>[21:28] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:30] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[22:58] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:58] *** vmlemon__ is now known as vmlemon_</td></tr>

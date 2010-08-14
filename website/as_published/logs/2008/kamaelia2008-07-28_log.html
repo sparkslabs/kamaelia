@@ -1,0 +1,599 @@
+<html><body><table>
+            <tr><td>[01:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[02:23] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[03:08] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[06:08] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[06:08] &lt Lawouach_&gt hello</td></tr>
+            <tr><td>[07:12] &lt Lawouach_&gt Well IronPython is still not Kamaelia ready.</td></tr>
+            <tr><td>[07:23] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[07:36] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[07:40] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:28] &lt Lawouach_&gt Currently IronPython and kamaelia fail because of this bug</td></tr>
+            <tr><td>[08:28] &lt Lawouach_&gt http://www.codeplex.com/IronPython/WorkItem/View.aspx?WorkItemId=17561</td></tr>
+            <tr><td>[08:28] &lt Lawouach_&gt That I've opened.</td></tr>
+            <tr><td>[08:28] &lt Lawouach_&gt IP is not complete but metaclasses do suck</td></tr>
+            <tr><td>[08:41] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[08:46] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[08:46] &lt MS-&gt morning</td></tr>
+            <tr><td>[08:47] *** MS- notes he moved the logs at the weekend</td></tr>
+            <tr><td>[08:48] *** orphans notes the new address - ta MS- </td></tr>
+            <tr><td>[08:49] *** orphans segfaults :)</td></tr>
+            <tr><td>[08:49] &lt MS-&gt Yep, I made sure I updated the channel's topic</td></tr>
+            <tr><td>[08:53] &lt MS-&gt Davbo: morning</td></tr>
+            <tr><td>[08:53] &lt Davbo&gt morning MS-</td></tr>
+            <tr><td>[08:54] &lt MS-&gt How goes?</td></tr>
+            <tr><td>[08:54] &lt MS-&gt I saw you've been restructuring things</td></tr>
+            <tr><td>[08:55] &lt MS-&gt http://edit.kamaelia.org/Developers/Projects/KamaeliaPaint hasn't been updated in a couple of weeks though - would be useful to get a summary of work from the past couple of weeks there</td></tr>
+            <tr><td>[08:55] &lt MS-&gt (nothing major, just an overview)</td></tr>
+            <tr><td>[08:58] *** MS- reads j_baker's reply</td></tr>
+            <tr><td>[08:58] &lt Davbo&gt Hey MS-, sorry I got conscripted to some manual labour</td></tr>
+            <tr><td>[08:59] &lt Davbo&gt Yeah, I'll write up a summary of what's gone on</td></tr>
+            <tr><td>[09:00] &lt MS-&gt Davbo: np & thanks</td></tr>
+            <tr><td>[09:09] &lt MS-&gt Also when you're back a talk through stuff would be useful</td></tr>
+            <tr><td>[09:10] &lt MS-&gt (esp so I can help with packaging up with you)</td></tr>
+            <tr><td>[09:12] &lt Davbo&gt back, sorry again. All done now :-)</td></tr>
+            <tr><td>[09:15] *** MS- notes this: http://edit.kamaelia.org/Developers/Projects/KamaeliaPublish/CrossTalk</td></tr>
+            <tr><td>[09:16] &lt MS-&gt Not sure I like the idea of slinging pre-parsed HTTP data around. I can understand the rationale that got things there, but it means that a third party has to deal with a non-standard form of HTTP rather than a standard.</td></tr>
+            <tr><td>[09:16] &lt Davbo&gt Sounds like a Christian discussion group</td></tr>
+            <tr><td>[09:16] &lt MS-&gt No, I think the name is fine</td></tr>
+            <tr><td>[09:17] &lt MS-&gt It's just the idea that it opens up a third party to something they're not expecting</td></tr>
+            <tr><td>[09:17] &lt MS-&gt I'm also unclear as to the serialisation for things like chunked encoding</td></tr>
+            <tr><td>[09:18] &lt Davbo&gt interesting</td></tr>
+            <tr><td>[09:18] &lt MS-&gt But hey, he's marking it as experimental, so experimental it is</td></tr>
+            <tr><td>[09:19] &lt MS-&gt After all the saying is "If you always do what you've always done, you always get what you've always got"</td></tr>
+            <tr><td>[09:19] &lt Davbo&gt I suppose</td></tr>
+            <tr><td>[09:20] &lt Davbo&gt Oh I see what he's doing</td></tr>
+            <tr><td>[09:21] &lt Davbo&gt Anyway,</td></tr>
+            <tr><td>[09:22] &lt Davbo&gt I want to get animation in this week MS-</td></tr>
+            <tr><td>[09:22] &lt MS-&gt Sounds like a good goal.</td></tr>
+            <tr><td>[09:23] &lt MS-&gt & fun :)</td></tr>
+            <tr><td>[09:23] &lt Davbo&gt I have already made a start on some parts, it shouldn't be a problem.</td></tr>
+            <tr><td>[09:23] &lt MS-&gt I take it the layers stuff should help somewhat there?</td></tr>
+            <tr><td>[09:23] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[09:24] &lt MS-&gt What's your take on my using your code as an example of how that proposed bit of syntax may make things clearer?</td></tr>
+            <tr><td>[09:24] &lt MS-&gt If you think it makes it less clear, please say</td></tr>
+            <tr><td>[09:25] &lt Davbo&gt Oh i did see that, the stuff in ToolBox right?</td></tr>
+            <tr><td>[09:26] &lt MS-&gt IIRC yes</td></tr>
+            <tr><td>[09:26] &lt mhrd-afk&gt """vmlemon_ : I take it that Kamaelia's demultiplexing components are intended to be used when you, A: know the PIDs you want, and B: only have data from a single multiplex in your TS file?""" ... yes.</td></tr>
+            <tr><td>[09:26] &lt mhrd-afk&gt * I'd strongly advise against recording more than one transport stream/multiplex into the same file, since you'll not be able to unpick the data from the two. Stuff carried on the same PIDs in both will interfere with each other and there'll be no way to distinguish them.</td></tr>
+            <tr><td>[09:26] &lt mhrd-afk&gt * There are a few variations on demultiplexing components in Kamaelia. Some take fixed arguments at initialisation telling them which PIDs to demux. Others can be reconfigured at runtime. See bottom of http://kamaelia.sourceforge.net/Cookbook ... The dvb examples get progressively more complex as you go down. The "RegisterService" stuff can be imported from Kamaelia.Experimental.Services</td></tr>
+            <tr><td>[09:26] &lt mhrd-afk&gt http://kamaelia.sourceforge.net/Components/pydoc/Kamaelia.Experimental.Services.html</td></tr>
+            <tr><td>[09:26] &lt mhrd-afk&gt (sorry about that brain dump ... am afk again now I'm afraid :-) )</td></tr>
+            <tr><td>[09:26] &lt mhrd-afk&gt ok &"£$ ... he's not around is he? :-)</td></tr>
+            <tr><td>[09:26] &lt MS-&gt um, no</td></tr>
+            <tr><td>[09:26] &lt MS-&gt :)</td></tr>
+            <tr><td>[09:27] &lt mhrd-afk&gt ah well, can someone point him at the logs if he turns up? (thanks)</td></tr>
+            <tr><td>[09:28] &lt Davbo&gt sure mhrd-afk</td></tr>
+            <tr><td>[09:28] &lt MS-&gt yep</td></tr>
+            <tr><td>[09:29] &lt Davbo&gt MS-: the sub_graphline is a nicer way to do what I've done</td></tr>
+            <tr><td>[09:29] &lt MS-&gt cool</td></tr>
+            <tr><td>[09:29] &lt MS-&gt I think there's more discussion to be had yet though since it's generating a bunch of interesting ideas</td></tr>
+            <tr><td>[09:30] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[09:30] &lt MS-&gt I'm still planning on doing the release this week.</td></tr>
+            <tr><td>[09:31] &lt MS-&gt Three major outstanding items to do - release notes, website shift over to new layouts & merge of kamaelia grey onto trunk</td></tr>
+            <tr><td>[09:31] &lt Davbo&gt Oh I remembered another thing. I'm so sorry, I only noticed I still have to merge Tools2Apps yesterday</td></tr>
+            <tr><td>[09:31] &lt MS-&gt It's packaged up approrpiate</td></tr>
+            <tr><td>[09:31] &lt MS-&gt You do?</td></tr>
+            <tr><td>[09:32] &lt Davbo&gt Yeah I should have done it ages ago</td></tr>
+            <tr><td>[09:32] &lt MS-&gt Branches (most recently) Merged</td></tr>
+            <tr><td>[09:32] &lt MS-&gt ...</td></tr>
+            <tr><td>[09:32] &lt MS-&gt private_MPS_Tools2AppsConsolidation</td></tr>
+            <tr><td>[09:32] &lt MS-&gt (from http://edit.kamaelia.org/ReleaseJune2008)</td></tr>
+            <tr><td>[09:32] &lt Davbo&gt Hmm</td></tr>
+            <tr><td>[09:33] &lt MS-&gt "Branches That Need Merging</td></tr>
+            <tr><td>[09:33] &lt MS-&gt These branches need claiming for merge:</td></tr>
+            <tr><td>[09:33] &lt MS-&gt None at present!"</td></tr>
+            <tr><td>[09:33] &lt Davbo&gt I *did* do it but had problems with it</td></tr>
+            <tr><td>[09:33] &lt Davbo&gt Maybe someone else looked at it?</td></tr>
+            <tr><td>[09:33] &lt MS-&gt I was in a merge frenzy just before Mashed - I think it happened then</td></tr>
+            <tr><td>[09:33] &lt MS-&gt (*think*)</td></tr>
+            <tr><td>[09:34] &lt MS-&gt would be worth double checking</td></tr>
+            <tr><td>[09:34] &lt Davbo&gt There was something wrong with setup.py and iirc you said you'd have a look</td></tr>
+            <tr><td>[09:35] &lt MS-&gt I think in future whenever actions get agreed by someone like this we ought to set a time/date it'll get done by, and if no done released back to the pool of "things to do"</td></tr>
+            <tr><td>[09:35] &lt MS-&gt So that we know better what's going on</td></tr>
+            <tr><td>[09:35] &lt MS-&gt It's so easy after all to go "Yes, I'll do that" and then not realise just how much time it'll take, hit and issue and it get left</td></tr>
+            <tr><td>[09:36] &lt MS-&gt At least if it's clearly "dropped", it's visible and can get picked up without confusing anyone</td></tr>
+            <tr><td>[09:36] &lt Davbo&gt Don't we delete branches once they're merged?</td></tr>
+            <tr><td>[09:36] &lt MS-&gt (random thought - you say after all "iirc you said you'd have a look")</td></tr>
+            <tr><td>[09:36] &lt MS-&gt Initially they're normally moved into "merged"</td></tr>
+            <tr><td>[09:36] &lt MS-&gt or "rejected"</td></tr>
+            <tr><td>[09:36] &lt Davbo&gt ah I see</td></tr>
+            <tr><td>[09:36] &lt MS-&gt for a brief while</td></tr>
+            <tr><td>[09:37] &lt MS-&gt then deleted with the last version number they existed in noted</td></tr>
+            <tr><td>[09:37] &lt Davbo&gt I noticed it when testing a checkout on code.google</td></tr>
+            <tr><td>[09:37] &lt MS-&gt Most of "merged" for example can probably be deleted I guess</td></tr>
+            <tr><td>[09:37] &lt MS-&gt (after current version noted)</td></tr>
+            <tr><td>[09:37] &lt MS-&gt I'm not impressed with code.google at present FWIW</td></tr>
+            <tr><td>[09:37] &lt MS-&gt took 3 hours for a checkout at the weekend failing repeatedly</td></tr>
+            <tr><td>[09:38] &lt MS-&gt I *really* don't like that</td></tr>
+            <tr><td>[09:38] &lt Davbo&gt Really? Wow</td></tr>
+            <tr><td>[09:38] &lt Davbo&gt seemed okay here</td></tr>
+            <tr><td>[09:38] &lt MS-&gt Yeah, long long time</td></tr>
+            <tr><td>[09:39] &lt MS-&gt OK, we ought to think about packaging your stuff up to make it easier for someone to run etc</td></tr>
+            <tr><td>[09:39] &lt MS-&gt You said you needed help with branching</td></tr>
+            <tr><td>[09:39] &lt MS-&gt it boils down to doing this:</td></tr>
+            <tr><td>[09:40] &lt MS-&gt cd branches</td></tr>
+            <tr><td>[09:40] &lt MS-&gt svn cp ../trunk/Code/Python private_DK_AnythingYouWantHere</td></tr>
+            <tr><td>[09:40] &lt MS-&gt svn ci private_DK_AnythingYouWantHere</td></tr>
+            <tr><td>[09:40] &lt MS-&gt I'd suggest AnythingYouWantHere be something related to PaintDev or similar</td></tr>
+            <tr><td>[09:41] &lt Davbo&gt Right</td></tr>
+            <tr><td>[09:41] &lt MS-&gt You'll then want to copy what's going on inside</td></tr>
+            <tr><td>[09:41] &lt MS-&gt /branches/private_MPS_Games4Kids/Apps/Games4Kids</td></tr>
+            <tr><td>[09:42] &lt MS-&gt specifically put your paint program in App</td></tr>
+            <tr><td>[09:42] &lt orphans&gt Lawouach, Lawouach_, ping?</td></tr>
+            <tr><td>[09:42] &lt MS-&gt Modify the files in DistBuild in the (hopefully) obvious way</td></tr>
+            <tr><td>[09:42] &lt MS-&gt (may not be obvious)</td></tr>
+            <tr><td>[09:42] &lt MS-&gt You'll also note that on that branch</td></tr>
+            <tr><td>[09:42] &lt MS-&gt I've also created</td></tr>
+            <tr><td>[09:43] &lt MS-&gt /branches/private_MPS_Games4Kids/Kamaelia/Kamaelia/Apps/Games4Kids/</td></tr>
+            <tr><td>[09:43] &lt MS-&gt which has a bunch of files in</td></tr>
+            <tr><td>[09:43] &lt Davbo&gt Games4Kids?</td></tr>
+            <tr><td>[09:43] &lt Lawouach&gt pong</td></tr>
+            <tr><td>[09:43] &lt MS-&gt and you'll also note that the setup.py file has this added:</td></tr>
+            <tr><td>[09:43] &lt MS-&gt  "Kamaelia.Apps.Games4Kids",</td></tr>
+            <tr><td>[09:43] &lt Davbo&gt where's that come from?</td></tr>
+            <tr><td>[09:43] &lt MS-&gt Yeah, I'm killing two birds with one stone</td></tr>
+            <tr><td>[09:43] &lt orphans&gt Lawouach, can you cast your eye over something - it's a bit of c++ which isn't working and I can't for the life of my see why</td></tr>
+            <tr><td>[09:44] &lt orphans&gt s/my/me</td></tr>
+            <tr><td>[09:44] &lt MS-&gt It's something I'm writing as games for kids :) , but also in relation to a project mhrd-afk is doing</td></tr>
+            <tr><td>[09:44] &lt MS-&gt which requires location/distance detection</td></tr>
+            <tr><td>[09:44] &lt MS-&gt and that's a simple way of testing some ideas</td></tr>
+            <tr><td>[09:44] &lt Davbo&gt Oh, heh cool</td></tr>
+            <tr><td>[09:44] &lt orphans&gt Lawouach, It's a little complex, so I've simplified as much as I can - basically it comes down to passing a struct as a void pointer not working right</td></tr>
+            <tr><td>[09:45] &lt MS-&gt The reason it's relevant is because it's pygame based & adds some stuff in places you'll probably need to</td></tr>
+            <tr><td>[09:45] &lt Lawouach&gt any code snippet at hand?</td></tr>
+            <tr><td>[09:45] &lt orphans&gt http://orphans.pastebin.com/d26c45a1</td></tr>
+            <tr><td>[09:45] &lt Davbo&gt I see</td></tr>
+            <tr><td>[09:46] &lt Davbo&gt Right, I think I know what to do</td></tr>
+            <tr><td>[09:46] &lt MS-&gt svn diff -r5036:HEAD |less</td></tr>
+            <tr><td>[09:46] &lt MS-&gt in ~/code.google/kamaelia/branches/private_MPS_Games4Kids</td></tr>
+            <tr><td>[09:46] &lt MS-&gt Should</td></tr>
+            <tr><td>[09:46] &lt Davbo&gt (looking at that branch now)</td></tr>
+            <tr><td>[09:46] &lt MS-&gt give you an idea of the sort of things you'll need to look at</td></tr>
+            <tr><td>[09:46] &lt Lawouach&gt orphans: what's the problem? I mean what's happening?</td></tr>
+            <tr><td>[09:47] &lt orphans&gt Lawouach, basically the wrapped openStream gets called, which the calls the unwrapped version. That calls the callback with a struct of data, which turns out to be nonsense within the callback</td></tr>
+            <tr><td>[09:47] &lt Lawouach&gt define nonsense</td></tr>
+            <tr><td>[09:47] &lt orphans&gt Lawouach, so where I print stuff in openStream it prints 1, whereas when I print it in streamCallback it gives a big silly int (which appears to be pretty random)</td></tr>
+            <tr><td>[09:48] &lt Lawouach&gt right</td></tr>
+            <tr><td>[09:48] &lt orphans&gt Lawouach, 3217995288 on the last run through :)</td></tr>
+            <tr><td>[09:48] &lt Lawouach&gt uh</td></tr>
+            <tr><td>[09:48] &lt Lawouach&gt your signature is wrong it seems</td></tr>
+            <tr><td>[09:48] &lt Lawouach&gt int streamCallback(A, LOAD, OF, ARGS, INCLUDING, void *userData)</td></tr>
+            <tr><td>[09:49] &lt Lawouach&gt sipCpp-&gtopenStream(A, LOAD, OF, ARGS, INCLUDING, streamCallback, &data);</td></tr>
+            <tr><td>[09:49] &lt MS-&gt Davbo: If you run into problems, let me know. It'll either be blindingly obvious what's going on or incredibly opaque</td></tr>
+            <tr><td>[09:49] &lt Lawouach&gt hmm</td></tr>
+            <tr><td>[09:49] &lt Lawouach&gt or am I reading this incorrectly?</td></tr>
+            <tr><td>[09:49] &lt Davbo&gt MS-: When should I aim to get it done MS-?</td></tr>
+            <tr><td>[09:50] &lt orphans&gt Lawouach, sipCpp-&gtopenStream calls streamCallback(&data) basically</td></tr>
+            <tr><td>[09:51] &lt Lawouach&gt ok</td></tr>
+            <tr><td>[09:51] &lt MS-&gt Davbo: I'd personally do the packaging when you're ready to "put down" what you're currently working on.</td></tr>
+            <tr><td>[09:51] &lt MS-&gt ie asap :)</td></tr>
+            <tr><td>[09:51] &lt Davbo&gt thought so</td></tr>
+            <tr><td>[09:51] &lt Davbo&gt I want to be able to move layers and animate before then</td></tr>
+            <tr><td>[09:51] &lt MS-&gt I'd like to see everyone able to package up their stuff before friday this week ideally</td></tr>
+            <tr><td>[09:51] &lt MS-&gt Largely because I'll then know it's sorted</td></tr>
+            <tr><td>[09:51] &lt Davbo&gt Alright</td></tr>
+            <tr><td>[09:52] &lt Davbo&gt I like having deadlines is all</td></tr>
+            <tr><td>[09:52] &lt MS-&gt If you have problems let me know - it'll be quick for me to do, but it's worth learning how to do it</td></tr>
+            <tr><td>[09:52] &lt MS-&gt OK, wednesday</td></tr>
+            <tr><td>[09:52] &lt MS-&gt :)</td></tr>
+            <tr><td>[09:52] &lt Davbo&gt :-)</td></tr>
+            <tr><td>[09:52] &lt Lawouach&gt orphans: at firts sight I don't know</td></tr>
+            <tr><td>[09:52] &lt Davbo&gt meeting them != having them ;-)</td></tr>
+            <tr><td>[09:52] &lt MS-&gt I'd expect it to be done today though</td></tr>
+            <tr><td>[09:53] &lt MS-&gt since it's not too hard, but you may hit problems since you've not done it before</td></tr>
+            <tr><td>[09:53] &lt Davbo&gt Okay, once i've done that where should I be making changes</td></tr>
+            <tr><td>[09:53] &lt Davbo&gt to the branch?</td></tr>
+            <tr><td>[09:53] &lt orphans&gt Lawouach, (kinda) good to hear - I thought it might be something really obvious that I was doing wrong</td></tr>
+            <tr><td>[09:53] &lt MS-&gt To the branch</td></tr>
+            <tr><td>[09:53] &lt MS-&gt You own that branch in the same way you own your sketches area</td></tr>
+            <tr><td>[09:54] &lt MS-&gt in fact you own the entire namespace /branches/private_DK_*</td></tr>
+            <tr><td>[09:54] &lt MS-&gt :-)</td></tr>
+            <tr><td>[09:54] &lt orphans&gt Lawouach, I'll have a poke around in sipCpp-&gtopenStream, put some debugging stuff in there and see how far I'm getting</td></tr>
+            <tr><td>[09:55] &lt MS-&gt The nice thing about that of course, is once that's done, you'll be able to give other people your code relatively easily by running the build script and giving them a tar ball to install</td></tr>
+            <tr><td>[09:56] &lt MS-&gt OK, regarding animation, would it be reasonable for me to assume that you will be enabling that before friday?</td></tr>
+            <tr><td>[09:57] &lt MS-&gt Assuming that's the case you'd probably be able to claim a version 0 this friday of your target code.</td></tr>
+            <tr><td>[09:57] &lt MS-&gt (since it'll be a multiwindow, packaged, animation scribbler :-) )</td></tr>
+            <tr><td>[09:57] &lt Davbo&gt Yeah, I aim for animation before friday</td></tr>
+            <tr><td>[09:58] &lt Lawouach&gt orphans: it seems the memory is allocated properly but not initialized as you'd expect</td></tr>
+            <tr><td>[09:58] &lt Lawouach&gt hence the big int number telling you "Yeah the memory is there but the data isn't"</td></tr>
+            <tr><td>[09:59] &lt MS-&gt We can also look at how you're planning on exporting the images so we can figure out how you can distibute the animations for others to run</td></tr>
+            <tr><td>[09:59] &lt MS-&gt (ie mpeg, flv, etc)</td></tr>
+            <tr><td>[09:59] &lt orphans&gt Lawouach, I love C :)</td></tr>
+            <tr><td>[10:00] &lt MS-&gt As long as you're generating frames of images, I can help you with (useful) pointers for how to do those</td></tr>
+            <tr><td>[10:01] &lt Davbo&gt dirac would be trivial from the components we already have</td></tr>
+            <tr><td>[10:01] &lt MS-&gt Could be worth looking at, yes.</td></tr>
+            <tr><td>[10:02] *** MS- idly wonders where Chong is</td></tr>
+            <tr><td>[10:02] &lt MS-&gt weather is really nice here though, so I can hardly blame him if he's off enjoying the weather given what it's been like recently</td></tr>
+            <tr><td>[10:02] &lt MS-&gt :)</td></tr>
+            <tr><td>[10:02] &lt Davbo&gt Yeah, same here</td></tr>
+            <tr><td>[10:02] &lt MS-&gt I'm sure he'll make up the time elsewhere if he's off enjoying it</td></tr>
+            <tr><td>[10:03] &lt Davbo&gt All the graduates were boiling in robes and suits on Friday :-)</td></tr>
+            <tr><td>[10:06] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[10:12] &lt MS-&gt Davbo: :)</td></tr>
+            <tr><td>[10:14] &lt Davbo&gt It was probably the most white & middle-classed thing i've ever done, there was even light jazz and Pimm's</td></tr>
+            <tr><td>[10:14] &lt MS-&gt heh</td></tr>
+            <tr><td>[10:14] &lt Davbo&gt ;-)</td></tr>
+            <tr><td>[10:15] &lt MS-&gt right, I'm going to get some lunch, then come back and write a document I've been asked to write</td></tr>
+            <tr><td>[10:15] &lt MS-&gt back later</td></tr>
+            <tr><td>[10:15] &lt Davbo&gt cya</td></tr>
+            <tr><td>[10:15] &lt MS-&gt cya :)</td></tr>
+            <tr><td>[10:15] *** MS- is now known as ms-afk</td></tr>
+            <tr><td>[10:19] &lt Lawouach_&gt back</td></tr>
+            <tr><td>[10:28] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[10:36] &lt orphans&gt woop, Lawouach, fixed :)</td></tr>
+            <tr><td>[10:38] &lt Lawouach_&gt what was it?</td></tr>
+            <tr><td>[10:39] &lt orphans&gt needed to manually allocate the memory for the struct</td></tr>
+            <tr><td>[10:39] &lt orphans&gt otherwise I think it was getting garbage collected somewhere along the line</td></tr>
+            <tr><td>[10:39] &lt Lawouach_&gt Yeah would make sense</td></tr>
+            <tr><td>[10:39] &lt Lawouach_&gt Actually, question for you, why did you choose a struct over a class?</td></tr>
+            <tr><td>[10:40] &lt Lawouach_&gt I'm just curious :)</td></tr>
+            <tr><td>[10:40] &lt orphans&gt I was cribbing off some other code which did basically the same thing :)</td></tr>
+            <tr><td>[10:40] &lt orphans&gt I'm not very good with C</td></tr>
+            <tr><td>[10:40] &lt orphans&gt learnt an awful lot this week :)</td></tr>
+            <tr><td>[10:42] &lt Lawouach_&gt that's good :)</td></tr>
+            <tr><td>[10:42] &lt Lawouach_&gt don't forget your timeline though ;)</td></tr>
+            <tr><td>[10:42] &lt orphans&gt heh, I wish I could forget it</td></tr>
+            <tr><td>[10:42] &lt orphans&gt I'm hoping lotsly to hear sound today</td></tr>
+            <tr><td>[10:42] &lt orphans&gt :)</td></tr>
+            <tr><td>[10:43] &lt Lawouach_&gt :p</td></tr>
+            <tr><td>[10:50] &lt wyleu&gt Is Joe Turner still around?</td></tr>
+            <tr><td>[10:55] &lt Lawouach_&gt orphans: ping</td></tr>
+            <tr><td>[10:55] &lt orphans&gt wyleu, hey :)</td></tr>
+            <tr><td>[10:55] &lt wyleu&gt Hey Orphans</td></tr>
+            <tr><td>[10:56] &lt wyleu&gt I've just presented to the local council after finally getting Java running in Iceweasel at 3.25am this morning :D</td></tr>
+            <tr><td>[10:58] &lt wyleu&gt But that's not the question. I want to make a synth make a noise have you a simplistic component that just takes some form of on /off message sent to it in an inbox?</td></tr>
+            <tr><td>[10:58] &lt wyleu&gt Control B on steroids really...</td></tr>
+            <tr><td>[10:58] &lt orphans&gt wyleu, sort of :)</td></tr>
+            <tr><td>[10:59] &lt wyleu&gt aaaah he says sort of. ..... I'm willing to offer Jaffa Cakes.</td></tr>
+            <tr><td>[10:59] &lt Lawouach_&gt wyleu: send some along :)</td></tr>
+            <tr><td>[10:59] &lt Lawouach_&gt I'll put the kettle on</td></tr>
+            <tr><td>[10:59] &lt wyleu&gt SOME ???!???!</td></tr>
+            <tr><td>[11:00] &lt Lawouach_&gt I could eat them all of course if you prefer</td></tr>
+            <tr><td>[11:00] &lt wyleu&gt now that would re the USB connected DNA synthesis machine at work woulddn't it?</td></tr>
+            <tr><td>[11:00] &lt Lawouach_&gt Good ol' mail would do too.</td></tr>
+            <tr><td>[11:01] &lt orphans&gt if you don't mind quite high latency look at using SineSynth (http://code.google.com/p/kamaelia/source/browse/trunk/Sketches/JT/Jam/library/trunk/Kamaelia/Apps/Jam/Audio/SineSynth.py)</td></tr>
+            <tr><td>[11:02] &lt orphans&gt the code isn't very well documented yet, but you should get an idea of what it looks like</td></tr>
+            <tr><td>[11:03] &lt wyleu&gt wyleu goes to play, with cup of tea in hand....</td></tr>
+            <tr><td>[11:03] &lt orphans&gt the latency is from the AOAudioPlaybackAdaptor() in there - I'm working on something better :)</td></tr>
+            <tr><td>[11:09] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[11:21] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[11:21] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:23] &lt Chong-&gt afternoon, vmlemon_</td></tr>
+            <tr><td>[11:24] *** vmlemon has joined #kamaelia</td></tr>
+            <tr><td>[11:25] &lt Davbo&gt Hey Chong-</td></tr>
+            <tr><td>[11:26] &lt Chong-&gt hi Davbo</td></tr>
+            <tr><td>[11:33] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[11:33] Reply: does the macarena</td></tr>
+            <tr><td>[11:46] *** ms-afk is now known as ms-</td></tr>
+            <tr><td>[11:47] &lt Davbo&gt That OpenTaste thing seems interesting Lawouach_, well if it does what it says it does.</td></tr>
+            <tr><td>[11:48] &lt Lawouach_&gt It's a specification, young at that, so it's a wait and see situation :)</td></tr>
+            <tr><td>[11:49] &lt Lawouach_&gt It was via RadioBlogs from the BBC (they are deeply interesting to follow)</td></tr>
+            <tr><td>[11:49] &lt Lawouach_&gt well if you are in that sort of things ;)</td></tr>
+            <tr><td>[11:49] &lt Davbo&gt it could be like GreaseMonkey, for people which don't know how to use GreaseMonkey</td></tr>
+            <tr><td>[11:50] &lt vmlemon_&gt Anyone following the Backstage lists?</td></tr>
+            <tr><td>[11:50] &lt Davbo&gt well, that's one use I could see for it</td></tr>
+            <tr><td>[11:53] &lt ms-&gt vmlemon_: yep</td></tr>
+            <tr><td>[11:54] &lt ms-&gt Oh btw mhrd said "look at the logs" :)</td></tr>
+            <tr><td>[11:54] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[11:55] &lt vmlemon_&gt I'll look soon</td></tr>
+            <tr><td>[11:55] &lt Lawouach_&gt ms-: have you seen my note here on my IronPython and kamaelia status?</td></tr>
+            <tr><td>[11:55] &lt Lawouach_&gt basically it ain't working yet</td></tr>
+            <tr><td>[11:55] &lt Lawouach_&gt because of this bug I opened:</td></tr>
+            <tr><td>[11:55] &lt Lawouach_&gt http://www.codeplex.com/IronPython/WorkItem/View.aspx?WorkItemId=17561</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt the AxonObject class uses the AxonType metaclass</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt and that doesn't fly well with IronPython on some cases when linkage(...) is called in a specific way</td></tr>
+            <tr><td>[11:59] *** Davbo was listening to ms- talk from Pycon last year yesterday, where he mentions about Kamaelia not working on IronPython :-)</td></tr>
+            <tr><td>[12:00] &lt vmlemon_&gt Hmm, will there be any bits from Pycon this year, for those who can't go?</td></tr>
+            <tr><td>[12:00] &lt ms-&gt Lawouach_: I saw that</td></tr>
+            <tr><td>[12:00] &lt ms-&gt It did make me wonder whether to remove the metaclass after this release</td></tr>
+            <tr><td>[12:00] &lt Davbo&gt I think it's fair to assume so vmlemon_</td></tr>
+            <tr><td>[12:00] &lt ms-&gt Or whether to start on ideas for Axon 2.0</td></tr>
+            <tr><td>[12:01] &lt ms-&gt Since there's a bunch of ideas heading that way</td></tr>
+            <tr><td>[12:01] &lt ms-&gt so to make that branch earlier rather than later</td></tr>
+            <tr><td>[12:01] &lt ms-&gt It was originally there to allow the .__super() syntax</td></tr>
+            <tr><td>[12:02] &lt ms-&gt But that's a bad idea generally speaking it sounds</td></tr>
+            <tr><td>[12:02] &lt ms-&gt since there's edge cases that work wrong in that cse</td></tr>
+            <tr><td>[12:02] &lt ms-&gt which is why I don't recommend it these days</td></tr>
+            <tr><td>[12:02] &lt Lawouach_&gt Well it seems that the meta-class doesn't bring much here,</td></tr>
+            <tr><td>[12:02] &lt Lawouach_&gt at least the rationale is not immediate</td></tr>
+            <tr><td>[12:03] &lt ms-&gt There was a reason for it, and deprecating it seemed more sensible than removing</td></tr>
+            <tr><td>[12:03] &lt ms-&gt Now I'm not sure it's sensible to leave in, esp if it opens doors</td></tr>
+            <tr><td>[12:14] &lt vmlemon_&gt kamlogbot: date</td></tr>
+            <tr><td>[12:14] Reply: 2008-07-28</td></tr>
+            <tr><td>[12:16] &lt Chong-&gt kamlogbot: time</td></tr>
+            <tr><td>[12:16] Reply: 12:16:46</td></tr>
+            <tr><td>[12:18] &lt Chong-&gt Where is kamlogbot in? :-) 2:15 difference</td></tr>
+            <tr><td>[12:18] &lt vmlemon_&gt Somewhere in the UK, I assume</td></tr>
+            <tr><td>[12:19] &lt vmlemon_&gt Maybe on a BBC box</td></tr>
+            <tr><td>[12:20] &lt Chong-&gt probably</td></tr>
+            <tr><td>[12:20] &lt ms-&gt Chong-: It' needs the clock changing</td></tr>
+            <tr><td>[12:20] &lt vmlemon_&gt Thanks mhrd</td></tr>
+            <tr><td>[12:20] &lt vmlemon_&gt I saw your technote/brain dum</td></tr>
+            <tr><td>[12:21] &lt Chong-&gt ms-: yep</td></tr>
+            <tr><td>[12:21] &lt vmlemon_&gt *dump</td></tr>
+            <tr><td>[12:21] &lt ms-&gt "(14:17:55) Lawouach_: at least the rationale is not immediate"</td></tr>
+            <tr><td>[12:21] &lt ms-&gt That's a polite way of saying "it looks damn bizarre from where I'm sitting"</td></tr>
+            <tr><td>[12:24] &lt aa_&gt I bet it actually runs on a BBC</td></tr>
+            <tr><td>[12:26] &lt vmlemon_&gt Acorn Atom?</td></tr>
+            <tr><td>[12:26] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt ms-: My mom educated me well enough not to anger an English man. She used to say "Poor people they're angry enough already as it is with their cranberry sauce"</td></tr>
+            <tr><td>[12:32] &lt vmlemon_&gt aa_: Maybe it's running on *gasp* a ZX Spectrum? ;)</td></tr>
+            <tr><td>[12:48] &lt ms-&gt Lawouach_: hehehe</td></tr>
+            <tr><td>[12:49] &lt aa_&gt I seem to remember the beebs were round before the spectrums, but then maybe I am wrong</td></tr>
+            <tr><td>[12:51] &lt vmlemon_&gt Kamaelia: BASIC?</td></tr>
+            <tr><td>[12:53] &lt Davbo&gt I think you're right aa_</td></tr>
+            <tr><td>[12:53] &lt Davbo&gt My school had an '82 BBC IIRC :-)</td></tr>
+            <tr><td>[12:54] *** Davbo has the huuuge manual</td></tr>
+            <tr><td>[12:54] &lt ms-&gt Davbo: Oddly my school had an '82 BBC as well</td></tr>
+            <tr><td>[12:54] &lt ms-&gt Mind you, that was in '82</td></tr>
+            <tr><td>[12:54] &lt ms-&gt :)</td></tr>
+            <tr><td>[12:56] &lt vmlemon_&gt I think they released the code for it as Sources Available/Shared Source</td></tr>
+            <tr><td>[12:58] &lt ms-&gt Oh BBC Basic you mean ?</td></tr>
+            <tr><td>[12:58] &lt ms-&gt Oh, that's hardly an issue</td></tr>
+            <tr><td>[12:59] &lt vmlemon_&gt (as part of RISC OS)</td></tr>
+            <tr><td>[13:00] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[13:00] Reply: does the macarena</td></tr>
+            <tr><td>[13:00] &lt ms-&gt Though if you're interested in it: http://www.compulink.co.uk/~rrussell/bbcbasic/history.html</td></tr>
+            <tr><td>[13:00] &lt vmlemon_&gt ms-: Yup</td></tr>
+            <tr><td>[13:01] &lt vmlemon_&gt Although I think it was modified during porting</td></tr>
+            <tr><td>[13:02] &lt ms-&gt Personally I'm not interested in basic at all</td></tr>
+            <tr><td>[13:02] &lt ms-&gt Stopped doing that god knows how long ago</td></tr>
+            <tr><td>[13:02] &lt ms-&gt Probably last major piece of code I wrote in basic would've been...</td></tr>
+            <tr><td>[13:02] &lt ms-&gt 18 years ago?</td></tr>
+            <tr><td>[13:02] &lt ms-&gt something like that</td></tr>
+            <tr><td>[13:03] &lt ms-&gt gosh that's a while back</td></tr>
+            <tr><td>[13:03] *** vmlemon_ isn't, either, but thought he'd mention it</td></tr>
+            <tr><td>[13:04] &lt ms-&gt http://www.heretical.com/sheppard/bbcbasic.html is interesting though</td></tr>
+            <tr><td>[13:07] &lt ms-&gt Gosh that entire website looks bananas</td></tr>
+            <tr><td>[13:13] &lt ms-&gt http://sourceforge.net/project/showfiles.php?group_id=185535&package_id=216227</td></tr>
+            <tr><td>[13:13] &lt ms-&gt shows last updated boxing day last year</td></tr>
+            <tr><td>[13:14] *** orphans swears quite loudly at numpy</td></tr>
+            <tr><td>[13:14] *** ms- hears the swearing from here</td></tr>
+            <tr><td>[13:16] &lt orphans&gt I can't even work out how to initialise the *&%^ing thing properly</td></tr>
+            <tr><td>[13:26] &lt Davbo&gt There are some interesting jobs that crop up, in my uni inbox. Some Nanny agency wants someone to setup their CRM lol :-)</td></tr>
+            <tr><td>[13:26] &lt Davbo&gt "We bought this......Does anyone know how it works??"</td></tr>
+            <tr><td>[13:26] Reply: Hm?</td></tr>
+            <tr><td>[13:27] &lt vmlemon_&gt Hmm, any interest in making FileAppender an "official" Kamaelia component, since I've found it to be useful, and Kamaelia seems to be lacking a component to do that?</td></tr>
+            <tr><td>[13:29] *** vmlemon_ has had success with using it with the DVB stuff, and as part of his (work in progress) MSN server</td></tr>
+            <tr><td>[13:29] &lt ms-&gt vmlemon_: Sure, sling a copy to the list? If it's something we'd all like (which seems plausible) we could always add it.</td></tr>
+            <tr><td>[13:38] *** ms- notes chong didn't make use of mentor time today</td></tr>
+            <tr><td>[13:45] &lt Davbo&gt that's odd, he usually treats it as a meeting</td></tr>
+            <tr><td>[14:04] &lt ms-&gt Maybe he expects me to treat it as a meeting rather than a time when he can corner me?</td></tr>
+            <tr><td>[14:10] &lt orphans&gt mm, segfaulting in new and unusual ways :)</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt Serves you right for using C orphans ;-)</td></tr>
+            <tr><td>[14:25] &lt Davbo&gt Although I managed to get a couple of segfaults with my code the other week :-)</td></tr>
+            <tr><td>[14:38] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[14:44] &lt orphans&gt Davbo, seriously, not fun</td></tr>
+            <tr><td>[14:45] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[14:46] &lt Davbo&gt sympathy @orphans, are you doing this as an alternative to pd-extended</td></tr>
+            <tr><td>[14:48] &lt orphans&gt yup</td></tr>
+            <tr><td>[14:48] &lt orphans&gt for my sins :)</td></tr>
+            <tr><td>[14:49] &lt orphans&gt currently I know of three places which are making it segfault</td></tr>
+            <tr><td>[14:49] &lt orphans&gt and that's just as far as I've got</td></tr>
+            <tr><td>[14:50] &lt Davbo&gt Well so far your project has massively impressed me, if not anyone else :-)</td></tr>
+            <tr><td>[14:51] &lt orphans&gt :)</td></tr>
+            <tr><td>[14:51] &lt orphans&gt on the plus side I think I just found another problem :)</td></tr>
+            <tr><td>[15:21] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[15:22] &lt vmlemon_&gt Hi wyleu</td></tr>
+            <tr><td>[15:22] &lt wyleu&gt Hi lemon, how spin's your world?</td></tr>
+            <tr><td>[15:23] &lt vmlemon_&gt So-so</td></tr>
+            <tr><td>[15:24] &lt wyleu&gt so so serious?</td></tr>
+            <tr><td>[15:24] &lt vmlemon_&gt Not bad, but not great</td></tr>
+            <tr><td>[15:25] &lt wyleu&gt I wish you the outcome that comforts most.</td></tr>
+            <tr><td>[15:25] &lt vmlemon_&gt (I feel tired, and have horrible toothache, and can't get out to see the dentist) :|</td></tr>
+            <tr><td>[15:26] &lt wyleu&gt very insistent those K/Na nerve's ain't they?</td></tr>
+            <tr><td>[15:26] &lt wyleu&gt Are you confined at Her Magestie's Pleasure then...?</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt o.O</td></tr>
+            <tr><td>[15:27] &lt wyleu&gt Auntie Beeb :D</td></tr>
+            <tr><td>[15:27] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:27] &lt wyleu&gt 246284K :D</td></tr>
+            <tr><td>[15:28] &lt vmlemon_&gt I don't know if being in a channel related to a BBC project counts ;)</td></tr>
+            <tr><td>[15:28] &lt vmlemon_&gt (Probably not, though)</td></tr>
+            <tr><td>[15:28] &lt wyleu&gt well however we end up here it's all generally beneficial... subject to license</td></tr>
+            <tr><td>[15:29] *** vmlemon_ is still trying to receive Channels 4 and 5, and ITV1, but seemingly can't receive them/actually get them into the channel list here with the aerial I have</td></tr>
+            <tr><td>[15:30] &lt wyleu&gt It's only a matter of time and careful programme labelling.</td></tr>
+            <tr><td>[15:30] &lt wyleu&gt ...and the ability to read the label, and then play the stuff.</td></tr>
+            <tr><td>[15:31] &lt wyleu&gt Radio 3 is making a very fine noise as we type.</td></tr>
+            <tr><td>[15:31] &lt vmlemon_&gt I can get the multiplexes with them on (and even get the data from them, somehow), although I can never seem to be able to tune Xine or Kaffeine into them...</td></tr>
+            <tr><td>[15:32] *** vmlemon_ contemplates bruteforcing the PID, or spending time recording the channel tables...</td></tr>
+            <tr><td>[15:32] &lt vmlemon_&gt Still, I can get the crappy shopping channel</td></tr>
+            <tr><td>[15:32] &lt vmlemon_&gt and some music video and radio channels</td></tr>
+            <tr><td>[15:32] &lt wyleu&gt That will be a source of great releif to their advertisers :D</td></tr>
+            <tr><td>[15:32] &lt vmlemon_&gt Hah</td></tr>
+            <tr><td>[15:33] &lt vmlemon_&gt Meh, no "local" radio on DVB or DAB...</td></tr>
+            <tr><td>[15:33] &lt vmlemon_&gt Crapola</td></tr>
+            <tr><td>[15:33] &lt wyleu&gt Yes, it's all a bit of a mess.</td></tr>
+            <tr><td>[15:34] &lt vmlemon_&gt Still, I've got an FM tuner on my phone, if I was desperate...</td></tr>
+            <tr><td>[15:35] &lt vmlemon_&gt Nice to see that World Service is on DVB though, so I don't have to wait until the early hours of the morning for Radio 4 to simulcast it, if I want to listen to it</td></tr>
+            <tr><td>[15:35] &lt vmlemon_&gt (which isn't often)</td></tr>
+            <tr><td>[15:35] &lt wyleu&gt I have an inherent distress about DAB REPLACING am/fm, A format should completely encompose the one it replaces. DAB can't even get a timecheck to sync, so how will we fight off the Independance day creatures at the very least.</td></tr>
+            <tr><td>[15:36] &lt vmlemon_&gt I'd imagine a load of chaos ensuing, if FM ever went away...</td></tr>
+            <tr><td>[15:36] &lt wyleu&gt It's good to modulate.</td></tr>
+            <tr><td>[15:36] &lt vmlemon_&gt Especially since a lot of devices and vehicles have FM/*-Wave radio tuners that can't be replaced easily</td></tr>
+            <tr><td>[15:37] &lt wyleu&gt Aaaah but that's what makes them buy the new model...</td></tr>
+            <tr><td>[15:38] &lt vmlemon_&gt I remember seeing something about DAB vs FM latency-wise, with the conclusion that DAB lagged behind the FM broadcast a great deal</td></tr>
+            <tr><td>[15:38] &lt vmlemon_&gt Although I can't find it now, or remember where the comparison was shown</td></tr>
+            <tr><td>[15:38] &lt wyleu&gt 3 minutes something is the best I've seen but I haven't looked in a fair while.</td></tr>
+            <tr><td>[15:39] &lt vmlemon_&gt Not to mention the nonsense with Multiplexes/Ensembles not having certain stations, and being restricted by area, unless you have a very good aerial</td></tr>
+            <tr><td>[15:39] &lt wyleu&gt Pragmatic solutions of their time, we know better now...</td></tr>
+            <tr><td>[15:40] &lt vmlemon_&gt That said, I haven't actually seen a DAB radio "in the wild", nor do I have one</td></tr>
+            <tr><td>[15:40] &lt wyleu&gt Environmentally the pocket trannie beats it hands down.</td></tr>
+            <tr><td>[15:41] &lt wyleu&gt help, I'm in real trouble if the whitehousebot seas that one .. . .</td></tr>
+            <tr><td>[15:41] &lt vmlemon_&gt MonkeyBot? ;)</td></tr>
+            <tr><td>[15:41] &lt wyleu&gt Whatever....</td></tr>
+            <tr><td>[15:41] &lt vmlemon_&gt 1-Seg and DVB-H look interesting, although I can see them being a big gimmick and painful to use whilst in motion</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt Not to mention that they haven't seen much deployment outside of Japan, and maybe Korea</td></tr>
+            <tr><td>[15:42] &lt vmlemon_&gt (at least not on a full-time, non trial basis)</td></tr>
+            <tr><td>[15:42] &lt wyleu&gt Hankers back to days of 1inch/umats . . .</td></tr>
+            <tr><td>[15:43] &lt wyleu&gt come an olympics, come a new standard.</td></tr>
+            <tr><td>[15:44] &lt vmlemon_&gt Hell, they're already talking about phasing DAB out with a new, incompatible version</td></tr>
+            <tr><td>[15:44] &lt vmlemon_&gt and they've only just rolled it out, not so long ago...</td></tr>
+            <tr><td>[15:45] &lt vmlemon_&gt So much for all those folks who've bought DAB radios, assuming that the new spec makes it onto the national networks, here</td></tr>
+            <tr><td>[15:46] &lt vmlemon_&gt ("DAB+")</td></tr>
+            <tr><td>[15:46] &lt vmlemon_&gt Or DAB-, if you're feeling that way out ;)</td></tr>
+            <tr><td>[15:48] &lt wyleu&gt It's a mighty point to reach when everyone realises we're really in the poo, cos then anything organised we do is better :D</td></tr>
+            <tr><td>[15:48] &lt vmlemon_&gt Looks like it'll bring new audio codecs, and one or more new modulation techniques into the mix</td></tr>
+            <tr><td>[15:49] &lt wyleu&gt I've just printed out the community guide, so Debian talks to CUPS talks to Printer...Bloody pain these software patch bays.</td></tr>
+            <tr><td>[15:50] &lt vmlemon_&gt The joys of CUPS...</td></tr>
+            <tr><td>[15:51] &lt vmlemon_&gt A few days ago, I tried printing something, and ended up adding the document to the print queue about 3 times, only to find that it wouldn't attempt to print it until I rebooted</td></tr>
+            <tr><td>[15:51] &lt vmlemon_&gt Yay...</td></tr>
+            <tr><td>[15:51] &lt vmlemon_&gt (It started sending data to the printer, about 2 minutes into running the shutdown scripts)</td></tr>
+            <tr><td>[15:54] *** vmlemon_ hates printers and the associated faffing they end up causing</td></tr>
+            <tr><td>[15:55] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[15:55] Reply: does the macarena</td></tr>
+            <tr><td>[15:57] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:00] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:02] &lt vmlemon_&gt kamlogbot: time</td></tr>
+            <tr><td>[16:02] Reply: 16:02:29</td></tr>
+            <tr><td>[16:03] &lt vmlemon_&gt Argh, stupid connection keeps gathering horrific amounts of latency, and then cutting out :(</td></tr>
+            <tr><td>[16:26] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:31] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[16:38] &lt vmlemon_&gt Wow, http://apple.slashdot.org/article.pl?sid=08/07/27/0029229</td></tr>
+            <tr><td>[16:38] &lt vmlemon_&gt Here we go again</td></tr>
+            <tr><td>[16:43] &lt Lawouach&gt that crashed firefox.</td></tr>
+            <tr><td>[16:45] &lt orphans&gt hey Lawouach</td></tr>
+            <tr><td>[16:45] &lt Lawouach&gt hi mate</td></tr>
+            <tr><td>[16:46] &lt orphans&gt how's it going?</td></tr>
+            <tr><td>[16:46] &lt Lawouach&gt good just bloody hot down here</td></tr>
+            <tr><td>[16:46] &lt Lawouach&gt though it's started raining</td></tr>
+            <tr><td>[16:47] *** vmlemon_ wants rain</td></tr>
+            <tr><td>[16:47] &lt orphans&gt pretty warm here too - I'm at the top of my house and have a window about the size of a piece of A4 paper. Is boiling</td></tr>
+            <tr><td>[16:47] &lt Lawouach&gt well we'll go fast then :)</td></tr>
+            <tr><td>[16:47] &lt orphans&gt heh</td></tr>
+            <tr><td>[16:47] &lt Lawouach&gt I'll let you drive.</td></tr>
+            <tr><td>[16:48] &lt orphans&gt ok, so this week I've been trying to sort out low-latency audio</td></tr>
+            <tr><td>[16:48] &lt orphans&gt and it's killing me a little bit :)</td></tr>
+            <tr><td>[16:48] &lt vmlemon_&gt Anyone want to trade some rain clouds for too much heat? ;)</td></tr>
+            <tr><td>[16:48] &lt Lawouach&gt orphans: luckily programming is sometimes hard</td></tr>
+            <tr><td>[16:49] &lt orphans&gt yup, I do get a great feeling of acheivement every time I fix something else :)</td></tr>
+            <tr><td>[16:49] &lt orphans&gt at the moment I can't get it to call functions, which is annoying 'cause when I can do that then I'm properly moving with it</td></tr>
+            <tr><td>[16:49] &lt Lawouach&gt what's blocking?</td></tr>
+            <tr><td>[16:50] &lt orphans&gt it kinda does nothing when I try to call the function - it's a bit strange</td></tr>
+            <tr><td>[16:51] &lt orphans&gt (calling a python function from the C++ this is)</td></tr>
+            <tr><td>[16:51] &lt Lawouach&gt nothing?</td></tr>
+            <tr><td>[16:51] &lt Lawouach&gt could you be more precise? :)</td></tr>
+            <tr><td>[16:52] &lt j_baker&gt vmlemon_: were you offering the rain clouds or the heat?</td></tr>
+            <tr><td>[16:52] &lt vmlemon_&gt I was offering the heat ;)</td></tr>
+            <tr><td>[16:52] &lt orphans&gt well, it doesn't error out, and skips on to the next statement, but if you try and get a return value it just gives zero, and it doesn't actually call anything in the python function</td></tr>
+            <tr><td>[16:53] &lt Lawouach&gt let's step back a minute</td></tr>
+            <tr><td>[16:53] &lt Lawouach&gt what is the C++ library you are trying to make a binding for?</td></tr>
+            <tr><td>[16:53] &lt orphans&gt RtAudio</td></tr>
+            <tr><td>[16:54] &lt Lawouach&gt is it pure C or C/C++?</td></tr>
+            <tr><td>[16:54] &lt orphans&gt c++</td></tr>
+            <tr><td>[16:55] &lt Lawouach&gt okay</td></tr>
+            <tr><td>[16:55] &lt Lawouach&gt so SIP does make sense</td></tr>
+            <tr><td>[16:55] &lt orphans&gt mhm, it's not too bad to work with too when you get into it</td></tr>
+            <tr><td>[16:55] &lt j_baker&gt vmlemon_: Sorry, have too much heat as it is. :)</td></tr>
+            <tr><td>[16:56] &lt Lawouach&gt orphans: it'd be nice if there was a simple test.py in the RtAudioBinding directory</td></tr>
+            <tr><td>[16:56] &lt Lawouach&gt I could build the binding but how to test it simply?</td></tr>
+            <tr><td>[16:56] *** vmlemon_ waits for them to start making FairTrade weather products (made from only the finest clouds, of course) ;)</td></tr>
+            <tr><td>[16:56] &lt Lawouach&gt ha ha</td></tr>
+            <tr><td>[16:57] &lt orphans&gt Lawouach, I've got a bit more (and more sensible code in now) - I'll do a quick ci</td></tr>
+            <tr><td>[16:57] &lt Lawouach&gt ta</td></tr>
+            <tr><td>[16:57] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:57] &lt orphans&gt although the testing code is a bit more than it needs to be - I'm just using one of the components which was working with a different output</td></tr>
+            <tr><td>[17:01] &lt orphans&gt Lawouach, ok, I think that should be it</td></tr>
+            <tr><td>[17:01] &lt Lawouach&gt k</td></tr>
+            <tr><td>[17:01] &lt orphans&gt to build you need a copy of RtAudio, and to set the path to it in the config.linux.py file</td></tr>
+            <tr><td>[17:01] &lt Lawouach&gt didn't you forget a file?</td></tr>
+            <tr><td>[17:01] &lt orphans&gt __init__ probably :)</td></tr>
+            <tr><td>[17:02] &lt Lawouach&gt ah no</td></tr>
+            <tr><td>[17:02] &lt Lawouach&gt gcc: /home/joe/sources/rtaudio-4.0.4/RtAudio.cpp</td></tr>
+            <tr><td>[17:02] &lt Lawouach&gt you've used an absolute path</td></tr>
+            <tr><td>[17:02] &lt orphans&gt Lawouach, that's why you need to set the path in the config file</td></tr>
+            <tr><td>[17:04] &lt orphans&gt oops, forgot to add the Component</td></tr>
+            <tr><td>[17:06] &lt orphans&gt added now - if you setup.py install the binding and the Jam libraries, then run Jam/library/trunk/Kamaelia/Apps/Jam/Audio/ it should run, but badly :)</td></tr>
+            <tr><td>[17:07] &lt orphans&gt argh, that path with SineSynth.py on the end</td></tr>
+            <tr><td>[17:10] &lt Lawouach&gt right</td></tr>
+            <tr><td>[17:10] &lt Lawouach&gt while I'm compiling and all</td></tr>
+            <tr><td>[17:10] &lt Lawouach&gt could you extend on the rest of what you've been doing? :D</td></tr>
+            <tr><td>[17:11] &lt orphans&gt :) pretty much that - if I'm going to get the simpler audio stuff in I need it done. When it's done it'll just be a matter of dropping in components and the audio will be sorted</td></tr>
+            <tr><td>[17:12] &lt Lawouach&gt yeah thought as much</td></tr>
+            <tr><td>[17:12] &lt Lawouach&gt That's alright, this is a tough task but a good one IMO.</td></tr>
+            <tr><td>[17:12] &lt orphans&gt yeah. I'll be glad when it's working</td></tr>
+            <tr><td>[17:13] &lt Lawouach&gt I think SoC is two weeks away right?</td></tr>
+            <tr><td>[17:13] &lt Lawouach&gt With next week being a put your pen down</td></tr>
+            <tr><td>[17:13] &lt orphans&gt eesh yeah.</td></tr>
+            <tr><td>[17:13] &lt orphans&gt it's come around really fast</td></tr>
+            <tr><td>[17:13] *** BCarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[17:13] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:14] &lt Lawouach&gt How do you plan those two weeks? Realistically</td></tr>
+            <tr><td>[17:14] &lt vmlemon_&gt Code! Code like you've never coded before! ;)</td></tr>
+            <tr><td>[17:14] &lt orphans&gt all depends on how much longer this takes me really. After that it's a matter of tying up loose ends and cleaning stuff up</td></tr>
+            <tr><td>[17:16] &lt orphans&gt I'd be pretty hard pushed to work out how long the rest of the binding will take, just because it's the first time I've done something like it</td></tr>
+            <tr><td>[17:16] &lt Lawouach&gt Right. I believe it would be wrong to stop you in your dynamic with the binding so I'll let you drive it this week</td></tr>
+            <tr><td>[17:16] &lt Lawouach&gt However I really wish you'll deliver something well packaged by the term of SoC.</td></tr>
+            <tr><td>[17:16] &lt orphans&gt yeah, absolutely</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt I think your code is rather solid, so it's more about documentation and testing. Testing will be probably harder so don't scratch too hard on that part. Testing is important but I understand testing an audio application is harder. Probably testing Osc messages correct flow would be good to have.</td></tr>
+            <tr><td>[17:17] &lt orphans&gt I think if the binding takes too much longer then I'll sort out getting a nice package together, and delay the audio stuff until it's ready</td></tr>
+            <tr><td>[17:17] &lt Lawouach&gt fine</td></tr>
+            <tr><td>[17:18] &lt orphans&gt yeah, testing the message stuff flows right will be my first priority</td></tr>
+            <tr><td>[17:20] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[17:20] &lt Lawouach&gt I won't ask you more than that because testing the GUI and the audio would be too hard in the time frame</td></tr>
+            <tr><td>[17:20] &lt Lawouach&gt But the Osc messages is doable.</td></tr>
+            <tr><td>[17:20] &lt orphans&gt yeah</td></tr>
+            <tr><td>[17:21] &lt orphans&gt actually, quick aside on testing - you know that intro video you showed us used a couple of extra tools on top of unittest</td></tr>
+            <tr><td>[17:22] &lt orphans&gt are we good to use them, or is it better to stick to using unittest for Kamaelia stuff?</td></tr>
+            <tr><td>[17:22] &lt Lawouach&gt Personally I would encourage you to try them</td></tr>
+            <tr><td>[17:22] &lt Lawouach&gt You'd write your tests with unitests anyway</td></tr>
+            <tr><td>[17:23] &lt Lawouach&gt nose is mainly used for tests discovery and simplifying the process of running them</td></tr>
+            <tr><td>[17:23] &lt Lawouach&gt so please go ahead, it's part of the process</td></tr>
+            <tr><td>[17:23] &lt orphans&gt ok, cool :)</td></tr>
+            <tr><td>[17:24] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:24] &lt orphans&gt you managed to get the bindings to build?&gt</td></tr>
+            <tr><td>[17:25] &lt Lawouach&gt at this stage it's both about packaging up, meaning using tools that others use too</td></tr>
+            <tr><td>[17:25] &lt Lawouach&gt yes</td></tr>
+            <tr><td>[17:25] &lt Lawouach&gt I don't hear any sound though</td></tr>
+            <tr><td>[17:25] &lt Lawouach&gt python Jam/library/trunk/Kamaelia/Apps/Jam/Audio/SineSynth.py</td></tr>
+            <tr><td>[17:25] &lt orphans&gt Lawouach, nor do I :) - that's the bit which doesn't work</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt ah :)</td></tr>
+            <tr><td>[17:26] &lt Lawouach&gt well it doesn't fail at least :)</td></tr>
+            <tr><td>[17:26] &lt vmlemon_&gt Hmm, has anyone apart from orphans got Jam producing sound?</td></tr>
+            <tr><td>[17:26] &lt orphans&gt if you have a look in Jam/library/trunk/Kamaelia/Apps/Jam/Audio/RTOutput.py you see the print statement?</td></tr>
+            <tr><td>[17:26] &lt orphans&gt vmlemon_, Davbo did :)</td></tr>
+            <tr><td>[17:26] &lt vmlemon_&gt Aah, cool</td></tr>
+            <tr><td>[17:26] &lt orphans&gt Lawouach, that should get called, and resolutely doesnt</td></tr>
+            <tr><td>[17:27] &lt Lawouach&gt I have plenty of "Frames: 1024 Time: 8.939683"</td></tr>
+            <tr><td>[17:27] &lt Lawouach&gt in stdout</td></tr>
+            <tr><td>[17:27] &lt orphans&gt ahh yeah, that was some debugging from the bindings - that bit works :)</td></tr>
+            <tr><td>[17:27] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[17:28] &lt orphans&gt the frames is the size of the buffer, and the time is the stream time</td></tr>
+            <tr><td>[17:28] &lt Lawouach&gt regarding the binding, it'd be great to have a example.py or some related test in the RtAudioBinding directory</td></tr>
+            <tr><td>[17:28] &lt Lawouach&gt that'd make it easier to work on the binding without the KamJam overhead</td></tr>
+            <tr><td>[17:28] &lt orphans&gt yeah, I'll port one of the RtAudio tests</td></tr>
+            <tr><td>[17:28] &lt Lawouach&gt thanks</td></tr>
+            <tr><td>[17:28] &lt Lawouach&gt something simple</td></tr>
+            <tr><td>[17:29] &lt orphans&gt I've been working from one as I've been going along - should be pretty much line for line</td></tr>
+            <tr><td>[17:29] &lt Lawouach&gt cool</td></tr>
+            <tr><td>[17:30] &lt orphans&gt I'll probably ping you tomorrow with that sorted complaining of some difficulty or other :)</td></tr>
+            <tr><td>[17:30] &lt orphans&gt should be a bit more obvious what's going on then</td></tr>
+            <tr><td>[17:31] &lt Lawouach&gt yeah sure</td></tr>
+            <tr><td>[17:31] &lt Lawouach&gt sounds good to me</td></tr>
+            <tr><td>[17:31] &lt Lawouach&gt I'll let you be then</td></tr>
+            <tr><td>[17:31] *** bcarlyon|laptop is now known as BarryCarlyon</td></tr>
+            <tr><td>[17:32] &lt orphans&gt k, cheers for all the help :)</td></tr>
+            <tr><td>[17:32] &lt Lawouach&gt np</td></tr>
+            <tr><td>[17:34] *** wyleu has joined #kamaelia</td></tr>
+            <tr><td>[17:54] *** Lawouach has started watching X-Files episodes again</td></tr>
+            <tr><td>[17:54] &lt Lawouach&gt S4E2 is just creepy :)</td></tr>
+            <tr><td>[17:54] &lt Lawouach&gt love it</td></tr>
+            <tr><td>[17:58] &lt j_baker&gt I love the X-Files. I want to see the new movie, but no one will see it with me. :(</td></tr>
+            <tr><td>[17:58] &lt Lawouach&gt I'll go alone. I don't mind going to the cinema on my own</td></tr>
+            <tr><td>[18:09] &lt j_baker&gt Hey Lawouach: I have a dumb question. :) If I have two instances of headstock.api.jid.JID, what is the best way to check them for equality? Would it just be unicode(JID1) == unicode(JID2). I get the feeling that doing things that way may cause problems if there's a resource ID.</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt it depends if you consider the resource to be part of the test</td></tr>
+            <tr><td>[18:09] &lt Lawouach&gt if not then go for</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt jid1.nodeid() == jid2.nodeid()</td></tr>
+            <tr><td>[18:10] &lt Lawouach&gt I think that'll give: username@domain only</td></tr>
+            <tr><td>[18:10] &lt j_baker&gt Ok, that's what I was looking for.</td></tr>
+            <tr><td>[18:19] *** BCarlyon|ubuntu has joined #kamaelia</td></tr>
+            <tr><td>[18:28] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:29] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[18:33] *** Chong- has joined #kamaelia</td></tr>
+            <tr><td>[18:35] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[19:22] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[19:55] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:02] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[20:05] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:09] &lt vmlemon_&gt kamlogbot: dance</td></tr>
+            <tr><td>[21:09] Reply: does the macarena</td></tr>

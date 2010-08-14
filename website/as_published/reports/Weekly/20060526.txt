@@ -1,0 +1,224 @@
+====== START OF WEEKLY IRC KAMAELIA MEETING, 20060526 ======
+
+1. Note of agenda
+2. Participants
+Participants: Matt, Michael, c-ryan, devendra_l, thomasFx
+Attending: G0SUB, Uraeus
+
+3. Activity Reports
+
+Michael
+       DONE - Update BBC Management on on SoC
+              Communicate results of SoC to students (significant time drain)
+              Turned debian box into a build box
+              Discovered DVB-T card couldn't fit
+              Reinstalled as local Macro dev box
+              Wrote up bimonthly meeting notes
+              Created draft new website
+              Ran new description by specialism manager
+
+       TODO - Merge inversion branch onto head
+              Merge tests from threading branch
+              Write detailed design document for Proper Macro
+              Follow up with SM regarding one sider
+              Sort out next Axon/Kamaelia release
+              Audit/update documentation as needed
+              Propose candidate components to move into release tree.
+              Improve website documentation - long spiely text and how its used.
+              Weekly meeting notes
+              Monthly report
+
+       BLOCKED - Debian box
+              DVB-T card didn't fit
+              Matt debugging candidate release branch
+
+Matt:
+       DONE - Fixed Anybox (anyReady) problem
+              Improved efficiency of pyrex DVB demuxer
+              Created rough tarball for mplayer with the right codecs
+              Moved private_MH_axon_threads branch axon tests to /Tests
+              Debugged Macro.py/selector/pipethrough
+              Purchased and set up RF distribution h/w in my office
+       
+       TODO - Soak test the fixed programme transcoder
+              Propose components for adding to next release.
+              Audit/update documentation as needed
+              Write tests for the system inversion changes
+              Set up 2nd HP tower & rackmount
+              Purchase DVB-T cards for HPs
+              Check RF signal in office (borrowed kit to do this)
+              Improve Now and Next change detection
+              Reimplement synchronous boxes/linkages
+              Mod various components to utilise inversion (timer component?)
+              Move sys-status from Macro.py, into the introspection code.
+              Improve website component documentation to include long spiely stuff
+              bugfix: add linkage removal when components shutdown
+       BLOCKED - Purchasing delays on RF h/w held up debugging work
+
+Devendra:
+       DONE - Subscription to all mailing lists
+              Completed other formalities as mentioned 
+              in intial mail sent by Michael
+       TODO - Start a blog.
+       BLOCKED - Further study of components (Due to upcoming exams)
+
+Thomas:
+       DONE - completed Mini-Axon Tutorial
+              played with python & opengl
+              installed togra
+       TODO - become famliar with togra
+              figure out how to realise space manager and components
+       BLOCKED - busy learning for exams and doing related work until wednesday, 31st
+
+Ryan:
+       DONE - Working HTTP Server, IRC client and logger
+       TODO - play around with wrapping C++ for Python
+       BLOCKED - nope
+
+Note: Devendra's Exams finished on June 9th - will aim to do what's possible
+before then, but will be largely blocked until then. Work done before SoC
+started helps mitigate this.
+
+4. Discussion items (max 3 or 4)
+4.1 Release Issues
+
+Michael provided background to the SoC attendees regarding the release
+by June 15th. Specifically to consolidate recent work, and recent
+optimisations work.
+
+Matt noted he's in favour of a fast release, patching any unexpected
+holes with incremental releases. Michael concurred. June 15th is the
+cutoff point.
+
+Ryan proposed including the Lagger component in the main release tree.
+
+Michael then posted the release check list, which was updated. The following
+consolidates the discussion:
+
+MUST HAVES
+
+***   Sort out next Axon/Kamaelia release
+***   Modify internet subsystem to be compliant with selector changes
+***   Merge inversion branch onto head
+***   add linkage removal when components shutdown
+***   components that Macro.py depends on should be included in the release, even if we tag them as being experimental
+      Anybox problem - looks at final destination inbox in a passthrough chain, this is broken :)
+      (11:09:48) mhrd: change self.dataReady() to examine only storage directly local to the inbox
+
+WOULD LIKE TO HAVES
+
+      Now and Next change detection needs to distinguish between programme update and programme junction.
+      Move threading branch axon tests to right location & notify Michael.
+      Merge tests from threading branch
+      Write tests for the system inversion changes
+      Synchronised boxes need reimplementing
+      Many components don't play nicely with the inversion right now due to busy wait.
+
+      Audit/update documentation as needed
+      Propose candidate components to move into release tree.
+
+The critical path items left to do have been marked ***, and allocation
+was as follows:
+   * First 3 items are to be done by Michael.
+   * Last 3 items are to be done by Matt.
+
+Regarding the linkage issue Matt agreed to branch off the inversion branch
+since it's a candidate release.
+
+Michael asked anyone who has time to help with auditing (ie reading/checking)
+the documentation.
+
+Matt noted the inversion was now stable - suitable for merging into head.
+Michael asked Matt to write 1-2 sides worth of text describing the
+optimisations implemented, Matt agreed.
+
+
+4.2 Summer of Code
+
+Michael skimmed through the ACTION's in the summer of code guidance he
+produced for the accepted students, to see what's left that needs doing.
+This should be checked against next week. If this report skips an ACTION,
+it means all the attendees had done that item.
+
+ACTION: Please provide me with username/password details you'd like for a login for the bliki
+People who need to do this: Thomas, Ryan.
+
+ACTION: Set up a blog which supports RSS, make entries at least once every 3 days (on average), and let me & Matt know where it is.
+People who need to do this: Ryan, Devendra
+
+ACTION: Decide whether you want to syndicate the feed to planet.python.org www.planetpython.org or similar (I would suggest you do).
+People who need to do this: Everyone
+
+Note about guaranteed mentor time, the agreed times were:
+    Mon: 4pm Ryan
+    Tue: 4pm Anagha
+    Wed: 4pm Thomas
+    Thur: 4pm Devendra
+
+Michael noted that he'd like to get all SoC students as involved as he can
+despite, very different, projects, but there are commonalities.
+
+Licensing
+
+Michael raised the issue of contributor agreement. Most people were OK
+on the positive aspects in general, but wary of the BBC being able to
+sell on a closed version, so wanted clarification/time to think about
+things. Michael is to follow up with a plain english version of what
+people were willing to agree to to the mailing this, and if people
+agree then ask legal to check it, and then move on.
+
+Michael repeatedly noted this is the same procedure as many other open
+source projects that require copyright assignment (FSF, OpenOffice.org,
+ASF, PSF, etc).
+
+Thomas noted he's not familiar with licensing. Michael to follow up
+outside meeting.
+
+Question that deserves a longer response:
+"are there any restrictions or any other issues with BBC that we
+ should know ?"
+
+Most people needed more time. Due to our development style, this isn't
+a problem.
+
+Welcome
+
+Michael then formally welcomed everyone to the project, Matt agreed.
+Michael also reminded people their supposed to give the project their
+primary focus so that their performance can be evaluated mid term.
+Michael also noted that this is obviously subject to any issues in
+BLOCKED, and knowing what's blocking thing helps a lot with that.
+
+Michael also noted that this isn't about completion, it's about how
+people conduct themselves and what they produce relative to what they
+say they'll produce and what's reasonable to expect.
+
+Michael also suggested that people start by moving their project plan
+into their todos and work through them and progress as quickly as their
+BLOCKED's allow (as well as have a summer :)
+
+4.3 Any other business
+
+Devendra noted that there's an issue with google publishing proposals,
+specifically to do with emails, phone numbers etc, in the proposals.
+As a result Devendra noted that Michael may need to open up proposals
+for editting to remove such information.
+
+ACTION: Michael to open up apps for editting down
+
+5. Date/Time of next meeting
+   Proposed: Fri 2nd June 2006, 11am BST (GMT+0100)
+
+Agreed.
+
+Devendra noted not available for next 2 meetings. Michael to follow up
+on how we track DONE/TODO/BLOCKED during that time period.
+
+Being paid by google after all, and have to deal with this sensibly.
+A student going Absent With Out Leave - AWOL has to be reported and
+will be replaced by someone who doesn't. A student Absent With Leave
+can be dealt with if managed appropriately - ie if progress can be
+made in other ways. Michael noted this could be resolved to Devendra's
+satisfaction.
+
+====== END OF WEEKLY IRC KAMAELIA MEETING, 20060526 ======

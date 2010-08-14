@@ -1,0 +1,306 @@
+<html><body><table>
+            <tr><td>[01:01] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[04:52] *** xmlhacker has joined #kamaelia</td></tr>
+            <tr><td>[07:01] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[07:01] &lt Lawouach_&gt hello</td></tr>
+            <tr><td>[07:50] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[08:43] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[08:44] *** bcarlyon|laptop has parted #kamaelia</td></tr>
+            <tr><td>[09:06] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:06] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[09:10] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[09:19] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:22] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[09:23] *** vmlemon__ is now known as vmlemon]</td></tr>
+            <tr><td>[09:23] *** vmlemon] is now known as vmlemon_</td></tr>
+            <tr><td>[10:31] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:33] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[10:33] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[10:33] &lt vmlemon_&gt Hmm, is anyone familiar with dvbsnoop?</td></tr>
+            <tr><td>[10:45] *** vmlemon_ has no idea if it's actually providing correct/useful output</td></tr>
+            <tr><td>[10:50] &lt orphans&gt Lawouach, ping?</td></tr>
+            <tr><td>[10:54] &lt orphans&gt Lawouach, forget that ping actually, I think I'm just being an idiot :)</td></tr>
+            <tr><td>[10:54] &lt Lawouach&gt are you?</td></tr>
+            <tr><td>[10:54] &lt Lawouach&gt :)</td></tr>
+            <tr><td>[10:54] &lt orphans&gt actually, I'll ask you so I know for next time (if you've got a minute that is)</td></tr>
+            <tr><td>[10:55] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[10:55] &lt Lawouach&gt I have</td></tr>
+            <tr><td>[10:56] &lt orphans&gt I'm just putting tempo syncing code into place (meant to do it a while ago and forgot), so I basically need data for the bpm etc broadcast around a number of components</td></tr>
+            <tr><td>[10:57] &lt orphans&gt I realised I can do this pretty easily using a backplane, cause I regularly update a lastBeatTime variable, so I can send out all the info every time a beat comes around</td></tr>
+            <tr><td>[10:57] &lt orphans&gt but if I didn't have a regularly updating variable, just some constants which needed distributing would it be best to use the CAT?</td></tr>
+            <tr><td>[10:58] &lt Lawouach&gt hmmm</td></tr>
+            <tr><td>[10:58] &lt Lawouach&gt I can understand why you're pondering between the two.</td></tr>
+            <tr><td>[10:59] &lt Lawouach&gt Hard to tell.</td></tr>
+            <tr><td>[11:00] &lt orphans&gt the lastBeatTime and backplane combination has advantages I think - you can waitcomplete at the start of your main method until a new beat comes around then you are perfectly synced with little effort on the timing side</td></tr>
+            <tr><td>[11:00] &lt Lawouach&gt Really I'd say it's a matter of taste here.</td></tr>
+            <tr><td>[11:00] &lt Lawouach&gt I can't see anything wrong with either approach at first glance</td></tr>
+            <tr><td>[11:00] &lt Lawouach&gt Right well go with it :)</td></tr>
+            <tr><td>[11:01] &lt orphans&gt will do :) Just checking that I had the right end of the stick with CAT really, which it looks like I have</td></tr>
+            <tr><td>[11:05] &lt Lawouach&gt off to work</td></tr>
+            <tr><td>[11:06] &lt Davbo&gt Hey all</td></tr>
+            <tr><td>[11:06] &lt orphans&gt hey Davbo</td></tr>
+            <tr><td>[11:07] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[11:07] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[11:29] *** Davb1 has joined #kamaelia</td></tr>
+            <tr><td>[11:31] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:51] *** Lawouach_ has joined #kamaelia</td></tr>
+            <tr><td>[12:11] &lt Davbo&gt Salut Lawouach_ :)</td></tr>
+            <tr><td>[12:12] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[12:13] &lt Davbo&gt hey vmlemon_</td></tr>
+            <tr><td>[12:13] *** Davbo can't find his National Insurance Number =[</td></tr>
+            <tr><td>[12:14] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt http://www.sun.com/storage/openstorage/index.jsp &lt -- why with Sun you always end up wondering "Where the heck should I be clicking now?"</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt 'lu Davbo</td></tr>
+            <tr><td>[12:15] &lt Davbo&gt Agh, I hate trying to get something off the Sun website</td></tr>
+            <tr><td>[12:17] &lt vmlemon_&gt "Accessible Sun", anyone?</td></tr>
+            <tr><td>[12:18] &lt Lawouach_&gt if only</td></tr>
+            <tr><td>[12:18] &lt vmlemon_&gt (Similar idea to "Accessible Odeon", probably)</td></tr>
+            <tr><td>[12:26] &lt Davbo&gt When we started Uni I recall the lecturer saying we all needed to get the Java SDK and then the next lecture we had with him when he said "Did you all download the JDK?" everyone was saying "We couldn't find it"</td></tr>
+            <tr><td>[12:26] &lt Davbo&gt because the site is so convoluted they didn't know which version / what they needed</td></tr>
+            <tr><td>[12:27] &lt vmlemon_&gt Ugh</td></tr>
+            <tr><td>[12:29] &lt Davbo&gt Hmm, is your NINO on your Passport?</td></tr>
+            <tr><td>[12:30] &lt vmlemon_&gt No idea, I'm one of the few people who've never applied for/had a passport</td></tr>
+            <tr><td>[12:30] &lt vmlemon_&gt They supposedly sent cards out with NINs ages ago...</td></tr>
+            <tr><td>[12:31] &lt Davbo&gt I've lost my card :-(</td></tr>
+            <tr><td>[12:31] &lt Davbo&gt I think</td></tr>
+            <tr><td>[12:31] &lt vmlemon_&gt Dunno if they offer replacements or a lookup service, though</td></tr>
+            <tr><td>[12:32] *** vmlemon_ lost his NIN card, months ago</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt one of those things you only need once every few years though</td></tr>
+            <tr><td>[12:32] &lt vmlemon_&gt True</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt Ahaa! Student loan co. website seems to know it</td></tr>
+            <tr><td>[12:32] &lt Davbo&gt but don't have the last letter :/</td></tr>
+            <tr><td>[12:33] &lt Lawouach_&gt You only have 26 chances</td></tr>
+            <tr><td>[12:33] &lt Davbo&gt Ah the last letter isn't needed :)</td></tr>
+            <tr><td>[12:33] &lt Davbo&gt http://en.wikipedia.org/wiki/National_Insurance#National_Insurance_number</td></tr>
+            <tr><td>[12:34] &lt Davbo&gt "The number is unique without the last letter"</td></tr>
+            <tr><td>[12:34] &lt Lawouach_&gt life's crazy</td></tr>
+            <tr><td>[12:40] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:42] &lt vmlemon_&gt kamaeliabot: ecky</td></tr>
+            <tr><td>[12:42] Reply: Ptang!</td></tr>
+            <tr><td>[12:42] &lt vmlemon_&gt kamaeliabot: dance</td></tr>
+            <tr><td>[12:42] Reply: does the macarena</td></tr>
+            <tr><td>[13:00] *** MS- has joined #kamaelia</td></tr>
+            <tr><td>[13:00] &lt MS-&gt afternoon</td></tr>
+            <tr><td>[13:01] &lt Lawouach_&gt hello MS-</td></tr>
+            <tr><td>[13:01] &lt vmlemon_&gt Hi MS-</td></tr>
+            <tr><td>[13:02] &lt Davbo&gt Hi MS-</td></tr>
+            <tr><td>[13:05] &lt Davbo&gt Damn it, why do banks have to ask difficult questions on their applications "When did you move into this address?" I can't remember the exact date!</td></tr>
+            <tr><td>[13:07] &lt vmlemon_&gt They probably don't want people to have bank accounts ;)</td></tr>
+            <tr><td>[13:08] &lt Davbo&gt it's one of those things where they could just as easily ask "Have you lived here &gt 6 months?"</td></tr>
+            <tr><td>[13:09] *** Davbo picks random date</td></tr>
+            <tr><td>[13:29] &lt MS-&gt Davbo: They often just want something rough</td></tr>
+            <tr><td>[13:29] &lt MS-&gt ie to the right month if less than a year</td></tr>
+            <tr><td>[13:32] &lt Davbo&gt Yeah, it's over 4 years so I don't think it matters much</td></tr>
+            <tr><td>[13:34] &lt Davbo&gt Now to just hope this Icelandic bank doesn't lose all my money :-)</td></tr>
+            <tr><td>[14:08] &lt orphans&gt &lt = off to find out result :)</td></tr>
+            <tr><td>[14:12] *** j_baker has joined #kamaelia</td></tr>
+            <tr><td>[14:32] &lt j_baker&gt You know, if there's one bad thing that python's done for the open source community, it's the annoyance I get every time I get to the "py" section of my package manager.</td></tr>
+            <tr><td>[14:40] &lt MS-&gt ?</td></tr>
+            <tr><td>[14:41] &lt vmlemon_&gt Too many py* things?</td></tr>
+            <tr><td>[14:51] &lt MS-&gt Quite pyssibly</td></tr>
+            <tr><td>[14:52] &lt Davbo&gt KDE is worse for that</td></tr>
+            <tr><td>[14:52] &lt Davbo&gt Konsole etc</td></tr>
+            <tr><td>[14:53] *** vmlemon_ still wonders why KControl isn't named Kontrol...</td></tr>
+            <tr><td>[14:54] &lt j_baker&gt Actually, I think that packages beginning with "lib" are the worst of all.</td></tr>
+            <tr><td>[14:55] &lt vmlemon_&gt xgklibfoo!</td></tr>
+            <tr><td>[14:55] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[14:56] &lt j_baker&gt You mean pyxgklibfoo</td></tr>
+            <tr><td>[14:56] &lt vmlemon_&gt Good point</td></tr>
+            <tr><td>[15:03] &lt j_baker&gt Hey Lawouach or Lawouach_: does CherryPy have a mailing list?</td></tr>
+            <tr><td>[15:04] &lt j_baker&gt nvm, found it</td></tr>
+            <tr><td>[15:04] &lt Lawouach_&gt it does :)</td></tr>
+            <tr><td>[15:04] &lt Lawouach_&gt Depends if you're going to talk about CP development itself or not</td></tr>
+            <tr><td>[15:05] &lt Lawouach_&gt If not choose the users list</td></tr>
+            <tr><td>[15:05] &lt Lawouach_&gt Otherwise the dev list</td></tr>
+            <tr><td>[15:06] &lt j_baker&gt Well, I was planning on including a generic "run a cherrypy program in Kamaelia Publish easily" WSGI app and I wanted to post a copy of it to see if there was anything that might need to be added. So I suppose it would probably go to the users list.</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt yeah</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt They'll be pleased BTW :)</td></tr>
+            <tr><td>[15:07] &lt Lawouach_&gt I know Robert Brewer likes the idea behind Kamaelia</td></tr>
+            <tr><td>[15:08] &lt Lawouach_&gt Robert has been the lead dev for CP for more than 3 years now</td></tr>
+            <tr><td>[15:08] &lt j_baker&gt That's awesome.</td></tr>
+            <tr><td>[15:13] *** j_baker notes that a server-specific Kamaelia API would really be cool.</td></tr>
+            <tr><td>[15:23] &lt MS-&gt I didn't know Robert liked Kamaelia</td></tr>
+            <tr><td>[15:23] &lt MS-&gt That's nice to hear :)</td></tr>
+            <tr><td>[15:24] &lt MS-&gt (given that we collaborated on this: http://www.aminus.org/rbre/python/pydec.html )</td></tr>
+            <tr><td>[15:35] &lt Lawouach_&gt He had told me that</td></tr>
+            <tr><td>[15:35] &lt Lawouach_&gt He respects your work.</td></tr>
+            <tr><td>[15:41] *** Davbo changed the topic to Don't forget you can ask questions on the mailing list as well | Claim a branch for review and (maybe) merge! :-) | Update and review the release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 4th July 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[15:48] *** j_baker changed the topic to Don't forget you can ask questions on the mailing list as well | Claim a branch for review and (maybe) merge! :-) | Update and review the release Wiki here: http://edit.kamaelia.org/ReleaseJune2008 u/p : wiki/wiki | Next weekly meeting 4pm 3rd July 2008 | Don't ask to ask, just ask (channel is logged: http://yeoldeclue.com/logs/ )</td></tr>
+            <tr><td>[15:50] &lt Davbo&gt woops my excitement for the 4th got the better of me.</td></tr>
+            <tr><td>[15:50] &lt Davbo&gt thanks j_baker</td></tr>
+            <tr><td>[15:52] &lt j_baker&gt lol... We've been independent for over 200 years now, Davbo. No need to get too excited. :P</td></tr>
+            <tr><td>[15:56] &lt Davbo&gt Precisely, that was my English sarcasm ;-)</td></tr>
+            <tr><td>[16:12] &lt Lawouach&gt j_baker: I don't have much time before leaving but have you considered looking at paste.deploy for your plugin idea?</td></tr>
+            <tr><td>[16:13] &lt Lawouach&gt http://pythonpaste.org/deploy/</td></tr>
+            <tr><td>[16:14] &lt j_baker&gt That's definitely a possibility. In fact I've actually got a paste plugin as well for working with pylons.</td></tr>
+            <tr><td>[16:48] &lt Davbo&gt orphans: your XYPad is proving very useful, just made a make-shift slider to control brush size with it :)</td></tr>
+            <tr><td>[17:08] &lt Davbo&gt http://www.davbo.org/images/snapshot12.png</td></tr>
+            <tr><td>[17:10] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[17:11] &lt Davbo&gt slowly but surely :)</td></tr>
+            <tr><td>[17:11] &lt MS-&gt cool</td></tr>
+            <tr><td>[17:15] &lt vmlemon_&gt The Paint app is multiprocess?</td></tr>
+            <tr><td>[17:15] &lt Davbo&gt Yeah</td></tr>
+            <tr><td>[17:16] &lt Davbo&gt http://edit.kamaelia.org/Developers/Projects/KamaeliaPaint if you're interested vmlemon_</td></tr>
+            <tr><td>[17:16] &lt Davbo&gt back later</td></tr>
+            <tr><td>[17:16] &lt vmlemon_&gt Thanks</td></tr>
+            <tr><td>[17:26] *** MS- makes note for Davbo to say that he's modified Davbo's app slightly</td></tr>
+            <tr><td>[17:26] &lt MS-&gt Specifically to make the windows a more sensible size</td></tr>
+            <tr><td>[17:30] &lt Lawouach&gt gotta go</td></tr>
+            <tr><td>[17:30] &lt Lawouach&gt see you later guys</td></tr>
+            <tr><td>[17:37] *** vmlemon_ wonders how much a Wii Remote costs, these days</td></tr>
+            <tr><td>[17:37] &lt vmlemon_&gt (I was interested in getting one for the Linux/Bluetooth experiments)</td></tr>
+            <tr><td>[17:48] &lt MS-&gt Someone remind me why I should even vaguely consider switching to windows ?</td></tr>
+            <tr><td>[17:48] &lt MS-&gt http://blog.seattlepi.nwsource.com/microsoft/archives/141821.asp</td></tr>
+            <tr><td>[17:48] &lt vmlemon_&gt No idea</td></tr>
+            <tr><td>[17:49] &lt vmlemon_&gt I think I saw that earlier - Bill struggles to install Microsoft MovieMaker</td></tr>
+            <tr><td>[17:50] &lt MS-&gt Yep</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt "Someone decided to trash the one part of Windows that was usable? The file system is no longer usable. The registry is not usable. This program listing was one sane place but now it is all crapped up."</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[17:52] &lt vmlemon_&gt Was it ever usable in the first place? ;)</td></tr>
+            <tr><td>[17:54] &lt MS-&gt That's rather open to debate</td></tr>
+            <tr><td>[17:54] &lt MS-&gt With probably</td></tr>
+            <tr><td>[17:54] &lt MS-&gt microsoft on one side</td></tr>
+            <tr><td>[17:54] &lt MS-&gt rest of the world</td></tr>
+            <tr><td>[17:54] &lt MS-&gt on the other</td></tr>
+            <tr><td>[17:55] &lt vmlemon_&gt Of course, Microsoft are biased into believing that their products are usable</td></tr>
+            <tr><td>[17:58] &lt vmlemon_&gt (For obvious reasons, seeing as they make them)</td></tr>
+            <tr><td>[17:58] *** vmlemon_ thinks "usability" is a subjective thing</td></tr>
+            <tr><td>[18:01] &lt vmlemon_&gt Although I'm used to trying to use stuff that others would find totally unusable...</td></tr>
+            <tr><td>[18:01] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[18:22] &lt vmlemon_&gt Hah, http://culinaryabortions.wordpress.com/2008/05/27/32-melon-crunky/</td></tr>
+            <tr><td>[18:43] &lt vmlemon_&gt Yum... http://culinaryabortions.wordpress.com/2008/05/18/26-bacon-and-egg-bread/</td></tr>
+            <tr><td>[19:48] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[19:59] &lt MS-&gt feedback on http://edit.kamaelia.org/GetKamaelia welcome</td></tr>
+            <tr><td>[20:00] &lt MS-&gt (it's a rebadged version of the "GetMashed" page - but with the same basic intent)</td></tr>
+            <tr><td>[20:00] &lt MS-&gt People are more than welcome to edit it to improve it</td></tr>
+            <tr><td>[20:08] &lt vmlemon_&gt Looks good</td></tr>
+            <tr><td>[20:09] &lt vmlemon_&gt Hmm, just wondering, what does the video shot detection stuff involve?</td></tr>
+            <tr><td>[20:46] &lt MS-&gt It takes in a video file, and then spits out frames where the shot changes :)</td></tr>
+            <tr><td>[20:46] &lt MS-&gt and "just works" really :)</td></tr>
+            <tr><td>[20:50] &lt vmlemon_&gt Cool</td></tr>
+            <tr><td>[20:51] &lt vmlemon_&gt Hmm, not sure if you saw my question earlier, but are you familiar with dvbsnoop?</td></tr>
+            <tr><td>[20:51] &lt MS-&gt I think I've used it once, just over 2 years ago</td></tr>
+            <tr><td>[20:51] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[20:51] &lt MS-&gt I think it worked FWIW</td></tr>
+            <tr><td>[20:51] &lt MS-&gt for whatever I was using it for</td></tr>
+            <tr><td>[20:53] *** vmlemon_ isn't sure if he's using it properly...</td></tr>
+            <tr><td>[20:53] *** MS- looks at the logs</td></tr>
+            <tr><td>[20:53] &lt vmlemon_&gt It seems to spew out several hundred MB out of text, although I don't think it's dissecting the file properly</td></tr>
+            <tr><td>[20:54] &lt vmlemon_&gt I assume that you have to manually guess the type of the file, though</td></tr>
+            <tr><td>[20:54] &lt vmlemon_&gt *MB of text</td></tr>
+            <tr><td>[20:54] &lt MS-&gt What are you trying to use it for OOI?</td></tr>
+            <tr><td>[20:55] &lt vmlemon_&gt Just curious about the data structures/packet contents of some Transport Stream files I have</td></tr>
+            <tr><td>[20:55] &lt MS-&gt I see</td></tr>
+            <tr><td>[20:55] &lt MS-&gt It may be worth looking at Matt's code as well FWIW</td></tr>
+            <tr><td>[20:56] &lt MS-&gt It's pretty good at decoding various parts of DVB</td></tr>
+            <tr><td>[20:56] &lt vmlemon_&gt Should just be 'dvbsnoop -s ts -tssubdecode -if pathtofile &gt SomewhereToSpewOutput', right?</td></tr>
+            <tr><td>[20:56] &lt MS-&gt Sounds about right</td></tr>
+            <tr><td>[20:56] &lt vmlemon_&gt Gives a load of "unknown"s, and doesn't seem to do anything with certain structures, that said</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Most of the components (if not all of them) here have examples: http://edit.kamaelia.org/Components/pydoc/Kamaelia.Device.DVB.html</td></tr>
+            <tr><td>[20:57] &lt vmlemon_&gt Thanks, I'll have a look</td></tr>
+            <tr><td>[20:57] *** vmlemon_ ought to get some actual tuner hardware, sometime...</td></tr>
+            <tr><td>[20:57] &lt MS-&gt Also various bits of http://edit.kamaelia.org/Cookbook/DVB also assist with showing how the various bits hang together</td></tr>
+            <tr><td>[20:59] &lt vmlemon_&gt It'll do both "streaming" DVB Transport Streams (i.e. snarfed from a hardware device) and "fixed" TSes (i.e. from an existing file on disk)?</td></tr>
+            <tr><td>[20:59] *** vmlemon_ looks in the Cookbook for some tasty ideas ;)</td></tr>
+            <tr><td>[21:00] &lt vmlemon_&gt Hmm, looks like http://edit.kamaelia.org/Components/pydoc/Kamaelia.Physics.Behaviours.continuousIdentity.html is missing</td></tr>
+            <tr><td>[21:00] &lt vmlemon_&gt (Just gives an invitation to edit the page)</td></tr>
+            <tr><td>[21:00] &lt vmlemon_&gt No idea what's supposed to go there, though</td></tr>
+            <tr><td>[21:04] &lt vmlemon_&gt Just looking at TransportStreamDemuxer now</td></tr>
+            <tr><td>[21:05] &lt vmlemon_&gt Any way of figuring out what PIDs my transport stream file contains? Although I know what channels are supposedly in it</td></tr>
+            <tr><td>[21:08] *** vmlemon_ digs out dvbsnoop</td></tr>
+            <tr><td>[21:10] &lt vmlemon_&gt The code looks pleasent otherwise, though</td></tr>
+            <tr><td>[21:12] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[21:12] *** bcarlyon|ubuntu_ is now known as bcarlyon|ubuntu</td></tr>
+            <tr><td>[21:16] &lt vmlemon_&gt Looks like I'll need to install Kamaelia on this machine...</td></tr>
+            <tr><td>[21:17] &lt vmlemon_&gt Turns out that it's already installed, but can't import "dvb3.frontend"</td></tr>
+            <tr><td>[21:17] &lt MS-&gt that's the DVB bindings which are needed</td></tr>
+            <tr><td>[21:18] &lt MS-&gt http://sourceforge.net/project/showfiles.php?group_id=122494&package_id=176999</td></tr>
+            <tr><td>[21:19] &lt vmlemon_&gt Aha! Looks like I still have my MegaBundle from last time, with the untouched python-dvb3-0.0.4.tar</td></tr>
+            <tr><td>[21:19] *** vmlemon_ tries to install the bindings</td></tr>
+            <tr><td>[21:20] &lt vmlemon_&gt Ouch</td></tr>
+            <tr><td>[21:20] &lt vmlemon_&gt dvb3/dmx.c: In function ‘__Pyx_GetStarArgs’:</td></tr>
+            <tr><td>[21:20] &lt vmlemon_&gt dvb3/dmx.c:1327: warning: suggest explicit braces to avoid ambiguous ‘else’</td></tr>
+            <tr><td>[21:20] &lt vmlemon_&gt dvb3/dmx.c:1329: warning: suggest explicit braces to avoid ambiguous ‘else’</td></tr>
+            <tr><td>[21:20] &lt vmlemon_&gt error: command 'gcc' failed with exit status 1</td></tr>
+            <tr><td>[21:21] *** vmlemon_ wonders if it's a Pyrex problem, although he's using the one shipped with the MegaBundle, if memory serves correct</td></tr>
+            <tr><td>[21:24] &lt vmlemon_&gt http://paster.dazjorz.com/?a=rawpaste&p=3285</td></tr>
+            <tr><td>[21:24] *** vmlemon_ downloads a fresh copy of the tarball from the URL</td></tr>
+            <tr><td>[21:29] &lt MS-&gt The pyrex version I'm using is 0.9.3.1</td></tr>
+            <tr><td>[21:29] &lt MS-&gt the above does build using that</td></tr>
+            <tr><td>[21:30] &lt MS-&gt pyrex doesn't produce 100% clean code BTW</td></tr>
+            <tr><td>[21:30] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[21:32] &lt vmlemon__&gt Damn, lost connectivity</td></tr>
+            <tr><td>[21:32] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[21:33] &lt vmlemon_&gt Any thoughts on the error I pasted?</td></tr>
+            <tr><td>[21:35] &lt MS-&gt not sure - I've normally been able to install it cleanly using pyrex 0.9.3.1</td></tr>
+            <tr><td>[21:35] &lt MS-&gt which is in the megabundle</td></tr>
+            <tr><td>[21:35] &lt vmlemon_&gt Pyrex version 0.9.3.1</td></tr>
+            <tr><td>[21:35] &lt vmlemon_&gt Exact version here...</td></tr>
+            <tr><td>[21:36] &lt vmlemon_&gt (according to 'pyrexc -v')</td></tr>
+            <tr><td>[21:37] &lt MS-&gt I really don't know</td></tr>
+            <tr><td>[21:37] &lt MS-&gt Do you have the linux kernel headers installed?</td></tr>
+            <tr><td>[21:37] &lt vmlemon_&gt Yes</td></tr>
+            <tr><td>[21:38] &lt MS-&gt I think it pulls in dvb stuff from there</td></tr>
+            <tr><td>[21:38] &lt MS-&gt really don't know - sorry - I've not had that problem :-(</td></tr>
+            <tr><td>[21:38] &lt MS-&gt What distro ?</td></tr>
+            <tr><td>[21:38] &lt vmlemon_&gt Fedora 8</td></tr>
+            <tr><td>[21:38] &lt MS-&gt Again, not tested with that</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt I think *buntu had that problem, unless that one was Dirac related...</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt Clearly, Kamaelia compatibility isn't a factor I've looked at when picking Linuxes ;)</td></tr>
+            <tr><td>[21:40] &lt MS-&gt Well, this is DVB support issue</td></tr>
+            <tr><td>[21:40] &lt MS-&gt s</td></tr>
+            <tr><td>[21:40] &lt MS-&gt which is more the problem probably</td></tr>
+            <tr><td>[21:40] &lt MS-&gt ubuntu sucks for that</td></tr>
+            <tr><td>[21:40] &lt MS-&gt open suse is far better</td></tr>
+            <tr><td>[21:40] &lt MS-&gt for that</td></tr>
+            <tr><td>[21:41] *** vmlemon_ wonders if it'd work on an earlier kernel version, since 2.6.25* seems to have broken quite a lot for folks</td></tr>
+            <tr><td>[21:42] &lt MS-&gt 2.6.22.17-0.1-default</td></tr>
+            <tr><td>[21:42] &lt MS-&gt is what I'm using here</td></tr>
+            <tr><td>[21:42] &lt vmlemon_&gt 2.6.25.4-10.fc8 here</td></tr>
+            <tr><td>[21:42] &lt MS-&gt It's possible the headers have changed since</td></tr>
+            <tr><td>[21:43] &lt vmlemon_&gt (Was using a 2.6.24 or 2.6.23, if I remember correctly)</td></tr>
+            <tr><td>[21:43] &lt vmlemon_&gt It seems that they break/change stuff for the hell of it...</td></tr>
+            <tr><td>[21:58] &lt vmlemon_&gt "Kamaelia: Linux", anyone? ;)</td></tr>
+            <tr><td>[22:06] &lt MS-&gt heh</td></tr>
+            <tr><td>[22:07] &lt MS-&gt "delusions of grandeur"</td></tr>
+            <tr><td>[22:07] &lt MS-&gt I'll be happy to have *a* system that I can use :)</td></tr>
+            <tr><td>[22:07] &lt MS-&gt Happy to clone that for everyone else mind</td></tr>
+            <tr><td>[22:07] &lt MS-&gt :)</td></tr>
+            <tr><td>[22:07] &lt MS-&gt Not mad enough to start a linux distro though</td></tr>
+            <tr><td>[22:08] &lt MS-&gt Could be tempted to make a live CD of stuff that I *know* works though</td></tr>
+            <tr><td>[22:08] &lt MS-&gt (maybe)</td></tr>
+            <tr><td>[22:08] &lt MS-&gt maybe for mashed *next* year - assuming it happens</td></tr>
+            <tr><td>[22:09] &lt MS-&gt Wonder what Matt will make of https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/trunk/Sketches/MPS/Compose2/ScribbleNLink.py</td></tr>
+            <tr><td>[22:10] &lt MS-&gt Kinda a mix of the gesture/handwriting recognition code and the Axon Visualiser</td></tr>
+            <tr><td>[22:13] &lt vmlemon_&gt It'd be interesting/unique to have a Linux system with the userland components made entirely from Kamaelia components though, if nothing else...</td></tr>
+            <tr><td>[22:13] &lt MS-&gt It'd certainly be novel</td></tr>
+            <tr><td>[22:13] &lt vmlemon_&gt Not to mention a good test of the capabilities of it</td></tr>
+            <tr><td>[22:15] &lt vmlemon_&gt Dunno how compatible it would be with other software, though</td></tr>
+            <tr><td>[22:18] &lt MS-&gt Depends on what things you replaced really</td></tr>
+            <tr><td>[22:18] &lt MS-&gt I think at the moment it'd be overly ambitious to do something like that, personally</td></tr>
+            <tr><td>[22:18] &lt MS-&gt Even if doable</td></tr>
+            <tr><td>[22:19] &lt vmlemon_&gt A Kamaelia-based shell or web browser might be a bit too much...</td></tr>
+            <tr><td>[22:19] &lt MS-&gt The Axon Shell exists</td></tr>
+            <tr><td>[22:19] &lt MS-&gt which can launch components</td></tr>
+            <tr><td>[22:19] &lt MS-&gt and you can read/write from in/outboxes</td></tr>
+            <tr><td>[22:19] *** vmlemon_ never knew about that</td></tr>
+            <tr><td>[22:19] &lt MS-&gt so it's not that far fetched</td></tr>
+            <tr><td>[22:19] &lt MS-&gt builds on the IPython shell</td></tr>
+            <tr><td>[22:20] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[22:20] &lt MS-&gt More a proof of concept than anything as well</td></tr>
+            <tr><td>[22:20] &lt MS-&gt http://edit.kamaelia.org/AxonShell</td></tr>
+            <tr><td>[22:20] &lt MS-&gt Does work though</td></tr>
+            <tr><td>[22:21] *** vmlemon_ wonders how well it'd deal with Unicode text/text encoded in 2 byte charsets (e.g. Japanese or Korean)...</td></tr>
+            <tr><td>[22:22] &lt MS-&gt no idea</td></tr>
+            <tr><td>[22:23] &lt vmlemon_&gt Easter egg - ASCII art Kamaelia cat, if a certain command is run in a certain way...</td></tr>
+            <tr><td>[22:23] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[22:25] &lt vmlemon_&gt (The exact command is a secret though, of course)</td></tr>
+            <tr><td>[22:32] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[22:35] *** vmlemon_ is finding Python's indentation handling annoying when trying to use code lifted directly from Wiki pages without manually "fixing" the indentation to make it happy...</td></tr>
+            <tr><td>[22:38] &lt vmlemon_&gt I'm sure that's not supposed to happen - "from Kamaelia.Protocol.HTTP.Handlers.Minimal import Minimal"; "ImportError: No module named Handlers.Minimal"...</td></tr>
+            <tr><td>[22:39] &lt vmlemon_&gt I think my Kamaelia installation is either kaput, or incomplete, somehow...</td></tr>
+            <tr><td>[22:40] &lt vmlemon_&gt (No idea how that could have happened, since I installed everything in the bundle, just about)</td></tr>
+            <tr><td>[22:41] *** vmlemon_ is trying to use the HTTPServer recipe in the Cookbook </td></tr>
+            <tr><td>[22:45] &lt vmlemon_&gt Anyway, night</td></tr>
+            <tr><td>[22:46] &lt MS-&gt cya</td></tr>
+            <tr><td>[23:02] *** MS- has parted #kamaelia</td></tr>

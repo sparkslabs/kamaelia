@@ -1,0 +1,237 @@
+<html><body><table>
+            <tr><td>[02:12] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[03:53] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[05:30] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[05:51] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[07:05] &lt Lawouach_&gt morning all</td></tr>
+            <tr><td>[07:10] *** Lawouach_ shoots vmlemon in the foot. </td></tr>
+            <tr><td>[07:45] *** mhrd-afk is now known as mhrd</td></tr>
+            <tr><td>[07:46] &lt mhrd&gt mornin' all ... ought to get on with reading scrollback :-)</td></tr>
+            <tr><td>[07:52] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:06] &lt Lawouach_&gt mhrd: yeah quite a bunch</td></tr>
+            <tr><td>[08:14] &lt mhrd&gt hmm, now I need several days to digest several days of scrollback I've just read :-)</td></tr>
+            <tr><td>[08:15] &lt Lawouach_&gt see you then :)</td></tr>
+            <tr><td>[08:17] &lt mhrd&gt nah, now gotta start on email :-)</td></tr>
+            <tr><td>[09:18] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[09:19] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[09:54] *** mhrd has parted #kamaelia</td></tr>
+            <tr><td>[10:03] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[10:13] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[10:44] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[10:45] *** orphans has joined #kamaelia</td></tr>
+            <tr><td>[11:14] &lt orphans&gt mhrd, don't spose you could give me a guestimate as to how long it'd take me to get UDP working with your modified CSA?</td></tr>
+            <tr><td>[11:15] &lt mhrd&gt hmm ...</td></tr>
+            <tr><td>[11:15] *** orphans is trying to work out scheduling</td></tr>
+            <tr><td>[11:18] &lt mhrd&gt it shouldn't be hard ... you just need to modify how the socket is set up in MulticastTransciever.py runClient() method</td></tr>
+            <tr><td>[11:18] &lt mhrd&gt I'm a bit rusty on my python socket stuff atm though, so I might be missing something</td></tr>
+            <tr><td>[11:18] &lt mhrd&gt you're very welcome to take a copy and try</td></tr>
+            <tr><td>[11:19] &lt mhrd&gt what do you mean by scheduling in this context?</td></tr>
+            <tr><td>[11:19] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[11:19] &lt orphans&gt my schedule of work :)</td></tr>
+            <tr><td>[11:19] &lt orphans&gt MS- asked us to send it to the list :)</td></tr>
+            <tr><td>[11:19] &lt mhrd&gt ah</td></tr>
+            <tr><td>[11:20] &lt mhrd&gt thought you might have meant this kind of scheduling http://en.wikipedia.org/wiki/Scheduling_(computing)</td></tr>
+            <tr><td>[11:20] &lt mhrd&gt :)</td></tr>
+            <tr><td>[11:20] &lt orphans&gt I should really stop using computer words in non-computer sentances</td></tr>
+            <tr><td>[11:21] &lt mhrd&gt I'd guess it shouldn't take more than a day or two to try and test out ... I think the modification looks really simple; but as I said, I could be very wrong</td></tr>
+            <tr><td>[11:21] &lt mhrd&gt heh, np. it had valid RealLife(tm) meanings before computers came along</td></tr>
+            <tr><td>[11:22] &lt mhrd&gt does that help, or am I being too non-committal?</td></tr>
+            <tr><td>[11:22] &lt orphans&gt no, that's awesome</td></tr>
+            <tr><td>[11:22] &lt mhrd&gt cool.</td></tr>
+            <tr><td>[11:23] &lt orphans&gt I thought it might be one of these horrible two weeks of digging in something I'm pretty clueless about</td></tr>
+            <tr><td>[11:23] &lt mhrd&gt the thing that probably will be harder is working out how to integrate it ... since it was an experiment that required mods to CSA and possibly the Selector iirc</td></tr>
+            <tr><td>[11:24] &lt orphans&gt yeah, I'll have a look at the diffs for them and see how much I understand :)</td></tr>
+            <tr><td>[11:24] &lt orphans&gt I may be bugging you constantly when I get to sorting that bit out properly :)</td></tr>
+            <tr><td>[11:24] &lt mhrd&gt its np</td></tr>
+            <tr><td>[11:25] &lt mhrd&gt I'm fighting with SMIL and Ambulant player atm, so pretty much anything else is more fun atm</td></tr>
+            <tr><td>[11:26] &lt orphans&gt looks fun</td></tr>
+            <tr><td>[11:28] &lt orphans&gt right, will get the schedule off and get on with revision - thanks mhrd</td></tr>
+            <tr><td>[11:30] &lt Lawouach_&gt back from lunch</td></tr>
+            <tr><td>[11:30] &lt Lawouach_&gt hi orphans</td></tr>
+            <tr><td>[11:30] &lt mhrd&gt lunch ... good idea</td></tr>
+            <tr><td>[11:30] &lt Lawouach_&gt go study!</td></tr>
+            <tr><td>[11:30] &lt orphans&gt ahh, studying :)</td></tr>
+            <tr><td>[11:35] &lt Lawouach_&gt http://news.slashdot.org/article.pl?sid=08/05/26/232221&from=rss</td></tr>
+            <tr><td>[11:35] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[11:41] *** Lawouach_ is listening to The Streets</td></tr>
+            <tr><td>[11:47] *** PJ_Coudert has joined #kamaelia</td></tr>
+            <tr><td>[11:51] &lt Davbo&gt Poor Lawouach_, do you want me to send you some real music? ;-)</td></tr>
+            <tr><td>[11:52] &lt Davbo&gt Afternoon all btw :-)</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt I actually enjoy The Streets</td></tr>
+            <tr><td>[11:52] &lt Lawouach_&gt what's wrong with them?</td></tr>
+            <tr><td>[11:53] &lt vmlemon_&gt Davbo: Does that mean that imitation music exists? ;)</td></tr>
+            <tr><td>[11:54] &lt Davbo&gt Can't stand The Streets, mostly because of their "sound"</td></tr>
+            <tr><td>[11:55] *** vmlemon_ hates CAPTCHAs</td></tr>
+            <tr><td>[11:55] &lt Davbo&gt rapper from Birmingham, it just doesn't work for me Lawouach_ :-)</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt I actually enjoy them for their sound as well as the fun of their text</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt I can understand it doesn't suit everyone though</td></tr>
+            <tr><td>[11:56] &lt Davbo&gt I can't stand Arctic Monkeys for similar reasons. Despite them coming from where I live.</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt Not a big fan of Arctic Monkeys</td></tr>
+            <tr><td>[11:56] &lt Lawouach_&gt Another "the best band of the World of the wee"</td></tr>
+            <tr><td>[11:57] &lt Lawouach_&gt That was supposed to read "week"</td></tr>
+            <tr><td>[11:57] &lt Davbo&gt Hehe</td></tr>
+            <tr><td>[11:57] &lt Lawouach_&gt But I feel it was appropriate too</td></tr>
+            <tr><td>[11:57] &lt vmlemon_&gt Ugh, a world of urine? ;)</td></tr>
+            <tr><td>[11:57] &lt Davbo&gt Agreed :-)</td></tr>
+            <tr><td>[11:57] &lt vmlemon_&gt How classy</td></tr>
+            <tr><td>[11:58] &lt vmlemon_&gt Ugh, Yahoo!'s post code location system is dumb</td></tr>
+            <tr><td>[11:58] &lt vmlemon_&gt It always says "This postal code is not located in the country you selected" despite my postcode being valid</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt Imagine if it was saying "dude you live in such a shitty hole"</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt :)</td></tr>
+            <tr><td>[11:59] &lt vmlemon_&gt Haha</td></tr>
+            <tr><td>[11:59] &lt vmlemon_&gt Well, Boroughbridge is a pretty crappy place to live</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt Or "I had sex with your sister there too yes"</td></tr>
+            <tr><td>[11:59] &lt Davbo&gt That being said Lawouach_, I do have an album by The Streets which I have been known to listen to :P</td></tr>
+            <tr><td>[11:59] &lt Lawouach_&gt Davbo: which one?</td></tr>
+            <tr><td>[12:00] &lt Davbo&gt Original Pirate Material i think</td></tr>
+            <tr><td>[12:00] &lt Davbo&gt i'd have to look upstairs</td></tr>
+            <tr><td>[12:00] &lt Davbo&gt My ex-girlfriend hated it, I think she conditioned me against it ;-)</td></tr>
+            <tr><td>[12:01] &lt Lawouach_&gt I love it :)</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt Davbo: regarding The Streets, I think it reminds me of the time I spent in the UK</td></tr>
+            <tr><td>[12:08] &lt Lawouach_&gt Why I don't kow. But it does.</td></tr>
+            <tr><td>[12:09] &lt Lawouach_&gt So I suppose that makes me biaised :)</td></tr>
+            <tr><td>[12:09] &lt vmlemon_&gt Just wondering, you're originally from here? Or France?</td></tr>
+            <tr><td>[12:10] &lt Lawouach_&gt France</td></tr>
+            <tr><td>[12:10] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[12:10] &lt Lawouach_&gt I've lived in the UK for about 3 years</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt I arrived in late 2003, came back to France during 2005 and went back again to the UK in 2006 and 2007</td></tr>
+            <tr><td>[12:11] &lt Lawouach_&gt I used to live in Reading. I lived for 3 months in London somewhere in the middle :)</td></tr>
+            <tr><td>[12:12] &lt Davbo&gt I'd have thought you'd want to forget about the UK, all of us that live here do ;-)</td></tr>
+            <tr><td>[12:12] &lt vmlemon_&gt We're obviously a little too uninteresting as a country, then ;)</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt Stoke Newington right next to the Mosque :)</td></tr>
+            <tr><td>[12:12] &lt Lawouach_&gt Davbo, vmlemon_: well no. I long hesitated in settling for good over there.</td></tr>
+            <tr><td>[12:12] &lt vmlemon_&gt Aah</td></tr>
+            <tr><td>[12:13] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt After the company I was involved in the US failed last November I got a contract in London. Went over ther. Signed it. Then handed it back as I realized I need to come back to France for a while.</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt Travelling has one curse</td></tr>
+            <tr><td>[12:13] &lt Lawouach_&gt Everywhere and nowhere is your home.</td></tr>
+            <tr><td>[12:14] &lt vmlemon_&gt At least you have the Eiffel tower, and croissants ;)</td></tr>
+            <tr><td>[12:14] &lt vmlemon_&gt Unlike us ;)</td></tr>
+            <tr><td>[12:14] &lt vmlemon_&gt We only have crappy, slow giant ferris wheel</td></tr>
+            <tr><td>[12:14] &lt vmlemon_&gt ;)</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt ah well...</td></tr>
+            <tr><td>[12:14] &lt Davbo&gt We have Blackpool tower and Yorkshire puddings.</td></tr>
+            <tr><td>[12:14] &lt vmlemon_&gt and that ill fated dome thing</td></tr>
+            <tr><td>[12:14] &lt Lawouach_&gt Two English friends are coming over this weekend actually</td></tr>
+            <tr><td>[12:15] &lt Davbo&gt Cool Lawouach_, but I wouldn't want to travel all the time either</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt You've got Alton Towers that is way better than Parc Asteric or Dysney Land</td></tr>
+            <tr><td>[12:15] *** vmlemon_ has never been there</td></tr>
+            <tr><td>[12:15] &lt Lawouach_&gt Alton Towers? I've spent great time over there. It rocks :)</td></tr>
+            <tr><td>[12:16] &lt Davbo&gt I quite like Disney Land :)</td></tr>
+            <tr><td>[12:16] &lt Davbo&gt I've only been the France once</td></tr>
+            <tr><td>[12:16] &lt Lawouach_&gt Anyway both countries have their downsides.</td></tr>
+            <tr><td>[12:16] &lt vmlemon_&gt "Theme parks?!? In England?!?! I thought they only had old people who drink tea and knit, and farmers in their 60's, and probably supermarkets" ;)</td></tr>
+            <tr><td>[12:17] *** vmlemon_ ducks...</td></tr>
+            <tr><td>[12:18] *** Lawouach_ shoots the duck</td></tr>
+            <tr><td>[12:19] &lt vmlemon_&gt Quack, bubble... splash!</td></tr>
+            <tr><td>[12:20] &lt Davbo&gt I have my pictures of the Eiffel tower and Champs-Elyses (forgive my spelling) on the wall next to me :-)</td></tr>
+            <tr><td>[12:20] &lt vmlemon_&gt Bye-bye Birdie</td></tr>
+            <tr><td>[12:20] &lt vmlemon_&gt At least you didn't spell it phonetically, as some people have done... ("Shonz Eleesays"?)</td></tr>
+            <tr><td>[12:21] &lt Davbo&gt hehe</td></tr>
+            <tr><td>[12:22] &lt Davbo&gt One big horrific one-way system</td></tr>
+            <tr><td>[12:22] &lt Davbo&gt I'd hate to drive in Paris</td></tr>
+            <tr><td>[12:22] &lt Lawouach_&gt I did.</td></tr>
+            <tr><td>[12:22] &lt Lawouach_&gt Once.</td></tr>
+            <tr><td>[12:23] &lt Lawouach_&gt That was... hmmm... not fun.</td></tr>
+            <tr><td>[12:23] &lt Lawouach_&gt London is rather country side next to Paris IMO</td></tr>
+            <tr><td>[12:23] &lt Davbo&gt Depends where in London</td></tr>
+            <tr><td>[12:24] &lt Lawouach_&gt I suppose :)</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt When I lived in Stoke Newington I had to go accross North London to reach Uxbridge</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt 2 hours each way by car</td></tr>
+            <tr><td>[12:26] &lt Lawouach_&gt It was not fun either.</td></tr>
+            <tr><td>[12:26] &lt Davbo&gt ooo I almost moved to Uxbridge</td></tr>
+            <tr><td>[12:27] &lt Lawouach_&gt That's why I moved.</td></tr>
+            <tr><td>[12:27] &lt Lawouach_&gt Uxbridge is rather dead :)</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt I applied to Brunel university</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt which is there</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt I think.</td></tr>
+            <tr><td>[12:27] &lt Lawouach_&gt But it has the advantage of being really close of the M25, M4 and M3</td></tr>
+            <tr><td>[12:27] &lt Lawouach_&gt Meaning you can escape :)</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt lol</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt Yeah I didn't really like it</td></tr>
+            <tr><td>[12:27] &lt Davbo&gt I much prefer Sheffield</td></tr>
+            <tr><td>[12:28] &lt Davbo&gt I'm completely biased but Sheffield is by far my favourite city of all the ones i've visited.</td></tr>
+            <tr><td>[12:29] &lt Lawouach_&gt Never been there</td></tr>
+            <tr><td>[12:35] &lt vmlemon_&gt Ugh, I've just heard about the fuel tax nightmare here</td></tr>
+            <tr><td>[12:36] &lt vmlemon_&gt Way to go Gordon, you've upset a load of truckers and caused motorway blockades</td></tr>
+            <tr><td>[12:36] &lt vmlemon_&gt not to mention the backlash from your own side</td></tr>
+            <tr><td>[12:37] *** Davbo sings - "Gordon Brown, texture like sun..."</td></tr>
+            <tr><td>[12:38] &lt vmlemon_&gt Haha</td></tr>
+            <tr><td>[13:06] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[13:11] &lt vmlemon_&gt Ugh, Firefox keeps SEGFAULTing whilst trying to render a certain page</td></tr>
+            <tr><td>[13:16] *** Davb1 has joined #kamaelia</td></tr>
+            <tr><td>[13:39] *** Davb1 is now known as Davbo</td></tr>
+            <tr><td>[14:35] *** j_baker-away is now known as j_baker</td></tr>
+            <tr><td>[14:37] &lt j_baker&gt Morning and/or afternoon to everyone</td></tr>
+            <tr><td>[14:39] &lt Lawouach_&gt hi j_baker</td></tr>
+            <tr><td>[14:39] &lt vmlemon_&gt Hi</td></tr>
+            <tr><td>[15:12] &lt Davbo&gt Anyone know a good plugin to stop spam on WordPress?</td></tr>
+            <tr><td>[15:12] Reply: Hm?</td></tr>
+            <tr><td>[15:21] &lt j_baker&gt Askimet, Davbo</td></tr>
+            <tr><td>[15:21] &lt j_baker&gt It should be included with it.</td></tr>
+            <tr><td>[15:23] &lt Davbo&gt oh i see it</td></tr>
+            <tr><td>[15:23] &lt Davbo&gt thanks j_baker</td></tr>
+            <tr><td>[15:48] *** j_baker-laptop has joined #kamaelia</td></tr>
+            <tr><td>[16:03] &lt j_baker-laptop&gt Why does the mac version of subversion suck so much?</td></tr>
+            <tr><td>[16:06] &lt vmlemon_&gt "It's by design" ;)</td></tr>
+            <tr><td>[16:07] &lt j_baker-laptop&gt To be fair, git is even worse</td></tr>
+            <tr><td>[16:25] *** Davbo has found a very interesting bug</td></tr>
+            <tr><td>[16:26] &lt Davbo&gt When passing "clear" through the ProcessGraphline only the first letter "c" actually reaches the destination inbox, the rest is seemingly discarded</td></tr>
+            <tr><td>[16:26] &lt Davbo&gt I wonder if MS is aware of that</td></tr>
+            <tr><td>[16:27] &lt Davbo&gt humm</td></tr>
+            <tr><td>[16:31] &lt Davbo&gt back later</td></tr>
+            <tr><td>[16:41] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[16:41] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[16:51] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[16:55] &lt j_baker-laptop&gt Does anybody know an easy way to checkout all of the branches in the branches directory in SVN except for one?</td></tr>
+            <tr><td>[16:57] &lt zaheerm&gt checkout the branches dir, then rm -rf the one you don't want :)</td></tr>
+            <tr><td>[16:57] &lt mhrd&gt not sure - you could try using the -N (non-recursion) flag on the root, then running svn update/checkout on each of the branches except the one you don't want</td></tr>
+            <tr><td>[16:57] &lt mhrd&gt (not tried that though)</td></tr>
+            <tr><td>[16:58] &lt j_baker-laptop&gt Well, there's one particular branch that's causing me problems and it won't install on my macbook, zaheerm.</td></tr>
+            <tr><td>[16:58] &lt j_baker-laptop&gt I was just going to try and skip it and see if the rest of them work.</td></tr>
+            <tr><td>[17:23] &lt mhrd&gt if you don't already know, you can browse the repository online if you need to get a list of what branches there are: http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/branches/</td></tr>
+            <tr><td>[17:23] &lt mhrd&gt the problem you're experiencing is a lack of a case sensitive filesystem on your mac :)</td></tr>
+            <tr><td>[17:23] &lt mhrd&gt (see email to the list)</td></tr>
+            <tr><td>[17:26] &lt j_baker-laptop&gt I see. I hadn't thought of that.</td></tr>
+            <tr><td>[17:27] &lt j_baker-laptop&gt In the meantime I just checked out the branch I needed in a separate repository.</td></tr>
+            <tr><td>[17:28] &lt mhrd&gt cool</td></tr>
+            <tr><td>[17:39] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[17:57] &lt j_baker-laptop&gt mhrd - my understanding of the threadedcomponent is that if it creates another component, that component runs in the same thread?</td></tr>
+            <tr><td>[17:57] &lt j_baker-laptop&gt Is that correct?</td></tr>
+            <tr><td>[17:58] *** mhrd thinks for a sec</td></tr>
+            <tr><td>[17:58] &lt mhrd&gt no it doesn't</td></tr>
+            <tr><td>[17:59] &lt j_baker-laptop&gt Really? What I noticed is that if I create a component from within a threadedcomponent, it seems to die off at the same time as the threaded component.</td></tr>
+            <tr><td>[17:59] &lt mhrd&gt threadedcomponent doesn't create a whole new environment for the thread (its own scheduler, etc...) - it simply puts a protective wrapping between the thread and teh rest of teh system</td></tr>
+            <tr><td>[17:59] &lt mhrd&gt oh?</td></tr>
+            <tr><td>[18:00] &lt mhrd&gt can you commit an example that demos this?</td></tr>
+            <tr><td>[18:00] &lt j_baker-laptop&gt But when I create it somewhere else and pass it to the threadedcomponent as an __init__ argument, it doesn't do that.</td></tr>
+            <tr><td>[18:00] &lt j_baker-laptop&gt I believe I can.</td></tr>
+            <tr><td>[18:12] *** mhrd heading home now. online later maybe :)</td></tr>
+            <tr><td>[18:13] *** mhrd is now known as mhrd-afk</td></tr>
+            <tr><td>[18:46] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[19:25] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[20:02] *** mhrd-home has joined #kamaelia</td></tr>
+            <tr><td>[20:05] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:16] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[21:38] &lt mhrd-home&gt j_baker: see my reply on the list. short answer is "I don't know ... I need a simpler example to look at!" :-)</td></tr>
+            <tr><td>[21:38] &lt vmlemon_&gt Hmm, slightly off-topic, but analogue TV here is UHF?</td></tr>
+            <tr><td>[21:39] &lt mhrd-home&gt here = UK? yes</td></tr>
+            <tr><td>[21:39] &lt vmlemon_&gt OK</td></tr>
+            <tr><td>[21:39] &lt j_baker-laptop&gt Sorry, I should have done that sooner, mhrd. :)</td></tr>
+            <tr><td>[21:39] &lt mhrd-home&gt heh :)</td></tr>
+            <tr><td>[21:39] &lt j_baker-laptop&gt I'll see if I can get you a better sample</td></tr>
+            <tr><td>[21:39] &lt j_baker-laptop&gt On the upside, I have MoinMoin working in the server. :)</td></tr>
+            <tr><td>[21:40] &lt mhrd-home&gt either something simpler, or a really detailed pedantic set of "type this, expect this", "I think this bit should be doing this" yada yada :)</td></tr>
+            <tr><td>[21:40] &lt mhrd-home&gt nice :)</td></tr>
+            <tr><td>[22:31] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[22:46] *** vmlemon__ has joined #kamaelia</td></tr>
+            <tr><td>[22:48] *** vmlemon__ is now known as vmlemon_</td></tr>
+            <tr><td>[23:45] *** mhrd-home has parted #kamaelia</td></tr>
+            <tr><td>[23:47] *** bcarlyon|ubuntu_ has joined #kamaelia</td></tr>
+            <tr><td>[23:52] *** bcarlyon|laptop has joined #kamaelia</td></tr>
+            <tr><td>[23:53] *** Davbo has posted his strange bug to the ML and is off to ebd</td></tr>
+            <tr><td>[23:54] &lt Davbo&gt s/ebd/bed</td></tr>
+            <tr><td>[23:54] &lt Davbo&gt Night all</td></tr>
+            <tr><td>[23:54] &lt bcarlyon|laptop&gt night</td></tr>
+            <tr><td>[23:54] &lt j_baker-laptop&gt night</td></tr>

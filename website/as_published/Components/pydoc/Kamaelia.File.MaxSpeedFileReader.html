@@ -1,0 +1,232 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.File.MaxSpeedFileReader </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.File.MaxSpeedFileReader</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.html">File</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.MaxSpeedFileReader.html">MaxSpeedFileReader</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+<li><strong>component <a class="reference" href="/Components/pydoc/Kamaelia.File.MaxSpeedFileReader.MaxSpeedFileReader.html">MaxSpeedFileReader</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#713">Reading a file as fast as possible</a><ul>
+<li><a class="reference" href="#714">Example Usage</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#715">More details</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="713">Reading a file as fast as possible</h1>
+<p>MaxSpeedFileReader reads a file in bytes mode as fast as it can; limited only
+by any size limit on the inbox it is sending the data to.</p>
+<p>This component is therefore useful for building systems that are self rate
+limiting - systems that are just trying to process data as fast as they can and
+are limited by the speed of the slowest part of the chain.</p>
+<div class="section">
+<h2 id="714"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<p>Read &quot;myfile&quot; in in chunks of 1024 bytes. The rate is limited by the rate at
+which the consumer component can consume the chunks, since its inbox has a size
+limit of 5 items of data:</p>
+<pre class="literal-block">
+consumer = Consumer()
+consumer.inboxes[&quot;inbox&quot;].setSize(5)
+
+Pipeline( MaxSpeedFileReader(&quot;myfile&quot;, chunksize=1024),
+          consumer,
+        ).run()
+</pre>
+</div>
+<div class="section">
+<h2 id="715"><a id="more-details" name="more-details">More details</a></h2>
+<p>Specify a filename and chunksize and MaxSpeedFileReader will read bytes from
+the file in the chunksize you specified and send them out of its &quot;outbox&quot;
+outbox.</p>
+<p>If the destination inbox it is sending chunks to is size limited, then
+MaxSpeedFileReader will pause until space becomes available. This is how the
+speed at which the file is ingested is regulated - by the rate at which it is
+consumed.</p>
+<p>When the whole file has been read, this component will terminate and send a
+producerFinished() message out of its &quot;signal&quot; outbox.</p>
+<p>If a producerFinished message is received on the &quot;control&quot; inbox, this component
+will complete sending any data that may be waiting. It will then send the
+producerFinished message on out of its &quot;signal&quot; outbox and terminate.</p>
+<p>If a shutdownMicroprocess message is received on the &quot;control&quot; inbox, this
+component will immediately send it on out of its &quot;signal&quot; outbox and immediately
+terminate. It will not complete sending on any pending data.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.html">File</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.MaxSpeedFileReader.html">MaxSpeedFileReader</a>.<a class="reference" href="/Components/pydoc/Kamaelia.File.MaxSpeedFileReader.MaxSpeedFileReader.html">MaxSpeedFileReader</a></h1>
+<div class="section">
+<h2 id="symbol-MaxSpeedFileReader">class MaxSpeedFileReader(<a class="reference" href="/Docs/Axon/Axon.Component.component.html">Axon.Component.component</a>)</h2>
+<p>MaxSpeedFileReader(filename[,chunksize]) -&gt; new MaxSpeedFileReader component.</p>
+<p>Reads the contents of a file in bytes mode; sending it out as fast as it can
+in chunks from the &quot;outbox&quot; outbox. The rate of reading is only limited by
+any size limit of the destination inbox to which the data is being sent.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>filename   -- The filename of the file to read</li>
+<li>chunksize  -- Optional. The maximum number of bytes in each chunk of data read from the file and sent out of the &quot;outbox&quot; outbox (default=32768)</li>
+</ul>
+<div class="section">
+<h3><a id="symbol-MaxSpeedFileReader.Inboxes" name="symbol-MaxSpeedFileReader.Inboxes">Inboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3><a id="symbol-MaxSpeedFileReader.Outboxes" name="symbol-MaxSpeedFileReader.Outboxes">Outboxes</a></h3>
+<ul class="simple">
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="container">
+<div style="float: right; border: solid;" class="twoC"> <p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div></div>
+<div class="section">
+<h4><a id="symbol-MaxSpeedFileReader.__init__" name="symbol-MaxSpeedFileReader.__init__">__init__(self, filename[, chunksize])</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MaxSpeedFileReader.canStop" name="symbol-MaxSpeedFileReader.canStop">canStop(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MaxSpeedFileReader.handleControl" name="symbol-MaxSpeedFileReader.handleControl">handleControl(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MaxSpeedFileReader.main" name="symbol-MaxSpeedFileReader.main">main(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MaxSpeedFileReader.mustStop" name="symbol-MaxSpeedFileReader.mustStop">mustStop(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-MaxSpeedFileReader.waitSend" name="symbol-MaxSpeedFileReader.waitSend">waitSend(self, data, boxname)</a></h4>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

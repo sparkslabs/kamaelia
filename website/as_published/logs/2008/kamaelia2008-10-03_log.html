@@ -1,0 +1,112 @@
+<html><body><table>
+            <tr><td>[07:47] *** mhrd has joined #kamaelia</td></tr>
+            <tr><td>[07:54] *** Uraeus has joined #kamaelia</td></tr>
+            <tr><td>[08:04] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[09:22] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[09:34] *** acrimo has joined #kamaelia</td></tr>
+            <tr><td>[11:11] *** vmlemon_ has joined #kamaelia</td></tr>
+            <tr><td>[12:19] *** Lawouach_ is reading last Kamaelia's messages on the list and notice that some of my code is reused in other projects</td></tr>
+            <tr><td>[12:19] &lt Lawouach_&gt That's cool :)</td></tr>
+            <tr><td>[12:43] &lt MS-&gt Indeed :)</td></tr>
+            <tr><td>[12:43] &lt MS-&gt That's what I thought :)</td></tr>
+            <tr><td>[12:46] &lt MS-&gt There's an ensuing discussion on the pyconuk list btw - which is hosted on python.org</td></tr>
+            <tr><td>[12:47] &lt MS-&gt Someone has said "the API isn't pythonic enough", which is a fair criticism, and that's started a mini-discussion as to what would be nicer</td></tr>
+            <tr><td>[12:47] &lt MS-&gt That's led to this:</td></tr>
+            <tr><td>[12:47] &lt MS-&gt &gt for data in self.boxes.inbox:</td></tr>
+            <tr><td>[12:47] &lt MS-&gt &gt self.boxes.outbox.send(self.transform(data))</td></tr>
+            <tr><td>[12:48] &lt MS-&gt which is pretty equivalent to what we have now, but cleaner</td></tr>
+            <tr><td>[12:48] &lt MS-&gt (I mentioned my idea of Axon 2.0 being able to have nicer syntactic sugar)</td></tr>
+            <tr><td>[13:01] &lt Lawouach_&gt yeah I saw that</td></tr>
+            <tr><td>[13:01] &lt Lawouach_&gt I like that API better for sure</td></tr>
+            <tr><td>[13:02] &lt Lawouach_&gt I'm not convinced avout using the &lt &lt  and &gt&gt C++ idioms :)</td></tr>
+            <tr><td>[13:02] &lt MS-&gt Fair enough. I like the way it looks, but I can also see people wanting to run a mile :)</td></tr>
+            <tr><td>[13:05] &lt Lawouach_&gt well some might argue that making things more readable by using C++ syntax is kind of taking the piss :)</td></tr>
+            <tr><td>[13:06] &lt Lawouach_&gt anyway, all good stuff</td></tr>
+            <tr><td>[13:06] &lt MS-&gt heh, I suppose - I hadn't thought of it that way</td></tr>
+            <tr><td>[13:52] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[13:59] &lt mhrd&gt http://itmanagement.earthweb.com/osrc/article.php/3775446/Bruce+Perens:+A+Big+Change+for+Open+Source.htm</td></tr>
+            <tr><td>[15:01] &lt aa_&gt hi everyone, can kamaelia messages be anything?</td></tr>
+            <tr><td>[15:02] &lt mhrd&gt any python object/datatype - yes</td></tr>
+            <tr><td>[15:02] &lt aa_&gt mhrd: how about non-python objects</td></tr>
+            <tr><td>[15:02] &lt aa_&gt I mean C bound objects</td></tr>
+            <tr><td>[15:03] &lt aa_&gt eg a gtk Window</td></tr>
+            <tr><td>[15:03] &lt aa_&gt (specifically)</td></tr>
+            <tr><td>[15:04] &lt mhrd&gt the current instantiation of Kamaelia is in python, so it would have to be representable in python.</td></tr>
+            <tr><td>[15:04] &lt mhrd&gt If you're using gtk from python, then the bindings will already be wrapping the C entity as a python object - so in that circumstance - the answer is still yes :-)</td></tr>
+            <tr><td>[15:05] &lt aa_&gt mhrd: ok that's great</td></tr>
+            <tr><td>[15:05] &lt aa_&gt mhrd: how does it pass them?</td></tr>
+            <tr><td>[15:05] &lt aa_&gt inter processes?</td></tr>
+            <tr><td>[15:06] &lt aa_&gt do the things have to be pickleable or antyhing?</td></tr>
+            <tr><td>[15:06] &lt mhrd&gt *that* I'm not so certain about. Internally within a process the data type does not matter. Inter-process or via network connections, the answer may subtly morph into a 'no' ... or a 'yes, if you marshall/pickle it yourself'</td></tr>
+            <tr><td>[15:07] &lt aa_&gt well, these things are pretty unpickleable</td></tr>
+            <tr><td>[15:07] &lt mhrd&gt I'm not very familiar with the interprocess stuff - MS- or others might be able to give a better answer</td></tr>
+            <tr><td>[15:09] &lt aa_&gt mhrd: ok, thanks</td></tr>
+            <tr><td>[15:11] &lt mhrd&gt np</td></tr>
+            <tr><td>[15:30] &lt MS-&gt Inside a single process anything can be a message. For anything passed using ProcessPipeline or ProcessGraphline, it has to be pickleable</td></tr>
+            <tr><td>[15:31] &lt MS-&gt Process* uses the Paul Boddie's pprocess library, which creates channels between processes using os.pipe's and pickles things sent between them</td></tr>
+            <tr><td>[15:32] &lt MS-&gt But if you're just using normal Axon.Component.component or Axon.ThreadedComponent.threadedcomponent then anything goes</td></tr>
+            <tr><td>[15:32] &lt MS-&gt even components...</td></tr>
+            <tr><td>[15:33] &lt MS-&gt You could pass a gtk Window between two components inside the same thread or process</td></tr>
+            <tr><td>[15:33] &lt MS-&gt But probably not across a process boundary.</td></tr>
+            <tr><td>[18:03] *** ian_brasil has joined #kamaelia</td></tr>
+            <tr><td>[20:00] *** Davbo has joined #kamaelia</td></tr>
+            <tr><td>[20:01] &lt aa_&gt MS-: sorry missed your reply, and thanks</td></tr>
+            <tr><td>[20:03] &lt MS-&gt np :)</td></tr>
+            <tr><td>[20:04] &lt aa_&gt MS-: I was slightly hoping that I could do really rich and flexible UI with this thing</td></tr>
+            <tr><td>[20:04] &lt aa_&gt without the "higher level components"</td></tr>
+            <tr><td>[20:06] &lt MS-&gt You may well be able to end up doing those things, but with different libraries we're still at relatively early stages since alot depends on "has someone does X,Y and Z with this".</td></tr>
+            <tr><td>[20:06] &lt MS-&gt Some pygame and OpenGL stuff for example is much further along. Networky stuff much further along, etc</td></tr>
+            <tr><td>[20:07] &lt aa_&gt MS-: well, I am sure gtk will catch up as soon as I get my head around it</td></tr>
+            <tr><td>[20:07] &lt MS-&gt Some of these things also depend on once you have something realising the consequences of it</td></tr>
+            <tr><td>[20:07] &lt Davbo&gt Evenin' all</td></tr>
+            <tr><td>[20:07] &lt MS-&gt For example, with pygame when we added buttons etc, I didn't even think of the idea that widgets overlapping</td></tr>
+            <tr><td>[20:07] &lt MS-&gt Davbo: evening</td></tr>
+            <tr><td>[20:08] &lt MS-&gt but when we realised they could, adding transparency in, and allowing UIs to overlay each other (fade in and out even) sprang to mind</td></tr>
+            <tr><td>[20:08] &lt MS-&gt making things like scribbling on video or scribbling over a text ticker fast</td></tr>
+            <tr><td>[20:09] &lt MS-&gt I'm sure /similar/ sorts of advantages will crop up with other UI toolkits</td></tr>
+            <tr><td>[20:14] &lt aa_&gt evening Davbo</td></tr>
+            <tr><td>[20:17] &lt aa_&gt well, can I think out loud?</td></tr>
+            <tr><td>[20:17] &lt aa_&gt I am imagining some kind of view server which lives in its own process</td></tr>
+            <tr><td>[20:18] &lt aa_&gt (since gtk threading is a nightmare)</td></tr>
+            <tr><td>[20:18] &lt aa_&gt and it certainly won't run itself in a non-main thread</td></tr>
+            <tr><td>[20:18] &lt aa_&gt and ui cannot be updated from a non-main thread without custom locking</td></tr>
+            <tr><td>[20:37] &lt aa_&gt MS-: where should http://www.kamaelia.org/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1113495151 be pointing? it says "For the moment, see this tutorial on how to go from non-component code to component code" but it is giving 404</td></tr>
+            <tr><td>[21:10] &lt Davbo&gt don't think that blog is alive yet</td></tr>
+            <tr><td>[21:11] &lt Davbo&gt due to the transition from sf.net to the new webserver afaik</td></tr>
+            <tr><td>[21:11] &lt Davbo&gt i might be wrong though</td></tr>
+            <tr><td>[21:11] &lt Davbo&gt unfortunately i don't have a copy of that tutorial either</td></tr>
+            <tr><td>[21:12] &lt Davbo&gt here you go aa_: http://web.archive.org/web/20080106145923/http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&nodeid=1113495151</td></tr>
+            <tr><td>[21:12] &lt aa_&gt Davbo: thanks a lot</td></tr>
+            <tr><td>[21:13] &lt Davbo&gt no problem, MS- has probably gone afk or something :-)</td></tr>
+            <tr><td>[21:16] &lt Davbo&gt also aa_: Thanks for pointing out PIDA</td></tr>
+            <tr><td>[21:23] &lt Davbo&gt still getting used to Vim but PIDA seems to offer everything i'd want from it</td></tr>
+            <tr><td>[21:23] &lt aa_&gt Davbo: great :) pida loves you, remember</td></tr>
+            <tr><td>[21:24] &lt aa_&gt Davbo: if you prefer a notepad-like editor in pida there is one</td></tr>
+            <tr><td>[21:24] &lt aa_&gt Davbo: and the development version (very pre alpha) has unbelievable code completion and python source outlining, and also a debugger</td></tr>
+            <tr><td>[21:24] &lt Davbo&gt awesome</td></tr>
+            <tr><td>[21:25] &lt aa_&gt yeah, like it will work out where an instance attribute is defined in a superclass, for example</td></tr>
+            <tr><td>[21:25] &lt aa_&gt and taske you to the file and line that says self.something = blah</td></tr>
+            <tr><td>[21:25] &lt Davbo&gt that'd be really useful</td></tr>
+            <tr><td>[21:26] &lt aa_&gt yeah, I can't take the credit though, the code comes from rope, the refactoring lib</td></tr>
+            <tr><td>[21:26] &lt Davbo&gt do you contribute to PIDA? you seem to know if very well</td></tr>
+            <tr><td>[21:26] &lt aa_&gt Davbo: oh, yes, I wrote PIDA :)</td></tr>
+            <tr><td>[21:27] &lt Davbo&gt Ah! I see lol</td></tr>
+            <tr><td>[21:27] &lt aa_&gt it's my baby</td></tr>
+            <tr><td>[21:27] &lt Davbo&gt that's awesome</td></tr>
+            <tr><td>[21:27] &lt aa_&gt and it taught me "If I find something useful, then n+1 people will find it useful"</td></tr>
+            <tr><td>[21:27] &lt aa_&gt because *everyone* told me I was insane</td></tr>
+            <tr><td>[21:27] &lt aa_&gt 1. yet another IDE</td></tr>
+            <tr><td>[21:27] &lt aa_&gt 2. embedding Vim????</td></tr>
+            <tr><td>[21:28] &lt aa_&gt 3. etc etc etc</td></tr>
+            <tr><td>[21:30] &lt Davbo&gt it's very tough for me to just pick up and use Vim really, it's much better with PIDA wrapping it</td></tr>
+            <tr><td>[21:30] &lt aa_&gt best of both worlds (imo)</td></tr>
+            <tr><td>[21:30] &lt Davbo&gt i think a lot of people which have spent there whole career editing in a console don't realise that</td></tr>
+            <tr><td>[21:30] &lt aa_&gt Davbo: if you care, this is the new python code outliner: http://lh4.ggpht.com/aafshar/SIo2kHLVoKI/AAAAAAAAAhw/gRHlxX8rcBY/ropebrowser.png</td></tr>
+            <tr><td>[21:31] &lt Davbo&gt ah that's great seeing the docstrings</td></tr>
+            <tr><td>[21:31] &lt aa_&gt eg Python.window is actually a *property* defined in a superclass</td></tr>
+            <tr><td>[21:32] &lt aa_&gt anyway, sorry I get carried away, like I say its my baby, let us know of any bugs and things</td></tr>
+            <tr><td>[21:34] &lt Davbo&gt PIDA should be popular with a lot of new python programmers, Vim basics can be learnt in 5 minutes. Just things like a little button for copy/pasting from terminal makes bash easier to swallow for novices</td></tr>
+            <tr><td>[21:35] &lt aa_&gt it's really hard to make people change their dev environment</td></tr>
+            <tr><td>[21:35] &lt aa_&gt so I try not to bother</td></tr>
+            <tr><td>[21:37] &lt Davbo&gt Yeah that's true</td></tr>
+            <tr><td>[21:41] &lt Davbo&gt still trying to use a macro in Vim, can't think of a use yet though</td></tr>

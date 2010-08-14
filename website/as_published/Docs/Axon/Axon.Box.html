@@ -1,0 +1,598 @@
+<html>
+<head>
+<title> Docs/Axon/Axon.Box </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Docs/Axon/Axon.Box">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                <html>
+<head>
+<title>Kamaelia docs : Axon.Box</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<div class="section">
+<h2><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Box.html">Box</a></h2>
+</div>
+</div>
+<div class="section">
+<h1>Axon postboxes - inboxes and outboxes</h1>
+<div class="container">
+<ul class="simple">
+<li><strong><a class="reference" href="/Docs/Axon/Axon.Box.makeInbox.html">makeInbox</a></strong>(notify[, size])</li>
+<li><strong><a class="reference" href="/Docs/Axon/Axon.Box.makeOutbox.html">makeOutbox</a></strong>(notify)</li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Box.nullsink.html">nullsink</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Box.postbox.html">postbox</a></strong></li>
+<li><strong>class <a class="reference" href="/Docs/Axon/Axon.Box.realsink.html">realsink</a></strong></li>
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#35">Example Usage</a><ul>
+<li><a class="reference" href="#36">Creation</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#37">Adding/Removing Linkages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#38">More detail</a><ul>
+<li><a class="reference" href="#39">Inboxes</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#40">Outboxes</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#41">Linking them together</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#42">How is it implemented?</a><ul>
+<li><a class="reference" href="#43">Notification that a message has been delivered</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#44">Notification that a message has been collected</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#45">Notifications - performance</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<p>The objects used to implement inboxes and outboxes. They store and handle
+linkages and delivery of messages from outbox to inbox.</p>
+<ul class="simple">
+<li>Components create postboxes and use them as their inboxes and outboxes.</li>
+</ul>
+<p><em>This is an Axon internal. If you are writing components you do not need to
+understand this as you will normally not use it directly.</em></p>
+<p>Developers wishing to use Axon in other ways or understand its implementation
+shoudl read on with interest!</p>
+<div class="section">
+<h2 id="35"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<div class="section">
+<h3 id="36"><a id="creation" name="creation">Creation</a></h3>
+<p>Creating an outbox:</p>
+<pre class="literal-block">
+def outboxNotify():
+    print &quot;A message was collected from an inbox that this outbox is linked to.&quot;
+
+myOutbox = makeOutbox(outboxNotify)
+</pre>
+<p>Creating an inbox:</p>
+<pre class="literal-block">
+def inboxNotify():
+    print &quot;A new message has arrived at this inbox.&quot;
+
+myInbox = makeInbox(inboxNotify)
+</pre>
+<p>Creating an inbox that is limited to holding 10 items:</p>
+<pre class="literal-block">
+mySizeLimitedInbox = makeInbox(inboxNotify, size=10)
+</pre>
+<p>Alternative syntax to do the same:</p>
+<pre class="literal-block">
+mySizeLimitedInbox = makeInbox(inboxNotify)
+mySizeLimitedInbox.setSize(10)
+</pre>
+</div>
+<div class="section">
+<h3 id="37"><a id="adding-removing-linkages" name="adding-removing-linkages">Adding/Removing Linkages</a></h3>
+<p>Create outboxes A and B, and inboxes C and D, then linking them in a chain
+A to B to C to D:</p>
+<pre class="literal-block">
+boxA = makeOutbox( &lt;notify callback&gt; )
+boxB = makeOutbox( &lt;notify callback&gt; )
+
+boxC = makeInbox( &lt;notify callback&gt; )
+boxD = makeInbox( &lt;notify callback&gt; )
+
+boxB.addsource(boxA)
+boxC.addsource(boxB)
+boxD.addsource(boxC)
+</pre>
+<p>We can also remove one of those linkages:</p>
+<pre class="literal-block">
+boxC.removeSource(boxB)
+</pre>
+</div>
+</div>
+<div class="section">
+<h2 id="38"><a id="more-detail" name="more-detail">More detail</a></h2>
+<p>Call makeInbox() or makeOutbox() to make an inbox or outbox respectively.</p>
+<p>Both inboxes and outboxes are instances of the postbox class. postboxes provide
+a subset of the python list interface to let you add and remove items from it:</p>
+<ul class="simple">
+<li><strong>postbox.append(data)</strong> - ie. send a message</li>
+<li><strong>postbox.pop(data)</strong> - ie. collect a message</li>
+<li><strong>postbox.__len__()</strong> - ie. len(myPostbox)</li>
+</ul>
+<div class="section">
+<h3 id="39"><a id="inboxes" name="inboxes">Inboxes</a></h3>
+<p>An inbox is a postbox with storage. Calling append() will put a message into
+that inbox. Calling len() will report the number of items in the inbox, and
+pop() will enable you to take items out.</p>
+<p>Inboxes can be size limited. If it becomes full then trying to append() will
+raise an <a class="reference" href="/Docs/Axon/Axon.AxonExceptions.noSpaceInBox.html">Axon.AxonExceptions.noSpaceInBox</a> exception.</p>
+</div>
+<div class="section">
+<h3 id="40"><a id="outboxes" name="outboxes">Outboxes</a></h3>
+<p>An outbox is a postbox with no storage. Calling append() will silently discard
+the message. len() will report the box as containing zero items; and calling
+pop() will, as expected, raise an IndexError exception.</p>
+</div>
+<div class="section">
+<h3 id="41"><a id="linking-them-together" name="linking-them-together">Linking them together</a></h3>
+<p>Boxes can be wired together, so that posting a message to one actually results
+in the message appearing in another. Axon does this when you make a link between
+postboxes on different components. Links have direction. Messages flow only one
+way along a link - from source to target/destination/sink.</p>
+<p>Boxes can be wired up in a many-to-one tree structure - where many sources feed
+their messages, along one or more hops through inbetween postboxes, towards a
+single destination:</p>
+<ul class="simple">
+<li>postbox.addsource(source_postbox)</li>
+<li>postbox.removeSource(source_postbox)</li>
+</ul>
+<p>Suppose you wire up boxes to form a tree:</p>
+<pre class="literal-block">
++---+       +---+
+| A | ----&gt; | B | --,
++---+       +---+   '--&gt; +---+       +---+       +---+
+                         | D | ----&gt; | E | ----&gt; | F |
+            +---+   ,--&gt; +---+       +---+       +---+
+            | C | --'
+            +---+
+</pre>
+<p>Sending a message using the append() method from A,B,C,D or E will result in
+the message being sent to F. Make sure F is an outbox, otherwise the message
+will be lost!</p>
+<p>When a box is wired to another, it diverts calls to append() to the final
+destination instead of its own local storage; so A,B,C,D and E can be inboxes
+or outboxes - it doesn't matter.</p>
+<p>You are not allowed to create links going from one source to two or more
+destinations (one-to-many arrangements). If you try, an <a class="reference" href="/Docs/Axon/Axon.AxonExceptions.BoxAlreadyLinkedToDestination.html">Axon.AxonExceptions.BoxAlreadyLinkedToDestination</a>
+exception will be raised.</p>
+</div>
+</div>
+<div class="section">
+<h2 id="42"><a id="how-is-it-implemented" name="how-is-it-implemented">How is it implemented?</a></h2>
+<p>Calling makeInbox() or makeOutbox() creates an instance of the postbox class.
+A postbox behaves like a simple piece of storage, accessed using the append(),
+pop() and len() methods. However, if the postbox is linked to others,
+then the storage that is actually accessed belongs to the target postbox (the
+final destination in the chain).</p>
+<p>This storage is therefore actually a separate object, held inside a postbox.
+When postboxes are wired together, they all reconfigure themselves so that calls
+to append(), len() and pop() actually access the same storage in the target
+postbox. In the postbox class, where the messages actually get sent to is
+referred to as the sink.</p>
+<p>For inboxes, this is an instance of the realsink class (that actually stores
+stuff). But for outboxes, it is an instance of the nullsink class (that just
+discards stuff given to it, and always appears empty). This is so that messages
+that end up at outboxes don't pile up, uncollected.</p>
+<p>For example, suppose we link three postboxes in a chain:</p>
+<pre class="literal-block">
++-------------------+      +-------------------+      +----------------------+
+|     postbox A     | ---&gt; |     postbox B     | ---&gt; |      postbox C       |
+|                   |      |                   |      |                      |
+| A.target = C      |      | B.target = C      |      | C.target = None      |
+| A.sink   = C.sink |      | B.sink   = C.sink |      | C.sink   = C.storage |
++-------------------+      +-------------------+      +----------------------+
+</pre>
+<p>The target of postboxes A and B is postbox C. The sinks used by all three is
+the storage beloinging to postbox C. Calls to append(), pop() and len() made to
+any of the three postboxes are all direected to the storage in postbox C.</p>
+<p>The links between postboxes are represented internally as a list of sources for
+each postbox. For example:</p>
+<pre class="literal-block">
++---+       +---+
+| A | ----&gt; | B | --,
++---+       +---+   '--&gt; +---+       +---+       +---+
+                         | D | ----&gt; | E | ----&gt; | F |
+            +---+   ,--&gt; +---+       +---+       +---+
+            | C | --'
+            +---+
+
+A.sources = []
+B.sources = [A]
+C.sources = []
+D.sources = [B,C]
+E.sources = [D]
+F.sources = [E]
+</pre>
+<p>Links are created an destroyed by calling addsource() or removeSource(). So
+for example, to wire up postbox D in the above example, the following calls were
+made:</p>
+<pre class="literal-block">
+D.addsource(B)
+D.addsource(C)
+</pre>
+<p>Internally, addsource() and removeSource() calls _retarget() which recurses back
+up the chain of linkages, updating any other boxes that feed into the source,
+to make sure they all now point at the new target too.</p>
+<p>addsource() also delivers any messages waiting in the source's storage to the
+new destination's storage. This ensures that messages do not get lost halfway
+along a chain of linkages when the chain is extended.</p>
+<p>Because all postboxes in a chain end up redirecting calls to the target
+postbox's storage; a separate self.local_len() method is provided to allow a
+component to find out whether there is any items waiting in its own postbox.
+A component's inbox might not be the final destination in a chain, so it is
+important that if the component attempts to examine its own inbox for new items
+it should not inadvertently query the final destination instead.</p>
+<div class="section">
+<h3 id="43"><a id="notification-that-a-message-has-been-delivered" name="notification-that-a-message-has-been-delivered">Notification that a message has been delivered</a></h3>
+<p>When creating an inbox, you provide a notification callback that will be called
+whenever a new message arrives at that box. Axon uses this to wake the component
+that owns that inbox.</p>
+<p>The realsink object keeps note of this callback, and calls it when a new message
+is delivered to it (ie. its append() method is called).</p>
+</div>
+<div class="section">
+<h3 id="44"><a id="notification-that-a-message-has-been-collected" name="notification-that-a-message-has-been-collected">Notification that a message has been collected</a></h3>
+<p>When a message is collected; some parties in the chain of linked boxes may wish
+to be notified. Axon uses this to wake owners of outboxes linked to the
+destination inbox from which the message has been collected. You therefore
+provide a notification callback when creating an outbox.</p>
+<p>The realsink object keeps a 'wakeOnPop' list of callbacks to call when its pop()
+method is called.</p>
+<p>When linkages are added or removed, the storage of all inboxes downstream of
+where the change has occurred must update their list of 'wakeOnPop' callbacks.
+Therefore addsource() or removeSource() also call _addNotifys() or
+_removeNotifys() respectively, which recurse down the chain of linkages towards
+the target, updating the list of callbacks as they go.</p>
+</div>
+<div class="section">
+<h3 id="45"><a id="notifications-performance" name="notifications-performance">Notifications - performance</a></h3>
+<p>All this climbing up and down of the chain of linkages to update lists of
+callbacks takes time - O(n) where n is the number of postboxes in the chain.</p>
+<p>Paying this cost upfront means that the overheads of actually delivering or
+collecting messages is substantially less because all the data is already there
+and up to date. In general, it is felt that messages are likely to be sent far
+more often than linkages are created and destroyed - which should justify this
+tradeoff.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Box.html">Box</a>.<a class="reference" href="/Docs/Axon/Axon.Box.makeInbox.html">makeInbox</a></h1>
+<div class="section">
+<h2><a id="symbol-makeInbox" name="symbol-makeInbox">makeInbox(notify[, size])</a></h2>
+<p>Returns a new postbox object suitable for use as an Axon inbox.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>notify  -- notify() will be called whenever a message arrives at this inbox.</li>
+<li>size    -- None, or a limit on the maxmimum number if items this inbox can hold (default=None)</li>
+</ul>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Box.html">Box</a>.<a class="reference" href="/Docs/Axon/Axon.Box.makeOutbox.html">makeOutbox</a></h1>
+<div class="section">
+<h2><a id="symbol-makeOutbox" name="symbol-makeOutbox">makeOutbox(notify)</a></h2>
+<p>Returns a new postbox object suitable for use a an Axon outbox.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>notify  -- notify() will be called whenever a message is collected from an inbox that this outbox delivers to.</li>
+</ul>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Box.html">Box</a>.<a class="reference" href="/Docs/Axon/Axon.Box.nullsink.html">nullsink</a></h1>
+<div class="section">
+<h2 id="symbol-nullsink">class nullsink(object)</h2>
+<div class="section">
+<p>nullsink() -&gt; new nullsink object</p>
+<p>A dummy piece of storage for postboxes, that behaves a bit like a list.</p>
+<p>Discards data given to it by calling append() and always reports that it
+contains no items.</p>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-nullsink.__init__" name="symbol-nullsink.__init__">__init__(self)</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-nullsink.__len__" name="symbol-nullsink.__len__">__len__(self)</a></h4>
+<p>Returns number of items in the list (always zero)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-nullsink.__repr__" name="symbol-nullsink.__repr__">__repr__(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-nullsink.append" name="symbol-nullsink.append">append(self, data)</a></h4>
+<p>Append item to the list - though actually it just gets discarded.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-nullsink.pop" name="symbol-nullsink.pop">pop(self, index)</a></h4>
+<p>Returns an item from the list (always raises IndexError</p>
+</div>
+<div class="section">
+<h4><a id="symbol-nullsink.setShowTransit" name="symbol-nullsink.setShowTransit">setShowTransit(self, showtransit, tag)</a></h4>
+<p>Set showTransit to True to cause debugging output whenever a message is
+delivered to this storage. The tag can be anything you want to identify
+this occurrence.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Box.html">Box</a>.<a class="reference" href="/Docs/Axon/Axon.Box.postbox.html">postbox</a></h1>
+<div class="section">
+<h2 id="symbol-postbox">class postbox(object)</h2>
+<div class="section">
+<p>postbox(storage[,notify]) -&gt; new postbox object.</p>
+<p>Creates a postbox, using the specified storage as default storage. Storage
+should have the interface of list objects.</p>
+<p>Also takes optional notify callback, that will be called whenever an item is
+taken out of a postbox further down the chain.</p>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-postbox.__init__" name="symbol-postbox.__init__">__init__(self, storage[, notify])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.__len__" name="symbol-postbox.__len__">__len__(self)</a></h4>
+<p>Returns number of items in the postbox</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.__repr__" name="symbol-postbox.__repr__">__repr__(self)</a></h4>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox._addnotifys" name="symbol-postbox._addnotifys">_addnotifys(self, newnotifys)</a></h4>
+<p>Updates the local storage's list of notification callbacks for when messages are
+taken out of inboxes. Then recurses this info to this postbox's target, so it can
+update too.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox._removenotifys" name="symbol-postbox._removenotifys">_removenotifys(self, oldnotifys)</a></h4>
+<p>Updates the local storage's list of notification callbacks for when messages are
+taken out of inboxes. Then recurses this info to this postbox's target, so it can
+update too.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox._retarget" name="symbol-postbox._retarget">_retarget(self[, newtarget])</a></h4>
+<p>retarget([newtarget]) aims requests at to this postbox at a different
+target.</p>
+<p>If newtarget is unspecified or None, target is default local storage.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.addsource" name="symbol-postbox.addsource">addsource(self, newsource)</a></h4>
+<p>addsource(newsource) registers newsource as a source and tells it to
+'retarget' at this postbox.</p>
+<p>Also finds out from the new source who wants to be notified when messages are taken
+out of postboxes, and updates records accordingly, and passes this info further down
+the chain of linkages.</p>
+<p>Raises <a class="reference" href="/Docs/Axon/Axon.AxonExceptions.BoxAlreadyLinkedToDestination.html">Axon.AxonExceptions.BoxAlreadyLinkedToDestination</a> if the newsource is already
+targetted at a destination. This is because Axon does not support one-to-many
+arrangements.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.getSize" name="symbol-postbox.getSize">getSize(self)</a></h4>
+<p>Gets current box size limit</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.getnotifys" name="symbol-postbox.getnotifys">getnotifys(self)</a></h4>
+<p>Returns list of all callbacks that should be made when messages are collected
+from a postbox using this one as a source.</p>
+<p>The list returned is effectively all callbacks this postbox would have to make
+<em>plus</em> the callback for the owner of this box (if there is one)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.isFull" name="symbol-postbox.isFull">isFull(self)</a></h4>
+<p>Returns True if the destination box is full (and has a size limit)</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.removesource" name="symbol-postbox.removesource">removesource(self, oldsource)</a></h4>
+<p>removesource(oldsource) deregisters oldsource as a source and tells it
+to 'retarget' at None (nothing).</p>
+<p>Also finds out from the old source who was being notified when messages are taken
+out of postboxes, and updates records accordingly, and passes this info further down
+the chain of linkages.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.setShowTransit" name="symbol-postbox.setShowTransit">setShowTransit(self[, showtransit][, tag])</a></h4>
+<p>Set showTransit to True to cause debugging output whenever a message is
+delivered to this postbox. The tag can be anything you want to identify
+this occurrence.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-postbox.setSize" name="symbol-postbox.setSize">setSize(self, size)</a></h4>
+<p>Set box size limit (use None for no limit)</p>
+<p>Behaviour is undefined (and not recommended!) if this call is made whilst
+there may be items in the postbox!</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+<h1><a class="reference" href="/Docs/Axon/Axon.html">Axon</a>.<a class="reference" href="/Docs/Axon/Axon.Box.html">Box</a>.<a class="reference" href="/Docs/Axon/Axon.Box.realsink.html">realsink</a></h1>
+<div class="section">
+<h2 id="symbol-realsink">class realsink(list)</h2>
+<div class="section">
+<p>realsink(notify[,size]) -&gt; new realsink object.</p>
+<p>A working piece of storage for postboxes, that behaves a bit like a list.</p>
+<p>Stores data given to it by calling append(), up to a limit after which
+<a class="reference" href="/Docs/Axon/Axon.AxonExceptions.noSpaceInBox.html">Axon.AxonExceptions.noSpaceInBox</a> exceptions are raised.</p>
+<p>Calls the 'notify' callback when append() is called.
+Calls any callbacks in the self.wakeOnPop list when pop() is called.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>notify  -- notify() is called whenever append() is called</li>
+<li>size    -- None, or the maximum number of items this storage can hold</li>
+</ul>
+</div>
+<div class="section">
+<h3>Methods defined here</h3>
+<div class="section">
+<h4><a id="symbol-realsink.__init__" name="symbol-realsink.__init__">__init__(self, notify[, size])</a></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature.</p>
+</div>
+<div class="section">
+<h4><a id="symbol-realsink.append" name="symbol-realsink.append">append(self, data)</a></h4>
+<p>Appends item to the list, or raises <a class="reference" href="/Docs/Axon/Axon.AxonExceptions.noSpaceInBox.html">Axon.AxonExceptions.noSpaceInBox</a>
+exception if the number of items already meets the size limit.</p>
+<p>Calls self.notify() callback</p>
+</div>
+<div class="section">
+<h4><a id="symbol-realsink.pop" name="symbol-realsink.pop">pop(self, index)</a></h4>
+<p>Returns an item from the list, or raises IndexError if there are none.</p>
+<p>Calls all callbacks listed in self.wakeOnPop</p>
+</div>
+<div class="section">
+<h4><a id="symbol-realsink.setShowTransit" name="symbol-realsink.setShowTransit">setShowTransit(self, showtransit, tag)</a></h4>
+<p>Set showTransit to True to cause debugging output whenever a message is
+delivered to this storage. The tag can be anything you want to identify
+this occurrence.</p>
+</div>
+</div>
+<div class="section">
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+
+
+<p><i>-- Automatic documentation generator, 01 Feb 2010 at 04:00:28 UTC/GMT</i>
+</body></html>
+
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

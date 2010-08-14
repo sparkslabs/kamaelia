@@ -1,0 +1,358 @@
+<html>
+<head>
+<title> Components/pydoc/Kamaelia.Support.Data.Repository </title>
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span> 
+  </b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twelveC column"> 
+                <html>
+<head>
+<title>Kamaelia docs : Kamaelia.Support.Data.Repository</title>
+<style type="test/css">
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="section">
+<h1><a class="reference" href="/Components/pydoc/Kamaelia.html">Kamaelia</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Support.html">Support</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Support.Data.html">Data</a>.<a class="reference" href="/Components/pydoc/Kamaelia.Support.Data.Repository.html">Repository</a></h1>
+</div>
+<div class="section">
+<div class="container">
+<ul class="simple">
+</ul>
+</div>
+<ul class="simple">
+<li><a class="reference" href="#42">Kamaelia component repository introspection</a><ul>
+<li><a class="reference" href="#43">Example Usage</a><ul>
+<li><a class="reference" href="#44">Simple lists of component/prefab names</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#45">Detailed introspections::</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference" href="#46">Obtaining introspection data</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#47">How are components and prefabs detected?</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#48">Structure of detailed introspections</a><ul>
+</ul>
+</li>
+<li><a class="reference" href="#49">Implementation Details</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1 id="42">Kamaelia component repository introspection</h1>
+<p>This support code scans through a Kamaelia installation detecting components and
+picking up relevant information such as doc strings, initializer arguments and
+the declared Inboxes and Outboxes.</p>
+<p>It not only detects components and prefabs, but also picks up modules, classes
+and functions - making this a good source for documentation generation.</p>
+<div class="section">
+<h2 id="43"><a id="example-usage" name="example-usage">Example Usage</a></h2>
+<div class="section">
+<h3 id="44"><a id="simple-lists-of-component-prefab-names" name="simple-lists-of-component-prefab-names">Simple lists of component/prefab names</a></h3>
+<p>Fetch a flat listing of all components. The key is the module path (as a tuple)
+and the value is a list of the names of the components found:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; r=Repository.GetAllKamaeliaComponents()
+&gt;&gt;&gt; r[('Kamaelia','Util','Console')]
+['ConsoleEchoer', 'ConsoleReader']
+</pre>
+<p>Fetch a <em>nested</em> listing of all components. The leaf is a list of entity names:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; r=Repository.GetAllKamaeliaComponentsNested()
+&gt;&gt;&gt; r['Kamaelia']['Util']['Console']
+['ConsoleEchoer', 'ConsoleReader']
+</pre>
+<p>Fetch a flat listing of all prefabs:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; p=Repository.GetAllKamaeliaPrefabs()
+&gt;&gt;&gt; p[('Kamaelia','File','Reading')]
+['RateControlledFileReader', 'RateControlledReusableFileReader',
+'ReusableFileReader', 'FixedRateControlledReusableFileReader']
+</pre>
+<p>Fetch a <em>nested</em> listing of all prefabs:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; p=Repository.GetAllKamaeliaPrefabsNested()
+&gt;&gt;&gt; p['Kamaelia']['File']['Reading']
+['RateControlledFileReader', 'RateControlledReusableFileReader',
+'ReusableFileReader', 'FixedRateControlledReusableFileReader']
+</pre>
+<p>Fetching a flat listing of components as defined in a specific directory (rather
+than the current Kamaelia installation):</p>
+<pre class="literal-block">
+&gt;&gt;&gt; r=Repository.GetAllKamaeliaComponents(baseDir=&quot;/data/my-projects/my-components/&quot;)
+</pre>
+</div>
+<div class="section">
+<h3 id="45"><a id="detailed-introspections" name="detailed-introspections">Detailed introspections::</a></h3>
+<p>We can ask for a complete introspection of the current Kamaelia installation:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; docTree=Repository.ModuleDoc(&quot;Kamaelia&quot;,&quot;/usr/lib/python/site-packages/Kamaelia&quot;)
+&gt;&gt;&gt; docTree.resolve(roots={&quot;Kamaelia&quot;:docTree})
+</pre>
+<p>And look up a particular module:</p>
+<pre class="literal-block">
+ &gt;&gt;&gt; m=docTree.find(&quot;Util.Console&quot;)
+ &gt;&gt;&gt; m
+&lt;Repository.ModuleDoc object at 0x40403b0c&gt;
+</pre>
+<p>Then find components declared in that module:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; cs=m.listAllComponents()
+&gt;&gt;&gt; cs
+[('ConsoleReader', &lt;Repository.ClassScope object at 0x41511bac&gt;), ('ConsoleEchoer', &lt;Repository.ClassScope object at 0x4115990c&gt;)]
+&gt;&gt;&gt; (name,c)=cs[0]
+&gt;&gt;&gt; name
+'ConsoleReader'
+&gt;&gt;&gt; c
+&lt;Repository.ClassScope object at 0x41511bac&gt;
+</pre>
+<p>And look at properties of that component:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; c.module
+'<a class="reference" href="/Components/pydoc/Kamaelia.Util.Console.html">Kamaelia.Util.Console</a>'
+&gt;&gt;&gt; c.inboxes
+{'control': 'NOT USED', 'inbox': 'NOT USED'}
+&gt;&gt;&gt; c.outboxes
+{'outbox': 'Lines that were typed at the console', 'signal': 'NOT USED'}
+&gt;&gt;&gt; print c.doc
+ConsoleReader([prompt][,eol]) -&gt; new ConsoleReader component.
+
+Component that provides a console for typing in stuff. Each line is output
+from the &quot;outbox&quot; outbox one at a time.
+
+Keyword arguments:
+
+- prompt  -- Command prompt (default=&quot;&gt;&gt;&gt; &quot;)
+- eol     -- End of line character(s) to put on end of every line outputted (default is newline)
+</pre>
+<p>This includes methods defined in it:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; c.listAllFunctions()
+[('main', &lt;Repository.FunctionScope object at 0x4166822c&gt;), ('__init__', &lt;Repository.FunctionScope object at 0x4166224c&gt;)]
+&gt;&gt;&gt; name,f=c.listAllFunctions()[1]
+&gt;&gt;&gt; name
+'__init__'
+&gt;&gt;&gt; f
+&lt;Repository.FunctionScope object at 0x4166224c&gt;
+</pre>
+<p>We can look at the docs for the function:</p>
+<blockquote>
+<pre class="doctest-block">
+&gt;&gt;&gt; f.doc
+'x.__init__(...) initializes x; see x.__class__.__doc__ for signature'
+</pre>
+</blockquote>
+<p>We can ask for a string summarising the method's arguments:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; f.argString
+'self[, prompt][, eol]'
+</pre>
+<p>Or a list naming each argument, consisting of (argname, summary-representation)
+pairs:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; f.args
+[('self', 'self'), ('prompt', '[prompt]'), ('eol', '[eol]')]
+</pre>
+</div>
+</div>
+<div class="section">
+<h2 id="46"><a id="obtaining-introspection-data" name="obtaining-introspection-data">Obtaining introspection data</a></h2>
+<p>To get a detailed introspection you create a ModuleDoc object. You can
+either point it at a specific directory, or just let it introspect the currently
+installed Kamaelia repository.</p>
+<p>You can specify the module path corresponding to that directory (the &quot;root
+name&quot;). The default is simply &quot;Kamaelia&quot;. If for example, you point it at the
+<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.html">Kamaelia.Chassis</a> directory; you should explain that the root name is
+&quot;<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.html">Kamaelia.Chassis</a>&quot;. Or if, for example, you are using this code to document
+<a class="reference" href="/Docs/Axon/Axon.html">Axon</a>, you would specify a root name of &quot;<a class="reference" href="/Docs/Axon/Axon.html">Axon</a>&quot;.</p>
+<p>After instantiating your ModuleDoc object; remember to call its &quot;resolve&quot; method
+to allow it to resolve references to base classes, and determine method the
+resolution order for classes.</p>
+</div>
+<div class="section">
+<h2 id="47"><a id="how-are-components-and-prefabs-detected" name="how-are-components-and-prefabs-detected">How are components and prefabs detected?</a></h2>
+<p>Components and prefabs are detected in sourcefiles by looking for declarations
+of an __kamaelia_components__ and __kamaelia_prefabs__ variables, for example:</p>
+<pre class="literal-block">
+__kamaelia_components__ = [ &quot;IcecastClient&quot;, &quot;IcecastDemux&quot;, &quot;IcecastStreamWriter&quot; ]
+__kamaelia_prefabs__ = [ &quot;IcecastStreamRemoveMetadata&quot; ]
+</pre>
+<p>They should be declared individually, at module level, and should consist of a
+simple list of strings giving the names of the components/prefabs present.</p>
+</div>
+<div class="section">
+<h2 id="48"><a id="structure-of-detailed-introspections" name="structure-of-detailed-introspections">Structure of detailed introspections</a></h2>
+<p>The introspection is a hierarchy of Scope objects, each representing a delcaration
+scope - such as a module, class, function, etc. These are built up to reflect
+the structure of the library if it is imported.</p>
+<ul>
+<li><p class="first">ModuleDoc objects represent each module. They may contain:</p>
+<blockquote>
+<ul class="simple">
+<li>Other ModuleDoc objects</li>
+<li>ImportScope objects</li>
+<li>ClassScope objects (representing classes and components)</li>
+<li>FunctionScope objects (repesenting functions and prefabs)</li>
+<li>UnparsedScope objects (anything that wasn't parsed)</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>ClassScope and FunctionScope objects may also contain any of these. For example,
+methods in a class will be represented as FunctionScope objects within the
+ClassScope object.</p>
+<p>The find() method of any given scope can be used to lookup a symbol in that scope,
+or its children. For example, you could call find() on the &quot;<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.html">Kamaelia.Chassis</a>&quot;
+ModuleDoc object with the argument &quot;Graphline.Graphline&quot; to retrieve the graphline
+component (its full path is &quot;<a class="reference" href="/Components/pydoc/Kamaelia.Chassis.Graphline.Graphline.html">Kamaelia.Chassis.Graphline.Graphline</a>&quot;)</p>
+<p>The listAllXXXXX() methods enumerate items - such as classes, functions,
+components, prefabs or modules.</p>
+</div>
+<div class="section">
+<h2 id="49"><a id="implementation-details" name="implementation-details">Implementation Details</a></h2>
+<p>This code uses the python compiler.ast module to parse the source of python
+files, rather than import them. This allows introspection of code that might not
+necessarily run on the system at hand - perhaps because not all dependancies can
+be satisfied.</p>
+<p>Basic tracking of assignment operations is performed, so the following is fair
+game:</p>
+<pre class="literal-block">
+from <a class="reference" href="/Docs/Axon/Axon.Component.html">Axon.Component</a> import component as flurble
+
+class Boo(flurble):
+    pass
+
+Foo=Boo
+</pre>
+<p>However anything more comple is not processed. For example, functions and
+classes declared within &quot;if&quot; statement will not be found:</p>
+<pre class="literal-block">
+if 1:
+    class WillNotBeDetected:
+        pass
+
+    def AlsoWillNotBeDetected():
+        pass
+</pre>
+<p>The simplified functions that only return lists of component/prefab names (
+GetAllKamaeliaComponentsNested, GetAllKamaeliaComponents,
+GetAllKamaeliaPrefabsNested and GetAllKamaeliaPrefabs) simply run the full
+introspection of the codebase but then throw most of the information away.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section">
+</div>
+</div>
+
+
+
+
+
+<div class="section">
+<h1>Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer?
+Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback
+<a class="reference" href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701">here</a>
+in reply to the documentation thread in the Kamaelia blog.</p>
+</div>
+
+
+<p><i>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</i>
+</body></html>
+
+                </div> 
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home>5D">Kamaelia</a>
+    is an open source project originated from and guided by BBC
+    Research. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved.
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+

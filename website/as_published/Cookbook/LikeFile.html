@@ -1,0 +1,220 @@
+<html>
+<head>
+<title> Cookbook/LikeFile </title>
+<meta name="description" content="Kamaelia - making concurrency simpler in python - Cookbook/LikeFile">
+<meta name="keywords" content="python concurrency generators threads processes component system experts beginners media networking">
+<link rel=stylesheet type="text/css" href="/newcss.css">
+  </head>
+<body style="font-size: 10pt; font-family: verdana,arial,helvetica,sans-serif; line-height: 1.8;">
+</div>
+
+</span></p>
+
+<div id="centreinbrowser">
+    <table><tr><td>
+        <div id="contentwrapper">
+            <div id="contentpanel">
+                <div class="column twoC largertext">  &nbsp; </div>
+                <div class="column twoC largertext">  &nbsp;  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b><a href="/Home.html"> Home</a></b> </div>
+                <div class="column twoC largertext"> 
+<P class="orange" align="center"> 
+<b><a href="/About.html" class="smallertext">About</a>, 
+<a href="/Sitemap.html" class="smallertext">Index</a>, 
+<a href="/RecentChanges.html" class="smallertext">Changes</a></b>
+  </div>
+                <div class="column twoC largertext"> <P class="orange" align="center">  <b> <a href="/Developers/">Developers</a> </b> </div>
+                <div class="column last twoC"> <P class="orange" align="center"> 
+<b>
+<span class="largertext">&nbsp;</span>
+<!--   <span class="largertext"><a href="/UserLogin.html">Login</a>/<a href="/UserRegistration.html">Register</a> </span>  -->
+<!--  </b> -->
+</b>
+ </div>
+
+<div class="divide"></div>
+                <div id="masthead">
+                    &nbsp;
+                    <br>
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column">
+                    &nbsp;
+                </div>
+                <div class="fourC column last">
+                    &nbsp;
+                </div>
+<div class="divide"></div>
+                <div class="twoC column">
+                    &nbsp;
+                </div>
+                <div class="eightC column">
+                
+
+
+<pre>
+=================================================
+LikeFile - file-like interaction with components.
+=================================================
+
+LikeFile is a way to run Axon components with code that is not Axon-aware. It
+does this by running the scheduler and all associated microprocesses in a
+separate thread, and using a custom component to communicate if so desired.
+
+
+Using this code
+---------------
+
+With a normal kamaelia system, you would start up a component and start
+running the Axon scheduler as follows, either:
+
+    from Axon.Scheduler import scheduler
+    component.activate()
+    scheduler.run.runThreads()
+    someOtherCode()
+
+or simply:
+
+    component.run()
+    someOtherCode()
+
+In both cases, someOtherCode() only run when the scheduler exits. What do you
+do if you want to (e.g.) run this alongside another external library that has
+the same requirement?
+
+Well, first we start the Axon scheduler in the background as follows:
+
+    from likefile import schedulerThread
+    schedulerThread().start()
+
+The scheduler is now actively running in the background, and you can start
+components on it from the foreground, in the same way as you would from inside
+kamaelia (don't worry, activate() is threadsafe):
+
+    component.activate()
+    someOtherCode()
+
+"component" will immediately start running and processing. This is fine if it's
+something non-interactive like a TCP server, but what do we do if we want to 
+interact with this component from someOtherCode?
+
+In this case, we use LikeFile, instead of activating. This is a wrapper
+which sits around a component and provides a threadsafe way to interact
+with it, whilst it is running in the backgrounded sheduler:
+
+    from likefile import LikeFile
+    wrappedComponent = LikeFile(component)
+    someOtherCode()
+
+Now, wrappedComponent is an instance of the likefile wrapper, and you can
+interact with "component" by calling get() on wrappedComponent, to get data
+from the outbox on "component", or by calling put(data) to put "data" into
+the inbox of "component" like so:
+
+    p = LikeFile( SimpleHTTPClient() )
+    p.put("http://google.com")
+    google = p.get()
+    p.shutdown()
+    print "google's homepage is", len(google), "bytes long.
+
+for both get() and put(), there is an optional extra parameter boxname,
+allowing you to interact with different boxes, for example to send a message
+with the text "RELOAD" to a component's control inbox, you would do:
+
+    wrappedComponent.put("RELOAD", "control")
+    wrappedComponent.get("signal")
+
+Finally, LikeFile objects have a shutdown() method that sends the usual Axon
+IPC shutdown messages to a wrapped component, and prevents further IO.
+
+
+Diagram of LikeFile's functionality
+-----------------------------------
+LikeFile is constructed from components like so:
+
+
+     +----------------------------------+
+     |             LikeFile             |
+     +----------------------------------+
+          |                      / \ 
+          |                       |
+      InQueues                 OutQueues
+          |                       |
++---------+-----------------------+---------+
+|        \ /                      |         |
+|    +---------+               +--------+   |
+|    |  Input  |   Shutdown    | Output |   |
+|    | Wrapper | ------------> |        |   |
+|    | (thread)|   Message     |Wrapper |   |
+|    +---------+               +--------+   |
+|         |                      / \        |
+|         |                       |         |
+|     Inboxes                 Outboxes      |
+|         |                       |         |
+|        \ /                      |         |
+|    +----------------------------------+   |
+|    |      the wrapped component       |   |
+|    +----------------------------------+   |
+|                                           |
+|    +----------------------------------+   |
+|    |       Some other component       |   | 
+|    |     that was only activated      |   |
+|    +----------------------------------+   |
+|                                           |
+|  AXON SCHEDULED COMPONENTS                |
++-------------------------------------------+
+
+
+
+
+Note 1: Threadsafeness of activate().
+
+when a component is activated, it calls the method inherited from microprocess, which calls _addThread(self)
+on an appropriate scheduler. _addThread calls wakeThread, which places the request on a threadsafe queue.
+</pre>
+                </div>
+                <div class="twoC column last">
+                    &nbsp;
+                </div>
+                <div id="footer">
+                    &nbsp;
+                    <br>&nbsp;
+                </div>
+
+
+<div class="divide"></div>
+            </div>
+        </div>
+    </td></tr></table>
+
+
+<hr>
+<div id="aboutblock" style="text-align: left"; padding-left: 1em;>
+<font size="-2">
+   <P><img src="http://www.kamaelia.org/images/BBC-ResearchLogo-Small.png"
+style="float: left; padding-right: 10px; margin-bottom: 3em;"> <a href="http://www.kamaelia.org/Home.html">Kamaelia</a>
+    is an open source project originated from and guided by <a href="http://www.bbc.co.uk/rd"> BBC 
+    Research</a>. For more information browse the site or get in 
+    <a href="/Contact.html">contact</a>.
+   <P>This is an ongoing community based development site. As a result the
+   contents of this page is the opinions of the contributors of the pages
+   involved not the organisations involved. Specificially, this page may
+   contain personal views which are not the views of the BBC. (the site is
+   powered by a wiki engine)
+   <P>(C) Copyright 2008 Kamaelia Contributors, including the British
+   Broadcasting Corporation, All Rights Reserved
+</font>
+</div>
+</div>
+<div style="display:none">
+This web site is powered by the same code created for the
+<a href="http://www.bickermanor.org/"> bicker manor</a> project. For more
+details, contact Michael Sparks at BBC Research directly (cf contact)
+</div>
+</body>
+</html>
+
+
+
