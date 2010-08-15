@@ -70,10 +70,11 @@ def scrub_filename(filename):
     while True:
         if filename[0] == "/":
             filename = filename[1:]
-        elif filename[0:2] == "..":
-            filename = filename[2:]
         else:
             break
+    filename = filename.replace("../","") # Remove all of these inside the filename
+    if filename[-2:] == "..":
+       filename = filename[:-2]
     return filename
 
 if __name__ == "__main__":
