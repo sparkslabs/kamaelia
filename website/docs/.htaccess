@@ -1,0 +1,2 @@
+ErrorDocument 404 /cgi-bin/404
+Redirect /index.html http://beta.kamaelia.org/Home.html
