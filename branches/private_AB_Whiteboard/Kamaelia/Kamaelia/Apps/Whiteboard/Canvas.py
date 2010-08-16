@@ -109,10 +109,10 @@ class Canvas(Axon.Component.component):
 
     def main(self):
         """Main loop"""
-        yield 1
-        yield 1
-        yield 1
-        yield 1
+        yield 1 #FIXME
+        yield 1 #FIXME
+        yield 1 #FIXME
+        yield 1 #FIXME
         yield WaitComplete(
               self.requestDisplay( DISPLAYREQUEST=True,
                                    callback = (self,"fromDisplay"),
