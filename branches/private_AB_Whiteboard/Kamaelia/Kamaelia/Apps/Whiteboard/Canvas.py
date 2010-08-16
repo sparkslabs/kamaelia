@@ -58,7 +58,6 @@ class Canvas(Axon.Component.component):
     Outboxes = { "outbox" : "Issues drawing instructions",
                  "signal" : "",
                  "toDisplay" : "For sending requests to PygameDisplay service",
-                 "toApp" : "Send requests to app - for calibration", # MODIFICATION
                  "eventsOut" : "Events forwarded out of here",
                  "surfacechanged" : "If the surface gets changed from last load/save a 'dirty' message is emitted here",
                  "toTicker" : "Send data to text ticker",
@@ -91,9 +90,10 @@ class Canvas(Axon.Component.component):
     def requestDisplay(self, **argd):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"toDisplay"), displayservice)
-        #argd["transparency"] = self.bgcolour
+        #argd["transparency"] = self.bgcolour # This causes problems when using OpenGL.
+	#Modified to something that works with most apps - not sure why it does
+	argd["transparency"] = (255,255,180)
         self.send(argd, "toDisplay")
-        self.send(argd, "toApp") # MODIFICATION
         for _ in self.waitBox("fromDisplay"):
             yield 1
         self.surface = self.recv("fromDisplay")
@@ -124,7 +124,6 @@ class Canvas(Axon.Component.component):
 
         self.surface.fill( (self.bgcolour) )
         self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
-        self.send({"REDRAW":True, "surface":self.surface}, "toApp") # MODIFICATION
 
 
         self.send( {"ADDLISTENEVENT" : pygame.MOUSEBUTTONDOWN, "surface" : self.surface},
@@ -150,7 +149,6 @@ class Canvas(Axon.Component.component):
             
             if self.redrawNeeded:
                 self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
-                self.send({"REDRAW":True, "surface":self.surface}, "toApp") #MODIFICATION
                 if not self.clean:
                     if not self.dirty_sent:
                         self.send("dirty", "surfacechanged")
@@ -301,17 +299,11 @@ class Canvas(Axon.Component.component):
         root.destroy()
         try:
             if (password != ""):
-                #os.system("zip", "-j", "-q", "-P " + password, "Decks/" + filename, self.notepad + "/*.png")
                 os.system("zip -j -q -P " + password + " Decks/" + filename + " " + self.notepad + "/*.png")
                 self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("Zip file 'Decks/" + filename + "' created successfully with password","toTicker")
             else:
                 os.system("zip -j -q Decks/" + filename + " " + self.notepad + "/*.png")
-                """zipped = ZipFile('Decks/' + filename,'w') # This seems to have broken
-                for x in range(num_pages + 1):
-                    if (x > 0):
-                        zipped.write(self.notepad + "/" +  "slide." + str(x) + ".png", "slide." + str(x) + ".png")
-                zipped.close()"""
                 self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("Zip file 'Decks/" + filename + "' created successfully without password","toTicker")
         except Exception, e:
@@ -321,7 +313,6 @@ class Canvas(Axon.Component.component):
         
     def clearscribbles(self, args):
         try:
-            #for x in os.listdir(self.notepad):
             for x in os.listdir(self.notepad):
                 if (os.path.splitext(x)[1] == ".png"):
                     os.remove(self.notepad + "/" + x)
@@ -368,7 +359,6 @@ class Canvas(Axon.Component.component):
         self.surface.blit(snapshot, imageorigin)
         self.redrawNeeded = True
         self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
-        #self.send("dirty", "surfacechanged")
         
     def quit(self, args):
         root = Tk()
