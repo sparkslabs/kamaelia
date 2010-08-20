@@ -60,7 +60,6 @@ class SingleServer(_Axon.Component.component):
               "signal"      : "When the client disconnects a producerFinished message is sent here", 
               "_CSA_signal" : "Outbox for sending messages to the CSA. Currently unused."
             }
-   socketOptions = None
    port = 1601
    socketOptions=None
    TCPS=TCPServer
