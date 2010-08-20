@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
@@ -30,8 +30,14 @@ TODO:
 If there is already a connection, then any new connections are shutdown. It would
 be better if they weren't accepted in the first place, but that requires changes to
 TCPServer.
+
+FastRestartSingleServer is exactly the same as SingleServer, expect its default is
+to set appropriate socket options to allow the server to restart instantly. This isn't
+the traditional default because in kamaelia we prefer to follow the defaults of the
+OS, rather than local defaults.
 """
 
+import socket
 import Axon as _Axon
 from Kamaelia.Internet.TCPServer import TCPServer
 import Kamaelia.IPC as _ki
@@ -54,15 +60,23 @@ class SingleServer(_Axon.Component.component):
               "signal"      : "When the client disconnects a producerFinished message is sent here", 
               "_CSA_signal" : "Outbox for sending messages to the CSA. Currently unused."
             }
-   def __init__(self, port=1601):
-      super(SingleServer,self).__init__()
-      self.listenport = port
+   socketOptions = None
+   port = 1601
+   socketOptions=None
+   TCPS=TCPServer
+   def __init__(self, **argd):
+      super(SingleServer,self).__init__(**argd)
+      self.listenport = self.port # avoid complete rewrite, should santise and make consistent.
       self.CSA = None
       self.rejectedCSAs = []
       self.myPLS = None
 
    def main(self):
-      self.myPLS = TCPServer(listenport=self.listenport)
+      if self.socketOptions is None:
+          self.myPLS = (self.TCPS)(listenport=self.port)
+      else:
+          self.myPLS = (self.TCPS)(listenport=self.port, socketOptions=self.socketOptions)
+      
       self.link((self.myPLS,"protocolHandlerSignal"),(self,"_oobinfo"))
       self.addChildren(self.myPLS)
       yield _Axon.Ipc.newComponent(self.myPLS)
@@ -113,7 +127,10 @@ class SingleServer(_Axon.Component.component):
       self.addChildren(newCSA)
       return _Axon.Ipc.newComponent(newCSA)
 
-__kamaelia_components__  = ( SingleServer, echo )
+class FastRestartSingleServer(SingleServer):
+    socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+__kamaelia_components__  = ( SingleServer, FastRestartSingleServer, echo )
 
 
 if __name__ == '__main__':
@@ -121,7 +138,7 @@ if __name__ == '__main__':
 
    class SimplisticServer(_Axon.Component.component):
       def main(self):
-         server = SingleServer(port=1501)
+         server = SingleServer(port=1501, socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))
          handler = echo()
          self.link((server, "outbox"), (handler, "inbox"))
          self.link((server, "signal"), (handler, "control"))
