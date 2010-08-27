@@ -65,9 +65,6 @@ if __name__ == "__main__":
              TPP,
              ConsoleEchoer()).activate()
 
-    def even(x): return x%2 == 0
-    def print_even(x): return "Even ! " + str(x)
-
     ConditionalTransformer(TPP, "EVEN", lambda x: x % 2==0, lambda x: "Even ! " + str(x)).activate()
 
     def isodd(x): return x % 2==1
@@ -75,8 +72,16 @@ if __name__ == "__main__":
 
     ConditionalTransformer(TPP, "ODD", isodd, format_as_odd).activate()
 
+    class Divisible3(ConditionalTransformer):
+       @staticmethod
+       def condition(x):
+           return x % 3 == 0
+       @staticmethod
+       def process(x):
+           return "Divisible by 3 ! " + str(x)
+
     class Divisible(ConditionalTransformer):
-        divisor = 3
+        divisor = 4
         
         def shouldProcessMessage(self, message):
             return (message % self.divisor) == 0
@@ -84,15 +89,7 @@ if __name__ == "__main__":
         def processMessage(self, message):
             return "Divisible by "+str(self.divisor) + " ! " + str(message)
 
-    class Divisible5(ConditionalTransformer):
-       @staticmethod
-       def condition(x):
-           return x % 5 == 0
-       @staticmethod
-       def process(x):
-           return "Divisible by 5 ! " + str(x)
-
-    Divisible(TPP, "THREE").activate()
-    Divisible(TPP, "FOUR", divisor = 4).activate()
-    Divisible5(TPP, "FIVE").run()
+    Divisible3(TPP, "THREE").activate()
+    Divisible(TPP, "FOUR").activate()
+    Divisible(TPP, "FIVE", divisor = 5).run()
 
