@@ -34,7 +34,6 @@ class ConditionalTransformer(Axon.Component.component):
 
     def main(self):
         self.link((self,"toprocessor"), (self.processor, "processor"))
-        yield 1
         request = ( self.tag, self.condition, self )
         self.send(request, "toprocessor")
         process = self.process
@@ -80,6 +79,8 @@ if __name__ == "__main__":
        def process(x):
            return "Divisible by 3 ! " + str(x)
 
+    Divisible3(TPP, "THREE").activate()
+
     class Divisible(ConditionalTransformer):
         divisor = 4
         
@@ -89,7 +90,6 @@ if __name__ == "__main__":
         def processMessage(self, message):
             return "Divisible by "+str(self.divisor) + " ! " + str(message)
 
-    Divisible3(TPP, "THREE").activate()
     Divisible(TPP, "FOUR").activate()
     Divisible(TPP, "FIVE", divisor = 5).run()
 
