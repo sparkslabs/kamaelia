@@ -84,10 +84,10 @@ if __name__ == "__main__":
     class Divisible(ConditionalTransformer):
         divisor = 4
         
-        def shouldProcessMessage(self, message):
+        def condition(self, message):
             return (message % self.divisor) == 0
 
-        def processMessage(self, message):
+        def process(self, message):
             return "Divisible by "+str(self.divisor) + " ! " + str(message)
 
     Divisible(TPP, "FOUR").activate()
