@@ -56,14 +56,11 @@ How does it work?
 The component receives data on its "inbox" inbox and immediately copies it to
 its "outbox" outbox.
 
-If a producerFinished or shutdownMicroprocess message is received on its
-"control" inbox, the component sends a producerFinished message to its "signal"
-outbox and terminates.
+If any message is received on its "control" inbox, the component passes the message
+onto its "signal" outbox and terminates.
 """
 
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess
-
 
 class EchoProtocol(component):
    """\
@@ -72,32 +69,14 @@ class EchoProtocol(component):
    Simple component that copies anything sent to its "inbox" inbox to its "outbox"
    outbox.
    """
-
-   def __init__(self,**argd):
-      """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-      super(EchoProtocol, self).__init__(**argd) # Accept default in/outboxes
-
-   def mainBody(self):
-      """Main body."""
-      self.pause()
-      
-      while self.dataReady("inbox"):
-         data = self.recv("inbox")
-         #print "NetServ : We were sent data - "
-         #print "We should probably do something with it now? :-)"
-         #print "I know, let's sling it straight back at them :-)"
-         self.send(data,"outbox")
-         
-      return self.shutdown()
-
-   def shutdown(self):
-       """Return 0 if a shutdown message is received, else return 1."""
-       while self.dataReady("control"):
-           msg=self.recv("control")
-           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
-               self.send(producerFinished(self),"signal")
-               return 0
-       return 1
+   def main(self):
+       while not self.dataReady("control"):
+           for message in self.Inbox("inbox"):
+               self.send(message, "outbox")
+           if not self.anyReady():
+               self.pause()
+           yield 1
+       self.send(self.recv("control"), "signal")
 
 __kamaelia_components__  = ( EchoProtocol, )
 
