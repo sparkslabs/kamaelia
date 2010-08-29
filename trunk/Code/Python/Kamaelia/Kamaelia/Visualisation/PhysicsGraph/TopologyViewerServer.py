@@ -92,13 +92,14 @@ from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Chassis.ConnectedServer import SimpleServer
+# from Kamaelia.Chassis.ConnectedServer import SimpleServer
+from Kamaelia.Chassis.ConnectedServer import FastRestartServer
 from Kamaelia.Util.Backplane import *
 
 Backplane("NODEEVENTS").activate()
 
 
-def Users():
+def Users(**kwargs):
     return PublishTo("NODEEVENTS")
 
 def TopologyViewerServer(serverPort = 1500, **dictArgs):
@@ -114,7 +115,8 @@ def TopologyViewerServer(serverPort = 1500, **dictArgs):
     - serverPort  -- None, or port number to listen on (default=1500)
     - args        -- all remaining keyword arguments passed onto TopologyViewer
     """
-    SimpleServer(protocol=Users, port=serverPort).activate()
+    FastRestartServer(protocol=Users, port=serverPort).activate()
+#     SimpleServer(protocol=Users, port=serverPort).activate()
     return Pipeline( SubscribeTo("NODEEVENTS"),
                      chunks_to_lines(),
                      lines_to_tokenlists(),
