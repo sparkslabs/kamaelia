@@ -119,6 +119,7 @@ class Multicast_transceiver(Axon.Component.component):
    def main(self):
         """Main loop"""
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind((self.local_addr,self.local_port)) # Receive from server on this port
 
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
