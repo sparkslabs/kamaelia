@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
 #
@@ -53,6 +54,7 @@ import time
 
 from AxonExceptions import AxonException, ArgumentsClash
 from Axon import AxonObject
+import Box
 from util import removeAll
 from idGen import strId, numId,Debug
 from debug import debug
@@ -87,6 +89,9 @@ class linkage(AxonObject):
         else:
            if synchronous is not None:
                self.getSinkbox().setSize(1) # Restore functionality
+
+        if Box.ShowAllTransits:
+            self.getSinkbox().storage.tag = self.short_str()
  
     def sourcePair(self):
         """Returns (component,boxname) tuple describing where this linkage goes from"""
@@ -120,6 +125,9 @@ class linkage(AxonObject):
  
     def __str__(self):
         return "Link( source:[" + self.source.name + "," + self.sourcebox + "], sink:[" + self.sink.name + "," + self.sinkbox + "] )"
+
+    def short_str(self):
+        return "(%s,%s):(%s,%s)" % tuple([ X[X.rfind(".")+1:] for X in (self.source.name, self.sourcebox, self.sink.name , self.sinkbox)])
 
     def setSynchronous(self, pipewidth = None):
         """\
