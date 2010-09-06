@@ -314,6 +314,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # notifications of new and closed sockets
             while self.dataReady("_socketactivity"):
                 data = self.recv("_socketactivity")
+#                print "DATA RECEIVED", data, repr(data)
                 if isinstance(data, newCSA):
                     self.handleNewConnection(data)
                 if isinstance(data, shutdownCSA):
@@ -410,7 +411,10 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         Keyword arguments:
         shutdownCSAMessage -- shutdownCSAMessage.object is the ConnectedSocketAdapter for socket that is closing.
         """
+#        print shutdownCSAMessage
+#        print shutdownCSAMessage.object
         connectedSocket = shutdownCSAMessage.object
+#        print "CLOSING", connectedSocket
         try:
             bundle=self.retrieveTrackedResourceInformation(connectedSocket)
 #            print "BUNDLE", bundle
@@ -418,6 +422,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # This means we've actually already done this...
             return
         resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
+#        print bundle
 
         self.connectedSockets = [ x for x in self.connectedSockets if x != connectedSocket ]
 
