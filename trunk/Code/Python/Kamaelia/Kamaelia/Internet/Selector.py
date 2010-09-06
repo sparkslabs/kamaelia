@@ -221,8 +221,9 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
             if isinstance(message, newReader):
                 replyService, selectable = message.object
                 L = self.addLinks(replyService, selectable, meta[READERS], readers, "readerNotify")
+#                print [str(x) for x in replyService], selectable
 #                print "new reader",selectable
-                L.showtransit = 0
+#                L.showtransit = 0
                 message.object = None
 
             if isinstance(message, newWriter):
