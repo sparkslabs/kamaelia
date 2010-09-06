@@ -199,6 +199,10 @@ class ConnectedSocketAdapter(component):
    def stop(self):
        # Some of these are going to crash initially when stop is called
 #       print "I AM CALLED"
+       if self.socket is None:
+           # SELF.STOP CALLED TWICE - possible under limited circumstances (crashes primarily)
+           # Only want to call once though, so exit here.
+           return
        try:
            self.socket.shutdown(2)
        except Exception, e:
@@ -221,6 +225,7 @@ class ConnectedSocketAdapter(component):
            self.send(removeWriter(self, sock), "_selectorSignal")
        sock = None
        super(ConnectedSocketAdapter, self).stop()
+       self.stop = lambda : None   # Make it rather hard to call us twice by mistake
 #       import gc
 #       import pprint
 #       gc.collect()
