@@ -193,6 +193,7 @@ class TCPServer(Axon.Component.component):
       for s in self.socket_handlers:
           if self.socket_handlers[s]==theComponent:
               found = True
+              break
       if found:
         sock = s
 
