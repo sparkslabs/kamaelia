@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
 #
@@ -383,7 +384,8 @@ from Ipc import *
 
 from Box import makeInbox,makeOutbox
 
-
+TraceAllSends = False
+TraceAllRecvs = False
 
 class component(microprocess):
    """\
@@ -448,6 +450,13 @@ class component(microprocess):
       self._callOnCloseDown = []
 
       self.postoffice = postoffice("component :" + self.name)
+      if TraceAllSends:
+          self._o_send = self.send
+          self.send = self._debug_send
+      if TraceAllRecvs:
+          self._o_recv = self.recv
+          self.recv = self._debug_recv
+
 
    def setInboxSize(self, boxname, size):
        "boxname - some boxname, must be an inbox ; size - maximum number of items we're happy with"
@@ -599,6 +608,13 @@ class component(microprocess):
       """
       return self.inboxes[boxname].pop(0)
 
+   def _debug_recv(self,boxname="inbox"):
+      shortname = self.name[self.name.rfind(".")+1:]
+      message = self._o_recv(boxname)
+      print "RECV: %s %s '%s' : %s" % (str(id(message)), shortname , boxname, str(message))
+      return message
+
+
    def Inbox(self, boxname="inbox"):
        while self.dataReady(boxname):
            yield self.recv(boxname)
@@ -619,6 +635,12 @@ class component(microprocess):
       """
       self.outboxes[boxname].append(message)
 
+   def _debug_send(self,message, boxname="outbox"):
+      shortname = self.name[self.name.rfind(".")+1:]
+      
+      print "SEND: %s %s '%s' : %s" % (str(id(message)), shortname , boxname, str(message))
+      self._o_send(message, boxname)
+       
 
    def main(self):
       """\
