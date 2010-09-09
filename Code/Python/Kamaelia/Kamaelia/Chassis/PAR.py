@@ -256,9 +256,9 @@ class PAR(Axon.Component.component):
                       shutdownMessage = msg
 
           # If there's nothing to do, then sleep
-          while not self.anyReady() and not shutdown:
+          # We shouldn't pause if a shutdownMicroprocess was sent to us (hence the flag)
+          if not self.anyReady() and not shutdown:
               self.pause()
-              yield 1
           yield 1
 
       if shutdownMessage:
