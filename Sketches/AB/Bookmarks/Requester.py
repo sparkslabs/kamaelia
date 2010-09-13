@@ -284,7 +284,7 @@ class Requester(threadedcomponent):
                     if oldpid != None and oldpid != pid:
                         # Pid has changed - tie off the last prog ready for analysis
                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
-                        if cursor.fetchone() == None:
+                        if cursor.fetchone() != None:
                             cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
                         oldpid = pid
                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
