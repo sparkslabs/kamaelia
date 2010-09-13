@@ -286,14 +286,13 @@ class Requester(threadedcomponent):
                     duration = data[1][3]
                     expectedstart = data[1][4]
                     if oldpid != None and oldpid != pid:
-                        # Pid has changed - tie off the last prog ready for analysis
+                        # Pid has changed - tie off the last prog ready for analysis TODO: This doesn't work yet?!?
                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
                         if cursor.fetchone() != None:
                             cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
-                        oldpid = pid
                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                     if cursor.fetchone() == None:
-                        cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart) VALUES (%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart))
+                        cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,self.channel))
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
                 else:
@@ -303,6 +302,8 @@ class Requester(threadedcomponent):
                     print keywords
                     self.send([keywords,pid],"outbox")
                     pass
+                
+                oldpid = pid
             else:
                 # This bit just got complicated - won't work yet so concentrating on one channel - ABOVE
                 # Now, adding some stuff above I've definitely broken this
