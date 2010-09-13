@@ -57,6 +57,8 @@ class Requester(threadedcomponent):
             pid = data[0]
             title = data[1]
             offset = data[2]
+            duration = data[3]
+            expectedstart = data[4]
         if pid != self.channels[channel]:
             #TODO: Will need to check, esp in radio case if presenter name is the same as show name to reduce duplicate keywords
             # Perhaps just do a duplicate scan before creating Twitter stream
@@ -281,6 +283,8 @@ class Requester(threadedcomponent):
                     pid = data[1][0]
                     title = data[1][1]
                     offset = data[1][2]
+                    duration = data[1][3]
+                    expectedstart = data[1][4]
                     if oldpid != None and oldpid != pid:
                         # Pid has changed - tie off the last prog ready for analysis
                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
@@ -289,7 +293,7 @@ class Requester(threadedcomponent):
                         oldpid = pid
                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                     if cursor.fetchone() == None:
-                        cursor.execute("""INSERT INTO programmes (pid,title,timediff) VALUES (%s,%s,%s)""", (pid,title,offset))
+                        cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart) VALUES (%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart))
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
                 else:

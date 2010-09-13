@@ -158,8 +158,8 @@ class WhatsOn(component):
                                 offset = actualstart - expectedstart
                             pid = programme['programme']['pid']
                             title =  programme['programme']['display_titles']['title']
-                            print [pid,title,offset]
-                            return [pid,title,offset]
+                            print [pid,title,offset,programme['duration'],programme['start']]
+                            return [pid,title,offset,programme['duration'],programme['start']]
                             break
 
             else:
@@ -177,8 +177,8 @@ class WhatsOn(component):
                             pid = programme['programme']['pid']
                             title =  programme['programme']['display_titles']['title']
                             # Has to assume no offset as it knows no better
-                            print [pid,title,0]
-                            return [pid,title,0]
+                            print [pid,title,0,programme['duration'],programme['start']]
+                            return [pid,title,0,programme['duration'],programme['start']]
                             break
 
     def main(self):
