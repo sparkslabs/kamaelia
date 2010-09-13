@@ -10,6 +10,7 @@
 # Need to ensure one rogue user can't cause a trend - things must be mentioned by several
 
 import MySQLdb
+import _mysql_exceptions
 import cjson
 import os
 import time
@@ -116,6 +117,43 @@ if __name__ == "__main__":
 
             print "Mean tweets per minute: ", meantweets
 
+            # Calculate median
+            if len(tweetminutes) < duration:
+                extrazeros = duration - len(tweetminutes)
+            else:
+                extrazeros = 0
+
+            midpoint = int((len(tweetminutes) + extrazeros) / 2)
+
+            # Order the list!
+            items = [[v, k] for k, v in tweetminutes.items()]
+            items.sort()
+
+            if midpoint <= extrazeros:
+                mediantweets = 0
+            else:
+                midpoint -= (extrazeros + 1)
+                mediantweets = items[midpoint][0]
+
+            print "Median tweets per minute: ", mediantweets
+
+            # Calculate mode
+            numcheck = dict({extrazeros : 0})
+            for pair in items:
+                if numcheck.has_key(pair[0]):
+                    numcheck[pair[0]] += 1
+                else:
+                    numcheck[pair[0]] = 1
+
+            ncitems = [[v, k] for k, v in numcheck.items()]
+            ncitems.sort(reverse=True)
+            modetweets = ncitems[0][1]
+
+            print "Mode tweets per minute: ", modetweets
+
+            # Calculate standard deviation / quartiles
+            
+
             # Do word freq analysis on each minute and store top 20 words???? - expected and unexpected
             # TODO
 
@@ -124,7 +162,7 @@ if __name__ == "__main__":
                     if tweetminutes[minute] > 0:
                         cursor.execute("""INSERT INTO analyseddata (pid,datetime,wordfreqexpected,wordfrequnexpected,totaltweets) VALUES (%s,%s,%s,%s,%s)""", (pid,minute,0,0,tweetminutes[minute]))
 
-                cursor.execute("""UPDATE programmes SET analysed = 1, totaltweets = %s, meantweets = %s WHERE pid = %s""",(numtweets,meantweets,pid))
+                cursor.execute("""UPDATE programmes SET analysed = 1, totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s WHERE pid = %s""",(numtweets,meantweets,mediantweets,modetweets,pid))
             except _mysql_exceptions.IntegrityError, e:
                 print "Data has already been analysed. Clear DB tables to redo: ", e
 
