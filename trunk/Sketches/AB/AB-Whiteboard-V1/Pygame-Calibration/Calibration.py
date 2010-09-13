@@ -45,8 +45,7 @@ from Kamaelia.Apps.Whiteboard.Painter import Painter
 from Kamaelia.Apps.Whiteboard.TwoWaySplitter import TwoWaySplitter
 from Kamaelia.Apps.Whiteboard.UI import ClearPage
 
-
-from Calibrate import Calibrate
+from Kamaelia.Apps.Calibration.Calibrate import Calibrate
 
      
 def calibButton(left, top):    

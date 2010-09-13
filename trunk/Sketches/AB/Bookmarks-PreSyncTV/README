@@ -1,0 +1,5 @@
+TV Bookmarks
+- App designed to grab RDF data from BBC /programmes and use it to identify relevant conversation using Twitter.
+- Data is the saved and analysed to create bookmarks in programmes which can be jumped to via the iPlayer interface.
+- Data will at a later date be enriched to provide some form of explanation to users, identifying why it forms a relevant bookmark.
+- If run live enough, could be used to give a live activity EPG with heavily discussed programmes highlighted

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs     = "http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl      = "http://www.w3.org/2002/07/owl#"
+         xmlns:foaf     = "http://xmlns.com/foaf/0.1/"
+         xmlns:po       = "http://purl.org/ontology/po/"
+         xmlns:mo       = "http://purl.org/ontology/mo/"
+         xmlns:skos     = "http://www.w3.org/2008/05/skos#"
+         xmlns:time     = "http://www.w3.org/2006/time#"
+         xmlns:dc       = "http://purl.org/dc/elements/1.1/"
+         xmlns:dcterms  = "http://purl.org/dc/terms/"
+         xmlns:wgs84_pos= "http://www.w3.org/2003/01/geo/wgs84_pos#"
+         xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
+         xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
+
+<rdf:Description rdf:about="/programmes/b00tpmhh.rdf">
+  <rdfs:label>Description of a programme version of 13/09/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-06T00:07:23+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-06T00:07:23+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00tpmhh#programme"/>
+</rdf:Description>
+
+<po:Version rdf:about="/programmes/b00tpmhh#programme">
+
+  <rdfs:label>A version of 13/09/2010</rdfs:label>
+  
+  <po:sound_format>Stereo</po:sound_format>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9900</po:duration>
+  <po:pid>b00tpmhh</po:pid>
+  <po:time>
+    <timeline:Interval>
+      <rdfs:label>Time interval for a version of 13/09/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00tpmhh#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT9900S</timeline:duration>
+    </timeline:Interval>
+  </po:time>
+
+
+</po:Version>
+
+<po:Episode rdf:about="/programmes/b00tpmhr#programme">
+  <rdfs:label>13/09/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/b00tpmhh#programme" />
+</po:Episode>
+
+<timeline:TimeLine rdf:about="/programmes/b00tpmhh#timeline">
+  <rdfs:label>Timeline of a version of 13/09/2010</rdfs:label>
+</timeline:TimeLine>
+
+<po:Broadcast rdf:about="/programmes/b00tpmhh#p009v23m">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p009v23m</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-13</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T10:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T12:45:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/england#service">
+       <rdfs:label>Radio 1 England</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00tpmhh#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00tpmhh#p009v2l9">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p009v2l9</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-13</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T10:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T12:45:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/northernireland#service">
+       <rdfs:label>Radio 1 N. Ireland</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00tpmhh#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00tpmhh#p009v2lq">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p009v2lq</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-13</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T10:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T12:45:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/scotland#service">
+       <rdfs:label>Radio 1 Scotland</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00tpmhh#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00tpmhh#p009v2m4">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p009v2m4</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-13</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T10:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T12:45:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/wales#service">
+       <rdfs:label>Radio 1 Wales</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00tpmhh#programme" />
+</po:Broadcast>
+
+
+
+
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-13T12:47:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-20T12:47:00+01:00</timeline:end>
+</po:Availability>
+
+
+
+</rdf:RDF>
