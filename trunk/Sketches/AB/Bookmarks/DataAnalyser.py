@@ -12,8 +12,9 @@
 import MySQLdb
 import cjson
 import os
+import time
 from dateutil.parser import parse
-#from datetime import datetime
+from datetime import timedelta
 
 exclusions = ["a","able","about","across","after","all","almost","also","am",\
             "among","an","and","any","are","as","at","be","because","been","but",\
@@ -38,9 +39,6 @@ if __name__ == "__main__":
     # TODO: Do live analysis on ALL statistics - tweets in each minute etc until imported = 1
     # Only analyse each minute when a later minute's tweets have started to come in
     # Calculate running total and mean etc
-    # TODO: Check if imported is 1 or not and if so do final analysis of all before setting analysed to 1
-    # Final analysis involves redoing all earlier analysis to make sure nothing was missed
-    # Calculate total, mean, median, mode, etc - anything needed
 
     # Load Config
     try:
@@ -61,53 +59,75 @@ if __name__ == "__main__":
     cursor = dbConnect(dbuser,dbpass)
 
     while 1:
+        # The below does FINAL analysis only - live analysis still needs adding. This will likely need modifying once that's done
         # Check if imported = 1 and analysed = 0
-        cursor.execute("""SELECT pid,title FROM programmes WHERE imported = 1 AND analysed = 0""")
+
+        print "Checking for unanalysed data..."
+        
+        cursor.execute("""SELECT pid,title,duration FROM programmes WHERE imported = 1 AND analysed = 0""")
         data = cursor.fetchall()
 
         for result in data:
             # If so, calculate total tweets and gather all keywords into a list
             pid = result[0]
             title = result[1]
+            duration = result[2]
             print "Currently processing " + title + ": " + pid
             cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
             kwdata = cursor.fetchall()
             keywords = list()
             for word in kwdata:
                 keywords.append(str(word[0]))
-            print "Keywords are: " + str(keywords)
+            print "Keywords are: ", keywords
             cursor.execute("""SELECT tid,datetime,text,user FROM rawdata WHERE pid = %s ORDER BY datetime ASC""",(pid))
             tweets = cursor.fetchall()
             numtweets = len(tweets)
-            print "Total tweets: " + str(numtweets)
+            print "Total tweets: ", numtweets
 
             # Then group tweets by minute and create db entries in 'analysed' for each minute
             tweetminutes = dict()
+            lasttime = None
             for tweet in tweets:
                 tid = tweet[0]
                 tweettime = parse(tweet[1])
                 tweettime = tweettime.replace(tzinfo=None)
                 # Need to bear in mind that everything here is in GMT - if UK is in BST on a particular date bookmarks will need an offset
                 tweettime = tweettime.replace(second=0)
+                if lasttime != None:
+                    while tweettime > (lasttime + timedelta(seconds=60)):
+                        lasttime += timedelta(seconds=60)
+                        tweetminutes[str(lasttime)] = 0
                 text = tweet[2]
                 user = tweet[3]
                 if not tweetminutes.has_key(str(tweettime)):
                     tweetminutes[str(tweettime)] = 1
                 else:
                     tweetminutes[str(tweettime)] += 1
+                lasttime = tweettime
 
-            print tweetminutes
-
+            print "Tweets per minute: ", tweetminutes
 
             # Calculate average (mean) tweets per minute and store alongside programme (with total tweets)
+            duration = duration/60
+            if numtweets > 0 and duration > 0:
+                meantweets = float(numtweets)/float(duration)
+            else:
+                meantweets = 0
 
+            print "Mean tweets per minute: ", meantweets
 
             # Do word freq analysis on each minute and store top 20 words???? - expected and unexpected
+            # TODO
 
+            try:
+                for minute in sorted(tweetminutes, reverse=True):
+                    if tweetminutes[minute] > 0:
+                        cursor.execute("""INSERT INTO analyseddata (pid,datetime,wordfreqexpected,wordfrequnexpected,totaltweets) VALUES (%s,%s,%s,%s,%s)""", (pid,minute,0,0,tweetminutes[minute]))
 
-        break
+                cursor.execute("""UPDATE programmes SET analysed = 1, totaltweets = %s, meantweets = %s WHERE pid = %s""",(numtweets,meantweets,pid))
+            except _mysql_exceptions.IntegrityError, e:
+                print "Data has already been analysed. Clear DB tables to redo: ", e
 
-
-        
-
-        
+        # Sleep here until more data is available to analyse
+        print "Sleeping for 10 seconds..."
+        time.sleep(10)
