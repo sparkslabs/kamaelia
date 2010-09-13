@@ -167,5 +167,5 @@ if __name__ == "__main__":
                 print "Data has already been analysed. Clear DB tables to redo: ", e
 
         # Sleep here until more data is available to analyse
-        print "Sleeping for 10 seconds..."
-        time.sleep(10)
+        print "Sleeping for 5 minutes..."
+        time.sleep(60*5)
