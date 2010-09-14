@@ -153,9 +153,9 @@ class WhatsOn(component):
                             #starttime = starttime.astimezone(gmt)
                             #starttime = starttime.replace(tzinfo=None)
                             if 'difference' in locals():
-                                offset = actualstart - expectedstart - difference
+                                offset = (expectedstart - actualstart) - difference
                             else:
-                                offset = actualstart - expectedstart
+                                offset = expectedstart - actualstart
                             pid = programme['programme']['pid']
                             title =  programme['programme']['display_titles']['title']
                             print [pid,title,offset,programme['duration'],programme['start']]
