@@ -14,4 +14,11 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+
+    (r'^programmes/(?P<pid>\w+)/$', 'bookmarks.output.views.programme'),
+    (r'^channels/(?P<channel>\w+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', 'bookmarks.output.views.channel'),
+    (r'^channels/(?P<channel>\w+)/(?P<year>\d+)/(?P<month>\d+)/$', 'bookmarks.output.views.channel'),
+    (r'^channels/(?P<channel>\w+)/(?P<year>\d+)/$', 'bookmarks.output.views.channel'),
+    (r'^channels/(?P<channel>\w+)/$', 'bookmarks.output.views.channel'),
+    (r'^$', 'bookmarks.output.views.index'),
 )
