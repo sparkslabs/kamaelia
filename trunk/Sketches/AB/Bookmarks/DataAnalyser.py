@@ -85,73 +85,81 @@ if __name__ == "__main__":
             numtweets = len(tweets)
             print "Total tweets: ", numtweets
 
-            # Then group tweets by minute and create db entries in 'analysed' for each minute
-            tweetminutes = dict()
-            lasttime = None
-            for tweet in tweets:
-                tid = tweet[0]
-                tweettime = parse(tweet[1])
-                tweettime = tweettime.replace(tzinfo=None)
-                # Need to bear in mind that everything here is in GMT - if UK is in BST on a particular date bookmarks will need an offset
-                tweettime = tweettime.replace(second=0)
-                if lasttime != None:
-                    while tweettime > (lasttime + timedelta(seconds=60)):
-                        lasttime += timedelta(seconds=60)
-                        tweetminutes[str(lasttime)] = 0
-                text = tweet[2]
-                user = tweet[3]
-                if not tweetminutes.has_key(str(tweettime)):
-                    tweetminutes[str(tweettime)] = 1
+            if numtweets > 0:
+                # Then group tweets by minute and create db entries in 'analysed' for each minute
+                tweetminutes = dict()
+                lasttime = None
+                for tweet in tweets:
+                    tid = tweet[0]
+                    tweettime = parse(tweet[1])
+                    tweettime = tweettime.replace(tzinfo=None)
+                    # Need to bear in mind that everything here is in GMT - if UK is in BST on a particular date bookmarks will need an offset
+                    tweettime = tweettime.replace(second=0)
+                    if lasttime != None:
+                        while tweettime > (lasttime + timedelta(seconds=60)):
+                            lasttime += timedelta(seconds=60)
+                            tweetminutes[str(lasttime)] = 0
+                    text = tweet[2]
+                    user = tweet[3]
+                    if not tweetminutes.has_key(str(tweettime)):
+                        tweetminutes[str(tweettime)] = 1
+                    else:
+                        tweetminutes[str(tweettime)] += 1
+                    lasttime = tweettime
+
+                print "Tweets per minute: ", tweetminutes
+
+
+                # Calculate average (mean) tweets per minute and store alongside programme (with total tweets)
+                duration = duration/60
+                if numtweets > 0 and duration > 0:
+                    meantweets = float(numtweets)/float(duration)
                 else:
-                    tweetminutes[str(tweettime)] += 1
-                lasttime = tweettime
+                    meantweets = 0
 
-            print "Tweets per minute: ", tweetminutes
+                print "Mean tweets per minute: ", meantweets
 
-            # Calculate average (mean) tweets per minute and store alongside programme (with total tweets)
-            duration = duration/60
-            if numtweets > 0 and duration > 0:
-                meantweets = float(numtweets)/float(duration)
+                # Calculate median
+                if len(tweetminutes) < duration:
+                    extrazeros = duration - len(tweetminutes)
+                else:
+                    extrazeros = 0
+
+                midpoint = int((len(tweetminutes) + extrazeros) / 2)
+
+                # Order the list!
+                items = [[v, k] for k, v in tweetminutes.items()]
+                items.sort()
+
+                if midpoint <= extrazeros:
+                    mediantweets = 0
+                else:
+                    midpoint -= (extrazeros + 1)
+                    mediantweets = items[midpoint][0]
+
+                print "Median tweets per minute: ", mediantweets
+
+                # Calculate mode
+                numcheck = dict({extrazeros : 0})
+                for pair in items:
+                    if numcheck.has_key(pair[0]):
+                        numcheck[pair[0]] += 1
+                    else:
+                        numcheck[pair[0]] = 1
+
+                ncitems = [[v, k] for k, v in numcheck.items()]
+                ncitems.sort(reverse=True)
+                modetweets = ncitems[0][1]
+
+                print "Mode tweets per minute: ", modetweets
+
+                # Calculate standard deviation / quartiles
+
             else:
                 meantweets = 0
-
-            print "Mean tweets per minute: ", meantweets
-
-            # Calculate median
-            if len(tweetminutes) < duration:
-                extrazeros = duration - len(tweetminutes)
-            else:
-                extrazeros = 0
-
-            midpoint = int((len(tweetminutes) + extrazeros) / 2)
-
-            # Order the list!
-            items = [[v, k] for k, v in tweetminutes.items()]
-            items.sort()
-
-            if midpoint <= extrazeros:
                 mediantweets = 0
-            else:
-                midpoint -= (extrazeros + 1)
-                mediantweets = items[midpoint][0]
-
-            print "Median tweets per minute: ", mediantweets
-
-            # Calculate mode
-            numcheck = dict({extrazeros : 0})
-            for pair in items:
-                if numcheck.has_key(pair[0]):
-                    numcheck[pair[0]] += 1
-                else:
-                    numcheck[pair[0]] = 1
-
-            ncitems = [[v, k] for k, v in numcheck.items()]
-            ncitems.sort(reverse=True)
-            modetweets = ncitems[0][1]
-
-            print "Mode tweets per minute: ", modetweets
-
-            # Calculate standard deviation / quartiles
+                modetweets = 0
+                tweetminutes = dict()
             
 
             # Do word freq analysis on each minute and store top 20 words???? - expected and unexpected
