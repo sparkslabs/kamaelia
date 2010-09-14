@@ -125,6 +125,17 @@ class Requester(threadedcomponent):
                 else:
                     keywords = [channel,"#" + string.lower(re.sub("\s+","",title))]
 
+                numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
+                for word in numwords:
+                    if word in string.lower(channel):
+                        numchannel = string.replace(string.lower(channel),word,str(numwords[word]))
+                        keywords.append(numchannel)
+                        break
+                    if str(numwords[word]) in string.lower(channel):
+                        numchannel = string.replace(string.lower(channel),str(numwords[word]),word)
+                        keywords.append(numchannel)
+                        break
+
                 # Load NameCache
                 save = False
                 try:
@@ -256,7 +267,10 @@ class Requester(threadedcomponent):
                     file.close()
                 except IOError, e:
                     print ("Failed to save name cache - could cause rate limit problems")
-                    
+
+                # Remove repeated keywords here
+                keywords = list(set(keywords))
+
                 return [keywords,data]
             
         else:

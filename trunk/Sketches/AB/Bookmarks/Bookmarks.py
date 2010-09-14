@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     system = Graphline(CURRENTPROG = WhatsOn(proxy),
                     RDFSOURCE = ProgrammeData(proxy),
-                    REQUESTER = Requester("bbctwo",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
+                    REQUESTER = Requester("radio1",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
                     FIREHOSE = TwitterStream(username, password, proxy), # Not technically using firehose yet, but will be made to work the same way with that later (or gardenhose more likely)
                     SEARCH = PeopleSearch(username, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
