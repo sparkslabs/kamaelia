@@ -3,12 +3,13 @@ from django.http import HttpResponse
 from bookmarks.output.models import programmes,analyseddata
 from datetime import date,timedelta,datetime
 from dateutil.parser import parse
+from pygooglechart import SimpleLineChart #lc
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
             
 radiochannels = ["radio1","1xtra","radio2","radio3","radio4","radio5","sportsextra","6music","radio7","asiannetwork","worldservice"]
 
-header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script></head><body><h1>Social Bookmarks</h1>'
+header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="/media/jquery/jquery.min.js"></script></head><body><h1>Social Bookmarks</h1>'
 
 footer = '</body></html>'
 
@@ -63,7 +64,7 @@ def channel(request,channel,year=0,month=0,day=0):
         if len(data) < 1:
             output += "<br />Please note: No data has yet been captured for this channel."
         else:
-            output += '<br /><br /><div id="inlineDatepicker"></div>'
+            output += '<br /><div id="inlineDatepicker"></div>'
             if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
                 datecomp = year + "-" + month + "-" + day
                 output += "<br />Currently viewing shows for " + day + "/" + month + "/" + year + "<br />"
@@ -76,7 +77,7 @@ def channel(request,channel,year=0,month=0,day=0):
                     output += "<br />No data for this date - please select another from the picker above.<br />"
             else:
                 output += "<br />Please select a date from the picker above.<br />"
-        output += "<br /><br /><a href=\"/\">Back to index</a> - <a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\">View BBC channel page</a>"
+        output += "<br /><br /><a href=\"/\">Back to index</a>"
 
     output += footer
     return HttpResponse(output)
@@ -100,25 +101,35 @@ def programme(request,pid):
         output += "<strong>" + data[0].title + "</strong><br />"
         output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
         output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
-        for minute in minutedata:
-            # This isn't the most elegant BST solution, but it appears to work
-            offset = datetime.strptime(str(tz.utcoffset(parse(minute.datetime))),"%H:%M:%S")
-            offset = timedelta(hours=offset.hour)
-            tweettime = parse(minute.datetime) + offset
-            proghour = tweettime.hour - actualstart.hour
-            progmin = tweettime.minute - actualstart.minute
-            progsec = tweettime.second - actualstart.second
-            playertime = (((proghour * 60) + progmin) * 60) + progsec
-            if playertime > (data[0].duration - 60):
-                playertimemin = (data[0].duration/60) - 1
-                playertimesec = playertime%60
-            elif playertime > 0:
-                playertimemin = playertime/60
-                playertimesec = playertime%60
-            else:
-                playertimemin = 0
-                playertimesec = 0
-            output += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
+        if data[0].imported == 0:
+            output += "<br />Data for this programme has not been flagged as imported."
+            output += "<br />- This may indicate that the programme is yet to finish."
+            output += "<br />- If the programme finished over 5 minutes ago, you may need to set the flag manually."
+        elif data[0].analysed == 0:
+            output += "<br />Data for this programme has been imported but is awaiting analysis."
+        else:
+            # Still need to add some form of chart or charts here - looking at Google Chart API first.
+            # Would be worth caching charts if poss to avoid too many API calls.
+            output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + "<br />"
+            for minute in minutedata:
+                # This isn't the most elegant BST solution, but it appears to work
+                offset = datetime.strptime(str(tz.utcoffset(parse(minute.datetime))),"%H:%M:%S")
+                offset = timedelta(hours=offset.hour)
+                tweettime = parse(minute.datetime) + offset
+                proghour = tweettime.hour - actualstart.hour
+                progmin = tweettime.minute - actualstart.minute
+                progsec = tweettime.second - actualstart.second
+                playertime = (((proghour * 60) + progmin) * 60) + progsec
+                if playertime > (data[0].duration - 60):
+                    playertimemin = (data[0].duration/60) - 1
+                    playertimesec = playertime%60
+                elif playertime > 0:
+                    playertimemin = playertime/60
+                    playertimesec = playertime%60
+                else:
+                    playertimemin = 0
+                    playertimesec = 0
+                output += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
         output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
     else:
         output += "Database consistency error - somehow a primary key appears twice..."

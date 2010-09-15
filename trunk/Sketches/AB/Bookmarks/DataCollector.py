@@ -46,22 +46,22 @@ class DataCollector(threadedcomponent):
                         if cursor.fetchone() != None:
                             cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pids[currentnum],newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
                     
-
-                        olddata = ""
-                        try:
-                            homedir = os.path.expanduser("~")
-                            file = open(homedir + "/twitstream.txt",'r')
-                            olddata = file.read()
-                            file.close()
-                        except IOError, e:
-                            pass
-                        try:
-                            # Need better storage method to keep pid and keywords etc (DB)
-                            file = open(homedir + "/twitstream.txt",'w')
-                            file.write(olddata + "\n" + twitdata[currentnum])
-                            file.close()
-                        except IOError, e:
-                            print ("Writing of data to file failed: " + str(e))
+                        if 0:
+                            olddata = ""
+                            try:
+                                homedir = os.path.expanduser("~")
+                                file = open(homedir + "/twitstream.txt",'r')
+                                olddata = file.read()
+                                file.close()
+                            except IOError, e:
+                                pass
+                            try:
+                                # Need better storage method to keep pid and keywords etc (DB)
+                                file = open(homedir + "/twitstream.txt",'w')
+                                file.write(olddata + "\n" + twitdata[currentnum])
+                                file.close()
+                            except IOError, e:
+                                print ("Writing of data to file failed: " + str(e))
                         
 
                     currentnum += 1

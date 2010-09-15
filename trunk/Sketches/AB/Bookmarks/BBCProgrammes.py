@@ -8,6 +8,7 @@
 import cjson
 import urllib2
 import urllib
+import httplib
 
 from Axon.Component import component
 
@@ -76,6 +77,12 @@ class WhatsOn(component):
         try:
             req = urllib2.Request(synctimeurl,data,headers)
             syncconn = urllib2.urlopen(req)
+        except httplib.BadStatusLine, e:
+            print "Some odd HTTP line error: " + str(e)
+            syncconn = False
+        except urllib2.HTTPError, e:
+            print(e.code)
+            syncconn= False
         except urllib2.URLError, e:
             syncconn = False
             print "URLError:", e.reason
@@ -97,6 +104,9 @@ class WhatsOn(component):
             try:
                 req = urllib2.Request(syncschedurl,data,headers)
                 syncconn = urllib2.urlopen(req)
+            except httplib.BadStatusLine, e:
+                print "Some odd HTTP line error: " + str(e)
+                syncconn = False
             except urllib2.HTTPError, e:
                 print(e.code)
                 syncconn= False
