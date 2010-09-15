@@ -2,6 +2,7 @@
 from django.http import HttpResponse
 from bookmarks.output.models import programmes,analyseddata
 from datetime import date
+from dateutil.parser import parse
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
             
@@ -13,23 +14,16 @@ footer = '</body></html>'
 
 def index(request):
     currentdate = date.today()
-    currentyear = str(currentdate.year)
-    currentmonth = str(currentdate.month)
-    currentday = str(currentdate.day)
-    if len(currentmonth) < 2:
-        currentmonth = "0" + currentmonth
-    if len(currentday) < 2:
-        currentday = "0" + currentday
     output = header
 
     output += "<br />Notice the severe lack of CSS<br />"
 
     output += "<h2>TV</h2>"
     for channel in tvchannels:
-        output += "<a href=\"/channels/" + channel + "/" + currentyear + "/" + currentmonth + "/" + currentday + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a> "
+        output += "<a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a> "
     output += "<br /><h2>Radio</h2>"
     for channel in radiochannels:
-        output += "<a href=\"/channels/" + channel + "/" + currentyear + "/" + currentmonth + "/" + currentday + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a> "
+        output += "<a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a> "
         
     output += footer
     return HttpResponse(output)
@@ -74,7 +68,11 @@ def channel(request,channel,year=0,month=0,day=0):
                 datecomp = year + "-" + month + "-" + day
                 data = programmes.objects.filter(channel__exact=channel,expectedstart__contains=datecomp).order_by('expectedstart').all()
                 for programme in data:
-                    output += "<br />" + programme.expectedstart + " <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
+                    progdate = parse(programme.expectedstart)
+                    progdate = progdate.replace(tzinfo=None)
+                    output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
+                if len(data) < 1:
+                    output += "<br />No data for this date - please select another from the picker above.<br />"
             else:
                 output += "<br />Please select a date from the picker above.<br />"
         output += "<br /><br /><a href=\"/\">Back to index</a>"
@@ -90,11 +88,13 @@ def programme(request,pid):
         output += "Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     elif len(data) == 1:
+        progdate = parse(data[0].expectedstart)
+        progdate = progdate.replace(tzinfo=None)
         minutedata = analyseddata.objects.filter(pid=pid)
         output += data[0].title + "<br />"
-        output += data[0].expectedstart + "<br />"
+        output += str(progdate.strftime("%d/%m/%Y %H:%M")) + "<br />"
         output += str(data[0].duration)
-        output += "<br /><br /><a href=\"/\">Back to channel page</a>" #TODO - get data from database
+        output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a>" #TODO - get data from database
     else:
         output += "Database consistency error - somehow a primary key appears twice..."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
