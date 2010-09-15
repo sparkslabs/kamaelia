@@ -97,6 +97,9 @@ class WhatsOn(component):
             try:
                 req = urllib2.Request(syncschedurl,data,headers)
                 syncconn = urllib2.urlopen(req)
+            except urllib2.HTTPError, e:
+                print(e.code)
+                syncconn= False
             except urllib2.URLError, e:
                 syncconn = False
                 print "URLError:", e.reason
@@ -116,6 +119,9 @@ class WhatsOn(component):
         try:
             req = urllib2.Request(scheduleurl,data,headers)
             conn1 = urllib2.urlopen(req)
+        except urllib2.HTTPError, e:
+            print(e.code)
+            conn1= False
         except urllib2.URLError, e:
             conn1 = False
             print "URLError:", e.reason
@@ -147,7 +153,8 @@ class WhatsOn(component):
                         gmt = pytz.timezone("GMT")
                         starttime = starttime.astimezone(gmt)
                         starttime = starttime.replace(tzinfo=None)
-                        if showdatetime == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title']):
+                        # FIXME: Turned off programme name checking as /programmes can show different info to DVB bridge
+                        if showdatetime == starttime: # and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title']):
                             expectedstart = mktime(parse(programme['start']).astimezone(gmt).timetuple())
                             #expectedstart = mktime(showdatetime.timetuple())
                             #starttime = starttime.astimezone(gmt)
@@ -275,6 +282,9 @@ class ProgrammeData(component):
         try:
             req = urllib2.Request(url,data,headers)
             conn1 = urllib2.urlopen(req)
+        except urllib2.HTTPError, e:
+            print(e.code)
+            conn1= False
         except urllib2.URLError, e:
             conn1 = False
             print "URLError:", e.reason

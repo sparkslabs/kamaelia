@@ -309,6 +309,7 @@ class Requester(threadedcomponent):
                         cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,self.channel))
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
+                    oldpid = pid
                 else:
                     keywords = None
                 
@@ -317,7 +318,6 @@ class Requester(threadedcomponent):
                     self.send([keywords,pid],"outbox")
                     pass
                 
-                oldpid = pid
             else:
                 # This bit just got complicated - won't work yet so concentrating on one channel - ABOVE
                 # Now, adding some stuff above I've definitely broken this
