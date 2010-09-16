@@ -58,8 +58,8 @@ class WhatsOn(component):
 
     def getCurrentProg(self, channel):
         scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + ".json"
-        syncschedurl = "http://gandi.thwackety.com:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
-        synctimeurl = "http://gandi.thwackety.com:8082/dvb-bridge?command=time"
+        syncschedurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
+        synctimeurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=time"
 
         # Configure proxy and opener
         if self.proxy:

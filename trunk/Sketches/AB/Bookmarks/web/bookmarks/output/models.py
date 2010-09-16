@@ -17,6 +17,7 @@ class programmes(models.Model):
     meantweets = models.FloatField(db_column="meantweets",default=0)
     mediantweets = models.IntegerField(db_column="mediantweets",default=0)
     modetweets = models.IntegerField(db_column="modetweets",default=0)
+    stdevtweets = models.FloatField(db_column="stdevtweets",default=0)
 
     class Meta:
         db_table = 'programmes'
