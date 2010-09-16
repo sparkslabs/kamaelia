@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from bookmarks.output.models import programmes,analyseddata
 from datetime import date,timedelta,datetime
 from dateutil.parser import parse
-from pygooglechart import SimpleLineChart #lc
+from pygooglechart import SimpleLineChart, Axis #lc
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
             
@@ -109,8 +109,9 @@ def programme(request,pid):
             output += "<br />Data for this programme has been imported but is awaiting analysis."
         else:
             # Still need to add some form of chart or charts here - looking at Google Chart API first.
-            # Would be worth caching charts if poss to avoid too many API calls.
-            output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + "<br />"
+            # Would be worth caching charts if poss to avoid too many API calls.            
+            tweetmins = dict()
+            appender = ""
             for minute in minutedata:
                 # This isn't the most elegant BST solution, but it appears to work
                 offset = datetime.strptime(str(tz.utcoffset(parse(minute.datetime))),"%H:%M:%S")
@@ -129,7 +130,36 @@ def programme(request,pid):
                 else:
                     playertimemin = 0
                     playertimesec = 0
-                output += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
+                appender += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
+                if not tweetmins.has_key(str(playertimemin)):
+                    tweetmins[str(playertimemin)] = int(minute.totaltweets)
+
+            if len(tweetmins) > 0:
+                output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + "<br />"
+                xlist = range(0,data[0].duration/60)
+                ylist = list()
+                for min in xlist:
+                    if tweetmins.has_key(str(min)):
+                        ylist.append(tweetmins[str(min)])
+                    else:
+                        ylist.append(0)
+
+                maxy = max(ylist)
+                maxx = max(xlist)
+                graph = SimpleLineChart(750,300,y_range=[0,maxy])
+                graph.add_data(ylist)
+
+                #TODO: Fix the bad labelling!
+                graph.set_title("Tweets per minute (with bad labelling)")
+                left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
+                bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
+                graph.set_axis_labels(Axis.LEFT,left_axis)
+                graph.set_axis_labels(Axis.BOTTOM,bottom_axis)
+                output += "<br /><img src=\"" + graph.get_url() + "\"><br />"
+                output += appender
+            else:
+                output += "<br />Not enough data to generate statistics.<br />"
+
         output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
     else:
         output += "Database consistency error - somehow a primary key appears twice..."
