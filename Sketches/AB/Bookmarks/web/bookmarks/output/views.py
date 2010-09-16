@@ -4,6 +4,7 @@ from bookmarks.output.models import programmes,analyseddata
 from datetime import date,timedelta,datetime
 from dateutil.parser import parse
 from pygooglechart import SimpleLineChart, Axis #lc
+import operator
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
             
@@ -17,7 +18,7 @@ def index(request):
     currentdate = date.today()
     output = header
 
-    output += "<br />Notice the severe lack of CSS<br />"
+    output += "Notice the severe lack of CSS<br />"
 
     output += "<h2>TV</h2>"
     for channel in tvchannels:
@@ -112,6 +113,7 @@ def programme(request,pid):
             # Would be worth caching charts if poss to avoid too many API calls.            
             tweetmins = dict()
             appender = ""
+            lastwasbookmark = False
             for minute in minutedata:
                 # This isn't the most elegant BST solution, but it appears to work
                 offset = datetime.strptime(str(tz.utcoffset(parse(minute.datetime))),"%H:%M:%S")
@@ -131,11 +133,18 @@ def programme(request,pid):
                     playertimemin = 0
                     playertimesec = 0
                 appender += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
+                if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets):
+                    if lastwasbookmark == False:
+                        appender += " BOOKMARK!"
+                        lastwasbookmark = True
+                    else:
+                        appender += " cont'd..."
+                else:
+                    lastwasbookmark = False
                 if not tweetmins.has_key(str(playertimemin)):
                     tweetmins[str(playertimemin)] = int(minute.totaltweets)
-
-            if len(tweetmins) > 0:
-                output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + "<br />"
+            if len(tweetmins) > 0 and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation
+                output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
                 xlist = range(0,data[0].duration/60)
                 ylist = list()
                 for min in xlist:
@@ -158,7 +167,7 @@ def programme(request,pid):
                 output += "<br /><img src=\"" + graph.get_url() + "\"><br />"
                 output += appender
             else:
-                output += "<br />Not enough data to generate statistics.<br />"
+                output += "<br />Not enough data to generate accurate statistics.<br />"
 
         output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
     else:

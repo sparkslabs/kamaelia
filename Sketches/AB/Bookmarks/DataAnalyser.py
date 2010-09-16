@@ -16,6 +16,7 @@ import os
 import time
 from dateutil.parser import parse
 from datetime import timedelta
+import math
 
 exclusions = ["a","able","about","across","after","all","almost","also","am",\
             "among","an","and","any","are","as","at","be","because","been","but",\
@@ -154,11 +155,18 @@ if __name__ == "__main__":
                 print "Mode tweets per minute: ", modetweets
 
                 # Calculate standard deviation / quartiles
+                stdevsum = (0-meantweets)*(0-meantweets)*extrazeros
+                for tweet in tweetminutes:
+                  stdevsum += (tweetminutes[tweet]-meantweets)*(tweetminutes[tweet]-meantweets)
+                stdevtweets = math.sqrt(stdevsum/(len(tweetminutes)+extrazeros))
+
+                print "Standard deviation: ", stdevtweets
 
             else:
                 meantweets = 0
                 mediantweets = 0
                 modetweets = 0
+                stdevtweets = 0
                 tweetminutes = dict()
             
 
@@ -170,7 +178,7 @@ if __name__ == "__main__":
                     if tweetminutes[minute] > 0:
                         cursor.execute("""INSERT INTO analyseddata (pid,datetime,wordfreqexpected,wordfrequnexpected,totaltweets) VALUES (%s,%s,%s,%s,%s)""", (pid,minute,0,0,tweetminutes[minute]))
 
-                cursor.execute("""UPDATE programmes SET analysed = 1, totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s WHERE pid = %s""",(numtweets,meantweets,mediantweets,modetweets,pid))
+                cursor.execute("""UPDATE programmes SET analysed = 1, totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s""",(numtweets,meantweets,mediantweets,modetweets,stdevtweets,pid))
             except _mysql_exceptions.IntegrityError, e:
                 print "Data has already been analysed. Clear DB tables to redo: ", e
 
