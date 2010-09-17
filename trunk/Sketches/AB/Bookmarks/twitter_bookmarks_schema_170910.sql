@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 13, 2010 at 05:04 PM
+-- Generation Time: Sep 17, 2010 at 08:45 AM
 -- Server version: 5.1.41
 -- PHP Version: 5.3.2-1ubuntu4.2
 
@@ -26,13 +26,15 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 
 CREATE TABLE IF NOT EXISTS `analyseddata` (
+  `did` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
   `datetime` varchar(100) NOT NULL,
   `wordfreqexpected` varchar(500) NOT NULL,
   `wordfrequnexpected` varchar(500) NOT NULL,
   `totaltweets` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`pid`,`datetime`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`did`),
+  KEY `pid_refs_pid_5901525b` (`pid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2297 ;
 
 -- --------------------------------------------------------
 
@@ -44,8 +46,9 @@ CREATE TABLE IF NOT EXISTS `keywords` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
   `keyword` varchar(200) NOT NULL,
-  PRIMARY KEY (`uid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
+  PRIMARY KEY (`uid`),
+  KEY `pid_refs_pid_38b0e356` (`pid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1352 ;
 
 -- --------------------------------------------------------
 
@@ -63,9 +66,10 @@ CREATE TABLE IF NOT EXISTS `programmes` (
   `imported` tinyint(1) NOT NULL DEFAULT '0',
   `analysed` tinyint(1) NOT NULL DEFAULT '0',
   `totaltweets` int(11) NOT NULL DEFAULT '0',
-  `meantweets` float NOT NULL DEFAULT '0',
+  `meantweets` double NOT NULL DEFAULT '0',
   `mediantweets` int(11) NOT NULL DEFAULT '0',
   `modetweets` int(11) NOT NULL DEFAULT '0',
+  `stdevtweets` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`pid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -81,5 +85,6 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   `datetime` varchar(100) NOT NULL,
   `text` varchar(200) CHARACTER SET utf8 NOT NULL,
   `user` varchar(200) NOT NULL,
-  PRIMARY KEY (`tid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
+  PRIMARY KEY (`tid`),
+  KEY `pid_refs_pid_458415f9` (`pid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15541 ;

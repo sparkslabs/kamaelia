@@ -1,8 +1,11 @@
 TV Bookmarks
 - App designed to grab RDF data from BBC /programmes and use it to identify relevant conversation using Twitter.
-- Data is the saved and analysed to create bookmarks in programmes which can be jumped to via the iPlayer interface.
+- Data is then saved and analysed to create bookmarks in programmes which can be jumped to via the iPlayer interface.
 - Data will at a later date be enriched to provide some form of explanation to users, identifying why it forms a relevant bookmark.
 - If run live enough, could be used to give a live activity EPG with heavily discussed programmes highlighted
 
+Installing
+- DB schema MUST be imported from the included SQL file BEFORE executing the Django DB sync as Django can't get it quite right
 
-- Database schema not included yet as it changes far too often
+Important Note
+- This program makes use of the Twitter people search API. Despite keeping a cache of searched for users, given the feature specific rate limit of 60 requests per hour you may encounter problems. The program does not currently watch for hitting the rate limit but should do soon.
