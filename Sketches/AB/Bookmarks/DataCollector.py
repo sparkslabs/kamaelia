@@ -8,6 +8,7 @@ import time
 import os
 import MySQLdb
 import cjson
+import string
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -29,22 +30,34 @@ class DataCollector(threadedcomponent):
         cursor = self.dbConnect()
         while 1:
             twitdata = list()
-            pids = list()
             while self.dataReady("inbox"):
+                pids = list()
                 data = self.recv("inbox")
-                twitdata.append(data[0])
-                pids.append(data[1])
+                for pid in data[1]:
+                    pids.append(pid)
+                twitdata.append([data[0],pids])
             if len(twitdata) > 0:
                 # TODO: Looking for \n characters, divide tweets, then check them against original keywords and add to table against the correct pid
                 print twitdata
 
-                currentnum = 0
-                for pid in pids:
-                    if twitdata[currentnum] != "\r\n":
-                        newdata = cjson.decode(twitdata[currentnum])
-                        cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pids[currentnum]))
-                        if cursor.fetchone() != None:
-                            cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pids[currentnum],newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
+                
+                for tweet in twitdata:
+                    if tweet[0] != "\r\n":
+                        # At this point, each 'tweet' contains tweetdata, and a list of possible pids
+                        newdata = cjson.decode(tweet[0]) # Won't work - need keywords to be related to their pids - let's requery
+                        for pid in tweet[1]:
+                            # Cycle through possible pids, grabbing that pid's keywords from the DB
+                            # Then, check this tweet against the keywords and save to DB where appropriate (there may be more than one location)
+                            cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
+                            keywords = cursor.fetchall()
+                            #print newdata['text']
+                            for keyword in keywords:
+                                #print keyword[0]
+                                if string.lower(keyword[0]) in string.lower(newdata['text']):
+                                    cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
+                                    if cursor.fetchone() != None:
+                                        cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
+                                        break # Break out of this loop and back to check the same tweet against the next programme
                     
                         if 0:
                             olddata = ""
@@ -64,7 +77,6 @@ class DataCollector(threadedcomponent):
                                 print ("Writing of data to file failed: " + str(e))
                         
 
-                    currentnum += 1
                 # Still need to re-search through received data using original keywords to ensure those keywords separated by spaces appear correctly and not split
             else:
                 time.sleep(0.1)
