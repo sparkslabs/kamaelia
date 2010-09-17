@@ -114,6 +114,8 @@ def programme(request,pid):
             tweetmins = dict()
             appender = ""
             lastwasbookmark = False
+            bookmarks = list()
+            bookmarkcont = list()
             for minute in minutedata:
                 # This isn't the most elegant BST solution, but it appears to work
                 offset = datetime.strptime(str(tz.utcoffset(parse(minute.datetime))),"%H:%M:%S")
@@ -137,8 +139,10 @@ def programme(request,pid):
                     if lastwasbookmark == False:
                         appender += " BOOKMARK!"
                         lastwasbookmark = True
+                        bookmarks.append(playertimemin)
                     else:
                         appender += " cont'd..."
+                        bookmarkcont.append(playertimemin)
                 else:
                     lastwasbookmark = False
                 if not tweetmins.has_key(str(playertimemin)):
@@ -158,14 +162,38 @@ def programme(request,pid):
                 graph = SimpleLineChart(750,300,y_range=[0,maxy])
                 graph.add_data(ylist)
 
+                mainwidth = int(900/maxx) * (maxx + 1)
+                blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 100px; width: " + str(mainwidth) + "px\">"
+                width = int(900/maxx)
+                for min in xlist:
+                    if tweetmins.has_key(str(min)):
+                        opacity = float(tweetmins[str(min)]) / maxy
+                    else:
+                        opacity = 0
+                    blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 100px; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                blockgraph += "</div>"
+
+                blockgraph2 = "<div style=\"border-bottom: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
+                for min in xlist:
+                    if min in bookmarks:
+                        blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
+                        lastbookmark = min
+                    elif min in bookmarkcont:
+                        blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
+                    else:
+                        blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
+                blockgraph2 += "</div>"
+
                 #TODO: Fix the bad labelling!
                 graph.set_title("Tweets per minute (with bad labelling)")
                 left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
                 bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
                 graph.set_axis_labels(Axis.LEFT,left_axis)
                 graph.set_axis_labels(Axis.BOTTOM,bottom_axis)
-                output += "<br /><img src=\"" + graph.get_url() + "\"><br />"
-                output += appender
+                output += "<br /><img src=\"" + graph.get_url() + "\"><br /><br />"
+                output += blockgraph
+                output += blockgraph2
+                #output += appender
             else:
                 output += "<br />Not enough data to generate accurate statistics.<br />"
 
