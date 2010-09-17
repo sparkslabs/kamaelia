@@ -86,7 +86,7 @@ class TwitterStream(threadedcomponent):
             if self.dataReady("inbox"):
                 recvdata = self.recv("inbox")
                 keywords = recvdata[0]
-                pid = recvdata[1]
+                pids = recvdata[1]
                 data = urllib.urlencode({"track": ",".join(keywords)})
                 print ("Got keywords: " + data)
                 # When using firehose, filtering based on keywords will be carried out AFTER grabbing data
@@ -123,7 +123,7 @@ class TwitterStream(threadedcomponent):
                             while not "\n" in content:
                                 content += conn1.read(1)
                             #content = conn1.readline()
-                            self.send([content,pid],"data") # Send to data collector / analyser rather than back to requester
+                            self.send([content,pids],"data") # Send to data collector / analyser rather than back to requester
                             # What is message size limit on inboxes - could be getting flooded in just one send
                         except IOError, e:
                             print str(e)
@@ -133,6 +133,6 @@ class TwitterStream(threadedcomponent):
                             #self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
                     print ("Disconnecting from twitter stream.")
                     conn1.close()
-                    time.sleep(10) # TODO: Add in proper backoff algorithm and reconnection facility
+                    time.sleep(1) # TODO: Add in proper backoff algorithm and reconnection facility
                     # Reconnection util and backoff need to look at HTTP error codes
                     

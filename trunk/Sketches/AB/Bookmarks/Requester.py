@@ -268,8 +268,6 @@ class Requester(threadedcomponent):
                 except IOError, e:
                     print ("Failed to save name cache - could cause rate limit problems")
 
-                # Remove repeated keywords here
-                keywords = list(set(keywords))
 
                 return [keywords,data]
             
@@ -287,10 +285,11 @@ class Requester(threadedcomponent):
     def main(self):
         cursor = self.dbConnect()
         oldkeywords = None
-        oldpid = None # only relevant for single channel selection
+        #oldpid = None # only relevant for single channel selection
         while 1:
             print ("### Checking current programmes ###")
             if self.channel != "all":
+                oldpid = self.channels[self.channel]
                 data = self.doStuff(self.channel)
                 if data != None:
                     keywords = data[0]
@@ -299,8 +298,8 @@ class Requester(threadedcomponent):
                     offset = data[1][2]
                     duration = data[1][3]
                     expectedstart = data[1][4]
-                    if oldpid != None and oldpid != pid:
-                        # Pid has changed - tie off the last prog ready for analysis TODO: This doesn't work yet?!?
+                    if oldpid != "" and oldpid != pid:
+                        # Pid has changed - tie off the last prog ready for analysis
                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
                         if cursor.fetchone() != None:
                             cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
@@ -309,26 +308,71 @@ class Requester(threadedcomponent):
                         cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,self.channel))
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
-                    oldpid = pid
+                    #oldpid = pid
                 else:
                     keywords = None
-                
+
+                # Remove repeated keywords here
+                if keywords != None:
+                    keywords = list(set(keywords))
+
                 if (keywords != oldkeywords) & (keywords != None):
                     print keywords
-                    self.send([keywords,pid],"outbox")
+                    self.send([keywords,[pid]],"outbox")
                     pass
                 
             else:
-                # This bit just got complicated - won't work yet so concentrating on one channel - ABOVE
-                # Now, adding some stuff above I've definitely broken this
+                # Still need to fix the 'changed to - off air' problem, but it isn't causing twitter keyword redos thankfully (purely a printing error)
+                # Possible issue will start to occur if programmes change too often - tweet stream will miss too much
                 keywords = list()
                 for channel in self.channels:
-                    newwords = self.doStuff(channel)
-                    if (newwords != None):
-                        keywords.append(newwords)
-                if (keywords != oldkeywords) & (keywords != None):
+                    oldpid = self.channels[channel]
+                    data = self.doStuff(channel)
+                    if data != None:
+                        keywordappender = data[0]
+                        pid = data[1][0]
+                        title = data[1][1]
+                        offset = data[1][2]
+                        duration = data[1][3]
+                        expectedstart = data[1][4]
+                        if oldpid != "" and oldpid != pid:
+                            # Pid has changed - tie off the last prog ready for analysis
+                            cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
+                            if cursor.fetchone() != None:
+                                cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
+                        cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
+                        if cursor.fetchone() == None:
+                            cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,channel))
+                            for word in keywordappender:
+                                cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
+                        #oldpid = pid
+                    #else:
+                        #keywordappender = ""
+                        
+                    #for keyword in keywordappender:
+                        #keywords.append(keyword)
+
+                currentpids = list()
+                for channel in self.channels:
+                    if self.channels[channel] != "":
+                        currentpids.append(self.channels[channel])
+
+                for pid in currentpids:
+                    cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
+                    keywordquery = cursor.fetchall()
+                    for keyword in keywordquery:
+                        keywords.append(keyword[0])
+
+                # Remove repeated keywords here
+                if len(keywords) != 0:
+                    keywords = list(set(keywords))
+
+                if (keywords != oldkeywords) & (len(keywords) != 0):
                     print keywords
+                    self.send([keywords,currentpids],"outbox") #epicfail: now need to send all pids, and search through them further down the line
                     pass
+
+
             if self.dataReady("inbox"):
                 print self.recv("inbox")
             oldkeywords = keywords
