@@ -159,12 +159,10 @@ def programme(request,pid):
 
                 maxy = max(ylist)
                 maxx = max(xlist)
-                graph = SimpleLineChart(750,300,y_range=[0,maxy])
-                graph.add_data(ylist)
 
-                mainwidth = int(900/maxx) * (maxx + 1)
+                mainwidth = int(1000/maxx) * (maxx + 1)
                 blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 100px; width: " + str(mainwidth) + "px\">"
-                width = int(900/maxx)
+                width = int(1000/maxx)
                 for min in xlist:
                     if tweetmins.has_key(str(min)):
                         opacity = float(tweetmins[str(min)]) / maxy
@@ -183,6 +181,9 @@ def programme(request,pid):
                     else:
                         blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
                 blockgraph2 += "</div>"
+
+                graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
+                graph.add_data(ylist)
 
                 #TODO: Fix the bad labelling!
                 graph.set_title("Tweets per minute (with bad labelling)")
