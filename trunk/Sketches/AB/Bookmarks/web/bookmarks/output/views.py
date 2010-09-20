@@ -10,15 +10,13 @@ tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews"
             
 radiochannels = ["radio1","1xtra","radio2","radio3","radio4","radio5","sportsextra","6music","radio7","asiannetwork","worldservice"]
 
-header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="/media/jquery/jquery.min.js"></script></head><body><h1>Social Bookmarks</h1>'
+header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="/media/jquery/jquery.min.js"></script></head><body style="margin: 0px"><div style="background-color: #FFFFFF; position: absolute; overflow: hidden; width: 100%; height: 100%"><div style="width: 100%; overflow: hidden; height: 80px; font-family: Arial, Helvetica, sans-serif; position: absolute; padding-left: 10px; background-color: #A9D0F5"><h1>Social Bookmarks</h1></div><div style="position: absolute; top: 80px; font-family: Arial, Helvetica, sans-serif; padding: 10px; width: 100%">'
 
-footer = '</body></html>'
+footer = '</div></div></body></html>'
 
 def index(request):
     currentdate = date.today()
     output = header
-
-    output += "Notice the severe lack of CSS<br />"
 
     output += "<h2>TV</h2>"
     for channel in tvchannels:
@@ -34,7 +32,7 @@ def channel(request,channel,year=0,month=0,day=0):
     output = header
     data = programmes.objects.filter(channel=channel)
     if channel not in radiochannels and channel not in tvchannels:
-        output += "Invalid channel supplied."
+        output += "<br />Invalid channel supplied."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     else:
         output += '<style type="text/css">@import "/media/jquery/jquery.datepick.css";</style>\n \
@@ -61,7 +59,7 @@ def channel(request,channel,year=0,month=0,day=0):
                         }\n \
                     </script>\n"
         
-        output += "<a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+        output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
         if len(data) < 1:
             output += "<br />Please note: No data has yet been captured for this channel."
         else:
@@ -88,11 +86,11 @@ def programme(request,pid):
 
     data = programmes.objects.filter(pid=pid).all()
     if len(data) == 0:
-        output += "Invalid pid supplied or no data has yet been captured for this programme."
+        output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     elif len(data) == 1:
         channel = data[0].channel
-        output += "<a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
+        output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
         progdate = parse(data[0].expectedstart)
         tz = progdate.tzinfo
         progdate = progdate.replace(tzinfo=None)
@@ -200,7 +198,7 @@ def programme(request,pid):
 
         output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
     else:
-        output += "Database consistency error - somehow a primary key appears twice..."
+        output += "<br />Database consistency error - somehow a primary key appears twice..."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
 
     output += footer

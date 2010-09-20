@@ -63,10 +63,7 @@ class Requester(threadedcomponent):
             #TODO: Will need to check, esp in radio case if presenter name is the same as show name to reduce duplicate keywords
             # Perhaps just do a duplicate scan before creating Twitter stream
             if pid == None:
-                if self.firstrun:
-                    print (channel + ": Off Air")
-                else:
-                    print (channel + ": Changed to - Off Air")
+                print (channel + ": Off Air")
             else:
                 self.channels[channel] = pid
                 self.send([pid, "rdf"], "proginfo")
@@ -127,7 +124,7 @@ class Requester(threadedcomponent):
 
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:
-                    if word in string.lower(channel):
+                    if word in string.lower(channel) and channel != "asiannetwork": # Bug fix! asianne2rk
                         numchannel = string.replace(string.lower(channel),word,str(numwords[word]))
                         keywords.append(numchannel)
                         break
@@ -143,7 +140,7 @@ class Requester(threadedcomponent):
                     file = open(homedir + "/namecache.conf",'r')
                     save = True
                 except IOError, e:
-                    print ("Failed to load name cache - postponing twitter searches: " + str(e))
+                    print ("Failed to load name cache - will attempt to create a new file: " + str(e))
 
                 if save:
                     raw_config = file.read()
@@ -237,7 +234,7 @@ class Requester(threadedcomponent):
                     keywords.append(firstname + " " + lastname)
 
                 # Radio appears to have been forgotten about a bit in RDF / scheduling at the mo
-                if "radio" in channel:
+                if "radio" in channel or "6music" in channel or "asiannetwork" in channel or "sportsextra" in channel or "worldservice" in channel:
                     # However, radio shows are often named using the DJ - The cases where this isn't true will cause problems however as they'll be saved in json - DOH! TODO
                     if config.has_key(title):
                         # Found a cached value
