@@ -9,6 +9,8 @@ import urllib
 import time
 import os
 import cjson
+import string
+from datetime import datetime,timedelta
 
 import urlparse
 import oauth2 as oauth
@@ -26,6 +28,7 @@ class PeopleSearch(component):
         self.proxy = proxy
         self.keypair = keypair
         self.username = username
+        self.ratelimited = datetime.today() - timedelta(minutes=15)
 
     def getOAuth(self, consumer_key, consumer_secret):
         request_token_url = 'http://api.twitter.com/oauth/request_token'
@@ -129,56 +132,67 @@ class PeopleSearch(component):
             # TODO: Watch rate limit of 60 per hour in search headers
             # TODO: Implement backoff algorithm in case of connection failures - watch out for the fact this could delay the requester component
             if self.dataReady("inbox"):
-                person = self.recv("inbox")
+                if (datetime.today() - timedelta(minutes=15)) > self.ratelimited:
+                    person = self.recv("inbox")
 
-                #print person
-                requesturl = twitterurl + "?q=" + urllib.quote(person) + "&per_page=5"
-                #print requesturl
+                    #print person
+                    requesturl = twitterurl + "?q=" + urllib.quote(person) + "&per_page=5"
+                    #print requesturl
 
-                params = {
-                    'oauth_version': "1.0",
-                    'oauth_nonce': oauth.generate_nonce(),
-                    'oauth_timestamp': int(time.time()),
-                    'user': self.username
-                }
+                    params = {
+                        'oauth_version': "1.0",
+                        'oauth_nonce': oauth.generate_nonce(),
+                        'oauth_timestamp': int(time.time()),
+                        'user': self.username
+                    }
 
-                token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
-                consumer = oauth.Consumer(key=consumer_key,secret=consumer_secret)
+                    token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
+                    consumer = oauth.Consumer(key=consumer_key,secret=consumer_secret)
 
-                params['oauth_token'] = token.key
-                params['oauth_consumer_key'] = consumer.key
+                    params['oauth_token'] = token.key
+                    params['oauth_consumer_key'] = consumer.key
 
-                req = oauth.Request(method="GET",url=requesturl,parameters=params)
+                    req = oauth.Request(method="GET",url=requesturl,parameters=params)
 
-                signature_method = oauth.SignatureMethod_HMAC_SHA1()
-                req.sign_request(signature_method, consumer, token)
+                    signature_method = oauth.SignatureMethod_HMAC_SHA1()
+                    req.sign_request(signature_method, consumer, token)
 
-                requesturl = req.to_url()
+                    requesturl = req.to_url()
 
-         
-                if 1:
-                    # Grab twitter data
-                    try:
-                        #req = urllib2.Request(requesturl,data,headers)
-                        conn1 = urllib2.urlopen(requesturl)
-                    except urllib2.HTTPError, e:
-                        self.send("HTTP Error: " + str(e.code),"outbox") # Errors get sent back to the requester
-                        conn1 = False
-                    except urllib2.URLError, e:
-                        self.send("Connect Error: " + e.reason,"outbox") # Errors get sent back to the requester
-                        conn1 = False
 
-                    if conn1:
-                        print conn1.info() # Manual place to watch rate limit for now
+                    if 1:
+                        # Grab twitter data
                         try:
-                            data = conn1.read()
+                            #req = urllib2.Request(requesturl,data,headers)
+                            conn1 = urllib2.urlopen(requesturl)
+                        except urllib2.HTTPError, e:
+                            self.send("HTTP Error: " + str(e.code),"outbox") # Errors get sent back to the requester
+                            conn1 = False
+                        except urllib2.URLError, e:
+                            self.send("Connect Error: " + e.reason,"outbox") # Errors get sent back to the requester
+                            conn1 = False
+
+                        if conn1:
+                            headers = conn1.info() # Manual place to watch rate limit for now
+                            headerlist = string.split(str(headers),"\n")
+                            for line in headerlist:
+                                splitheader = string.split(line," ")
+                                if splitheader[0] == "X-FeatureRateLimit-Remaining:":
+                                    print splitheader[0] + " " + str(splitheader[1])
+                                    if splitheader[1] < 5:
+                                        self.ratelimited = datetime.today()
+                                    break
                             try:
-                                content = cjson.decode(data)
-                                self.send(content,"outbox")
-                            except cjson.DecodeError, e:
-                                self.send(dict(),"outbox")
-                        except IOError, e:
-                            self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
-                        conn1.close()
+                                data = conn1.read()
+                                try:
+                                    content = cjson.decode(data)
+                                    self.send(content,"outbox")
+                                except cjson.DecodeError, e:
+                                    self.send(dict(),"outbox")
+                            except IOError, e:
+                                self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
+                            conn1.close()
+                else:
+                   print "Twitter search paused - rate limited"                
             self.pause()
             yield 1
