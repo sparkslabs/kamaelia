@@ -132,9 +132,9 @@ class PeopleSearch(component):
             # TODO: Watch rate limit of 60 per hour in search headers
             # TODO: Implement backoff algorithm in case of connection failures - watch out for the fact this could delay the requester component
             if self.dataReady("inbox"):
+                
+                person = self.recv("inbox")
                 if (datetime.today() - timedelta(minutes=15)) > self.ratelimited:
-                    person = self.recv("inbox")
-
                     #print person
                     requesturl = twitterurl + "?q=" + urllib.quote(person) + "&per_page=5"
                     #print requesturl
@@ -179,7 +179,7 @@ class PeopleSearch(component):
                                 splitheader = string.split(line," ")
                                 if splitheader[0] == "X-FeatureRateLimit-Remaining:":
                                     print splitheader[0] + " " + str(splitheader[1])
-                                    if splitheader[1] < 5:
+                                    if int(splitheader[1]) < 5:
                                         self.ratelimited = datetime.today()
                                     break
                             try:
@@ -193,6 +193,7 @@ class PeopleSearch(component):
                                 self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
                             conn1.close()
                 else:
-                   print "Twitter search paused - rate limited"                
+                   print "Twitter search paused - rate limited"
+                   self.send(dict(),"outbox")
             self.pause()
             yield 1
