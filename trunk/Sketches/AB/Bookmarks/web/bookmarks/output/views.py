@@ -4,13 +4,15 @@ from bookmarks.output.models import programmes,analyseddata
 from datetime import date,timedelta,datetime
 from dateutil.parser import parse
 from pygooglechart import SimpleLineChart, Axis #lc
-import operator
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
             
 radiochannels = ["radio1","1xtra","radio2","radio3","radio4","radio5","sportsextra","6music","radio7","asiannetwork","worldservice"]
 
-header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="/media/jquery/jquery.min.js"></script></head><body style="margin: 0px"><div style="background-color: #FFFFFF; position: absolute; overflow: hidden; width: 100%; height: 100%"><div style="width: 100%; overflow: hidden; height: 80px; font-family: Arial, Helvetica, sans-serif; position: absolute; padding-left: 10px; background-color: #A9D0F5"><h1>Social Bookmarks</h1></div><div style="position: absolute; top: 80px; font-family: Arial, Helvetica, sans-serif; padding: 10px; width: 100%">'
+header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="/media/jquery/jquery.min.js"></script>\
+            </head><body style="margin: 0px"><div style="background-color: #FFFFFF; position: absolute; width: 100%; height: 100%">\
+            <div style="width: 100%; overflow: hidden; height: 80px; font-family: Arial, Helvetica, sans-serif; position: absolute; background-color: #A9D0F5">\
+            <div style="padding-left: 10px"><h1>Social Bookmarks</h1></div></div><div style="position: absolute; top: 80px; font-family: Arial, Helvetica, sans-serif; padding: 10px">'
 
 footer = '</div></div></body></html>'
 

@@ -10,6 +10,7 @@ import urllib2
 import urllib
 import os
 import cjson
+import socket
 
 import oauth2 as oauth # TODO - returns 401 unauthorised at the mo
 
@@ -27,6 +28,8 @@ class TwitterStream(threadedcomponent):
         self.password = password
         # Reconnect on failure?
         self.reconnect = reconnect # Not quite used yet
+        timeout = 120
+        socket.setdefaulttimeout(timeout) # Attempt to fix issues with streaming API connection hanging
 
     def main(self):
         twitterurl = "http://stream.twitter.com/1/statuses/filter.json"
@@ -113,7 +116,7 @@ class TwitterStream(threadedcomponent):
                     print(e.code)
                     conn1 = False
                 except urllib2.URLError, e:
-                    self.send("Connect Error: " + e.reason,"outbox") # Errors get sent back to the requester
+                    self.send("Connect Error: " + str(e.reason),"outbox") # Errors get sent back to the requester
                     conn1 = False
 
                 if conn1:
@@ -125,14 +128,36 @@ class TwitterStream(threadedcomponent):
                             #content = conn1.readline()
                             self.send([content,pids],"data") # Send to data collector / analyser rather than back to requester
                             # What is message size limit on inboxes - could be getting flooded in just one send
+                            failed = False
                         except IOError, e:
                             print str(e)
-                            break # TODO: FIXME
+                            failed = True
+                            #break # TODO: FIXME
                         except Axon.AxonExceptions.noSpaceInBox, e:
-                            pass # Ignore data - no space
+                            #pass # Ignore data - no space
+                            failed = True
                             #self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
+                        if failed == True:
+                            # Reconnection procedure
+                            print ("Streaming API connection failed.")
+                            conn1.close()
+                            time.sleep(1)
+                            try:
+                                req = urllib2.Request(twitterurl,data,headers)
+                                conn1 = urllib2.urlopen(req)
+                                print ("Connected to twitter stream. Awaiting data...")
+                            except urllib2.HTTPError, e:
+                                self.send("Connect Error: " + str(e.code),"outbox") # Errors get sent back to the requester
+                                print(e.code)
+                                conn1 = False
+                                break
+                            except urllib2.URLError, e:
+                                self.send("Connect Error: " + str(e.reason),"outbox") # Errors get sent back to the requester
+                                conn1 = False
+                                break
                     print ("Disconnecting from twitter stream.")
-                    conn1.close()
+                    if conn1:
+                        conn1.close()
                     time.sleep(1) # TODO: Add in proper backoff algorithm and reconnection facility
                     # Reconnection util and backoff need to look at HTTP error codes
                     
