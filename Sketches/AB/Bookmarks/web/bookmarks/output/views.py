@@ -147,7 +147,7 @@ def programme(request,pid):
                     lastwasbookmark = False
                 if not tweetmins.has_key(str(playertimemin)):
                     tweetmins[str(playertimemin)] = int(minute.totaltweets)
-            if len(tweetmins) > 0 and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation
+            if len(tweetmins) > 0 and max(tweetmins.values()) > 5: # Arbitrary value chosen for now - needs experimentation - was 9
                 output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
                 xlist = range(0,data[0].duration/60)
                 ylist = list()
