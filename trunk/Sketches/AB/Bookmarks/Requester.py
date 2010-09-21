@@ -306,11 +306,11 @@ class Requester(threadedcomponent):
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
                     #oldpid = pid
-                elif oldpid != "" and oldpid != None:
-                    cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
-                    if cursor.fetchone() != None:
-                        cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
-                    keywords = None
+                #elif oldpid != "" and oldpid != None:
+                #    cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
+                #    if cursor.fetchone() != None:
+                #        cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
+                #    keywords = None
                 else:
                     keywords = None
 
@@ -347,10 +347,10 @@ class Requester(threadedcomponent):
                             cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,channel))
                             for word in keywordappender:
                                 cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
-                    elif oldpid != "" and oldpid != None:
-                        cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
-                        if cursor.fetchone() != None:
-                            cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
+                    #elif oldpid != "" and oldpid != None:
+                    #    cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
+                    #    if cursor.fetchone() != None:
+                    #        cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
                         #oldpid = pid
                     #else:
                         #keywordappender = ""
