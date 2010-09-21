@@ -35,7 +35,7 @@ class Requester(threadedcomponent):
                         "radio2" : "",
                         "radio3" : "",
                         "radio4" : "",
-                        "radio5" : "",
+                        "5live" : "",
                         "worldservice" : "",
                         "6music" : "",
                         "radio7" : "",
