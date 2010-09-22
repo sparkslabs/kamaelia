@@ -124,7 +124,7 @@ def programme(request,pid):
                 proghour = tweettime.hour - actualstart.hour
                 progmin = tweettime.minute - actualstart.minute
                 progsec = tweettime.second - actualstart.second
-                playertime = (((proghour * 60) + progmin) * 60) + progsec
+                playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # final 90 removed to give people time to tweet - would probably work with 60 but this gives a run up
                 if playertime > (data[0].duration - 60):
                     playertimemin = (data[0].duration/60) - 1
                     playertimesec = playertime%60
@@ -147,7 +147,7 @@ def programme(request,pid):
                     lastwasbookmark = False
                 if not tweetmins.has_key(str(playertimemin)):
                     tweetmins[str(playertimemin)] = int(minute.totaltweets)
-            if len(tweetmins) > 0 and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+            if len(tweetmins) > 0 and max(tweetmins.values()) > 7: # Arbitrary value chosen for now - needs experimentation - was 9
                 output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
                 xlist = range(0,data[0].duration/60)
                 ylist = list()
@@ -181,6 +181,9 @@ def programme(request,pid):
                     else:
                         blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
                 blockgraph2 += "</div>"
+
+                if mainwidth > 1000:
+                    mainwidth = 1000
 
                 graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
                 graph.add_data(ylist)

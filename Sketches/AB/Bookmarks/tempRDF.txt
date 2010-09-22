@@ -13,65 +13,198 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00tw0qb.rdf">
-  <rdfs:label>Description of a programme version of All the latest tech news with Jas Dhaliwal</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-14T00:12:57+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-14T00:12:57+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00tw0qb#programme"/>
+<rdf:Description rdf:about="/programmes/p009g3xg.rdf">
+  <rdfs:label>Description of a programme version of A Load of Rubbish</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-08-17T11:11:02+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-08-17T11:11:02+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/p009g3xg#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00tw0qb#programme">
+<po:Version rdf:about="/programmes/p009g3xg#programme">
 
-  <rdfs:label>A version of All the latest tech news with Jas Dhaliwal</rdfs:label>
-  
+  <rdfs:label>A version of A Load of Rubbish</rdfs:label>
+  <po:aspect_ratio>16:9</po:aspect_ratio>
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10800</po:duration>
-  <po:pid>b00tw0qb</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">840</po:duration>
+  <po:pid>p009g3xg</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of All the latest tech news with Jas Dhaliwal</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00tw0qb#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT10800S</timeline:duration>
+      <rdfs:label>Time interval for a version of A Load of Rubbish</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/p009g3xg#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT840S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Series Producer</rdfs:label>
+          <dc:title>Series Producer</dc:title>
+          <dc:description>The manager of an entire series run of a television programme, usually the individual in charge of finance, personnel, and other non-artistic aspects in the development of the particular series</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Dougie Napier</rdfs:label>
+          <foaf:givenName>Dougie</foaf:givenName>
+          <foaf:familyName>Napier</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Character>
+          <foaf:name>May</foaf:name>
+        </po:Character>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Sarah McCardie</rdfs:label>
+          <foaf:givenName>Sarah</foaf:givenName>
+          <foaf:familyName>McCardie</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Character>
+          <foaf:name>Ruairi</foaf:name>
+        </po:Character>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Paul Currie</rdfs:label>
+          <foaf:givenName>Paul</foaf:givenName>
+          <foaf:familyName>Currie</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Character>
+          <foaf:name>Dara</foaf:name>
+        </po:Character>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Lesa Gillespie</rdfs:label>
+          <foaf:givenName>Lesa</foaf:givenName>
+          <foaf:familyName>Gillespie</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Character>
+          <foaf:name>Billy</foaf:name>
+        </po:Character>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Josh Elwell</rdfs:label>
+          <foaf:givenName>Josh</foaf:givenName>
+          <foaf:familyName>Elwell</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Director</rdfs:label>
+          <dc:title>Director</dc:title>
+          <dc:description>A supervisor; generally refers to the person responsible for all audience-visible components of a program, film, or show, whereas the producer is responsible for the financial and other behind-the-scenes aspects. A director&#39;s duties might also include casting, script editing, shot selection, shot composition, and editing</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Richard Bradley</rdfs:label>
+          <foaf:givenName>Richard</foaf:givenName>
+          <foaf:familyName>Bradley</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Executive Producer</rdfs:label>
+          <dc:title>Executive Producer</dc:title>
+          <dc:description>A producer who is not involved in any technical aspects of the making process, but who is still responsible for the overall production. Typically an executive producer handles business and legal issues</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Sara Harkins</rdfs:label>
+          <foaf:givenName>Sara</foaf:givenName>
+          <foaf:familyName>Harkins</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Executive Producer</rdfs:label>
+          <dc:title>Executive Producer</dc:title>
+          <dc:description>A producer who is not involved in any technical aspects of the making process, but who is still responsible for the overall production. Typically an executive producer handles business and legal issues</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Colin Williams</rdfs:label>
+          <foaf:givenName>Colin</foaf:givenName>
+          <foaf:familyName>Williams</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Writer</rdfs:label>
+          <dc:title>Writer</dc:title>
+          <dc:description>A person who writes scripts for plays or movies or broadcast dramas</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Martin McCardie</rdfs:label>
+          <foaf:givenName>Martin</foaf:givenName>
+          <foaf:familyName>McCardie</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00tw15j#programme">
-  <rdfs:label>All the latest tech news with Jas Dhaliwal</rdfs:label>
-  <po:version rdf:resource="/programmes/b00tw0qb#programme" />
+<po:Episode rdf:about="/programmes/b00tj588#programme">
+  <rdfs:label>A Load of Rubbish</rdfs:label>
+  <po:version rdf:resource="/programmes/p009g3xg#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00tw0qb#timeline">
-  <rdfs:label>Timeline of a version of All the latest tech news with Jas Dhaliwal</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/p009g3xg#timeline">
+  <rdfs:label>Timeline of a version of A Load of Rubbish</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00tw0qb#p00b0n1w">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b0n1w</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-21</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-21T15:00:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-21T18:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/asiannetwork#service">
-      <rdfs:label>BBC Asian Network</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00tw0qb#programme" />
-</po:Broadcast>
 
 
 
 
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-21T18:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T18:02:00+01:00</timeline:end>
-</po:Availability>
 
 
 
