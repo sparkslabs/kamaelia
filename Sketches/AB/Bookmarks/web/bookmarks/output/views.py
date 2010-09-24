@@ -146,6 +146,8 @@ def programme(request,pid):
                             bookmarks.append(playertimemin)
                         else:
                             lastwasbookmark = False
+                else:
+                    lastwasbookmark = False
                 if not tweetmins.has_key(str(playertimemin)):
                     tweetmins[str(playertimemin)] = int(minute.totaltweets)
             if len(tweetmins) > 0 and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
