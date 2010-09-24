@@ -340,7 +340,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.height = argd.get("height",768)
       self.background_colour = argd.get("background_colour", (255,255,255))      
       if argd.get("offsets", None) is None:
-          self.offsets = [20,30,1004,30,20,718,1004,718]
+          self.offsets = {'topleftx' : 20, 'toplefty' : 30, 'toprightx' : 1004, 'toprighty' : 30,\
+                          'bottomleftx' : 20, 'bottomlefty' : 718, 'bottomrightx' : 1004, 'bottomrighty' : 718}
           self.calibrated = False
       else:
           self.offsets = argd["offsets"]
@@ -678,7 +679,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       except IOError, e:
           print ("Failed to load calibration data - could not open pygame-calibration.conf")
       else:
-          raw_config = "[" + file.read() + "]" # FIXME ! Make the config actually a cjson array
+          raw_config = file.read()
           file.close()
 
       if raw_config:
@@ -692,10 +693,10 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       # Calculate these values once for calibration purposes, and cache then for later use
       # Performance optimisation
       # 
-      topleft = [float(self.offsets[0]-21),float(self.offsets[1]-62)]
-      topright = [float(self.offsets[2]+19),float(self.offsets[3]-62)]
-      bottomleft = [float(self.offsets[4]-21),float(self.offsets[5]+18)]
-      bottomright = [float(self.offsets[6]+19),float(self.offsets[7]+18)]
+      topleft = [float(int(self.offsets['topleftx'])-21),float(int(self.offsets['toplefty'])-62)]
+      topright = [float(int(self.offsets['toprightx'])+19),float(int(self.offsets['toprighty'])-62)]
+      bottomleft = [float(int(self.offsets['bottomleftx'])-21),float(int(self.offsets['bottomlefty'])+18)]
+      bottomright = [float(int(self.offsets['bottomrightx'])+19),float(int(self.offsets['bottomrighty'])+18)]
       self.calibration_corners = topleft, topright, bottomleft, bottomright
       #
       # More calibration calculations cached for reuse.  Not stored as
