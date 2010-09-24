@@ -135,19 +135,20 @@ def programme(request,pid):
                     playertimemin = 0
                     playertimesec = 0
                 appender += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
-                if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets):
-                    if lastwasbookmark == False:
-                        appender += " BOOKMARK!"
-                        lastwasbookmark = True
-                        bookmarks.append(playertimemin)
-                    else:
+                if minute.totaltweets > (1.5*data[0].stdevtweets+data[0].meantweets):
+                    if lastwasbookmark == True:
                         appender += " cont'd..."
                         bookmarkcont.append(playertimemin)
-                else:
-                    lastwasbookmark = False
+                    else:
+                        if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets):
+                            appender += " BOOKMARK!"
+                            lastwasbookmark = True
+                            bookmarks.append(playertimemin)
+                        else:
+                            lastwasbookmark = False
                 if not tweetmins.has_key(str(playertimemin)):
                     tweetmins[str(playertimemin)] = int(minute.totaltweets)
-            if len(tweetmins) > 0 and max(tweetmins.values()) > 7: # Arbitrary value chosen for now - needs experimentation - was 9
+            if len(tweetmins) > 0 and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
                 output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
                 xlist = range(0,data[0].duration/60)
                 ylist = list()
