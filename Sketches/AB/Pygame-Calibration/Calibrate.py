@@ -21,6 +21,7 @@
 
 import Axon
 import sys
+import cjson
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
@@ -94,8 +95,9 @@ class Calibrate(component):
                 #print(data)
                 data = str(self.topleft[0][4]) + "," + str(self.topleft[0][5]) + "," + str(self.topright[0][4]) + "," + str(self.topright[0][5]) + ","
                 data = data + str(self.bottomleft[0][4]) + "," + str(self.bottomleft[0][5]) + "," + str(self.bottomright[0][4]) + "," + str(self.bottomright[0][5])
-                #data = ",".join(str(self.topleft[0][4:6])) + "," + ",".join(str(self.topright[0][4:6])) + "," + ",".join(str(self.bottomleft[0][4:6])) + "," + ",".join(str(self.bottomright[0][4:6]))
-                data = ["pygame-calibration.conf",data]
+                data = {'topleftx' : self.topleft[0][4], 'toplefty' : self.topleft[0][5], 'toprightx' : self.topright[0][4], 'toprighty' : self.topright[0][5],\
+                        'bottomleftx' : self.bottomleft[0][4], 'bottomlefty' : self.bottomleft[0][5], 'bottomrightx' : self.bottomright[0][4], 'bottomrighty' : self.bottomright[0][5]}
+                data = ["pygame-calibration.conf",cjson.encode(data)]
                 self.send(data,"finaldata")
             while (self.dataReady("inbox") & (self.globalcount == 5)):
                 data = self.recv("inbox")

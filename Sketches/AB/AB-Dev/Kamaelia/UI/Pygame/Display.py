@@ -339,7 +339,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.width = argd.get("width",1024)
       self.height = argd.get("height",768)
       self.background_colour = argd.get("background_colour", (255,255,255))
-      self.offsets = argd.get("offsets", [20,30,1004,30,20,718,1004,718])
+      self.offsets = argd.get("offsets", {'topleftx' : 20, 'toplefty' : 30, 'toprightx' : 1004, 'toprighty' : 30,\
+                                           'bottomleftx' : 20, 'bottomlefty' : 718, 'bottomrightx' : 1004, 'bottomrighty' : 718}) #[20,30,1004,30,20,718,1004,718])
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (0,0)
       self.surfaces = []  ##HERE
@@ -614,10 +615,10 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                 # When clicking bottom left, co-ords should be [21,750]
                                 # When clicking bottom right, co-ords should be [1005,750]
                                 # Max co-ords are 1024 x 768 or whatever specified in self.width and self.height
-                                topleft = [float(self.offsets[0]-21),float(self.offsets[1]-62)]
-                                topright = [float(self.offsets[2]+19),float(self.offsets[3]-62)]
-                                bottomleft = [float(self.offsets[4]-21),float(self.offsets[5]+18)]
-                                bottomright = [float(self.offsets[6]+19),float(self.offsets[7]+18)]
+                                topleft = [float(int(self.offsets['topleftx'])-21),float(int(self.offsets['toplefty'])-62)]
+                                topright = [float(int(self.offsets['toprightx'])+19),float(int(self.offsets['toprighty'])-62)]
+                                bottomleft = [float(int(self.offsets['bottomleftx'])-21),float(int(self.offsets['bottomlefty'])+18)]
+                                bottomright = [float(int(self.offsets['bottomrightx'])+19),float(int(self.offsets['bottomrighty'])+18)]
                                 topxratio = float(self.width / (topright[0] - topleft[0]))
                                 bottomxratio = float(self.width / (bottomright[0] - bottomleft[0]))
                                 leftyratio = float(self.height / (bottomleft[1] - topleft[1]))
@@ -662,7 +663,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       # CALIBRATION
       try:
           file = open("pygame-calibration.conf")
-          self.offsets = cjson.decode("[" + file.readline() + "]")
+          self.offsets = cjson.decode(file.readline())
           file.close()
       except Exception, e:
           print ("Failed to load calibration data")
