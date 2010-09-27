@@ -133,14 +133,19 @@ class Requester(threadedcomponent):
                 else:
                     keywords = [channel,"#" + string.lower(re.sub("\s+","",title))]
 
+                titlewords = title.split()
+                if len(titlewords) > 1:
+                    # If more than one word in show title, add that too
+                    keywords.append(title.lower())
+
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:
-                    if word in string.lower(channel) and channel != "asiannetwork": # Bug fix! asianne2rk
-                        numchannel = string.replace(string.lower(channel),word,str(numwords[word]))
+                    if word in channel.lower() and channel != "asiannetwork": # Bug fix! asianne2rk
+                        numchannel = string.replace(channel.lower(),word,str(numwords[word]))
                         keywords.append(numchannel)
                         break
-                    if str(numwords[word]) in string.lower(channel):
-                        numchannel = string.replace(string.lower(channel),str(numwords[word]),word)
+                    if str(numwords[word]) in channel.lower():
+                        numchannel = string.replace(channel.lower(),str(numwords[word]),word)
                         keywords.append(numchannel)
                         break
 
@@ -207,7 +212,7 @@ class Requester(threadedcomponent):
                     keywords.append(character + " " + title)
                     if " " in character:
                         # Looks like we have a firstname + surname situation
-                        charwords = string.split(character)
+                        charwords = character.split()
                         if charwords[0] != "Dr" and charwords[0] != "Miss" and charwords[0] != "Mr" and charwords[0] != "Mrs" and charwords[0] != "Ms":
                             # As long as the first word isn't a title, add it as a first name
                             keywords.append(charwords[0] + " " + channel)
@@ -255,7 +260,7 @@ class Requester(threadedcomponent):
                         try:
                             for user in twitdata:
                                 if user.has_key('verified'):
-                                    if (user['verified'] == True or user['followers_count'] > 10000) and  string.lower(user['name']) == string.lower(title):
+                                    if (user['verified'] == True or user['followers_count'] > 10000) and  string.lower(user['name']) == title.lower():
                                         screenname = user['screen_name']
                                         keywords.append(screenname)
                                         break

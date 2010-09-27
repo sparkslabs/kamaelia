@@ -172,7 +172,7 @@ class PeopleSearch(component):
                             headers = conn1.info() # Manual place to watch rate limit for now
                             headerlist = string.split(str(headers),"\n")
                             for line in headerlist:
-                                splitheader = string.split(line," ")
+                                splitheader = line.split()
                                 if splitheader[0] == "X-FeatureRateLimit-Remaining:":
                                     print splitheader[0] + " " + str(splitheader[1])
                                     if int(splitheader[1]) < 5:
