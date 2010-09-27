@@ -13,8 +13,14 @@ import string
 from Axon.ThreadedComponent import threadedcomponent
 
 class DataCollector(threadedcomponent):
-    Inboxes = ["inbox", "control"]
-    Outboxes = ["outbox", "signal"]
+    Inboxes = {
+        "inbox" : "Receives data in the format [tweetjson,[pid,pid]]",
+        "control" : ""
+    }
+    Outboxes = {
+        "outbox" : "",
+        "signal" : ""
+    }
 
     def __init__(self,dbuser,dbpass):
         super(DataCollector, self).__init__()
@@ -50,9 +56,7 @@ class DataCollector(threadedcomponent):
                             # Then, check this tweet against the keywords and save to DB where appropriate (there may be more than one location)
                             cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
                             keywords = cursor.fetchall()
-                            #print newdata['text']
                             for keyword in keywords:
-                                #print keyword[0]
                                 if string.lower(keyword[0]) in string.lower(newdata['text']):
                                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                     if cursor.fetchone() != None:

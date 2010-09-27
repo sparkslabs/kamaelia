@@ -17,11 +17,15 @@ import oauth2 as oauth
 
 from Axon.Component import component
 
-# TODO: Rate limit checking!
-
 class PeopleSearch(component):
-    Inboxes = ["inbox", "control"]
-    Outboxes = ["outbox", "signal"]
+    Inboxes = {
+        "inbox" : "Receives string indicating a person's name",
+        "control" : ""
+    }
+    Outboxes = {
+        "outbox" : "Outputs raw search output from Twitter people search in JSON",
+        "signal" : ""
+    }
 
     def __init__(self, username, keypair, proxy = False):
         super(PeopleSearch, self).__init__()
@@ -89,14 +93,8 @@ class PeopleSearch(component):
 
             # Read Config
             config = cjson.decode(raw_config)
-            #if config.has_key('key'):
-            #    config['key'].append(access_token['oauth_token'])
-            #else:
             config['key'] = access_token['oauth_token']
 
-            #if config.has_key('secret'):
-            #    config['secret'].append(access_token['oauth_token_secret'])
-            #else:
             config['secret'] = access_token['oauth_token_secret']
 
             raw_config = cjson.encode(config)
@@ -135,9 +133,7 @@ class PeopleSearch(component):
                 
                 person = self.recv("inbox")
                 if (datetime.today() - timedelta(minutes=15)) > self.ratelimited:
-                    #print person
                     requesturl = twitterurl + "?q=" + urllib.quote(person) + "&per_page=5"
-                    #print requesturl
 
                     params = {
                         'oauth_version': "1.0",

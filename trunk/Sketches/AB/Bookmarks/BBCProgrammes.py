@@ -3,7 +3,7 @@
 # Interface to BBC /programmes JSON etc
 # - Identifies PID of current programme on a chosen channel
 # - Provides output for PIDs in a chosen format (XML, RDF etc)
-# - Identifies currently playing tracks on radio channels
+# - Identifies currently playing tracks on radio channels TODO
 
 import cjson
 import urllib2
@@ -16,7 +16,6 @@ from datetime import datetime, tzinfo, timedelta
 from dateutil.parser import parse
 from time import time, mktime
 import pytz
-import string
 
 # Should probably combine these all into one component given the amount of similarity
 # OR - create a generic requester component and link all of these to it (removing the urllib stuff)
@@ -30,8 +29,14 @@ class GMT(tzinfo):
         return timedelta(0)
 
 class WhatsOn(component):
-    Inboxes = ["inbox", "control"]
-    Outboxes = ["outbox", "signal"]
+    Inboxes = {
+        "inbox" : "Receives a channel name to investigate in the 'key' format from self.channels",
+        "control" : ""
+    }
+    Outboxes = {
+        "outbox" : "If a channel is on air, sends out programme info [pid,title,timeoffset,duration,expectedstarttime]",
+        "signal" : ""
+    }
 
     def __init__(self, proxy = False):
         super(WhatsOn, self).__init__()
@@ -78,7 +83,7 @@ class WhatsOn(component):
             req = urllib2.Request(synctimeurl,data,headers)
             syncconn = urllib2.urlopen(req)
         except httplib.BadStatusLine, e:
-            print "Some odd HTTP line error: " + str(e)
+            print "DVB Bridge is inaccessible: " + str(e)
             syncconn = False
         except urllib2.HTTPError, e:
             print(e.code)
@@ -95,7 +100,6 @@ class WhatsOn(component):
                 decodedcontent = cjson.decode(content)
                 if decodedcontent[0] == "OK":
                     difference = time() - decodedcontent[2]['time']
-                    #print difference
             except cjson.DecodeError, e:
                 print "cjson.DecodeError:", e.message
 
@@ -105,7 +109,7 @@ class WhatsOn(component):
                 req = urllib2.Request(syncschedurl,data,headers)
                 syncconn = urllib2.urlopen(req)
             except httplib.BadStatusLine, e:
-                print "Some odd HTTP line error: " + str(e)
+                print "DVB Bridge is inaccessible: " + str(e)
                 syncconn = False
             except urllib2.HTTPError, e:
                 print(e.code)
@@ -121,7 +125,6 @@ class WhatsOn(component):
                     decodedcontent = cjson.decode(content)
                     if decodedcontent[0] == "OK":
                         proginfo = decodedcontent[2]['info']
-                        #print proginfo
                 except cjson.DecodeError, e:
                     print "cjson.DecodeError:", e.message
 
@@ -151,10 +154,6 @@ class WhatsOn(component):
                 actualstart = proginfo['changed']
                 showdatetime = datetime.strptime(str(showdate[0]) + "-" + str(showdate[1]) + "-" + str(showdate[2]) +
                     " " + str(showtime[0]) + ":" + str(showtime[1]) + ":" + str(showtime[2]),"%Y-%m-%d %H:%M:%S")
-                    
-                #print mktime(datetime.now().timetuple())
-                #print actualstart
-                #print mktime(showdatetime.timetuple())
 
                 # SyncTV produced data - let's trust that
                 if 'decodedcontent' in locals():
@@ -166,9 +165,6 @@ class WhatsOn(component):
                         # FIXME: Turned off programme name checking as /programmes can show different info to DVB bridge
                         if showdatetime == starttime: # and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title']):
                             expectedstart = mktime(parse(programme['start']).astimezone(gmt).timetuple())
-                            #expectedstart = mktime(showdatetime.timetuple())
-                            #starttime = starttime.astimezone(gmt)
-                            #starttime = starttime.replace(tzinfo=None)
                             if 'difference' in locals():
                                 offset = (expectedstart - actualstart) - difference
                             else:
@@ -208,8 +204,14 @@ class WhatsOn(component):
             yield 1
 
 class NowPlaying(component):
-    Inboxes = ["inbox", "control"]
-    Outboxes = ["outbox", "signal"]
+    Inboxes = {
+        "inbox" : "",
+        "control" : ""
+    }
+    Outboxes = {
+        "outbox" : "",
+        "signal" : ""
+    }
 
     def __init__(self, proxy = False):
         super(NowPlaying, self).__init__()
@@ -265,8 +267,14 @@ class NowPlaying(component):
 class ProgrammeData(component):
     # NOTE: This component could be replaced by a generic HTTP content grabber provided it allows for proxies
 
-    Inboxes = ["inbox", "control"]
-    Outboxes = ["outbox", "signal"]
+    Inboxes = {
+        "inbox" : "Receives a PID and a data format",
+        "control" : ""
+    }
+    Outboxes = {
+        "outbox" : "Sends out the retrieved raw data",
+        "signal" : ""
+    }
 
     def __init__(self, proxy = False):
         super(ProgrammeData, self).__init__()
