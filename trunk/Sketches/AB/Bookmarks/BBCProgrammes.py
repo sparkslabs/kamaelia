@@ -16,6 +16,7 @@ from datetime import datetime, tzinfo, timedelta
 from dateutil.parser import parse
 from time import time, mktime
 import pytz
+import time as sleeper
 
 # Should probably combine these all into one component given the amount of similarity
 # OR - create a generic requester component and link all of these to it (removing the urllib stuff)
@@ -198,6 +199,7 @@ class WhatsOn(component):
         while 1:
             if self.dataReady("inbox"):
                 channel = self.recv("inbox")
+                sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes
                 data = self.getCurrentProg(channel)
                 self.send(data,"outbox")
             self.pause()
@@ -259,6 +261,7 @@ class NowPlaying(component):
         while 1:
             if self.dataReady("inbox"):
                 channel = self.recv("inbox")
+                sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes
                 npdata = self.getCurrentTrack(channel)
                 self.send(npdata,"outbox")
             self.pause()
@@ -317,6 +320,7 @@ class ProgrammeData(component):
         while 1:
             if self.dataReady("inbox"):
                 request = self.recv("inbox")
+                sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes
                 pid = request[0]
                 format = request[1]
                 progdata = self.getProgrammeData(pid,format)

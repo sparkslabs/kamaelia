@@ -13,48 +13,129 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b008ydqg.rdf">
-  <rdfs:label>Description of the episode Big Sister</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-01-28T01:14:54Z</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-12-08T04:14:16Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b008ydqg#programme"/>
+<rdf:Description rdf:about="/programmes/p009vmwp.rdf">
+  <rdfs:label>Description of a programme version of 27/09/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-06T21:10:25+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-06T21:10:25+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/p009vmwp#programme"/>
 </rdf:Description>
 
-<po:Episode rdf:about="/programmes/b008ydqg#programme">
+<po:Version rdf:about="/programmes/p009vmwp#programme">
 
-  <po:pid>b008ydqg</po:pid>
-  <dc:title>Big Sister</dc:title>
-  <po:short_synopsis>The spies investigate when an MP threatens to send Britain&#39;s kids to a remote island.</po:short_synopsis>
-  <po:medium_synopsis>Children&#39;s spy drama with high school kids Blane, Daisy and Rose. The spies investigate when a child-hating MP threatens to send Britain&#39;s kids to a remote island.</po:medium_synopsis>
+  <rdfs:label>A version of 27/09/2010</rdfs:label>
   
-
   
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1680</po:duration>
+  <po:pid>p009vmwp</po:pid>
+  <po:time>
+    <timeline:Interval>
+      <rdfs:label>Time interval for a version of 27/09/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/p009vmwp#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1680S</timeline:duration>
+    </timeline:Interval>
+  </po:time>
 
 
-  <po:masterbrand rdf:resource="/cbbc#service"/>
+</po:Version>
 
-  <po:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">6</po:position>
-
-  <po:genre rdf:resource="/programmes/genres/childrens/drama#genre" />
-
-
-
-
-
-  <po:version rdf:resource="/programmes/b008ydks#programme" />
-
-
+<po:Episode rdf:about="/programmes/p009vmt3#programme">
+  <rdfs:label>27/09/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/p009vmwp#programme" />
 </po:Episode>
 
-<po:Series rdf:about="/programmes/b008qhg9#programme">
-  <po:episode rdf:resource="/programmes/b008ydqg#programme"/>
-</po:Series>
+<timeline:TimeLine rdf:about="/programmes/p009vmwp#timeline">
+  <rdfs:label>Timeline of a version of 27/09/2010</rdfs:label>
+</timeline:TimeLine>
+
+<po:Broadcast rdf:about="/programmes/p009vmwp#p009vmzk">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p009vmzk</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-27</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-27T12:32:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-27T13:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/p009vmwp#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/p009vmwp#p009vn02">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p009vn02</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-27</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-27T16:32:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-27T17:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/p009vmwp#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/p009vmwp#p009vn12">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p009vn12</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-28</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T00:32:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T00:58:30+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/p009vmwp#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/p009vmwp#p009wjnm">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p009wjnm</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-28</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T04:32:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T05:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/p009vmwp#programme" />
+</po:Broadcast>
 
 
 
-<po:Brand rdf:about="/programmes/b006v8z9#programme">
-  <po:episode rdf:resource="/programmes/b008ydqg#programme"/>
-</po:Brand>
+
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-27T17:02:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T17:02:00+01:00</timeline:end>
+</po:Availability>
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T01:00:30+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T01:00:30+01:00</timeline:end>
+</po:Availability>
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T05:02:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T05:02:00+01:00</timeline:end>
+</po:Availability>
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-27T13:02:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T13:02:00+01:00</timeline:end>
+</po:Availability>
+
 
 
 </rdf:RDF>
