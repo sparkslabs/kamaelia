@@ -96,6 +96,11 @@ class TwitterStream(threadedcomponent):
                 # Receive keywords and PIDs
                 recvdata = self.recv("inbox")
                 keywords = recvdata[0]
+
+                # Abide by Twitter's keyword limit of 400
+                if len(keywords) > 400:
+                    keywords = keywords[0:400:1]
+                    
                 pids = recvdata[1]
 
                 # Create POST data
