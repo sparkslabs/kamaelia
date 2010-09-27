@@ -130,10 +130,10 @@ class Requester(threadedcomponent):
                 else:
                     keywords = [channel,"#" + string.lower(re.sub("\s+","",title))]
 
-                titlewords = title.split()
-                if len(titlewords) > 1:
+                #titlewords = title.split()
+                #if len(titlewords) > 1:
                     # If more than one word in show title, add that too
-                    keywords.append(title.lower())
+                keywords.append(title.lower())
 
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:
