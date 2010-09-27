@@ -4,7 +4,6 @@
 # Need word freq analysis, tweet rate analysis etc
 # Any looking at natural language engines / subtitles should be done here or in components following this
 # This component probably needs the original keywords etc too as it needs to separate both programmes and channels
-# TODO: Ability to analyse multiple channels at once should be achieved automatically here, but still needs implementing at earlier stages.
 # When analysing, look for mentions of just first names used with #programme etc, as people are unlikely to describe presenters etc with full names (could actually modify the original search to do this) TODO
 # Watch out for repeated tweets - could be user or Twitter error
 # Need to ensure one rogue user can't cause a trend - things must be mentioned by several

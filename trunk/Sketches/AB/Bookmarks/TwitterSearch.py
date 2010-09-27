@@ -127,7 +127,6 @@ class PeopleSearch(component):
         
 
         while 1:
-            # TODO: Watch rate limit of 60 per hour in search headers
             # TODO: Implement backoff algorithm in case of connection failures - watch out for the fact this could delay the requester component
             if self.dataReady("inbox"):
                 

@@ -57,7 +57,7 @@ if __name__ == "__main__":
     system = Graphline(CURRENTPROG = WhatsOn(proxy),
                     RDFSOURCE = ProgrammeData(proxy),
                     REQUESTER = Requester("all",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
-                    FIREHOSE = TwitterStream(username, password, proxy),
+                    FIREHOSE = TwitterStream(username, password, proxy, True),
                     SEARCH = PeopleSearch(username, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting

@@ -72,7 +72,6 @@ class Requester(threadedcomponent):
             duration = data[3]
             expectedstart = data[4]
         if pid != self.channels[channel]:
-            #TODO: Will need to check, esp in radio case if presenter name is the same as show name to reduce duplicate keywords
             # Perhaps just do a duplicate scan before creating Twitter stream
             if pid == None:
                 self.channels[channel] = None
@@ -125,8 +124,6 @@ class Requester(threadedcomponent):
                 for item in """!"#$%&()*+,-./:;<=>?@[\\]?_'`{|}?""":
                     title = title.replace(item,"")
 
-                # TODO: Should remove CONTENT of brackets, not just the brackets
-                # TODO: Remove 'the' from the start of programme names like '#thedailypolitics' - trouble is, #theoneshow needs to keep its 'the'
                 if string.find(title,"The",0,3) != -1:
                     newtitle = string.replace(re.sub("\s+","",title),"The","",1)
                     keywords = [channel,"#" + string.lower(re.sub("\s+","",title)),'#' + string.lower(re.sub("\s+","",newtitle))]
