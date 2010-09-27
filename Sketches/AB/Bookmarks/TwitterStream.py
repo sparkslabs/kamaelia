@@ -2,7 +2,6 @@
 
 # Interface to Twitter streaming API
 # - Grabs JSON data based on chosen keywords
-# - TODO Allows for reconnection on failure
 
 
 import time
@@ -33,7 +32,7 @@ class TwitterStream(threadedcomponent):
         self.username = username
         self.password = password
         # Reconnect on failure?
-        self.reconnect = reconnect # Not quite used yet
+        self.reconnect = reconnect
         timeout = 120
         socket.setdefaulttimeout(timeout) # Attempt to fix issues with streaming API connection hanging
 
@@ -135,12 +134,11 @@ class TwitterStream(threadedcomponent):
                         except IOError, e:
                             print str(e)
                             failed = True
-                            #break # TODO: FIXME
                         except Axon.AxonExceptions.noSpaceInBox, e:
                             #pass # Ignore data - no space
                             failed = True
                             #self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
-                        if failed == True:
+                        if failed == True and self.reconnect == True:
                             # Reconnection procedure
                             print ("Streaming API connection failed.")
                             conn1.close()
