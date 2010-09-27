@@ -2,7 +2,7 @@
 
 # Interface to Twitter streaming API
 # - Grabs JSON data based on chosen keywords
-# - Allows for reconnection on failure
+# - TODO Allows for reconnection on failure
 
 
 import time
@@ -12,19 +12,25 @@ import os
 import cjson
 import socket
 
-import oauth2 as oauth # TODO - returns 401 unauthorised at the mo
+import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
 
 from Axon.ThreadedComponent import threadedcomponent
 
 class TwitterStream(threadedcomponent):
-    Inboxes = ["inbox", "control"]
-    Outboxes = ["outbox", "signal", "data"]
+    Inboxes = {
+        "inbox" : "Receives lists containing keywords and PIDs - [[pid,pid],[keyword,keyword,keyword]]",
+        "control" : ""
+    }
+    Outboxes = {
+        "outbox" : "Sends out status messages from the streaming API connection",
+        "signal" : "",
+        "data" : "Sends out received tweets in the format [tweetjson,[pid,pid]]"
+    }
 
     def __init__(self, username, password, proxy = False, reconnect = False):
         super(TwitterStream, self).__init__()
         self.proxy = proxy
         self.username = username
-        #self.keypair = keypair
         self.password = password
         # Reconnect on failure?
         self.reconnect = reconnect # Not quite used yet
@@ -47,7 +53,7 @@ class TwitterStream(threadedcomponent):
         else:
             twitopener = urllib2.build_opener(authhandler)
 
-        if 0:
+        if 0: # 'Commented out' code for incomplete OAuth
             if self.keypair == False:
                 while not self.dataReady("inbox"):
                     pass # Delay until sure the keypair will be saved
@@ -87,36 +93,34 @@ class TwitterStream(threadedcomponent):
 
         while 1:
             if self.dataReady("inbox"):
+
+                # Receive keywords and PIDs
                 recvdata = self.recv("inbox")
                 keywords = recvdata[0]
                 pids = recvdata[1]
+
+                # Create POST data
                 data = urllib.urlencode({"track": ",".join(keywords)})
                 print ("Got keywords: " + data)
-                # When using firehose, filtering based on keywords will be carried out AFTER grabbing data
+
+                # If using firehose, filtering based on keywords will be carried out AFTER grabbing data
                 # This will be done here rather than by Twitter
 
-                #test = req.get_normalized_parameters()
-                #test = test + "&" + data
-
-
-                #params['track'] = ",".join(keywords)
-
-                #params = urllib.urlencode(params)
                 # Get ready to grab Twitter data
                 urllib2.install_opener(twitopener)
                 headers = {'User-Agent' : "BBC R&D Grabber"}
-                #print params
+
                 # Grab twitter data
                 try:
                     req = urllib2.Request(twitterurl,data,headers)
                     conn1 = urllib2.urlopen(req)
                     print ("Connected to twitter stream. Awaiting data...")
                 except urllib2.HTTPError, e:
-                    self.send("Connect Error: " + str(e.code),"outbox") # Errors get sent back to the requester
+                    self.send("Connect Error: " + str(e.code),"outbox") # TODO Errors get sent back to the requester
                     print(e.code)
                     conn1 = False
                 except urllib2.URLError, e:
-                    self.send("Connect Error: " + str(e.reason),"outbox") # Errors get sent back to the requester
+                    self.send("Connect Error: " + str(e.reason),"outbox") # TODO Errors get sent back to the requester
                     conn1 = False
 
                 if conn1:
@@ -125,7 +129,6 @@ class TwitterStream(threadedcomponent):
                             content = ""
                             while not "\n" in content:
                                 content += conn1.read(1)
-                            #content = conn1.readline()
                             self.send([content,pids],"data") # Send to data collector / analyser rather than back to requester
                             # What is message size limit on inboxes - could be getting flooded in just one send
                             failed = False

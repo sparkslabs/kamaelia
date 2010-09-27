@@ -1,10 +1,11 @@
 #! /usr/bin/python
 
+# Bookmarks.py
+# - Identifies current BBC programmes and generates keywords based on them.
+# - Collects Twitter streaming API data based on generated keywords.
 # Program run initially to join up all mailboxes etc
 
-
 #### NOTE: THIS PROGRAMME CURRENTLY NEEDS A PROXY FREE CONNECTION IF OAUTH KEYS NEED REFRESHING
-#### NOTE: THIS PROGRAMME MUST ALSO BE ABLE TO ACCESS REITH IP ADDRESSES FOR THE DVB BRIDGE
 
 #### NOTE: Error handling is unfinished for HTTP based connections. Currently it purely prints to the screen.
 #### Eventually Twitter and others would welcome an exponential backoff in places.
@@ -40,11 +41,13 @@ if __name__ == "__main__":
     dbuser = config['dbuser']
     dbpass = config['dbpass']
 
+    # Set proxy server if available
     if config.has_key('proxy'):
         proxy = config['proxy']
     else:
         proxy = False
 
+    # Set OAuth keypair if available
     if config.has_key('key') & config.has_key('secret'):
         keypair = [config['key'],config['secret']]
     else:
@@ -54,18 +57,18 @@ if __name__ == "__main__":
     system = Graphline(CURRENTPROG = WhatsOn(proxy),
                     RDFSOURCE = ProgrammeData(proxy),
                     REQUESTER = Requester("all",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
-                    FIREHOSE = TwitterStream(username, password, proxy), # Not technically using firehose yet, but will be made to work the same way with that later (or gardenhose more likely)
+                    FIREHOSE = TwitterStream(username, password, proxy),
                     SEARCH = PeopleSearch(username, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
-                    linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"),
-                                ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"),
-                                ("REQUESTER", "proginfo") : ("RDFSOURCE", "inbox"),
-                                ("RDFSOURCE", "outbox") : ("REQUESTER", "proginfo"),
-                                ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"),
-                                ("FIREHOSE", "outbox") : ("REQUESTER", "inbox"),
-                                ("FIREHOSE", "data") : ("COLLECTOR", "inbox"),
-                                ("REQUESTER", "search") : ("SEARCH", "inbox"),
-                                ("SEARCH", "outbox") : ("REQUESTER", "search")
+                    linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
+                                ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
+                                ("REQUESTER", "proginfo") : ("RDFSOURCE", "inbox"), # Request additional data about current programmes
+                                ("RDFSOURCE", "outbox") : ("REQUESTER", "proginfo"), # Pass back additional data
+                                ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API
+                                ("FIREHOSE", "outbox") : ("REQUESTER", "inbox"), # Process errors from streaming API TODO
+                                ("FIREHOSE", "data") : ("COLLECTOR", "inbox"), # Collect data from streaming API
+                                ("REQUESTER", "search") : ("SEARCH", "inbox"), # Perform Twitter people search based on keywords
+                                ("SEARCH", "outbox") : ("REQUESTER", "search") # Return Twitter people search results
                                 }
                             ).run()
 

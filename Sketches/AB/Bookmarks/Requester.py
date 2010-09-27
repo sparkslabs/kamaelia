@@ -16,8 +16,20 @@ import MySQLdb
 from Axon.ThreadedComponent import threadedcomponent
 
 class Requester(threadedcomponent):
-    Inboxes = ["inbox", "control", "whatson", "proginfo", "search"]
-    Outboxes = ["outbox", "signal", "whatson", "proginfo", "search"]
+    Inboxes = {
+        "inbox" : "",
+        "control" : "",
+        "whatson" : "Receives back what's currently on a channel - [pid,title,timeoffset,duration,expectedstarttime]",
+        "proginfo" : "Receives back raw RDF data for a PID",
+        "search" : "Receives back raw Twitter people search JSON"
+    }
+    Outboxes = {
+        "outbox" : "Sends out keywords and pid(s) for streaming API connections - [[keyword,keyword],[pid,pid,pid]]",
+        "signal" : "",
+        "whatson" : "Requests current programmes by sending a channel name",
+        "proginfo" : "Requests RDF format data for a pid - [pid, 'rdf']",
+        "search" : "Sends people's names for Twitter username identification"
+    }
 
     def __init__(self, channel,dbuser,dbpass):
         super(Requester, self).__init__()
@@ -113,8 +125,6 @@ class Requester(threadedcomponent):
                 for item in """!"#$%&()*+,-./:;<=>?@[\\]?_'`{|}?""":
                     title = title.replace(item,"")
 
-                #print "Twitter Keywords for " + pid + ":"
-                #print "#" + channel + " #" + re.sub("\s+","",title)
                 # TODO: Should remove CONTENT of brackets, not just the brackets
                 # TODO: Remove 'the' from the start of programme names like '#thedailypolitics' - trouble is, #theoneshow needs to keep its 'the'
                 if string.find(title,"The",0,3) != -1:
@@ -156,13 +166,10 @@ class Requester(threadedcomponent):
                 s = g.subjects(predicate=rdflib.URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),object=rdflib.URIRef('http://purl.org/ontology/po/Role'))
 
                 for x in s:
-                    #role = g.value(subject=rdflib.BNode(x),predicate=rdflib.URIRef('http://purl.org/dc/elements/1.1/title'))
                     rid = g.value(predicate=rdflib.URIRef('http://purl.org/ontology/po/role'),object=rdflib.BNode(x))
                     pid = g.value(subject=rdflib.BNode(rid),predicate=rdflib.URIRef('http://purl.org/ontology/po/participant'))
                     firstname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/givenName')))
                     lastname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/familyName')))
-                    #print role + " is " + firstname + " " + lastname
-                    #print firstname + " " + lastname
 
                     if config.has_key(firstname + " " + lastname):
                         # Found a cached value
@@ -196,8 +203,6 @@ class Requester(threadedcomponent):
                     pid = g.value(subject=rdflib.BNode(rid),predicate=rdflib.URIRef('http://purl.org/ontology/po/participant'))
                     firstname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/givenName')))
                     lastname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/familyName')))
-                    #print character + " is " + firstname + " " + lastname
-                    #print firstname + " " + lastname
                     keywords.append(character + " " + channel)
                     keywords.append(character + " " + title)
                     if " " in character:
@@ -283,7 +288,6 @@ class Requester(threadedcomponent):
     def main(self):
         cursor = self.dbConnect()
         oldkeywords = None
-        #oldpid = None # only relevant for single channel selection
         while 1:
             print ("### Checking current programmes ###")
             if self.channel != "all":
