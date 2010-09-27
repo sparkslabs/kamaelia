@@ -63,6 +63,7 @@ class Requester(threadedcomponent):
             #TODO: Will need to check, esp in radio case if presenter name is the same as show name to reduce duplicate keywords
             # Perhaps just do a duplicate scan before creating Twitter stream
             if pid == None:
+                self.channels[channel] = None
                 print (channel + ": Off Air")
             else:
                 self.channels[channel] = pid
@@ -287,6 +288,8 @@ class Requester(threadedcomponent):
             print ("### Checking current programmes ###")
             if self.channel != "all":
                 oldpid = self.channels[self.channel]
+                if oldpid == None:
+                    cursor.execute("""UPDATE programmes SET imported = 1 WHERE channel = %s""",(self.channel))
                 data = self.doStuff(self.channel)
                 if data != None:
                     keywords = data[0]
@@ -295,22 +298,12 @@ class Requester(threadedcomponent):
                     offset = data[1][2]
                     duration = data[1][3]
                     expectedstart = data[1][4]
-                    if oldpid != "" and oldpid != pid:
-                        # Pid has changed - tie off the last prog ready for analysis
-                        cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
-                        if cursor.fetchone() != None:
-                            cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
+                    cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,self.channel))
                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                     if cursor.fetchone() == None:
                         cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,self.channel))
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
-                    #oldpid = pid
-                #elif oldpid != "" and oldpid != None:
-                #    cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
-                #    if cursor.fetchone() != None:
-                #        cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
-                #    keywords = None
                 else:
                     keywords = None
 
@@ -329,6 +322,8 @@ class Requester(threadedcomponent):
                 keywords = list()
                 for channel in self.channels:
                     oldpid = self.channels[channel]
+                    if oldpid == None:
+                        cursor.execute("""UPDATE programmes SET imported = 1 WHERE channel = %s""",(channel))
                     data = self.doStuff(channel)
                     if data != None:
                         keywordappender = data[0]
@@ -337,30 +332,16 @@ class Requester(threadedcomponent):
                         offset = data[1][2]
                         duration = data[1][3]
                         expectedstart = data[1][4]
-                        if oldpid != "" and oldpid != pid:
-                            # Pid has changed - tie off the last prog ready for analysis
-                            cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
-                            if cursor.fetchone() != None:
-                                cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
+                        cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,channel))
                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                         if cursor.fetchone() == None:
                             cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,channel))
                             for word in keywordappender:
                                 cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
-                    #elif oldpid != "" and oldpid != None:
-                    #    cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(oldpid))
-                    #    if cursor.fetchone() != None:
-                    #        cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid = %s""",(oldpid))
-                        #oldpid = pid
-                    #else:
-                        #keywordappender = ""
-                        
-                    #for keyword in keywordappender:
-                        #keywords.append(keyword)
 
                 currentpids = list()
                 for channel in self.channels:
-                    if self.channels[channel] != "":
+                    if self.channels[channel] != "" and self.channels[channel] != None:
                         currentpids.append(self.channels[channel])
 
                 for pid in currentpids:
