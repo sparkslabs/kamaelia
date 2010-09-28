@@ -131,7 +131,7 @@ class TwitterStream(threadedcomponent):
                     while not self.dataReady("inbox"):
                         try:
                             content = ""
-                            while not "\n" in content:
+                            while not "\r\n" in content: # Twitter specified watch characters - readline doesn't catch this properly
                                 content += conn1.read(1)
                             self.send([content,pids],"data") # Send to data collector / analyser rather than back to requester
                             # What is message size limit on inboxes - could be getting flooded in just one send

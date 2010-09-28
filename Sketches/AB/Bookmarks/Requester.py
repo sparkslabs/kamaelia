@@ -69,7 +69,8 @@ class Requester(threadedcomponent):
             "b006ml0g" : ["qikipedia", "#qi"], # QI
             "b006t1k5" : ["#masterchef"], # Masterchef
             "b00j4j7g" : ["#f1"], # Formula 1
-            "b006wkqb" : ["chrisdjmoyles","chrismoylesshow"] # Chris Moyles Breakfast Show
+            "b006wkqb" : ["chrisdjmoyles","chrismoylesshow"], # Chris Moyles Breakfast Show
+            "b0071b63" : ["bbcapprentice"] # The Apprentice
         }
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
         self.officialseriestags = {
