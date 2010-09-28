@@ -70,7 +70,8 @@ class Requester(threadedcomponent):
             "b006t1k5" : ["#masterchef"], # Masterchef
             "b00j4j7g" : ["#f1"], # Formula 1
             "b006wkqb" : ["chrisdjmoyles","chrismoylesshow"], # Chris Moyles Breakfast Show
-            "b0071b63" : ["bbcapprentice"] # The Apprentice
+            "b0071b63" : ["bbcapprentice"], # The Apprentice
+            "b006mg74" : ["bbcwatchdog"] # Watchdog
         }
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
         self.officialseriestags = {
@@ -163,9 +164,15 @@ class Requester(threadedcomponent):
                 else:
                     print (channel + ": Changed to - " + title)
 
+                # Minor alterations
                 title = title.replace("&","and")
+
+                if ":" in title:
+                    titlebits = title.split(":")
+                    title = titlebits[0]
+                    
                 # Remove punctuation
-                for item in """!"#$%()*+,-./:;<=>?@[\\]?_'`{|}?""":
+                for item in """!"#$%()*+,-./;<=>?@[\\]?_'`{|}?""":
                     title = title.replace(item,"")
 
                 keywords = dict()

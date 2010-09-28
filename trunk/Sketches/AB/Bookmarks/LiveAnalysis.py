@@ -61,8 +61,22 @@ if __name__ == "__main__":
         # Check if analysed = 0
 
         print "Checking for unanalysed data..."
+
+        # Stage 1: Live analysis
+        cursor.execute("""SELECT tid,pid,datetime,text,user FROM rawdata WHERE analysed = 0""")
+        data = cursor.fetchall()
+
+        for result in data:
+            tid = result[0]
+            pid = result[1]
+            tweettime = result[2]
+            tweettext = result[3]
+            tweetuser = result[4]
+
         
-        
+        # Stage 2: If all raw tweets analysed and imported = 1, finalise the analysis
+        #cursor.execute("""SELECT pid,title,duration FROM programmes WHERE programmes.imported = 1 AND programmes.analysed = 0 AND rawdata.pid = programmes.pid AND rawdata.analysed = 0""") # Gah, mindfail hence queryfail
+
         # Sleep here until more data is available to analyse
         print "Sleeping for 1 second..."
         time.sleep(1)
