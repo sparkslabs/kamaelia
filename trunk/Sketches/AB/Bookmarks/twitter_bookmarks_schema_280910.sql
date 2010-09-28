@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 17, 2010 at 08:45 AM
+-- Generation Time: Sep 28, 2010 at 04:05 AM
 -- Server version: 5.1.41
--- PHP Version: 5.3.2-1ubuntu4.2
+-- PHP Version: 5.3.2-1ubuntu4.5
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `analyseddata` (
   `totaltweets` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`did`),
   KEY `pid_refs_pid_5901525b` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2297 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27391 ;
 
 -- --------------------------------------------------------
 
@@ -46,9 +46,10 @@ CREATE TABLE IF NOT EXISTS `keywords` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
   `keyword` varchar(200) NOT NULL,
+  `type` varchar(100) NOT NULL,
   PRIMARY KEY (`uid`),
   KEY `pid_refs_pid_38b0e356` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1352 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16173 ;
 
 -- --------------------------------------------------------
 
@@ -87,4 +88,4 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   `user` varchar(200) NOT NULL,
   PRIMARY KEY (`tid`),
   KEY `pid_refs_pid_458415f9` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15541 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=145960 ;
