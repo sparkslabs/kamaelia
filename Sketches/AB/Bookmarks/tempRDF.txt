@@ -13,64 +13,98 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00tz3hx.rdf">
-  <rdfs:label>Description of a programme version of 28/09/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-21T00:14:28+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-21T00:14:28+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00tz3hx#programme"/>
+<rdf:Description rdf:about="/programmes/b00803dt.rdf">
+  <rdfs:label>Description of a programme version of Ingmar Bergman - The Seventh Seal</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-09-25T03:11:45+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-04-21T22:17:35+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00803dt#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00tz3hx#programme">
+<po:Version rdf:about="/programmes/b00803dt#programme">
 
-  <rdfs:label>A version of 28/09/2010</rdfs:label>
+  <rdfs:label>A version of Ingmar Bergman - The Seventh Seal</rdfs:label>
   
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7200</po:duration>
-  <po:pid>b00tz3hx</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
+  <po:pid>b00803dt</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of 28/09/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00tz3hx#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT7200S</timeline:duration>
+      <rdfs:label>Time interval for a version of Ingmar Bergman - The Seventh Seal</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00803dt#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00tz3k1#programme">
-  <rdfs:label>28/09/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00tz3hx#programme" />
+<po:Episode rdf:about="/programmes/b00803g5#programme">
+  <rdfs:label>Ingmar Bergman - The Seventh Seal</rdfs:label>
+  <po:version rdf:resource="/programmes/b00803dt#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00tz3hx#timeline">
-  <rdfs:label>Timeline of a version of 28/09/2010</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00803dt#timeline">
+  <rdfs:label>Timeline of a version of Ingmar Bergman - The Seventh Seal</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00tz3hx#p00b54hb">
+<po:Broadcast rdf:about="/programmes/b00803dt#p0008j1c">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b54hb</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-28</po:schedule_date>
+  <po:pid>p0008j1c</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2007-10-02</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T13:00:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T15:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-10-02T13:15:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-10-02T13:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/asiannetwork#service">
-      <rdfs:label>BBC Asian Network</rdfs:label>
+    <po:Service rdf:about="/services/radio7#service">
+      <rdfs:label>BBC Radio 7</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00tz3hx#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00803dt#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00803dt#p0008j1d">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p0008j1d</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2008-06-19</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-06-19T13:45:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-06-19T14:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio7#service">
+      <rdfs:label>BBC Radio 7</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00803dt#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00803dt#p00b54fz">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00b54fz</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-28</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T15:15:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T15:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio7#service">
+      <rdfs:label>BBC Radio 7</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00803dt#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T15:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T15:02:00+01:00</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T15:32:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T15:32:00+01:00</timeline:end>
 </po:Availability>
 
 
