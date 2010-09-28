@@ -37,33 +37,44 @@ class Requester(threadedcomponent):
         self.dbuser = dbuser
         self.dbpass = dbpass
         # Modify this to construct the dictionary based on the channel names passed in?
-        self.channels = {"bbcone" : "",
-                        "bbctwo" : "",
-                        "bbcthree" : "",
-                        "bbcfour" : "",
-                        "cbbc" : "",
-                        "cbeebies" : "",
-                        "bbcnews" : "",
-                        "radio1" : "",
-                        "radio2" : "",
-                        "radio3" : "",
-                        "radio4" : "",
-                        "5live" : "",
-                        "worldservice" : "",
-                        "6music" : "",
-                        "radio7" : "",
-                        "1xtra" : "",
-                        "bbcparliament" : "",
-                        "asiannetwork" : "",
-                        "sportsextra" : ""}
+        self.channels = {
+            "bbcone" : "",
+            "bbctwo" : "",
+            "bbcthree" : "",
+            "bbcfour" : "",
+            "cbbc" : "",
+            "cbeebies" : "",
+            "bbcnews" : "",
+            "radio1" : "",
+            "radio2" : "",
+            "radio3" : "",
+            "radio4" : "",
+            "5live" : "",
+            "worldservice" : "",
+            "6music" : "",
+            "radio7" : "",
+            "1xtra" : "",
+            "bbcparliament" : "",
+            "asiannetwork" : "",
+            "sportsextra" : ""
+        }
 
         # Brand PIDs associated with programmes. Not all progs have brands, but it's a start
-        self.officialbrandtags = {"b00vc3rz" : ["#genius","bbcgenius"], # Genius with Dave Gorman
-                                "b006t1q9" : ["#bbcqt","bbcquestiontime"], # Question Time
-                                "b009w2w3" : ["#laterjools", "bbclater"], # Later with Jools Holland
-                                "b00lwxj1" : ["bbcbang"]} # Bang goes the theory
+        self.officialbrandtags = {
+            "b00vc3rz" : ["#genius","bbcgenius"], # Genius with Dave Gorman
+            "b006t1q9" : ["#bbcqt","bbcquestiontime"], # Question Time
+            "b009w2w3" : ["#laterjools", "bbclater"], # Later with Jools Holland
+            "b00lwxj1" : ["bbcbang"], # Bang goes the theory
+            "b006m8dq" : ["#scd", "bbcstrictly"], # Strictly come dancing
+            "b006ml0g" : ["qikipedia", "#qi"], # QI
+            "b006t1k5" : ["#masterchef"], # Masterchef
+            "b00j4j7g" : ["#f1"], # Formula 1
+            "b006wkqb" : ["chrisdjmoyles","chrismoylesshow"] # Chris Moyles Breakfast Show
+        }
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
-        self.officialseriestags = {"b00v2z3s" : ["#askrhod"]} # Ask Rhod Gilbert
+        self.officialseriestags = {
+            "b00v2z3s" : ["#askrhod"] # Ask Rhod Gilbert
+        }
 
         self.firstrun = True
 
@@ -109,7 +120,7 @@ class Requester(threadedcomponent):
                     bidmod = str(bidmod.replace("file:///programmes/",""))
                     if self.officialbrandtags.has_key(bidmod):
                         twittags = self.officialbrandtags[bidmod]
-                    break
+                        break
 
                 # Identify the series and whether there are any official hashtags
                 if len(twittags) == 0:
@@ -120,7 +131,7 @@ class Requester(threadedcomponent):
                         sidmod = str(sidmod.replace("file:///programmes/",""))
                         if self.officialseriestags.has_key(sidmod):
                             twittags = self.officialseriestags[sidmod]
-                        break
+                            break
 
                 so = g.subject_objects(predicate=rdflib.URIRef('http://purl.org/ontology/po/version'))
                 # Pick a version, any version - for this which one doesn't matter
@@ -155,17 +166,22 @@ class Requester(threadedcomponent):
                 for item in """!"#$%&()*+,-./:;<=>?@[\\]?_'`{|}?""":
                     title = title.replace(item,"")
 
-                if string.find(title,"The",0,3) != -1:
-                    newtitle = string.replace(re.sub("\s+","",title),"The","",1)
-                    keywords = {channel : "Channel", "#" + string.lower(re.sub("\s+","",title)) : "Title", '#' + string.lower(re.sub("\s+","",newtitle)) : "Title"}
-                else:
-                    keywords = {channel : "Channel", "#" + string.lower(re.sub("\s+","",title)) : "Title"}
-
-                keywords[title.lower()] = "Title"
+                keywords = dict()
 
                 # Add official hashtags to the list
                 for tag in twittags:
                     keywords[tag] = "Twitter"
+
+                if string.find(title,"The",0,3) != -1:
+                    newtitle = string.replace(re.sub("\s+","",title),"The","",1)
+                    keywords[channel] = "Channel"
+                    keywords["#" + string.lower(re.sub("\s+","",title))] = "Title"
+                    keywords['#' + string.lower(re.sub("\s+","",newtitle))] = "Title"
+                else:
+                    keywords[channel] = "Channel"
+                    keywords["#" + string.lower(re.sub("\s+","",title))] = "Title"
+
+                keywords[title.lower()] = "Title"
 
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:
