@@ -163,8 +163,9 @@ class Requester(threadedcomponent):
                 else:
                     print (channel + ": Changed to - " + title)
 
+                title = title.replace("&","and")
                 # Remove punctuation
-                for item in """!"#$%&()*+,-./:;<=>?@[\\]?_'`{|}?""":
+                for item in """!"#$%()*+,-./:;<=>?@[\\]?_'`{|}?""":
                     title = title.replace(item,"")
 
                 keywords = dict()
@@ -254,6 +255,7 @@ class Requester(threadedcomponent):
                     pid = g.value(subject=rdflib.BNode(rid),predicate=rdflib.URIRef('http://purl.org/ontology/po/participant'))
                     firstname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/givenName')))
                     lastname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/familyName')))
+                    # This ^ is a temporary fix until I work out a better DB structure
                     keywords[character + "^" + channel] = "Character"
                     keywords[character + "^" + title] = "Character"
                     if " " in character:
@@ -261,10 +263,12 @@ class Requester(threadedcomponent):
                         charwords = character.split()
                         if charwords[0] != "Dr" and charwords[0] != "Miss" and charwords[0] != "Mr" and charwords[0] != "Mrs" and charwords[0] != "Ms" and charwords[0] != "The":
                             # As long as the first word isn't a title, add it as a first name
+                            # This ^ is a temporary fix until I work out a better DB structure
                             keywords[charwords[0] + "^" + channel] = "Character"
                             keywords[charwords[0] + "^" + title] = "Character"
                         elif len(charwords) > 2:
                             # If the first word was a title, and the second word isn't a surname (checked by > 2) add the first name
+                            # This ^ is a temporary fix until I work out a better DB structure
                             keywords[charwords[1] + "^" + channel] = "Character"
                             keywords[charwords[1] + "^" + title] = "Character"
                     if config.has_key(firstname + " " + lastname):
@@ -366,7 +370,11 @@ class Requester(threadedcomponent):
                 cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
                 keywordquery = cursor.fetchall()
                 for keyword in keywordquery:
-                    keywords.append(keyword[0])
+                    # This ^ is a temporary fix until I work out a better DB structure
+                    if "^" in keyword[0]:
+                        keywords.append(string.replace(keyword[0],"^"," "))
+                    else:
+                        keywords.append(keyword[0])
 
                 if (keywords != oldkeywords) & (keywords != None):
                     print keywords
@@ -405,7 +413,11 @@ class Requester(threadedcomponent):
                     cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
                     keywordquery = cursor.fetchall()
                     for keyword in keywordquery:
-                        keywords.append(keyword[0])
+                        # This ^ is a temporary fix until I work out a better DB structure
+                        if "^" in keyword[0]:
+                            keywords.append(string.replace(keyword[0],"^"," "))
+                        else:
+                            keywords.append(keyword[0])
 
                 # Remove repeated keywords here
                 if len(keywords) != 0:
@@ -424,6 +436,6 @@ class Requester(threadedcomponent):
             # Then, pass keywords to TwitterStream. DataCollector will pick up the data
             # Must deal with errors passed back from TwitterStream here
             self.firstrun = False
-            time.sleep(60) # Wait a minute!
+            time.sleep(30) # Wait for 30 secs - don't need as much given the wait time between /programmes requests
             # Could always get this to wait until the programme is due to change, but this *may* miss last minute schedule changes
             
