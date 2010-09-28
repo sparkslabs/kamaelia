@@ -3,9 +3,6 @@
 # Analyses saved data in DB to give something more useful. Saves to output DB ready for display in web interface
 # Need word freq analysis, tweet rate analysis etc
 # Any looking at natural language engines / subtitles should be done here or in components following this
-# This component probably needs the original keywords etc too as it needs to separate both programmes and channels
-# When analysing, look for mentions of just first names used with #programme etc, as people are unlikely to describe presenters etc with full names (could actually modify the original search to do this) TODO
-# Watch out for repeated tweets - could be user or Twitter error
 # Need to ensure one rogue user can't cause a trend - things must be mentioned by several
 
 import MySQLdb
@@ -37,9 +34,6 @@ def dbConnect(dbuser,dbpass):
     return cursor
 
 if __name__ == "__main__":
-    # TODO: Do live analysis on ALL statistics - tweets in each minute etc until imported = 1
-    # Only analyse each minute when a later minute's tweets have started to come in
-    # Calculate running total and mean etc
 
     # Load Config
     try:
@@ -60,7 +54,7 @@ if __name__ == "__main__":
     cursor = dbConnect(dbuser,dbpass)
 
     while 1:
-        # The below does FINAL analysis only - live analysis still needs adding. This will likely need modifying once that's done
+        # The below does FINAL analysis only - live analysis is via LiveAnalysis.py for now
         # Check if imported = 1 and analysed = 0
 
         print "Checking for unanalysed data..."

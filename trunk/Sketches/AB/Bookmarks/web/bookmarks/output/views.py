@@ -84,6 +84,8 @@ def channel(request,channel,year=0,month=0,day=0):
     return HttpResponse(output)
 
 def programme(request,pid):
+    # When doing API in json/RDF? look at 'Outputting CSV with Django' online.
+
     output = header
 
     data = programmes.objects.filter(pid=pid).all()
