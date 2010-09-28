@@ -54,10 +54,18 @@ class DataCollector(threadedcomponent):
                         for pid in tweet[1]:
                             # Cycle through possible pids, grabbing that pid's keywords from the DB
                             # Then, check this tweet against the keywords and save to DB where appropriate (there may be more than one location)
-                            cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
-                            keywords = cursor.fetchall()
-                            for keyword in keywords:
-                                if string.lower(keyword[0]) in string.lower(newdata['text']):
+                            cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
+                            data = cursor.fetchall()
+                            for row in data:
+                                if row[1] == "Character":
+                                    keywords = row[0].split("^")
+                                    if len(keywords) == 2:
+                                        if string.lower(keywords[0]) in string.lower(newdata['text']) and string.lower(keywords[1]) in string.lower(newdata['text']):
+                                            cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
+                                            if cursor.fetchone() != None:
+                                                cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
+                                                break # Break out of this loop and back to check the same tweet against the next programme
+                                elif string.lower(row[0]) in string.lower(newdata['text']):
                                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                     if cursor.fetchone() != None:
                                         cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))

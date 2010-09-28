@@ -126,24 +126,26 @@ class Requester(threadedcomponent):
 
                 if string.find(title,"The",0,3) != -1:
                     newtitle = string.replace(re.sub("\s+","",title),"The","",1)
-                    keywords = [channel,"#" + string.lower(re.sub("\s+","",title)),'#' + string.lower(re.sub("\s+","",newtitle))]
+                    #keywords = [channel,"#" + string.lower(re.sub("\s+","",title)),'#' + string.lower(re.sub("\s+","",newtitle))]
+                    keywords = {channel : "Channel", "#" + string.lower(re.sub("\s+","",title)) : "Title", '#' + string.lower(re.sub("\s+","",newtitle)) : "Title"}
                 else:
-                    keywords = [channel,"#" + string.lower(re.sub("\s+","",title))]
+                    #keywords = [channel,"#" + string.lower(re.sub("\s+","",title))]
+                    keywords = {channel : "Channel", "#" + string.lower(re.sub("\s+","",title)) : "Title"}
 
-                #titlewords = title.split()
-                #if len(titlewords) > 1:
-                    # If more than one word in show title, add that too
-                keywords.append(title.lower())
+                #keywords.append(title.lower())
+                keywords[title.lower()] = "Title"
 
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:
                     if word in channel.lower() and channel != "asiannetwork": # Bug fix! asianne2rk
                         numchannel = string.replace(channel.lower(),word,str(numwords[word]))
-                        keywords.append(numchannel)
+                        #keywords.append(numchannel)
+                        keywords[numchannel] = "Channel"
                         break
                     if str(numwords[word]) in channel.lower():
                         numchannel = string.replace(channel.lower(),str(numwords[word]),word)
-                        keywords.append(numchannel)
+                        #keywords.append(numchannel)
+                        keywords[numchannel] = "Channel"
                         break
 
                 # Load NameCache
@@ -176,7 +178,8 @@ class Requester(threadedcomponent):
                     if config.has_key(firstname + " " + lastname):
                         # Found a cached value
                         if config[firstname + " " + lastname] != "":
-                            keywords.append(config[firstname + " " + lastname])
+                            #keywords.append(config[firstname + " " + lastname])
+                            keywords[config[firstname + " " + lastname]] = "Participant"
                     else:
                         # Not cached yet - new request
                         self.send(firstname + " " + lastname, "search")
@@ -189,12 +192,14 @@ class Requester(threadedcomponent):
                                 if user.has_key('verified'):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and string.lower(user['name']) == string.lower(firstname + " " + lastname):
                                         screenname = user['screen_name']
-                                        keywords.append(screenname)
+                                        #keywords.append(screenname)
+                                        keywords[screenname] = "Twitter"
                                         break
                         except AttributeError, e:
                             pass
                         config[firstname + " " + lastname] = screenname
-                    keywords.append(firstname + " " + lastname)
+                    #keywords.append(firstname + " " + lastname)
+                    keywords[firstname + " " + lastname] = "Participant"
 
                 s = g.subjects(predicate=rdflib.URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),object=rdflib.URIRef('http://purl.org/ontology/po/Character'))
 
@@ -205,23 +210,30 @@ class Requester(threadedcomponent):
                     pid = g.value(subject=rdflib.BNode(rid),predicate=rdflib.URIRef('http://purl.org/ontology/po/participant'))
                     firstname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/givenName')))
                     lastname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/familyName')))
-                    keywords.append(character + " " + channel)
-                    keywords.append(character + " " + title)
+                    #keywords.append(character + " " + channel)
+                    keywords[character + "^" + channel] = "Character"
+                    #keywords.append(character + " " + title)
+                    keywords[character + "^" + title] = "Character"
                     if " " in character:
                         # Looks like we have a firstname + surname situation
                         charwords = character.split()
-                        if charwords[0] != "Dr" and charwords[0] != "Miss" and charwords[0] != "Mr" and charwords[0] != "Mrs" and charwords[0] != "Ms":
+                        if charwords[0] != "Dr" and charwords[0] != "Miss" and charwords[0] != "Mr" and charwords[0] != "Mrs" and charwords[0] != "Ms" and charwords[0] != "The":
                             # As long as the first word isn't a title, add it as a first name
-                            keywords.append(charwords[0] + " " + channel)
-                            keywords.append(charwords[0] + " " + title)
+                            #keywords.append(charwords[0] + " " + channel)
+                            keywords[charwords[0] + "^" + channel] = "Character"
+                            #keywords.append(charwords[0] + " " + title)
+                            keywords[charwords[0] + "^" + title] = "Character"
                         elif len(charwords) > 2:
                             # If the first word was a title, and the second word isn't a surname (checked by > 2) add the first name
-                            keywords.append(charwords[1] + " " + channel)
-                            keywords.append(charwords[1] + " " + title)
+                            #keywords.append(charwords[1] + " " + channel)
+                            keywords[charwords[1] + "^" + channel] = "Character"
+                            #keywords.append(charwords[1] + " " + title)
+                            keywords[charwords[1] + "^" + title] = "Character"
                     if config.has_key(firstname + " " + lastname):
                         # Found a cached value
                         if config[firstname + " " + lastname] != "":
-                            keywords.append(config[firstname + " " + lastname])
+                            #keywords.append(config[firstname + " " + lastname])
+                            keywords[config[firstname + " " + lastname]] = "Actor"
                     else:
                         # Not cached yet - new request
                         self.send(firstname + " " + lastname, "search")
@@ -234,12 +246,14 @@ class Requester(threadedcomponent):
                                 if user.has_key('verified'):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and string.lower(user['name']) == string.lower(firstname + " " + lastname):
                                         screenname = user['screen_name']
-                                        keywords.append(screenname)
+                                        #keywords.append(screenname)
+                                        keywords[screenname] = "Twitter"
                                         break
                         except AttributeError, e:
                             pass
                         config[firstname + " " + lastname] = screenname
-                    keywords.append(firstname + " " + lastname)
+                    #keywords.append(firstname + " " + lastname)
+                    keywords[firstname + " " + lastname] = "Actor"
 
                 # Radio appears to have been forgotten about a bit in RDF / scheduling at the mo
                 if "radio" in channel or "6music" in channel or "asiannetwork" in channel or "sportsextra" in channel or "worldservice" in channel:
@@ -247,7 +261,8 @@ class Requester(threadedcomponent):
                     if config.has_key(title):
                         # Found a cached value
                         if config[title] != "":
-                            keywords.append(config[title])
+                            #keywords.append(config[title])
+                            keywords[config[title]] = "Title"
                     else:
                         self.send(title, "search")
                         while not self.dataReady("search"):
@@ -259,7 +274,8 @@ class Requester(threadedcomponent):
                                 if user.has_key('verified'):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and  string.lower(user['name']) == title.lower():
                                         screenname = user['screen_name']
-                                        keywords.append(screenname)
+                                        #keywords.append(screenname)
+                                        keywords[screenname] = "Twitter"
                                         break
                         except AttributeError, e:
                             pass
@@ -309,13 +325,20 @@ class Requester(threadedcomponent):
                     if cursor.fetchone() == None:
                         cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,self.channel))
                         for word in keywords:
-                            cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
+                            cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywords[word]))
+                    keywords = list()
                 else:
                     keywords = None
 
                 # Remove repeated keywords here
-                if keywords != None:
-                    keywords = list(set(keywords))
+                # No need as using dict()
+                #if keywords != None:
+                #    keywords = list(set(keywords))
+
+                cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
+                keywordquery = cursor.fetchall()
+                for keyword in keywordquery:
+                    keywords.append(keyword[0])
 
                 if (keywords != oldkeywords) & (keywords != None):
                     print keywords
@@ -343,7 +366,7 @@ class Requester(threadedcomponent):
                         if cursor.fetchone() == None:
                             cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,channel))
                             for word in keywordappender:
-                                cursor.execute("""INSERT INTO keywords (pid,keyword) VALUES (%s,%s)""", (pid,word))
+                                cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywordappender[word]))
 
                 currentpids = list()
                 for channel in self.channels:
