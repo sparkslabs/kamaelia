@@ -36,6 +36,7 @@ class Requester(threadedcomponent):
         self.channel = channel
         self.dbuser = dbuser
         self.dbpass = dbpass
+        # Modify this to construct the dictionary based on the channel names passed in?
         self.channels = {"bbcone" : "",
                         "bbctwo" : "",
                         "bbcthree" : "",
@@ -55,7 +56,15 @@ class Requester(threadedcomponent):
                         "bbcparliament" : "",
                         "asiannetwork" : "",
                         "sportsextra" : ""}
-        # Modify this to construct the dictionary based on the channel names passed in?
+
+        # Brand PIDs associated with programmes. Not all progs have brands, but it's a start
+        self.officialbrandtags = {"b00vc3rz" : ["#genius","bbcgenius"], # Genius with Dave Gorman
+                                "b006t1q9" : ["#bbcqt","bbcquestiontime"], # Question Time
+                                "b009w2w3" : ["#laterjools", "bbclater"], # Later with Jools Holland
+                                "b00lwxj1" : ["bbcbang"]} # Bang goes the theory
+        # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
+        self.officialseriestags = {"b00v2z3s" : ["#askrhod"]} # Ask Rhod Gilbert
+
         self.firstrun = True
 
     def doStuff(self, channel):
@@ -89,7 +98,29 @@ class Requester(threadedcomponent):
                 file.close()
 
                 g = Graph()
+                # This is a temporary proxy fix. A URL could be put here instead
                 g.parse("tempRDF.txt")
+
+                # Identify the brand and whether there are any official hashtags
+                twittags = list()
+                for bid in g.subjects(object = rdflib.URIRef('http://purl.org/ontology/po/Brand')):
+                    # bid is Brand ID
+                    bidmod = bid.replace("#programme","")
+                    bidmod = str(bidmod.replace("file:///programmes/",""))
+                    if self.officialbrandtags.has_key(bidmod):
+                        twittags = self.officialbrandtags[bidmod]
+                    break
+
+                # Identify the series and whether there are any official hashtags
+                if len(twittags) == 0:
+                    # Identify the brand and whether there are any official hashtags
+                    for sid in g.subjects(object = rdflib.URIRef('http://purl.org/ontology/po/Series')):
+                        # sid is Series ID
+                        sidmod = sid.replace("#programme","")
+                        sidmod = str(sidmod.replace("file:///programmes/",""))
+                        if self.officialseriestags.has_key(sidmod):
+                            twittags = self.officialseriestags[sidmod]
+                        break
 
                 so = g.subject_objects(predicate=rdflib.URIRef('http://purl.org/ontology/po/version'))
                 # Pick a version, any version - for this which one doesn't matter
@@ -126,25 +157,24 @@ class Requester(threadedcomponent):
 
                 if string.find(title,"The",0,3) != -1:
                     newtitle = string.replace(re.sub("\s+","",title),"The","",1)
-                    #keywords = [channel,"#" + string.lower(re.sub("\s+","",title)),'#' + string.lower(re.sub("\s+","",newtitle))]
                     keywords = {channel : "Channel", "#" + string.lower(re.sub("\s+","",title)) : "Title", '#' + string.lower(re.sub("\s+","",newtitle)) : "Title"}
                 else:
-                    #keywords = [channel,"#" + string.lower(re.sub("\s+","",title))]
                     keywords = {channel : "Channel", "#" + string.lower(re.sub("\s+","",title)) : "Title"}
 
-                #keywords.append(title.lower())
                 keywords[title.lower()] = "Title"
+
+                # Add official hashtags to the list
+                for tag in twittags:
+                    keywords[tag] = "Twitter"
 
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:
                     if word in channel.lower() and channel != "asiannetwork": # Bug fix! asianne2rk
                         numchannel = string.replace(channel.lower(),word,str(numwords[word]))
-                        #keywords.append(numchannel)
                         keywords[numchannel] = "Channel"
                         break
                     if str(numwords[word]) in channel.lower():
                         numchannel = string.replace(channel.lower(),str(numwords[word]),word)
-                        #keywords.append(numchannel)
                         keywords[numchannel] = "Channel"
                         break
 
@@ -178,7 +208,6 @@ class Requester(threadedcomponent):
                     if config.has_key(firstname + " " + lastname):
                         # Found a cached value
                         if config[firstname + " " + lastname] != "":
-                            #keywords.append(config[firstname + " " + lastname])
                             keywords[config[firstname + " " + lastname]] = "Participant"
                     else:
                         # Not cached yet - new request
@@ -192,13 +221,11 @@ class Requester(threadedcomponent):
                                 if user.has_key('verified'):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and string.lower(user['name']) == string.lower(firstname + " " + lastname):
                                         screenname = user['screen_name']
-                                        #keywords.append(screenname)
                                         keywords[screenname] = "Twitter"
                                         break
                         except AttributeError, e:
                             pass
                         config[firstname + " " + lastname] = screenname
-                    #keywords.append(firstname + " " + lastname)
                     keywords[firstname + " " + lastname] = "Participant"
 
                 s = g.subjects(predicate=rdflib.URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),object=rdflib.URIRef('http://purl.org/ontology/po/Character'))
@@ -210,29 +237,22 @@ class Requester(threadedcomponent):
                     pid = g.value(subject=rdflib.BNode(rid),predicate=rdflib.URIRef('http://purl.org/ontology/po/participant'))
                     firstname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/givenName')))
                     lastname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/familyName')))
-                    #keywords.append(character + " " + channel)
                     keywords[character + "^" + channel] = "Character"
-                    #keywords.append(character + " " + title)
                     keywords[character + "^" + title] = "Character"
                     if " " in character:
                         # Looks like we have a firstname + surname situation
                         charwords = character.split()
                         if charwords[0] != "Dr" and charwords[0] != "Miss" and charwords[0] != "Mr" and charwords[0] != "Mrs" and charwords[0] != "Ms" and charwords[0] != "The":
                             # As long as the first word isn't a title, add it as a first name
-                            #keywords.append(charwords[0] + " " + channel)
                             keywords[charwords[0] + "^" + channel] = "Character"
-                            #keywords.append(charwords[0] + " " + title)
                             keywords[charwords[0] + "^" + title] = "Character"
                         elif len(charwords) > 2:
                             # If the first word was a title, and the second word isn't a surname (checked by > 2) add the first name
-                            #keywords.append(charwords[1] + " " + channel)
                             keywords[charwords[1] + "^" + channel] = "Character"
-                            #keywords.append(charwords[1] + " " + title)
                             keywords[charwords[1] + "^" + title] = "Character"
                     if config.has_key(firstname + " " + lastname):
                         # Found a cached value
                         if config[firstname + " " + lastname] != "":
-                            #keywords.append(config[firstname + " " + lastname])
                             keywords[config[firstname + " " + lastname]] = "Actor"
                     else:
                         # Not cached yet - new request
@@ -246,13 +266,11 @@ class Requester(threadedcomponent):
                                 if user.has_key('verified'):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and string.lower(user['name']) == string.lower(firstname + " " + lastname):
                                         screenname = user['screen_name']
-                                        #keywords.append(screenname)
                                         keywords[screenname] = "Twitter"
                                         break
                         except AttributeError, e:
                             pass
                         config[firstname + " " + lastname] = screenname
-                    #keywords.append(firstname + " " + lastname)
                     keywords[firstname + " " + lastname] = "Actor"
 
                 # Radio appears to have been forgotten about a bit in RDF / scheduling at the mo
@@ -261,7 +279,6 @@ class Requester(threadedcomponent):
                     if config.has_key(title):
                         # Found a cached value
                         if config[title] != "":
-                            #keywords.append(config[title])
                             keywords[config[title]] = "Title"
                     else:
                         self.send(title, "search")
@@ -274,7 +291,6 @@ class Requester(threadedcomponent):
                                 if user.has_key('verified'):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and  string.lower(user['name']) == title.lower():
                                         screenname = user['screen_name']
-                                        #keywords.append(screenname)
                                         keywords[screenname] = "Twitter"
                                         break
                         except AttributeError, e:
@@ -329,11 +345,6 @@ class Requester(threadedcomponent):
                     keywords = list()
                 else:
                     keywords = None
-
-                # Remove repeated keywords here
-                # No need as using dict()
-                #if keywords != None:
-                #    keywords = list(set(keywords))
 
                 cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
                 keywordquery = cursor.fetchall()
