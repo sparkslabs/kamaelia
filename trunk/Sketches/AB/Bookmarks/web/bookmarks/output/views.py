@@ -98,7 +98,7 @@ def programme(request,pid):
         progdate = parse(data[0].expectedstart)
         tz = progdate.tzinfo
         progdate = progdate.replace(tzinfo=None)
-        actualstart = progdate + timedelta(seconds=data[0].timediff)
+        actualstart = progdate - timedelta(seconds=data[0].timediff)
         minutedata = analyseddata.objects.filter(pid=pid).order_by('datetime').all()
         output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
         output += "<strong>" + data[0].title + "</strong><br />"
@@ -126,7 +126,7 @@ def programme(request,pid):
                 proghour = tweettime.hour - actualstart.hour
                 progmin = tweettime.minute - actualstart.minute
                 progsec = tweettime.second - actualstart.second
-                playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # final 90 removed to give people time to tweet - would probably work with 60 but this gives a run up
+                playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
                 if playertime > (data[0].duration - 60):
                     playertimemin = (data[0].duration/60) - 1
                     playertimesec = playertime%60
