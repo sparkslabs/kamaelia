@@ -220,5 +220,5 @@ if __name__ == "__main__":
                 print "Done!"
                 
         # Sleep here until more data is available to analyse
-        print "Sleeping for 1 second..."
-        time.sleep(1)
+        print "Sleeping for 10 seconds..."
+        time.sleep(10)
