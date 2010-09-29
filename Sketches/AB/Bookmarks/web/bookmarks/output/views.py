@@ -94,6 +94,8 @@ def programme(request,pid):
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     elif len(data) == 1:
+        if data[0].analysed == 0:
+            output += "<meta http-equiv='refresh' content='60'>"
         channel = data[0].channel
         output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
         progdate = parse(data[0].expectedstart)

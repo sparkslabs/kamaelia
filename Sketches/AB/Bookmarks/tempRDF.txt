@@ -13,84 +13,78 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00tytlq.rdf">
-  <rdfs:label>Description of a programme version of Alice, Hanging In There</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-22T00:10:01+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-22T00:10:01+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00tytlq#programme"/>
+<rdf:Description rdf:about="/programmes/b00v38zt.rdf">
+  <rdfs:label>Description of a programme version of 29/09/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-22T00:19:53+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-22T00:19:53+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00v38zt#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00tytlq#programme">
+<po:Version rdf:about="/programmes/b00v38zt#programme">
 
-  <rdfs:label>A version of Alice, Hanging In There</rdfs:label>
-  
+  <rdfs:label>A version of 29/09/2010</rdfs:label>
+  <po:aspect_ratio>16:9</po:aspect_ratio>
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
-  <po:pid>b00tytlq</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">11700</po:duration>
+  <po:pid>b00v38zt</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Alice, Hanging In There</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00tytlq#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
+      <rdfs:label>Time interval for a version of 29/09/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00v38zt#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT11700S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00tyv87#programme">
-  <rdfs:label>Alice, Hanging In There</rdfs:label>
-  <po:version rdf:resource="/programmes/b00tytlq#programme" />
+<po:Episode rdf:about="/programmes/b00v39bw#programme">
+  <rdfs:label>29/09/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/b00v38zt#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00tytlq#timeline">
-  <rdfs:label>Timeline of a version of Alice, Hanging In There</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00v38zt#timeline">
+  <rdfs:label>Timeline of a version of 29/09/2010</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00tytlq#p00b5s7s">
+<po:Broadcast rdf:about="/programmes/b00v38zt#p00b5t00">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b5s7s</po:pid>
+  <po:pid>p00b5t00</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-29</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T15:30:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T15:45:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T16:15:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T19:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/radio4/fm#service">
-       <rdfs:label>FM</rdfs:label>
-       <po:parent_service rdf:resource="/services/radio4#service"/>
-     </po:Service>
+    <po:Service rdf:about="/services/parliament#service">
+      <rdfs:label>BBC Parliament</rdfs:label>
+    </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00tytlq#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00v38zt#programme" />
 </po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00tytlq#p00b5sp2">
+<po:Broadcast rdf:about="/programmes/b00v38zt#p00b7354">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b5sp2</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-29</po:schedule_date>
+  <po:pid>p00b7354</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-02</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T15:30:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T15:45:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-02T01:30:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-02T04:45:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/radio4/lw#service">
-       <rdfs:label>LW</rdfs:label>
-       <po:parent_service rdf:resource="/services/radio4#service"/>
-     </po:Service>
+    <po:Service rdf:about="/services/parliament#service">
+      <rdfs:label>BBC Parliament</rdfs:label>
+    </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00tytlq#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00v38zt#programme" />
 </po:Broadcast>
 
 
 
 
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T15:47:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T15:47:00+01:00</timeline:end>
-</po:Availability>
 
 
 
