@@ -64,6 +64,7 @@ if __name__ == "__main__":
         print "Checking for new data..."
 
         # Stage 1: Live analysis - could do with a better way to do the first query - rather resource killing for SQL it seems
+        # Could move this into the main app to take a copy of tweets on arrival, but would rather solve separately if poss
         cursor.execute("""SELECT tid,pid,datetime,text,user FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
         data = cursor.fetchall()
 
@@ -162,7 +163,7 @@ if __name__ == "__main__":
                 stdevtweets += val
 
             try:
-                stdevtweets = math.sqrt(stdevtweets / meantweets)
+                stdevtweets = math.sqrt(stdevtweets / runningtime)
             except ZeroDivisionError, e:
                 stdevtweets = 0
 
@@ -227,7 +228,7 @@ if __name__ == "__main__":
                 for val in stdevlist:
                     stdevtweets += val
                 try:
-                    stdevtweets = math.sqrt(stdevtweets / meantweets)
+                    stdevtweets = math.sqrt(stdevtweets / runningtime)
                 except ZeroDivisionError, e:
                     stdevtweets = 0
                 
