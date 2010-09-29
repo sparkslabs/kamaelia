@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
         print "Checking for new data..."
 
-        # Stage 1: Live analysis
+        # Stage 1: Live analysis - could do with a better way to do the first query - rather resource killing for SQL it seems
         cursor.execute("""SELECT tid,pid,datetime,text,user FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
         data = cursor.fetchall()
 

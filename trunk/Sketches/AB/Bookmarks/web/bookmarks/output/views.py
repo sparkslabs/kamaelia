@@ -85,6 +85,7 @@ def channel(request,channel,year=0,month=0,day=0):
 
 def programme(request,pid):
     # When doing API in json/RDF? look at 'Outputting CSV with Django' online.
+    # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
 
     output = header
 
@@ -104,15 +105,16 @@ def programme(request,pid):
         output += "<strong>" + data[0].title + "</strong><br />"
         output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
         output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
-        if data[0].imported == 0:
-            output += "<br />Data for this programme has not been flagged as imported."
-            output += "<br />- This may indicate that the programme is yet to finish."
-            output += "<br />- If the programme finished over 5 minutes ago, you may need to set the flag manually."
-        elif data[0].analysed == 0:
-            output += "<br />Data for this programme has been imported but is awaiting analysis."
-        else:
+        #if data[0].imported == 0:
+        #    output += "<br />Data for this programme has not been flagged as imported."
+        #    output += "<br />- This may indicate that the programme is yet to finish."
+        #    output += "<br />- If the programme finished over 5 minutes ago, you may need to set the flag manually."
+        #elif data[0].analysed == 0:
+        #    output += "<br />Data for this programme has been imported but is awaiting analysis."
+        #else:
             # Still need to add some form of chart or charts here - looking at Google Chart API first.
-            # Would be worth caching charts if poss to avoid too many API calls.            
+            # Would be worth caching charts if poss to avoid too many API calls.
+        if 1:
             tweetmins = dict()
             appender = ""
             lastwasbookmark = False
@@ -152,7 +154,7 @@ def programme(request,pid):
                     lastwasbookmark = False
                 if not tweetmins.has_key(str(playertimemin)):
                     tweetmins[str(playertimemin)] = int(minute.totaltweets)
-            if len(tweetmins) > 0 and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+            if len(tweetmins) > 0 and max(tweetmins.values()) > 0: # Arbitrary value chosen for now - needs experimentation - was 9
                 output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
                 xlist = range(0,data[0].duration/60)
                 ylist = list()
