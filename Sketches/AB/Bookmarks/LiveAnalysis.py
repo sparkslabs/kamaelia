@@ -64,7 +64,7 @@ if __name__ == "__main__":
         print "Checking for new data..."
 
         # Stage 1: Live analysis
-        cursor.execute("""SELECT tid,pid,datetime,text,user FROM rawdata WHERE analysed = 0 ORDER BY tid""")
+        cursor.execute("""SELECT tid,pid,datetime,text,user FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
         data = cursor.fetchall()
 
         for result in data:
@@ -119,9 +119,12 @@ if __name__ == "__main__":
                 runningtime = 0
             else:
                 runningtime = float(runningtime) / 60
-                
-            meantweets = totaltweets / runningtime
 
+            try:
+                meantweets = totaltweets / runningtime
+            except ZeroDivisionError, e:
+                meantweets = 0
+                
             #TODO: Median, mode and stdev really aren't right yet
             cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s""",(pid))
             analyseddata = cursor.fetchall()
@@ -157,7 +160,11 @@ if __name__ == "__main__":
             stdevtweets = 0
             for val in stdevlist:
                 stdevtweets += val
-            stdevtweets = math.sqrt(stdevtweets / meantweets)
+
+            try:
+                stdevtweets = math.sqrt(stdevtweets / meantweets)
+            except ZeroDivisionError, e:
+                stdevtweets = 0
 
             # Finished analysis
             cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid))
@@ -165,17 +172,17 @@ if __name__ == "__main__":
             print "Done!"
         
         # Stage 2: If all raw tweets analysed and imported = 1, finalise the analysis - could do bookmark identification here too?
-        cursor.execute("""SELECT pid,duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,title FROM programmes WHERE programmes.imported = 1 AND programmes.analysed = 0""")
+        cursor.execute("""SELECT pid,duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,title FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
         data = cursor.fetchall()
         for result in data:
-            pid = data[0]
-            duration = data[1]
-            totaltweets = data[2]
-            meantweets = data[3]
-            mediantweets = data[4]
-            modetweets = data[5]
-            stdevtweets = data[6]
-            title = data[7]
+            pid = result[0]
+            duration = result[1]
+            totaltweets = result[2]
+            meantweets = result[3]
+            mediantweets = result[4]
+            modetweets = result[5]
+            stdevtweets = result[6]
+            title = result[7]
             # Cycle through checking if all tweets for this programme have been analysed - if so finalise the stats
             cursor.execute("""SELECT tid FROM rawdata WHERE analysed = 0 AND pid = %s""", (pid))
             if cursor.fetchone() == None:
@@ -219,7 +226,10 @@ if __name__ == "__main__":
                 stdevtweets = 0
                 for val in stdevlist:
                     stdevtweets += val
-                stdevtweets = math.sqrt(stdevtweets / meantweets)
+                try:
+                    stdevtweets = math.sqrt(stdevtweets / meantweets)
+                except ZeroDivisionError, e:
+                    stdevtweets = 0
                 
                 cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid))
                 print "Done!"
