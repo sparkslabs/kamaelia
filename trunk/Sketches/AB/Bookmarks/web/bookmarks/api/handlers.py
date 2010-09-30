@@ -3,6 +3,7 @@ from bookmarks.output.models import programmes, keywords
 
 class ProgrammesHandler(BaseHandler):
     allowed_methods = ('GET',)
+    # The below could be used if I wasn't adding keywords too - not sure how to imply some sort of JOIN operation
     #fields = ('pid', 'channel', 'title', 'expectedstart', 'timediff', 'duration', 'imported', 'analysed', 'totaltweets', 'meantweets', 'mediantweets', 'modetweets', 'stdevtweets')
     #model = programmes
 

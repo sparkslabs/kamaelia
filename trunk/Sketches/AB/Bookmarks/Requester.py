@@ -59,7 +59,8 @@ class Requester(threadedcomponent):
             "sportsextra" : ""
         }
 
-        # Brand PIDs associated with programmes. Not all progs have brands, but it's a start
+        # Brand PIDs associated with programmes. New progs don't always have brands, but it's a start
+        # Ideally this would be replaced by the BBC Buzz database, but that's not yet accessible AFAIK and doesn't always store tags for new programmes.
         self.officialbrandtags = {
             "b00vc3rz" : ["#genius","bbcgenius"], # Genius with Dave Gorman
             "b006t1q9" : ["#bbcqt","bbcquestiontime"], # Question Time
@@ -67,7 +68,6 @@ class Requester(threadedcomponent):
             "b00lwxj1" : ["bbcbang"], # Bang goes the theory
             "b006m8dq" : ["#scd", "bbcstrictly"], # Strictly come dancing
             "b006ml0g" : ["qikipedia", "#qi"], # QI
-            "b006t1k5" : ["#masterchef"], # Masterchef
             "b00j4j7g" : ["#f1"], # Formula 1
             "b006wkqb" : ["chrisdjmoyles","chrismoylesshow"], # Chris Moyles Breakfast Show
             "b0071b63" : ["bbcapprentice"], # The Apprentice
@@ -233,7 +233,7 @@ class Requester(threadedcomponent):
                     if config.has_key(firstname + " " + lastname):
                         # Found a cached value
                         if config[firstname + " " + lastname] != "":
-                            keywords[config[firstname + " " + lastname]] = "Participant"
+                            keywords[config[firstname + " " + lastname]] = "Twitter"
                     else:
                         # Not cached yet - new request
                         self.send(firstname + " " + lastname, "search")
@@ -307,7 +307,7 @@ class Requester(threadedcomponent):
                     if config.has_key(title):
                         # Found a cached value
                         if config[title] != "":
-                            keywords[config[title]] = "Title"
+                            keywords[config[title]] = "Twitter"
                     else:
                         self.send(title, "search")
                         while not self.dataReady("search"):

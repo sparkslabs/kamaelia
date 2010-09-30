@@ -1,5 +1,7 @@
 #! /usr/bin/python
 
+# NB: It is recommended that this file is used for analysis as opposed to DataAnalyser.py
+
 # Analyses saved data in DB to give something more useful. Saves to output DB ready for display in web interface
 # Need word freq analysis, tweet rate analysis etc
 # Any looking at natural language engines / subtitles should be done here or in components following this
@@ -21,8 +23,6 @@ def dbConnect(dbuser,dbpass):
     return cursor
 
 if __name__ == "__main__":
-    # Live analysis on ALL statistics - tweets in each minute etc until imported = 1
-    # Only analyse each minute when a later minute's tweets have started to come in???
     # Calculate running total and mean etc
 
     # Load Config
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
         print "Checking for new data..."
 
-        # Stage 1: Live analysis - could do with a better way to do the first query - rather resource killing for SQL it seems
+        # Stage 1: Live analysis - could do with a better way to do the first query (indexed field 'analsed' to speed up for now)
         # Could move this into the main app to take a copy of tweets on arrival, but would rather solve separately if poss
         cursor.execute("""SELECT tid,pid,datetime,text,user FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
         data = cursor.fetchall()

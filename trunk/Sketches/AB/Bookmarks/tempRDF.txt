@@ -13,107 +13,114 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00tvlwn.rdf">
-  <rdfs:label>Description of a programme version of Lois The Witch</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-23T00:12:55+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-23T00:12:55+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00tvlwn#programme"/>
+<rdf:Description rdf:about="/programmes/b00njy8z.rdf">
+  <rdfs:label>Description of a programme version of Bad Luck Machine</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-10-11T00:09:40+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-10-11T00:09:40+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00njy8z#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00tvlwn#programme">
+<po:Version rdf:about="/programmes/b00njy8z#programme">
 
-  <rdfs:label>A version of Lois The Witch</rdfs:label>
-  
+  <rdfs:label>A version of Bad Luck Machine</rdfs:label>
+  <po:aspect_ratio>16:9</po:aspect_ratio>
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2700</po:duration>
-  <po:pid>b00tvlwn</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">600</po:duration>
+  <po:pid>b00njy8z</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Lois The Witch</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00tvlwn#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT2700S</timeline:duration>
+      <rdfs:label>Time interval for a version of Bad Luck Machine</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00njy8z#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT600S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Imelda Staunton</rdfs:label>
+          <foaf:givenName>Imelda</foaf:givenName>
+          <foaf:familyName>Staunton</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Lenny Henry</rdfs:label>
+          <foaf:givenName>Lenny</foaf:givenName>
+          <foaf:familyName>Henry</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00tvmjy#programme">
-  <rdfs:label>Lois The Witch</rdfs:label>
-  <po:version rdf:resource="/programmes/b00tvlwn#programme" />
+<po:Episode rdf:about="/programmes/b00njyfy#programme">
+  <rdfs:label>Bad Luck Machine</rdfs:label>
+  <po:version rdf:resource="/programmes/b00njy8z#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00tvlwn#timeline">
-  <rdfs:label>Timeline of a version of Lois The Witch</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00njy8z#timeline">
+  <rdfs:label>Timeline of a version of Bad Luck Machine</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00tvlwn#p00b6h06">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b6h06</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-30</po:schedule_date>
+<po:Broadcast rdf:about="/programmes/b00njy8z#p004q15r">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p004q15r</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2009-10-18</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-30T11:15:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-30T12:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-10-18T16:50:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-10-18T17:00:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/radio7#service">
-      <rdfs:label>BBC Radio 7</rdfs:label>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00tvlwn#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00njy8z#programme" />
 </po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00tvlwn#p00b6h0w">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b6h0w</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-30</po:schedule_date>
+<po:Broadcast rdf:about="/programmes/b00njy8z#p006zx8r">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p006zx8r</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-03-28</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-30T21:15:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-30T22:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-03-28T16:20:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-03-28T16:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/radio7#service">
-      <rdfs:label>BBC Radio 7</rdfs:label>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00tvlwn#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00tvlwn#p00b6h16">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b6h16</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-01</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-01T02:15:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-01T03:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/radio7#service">
-      <rdfs:label>BBC Radio 7</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00tvlwn#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00njy8z#programme" />
 </po:Broadcast>
 
 
 
 
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-30T22:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T22:02:00+01:00</timeline:end>
-</po:Availability>
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-30T12:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T12:02:00+01:00</timeline:end>
-</po:Availability>
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-01T03:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-08T03:02:00+01:00</timeline:end>
-</po:Availability>
 
 
 
