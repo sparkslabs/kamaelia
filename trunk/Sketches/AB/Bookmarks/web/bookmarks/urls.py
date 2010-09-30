@@ -20,5 +20,6 @@ urlpatterns = patterns('',
     (r'^channels/(?P<channel>\w+)/(?P<year>\d+)/(?P<month>\d+)/$', 'bookmarks.output.views.channel'),
     (r'^channels/(?P<channel>\w+)/(?P<year>\d+)/$', 'bookmarks.output.views.channel'),
     (r'^channels/(?P<channel>\w+)/$', 'bookmarks.output.views.channel'),
+    (r'^api/', include('bookmarks.api.urls')),
     (r'^$', 'bookmarks.output.views.index'),
 )
