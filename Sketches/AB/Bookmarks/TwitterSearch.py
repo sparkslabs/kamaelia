@@ -34,6 +34,14 @@ class PeopleSearch(component):
         self.username = username
         self.ratelimited = datetime.today() - timedelta(minutes=15)
 
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
     def getOAuth(self, consumer_key, consumer_secret):
         request_token_url = 'http://api.twitter.com/oauth/request_token'
         access_token_url = 'http://api.twitter.com/oauth/access_token'
@@ -126,7 +134,7 @@ class PeopleSearch(component):
         #data = ""
         
 
-        while 1:
+        while not self.finished():
             # TODO: Implement backoff algorithm in case of connection failures - watch out for the fact this could delay the requester component
             if self.dataReady("inbox"):
                 
@@ -154,39 +162,37 @@ class PeopleSearch(component):
 
                     requesturl = req.to_url()
 
+                    # Grab twitter data
+                    try:
+                        #req = urllib2.Request(requesturl,data,headers)
+                        conn1 = urllib2.urlopen(requesturl)
+                    except urllib2.HTTPError, e:
+                        self.send("HTTP Error: " + str(e.code),"outbox") # Errors get sent back to the requester
+                        conn1 = False
+                    except urllib2.URLError, e:
+                        self.send("Connect Error: " + e.reason,"outbox") # Errors get sent back to the requester
+                        conn1 = False
 
-                    if 1:
-                        # Grab twitter data
+                    if conn1:
+                        headers = conn1.info() # Manual place to watch rate limit for now
+                        headerlist = string.split(str(headers),"\n")
+                        for line in headerlist:
+                            splitheader = line.split()
+                            if splitheader[0] == "X-FeatureRateLimit-Remaining:":
+                                print splitheader[0] + " " + str(splitheader[1])
+                                if int(splitheader[1]) < 5:
+                                    self.ratelimited = datetime.today()
+                                break
                         try:
-                            #req = urllib2.Request(requesturl,data,headers)
-                            conn1 = urllib2.urlopen(requesturl)
-                        except urllib2.HTTPError, e:
-                            self.send("HTTP Error: " + str(e.code),"outbox") # Errors get sent back to the requester
-                            conn1 = False
-                        except urllib2.URLError, e:
-                            self.send("Connect Error: " + e.reason,"outbox") # Errors get sent back to the requester
-                            conn1 = False
-
-                        if conn1:
-                            headers = conn1.info() # Manual place to watch rate limit for now
-                            headerlist = string.split(str(headers),"\n")
-                            for line in headerlist:
-                                splitheader = line.split()
-                                if splitheader[0] == "X-FeatureRateLimit-Remaining:":
-                                    print splitheader[0] + " " + str(splitheader[1])
-                                    if int(splitheader[1]) < 5:
-                                        self.ratelimited = datetime.today()
-                                    break
+                            data = conn1.read()
                             try:
-                                data = conn1.read()
-                                try:
-                                    content = cjson.decode(data)
-                                    self.send(content,"outbox")
-                                except cjson.DecodeError, e:
-                                    self.send(dict(),"outbox")
-                            except IOError, e:
-                                self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
-                            conn1.close()
+                                content = cjson.decode(data)
+                                self.send(content,"outbox")
+                            except cjson.DecodeError, e:
+                                self.send(dict(),"outbox")
+                        except IOError, e:
+                            self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
+                        conn1.close()
                 else:
                    print "Twitter search paused - rate limited"
                    self.send(dict(),"outbox")

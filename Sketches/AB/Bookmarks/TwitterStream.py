@@ -2,7 +2,7 @@
 
 # Interface to Twitter streaming API
 # - Grabs JSON data based on chosen keywords
-
+# - Currently also relays PIDs - this really needs moving elsewhere
 
 import time
 import urllib2
@@ -10,6 +10,7 @@ import urllib
 import os
 import cjson
 import socket
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
 
@@ -35,6 +36,14 @@ class TwitterStream(threadedcomponent):
         self.reconnect = reconnect
         timeout = 120
         socket.setdefaulttimeout(timeout) # Attempt to fix issues with streaming API connection hanging
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
 
     def main(self):
         twitterurl = "http://stream.twitter.com/1/statuses/filter.json"
@@ -90,7 +99,7 @@ class TwitterStream(threadedcomponent):
             params['oauth_signature'] = req.get_parameter('oauth_signature')
             params['oauth_signature_method'] = req.get_parameter('oauth_signature_method')
 
-        while 1:
+        while not self.finished():
             if self.dataReady("inbox"):
 
                 # Receive keywords and PIDs
