@@ -48,9 +48,8 @@ class TwitterStream(threadedcomponent):
     def main(self):
         twitterurl = "http://stream.twitter.com/1/statuses/filter.json"
 
-        # Configure authentication for Twitter
+        # Configure authentication for Twitter - temporary until OAuth implemented
         passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        # May not work any more using basic auth
         passman.add_password(None, twitterurl, self.username, self.password)
         authhandler = urllib2.HTTPBasicAuthHandler(passman)
 
@@ -123,7 +122,7 @@ class TwitterStream(threadedcomponent):
                 urllib2.install_opener(twitopener)
                 headers = {'User-Agent' : "BBC R&D Grabber"}
 
-                # Grab twitter data
+                # Connect to Twitter
                 try:
                     req = urllib2.Request(twitterurl,data,headers)
                     conn1 = urllib2.urlopen(req)
@@ -137,19 +136,20 @@ class TwitterStream(threadedcomponent):
                     conn1 = False
 
                 if conn1:
+                    # While no new keywords have been passed in...
                     while not self.dataReady("inbox"):
+                        # Collect data from the streaming API as it arrives - separated by carriage returns.
                         try:
                             content = ""
                             while not "\r\n" in content: # Twitter specified watch characters - readline doesn't catch this properly
                                 content += conn1.read(1)
                             self.send([content,pids],"data") # Send to data collector / analyser rather than back to requester
-                            # What is message size limit on inboxes - could be getting flooded in just one send
                             failed = False
                         except IOError, e:
                             print str(e)
                             failed = True
                         except Axon.AxonExceptions.noSpaceInBox, e:
-                            #pass # Ignore data - no space
+                            # Ignore data - no space to send out
                             failed = True
                             #self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
                         if failed == True and self.reconnect == True:
@@ -174,5 +174,5 @@ class TwitterStream(threadedcomponent):
                     if conn1:
                         conn1.close()
                     time.sleep(1) # TODO: Add in proper backoff algorithm and reconnection facility
-                    # Reconnection util and backoff need to look at HTTP error codes
+                    # Reconnection util and backoff should really look at HTTP error codes
                     
