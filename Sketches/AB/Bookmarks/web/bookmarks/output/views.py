@@ -95,7 +95,7 @@ def programme(request,pid):
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     elif len(data) == 1:
         if data[0].analysed == 0:
-            output += "<meta http-equiv='refresh' content='60'>"
+            output += "<meta http-equiv='refresh' content='30'>"
         channel = data[0].channel
         output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
         progdate = parse(data[0].expectedstart)
@@ -208,11 +208,12 @@ def programme(request,pid):
                 output += blockgraph2
                 #output += appender
             else:
-                output += "<br />Not enough data to generate accurate statistics.<br />"
+                output += "<br />Not enough data to generate statistics.<br />"
 
+        output += "<br /><br />API: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
         output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
     else:
-        output += "<br />Database consistency error - somehow a primary key appears twice..."
+        output += "<br />Database consistency error - somehow a primary key appears twice. The world may have ended."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
 
     output += footer

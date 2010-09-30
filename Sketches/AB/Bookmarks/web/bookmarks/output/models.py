@@ -36,7 +36,8 @@ class analyseddata(models.Model):
 class keywords(models.Model):
     uid = models.IntegerField(primary_key=True,db_column="uid")
     pid = models.ForeignKey(programmes,db_column="pid")
-    keyword = models.CharField(max_length=100,db_column="keyword")
+    keyword = models.CharField(max_length=200,db_column="keyword")
+    type = models.CharField(max_length=100,db_column="type")
 
     class Meta:
         db_table = 'keywords'
@@ -47,6 +48,7 @@ class rawdata(models.Model):
     datetime = models.CharField(max_length=100,db_column="datetime")
     text = models.CharField(max_length=200,db_column="text")
     user = models.CharField(max_length=200,db_column="user")
+    analysed = models.BooleanField(db_column="analysed",default=0)
 
     class Meta:
         db_table = 'rawdata'
