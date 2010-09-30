@@ -42,6 +42,7 @@ class WhatsOn(component):
     def __init__(self, proxy = False):
         super(WhatsOn, self).__init__()
         self.proxy = proxy
+        # Define channel schedule URLs and DVB bridge channel formats
         self.channels = {"bbcone" : ["bbc one", "/bbcone/programmes/schedules/north_west/today"],
                 "bbctwo" : ["bbc two", "/bbctwo/programmes/schedules/england"],
                 "bbcthree" : ["bbc three", "/bbcthree/programmes/schedules"],
@@ -87,7 +88,7 @@ class WhatsOn(component):
         headers = {'User-Agent' : "BBC R&D Grabber"}
         data = ""
 
-        # Grab SyncTV data
+        # Grab SyncTV time data to work out the offset between local (NTP) and BBC time (roughly)
         try:
             req = urllib2.Request(synctimeurl,data,headers)
             syncconn = urllib2.urlopen(req)
@@ -113,7 +114,7 @@ class WhatsOn(component):
                 print "cjson.DecodeError:", e.message
 
         if 'difference' in locals():
-        # Grab SyncTV data
+        # Grab actual programme start time from DVB bridge channel page
             try:
                 req = urllib2.Request(syncschedurl,data,headers)
                 syncconn = urllib2.urlopen(req)
@@ -137,7 +138,7 @@ class WhatsOn(component):
                 except cjson.DecodeError, e:
                     print "cjson.DecodeError:", e.message
 
-        # Grab BBC data
+        # Grab BBC schedule data for given channel
         try:
             req = urllib2.Request(scheduleurl,data,headers)
             conn1 = urllib2.urlopen(req)
@@ -171,6 +172,7 @@ class WhatsOn(component):
                         gmt = pytz.timezone("GMT")
                         starttime = starttime.astimezone(gmt)
                         starttime = starttime.replace(tzinfo=None)
+                        # Identify which DVB bridge programme corresponds to the /programmes schedule to get PID
                         # FIXME: Turned off programme name checking as /programmes can show different info to DVB bridge
                         if showdatetime == starttime: # and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title']):
                             expectedstart = mktime(parse(programme['start']).astimezone(gmt).timetuple())
@@ -309,6 +311,8 @@ class ProgrammeData(component):
         return False
 
     def getProgrammeData(self, pid, format):
+        # Basic /programmes content grabber - user defined PID and data format
+
         url = self.programmesurl + pid + "." + format
 
         # Configure proxy and opener

@@ -2,7 +2,6 @@
 
 # Interface to Twitter search API
 # - Returns results of people searches as a dictionary
-# TODO: If it's found that regularly different people have the same name, relate the twitter names found to particular PIDs / Brand PIDs too?
 
 import urllib2
 import urllib
@@ -43,6 +42,7 @@ class PeopleSearch(component):
         return False
 
     def getOAuth(self, consumer_key, consumer_secret):
+        # Perform OAuth authentication
         request_token_url = 'http://api.twitter.com/oauth/request_token'
         access_token_url = 'http://api.twitter.com/oauth/access_token'
         authorize_url = 'http://api.twitter.com/oauth/authorize'
@@ -61,11 +61,13 @@ class PeopleSearch(component):
         print "     - oauth_token_secret = %s" % request_token['oauth_token_secret']
         print
 
+        # The user must confirm authorisation so a URL is printed here
         print "Go to the following link in your browser:"
         print "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
         print
 
         accepted = 'n'
+        # Wait until the user has confirmed authorisation
         while accepted.lower() == 'n':
             accepted = raw_input('Have you authorized me? (y/n) ')
         oauth_verifier = raw_input('What is the PIN? ')
@@ -78,6 +80,7 @@ class PeopleSearch(component):
         resp, content = client.request(access_token_url, "POST", body="oauth_verifier=%s" % oauth_verifier)
         access_token = dict(urlparse.parse_qsl(content))
 
+        # Access tokens retrieved from Twitter
         print "Access Token:"
         print "     - oauth_token        = %s" % access_token['oauth_token']
         print "     - oauth_token_secret = %s" % access_token['oauth_token_secret']
@@ -86,7 +89,7 @@ class PeopleSearch(component):
         print
 
         save = False
-        # Load Config
+        # Load config to save OAuth keys
         try:
             homedir = os.path.expanduser("~")
             file = open(homedir + "/twitter-login.conf",'r')
@@ -99,7 +102,7 @@ class PeopleSearch(component):
 
             file.close()
 
-            # Read Config
+            # Read config and add new values
             config = cjson.decode(raw_config)
             config['key'] = access_token['oauth_token']
 
@@ -107,6 +110,7 @@ class PeopleSearch(component):
 
             raw_config = cjson.encode(config)
 
+            # Write out the new config file
             try:
                 file = open(homedir + "/twitter-login.conf",'w')
                 file.write(raw_config)
@@ -122,6 +126,7 @@ class PeopleSearch(component):
         consumer_key = '2kfk97VzNZQ36jOoZNvag'
         consumer_secret = 'Uye8ILqcBR3UpkbazSeezgIvlWKfRZcsU6YqPC1YYc'
 
+        # Check if OAuth has been done before - if so use the keys from the config file
         if self.keypair == False:
             self.keypair = self.getOAuth(consumer_key, consumer_secret)
 
@@ -137,8 +142,10 @@ class PeopleSearch(component):
         while not self.finished():
             # TODO: Implement backoff algorithm in case of connection failures - watch out for the fact this could delay the requester component
             if self.dataReady("inbox"):
-                
+                # Retieve keywords to look up
                 person = self.recv("inbox")
+
+                # Ensure we're not rate limited during the first request - if so we'll wait for 15 mins before our next request
                 if (datetime.today() - timedelta(minutes=15)) > self.ratelimited:
                     requesturl = twitterurl + "?q=" + urllib.quote(person) + "&per_page=5"
 
@@ -162,7 +169,7 @@ class PeopleSearch(component):
 
                     requesturl = req.to_url()
 
-                    # Grab twitter data
+                    # Connect to Twitter
                     try:
                         #req = urllib2.Request(requesturl,data,headers)
                         conn1 = urllib2.urlopen(requesturl)
@@ -174,7 +181,8 @@ class PeopleSearch(component):
                         conn1 = False
 
                     if conn1:
-                        headers = conn1.info() # Manual place to watch rate limit for now
+                        # Check rate limiting here and print current limit
+                        headers = conn1.info()
                         headerlist = string.split(str(headers),"\n")
                         for line in headerlist:
                             splitheader = line.split()
@@ -183,6 +191,7 @@ class PeopleSearch(component):
                                 if int(splitheader[1]) < 5:
                                     self.ratelimited = datetime.today()
                                 break
+                        # Grab json format result of people search here
                         try:
                             data = conn1.read()
                             try:
