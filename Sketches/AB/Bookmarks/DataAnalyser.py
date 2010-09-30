@@ -1,5 +1,6 @@
 #! /usr/bin/python
 
+# The below does FINAL analysis only - DO NOT USE IN CONJUNCTION WITH LiveAnalysis.py
 # Analyses saved data in DB to give something more useful. Saves to output DB ready for display in web interface
 # Need word freq analysis, tweet rate analysis etc
 # Any looking at natural language engines / subtitles should be done here or in components following this
