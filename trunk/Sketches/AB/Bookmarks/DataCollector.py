@@ -5,7 +5,6 @@
 # Keywords, and possibly PIDs and channels will most likely have to be passed here as well as to the TwitterStream from Requester
 
 import time
-import os
 import MySQLdb
 import cjson
 import string
@@ -27,6 +26,14 @@ class DataCollector(threadedcomponent):
         self.dbuser = dbuser
         self.dbpass = dbpass
 
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
     def dbConnect(self):
         db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()
@@ -34,7 +41,7 @@ class DataCollector(threadedcomponent):
 
     def main(self):
         cursor = self.dbConnect()
-        while 1:
+        while not self.finished():
             twitdata = list()
             while self.dataReady("inbox"):
                 pids = list()
@@ -69,25 +76,7 @@ class DataCollector(threadedcomponent):
                                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                     if cursor.fetchone() != None:
                                         cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
-                                        break # Break out of this loop and back to check the same tweet against the next programme
-                    
-                        if 0:
-                            olddata = ""
-                            try:
-                                homedir = os.path.expanduser("~")
-                                file = open(homedir + "/twitstream.txt",'r')
-                                olddata = file.read()
-                                file.close()
-                            except IOError, e:
-                                pass
-                            try:
-                                # Need better storage method to keep pid and keywords etc (DB)
-                                file = open(homedir + "/twitstream.txt",'w')
-                                file.write(olddata + "\n" + twitdata[currentnum])
-                                file.close()
-                            except IOError, e:
-                                print ("Writing of data to file failed: " + str(e))
-                        
+                                        break # Break out of this loop and back to check the same tweet against the next programme                        
 
                 # Still need to re-search through received data using original keywords to ensure those keywords separated by spaces appear correctly and not split
             else:

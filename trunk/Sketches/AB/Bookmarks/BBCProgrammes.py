@@ -62,6 +62,14 @@ class WhatsOn(component):
                 "asiannetwork" : ["bbc asian net.", "/asiannetwork/programmes/schedules"],
                 "sportsextra" : ["bbc r5sx", "/5livesportsextra/programmes/schedules"]}
 
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
     def getCurrentProg(self, channel):
         scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + ".json"
         syncschedurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
@@ -196,7 +204,7 @@ class WhatsOn(component):
                             break
 
     def main(self):
-        while 1:
+        while not self.finished():
             if self.dataReady("inbox"):
                 channel = self.recv("inbox")
                 sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes
@@ -219,6 +227,14 @@ class NowPlaying(component):
         super(NowPlaying, self).__init__()
         self.proxy = proxy
         self.channels = {"radio1" : "/radio1/nowplaying/latest"}
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
 
     def getCurrentTrack(self, channel):
         nowplayingurl = "http://www.bbc.co.uk" + self.channels[channel] + ".json"
@@ -258,7 +274,7 @@ class NowPlaying(component):
             return False
 
     def main(self):
-        while 1:
+        while not self.finished():
             if self.dataReady("inbox"):
                 channel = self.recv("inbox")
                 sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes
@@ -283,6 +299,14 @@ class ProgrammeData(component):
         super(ProgrammeData, self).__init__()
         self.proxy = proxy
         self.programmesurl = "http://www.bbc.co.uk/programmes/"
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
 
     def getProgrammeData(self, pid, format):
         url = self.programmesurl + pid + "." + format
@@ -317,7 +341,7 @@ class ProgrammeData(component):
             return content
 
     def main(self):
-        while 1:
+        while not self.finished():
             if self.dataReady("inbox"):
                 request = self.recv("inbox")
                 sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes

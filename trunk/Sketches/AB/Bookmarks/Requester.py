@@ -80,6 +80,14 @@ class Requester(threadedcomponent):
 
         self.firstrun = True
 
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
     def doStuff(self, channel):
         self.send(channel, "whatson")
         while not self.dataReady("whatson"):
@@ -350,7 +358,7 @@ class Requester(threadedcomponent):
     def main(self):
         cursor = self.dbConnect()
         oldkeywords = None
-        while 1:
+        while not self.finished():
             print ("### Checking current programmes ###")
             if self.channel != "all":
                 oldpid = self.channels[self.channel]
