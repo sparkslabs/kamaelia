@@ -29,10 +29,10 @@ import pygame
 from datetime import datetime
 from zipfile import ZipFile
 
-from Tkinter import *
+from Tkinter import Tk
 from tkFileDialog import askopenfilename
 from tkSimpleDialog import askstring
-from tkMessageBox import *
+from tkMessageBox import askyesno
 
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.PygameDisplay import PygameDisplay
@@ -109,10 +109,10 @@ class Canvas(Axon.Component.component):
 
     def main(self):
         """Main loop"""
-        yield 1 #FIXME
-        yield 1 #FIXME
-        yield 1 #FIXME
-        yield 1 #FIXME
+        #yield 1 #FIXME
+        #yield 1 #FIXME
+        #yield 1 #FIXME
+        #yield 1 #FIXME
         yield WaitComplete(
               self.requestDisplay( DISPLAYREQUEST=True,
                                    callback = (self,"fromDisplay"),
@@ -240,18 +240,17 @@ class Canvas(Axon.Component.component):
         self.redrawNeeded = True
 
     def load(self, args):
-            filename = args[0]
-#            print "ARGS", args
-            try:
-                loadedimage = pygame.image.load(filename)
-            except:
-                pass
-            else:
-                self.surface.blit(loadedimage, (0,0))
-            self.redrawNeeded = True
-            if not ( (len(args) >1) and args[1] == "nopropogate" ):
-                self.getimg(())
-            self.clean = True
+        filename = args[0]
+        try:
+            loadedimage = pygame.image.load(filename)
+        except:
+            pass
+        else:
+            self.surface.blit(loadedimage, (0,0))
+        self.redrawNeeded = True
+        if not ( (len(args) >1) and args[1] == "nopropogate" ):
+            self.getimg(())
+        self.clean = True
 
     def save(self, args):
         filename = args[0]
@@ -272,14 +271,13 @@ class Canvas(Axon.Component.component):
         root.withdraw()
         password = askstring("Deck Password","Please enter the password for this zip file, or leave blank if there is no password:", parent=root)
         root.destroy()
-        if (filename):
+        if filename:
             try:
                 unzipped = ZipFile(filename)
                 self.clearscribbles("")
                 unzipped.extractall(path=self.notepad,pwd=password)
                 files = os.listdir(self.notepad)
                 files.sort()
-                loadstring = self.notepad + "/" + files[0]
                 self.send("first", "toHistory")
                 self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("Deck loaded successfully","toTicker")
@@ -292,13 +290,12 @@ class Canvas(Axon.Component.component):
         dt = datetime.now()
         filename = dt.strftime("%Y%m%d-%H%M%S")
         filename = filename + ".zip"
-        num_pages = len(os.listdir(self.notepad))
         root = Tk()
         root.withdraw()
         password = askstring("Deck Password","Please enter a password for the zip file, or leave blank for no password:", parent=root)
         root.destroy()
         try:
-            if (password != ""):
+            if password != "":
                 os.system("zip -j -q -P " + password + " Decks/" + filename + " " + self.notepad + "/*.png")
                 self.send(chr(0) + "CLRTKR", "toTicker")
                 self.send("Zip file 'Decks/" + filename + "' created successfully with password","toTicker")
@@ -314,7 +311,7 @@ class Canvas(Axon.Component.component):
     def clearscribbles(self, args):
         try:
             for x in os.listdir(self.notepad):
-                if (os.path.splitext(x)[1] == ".png"):
+                if os.path.splitext(x)[1] == ".png":
                     os.remove(self.notepad + "/" + x)
             self.clear("")
             self.send("first", "toHistory")
@@ -354,7 +351,7 @@ class Canvas(Axon.Component.component):
         imageorigin = args[1]
         location = args[2]
         self.surface.blit(snapshot, imageorigin) # temp
-        if (location == "local"):
+        if location == "local":
             imageorigin = (imageorigin[0], imageorigin[1] + 141)
         self.surface.blit(snapshot, imageorigin)
         self.redrawNeeded = True
@@ -364,12 +361,12 @@ class Canvas(Axon.Component.component):
         root = Tk()
         root.withdraw()
         kill = False
-        if (askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root)):
+        if askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root):
             # perform quit
             kill = True
             #pygame.quit() # This isn't the right way to do it!
             # Also, saving won't work as the program exits before it's happened
         root.destroy()
-        if (kill):
+        if kill:
             print("Exiting")
             self.scheduler.stop()

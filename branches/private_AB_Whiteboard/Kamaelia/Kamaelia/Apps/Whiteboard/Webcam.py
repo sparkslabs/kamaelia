@@ -39,6 +39,7 @@ sys.path.insert(0, "<path to release candidate>/pygame-1.9.0rc1/build/lib.linux-
     raise
   
 from Axon.ThreadedComponent import threadedcomponent
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 pygame.init()        # Would be nice to be able to find out if pygame was already initialised or not.
 pygame.camera.init() # Ditto for camera subsystem
@@ -57,6 +58,14 @@ class VideoCaptureSource(threadedcomponent):
             self.delay = 1.0/self.fps
         self.snapshot = None
 
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
     def capture_one(self):
         self.snapshot = None
         try:
@@ -67,7 +76,7 @@ class VideoCaptureSource(threadedcomponent):
     def main(self):
         try:
             self.camera.start()
-            while 1:
+            while not self.finished():
                 self.capture_one()
                 self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
                 self.snapshot=self.snapshot.convert()

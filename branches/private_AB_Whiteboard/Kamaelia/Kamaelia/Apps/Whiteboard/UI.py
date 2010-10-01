@@ -42,10 +42,10 @@ def PagingControls(left,top):
                                  position=(left+192, top),
                                  msg="new"),
                 linkages = {
-                    ("PREV","outbox") : ("", "outbox"),
-                    ("NEXT","outbox") : ("", "outbox"),
-                    ("CHECKPOINT","outbox") : ("", "outbox"),
-                    ("NEWPAGE","outbox") : ("", "outbox"),
+                    ("PREV","outbox") : ("self", "outbox"),
+                    ("NEXT","outbox") : ("self", "outbox"),
+                    ("CHECKPOINT","outbox") : ("self", "outbox"),
+                    ("NEWPAGE","outbox") : ("self", "outbox"),
                 }
            )
 
@@ -60,8 +60,8 @@ def LocalPagingControls(left,top):
                                     position=(left+64, top),
                                     msg=[['next']]),
                 linkages = {
-                    ("REMOTEPREV","outbox") : ("", "outbox"),
-                    ("REMOTENEXT","outbox") : ("", "outbox"),
+                    ("REMOTEPREV","outbox") : ("self", "outbox"),
+                    ("REMOTENEXT","outbox") : ("self", "outbox"),
                 }
            )
 

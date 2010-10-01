@@ -23,6 +23,7 @@
 import Axon
 import os
 import shutil
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class CheckpointSequencer(Axon.Component.component):
     def __init__(self, rev_access_callback = None,
@@ -49,7 +50,7 @@ class CheckpointSequencer(Axon.Component.component):
         slides = os.listdir(self.notepad)
         slides.sort()
         for x in slides:
-            if (x == "slide." + str(exists) + ".png"):
+            if x == "slide." + str(exists) + ".png":
                 # This slide exists, skip to next one
                 pass
             else:
@@ -60,12 +61,20 @@ class CheckpointSequencer(Axon.Component.component):
                     print("Failed to renumber slides. There may be an error in the sequence")
             exists += 1
 
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
     def main(self):
         current = self.initial
         highest = self.highest
         self.send( self.loadMessage(current), "outbox")
         dirty = False
-        while 1:
+        while not self.finished():
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
                 if command == "delete":
@@ -74,19 +83,19 @@ class CheckpointSequencer(Axon.Component.component):
                     except Exception, e:
                         pass
                     
-                    if (current == highest) & (highest > 1):
+                    if current == highest and highest > 1:
                         # go to previous slide
                         dirty = False
                         command = "prev"
                         highest -= 1
                         self.fixNumbering()
-                    elif (current < highest) & (current != 1):
+                    elif current < highest and current != 1:
                         # go to previous slide and fix numbering
                         dirty = False
                         command = "prev"
                         highest -= 1
                         self.fixNumbering()
-                    elif (current == 1) & (current < highest):
+                    elif current == 1 and current < highest:
                         # fix numbering then reload current slide
                         highest -= 1
                         self.fixNumbering()
@@ -117,12 +126,12 @@ class CheckpointSequencer(Axon.Component.component):
                     self.send( self.loadMessage(current), "outbox")        
                     highest = 0
                     for x in os.listdir(self.notepad):
-                        if (os.path.splitext(x)[1] == ".png"):
+                        if os.path.splitext(x)[1] == ".png":
                             highest += 1
-                    if (highest < 1):
+                    if highest < 1:
                         highest = 1
                 if command == "checkpoint":
-                    if (current == highest):
+                    if current == highest:
                         self.send( self.saveMessage(current), "outbox")
                         highest += 1
                         current = highest

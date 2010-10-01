@@ -243,6 +243,7 @@ class Bunch: pass
 
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.AxonExceptions import noSpaceInBox
+from Axon.Ipc import producerFinished, shutdownMicroprocess
  
 class _PygameEventSource(threadedcomponent):
     """\
@@ -257,12 +258,19 @@ class _PygameEventSource(threadedcomponent):
 
     def __init__(self):
         super(_PygameEventSource,self).__init__(queuelengths=1)
-        
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
 
     def main(self):
         waitevents = [pygame.VIDEORESIZE, pygame.VIDEOEXPOSE, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]
         
-        while 1:
+        while not self.finished():
             time.sleep(0.01)
             eventswaiting = pygame.event.peek(waitevents)  # and get any others waiting - wait for specific events...
             if self.dataReady("control"):

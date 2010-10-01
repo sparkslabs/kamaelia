@@ -27,7 +27,7 @@ import Axon
 import pygame
 
 from Axon.Component import component
-from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -36,7 +36,6 @@ from Kamaelia.Internet.TCPClient import TCPClient
 
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
-from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists as text_to_tokenlists
 from Kamaelia.Util.NullSink import nullSinkComponent
 
 from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
@@ -54,7 +53,7 @@ from Kamaelia.Protocol.Framing import DataChunker, DataDeChunker
 # back into the repository.
 #
 from Kamaelia.Apps.Whiteboard.TagFiltering import TagAndFilterWrapper, FilterAndTagWrapper
-from Kamaelia.Apps.Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag, FilterAndTagWrapperKeepingTag
+from Kamaelia.Apps.Whiteboard.TagFiltering import TagAndFilterWrapperKeepingTag
 from Kamaelia.Apps.Whiteboard.Tokenisation import tokenlists_to_lines, lines_to_tokenlists
 from Kamaelia.Apps.Whiteboard.Canvas import Canvas
 from Kamaelia.Apps.Whiteboard.Painter import Painter
@@ -101,11 +100,11 @@ if len(sys.argv) >1:
         if os.path.isdir(sys.argv[1]):
             notepad = sys.argv[1]
             
-if (notepad is None) and os.path.exists("Scribbles"):
+if notepad is None and os.path.exists("Scribbles"):
     if os.path.isdir("Scribbles"):
         notepad = "Scribbles"
 
-if (notepad is None):
+if notepad is None:
    #N = os.path.join(os.path.expanduser("~"),"Scribbles")
    N = "Scribbles"
    if not os.path.exists(N):
@@ -113,7 +112,7 @@ if (notepad is None):
    if os.path.isdir(N):
        notepad = N
 
-if (notepad is None):
+if notepad is None:
     print "Can't figure out what to do with piccies. Exitting"
     sys.exit(0)
 
@@ -165,49 +164,67 @@ def clientconnector(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", po
                     ),
             linkages = {
                 # incoming messages go to a router
-                ("", "inbox") : ("ROUTER", "inbox"),
+                ("self", "inbox") : ("ROUTER", "inbox"),
                 # distribute messages to appropriate destinations
                 ("ROUTER",      "audio") : ("AUDIO",      "inbox"),
                 ("ROUTER", "whiteboard") : ("WHITEBOARD", "inbox"),
                 # aggregate all output
-                ("AUDIO",      "outbox") : ("", "outbox"),
-                ("WHITEBOARD", "outbox") : ("", "outbox"),
+                ("AUDIO",      "outbox") : ("self", "outbox"),
+                ("WHITEBOARD", "outbox") : ("self", "outbox"),
                 # shutdown routing, not sure if this will actually work, but hey!
-                ("", "control") : ("ROUTER", "control"),
+                ("self", "control") : ("ROUTER", "control"),
                 ("ROUTER", "signal") : ("AUDIO", "control"),
                 ("AUDIO", "signal") : ("WHITEBOARD", "control"),
-                ("WHITEBOARD", "signal") : ("", "signal")
+                ("WHITEBOARD", "signal") : ("self", "signal")
                 },
             ),
         tokenlists_to_lines(),
         )
 
-class SurfaceToJpeg(Axon.Component.component):
-    Inboxes = ["inbox", "inbox2", "control"]
-    Outboxes = ["outbox", "outbox2", "signal"]
+class SurfaceToJpeg(component):
+    # This component converts images to strings or strings to images dependent on what it receives
+
+    Inboxes = {
+        "inbox" : "Receives strings or images for conversion",
+        "control" : "",
+    }
+    Outboxes = {
+        "outbox" : "Outputs the opposite of what it received (images/strings)",
+        "signal" : "",
+    }
     
     def __init__(self):
         super(SurfaceToJpeg, self).__init__()
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
     
     def main(self):
-        while (1):
-            while (self.dataReady("inbox")):
+        while not self.shutdown():
+            while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                imagestring = pygame.image.tostring(data,"RGB")
-                self.send(imagestring, "outbox")
-            while (self.dataReady("inbox2")):
-                data = self.recv("inbox2")
-                try: # Prevent crashing with malformed received images
-                    image = pygame.image.fromstring(data,(190,140),"RGB")
-                    self.send(image, "outbox2")
-                except Exception, e:
-                    pass
+                if ininstance(data,str):
+                    # Convert string to Pygame image using a particular size
+                    try: # Prevent crashing with malformed received images
+                        image = pygame.image.fromstring(data,(190,140),"RGB")
+                        self.send(image, "outbox")
+                    except Exception, e:
+                        pass
+                else:
+                    # Convert Pygame image to a string for transmission
+                    imagestring = pygame.image.tostring(data,"RGB")
+                    self.send(imagestring, "outbox")
             self.pause()
             yield 1
 
 def clientconnectorwc(webcamBackplane="WEBCAM", port=1501):
+    # Connects webcams to the network
     return Pipeline(
-        #chunks_to_lines(),
         Graphline(
             WEBCAM = FilteringPubsubBackplane(webcamBackplane),
             CONVERTER = SurfaceToJpeg(),
@@ -215,12 +232,16 @@ def clientconnectorwc(webcamBackplane="WEBCAM", port=1501):
             CONSOLE = ConsoleEchoer(),
             DEFRAMER = DataDeChunker(),
             linkages = {
-                ("", "inbox") : ("DEFRAMER", "inbox"),
-                ("DEFRAMER", "outbox") : ("CONVERTER", "inbox2"),
-                ("CONVERTER", "outbox2") : ("WEBCAM", "inbox"),
+                # Receive data from the network - deframe and convert to image for display
+                ("self", "inbox") : ("DEFRAMER", "inbox"),
+                ("DEFRAMER", "outbox") : ("CONVERTER", "inbox"),
+                # Send to display
+                ("CONVERTER", "outbox") : ("WEBCAM", "inbox"),
+                # Forward local images to the network - convert to strings and frame
                 ("WEBCAM", "outbox") : ("CONVERTER", "inbox"),
                 ("CONVERTER", "outbox") : ("FRAMER", "inbox"),
-                ("FRAMER", "outbox") : ("", "outbox"),
+                # Send to network
+                ("FRAMER", "outbox") : ("self", "outbox"),
                 },
             ),
         )
@@ -237,6 +258,7 @@ def LocalEventServer(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", p
     return SimpleServer(protocol=clientconnector, port=port)
     
 def LocalWebcamEventServer(webcamBackplane="WEBCAM", port=1501):
+    # Sets up the webcam server in a similar way to the one used for images and audio
     def configuredClientConnector():
         return clientconnectorwc(webcamBackplane=webcamBackplane,
                                  port=port)
@@ -274,6 +296,7 @@ def EventServerClients(rhost, rport,
         
 def WebcamEventServerClients(rhost, rport, 
                        webcamBackplane="WEBCAM"):
+    # Allows retrieval of remote cam images from the network
     # plug a TCPClient into the backplane
 
     return Graphline(
@@ -337,7 +360,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("PAINTER", "outbox")    : ("PAINT_SPLITTER", "inbox"),
                           ("CLEAR","outbox")       : ("PAINT_SPLITTER", "inbox"),
                           ("PAINT_SPLITTER", "outbox")  : ("CANVAS", "inbox"),
-                          ("PAINT_SPLITTER", "outbox2") : ("", "outbox"), # send to network
+                          ("PAINT_SPLITTER", "outbox2") : ("self", "outbox"), # send to network
                           
                           ("SAVEDECK", "outbox") : ("CANVAS", "inbox"),
                           ("LOADDECK", "outbox") : ("CANVAS", "inbox"),
@@ -349,14 +372,14 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           #("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
                           #("LOCALEVENT_SPLITTER", "outbox2"): ("", "outbox"), # send to network
                           #("LOCALEVENT_SPLITTER", "outbox") : ("LOCALPAGEEVENTS", "inbox"),
-                          ("", "inbox")        : ("LOCALPAGEEVENTS", "inbox"),
+                          ("self", "inbox")        : ("LOCALPAGEEVENTS", "inbox"),
                           ("LOCALPAGEEVENTS", "false")  : ("CANVAS", "inbox"),
                           ("LOCALPAGEEVENTS", "true")  : ("HISTORY", "inbox"),
 
                           ("PAGINGCONTROLS","outbox") : ("HISTORY", "inbox"),
                           ("HISTORY","outbox")     : ("CANVAS", "inbox"),
 
-                          ("CANVAS", "outbox")     : ("", "outbox"),
+                          ("CANVAS", "outbox")     : ("self", "outbox"),
                           ("CANVAS","surfacechanged") : ("HISTORY", "inbox"),
                           
                           ("CANVAS", "toTicker") : ("TICKER", "inbox"),
@@ -368,9 +391,17 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           },
                     )
 
-class ProperSurfaceDisplayer(Axon.Component.component):
-    Inboxes = ["inbox", "control", "callback"]
-    Outboxes= ["outbox", "signal", "display_signal"]
+class ProperSurfaceDisplayer(component):
+    Inboxes = {
+        "inbox" : "",
+        "control" : "",
+        "callback" : "",
+    }
+    Outboxes = {
+        "outbox" : "",
+        "signal" : "",
+        "display_signal" : "",
+    }
     remotecams = [0,0,0,0]
     remotecamcount = [25,25,25,25]
     displaysize = (640, 480)
@@ -381,6 +412,14 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                            "size": self.displaysize,
                            "position" : self.position,
                            "bgcolour" : self.bgcolour}
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
 
     def pygame_display_flip(self):
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
@@ -398,14 +437,14 @@ class ProperSurfaceDisplayer(Axon.Component.component):
     def main(self):
        yield Axon.Ipc.WaitComplete(self.getDisplay())
        # initialise five webcam windows
-       if (self.webcam == 1):
+       if self.webcam == 1:
           snapshot = "No Local Camera"
           font = pygame.font.Font(None,22)
           self.display.fill( (0,0,0) )
           snapshot = font.render(snapshot, False, (255,255,255))
           self.display.blit(snapshot, (34,56))
           self.pygame_display_flip()
-       elif (self.webcam == 2):
+       elif self.webcam == 2:
           snapshot = "No Remote Camera"
           font = pygame.font.Font(None,22)
           self.display.fill( (0,0,0),pygame.Rect(0,0,190,140*4))
@@ -415,38 +454,38 @@ class ProperSurfaceDisplayer(Axon.Component.component):
           self.display.blit(snapshot, (25,56+140*2+2)) 
           self.display.blit(snapshot, (25,56+140*3+3)) 
           self.pygame_display_flip()
-       while 1:
-          if (self.webcam):
+       while not self.finished():
+          if self.webcam:
               while self.dataReady("inbox"):
                   snapshot = self.recv("inbox")
-                  if (self.webcam == 1):
+                  if self.webcam == 1:
                       #snapshot=snapshot.convert()
                       self.display.blit(snapshot, (0,0))
                       self.pygame_display_flip()
-                  elif (self.webcam == 2):
+                  elif self.webcam == 2:
                       # remove tag
                       tag = snapshot[0]
                       data = snapshot[1]
                       pretagged = False
                       # allocate tag to a cam window
                       for x in self.remotecams:
-                          if (x == tag):
+                          if x == tag:
                               pretagged = True
                               
-                      if (pretagged == False):
-                          if (self.remotecams[0] == 0):
+                      if pretagged == False:
+                          if self.remotecams[0] == 0:
                               self.remotecams[0] = tag
-                          elif ((self.remotecams[1] == 0)):
+                          elif self.remotecams[1] == 0:
                               self.remotecams[1] = tag
-                          elif ((self.remotecams[2] == 0)):
+                          elif self.remotecams[2] == 0:
                               self.remotecams[2] = tag
-                          elif ((self.remotecams[2] == 0)):
+                          elif self.remotecams[2] == 0:
                               self.remotecams[3] = tag
 
                       # public cam pic to window if one is available
                       iteration = 0
                       for x in self.remotecams:
-                          if (self.remotecams[iteration] == tag):
+                          if self.remotecams[iteration] == tag:
                               offset = (140 * iteration + iteration * 1)
                               self.display.blit(data, (0,0+offset))
                               self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
@@ -455,7 +494,7 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                       # Reset remote cameras where clients have disconnected (remotecamcount = 0)
                       iteration = 0
                       for x in self.remotecamcount:
-                          if (self.remotecamcount[iteration] == 0):
+                          if self.remotecamcount[iteration] == 0:
                               snapshot = "No Remote Camera"
                               font = pygame.font.Font(None,22)
                               offset = (iteration * 140 + iteration * 1)
@@ -463,7 +502,7 @@ class ProperSurfaceDisplayer(Axon.Component.component):
                               snapshot = font.render(snapshot, False, (255,255,255))
                               self.display.blit(snapshot, (25,56+offset)) 
                               self.remotecams[iteration] = 0
-                          elif (self.remotecamcount[iteration] > 0):
+                          elif self.remotecamcount[iteration] > 0:
                               self.remotecamcount[iteration] -= 1
                           iteration += 1
 
@@ -489,8 +528,8 @@ if __name__=="__main__":
     mainsketcher = \
         Graphline( SKETCHER = makeBasicSketcher(left,top+1,width,height-1),
                    CONSOLE = CommandConsole(),
-                   linkages = { ('','inbox'):('SKETCHER','inbox'),
-                                ('SKETCHER','outbox'):('','outbox'),
+                   linkages = { ('self','inbox'):('SKETCHER','inbox'),
+                                ('SKETCHER','outbox'):('self','outbox'),
                                 ('CONSOLE','outbox'):('SKETCHER','inbox'),
                               }
                      )
@@ -500,10 +539,10 @@ if __name__=="__main__":
                         REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4+4), position = (1024-191,32+140+3), bgcolour=(0,0,0), webcam = 2),
                         CAM_SPLITTER = TwoWaySplitter(),
                         CONSOLE = ConsoleEchoer(),
-                        linkages = { ('','inbox'):('REMWCCANVAS','inbox'),
+                        linkages = { ('self','inbox'):('REMWCCANVAS','inbox'),
                             ('LOCALWEBCAM','outbox'):('CAM_SPLITTER','inbox'),
                             ('CAM_SPLITTER','outbox2'):('WCCANVAS','inbox'),
-                            ('CAM_SPLITTER','outbox'):('','outbox'),
+                            ('CAM_SPLITTER','outbox'):('self','outbox'),
                           }
                       )
         

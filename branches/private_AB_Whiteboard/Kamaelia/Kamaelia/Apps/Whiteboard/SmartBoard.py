@@ -22,8 +22,7 @@
 #
 
 import Axon
-import time
-from Axon.Ipc import producerFinished, shutdownMicroprocess
+from Axon.Ipc import producerFinished, shutdownMicroprocess # Experimental component - loop not yet implemented
 
 try:
     import usb.core
@@ -50,10 +49,18 @@ class SmartBoard(Axon.Component.component):
           
     def __init__(self):
         super(SmartBoard,self).__init__()
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
         
     def main(self):
         yield 1
-        if(1): #try
+        if 1: #try
             dev = usb.core.find(idVendor=0x0b8c,idProduct=0x0001)
             interface = dev.get_interface_altsetting()
             if dev.is_kernel_driver_active(interface.bInterfaceNumber):
