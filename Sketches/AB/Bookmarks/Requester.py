@@ -12,6 +12,7 @@ import cjson
 import os
 import string
 import MySQLdb
+from datetime import date
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -61,6 +62,7 @@ class Requester(threadedcomponent):
 
         # Brand PIDs associated with programmes. New progs don't always have brands, but it's a start
         # Ideally this would be replaced by the BBC Buzz database, but that's not yet accessible AFAIK and doesn't always store tags for new programmes.
+        # This doesn't help in the channel case where for example radio 1 uses @bbcr1
         self.officialbrandtags = {
             "b00vc3rz" : ["#genius","bbcgenius"], # Genius with Dave Gorman
             "b006t1q9" : ["#bbcqt","bbcquestiontime"], # Question Time
@@ -189,16 +191,31 @@ class Requester(threadedcomponent):
                 for tag in twittags:
                     keywords[tag] = "Twitter"
 
+                # Duplicates will be removed later
                 if string.find(title,"The",0,3) != -1:
                     newtitle = string.replace(re.sub("\s+","",title),"The","",1)
                     keywords[channel] = "Channel"
                     keywords["#" + string.lower(re.sub("\s+","",title))] = "Title"
+                    # Check for and remove year too
+                    keywords["#" + string.replace(string.lower(re.sub("\s+","",title))," " + str(date.today().year),"",1)] = "Title"
                     keywords['#' + string.lower(re.sub("\s+","",newtitle))] = "Title"
+                    # Check for and remove year too
+                    keywords['#' + string.replace(string.lower(re.sub("\s+","",newtitle))," " + str(date.today().year),"",1)] = "Title"
                 else:
                     keywords[channel] = "Channel"
                     keywords["#" + string.lower(re.sub("\s+","",title))] = "Title"
+                    keywords["#" + string.replace(string.lower(re.sub("\s+","",title))," " + str(date.today().year),"",1)] = "Title"
 
-                keywords[title.lower()] = "Title"
+                newtitle = string.replace(re.sub("\s+","",title),"The","",1)
+                newtitle = newtitle.lower()
+                # Remove current year from events
+                newtitle = newtitle.replace(" " + str(date.today().year),"",1)
+                titlewords = newtitle.split()
+                if len(titlewords) > 1:
+                    keywords[newtitle] = "Title"
+                else:
+                    # Trial fix for issue of one word titles producing huge amounts of data
+                    keywords[newtitle + "^" + "bbc"] = "Title"
 
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:

@@ -8,6 +8,8 @@ import time
 import MySQLdb
 import cjson
 import string
+from dateutil.parser import parse
+from datetime import timedelta
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -51,33 +53,56 @@ class DataCollector(threadedcomponent):
                 twitdata.append([data[0],pids])
             if len(twitdata) > 0:
                 # TODO: Looking for \n characters, divide tweets, then check them against original keywords and add to table against the correct pid
-                print twitdata
+                #print twitdata
 
                 
                 for tweet in twitdata:
                     if tweet[0] != "\r\n":
                         # At this point, each 'tweet' contains tweetdata, and a list of possible pids
                         newdata = cjson.decode(tweet[0]) # Won't work - need keywords to be related to their pids - let's requery
+                        print "New tweet! @" + newdata['user']['screen_name'] + ": " + newdata['text']
                         for pid in tweet[1]:
                             # Cycle through possible pids, grabbing that pid's keywords from the DB
                             # Then, check this tweet against the keywords and save to DB where appropriate (there may be more than one location)
                             cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
                             data = cursor.fetchall()
                             for row in data:
-                                if row[1] == "Character":
-                                    keywords = row[0].split("^")
-                                    if len(keywords) == 2:
-                                        if string.lower(keywords[0]) in string.lower(newdata['text']) and string.lower(keywords[1]) in string.lower(newdata['text']):
-                                            cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
-                                            if cursor.fetchone() != None:
+                                keywords = row[0].split("^")
+                                if len(keywords) == 2:
+                                    if string.lower(keywords[0]) in string.lower(newdata['text']) and string.lower(keywords[1]) in string.lower(newdata['text']):
+                                        cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
+                                        if cursor.fetchone() != None:
+                                            # Ensure the user hasn't already tweeted for this programme in this minute
+                                            #dbtime = parse(newdata['created_at'])
+                                            #dbtime = dbtime.replace(tzinfo=None)
+                                            #dbtime = dbtime.replace(second=0)
+                                            #dbtime2 = dbtime + timedelta(seconds=60)
+                                            cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
+                                            if cursor.fetchone() == None:
+                                                print ("Storing tweet for pid " + pid)
                                                 cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
-                                elif string.lower(row[0]) in string.lower(newdata['text']):
+                                            else:
+                                                print ("Duplicate user for current minute - ignoring")
+                                if string.lower(row[0]) in string.lower(newdata['text']):
                                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                     if cursor.fetchone() != None:
-                                        cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
-                                        break # Break out of this loop and back to check the same tweet against the next programme                        
-
+                                        # Ensure the user hasn't already tweeted for this programme in this minute
+                                        #dbtime = parse(newdata['created_at'])
+                                        #dbtime = dbtime.replace(tzinfo=None)
+                                        #dbtime = dbtime.replace(second=0)
+                                        #dbtime2 = dbtime + timedelta(seconds=60)
+                                        cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
+                                        if cursor.fetchone() == None:
+                                            print ("Storing tweet for pid " + pid)
+                                            cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
+                                            break # Break out of this loop and back to check the same tweet against the next programme
+                                        else:
+                                            print ("Duplicate user for current minute - ignoring")
+                    else:
+                        print "Blank line received from Twitter - no new data"
+                    
+                    print ("Done!") # new line to break up display
                 # Still need to re-search through received data using original keywords to ensure those keywords separated by spaces appear correctly and not split
             else:
                 time.sleep(0.1)
