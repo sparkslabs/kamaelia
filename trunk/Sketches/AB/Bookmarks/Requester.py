@@ -193,7 +193,7 @@ class Requester(threadedcomponent):
 
                 # Duplicates will be removed later
                 if string.find(title,"The",0,3) != -1:
-                    newtitle = string.replace(re.sub("\s+","",title),"The","",1)
+                    newtitle = string.replace(re.sub("\s+","",title),"The ","",1)
                     keywords[channel] = "Channel"
                     keywords["#" + string.lower(re.sub("\s+","",title))] = "Title"
                     # Check for and remove year too
@@ -206,7 +206,7 @@ class Requester(threadedcomponent):
                     keywords["#" + string.lower(re.sub("\s+","",title))] = "Title"
                     keywords["#" + string.replace(string.lower(re.sub("\s+","",title))," " + str(date.today().year),"",1)] = "Title"
 
-                newtitle = string.replace(re.sub("\s+","",title),"The","",1)
+                newtitle = string.replace(title,"The ","",1)
                 newtitle = newtitle.lower()
                 # Remove current year from events
                 newtitle = newtitle.replace(" " + str(date.today().year),"",1)
