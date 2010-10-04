@@ -54,6 +54,7 @@ class Canvas(Axon.Component.component):
                  "control" : "",
                  "fromDisplay"  : "For receiving replies from PygameDisplay service",
                  "eventsIn" : "For receiving PygameDisplay events",
+                 "fromEmail" : "Accepts status messages back from the e-mail component - TEMPORARY",
                }
     Outboxes = { "outbox" : "Issues drawing instructions",
                  "signal" : "",
@@ -62,9 +63,10 @@ class Canvas(Axon.Component.component):
                  "surfacechanged" : "If the surface gets changed from last load/save a 'dirty' message is emitted here",
                  "toTicker" : "Send data to text ticker",
                  "toHistory" : "Move to first slide",
+                 "toEmail" : "For sending out e-mails in list format - TEMPORARY",
                }
 
-    def __init__(self, position=(0,0), size=(1024,768), bgcolour=(255,255,255), notepad="Scribbles"):
+    def __init__(self, position=(0,0), size=(1024,768), bgcolour=(255,255,255), notepad="Scribbles", email=False):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
         super(Canvas,self).__init__()
         self.position = position
@@ -72,6 +74,9 @@ class Canvas(Axon.Component.component):
         self.antialias = False
         self.bgcolour = bgcolour
         self.notepad = notepad
+        
+        # This will be moved out of here before branch completion
+        self.email = email
 
         if self.antialias == True:
             self.pygame_draw_line = pygame.draw.aaline
@@ -135,6 +140,14 @@ class Canvas(Axon.Component.component):
 
         while not self.finished():
             
+            #TEMPORARY - to be moved to another component
+            while self.dataReady("fromEmail"):
+                status = self.recv("fromEmail")
+                if status == "sent":
+                    self.send(". Deck e-mailed successfully","toTicker")
+                else:
+                    self.send(". Error sending deck by e-mail: " + status,"toTicker")
+
             self.redrawNeeded = False
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
@@ -267,45 +280,92 @@ class Canvas(Axon.Component.component):
         root.withdraw()
         filename = askopenfilename(filetypes=[("Zip Archives",".zip")],initialdir="Decks",title="Load Slide Deck",parent=root)
         root.destroy()
-        root = Tk()
-        root.withdraw()
-        password = askstring("Deck Password","Please enter the password for this zip file, or leave blank if there is no password:", parent=root)
-        root.destroy()
-        if filename:
-            try:
-                unzipped = ZipFile(filename)
-                self.clearscribbles("")
-                unzipped.extractall(path=self.notepad,pwd=password)
-                files = os.listdir(self.notepad)
-                files.sort()
-                self.send("first", "toHistory")
-                self.send(chr(0) + "CLRTKR", "toTicker")
-                self.send("Deck loaded successfully","toTicker")
-            except Exception, e:
-                self.send(chr(0) + "CLRTKR", "toTicker")
-                self.send("Failed to open the deck specified. You may have entered the password incorrectly","toTicker")
+        if filename != "":
+            root = Tk()
+            root.withdraw()
+            password = askstring("Deck Password","Please enter the password for this zip file, or press cancel if you believe there isn't one:", parent=root)
+            root.destroy()
+            if filename:
+                try:
+                    unzipped = ZipFile(filename)
+                    self.clearscribbles("")
+                    if password != None:
+                        unzipped.extractall(path=self.notepad,pwd=password)
+                    else:
+                        unzipped.extractall(path=self.notepad,pwd="")
+                    files = os.listdir(self.notepad)
+                    files.sort()
+                    self.send("first", "toHistory")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("Deck loaded successfully","toTicker")
+                except Exception, e:
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("Failed to open the deck specified. You may have entered the password incorrectly","toTicker")
         self.clean = True
 
     def savedeck(self, args):
-        dt = datetime.now()
-        filename = dt.strftime("%Y%m%d-%H%M%S")
-        filename = filename + ".zip"
-        root = Tk()
-        root.withdraw()
-        password = askstring("Deck Password","Please enter a password for the zip file, or leave blank for no password:", parent=root)
-        root.destroy()
-        try:
-            if password != "":
-                os.system("zip -j -q -P " + password + " Decks/" + filename + " " + self.notepad + "/*.png")
-                self.send(chr(0) + "CLRTKR", "toTicker")
-                self.send("Zip file 'Decks/" + filename + "' created successfully with password","toTicker")
+        num_pages = 0
+        for x in os.listdir(self.notepad):
+            if (os.path.splitext(x)[1] == ".png"):
+                num_pages += 1
+        if num_pages > 0:
+            dt = datetime.now()
+            filename = dt.strftime("%Y%m%d-%H%M%S")
+            filename = filename + ".zip"
+            root = Tk()
+            root.withdraw()
+            success = False
+            if askyesno("Deck Password","Would you like this deck to be password protected?",parent=root):
+                root.destroy()
+                root = Tk()
+                root.withdraw()
+                password = ""
+                while password == "":
+                    password = askstring("Deck Password","Please enter a password for the zip file:", parent=root)
+
+                if password != None:
+                    # Ensure the user hasn't pressed Cancel - if not, proceed, otherwise don't save
+                    try:
+                        os.system("zip -j -q -P " + password + " Decks/" + filename + " " + self.notepad + "/*.png")
+                        self.send(chr(0) + "CLRTKR", "toTicker")
+                        self.send("Zip file 'Decks/" + filename + "' created successfully with password","toTicker")
+                        success = True
+                    except Exception, e:
+                        self.send(chr(0) + "CLRTKR", "toTicker")
+                        self.send("Failed to write to zip file 'Decks/" + filename + "'","toTicker")
             else:
-                os.system("zip -j -q Decks/" + filename + " " + self.notepad + "/*.png")
-                self.send(chr(0) + "CLRTKR", "toTicker")
-                self.send("Zip file 'Decks/" + filename + "' created successfully without password","toTicker")
-        except Exception, e:
+                try:
+                    os.system("zip -j -q Decks/" + filename + " " + self.notepad + "/*.png")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("Zip file 'Decks/" + filename + "' created successfully without password","toTicker")
+                    success = True
+                except Exception, e:
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("Failed to write to zip file 'Decks/" + filename + "'","toTicker")
+
+            root.destroy()
+
+            if success == True and self.email == True:
+                # Ask if the user wants to e-mail a copy to themselves
+                root = Tk()
+                root.withdraw()
+                if askyesno("E-mail Deck","Would you like to send a copy of this deck by e-mail?",parent=root):
+                    root.destroy()
+                    root = Tk()
+                    root.withdraw()
+                    address = ""
+                    while address == "":
+                        address = askstring("E-mail Deck","Please enter an e-mail address. Multiple addresses can be entered if separated by semicolons:", parent=root)
+
+                    if address != None:
+                        # We have an address - no idea if it's valid or not, but this is where we'll send the message
+                        body = "Your whiteboard deck has been attached\n\nSent via Whiteboard"
+                        self.send([address,"Whiteboard Deck " + filename,body,["Decks/" + filename]], "toEmail")
+
+                root.destroy()
+        else:
             self.send(chr(0) + "CLRTKR", "toTicker")
-            self.send("Failed to write to zip file 'Decks/" + filename + "'","toTicker")
+            self.send("Save failed: No slides appear to exist","toTicker")
         self.clean = True
         
     def clearscribbles(self, args):

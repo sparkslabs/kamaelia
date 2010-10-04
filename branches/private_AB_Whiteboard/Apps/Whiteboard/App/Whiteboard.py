@@ -25,6 +25,7 @@ import os
 import sys
 import Axon
 import pygame
+import cjson
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
@@ -68,6 +69,13 @@ from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 #from Kamaelia.Apps.Whiteboard.SmartBoard import SmartBoard
 from Kamaelia.Apps.Whiteboard.Webcam import VideoCaptureSource
 
+# For the e-mailer
+import smtplib
+from email.MIMEText import MIMEText
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEBase import MIMEBase
+from email.encoders import encode_base64
+
 try:
     from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
 except Exception, e:
@@ -92,7 +100,38 @@ try:
 except ImportError:
     print "RawAudioMixer not available, using NullSink instead"
     RawAudioMixer = nullSinkComponent
-    
+
+
+raw_config = ""
+# Load E-mail Config
+try:
+    homedir = os.path.expanduser("~")
+    file = open(homedir + "/whiteboard.conf")
+    raw_config = file.read()
+    file.close()
+except IOError, e:
+    print ("Failed to load mail server config - e-mail disabled")
+
+# Read Config
+mailserver = ""
+mailport = ""
+mailfrom = ""
+mailuser = ""
+mailpass = ""
+mailinuse = False
+if raw_config != "":
+    try:
+        config = cjson.decode(raw_config)
+        mailserver = config['server']
+        mailport = config['port']
+        mailfrom = config['from']
+        mailuser = config['user']
+        mailpass = config['pass']
+        mailinuse = True
+    except cjson.DecodeError:
+        print ("Failed to decode mail settings - e-mail disabled")
+    except KeyError, e:
+        print ("A setting was missing in the config file (" + str(e) + ") - e-mail disabled")
     
 notepad = None
 if len(sys.argv) >1:
@@ -317,9 +356,85 @@ class LocalPageEventsFilter(ConditionalSplitter): # This is a data tap/siphon/de
 
 SLIDESPEC = notepad+"/slide.%d.png"
 
+class Email(component):
+    # Sends e-mails from a specific mail account - could be modified to relay via servers, but that doesn't tend to work due to restrictions
+    Inboxes = {
+        "inbox" : "Receives a list containing details to send out e-mails with",
+        "control" : "",
+    }
+    Outboxes = {
+        "outbox" : "Sends status messages relating to sending e-mail",
+        "signal" : "",
+    }
+
+    def __init__(self, server, port, fromaddr, username, password):
+        super(Email, self).__init__()
+        self.server = server
+        self.port = port
+        self.fromaddr = fromaddr
+        self.username = username
+        self.password = password
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
+    def main(self):
+        while not self.finished():
+            if self.dataReady("inbox"):
+                # Input format: ['to address','subject','message body',['attachment filenames']]
+                emaildata = self.recv("inbox")
+                msg = MIMEMultipart()
+                for filename in emaildata[3]:
+                    file = open(filename)
+                    data = file.read()
+                    file.close()
+                    diff = MIMEBase('application','zip')
+                    diff.set_payload(data)
+                    encode_base64(diff)
+                    filelink = filename.split("/")
+                    filelink = filelink[len(filelink) - 1]
+                    diff.add_header('Content-Disposition','attachment',filename=filelink)
+                    msg.attach(diff)
+                msg['Subject'] = emaildata[1]
+                msg['From'] = "Whiteboard Server"
+                msg['To'] = emaildata[0]
+                text = MIMEText(emaildata[2],'plain')
+                msg.attach(text)
+                try:
+                    s = smtplib.SMTP(self.server,self.port)
+                    s.ehlo()
+                    s.starttls()
+                    s.ehlo()
+                    s.login(self.username,self.password)
+                    s.sendmail(self.fromaddr,emaildata[0],msg.as_string())
+                    self.send("sent","outbox")
+                except smtplib.SMTPRecipientsRefused:
+                    self.send("Recipient refused","outbox")
+                except smtplib.SMTPHeloError:
+                    self.send("Remote server responded incorrectly","outbox")
+                except smtplib.SMTPSenderRefused:
+                    self.send("From address rejected by server","outbox")
+                except smtplib.SMTPDataError:
+                    self.send("An unknown data error occurred","outbox")
+                except smtplib.SMTPAuthenticationError:
+                    self.send("The mail server login details specified are incorrect","outbox")
+                except smtplib.SMTPException:
+                    self.send("Server does not support STARTTLS","outbox")
+                except RuntimeError:
+                    self.send("SSL/TLS support not found","outbox")
+                s.quit()
+            yield 1
+            self.pause()
+
+
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-192,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=notepad ),
+    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-192,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=notepad,email=mailinuse ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
@@ -351,6 +466,8 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       DEBUG   = ConsoleEchoer(),
                       
                       TICKER = Ticker(position=(left,top+height-15),background_colour=(220,220,220),text_colour=(0,0,0),text_height=(17),render_right=(width),render_bottom=(15)),
+
+                      EMAIL = Email(mailserver,mailport,mailfrom,mailuser,mailpass),
 
                       linkages = {
                           ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
@@ -388,6 +505,9 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 #                          ("SMARTBOARD", "colour") : ("PAINTER", "colour"),
 #                          ("SMARTBOARD", "erase") : ("PAINTER", "erase"),
 #                          ("SMARTBOARD", "toTicker") : ("TICKER", "inbox"),
+
+                          ("CANVAS", "toEmail") : ("EMAIL", "inbox"),
+                          ("EMAIL", "outbox") : ("CANVAS", "fromEmail"),
                           },
                     )
 
@@ -523,7 +643,7 @@ if __name__=="__main__":
     width = 1024
     height = 768
     
-    BACKGROUND = ProperSurfaceDisplayer(displaysize = (1024, 768), position = (0, 0), bgcolour=(0,0,0), webcam = 0).activate()
+    BACKGROUND = ProperSurfaceDisplayer(displaysize = (width, height), position = (left, top), bgcolour=(0,0,0), webcam = 0).activate()
     
     mainsketcher = \
         Graphline( SKETCHER = makeBasicSketcher(left,top+1,width,height-1),
