@@ -13,119 +13,64 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00cv029.rdf">
-  <rdfs:label>Description of a programme version of Travel</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-07-28T01:27:39+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-01-16T01:15:32Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00cv029#programme"/>
+<rdf:Description rdf:about="/programmes/b00tzmpf.rdf">
+  <rdfs:label>Description of a programme version of With Harry Hill and Professor Brian Cox</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-27T00:08:50+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-27T00:08:50+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00tzmpf#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00cv029#programme">
+<po:Version rdf:about="/programmes/b00tzmpf#programme">
 
-  <rdfs:label>A version of Travel</rdfs:label>
+  <rdfs:label>A version of With Harry Hill and Professor Brian Cox</rdfs:label>
   
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
-  <po:pid>b00cv029</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">11100</po:duration>
+  <po:pid>b00tzmpf</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Travel</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00cv029#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
+      <rdfs:label>Time interval for a version of With Harry Hill and Professor Brian Cox</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00tzmpf#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT11100S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00d1x77#programme">
-  <rdfs:label>Travel</rdfs:label>
-  <po:version rdf:resource="/programmes/b00cv029#programme" />
+<po:Episode rdf:about="/programmes/b00tzmqg#programme">
+  <rdfs:label>With Harry Hill and Professor Brian Cox</rdfs:label>
+  <po:version rdf:resource="/programmes/b00tzmpf#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00cv029#timeline">
-  <rdfs:label>Timeline of a version of Travel</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00tzmpf#timeline">
+  <rdfs:label>Timeline of a version of With Harry Hill and Professor Brian Cox</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00cv029#p000l0dc">
+<po:Broadcast rdf:about="/programmes/b00tzmpf#p00b89x0">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p000l0dc</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2008-08-04</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-08-04T15:45:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-08-04T16:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/radio4/fm#service">
-       <rdfs:label>FM</rdfs:label>
-       <po:parent_service rdf:resource="/services/radio4#service"/>
-     </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00cv029#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00cv029#p000l0dd">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p000l0dd</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2008-08-04</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-08-04T15:45:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-08-04T16:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/radio4/lw#service">
-       <rdfs:label>LW</rdfs:label>
-       <po:parent_service rdf:resource="/services/radio4#service"/>
-     </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00cv029#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00cv029#p00b89xq">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
-  <po:pid>p00b89xq</po:pid>
+  <po:pid>p00b89x0</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-04</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T15:45:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T16:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T14:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T17:05:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/radio4/fm#service">
-       <rdfs:label>FM</rdfs:label>
-       <po:parent_service rdf:resource="/services/radio4#service"/>
-     </po:Service>
+    <po:Service rdf:about="/services/radio2#service">
+      <rdfs:label>BBC Radio 2</rdfs:label>
+    </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00cv029#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00cv029#p00b8b5t">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
-  <po:pid>p00b8b5t</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-04</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T15:45:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T16:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/radio4/lw#service">
-       <rdfs:label>LW</rdfs:label>
-       <po:parent_service rdf:resource="/services/radio4#service"/>
-     </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00cv029#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00tzmpf#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T16:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-11T16:02:00+01:00</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-04T17:07:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-11T17:07:00+01:00</timeline:end>
 </po:Availability>
 
 
