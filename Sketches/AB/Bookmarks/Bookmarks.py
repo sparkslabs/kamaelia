@@ -20,6 +20,9 @@ from Requester import Requester
 from TwitterStream import TwitterStream
 from TwitterSearch import PeopleSearch
 from DataCollector import DataCollector
+from ConnectionWatcher import ConnectionWatcher
+
+from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 
 if __name__ == "__main__":
 
@@ -53,22 +56,27 @@ if __name__ == "__main__":
     else:
         keypair = False
 
+    firehose = TwitterStream(username, password, proxy, True);
 
     system = Graphline(CURRENTPROG = WhatsOn(proxy),
                     RDFSOURCE = ProgrammeData(proxy),
                     REQUESTER = Requester("all",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
-                    FIREHOSE = TwitterStream(username, password, proxy, True),
+                    FIREHOSE = firehose,
                     SEARCH = PeopleSearch(username, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
+                    WATCHER = ConnectionWatcher(firehose,60),
+                    TWOWAY = TwoWaySplitter(),
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
                                 ("REQUESTER", "proginfo") : ("RDFSOURCE", "inbox"), # Request additional data about current programmes
                                 ("RDFSOURCE", "outbox") : ("REQUESTER", "proginfo"), # Pass back additional data
                                 ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API
                                 ("FIREHOSE", "outbox") : ("REQUESTER", "inbox"), # Process errors from streaming API TODO
-                                ("FIREHOSE", "data") : ("COLLECTOR", "inbox"), # Collect data from streaming API
+                                ("FIREHOSE", "data") : ("TWOWAY" , "inbox"),
+                                ("TWOWAY", "outbox") : ("COLLECTOR", "inbox"), # Collect data from streaming API
                                 ("REQUESTER", "search") : ("SEARCH", "inbox"), # Perform Twitter people search based on keywords
-                                ("SEARCH", "outbox") : ("REQUESTER", "search") # Return Twitter people search results
+                                ("SEARCH", "outbox") : ("REQUESTER", "search"), # Return Twitter people search results
+                                ("TWOWAY" , "outbox2") : ("WATCHER", "inbox") # Keep an eye on data passing out of the firehose to make sure it continues
                                 }
                             ).run()
 

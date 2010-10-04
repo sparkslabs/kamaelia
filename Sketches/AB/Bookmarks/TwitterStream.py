@@ -45,7 +45,15 @@ class TwitterStream(threadedcomponent):
                 return True
         return False
 
-    def main(self):
+    def kill(self):
+        print ("running kill")
+        self.g.throw(Exception)
+        print ("ran kill")
+        self.main()
+        print ("ran main")
+    # tried self.g.throw(Exception) but failed saying self.g was undefined
+
+    def main_hack(self):
         twitterurl = "http://stream.twitter.com/1/statuses/filter.json"
 
         # Configure authentication for Twitter - temporary until OAuth implemented
@@ -175,4 +183,8 @@ class TwitterStream(threadedcomponent):
                         conn1.close()
                     time.sleep(1) # TODO: Add in proper backoff algorithm and reconnection facility
                     # Reconnection util and backoff should really look at HTTP error codes
-                    
+
+    def main(self):
+        self.g = self.main_hack()
+        for _ in self.g:
+            pass
