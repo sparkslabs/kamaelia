@@ -111,7 +111,7 @@ if __name__ == "__main__":
                 meantweets = totaltweets / runningtime
             except ZeroDivisionError, e:
                 meantweets = 0
-                
+
             cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s""",(pid))
             analyseddata = cursor.fetchall()
 
@@ -156,7 +156,7 @@ if __name__ == "__main__":
             cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid))
             cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
             print "Done!"
-        
+
         # Stage 2: If all raw tweets analysed and imported = 1, finalise the analysis - could do bookmark identification here too?
         cursor.execute("""SELECT pid,duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,title FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
         data = cursor.fetchall()

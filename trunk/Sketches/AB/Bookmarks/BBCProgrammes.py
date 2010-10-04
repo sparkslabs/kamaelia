@@ -182,6 +182,8 @@ class WhatsOn(component):
                                 offset = expectedstart - actualstart
                             pid = programme['programme']['pid']
                             title =  programme['programme']['display_titles']['title']
+                            # Attempted fix for unicode errors caused
+                            title = unicode(title,errors='ignore').encode("utf-8")
                             print [pid,title,offset,programme['duration'],programme['start']]
                             return [pid,title,offset,programme['duration'],programme['start']]
                             break
@@ -200,6 +202,8 @@ class WhatsOn(component):
                         if (utcdatetime >= starttime) & (utcdatetime < endtime):
                             pid = programme['programme']['pid']
                             title =  programme['programme']['display_titles']['title']
+                            # Attempted fix for unicode errors caused
+                            title = unicode(title,errors='ignore').encode("utf-8")
                             # Has to assume no offset as it knows no better
                             print [pid,title,0,programme['duration'],programme['start']]
                             return [pid,title,0,programme['duration'],programme['start']]
