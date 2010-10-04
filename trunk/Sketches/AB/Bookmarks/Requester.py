@@ -206,16 +206,16 @@ class Requester(threadedcomponent):
                     keywords["#" + string.lower(re.sub("\s+","",title))] = "Title"
                     keywords["#" + string.replace(string.lower(re.sub("\s+","",title))," " + str(date.today().year),"",1)] = "Title"
 
-                newtitle = string.replace(title,"The ","",1)
-                newtitle = newtitle.lower()
+                allwordtitle = string.replace(title,"The ","",1)
+                allwordtitle = allwordtitle.lower()
                 # Remove current year from events
-                newtitle = newtitle.replace(" " + str(date.today().year),"",1)
-                titlewords = newtitle.split()
+                allwordtitle = allwordtitle.replace(" " + str(date.today().year),"",1)
+                titlewords = allwordtitle.split()
                 if len(titlewords) > 1:
-                    keywords[newtitle] = "Title"
+                    keywords[allwordtitle] = "Title"
                 else:
                     # Trial fix for issue of one word titles producing huge amounts of data
-                    keywords[newtitle + "^" + "bbc"] = "Title"
+                    keywords[allwordtitle + "^" + "bbc"] = "Title"
 
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:

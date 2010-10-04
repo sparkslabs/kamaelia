@@ -198,7 +198,7 @@ def programme(request,pid):
                 graph.add_data(ylist)
 
                 #TODO: Fix the bad labelling!
-                graph.set_title("Tweets per minute (with bad labelling)")
+                graph.set_title("Tweets per minute")
                 left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
                 bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
                 graph.set_axis_labels(Axis.LEFT,left_axis)
