@@ -38,7 +38,7 @@ class ConnectionWatcher(threadedcomponent):
             while killed == False:
                 while self.dataReady("inbox"):
                     self.recv("inbox") # Flush the inbox
-                    lasttweettime = datetime.today()
+                    lastdatatime = datetime.today()
                     print ("data")
 
                 if (lastdatatime + timedelta(seconds=self.watchtime)) < datetime.today():
