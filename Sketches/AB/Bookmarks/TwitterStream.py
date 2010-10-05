@@ -24,7 +24,8 @@ class TwitterStream(threadedcomponent):
     Outboxes = {
         "outbox" : "Sends out status messages from the streaming API connection",
         "signal" : "",
-        "data" : "Sends out received tweets in the format [tweetjson,[pid,pid]]"
+        "data" : "Sends out received tweets in the format [tweetjson,[pid,pid]]",
+        "messages" : "Sends start and stop signals to ConnectionWatcher",
     }
 
     def __init__(self, username, password, proxy = False, reconnect = False):
@@ -144,6 +145,7 @@ class TwitterStream(threadedcomponent):
                     conn1 = False
 
                 if conn1:
+                    self.send("start","messages")
                     # While no new keywords have been passed in...
                     while not self.dataReady("inbox"):
                         # Collect data from the streaming API as it arrives - separated by carriage returns.
@@ -163,12 +165,14 @@ class TwitterStream(threadedcomponent):
                         if failed == True and self.reconnect == True:
                             # Reconnection procedure
                             print ("Streaming API connection failed.")
+                            self.send("stop","messages")
                             conn1.close()
                             time.sleep(1)
                             try:
                                 req = urllib2.Request(twitterurl,data,headers)
                                 conn1 = urllib2.urlopen(req)
                                 print ("Connected to twitter stream. Awaiting data...")
+                                self.send("start","messages")
                             except urllib2.HTTPError, e:
                                 self.send("Connect Error: " + str(e.code),"outbox") # Errors get sent back to the requester
                                 print(e.code)
@@ -179,6 +183,7 @@ class TwitterStream(threadedcomponent):
                                 conn1 = False
                                 break
                     print ("Disconnecting from twitter stream.")
+                    self.send("stop","messages")
                     if conn1:
                         conn1.close()
                     time.sleep(1) # TODO: Add in proper backoff algorithm and reconnection facility

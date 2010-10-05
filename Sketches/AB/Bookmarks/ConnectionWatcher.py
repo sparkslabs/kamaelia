@@ -5,6 +5,7 @@ from Axon.ThreadedComponent import threadedcomponent
 class ConnectionWatcher(threadedcomponent):
     Inboxes = {
         "inbox" : "Receives data stream to watch",
+        "messages" : "Receives start and stop signals to identify when to watch connections",
         "control" : ""
     }
     Outboxes = {
@@ -16,6 +17,7 @@ class ConnectionWatcher(threadedcomponent):
         super(ConnectionWatcher, self).__init__()
         self.watchtime = watchtime
         self.handle = handle
+        self.started = False
 
     def finished(self):
         while self.dataReady("control"):
@@ -28,23 +30,31 @@ class ConnectionWatcher(threadedcomponent):
     def main(self):
         while not self.finished():
             
-            while not self.dataReady("inbox"):
+            while not self.dataReady("messages") and self.started == False:
                 # Wait for connection init
-                time.sleep(1)
+                data = self.recv("messages")
+                if data == "start":
+                    self.started = True
 
             lastdatatime = datetime.today()
             killed = False
 
-            while killed == False:
+            while killed == False and self.started == True:
                 while self.dataReady("inbox"):
                     self.recv("inbox") # Flush the inbox
                     lastdatatime = datetime.today()
                     print ("data")
 
-                if (lastdatatime + timedelta(seconds=self.watchtime)) < datetime.today():
+                while self.dataReady("messages"):
+                    data = self.recv("messages")
+                    if data == "stop":
+                        self.started = False
+
+                if (lastdatatime + timedelta(seconds=self.watchtime)) < datetime.today() and self.started == True:
                     # Execute kill operation
                     print ("killing")
                     self.handle.kill()
                     killed = True
-                    
+                    self.started = False
+
                 time.sleep(1)

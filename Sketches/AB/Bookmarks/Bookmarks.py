@@ -76,7 +76,8 @@ if __name__ == "__main__":
                                 ("TWOWAY", "outbox") : ("COLLECTOR", "inbox"), # Collect data from streaming API
                                 ("REQUESTER", "search") : ("SEARCH", "inbox"), # Perform Twitter people search based on keywords
                                 ("SEARCH", "outbox") : ("REQUESTER", "search"), # Return Twitter people search results
-                                ("TWOWAY" , "outbox2") : ("WATCHER", "inbox") # Keep an eye on data passing out of the firehose to make sure it continues
+                                ("TWOWAY" , "outbox2") : ("WATCHER", "inbox"), # Keep an eye on data passing out of the firehose to make sure it continues
+                                ("FIREHOSE" , "messages") : ("WATCHER", "messages")
                                 }
                             ).run()
 
