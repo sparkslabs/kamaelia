@@ -77,7 +77,7 @@ class DataCollector(threadedcomponent):
                                             #dbtime = dbtime.replace(tzinfo=None)
                                             #dbtime = dbtime.replace(second=0)
                                             #dbtime2 = dbtime + timedelta(seconds=60)
-                                            cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
+                                            cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND datetime = %s AND user = %s""",(pid,newdata['created_at'],newdata['user']['screen_name']))
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
                                                 cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
@@ -92,7 +92,7 @@ class DataCollector(threadedcomponent):
                                         #dbtime = dbtime.replace(tzinfo=None)
                                         #dbtime = dbtime.replace(second=0)
                                         #dbtime2 = dbtime + timedelta(seconds=60)
-                                        cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
+                                        cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND datetime = %s AND user = %s""",(pid,newdata['created_at'],newdata['user']['screen_name']))
                                         if cursor.fetchone() == None:
                                             print ("Storing tweet for pid " + pid)
                                             cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
