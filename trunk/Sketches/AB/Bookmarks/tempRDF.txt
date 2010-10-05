@@ -13,24 +13,24 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00v16lk.rdf">
-  <rdfs:label>Description of a programme version of 05/10/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T00:12:22+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T00:12:22+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00v16lk#programme"/>
+<rdf:Description rdf:about="/programmes/b00v11q6.rdf">
+  <rdfs:label>Description of a programme version of Tuesday - James Jolly</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T01:01:06+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T01:01:06+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00v11q6#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00v16lk#programme">
+<po:Version rdf:about="/programmes/b00v11q6#programme">
 
-  <rdfs:label>A version of 05/10/2010</rdfs:label>
+  <rdfs:label>A version of Tuesday - James Jolly</rdfs:label>
   
   <po:sound_format>Stereo</po:sound_format>
   <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7200</po:duration>
-  <po:pid>b00v16lk</po:pid>
+  <po:pid>b00v11q6</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of 05/10/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v16lk#timeline"/>
+      <rdfs:label>Time interval for a version of Tuesday - James Jolly</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00v11q6#timeline"/>
       <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT7200S</timeline:duration>
     </timeline:Interval>
   </po:time>
@@ -38,18 +38,18 @@
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00v16mk#programme">
-  <rdfs:label>05/10/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00v16lk#programme" />
+<po:Episode rdf:about="/programmes/b00v11s8#programme">
+  <rdfs:label>Tuesday - James Jolly</rdfs:label>
+  <po:version rdf:resource="/programmes/b00v11q6#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00v16lk#timeline">
-  <rdfs:label>Timeline of a version of 05/10/2010</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00v11q6#timeline">
+  <rdfs:label>Timeline of a version of Tuesday - James Jolly</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00v16lk#p00b8xr6">
+<po:Broadcast rdf:about="/programmes/b00v11q6#p00b8zm3">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b8xr6</po:pid>
+  <po:pid>p00b8zm3</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-05</po:schedule_date>
   <event:time>
     <timeline:Interval>
@@ -58,11 +58,11 @@
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/5live#service">
-      <rdfs:label>BBC Radio 5 live</rdfs:label>
+    <po:Service rdf:about="/services/radio3#service">
+      <rdfs:label>BBC Radio 3</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00v16lk#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00v11q6#programme" />
 </po:Broadcast>
 
 
