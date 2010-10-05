@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-# Saves relevant data fed back from TwitterStream etc next to its PID and timestamp (TODO) ready for analysis
+# Saves relevant data fed back from TwitterStream etc next to its PID and timestamp ready for analysis
 # Needs to do limited analysis to work out which keywords in the tweet stream correspond to which programme
 # Keywords, and possibly PIDs and channels will most likely have to be passed here as well as to the TwitterStream from Requester
 
@@ -8,8 +8,6 @@ import time
 import MySQLdb
 import cjson
 import string
-from dateutil.parser import parse
-from datetime import timedelta
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -52,10 +50,7 @@ class DataCollector(threadedcomponent):
                     pids.append(pid)
                 twitdata.append([data[0],pids])
             if len(twitdata) > 0:
-                # TODO: Looking for \n characters, divide tweets, then check them against original keywords and add to table against the correct pid
-                #print twitdata
 
-                
                 for tweet in twitdata:
                     if tweet[0] != "\r\n":
                         # At this point, each 'tweet' contains tweetdata, and a list of possible pids
@@ -73,10 +68,6 @@ class DataCollector(threadedcomponent):
                                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                         if cursor.fetchone() != None:
                                             # Ensure the user hasn't already tweeted for this programme in this minute
-                                            #dbtime = parse(newdata['created_at'])
-                                            #dbtime = dbtime.replace(tzinfo=None)
-                                            #dbtime = dbtime.replace(second=0)
-                                            #dbtime2 = dbtime + timedelta(seconds=60)
                                             cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND datetime = %s AND user = %s""",(pid,newdata['created_at'],newdata['user']['screen_name']))
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
@@ -88,10 +79,6 @@ class DataCollector(threadedcomponent):
                                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                     if cursor.fetchone() != None:
                                         # Ensure the user hasn't already tweeted for this programme in this minute
-                                        #dbtime = parse(newdata['created_at'])
-                                        #dbtime = dbtime.replace(tzinfo=None)
-                                        #dbtime = dbtime.replace(second=0)
-                                        #dbtime2 = dbtime + timedelta(seconds=60)
                                         cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND datetime = %s AND user = %s""",(pid,newdata['created_at'],newdata['user']['screen_name']))
                                         if cursor.fetchone() == None:
                                             print ("Storing tweet for pid " + pid)
@@ -103,6 +90,5 @@ class DataCollector(threadedcomponent):
                         print "Blank line received from Twitter - no new data"
                     
                     print ("Done!") # new line to break up display
-                # Still need to re-search through received data using original keywords to ensure those keywords separated by spaces appear correctly and not split
             else:
                 time.sleep(0.1)

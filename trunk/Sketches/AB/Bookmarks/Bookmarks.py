@@ -5,7 +5,7 @@
 # - Collects Twitter streaming API data based on generated keywords.
 # Program run initially to join up all mailboxes etc
 
-#### NOTE: THIS PROGRAMME CURRENTLY NEEDS A PROXY FREE CONNECTION IF OAUTH KEYS NEED REFRESHING
+#### NOTE: THIS PROGRAM CURRENTLY NEEDS A PROXY FREE CONNECTION IF OAUTH KEYS NEED REFRESHING
 
 #### NOTE: Error handling is unfinished for HTTP based connections. Currently it purely prints to the screen.
 #### Eventually Twitter and others would welcome an exponential backoff in places.
