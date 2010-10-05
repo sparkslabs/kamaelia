@@ -10,7 +10,7 @@ import urllib
 import os
 import cjson
 import socket
-import signal
+#import signal
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
@@ -208,3 +208,4 @@ class TwitterStream(threadedcomponent):
     #    self.g = self.main_hack()
     #    for _ in self.g:
     #        pass
+    
