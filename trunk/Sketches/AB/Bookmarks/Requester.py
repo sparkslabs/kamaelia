@@ -180,7 +180,10 @@ class Requester(threadedcomponent):
                 if ":" in title:
                     titlebits = title.split(":")
                     title = titlebits[0]
-                    
+
+                # Saving a copy here so apostrophes etc can be used in the Twitter people search
+                titlesave = title
+
                 # Remove punctuation
                 for item in """!"#$%()*+,-./;<=>?@[\\]?_'`{|}?""":
                     title = title.replace(item,"")
@@ -329,12 +332,12 @@ class Requester(threadedcomponent):
                 # Radio appears to have been forgotten about a bit in RDF / scheduling at the mo
                 if "radio" in channel or "6music" in channel or "asiannetwork" in channel or "sportsextra" in channel or "worldservice" in channel:
                     # However, radio shows are often named using the DJ - The cases where this isn't true will cause problems however as they'll be saved in json - DOH! TODO
-                    if config.has_key(title):
+                    if config.has_key(titlesave):
                         # Found a cached value
-                        if config[title] != "":
-                            keywords[config[title]] = "Twitter"
-                    else:
-                        self.send(title, "search")
+                        if config[titlesave] != "":
+                            keywords[config[titlesave]] = "Twitter"
+                    elif len(titlesave.split()) < 4: # Prevent some shows getting through at least - restricts people's names to three words
+                        self.send(titlesave, "search")
                         while not self.dataReady("search"):
                             pass
                         twitdata = self.recv("search")
@@ -342,13 +345,13 @@ class Requester(threadedcomponent):
                         try:
                             for user in twitdata:
                                 if user.has_key('verified'):
-                                    if (user['verified'] == True or user['followers_count'] > 10000) and  string.lower(user['name']) == title.lower():
+                                    if (user['verified'] == True or user['followers_count'] > 10000) and  string.lower(user['name']) == titlesave.lower():
                                         screenname = user['screen_name']
                                         keywords[screenname] = "Twitter"
                                         break
                         except AttributeError, e:
                             pass
-                        config[title] = screenname
+                        config[titlesave] = screenname
 
                 try:
                     file = open(homedir + "/namecache.conf",'w')
