@@ -73,7 +73,8 @@ class Requester(threadedcomponent):
             "b00j4j7g" : ["#f1"], # Formula 1
             "b006wkqb" : ["chrisdjmoyles","chrismoylesshow"], # Chris Moyles Breakfast Show
             "b0071b63" : ["bbcapprentice"], # The Apprentice
-            "b006mg74" : ["bbcwatchdog"] # Watchdog
+            "b006mg74" : ["bbcwatchdog"], # Watchdog
+            "b006v5tb" : ['bbcbreakfast'] # Breakfast
         }
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
         self.officialseriestags = {

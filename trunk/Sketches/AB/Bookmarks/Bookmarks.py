@@ -50,6 +50,9 @@ if __name__ == "__main__":
     else:
         proxy = False
 
+    # Set OAuth consumer keypair
+    consumerkeypair = [config['consumerkey'],config['consumersecret']]
+
     # Set OAuth keypair if available
     if config.has_key('key') & config.has_key('secret'):
         keypair = [config['key'],config['secret']]
@@ -62,7 +65,7 @@ if __name__ == "__main__":
                     RDFSOURCE = ProgrammeData(proxy),
                     REQUESTER = Requester("all",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
                     FIREHOSE = firehose,
-                    SEARCH = PeopleSearch(username, keypair, proxy),
+                    SEARCH = PeopleSearch(username, consumerkeypair, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
                     #WATCHER = ConnectionWatcher(firehose,60),
                     TWOWAY = TwoWaySplitter(),

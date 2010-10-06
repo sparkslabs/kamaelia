@@ -1,3 +1,4 @@
 # Remove this line and move file to /home/<yourusername>
 # 'key' and 'secret' are automatically generated for oauth. Whilst not fully supported, 'proxy' can also be added to the dictionary.
-{"username": "YourTwitterUsername", "password": "YourTwitterPassword", "dbuser" : "YourMySQLUsername", "dbpass" : "YourMySQLPassword"}
+# 'consumerkey' and 'consumersecret' must be obtained from your Twitter account by registering a new app.
+{"username": "YourTwitterUsername", "password": "YourTwitterPassword", "dbuser" : "YourMySQLUsername", "dbpass" : "YourMySQLPassword", "consumerkey" : "yourtwitterkeyhere", "consumersecret" : "yourtwittersecrethere"}
