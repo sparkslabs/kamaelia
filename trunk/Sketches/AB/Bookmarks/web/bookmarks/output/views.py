@@ -1,6 +1,6 @@
 # Create your views here.
 from django.http import HttpResponse
-from bookmarks.output.models import programmes,analyseddata
+from bookmarks.output.models import programmes,analyseddata,rawdata
 from datetime import date,timedelta,datetime
 from dateutil.parser import parse
 from pygooglechart import SimpleLineChart, Axis #lc
@@ -88,6 +88,13 @@ def programme(request,pid):
     # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
 
     output = header
+    output += "<script type=\"text/javascript\">"
+    output += "function revealTweets() {"
+    output += "if (document.getElementById('rawtweets').style.display == 'none') {"
+    output += "document.getElementById('rawtweets').style.display = 'inline';"
+    output += "} else {"
+    output += "document.getElementById('rawtweets').style.display = 'none';"
+    output += "}}</script>"
 
     data = programmes.objects.filter(pid=pid).all()
     if len(data) == 0:
@@ -211,7 +218,16 @@ def programme(request,pid):
                 output += "<br />Not enough data to generate statistics.<br />"
 
         output += "<br /><br />API: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
-        output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
+        # Reveal tweets is temporary - will allow selection and viewing of single minutes once the database has been redesigned.
+        output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"javascript:revealTweets()\">View all / hide all tweets</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
+
+        # The below is a lesser of two evils solution - Ideally tweets for individual minutes would be grabbed via AJAX upon request.
+        # This can't be added without significant pain until the database has been restructured slightly to use better format dates and times for raw tweets
+        rawtweets = rawdata.objects.filter(pid=pid).all()
+        output += "<br /><br /><div id=\"rawtweets\" style=\"display: none; font-size: 9pt\">"
+        for tweet in rawtweets:
+            output += "<br /><strong>" + tweet.datetime + ":</strong> " + tweet.text
+        output += "</div>"
     else:
         output += "<br />Database consistency error - somehow a primary key appears twice. The world may have ended."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
