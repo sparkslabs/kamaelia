@@ -94,11 +94,8 @@ class TwitterStream(threadedcomponent):
                 'user': self.username
             }
 
-            consumer_key = '2kfk97VzNZQ36jOoZNvag'
-            consumer_secret = 'Uye8ILqcBR3UpkbazSeezgIvlWKfRZcsU6YqPC1YYc'
-
             token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
-            consumer = oauth.Consumer(key=consumer_key,secret=consumer_secret)
+            consumer = oauth.Consumer(key=self.consumerkeypair[0],secret=self.consumerkeypair[1])
 
             params['oauth_token'] = token.key
             params['oauth_consumer_key'] = consumer.key

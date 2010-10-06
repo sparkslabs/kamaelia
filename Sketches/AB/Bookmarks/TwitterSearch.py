@@ -26,9 +26,10 @@ class PeopleSearch(component):
         "signal" : ""
     }
 
-    def __init__(self, username, keypair, proxy = False):
+    def __init__(self, username, consumerkeypair, keypair, proxy = False):
         super(PeopleSearch, self).__init__()
         self.proxy = proxy
+        self.consumerkeypair = consumerkeypair
         self.keypair = keypair
         self.username = username
         self.ratelimited = datetime.today() - timedelta(minutes=15)
@@ -123,12 +124,9 @@ class PeopleSearch(component):
     def main(self):
         twitterurl = "http://api.twitter.com/1/users/search.json"
 
-        consumer_key = '2kfk97VzNZQ36jOoZNvag'
-        consumer_secret = 'Uye8ILqcBR3UpkbazSeezgIvlWKfRZcsU6YqPC1YYc'
-
         # Check if OAuth has been done before - if so use the keys from the config file
         if self.keypair == False:
-            self.keypair = self.getOAuth(consumer_key, consumer_secret)
+            self.keypair = self.getOAuth(self.consumerkeypair[0], self.consumerkeypair[1])
 
         if self.proxy:
             proxyhandler = urllib2.ProxyHandler({"http" : self.proxy})
@@ -157,7 +155,7 @@ class PeopleSearch(component):
                     }
 
                     token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
-                    consumer = oauth.Consumer(key=consumer_key,secret=consumer_secret)
+                    consumer = oauth.Consumer(key=self.consumerkeypair[0],secret=self.consumerkeypair[1])
 
                     params['oauth_token'] = token.key
                     params['oauth_consumer_key'] = consumer.key
