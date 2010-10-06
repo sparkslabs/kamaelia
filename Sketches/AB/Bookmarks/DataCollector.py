@@ -68,7 +68,8 @@ class DataCollector(threadedcomponent):
                                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                         if cursor.fetchone() != None:
                                             # Ensure the user hasn't already tweeted for this programme in this minute
-                                            cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND datetime = %s AND user = %s""",(pid,newdata['created_at'],newdata['user']['screen_name']))
+                                            # Muppet - this will only check for same second tweets - duh
+                                            cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
                                                 cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
@@ -79,7 +80,8 @@ class DataCollector(threadedcomponent):
                                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                     if cursor.fetchone() != None:
                                         # Ensure the user hasn't already tweeted for this programme in this minute
-                                        cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND datetime = %s AND user = %s""",(pid,newdata['created_at'],newdata['user']['screen_name']))
+                                        # Muppet - this will only check for same second tweets - duh
+                                        cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
                                         if cursor.fetchone() == None:
                                             print ("Storing tweet for pid " + pid)
                                             cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
