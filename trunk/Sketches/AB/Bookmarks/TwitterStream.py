@@ -132,7 +132,7 @@ class TwitterStream(threadedcomponent):
 
                 # Get ready to grab Twitter data
                 urllib2.install_opener(twitopener)
-                headers = {'User-Agent' : "BBC R&D Grabber"}
+                headers = {'User-Agent' : "BBC R&D Grabber", "Keep-Alive: " : self.timeout, "Connection:" : "Keep-Alive"}
 
                 # Connect to Twitter
                 try:
