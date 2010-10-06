@@ -13,64 +13,200 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b005f4gb.rdf">
-  <rdfs:label>Description of a programme version of Episode 3</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T00:06:20+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-29T00:06:20+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b005f4gb#programme"/>
+<rdf:Description rdf:about="/programmes/b00txhv9.rdf">
+  <rdfs:label>Description of a programme version of The Secret Science of Pee</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T00:10:10+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-28T00:10:10+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00txhv9#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b005f4gb#programme">
+<po:Version rdf:about="/programmes/b00txhv9#programme">
 
-  <rdfs:label>A version of Episode 3</rdfs:label>
+  <rdfs:label>A version of The Secret Science of Pee</rdfs:label>
   
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
-  <po:pid>b005f4gb</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1800</po:duration>
+  <po:pid>b00txhv9</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Episode 3</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b005f4gb#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
+      <rdfs:label>Time interval for a version of The Secret Science of Pee</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00txhv9#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1800S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b007jrbz#programme">
-  <rdfs:label>Episode 3</rdfs:label>
-  <po:version rdf:resource="/programmes/b005f4gb#programme" />
+<po:Episode rdf:about="/programmes/b00txhvf#programme">
+  <rdfs:label>The Secret Science of Pee</rdfs:label>
+  <po:version rdf:resource="/programmes/b00txhv9#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b005f4gb#timeline">
-  <rdfs:label>Timeline of a version of Episode 3</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00txhv9#timeline">
+  <rdfs:label>Timeline of a version of The Secret Science of Pee</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b005f4gb#p00b9h59">
+<po:Broadcast rdf:about="/programmes/b00txhv9#p00b8xkm">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b9h59</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-06</po:schedule_date>
+  <po:pid>p00b8xkm</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-05</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T15:30:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T15:45:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T21:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T21:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/radio7#service">
-      <rdfs:label>BBC Radio 7</rdfs:label>
-    </po:Service>
+    <po:Service rdf:about="/services/radio4/fm#service">
+       <rdfs:label>FM</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio4#service"/>
+     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b005f4gb#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00txhv9#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00txhv9#p00b8y3c">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00b8y3c</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-05</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T21:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T21:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio4/lw#service">
+       <rdfs:label>LW</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio4#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00txhv9#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00txhv9#p00b9gyf">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00b9gyf</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-06</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T16:30:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T17:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio4/fm#service">
+       <rdfs:label>FM</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio4#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00txhv9#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00txhv9#p00b9h95">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00b9h95</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-06</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T16:30:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T17:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio4/lw#service">
+       <rdfs:label>LW</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio4#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00txhv9#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T15:47:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T15:47:00+01:00</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T17:02:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T17:02:00+01:00</timeline:end>
+</po:Availability>
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T21:32:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-12T21:32:00+01:00</timeline:end>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00b90l0">
+      <po:pid>p00b90l0</po:pid>
+      <po:service rdf:resource="/services/iplayer_uk_stream_mp3#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T22:04:12+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9g1">
+      <po:pid>p00bf9g1</po:pid>
+      <po:service rdf:resource="/services/iplayer_intl_stream_aac_rtmp_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T22:04:12+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9g3">
+      <po:pid>p00bf9g3</po:pid>
+      <po:service rdf:resource="/services/iplayer_intl_stream_wma_uk_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T21:59:01+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9g2">
+      <po:pid>p00bf9g2</po:pid>
+      <po:service rdf:resource="/services/iplayer_uk_stream_aac_rtmp_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T22:04:16+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9g4">
+      <po:pid>p00bf9g4</po:pid>
+      <po:service rdf:resource="/services/iplayer_intl_stream_wma_lo_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T21:59:06+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9k0">
+      <po:pid>p00bf9k0</po:pid>
+      <po:service rdf:resource="/services/iplayer_uk_stream_mp3_http#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T22:04:16+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9k1">
+      <po:pid>p00bf9k1</po:pid>
+      <po:service rdf:resource="/services/iplayer_uk_stream_aac_wii_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T22:04:24+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9k4">
+      <po:pid>p00bf9k4</po:pid>
+      <po:service rdf:resource="/services/iplayer_stb_uk_stream_aac_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T22:04:30+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9k5">
+      <po:pid>p00bf9k5</po:pid>
+      <po:service rdf:resource="/services/iplayer_uk_stream_aac_rtmp_lo_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T22:04:44+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9ks">
+      <po:pid>p00bf9ks</po:pid>
+      <po:service rdf:resource="/services/iplayer_uk_stream_aac_http_lo_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T22:10:06+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/b00txhv9#p00bf9kw">
+      <po:pid>p00bf9kw</po:pid>
+      <po:service rdf:resource="/services/iplayer_uk_stream_aac_3gp_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-05T23:49:23+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
 </po:Availability>
 
 
