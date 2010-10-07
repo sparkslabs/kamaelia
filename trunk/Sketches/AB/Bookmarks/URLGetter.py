@@ -37,7 +37,7 @@ class HTTPGetter(component):
                 return True
         return False
 
-    def getURLData(self, url, username = False, password = False):
+    def getURLData(self, url, postdata = None, username = False, password = False):
 
         # Configure authentication
         if username and password:
@@ -57,9 +57,6 @@ class HTTPGetter(component):
         else:
             urlopener = urllib2.build_opener()
 
-        # POST data
-        data = ""
-
         # Get ready to grab data
         urllib2.install_opener(urlopener)
         if self.useragent:
@@ -69,16 +66,16 @@ class HTTPGetter(component):
 
         # Grab data
         try:
-            req = urllib2.Request(url,data,headers)
+            req = urllib2.Request(url,postdata,data,headers)
             conn1 = urllib2.urlopen(req)
         except httplib.BadStatusLine, e:
-            return ["StatusError",str(e)]
+            return ["StatusError",e]
             conn1 = False
         except urllib2.HTTPError, e:
-            return ["HTTPError",str(e.code)]
+            return ["HTTPError",e.code]
             conn1= False
         except urllib2.URLError, e:
-            return ['URLError',str(e.reason)]
+            return ['URLError',e.reason]
             conn1 = False
         
         # Read and return programme data
@@ -92,9 +89,14 @@ class HTTPGetter(component):
             if self.dataReady("inbox"):
                 # Data format: [url,username(optional),password(optional)]
                 request = self.recv("inbox")
-                if len(request) == 3:
-                    urldata = self.getURLData(request[0],request[1],request[2])
+                if len(request) == 4:
+                    # Authenticated with optional POST
+                    urldata = self.getURLData(request[0],request[1],request[2],request[3])
+                elif len(request) == 2:
+                    # Plain POST
+                    urldata = self.getURLData(request[0],request[1])
                 else:
+                    # Plain GET
                     urldata = self.getURLData(request[0])
                 # Data format: [OK/Error,message]
                 self.send(urldata,"outbox")
