@@ -1,3 +1,16 @@
+#! /usr/bin/python
+
+# Basic URL requesting component.
+# Gets passed a list in the format: [url,username,password] where username and password are optional
+# Returns a list in the format: ["OK",data] or ["Error", "Error string"]
+# Set up for GET requests only at the moment - can be easily modified for others later
+
+import urllib2
+import httplib
+
+from Axon.Component import component
+
+
 class HTTPGetter(component):
 
     Inboxes = {
@@ -42,6 +55,9 @@ class HTTPGetter(component):
         else:
             urlopener = urllib2.build_opener()
 
+        # POST data
+        data = ""
+
         # Get ready to grab data
         urllib2.install_opener(urlopener)
         if self.useragent:
@@ -54,7 +70,7 @@ class HTTPGetter(component):
             req = urllib2.Request(url,data,headers)
             conn1 = urllib2.urlopen(req)
         except httplib.BadStatusLine, e:
-            return ["Error",str(e)]
+            return ["StatusError",str(e)]
             conn1 = False
         except urllib2.HTTPError, e:
             return ["HTTPError",str(e.code)]
@@ -62,7 +78,7 @@ class HTTPGetter(component):
         except urllib2.URLError, e:
             return ['URLError',str(e.reason)]
             conn1 = False
-
+        
         # Read and return programme data
         if conn1:
             content = conn1.read()
@@ -75,10 +91,10 @@ class HTTPGetter(component):
                 # Data format: [url,username(optional),password(optional)]
                 request = self.recv("inbox")
                 if len(request) == 3:
-                    urldata = self.getURL(request[0],request[1],request[2])
+                    urldata = self.getURLData(request[0],request[1],request[2])
                 else:
-                    urldata = self.getURL(request[0])
+                    urldata = self.getURLData(request[0])
                 # Data format: [OK/Error,message]
                 self.send(urldata,"outbox")
-            self.pause()
             yield 1
+            self.pause()
