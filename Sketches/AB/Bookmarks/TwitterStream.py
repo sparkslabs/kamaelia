@@ -12,6 +12,8 @@ import cjson
 import socket
 #import signal
 from Axon.Ipc import producerFinished, shutdownMicroprocess
+from threading import Timer
+import Axon
 
 import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
 
@@ -26,7 +28,6 @@ class TwitterStream(threadedcomponent):
         "outbox" : "Sends out status messages from the streaming API connection",
         "signal" : "",
         "data" : "Sends out received tweets in the format [tweetjson,[pid,pid]]",
-        "messages" : "Sends start and stop signals to ConnectionWatcher",
     }
 
     def __init__(self, username, password, proxy = False, reconnect = False, timeout = 120):
@@ -46,17 +47,6 @@ class TwitterStream(threadedcomponent):
                 self.send(msg, "signal")
                 return True
         return False
-
-    #def kill(self):
-    #    print ("running kill")
-    #    self.g.throw(Exception)
-    #    print ("ran kill")
-    #    self.main()
-    #    print ("ran main")
-    # tried self.g.throw(Exception) but failed saying self.g was undefined
-
-    def sighandler(self):
-        raise IOError("Connection timeout - alarming")
 
     def main(self):
         twitterurl = "http://stream.twitter.com/1/statuses/filter.json"
@@ -108,8 +98,6 @@ class TwitterStream(threadedcomponent):
             params['oauth_signature'] = req.get_parameter('oauth_signature')
             params['oauth_signature_method'] = req.get_parameter('oauth_signature_method')
 
-        #signal.signal(signal.SIGALRM, self.sighandler)
-
         while not self.finished():
             if self.dataReady("inbox"):
 
@@ -150,13 +138,14 @@ class TwitterStream(threadedcomponent):
                     conn1 = False
 
                 if conn1:
-                    #self.send("start","messages")
                     # While no new keywords have been passed in...
                     while not self.dataReady("inbox"):
                         # Collect data from the streaming API as it arrives - separated by carriage returns.
-                        #signal.alarm(self.timeout)
                         try:
                             content = ""
+                            # Timer attempt to fix connection hanging
+                            readtimer = Timer(self.timeout,conn1.close)
+                            readtimer.start()
                             while not "\r\n" in content: # Twitter specified watch characters - readline doesn't catch this properly
                                 content += conn1.read(1)
                                 # Trying to work out what content is set to at the point it fails
@@ -164,6 +153,7 @@ class TwitterStream(threadedcomponent):
                                 file = open(filepath, 'w')
                                 file.write(content)
                                 file.close()
+                            readtimer.cancel()
                             self.send([content,pids],"data") # Send to data collector / analyser rather than back to requester
                             failed = False
                         except IOError, e:
@@ -175,11 +165,9 @@ class TwitterStream(threadedcomponent):
                             #self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
                         except socket.timeout, e:
                             failed = True
-                        #signal.alarm(0)
                         if failed == True and self.reconnect == True:
                             # Reconnection procedure
                             print ("Streaming API connection failed.")
-                            #self.send("stop","messages")
                             conn1.close()
                             time.sleep(1)
                             try:
@@ -200,14 +188,8 @@ class TwitterStream(threadedcomponent):
                                 conn1 = False
                                 break
                     print ("Disconnecting from twitter stream.")
-                    #self.send("stop","messages")
                     if conn1:
                         conn1.close()
                     time.sleep(1) # TODO: Add in proper backoff algorithm and reconnection facility
                     # Reconnection util and backoff should really look at HTTP error codes
-
-    #def main(self):
-    #    self.g = self.main_hack()
-    #    for _ in self.g:
-    #        pass
     

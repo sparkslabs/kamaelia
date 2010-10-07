@@ -66,7 +66,7 @@ class HTTPGetter(component):
 
         # Grab data
         try:
-            req = urllib2.Request(url,postdata,data,headers)
+            req = urllib2.Request(url,postdata,headers)
             conn1 = urllib2.urlopen(req)
         except httplib.BadStatusLine, e:
             return ["StatusError",e]
