@@ -13,64 +13,134 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00v3kyn.rdf">
-  <rdfs:label>Description of a programme version of 07/10/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-30T00:12:50+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-30T00:12:50+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00v3kyn#programme"/>
+<rdf:Description rdf:about="/programmes/p00b2rjs.rdf">
+  <rdfs:label>Description of a programme version of The death of anti-apartheid activist Steve Biko</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-16T20:14:45+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-16T20:14:45+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/p00b2rjs#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00v3kyn#programme">
+<po:Version rdf:about="/programmes/p00b2rjs#programme">
 
-  <rdfs:label>A version of 07/10/2010</rdfs:label>
+  <rdfs:label>A version of The death of anti-apartheid activist Steve Biko</rdfs:label>
   
-  <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9000</po:duration>
-  <po:pid>b00v3kyn</po:pid>
+  
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">600</po:duration>
+  <po:pid>p00b2rjs</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of 07/10/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v3kyn#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT9000S</timeline:duration>
+      <rdfs:label>Time interval for a version of The death of anti-apartheid activist Steve Biko</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/p00b2rjs#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT600S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00v3kyz#programme">
-  <rdfs:label>07/10/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00v3kyn#programme" />
+<po:Episode rdf:about="/programmes/p00b2rg6#programme">
+  <rdfs:label>The death of anti-apartheid activist Steve Biko</rdfs:label>
+  <po:version rdf:resource="/programmes/p00b2rjs#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00v3kyn#timeline">
-  <rdfs:label>Timeline of a version of 07/10/2010</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/p00b2rjs#timeline">
+  <rdfs:label>Timeline of a version of The death of anti-apartheid activist Steve Biko</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00v3kyn#p00bb5g7">
+<po:Broadcast rdf:about="/programmes/p00b2rjs#p00b2rmm">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bb5g7</po:pid>
+  <po:pid>p00b2rmm</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-07</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T10:00:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T12:30:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T05:50:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T06:00:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/asiannetwork#service">
-      <rdfs:label>BBC Asian Network</rdfs:label>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00v3kyn#programme" />
+  <po:broadcast_of rdf:resource="/programmes/p00b2rjs#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/p00b2rjs#p00b2rnc">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00b2rnc</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-07</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T11:50:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T12:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/p00b2rjs#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/p00b2rjs#p00b2rpv">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00b2rpv</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-07</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T23:50:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-08T00:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/p00b2rjs#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T12:32:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T12:32:00+01:00</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T06:02:00+01:00</timeline:start>
+  
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/p00b2rjs#p00b2ys2">
+      <po:pid>p00b2ys2</po:pid>
+      <po:service rdf:resource="/services/iplayer_intl_stream_aac_abstract#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T06:40:26+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/p00b2rjs#p00b2ys4">
+      <po:pid>p00b2ys4</po:pid>
+      <po:service rdf:resource="/services/iplayer_intl_stream_wma#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T06:40:26+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/p00b2rjs#p00b2ys3">
+      <po:pid>p00b2ys3</po:pid>
+      <po:service rdf:resource="/services/iplayer_intl_stream_real#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T06:40:23+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+  <po:media_item>
+    <po:MediaItem rdf:about="/programmes/p00b2rjs#p00bg7cg">
+      <po:pid>p00bg7cg</po:pid>
+      <po:service rdf:resource="/services/iplayer_intl_stream_aac_ws_concrete#service"/>
+      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T06:40:29+01:00</po:start_of_media_availability>
+    </po:MediaItem>
+  </po:media_item>
+</po:Availability>
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T12:02:00+01:00</timeline:start>
+  
+</po:Availability>
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-08T00:02:00+01:00</timeline:start>
+  
 </po:Availability>
 
 

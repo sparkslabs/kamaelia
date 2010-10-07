@@ -159,6 +159,11 @@ class TwitterStream(threadedcomponent):
                             content = ""
                             while not "\r\n" in content: # Twitter specified watch characters - readline doesn't catch this properly
                                 content += conn1.read(1)
+                                # Trying to work out what content is set to at the point it fails
+                                filepath = "contentDebug.txt"
+                                file = open(filepath, 'w')
+                                file.write(content)
+                                file.close()
                             self.send([content,pids],"data") # Send to data collector / analyser rather than back to requester
                             failed = False
                         except IOError, e:

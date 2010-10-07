@@ -5,6 +5,8 @@
 # Returns a list in the format: ["OK",data] or ["Error", "Error string"]
 # Set up for GET requests only at the moment - can be easily modified for others later
 
+# May change to use httplib instead to better handle different types of requests
+
 import urllib2
 import httplib
 
