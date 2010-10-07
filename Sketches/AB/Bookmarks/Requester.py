@@ -22,14 +22,16 @@ class Requester(threadedcomponent):
         "control" : "",
         "whatson" : "Receives back what's currently on a channel - [pid,title,timeoffset,duration,expectedstarttime]",
         "proginfo" : "Receives back raw RDF data for a PID",
-        "search" : "Receives back raw Twitter people search JSON"
+        "search" : "Receives back raw Twitter people search JSON",
+        "datain" : "URL contents returns from getter component",
     }
     Outboxes = {
         "outbox" : "Sends out keywords and pid(s) for streaming API connections - [[keyword,keyword],[pid,pid,pid]]",
         "signal" : "",
         "whatson" : "Requests current programmes by sending a channel name",
         "proginfo" : "Requests RDF format data for a pid - [pid, 'rdf']",
-        "search" : "Sends people's names for Twitter username identification"
+        "search" : "Sends people's names for Twitter username identification",
+        "dataout" : "URL requests to getter component",
     }
 
     def __init__(self, channel,dbuser,dbpass):
@@ -111,10 +113,15 @@ class Requester(threadedcomponent):
                 print (channel + ": Off Air")
             else:
                 self.channels[channel] = pid
-                self.send([pid, "rdf"], "proginfo")
-                while not self.dataReady("proginfo"):
-                     pass
-                programmedata = self.recv("proginfo")
+                self.send(["http://www.bbc.co.uk/programmes/" + pid + ".rdf"], "dataout")
+                while not self.dataReady("datain"):
+                    pass
+                recvdata = self.recv("datain")
+                
+                if recvdata[0] == "OK":
+                    programmedata = recvdata[1]
+                else:
+                    programmedata = None
 
                 filepath = "tempRDF.txt"
                 file = open(filepath, 'w')
@@ -157,10 +164,14 @@ class Requester(threadedcomponent):
 
                 # Got version, now get people
 
-                self.send([vidmod, "rdf"], "proginfo")
-                while not self.dataReady("proginfo"):
+                self.send(["http://www.bbc.co.uk/programmes/" + vidmod + ".rdf"], "dataout")
+                while not self.dataReady("datain"):
                     pass
-                versiondata = self.recv("proginfo")
+                recvdata = self.recv("datain")
+                if recvdata[0] == "OK":
+                    versiondata = recvdata[1]
+                else:
+                    versiondata = None
 
                 filepath = "tempRDF.txt"
                 file = open(filepath, 'w')
