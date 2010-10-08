@@ -234,6 +234,7 @@ import pygame
 import cjson #MODIFICATION FOR CALIBRATION
 import Axon
 import time
+import os # MODIFICATION FOR CALIBRATION
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -679,16 +680,22 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
       #
       # FIXME: Farm this off to another function
-      #      
-      raw_config = ""
+      # FIXME: Still needs to avoid any modifications to offsets (not even using default ones) if no conf file is available
+      #
       # CALIBRATION
+          
+      # Try to load config locally first - if it doesn't exist, look in machine locations like /etc/...
       try:
-          file = open("pygame-calibration.conf")
+          dirs = [os.path.expanduser("~") + "/.kamaelia/Kamaelia.UI.Pygame","/usr/local/etc/kamaelia/Kamaelia.UI.Pygame","/etc/kamaelia/Kamaelia.UI.Pygame"]
+          raw_config = False
+          for directory in dirs:
+              if os.path.isfile(directory + "/pygame-calibration.conf"):
+                  file = open(directory + "/pygame-calibration.conf")
+                  raw_config = file.read()
+                  file.close()
+                  break
       except IOError, e:
-          print ("Failed to load calibration data - could not open pygame-calibration.conf")
-      else:
-          raw_config = file.read()
-          file.close()
+          print ("Failed to load calibration data - read error")                    
 
       if raw_config:
          try:
@@ -696,6 +703,8 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
              self.calibrated = True
          except cjson.DecodeError, e:
              print ("Failed to load calibration data - corrupt config file : pygame-calibration.conf")
+      else:
+          print("Pygame calibration file could not be found - defaults loaded")
 
       # 
       # Calculate these values once for calibration purposes, and cache then for later use

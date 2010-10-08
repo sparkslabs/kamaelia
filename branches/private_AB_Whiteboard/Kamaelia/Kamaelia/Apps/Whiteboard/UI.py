@@ -72,16 +72,16 @@ def ClearPage(left,top):
     return Button(caption="Clear", size=(63,32), position=(left, top), msg=[["clear"]])
     
 def SaveDeck(left,top):
-    return Button(caption="Save Deck", size=(63,32), position=(left,top), msg=[["savedeck"]])
+    return Button(caption="Save Deck", size=(63,32), position=(left,top), msg="savedeck")
 
 def LoadDeck(left,top):
-    return Button(caption="Load Deck", size=(63,32), position=(left,top), msg=[["loaddeck"]])
+    return Button(caption="Load Deck", size=(63,32), position=(left,top), msg="loaddeck")
     
 def ClearScribbles(left,top):
-    return Button(caption="Close Deck", size=(63,32), position=(left,top), msg=[["clearscribbles"]])
+    return Button(caption="Close Deck", size=(63,32), position=(left,top), msg="clearscribbles")
     
 def Delete(left,top):
-    return Button(caption="Delete Slide", size=(63,32), position=(left,top), msg=[["deleteslide"]])
+    return Button(caption="Delete Slide", size=(63,32), position=(left,top), msg="deleteslide")
     
 def Quit(left,top):
-    return Button(caption="Quit", size=(63,32), position=(left,top), msg=[["quit"]])  
+    return Button(caption="Quit", size=(63,32), position=(left,top), msg="quit")  

@@ -50,11 +50,11 @@ class Decks(component):
         "signal" : "",
     }
     
-    def __init__(self, scribblesdir, deckdir):
+    def __init__(self, scribblesdir, deckdir, email):
         super(Decks, self).__init__()
         self.scribblesdir = scribblesdir
         self.deckdir = deckdir
-        self.email = False
+        self.email = email
     
     def shutdown(self):
        """Return 0 if a shutdown message is received, else return 1."""
@@ -74,30 +74,26 @@ class Decks(component):
                 else:
                     self.send(". Error sending deck by e-mail: " + status,"toTicker")
             while self.dataReady("inbox"):
-                msgs = self.recv("inbox")
-                for msg in msgs:
-                    cmd = msg[0]
-                    args = msg[1:]
-                    # parse commands here
-                    self.handleCommand(cmd, *args)
+                cmd = self.recv("inbox")
+                self.handleCommand(cmd)
                 yield 1
             self.pause()
             yield 1
                 
-    def handleCommand(self, cmd, *args):
+    def handleCommand(self, cmd):
         cmd = cmd.upper()
         if cmd=="LOADDECK":
-            self.loaddeck(args)
+            self.loaddeck()
         elif cmd=="SAVEDECK":
-            self.savedeck(args)
+            self.savedeck()
         elif cmd=="CLEARSCRIBBLES":
-            self.clearscribbles(args)
+            self.clearscribbles()
         elif cmd=="DELETESLIDE":
-            self.deleteslide(args)
+            self.deleteslide()
         elif cmd== "QUIT":
-            self.quit(args)
+            self.quit()
     
-    def loaddeck(self, args):
+    def loaddeck(self):
         root = Tk()
         root.withdraw()
         filename = askopenfilename(filetypes=[("Zip Archives",".zip")],initialdir=self.deckdir,title="Load Slide Deck",parent=root)
@@ -122,7 +118,7 @@ class Decks(component):
                     self.send(chr(0) + "CLRTKR", "toTicker")
                     self.send("Failed to open the deck specified. You may have entered the password incorrectly","toTicker")
 
-    def savedeck(self, args):
+    def savedeck(self):
         num_pages = 0
         for x in os.listdir(self.scribblesdir):
             if (os.path.splitext(x)[1] == ".png"):
@@ -186,7 +182,7 @@ class Decks(component):
             self.send(chr(0) + "CLRTKR", "toTicker")
             self.send("Save failed: No slides appear to exist","toTicker")
         
-    def clearscribbles(self, args):
+    def clearscribbles(self):
         try:
             for x in os.listdir(self.scribblesdir):
                 if os.path.splitext(x)[1] == ".png":
@@ -200,7 +196,7 @@ class Decks(component):
         self.send([["clear"]], "toCanvas")
         self.send("delete", "toHistory")
     
-    def quit(self, args):
+    def quit(self):
        root = Tk()
        root.withdraw()
        kill = False

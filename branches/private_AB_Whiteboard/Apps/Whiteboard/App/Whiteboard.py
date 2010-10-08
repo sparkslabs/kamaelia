@@ -64,7 +64,7 @@ from Kamaelia.Apps.Whiteboard.Entuple import Entuple
 from Kamaelia.Apps.Whiteboard.Routers import Router, TwoWaySplitter, ConditionalSplitter
 from Kamaelia.Apps.Whiteboard.Palette import buildPalette, colours
 from Kamaelia.Apps.Whiteboard.Options import parseOptions
-from Kamaelia.Apps.Whiteboard.UI import PagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles, Delete
+from Kamaelia.Apps.Whiteboard.UI import PagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles, Delete, Quit
 from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 #from Kamaelia.Apps.Whiteboard.SmartBoard import SmartBoard
 from Kamaelia.Apps.Whiteboard.Webcam import VideoCaptureSource
@@ -105,11 +105,11 @@ config = defaults
 
 # Load Config
 try:
-    wbdirs = ["/etc/kamaelia/Kamaelia.Apps.Whiteboard","/usr/local/etc/kamaelia/Kamaelia.Apps.Whiteboard",os.path.expanduser("~")]
+    wbdirs = ["/etc/kamaelia/Kamaelia.Apps.Whiteboard","/usr/local/etc/kamaelia/Kamaelia.Apps.Whiteboard",os.path.expanduser("~") + "/.kamaelia/Kamaelia.Apps.Whiteboard"]
     raw_config = False
-    for dir in wbdirs:
-        if os.path.isfile(dir + "/whiteboard.conf"):
-            file = open(dir + "/whiteboard.conf")
+    for directory in wbdirs:
+        if os.path.isfile(directory + "/whiteboard.conf"):
+            file = open(directory + "/whiteboard.conf")
             raw_config = file.read()
             file.close()
         if raw_config:
@@ -368,13 +368,13 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       SAVEDECK = SaveDeck(left+(64*8)+32*len(colours)+1,top),
                       LOADDECK = LoadDeck(left+(64*7)+32*len(colours)+1,top),
                       
-                      DECKMANAGER = Decks(config['directories']['scribbles'],config['directories']['decks']),
+                      DECKMANAGER = Decks(config['directories']['scribbles'],config['directories']['decks'],False),
                       
   #                    SMARTBOARD = SmartBoard(),
                       
                       DELETE = Delete(left+(64*6)+32*len(colours)+1,top),
                       CLOSEDECK = ClearScribbles(left+(64*9)+32*len(colours)+1,top),
-  #                    QUIT = Quit(left+(64*10)+32*len(colours)+1,top),
+                      QUIT = Quit(left+(64*10)+32*len(colours)+1,top),
 
                       PAGINGCONTROLS = PagingControls(left+64+32*len(colours)+1,top),
                       #LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
@@ -415,7 +415,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("DECKMANAGER", "toTicker") : ("TICKER", "inbox"),
                           ("DECKMANAGER", "toCanvas") : ("CANVAS", "inbox"),
                           ("DECKMANAGER", "toHistory") : ("HISTORY", "inbox"),
-#                          ("QUIT", "outbox") : ("DECKMANAGER", "inbox"),
+                          ("QUIT", "outbox") : ("DECKMANAGER", "inbox"),
                           
                           #("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
                           #("LOCALEVENT_SPLITTER", "outbox2"): ("", "outbox"), # send to network
