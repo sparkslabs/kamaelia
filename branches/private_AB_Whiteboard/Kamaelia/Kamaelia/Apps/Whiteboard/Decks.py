@@ -106,7 +106,7 @@ class Decks(component):
             if filename:
                 try:
                     unzipped = ZipFile(filename)
-                    self.clearscribbles("")
+                    self.clearscribbles()
                     if password != None:
                         unzipped.extractall(path=self.scribblesdir,pwd=password)
                     else:
@@ -192,7 +192,7 @@ class Decks(component):
         except Exception, e:
             pass
         
-    def deleteslide(self, args):
+    def deleteslide(self):
         self.send([["clear"]], "toCanvas")
         self.send("delete", "toHistory")
     
