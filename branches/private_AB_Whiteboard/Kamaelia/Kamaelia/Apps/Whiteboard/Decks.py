@@ -37,16 +37,16 @@ from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 class Decks(component):
     # Many of these inboxes and outboxes are temporary until the structure is finalised
     Inboxes = {
-        "inbox" : "",
-        "fromEmail" : "",
+        "inbox" : "Button click events result in messages to this inbox",
+        "fromEmail" : "Status messages from the e-mail component are received back here",
         "control" : "",
     }
     Outboxes = {
         "outbox" : "",
-        "toTicker" : "",
-        "toCanvas" : "",
-        "toHistory" : "",
-        "toEmail" : "",
+        "toTicker" : "Sends messages out to the Ticker component",
+        "toCanvas" : "Sends messages out to the Canvas component",
+        "toHistory" : "Sends messages out to the CheckpointSequencer component",
+        "toEmail" : "Requests to send e-mails are sent through this outbox",
         "signal" : "",
     }
     

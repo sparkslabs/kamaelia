@@ -67,7 +67,7 @@ from Kamaelia.Apps.Whiteboard.Options import parseOptions
 from Kamaelia.Apps.Whiteboard.UI import PagingControls, Eraser, ClearPage, SaveDeck, LoadDeck, ClearScribbles, Delete, Quit
 from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 #from Kamaelia.Apps.Whiteboard.SmartBoard import SmartBoard
-from Kamaelia.Apps.Whiteboard.Webcam import VideoCaptureSource
+from Kamaelia.Apps.Whiteboard.Webcam import VideoCaptureSource, WebcamManager
 from Kamaelia.Apps.Whiteboard.Email import Email
 from Kamaelia.Apps.Whiteboard.Decks import Decks
 
@@ -454,9 +454,7 @@ class ProperSurfaceDisplayer(component):
         "signal" : "",
         "display_signal" : "",
     }
-    remotecams = [0,0,0,0]
-    remotecamcount = [25,25,25,25]
-    displaysize = (640, 480)
+
     def __init__(self, **argd):
         super(ProperSurfaceDisplayer, self).__init__(**argd)
         self.disprequest = { "DISPLAYREQUEST" : True,
@@ -465,13 +463,14 @@ class ProperSurfaceDisplayer(component):
                            "position" : self.position,
                            "bgcolour" : self.bgcolour}
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                self.send(msg, "signal")
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
     def pygame_display_flip(self):
         self.send({"REDRAW":True, "surface":self.display}, "display_signal")
@@ -488,85 +487,12 @@ class ProperSurfaceDisplayer(component):
 
     def main(self):
        yield Axon.Ipc.WaitComplete(self.getDisplay())
-       # initialise five webcam windows
-       if self.webcam == 1:
-          snapshot = "No Local Camera"
-          font = pygame.font.Font(None,22)
-          self.display.fill( (0,0,0) )
-          snapshot = font.render(snapshot, False, (255,255,255))
-          self.display.blit(snapshot, (34,56))
-          self.pygame_display_flip()
-       elif self.webcam == 2:
-          snapshot = "No Remote Camera"
-          font = pygame.font.Font(None,22)
-          self.display.fill( (0,0,0),pygame.Rect(0,0,190,140*4))
-          snapshot = font.render(snapshot, False, (255,255,255))
-          self.display.blit(snapshot, (25,56)) 
-          self.display.blit(snapshot, (25,56+140*1+1)) 
-          self.display.blit(snapshot, (25,56+140*2+2)) 
-          self.display.blit(snapshot, (25,56+140*3+3)) 
-          self.pygame_display_flip()
-       while not self.finished():
-          if self.webcam:
-              while self.dataReady("inbox"):
-                  snapshot = self.recv("inbox")
-                  if self.webcam == 1:
-                      #snapshot=snapshot.convert()
-                      self.display.blit(snapshot, (0,0))
-                      self.pygame_display_flip()
-                  elif self.webcam == 2:
-                      # remove tag
-                      tag = snapshot[0]
-                      data = snapshot[1]
-                      pretagged = False
-                      # allocate tag to a cam window
-                      for x in self.remotecams:
-                          if x == tag:
-                              pretagged = True
-                              
-                      if pretagged == False:
-                          if self.remotecams[0] == 0:
-                              self.remotecams[0] = tag
-                          elif self.remotecams[1] == 0:
-                              self.remotecams[1] = tag
-                          elif self.remotecams[2] == 0:
-                              self.remotecams[2] = tag
-                          elif self.remotecams[2] == 0:
-                              self.remotecams[3] = tag
 
-                      # public cam pic to window if one is available
-                      iteration = 0
-                      for x in self.remotecams:
-                          if self.remotecams[iteration] == tag:
-                              offset = (140 * iteration + iteration * 1)
-                              self.display.blit(data, (0,0+offset))
-                              self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
-                          iteration += 1
+       while self.shutdown():
+          self.pause()
+          yield 1
 
-                      # Reset remote cameras where clients have disconnected (remotecamcount = 0)
-                      iteration = 0
-                      for x in self.remotecamcount:
-                          if self.remotecamcount[iteration] == 0:
-                              snapshot = "No Remote Camera"
-                              font = pygame.font.Font(None,22)
-                              offset = (iteration * 140 + iteration * 1)
-                              self.display.fill( (0,0,0),pygame.Rect(0,offset,190,140))
-                              snapshot = font.render(snapshot, False, (255,255,255))
-                              self.display.blit(snapshot, (25,56+offset)) 
-                              self.remotecams[iteration] = 0
-                          elif self.remotecamcount[iteration] > 0:
-                              self.remotecamcount[iteration] -= 1
-                          iteration += 1
 
-                      self.pygame_display_flip()
-
-              while not self.anyReady():
-                self.pause()
-                yield 1
-              yield 1  
-          else:
-              self.pause()
-              yield 1
 
 if __name__=="__main__":
 
@@ -587,8 +513,8 @@ if __name__=="__main__":
                      )
 
     camera = Graphline( LOCALWEBCAM = VideoCaptureSource(),
-                        WCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140), position = (1024-191,32+2), bgcolour=(0,0,0), webcam = 1),
-                        REMWCCANVAS = ProperSurfaceDisplayer(displaysize = (190, 140*4+4), position = (1024-191,32+140+3), bgcolour=(0,0,0), webcam = 2),
+                        WCCANVAS = WebcamManager(displaysize = (190, 140), position = (1024-191,32+2), bgcolour=(0,0,0), webcam = 1),
+                        REMWCCANVAS = WebcamManager(displaysize = (190, 140*4+4), position = (1024-191,32+140+3), bgcolour=(0,0,0), webcam = 2),
                         CAM_SPLITTER = TwoWaySplitter(),
                         CONSOLE = ConsoleEchoer(),
                         linkages = { ('self','inbox'):('REMWCCANVAS','inbox'),
