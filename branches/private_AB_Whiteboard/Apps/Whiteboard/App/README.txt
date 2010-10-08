@@ -24,13 +24,13 @@ that element must be completed too.
 The config file must be saved as 'whiteboard.conf' in one of the following 
 locations:
 
-/etc/kamaelia/Whiteboard/whiteboard.conf
-/usr/local/etc/kamaelia/Whiteboard/whiteboard.conf
-~/.kamaelia/Whiteboard/whiteboard.conf
+/etc/kamaelia/Kamaelia.Apps.Whiteboard/whiteboard.conf
+/usr/local/etc/kamaelia/Kamaelia.Apps.Whiteboard/whiteboard.conf
+~/.kamaelia/Kamaelia.Apps.Whiteboard/whiteboard.conf
 
 
 By default, with no config files available, the whiteboard will not enable e-mail
 and will use the following directories for Scribbles and Decks respectively:
 
-~/.kamaelia/Whiteboard/Scribbles/
+~/.kamaelia/Kamaelia.Apps.Whiteboard/Scribbles/
 ~/Whiteboard/Decks/

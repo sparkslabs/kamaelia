@@ -38,6 +38,7 @@ class Decks(component):
     # Many of these inboxes and outboxes are temporary until the structure is finalised
     Inboxes = {
         "inbox" : "",
+        "fromEmail" : "",
         "control" : "",
     }
     Outboxes = {
@@ -45,6 +46,7 @@ class Decks(component):
         "toTicker" : "",
         "toCanvas" : "",
         "toHistory" : "",
+        "toEmail" : "",
         "signal" : "",
     }
     
@@ -65,6 +67,12 @@ class Decks(component):
 
     def main(self):
         while self.shutdown():
+            while self.dataReady("fromEmail"):
+                status = self.recv("fromEmail")
+                if status == "sent":
+                    self.send(". Deck e-mailed successfully","toTicker")
+                else:
+                    self.send(". Error sending deck by e-mail: " + status,"toTicker")
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
                 for msg in msgs:
@@ -80,20 +88,14 @@ class Decks(component):
         cmd = cmd.upper()
         if cmd=="LOADDECK":
             self.loaddeck(args)
-            #self.send({"REDRAW":True, "surface":self.surface}, "toDisplay") # won't work
-            #self.send("dirty", "toHistory")
         elif cmd=="SAVEDECK":
             self.savedeck(args)
-            #self.clean = True
-            #self.dirty_sent = False
         elif cmd=="CLEARSCRIBBLES":
             self.clearscribbles(args)
-            #self.clean = True
-            #self.dirty_sent = False
         elif cmd=="DELETESLIDE":
             self.deleteslide(args)
-            #self.clean = True
-            #self.dirty_sent = False
+        elif cmd== "QUIT":
+            self.quit(args)
     
     def loaddeck(self, args):
         root = Tk()
@@ -198,27 +200,16 @@ class Decks(component):
         self.send([["clear"]], "toCanvas")
         self.send("delete", "toHistory")
     
-    #def webcam(self, args):
-    #    snapshot = args[0]
-    #    imageorigin = args[1]
-    #    location = args[2]
-    #    self.surface.blit(snapshot, imageorigin) # temp
-    #    if location == "local":
-    #        imageorigin = (imageorigin[0], imageorigin[1] + 141)
-    #    self.surface.blit(snapshot, imageorigin)
-    #    self.redrawNeeded = True
-    #    self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
-        
-    #def quit(self, args):
-    #    root = Tk()
-    #    root.withdraw()
-    #    kill = False
-    #    if askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root):
-    #        # perform quit
-    #        kill = True
-    #        #pygame.quit() # This isn't the right way to do it!
-    #        # Also, saving won't work as the program exits before it's happened
-    #    root.destroy()
-    #    if kill:
-    #        print("Exiting")
-    #        self.scheduler.stop()
+    def quit(self, args):
+       root = Tk()
+       root.withdraw()
+       kill = False
+       if askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root):
+           # perform quit
+           kill = True
+           #pygame.quit() # This isn't the right way to do it!
+           # Also, saving won't work as the program exits before it's happened
+       root.destroy()
+       if kill:
+           print("Exiting")
+           self.scheduler.stop()

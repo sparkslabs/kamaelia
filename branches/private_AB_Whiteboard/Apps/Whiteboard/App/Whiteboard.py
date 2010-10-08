@@ -99,13 +99,13 @@ except ImportError:
     RawAudioMixer = nullSinkComponent
 
 defaults = {"email" : {"server" : "","port" : "","user" : "","pass": "","from" : ""},\
-            "directories" : {"scribbles" : os.path.expanduser("~") + "/.kamaelia/Whiteboard/Scribbles",\
+            "directories" : {"scribbles" : os.path.expanduser("~") + "/.kamaelia/Kamaelia.Apps.Whiteboard/Scribbles",\
                              "decks" : os.path.expanduser("~") + "/Whiteboard/Decks"}}
 config = defaults
 
 # Load Config
 try:
-    wbdirs = ["/etc/kamaelia/Whiteboard","/usr/local/etc/kamaelia/Whiteboard",os.path.expanduser("~")]
+    wbdirs = ["/etc/kamaelia/Kamaelia.Apps.Whiteboard","/usr/local/etc/kamaelia/Kamaelia.Apps.Whiteboard",os.path.expanduser("~")]
     raw_config = False
     for dir in wbdirs:
         if os.path.isfile(dir + "/whiteboard.conf"):
@@ -359,7 +359,7 @@ SLIDESPEC = config['directories']['scribbles'] +"/slide.%d.png"
 
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-192,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=config['directories']['scribbles'],email=False ),
+    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-192,(height-(32+15)-1)),bgcolour=(255,255,255) ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
@@ -415,7 +415,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("DECKMANAGER", "toTicker") : ("TICKER", "inbox"),
                           ("DECKMANAGER", "toCanvas") : ("CANVAS", "inbox"),
                           ("DECKMANAGER", "toHistory") : ("HISTORY", "inbox"),
-#                          ("QUIT", "outbox") : ("CANVAS", "inbox"),
+#                          ("QUIT", "outbox") : ("DECKMANAGER", "inbox"),
                           
                           #("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
                           #("LOCALEVENT_SPLITTER", "outbox2"): ("", "outbox"), # send to network
@@ -437,8 +437,8 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 #                          ("SMARTBOARD", "erase") : ("PAINTER", "erase"),
 #                          ("SMARTBOARD", "toTicker") : ("TICKER", "inbox"),
 
-                          ("CANVAS", "toEmail") : ("EMAIL", "inbox"),
-                          ("EMAIL", "outbox") : ("CANVAS", "fromEmail"),
+                          ("DECKMANAGER", "toEmail") : ("EMAIL", "inbox"),
+                          ("EMAIL", "outbox") : ("DECKMANAGER", "fromEmail"),
                           },
                     )
 
