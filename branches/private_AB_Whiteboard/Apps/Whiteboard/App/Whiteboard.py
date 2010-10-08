@@ -102,7 +102,7 @@ defaults = {"email" : {"server" : "","port" : "","user" : "","pass": "","from" :
             "directories" : {"scribbles" : os.path.expanduser("~") + "/.kamaelia/Kamaelia.Apps.Whiteboard/Scribbles",\
                              "decks" : os.path.expanduser("~") + "/Whiteboard/Decks"}}
 config = defaults
-
+emailavailable = False
 # Load Config
 try:
     wbdirs = ["/etc/kamaelia/Kamaelia.Apps.Whiteboard","/usr/local/etc/kamaelia/Kamaelia.Apps.Whiteboard",os.path.expanduser("~") + "/.kamaelia/Kamaelia.Apps.Whiteboard"]
@@ -120,6 +120,7 @@ try:
                     if temp_config.has_key(entry):
                         for key in temp_config[entry].keys():
                             config[entry][key] = temp_config[entry][key]
+                        emailavailable = True
             except cjson.DecodeError, e:
                 print("Could not decode config file in " + dir)
 except IOError, e:
@@ -368,7 +369,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       SAVEDECK = SaveDeck(left+(64*8)+32*len(colours)+1,top),
                       LOADDECK = LoadDeck(left+(64*7)+32*len(colours)+1,top),
                       
-                      DECKMANAGER = Decks(config['directories']['scribbles'],config['directories']['decks'],False),
+                      DECKMANAGER = Decks(config['directories']['scribbles'],config['directories']['decks'],emailavailable),
                       
   #                    SMARTBOARD = SmartBoard(),
                       
