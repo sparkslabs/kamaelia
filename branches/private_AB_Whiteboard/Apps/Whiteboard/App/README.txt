@@ -1,0 +1,36 @@
+#### KAMAELIA WHITEBOARD ####
+
+## Configuration ##
+The whiteboard software will start up without the need for a configuration file, 
+however you may wish to change some of the available config values to customise
+its operation or enable advanced features.
+
+The config file is saved in JSON format and features the following entries:
+
+{"email" : 
+	{"server" : "",
+	 "port" : "",
+	 "user" : "",
+	 "pass" : "",
+	 "from" : ""},
+ "directories" : 
+	{"scribbles" : "",
+	 "decks" : ""}
+}
+
+NOTE: If setting either the 'email' or 'directories' element, all entries within
+that element must be completed too.
+
+The config file must be saved as 'whiteboard.conf' in one of the following 
+locations:
+
+/etc/kamaelia/Whiteboard/whiteboard.conf
+/usr/local/etc/kamaelia/Whiteboard/whiteboard.conf
+~/.kamaelia/Whiteboard/whiteboard.conf
+
+
+By default, with no config files available, the whiteboard will not enable e-mail
+and will use the following directories for Scribbles and Decks respectively:
+
+~/.kamaelia/Whiteboard/Scribbles/
+~/Whiteboard/Decks/

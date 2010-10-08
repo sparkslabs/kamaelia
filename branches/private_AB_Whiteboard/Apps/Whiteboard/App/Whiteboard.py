@@ -68,13 +68,10 @@ from Kamaelia.Apps.Whiteboard.UI import PagingControls, Eraser, ClearPage, SaveD
 from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 #from Kamaelia.Apps.Whiteboard.SmartBoard import SmartBoard
 from Kamaelia.Apps.Whiteboard.Webcam import VideoCaptureSource
+from Kamaelia.Apps.Whiteboard.Email import Email
+from Kamaelia.Apps.Whiteboard.Decks import Decks
 
-# For the e-mailer
-import smtplib
-from email.MIMEText import MIMEText
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
-from email.encoders import encode_base64
+
 
 try:
     from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
@@ -101,62 +98,64 @@ except ImportError:
     print "RawAudioMixer not available, using NullSink instead"
     RawAudioMixer = nullSinkComponent
 
+defaults = {"email" : {"server" : "","port" : "","user" : "","pass": "","from" : ""},\
+            "directories" : {"scribbles" : os.path.expanduser("~") + "/.kamaelia/Whiteboard/Scribbles",\
+                             "decks" : os.path.expanduser("~") + "/Whiteboard/Decks"}}
+config = defaults
 
-raw_config = ""
-# Load E-mail Config
+# Load Config
 try:
-    homedir = os.path.expanduser("~")
-    file = open(homedir + "/whiteboard.conf")
-    raw_config = file.read()
-    file.close()
+    wbdirs = ["/etc/kamaelia/Whiteboard","/usr/local/etc/kamaelia/Whiteboard",os.path.expanduser("~")]
+    raw_config = False
+    for dir in wbdirs:
+        if os.path.isfile(dir + "/whiteboard.conf"):
+            file = open(dir + "/whiteboard.conf")
+            raw_config = file.read()
+            file.close()
+        if raw_config:
+            try:
+                temp_config = cjson.decode(raw_config)
+                entries = ["email","directories"]
+                for entry in entries:
+                    if temp_config.has_key(entry):
+                        for key in temp_config[entry].keys():
+                            config[entry][key] = temp_config[entry][key]
+            except cjson.DecodeError, e:
+                print("Could not decode config file in " + dir)
 except IOError, e:
-    print ("Failed to load mail server config - e-mail disabled")
+    print ("Failed to load config file")
 
-# Read Config
-mailserver = ""
-mailport = ""
-mailfrom = ""
-mailuser = ""
-mailpass = ""
-mailinuse = False
-if raw_config != "":
-    try:
-        config = cjson.decode(raw_config)
-        mailserver = config['server']
-        mailport = config['port']
-        mailfrom = config['from']
-        mailuser = config['user']
-        mailpass = config['pass']
-        mailinuse = True
-    except cjson.DecodeError:
-        print ("Failed to decode mail settings - e-mail disabled")
-    except KeyError, e:
-        print ("A setting was missing in the config file (" + str(e) + ") - e-mail disabled")
-    
-notepad = None
-if len(sys.argv) >1:
-    if os.path.exists(sys.argv[1]):
-        if os.path.isdir(sys.argv[1]):
-            notepad = sys.argv[1]
-            
-if notepad is None and os.path.exists("Scribbles"):
-    if os.path.isdir("Scribbles"):
-        notepad = "Scribbles"
+if defaults['directories']['scribbles'] != config['directories']['scribbles']:
+    # Remove trailing '/' if exists:
+    if config['directories']['scribbles'][-1:] == "/":
+        config['directories']['scribbles'] = config['directories']['scribbles'][0:-1]
 
-if notepad is None:
-   #N = os.path.join(os.path.expanduser("~"),"Scribbles")
-   N = "Scribbles"
-   if not os.path.exists(N):
-       os.makedirs(N)
-   if os.path.isdir(N):
-       notepad = N
+    # Check directories exist
+    if os.path.exists(config['directories']['scribbles']):
+        if not os.path.isdir(config['directories']['scribbles']):
+            print("You have a user configured Scribbles directory that can't be found. Please create it.")
+            sys.exit(0)
+    else:
+        print("You have a user configured Scribbles directory that can't be found. Please create it.")
+        sys.exit(0)
+elif not os.path.exists(config['directories']['scribbles']):
+    os.makedirs(config['directories']['scribbles'])  
 
-if notepad is None:
-    print "Can't figure out what to do with piccies. Exitting"
-    sys.exit(0)
+if defaults['directories']['decks'] != config['directories']['decks']:
+    # Remove trailing '/' if exists:
+    if config['directories']['decks'][-1:] == "/":
+        config['directories']['decks'] = config['directories']['decks'][0:-1]
 
-if not os.path.exists("Decks"):
-    os.makedirs("Decks")
+    # Check directories exist
+    if os.path.exists(config['directories']['decks']):
+        if not os.path.isdir(config['directories']['decks']):
+            print("You have a user configured Decks directory that can't be found. Please create it.")
+            sys.exit(0)
+    else:
+        print("You have a user configured Decks directory that can't be found. Please create it.")
+        sys.exit(0)
+elif not os.path.exists(config['directories']['decks']):
+    os.makedirs(config['directories']['decks'])
 
 
 #
@@ -165,10 +164,9 @@ if not os.path.exists("Decks"):
 colours_order = [ "black", "red", "orange", "yellow", "green", "turquoise", "blue", "purple", "darkgrey", "lightgrey" ]
 
 num_pages = 0
-for x in os.listdir(notepad):
+for x in os.listdir(config['directories']['scribbles']):
     if (os.path.splitext(x)[1] == ".png"):
         num_pages += 1
-#num_pages = len(os.listdir(notepad))
 if (num_pages < 1):
     num_pages = 1
 
@@ -247,7 +245,7 @@ class SurfaceToJpeg(component):
         while not self.shutdown():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                if ininstance(data,str):
+                if isinstance(data,str):
                     # Convert string to Pygame image using a particular size
                     try: # Prevent crashing with malformed received images
                         image = pygame.image.fromstring(data,(190,140),"RGB")
@@ -354,87 +352,14 @@ class LocalPageEventsFilter(ConditionalSplitter): # This is a data tap/siphon/de
     def true(self,data):
         self.send((data[0][0], "local"), "true")
 
-SLIDESPEC = notepad+"/slide.%d.png"
+SLIDESPEC = config['directories']['scribbles'] +"/slide.%d.png"
 
-class Email(component):
-    # Sends e-mails from a specific mail account - could be modified to relay via servers, but that doesn't tend to work due to restrictions
-    Inboxes = {
-        "inbox" : "Receives a list containing details to send out e-mails with",
-        "control" : "",
-    }
-    Outboxes = {
-        "outbox" : "Sends status messages relating to sending e-mail",
-        "signal" : "",
-    }
 
-    def __init__(self, server, port, fromaddr, username, password):
-        super(Email, self).__init__()
-        self.server = server
-        self.port = port
-        self.fromaddr = fromaddr
-        self.username = username
-        self.password = password
-
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                self.send(msg, "signal")
-                return True
-        return False
-
-    def main(self):
-        while not self.finished():
-            if self.dataReady("inbox"):
-                # Input format: ['to address','subject','message body',['attachment filenames']]
-                emaildata = self.recv("inbox")
-                msg = MIMEMultipart()
-                for filename in emaildata[3]:
-                    file = open(filename)
-                    data = file.read()
-                    file.close()
-                    diff = MIMEBase('application','zip')
-                    diff.set_payload(data)
-                    encode_base64(diff)
-                    filelink = filename.split("/")
-                    filelink = filelink[len(filelink) - 1]
-                    diff.add_header('Content-Disposition','attachment',filename=filelink)
-                    msg.attach(diff)
-                msg['Subject'] = emaildata[1]
-                msg['From'] = "Whiteboard Server"
-                msg['To'] = emaildata[0]
-                text = MIMEText(emaildata[2],'plain')
-                msg.attach(text)
-                try:
-                    s = smtplib.SMTP(self.server,self.port)
-                    s.ehlo()
-                    s.starttls()
-                    s.ehlo()
-                    s.login(self.username,self.password)
-                    s.sendmail(self.fromaddr,emaildata[0],msg.as_string())
-                    self.send("sent","outbox")
-                except smtplib.SMTPRecipientsRefused:
-                    self.send("Recipient refused","outbox")
-                except smtplib.SMTPHeloError:
-                    self.send("Remote server responded incorrectly","outbox")
-                except smtplib.SMTPSenderRefused:
-                    self.send("From address rejected by server","outbox")
-                except smtplib.SMTPDataError:
-                    self.send("An unknown data error occurred","outbox")
-                except smtplib.SMTPAuthenticationError:
-                    self.send("The mail server login details specified are incorrect","outbox")
-                except smtplib.SMTPException:
-                    self.send("Server does not support STARTTLS","outbox")
-                except RuntimeError:
-                    self.send("SSL/TLS support not found","outbox")
-                s.quit()
-            yield 1
-            self.pause()
 
 
 
 def makeBasicSketcher(left=0,top=0,width=1024,height=768):
-    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-192,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=notepad,email=mailinuse ),
+    return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-192,(height-(32+15)-1)),bgcolour=(255,255,255),notepad=config['directories']['scribbles'],email=False ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
@@ -442,6 +367,8 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       
                       SAVEDECK = SaveDeck(left+(64*8)+32*len(colours)+1,top),
                       LOADDECK = LoadDeck(left+(64*7)+32*len(colours)+1,top),
+                      
+                      DECKMANAGER = Decks(config['directories']['scribbles'],config['directories']['decks']),
                       
   #                    SMARTBOARD = SmartBoard(),
                       
@@ -458,7 +385,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                                                     lambda X: [["CLEAR"]],
                                                     initial = 1,
                                                     highest = num_pages,
-                                                    notepad = notepad,
+                                                    notepad = config['directories']['scribbles'],
                                 ),
 
                       PAINT_SPLITTER = TwoWaySplitter(),
@@ -467,7 +394,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                       
                       TICKER = Ticker(position=(left,top+height-15),background_colour=(220,220,220),text_colour=(0,0,0),text_height=(17),render_right=(width),render_bottom=(15)),
 
-                      EMAIL = Email(mailserver,mailport,mailfrom,mailuser,mailpass),
+                      EMAIL = Email(config['email']['server'],config['email']['port'],config['email']['from'],config['email']['user'],config['email']['pass']),
 
                       linkages = {
                           ("CANVAS",  "eventsOut") : ("PAINTER", "inbox"),
@@ -479,11 +406,15 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("PAINT_SPLITTER", "outbox")  : ("CANVAS", "inbox"),
                           ("PAINT_SPLITTER", "outbox2") : ("self", "outbox"), # send to network
                           
-                          ("SAVEDECK", "outbox") : ("CANVAS", "inbox"),
-                          ("LOADDECK", "outbox") : ("CANVAS", "inbox"),
+                          ("SAVEDECK", "outbox") : ("DECKMANAGER", "inbox"),
+                          ("LOADDECK", "outbox") : ("DECKMANAGER", "inbox"),
                           
-                          ("CLOSEDECK", "outbox") : ("CANVAS", "inbox"),
-                          ("DELETE", "outbox") : ("CANVAS", "inbox"),
+                          ("CLOSEDECK", "outbox") : ("DECKMANAGER", "inbox"),
+                          ("DELETE", "outbox") : ("DECKMANAGER", "inbox"),
+                          
+                          ("DECKMANAGER", "toTicker") : ("TICKER", "inbox"),
+                          ("DECKMANAGER", "toCanvas") : ("CANVAS", "inbox"),
+                          ("DECKMANAGER", "toHistory") : ("HISTORY", "inbox"),
 #                          ("QUIT", "outbox") : ("CANVAS", "inbox"),
                           
                           #("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),

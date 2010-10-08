@@ -58,13 +58,14 @@ class VideoCaptureSource(threadedcomponent):
             self.delay = 1.0/self.fps
         self.snapshot = None
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                self.send(msg, "signal")
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
     def capture_one(self):
         self.snapshot = None
@@ -76,7 +77,7 @@ class VideoCaptureSource(threadedcomponent):
     def main(self):
         try:
             self.camera.start()
-            while not self.finished():
+            while self.shutdown():
                 self.capture_one()
                 self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
                 self.snapshot=self.snapshot.convert()

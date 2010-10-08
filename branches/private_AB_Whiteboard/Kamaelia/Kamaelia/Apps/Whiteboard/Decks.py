@@ -1,0 +1,224 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://www.kamaelia.org/AUTHORS - please extend this file,
+#     not this notice.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# -------------------------------------------------------------------------
+#
+
+from Tkinter import Tk
+from tkFileDialog import askopenfilename
+from tkSimpleDialog import askstring
+from tkMessageBox import askyesno
+
+from zipfile import ZipFile
+from datetime import datetime
+
+import os
+
+from Axon.Component import component
+from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
+
+class Decks(component):
+    # Many of these inboxes and outboxes are temporary until the structure is finalised
+    Inboxes = {
+        "inbox" : "",
+        "control" : "",
+    }
+    Outboxes = {
+        "outbox" : "",
+        "toTicker" : "",
+        "toCanvas" : "",
+        "toHistory" : "",
+        "signal" : "",
+    }
+    
+    def __init__(self, scribblesdir, deckdir):
+        super(Decks, self).__init__()
+        self.scribblesdir = scribblesdir
+        self.deckdir = deckdir
+        self.email = False
+    
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
+
+    def main(self):
+        while self.shutdown():
+            while self.dataReady("inbox"):
+                msgs = self.recv("inbox")
+                for msg in msgs:
+                    cmd = msg[0]
+                    args = msg[1:]
+                    # parse commands here
+                    self.handleCommand(cmd, *args)
+                yield 1
+            self.pause()
+            yield 1
+                
+    def handleCommand(self, cmd, *args):
+        cmd = cmd.upper()
+        if cmd=="LOADDECK":
+            self.loaddeck(args)
+            #self.send({"REDRAW":True, "surface":self.surface}, "toDisplay") # won't work
+            #self.send("dirty", "toHistory")
+        elif cmd=="SAVEDECK":
+            self.savedeck(args)
+            #self.clean = True
+            #self.dirty_sent = False
+        elif cmd=="CLEARSCRIBBLES":
+            self.clearscribbles(args)
+            #self.clean = True
+            #self.dirty_sent = False
+        elif cmd=="DELETESLIDE":
+            self.deleteslide(args)
+            #self.clean = True
+            #self.dirty_sent = False
+    
+    def loaddeck(self, args):
+        root = Tk()
+        root.withdraw()
+        filename = askopenfilename(filetypes=[("Zip Archives",".zip")],initialdir=self.deckdir,title="Load Slide Deck",parent=root)
+        root.destroy()
+        if filename != "":
+            root = Tk()
+            root.withdraw()
+            password = askstring("Deck Password","Please enter the password for this zip file, or press cancel if you believe there isn't one:", parent=root)
+            root.destroy()
+            if filename:
+                try:
+                    unzipped = ZipFile(filename)
+                    self.clearscribbles("")
+                    if password != None:
+                        unzipped.extractall(path=self.scribblesdir,pwd=password)
+                    else:
+                        unzipped.extractall(path=self.scribblesdir,pwd="")
+                    self.send("first", "toHistory")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("Deck loaded successfully","toTicker")
+                except Exception, e:
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("Failed to open the deck specified. You may have entered the password incorrectly","toTicker")
+
+    def savedeck(self, args):
+        num_pages = 0
+        for x in os.listdir(self.scribblesdir):
+            if (os.path.splitext(x)[1] == ".png"):
+                num_pages += 1
+        if num_pages > 0:
+            dt = datetime.now()
+            filename = dt.strftime("%Y%m%d-%H%M%S")
+            filename = filename + ".zip"
+            root = Tk()
+            root.withdraw()
+            success = False
+            if askyesno("Deck Password","Would you like this deck to be password protected?",parent=root):
+                root.destroy()
+                root = Tk()
+                root.withdraw()
+                password = ""
+                while password == "":
+                    password = askstring("Deck Password","Please enter a password for the zip file:", parent=root)
+
+                if password != None:
+                    # Ensure the user hasn't pressed Cancel - if not, proceed, otherwise don't save
+                    try:
+                        os.system("zip -j -q -P " + password + " " + self.deckdir + "/" + filename + " " + self.scribblesdir + "/*.png")
+                        self.send(chr(0) + "CLRTKR", "toTicker")
+                        self.send("Zip file '" + filename + "' created successfully with password","toTicker")
+                        success = True
+                    except Exception, e:
+                        self.send(chr(0) + "CLRTKR", "toTicker")
+                        self.send("Failed to write to zip file '" + filename + "'","toTicker")
+            else:
+                try:
+                    os.system("zip -j -q " + self.deckdir + "/" + filename + " " + self.scribblesdir + "/*.png")
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("Zip file '" + filename + "' created successfully without password","toTicker")
+                    success = True
+                except Exception, e:
+                    self.send(chr(0) + "CLRTKR", "toTicker")
+                    self.send("Failed to write to zip file '" + filename + "'","toTicker")
+
+            root.destroy()
+
+            if success == True and self.email == True:
+                # Ask if the user wants to e-mail a copy to themselves
+                root = Tk()
+                root.withdraw()
+                if askyesno("E-mail Deck","Would you like to send a copy of this deck by e-mail?",parent=root):
+                    root.destroy()
+                    root = Tk()
+                    root.withdraw()
+                    address = ""
+                    while address == "":
+                        address = askstring("E-mail Deck","Please enter an e-mail address. Multiple addresses can be entered if separated by semicolons:", parent=root)
+
+                    if address != None:
+                        # We have an address - no idea if it's valid or not, but this is where we'll send the message
+                        body = "Your whiteboard deck has been attached\n\nSent via Whiteboard"
+                        self.send([address,"Whiteboard Deck " + filename,body,[self.deckdir + "/" + filename]], "toEmail")
+
+                root.destroy()
+        else:
+            self.send(chr(0) + "CLRTKR", "toTicker")
+            self.send("Save failed: No slides appear to exist","toTicker")
+        
+    def clearscribbles(self, args):
+        try:
+            for x in os.listdir(self.scribblesdir):
+                if os.path.splitext(x)[1] == ".png":
+                    os.remove(self.scribblesdir + "/" + x)
+            self.send([["clear"]], "toCanvas")
+            self.send("first", "toHistory")
+        except Exception, e:
+            pass
+        
+    def deleteslide(self, args):
+        self.send([["clear"]], "toCanvas")
+        self.send("delete", "toHistory")
+    
+    #def webcam(self, args):
+    #    snapshot = args[0]
+    #    imageorigin = args[1]
+    #    location = args[2]
+    #    self.surface.blit(snapshot, imageorigin) # temp
+    #    if location == "local":
+    #        imageorigin = (imageorigin[0], imageorigin[1] + 141)
+    #    self.surface.blit(snapshot, imageorigin)
+    #    self.redrawNeeded = True
+    #    self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
+        
+    #def quit(self, args):
+    #    root = Tk()
+    #    root.withdraw()
+    #    kill = False
+    #    if askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root):
+    #        # perform quit
+    #        kill = True
+    #        #pygame.quit() # This isn't the right way to do it!
+    #        # Also, saving won't work as the program exits before it's happened
+    #    root.destroy()
+    #    if kill:
+    #        print("Exiting")
+    #        self.scheduler.stop()

@@ -61,20 +61,21 @@ class CheckpointSequencer(Axon.Component.component):
                     print("Failed to renumber slides. There may be an error in the sequence")
             exists += 1
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                self.send(msg, "signal")
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
     def main(self):
         current = self.initial
         highest = self.highest
         self.send( self.loadMessage(current), "outbox")
         dirty = False
-        while not self.finished():
+        while self.shutdown():
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
                 if command == "delete":

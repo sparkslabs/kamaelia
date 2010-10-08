@@ -1,1 +1,1 @@
-{"server" : "smtp.yourserver.com", "port" : 587, "user" : "yourusername", "pass" : "yourpassword", "from" : "yourname@yourdomain.com"}
+{"email" : {"server" : "smtp.yourserver.com", "port" : 587, "user" : "yourusername", "pass" : "yourpassword", "from" : "yourname@yourdomain.com"}, "directories" : {"scribblesdir" : "", "decksdir" : ""}}

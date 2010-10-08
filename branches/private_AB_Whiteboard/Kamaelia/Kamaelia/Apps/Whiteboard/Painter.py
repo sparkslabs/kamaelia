@@ -46,13 +46,14 @@ class Painter(Axon.Component.component):
         self.sendbuffer = []
 
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                self.send(msg, "signal")
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
 
     def main(self):
@@ -63,7 +64,7 @@ class Painter(Axon.Component.component):
         dragging = False
         mode="LINE"
 
-        while not self.finished():
+        while self.shutdown():
 
             while self.dataReady("colour"):
                 r,g,b = self.recv("colour")

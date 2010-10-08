@@ -103,13 +103,14 @@ class Canvas(Axon.Component.component):
             yield 1
         self.surface = self.recv("fromDisplay")
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                self.send(msg, "signal")
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
 
     def main(self):
@@ -138,7 +139,7 @@ class Canvas(Axon.Component.component):
         self.send( {"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP, "surface" : self.surface},
                    "toDisplay" )
 
-        while not self.finished():
+        while self.shutdown():
             
             #TEMPORARY - to be moved to another component
             while self.dataReady("fromEmail"):
@@ -180,6 +181,7 @@ class Canvas(Axon.Component.component):
         # Would then be pluggable.
         #
         cmd = cmd.upper()
+        
         if   cmd=="CLEAR":
             self.clear(args)
             self.clean = True
