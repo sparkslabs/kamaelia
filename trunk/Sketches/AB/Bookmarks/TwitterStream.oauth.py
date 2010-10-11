@@ -20,6 +20,7 @@ import httplib
 
 import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
 # The 401 *may* be down to using the same stored received key and secret as the search component, but I would have thought this to be fine
+import urlparse
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -146,29 +147,30 @@ class TwitterStream(threadedcomponent):
             twitopener = urllib2.build_opener(proxyhandler)
             urllib2.install_opener(twitopener)
 
-        params = {
-            'oauth_version': "1.0",
-            'oauth_nonce': oauth.generate_nonce(),
-            'oauth_timestamp': int(time.time()),
-            'user': self.username
-        }
-
-        token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
-        consumer = oauth.Consumer(key=self.consumerkeypair[0],secret=self.consumerkeypair[1])
-
-        params['oauth_token'] = token.key
-        params['oauth_consumer_key'] = consumer.key
-
-        req = oauth.Request(method="GET",url=twitterurl,parameters=params)
-
-        signature_method = oauth.SignatureMethod_HMAC_SHA1()
-        req.sign_request(signature_method, consumer, token)
-
-        params['oauth_signature'] = req.get_parameter('oauth_signature')
-        params['oauth_signature_method'] = req.get_parameter('oauth_signature_method')
 
         while not self.finished():
             if self.dataReady("inbox"):
+
+                params = {
+                    'oauth_version': "1.0",
+                    'oauth_nonce': oauth.generate_nonce(),
+                    'oauth_timestamp': int(time.time()),
+                    'user': self.username
+                }
+
+                token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
+                consumer = oauth.Consumer(key=self.consumerkeypair[0],secret=self.consumerkeypair[1])
+
+                params['oauth_token'] = token.key
+                params['oauth_consumer_key'] = consumer.key
+
+                req = oauth.Request(method="GET",url=twitterurl,parameters=params)
+
+                signature_method = oauth.SignatureMethod_HMAC_SHA1()
+                req.sign_request(signature_method, consumer, token)
+
+                params['oauth_signature'] = req.get_parameter('oauth_signature')
+                params['oauth_signature_method'] = req.get_parameter('oauth_signature_method')
 
                 # Receive keywords and PIDs
                 recvdata = self.recv("inbox")
@@ -191,7 +193,7 @@ class TwitterStream(threadedcomponent):
 
                 # Encode data
                 data = urllib.urlencode(data)
-
+                print data
                 # If using firehose, filtering based on keywords will be carried out AFTER grabbing data
                 # This will be done here rather than by Twitter
                 
@@ -205,15 +207,17 @@ class TwitterStream(threadedcomponent):
                     self.backofftime = 1 # Reset the backoff time
                     print ("Connected to twitter stream. Awaiting data...")
                 except httplib.BadStatusLine, e:
-                    sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e))
+                    sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e) + '\n')
                     # General network error assumed - short backoff
                     self.backofftime += 1
                     if self.backofftime > 16:
                         self.backofftime = 16
                     conn1 = False
                 except urllib2.HTTPError, e:
-                    sys.stderr.write('TwitterStream HTTP error: ' + str(e.code))
-                    sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes')
+                    sys.stderr.write('TwitterStream HTTP error: ' + str(e.code) + '\n')
+                    sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes \n')
+                    if e.code == 401:
+                        sys.stderr.write('TwitterStream HTTP error: Your access tokens may have expired. \n')
                     # Major error assumed - long backoff
                     if e.code > 200:
                         if self.backofftime == 1:
@@ -295,8 +299,10 @@ class TwitterStream(threadedcomponent):
                                 # Reconnection failed - must break out and wait for new keywords
                                 break
                             except urllib2.HTTPError, e:
-                                sys.stderr.write('TwitterStream HTTP error: ' + str(e.code))
-                                sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes')
+                                sys.stderr.write('TwitterStream HTTP error: ' + str(e.code) + '\n')
+                                sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes \n')
+                                if e.code == 401:
+                                    sys.stderr.write('TwitterStream HTTP error: Your access tokens may have expired. \n')
                                 # Major error assumed - long backoff
                                 if e.code > 200:
                                     if self.backofftime == 1:

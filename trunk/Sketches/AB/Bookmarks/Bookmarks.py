@@ -57,7 +57,7 @@ if __name__ == "__main__":
     consumerkeypair = [config['consumerkey'],config['consumersecret']]
 
     # Set OAuth keypair if available
-    if config.has_key('key') & config.has_key('secret'):
+    if config.has_key('key') and config.has_key('secret'):
         keypair = [config['key'],config['secret']]
     else:
         keypair = False
