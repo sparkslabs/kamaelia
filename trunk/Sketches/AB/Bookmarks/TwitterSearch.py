@@ -133,8 +133,8 @@ class PeopleSearch(component):
             twitopener = urllib2.build_opener(proxyhandler)
             urllib2.install_opener(twitopener)
 
-        #headers = {'User-Agent' : "BBC R&D Grabber"}
-        #data = ""
+        headers = {'User-Agent' : "BBC R&D Grabber"}
+        data = None
         
 
         while not self.finished():
@@ -171,6 +171,8 @@ class PeopleSearch(component):
                     try:
                         #conn1 = urllib2.Request(requesturl,data,headers)
                         conn1 = urllib2.urlopen(requesturl)
+                    except httplib.BadStatusLine, e:
+                        conn1 = False
                     except urllib2.HTTPError, e:
                         self.send("HTTP Error: " + str(e.code),"outbox") # Errors get sent back to the requester
                         conn1 = False
@@ -183,11 +185,12 @@ class PeopleSearch(component):
                         headers = conn1.info()
                         headerlist = string.split(str(headers),"\n")
                         for line in headerlist:
-                            splitheader = line.split()
-                            if splitheader[0] == "X-FeatureRateLimit-Remaining:" or splitheader[0] == "X-RateLimit-Remaining:":
-                                print splitheader[0] + " " + str(splitheader[1])
-                                if int(splitheader[1]) < 5:
-                                    self.ratelimited = datetime.today()
+                            if line != "":
+                                splitheader = line.split()
+                                if splitheader[0] == "X-FeatureRateLimit-Remaining:" or splitheader[0] == "X-RateLimit-Remaining:":
+                                    print splitheader[0] + " " + str(splitheader[1])
+                                    if int(splitheader[1]) < 5:
+                                        self.ratelimited = datetime.today()
                         # Grab json format result of people search here
                         try:
                             data = conn1.read()
