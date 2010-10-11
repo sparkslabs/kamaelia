@@ -184,21 +184,21 @@ class TwitterStream(threadedcomponent):
                 pids = recvdata[1]
 
                 # Create POST data
-                data = {"track": ",".join(keywords)}
-                print ("Got keywords: " + urllib.urlencode(data))
+                data = urllib.urlencode({"track": ",".join(keywords)})
+                print ("Got keywords: " + data)
 
-                # Add OAuth parameters to data string
-                for key in params:
-                    data[key] = params[key]
-
-                # Encode data
-                data = urllib.urlencode(data)
-                print data
                 # If using firehose, filtering based on keywords will be carried out AFTER grabbing data
                 # This will be done here rather than by Twitter
                 
                 # Identify the client and add a keep alive message using the same timeout assigned to the socket
-                headers = {'User-Agent' : "BBC R&D Grabber", "Keep-Alive: " : self.timeout, "Connection:" : "Keep-Alive"}
+                headers = {'User-Agent' : "BBC R&D Grabber", "Keep-Alive" : self.timeout, "Connection" : "Keep-Alive"}
+
+                # Add OAuth parameters to headers
+                oauthlist = ""
+                for key in params:
+                    oauthlist += key + "=\"" + str(params[key]) + "\", "
+
+                headers['OAuth'] = oauthlist.rstrip(", ")
 
                 # Connect to Twitter
                 try:
