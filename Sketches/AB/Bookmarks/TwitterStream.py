@@ -67,41 +67,6 @@ class TwitterStream(threadedcomponent):
         else:
             twitopener = urllib2.build_opener(authhandler)
 
-        # Commented out code for incomplete OAuth
-#        if self.keypair == False:
-#            while not self.dataReady("inbox"):
-#                pass # Delay until sure the keypair will be saved
-#
-#        try:
-#            homedir = os.path.expanduser("~")
-#            file = open(homedir + "/twitter-login.conf",'r')
-#            data = cjson.decode(file.read())
-#            self.keypair = [data['key'],data['secret']]
-#        except IOError, e:
-#            print ("Failed to load oauth keys for streaming API - exiting")
-#            sys.exit(0)
-#
-#        params = {
-#            'oauth_version': "1.0",
-#            'oauth_nonce': oauth.generate_nonce(),
-#            'oauth_timestamp': int(time.time()),
-#            'user': self.username
-#        }
-#
-#        token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
-#        consumer = oauth.Consumer(key=self.consumerkeypair[0],secret=self.consumerkeypair[1])
-#
-#        params['oauth_token'] = token.key
-#        params['oauth_consumer_key'] = consumer.key
-#
-#        req = oauth.Request(method="POST",url=twitterurl,parameters=params)
-#
-#        signature_method = oauth.SignatureMethod_HMAC_SHA1()
-#        req.sign_request(signature_method, consumer, token)
-#
-#        params['oauth_signature'] = req.get_parameter('oauth_signature')
-#        params['oauth_signature_method'] = req.get_parameter('oauth_signature_method')
-
         while not self.finished():
             if self.dataReady("inbox"):
 
@@ -136,15 +101,15 @@ class TwitterStream(threadedcomponent):
                     self.backofftime = 1 # Reset the backoff time
                     print ("Connected to twitter stream. Awaiting data...")
                 except httplib.BadStatusLine, e:
-                    sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e))
+                    sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e) + '\n')
                     # General network error assumed - short backoff
                     self.backofftime += 1
                     if self.backofftime > 16:
                         self.backofftime = 16
                     conn1 = False
                 except urllib2.HTTPError, e:
-                    sys.stderr.write('TwitterStream HTTP error: ' + str(e.code))
-                    sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes')
+                    sys.stderr.write('TwitterStream HTTP error: ' + str(e.code) + '\n')
+                    sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes \n')
                     # Major error assumed - long backoff
                     if e.code > 200:
                         if self.backofftime == 1:
@@ -155,14 +120,14 @@ class TwitterStream(threadedcomponent):
                             self.backofftime = 240
                     conn1 = False
                 except urllib2.URLError, e:
-                    sys.stderr.write('TwitterStream URL error: ' + str(e.reason))
+                    sys.stderr.write('TwitterStream URL error: ' + str(e.reason) + '\n')
                     # General network error assumed - short backoff
                     self.backofftime += 1
                     if self.backofftime > 16:
                         self.backofftime = 16
                     conn1 = False
                 except socket.timeout, e:
-                    sys.stderr.write('TwitterStream socket timeout: ' + str(e))
+                    sys.stderr.write('TwitterStream socket timeout: ' + str(e) + '\n')
                     # General network error assumed - short backoff
                     self.backofftime += 1
                     if self.backofftime > 16:
@@ -190,14 +155,14 @@ class TwitterStream(threadedcomponent):
                             self.send([content,pids],"outbox") # Send to data collector / analyser rather than back to requester
                             failed = False
                         except IOError, e:
-                            sys.stderr.write('TwitterStream IO error: ' + str(e))
+                            sys.stderr.write('TwitterStream IO error: ' + str(e) + '\n')
                             failed = True
                         except Axon.AxonExceptions.noSpaceInBox, e:
                             # Ignore data - no space to send out
-                            sys.stderr.write('TwitterStream no space in box error: ' + str(e))
+                            sys.stderr.write('TwitterStream no space in box error: ' + str(e) + '\n')
                             failed = True
                         except socket.timeout, e:
-                            sys.stderr.write('TwitterStream socket timeout: ' + str(e))
+                            sys.stderr.write('TwitterStream socket timeout: ' + str(e) + '\n')
                             # General network error assumed - short backoff
                             self.backofftime += 1
                             if self.backofftime > 16:
@@ -217,7 +182,7 @@ class TwitterStream(threadedcomponent):
                                 self.backofftime = 1
                                 print ("Connected to twitter stream. Awaiting data...")
                             except httplib.BadStatusLine, e:
-                                sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e))
+                                sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e) + '\n')
                                 # General network error assumed - short backoff
                                 self.backofftime += 1
                                 if self.backofftime > 16:
@@ -226,8 +191,8 @@ class TwitterStream(threadedcomponent):
                                 # Reconnection failed - must break out and wait for new keywords
                                 break
                             except urllib2.HTTPError, e:
-                                sys.stderr.write('TwitterStream HTTP error: ' + str(e.code))
-                                sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes')
+                                sys.stderr.write('TwitterStream HTTP error: ' + str(e.code) + '\n')
+                                sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes \n')
                                 # Major error assumed - long backoff
                                 if e.code > 200:
                                     if self.backofftime == 1:
@@ -240,7 +205,7 @@ class TwitterStream(threadedcomponent):
                                 # Reconnection failed - must break out and wait for new keywords
                                 break
                             except urllib2.URLError, e:
-                                sys.stderr.write('TwitterStream URL error: ' + str(e.reason))
+                                sys.stderr.write('TwitterStream URL error: ' + str(e.reason) + '\n')
                                 # General network error assumed - short backoff
                                 self.backofftime += 1
                                 if self.backofftime > 16:
@@ -249,7 +214,7 @@ class TwitterStream(threadedcomponent):
                                 # Reconnection failed - must break out and wait for new keywords
                                 break
                             except socket.timeout, e:
-                                sys.stderr.write('TwitterStream socket timeout: ' + str(e))
+                                sys.stderr.write('TwitterStream socket timeout: ' + str(e) + '\n')
                                 # General network error assumed - short backoff
                                 self.backofftime += 1
                                 if self.backofftime > 16:

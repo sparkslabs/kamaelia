@@ -9,6 +9,8 @@ import time
 import os
 import cjson
 import string
+import httplib
+import sys
 from datetime import datetime,timedelta
 
 import urlparse
@@ -169,15 +171,16 @@ class PeopleSearch(component):
 
                     # Connect to Twitter
                     try:
-                        #conn1 = urllib2.Request(requesturl,data,headers)
-                        conn1 = urllib2.urlopen(requesturl)
+                        req = urllib2.Request(requesturl,data,headers) # Why won't this work?!? Is it trying to POST?
+                        conn1 = urllib2.urlopen(req)
                     except httplib.BadStatusLine, e:
+                        sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
                         conn1 = False
                     except urllib2.HTTPError, e:
-                        self.send("HTTP Error: " + str(e.code),"outbox") # Errors get sent back to the requester
+                        sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
                         conn1 = False
                     except urllib2.URLError, e:
-                        self.send("Connect Error: " + e.reason,"outbox") # Errors get sent back to the requester
+                        sys.stderr.write('TwitterStream URL error: ' + str(e.reason) + '\n')
                         conn1 = False
 
                     if conn1:
@@ -200,7 +203,7 @@ class PeopleSearch(component):
                             except cjson.DecodeError, e:
                                 self.send(dict(),"outbox")
                         except IOError, e:
-                            self.send("Read Error: " + str(e),"outbox") # TODO: FIXME - Errors get sent back to the requester
+                            sys.stderr.write('PeopleSearch IO error: ' + str(e) + '\n')
                         conn1.close()
                 else:
                    print "Twitter search paused - rate limited"
