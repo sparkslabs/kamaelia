@@ -92,7 +92,7 @@ class TwitterStream(threadedcomponent):
                 urllib2.install_opener(twitopener)
                 
                 # Identify the client and add a keep alive message using the same timeout assigned to the socket
-                headers = {'User-Agent' : "BBC R&D Grabber", "Keep-Alive: " : self.timeout, "Connection:" : "Keep-Alive"}
+                headers = {'User-Agent' : "BBC R&D Grabber", "Keep-Alive" : self.timeout, "Connection" : "Keep-Alive"}
 
                 # Connect to Twitter
                 try:
