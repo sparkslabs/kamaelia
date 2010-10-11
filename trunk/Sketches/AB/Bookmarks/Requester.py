@@ -476,8 +476,6 @@ class Requester(threadedcomponent):
                     pass
 
 
-            if self.dataReady("inbox"):
-                print self.recv("inbox")
             oldkeywords = keywords
             # At this point, find the version tags to allow further info finding
             # Then, pass keywords to TwitterStream. DataCollector will pick up the data
