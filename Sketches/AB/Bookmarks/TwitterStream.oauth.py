@@ -10,15 +10,16 @@ import time
 import urllib2
 import urllib
 import sys
-#import os
-#import cjson
+import os
+import cjson
 import socket
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from threading import Timer
 import Axon
 import httplib
 
-#import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
+import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
+# The 401 *may* be down to using the same stored received key and secret as the search component, but I would have thought this to be fine
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -32,11 +33,13 @@ class TwitterStream(threadedcomponent):
         "signal" : "",
     }
 
-    def __init__(self, username, password, proxy = False, reconnect = False, timeout = 120):
+    def __init__(self, username, consumerkeypair, keypair, proxy = False, reconnect = False, timeout = 120):
         super(TwitterStream, self).__init__()
         self.proxy = proxy
         self.username = username
-        self.password = password
+        #self.password = password
+        self.consumerkeypair = consumerkeypair
+        self.keypair = keypair
         # Reconnect on failure?
         self.reconnect = reconnect
         # In theory this won't matter, but add a timeout to be safe anyway
@@ -51,56 +54,118 @@ class TwitterStream(threadedcomponent):
                 self.send(msg, "signal")
                 return True
         return False
+        
+    def getOAuth(self, consumer_key, consumer_secret):
+        # Perform OAuth authentication
+        request_token_url = 'http://api.twitter.com/oauth/request_token'
+        access_token_url = 'http://api.twitter.com/oauth/access_token'
+        authorize_url = 'http://api.twitter.com/oauth/authorize'
+
+        consumer = oauth.Consumer(consumer_key, consumer_secret)
+        client = oauth.Client(consumer)
+
+        resp, content = client.request(request_token_url, "POST")
+        if resp['status'] != '200':
+            raise Exception("Invalid response %s." % resp['status'])
+
+        request_token = dict(urlparse.parse_qsl(content))
+
+        print "Request Token:"
+        print "     - oauth_token        = %s" % request_token['oauth_token']
+        print "     - oauth_token_secret = %s" % request_token['oauth_token_secret']
+        print
+
+        # The user must confirm authorisation so a URL is printed here
+        print "Go to the following link in your browser:"
+        print "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
+        print
+
+        accepted = 'n'
+        # Wait until the user has confirmed authorisation
+        while accepted.lower() == 'n':
+            accepted = raw_input('Have you authorized me? (y/n) ')
+        oauth_verifier = raw_input('What is the PIN? ')
+
+        token = oauth.Token(request_token['oauth_token'],
+            request_token['oauth_token_secret'])
+        token.set_verifier(oauth_verifier)
+        client = oauth.Client(consumer,token)
+
+        resp, content = client.request(access_token_url, "POST", body="oauth_verifier=%s" % oauth_verifier)
+        access_token = dict(urlparse.parse_qsl(content))
+
+        # Access tokens retrieved from Twitter
+        print "Access Token:"
+        print "     - oauth_token        = %s" % access_token['oauth_token']
+        print "     - oauth_token_secret = %s" % access_token['oauth_token_secret']
+        print
+        print "You may now access protected resources using the access tokens above."
+        print
+
+        save = False
+        # Load config to save OAuth keys
+        try:
+            homedir = os.path.expanduser("~")
+            file = open(homedir + "/twitter-login.conf",'r')
+            save = True
+        except IOError, e:
+            print ("Failed to load config file - not saving oauth keys: " + str(e))
+
+        if save:
+            raw_config = file.read()
+
+            file.close()
+
+            # Read config and add new values
+            config = cjson.decode(raw_config)
+            config['key'] = access_token['oauth_token']
+
+            config['secret'] = access_token['oauth_token_secret']
+
+            raw_config = cjson.encode(config)
+
+            # Write out the new config file
+            try:
+                file = open(homedir + "/twitter-login.conf",'w')
+                file.write(raw_config)
+                file.close()
+            except IOError, e:
+                print ("Failed to save oauth keys: " + str(e))
+        
+        return [access_token['oauth_token'], access_token['oauth_token_secret']]
 
     def main(self):
         twitterurl = "http://stream.twitter.com/1/statuses/filter.json"
 
-        # Configure authentication for Twitter - temporary until OAuth implemented
-        passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        passman.add_password(None, twitterurl, self.username, self.password)
-        authhandler = urllib2.HTTPBasicAuthHandler(passman)
+        # Check if OAuth has been done before - if so use the keys from the config file
+        if self.keypair == False:
+            self.keypair = self.getOAuth(self.consumerkeypair[0], self.consumerkeypair[1])
 
-        # Configure proxy and opener
         if self.proxy:
             proxyhandler = urllib2.ProxyHandler({"http" : self.proxy})
-            twitopener = urllib2.build_opener(proxyhandler, authhandler)
-        else:
-            twitopener = urllib2.build_opener(authhandler)
+            twitopener = urllib2.build_opener(proxyhandler)
+            urllib2.install_opener(twitopener)
 
-        # Commented out code for incomplete OAuth
-#        if self.keypair == False:
-#            while not self.dataReady("inbox"):
-#                pass # Delay until sure the keypair will be saved
-#
-#        try:
-#            homedir = os.path.expanduser("~")
-#            file = open(homedir + "/twitter-login.conf",'r')
-#            data = cjson.decode(file.read())
-#            self.keypair = [data['key'],data['secret']]
-#        except IOError, e:
-#            print ("Failed to load oauth keys for streaming API - exiting")
-#            sys.exit(0)
-#
-#        params = {
-#            'oauth_version': "1.0",
-#            'oauth_nonce': oauth.generate_nonce(),
-#            'oauth_timestamp': int(time.time()),
-#            'user': self.username
-#        }
-#
-#        token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
-#        consumer = oauth.Consumer(key=self.consumerkeypair[0],secret=self.consumerkeypair[1])
-#
-#        params['oauth_token'] = token.key
-#        params['oauth_consumer_key'] = consumer.key
-#
-#        req = oauth.Request(method="POST",url=twitterurl,parameters=params)
-#
-#        signature_method = oauth.SignatureMethod_HMAC_SHA1()
-#        req.sign_request(signature_method, consumer, token)
-#
-#        params['oauth_signature'] = req.get_parameter('oauth_signature')
-#        params['oauth_signature_method'] = req.get_parameter('oauth_signature_method')
+        params = {
+            'oauth_version': "1.0",
+            'oauth_nonce': oauth.generate_nonce(),
+            'oauth_timestamp': int(time.time()),
+            'user': self.username
+        }
+
+        token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
+        consumer = oauth.Consumer(key=self.consumerkeypair[0],secret=self.consumerkeypair[1])
+
+        params['oauth_token'] = token.key
+        params['oauth_consumer_key'] = consumer.key
+
+        req = oauth.Request(method="GET",url=twitterurl,parameters=params)
+
+        signature_method = oauth.SignatureMethod_HMAC_SHA1()
+        req.sign_request(signature_method, consumer, token)
+
+        params['oauth_signature'] = req.get_parameter('oauth_signature')
+        params['oauth_signature_method'] = req.get_parameter('oauth_signature_method')
 
         while not self.finished():
             if self.dataReady("inbox"):
@@ -117,14 +182,18 @@ class TwitterStream(threadedcomponent):
                 pids = recvdata[1]
 
                 # Create POST data
-                data = urllib.urlencode({"track": ",".join(keywords)})
-                print ("Got keywords: " + data)
+                data = {"track": ",".join(keywords)}
+                print ("Got keywords: " + urllib.urlencode(data))
+
+                # Add OAuth parameters to data string
+                for key in params:
+                    data[key] = params[key]
+
+                # Encode data
+                data = urllib.urlencode(data)
 
                 # If using firehose, filtering based on keywords will be carried out AFTER grabbing data
                 # This will be done here rather than by Twitter
-
-                # Get ready to grab Twitter data
-                urllib2.install_opener(twitopener)
                 
                 # Identify the client and add a keep alive message using the same timeout assigned to the socket
                 headers = {'User-Agent' : "BBC R&D Grabber", "Keep-Alive: " : self.timeout, "Connection:" : "Keep-Alive"}

@@ -7,8 +7,10 @@
 
 #### NOTE: THIS PROGRAM CURRENTLY NEEDS A PROXY FREE CONNECTION IF OAUTH KEYS NEED REFRESHING
 
-#### NOTE: Error handling is unfinished for HTTP based connections. Currently it purely prints to the screen.
-#### Eventually Twitter and others would welcome an exponential backoff in places.
+### Danger area: Adding OAuth to both Twitter components will result in them both trying to renew the received key and secret
+### By doing this, there is a chance of errors (although will have to try it out to make sure).
+### To avoid this, there needs to be a way to pass received keys and secrets to components needing them before they try to make requests too.
+### Also need to farm out access to config file from OAuth utilising components so they're more generic
 
 import cjson
 import os
