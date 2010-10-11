@@ -169,7 +169,7 @@ class PeopleSearch(component):
 
                     # Connect to Twitter
                     try:
-                        #req = urllib2.Request(requesturl,data,headers)
+                        #conn1 = urllib2.Request(requesturl,data,headers)
                         conn1 = urllib2.urlopen(requesturl)
                     except urllib2.HTTPError, e:
                         self.send("HTTP Error: " + str(e.code),"outbox") # Errors get sent back to the requester
@@ -184,11 +184,10 @@ class PeopleSearch(component):
                         headerlist = string.split(str(headers),"\n")
                         for line in headerlist:
                             splitheader = line.split()
-                            if splitheader[0] == "X-FeatureRateLimit-Remaining:":
+                            if splitheader[0] == "X-FeatureRateLimit-Remaining:" or splitheader[0] == "X-RateLimit-Remaining:":
                                 print splitheader[0] + " " + str(splitheader[1])
                                 if int(splitheader[1]) < 5:
                                     self.ratelimited = datetime.today()
-                                break
                         # Grab json format result of people search here
                         try:
                             data = conn1.read()
