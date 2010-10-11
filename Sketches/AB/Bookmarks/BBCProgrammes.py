@@ -167,7 +167,15 @@ class WhatsOn(component):
                                     pid = programme['programme']['pid']
                                     title =  programme['programme']['display_titles']['title']
                                     # Attempted fix for unicode errors caused
-                                    title = unicode(title,errors='ignore').encode("utf-8")
+                                    if isinstance(title,unicode):
+                                        print title
+                                        try:
+                                            title = unicode(title.decode(),errors='ignore').encode("utf-8")
+                                        except UnicodeEncodeError, e:
+                                            print "Unicode error: ", e
+                                            title = "Unknown - Encoding error"
+                                    else:
+                                        title = unicode(title,errors='ignore').encode("utf-8")
                                     print [pid,title,offset,programme['duration'],programme['start']]
                                     data = [pid,title,offset,programme['duration'],programme['start']]
                                     

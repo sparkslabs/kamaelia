@@ -72,8 +72,7 @@ if __name__ == "__main__":
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
                                 ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API
-                                ("FIREHOSE", "outbox") : ("REQUESTER", "inbox"), # Process errors from streaming API TODO
-                                ("FIREHOSE", "data") : ("COLLECTOR" , "inbox"),
+                                ("FIREHOSE", "outbox") : ("COLLECTOR" , "inbox"),
                                 #("TWOWAY", "outbox") : ("COLLECTOR", "inbox"), # Collect data from streaming API
                                 ("REQUESTER", "search") : ("SEARCH", "inbox"), # Perform Twitter people search based on keywords
                                 ("SEARCH", "outbox") : ("REQUESTER", "search"), # Return Twitter people search results
