@@ -164,7 +164,7 @@ class TwitterStream(threadedcomponent):
                 params['oauth_token'] = token.key
                 params['oauth_consumer_key'] = consumer.key
 
-                req = oauth.Request(method="GET",url=twitterurl,parameters=params)
+                req = oauth.Request(method="POST",url=twitterurl,parameters=params)
 
                 signature_method = oauth.SignatureMethod_HMAC_SHA1()
                 req.sign_request(signature_method, consumer, token)
@@ -175,6 +175,8 @@ class TwitterStream(threadedcomponent):
                 # Receive keywords and PIDs
                 recvdata = self.recv("inbox")
                 keywords = recvdata[0]
+
+                requesturl = req.to_url()
 
                 # Abide by Twitter's keyword limit of 400
                 if len(keywords) > 400:
@@ -199,10 +201,11 @@ class TwitterStream(threadedcomponent):
                     oauthlist += key + "=\"" + str(params[key]) + "\", "
 
                 headers['OAuth'] = oauthlist.rstrip(", ")
-
+                print headers
+                print requesturl
                 # Connect to Twitter
                 try:
-                    req = urllib2.Request(twitterurl,data,headers)
+                    req = urllib2.Request(requesturl,data,headers)
                     conn1 = urllib2.urlopen(req,None,self.timeout)
                     self.backofftime = 1 # Reset the backoff time
                     print ("Connected to twitter stream. Awaiting data...")
