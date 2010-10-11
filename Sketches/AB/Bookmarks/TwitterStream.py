@@ -4,6 +4,7 @@
 # - Grabs JSON data based on chosen keywords
 # - Currently also relays PIDs - this really needs moving elsewhere
 # TODO: Add watching for in-stream rate limiting / error messages
+# - Doesn't currently honour tweet deletion messages (TODO)
 
 import time
 import urllib2
@@ -109,6 +110,7 @@ class TwitterStream(threadedcomponent):
 
                 # Abide by Twitter's keyword limit of 400
                 if len(keywords) > 400:
+                    sys.stderr.write('TwitterStream keyword list too long - sending shortened list')
                     keywords = keywords[0:400:1]
                     
                 pids = recvdata[1]
@@ -141,6 +143,7 @@ class TwitterStream(threadedcomponent):
                     conn1 = False
                 except urllib2.HTTPError, e:
                     sys.stderr.write('TwitterStream HTTP error: ' + str(e.code))
+                    sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes')
                     # Major error assumed - long backoff
                     if e.code > 200:
                         if self.backofftime == 1:
@@ -223,6 +226,7 @@ class TwitterStream(threadedcomponent):
                                 break
                             except urllib2.HTTPError, e:
                                 sys.stderr.write('TwitterStream HTTP error: ' + str(e.code))
+                                sys.stderr.write('TwitterStream HTTP error: See http://dev.twitter.com/pages/streaming_api_response_codes')
                                 # Major error assumed - long backoff
                                 if e.code > 200:
                                     if self.backofftime == 1:

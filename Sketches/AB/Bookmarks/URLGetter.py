@@ -4,7 +4,7 @@
 # Gets passed a list in the format: [url,username,password] where username and password are optional
 # Returns a list in the format: ["OK",data] or ["Error", "Error string"]
 # Set up for GET requests only at the moment - can be easily modified for others later
-# TODO: Build in the facility to handle a second urllib connection so they overlap during diconnect periods?
+# TODO: Build in the facility to handle a second urllib connection so they overlap during disconnect periods?
 
 # May change to use httplib instead to better handle different types of requests
 
