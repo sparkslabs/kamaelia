@@ -19,6 +19,7 @@ import Axon
 import httplib
 
 #import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
+#import urlparse
 
 from Axon.ThreadedComponent import threadedcomponent
 
