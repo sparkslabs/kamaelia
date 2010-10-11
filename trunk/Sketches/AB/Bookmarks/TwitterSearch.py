@@ -136,7 +136,7 @@ class PeopleSearch(component):
             urllib2.install_opener(twitopener)
 
         headers = {'User-Agent' : "BBC R&D Grabber"}
-        data = None
+        postdata = None
         
 
         while not self.finished():
@@ -171,8 +171,8 @@ class PeopleSearch(component):
 
                     # Connect to Twitter
                     try:
-                        req = urllib2.Request(requesturl,data,headers) # Why won't this work?!? Is it trying to POST?
-                        conn1 = urllib2.urlopen(req)
+                        req = urllib2.Request(requesturl,postdata,headers) # Why won't this work?!? Is it trying to POST?
+                        conn1 = urllib2.urlopen(requesturl)
                     except httplib.BadStatusLine, e:
                         sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
                         conn1 = False
