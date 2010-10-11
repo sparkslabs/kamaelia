@@ -204,7 +204,10 @@ class PeopleSearch(component):
                                 self.send(dict(),"outbox")
                         except IOError, e:
                             sys.stderr.write('PeopleSearch IO error: ' + str(e) + '\n')
+                            self.send(dict(),"outbox")
                         conn1.close()
+                    else:
+                        self.send(dict(),"outbox")
                 else:
                    print "Twitter search paused - rate limited"
                    self.send(dict(),"outbox")
