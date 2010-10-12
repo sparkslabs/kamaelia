@@ -53,7 +53,7 @@ def index(request):
             offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
             offset = timedelta(hours=offset.hour)
             progdate = progdate.replace(tzinfo=None)
-            progend = progdate + timedelta(seconds=data[0].duration)
+            progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
             datenow = datetime.utcnow() + offset
             if datenow <= progend:
                 opacity = normaliser * data[0].stdevtweets
@@ -83,7 +83,7 @@ def index(request):
             offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
             offset = timedelta(hours=offset.hour)
             progdate = progdate.replace(tzinfo=None)
-            progend = progdate + timedelta(seconds=data[0].duration)
+            progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
             datenow = datetime.utcnow() + offset
             if datenow <= progend:
                 opacity = normaliser * data[0].stdevtweets
