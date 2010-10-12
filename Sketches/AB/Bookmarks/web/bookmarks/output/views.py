@@ -20,10 +20,11 @@ header = '<html><head><title>Social Bookmarks</title><script type="text/javascri
 footer = '</div></div></body></html>'
 
 def index(request):
+    # TODO: This page is now horribly inefficient - ugh
     currentdate = date.today()
     output = header
     output += "<meta http-equiv='refresh' content='30'>"
-    output += "<style type=\"text/css\">a:link, a:visited, a:active, a:hover { color: inherit; }</style>"
+    output += "<style type=\"text/css\">.box a:link, .box a:visited, .box a:active, .box a:hover { color: inherit; }</style>"
     # Prevent division by zero later on...
     #maxtweets = 1
     largeststdev = 1
@@ -66,10 +67,10 @@ def index(request):
                 #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data[0].pid + "/\" style=\"text-decoration: none\">" + str(data[0].totaltweets) + "</a></div></div>"
+                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data[0].pid + "/\" style=\"text-decoration: none\">" + str(data[0].totaltweets) + "</a></div></div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "Off Air</div>"
+                output += "No Data</div>"
         else:
             output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
@@ -96,15 +97,15 @@ def index(request):
                 #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data[0].pid + "/\" style=\"text-decoration: none\">" + str(data[0].totaltweets) + "</a></div></div>"
+                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data[0].pid + "/\" style=\"text-decoration: none\">" + str(data[0].totaltweets) + "</a></div></div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "Off Air</div>"
+                output += "No Data</div>"
         else:
             output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
         
-    output += "</div>" + footer
+    output += "<br /><br /></div><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
 
     return HttpResponse(output)
 
