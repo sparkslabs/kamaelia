@@ -20,7 +20,11 @@ def index(request):
     currentdate = date.today()
     output = header
     output += "<meta http-equiv='refresh' content='30'>"
-    maxtweets = 1
+
+    # Prevent division by zero later on...
+    #maxtweets = 1
+    largeststdev = 1
+
     # Identify the total tweets for each current programme (provided the grabber is still running)
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
@@ -29,8 +33,10 @@ def index(request):
             progdate = progdate.replace(tzinfo=None)
             progdate = progdate + timedelta(seconds=data[0].duration)
             datenow = datetime.now()
-            if data[0].totaltweets > maxtweets and datenow <= progdate:
-                maxtweets = data[0].totaltweets
+            #if data[0].totaltweets > maxtweets and datenow <= progdate:
+            #    maxtweets = data[0].totaltweets
+            if data[0].stdevtweets > largeststdev and datenow <= progdate:
+                largeststdev = data[0].stdevtweets
     for channel in radiochannels:
         data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
         if len(data) > 0:
@@ -38,10 +44,13 @@ def index(request):
             progdate = progdate.replace(tzinfo=None)
             progdate = progdate + timedelta(seconds=data[0].duration)
             datenow = datetime.now()
-            if data[0].totaltweets > maxtweets and datenow <= progdate:
-                maxtweets = data[0].totaltweets
+            #if data[0].totaltweets > maxtweets and datenow <= progdate:
+            #    maxtweets = data[0].totaltweets
+            if data[0].stdevtweets > largeststdev and datenow <= progdate:
+                largeststdev = data[0].stdevtweets
 
-    normaliser = 1/float(maxtweets)
+    #normaliser = 1/float(maxtweets)
+    normaliser = 1/float(largeststdev)
 
     output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
@@ -52,7 +61,7 @@ def index(request):
             progdate = progdate + timedelta(seconds=data[0].duration)
             datenow = datetime.now()
             if datenow <= progdate:
-                opacity = normaliser * data[0].totaltweets
+                opacity = normaliser * data[0].stdevtweets
                 #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
                     fontcolour = "#000000"
@@ -79,7 +88,7 @@ def index(request):
             progdate = progdate + timedelta(seconds=data[0].duration)
             datenow = datetime.now()
             if datenow <= progdate:
-                opacity = normaliser * data[0].totaltweets
+                opacity = normaliser * data[0].stdevtweets
                 #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
                     fontcolour = "#000000"
