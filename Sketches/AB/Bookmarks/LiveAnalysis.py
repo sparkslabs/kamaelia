@@ -63,9 +63,10 @@ if __name__ == "__main__":
             dbtime = parse(tweettime)
             dbtime = dbtime.replace(tzinfo=None)
             dbtime = dbtime.replace(second=0)
+            dbtimestamp = time.mktime(dbtime.timetuple())
             print "Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
             print "'" + tweettext + "'"
-            cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,expectedstart FROM programmes WHERE pid = %s""",(pid))
+            cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,expectedstart,timestamp,utcoffset FROM programmes WHERE pid = %s""",(pid))
             progdata = cursor.fetchone()
             duration = progdata[0]
             totaltweets = progdata[1]
@@ -76,11 +77,13 @@ if __name__ == "__main__":
             stdevtweets = progdata[5]
             timediff = progdata[6]
             expectedstart = progdata[7]
+            timestamp = progdata[8]
+            utcoffset = progdata[9]
             cursor.execute("""SELECT did,totaltweets FROM analyseddata WHERE pid = %s AND datetime = %s""",(pid,dbtime))
             analyseddata = cursor.fetchone()
             if analyseddata == None: # No tweets yet recorded for this minute
                 minutetweets = 1
-                cursor.execute("""INSERT INTO analyseddata (pid,datetime,wordfreqexpected,wordfrequnexpected,totaltweets) VALUES (%s,%s,%s,%s,%s)""", (pid,dbtime,0,0,minutetweets))
+                cursor.execute("""INSERT INTO analyseddata (pid,datetime,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,dbtime,0,0,minutetweets,dbtimestamp))
             else:
                 did = analyseddata[0]
                 minutetweets = analyseddata[1] # Get current number of tweets for this minute
