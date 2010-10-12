@@ -2,7 +2,12 @@ from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata
 from datetime import timedelta,datetime
 from dateutil.parser import parse
-#TODO: Add API summary output showing current programmes for each channel with an interestingness rating based on the main channels page
+
+tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
+
+radiochannels = ["radio1","1xtra","radio2","radio3","radio4","5live","sportsextra","6music","radio7","asiannetwork","worldservice"]
+
+allchannels = tvchannels + radiochannels
 
 class ProgrammesHandler(BaseHandler):
     allowed_methods = ('GET',)
@@ -84,4 +89,37 @@ class ProgrammesHandler(BaseHandler):
 
         else:
             retdata['status'] = "ERROR"
+        return retdata
+
+class SummaryHandler(BaseHandler):
+    allowed_methods = ('GET',)
+
+    def read(self, request):
+        retdata = {"channels" : list()}
+
+        # Prevent division by zero later on...
+        largeststdev = 1
+
+        for channel in allchannels:
+            retdata['channels'].append({"channel" : channel})
+            data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+            if len(data) > 0:
+                progdate = parse(data[0].expectedstart)
+                progdate = progdate.replace(tzinfo=None)
+                progdate = progdate + timedelta(seconds=data[0].duration)
+                datenow = datetime.now()
+                if datenow <= progdate:
+                    retdata['channels'][len(retdata['channels']) - 1]['pid'] = data[0].pid
+                    retdata['channels'][len(retdata['channels']) - 1]['stdev'] = data[0].stdevtweets
+                    retdata['channels'][len(retdata['channels']) - 1]['interestingness'] = 0
+                if data[0].stdevtweets > largeststdev and datenow <= progdate:
+                    largeststdev = data[0].stdevtweets
+
+        normaliser = 1/float(largeststdev)
+        for channelgroup in retdata['channels']:
+            if channelgroup.has_key('stdev'):
+                channelgroup['interestingness'] = channelgroup['stdev'] * normaliser
+                channelgroup.pop('stdev')
+        retdata['status'] = "OK"
+
         return retdata
