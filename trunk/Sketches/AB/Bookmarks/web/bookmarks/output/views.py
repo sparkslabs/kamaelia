@@ -20,7 +20,7 @@ def index(request):
     currentdate = date.today()
     output = header
     output += "<meta http-equiv='refresh' content='30'>"
-
+    output += "<style type=\"text/css\">a:link, a:visited, a:active, a:hover { color: inherit; }</style>"
     # Prevent division by zero later on...
     #maxtweets = 1
     largeststdev = 1
@@ -71,7 +71,7 @@ def index(request):
                 #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\">" + str(data[0].totaltweets) + "</div></div>"
+                output += "<div id=\"" + channel + "\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data[0].pid + "/\" style=\"text-decoration: none\">" + str(data[0].totaltweets) + "</a></div></div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "Off Air</div>"
@@ -98,7 +98,7 @@ def index(request):
                 #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\">" + str(data[0].totaltweets) + "</div></div>"
+                output += "<div id=\"" + channel + "\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data[0].pid + "/\" style=\"text-decoration: none\">" + str(data[0].totaltweets) + "</a></div></div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "Off Air</div>"
