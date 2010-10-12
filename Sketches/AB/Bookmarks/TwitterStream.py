@@ -10,6 +10,7 @@ import time
 import urllib2
 import urllib
 import sys
+from datetime import datetime
 #import os
 #import cjson
 import socket
@@ -100,7 +101,7 @@ class TwitterStream(threadedcomponent):
                     req = urllib2.Request(twitterurl,data,headers)
                     conn1 = urllib2.urlopen(req,None,self.timeout)
                     self.backofftime = 1 # Reset the backoff time
-                    print ("Connected to twitter stream. Awaiting data...")
+                    print (str(datetime.utcnow()) + " Connected to twitter stream. Awaiting data...")
                 except httplib.BadStatusLine, e:
                     sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e) + '\n')
                     # General network error assumed - short backoff
@@ -171,17 +172,17 @@ class TwitterStream(threadedcomponent):
                             failed = True
                         if failed == True and self.reconnect == True:
                             # Reconnection procedure
-                            print ("Streaming API connection failed.")
+                            print (str(datetime.utcnow()) + " Streaming API connection failed.")
                             conn1.close()
                             if self.backofftime > 1:
                                 print ("Backing off for " + str(self.backofftime) + " seconds.")
                             time.sleep(self.backofftime)
-                            print ("Attempting reconnection...")
+                            print (str(datetime.utcnow()) + " Attempting reconnection...")
                             try:
                                 req = urllib2.Request(twitterurl,data,headers)
                                 conn1 = urllib2.urlopen(req,None,self.timeout)
                                 self.backofftime = 1
-                                print ("Connected to twitter stream. Awaiting data...")
+                                print (str(datetime.utcnow()) + " Connected to twitter stream. Awaiting data...")
                             except httplib.BadStatusLine, e:
                                 sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e) + '\n')
                                 # General network error assumed - short backoff
@@ -223,10 +224,10 @@ class TwitterStream(threadedcomponent):
                                 conn1 = False
                                 # Reconnection failed - must break out and wait for new keywords
                                 break
-                    print ("Disconnecting from twitter stream.")
+                    print (str(datetime.utcnow()) + " Disconnecting from twitter stream.")
                     if conn1:
                         conn1.close()
                     if self.backofftime > 1:
                         print ("Backing off for " + str(self.backofftime) + " seconds.")
-                    time.sleep(self.backofftime)
+                        time.sleep(self.backofftime)
     
