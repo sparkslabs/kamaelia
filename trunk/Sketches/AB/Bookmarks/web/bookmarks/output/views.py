@@ -257,18 +257,20 @@ def programme(request,pid):
                 maxx = max(xlist)
 
                 mainwidth = int(1000/(maxx+1)) * (maxx + 1)
-                blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 100px; width: " + str(mainwidth) + "px\">"
+                # blockgraph = main gradient based output
+                # blockgraph2 = iPlayer bookmarks selection
+                # blockgraph3 = raw tweets selection
+                blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 50px; width: " + str(mainwidth) + "px\">"
+                blockgraph2 = "<div style=\"border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
+                blockgraph3 = "<div style=\"border-bottom: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
                 width = int(1000/(maxx+1))
                 for min in xlist:
                     if tweetmins.has_key(str(min)):
                         opacity = float(tweetmins[str(min)]) / maxy
                     else:
                         opacity = 0
-                    blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 100px; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
-                blockgraph += "</div>"
+                    blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
-                blockgraph2 = "<div style=\"border-bottom: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
-                for min in xlist:
                     if min in bookmarks and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
                         blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
                         lastbookmark = min
@@ -276,7 +278,12 @@ def programme(request,pid):
                         blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
                     else:
                         blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
+
+                    blockgraph3 += "<a href=\"notdoneyet FIXME TODO\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+
+                blockgraph += "</div>"
                 blockgraph2 += "</div>"
+                blockgraph3 += "</div>"
 
                 if mainwidth > 1000:
                     mainwidth = 1000
@@ -293,6 +300,7 @@ def programme(request,pid):
                 output += "<br /><img src=\"" + graph.get_url() + "\"><br /><br />"
                 output += blockgraph
                 output += blockgraph2
+                output += blockgraph3
                 #output += appender
             else:
                 output += "<br />Not enough data to generate statistics.<br />"
@@ -307,7 +315,7 @@ def programme(request,pid):
         output += "<br /><br /><div id=\"rawtweets\" style=\"display: none; font-size: 9pt\">"
         for tweet in rawtweets:
             output += "<br /><strong>" + tweet.datetime + ":</strong> " + tweet.text
-        output += "</div>"
+        #output += "</div>"
     else:
         output += "<br />Database consistency error - somehow a primary key appears twice. The world may have ended."
         output += "<br /><br /><a href=\"/\">Back to index</a>"

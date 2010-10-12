@@ -61,9 +61,9 @@ if __name__ == "__main__":
             tweettext = result[3]
             tweetuser = result[4]
             dbtime = parse(tweettime)
-            dbtime = dbtime.replace(tzinfo=None)
             dbtime = dbtime.replace(second=0)
             dbtimestamp = time.mktime(dbtime.timetuple())
+            dbtime = dbtime.replace(tzinfo=None)
             print "Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
             print "'" + tweettext + "'"
             cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,expectedstart,timestamp,utcoffset FROM programmes WHERE pid = %s""",(pid))
