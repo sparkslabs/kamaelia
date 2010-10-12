@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 04, 2010 at 09:59 AM
+-- Generation Time: Oct 12, 2010 at 09:34 AM
 -- Server version: 5.1.41
 -- PHP Version: 5.3.2-1ubuntu4.5
 
@@ -29,12 +29,13 @@ CREATE TABLE IF NOT EXISTS `analyseddata` (
   `did` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
   `datetime` varchar(100) NOT NULL,
+  `timestamp` double NOT NULL,
   `wordfreqexpected` varchar(500) NOT NULL,
   `wordfrequnexpected` varchar(500) NOT NULL,
   `totaltweets` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`did`),
   KEY `pid_refs_pid_5901525b` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=50218 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=81043 ;
 
 -- --------------------------------------------------------
 
@@ -49,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `keywords` (
   `type` varchar(100) NOT NULL,
   PRIMARY KEY (`uid`),
   KEY `pid_refs_pid_38b0e356` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27863 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=42336 ;
 
 -- --------------------------------------------------------
 
@@ -62,6 +63,8 @@ CREATE TABLE IF NOT EXISTS `programmes` (
   `channel` varchar(20) NOT NULL,
   `title` varchar(200) CHARACTER SET utf8 NOT NULL,
   `expectedstart` varchar(100) NOT NULL,
+  `timestamp` double NOT NULL,
+  `utcoffset` int(11) NOT NULL DEFAULT '0',
   `timediff` int(11) NOT NULL DEFAULT '0',
   `duration` int(11) NOT NULL DEFAULT '0',
   `imported` tinyint(1) NOT NULL DEFAULT '0',
@@ -84,10 +87,11 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   `tid` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
   `datetime` varchar(100) NOT NULL,
+  `timestamp` double NOT NULL,
   `text` varchar(200) CHARACTER SET utf8 NOT NULL,
   `user` varchar(200) NOT NULL,
   `analysed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`tid`),
   KEY `pid_refs_pid_458415f9` (`pid`),
   KEY `ANALYSED` (`analysed`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=357821 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=498431 ;

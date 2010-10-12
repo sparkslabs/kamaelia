@@ -8,6 +8,8 @@ import time
 import MySQLdb
 import cjson
 import string
+#from datetime import time
+from dateutil.parser import parse
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -72,7 +74,8 @@ class DataCollector(threadedcomponent):
                                             cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
-                                                cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
+                                                timestamp = time.mktime(parse(newdata['created_at']).timetuple())
+                                                cursor.execute("""INSERT INTO rawdata (pid,datetime,timestamp,text,user) VALUES (%s,%s,%s,%s,%s)""", (pid,newdata['created_at'],timestamp,newdata['text'],newdata['user']['screen_name']))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
                                                 print ("Duplicate user for current minute - ignoring")
@@ -84,7 +87,8 @@ class DataCollector(threadedcomponent):
                                         cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
                                         if cursor.fetchone() == None:
                                             print ("Storing tweet for pid " + pid)
-                                            cursor.execute("""INSERT INTO rawdata (pid,datetime,text,user) VALUES (%s,%s,%s,%s)""", (pid,newdata['created_at'],newdata['text'],newdata['user']['screen_name']))
+                                            timestamp = time.mktime(parse(newdata['created_at']).timetuple())
+                                            cursor.execute("""INSERT INTO rawdata (pid,datetime,timestamp,text,user) VALUES (%s,%s,%s,%s,%s)""", (pid,newdata['created_at'],timestamp,newdata['text'],newdata['user']['screen_name']))
                                             break # Break out of this loop and back to check the same tweet against the next programme
                                         else:
                                             print ("Duplicate user for current minute - ignoring")
