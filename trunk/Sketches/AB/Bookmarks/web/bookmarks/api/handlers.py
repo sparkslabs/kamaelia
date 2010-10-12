@@ -2,6 +2,7 @@ from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata
 from datetime import timedelta,datetime
 from dateutil.parser import parse
+#TODO: Add API summary output showing current programmes for each channel with an interestingness rating based on the main channels page
 
 class ProgrammesHandler(BaseHandler):
     allowed_methods = ('GET',)

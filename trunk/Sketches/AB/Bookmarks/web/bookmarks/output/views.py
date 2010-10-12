@@ -4,10 +4,13 @@ from bookmarks.output.models import programmes,analyseddata,rawdata
 from datetime import date,timedelta,datetime
 from dateutil.parser import parse
 from pygooglechart import SimpleLineChart, Axis #lc
+#TODO: Replace ugly meta refresh tags with AJAX
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
             
 radiochannels = ["radio1","1xtra","radio2","radio3","radio4","5live","sportsextra","6music","radio7","asiannetwork","worldservice"]
+
+allchannels = tvchannels + radiochannels
 
 header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="/media/jquery/jquery.min.js"></script>\
             </head><body style="margin: 0px"><div style="background-color: #FFFFFF; position: absolute; width: 100%; height: 100%">\
@@ -26,18 +29,7 @@ def index(request):
     largeststdev = 1
 
     # Identify the total tweets for each current programme (provided the grabber is still running)
-    for channel in tvchannels:
-        data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
-        if len(data) > 0:
-            progdate = parse(data[0].expectedstart)
-            progdate = progdate.replace(tzinfo=None)
-            progdate = progdate + timedelta(seconds=data[0].duration)
-            datenow = datetime.now()
-            #if data[0].totaltweets > maxtweets and datenow <= progdate:
-            #    maxtweets = data[0].totaltweets
-            if data[0].stdevtweets > largeststdev and datenow <= progdate:
-                largeststdev = data[0].stdevtweets
-    for channel in radiochannels:
+    for channel in allchannels:
         data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
         if len(data) > 0:
             progdate = parse(data[0].expectedstart)
