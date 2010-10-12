@@ -23,7 +23,7 @@ def index(request):
     # TODO: This page is now horribly inefficient - ugh
     currentdate = date.today()
     output = header
-    output += "<meta http-equiv='refresh' content='30'>"
+    output += "<meta http-equiv='refresh' content='60'>"
     output += "<style type=\"text/css\">.box a:link, .box a:visited, .box a:active, .box a:hover { color: inherit; }</style>"
     # Prevent division by zero later on...
     #maxtweets = 1
@@ -193,6 +193,7 @@ def programme(request,pid):
         output += "<strong>" + data[0].title + "</strong><br />"
         output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
         output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
+        output += "<br />Total tweets: " + str(data[0].totaltweets)
         #if data[0].imported == 0:
         #    output += "<br />Data for this programme has not been flagged as imported."
         #    output += "<br />- This may indicate that the programme is yet to finish."
@@ -243,7 +244,7 @@ def programme(request,pid):
                 if not tweetmins.has_key(str(playertimemin)):
                     tweetmins[str(playertimemin)] = int(minute.totaltweets)
             if len(tweetmins) > 0:
-                output += "<br />Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
+                output += " - Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
                 xlist = range(0,data[0].duration/60)
                 ylist = list()
                 for min in xlist:
