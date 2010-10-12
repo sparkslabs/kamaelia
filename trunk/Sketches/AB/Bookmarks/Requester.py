@@ -12,7 +12,8 @@ import cjson
 import os
 import string
 import MySQLdb
-from datetime import date
+from datetime import date, datetime
+from dateutil.parser import parse
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -407,7 +408,12 @@ class Requester(threadedcomponent):
                     cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,self.channel))
                     cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                     if cursor.fetchone() == None:
-                        cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,self.channel))
+                        progdate = parse(expectedstart)
+                        tz = progdate.tzinfo
+                        utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
+                        utcoffset = utcoffset.hour * 60 * 60
+                        timestamp = time.mktime(progdate.timetuple()) - utcoffset
+                        cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,timestamp,utcoffset,self.channel))
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywords[word]))
                     keywords = list()
@@ -447,7 +453,12 @@ class Requester(threadedcomponent):
                         cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,channel))
                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                         if cursor.fetchone() == None:
-                            cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,channel))
+                            progdate = parse(expectedstart)
+                            tz = progdate.tzinfo
+                            utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
+                            utcoffset = utcoffset.hour * 60 * 60
+                            timestamp = time.mktime(progdate.timetuple()) - utcoffset
+                            cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,timestamp,utcoffset,channel))
                             for word in keywordappender:
                                 cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywordappender[word]))
 
