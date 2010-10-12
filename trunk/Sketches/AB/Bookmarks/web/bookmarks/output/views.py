@@ -19,15 +19,86 @@ footer = '</div></div></body></html>'
 def index(request):
     currentdate = date.today()
     output = header
-
-    output += "<h2>TV</h2>"
+    output += "<meta http-equiv='refresh' content='30'>"
+    maxtweets = 1
+    # Identify the total tweets for each current programme (provided the grabber is still running)
     for channel in tvchannels:
-        output += "<a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a> "
-    output += "<br /><h2>Radio</h2>"
+        data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+        if len(data) > 0:
+            progdate = parse(data[0].expectedstart)
+            progdate = progdate.replace(tzinfo=None)
+            progdate = progdate + timedelta(seconds=data[0].duration)
+            datenow = datetime.now()
+            if data[0].totaltweets > maxtweets and datenow <= progdate:
+                maxtweets = data[0].totaltweets
     for channel in radiochannels:
-        output += "<a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a> "
+        data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+        if len(data) > 0:
+            progdate = parse(data[0].expectedstart)
+            progdate = progdate.replace(tzinfo=None)
+            progdate = progdate + timedelta(seconds=data[0].duration)
+            datenow = datetime.now()
+            if data[0].totaltweets > maxtweets and datenow <= progdate:
+                maxtweets = data[0].totaltweets
+
+    normaliser = 1/float(maxtweets)
+
+    output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
+    for channel in tvchannels:
+        data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+        if len(data) > 0:
+            progdate = parse(data[0].expectedstart)
+            progdate = progdate.replace(tzinfo=None)
+            progdate = progdate + timedelta(seconds=data[0].duration)
+            datenow = datetime.now()
+            if datenow <= progdate:
+                opacity = normaliser * data[0].totaltweets
+                #fontval = str(int(255 * opacity))
+                if opacity < 0.5:
+                    fontcolour = "#000000"
+                else:
+                    fontcolour = "#FFFFFF"
+                bgval = str(int(255 - (255 * opacity)))
+                #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
+                bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
+                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "<div id=\"" + channel + "\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\">" + str(data[0].totaltweets) + "</div></div>"
+            else:
+                output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "Off Air</div>"
+        else:
+            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+            output += "No Data</div>"
+
+    output += "<br /><br /></div><br /><br /><div style=\"display: inline; position: relative\"><h2>Radio</h2>"
+    for channel in radiochannels:
+        data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+        if len(data) > 0:
+            progdate = parse(data[0].expectedstart)
+            progdate = progdate.replace(tzinfo=None)
+            progdate = progdate + timedelta(seconds=data[0].duration)
+            datenow = datetime.now()
+            if datenow <= progdate:
+                opacity = normaliser * data[0].totaltweets
+                #fontval = str(int(255 * opacity))
+                if opacity < 0.5:
+                    fontcolour = "#000000"
+                else:
+                    fontcolour = "#FFFFFF"
+                bgval = str(int(255 - (255 * opacity)))
+                #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
+                bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
+                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "<div id=\"" + channel + "\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\">" + str(data[0].totaltweets) + "</div></div>"
+            else:
+                output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "Off Air</div>"
+        else:
+            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+            output += "No Data</div>"
         
-    output += footer
+    output += "</div>" + footer
+
     return HttpResponse(output)
 
 def channel(request,channel,year=0,month=0,day=0):
