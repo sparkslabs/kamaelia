@@ -49,10 +49,13 @@ def index(request):
         data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
         if len(data) > 0:
             progdate = parse(data[0].expectedstart)
+            tz = progdate.tzinfo
+            offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
+            offset = timedelta(hours=offset.hour)
             progdate = progdate.replace(tzinfo=None)
-            progdate = progdate + timedelta(seconds=data[0].duration)
-            datenow = datetime.now()
-            if datenow <= progdate:
+            progend = progdate + timedelta(seconds=data[0].duration)
+            datenow = datetime.utcnow() + offset
+            if datenow <= progend:
                 opacity = normaliser * data[0].stdevtweets
                 #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
@@ -76,10 +79,13 @@ def index(request):
         data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
         if len(data) > 0:
             progdate = parse(data[0].expectedstart)
+            tz = progdate.tzinfo
+            offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
+            offset = timedelta(hours=offset.hour)
             progdate = progdate.replace(tzinfo=None)
-            progdate = progdate + timedelta(seconds=data[0].duration)
-            datenow = datetime.now()
-            if datenow <= progdate:
+            progend = progdate + timedelta(seconds=data[0].duration)
+            datenow = datetime.utcnow() + offset
+            if datenow <= progend:
                 opacity = normaliser * data[0].stdevtweets
                 #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
