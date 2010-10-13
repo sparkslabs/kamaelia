@@ -167,15 +167,17 @@ class WhatsOn(component):
                                     pid = programme['programme']['pid']
                                     title =  programme['programme']['display_titles']['title']
                                     # Attempted fix for unicode errors caused
-                                    if isinstance(title,unicode):
-                                        print title
-                                        try:
-                                            title = unicode(title.decode(),errors='ignore').encode("utf-8")
-                                        except UnicodeEncodeError, e:
-                                            print "Unicode error: ", e
-                                            title = "Unknown - Encoding error"
-                                    else:
-                                        title = unicode(title,errors='ignore').encode("utf-8")
+                                    if title.isdigit():
+                                        title = str(title)
+#                                    if isinstance(title,unicode):
+#                                        print title
+#                                        try:
+#                                            title = unicode(title.decode(),errors='ignore').encode("utf-8")
+#                                        except UnicodeEncodeError, e:
+#                                            print "Unicode error: ", e
+#                                            title = "Unknown - Encoding error"
+#                                    else:
+#                                        title = unicode(title,errors='ignore').encode("utf-8")
                                     print [pid,title,offset,programme['duration'],programme['start']]
                                     data = [pid,title,offset,programme['duration'],programme['start']]
                                     
@@ -195,7 +197,17 @@ class WhatsOn(component):
                                     pid = programme['programme']['pid']
                                     title =  programme['programme']['display_titles']['title']
                                     # Attempted fix for unicode errors caused
-                                    title = unicode(title,errors='ignore').encode("utf-8")
+                                    if title.isdigit():
+                                        title = str(title)
+#                                    if isinstance(title,unicode):
+#                                        print title
+#                                        try:
+#                                            title = unicode(title.decode(),errors='ignore').encode("utf-8")
+#                                        except UnicodeEncodeError, e:
+#                                            print "Unicode error: ", e
+#                                            title = "Unknown - Encoding error"
+#                                    else:
+#                                        title = unicode(title,errors='ignore').encode("utf-8")
                                     # Has to assume no offset as it knows no better
                                     print [pid,title,0,programme['duration'],programme['start']]
                                     data = [pid,title,0,programme['duration'],programme['start']]
