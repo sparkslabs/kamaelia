@@ -180,6 +180,10 @@ class TwitterStream(threadedcomponent):
                             if self.backofftime > 16:
                                 self.backofftime = 16
                             failed = True
+                        except TypeError, e:
+                            # This pretty much means the connection failed - so let's deal with it
+                            sys.stderr.write('TwitterStream TypeError - conn1 failure: ' + str(e) + '\n')
+                            failed = True
                         if failed == True and self.reconnect == True:
                             # Reconnection procedure
                             print (str(datetime.utcnow()) + " Streaming API connection failed.")

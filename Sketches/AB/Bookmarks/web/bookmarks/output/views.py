@@ -2,8 +2,8 @@
 from django.http import HttpResponse
 from bookmarks.output.models import programmes,analyseddata,rawdata
 from datetime import date,timedelta,datetime
-from dateutil.parser import parse
 from pygooglechart import SimpleLineChart, Axis #lc
+import time
 #TODO: Replace ugly meta refresh tags with AJAX
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
@@ -33,8 +33,6 @@ def index(request):
     for channel in allchannels:
         data = programmes.objects.filter(channel=channel).order_by('-timestamp')
         if len(data) > 0:
-            #progdate = parse(data[0].expectedstart)
-            #progdate = progdate.replace(tzinfo=None)
             progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
             progdate = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
             datenow = datetime.now()
@@ -50,12 +48,7 @@ def index(request):
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).order_by('-timestamp')
         if len(data) > 0:
-            #progdate = parse(data[0].expectedstart)
             progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
-            #tz = progdate.tzinfo
-            #offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
-            #offset = timedelta(hours=offset.hour)
-            #progdate = progdate.replace(tzinfo=None)
             progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
             datenow = datetime.utcnow() + timedelta(seconds=data[0].utcoffset)
             if datenow <= progend:
@@ -81,12 +74,7 @@ def index(request):
     for channel in radiochannels:
         data = programmes.objects.filter(channel=channel).order_by('-timestamp')
         if len(data) > 0:
-            #progdate = parse(data[0].expectedstart)
             progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
-            #tz = progdate.tzinfo
-            #offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
-            #offset = timedelta(hours=offset.hour)
-            #progdate = progdate.replace(tzinfo=None)
             progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
             datenow = datetime.utcnow() + timedelta(seconds=data[0].utcoffset)
             if datenow <= progend:
@@ -149,12 +137,12 @@ def channel(request,channel,year=0,month=0,day=0):
         else:
             output += '<br /><div id="inlineDatepicker"></div>'
             if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
-                datecomp = year + "-" + month + "-" + day
                 output += "<br />Currently viewing shows for " + day + "/" + month + "/" + year + "<br />"
-                data = programmes.objects.filter(channel__exact=channel,expectedstart__contains=datecomp).order_by('expectedstart').all()
+                starttimestamp = time.mktime(datetime(int(year),int(month),int(day),0,0,0,0).timetuple()) - (3600*6) #TODO FIXME - shouldn't have to take 6hrs off
+                endtimestamp = starttimestamp + 86400
+                data = programmes.objects.filter(channel__exact=channel,timestamp__gte=starttimestamp,timestamp__lt=endtimestamp).order_by('timestamp').all()
                 for programme in data:
-                    progdate = parse(programme.expectedstart)
-                    progdate = progdate.replace(tzinfo=None)
+                    progdate = datetime.utcfromtimestamp(programme.timestamp) + timedelta(seconds=programme.utcoffset)
                     output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
                 if len(data) < 1:
                     output += "<br />No data for this date - please select another from the picker above.<br />"
@@ -187,11 +175,9 @@ def programme(request,pid):
             output += "<meta http-equiv='refresh' content='30'>"
         channel = data[0].channel
         output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
-        progdate = parse(data[0].expectedstart)
-        tz = progdate.tzinfo
-        progdate = progdate.replace(tzinfo=None)
+        progdate = datetime.utcfromtimestamp(data[0].timestamp) + timedelta(seconds=data[0].utcoffset)
         actualstart = progdate - timedelta(seconds=data[0].timediff)
-        minutedata = analyseddata.objects.filter(pid=pid).order_by('datetime').all()
+        minutedata = analyseddata.objects.filter(pid=pid).order_by('timestamp').all()
         output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
         output += "<strong>" + data[0].title + "</strong><br />"
         output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
@@ -213,10 +199,7 @@ def programme(request,pid):
             bookmarks = list()
             bookmarkcont = list()
             for minute in minutedata:
-                # This isn't the most elegant BST solution, but it appears to work
-                offset = datetime.strptime(str(tz.utcoffset(parse(minute.datetime))),"%H:%M:%S")
-                offset = timedelta(hours=offset.hour)
-                tweettime = parse(minute.datetime) + offset
+                tweettime = datetime.utcfromtimestamp(minute.timestamp) + timedelta(seconds=data[0].utcoffset)
                 proghour = tweettime.hour - actualstart.hour
                 progmin = tweettime.minute - actualstart.minute
                 progsec = tweettime.second - actualstart.second
@@ -317,7 +300,7 @@ def programme(request,pid):
         rawtweets = rawdata.objects.filter(pid=pid).all()
         output += "<br /><br /><div id=\"rawtweets\" style=\"display: none; font-size: 9pt\">"
         for tweet in rawtweets:
-            output += "<br /><strong>" + tweet.datetime + ":</strong> " + tweet.text
+            output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp)) + ":</strong> " + tweet.text
         #output += "</div>"
     else:
         output += "<br />Database consistency error - somehow a primary key appears twice. The world may have ended."

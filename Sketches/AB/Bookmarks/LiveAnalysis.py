@@ -11,7 +11,6 @@ import MySQLdb
 import cjson
 import os
 import time
-#from dateutil.parser import parse
 from datetime import timedelta, datetime
 import math
 import sys
@@ -62,7 +61,7 @@ if __name__ == "__main__":
             tweetuser = result[4]
             dbtime = datetime.utcfromtimestamp(tweettime)
             dbtime = dbtime.replace(second=0)
-            dbtimestamp = time.mktime(dbtime.timetuple())
+            dbtimestamp = time.mktime(dbtime.timetuple()) + (3600) #TODO FIXME
             print "Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
             print "'" + tweettext + "'"
             cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s""",(pid))
