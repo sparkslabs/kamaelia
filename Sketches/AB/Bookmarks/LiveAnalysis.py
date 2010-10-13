@@ -76,11 +76,11 @@ if __name__ == "__main__":
             timediff = progdata[6]
             timestamp = progdata[7]
             utcoffset = progdata[8]
-            cursor.execute("""SELECT did,totaltweets FROM analyseddata WHERE pid = %s AND datetime = %s""",(pid,dbtime))
+            cursor.execute("""SELECT did,totaltweets FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,dbtimestamp))
             analyseddata = cursor.fetchone()
             if analyseddata == None: # No tweets yet recorded for this minute
                 minutetweets = 1
-                cursor.execute("""INSERT INTO analyseddata (pid,datetime,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,dbtime,0,0,minutetweets,dbtimestamp))
+                cursor.execute("""INSERT INTO analyseddata (pid,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s)""", (pid,0,0,minutetweets,dbtimestamp))
             else:
                 did = analyseddata[0]
                 minutetweets = analyseddata[1] # Get current number of tweets for this minute

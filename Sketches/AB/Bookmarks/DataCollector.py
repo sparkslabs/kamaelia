@@ -74,7 +74,7 @@ class DataCollector(threadedcomponent):
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
                                                 timestamp = time.mktime(parse(newdata['created_at']).timetuple())
-                                                cursor.execute("""INSERT INTO rawdata (pid,datetime,timestamp,text,user) VALUES (%s,%s,%s,%s,%s)""", (pid,newdata['created_at'],timestamp,newdata['text'],newdata['user']['screen_name']))
+                                                cursor.execute("""INSERT INTO rawdata (pid,timestamp,text,user) VALUES (%s,%s,%s,%s)""", (pid,timestamp,newdata['text'],newdata['user']['screen_name']))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
                                                 print ("Duplicate user for current minute - ignoring")
@@ -87,7 +87,7 @@ class DataCollector(threadedcomponent):
                                         if cursor.fetchone() == None:
                                             print ("Storing tweet for pid " + pid)
                                             timestamp = time.mktime(parse(newdata['created_at']).timetuple())
-                                            cursor.execute("""INSERT INTO rawdata (pid,datetime,timestamp,text,user) VALUES (%s,%s,%s,%s,%s)""", (pid,newdata['created_at'],timestamp,newdata['text'],newdata['user']['screen_name']))
+                                            cursor.execute("""INSERT INTO rawdata (pid,timestamp,text,user) VALUES (%s,%s,%s,%s)""", (pid,timestamp,newdata['text'],newdata['user']['screen_name']))
                                             break # Break out of this loop and back to check the same tweet against the next programme
                                         else:
                                             print ("Duplicate user for current minute - ignoring")
