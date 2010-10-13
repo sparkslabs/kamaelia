@@ -77,7 +77,8 @@ class Requester(threadedcomponent):
             "b006wkqb" : ["chrisdjmoyles","chrismoylesshow"], # Chris Moyles Breakfast Show
             "b0071b63" : ["bbcapprentice"], # The Apprentice
             "b006mg74" : ["bbcwatchdog"], # Watchdog
-            "b006v5tb" : ['bbcbreakfast'] # Breakfast
+            "b006v5tb" : ['bbcbreakfast'], # Breakfast
+            "b006mkw3" : ["#hignfy","bbcHIGNFY"] # Have I Got News For You
         }
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
         self.officialseriestags = {
@@ -413,7 +414,7 @@ class Requester(threadedcomponent):
                         utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                         utcoffset = utcoffset.hour * 60 * 60
                         timestamp = time.mktime(progdate.timetuple()) - utcoffset
-                        cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,timestamp,utcoffset,self.channel))
+                        cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s)""", (pid,title,offset,duration,timestamp,utcoffset,self.channel))
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywords[word]))
                     keywords = list()
@@ -458,7 +459,7 @@ class Requester(threadedcomponent):
                             utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                             utcoffset = utcoffset.hour * 60 * 60
                             timestamp = time.mktime(progdate.timetuple()) - utcoffset
-                            cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,expectedstart,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,expectedstart,timestamp,utcoffset,channel))
+                            cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,timestamp,utcoffset,channel))
                             for word in keywordappender:
                                 cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywordappender[word]))
 
