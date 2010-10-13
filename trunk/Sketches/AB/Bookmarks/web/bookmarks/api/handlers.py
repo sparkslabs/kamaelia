@@ -2,7 +2,6 @@ from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata
 from datetime import timedelta,datetime
 from dateutil.parser import parse
-import time
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
 
