@@ -160,8 +160,12 @@ class TwitterStream(threadedcomponent):
                                 file.write(content)
                                 file.close()
                             readtimer.cancel()
-                            self.send([content,pids],"outbox") # Send to data collector / analyser rather than back to requester
-                            failed = False
+                            # Below modified to ensure reconnection is attempted if the timer expires
+                            if "\r\n" in content:
+                                self.send([content,pids],"outbox") # Send to data collector / analyser rather than back to requester
+                                failed = False
+                            else:
+                                failed = True
                         except IOError, e:
                             sys.stderr.write('TwitterStream IO error: ' + str(e) + '\n')
                             failed = True

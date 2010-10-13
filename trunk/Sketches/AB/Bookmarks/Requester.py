@@ -103,7 +103,7 @@ class Requester(threadedcomponent):
             pid = None
         else:
             pid = data[0]
-            title = str(data[1])
+            title = data[1]
             offset = data[2]
             duration = data[3]
             expectedstart = data[4]
