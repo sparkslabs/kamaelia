@@ -8,7 +8,6 @@ import time
 import MySQLdb
 import cjson
 import string
-#from datetime import time
 from dateutil.parser import parse
 
 from Axon.ThreadedComponent import threadedcomponent

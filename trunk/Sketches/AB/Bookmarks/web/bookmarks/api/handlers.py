@@ -1,7 +1,6 @@
 from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata
 from datetime import timedelta,datetime
-from dateutil.parser import parse
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
 
@@ -22,7 +21,8 @@ class ProgrammesHandler(BaseHandler):
             retdata['status'] = "OK"
             retdata['pid'] = data[0].pid
             retdata['title'] = data[0].title
-            retdata['expectedstart'] = data[0].expectedstart
+            retdata['timestamp'] = data[0].timestamp
+            retdata['utcoffset'] = data[0].utcoffset
             retdata['timediff'] = data[0].timediff
             retdata['duration'] = data[0].duration
             retdata['imported'] = data[0].imported
@@ -38,20 +38,16 @@ class ProgrammesHandler(BaseHandler):
                 retdata['keywords'].append({'keyword' : row.keyword, 'type' : row.type})
             retdata['bookmarks'] = list()
 
-            progdate = parse(data[0].expectedstart)
-            tz = progdate.tzinfo
-            progdate = progdate.replace(tzinfo=None)
+            progdate = datetime.utcfromtimestamp(data[0].timestamp) + timedelta(seconds=data[0].utcoffset)
             actualstart = progdate - timedelta(seconds=data[0].timediff)
-            minutedata = analyseddata.objects.filter(pid=pid).order_by('datetime').all()
+            minutedata = analyseddata.objects.filter(pid=pid).order_by('timestamp').all()
             tweetmins = dict()
             lastwasbookmark = False
             bookmarks = list()
             bookmarkcont = list()
             for minute in minutedata:
                 # This isn't the most elegant BST solution, but it appears to work
-                offset = datetime.strptime(str(tz.utcoffset(parse(minute.datetime))),"%H:%M:%S")
-                offset = timedelta(hours=offset.hour)
-                tweettime = parse(minute.datetime) + offset
+                tweettime = datetime.utcfromtimestamp(minute.timestamp) + timedelta(seconds=data[0].utcoffset)
                 proghour = tweettime.hour - actualstart.hour
                 progmin = tweettime.minute - actualstart.minute
                 progsec = tweettime.second - actualstart.second
@@ -105,7 +101,6 @@ class SummaryHandler(BaseHandler):
             data = programmes.objects.filter(channel=channel).order_by('-timestamp')
             if len(data) > 0:
                 progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
-                #progdate = progdate.replace(tzinfo=None)
                 progdate = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
                 datenow = datetime.now()
                 if datenow <= progdate:

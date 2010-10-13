@@ -8,7 +8,7 @@ class programmes(models.Model):
     pid = models.CharField(max_length=10,primary_key=True,db_column="pid")
     channel = models.CharField(max_length=20,db_column="channel")
     title = models.CharField(max_length=200,db_column="title")
-    expectedstart = models.CharField(max_length=100,db_column="expectedstart")
+    #expectedstart = models.CharField(max_length=100,db_column="expectedstart")
     timestamp = models.FloatField(db_column="timestamp",default=0)
     utcoffset = models.IntegerField(db_column="utcoffset",default=0)
     timediff = models.IntegerField(db_column="timediff",default=0)
@@ -27,7 +27,7 @@ class programmes(models.Model):
 class analyseddata(models.Model):
     did = models.IntegerField(primary_key=True,db_column="did")
     pid = models.ForeignKey(programmes,db_column="pid")
-    datetime = models.CharField(max_length=100,db_column="datetime")
+    #datetime = models.CharField(max_length=100,db_column="datetime")
     timestamp = models.FloatField(db_column="timestamp",default=0)
     wordfreqexpected = models.CharField(max_length=500,db_column="wordfreqexpected")
     wordfrequnexpected = models.CharField(max_length=500,db_column="wordfrequnexpected")
@@ -48,7 +48,7 @@ class keywords(models.Model):
 class rawdata(models.Model):
     tid = models.IntegerField(primary_key=True,db_column="tid")
     pid = models.ForeignKey(programmes,db_column="pid")
-    datetime = models.CharField(max_length=100,db_column="datetime")
+    #datetime = models.CharField(max_length=100,db_column="datetime")
     timestamp = models.FloatField(db_column="timestamp",default=0)
     text = models.CharField(max_length=200,db_column="text")
     user = models.CharField(max_length=200,db_column="user")
