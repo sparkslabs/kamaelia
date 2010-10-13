@@ -13,340 +13,83 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00v7rcf.rdf">
-  <rdfs:label>Description of a programme version of 13/10/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T00:09:36+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T00:09:36+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00v7rcf#programme"/>
+<rdf:Description rdf:about="/programmes/b00v72ll.rdf">
+  <rdfs:label>Description of a programme version of Episode 3</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T00:07:25+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-06T00:07:25+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00v72ll#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00v7rcf#programme">
+<po:Version rdf:about="/programmes/b00v72ll#programme">
 
-  <rdfs:label>A version of 13/10/2010</rdfs:label>
+  <rdfs:label>A version of Episode 3</rdfs:label>
   
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10800</po:duration>
-  <po:pid>b00v7rcf</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
+  <po:pid>b00v72ll</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of 13/10/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT10800S</timeline:duration>
+      <rdfs:label>Time interval for a version of Episode 3</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00v72ll#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00v7rcp#programme">
-  <rdfs:label>13/10/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00v7rcf#programme" />
+<po:Episode rdf:about="/programmes/b00v72nb#programme">
+  <rdfs:label>Episode 3</rdfs:label>
+  <po:version rdf:resource="/programmes/b00v72ll#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00v7rcf#timeline">
-  <rdfs:label>Timeline of a version of 13/10/2010</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00v72ll#timeline">
+  <rdfs:label>Timeline of a version of Episode 3</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00v7rcf#p00bfbks">
+<po:Broadcast rdf:about="/programmes/b00v72ll#p00bfbfd">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bfbks</po:pid>
+  <po:pid>p00bfbfd</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-13</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T07:00:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T10:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T10:45:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:00:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/6music#service">
-      <rdfs:label>BBC 6 Music</rdfs:label>
-    </po:Service>
+    <po:Service rdf:about="/services/radio4/fm#service">
+       <rdfs:label>FM</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio4#service"/>
+     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00v7rcf#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00v72ll#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00v72ll#p00bfbnj">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00bfbnj</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-13</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T10:45:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio4/lw#service">
+       <rdfs:label>LW</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio4#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00v72ll#programme" />
 </po:Broadcast>
 
 
-<po:Segment rdf:about="/programmes/p002fr67#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>The Divine Comedy - Becoming More Like Alfie</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklvz">
-  
-      <po:position>1</po:position>
-      <rdfs:label>Time interval for The Divine Comedy - Becoming More Like Alfie</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p009z2j0#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>M.I.A. - It Takes A Muscle</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklw2">
-  
-      <po:position>2</po:position>
-      <rdfs:label>Time interval for M.I.A. - It Takes A Muscle</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002hjqx#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Electronic - Getting Away With It</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklw7">
-  
-      <po:position>3</po:position>
-      <rdfs:label>Time interval for Electronic - Getting Away With It</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bklwd#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Bob Dylan - Dirt Road Blues</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklwf">
-  
-      <po:position>4</po:position>
-      <rdfs:label>Time interval for Bob Dylan - Dirt Road Blues</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bklwq#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Band Of Horses and The University Of Georgia Redcoat Marching Band - Georgia</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklwr">
-  
-      <po:position>5</po:position>
-      <rdfs:label>Time interval for Band Of Horses and The University Of Georgia Redcoat Marching Band - Georgia</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002ggwm#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Supergrass - Richard Iii</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklx3">
-  
-      <po:position>6</po:position>
-      <rdfs:label>Time interval for Supergrass - Richard Iii</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00b1hx8#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>The Black Keys - Next Girl</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkly8">
-  
-      <po:position>7</po:position>
-      <rdfs:label>Time interval for The Black Keys - Next Girl</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bc7pq#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>TWILIGHT SINGERS feat. ANI DIFRANCO - Blackbird &amp; The Fox</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklyn">
-  
-      <po:position>8</po:position>
-      <rdfs:label>Time interval for TWILIGHT SINGERS feat. ANI DIFRANCO - Blackbird &amp; The Fox</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002hjqc#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Badly Drawn Boy - Once Around The Block</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklyr">
-  
-      <po:position>9</po:position>
-      <rdfs:label>Time interval for Badly Drawn Boy - Once Around The Block</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002gjwx#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>The Jam - In The City</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklz2">
-  
-      <po:position>10</po:position>
-      <rdfs:label>Time interval for The Jam - In The City</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002ffp1#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Madness - Embarrassment</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklzf">
-  
-      <po:position>11</po:position>
-      <rdfs:label>Time interval for Madness - Embarrassment</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002k605#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Shack - Natalie&#39;S Party</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bklzm">
-  
-      <po:position>12</po:position>
-      <rdfs:label>Time interval for Shack - Natalie&#39;S Party</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p009vx43#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Black Mountain - The Hair Song</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm0q">
-  
-      <po:position>13</po:position>
-      <rdfs:label>Time interval for Black Mountain - The Hair Song</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bkm11#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Discodeine and Jarvis Cocker - Synchronize</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm12">
-  
-      <po:position>14</po:position>
-      <rdfs:label>Time interval for Discodeine and Jarvis Cocker - Synchronize</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00b6b98#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Manic Street Preachers - Postcards From A Young Man</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm1k">
-  
-      <po:position>15</po:position>
-      <rdfs:label>Time interval for Manic Street Preachers - Postcards From A Young Man</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bkm2d#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Jacob Miller - Baby I Love You So</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm2f">
-  
-      <po:position>16</po:position>
-      <rdfs:label>Time interval for Jacob Miller - Baby I Love You So</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p003qdxb#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Laura Marling - Cross Your Fingers</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm2m">
-  
-      <po:position>17</po:position>
-      <rdfs:label>Time interval for Laura Marling - Cross Your Fingers</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002hkrc#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Howling Bells - Into The Chaos</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm4d">
-  
-      <po:position>18</po:position>
-      <rdfs:label>Time interval for Howling Bells - Into The Chaos</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002ffww#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>The La&#39;s - Feelin&#39;</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm6c">
-  
-      <po:position>19</po:position>
-      <rdfs:label>Time interval for The La&#39;s - Feelin&#39;</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p004vdzj#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Two Door Cinema Club - I Can Talk</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm6f">
-  
-      <po:position>20</po:position>
-      <rdfs:label>Time interval for Two Door Cinema Club - I Can Talk</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002dbsc#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Marvin Gaye - Inner City Blues (Make Me Wanna Holler)</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm6n">
-  
-      <po:position>21</po:position>
-      <rdfs:label>Time interval for Marvin Gaye - Inner City Blues (Make Me Wanna Holler)</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bkm9g#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>The Stone Roses - One Love</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkm9h">
-  
-      <po:position>22</po:position>
-      <rdfs:label>Time interval for The Stone Roses - One Love</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p009jgvk#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Arcade Fire - Ready To Start</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00v7rcf#p00bkmvn">
-  
-      <po:position>23</po:position>
-      <rdfs:label>Time interval for Arcade Fire - Ready To Start</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7rcf#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T10:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T10:02:00+01:00</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:02:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T11:02:00+01:00</timeline:end>
 </po:Availability>
 
 

@@ -31,11 +31,12 @@ def index(request):
 
     # Identify the total tweets for each current programme (provided the grabber is still running)
     for channel in allchannels:
-        data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+        data = programmes.objects.filter(channel=channel).order_by('-timestamp')
         if len(data) > 0:
-            progdate = parse(data[0].expectedstart)
-            progdate = progdate.replace(tzinfo=None)
-            progdate = progdate + timedelta(seconds=data[0].duration)
+            #progdate = parse(data[0].expectedstart)
+            #progdate = progdate.replace(tzinfo=None)
+            progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
+            progdate = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
             datenow = datetime.now()
             #if data[0].totaltweets > maxtweets and datenow <= progdate:
             #    maxtweets = data[0].totaltweets
@@ -47,15 +48,16 @@ def index(request):
 
     output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
-        data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+        data = programmes.objects.filter(channel=channel).order_by('-timestamp')
         if len(data) > 0:
-            progdate = parse(data[0].expectedstart)
-            tz = progdate.tzinfo
-            offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
-            offset = timedelta(hours=offset.hour)
-            progdate = progdate.replace(tzinfo=None)
+            #progdate = parse(data[0].expectedstart)
+            progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
+            #tz = progdate.tzinfo
+            #offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
+            #offset = timedelta(hours=offset.hour)
+            #progdate = progdate.replace(tzinfo=None)
             progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
-            datenow = datetime.utcnow() + offset
+            datenow = datetime.utcnow() + timedelta(seconds=data[0].utcoffset)
             if datenow <= progend:
                 opacity = normaliser * data[0].stdevtweets
                 #fontval = str(int(255 * opacity))
@@ -77,15 +79,16 @@ def index(request):
 
     output += "<br /><br /></div><br /><br /><div style=\"display: inline; position: relative\"><h2>Radio</h2>"
     for channel in radiochannels:
-        data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+        data = programmes.objects.filter(channel=channel).order_by('-timestamp')
         if len(data) > 0:
-            progdate = parse(data[0].expectedstart)
-            tz = progdate.tzinfo
-            offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
-            offset = timedelta(hours=offset.hour)
-            progdate = progdate.replace(tzinfo=None)
+            #progdate = parse(data[0].expectedstart)
+            progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
+            #tz = progdate.tzinfo
+            #offset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
+            #offset = timedelta(hours=offset.hour)
+            #progdate = progdate.replace(tzinfo=None)
             progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
-            datenow = datetime.utcnow() + offset
+            datenow = datetime.utcnow() + timedelta(seconds=data[0].utcoffset)
             if datenow <= progend:
                 opacity = normaliser * data[0].stdevtweets
                 #fontval = str(int(255 * opacity))
