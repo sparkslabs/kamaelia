@@ -11,7 +11,7 @@ import MySQLdb
 import cjson
 import os
 import time
-from dateutil.parser import parse
+#from dateutil.parser import parse
 from datetime import timedelta, datetime
 import math
 import sys
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
         # Stage 1: Live analysis - could do with a better way to do the first query (indexed field 'analsed' to speed up for now)
         # Could move this into the main app to take a copy of tweets on arrival, but would rather solve separately if poss
-        cursor.execute("""SELECT tid,pid,datetime,text,user FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
+        cursor.execute("""SELECT tid,pid,timestamp,text,user FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
         data = cursor.fetchall()
 
         for result in data:
@@ -60,13 +60,12 @@ if __name__ == "__main__":
             tweettime = result[2]
             tweettext = result[3]
             tweetuser = result[4]
-            dbtime = parse(tweettime)
+            dbtime = datetime.utcfromtimestamp(tweettime)
             dbtime = dbtime.replace(second=0)
             dbtimestamp = time.mktime(dbtime.timetuple())
-            dbtime = dbtime.replace(tzinfo=None)
             print "Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
             print "'" + tweettext + "'"
-            cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,expectedstart,timestamp,utcoffset FROM programmes WHERE pid = %s""",(pid))
+            cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s""",(pid))
             progdata = cursor.fetchone()
             duration = progdata[0]
             totaltweets = progdata[1]
@@ -76,9 +75,8 @@ if __name__ == "__main__":
             modetweets = progdata[4]
             stdevtweets = progdata[5]
             timediff = progdata[6]
-            expectedstart = progdata[7]
-            timestamp = progdata[8]
-            utcoffset = progdata[9]
+            timestamp = progdata[7]
+            utcoffset = progdata[8]
             cursor.execute("""SELECT did,totaltweets FROM analyseddata WHERE pid = %s AND datetime = %s""",(pid,dbtime))
             analyseddata = cursor.fetchone()
             if analyseddata == None: # No tweets yet recorded for this minute
@@ -91,15 +89,15 @@ if __name__ == "__main__":
                 cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
 
             # Averages / stdev are calculated roughly based on the programme's running time at this point
-            progdate = parse(expectedstart)
-            tz = progdate.tzinfo
-            progdate = progdate.replace(tzinfo=None)
+            progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
+            #tz = progdate.tzinfo
+            #progdate = progdate.replace(tzinfo=None)
             actualstart = progdate - timedelta(seconds=timediff)
 
-            offset = datetime.strptime(str(tz.utcoffset(parse(tweettime))),"%H:%M:%S")
-            offset = timedelta(hours=offset.hour)
-            actualtweettime = parse(tweettime) + offset
-            actualtweettime = actualtweettime.replace(tzinfo=None)
+            #offset = datetime.strptime(str(tz.utcoffset(parse(tweettime))),"%H:%M:%S")
+            #offset = timedelta(hours=offset.hour)
+            actualtweettime = datetime.utcfromtimestamp(tweettime + utcoffset)
+            #actualtweettime = actualtweettime.replace(tzinfo=None)
 
             # Calculate how far through the programme this tweet occurred
             runningtime = actualtweettime - actualstart

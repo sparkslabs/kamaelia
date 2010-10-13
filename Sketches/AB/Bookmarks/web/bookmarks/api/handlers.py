@@ -2,6 +2,7 @@ from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata
 from datetime import timedelta,datetime
 from dateutil.parser import parse
+import time
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
 
@@ -102,11 +103,11 @@ class SummaryHandler(BaseHandler):
 
         for channel in allchannels:
             retdata['channels'].append({"channel" : channel})
-            data = programmes.objects.filter(channel=channel).order_by('-expectedstart')
+            data = programmes.objects.filter(channel=channel).order_by('-timestamp')
             if len(data) > 0:
-                progdate = parse(data[0].expectedstart)
-                progdate = progdate.replace(tzinfo=None)
-                progdate = progdate + timedelta(seconds=data[0].duration)
+                progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
+                #progdate = progdate.replace(tzinfo=None)
+                progdate = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
                 datenow = datetime.now()
                 if datenow <= progdate:
                     retdata['channels'][len(retdata['channels']) - 1]['pid'] = data[0].pid
