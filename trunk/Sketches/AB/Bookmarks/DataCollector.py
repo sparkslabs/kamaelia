@@ -8,6 +8,7 @@ import time
 import MySQLdb
 import cjson
 import string
+from datetime import datetime
 from dateutil.parser import parse
 
 from Axon.ThreadedComponent import threadedcomponent
@@ -62,7 +63,7 @@ class DataCollector(threadedcomponent):
                             file = open(filepath, 'r')
                             filecontents = file.read()
                             file = open(filepath, 'w')
-                            file.write(filecontents + "\n" + cjson.encode(newdata))
+                            file.write(filecontents + "\n" + str(datetime.utcnow()) + " " + cjson.encode(newdata))
                             file.close()
                         elif newdata.has_key('scrub_geo'):
                             # Trying to work out what content is set to at the point it fails
@@ -70,7 +71,7 @@ class DataCollector(threadedcomponent):
                             file = open(filepath, 'r')
                             filecontents = file.read()
                             file = open(filepath, 'w')
-                            file.write(filecontents + "\n" + cjson.encode(newdata))
+                            file.write(filecontents + "\n" + str(datetime.utcnow()) + " " + cjson.encode(newdata))
                             file.close()
                         elif newdata.has_key('limit'):
                             # Trying to work out what content is set to at the point it fails
@@ -78,7 +79,7 @@ class DataCollector(threadedcomponent):
                             file = open(filepath, 'r')
                             filecontents = file.read()
                             file = open(filepath, 'w')
-                            file.write(filecontents + "\n" + cjson.encode(newdata))
+                            file.write(filecontents + "\n" + str(datetime.utcnow()) + " " + cjson.encode(newdata))
                             file.close()
                         else:
                             print "New tweet! @" + newdata['user']['screen_name'] + ": " + newdata['text']
