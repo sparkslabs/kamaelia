@@ -186,7 +186,7 @@ def programme(request,pid):
         if 1:
             tweetmins = dict()
             tweetstamps = dict()
-            appender = ""
+            #appender = ""
             lastwasbookmark = False
             bookmarks = list()
             bookmarkcont = list()
@@ -205,14 +205,14 @@ def programme(request,pid):
                 else:
                     playertimemin = 0
                     playertimesec = 0
-                appender += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
+                #appender += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
                 if minute.totaltweets > (1.5*data[0].stdevtweets+data[0].meantweets):
                     if lastwasbookmark == True:
-                        appender += " cont'd..."
+                        #appender += " cont'd..."
                         bookmarkcont.append(playertimemin)
                     else:
                         if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets) and minute.totaltweets > 9: # Arbitrary value chosen for now - needs experimentation - was 9
-                            appender += " BOOKMARK!"
+                            #appender += " BOOKMARK!"
                             lastwasbookmark = True
                             bookmarks.append(playertimemin)
                         else:

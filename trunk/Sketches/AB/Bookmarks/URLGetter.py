@@ -39,7 +39,7 @@ class HTTPGetter(component):
                 return True
         return False
 
-    def getURLData(self, url, postdata = None, username = False, password = False):
+    def getURLData(self, url, postdata = None, extraheaders = None, username = False, password = False):
 
         # Configure authentication
         if username and password:
@@ -64,7 +64,11 @@ class HTTPGetter(component):
         if self.useragent:
             headers = {'User-Agent' : self.useragent}
         else:
-            headers = ""
+            headers = dict()
+
+        if extraheaders != None:
+            for value in extraheaders:
+                headers[value] = extraheaders[value]
 
         # Grab data
         try:
@@ -91,9 +95,12 @@ class HTTPGetter(component):
             if self.dataReady("inbox"):
                 # Data format: [url,username(optional),password(optional)]
                 request = self.recv("inbox")
-                if len(request) == 4:
-                    # Authenticated with optional POST
-                    urldata = self.getURLData(request[0],request[1],request[2],request[3])
+                if len(request) == 5:
+                    # Authenticated with optional POST and headers
+                    urldata = self.getURLData(request[0],request[1],request[2],request[3], request[4])
+                elif len(request) == 3:
+                    # Plain POST with headers
+                    urldata = self.getURLData(request[0],request[1],request[2])
                 elif len(request) == 2:
                     # Plain POST
                     urldata = self.getURLData(request[0],request[1])
