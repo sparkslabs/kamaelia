@@ -157,17 +157,6 @@ def programme(request,pid):
     # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
 
     output = header
-    output += "<script type=\"text/javascript\">"
-    #output += "function revealTweets() {"
-    #output += "if (document.getElementById('rawtweets').style.display == 'none') {"
-    #output += "document.getElementById('rawtweets').style.display = 'inline';"
-    #output += "} else {"
-    #output += "document.getElementById('rawtweets').style.display = 'none';"
-    #output += "}}"
-    output += "function revealMinute(timestamp) {"
-    output += "window.open('/programmes/" + pid + "/' + timestamp);"
-    output += "}</script>"
-
     data = programmes.objects.filter(pid=pid).all()
     if len(data) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
@@ -270,7 +259,7 @@ def programme(request,pid):
                     else:
                         blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
                     if tweetstamps.has_key(str(min)):
-                        blockgraph3 += "<a href=\"javascript:revealMinute(" + str(tweetstamps[str(min)]) + ")\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                        blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
                     else:
                         blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
 

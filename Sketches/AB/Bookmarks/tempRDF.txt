@@ -13,64 +13,85 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00v714n.rdf">
+<rdf:Description rdf:about="/programmes/p00bkz34.rdf">
   <rdfs:label>Description of a programme version of 14/10/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T00:07:52+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T00:07:52+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00v714n#programme"/>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T19:49:37+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T19:49:37+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/p00bkz34#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00v714n#programme">
+<po:Version rdf:about="/programmes/p00bkz34#programme">
 
   <rdfs:label>A version of 14/10/2010</rdfs:label>
   
-  <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10800</po:duration>
-  <po:pid>b00v714n</po:pid>
+  
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1500</po:duration>
+  <po:pid>p00bkz34</po:pid>
   <po:time>
     <timeline:Interval>
       <rdfs:label>Time interval for a version of 14/10/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v714n#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT10800S</timeline:duration>
+      <timeline:timeline rdf:resource="/programmes/p00bkz34#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1500S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00v7159#programme">
+<po:Episode rdf:about="/programmes/p00b70lt#programme">
   <rdfs:label>14/10/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00v714n#programme" />
+  <po:version rdf:resource="/programmes/p00bkz34#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00v714n#timeline">
+<timeline:TimeLine rdf:about="/programmes/p00bkz34#timeline">
   <rdfs:label>Timeline of a version of 14/10/2010</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00v714n#p00bg276">
+<po:Broadcast rdf:about="/programmes/p00bkz34#p00bkz35">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bg276</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-14</po:schedule_date>
+  <po:pid>p00bkz35</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-17</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T10:00:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T13:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-17T11:05:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-17T11:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/1xtra#service">
-      <rdfs:label>BBC 1Xtra</rdfs:label>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00v714n#programme" />
+  <po:broadcast_of rdf:resource="/programmes/p00bkz34#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/p00bkz34#p00bkz37">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00bkz37</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-17</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-17T19:05:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-17T19:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/p00bkz34#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T13:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-21T13:02:00+01:00</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-17T11:32:00+01:00</timeline:start>
+  
+</po:Availability>
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-17T19:32:00+01:00</timeline:start>
+  
 </po:Availability>
 
 
