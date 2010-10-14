@@ -155,7 +155,7 @@ class TwitterStream(threadedcomponent):
                     'oauth_version': "1.0",
                     'oauth_nonce': oauth.generate_nonce(),
                     'oauth_timestamp': int(time.time()),
-                    'user': self.username
+                    #'user': self.username
                 }
 
                 token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
@@ -200,7 +200,7 @@ class TwitterStream(threadedcomponent):
                 for key in params:
                     oauthlist += key + "=\"" + str(params[key]) + "\", "
 
-                headers['OAuth'] = oauthlist.rstrip(", ")
+                headers['Authorization'] = "OAuth " + oauthlist.rstrip(", ")
                 print headers
                 print requesturl
                 # Connect to Twitter
