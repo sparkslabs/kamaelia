@@ -98,17 +98,17 @@ class SummaryHandler(BaseHandler):
 
         for channel in allchannels:
             retdata['channels'].append({"channel" : channel})
-            data = programmes.objects.filter(channel=channel).order_by('-timestamp')
-            if len(data) > 0:
-                progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
-                progdate = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
+            data = programmes.objects.filter(channel=channel).latest('timestamp')
+            if isinstance(data,object):
+                progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
+                progdate = progdate + timedelta(seconds=data.duration - data.timediff)
                 datenow = datetime.now()
-                if data[0].imported == 0:
-                    retdata['channels'][len(retdata['channels']) - 1]['pid'] = data[0].pid
-                    retdata['channels'][len(retdata['channels']) - 1]['stdev'] = data[0].stdevtweets
+                if data.imported == 0:
+                    retdata['channels'][len(retdata['channels']) - 1]['pid'] = data.pid
+                    retdata['channels'][len(retdata['channels']) - 1]['stdev'] = data.stdevtweets
                     retdata['channels'][len(retdata['channels']) - 1]['interestingness'] = 0
-                if data[0].stdevtweets > largeststdev and datenow <= progdate:
-                    largeststdev = data[0].stdevtweets
+                if data.stdevtweets > largeststdev and datenow <= progdate:
+                    largeststdev = data.stdevtweets
 
         normaliser = 1/float(largeststdev)
         for channelgroup in retdata['channels']:
