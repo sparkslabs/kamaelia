@@ -65,7 +65,7 @@ class ProgrammesHandler(BaseHandler):
                     if lastwasbookmark == True:
                         bookmarkcont.append(playertimemin)
                     else:
-                        if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets):
+                        if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets) and minute.totaltweets > 9:
                             lastwasbookmark = True
                             bookmarks.append(playertimemin)
                         else:
@@ -77,10 +77,10 @@ class ProgrammesHandler(BaseHandler):
             if len(tweetmins) > 0:
                 xlist = range(0,data[0].duration/60)
                 for min in xlist:
-                    if min in bookmarks and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                    if min in bookmarks:
                         retdata['bookmarks'].append({'iplayer' : "http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s", 'startseconds' : min*60+playertimesec, 'endseconds' : min*60+playertimesec+60})
                         lastindex = len(retdata['bookmarks']) - 1
-                    elif min in bookmarkcont and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                    elif min in bookmarkcont:
                         retdata['bookmarks'][lastindex]['endseconds'] = min*60+playertimesec+60
 
         else:
