@@ -154,11 +154,6 @@ class TwitterStream(threadedcomponent):
                             readtimer.start()
                             while not "\r\n" in content: # Twitter specified watch characters - readline doesn't catch this properly
                                 content += conn1.read(1)
-                                # Trying to work out what content is set to at the point it fails
-                                filepath = "contentDebug.txt"
-                                file = open(filepath, 'w')
-                                file.write(content)
-                                file.close()
                             readtimer.cancel()
                             # Below modified to ensure reconnection is attempted if the timer expires
                             if "\r\n" in content:

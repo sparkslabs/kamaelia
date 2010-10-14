@@ -38,7 +38,7 @@ def index(request):
             datenow = datetime.now()
             #if data[0].totaltweets > maxtweets and datenow <= progdate:
             #    maxtweets = data[0].totaltweets
-            if data[0].stdevtweets > largeststdev and datenow <= progdate:
+            if data[0].stdevtweets > largeststdev and data[0].imported==0:
                 largeststdev = data[0].stdevtweets
 
     #normaliser = 1/float(maxtweets)
@@ -51,7 +51,7 @@ def index(request):
             progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
             progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
             datenow = datetime.utcnow() + timedelta(seconds=data[0].utcoffset)
-            if datenow <= progend:
+            if data[0].imported==0:
                 opacity = normaliser * data[0].stdevtweets
                 #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
@@ -77,7 +77,7 @@ def index(request):
             progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
             progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
             datenow = datetime.utcnow() + timedelta(seconds=data[0].utcoffset)
-            if datenow <= progend:
+            if data[0].imported==0:
                 opacity = normaliser * data[0].stdevtweets
                 #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
@@ -219,7 +219,7 @@ def programme(request,pid):
                         appender += " cont'd..."
                         bookmarkcont.append(playertimemin)
                     else:
-                        if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets):
+                        if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets) and minute.totaltweets > 9: # Arbitrary value chosen for now - needs experimentation - was 9
                             appender += " BOOKMARK!"
                             lastwasbookmark = True
                             bookmarks.append(playertimemin)
@@ -257,10 +257,10 @@ def programme(request,pid):
                         opacity = 0
                     blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
-                    if min in bookmarks and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                    if min in bookmarks:
                         blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
                         lastbookmark = min
-                    elif min in bookmarkcont and max(tweetmins.values()) > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                    elif min in bookmarkcont: 
                         blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
                     else:
                         blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
