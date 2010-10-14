@@ -20,7 +20,6 @@ header = '<html><head><title>Social Bookmarks</title><script type="text/javascri
 footer = '</div></div></body></html>'
 
 def index(request):
-    # TODO: This page is now horribly inefficient - ugh
     currentdate = date.today()
     output = header
     output += "<meta http-equiv='refresh' content='60'>"
@@ -31,28 +30,28 @@ def index(request):
 
     # Identify the total tweets for each current programme (provided the grabber is still running)
     for channel in allchannels:
-        data = programmes.objects.filter(channel=channel).order_by('-timestamp')
-        if len(data) > 0:
-            progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
-            progdate = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
-            datenow = datetime.now()
+        data = programmes.objects.filter(channel=channel).latest('timestamp')
+        if isinstance(data,object):
+            progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
+            progdate = progdate + timedelta(seconds=data.duration - data.timediff)
+            #datenow = datetime.now()
             #if data[0].totaltweets > maxtweets and datenow <= progdate:
             #    maxtweets = data[0].totaltweets
-            if data[0].stdevtweets > largeststdev and data[0].imported==0:
-                largeststdev = data[0].stdevtweets
+            if data.stdevtweets > largeststdev and data.imported==0:
+                largeststdev = data.stdevtweets
 
     #normaliser = 1/float(maxtweets)
     normaliser = 1/float(largeststdev)
 
     output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
-        data = programmes.objects.filter(channel=channel).order_by('-timestamp')
-        if len(data) > 0:
-            progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
-            progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
-            datenow = datetime.utcnow() + timedelta(seconds=data[0].utcoffset)
-            if data[0].imported==0:
-                opacity = normaliser * data[0].stdevtweets
+        data = programmes.objects.filter(channel=channel).latest('timestamp')
+        if isinstance(data,object):
+            progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
+            #progend = progdate + timedelta(seconds=data.duration - data.timediff)
+            #datenow = datetime.utcnow() + timedelta(seconds=data.utcoffset)
+            if data.imported==0:
+                opacity = normaliser * data.stdevtweets
                 #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
                     fontcolour = "#000000"
@@ -62,7 +61,7 @@ def index(request):
                 #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data[0].pid + "/\" style=\"text-decoration: none\">" + str(data[0].totaltweets) + "</a></div></div>"
+                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none\">" + str(data.totaltweets) + "</a></div></div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "No Data</div>"
@@ -72,13 +71,13 @@ def index(request):
 
     output += "<br /><br /></div><br /><br /><div style=\"display: inline; position: relative\"><h2>Radio</h2>"
     for channel in radiochannels:
-        data = programmes.objects.filter(channel=channel).order_by('-timestamp')
-        if len(data) > 0:
-            progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
-            progend = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
-            datenow = datetime.utcnow() + timedelta(seconds=data[0].utcoffset)
-            if data[0].imported==0:
-                opacity = normaliser * data[0].stdevtweets
+        data = programmes.objects.filter(channel=channel).latest('timestamp')
+        if isinstance(data,object):
+            progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
+            #progend = progdate + timedelta(seconds=data.duration - data.timediff)
+            #datenow = datetime.utcnow() + timedelta(seconds=data.utcoffset)
+            if data.imported==0:
+                opacity = normaliser * data.stdevtweets
                 #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
                     fontcolour = "#000000"
@@ -88,7 +87,7 @@ def index(request):
                 #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data[0].pid + "/\" style=\"text-decoration: none\">" + str(data[0].totaltweets) + "</a></div></div>"
+                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none\">" + str(data.totaltweets) + "</a></div></div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "No Data</div>"
