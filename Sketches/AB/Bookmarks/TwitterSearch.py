@@ -28,12 +28,11 @@ class PeopleSearch(component):
         "signal" : ""
     }
 
-    def __init__(self, username, consumerkeypair, keypair, proxy = False):
+    def __init__(self, consumerkeypair, keypair, proxy = False):
         super(PeopleSearch, self).__init__()
         self.proxy = proxy
         self.consumerkeypair = consumerkeypair
         self.keypair = keypair
-        self.username = username
         self.ratelimited = datetime.today() - timedelta(minutes=15)
 
     def finished(self):
@@ -44,91 +43,8 @@ class PeopleSearch(component):
                 return True
         return False
 
-    def getOAuth(self, consumer_key, consumer_secret):
-        # Perform OAuth authentication
-        request_token_url = 'http://api.twitter.com/oauth/request_token'
-        access_token_url = 'http://api.twitter.com/oauth/access_token'
-        authorize_url = 'http://api.twitter.com/oauth/authorize'
-
-        consumer = oauth.Consumer(consumer_key, consumer_secret)
-        client = oauth.Client(consumer)
-
-        resp, content = client.request(request_token_url, "POST")
-        if resp['status'] != '200':
-            raise Exception("Invalid response %s." % resp['status'])
-
-        request_token = dict(urlparse.parse_qsl(content))
-
-        print "Request Token:"
-        print "     - oauth_token        = %s" % request_token['oauth_token']
-        print "     - oauth_token_secret = %s" % request_token['oauth_token_secret']
-        print
-
-        # The user must confirm authorisation so a URL is printed here
-        print "Go to the following link in your browser:"
-        print "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
-        print
-
-        accepted = 'n'
-        # Wait until the user has confirmed authorisation
-        while accepted.lower() == 'n':
-            accepted = raw_input('Have you authorized me? (y/n) ')
-        oauth_verifier = raw_input('What is the PIN? ')
-
-        token = oauth.Token(request_token['oauth_token'],
-            request_token['oauth_token_secret'])
-        token.set_verifier(oauth_verifier)
-        client = oauth.Client(consumer,token)
-
-        resp, content = client.request(access_token_url, "POST", body="oauth_verifier=%s" % oauth_verifier)
-        access_token = dict(urlparse.parse_qsl(content))
-
-        # Access tokens retrieved from Twitter
-        print "Access Token:"
-        print "     - oauth_token        = %s" % access_token['oauth_token']
-        print "     - oauth_token_secret = %s" % access_token['oauth_token_secret']
-        print
-        print "You may now access protected resources using the access tokens above."
-        print
-
-        save = False
-        # Load config to save OAuth keys
-        try:
-            homedir = os.path.expanduser("~")
-            file = open(homedir + "/twitter-login.conf",'r')
-            save = True
-        except IOError, e:
-            print ("Failed to load config file - not saving oauth keys: " + str(e))
-
-        if save:
-            raw_config = file.read()
-
-            file.close()
-
-            # Read config and add new values
-            config = cjson.decode(raw_config)
-            config['key'] = access_token['oauth_token']
-
-            config['secret'] = access_token['oauth_token_secret']
-
-            raw_config = cjson.encode(config)
-
-            # Write out the new config file
-            try:
-                file = open(homedir + "/twitter-login.conf",'w')
-                file.write(raw_config)
-                file.close()
-            except IOError, e:
-                print ("Failed to save oauth keys: " + str(e))
-        
-        return [access_token['oauth_token'], access_token['oauth_token_secret']]
-
     def main(self):
         twitterurl = "http://api.twitter.com/1/users/search.json"
-
-        # Check if OAuth has been done before - if so use the keys from the config file
-        if self.keypair == False:
-            self.keypair = self.getOAuth(self.consumerkeypair[0], self.consumerkeypair[1])
 
         if self.proxy:
             proxyhandler = urllib2.ProxyHandler({"http" : self.proxy})
@@ -137,6 +53,150 @@ class PeopleSearch(component):
 
         headers = {'User-Agent' : "BBC R&D Grabber"}
         postdata = None
+
+        if self.keypair == False:
+            # Perform OAuth authentication
+            request_token_url = 'http://api.twitter.com/oauth/request_token'
+            access_token_url = 'http://api.twitter.com/oauth/access_token'
+            authorize_url = 'http://api.twitter.com/oauth/authorize'
+
+            token = None
+            consumer = oauth.Consumer(key=self.consumerkeypair[0],secret=self.consumerkeypair[1])
+
+            params = {
+                        'oauth_version': "1.0",
+                        'oauth_nonce': oauth.generate_nonce(),
+                        'oauth_timestamp': int(time.time()),
+                    }
+
+            params['oauth_consumer_key'] = consumer.key
+
+            req = oauth.Request(method="GET",url=request_token_url,parameters=params)
+
+            signature_method = oauth.SignatureMethod_HMAC_SHA1()
+            req.sign_request(signature_method, consumer, token)
+
+            requestheaders = req.to_header()
+            requestheaders['User-Agent'] = "BBC R&D Grabber"
+
+            # Connect to Twitter
+            try:
+                req = urllib2.Request(request_token_url,None,requestheaders) # Why won't this work?!? Is it trying to POST?
+                conn1 = urllib2.urlopen(req)
+            except httplib.BadStatusLine, e:
+                sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
+                conn1 = False
+            except urllib2.HTTPError, e:
+                sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
+                conn1 = False
+            except urllib2.URLError, e:
+                sys.stderr.write('TwitterStream URL error: ' + str(e.reason) + '\n')
+                conn1 = False
+
+            if conn1:
+                content = conn1.read()
+                conn1.close()
+            #resp, content = client.request(request_token_url, "POST")
+            #if resp['status'] != '200':
+            #    raise Exception("Invalid response %s." % resp['status'])
+
+                request_token = dict(urlparse.parse_qsl(content))
+
+                print "Request Token:"
+                print "     - oauth_token        = %s" % request_token['oauth_token']
+                print "     - oauth_token_secret = %s" % request_token['oauth_token_secret']
+                print
+
+                # The user must confirm authorisation so a URL is printed here
+                print "Go to the following link in your browser:"
+                print "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
+                print
+
+                accepted = 'n'
+                # Wait until the user has confirmed authorisation
+                while accepted.lower() == 'n':
+                    accepted = raw_input('Have you authorized me? (y/n) ')
+                oauth_verifier = raw_input('What is the PIN? ')
+
+                token = oauth.Token(request_token['oauth_token'],
+                    request_token['oauth_token_secret'])
+                token.set_verifier(oauth_verifier)
+                #client = oauth.Client(consumer,token)
+                params = {
+                        'oauth_version': "1.0",
+                        'oauth_nonce': oauth.generate_nonce(),
+                        'oauth_timestamp': int(time.time()),
+                        #'user': self.username
+                    }
+
+                params['oauth_token'] = token.key
+                params['oauth_consumer_key'] = consumer.key
+
+                req = oauth.Request(method="GET",url=access_token_url,parameters=params)
+
+                signature_method = oauth.SignatureMethod_HMAC_SHA1()
+                req.sign_request(signature_method, consumer, token)
+
+                requestheaders = req.to_header()
+                requestheaders['User-Agent'] = "BBC R&D Grabber"
+                # Connect to Twitter
+                try:
+                    req = urllib2.Request(access_token_url,"oauth_verifier=%s" % oauth_verifier,requestheaders) # Why won't this work?!? Is it trying to POST?
+                    conn1 = urllib2.urlopen(req)
+                except httplib.BadStatusLine, e:
+                    sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
+                    conn1 = False
+                except urllib2.HTTPError, e:
+                    sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
+                    conn1 = False
+                except urllib2.URLError, e:
+                    sys.stderr.write('TwitterStream URL error: ' + str(e.reason) + '\n')
+                    conn1 = False
+
+                if conn1:
+                    content = conn1.read()
+                    conn1.close()
+                    access_token = dict(urlparse.parse_qsl(content))
+
+                    # Access tokens retrieved from Twitter
+                    print "Access Token:"
+                    print "     - oauth_token        = %s" % access_token['oauth_token']
+                    print "     - oauth_token_secret = %s" % access_token['oauth_token_secret']
+                    print
+                    print "You may now access protected resources using the access tokens above."
+                    print
+
+                    save = False
+                    # Load config to save OAuth keys
+                    try:
+                        homedir = os.path.expanduser("~")
+                        file = open(homedir + "/twitter-login.conf",'r')
+                        save = True
+                    except IOError, e:
+                        print ("Failed to load config file - not saving oauth keys: " + str(e))
+
+                    if save:
+                        raw_config = file.read()
+
+                        file.close()
+
+                        # Read config and add new values
+                        config = cjson.decode(raw_config)
+                        config['key'] = access_token['oauth_token']
+
+                        config['secret'] = access_token['oauth_token_secret']
+
+                        raw_config = cjson.encode(config)
+
+                        # Write out the new config file
+                        try:
+                            file = open(homedir + "/twitter-login.conf",'w')
+                            file.write(raw_config)
+                            file.close()
+                        except IOError, e:
+                            print ("Failed to save oauth keys: " + str(e))
+
+                    self.keypair = [access_token['oauth_token'], access_token['oauth_token_secret']]
         
 
         while not self.finished():
@@ -153,7 +213,6 @@ class PeopleSearch(component):
                         'oauth_version': "1.0",
                         'oauth_nonce': oauth.generate_nonce(),
                         'oauth_timestamp': int(time.time()),
-                        'user': self.username
                     }
 
                     token = oauth.Token(key=self.keypair[0],secret=self.keypair[1])
@@ -167,12 +226,13 @@ class PeopleSearch(component):
                     signature_method = oauth.SignatureMethod_HMAC_SHA1()
                     req.sign_request(signature_method, consumer, token)
 
-                    requesturl = req.to_url()
+                    requestheaders = req.to_header()
+                    requestheaders['User-Agent'] = "BBC R&D Grabber"
 
                     # Connect to Twitter
                     try:
-                        req = urllib2.Request(requesturl,postdata,headers) # Why won't this work?!? Is it trying to POST?
-                        conn1 = urllib2.urlopen(requesturl)
+                        req = urllib2.Request(requesturl,None,requestheaders) # Why won't this work?!? Is it trying to POST?
+                        conn1 = urllib2.urlopen(req)
                     except httplib.BadStatusLine, e:
                         sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
                         conn1 = False
