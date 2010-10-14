@@ -63,7 +63,7 @@ if __name__ == "__main__":
     system = Graphline(CURRENTPROG = WhatsOn(proxy),
                     REQUESTER = Requester("all",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
                     FIREHOSE = TwitterStream(username, password, proxy, True, 60), # Twitter API sends blank lines every 30 secs so timeout of 60 should be fine
-                    SEARCH = PeopleSearch(username, consumerkeypair, keypair, proxy),
+                    SEARCH = PeopleSearch(consumerkeypair, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
                     HTTPGETTER = HTTPGetter(proxy, "BBC R&D Grabber"),
                     HTTPGETTERRDF = HTTPGetter(proxy, "BBC R&D Grabber"),
