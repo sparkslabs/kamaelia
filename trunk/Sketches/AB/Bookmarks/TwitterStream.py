@@ -200,6 +200,7 @@ class TwitterStream(threadedcomponent):
                             file.write(filecontents + "\n" + str(datetime.utcnow()) + " Attempting reconnection...")
                             file.close()
                             try:
+                                urllib2.install_opener(twitopener)
                                 req = urllib2.Request(twitterurl,data,headers)
                                 conn1 = urllib2.urlopen(req,None,self.timeout)
                                 self.backofftime = 1
