@@ -56,16 +56,54 @@ class DataCollector(threadedcomponent):
                     if tweet[0] != "\r\n":
                         # At this point, each 'tweet' contains tweetdata, and a list of possible pids
                         newdata = cjson.decode(tweet[0]) # Won't work - need keywords to be related to their pids - let's requery
-                        print "New tweet! @" + newdata['user']['screen_name'] + ": " + newdata['text']
-                        for pid in tweet[1]:
-                            # Cycle through possible pids, grabbing that pid's keywords from the DB
-                            # Then, check this tweet against the keywords and save to DB where appropriate (there may be more than one location)
-                            cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
-                            data = cursor.fetchall()
-                            for row in data:
-                                keywords = row[0].split("^")
-                                if len(keywords) == 2:
-                                    if string.lower(keywords[0]) in string.lower(newdata['text']) and string.lower(keywords[1]) in string.lower(newdata['text']):
+                        if newdata.has_key('delete'):
+                            # Trying to work out what content is set to at the point it fails
+                            filepath = "contentDebug.txt"
+                            file = open(filepath, 'r')
+                            filecontents = file.read()
+                            file = open(filepath, 'w')
+                            file.write(filecontents + "\n" + cjson.encode(newdata))
+                            file.close()
+                        elif newdata.has_key('scrub_geo'):
+                            # Trying to work out what content is set to at the point it fails
+                            filepath = "contentDebug.txt"
+                            file = open(filepath, 'r')
+                            filecontents = file.read()
+                            file = open(filepath, 'w')
+                            file.write(filecontents + "\n" + cjson.encode(newdata))
+                            file.close()
+                        elif newdata.has_key('limit'):
+                            # Trying to work out what content is set to at the point it fails
+                            filepath = "contentDebug.txt"
+                            file = open(filepath, 'r')
+                            filecontents = file.read()
+                            file = open(filepath, 'w')
+                            file.write(filecontents + "\n" + cjson.encode(newdata))
+                            file.close()
+                        else:
+                            print "New tweet! @" + newdata['user']['screen_name'] + ": " + newdata['text']
+                            for pid in tweet[1]:
+                                # Cycle through possible pids, grabbing that pid's keywords from the DB
+                                # Then, check this tweet against the keywords and save to DB where appropriate (there may be more than one location)
+                                cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
+                                data = cursor.fetchall()
+                                for row in data:
+                                    keywords = row[0].split("^")
+                                    if len(keywords) == 2:
+                                        if string.lower(keywords[0]) in string.lower(newdata['text']) and string.lower(keywords[1]) in string.lower(newdata['text']):
+                                            cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
+                                            if cursor.fetchone() != None:
+                                                # Ensure the user hasn't already tweeted for this programme in this minute
+                                                # Muppet - this will only check for same second tweets - duh
+                                                cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
+                                                if cursor.fetchone() == None:
+                                                    print ("Storing tweet for pid " + pid)
+                                                    timestamp = time.mktime(parse(newdata['created_at']).timetuple())
+                                                    cursor.execute("""INSERT INTO rawdata (pid,timestamp,text,user) VALUES (%s,%s,%s,%s)""", (pid,timestamp,newdata['text'],newdata['user']['screen_name']))
+                                                    break # Break out of this loop and back to check the same tweet against the next programme
+                                                else:
+                                                    print ("Duplicate user for current minute - ignoring")
+                                    if string.lower(row[0]) in string.lower(newdata['text']):
                                         cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
                                         if cursor.fetchone() != None:
                                             # Ensure the user hasn't already tweeted for this programme in this minute
@@ -78,19 +116,6 @@ class DataCollector(threadedcomponent):
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
                                                 print ("Duplicate user for current minute - ignoring")
-                                if string.lower(row[0]) in string.lower(newdata['text']):
-                                    cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
-                                    if cursor.fetchone() != None:
-                                        # Ensure the user hasn't already tweeted for this programme in this minute
-                                        # Muppet - this will only check for same second tweets - duh
-                                        cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
-                                        if cursor.fetchone() == None:
-                                            print ("Storing tweet for pid " + pid)
-                                            timestamp = time.mktime(parse(newdata['created_at']).timetuple())
-                                            cursor.execute("""INSERT INTO rawdata (pid,timestamp,text,user) VALUES (%s,%s,%s,%s)""", (pid,timestamp,newdata['text'],newdata['user']['screen_name']))
-                                            break # Break out of this loop and back to check the same tweet against the next programme
-                                        else:
-                                            print ("Duplicate user for current minute - ignoring")
                     else:
                         print "Blank line received from Twitter - no new data"
                     

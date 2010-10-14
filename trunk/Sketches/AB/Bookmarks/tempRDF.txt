@@ -13,155 +13,64 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/p00b6dx9.rdf">
-  <rdfs:label>Description of a programme version of The Vaccine Detectives - part two</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-22T20:19:46+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-22T20:19:46+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/p00b6dx9#programme"/>
+<rdf:Description rdf:about="/programmes/b00v8x5t.rdf">
+  <rdfs:label>Description of a programme version of 14/10/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T00:08:28+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-07T00:08:28+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00v8x5t#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/p00b6dx9#programme">
+<po:Version rdf:about="/programmes/b00v8x5t#programme">
 
-  <rdfs:label>A version of The Vaccine Detectives - part two</rdfs:label>
+  <rdfs:label>A version of 14/10/2010</rdfs:label>
   
-  
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1680</po:duration>
-  <po:pid>p00b6dx9</po:pid>
+  <po:sound_format>Stereo</po:sound_format>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9000</po:duration>
+  <po:pid>b00v8x5t</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of The Vaccine Detectives - part two</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/p00b6dx9#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1680S</timeline:duration>
+      <rdfs:label>Time interval for a version of 14/10/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00v8x5t#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT9000S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/p00b6dt4#programme">
-  <rdfs:label>The Vaccine Detectives - part two</rdfs:label>
-  <po:version rdf:resource="/programmes/p00b6dx9#programme" />
+<po:Episode rdf:about="/programmes/b00v8x64#programme">
+  <rdfs:label>14/10/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/b00v8x5t#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/p00b6dx9#timeline">
-  <rdfs:label>Timeline of a version of The Vaccine Detectives - part two</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00v8x5t#timeline">
+  <rdfs:label>Timeline of a version of 14/10/2010</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/p00b6dx9#p00b6f09">
+<po:Broadcast rdf:about="/programmes/b00v8x5t#p00bg28z">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b6f09</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-13</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T10:32:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/worldservice#service">
-      <rdfs:label>BBC World Service</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/p00b6dx9#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/p00b6dx9#p00b6f1f">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b6f1f</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-13</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T15:32:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T16:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/worldservice#service">
-      <rdfs:label>BBC World Service</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/p00b6dx9#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/p00b6dx9#p00b6f29">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b6f29</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-13</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T20:32:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T21:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/worldservice#service">
-      <rdfs:label>BBC World Service</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/p00b6dx9#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/p00b6dx9#p00b70r3">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00b70r3</po:pid>
+  <po:pid>p00bg28z</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-14</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T01:32:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T02:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T10:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T12:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/worldservice#service">
-      <rdfs:label>BBC World Service</rdfs:label>
+    <po:Service rdf:about="/services/asiannetwork#service">
+      <rdfs:label>BBC Asian Network</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/p00b6dx9#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00v8x5t#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T21:02:00+01:00</timeline:start>
-  
-</po:Availability>
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:02:00+01:00</timeline:start>
-  
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/p00b6dx9#p00b6l9k">
-      <po:pid>p00b6l9k</po:pid>
-      <po:service rdf:resource="/services/iplayer_intl_stream_real#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:39:57+01:00</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/p00b6dx9#p00b6l9j">
-      <po:pid>p00b6l9j</po:pid>
-      <po:service rdf:resource="/services/iplayer_intl_stream_aac_abstract#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:39:56+01:00</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/p00b6dx9#p00b6l9l">
-      <po:pid>p00b6l9l</po:pid>
-      <po:service rdf:resource="/services/iplayer_intl_stream_wma#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:40:01+01:00</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/p00b6dx9#p00bkr5d">
-      <po:pid>p00bkr5d</po:pid>
-      <po:service rdf:resource="/services/iplayer_intl_stream_aac_ws_concrete#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T11:40:02+01:00</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-</po:Availability>
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T16:02:00+01:00</timeline:start>
-  
-</po:Availability>
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T02:02:00+01:00</timeline:start>
-  
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T12:32:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-21T12:32:00+01:00</timeline:end>
 </po:Availability>
 
 

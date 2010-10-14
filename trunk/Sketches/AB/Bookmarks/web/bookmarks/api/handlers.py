@@ -103,7 +103,7 @@ class SummaryHandler(BaseHandler):
                 progdate = datetime.utcfromtimestamp(data[0].timestamp + data[0].utcoffset)
                 progdate = progdate + timedelta(seconds=data[0].duration - data[0].timediff)
                 datenow = datetime.now()
-                if datenow <= progdate:
+                if data[0].imported == 0:
                     retdata['channels'][len(retdata['channels']) - 1]['pid'] = data[0].pid
                     retdata['channels'][len(retdata['channels']) - 1]['stdev'] = data[0].stdevtweets
                     retdata['channels'][len(retdata['channels']) - 1]['interestingness'] = 0
