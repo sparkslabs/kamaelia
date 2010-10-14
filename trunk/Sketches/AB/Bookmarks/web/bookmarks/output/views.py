@@ -159,12 +159,15 @@ def programme(request,pid):
 
     output = header
     output += "<script type=\"text/javascript\">"
-    output += "function revealTweets() {"
-    output += "if (document.getElementById('rawtweets').style.display == 'none') {"
-    output += "document.getElementById('rawtweets').style.display = 'inline';"
-    output += "} else {"
-    output += "document.getElementById('rawtweets').style.display = 'none';"
-    output += "}}</script>"
+    #output += "function revealTweets() {"
+    #output += "if (document.getElementById('rawtweets').style.display == 'none') {"
+    #output += "document.getElementById('rawtweets').style.display = 'inline';"
+    #output += "} else {"
+    #output += "document.getElementById('rawtweets').style.display = 'none';"
+    #output += "}}"
+    output += "function revealMinute(timestamp) {"
+    output += "window.open('/programmes/" + pid + "/' + timestamp);"
+    output += "}</script>"
 
     data = programmes.objects.filter(pid=pid).all()
     if len(data) == 0:
@@ -194,6 +197,7 @@ def programme(request,pid):
             # Would be worth caching charts if poss to avoid too many API calls.
         if 1:
             tweetmins = dict()
+            tweetstamps = dict()
             appender = ""
             lastwasbookmark = False
             bookmarks = list()
@@ -229,6 +233,8 @@ def programme(request,pid):
                     lastwasbookmark = False
                 if not tweetmins.has_key(str(playertimemin)):
                     tweetmins[str(playertimemin)] = int(minute.totaltweets)
+                if not tweetstamps.has_key(str(playertimemin)):
+                    tweetstamps[str(playertimemin)] = int(minute.timestamp)
             if len(tweetmins) > 0:
                 output += " - Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
                 xlist = range(0,data[0].duration/60)
@@ -264,8 +270,10 @@ def programme(request,pid):
                         blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
                     else:
                         blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
-
-                    blockgraph3 += "<a href=\"notdoneyet FIXME TODO\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                    if tweetstamps.has_key(str(min)):
+                        blockgraph3 += "<a href=\"javascript:revealMinute(" + str(tweetstamps[str(min)]) + ")\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                    else:
+                        blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
 
                 blockgraph += "</div>"
                 blockgraph2 += "</div>"
@@ -293,18 +301,42 @@ def programme(request,pid):
 
         output += "<br /><br />API: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
         # Reveal tweets is temporary - will allow selection and viewing of single minutes once the database has been redesigned.
-        output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"javascript:revealTweets()\">View all / hide all tweets</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
+        output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
         # The below is a lesser of two evils solution - Ideally tweets for individual minutes would be grabbed via AJAX upon request.
         # This can't be added without significant pain until the database has been restructured slightly to use better format dates and times for raw tweets
-        rawtweets = rawdata.objects.filter(pid=pid).all()
-        output += "<br /><br /><div id=\"rawtweets\" style=\"display: none; font-size: 9pt\">"
-        for tweet in rawtweets:
-            output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp)) + ":</strong> " + tweet.text
+        #rawtweets = rawdata.objects.filter(pid=pid).all()
+        #output += "<br /><br /><div id=\"rawtweets\" style=\"display: none; font-size: 9pt\">"
+        #for tweet in rawtweets:
+        #    output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp)) + ":</strong> " + tweet.text
         #output += "</div>"
     else:
         output += "<br />Database consistency error - somehow a primary key appears twice. The world may have ended."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
 
+    output += footer
+    return HttpResponse(output)
+
+def rawtweets(request,pid,timestamp):
+    output = header
+    progdata = programmes.objects.filter(pid=pid).all()
+    timestamp = int(timestamp)
+    if len(progdata) == 0:
+        output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
+    else:
+        endstamp = timestamp + 60
+        channel = progdata[0].channel
+        output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
+        progdate = datetime.utcfromtimestamp(progdata[0].timestamp) + timedelta(seconds=progdata[0].utcoffset)
+        starttime = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=progdata[0].utcoffset)
+        endtime = datetime.utcfromtimestamp(endstamp) + timedelta(seconds=progdata[0].utcoffset)
+        output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
+        output += "<strong>" + progdata[0].title + "</strong><br />"
+        output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
+        rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).all()
+        output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
+        for tweet in rawtweets:
+            output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + tweet.text
+        output += "</div>"
     output += footer
     return HttpResponse(output)
