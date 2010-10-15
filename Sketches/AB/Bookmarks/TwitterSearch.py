@@ -90,7 +90,7 @@ class PeopleSearch(component):
                 sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
                 conn1 = False
             except urllib2.URLError, e:
-                sys.stderr.write('TwitterStream URL error: ' + str(e.reason) + '\n')
+                sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
                 conn1 = False
 
             if conn1:
@@ -150,7 +150,7 @@ class PeopleSearch(component):
                     sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
                     conn1 = False
                 except urllib2.URLError, e:
-                    sys.stderr.write('TwitterStream URL error: ' + str(e.reason) + '\n')
+                    sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
                     conn1 = False
 
                 if conn1:
@@ -240,7 +240,7 @@ class PeopleSearch(component):
                         sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
                         conn1 = False
                     except urllib2.URLError, e:
-                        sys.stderr.write('TwitterStream URL error: ' + str(e.reason) + '\n')
+                        sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
                         conn1 = False
 
                     if conn1:

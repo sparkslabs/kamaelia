@@ -113,7 +113,7 @@ class HTTPGetter(component):
             self.pause()
 
 class StreamingHTTPGetter(threadedcomponent):
-    #TODO - will be created if hanging issue solved in Twitter streamer
+    #TODO - will be created if hanging issue solved in Twitter streamer - possibly
 
     def main(self):
         pass

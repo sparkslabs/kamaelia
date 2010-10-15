@@ -78,7 +78,7 @@ class Requester(threadedcomponent):
             "b0071b63" : ["bbcapprentice"], # The Apprentice
             "b006mg74" : ["bbcwatchdog"], # Watchdog
             "b006v5tb" : ['bbcbreakfast'], # Breakfast
-            "b006mkw3" : ["#hignfy","bbcHIGNFY"] # Have I Got News For You
+            "b006mkw3" : ["hignfy","bbchignfy"] # Have I Got News For You
         }
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
         self.officialseriestags = {
@@ -299,7 +299,6 @@ class Requester(threadedcomponent):
 
                 for x in s:
                     character = str(g.value(subject=rdflib.BNode(x),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/name')))
-                    # TODO: Character names would probably work best as just first names, but watch out for Dr. etc appearing first
                     rid = g.value(predicate=rdflib.URIRef('http://purl.org/ontology/po/role'),object=rdflib.BNode(x))
                     pid = g.value(subject=rdflib.BNode(rid),predicate=rdflib.URIRef('http://purl.org/ontology/po/participant'))
                     firstname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/givenName')))

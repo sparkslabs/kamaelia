@@ -153,7 +153,6 @@ def channel(request,channel,year=0,month=0,day=0):
     return HttpResponse(output)
 
 def programme(request,pid):
-    # When doing API in json/RDF? look at 'Outputting CSV with Django' online.
     # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
 
     output = header
@@ -174,130 +173,113 @@ def programme(request,pid):
         output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
         output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
         output += "<br />Total tweets: " + str(data[0].totaltweets)
-        #if data[0].imported == 0:
-        #    output += "<br />Data for this programme has not been flagged as imported."
-        #    output += "<br />- This may indicate that the programme is yet to finish."
-        #    output += "<br />- If the programme finished over 5 minutes ago, you may need to set the flag manually."
-        #elif data[0].analysed == 0:
-        #    output += "<br />Data for this programme has been imported but is awaiting analysis."
-        #else:
-            # Still need to add some form of chart or charts here - looking at Google Chart API first.
-            # Would be worth caching charts if poss to avoid too many API calls.
-        if 1:
-            tweetmins = dict()
-            tweetstamps = dict()
-            #appender = ""
-            lastwasbookmark = False
-            bookmarks = list()
-            bookmarkcont = list()
-            for minute in minutedata:
-                tweettime = datetime.utcfromtimestamp(minute.timestamp) + timedelta(seconds=data[0].utcoffset)
-                proghour = tweettime.hour - actualstart.hour
-                progmin = tweettime.minute - actualstart.minute
-                progsec = tweettime.second - actualstart.second
-                playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
-                if playertime > (data[0].duration - 60):
-                    playertimemin = (data[0].duration/60) - 1
-                    playertimesec = playertime%60
-                elif playertime > 0:
-                    playertimemin = playertime/60
-                    playertimesec = playertime%60
-                else:
-                    playertimemin = 0
-                    playertimesec = 0
-                #appender += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
-                if minute.totaltweets > (1.5*data[0].stdevtweets+data[0].meantweets):
-                    if lastwasbookmark == True:
-                        #appender += " cont'd..."
-                        bookmarkcont.append(playertimemin)
-                    else:
-                        if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets) and minute.totaltweets > 9: # Arbitrary value chosen for now - needs experimentation - was 9
-                            #appender += " BOOKMARK!"
-                            lastwasbookmark = True
-                            bookmarks.append(playertimemin)
-                        else:
-                            lastwasbookmark = False
-                else:
-                    lastwasbookmark = False
-                if not tweetmins.has_key(str(playertimemin)):
-                    tweetmins[str(playertimemin)] = int(minute.totaltweets)
-                if not tweetstamps.has_key(str(playertimemin)):
-                    tweetstamps[str(playertimemin)] = int(minute.timestamp)
-            if len(tweetmins) > 0:
-                output += " - Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
-                xlist = range(0,data[0].duration/60)
-                ylist = list()
-                for min in xlist:
-                    if tweetmins.has_key(str(min)):
-                        ylist.append(tweetmins[str(min)])
-                    else:
-                        ylist.append(0)
-
-                maxy = max(ylist)
-                maxx = max(xlist)
-
-                mainwidth = int(1000/(maxx+1)) * (maxx + 1)
-                # blockgraph = main gradient based output
-                # blockgraph2 = iPlayer bookmarks selection
-                # blockgraph3 = raw tweets selection
-                blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 50px; width: " + str(mainwidth) + "px\">"
-                blockgraph2 = "<div style=\"border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
-                blockgraph3 = "<div style=\"border-bottom: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
-                width = int(1000/(maxx+1))
-                for min in xlist:
-                    if tweetmins.has_key(str(min)):
-                        opacity = float(tweetmins[str(min)]) / maxy
-                    else:
-                        opacity = 0
-                    blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
-
-                    if min in bookmarks:
-                        blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
-                        lastbookmark = min
-                    elif min in bookmarkcont: 
-                        blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
-                    else:
-                        blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
-                    if tweetstamps.has_key(str(min)):
-                        blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
-                    else:
-                        blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
-
-                blockgraph += "</div>"
-                blockgraph2 += "</div>"
-                blockgraph3 += "</div>"
-
-                if mainwidth > 1000:
-                    mainwidth = 1000
-
-                graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
-                graph.add_data(ylist)
-
-                #TODO: Fix the bad labelling!
-                graph.set_title("Tweets per minute")
-                left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
-                bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
-                graph.set_axis_labels(Axis.LEFT,left_axis)
-                graph.set_axis_labels(Axis.BOTTOM,bottom_axis)
-                output += "<br /><img src=\"" + graph.get_url() + "\"><br /><br />"
-                output += blockgraph
-                output += blockgraph2
-                output += blockgraph3
-                #output += appender
+        tweetmins = dict()
+        tweetstamps = dict()
+        #appender = ""
+        lastwasbookmark = False
+        bookmarks = list()
+        bookmarkcont = list()
+        for minute in minutedata:
+            tweettime = datetime.utcfromtimestamp(minute.timestamp) + timedelta(seconds=data[0].utcoffset)
+            proghour = tweettime.hour - actualstart.hour
+            progmin = tweettime.minute - actualstart.minute
+            progsec = tweettime.second - actualstart.second
+            playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
+            if playertime > (data[0].duration - 60):
+                playertimemin = (data[0].duration/60) - 1
+                playertimesec = playertime%60
+            elif playertime > 0:
+                playertimemin = playertime/60
+                playertimesec = playertime%60
             else:
-                output += "<br />Not enough data to generate statistics.<br />"
+                playertimemin = 0
+                playertimesec = 0
+            #appender += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
+            if minute.totaltweets > (1.5*data[0].stdevtweets+data[0].meantweets):
+                if lastwasbookmark == True:
+                    #appender += " cont'd..."
+                    bookmarkcont.append(playertimemin)
+                else:
+                    if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets) and minute.totaltweets > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                        #appender += " BOOKMARK!"
+                        lastwasbookmark = True
+                        bookmarks.append(playertimemin)
+                    else:
+                        lastwasbookmark = False
+            else:
+                lastwasbookmark = False
+            if not tweetmins.has_key(str(playertimemin)):
+                tweetmins[str(playertimemin)] = int(minute.totaltweets)
+            if not tweetstamps.has_key(str(playertimemin)):
+                tweetstamps[str(playertimemin)] = int(minute.timestamp)
+        if len(tweetmins) > 0:
+            output += " - Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
+            xlist = range(0,data[0].duration/60)
+            ylist = list()
+            for min in xlist:
+                if tweetmins.has_key(str(min)):
+                    ylist.append(tweetmins[str(min)])
+                else:
+                    ylist.append(0)
+
+            maxy = max(ylist)
+            maxx = max(xlist)
+
+            mainwidth = int(1000/(maxx+1)) * (maxx + 1)
+            # blockgraph = main gradient based output
+            # blockgraph2 = iPlayer bookmarks selection
+            # blockgraph3 = raw tweets selection
+            blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 50px; width: " + str(mainwidth) + "px\">"
+            blockgraph2 = "<div style=\"border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
+            blockgraph3 = "<div style=\"border-bottom: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
+            width = int(1000/(maxx+1))
+            for min in xlist:
+                if tweetmins.has_key(str(min)):
+                    opacity = float(tweetmins[str(min)]) / maxy
+                else:
+                    opacity = 0
+                blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+
+                if min in bookmarks:
+                    blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
+                    lastbookmark = min
+                elif min in bookmarkcont:
+                    blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
+                else:
+                    blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
+                if tweetstamps.has_key(str(min)):
+                    blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                else:
+                    blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
+
+            blockgraph += "</div>"
+            blockgraph2 += "</div>"
+            blockgraph3 += "</div>"
+
+            if mainwidth > 1000:
+                mainwidth = 1000
+
+            graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
+            graph.add_data(ylist)
+
+            #TODO: Fix the bad labelling!
+            graph.set_title("Tweets per minute")
+            left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
+            bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
+            graph.set_axis_labels(Axis.LEFT,left_axis)
+            graph.set_axis_labels(Axis.BOTTOM,bottom_axis)
+            output += "<br /><img src=\"" + graph.get_url() + "\"><br /><br />"
+            output += blockgraph
+            output += blockgraph2
+            output += blockgraph3
+            #output += appender
+        else:
+            output += "<br />Not enough data to generate statistics.<br />"
 
         output += "<br /><br />API: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
         # Reveal tweets is temporary - will allow selection and viewing of single minutes once the database has been redesigned.
         output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
-        # The below is a lesser of two evils solution - Ideally tweets for individual minutes would be grabbed via AJAX upon request.
-        # This can't be added without significant pain until the database has been restructured slightly to use better format dates and times for raw tweets
-        #rawtweets = rawdata.objects.filter(pid=pid).all()
-        #output += "<br /><br /><div id=\"rawtweets\" style=\"display: none; font-size: 9pt\">"
-        #for tweet in rawtweets:
-        #    output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp)) + ":</strong> " + tweet.text
-        #output += "</div>"
     else:
         output += "<br />Database consistency error - somehow a primary key appears twice. The world may have ended."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
