@@ -45,7 +45,7 @@ class CheckpointSequencer(Axon.Component.component):
     def saveMessage(self, current): return current
     def newMessage(self, current): return current
     
-    def fixNumbering(self):
+    def fixNumbering(self): # MOVEME!!!!!
         exists = 1
         slides = os.listdir(self.notepad)
         slides.sort()
@@ -78,7 +78,7 @@ class CheckpointSequencer(Axon.Component.component):
         while self.shutdown():
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
-                if command == "delete":
+                if command == "delete": # MOVEME!!!!!
                     try:
                         os.remove(self.notepad + "/slide." + str(current) + ".png")
                     except Exception, e:
@@ -104,7 +104,7 @@ class CheckpointSequencer(Axon.Component.component):
                     else:
                         # Do nothing
                         pass
-                if command == "save":
+                if command == "save": # MOVEME!!!!!
                     self.send( self.saveMessage(current), "outbox")
                 if command == "prev":
                     if current >1:

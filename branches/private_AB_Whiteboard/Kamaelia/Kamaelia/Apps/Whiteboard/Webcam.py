@@ -81,7 +81,7 @@ class VideoCaptureSource(threadedcomponent):
         try:
             self.camera.start()
             while self.shutdown():
-                self.capture_one()
+                self.capture_one() # THIS IS FAILING - MAY BE THE CAMERA'S FAULT BUT NOT SURE
                 #self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
                 self.snapshot=self.snapshot.convert()
                 self.send(self.snapshot, "outbox")
@@ -159,6 +159,7 @@ class WebcamManager(component):
                   snapshot = self.recv("inbox")
                   if self.webcam == 1:
                       #snapshot=snapshot.convert()
+                      snapshot = pygame.transform.scale(snapshot,(190,140))
                       self.display.blit(snapshot, (0,0))
                       self.pygame_display_flip()
                   elif self.webcam == 2:
@@ -186,6 +187,7 @@ class WebcamManager(component):
                       for x in self.remotecams:
                           if self.remotecams[iteration] == tag:
                               offset = (140 * iteration + iteration * 1)
+                              data = pygame.transform.scale(data,(190,140))
                               self.display.blit(data, (0,0+offset))
                               self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
                           iteration += 1

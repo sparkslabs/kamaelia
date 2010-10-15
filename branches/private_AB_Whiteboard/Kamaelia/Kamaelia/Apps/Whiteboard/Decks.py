@@ -80,6 +80,22 @@ class Decks(component):
             self.pause()
             yield 1
                 
+    def fixNumbering(self):
+        exists = 1
+        slides = os.listdir(self.scribblesdir)
+        slides.sort()
+        for x in slides:
+            if x == "slide." + str(exists) + ".png":
+                # This slide exists, skip to next one
+                pass
+            else:
+                # This slide doesn't exist, find the next one up and copy it down
+                try:
+                    shutil.move(self.scribblesdir + "/" + x,self.scribblesdir + "/slide." + str(exists) + ".png")
+                except Exception, e:
+                    print("Failed to renumber slides. There may be an error in the sequence")
+            exists += 1
+                
     def handleCommand(self, cmd):
         cmd = cmd.upper()
         if cmd=="LOADDECK":
@@ -192,9 +208,37 @@ class Decks(component):
         except Exception, e:
             pass
         
-    def deleteslide(self):
+    def deleteslide(self): #FIXME
         self.send([["clear"]], "toCanvas")
         self.send("delete", "toHistory")
+        #try:
+            #os.remove(self.scribblesdir + "/slide." + str(current) + ".png")
+        #except Exception, e:
+            #pass
+        
+        #if current == highest and highest > 1:
+            ## go to previous slide
+            #dirty = False
+            #command = "prev"
+            #highest -= 1
+            #self.fixNumbering()
+        #elif current < highest and current != 1:
+            ## go to previous slide and fix numbering
+            #dirty = False
+            #command = "prev"
+            #highest -= 1
+            #self.fixNumbering()
+        #elif current == 1 and current < highest:
+            ## fix numbering then reload current slide
+            #highest -= 1
+            #self.fixNumbering()
+            #self.send( self.loadMessage(current), "outbox")
+        #else:
+            ## Do nothing
+            #pass
+            
+    def saveslide(self): #FIXME
+        # self.send( self.saveMessage(current), "outbox")
     
     def quit(self):
        root = Tk()
