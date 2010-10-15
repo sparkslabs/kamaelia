@@ -20,6 +20,7 @@ from TwitterStream import TwitterStream
 from TwitterSearch import PeopleSearch
 from DataCollector import DataCollector
 from URLGetter import HTTPGetter
+from LiveAnalysis import LiveAnalysis
 
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 
@@ -66,6 +67,7 @@ if __name__ == "__main__":
                     HTTPGETTER = HTTPGetter(proxy, "BBC R&D Grabber"),
                     HTTPGETTERRDF = HTTPGetter(proxy, "BBC R&D Grabber"),
                     TWOWAY = TwoWaySplitter(),
+                    ANALYSIS = LiveAnalysis(dbuser,dbpass),
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
                                 ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API
