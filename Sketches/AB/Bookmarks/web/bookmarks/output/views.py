@@ -25,7 +25,6 @@ def index(request):
     output += "<meta http-equiv='refresh' content='60'>"
     output += "<style type=\"text/css\">.box a:link, .box a:visited, .box a:active, .box a:hover { color: inherit; }</style>"
     # Prevent division by zero later on...
-    #maxtweets = 1
     largeststdev = 1
 
     # Identify the total tweets for each current programme (provided the grabber is still running)
@@ -34,13 +33,9 @@ def index(request):
         if isinstance(data,object):
             progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
             progdate = progdate + timedelta(seconds=data.duration - data.timediff)
-            #datenow = datetime.now()
-            #if data[0].totaltweets > maxtweets and datenow <= progdate:
-            #    maxtweets = data[0].totaltweets
             if data.stdevtweets > largeststdev and data.imported==0:
                 largeststdev = data.stdevtweets
 
-    #normaliser = 1/float(maxtweets)
     normaliser = 1/float(largeststdev)
 
     output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
@@ -48,17 +43,13 @@ def index(request):
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
             progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
-            #progend = progdate + timedelta(seconds=data.duration - data.timediff)
-            #datenow = datetime.utcnow() + timedelta(seconds=data.utcoffset)
             if data.imported==0:
                 opacity = normaliser * data.stdevtweets
-                #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
                     fontcolour = "#000000"
                 else:
                     fontcolour = "#FFFFFF"
                 bgval = str(int(255 - (255 * opacity)))
-                #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none\">" + str(data.totaltweets) + "</a></div></div>"
@@ -74,17 +65,13 @@ def index(request):
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
             progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
-            #progend = progdate + timedelta(seconds=data.duration - data.timediff)
-            #datenow = datetime.utcnow() + timedelta(seconds=data.utcoffset)
             if data.imported==0:
                 opacity = normaliser * data.stdevtweets
-                #fontval = str(int(255 * opacity))
                 if opacity < 0.5:
                     fontcolour = "#000000"
                 else:
                     fontcolour = "#FFFFFF"
                 bgval = str(int(255 - (255 * opacity)))
-                #fontcolour = "rgb(" + fontval + "," + fontval + "," + fontval + ")"
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none\">" + str(data.totaltweets) + "</a></div></div>"
@@ -306,7 +293,7 @@ def rawtweets(request,pid,timestamp):
         rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).all()
         output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
         for tweet in rawtweets:
-            output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + tweet.text
+            output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
         output += "</div>"
     output += footer
     return HttpResponse(output)

@@ -96,9 +96,6 @@ class PeopleSearch(component):
             if conn1:
                 content = conn1.read()
                 conn1.close()
-            #resp, content = client.request(request_token_url, "POST")
-            #if resp['status'] != '200':
-            #    raise Exception("Invalid response %s." % resp['status'])
 
                 request_token = dict(urlparse.parse_qsl(content))
 
@@ -121,12 +118,11 @@ class PeopleSearch(component):
                 token = oauth.Token(request_token['oauth_token'],
                     request_token['oauth_token_secret'])
                 token.set_verifier(oauth_verifier)
-                #client = oauth.Client(consumer,token)
+
                 params = {
                         'oauth_version': "1.0",
                         'oauth_nonce': oauth.generate_nonce(),
                         'oauth_timestamp': int(time.time()),
-                        #'user': self.username
                     }
 
                 params['oauth_token'] = token.key

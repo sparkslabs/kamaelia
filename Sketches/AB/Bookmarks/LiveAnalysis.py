@@ -96,14 +96,8 @@ class LiveAnalysis(threadedcomponent):
 
                 # Averages / stdev are calculated roughly based on the programme's running time at this point
                 progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
-                #tz = progdate.tzinfo
-                #progdate = progdate.replace(tzinfo=None)
                 actualstart = progdate - timedelta(seconds=timediff)
-
-                #offset = datetime.strptime(str(tz.utcoffset(parse(tweettime))),"%H:%M:%S")
-                #offset = timedelta(hours=offset.hour)
                 actualtweettime = datetime.utcfromtimestamp(tweettime + utcoffset)
-                #actualtweettime = actualtweettime.replace(tzinfo=None)
 
                 # Calculate how far through the programme this tweet occurred
                 runningtime = actualtweettime - actualstart
