@@ -5,8 +5,6 @@
 # - Collects Twitter streaming API data based on generated keywords.
 # Program run initially to join up all mailboxes etc
 
-#### NOTE: THIS PROGRAM CURRENTLY NEEDS A PROXY FREE CONNECTION IF OAUTH KEYS NEED REFRESHING
-
 ### Danger area: Adding OAuth to both Twitter components will result in them both trying to renew the received key and secret
 ### To avoid this, there needs to be a way to pass received keys and secrets to components needing them before they try to make requests too.
 ### Also need to farm out access to config file from OAuth utilising components so they're more generic
