@@ -65,8 +65,11 @@ filename = channel+ "." + str_stamp +".ts"
 
 print "Recording", channel, "to", filename
 
+from Kamaelia.Device.DVB.Parse.ParseTimeAndDateTable import TDT_PID
+from Kamaelia.Device.DVB.Parse.ParseEventInformationTable import EIT_PID
+
 Pipeline(
-   DVB_Multiplex(0, [chan_info["apid"], chan_info["vpid"]], chan_info["feparams"]), # BBC NEWS CHANNEL
+   DVB_Multiplex(0, [chan_info["apid"], chan_info["vpid"], EIT_PID, TDT_PID], chan_info["feparams"]), # BBC NEWS CHANNEL
    SimpleFileWriter( filename )
 ).run()
 
