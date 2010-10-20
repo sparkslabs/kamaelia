@@ -146,10 +146,7 @@ class LiveAnalysis(threadedcomponent):
 
 
                         for word in tweet[2].split():
-                            if "http://" in word:
-                                for items in """!"#$%&()*+,-;<=>?@~[\\]?_'`{|}?""":
-                                    word = string.replace(word,items,"")
-                            else:
+                            if not "http://" in word:
                                 for items in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
                                     word = string.replace(word,items,"")
                             if word != "":
