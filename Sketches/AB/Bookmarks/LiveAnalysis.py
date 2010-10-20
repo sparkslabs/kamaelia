@@ -167,6 +167,7 @@ class LiveAnalysis(threadedcomponent):
                                     filteredwords.append(word)
 
                         for word in filteredwords:
+                            word = string.lower(word)
                             if wordfrequnexpected.has_key(word) and not wordfreqexpected.has_key(word) and "\u" not in word:
                                 wordfrequnexpected[word] = wordfrequnexpected[word] + 1
                             elif not wordfreqexpected.has_key(word) and "\u" not in word:
