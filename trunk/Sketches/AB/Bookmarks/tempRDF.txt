@@ -13,46 +13,76 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00v9qc4.rdf">
-  <rdfs:label>Description of the episode 20/10/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T00:11:50+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-19T16:50:59+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00v9qc4#programme"/>
+<rdf:Description rdf:about="/programmes/b00v7tx8.rdf">
+  <rdfs:label>Description of the episode Episode 3</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T01:01:06+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T01:01:06+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00v7tx8#programme"/>
 </rdf:Description>
 
-<po:Episode rdf:about="/programmes/b00v9qc4#programme">
+<po:Episode rdf:about="/programmes/b00v7tx8#programme">
 
-  <po:pid>b00v9qc4</po:pid>
-  <dc:title>20/10/2010</dc:title>
-  <po:short_synopsis>Vis sits in for Max and catches up with some of the MOBO-nominated artists.</po:short_synopsis>
-  <po:medium_synopsis>Vis sits in for Max with music, gossip and entertainment. He catches up with some of the MOBO-nominated artists.</po:medium_synopsis>
+  <po:pid>b00v7tx8</po:pid>
+  <dc:title>Episode 3</dc:title>
+  <po:short_synopsis>The BBC Symphony Orchestra in music by Messiaen, Schubert, Knussen and Tchaikovsky.</po:short_synopsis>
+  <po:medium_synopsis>Louise Fryer presents a celebration of the BBC Symphony Orchestra. Messiaen: Poeme pour Mi. Schubert: Symphony No 5. Knussen: Symphony No 3. Tchaikovsky: Sleeping Beauty (excerpts).</po:medium_synopsis>
+  <po:long_synopsis>As the BBC Symphony Orchestra celebrates its 80th anniversary, Afternoon on 3 continues with its week of performances by the Orchestra and its twelve Chief Conductors since 1930. In the 1970s and 1980s Pierre Boulez, Rudolf Kempe, Gennadi Rozhdestvensky and Sir John Pritchard each contributed to the Orchestra&#39;s kaleidoscope of repertoire and styles. Presented by Louise Fryer.
+
+2.00pm
+Messiaen: Poeme pour Mi 
+Felicity Palmer, mezzo-soprano
+Pierre Boulez, conductor 
+
+2.30pm
+Schubert: Symphony No. 5 
+Rudolf Kempe, conductor
+
+3.00pm
+Knussen: Symphony No. 3 
+Oliver Knussen, conductor
+
+3.15pm
+Delius: Summer Night on the River
+Sir John Pritchard, conductor
+
+3.20pm
+Tchaikovsky: Sleeping Beauty (extracts)
+Gennadi Rozhdestvensky, conductor.</po:long_synopsis>
+
   
 
-  <po:microsite rdf:resource="http://www.bbc.co.uk/1xtra/max/"/>
 
-  <foaf:depiction rdf:resource="/iplayer/images/episode/b00v9qc4_512_288.jpg"/>
+  <po:masterbrand rdf:resource="/radio3#service"/>
 
-  <po:masterbrand rdf:resource="/1xtra#service"/>
+  <po:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</po:position>
 
-  
+  <po:genre rdf:resource="/programmes/genres/music/classical#genre" />
 
-  <po:genre rdf:resource="/programmes/genres/music/hiphoprnbanddancehall#genre" />
-  <po:genre rdf:resource="/programmes/genres/music/popandchart#genre" />
-  <po:genre rdf:resource="/programmes/genres/music/popandchart/experimentalandnew#genre" />
+  <po:format rdf:resource="/programmes/formats/performancesandevents#format" />
+
+  <po:subject rdf:resource="/programmes/subjects/franz_schubert#subject" />
+  <po:subject rdf:resource="/programmes/subjects/frederick_delius#subject" />
+  <po:subject rdf:resource="/programmes/subjects/oliver_knussen#subject" />
+  <po:subject rdf:resource="/programmes/subjects/olivier_messiaen#subject" />
+  <po:subject rdf:resource="/programmes/subjects/pyotr_ilyich_tchaikovsky#subject" />
+
+  <po:person rdf:resource="/programmes/people/VGVmL25hbWUvYmJjIG9yY2hlc3RyYXMgYW5kIHNpbmdlcnM#person" />
+  <po:person rdf:resource="/programmes/people/VGVmL25hbWUvYmJjIHN5bXBob255IG9yY2hlc3RyYQ#person" />
 
 
-
-
-
-  <po:version rdf:resource="/programmes/b00v9q5p#programme" />
+  <po:version rdf:resource="/programmes/b00v7tq9#programme" />
 
 
 </po:Episode>
 
+<po:Series rdf:about="/programmes/b00vhjfl#programme">
+  <po:episode rdf:resource="/programmes/b00v7tx8#programme"/>
+</po:Series>
 
 
-<po:Brand rdf:about="/programmes/b007gw82#programme">
-  <po:episode rdf:resource="/programmes/b00v9qc4#programme"/>
+
+<po:Brand rdf:about="/programmes/b006x3cd#programme">
+  <po:episode rdf:resource="/programmes/b00v7tx8#programme"/>
 </po:Brand>
 
 
