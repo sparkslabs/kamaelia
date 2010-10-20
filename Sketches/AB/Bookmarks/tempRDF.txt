@@ -13,77 +13,121 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00v7tx8.rdf">
-  <rdfs:label>Description of the episode Episode 3</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T01:01:06+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T01:01:06+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00v7tx8#programme"/>
+<rdf:Description rdf:about="/programmes/b00vh51z.rdf">
+  <rdfs:label>Description of a programme version of Dev takes over the afternoon</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T00:06:57+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T00:06:57+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00vh51z#programme"/>
 </rdf:Description>
 
-<po:Episode rdf:about="/programmes/b00v7tx8#programme">
+<po:Version rdf:about="/programmes/b00vh51z#programme">
 
-  <po:pid>b00v7tx8</po:pid>
-  <dc:title>Episode 3</dc:title>
-  <po:short_synopsis>The BBC Symphony Orchestra in music by Messiaen, Schubert, Knussen and Tchaikovsky.</po:short_synopsis>
-  <po:medium_synopsis>Louise Fryer presents a celebration of the BBC Symphony Orchestra. Messiaen: Poeme pour Mi. Schubert: Symphony No 5. Knussen: Symphony No 3. Tchaikovsky: Sleeping Beauty (excerpts).</po:medium_synopsis>
-  <po:long_synopsis>As the BBC Symphony Orchestra celebrates its 80th anniversary, Afternoon on 3 continues with its week of performances by the Orchestra and its twelve Chief Conductors since 1930. In the 1970s and 1980s Pierre Boulez, Rudolf Kempe, Gennadi Rozhdestvensky and Sir John Pritchard each contributed to the Orchestra&#39;s kaleidoscope of repertoire and styles. Presented by Louise Fryer.
-
-2.00pm
-Messiaen: Poeme pour Mi 
-Felicity Palmer, mezzo-soprano
-Pierre Boulez, conductor 
-
-2.30pm
-Schubert: Symphony No. 5 
-Rudolf Kempe, conductor
-
-3.00pm
-Knussen: Symphony No. 3 
-Oliver Knussen, conductor
-
-3.15pm
-Delius: Summer Night on the River
-Sir John Pritchard, conductor
-
-3.20pm
-Tchaikovsky: Sleeping Beauty (extracts)
-Gennadi Rozhdestvensky, conductor.</po:long_synopsis>
-
+  <rdfs:label>A version of Dev takes over the afternoon</rdfs:label>
   
+  <po:sound_format>Stereo</po:sound_format>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10800</po:duration>
+  <po:pid>b00vh51z</po:pid>
+  <po:time>
+    <timeline:Interval>
+      <rdfs:label>Time interval for a version of Dev takes over the afternoon</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00vh51z#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT10800S</timeline:duration>
+    </timeline:Interval>
+  </po:time>
 
 
-  <po:masterbrand rdf:resource="/radio3#service"/>
+</po:Version>
 
-  <po:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</po:position>
-
-  <po:genre rdf:resource="/programmes/genres/music/classical#genre" />
-
-  <po:format rdf:resource="/programmes/formats/performancesandevents#format" />
-
-  <po:subject rdf:resource="/programmes/subjects/franz_schubert#subject" />
-  <po:subject rdf:resource="/programmes/subjects/frederick_delius#subject" />
-  <po:subject rdf:resource="/programmes/subjects/oliver_knussen#subject" />
-  <po:subject rdf:resource="/programmes/subjects/olivier_messiaen#subject" />
-  <po:subject rdf:resource="/programmes/subjects/pyotr_ilyich_tchaikovsky#subject" />
-
-  <po:person rdf:resource="/programmes/people/VGVmL25hbWUvYmJjIG9yY2hlc3RyYXMgYW5kIHNpbmdlcnM#person" />
-  <po:person rdf:resource="/programmes/people/VGVmL25hbWUvYmJjIHN5bXBob255IG9yY2hlc3RyYQ#person" />
-
-
-  <po:version rdf:resource="/programmes/b00v7tq9#programme" />
-
-
+<po:Episode rdf:about="/programmes/b00vh527#programme">
+  <rdfs:label>Dev takes over the afternoon</rdfs:label>
+  <po:version rdf:resource="/programmes/b00vh51z#programme" />
 </po:Episode>
 
-<po:Series rdf:about="/programmes/b00vhjfl#programme">
-  <po:episode rdf:resource="/programmes/b00v7tx8#programme"/>
-</po:Series>
+<timeline:TimeLine rdf:about="/programmes/b00vh51z#timeline">
+  <rdfs:label>Timeline of a version of Dev takes over the afternoon</rdfs:label>
+</timeline:TimeLine>
+
+<po:Broadcast rdf:about="/programmes/b00vh51z#p00bkfw6">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00bkfw6</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T13:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/england#service">
+       <rdfs:label>Radio 1 England</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00vh51z#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00vh51z#p00bkgf4">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00bkgf4</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T13:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/northernireland#service">
+       <rdfs:label>Radio 1 N. Ireland</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00vh51z#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00vh51z#p00bkgfm">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00bkgfm</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T13:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/scotland#service">
+       <rdfs:label>Radio 1 Scotland</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00vh51z#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00vh51z#p00blj0h">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00blj0h</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T13:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/wales#service">
+       <rdfs:label>Radio 1 Wales</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00vh51z#programme" />
+</po:Broadcast>
 
 
 
-<po:Brand rdf:about="/programmes/b006x3cd#programme">
-  <po:episode rdf:resource="/programmes/b00v7tx8#programme"/>
-</po:Brand>
+
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:32:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-27T15:32:00+01:00</timeline:end>
+</po:Availability>
+
 
 
 </rdf:RDF>
