@@ -199,7 +199,7 @@ class WhatsOn(component):
                                     pid = programme['programme']['pid']
                                     title =  programme['programme']['display_titles']['title']
                                     # Attempted fix for unicode errors caused
-                                    if title.isdigit():
+                                    if (not isinstance(title,str)) and (not isinstance(title,unicode)):
                                         title = str(title)
 #                                    if isinstance(title,unicode):
 #                                        print title

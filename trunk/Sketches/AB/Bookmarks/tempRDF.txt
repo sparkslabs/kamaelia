@@ -13,73 +13,283 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00vnkpv.rdf">
-  <rdfs:label>Description of a programme version of Quangos Statement</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T20:26:15+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-14T20:26:15+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00vnkpv#programme"/>
+<rdf:Description rdf:about="/programmes/b00t8r9v.rdf">
+  <rdfs:label>Description of a programme version of Magpie</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-07-21T00:14:42+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-07-21T00:14:42+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00t8r9v#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00vnkpv#programme">
+<po:Version rdf:about="/programmes/b00t8r9v#programme">
 
-  <rdfs:label>A version of Quangos Statement</rdfs:label>
+  <rdfs:label>A version of Magpie</rdfs:label>
   <po:aspect_ratio>16:9</po:aspect_ratio>
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">12600</po:duration>
-  <po:pid>b00vnkpv</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
+  <po:pid>b00t8r9v</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Quangos Statement</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vnkpv#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT12600S</timeline:duration>
+      <rdfs:label>Time interval for a version of Magpie</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00t8r9v#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Janet James</rdfs:label>
+          <foaf:givenName>Janet</foaf:givenName>
+          <foaf:familyName>James</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Sam Dodd</rdfs:label>
+          <foaf:givenName>Sam</foaf:givenName>
+          <foaf:familyName>Dodd</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Teresa Gallagher</rdfs:label>
+          <foaf:givenName>Teresa</foaf:givenName>
+          <foaf:familyName>Gallagher</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Director</rdfs:label>
+          <dc:title>Director</dc:title>
+          <dc:description>A supervisor; generally refers to the person responsible for all audience-visible components of a program, film, or show, whereas the producer is responsible for the financial and other behind-the-scenes aspects. A director&#39;s duties might also include casting, script editing, shot selection, shot composition, and editing</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Adrian Hedley</rdfs:label>
+          <foaf:givenName>Adrian</foaf:givenName>
+          <foaf:familyName>Hedley</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Producer</rdfs:label>
+          <dc:title>Producer</dc:title>
+          <dc:description>The manager of an event, show, or other work, usually the individual in charge of finance, personnel, and other non-artistic aspects in the development of commercials, plays, movies, and other works</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Jo Killingley</rdfs:label>
+          <foaf:givenName>Jo</foaf:givenName>
+          <foaf:familyName>Killingley</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Writer</rdfs:label>
+          <dc:title>Writer</dc:title>
+          <dc:description>A person who writes scripts for plays or movies or broadcast dramas</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Tom Stevenson</rdfs:label>
+          <foaf:givenName>Tom</foaf:givenName>
+          <foaf:familyName>Stevenson</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00vnkpz#programme">
-  <rdfs:label>Quangos Statement</rdfs:label>
-  <po:version rdf:resource="/programmes/b00vnkpv#programme" />
+<po:Episode rdf:about="/programmes/b00t961p#programme">
+  <rdfs:label>Magpie</rdfs:label>
+  <po:version rdf:resource="/programmes/b00t8r9v#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00vnkpv#timeline">
-  <rdfs:label>Timeline of a version of Quangos Statement</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00t8r9v#timeline">
+  <rdfs:label>Timeline of a version of Magpie</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00vnkpv#p00bljxy">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bljxy</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-15</po:schedule_date>
+<po:Broadcast rdf:about="/programmes/b00t8r9v#p008yrsr">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p008yrsr</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-07-28</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-15T17:10:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-15T18:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-07-28T09:15:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-07-28T09:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/parliament#service">
-      <rdfs:label>BBC Parliament</rdfs:label>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00vnkpv#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00t8r9v#programme" />
 </po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00vnkpv#p00bljzc">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bljzc</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-16</po:schedule_date>
+<po:Broadcast rdf:about="/programmes/b00t8r9v#p008yrt6">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p008yrt6</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-07-28</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-16T04:00:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-16T05:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-07-28T13:15:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-07-28T13:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/parliament#service">
-      <rdfs:label>BBC Parliament</rdfs:label>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00vnkpv#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00t8r9v#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00t8r9v#p0096l21">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p0096l21</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-08-11</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-08-11T09:15:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-08-11T09:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00t8r9v#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00t8r9v#p0096l2j">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p0096l2j</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-08-11</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-08-11T13:15:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-08-11T13:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00t8r9v#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00t8r9v#p009wndr">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p009wndr</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-15</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-15T10:20:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-15T10:40:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00t8r9v#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00t8r9v#p009wnfj">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p009wnfj</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-09-15</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-15T14:20:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-09-15T14:40:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00t8r9v#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00t8r9v#p00bkgwp">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p00bkgwp</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T10:20:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T10:40:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00t8r9v#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00t8r9v#p00bkgxb">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p00bkgxb</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T14:20:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T14:40:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00t8r9v#programme" />
 </po:Broadcast>
 
 
