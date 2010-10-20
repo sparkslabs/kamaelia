@@ -290,6 +290,11 @@ def rawtweets(request,pid,timestamp):
         output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
         output += "<strong>" + progdata[0].title + "</strong><br />"
         output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
+        analysedtweets = analyseddata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).all()
+        output += "<b>Testing:</b>"
+        for entry in analysedtweets:
+            output += "<br />" + entry.wordfreqexpected + "<br />" + entry.wordfrequnexpected
+        output += "<br />"
         rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).all()
         output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
         for tweet in rawtweets:
