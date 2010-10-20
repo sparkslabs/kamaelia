@@ -13,6 +13,8 @@ import MySQLdb
 import time
 from datetime import timedelta, datetime
 import math
+import cjson
+import string
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -30,6 +32,18 @@ class LiveAnalysis(threadedcomponent):
         super(LiveAnalysis, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
+        self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
+                    "among","an","and","any","are","as","at","be","because","been","but",\
+                    "by","can","cannot","could","dear","did","do","does","either","else",\
+                    "ever","every","for","from","get","got","had","has","have","he","her",\
+                    "hers","him","his","how","however","i","if","in","into","is","it",\
+                    "its","just","least","let","like","likely","may","me","might","most",\
+                    "must","my","neither","no","nor","not","of","off","often","on","only",\
+                    "or","other","our","own","rather","said","say","says","she","should",\
+                    "since","so","some","than","that","the","their","them","then","there",\
+                    "these","they","this","tis","to","too","twas","us","wants","was","we",\
+                    "were","what","when","where","which","while","who","whom","why","will",\
+                    "with","would","yet","you","your"]
 
     def dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
@@ -87,12 +101,89 @@ class LiveAnalysis(threadedcomponent):
                 analyseddata = cursor.fetchone()
                 if analyseddata == None: # No tweets yet recorded for this minute
                     minutetweets = 1
-                    cursor.execute("""INSERT INTO analyseddata (pid,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s)""", (pid,0,0,minutetweets,dbtimestamp))
+                    cursor.execute("""INSERT INTO analyseddata (pid,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s)""", (pid,"{}","{}",minutetweets,dbtimestamp))
                 else:
                     did = analyseddata[0]
                     minutetweets = analyseddata[1] # Get current number of tweets for this minute
                     minutetweets += 1 # Add one to it for this tweet
-                    cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
+
+                    # Do word frequency analysis at this point
+                    # Inefficient at the mo as if a tweet comes in at 48 or 59 secs etc, all previous tweets for that minute will be re-alanysed
+                    keywords = dict()
+                    cursor.execute("""SELECT uid,keyword,type FROM keywords WHERE pid = %s""",(pid))
+                    keyworddata = cursor.fetchall()
+                    for word in keyworddata:
+                        wordname = word[1]
+                        for items in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                            wordname = string.replace(wordname,items,"")
+                            wordname = string.lower(wordname)
+                        keywords[wordname] = word[2]
+                        
+                    cursor.execute("""SELECT tid,timestamp,text,user FROM rawdata WHERE timestamp >= %s AND timestamp < %s AND pid = %s ORDER BY tid""", (timestamp,timestamp+60,pid))
+                    wordfreqdata = cursor.fetchall()
+                    wordfreqexpected = dict()
+                    wordfrequnexpected = dict()
+                    for tweet in wordfreqdata:
+                        words = list()
+                        filteredwords = list()
+                        for word in tweet[2].split():
+                            for items in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                                word = string.replace(word,items,"")
+                            if word != "":
+                                words.append(string.lower(word))
+                                if word not in self.exclusions:
+                                    filteredwords.append(word)
+
+                        for word in filteredwords:
+                            if word in keywords:
+                                # Direct match (expected)
+                                if wordfreqexpected.has_key(word):
+                                    wordfreqexpected[word] = wordfreqexpected[word] + 1
+                                else:
+                                    wordfreqexpected[word] = 1
+                            else:
+                                for keyword in keywords:
+                                    if "^" in keyword:
+                                        splitwords = keyword.split("^")
+                                        if word == splitwords[0]:
+                                            # Direct match (expected)
+                                            if wordfreqexpected.has_key(word):
+                                                wordfreqexpected[word] = wordfreqexpected[word] + 1
+                                            else:
+                                                wordfreqexpected[word] = 1
+                                            nomatch = False
+                                        else:
+                                            nomatch = True
+                                    else:
+                                        nomatch = True
+                                    if nomatch:
+                                        # Unexpected
+                                        if wordfrequnexpected.has_key(word):
+                                            wordfrequnexpected[word] = wordfrequnexpected[word] + 1
+                                        else:
+                                            wordfrequnexpected[word] = 1
+
+                    expecteditems = [(v,k) for k, v in wordfreqexpected.items()]
+                    expecteditems.sort(reverse=True)
+                    itemdict = dict()
+                    index = 0
+                    for item in expecteditems:
+                        itemdict[item[1]] = item[0]
+                        if index == 9:
+                            break
+                        index += 1
+                    itemdict = cjson.encode(itemdict)
+                    unexpecteditems = [(v,k) for k, v in wordfrequnexpected.items()]
+                    unexpecteditems.sort(reverse=True)
+                    itemdict2 = dict()
+                    index = 0
+                    for item in unexpecteditems:
+                        itemdict2[item[1]] = item[0]
+                        if index == 9:
+                            break
+                        index += 1
+                    itemdict2 = cjson.encode(itemdict2)
+                    cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,itemdict,itemdict2,did))
 
                 # Averages / stdev are calculated roughly based on the programme's running time at this point
                 progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
