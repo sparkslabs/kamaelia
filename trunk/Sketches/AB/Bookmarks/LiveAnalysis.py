@@ -43,7 +43,7 @@ class LiveAnalysis(threadedcomponent):
                     "since","so","some","than","that","the","their","them","then","there",\
                     "these","they","this","tis","to","too","twas","us","wants","was","we",\
                     "were","what","when","where","which","while","who","whom","why","will",\
-                    "with","would","yet","you","your"]
+                    "with","would","yet","you","your","via","RT"]
 
     def dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
@@ -119,13 +119,32 @@ class LiveAnalysis(threadedcomponent):
                             wordname = string.lower(wordname)
                         keywords[wordname] = word[2]
                         
-                    cursor.execute("""SELECT tid,timestamp,text,user FROM rawdata WHERE timestamp >= %s AND timestamp < %s AND pid = %s ORDER BY tid""", (timestamp,timestamp+60,pid))
+                    cursor.execute("""SELECT tid,timestamp,text,user FROM rawdata WHERE timestamp >= %s AND timestamp < %s AND pid = %s ORDER BY tid""", (dbtimestamp,dbtimestamp+60,pid))
                     wordfreqdata = cursor.fetchall()
                     wordfreqexpected = dict()
                     wordfrequnexpected = dict()
                     for tweet in wordfreqdata:
                         words = list()
                         filteredwords = list()
+
+                        for keyword in keywords:
+                            keyword = string.lower(keyword)
+                            if keyword in tweet[2]:
+                                # Direct match (expected)
+                                if wordfreqexpected.has_key(keyword):
+                                    wordfreqexpected[keyword] = wordfreqexpected[keyword] + 1
+                                else:
+                                    wordfreqexpected[keyword] = 1
+                            elif "^" in keyword:
+                                splitter = keyword.split("^")
+                                if splitter[0] in tweet[2]:
+                                    # Direct match (expected)
+                                    if wordfreqexpected.has_key(splitter[0]):
+                                        wordfreqexpected[splitter[0]] = wordfreqexpected[splitter[0]] + 1
+                                    else:
+                                        wordfreqexpected[splitter[0]] = 1
+
+
                         for word in tweet[2].split():
                             for items in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
                                 word = string.replace(word,items,"")
@@ -134,34 +153,12 @@ class LiveAnalysis(threadedcomponent):
                                 if word not in self.exclusions:
                                     filteredwords.append(word)
 
+                        # now treating wordfrequnexpected as analysis of single words even if they exist in keywords too
                         for word in filteredwords:
-                            if word in keywords:
-                                # Direct match (expected)
-                                if wordfreqexpected.has_key(word):
-                                    wordfreqexpected[word] = wordfreqexpected[word] + 1
-                                else:
-                                    wordfreqexpected[word] = 1
+                            if wordfrequnexpected.has_key(word):
+                                wordfrequnexpected[word] = wordfrequnexpected[word] + 1
                             else:
-                                for keyword in keywords:
-                                    if "^" in keyword:
-                                        splitwords = keyword.split("^")
-                                        if word == splitwords[0]:
-                                            # Direct match (expected)
-                                            if wordfreqexpected.has_key(word):
-                                                wordfreqexpected[word] = wordfreqexpected[word] + 1
-                                            else:
-                                                wordfreqexpected[word] = 1
-                                            nomatch = False
-                                        else:
-                                            nomatch = True
-                                    else:
-                                        nomatch = True
-                                    if nomatch:
-                                        # Unexpected
-                                        if wordfrequnexpected.has_key(word):
-                                            wordfrequnexpected[word] = wordfrequnexpected[word] + 1
-                                        else:
-                                            wordfrequnexpected[word] = 1
+                                wordfrequnexpected[word] = 1
 
                     expecteditems = [(v,k) for k, v in wordfreqexpected.items()]
                     expecteditems.sort(reverse=True)
