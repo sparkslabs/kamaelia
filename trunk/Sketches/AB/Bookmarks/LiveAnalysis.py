@@ -129,7 +129,7 @@ class LiveAnalysis(threadedcomponent):
 
                         for keyword in keywords:
                             keyword = string.lower(keyword)
-                            if keyword in tweet[2]:
+                            if keyword in string.lower(tweet[2]):
                                 # Direct match (expected)
                                 if wordfreqexpected.has_key(keyword):
                                     wordfreqexpected[keyword] = wordfreqexpected[keyword] + 1
@@ -137,7 +137,7 @@ class LiveAnalysis(threadedcomponent):
                                     wordfreqexpected[keyword] = 1
                             elif "^" in keyword:
                                 splitter = keyword.split("^")
-                                if splitter[0] in tweet[2]:
+                                if splitter[0] in string.lower(tweet[2]):
                                     # Direct match (expected)
                                     if wordfreqexpected.has_key(splitter[0]):
                                         wordfreqexpected[splitter[0]] = wordfreqexpected[splitter[0]] + 1
