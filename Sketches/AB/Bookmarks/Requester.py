@@ -233,6 +233,7 @@ class Requester(threadedcomponent):
                 else:
                     # Trial fix for issue of one word titles producing huge amounts of data
                     keywords[allwordtitle + "^" + "bbc"] = "Title"
+                keywords["#" + re.sub("\s+","",allwordtitle)] = "Title"
 
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:
