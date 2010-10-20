@@ -13,64 +13,119 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00v7tq9.rdf">
-  <rdfs:label>Description of a programme version of Episode 3</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T01:01:07+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T01:01:07+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00v7tq9#programme"/>
+<rdf:Description rdf:about="/programmes/b00vh51z.rdf">
+  <rdfs:label>Description of a programme version of Dev takes over the afternoon</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T00:06:57+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-13T00:06:57+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00vh51z#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00v7tq9#programme">
+<po:Version rdf:about="/programmes/b00vh51z#programme">
 
-  <rdfs:label>A version of Episode 3</rdfs:label>
+  <rdfs:label>A version of Dev takes over the afternoon</rdfs:label>
   
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7200</po:duration>
-  <po:pid>b00v7tq9</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10800</po:duration>
+  <po:pid>b00vh51z</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Episode 3</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00v7tq9#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT7200S</timeline:duration>
+      <rdfs:label>Time interval for a version of Dev takes over the afternoon</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00vh51z#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT10800S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00v7tx8#programme">
-  <rdfs:label>Episode 3</rdfs:label>
-  <po:version rdf:resource="/programmes/b00v7tq9#programme" />
+<po:Episode rdf:about="/programmes/b00vh527#programme">
+  <rdfs:label>Dev takes over the afternoon</rdfs:label>
+  <po:version rdf:resource="/programmes/b00vh51z#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00v7tq9#timeline">
-  <rdfs:label>Timeline of a version of Episode 3</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00vh51z#timeline">
+  <rdfs:label>Timeline of a version of Dev takes over the afternoon</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00v7tq9#p00bkj6b">
+<po:Broadcast rdf:about="/programmes/b00vh51z#p00bkfw6">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bkj6b</po:pid>
+  <po:pid>p00bkfw6</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T14:00:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T16:00:00+01:00</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T13:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:30:00+01:00</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/radio3#service">
-      <rdfs:label>BBC Radio 3</rdfs:label>
-    </po:Service>
+    <po:Service rdf:about="/services/radio1/england#service">
+       <rdfs:label>Radio 1 England</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00v7tq9#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00vh51z#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00vh51z#p00bkgf4">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00bkgf4</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T13:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/northernireland#service">
+       <rdfs:label>Radio 1 N. Ireland</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00vh51z#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00vh51z#p00bkgfm">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00bkgfm</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T13:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/scotland#service">
+       <rdfs:label>Radio 1 Scotland</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00vh51z#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00vh51z#p00blj0h">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00blj0h</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-20</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T13:00:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:30:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio1/wales#service">
+       <rdfs:label>Radio 1 Wales</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio1#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00vh51z#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T16:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-27T16:02:00+01:00</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-20T15:32:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-27T15:32:00+01:00</timeline:end>
 </po:Availability>
 
 
