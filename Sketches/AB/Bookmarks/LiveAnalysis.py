@@ -153,11 +153,10 @@ class LiveAnalysis(threadedcomponent):
                                 if word not in self.exclusions:
                                     filteredwords.append(word)
 
-                        # now treating wordfrequnexpected as analysis of single words even if they exist in keywords too
                         for word in filteredwords:
-                            if wordfrequnexpected.has_key(word):
+                            if wordfrequnexpected.has_key(word) and not wordfreqexpected.has_key(word) and "\u" not in word:
                                 wordfrequnexpected[word] = wordfrequnexpected[word] + 1
-                            else:
+                            elif not wordfreqexpected.has_key(word) and "\u" not in word:
                                 wordfrequnexpected[word] = 1
 
                     expecteditems = [(v,k) for k, v in wordfreqexpected.items()]
