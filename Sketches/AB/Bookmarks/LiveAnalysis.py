@@ -148,18 +148,19 @@ class LiveAnalysis(threadedcomponent):
                         newsplitlist = list()
                         for word in splittweet:
                             if not "http://" in word:
-                                for items in """*+-/<=>\\_""":
-                                    wordnew = string.replace(word,items," ")
-                                    if wordnew != word:
-                                        for item in wordnew.split():
-                                            newsplitlist.append(item)
-                                    else:
-                                        newsplitlist.append(word)
+                                wordnew = word
+                                for items in """*+-/<=>.\\_""":
+                                    wordnew = string.replace(wordnew,items," ")
+                                if wordnew != word:
+                                    for item in wordnew.split():
+                                        newsplitlist.append(item)
+                                else:
+                                    newsplitlist.append(word)
                             else:
                                 newsplitlist.append(word)
 
                         for word in newsplitlist:
-                            for items in """!"#$%&(),.:;?@~[]'`{|}""":
+                            for items in """!"#$%&(),:;?@~[]'`{|}""":
                                 word = string.replace(word,items,"")
                             if word != "":
                                 words.append(string.lower(word))
@@ -168,9 +169,9 @@ class LiveAnalysis(threadedcomponent):
 
                         for word in filteredwords:
                             word = string.lower(word)
-                            if wordfrequnexpected.has_key(word) and not wordfreqexpected.has_key(word) and "\u" not in word:
+                            if wordfrequnexpected.has_key(word) and not wordfreqexpected.has_key(word):
                                 wordfrequnexpected[word] = wordfrequnexpected[word] + 1
-                            elif not wordfreqexpected.has_key(word) and "\u" not in word:
+                            elif not wordfreqexpected.has_key(word):
                                 wordfrequnexpected[word] = 1
 
                     expecteditems = [(v,k) for k, v in wordfreqexpected.items()]
