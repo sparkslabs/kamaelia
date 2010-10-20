@@ -6,6 +6,3 @@ TV Bookmarks
 
 Installing
 - DB schema MUST be imported from the included SQL file BEFORE executing the Django DB sync as Django can't get it quite right
-
-Proxies
-- Currently, a proxy free connection is required due to limitations in the OAuth library. This will be corrected shortly.
