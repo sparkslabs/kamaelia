@@ -144,13 +144,23 @@ class LiveAnalysis(threadedcomponent):
                                     else:
                                         wordfreqexpected[splitter[0]] = 1
 
-
-                        for word in tweet[2].split():
+                        splittweet = tweet[2].split()
+                        for word in splittweet:
                             if not "http://" in word:
                                 for items in """*+-/<=>\\_""":
-                                    word = string.replace(word,items," ")
+                                    wordnew = string.replace(word,items," ")
+                                    if wordnew != word:
+                                        splittweet.pop(word)
+                                        for item in wordnew.split():
+                                            splittweet.append(item)
                                 for items in """!"#$%&(),.:;?@~[]'`{|}""":
-                                    word = string.replace(word,items,"")
+                                    wordnew = string.replace(word,items,"")
+                                    if wordnew != word:
+                                        splittweet.pop(word)
+                                        for item in wordnew.split():
+                                            splittweet.append(item)
+
+                        for word in splittweet:
                             if word != "":
                                 words.append(string.lower(word))
                                 if word not in self.exclusions:
