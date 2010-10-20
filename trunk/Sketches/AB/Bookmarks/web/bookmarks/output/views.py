@@ -124,7 +124,7 @@ def channel(request,channel,year=0,month=0,day=0):
             output += '<br /><div id="inlineDatepicker"></div>'
             if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
                 output += "<br />Currently viewing shows for " + day + "/" + month + "/" + year + "<br />"
-                starttimestamp = time.mktime(datetime(int(year),int(month),int(day),0,0,0,0).timetuple()) - (3600*6) #TODO FIXME - shouldn't have to take 6hrs off
+                starttimestamp = time.mktime(datetime(int(year),int(month),int(day),0,0,0,0).timetuple())
                 endtimestamp = starttimestamp + 86400
                 data = programmes.objects.filter(channel__exact=channel,timestamp__gte=starttimestamp,timestamp__lt=endtimestamp).order_by('timestamp').all()
                 for programme in data:
