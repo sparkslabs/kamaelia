@@ -41,9 +41,9 @@ class LiveAnalysis(threadedcomponent):
                     "must","my","neither","no","nor","not","of","off","often","on","only",\
                     "or","other","our","own","rather","said","say","says","she","should",\
                     "since","so","some","than","that","the","their","them","then","there",\
-                    "these","they","this","tis","to","too","twas","us","wants","was","we",\
+                    "these","they","this","tis","to","too","twas","up","us","wants","was","we",\
                     "were","what","when","where","which","while","who","whom","why","will",\
-                    "with","would","yet","you","your","via","RT"]
+                    "with","would","yet","you","your","via","rt"]
 
     def dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
@@ -164,7 +164,7 @@ class LiveAnalysis(threadedcomponent):
                                 word = string.replace(word,items,"")
                             if word != "":
                                 words.append(string.lower(word))
-                                if word not in self.exclusions:
+                                if string.lower(word) not in self.exclusions:
                                     filteredwords.append(word)
 
                         for word in filteredwords:
