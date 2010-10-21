@@ -78,11 +78,13 @@ class Requester(threadedcomponent):
             "b0071b63" : ["bbcapprentice"], # The Apprentice
             "b006mg74" : ["bbcwatchdog"], # Watchdog
             "b006v5tb" : ['bbcbreakfast'], # Breakfast
-            "b006mkw3" : ["hignfy","bbchignfy"] # Have I Got News For You
+            "b006mkw3" : ["hignfy","bbchignfy"], # Have I Got News For You
+
         }
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
         self.officialseriestags = {
-            "b00v2z3s" : ["#askrhod"] # Ask Rhod Gilbert
+            "b00v2z3s" : ["#askrhod"], # Ask Rhod Gilbert
+            "b00vd7qz" : ['film2010'] # Film 2010
         }
 
         self.firstrun = True

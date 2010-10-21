@@ -6,6 +6,7 @@ from pygooglechart import SimpleLineChart, Axis #lc
 import time
 import cjson
 import string
+from django.core.exceptions import ObjectDoesNotExist
 #TODO: Replace ugly meta refresh tags with AJAX
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
@@ -202,9 +203,27 @@ def programme(request,pid):
                             if len(unexpecteditems) > 0:
                                 # Find most popular keyword
                                 keyword = unexpecteditems[0][1]
-                                endstamp = minute.timestamp
-                                startstamp = endstamp - 60
+                                # Now look at each previous minute until it's no longer the top keyword
+                                topkeyword = keyword
+                                currentstamp = minute.timestamp
+                                while topkeyword == keyword:
+                                    currentstamp -= 60
+                                    try:
+                                        dataset = analyseddata.objects.get(pid=pid,timestamp=currentstamp)
+                                    except ObjectDoesNotExist:
+                                        break
+                                    wfdata = cjson.decode(dataset.wordfrequnexpected)
+                                    unexpecteditems = [(v,k) for k, v in wfdata.items()]
+                                    unexpecteditems.sort(reverse=True)
+                                    if len(unexpecteditems) > 0:
+                                        # Find most popular keyword
+                                        topkeyword = unexpecteditems[0][1]
+
+                                startstamp = currentstamp
+                                endstamp = currentstamp + 60
+                                
                                 # Investigate the previous minute
+                                tweetset = False
                                 rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
                                 for tweet in rawtweets:
                                     tweettext = string.lower(tweet.text)
@@ -212,10 +231,24 @@ def programme(request,pid):
                                         tweettext = string.replace(tweettext,items,"")
                                     if str(keyword) in tweettext:
                                         bookmarkstest.append(tweet.timestamp)
+                                        tweetset = True
                                         break
+                                if not tweetset:
+                                    rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=minute.timestamp,timestamp__lt=(minute.timestamp + 60)).order_by('timestamp').all()
+                                    for tweet in rawtweets:
+                                        tweettext = string.lower(tweet.text)
+                                        for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                            tweettext = string.replace(tweettext,items,"")
+                                        if str(keyword) in tweettext:
+                                            bookmarkstest.append(tweet.timestamp)
+                                            break
                         except cjson.DecodeError, e:
                             # Data is too old - no word freq data
                             pass
+                        except AttributeError, e:
+                            # As above
+                            pass
+
                     else:
                         lastwasbookmark = False
             else:
@@ -285,23 +318,24 @@ def programme(request,pid):
             output += blockgraph2
             output += blockgraph3
             #output += appender
-            output += "<br /><b>Testing</b>"
-            for entry in bookmarkstest:
-                tweettime = datetime.utcfromtimestamp(entry) + timedelta(seconds=data[0].utcoffset)
-                proghour = tweettime.hour - actualstart.hour
-                progmin = tweettime.minute - actualstart.minute
-                progsec = tweettime.second - actualstart.second
-                playertime = (((proghour * 60) + progmin) * 60) + progsec - 60 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
-                if playertime > (data[0].duration - 60):
-                    playertimemin = (data[0].duration/60) - 1
-                    playertimesec = playertime%60
-                elif playertime > 0:
-                    playertimemin = playertime/60
-                    playertimesec = playertime%60
-                else:
-                    playertimemin = 0
-                    playertimesec = 0
-                output += "<br />http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s"
+            if len(bookmarkstest) > 0:
+                output += "<br /><b>New Bookmark Testing</b>"
+                for entry in bookmarkstest:
+                    tweettime = datetime.utcfromtimestamp(entry) + timedelta(seconds=data[0].utcoffset)
+                    proghour = tweettime.hour - actualstart.hour
+                    progmin = tweettime.minute - actualstart.minute
+                    progsec = tweettime.second - actualstart.second
+                    playertime = (((proghour * 60) + progmin) * 60) + progsec - 60 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
+                    if playertime > (data[0].duration - 60):
+                        playertimemin = (data[0].duration/60) - 1
+                        playertimesec = playertime%60
+                    elif playertime > 0:
+                        playertimemin = playertime/60
+                        playertimesec = playertime%60
+                    else:
+                        playertimemin = 0
+                        playertimesec = 0
+                    output += "<br />http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s"
         else:
             output += "<br />Not enough data to generate statistics.<br />"
 
