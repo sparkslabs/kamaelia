@@ -41,7 +41,7 @@ def index(request):
 
     normaliser = 1/float(largeststdev)
 
-    output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
+    output += "<h2>Note:</h2>Analysis is currently delayed due to load testing.<br /><br /><div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
