@@ -214,8 +214,18 @@ class LiveAnalysis(threadedcomponent):
                             wfunexpected[entry] = wfudict[entry]
                     wfexpected = cjson.encode(wfexpected)
                     wfunexpected = cjson.encode(wfunexpected)
-                    
-                    cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,wfexpected,wfunexpected,did))
+
+
+                    # Ensure we're not exceeding DB limits
+                    # for now, if this happens we won't update the affected field
+                    if len(wfunexpected) > 2000 and len(wfexpected) > 2000:
+                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
+                    elif len(wfexpected) > 2000:
+                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,wfunexpected,did))
+                    elif len(wfunexpected) > 2000:
+                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s WHERE did = %s""",(minutetweets,wfexpected,did))
+                    else:
+                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,wfexpected,wfunexpected,did))
 
                 # Averages / stdev are calculated roughly based on the programme's running time at this point
                 progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
