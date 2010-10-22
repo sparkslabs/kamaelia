@@ -102,12 +102,6 @@ class TwitterStream(threadedcomponent):
                     conn1 = urllib2.urlopen(req,None,self.timeout)
                     self.backofftime = 1 # Reset the backoff time
                     print (str(datetime.utcnow()) + " Connected to twitter stream. Awaiting data...")
-                    #file = open("streamDebug.txt", 'r')
-                    #filecontents = file.read()
-                    #file.close()
-                    #file = open("streamDebug.txt", 'w')
-                    #file.write(filecontents + "\n" + str(datetime.utcnow()) + " Connected to twitter stream. Awaiting data...")
-                    #file.close()
                 except httplib.BadStatusLine, e:
                     sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e) + '\n')
                     # General network error assumed - short backoff
@@ -182,35 +176,17 @@ class TwitterStream(threadedcomponent):
                         if failed == True and self.reconnect == True:
                             # Reconnection procedure
                             print (str(datetime.utcnow()) + " Streaming API connection failed.")
-                            #file = open("streamDebug.txt", 'r')
-                            #filecontents = file.read()
-                            #file.close()
-                            #file = open("streamDebug.txt", 'w')
-                            #file.write(filecontents + "\n" + str(datetime.utcnow()) + " Streaming API connection failed")
-                            #file.close()
                             conn1.close()
                             if self.backofftime > 1:
                                 print ("Backing off for " + str(self.backofftime) + " seconds.")
                             time.sleep(self.backofftime)
                             print (str(datetime.utcnow()) + " Attempting reconnection...")
-                            #file = open("streamDebug.txt", 'r')
-                            #filecontents = file.read()
-                            #file.close()
-                            #file = open("streamDebug.txt", 'w')
-                            #file.write(filecontents + "\n" + str(datetime.utcnow()) + " Attempting reconnection...")
-                            #file.close()
                             try:
                                 urllib2.install_opener(twitopener)
                                 req = urllib2.Request(twitterurl,data,headers)
                                 conn1 = urllib2.urlopen(req,None,self.timeout)
                                 self.backofftime = 1
                                 print (str(datetime.utcnow()) + " Connected to twitter stream. Awaiting data...")
-                                #file = open("streamDebug.txt", 'r')
-                                #filecontents = file.read()
-                                #file.close()
-                                #file = open("streamDebug.txt", 'w')
-                                #file.write(filecontents + "\n" + str(datetime.utcnow()) + " Connected to twitter stream. Awaiting data...")
-                                #file.close()
                             except httplib.BadStatusLine, e:
                                 sys.stderr.write('TwitterStream BadStatusLine error: ' + str(e) + '\n')
                                 # General network error assumed - short backoff
@@ -253,12 +229,6 @@ class TwitterStream(threadedcomponent):
                                 # Reconnection failed - must break out and wait for new keywords
                                 break
                     print (str(datetime.utcnow()) + " Disconnecting from twitter stream.")
-                    #file = open("streamDebug.txt", 'r')
-                    #filecontents = file.read()
-                    #file.close()
-                    #file = open("streamDebug.txt", 'w')
-                    #file.write(filecontents + "\n" + str(datetime.utcnow()) + " Disconnecting from twitter stream.")
-                    #file.close()
                     if conn1:
                         conn1.close()
                     if self.backofftime > 1:
