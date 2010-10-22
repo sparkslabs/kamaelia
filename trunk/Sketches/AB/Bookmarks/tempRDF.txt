@@ -13,282 +13,55 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00vdg8d.rdf">
-  <rdfs:label>Description of a programme version of 22/10/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-15T00:11:13+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-15T00:11:13+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00vdg8d#programme"/>
+<rdf:Description rdf:about="/programmes/b00792tz.rdf">
+  <rdfs:label>Description of the episode Episode 12</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-05-29T13:04:13+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-03-09T21:10:19Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00792tz#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00vdg8d#programme">
+<po:Episode rdf:about="/programmes/b00792tz#programme">
 
-  <rdfs:label>A version of 22/10/2010</rdfs:label>
+  <po:pid>b00792tz</po:pid>
+  <dc:title>Episode 12</dc:title>
+  <po:short_synopsis>A new sea lion baby is born by the lake, and mum doesn&#39;t want anyone too close.</po:short_synopsis>
+  <po:medium_synopsis>Ben Fogle and Kate Humble explore life behind the scenes at Longleat Estate and Safari Park. A new sea lion baby is born by the lake, and mum doesn&#39;t want anyone too close.</po:medium_synopsis>
+  <po:long_synopsis>Ben Fogle and Kate Humble explore life behind the scenes at Longleat Estate and Safari Park. A new sea lion baby is born by the lake, and mum doesn&#39;t want anyone too close. There&#39;s hijinks in Pets&#39; Corner when six newcomers arrive, because ferrets are made for mischief. The ostriches&#39; new chick takes its first faltering steps, while up in Lion Country there&#39;s been a surprising development.</po:long_synopsis>
+
   
-  <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10800</po:duration>
-  <po:pid>b00vdg8d</po:pid>
-  <po:time>
-    <timeline:Interval>
-      <rdfs:label>Time interval for a version of 22/10/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT10800S</timeline:duration>
-    </timeline:Interval>
-  </po:time>
 
 
-</po:Version>
+  <po:masterbrand rdf:resource="/bbctwo#service"/>
 
-<po:Episode rdf:about="/programmes/b00vdg8v#programme">
-  <rdfs:label>22/10/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00vdg8d#programme" />
+  <po:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">12</po:position>
+
+  <po:genre rdf:resource="/programmes/genres/factual/petsandanimals#genre" />
+
+
+  <po:subject rdf:resource="/programmes/subjects/ben_fogle#subject" />
+  <po:subject rdf:resource="/programmes/subjects/ferret#subject" />
+  <po:subject rdf:resource="/programmes/subjects/kate_humble#subject" />
+  <po:subject rdf:resource="/programmes/subjects/longleat#subject" />
+  <po:subject rdf:resource="/programmes/subjects/longleat_safari_park#subject" />
+  <po:subject rdf:resource="/programmes/subjects/ostrich#subject" />
+
+
+
+  <po:version rdf:resource="/programmes/b006j392#programme" />
+  <po:version rdf:resource="/programmes/b007sw3d#programme" />
+
+
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00vdg8d#timeline">
-  <rdfs:label>Timeline of a version of 22/10/2010</rdfs:label>
-</timeline:TimeLine>
-
-<po:Broadcast rdf:about="/programmes/b00vdg8d#p00bllhb">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bllhb</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-22</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-22T10:00:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-22T13:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/6music#service">
-      <rdfs:label>BBC 6 Music</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00vdg8d#programme" />
-</po:Broadcast>
+<po:Series rdf:about="/programmes/b00q7c68#programme">
+  <po:episode rdf:resource="/programmes/b00792tz#programme"/>
+</po:Series>
 
 
-<po:Segment rdf:about="/programmes/p009xkj6#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Belle and Sebastian - Write About Love</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqwx5">
-  
-      <po:position>1</po:position>
-      <rdfs:label>Time interval for Belle and Sebastian - Write About Love</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bqxdh#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>The Spencer Davis Group - Gimme Some Lovin&#39;</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqxdm">
-  
-      <po:position>2</po:position>
-      <rdfs:label>Time interval for The Spencer Davis Group - Gimme Some Lovin&#39;</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bf1xq#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>The Beginning of the End - Funky Nassau (part one)</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqxx6">
-  
-      <po:position>3</po:position>
-      <rdfs:label>Time interval for The Beginning of the End - Funky Nassau (part one)</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002gk23#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Dinosaur Jr. - Freak Scene</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqyhx">
-  
-      <po:position>4</po:position>
-      <rdfs:label>Time interval for Dinosaur Jr. - Freak Scene</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00b056p#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Midlake - Fortune</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqz1g">
-  
-      <po:position>5</po:position>
-      <rdfs:label>Time interval for Midlake - Fortune</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002ggwg#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Elastica - Waking Up</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqz5c">
-  
-      <po:position>6</po:position>
-      <rdfs:label>Time interval for Elastica - Waking Up</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bqzcs#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Edwin Starr - 25 Miles</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzct">
-  
-      <po:position>7</po:position>
-      <rdfs:label>Time interval for Edwin Starr - 25 Miles</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bnw8m#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Aloe Blacc - I Need A Dollar</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzff">
-  
-      <po:position>8</po:position>
-      <rdfs:label>Time interval for Aloe Blacc - I Need A Dollar</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002lnc2#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Franz Ferdinand - Take Me Out</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzh9">
-  
-      <po:position>9</po:position>
-      <rdfs:label>Time interval for Franz Ferdinand - Take Me Out</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p009vx43#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Black Mountain - The Hair Song</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzjy">
-  
-      <po:position>10</po:position>
-      <rdfs:label>Time interval for Black Mountain - The Hair Song</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p004cl7z#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Iggy &amp; The Stooges - Raw Power</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzrz">
-  
-      <po:position>11</po:position>
-      <rdfs:label>Time interval for Iggy &amp; The Stooges - Raw Power</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bqztp#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Oasis - Cloudburst</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqztq">
-  
-      <po:position>12</po:position>
-      <rdfs:label>Time interval for Oasis - Cloudburst</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002gf0q#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Pixies - Velouria</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzvj">
-  
-      <po:position>13</po:position>
-      <rdfs:label>Time interval for Pixies - Velouria</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002hnfl#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Television - Marquee Moon</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzwk">
-  
-      <po:position>14</po:position>
-      <rdfs:label>Time interval for Television - Marquee Moon</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00bqzx0#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Ride - Like A Daydream</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzx2">
-  
-      <po:position>15</po:position>
-      <rdfs:label>Time interval for Ride - Like A Daydream</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002h3n6#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Muse - Plug In Baby</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzxp">
-  
-      <po:position>16</po:position>
-      <rdfs:label>Time interval for Muse - Plug In Baby</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p00b7z2x#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>The National - Conversation 16</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzyc">
-  
-      <po:position>17</po:position>
-      <rdfs:label>Time interval for The National - Conversation 16</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
-<po:Segment rdf:about="/programmes/p002f33q#segment">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/MusicSegment"/>
-  <rdfs:label>Booker T. &amp; The MG&#39;s - Green Onions</rdfs:label>
-  <po:time>
-  <timeline:Interval rdf:about="/programmes/b00vdg8d#p00bqzz6">
-  
-      <po:position>18</po:position>
-      <rdfs:label>Time interval for Booker T. &amp; The MG&#39;s - Green Onions</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vdg8d#timeline"/>
-    </timeline:Interval>
-  </po:time>
-</po:Segment>
 
-
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-22T13:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-29T13:02:00+01:00</timeline:end>
-</po:Availability>
-
+<po:Brand rdf:about="/programmes/b006w6ns#programme">
+  <po:episode rdf:resource="/programmes/b00792tz#programme"/>
+</po:Brand>
 
 
 </rdf:RDF>
