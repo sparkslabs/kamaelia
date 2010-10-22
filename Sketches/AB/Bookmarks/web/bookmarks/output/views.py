@@ -41,7 +41,7 @@ def index(request):
 
     normaliser = 1/float(largeststdev)
 
-    output += "<h2>Note:</h2>Analysis is currently delayed due to load testing.<br /><br /><div style=\"display: inline; position: relative\"><h2>TV</h2>"
+    output += "<h2>Note:</h2>Due to the low processing power of the machine being used, popular programmes such as the Apprentice will be missing large amounts of data.<br /><br /><div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
@@ -85,7 +85,7 @@ def index(request):
             output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
         
-    output += "<br /><br /></div><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
+    output += "<br /><br /></div><br /><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
 
     return HttpResponse(output)
 

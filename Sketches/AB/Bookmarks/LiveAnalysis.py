@@ -58,6 +58,94 @@ class LiveAnalysis(threadedcomponent):
                 return True
         return False
 
+    def analyseTweet(self,cursor,pid,tweettext):
+        # Do word frequency analysis at this point
+        # Inefficient at the mo as if a tweet comes in at 48 or 59 secs etc, all previous tweets for that minute will be re-alanysed
+        keywords = dict()
+        cursor.execute("""SELECT uid,keyword,type FROM keywords WHERE pid = %s""",(pid))
+        keyworddata = cursor.fetchall()
+        for word in keyworddata:
+            wordname = word[1]
+            for items in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                wordname = string.replace(wordname,items,"")
+                wordname = string.lower(wordname)
+            keywords[wordname] = word[2]
+
+        wordfreqexpected = dict()
+        wordfrequnexpected = dict()
+        words = list()
+        filteredwords = list()
+
+        for keyword in keywords:
+            keyword = string.lower(keyword)
+            if keyword in string.lower(tweettext):
+                # Direct match (expected)
+                if wordfreqexpected.has_key(keyword):
+                    wordfreqexpected[keyword] = wordfreqexpected[keyword] + 1
+                else:
+                    wordfreqexpected[keyword] = 1
+            elif "^" in keyword:
+                splitter = keyword.split("^")
+                if splitter[0] in string.lower(tweettext):
+                    # Direct match (expected)
+                    if wordfreqexpected.has_key(splitter[0]):
+                        wordfreqexpected[splitter[0]] = wordfreqexpected[splitter[0]] + 1
+                    else:
+                        wordfreqexpected[splitter[0]] = 1
+
+        splittweet = tweettext.split()
+        newsplitlist = list()
+        for word in splittweet:
+            if not "http://" in word:
+                wordnew = word
+                for items in """*+-/<=>.\\_""":
+                    wordnew = string.replace(wordnew,items," ")
+                if wordnew != word:
+                    for item in wordnew.split():
+                        newsplitlist.append(item)
+                else:
+                    newsplitlist.append(word)
+            else:
+                newsplitlist.append(word)
+
+        for word in newsplitlist:
+            for items in """!"#$%&(),:;?@~[]'`{|}""":
+                word = string.replace(word,items,"")
+            if word != "":
+                words.append(string.lower(word))
+                if string.lower(word) not in self.exclusions:
+                    filteredwords.append(word)
+
+        for word in filteredwords:
+            word = string.lower(word)
+            if wordfrequnexpected.has_key(word) and not wordfreqexpected.has_key(word):
+                wordfrequnexpected[word] = wordfrequnexpected[word] + 1
+            elif not wordfreqexpected.has_key(word):
+                wordfrequnexpected[word] = 1
+
+        expecteditems = [(v,k) for k, v in wordfreqexpected.items()]
+        expecteditems.sort(reverse=True)
+        itemdict = dict()
+        index = 0
+        for item in expecteditems:
+            itemdict[item[1]] = item[0]
+            if index == 9:
+                break
+            index += 1
+        #itemdict = cjson.encode(itemdict)
+        unexpecteditems = [(v,k) for k, v in wordfrequnexpected.items()]
+        unexpecteditems.sort(reverse=True)
+        itemdict2 = dict()
+        index = 0
+        for item in unexpecteditems:
+            itemdict2[item[1]] = item[0]
+            if index == 9:
+                break
+            index += 1
+        #itemdict2 = cjson.encode(itemdict2)
+
+        return [itemdict,itemdict2]
+
     def main(self):
         # Calculate running total and mean etc
 
@@ -97,104 +185,37 @@ class LiveAnalysis(threadedcomponent):
                 timediff = progdata[6]
                 timestamp = progdata[7]
                 utcoffset = progdata[8]
-                cursor.execute("""SELECT did,totaltweets FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,dbtimestamp))
+                cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,dbtimestamp))
                 analyseddata = cursor.fetchone()
                 if analyseddata == None: # No tweets yet recorded for this minute
                     minutetweets = 1
-                    cursor.execute("""INSERT INTO analyseddata (pid,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s)""", (pid,"{}","{}",minutetweets,dbtimestamp))
+                    itemdicts = self.analyseTweet(cursor,pid,tweettext)
+                    wfdict = cjson.encode(itemdicts[0])
+                    wfudict = cjson.encode(itemdicts[1])
+                    cursor.execute("""INSERT INTO analyseddata (pid,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s)""", (pid,wfdict,wfudict,minutetweets,dbtimestamp))
                 else:
                     did = analyseddata[0]
                     minutetweets = analyseddata[1] # Get current number of tweets for this minute
                     minutetweets += 1 # Add one to it for this tweet
-
-                    # Do word frequency analysis at this point
-                    # Inefficient at the mo as if a tweet comes in at 48 or 59 secs etc, all previous tweets for that minute will be re-alanysed
-                    keywords = dict()
-                    cursor.execute("""SELECT uid,keyword,type FROM keywords WHERE pid = %s""",(pid))
-                    keyworddata = cursor.fetchall()
-                    for word in keyworddata:
-                        wordname = word[1]
-                        for items in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
-                            wordname = string.replace(wordname,items,"")
-                            wordname = string.lower(wordname)
-                        keywords[wordname] = word[2]
-                        
-                    cursor.execute("""SELECT tid,timestamp,text,user FROM rawdata WHERE timestamp >= %s AND timestamp < %s AND pid = %s ORDER BY tid""", (dbtimestamp,dbtimestamp+60,pid))
-                    wordfreqdata = cursor.fetchall()
-                    wordfreqexpected = dict()
-                    wordfrequnexpected = dict()
-                    for tweet in wordfreqdata:
-                        words = list()
-                        filteredwords = list()
-
-                        for keyword in keywords:
-                            keyword = string.lower(keyword)
-                            if keyword in string.lower(tweet[2]):
-                                # Direct match (expected)
-                                if wordfreqexpected.has_key(keyword):
-                                    wordfreqexpected[keyword] = wordfreqexpected[keyword] + 1
-                                else:
-                                    wordfreqexpected[keyword] = 1
-                            elif "^" in keyword:
-                                splitter = keyword.split("^")
-                                if splitter[0] in string.lower(tweet[2]):
-                                    # Direct match (expected)
-                                    if wordfreqexpected.has_key(splitter[0]):
-                                        wordfreqexpected[splitter[0]] = wordfreqexpected[splitter[0]] + 1
-                                    else:
-                                        wordfreqexpected[splitter[0]] = 1
-
-                        splittweet = tweet[2].split()
-                        newsplitlist = list()
-                        for word in splittweet:
-                            if not "http://" in word:
-                                wordnew = word
-                                for items in """*+-/<=>.\\_""":
-                                    wordnew = string.replace(wordnew,items," ")
-                                if wordnew != word:
-                                    for item in wordnew.split():
-                                        newsplitlist.append(item)
-                                else:
-                                    newsplitlist.append(word)
-                            else:
-                                newsplitlist.append(word)
-
-                        for word in newsplitlist:
-                            for items in """!"#$%&(),:;?@~[]'`{|}""":
-                                word = string.replace(word,items,"")
-                            if word != "":
-                                words.append(string.lower(word))
-                                if string.lower(word) not in self.exclusions:
-                                    filteredwords.append(word)
-
-                        for word in filteredwords:
-                            word = string.lower(word)
-                            if wordfrequnexpected.has_key(word) and not wordfreqexpected.has_key(word):
-                                wordfrequnexpected[word] = wordfrequnexpected[word] + 1
-                            elif not wordfreqexpected.has_key(word):
-                                wordfrequnexpected[word] = 1
-
-                    expecteditems = [(v,k) for k, v in wordfreqexpected.items()]
-                    expecteditems.sort(reverse=True)
-                    itemdict = dict()
-                    index = 0
-                    for item in expecteditems:
-                        itemdict[item[1]] = item[0]
-                        if index == 9:
-                            break
-                        index += 1
-                    itemdict = cjson.encode(itemdict)
-                    unexpecteditems = [(v,k) for k, v in wordfrequnexpected.items()]
-                    unexpecteditems.sort(reverse=True)
-                    itemdict2 = dict()
-                    index = 0
-                    for item in unexpecteditems:
-                        itemdict2[item[1]] = item[0]
-                        if index == 9:
-                            break
-                        index += 1
-                    itemdict2 = cjson.encode(itemdict2)
-                    cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,itemdict,itemdict2,did))
+                    wfexpected = cjson.decode(analyseddata[2])
+                    wfunexpected = cjson.decode(analyseddata[3])
+                    itemdicts = self.analyseTweet(cursor,pid,tweettext)
+                    wfdict = itemdicts[0]
+                    wfudict = itemdicts[1]
+                    for entry in wfdict:
+                        if wfexpected.has_key(entry):
+                            wfexpected[entry] = wfexpected[entry] + wfdict[entry]
+                        else:
+                            wfexpected[entry] = wfdict[entry]
+                    for entry in wfudict:
+                        if wfunexpected.has_key(entry):
+                            wfunexpected[entry] = wfunexpected[entry] + wfudict[entry]
+                        else:
+                            wfunexpected[entry] = wfudict[entry]
+                    wfexpected = cjson.encode(wfexpected)
+                    wfunexpected = cjson.encode(wfunexpected)
+                    
+                    cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,wfexpected,wfunexpected,did))
 
                 # Averages / stdev are calculated roughly based on the programme's running time at this point
                 progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
