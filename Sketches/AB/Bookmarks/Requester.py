@@ -125,7 +125,7 @@ class Requester(threadedcomponent):
                 if recvdata[0] == "OK":
                     programmedata = recvdata[1]
                 else:
-                    programmedata = None
+                    programmedata = ""
 
                 filepath = "tempRDF.txt"
                 file = open(filepath, 'w')
@@ -175,7 +175,7 @@ class Requester(threadedcomponent):
                 if recvdata[0] == "OK":
                     versiondata = recvdata[1]
                 else:
-                    versiondata = None
+                    versiondata = ""
 
                 filepath = "tempRDF.txt"
                 file = open(filepath, 'w')

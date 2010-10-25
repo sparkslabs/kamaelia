@@ -325,7 +325,7 @@ def programme(request,pid):
                     proghour = tweettime.hour - actualstart.hour
                     progmin = tweettime.minute - actualstart.minute
                     progsec = tweettime.second - actualstart.second
-                    playertime = (((proghour * 60) + progmin) * 60) + progsec - 60 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
+                    playertime = (((proghour * 60) + progmin) * 60) + progsec - 80 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
                     if playertime > (data[0].duration - 60):
                         playertimemin = (data[0].duration/60) - 1
                         playertimesec = playertime%60
