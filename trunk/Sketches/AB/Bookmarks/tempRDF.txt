@@ -13,55 +13,66 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00792tz.rdf">
-  <rdfs:label>Description of the episode Episode 12</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2007-05-29T13:04:13+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-03-09T21:10:19Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00792tz#programme"/>
+<rdf:Description rdf:about="/programmes/b00vg8qn.rdf">
+  <rdfs:label>Description of a programme version of 25/10/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-18T00:03:10+01:00</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-18T00:03:42+01:00</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00vg8qn#programme"/>
 </rdf:Description>
 
-<po:Episode rdf:about="/programmes/b00792tz#programme">
+<po:Version rdf:about="/programmes/b00vg8qn#programme">
 
-  <po:pid>b00792tz</po:pid>
-  <dc:title>Episode 12</dc:title>
-  <po:short_synopsis>A new sea lion baby is born by the lake, and mum doesn&#39;t want anyone too close.</po:short_synopsis>
-  <po:medium_synopsis>Ben Fogle and Kate Humble explore life behind the scenes at Longleat Estate and Safari Park. A new sea lion baby is born by the lake, and mum doesn&#39;t want anyone too close.</po:medium_synopsis>
-  <po:long_synopsis>Ben Fogle and Kate Humble explore life behind the scenes at Longleat Estate and Safari Park. A new sea lion baby is born by the lake, and mum doesn&#39;t want anyone too close. There&#39;s hijinks in Pets&#39; Corner when six newcomers arrive, because ferrets are made for mischief. The ostriches&#39; new chick takes its first faltering steps, while up in Lion Country there&#39;s been a surprising development.</po:long_synopsis>
-
+  <rdfs:label>A version of 25/10/2010</rdfs:label>
   
+  <po:sound_format>Stereo</po:sound_format>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9000</po:duration>
+  <po:pid>b00vg8qn</po:pid>
+  <po:time>
+    <timeline:Interval>
+      <rdfs:label>Time interval for a version of 25/10/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00vg8qn#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT9000S</timeline:duration>
+    </timeline:Interval>
+  </po:time>
 
 
-  <po:masterbrand rdf:resource="/bbctwo#service"/>
+</po:Version>
 
-  <po:position rdf:datatype="http://www.w3.org/2001/XMLSchema#int">12</po:position>
-
-  <po:genre rdf:resource="/programmes/genres/factual/petsandanimals#genre" />
-
-
-  <po:subject rdf:resource="/programmes/subjects/ben_fogle#subject" />
-  <po:subject rdf:resource="/programmes/subjects/ferret#subject" />
-  <po:subject rdf:resource="/programmes/subjects/kate_humble#subject" />
-  <po:subject rdf:resource="/programmes/subjects/longleat#subject" />
-  <po:subject rdf:resource="/programmes/subjects/longleat_safari_park#subject" />
-  <po:subject rdf:resource="/programmes/subjects/ostrich#subject" />
-
-
-
-  <po:version rdf:resource="/programmes/b006j392#programme" />
-  <po:version rdf:resource="/programmes/b007sw3d#programme" />
-
-
+<po:Episode rdf:about="/programmes/b00vg8s4#programme">
+  <rdfs:label>25/10/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/b00vg8qn#programme" />
 </po:Episode>
 
-<po:Series rdf:about="/programmes/b00q7c68#programme">
-  <po:episode rdf:resource="/programmes/b00792tz#programme"/>
-</po:Series>
+<timeline:TimeLine rdf:about="/programmes/b00vg8qn#timeline">
+  <rdfs:label>Timeline of a version of 25/10/2010</rdfs:label>
+</timeline:TimeLine>
+
+<po:Broadcast rdf:about="/programmes/b00vg8qn#p00bmzt6">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00bmzt6</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-25</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-25T09:30:00+01:00</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-25T12:00:00+01:00</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio2#service">
+      <rdfs:label>BBC Radio 2</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00vg8qn#programme" />
+</po:Broadcast>
 
 
 
-<po:Brand rdf:about="/programmes/b006w6ns#programme">
-  <po:episode rdf:resource="/programmes/b00792tz#programme"/>
-</po:Brand>
+
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-25T12:02:00+01:00</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-01T11:02:00Z</timeline:end>
+</po:Availability>
+
 
 
 </rdf:RDF>
