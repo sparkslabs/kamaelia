@@ -1,4 +1,5 @@
 #! /usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Interface to Twitter streaming API
 # - Grabs JSON data based on chosen keywords
@@ -26,7 +27,7 @@ from Axon.ThreadedComponent import threadedcomponent
 
 class TwitterStream(threadedcomponent):
     Inboxes = {
-        "inbox" : "Receives lists containing keywords and PIDs - [[pid,pid],[keyword,keyword,keyword]]",
+        "inbox" : "Receives lists containing keywords and PIDs - [[pid,pid],[keyword,keyword,keyword]]", # This docstring looks the wrong way round based on code...
         "control" : ""
     }
     Outboxes = {
