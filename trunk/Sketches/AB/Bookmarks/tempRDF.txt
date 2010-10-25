@@ -13,65 +13,242 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00vg8qn.rdf">
-  <rdfs:label>Description of a programme version of 25/10/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-18T00:03:10+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-18T00:03:42+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00vg8qn#programme"/>
+<rdf:Description rdf:about="/programmes/p004wsdb.rdf">
+  <rdfs:label>Description of a programme version of Part 1</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-10-26T20:38:57Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-10-26T20:38:57Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/p004wsdb#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00vg8qn#programme">
+<po:Version rdf:about="/programmes/p004wsdb#programme">
 
-  <rdfs:label>A version of 25/10/2010</rdfs:label>
-  
+  <rdfs:label>A version of Part 1</rdfs:label>
+  <po:aspect_ratio>16:9</po:aspect_ratio>
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9000</po:duration>
-  <po:pid>b00vg8qn</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1500</po:duration>
+  <po:pid>p004wsdb</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of 25/10/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00vg8qn#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT9000S</timeline:duration>
+      <rdfs:label>Time interval for a version of Part 1</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/p004wsdb#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1500S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Elisabeth Sladen</rdfs:label>
+          <foaf:givenName>Elisabeth</foaf:givenName>
+          <foaf:familyName>Sladen</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Yasmin Paige</rdfs:label>
+          <foaf:givenName>Yasmin</foaf:givenName>
+          <foaf:familyName>Paige</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Tommy Knight</rdfs:label>
+          <foaf:givenName>Tommy</foaf:givenName>
+          <foaf:familyName>Knight</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Daniel Anthony</rdfs:label>
+          <foaf:givenName>Daniel</foaf:givenName>
+          <foaf:familyName>Anthony</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Joseph Millson</rdfs:label>
+          <foaf:givenName>Joseph</foaf:givenName>
+          <foaf:familyName>Millson</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Juliet Cowan</rdfs:label>
+          <foaf:givenName>Juliet</foaf:givenName>
+          <foaf:familyName>Cowan</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Alexander Armstrong</rdfs:label>
+          <foaf:givenName>Alexander</foaf:givenName>
+          <foaf:familyName>Armstrong</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Martyn Ellis</rdfs:label>
+          <foaf:givenName>Martyn</foaf:givenName>
+          <foaf:familyName>Ellis</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Ian Midlane</rdfs:label>
+          <foaf:givenName>Ian</foaf:givenName>
+          <foaf:familyName>Midlane</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Actor</rdfs:label>
+          <dc:title>Actor</dc:title>
+          <dc:description>A person who plays the role of a character</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Paul Kasey</rdfs:label>
+          <foaf:givenName>Paul</foaf:givenName>
+          <foaf:familyName>Kasey</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Producer</rdfs:label>
+          <dc:title>Producer</dc:title>
+          <dc:description>The manager of an event, show, or other work, usually the individual in charge of finance, personnel, and other non-artistic aspects in the development of commercials, plays, movies, and other works</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Matthew Bouch</rdfs:label>
+          <foaf:givenName>Matthew</foaf:givenName>
+          <foaf:familyName>Bouch</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00vg8s4#programme">
-  <rdfs:label>25/10/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00vg8qn#programme" />
+<po:Episode rdf:about="/programmes/b0080pg4#programme">
+  <rdfs:label>Part 1</rdfs:label>
+  <po:version rdf:resource="/programmes/p004wsdb#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00vg8qn#timeline">
-  <rdfs:label>Timeline of a version of 25/10/2010</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/p004wsdb#timeline">
+  <rdfs:label>Timeline of a version of Part 1</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00vg8qn#p00bmzt6">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bmzt6</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-10-25</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-25T09:30:00+01:00</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-25T12:00:00+01:00</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/radio2#service">
-      <rdfs:label>BBC Radio 2</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00vg8qn#programme" />
-</po:Broadcast>
 
 
 
 
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-25T12:02:00+01:00</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-01T11:02:00Z</timeline:end>
-</po:Availability>
 
 
 
