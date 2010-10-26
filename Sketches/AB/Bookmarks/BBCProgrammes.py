@@ -161,31 +161,26 @@ class WhatsOn(component):
                                 # Identify which DVB bridge programme corresponds to the /programmes schedule to get PID
                                 # FIXME: Turned off programme name checking as /programmes can show different info to DVB bridge
                                 if showdatetime == starttime or (showdatetime + timedelta(seconds=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])) or (showdatetime - timedelta(seconds=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])):
-                                    expectedstart = mktime(parse(programme['start']).astimezone(gmt).timetuple())
-                                    if 'difference' in locals():
-                                        offset = (expectedstart - actualstart) - difference
-                                    else:
-                                        offset = expectedstart - actualstart
-                                    pid = programme['programme']['pid']
-                                    title =  programme['programme']['display_titles']['title']
-                                    # Attempted fix for unicode errors caused
-                                    if (not isinstance(title,str)) and (not isinstance(title,unicode)):
-                                        title = str(title)
-#                                    if isinstance(title,unicode):
-#                                        print title
-#                                        try:
-#                                            title = unicode(title.decode(),errors='ignore').encode("utf-8")
-#                                        except UnicodeEncodeError, e:
-#                                            print "Unicode error: ", e
-#                                            title = "Unknown - Encoding error"
-#                                    else:
-#                                        title = unicode(title,errors='ignore').encode("utf-8")
+                                    #expectedstart = mktime(parse(programme['start']).astimezone(gmt).timetuple())
+                                    #if 'difference' in locals():
+                                    #    offset = (expectedstart - actualstart) - difference
+                                    #else:
+                                    #    offset = expectedstart - actualstart
                                     duration = (proginfo['NOW']['duration'][0] * 60 * 60) + (proginfo['NOW']['duration'][1] * 60) + proginfo['NOW']['duration'][2]
                                     progdate = parse(programme['start'])
                                     tz = progdate.tzinfo
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                                     utcoffset = utcoffset.hour * 60 * 60
                                     timestamp = sleeper.mktime(progdate.timetuple()) - utcoffset
+                                    if 'difference' in locals():
+                                        offset = (timestamp - actualstart) - difference
+                                    else:
+                                        offset = timestamp - actualstart
+                                    pid = programme['programme']['pid']
+                                    title =  programme['programme']['display_titles']['title']
+                                    # Attempted fix for unicode errors caused
+                                    if (not isinstance(title,str)) and (not isinstance(title,unicode)):
+                                        title = str(title)
                                     print [pid,title,offset,duration,str(showdatetime) + " GMT",utcoffset]
                                     data = [pid,title,offset,duration,timestamp,utcoffset]
                                     
@@ -207,15 +202,6 @@ class WhatsOn(component):
                                     # Attempted fix for unicode errors caused
                                     if (not isinstance(title,str)) and (not isinstance(title,unicode)):
                                         title = str(title)
-#                                    if isinstance(title,unicode):
-#                                        print title
-#                                        try:
-#                                            title = unicode(title.decode(),errors='ignore').encode("utf-8")
-#                                        except UnicodeEncodeError, e:
-#                                            print "Unicode error: ", e
-#                                            title = "Unknown - Encoding error"
-#                                    else:
-#                                        title = unicode(title,errors='ignore').encode("utf-8")
                                     # Has to assume no offset as it knows no better
                                     progdate = parse(programme['start'])
                                     tz = progdate.tzinfo
