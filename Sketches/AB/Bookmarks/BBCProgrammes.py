@@ -186,8 +186,8 @@ class WhatsOn(component):
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                                     utcoffset = utcoffset.hour * 60 * 60
                                     timestamp = sleeper.mktime(progdate.timetuple()) - utcoffset
-                                    print [pid,title,offset,duration,programme['start']]
-                                    data = [pid,title,offset,duration,timestamp]
+                                    print [pid,title,offset,duration,str(showdatetime) + " GMT",utcoffset]
+                                    data = [pid,title,offset,duration,timestamp,utcoffset]
                                     
 
                     else:
@@ -222,8 +222,8 @@ class WhatsOn(component):
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                                     utcoffset = utcoffset.hour * 60 * 60
                                     timestamp = sleeper.mktime(progdate.timetuple()) - utcoffset
-                                    print [pid,title,0,programme['duration'],programme['start']]
-                                    data = [pid,title,0,programme['duration'],timestamp]
+                                    print [pid,title,0,programme['duration'],programme['start'],utcoffset]
+                                    data = [pid,title,0,programme['duration'],timestamp,utcoffset]
                                     
 
                 self.send(data,"outbox")
