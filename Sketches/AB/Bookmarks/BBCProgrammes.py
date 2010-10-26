@@ -180,8 +180,14 @@ class WhatsOn(component):
 #                                            title = "Unknown - Encoding error"
 #                                    else:
 #                                        title = unicode(title,errors='ignore').encode("utf-8")
-                                    print [pid,title,offset,programme['duration'],programme['start']]
-                                    data = [pid,title,offset,programme['duration'],programme['start']]
+                                    duration = (proginfo['NOW']['duration'][0] * 60 * 60) + (proginfo['NOW']['duration'][1] * 60) + proginfo['NOW']['duration'][2]
+                                    progdate = parse(programme['start'])
+                                    tz = progdate.tzinfo
+                                    utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
+                                    utcoffset = utcoffset.hour * 60 * 60
+                                    timestamp = sleeper.mktime(progdate.timetuple()) - utcoffset
+                                    print [pid,title,offset,duration,programme['start']]
+                                    data = [pid,title,offset,duration,timestamp]
                                     
 
                     else:
@@ -211,8 +217,13 @@ class WhatsOn(component):
 #                                    else:
 #                                        title = unicode(title,errors='ignore').encode("utf-8")
                                     # Has to assume no offset as it knows no better
+                                    progdate = parse(programme['start'])
+                                    tz = progdate.tzinfo
+                                    utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
+                                    utcoffset = utcoffset.hour * 60 * 60
+                                    timestamp = sleeper.mktime(progdate.timetuple()) - utcoffset
                                     print [pid,title,0,programme['duration'],programme['start']]
-                                    data = [pid,title,0,programme['duration'],programme['start']]
+                                    data = [pid,title,0,programme['duration'],timestamp]
                                     
 
                 self.send(data,"outbox")
