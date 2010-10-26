@@ -250,7 +250,7 @@ class HTTPClientRequest(component):
         self.send(line + "\r\n", "outbox")
     def main(self):
         headers = dict(self.headers)
-        self.netPrintln("%s %s HTTP/%s" % (self.method, self.url, self.url))
+        self.netPrintln("%s %s HTTP/%s" % (self.method, self.url, self.proto))
         if self.postbody:
             headers["Content-Length"] = len(self.postbody)
         if self.host:
@@ -471,11 +471,7 @@ class LineFilter(component):
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
-def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, username=None, password=None, proxy=None):
-    # NOTE: username not supported yet
-    # NOTE: password not supported yet
-    # NOTE: proxy not supported yet
-
+def parse_url(fullurl):
     p = fullurl.find(":")
     proto = fullurl[:p]
     if proto.lower() != "http":
@@ -499,15 +495,54 @@ def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, userna
     else:
         host = server[:p]
         port = int(server[p+1:])
+
+    return proto, host, port, path
+
+from Kamaelia.Util.Console import ConsoleEchoer
+def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, username=None, password=None, proxy=None):
+    # NOTE: username not supported yet
+    # NOTE: password not supported yet
+    # NOTE: proxy not supported yet
+
+    proto, host, port, path = parse_url(fullurl)
+
+    if 0:
+        p = fullurl.find(":")
+        proto = fullurl[:p]
+        if proto.lower() != "http":
+             raise ValueError("Can only handle http urls. You provided"+fullurl)
+        if fullurl[p+1:p+3] != "//":
+             raise ValueError("Invalid HTTP URL."+fullurl)
+        fullurl = fullurl[p+3:]
+
+        p = fullurl.find("/")
+        if p == -1:
+            server = fullurl
+            path = "/"
+        else:
+            server = fullurl[:p]
+            path = fullurl[p:]
+
+        p = server.find(":")
+        if p == -1:
+            host = server
+            port = 80
+        else:
+            host = server[:p]
+            port = int(server[p+1:])
     
     if proxy != None:
         request = fullurl
+        _, req_host , req_port, _ = parse_url(proxy)
     else:
         request = path
+        req_host , req_port = host, port
 
     return Pipeline(
                     HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
-                    TCPClient(host, port, wait_for_serverclose=True),
+                    ConsoleEchoer(forwarder=True, use_repr=True),
+                    TCPClient(req_host, req_port, wait_for_serverclose=True),
+                    ConsoleEchoer(forwarder=True, use_repr=True),
                     HTTPClientResponseHandler(suppress_header = True),
                    )
 
