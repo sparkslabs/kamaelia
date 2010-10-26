@@ -553,11 +553,33 @@ if __name__ == "__main__":
         password =  None
 
     if 1:
-        URL = "http://www.kamaelia.org/Home.html"
+#        URL = "http://www.kamaelia.org/Home.html"
+        URL = "http://stream.twitter.com/1/statuses/filter.json"
+
+        headers = {
+            "Accept-Encoding": "identity",
+            "Keep-Alive": "120",
+            "Connection": "close",
+            "User-Agent": "BBC R&D Grabber",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        import cjson
+        import simplejson
+
         Pipeline(
-            HTTPDataStreamingClient(URL,proxy=proxy, username=username, password=password),
+            HTTPDataStreamingClient(URL,proxy=proxy,
+                                        username=username,
+                                        password=password,
+                                        headers = headers,
+                                        method="POST",
+                                        body="track=psychic+octopus%2Cbonfire+night%2Ctimes+paywall"),
+#            LineFilter(eol="\r\n"),
+#            ConsoleEchoer(forwarder=True, use_repr=True),
+#            PureTransformer(lambda x: "TWEET: "+ str(cjson.decode(x))+"\n"), # wierd decode errors ...
+#            PureTransformer(lambda x: "TWEET: "+ str(simplejson.loads(x))+"\n"),
             ConsoleEchoer()
         ).run()
+
 
     if 0:
         Pipeline(
@@ -599,7 +621,6 @@ Extensions still required
      -- Post of a body
      -- Better handling of sending of headers
      -- headers are currently key: value, should be key: [list of values], since HTTP headers may be repeated
-     -- Wrapper for creating authentication header
      -- UserAgent wrapper
      -- Accept-Encoding header
      
@@ -628,5 +649,63 @@ but that's an element of the prefab function for this anyway.
 00000120  XX XX XX XX XX XX XX XX  0d 0a 0d 0a 74 72 61 63  |XXXXXXXX....trac|
 00000130  6b 3d 53 61 72 61 68 2b  4a 61 6e 65 25 32 43 43  |k=Sarah+Jane%2CC|
 00000140  42 42 43                                          |BBC|
-"""
 
+POST http://stream.twitter.com/1/statuses/filter.json HTTP/1.1
+Accept-Encoding: identity
+Content-Length: 23
+Host: stream.twitter.com
+Keep-Alive: 120
+Connection: close
+User-Agent: BBC R&D Grabber
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXx
+
+track=Sarah+Jane%2CCBBC
+
+HTTP/1.0 200 OK
+Content-Type: application/json
+Server: Jetty(6.1.25)
+X-Cache: MISS from www-cache.reith.bbc.co.uk
+Via: 1.1 webgw0-rth.thls.bbc.co.uk:80 (squid/2.7.STABLE6)
+Connection: close
+
+
+POST http://stream.twitter.com/1/statuses/filter.json HTTP/1.0
+Connection: close
+Host: stream.twitter.com
+Accept-Encoding: identity
+Content-Length: 47
+Content-Type: application/x-www-form-urlencoded
+Keep-Alive: 120
+Authorization: Basic XXXXXXXXXXXXXXXXXXXXXX
+User-Agent: BBC R&D Grabber
+
+psychic+octopus%2Cbonfire+night%2Ctimes+paywallHTTP/1.0 406 Not Acceptable
+....x....1....x....2....x....3....x....4....x..
+
+
+POST http://stream.twitter.com/1/statuses/filter.json HTTP/1.1
+Accept-Encoding: identity
+Content-Length: 23
+Host: stream.twitter.com
+Keep-Alive: 120
+Connection: close
+User-Agent: BBC R&D Grabber
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic XXXXXXXXXXXXXXXXXXXXXXXXXXXx
+
+track=Sarah+Jane%2CCBBC
+
+POST http://stream.twitter.com/1/statuses/filter.json HTTP/1.0
+Connection: close
+Host: stream.twitter.com
+Accept-Encoding: identity
+Content-Length: 47
+Content-Type: application/x-www-form-urlencoded
+Keep-Alive: 120
+Authorization: Basic XXXXXXXXXXXXXXXXXXXXXX
+User-Agent: BBC R&D Grabber
+
+psychic+octopus%2Cbonfire+night%2Ctimes+paywallHTTP/1.0 406 Not Acceptable
+
+"""
