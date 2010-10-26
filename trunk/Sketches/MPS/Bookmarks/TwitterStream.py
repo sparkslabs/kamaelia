@@ -471,6 +471,13 @@ class LineFilter(component):
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
+import base64
+def http_basic_auth_header(username, password):
+    userpass = "%s:%s" % (username, password)
+    base64_userpass = base64.b64encode(userpass )
+    auth_value = "Basic %s" % base64_userpass
+    return ("Authorization", auth_value)
+
 def parse_url(fullurl):
     p = fullurl.find(":")
     proto = fullurl[:p]
@@ -502,35 +509,13 @@ from Kamaelia.Util.Console import ConsoleEchoer
 def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, username=None, password=None, proxy=None):
     # NOTE: username not supported yet
     # NOTE: password not supported yet
-    # NOTE: proxy not supported yet
-
+ 
+    headers = dict(headers)
     proto, host, port, path = parse_url(fullurl)
+    if username is not None and password is not None:
+        (header_field, header_value) = http_basic_auth_header(username, password)
+        headers[header_field] = header_value
 
-    if 0:
-        p = fullurl.find(":")
-        proto = fullurl[:p]
-        if proto.lower() != "http":
-             raise ValueError("Can only handle http urls. You provided"+fullurl)
-        if fullurl[p+1:p+3] != "//":
-             raise ValueError("Invalid HTTP URL."+fullurl)
-        fullurl = fullurl[p+3:]
-
-        p = fullurl.find("/")
-        if p == -1:
-            server = fullurl
-            path = "/"
-        else:
-            server = fullurl[:p]
-            path = fullurl[p:]
-
-        p = server.find(":")
-        if p == -1:
-            host = server
-            port = 80
-        else:
-            host = server[:p]
-            port = int(server[p+1:])
-    
     if proxy != None:
         request = fullurl
         _, req_host , req_port, _ = parse_url(proxy)
@@ -540,9 +525,7 @@ def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, userna
 
     return Pipeline(
                     HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
-                    ConsoleEchoer(forwarder=True, use_repr=True),
                     TCPClient(req_host, req_port, wait_for_serverclose=True),
-                    ConsoleEchoer(forwarder=True, use_repr=True),
                     HTTPClientResponseHandler(suppress_header = True),
                    )
 
@@ -562,9 +545,17 @@ if __name__ == "__main__":
         print "export http_proxy=http://www-cache.your.site.com:3128/"
         proxy = None
     
+    try:
+        username = os.environ["TWITTERUSERNAME"]
+        password =  os.environ["TWITTERPASSWORD"]
+    except KeyError:
+        username = None
+        password =  None
+
     if 1:
+        URL = "http://www.kamaelia.org/Home.html"
         Pipeline(
-            HTTPDataStreamingClient("http://www.kamaelia.org:80/Components.html",proxy=proxy),
+            HTTPDataStreamingClient(URL,proxy=proxy, username=username, password=password),
             ConsoleEchoer()
         ).run()
 
