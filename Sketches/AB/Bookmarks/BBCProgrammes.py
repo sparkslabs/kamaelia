@@ -160,7 +160,7 @@ class WhatsOn(component):
                                 starttime = starttime.replace(tzinfo=None)
                                 # Identify which DVB bridge programme corresponds to the /programmes schedule to get PID
                                 # FIXME: Turned off programme name checking as /programmes can show different info to DVB bridge
-                                if showdatetime == starttime: # and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title']):
+                                if showdatetime == starttime or (showdatetime + timedelta(seconds=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])) or (showdatetime - timedelta(seconds=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])):
                                     expectedstart = mktime(parse(programme['start']).astimezone(gmt).timetuple())
                                     if 'difference' in locals():
                                         offset = (expectedstart - actualstart) - difference
