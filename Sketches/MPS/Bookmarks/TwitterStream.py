@@ -235,4 +235,52 @@ class TwitterStream(threadedcomponent):
                     if self.backofftime > 1:
                         print ("Backing off for " + str(self.backofftime) + " seconds.")
                         time.sleep(self.backofftime)
+
+from Axon.Component import component
+import Axon
+
+class HTTPClientSide(component):
+    url = "/Components.html"
+    host = "www.kamaelia.org"
+    method = "GET"
+    postbody = None
+    headers = {}
+    proto = "1.0" # Since we only accept 1.0 style responses properly
+    def netPrintln(self, line):
+        self.send(line + "\r\n", "outbox")
+    def main(self):
+        headers = dict(self.headers)
+        self.netPrintln("%s %s HTTP/%s" % (self.method, self.url, self.url))
+        if self.postbody:
+            headers["Content-Length"] = len(self.postbody)
+        if self.host:
+            headers["Host"] = self.host
+        for header in headers:
+            self.netPrintln("%s: %s" % (header, headers[header]) )
+        self.netPrintln("")
+        if self.postbody:
+            self.send(self.postbody, "outbox")
+        yield 1
+        self.send(Axon.Ipc.producerFinished(), "signal")
+
+
+if __name__ == "__main__":
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.PureTransformer import PureTransformer
+    from Kamaelia.Internet.TCPClient import TCPClient
     
+    Pipeline(
+        HTTPClientSide(),
+        TCPClient("www.kamaelia.org", 80, wait_for_serverclose=True),
+#        PureTransformer(lambda x: str(len(x)) + "\n"),
+        ConsoleEchoer()
+    ).run()
+
+
+
+
+
+
+
+
