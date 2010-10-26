@@ -26,7 +26,7 @@ from Axon.ThreadedComponent import threadedcomponent
 
 class TwitterStream(threadedcomponent):
     Inboxes = {
-        "inbox" : "Receives lists containing keywords and PIDs - [[pid,pid],[keyword,keyword,keyword]]",
+        "inbox" : "Receives lists containing keywords and PIDs - [[keyword,keyword,keyword],[pid,pid]]",
         "control" : ""
     }
     Outboxes = {

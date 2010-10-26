@@ -12,8 +12,7 @@ import cjson
 import os
 import string
 import MySQLdb
-from datetime import date, datetime
-from dateutil.parser import parse
+from datetime import date
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -125,7 +124,21 @@ class Requester(threadedcomponent):
                 if recvdata[0] == "OK":
                     programmedata = recvdata[1]
                 else:
-                    programmedata = ""
+                    programmedata = '<?xml version="1.0" encoding="utf-8"?> \
+                                    <rdf:RDF xmlns:rdf      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#" \
+                                             xmlns:rdfs     = "http://www.w3.org/2000/01/rdf-schema#" \
+                                             xmlns:owl      = "http://www.w3.org/2002/07/owl#" \
+                                             xmlns:foaf     = "http://xmlns.com/foaf/0.1/" \
+                                             xmlns:po       = "http://purl.org/ontology/po/" \
+                                             xmlns:mo       = "http://purl.org/ontology/mo/" \
+                                             xmlns:skos     = "http://www.w3.org/2008/05/skos#" \
+                                             xmlns:time     = "http://www.w3.org/2006/time#" \
+                                             xmlns:dc       = "http://purl.org/dc/elements/1.1/" \
+                                             xmlns:dcterms  = "http://purl.org/dc/terms/" \
+                                             xmlns:wgs84_pos= "http://www.w3.org/2003/01/geo/wgs84_pos#" \
+                                             xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#" \
+                                             xmlns:event    = "http://purl.org/NET/c4dm/event.owl#"> \
+                                    </rdf:RDF>'
 
                 filepath = "tempRDF.txt"
                 file = open(filepath, 'w')
@@ -175,7 +188,21 @@ class Requester(threadedcomponent):
                 if recvdata[0] == "OK":
                     versiondata = recvdata[1]
                 else:
-                    versiondata = ""
+                    versiondata = '<?xml version="1.0" encoding="utf-8"?> \
+                                    <rdf:RDF xmlns:rdf      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#" \
+                                             xmlns:rdfs     = "http://www.w3.org/2000/01/rdf-schema#" \
+                                             xmlns:owl      = "http://www.w3.org/2002/07/owl#" \
+                                             xmlns:foaf     = "http://xmlns.com/foaf/0.1/" \
+                                             xmlns:po       = "http://purl.org/ontology/po/" \
+                                             xmlns:mo       = "http://purl.org/ontology/mo/" \
+                                             xmlns:skos     = "http://www.w3.org/2008/05/skos#" \
+                                             xmlns:time     = "http://www.w3.org/2006/time#" \
+                                             xmlns:dc       = "http://purl.org/dc/elements/1.1/" \
+                                             xmlns:dcterms  = "http://purl.org/dc/terms/" \
+                                             xmlns:wgs84_pos= "http://www.w3.org/2003/01/geo/wgs84_pos#" \
+                                             xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#" \
+                                             xmlns:event    = "http://purl.org/NET/c4dm/event.owl#"> \
+                                    </rdf:RDF>'
 
                 filepath = "tempRDF.txt"
                 file = open(filepath, 'w')
@@ -407,18 +434,18 @@ class Requester(threadedcomponent):
                     title = data[1][1]
                     offset = data[1][2]
                     duration = data[1][3]
-                    expectedstart = data[1][4]
+                    timestamp = data[1][4]
                     cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,self.channel))
-                    cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
-                    if cursor.fetchone() == None:
-                        progdate = parse(expectedstart)
-                        tz = progdate.tzinfo
-                        utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
-                        utcoffset = utcoffset.hour * 60 * 60
-                        timestamp = time.mktime(progdate.timetuple()) - utcoffset
+                    cursor.execute("""SELECT duration FROM programmes WHERE pid = %s""",(pid))
+                    progentrytest = cursor.fetchone()
+                    if progentrytest == None:
                         cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s)""", (pid,title,offset,duration,timestamp,utcoffset,self.channel))
                         for word in keywords:
                             cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywords[word]))
+                    else:
+                        # Fix for programmes where the duration is changed last minute
+                        if progentrytest.duration[0] != duration:
+                            cursor.execute("""UPDATE programmes SET duration = %s WHERE pid != %s AND channel = %s""",(duration,pid,channel))
                     keywords = list()
                 else:
                     keywords = None
@@ -452,18 +479,18 @@ class Requester(threadedcomponent):
                         title = data[1][1]
                         offset = data[1][2]
                         duration = data[1][3]
-                        expectedstart = data[1][4]
+                        timestamp = data[1][4]
                         cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,channel))
-                        cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
-                        if cursor.fetchone() == None:
-                            progdate = parse(expectedstart)
-                            tz = progdate.tzinfo
-                            utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
-                            utcoffset = utcoffset.hour * 60 * 60
-                            timestamp = time.mktime(progdate.timetuple()) - utcoffset
+                        cursor.execute("""SELECT duration FROM programmes WHERE pid = %s""",(pid))
+                        progentrytest = cursor.fetchone()
+                        if progentrytest == None:
                             cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,timestamp,utcoffset,channel))
                             for word in keywordappender:
                                 cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywordappender[word]))
+                        else:
+                            # Fix for programmes where the duration is changed last minute
+                            if progentrytest[0] != duration:
+                                cursor.execute("""UPDATE programmes SET duration = %s WHERE pid != %s AND channel = %s""",(duration,pid,channel))
 
                 currentpids = list()
                 for channel in self.channels:
