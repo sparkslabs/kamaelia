@@ -471,21 +471,75 @@ class LineFilter(component):
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
+def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, username=None, password=None, proxy=None):
+    # NOTE: username not supported yet
+    # NOTE: password not supported yet
+    # NOTE: proxy not supported yet
+
+    p = fullurl.find(":")
+    proto = fullurl[:p]
+    if proto.lower() != "http":
+         raise ValueError("Can only handle http urls. You provided"+fullurl)
+    if fullurl[p+1:p+3] != "//":
+         raise ValueError("Invalid HTTP URL."+fullurl)
+    fullurl = fullurl[p+3:]
+
+    p = fullurl.find("/")
+    if p == -1:
+        server = fullurl
+        path = "/"
+    else:
+        server = fullurl[:p]
+        path = fullurl[p:]
+
+    p = server.find(":")
+    if p == -1:
+        host = server
+        port = 80
+    else:
+        host = server[:p]
+        port = int(server[p+1:])
+    
+    if proxy != None:
+        request = fullurl
+    else:
+        request = path
+
+    return Pipeline(
+                    HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
+                    TCPClient(host, port, wait_for_serverclose=True),
+                    HTTPClientResponseHandler(suppress_header = True),
+                   )
 
 if __name__ == "__main__":
+
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Util.PureTransformer import PureTransformer
     from Kamaelia.Internet.TCPClient import TCPClient
     import pprint
+    import os
+
+    try:
+        proxy = os.environ["http_proxy"]
+    except KeyError:
+        print "Not using a proxy. If you want to use a proxy, you need to do something like this"
+        print "export http_proxy=http://www-cache.your.site.com:3128/"
+        proxy = None
     
     if 1:
+        Pipeline(
+            HTTPDataStreamingClient("http://www.kamaelia.org:80/Components.html",proxy=proxy),
+            ConsoleEchoer()
+        ).run()
+
+    if 0:
         Pipeline(
             HTTPClientRequest(),
             TCPClient("www.kamaelia.org", 80, wait_for_serverclose=True),
             HTTPClientResponseHandler(suppress_header = True),
-            LineFilter(eol="\n"),
-            PureTransformer(lambda x: "=="+x+"\n"),
+#            LineFilter(eol="\n"),
+#            PureTransformer(lambda x: "=="+x+"\n"),
             ConsoleEchoer()
         ).run()
 
