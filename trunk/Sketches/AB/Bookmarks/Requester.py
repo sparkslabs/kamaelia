@@ -435,6 +435,7 @@ class Requester(threadedcomponent):
                     offset = data[1][2]
                     duration = data[1][3]
                     timestamp = data[1][4]
+                    utcoffset = data[1][5]
                     cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,self.channel))
                     cursor.execute("""SELECT duration FROM programmes WHERE pid = %s""",(pid))
                     progentrytest = cursor.fetchone()
@@ -480,6 +481,7 @@ class Requester(threadedcomponent):
                         offset = data[1][2]
                         duration = data[1][3]
                         timestamp = data[1][4]
+                        utcoffset = data[1][5]
                         cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,channel))
                         cursor.execute("""SELECT duration FROM programmes WHERE pid = %s""",(pid))
                         progentrytest = cursor.fetchone()
