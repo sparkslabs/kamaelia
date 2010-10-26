@@ -518,6 +518,7 @@ if __name__ == "__main__":
 Extensions still required
      -- Post of a body
      -- Better handling of sending of headers
+     -- headers are currently key: value, should be key: [list of values], since HTTP headers may be repeated
      -- Wrapper for creating authentication header
      -- UserAgent wrapper
      -- Accept-Encoding header
