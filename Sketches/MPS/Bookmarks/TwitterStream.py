@@ -263,7 +263,6 @@ class HTTPClientRequest(component):
         yield 1
         self.send(Axon.Ipc.producerFinished(), "signal")
 
-
 class ShutdownNow(Exception):
     pass
 
@@ -357,7 +356,6 @@ class HTTPClientResponseHandler(component):
                         except KeyError:
                             header[header_field]= [header_value]
 
-
                 header["HTTPSTATUSCODE"] = status_code
                 header["HTTPSTATUSMESSAGE"] = status_message
                 header["HTTP_SERVER_VERSION"] = ver
@@ -402,6 +400,78 @@ class HTTPClientResponseHandler(component):
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
+class LineFilter(component):
+    eol = "\n"
+    def checkControl(self):
+        if self.dataReady("control"):
+            self.control_message = self.recv("control")
+            if isinstance(self.control_message, Axon.Ipc.shutdownMicroprocess):
+                raise Exception("ShutdownNow")
+            return self.control_message
+        
+    def get_line(self, raw_buffers):
+        for chunk in self.Inbox("inbox"):
+            raw_buffers.append(chunk)
+
+        if raw_buffers:
+            eol = self.eol
+            len_eol = len(eol)
+            line_buffer = []
+            i = 0
+            found_line = True
+            for raw_buffer in raw_buffers:
+                if eol not in raw_buffer:
+                    line_buffer.append(raw_buffer)
+                else:
+                    where = raw_buffer.find(eol)
+                    line = raw_buffer[:where]
+                    rest = raw_buffer[where+len_eol:]
+                    line_buffer.append(line)
+                    if rest:
+                        raw_buffers[i] = rest
+                        break
+                    else:
+                        i += 1
+                        break
+                i += 1
+            else:
+                found_line = False
+
+            if not found_line:
+                line = None
+            else:
+                raw_buffers =  raw_buffers[i:]
+                line = "".join(line_buffer)
+
+            return line, raw_buffers
+        else:
+            return None, raw_buffers
+
+    def main(self):
+        self.control_message = None
+        input_buffer = []
+        try:
+            while True:
+                yield 1
+                line = True
+                while line:
+                    line, input_buffer = self.get_line(input_buffer)
+                    if line:
+                        self.send(line, "outbox")
+
+                self.checkControl()
+                if self.control_message and input_buffer == [] and not self.dataReady("inbox"):
+                    # No more data to read, etc, so shutdown
+                    raise ShutdownNow
+
+        except ShutdownNow:
+            pass
+        if self.control_message:
+            self.send(self.control_message, "signal")
+        else:
+            self.send(Axon.Ipc.producerFinished(), "signal")
+
+
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
@@ -410,6 +480,16 @@ if __name__ == "__main__":
     import pprint
     
     if 1:
+        Pipeline(
+            HTTPClientRequest(),
+            TCPClient("www.kamaelia.org", 80, wait_for_serverclose=True),
+            HTTPClientResponseHandler(suppress_header = True),
+            LineFilter(eol="\n"),
+            PureTransformer(lambda x: "=="+x+"\n"),
+            ConsoleEchoer()
+        ).run()
+
+    if 0:
         Pipeline(
             HTTPClientRequest(),
             TCPClient("www.kamaelia.org", 80, wait_for_serverclose=True),
@@ -434,16 +514,38 @@ if __name__ == "__main__":
             ConsoleEchoer()
         ).run()
 
-
-
 """
-raw_buffers = ["hello", "world", "this\nis a", "line and this", "s another\n"]
-line, raw_buffers = get_line(raw_buffers)
-print line
+Extensions still required
+     -- Post of a body
+     -- Better handling of sending of headers
+     -- Wrapper for creating authentication header
+     -- UserAgent wrapper
+     -- Accept-Encoding header
+     
+Handles streamed response happily though, so in many respects "minor" details to
+handle Needs to handle connecting to a proxy and sending full request there instead,
+but that's an element of the prefab function for this anyway.
 
-
-i
-line_buffer
-raw_buffers
+00000000  50 4f 53 54 20 68 74 74  70 3a 2f 2f 73 74 72 65  |POST http://stre|
+00000010  61 6d 2e 74 77 69 74 74  65 72 2e 63 6f 6d 2f 31  |am.twitter.com/1|
+00000020  2f 73 74 61 74 75 73 65  73 2f 66 69 6c 74 65 72  |/statuses/filter|
+00000030  2e 6a 73 6f 6e 20 48 54  54 50 2f 31 2e 31 0d 0a  |.json HTTP/1.1..|
+00000040  41 63 63 65 70 74 2d 45  6e 63 6f 64 69 6e 67 3a  |Accept-Encoding:|
+00000050  20 69 64 65 6e 74 69 74  79 0d 0a 43 6f 6e 74 65  | identity..Conte|
+00000060  6e 74 2d 4c 65 6e 67 74  68 3a 20 32 33 0d 0a 48  |nt-Length: 23..H|
+00000070  6f 73 74 3a 20 73 74 72  65 61 6d 2e 74 77 69 74  |ost: stream.twit|
+00000080  74 65 72 2e 63 6f 6d 0d  0a 4b 65 65 70 2d 41 6c  |ter.com..Keep-Al|
+00000090  69 76 65 3a 20 31 32 30  0d 0a 43 6f 6e 6e 65 63  |ive: 120..Connec|
+000000a0  74 69 6f 6e 3a 20 63 6c  6f 73 65 0d 0a 55 73 65  |tion: close..Use|
+000000b0  72 2d 41 67 65 6e 74 3a  20 42 42 43 20 52 26 44  |r-Agent: BBC R&D|
+000000c0  20 47 72 61 62 62 65 72  0d 0a 43 6f 6e 74 65 6e  | Grabber..Conten|
+000000d0  74 2d 54 79 70 65 3a 20  61 70 70 6c 69 63 61 74  |t-Type: applicat|
+000000e0  69 6f 6e 2f 78 2d 77 77  77 2d 66 6f 72 6d 2d 75  |ion/x-www-form-u|
+000000f0  72 6c 65 6e 63 6f 64 65  64 0d 0a 41 75 74 68 6f  |rlencoded..Autho|
+00000100  72 69 7a 61 74 69 6f 6e  3a 20 42 61 73 69 63 20  |rization: Basic |
+00000110  XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX  |XXXXXXXXXXXXXXXX|
+00000120  XX XX XX XX XX XX XX XX  0d 0a 0d 0a 74 72 61 63  |XXXXXXXX....trac|
+00000130  6b 3d 53 61 72 61 68 2b  4a 61 6e 65 25 32 43 43  |k=Sarah+Jane%2CC|
+00000140  42 42 43                                          |BBC|
 """
 
