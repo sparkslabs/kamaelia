@@ -239,7 +239,7 @@ class TwitterStream(threadedcomponent):
 from Axon.Component import component
 import Axon
 
-class HTTPClientSide(component):
+class HTTPClientRequest(component):
     url = "/Components.html"
     host = "www.kamaelia.org"
     method = "GET"
@@ -264,23 +264,186 @@ class HTTPClientSide(component):
         self.send(Axon.Ipc.producerFinished(), "signal")
 
 
+class ShutdownNow(Exception):
+    pass
+
+class HTTPClientResponseHandler(component):
+    suppress_header = False
+    def get_line(self, raw_buffers):
+        for chunk in self.Inbox("inbox"):
+            raw_buffers.append(chunk)
+
+        if raw_buffers:
+            eol = "\r\n"
+            len_eol = len(eol)
+            line_buffer = []
+            i = 0
+            found_line = True
+            for raw_buffer in raw_buffers:
+                if eol not in raw_buffer:
+                    line_buffer.append(raw_buffer)
+                else:
+                    where = raw_buffer.find(eol)
+                    line = raw_buffer[:where]
+                    rest = raw_buffer[where+len_eol:]
+                    line_buffer.append(line)
+                    if rest:
+                        raw_buffers[i] = rest
+                        break
+                    else:
+                        i += 1
+                        break
+                i += 1
+            else:
+                found_line = False
+
+            if not found_line:
+                line = None
+            else:
+                raw_buffers =  raw_buffers[i:]
+                line = "".join(line_buffer)
+
+            return line, raw_buffers
+        else:
+            return None, raw_buffers
+
+    def checkControl(self):
+        if self.dataReady("control"):
+            self.control_message = self.recv("control")
+            if isinstance(self.control_message, Axon.Ipc.shutdownMicroprocess):
+                raise Exception("ShutdownNow")
+            return self.control_message
+
+    def main(self):
+        self.control_message = None
+        try:
+            input_buffer = []
+            line_buffer = None
+            line = None
+            while not line:
+                if not self.anyReady():
+                    self.pause()
+                yield 1
+                line, input_buffer = self.get_line(input_buffer) # Flushes Inbox
+                self.checkControl()
+
+            if self.control_message and input_buffer == [] and not self.dataReady("inbox"):
+                raise ShutdownNow
+
+            if line:
+                split_response = line.split()
+                if len(split_response) == 3:
+                    proto_ver, status_code, status_message = split_response
+                    proto, ver = proto_ver.split("/")
+                else:
+                    raise Exception("Broken Web Server")
+
+                if status_code != "200":
+                    raise Exception("Failure Status",status_code,status_message)
+
+                header = {}
+
+                while True:
+                    yield 1
+                    header_line, input_buffer = self.get_line(input_buffer)
+                    if header_line is not None:
+                        if header_line == "":
+                            break
+                        w = header_line.find(":")
+                        header_field = header_line[:w]
+                        header_value = header_line[w+2:]
+                        try:
+                            header[header_field].append(header_value)
+                        except KeyError:
+                            header[header_field]= [header_value]
+
+
+                header["HTTPSTATUSCODE"] = status_code
+                header["HTTPSTATUSMESSAGE"] = status_message
+                header["HTTP_SERVER_VERSION"] = ver
+                header["HTTP_PROTOCOL"] = proto
+
+                if not self.suppress_header:
+                    self.send(("header", header), "outbox")
+
+                if self.control_message and input_buffer == [] and not self.dataReady("inbox"):
+                    raise ShutdownNow
+
+            while True:
+                yield 1
+                for chunk in input_buffer:
+                    if not self.suppress_header:
+                        self.send(("body", chunk), "outbox")
+                    else:
+                        self.send(chunk, "outbox")
+
+                input_buffer = []
+
+                for chunk in self.Inbox():
+                    if not self.suppress_header:
+                        self.send(("body", chunk), "outbox")
+                    else:
+                        self.send(chunk, "outbox")
+
+                    if not self.suppress_header:
+                        self.send(("body", chunk), "outbox")
+                    else:
+                        self.send(chunk, "outbox")
+
+                self.checkControl()
+                if self.control_message:
+                    break
+                
+        except ShutdownNow:
+            pass
+
+        if self.control_message:
+            self.send(self.control_message, "signal")
+        else:
+            self.send(Axon.Ipc.producerFinished(), "signal")
+
 if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Util.PureTransformer import PureTransformer
     from Kamaelia.Internet.TCPClient import TCPClient
+    import pprint
     
-    Pipeline(
-        HTTPClientSide(),
-        TCPClient("www.kamaelia.org", 80, wait_for_serverclose=True),
-#        PureTransformer(lambda x: str(len(x)) + "\n"),
-        ConsoleEchoer()
-    ).run()
+    if 1:
+        Pipeline(
+            HTTPClientRequest(),
+            TCPClient("www.kamaelia.org", 80, wait_for_serverclose=True),
+            HTTPClientResponseHandler(suppress_header = True),
+            PureTransformer(lambda x: pprint.pformat(x)+"\n"),
+            ConsoleEchoer()
+        ).run()
+
+    if 0:
+        Pipeline(
+            HTTPClientRequest(),
+            TCPClient("www.kamaelia.org", 80, wait_for_serverclose=True),
+            HTTPClientResponseHandler(),
+            PureTransformer(lambda (x,y): repr((x,len(y)))+"\n"),
+            ConsoleEchoer()
+        ).run()
+
+    if 0:
+        Pipeline(
+            HTTPClientRequest(),
+            TCPClient("www.kamaelia.org", 80, wait_for_serverclose=True),
+            ConsoleEchoer()
+        ).run()
 
 
 
+"""
+raw_buffers = ["hello", "world", "this\nis a", "line and this", "s another\n"]
+line, raw_buffers = get_line(raw_buffers)
+print line
 
 
-
-
+i
+line_buffer
+raw_buffers
+"""
 
