@@ -141,7 +141,7 @@ class TCPClient(Axon.Component.component):
               }
    Usescomponents=[ConnectedSocketAdapter] # List of classes used.
 
-   def __init__(self,host,port,delay=0, connect_timeout=60):
+   def __init__(self,host,port,delay=0, connect_timeout=60, wait_for_serverclose = False):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(TCPClient, self).__init__()
       self.host = host
@@ -151,6 +151,7 @@ class TCPClient(Axon.Component.component):
       self.sock = None
       self.howDied = None
       self.connect_timeout = connect_timeout
+      self.wait_for_serverclose = wait_for_serverclose
 
    def main(self):
       """Main loop."""
@@ -326,9 +327,13 @@ class TCPClient(Axon.Component.component):
    def shutdown(self):
        while self.dataReady("control"):
            msg = self.recv("control")
-           self.send(msg,"signal")
-           if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-               return True
+           if not self.wait_for_serverclose:
+               self.send(msg,"signal")
+               return isinstance(msg, (producerFinished,shutdownMicroprocess))
+           else:
+               if isinstance(msg, shutdownMicroprocess):
+                   self.send(msg,"signal")
+                   return True
        return False
 
 __kamaelia_components__  = ( TCPClient, )
