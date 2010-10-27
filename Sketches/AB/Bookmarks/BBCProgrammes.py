@@ -166,7 +166,8 @@ class WhatsOn(component):
                                     tz = progdate.tzinfo
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                                     utcoffset = utcoffset.hour * 60 * 60
-                                    timestamp = sleeper.mktime(showdatetime.timetuple())# - utcoffset
+                                    # Something's not right with the code below #TODO #FIXME
+                                    timestamp = sleeper.mktime(showdatetime.timetuple()) + utcoffset
                                     if 'difference' in locals():
                                         offset = (timestamp - actualstart) - difference
                                     else:
