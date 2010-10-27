@@ -141,17 +141,21 @@ class TwitterStream(threadedcomponent):
                     while not self.dataReady("inbox"):
                         # Collect data from the streaming API as it arrives - separated by carriage returns.
                         try:
-                            content = ""
+                            content = list()
                             # Timer attempt to fix connection hanging
                             # Could possibly force this to generate an exception otherwise - can't be sure if that will stop the read though
                             readtimer = Timer(self.timeout,conn1.close)
                             readtimer.start()
-                            while not "\r\n" in content: # Twitter specified watch characters - readline doesn't catch this properly
-                                content += conn1.read(1)
+                            # Need to initialise the first two characters or the while loop will fail - safe to do this as the minimum received should be "\r\n"
+                            content.append(conn1.read(1))
+                            content.append(conn1.read(1))
+                            while content[len(content)-2:len(content)] != ["\r","\n"]: # Twitter specified watch characters - readline doesn't catch this properly
+                                content.append(conn1.read(1))
                             readtimer.cancel()
                             # Below modified to ensure reconnection is attempted if the timer expires
-                            if "\r\n" in content:
-                                self.send([content,pids],"outbox") # Send to data collector / analyser rather than back to requester
+                            contentstring = "".join(content).replace("\\/","/")
+                            if "\r\n" in contentstring:
+                                self.send([contentstring,pids],"outbox") # Send to data collector / analyser rather than back to requester
                                 failed = False
                             else:
                                 failed = True

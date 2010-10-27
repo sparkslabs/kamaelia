@@ -41,7 +41,7 @@ def index(request):
 
     normaliser = 1/float(largeststdev)
 
-    output += "<h2>Note:</h2>Due to the low processing power of the machine being used, popular programmes such as the Apprentice will be missing large amounts of data.<br /><br /><div style=\"display: inline; position: relative\"><h2>TV</h2>"
+    output += "<h2>Note:</h2>Due to the low processing power of the machine being used (or more likely some inefficient code), popular programmes such as the Apprentice will be missing large amounts of data.<br /><br /><div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
@@ -335,7 +335,7 @@ def programme(request,pid):
                     else:
                         playertimemin = 0
                         playertimesec = 0
-                    output += "<br />http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s"
+                    output += "<br /><a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s</a>"
         else:
             output += "<br />Not enough data to generate statistics.<br />"
 
