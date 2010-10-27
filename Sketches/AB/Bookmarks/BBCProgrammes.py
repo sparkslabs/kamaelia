@@ -160,20 +160,13 @@ class WhatsOn(component):
                                 starttime = starttime.astimezone(gmt)
                                 starttime = starttime.replace(tzinfo=None)
                                 # Identify which DVB bridge programme corresponds to the /programmes schedule to get PID
-                                # FIXME: Turned off programme name checking as /programmes can show different info to DVB bridge
-                                # New version below isn't working quite right yet
                                 if showdatetime == starttime or (showdatetime + timedelta(minutes=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])) or (showdatetime - timedelta(minutes=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])):
-                                    #expectedstart = mktime(parse(programme['start']).astimezone(gmt).timetuple())
-                                    #if 'difference' in locals():
-                                    #    offset = (expectedstart - actualstart) - difference
-                                    #else:
-                                    #    offset = expectedstart - actualstart
                                     duration = (proginfo['NOW']['duration'][0] * 60 * 60) + (proginfo['NOW']['duration'][1] * 60) + proginfo['NOW']['duration'][2]
                                     progdate = parse(programme['start'])
                                     tz = progdate.tzinfo
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                                     utcoffset = utcoffset.hour * 60 * 60
-                                    timestamp = sleeper.mktime(progdate.timetuple()) - utcoffset
+                                    timestamp = sleeper.mktime(showdatetime.timetuple())# - utcoffset
                                     if 'difference' in locals():
                                         offset = (timestamp - actualstart) - difference
                                     else:
