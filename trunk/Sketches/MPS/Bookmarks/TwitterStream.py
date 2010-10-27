@@ -533,12 +533,20 @@ def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, userna
                     ComponentBoxTracer(
                         TCPClient(req_host, req_port, wait_for_serverclose=True),
                         Pipeline(
-                            PureFilter(lambda x: (x[0] == "inbox") or (x[0] == "outbox")),
-                            PureTransformer(lambda x: x[1]),
+                            PureFilter(lambda x: x[0] == "outbox"),           # Only interested in data from the connection
+                            PureTransformer(lambda x: x[1]),                  # Just want the data from the wire
+                            PureTransformer(lambda x: base64.b64encode(x)+"\n"), # To ensure we capture data as chunked on the way in
+                            SimpleFileWriter("tweets.b64.txt"),                # Capture for replay / debug
+                        ),
+                    ),
+                    ComponentBoxTracer(
+                        HTTPClientResponseHandler(suppress_header = True),
+                        Pipeline(
+                            PureFilter(lambda x: x[0] == "outbox"), # Only want the processed data here
+                            PureTransformer(lambda x: x[1]), # Only want the raw data
                             SimpleFileWriter("tweets.raw.txt"),
                         ),
-                   ),
-                    HTTPClientResponseHandler(suppress_header = True),
+                    )
                    )
 
 if __name__ == "__main__":
