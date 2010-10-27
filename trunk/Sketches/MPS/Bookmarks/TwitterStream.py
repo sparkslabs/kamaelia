@@ -505,7 +505,12 @@ def parse_url(fullurl):
 
     return proto, host, port, path
 
+from ComponentBoxTracer import ComponentBoxTracer
+from PureFilter import PureFilter
 from Kamaelia.Util.Console import ConsoleEchoer
+from Kamaelia.File.Writing import SimpleFileWriter
+from Kamaelia.Util.PureTransformer import PureTransformer
+
 def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, username=None, password=None, proxy=None):
     # NOTE: username not supported yet
     # NOTE: password not supported yet
@@ -525,7 +530,14 @@ def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, userna
 
     return Pipeline(
                     HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
-                    TCPClient(req_host, req_port, wait_for_serverclose=True),
+                    ComponentBoxTracer(
+                        TCPClient(req_host, req_port, wait_for_serverclose=True),
+                        Pipeline(
+                            PureFilter(lambda x: (x[0] == "inbox") or (x[0] == "outbox")),
+                            PureTransformer(lambda x: x[1]),
+                            SimpleFileWriter("tweets.raw.txt"),
+                        ),
+                   ),
                     HTTPClientResponseHandler(suppress_header = True),
                    )
 
@@ -564,7 +576,6 @@ if __name__ == "__main__":
         }
         import cjson
         import simplejson
-        from Kamaelia.File.Writing import SimpleFileWriter
 
         searchterms = "we,I,in,lol,RT,to,that,is,are,a,mine,my,the,there"
         args = urllib.urlencode({"track":searchterms})
@@ -581,7 +592,6 @@ if __name__ == "__main__":
 #            PureTransformer(lambda x: "TWEET: "+ str(cjson.decode(x))+"\n"), # wierd decode errors ...
 #            PureTransformer(lambda x: "TWEET: "+ str(simplejson.loads(x))+"\n"),
 #            ConsoleEchoer(forwarder=True),
-            SimpleFileWriter("tweets.raw.txt"),
         ).run()
 
 
