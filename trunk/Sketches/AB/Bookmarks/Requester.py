@@ -445,7 +445,7 @@ class Requester(threadedcomponent):
                             cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywords[word]))
                     else:
                         # Fix for programmes where the duration is changed last minute
-                        if progentrytest.duration[0] != duration:
+                        if progentrytest.duration[0] < duration:
                             cursor.execute("""UPDATE programmes SET duration = %s WHERE pid != %s AND channel = %s""",(duration,pid,channel))
                     keywords = list()
                 else:
@@ -491,7 +491,7 @@ class Requester(threadedcomponent):
                                 cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywordappender[word]))
                         else:
                             # Fix for programmes where the duration is changed last minute
-                            if progentrytest[0] != duration:
+                            if progentrytest[0] < duration:
                                 cursor.execute("""UPDATE programmes SET duration = %s WHERE pid != %s AND channel = %s""",(duration,pid,channel))
 
                 currentpids = list()
