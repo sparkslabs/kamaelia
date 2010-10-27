@@ -12,7 +12,8 @@ from Axon.Component import component
 
 from datetime import datetime, tzinfo, timedelta
 from dateutil.parser import parse
-from time import time, mktime
+from time import time
+import string
 import pytz
 import time as sleeper
 
@@ -161,7 +162,7 @@ class WhatsOn(component):
                                 # Identify which DVB bridge programme corresponds to the /programmes schedule to get PID
                                 # FIXME: Turned off programme name checking as /programmes can show different info to DVB bridge
                                 # New version below isn't working quite right yet
-                                if showdatetime == starttime or (showdatetime + timedelta(seconds=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])) or (showdatetime - timedelta(seconds=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])):
+                                if showdatetime == starttime or (showdatetime + timedelta(minutes=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])) or (showdatetime - timedelta(minutes=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])):
                                     #expectedstart = mktime(parse(programme['start']).astimezone(gmt).timetuple())
                                     #if 'difference' in locals():
                                     #    offset = (expectedstart - actualstart) - difference
