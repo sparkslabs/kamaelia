@@ -566,13 +566,16 @@ if __name__ == "__main__":
         import cjson
         import simplejson
 
+        searchterms = "we,I,in,lol,RT,to,that,is,are,a,mine,my,the,there"
+        args = urllib.urlencode({"track":searchterms})
+
         Pipeline(
             HTTPDataStreamingClient(URL,proxy=proxy,
                                         username=username,
                                         password=password,
                                         headers = headers,
                                         method="POST",
-                                        body="track=psychic+octopus%2Cbonfire+night%2Ctimes+paywall"),
+                                        body=args),
 #            LineFilter(eol="\r\n"),
 #            ConsoleEchoer(forwarder=True, use_repr=True),
 #            PureTransformer(lambda x: "TWEET: "+ str(cjson.decode(x))+"\n"), # wierd decode errors ...
