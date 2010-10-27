@@ -553,7 +553,6 @@ if __name__ == "__main__":
         password =  None
 
     if 1:
-#        URL = "http://www.kamaelia.org/Home.html"
         URL = "http://stream.twitter.com/1/statuses/filter.json"
 
         headers = {
@@ -565,6 +564,7 @@ if __name__ == "__main__":
         }
         import cjson
         import simplejson
+        from Kamaelia.File.Writing import SimpleFileWriter
 
         searchterms = "we,I,in,lol,RT,to,that,is,are,a,mine,my,the,there"
         args = urllib.urlencode({"track":searchterms})
@@ -580,7 +580,8 @@ if __name__ == "__main__":
 #            ConsoleEchoer(forwarder=True, use_repr=True),
 #            PureTransformer(lambda x: "TWEET: "+ str(cjson.decode(x))+"\n"), # wierd decode errors ...
 #            PureTransformer(lambda x: "TWEET: "+ str(simplejson.loads(x))+"\n"),
-            ConsoleEchoer()
+#            ConsoleEchoer(forwarder=True),
+            SimpleFileWriter("tweets.raw.txt"),
         ).run()
 
 
