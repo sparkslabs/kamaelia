@@ -41,7 +41,7 @@ def index(request):
 
     normaliser = 1/float(largeststdev)
 
-    output += "<h2>Note:</h2>Due to the low processing power of the machine being used (or more likely some inefficient code), popular programmes such as the Apprentice will be missing large amounts of data.<br /><br /><div style=\"display: inline; position: relative\"><h2>TV</h2>"
+    output += "<h2>Note:</h2>- Due to the low processing power of the machine being used (or more likely some inefficient code), popular programmes such as the Apprentice will be missing large amounts of data.<br />- I'd advise using a browser other than Internet Explorer to view this at the moment. Bad HTML/CSS will be fixed shortly.<br /><br /><div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
