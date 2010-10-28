@@ -316,6 +316,8 @@ class HTTPClientResponseHandler(component):
     def main(self):
         self.control_message = None
         try:
+            
+            # First of all get wrapping HTTP response line
             input_buffer = []
             line_buffer = None
             line = None
@@ -329,6 +331,7 @@ class HTTPClientResponseHandler(component):
             if self.control_message and input_buffer == [] and not self.dataReady("inbox"):
                 raise ShutdownNow
 
+            # Then parse the HTTP response line
             if line:
                 split_response = line.split()
                 if len(split_response) == 3:
@@ -356,6 +359,7 @@ class HTTPClientResponseHandler(component):
                         except KeyError:
                             header[header_field]= [header_value]
 
+                print "WE HAVE THE HEADER NOW"
                 header["HTTPSTATUSCODE"] = status_code
                 header["HTTPSTATUSMESSAGE"] = status_message
                 header["HTTP_SERVER_VERSION"] = ver
@@ -363,26 +367,21 @@ class HTTPClientResponseHandler(component):
 
                 if not self.suppress_header:
                     self.send(("header", header), "outbox")
+                print header
 
                 if self.control_message and input_buffer == [] and not self.dataReady("inbox"):
                     raise ShutdownNow
 
+            for chunk in input_buffer:
+                if not self.suppress_header:
+                    self.send(("body", chunk), "outbox")
+                else:
+                    self.send(chunk, "outbox")
+
+            input_buffer = []
             while True:
                 yield 1
-                for chunk in input_buffer:
-                    if not self.suppress_header:
-                        self.send(("body", chunk), "outbox")
-                    else:
-                        self.send(chunk, "outbox")
-
-                input_buffer = []
-
                 for chunk in self.Inbox():
-                    if not self.suppress_header:
-                        self.send(("body", chunk), "outbox")
-                    else:
-                        self.send(chunk, "outbox")
-
                     if not self.suppress_header:
                         self.send(("body", chunk), "outbox")
                     else:
