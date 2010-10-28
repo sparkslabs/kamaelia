@@ -529,6 +529,15 @@ def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, userna
 
     return Pipeline(
                     HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
+                    TCPClient(req_host, req_port, wait_for_serverclose=True),
+                    HTTPClientResponseHandler(suppress_header = True),
+                   )
+
+    # Leaving this here for a little while, since it is interesting/useful
+    # Worth bearing in mind this next line will never execute
+    
+    return Pipeline(
+                    HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
                     ComponentBoxTracer(
                         TCPClient(req_host, req_port, wait_for_serverclose=True),
                         Pipeline(
@@ -587,19 +596,29 @@ if __name__ == "__main__":
         searchterms = "we,I,in,lol,RT,to,that,is,are,a,mine,my,the,there"
         args = urllib.urlencode({"track":searchterms})
 
-        Pipeline(
-            HTTPDataStreamingClient(URL,proxy=proxy,
-                                        username=username,
-                                        password=password,
-                                        headers = headers,
-                                        method="POST",
-                                        body=args),
-#            LineFilter(eol="\r\n"),
-#            ConsoleEchoer(forwarder=True, use_repr=True),
-#            PureTransformer(lambda x: "TWEET: "+ str(cjson.decode(x))+"\n"), # wierd decode errors ...
-#            PureTransformer(lambda x: "TWEET: "+ str(simplejson.loads(x))+"\n"),
-#            ConsoleEchoer(forwarder=True),
-        ).run()
+        if 0:
+            Pipeline(
+                HTTPDataStreamingClient(URL,proxy=proxy,
+                                            username=username,
+                                            password=password,
+                                            headers = headers,
+                                            method="POST",
+                                            body=args),
+                LineFilter(eol="\r\n"),
+                PureTransformer(lambda x: "TWEET: "+ str(cjson.decode(x))+"\n"),
+                ConsoleEchoer(forwarder=True),
+            ).run()
+
+        if 1:
+            Pipeline(
+                HTTPDataStreamingClient(URL,proxy=proxy,
+                                            username=username,
+                                            password=password,
+                                            headers = headers,
+                                            method="POST",
+                                            body=args),
+                SimpleFileWriter("tweets.raw.txt"),
+            ).run()
 
 
     if 0:
