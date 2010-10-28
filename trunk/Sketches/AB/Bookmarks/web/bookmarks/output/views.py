@@ -16,6 +16,7 @@ radiochannels = ["radio1","1xtra","radio2","radio3","radio4","5live","sportsextr
 allchannels = tvchannels + radiochannels
 
 header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="/media/jquery/jquery.min.js"></script>\
+            <style type="text/css">h1 { margin-top: 20px; font-size: 20pt; } h2 { font-size: 14pt; }</style> \
             </head><body style="margin: 0px"><div style="background-color: #FFFFFF; position: absolute; width: 100%; height: 100%">\
             <div style="width: 100%; overflow: hidden; height: 80px; font-family: Arial, Helvetica, sans-serif; position: absolute; background-color: #A9D0F5">\
             <div style="padding-left: 10px"><h1>Social Bookmarks</h1></div></div><div style="position: absolute; top: 80px; font-family: Arial, Helvetica, sans-serif; padding: 10px">'
@@ -41,7 +42,7 @@ def index(request):
 
     normaliser = 1/float(largeststdev)
 
-    output += "<h2>Note:</h2>- Due to the low processing power of the machine being used (or more likely some inefficient code), popular programmes such as the Apprentice will be missing large amounts of data.<br />- I'd advise using a browser other than Internet Explorer to view this at the moment. Bad HTML/CSS will be fixed shortly.<br /><br /><div style=\"display: inline; position: relative\"><h2>TV</h2>"
+    output += "<h2>Note:</h2><p>- Due to the low processing power of the machine being used (or more likely some inefficient code), popular programmes such as the Apprentice will be missing large amounts of data.</p><div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
@@ -55,7 +56,7 @@ def index(request):
                 bgval = str(int(255 - (255 * opacity)))
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none\">" + str(data.totaltweets) + "</a></div></div>"
+                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "No Data</div>"
@@ -77,7 +78,7 @@ def index(request):
                 bgval = str(int(255 - (255 * opacity)))
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
                 output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none\">" + str(data.totaltweets) + "</a></div></div>"
+                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "No Data</div>"
@@ -274,9 +275,9 @@ def programme(request,pid):
             # blockgraph = main gradient based output
             # blockgraph2 = iPlayer bookmarks selection
             # blockgraph3 = raw tweets selection
-            blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 50px; width: " + str(mainwidth) + "px\">"
-            blockgraph2 = "<div style=\"border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
-            blockgraph3 = "<div style=\"border-bottom: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px\">"
+            blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 50px; width: " + str(mainwidth) + "px; overflow: hidden\">"
+            blockgraph2 = "<div style=\"border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px; overflow: hidden\">"
+            blockgraph3 = "<div style=\"border-bottom: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px; overflow: hidden\">"
             width = int(1000/(maxx+1))
             lastbookmark = None
             for min in xlist:
@@ -284,16 +285,16 @@ def programme(request,pid):
                     opacity = float(tweetmins[str(min)]) / maxy
                 else:
                     opacity = 0
-                blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
                 if min in bookmarks:
-                    blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
+                    blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #888888\"></div></a>"
                     lastbookmark = min
                 elif min in bookmarkcont and lastbookmark != None:
-                    blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #888888\"></div></a>"
+                    blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #888888\"></div></a>"
                 else:
                     blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
                 if tweetstamps.has_key(str(min)):
-                    blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                    blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
                 else:
                     blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
 
@@ -313,7 +314,7 @@ def programme(request,pid):
             bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
             graph.set_axis_labels(Axis.LEFT,left_axis)
             graph.set_axis_labels(Axis.BOTTOM,bottom_axis)
-            output += "<br /><img src=\"" + graph.get_url() + "\"><br /><br />"
+            output += "<br /><img src=\"" + graph.get_url() + "\"><br /><br /><!--[if lte IE 8]><strong>Note:</strong> It looks like you're using Internet Explorer - until a code bug is fixed, you won't be able to see the last minute(s) of programmes in the plot below.<br /><br /><![endif]-->"
             output += blockgraph
             output += blockgraph2
             output += blockgraph3
