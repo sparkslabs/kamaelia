@@ -359,7 +359,6 @@ class HTTPClientResponseHandler(component):
                         except KeyError:
                             header[header_field]= [header_value]
 
-                print "WE HAVE THE HEADER NOW"
                 header["HTTPSTATUSCODE"] = status_code
                 header["HTTPSTATUSMESSAGE"] = status_message
                 header["HTTP_SERVER_VERSION"] = ver
@@ -367,7 +366,6 @@ class HTTPClientResponseHandler(component):
 
                 if not self.suppress_header:
                     self.send(("header", header), "outbox")
-                print header
 
                 if self.control_message and input_buffer == [] and not self.dataReady("inbox"):
                     raise ShutdownNow
@@ -401,65 +399,59 @@ class HTTPClientResponseHandler(component):
 
 class LineFilter(component):
     eol = "\n"
-    def checkControl(self):
-        if self.dataReady("control"):
-            self.control_message = self.recv("control")
-            if isinstance(self.control_message, Axon.Ipc.shutdownMicroprocess):
-                raise Exception("ShutdownNow")
-            return self.control_message
-        
-    def get_line(self, raw_buffers):
+    def __init__(self,**argd):
+        super(LineFilter,self).__init__(**argd)
+        self.input_buffer = []
+        self.line_buffer = []
+
+    def get_line(self):
         for chunk in self.Inbox("inbox"):
-            raw_buffers.append(chunk)
+            self.input_buffer.append(chunk)
 
-        if raw_buffers:
-            eol = self.eol
-            len_eol = len(eol)
-            line_buffer = []
-            i = 0
-            found_line = True
-            for raw_buffer in raw_buffers:
-                if eol not in raw_buffer:
-                    line_buffer.append(raw_buffer)
-                else:
-                    where = raw_buffer.find(eol)
-                    line = raw_buffer[:where]
-                    rest = raw_buffer[where+len_eol:]
-                    line_buffer.append(line)
-                    if rest:
-                        raw_buffers[i] = rest
-                        break
-                    else:
-                        i += 1
-                        break
-                i += 1
+        if len(self.input_buffer) == 0:
+            return None
+
+        if len(self.line_buffer) > 0:
+            edgecase = self.line_buffer[-1][-5:] + self.input_buffer[0][:5]
+            if self.eol in edgecase:
+                rawline = self.line_buffer[-1]+self.input_buffer[0]
+                where = rawline.find(self.eol)
+                line = rawline[:where]
+                rest = rawline[where+len(self.eol):]
+                self.input_buffer[0] = rest
+                del self.line_buffer[-1]
+                result = "".join(self.line_buffer) + line
+                self.line_buffer = []
+                return result
+
+        if self.eol in self.input_buffer[0]:
+            where = self.input_buffer[0].find(self.eol)
+            line = self.input_buffer[0][:where]
+            rest = self.input_buffer[0][where+len(self.eol):]
+            if rest:
+                self.input_buffer[0] = rest
             else:
-                found_line = False
+                del self.input_buffer[0]
+            result = "".join(self.line_buffer) + line
+            self.line_buffer = []
+            return result
 
-            if not found_line:
-                line = None
-            else:
-                raw_buffers =  raw_buffers[i:]
-                line = "".join(line_buffer)
-
-            return line, raw_buffers
-        else:
-            return None, raw_buffers
+        self.line_buffer.append(self.input_buffer.pop(0))
+        return None
 
     def main(self):
         self.control_message = None
-        input_buffer = []
         try:
             while True:
                 yield 1
                 line = True
                 while line:
-                    line, input_buffer = self.get_line(input_buffer)
+                    line = self.get_line()
                     if line:
                         self.send(line, "outbox")
 
                 self.checkControl()
-                if self.control_message and input_buffer == [] and not self.dataReady("inbox"):
+                if self.control_message and self.input_buffer == [] and not self.dataReady("inbox"):
                     # No more data to read, etc, so shutdown
                     raise ShutdownNow
 
@@ -469,6 +461,14 @@ class LineFilter(component):
             self.send(self.control_message, "signal")
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
+
+    def checkControl(self):
+        if self.dataReady("control"):
+            self.control_message = self.recv("control")
+            if isinstance(self.control_message, Axon.Ipc.shutdownMicroprocess):
+                raise Exception("ShutdownNow")
+            return self.control_message
+        
 
 import base64
 def http_basic_auth_header(username, password):
