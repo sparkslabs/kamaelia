@@ -45,7 +45,7 @@ if 0:
         MyTransformer(),
     ).run()
 
-if 1:
+if 0:
     Pipeline(
         ReadFileAdaptor("ParsedCombinedBody.txt", readmode="line"),
         MyTransformer(),
@@ -62,19 +62,15 @@ if 0:
         PureTransformer(base64.b64decode),
         HTTPClientResponseHandler(suppress_header = True),
         SimpleFileWriter("ParsedCombinedBody.txt")
-#        LineFilter(eol="\r\n"),
 #        PureTransformer(lambda x: x.rstrip()),
 #        MyTransformer(),
     ).run()
 
-if 0:
+if 1: # NOW SUCCEEDS
     Pipeline(
         ReadFileAdaptor("tweets.b64.txt", readmode="line"),
         PureTransformer(base64.b64decode),
         HTTPClientResponseHandler(suppress_header = True),
-        PureTransformer(lambda x: x.rstrip()),
-    #    PureTransformer(cjson.decode),
+        LineFilter(eol="\r\n"),
         MyTransformer(),
-    #    SimpleFileWriter("tweets.b64raw.txt"),
-    #    ConsoleEchoer(),
     ).run()
