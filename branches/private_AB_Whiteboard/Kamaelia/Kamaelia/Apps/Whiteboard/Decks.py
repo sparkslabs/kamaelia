@@ -30,6 +30,7 @@ from zipfile import ZipFile
 from datetime import datetime
 
 import os
+import shutil
 
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
@@ -75,7 +76,11 @@ class Decks(component):
                     self.send(". Error sending deck by e-mail: " + status,"toTicker")
             while self.dataReady("inbox"):
                 cmd = self.recv("inbox")
-                self.handleCommand(cmd)
+                if isinstance(cmd,list):
+                    if (cmd[0] == "delete"):
+                        self.deleteslide(cmd[1])
+                else:
+                    self.handleCommand(cmd)
                 yield 1
             self.pause()
             yield 1
@@ -94,6 +99,7 @@ class Decks(component):
                     shutil.move(self.scribblesdir + "/" + x,self.scribblesdir + "/slide." + str(exists) + ".png")
                 except Exception, e:
                     print("Failed to renumber slides. There may be an error in the sequence")
+                    print str(e)
             exists += 1
                 
     def handleCommand(self, cmd):
@@ -104,8 +110,6 @@ class Decks(component):
             self.savedeck()
         elif cmd=="CLEARSCRIBBLES":
             self.clearscribbles()
-        elif cmd=="DELETESLIDE":
-            self.deleteslide()
         elif cmd== "QUIT":
             self.quit()
     
@@ -208,38 +212,12 @@ class Decks(component):
         except Exception, e:
             pass
         
-    def deleteslide(self): #FIXME
-        self.send([["clear"]], "toCanvas")
-        self.send("delete", "toHistory")
-        #try:
-            #os.remove(self.scribblesdir + "/slide." + str(current) + ".png")
-        #except Exception, e:
-            #pass
-        
-        #if current == highest and highest > 1:
-            ## go to previous slide
-            #dirty = False
-            #command = "prev"
-            #highest -= 1
-            #self.fixNumbering()
-        #elif current < highest and current != 1:
-            ## go to previous slide and fix numbering
-            #dirty = False
-            #command = "prev"
-            #highest -= 1
-            #self.fixNumbering()
-        #elif current == 1 and current < highest:
-            ## fix numbering then reload current slide
-            #highest -= 1
-            #self.fixNumbering()
-            #self.send( self.loadMessage(current), "outbox")
-        #else:
-            ## Do nothing
-            #pass
-            
-    def saveslide(self): #FIXME
-        # self.send( self.saveMessage(current), "outbox")
-	pass
+    def deleteslide(self,current): #FIXME
+        try:
+            os.remove(self.scribblesdir + "/slide." + str(current) + ".png")
+        except Exception, e:
+            pass
+        self.fixNumbering()
     
     def quit(self):
     	root = Tk()

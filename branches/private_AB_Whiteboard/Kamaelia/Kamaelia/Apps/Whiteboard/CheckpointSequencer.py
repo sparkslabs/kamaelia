@@ -26,40 +26,32 @@ import shutil
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class CheckpointSequencer(Axon.Component.component):
+    Inboxes = {
+        "inbox" : "",
+        "control" : "",
+    }
+    Outboxes = {
+        "outbox" : "",
+        "signal" : "",
+        "toDecks" : "",
+    }
+    
     def __init__(self, rev_access_callback = None,
                        rev_checkpoint_callback = None,
                        blank_slate_callback = None,
                        initial = 1,
-                       highest = 1,
-                       notepad = "Scribbles"):
+                       highest = 1):
         super(CheckpointSequencer, self).__init__()
         if rev_access_callback: self.loadMessage = rev_access_callback
         if rev_checkpoint_callback: self.saveMessage = rev_checkpoint_callback
         if blank_slate_callback: self.newMessage = blank_slate_callback
         self.initial = initial
         self.highest = highest
-        self.notepad = notepad
 
 
     def loadMessage(self, current): return current
     def saveMessage(self, current): return current
     def newMessage(self, current): return current
-    
-    def fixNumbering(self): # MOVEME!!!!!
-        exists = 1
-        slides = os.listdir(self.notepad)
-        slides.sort()
-        for x in slides:
-            if x == "slide." + str(exists) + ".png":
-                # This slide exists, skip to next one
-                pass
-            else:
-                # This slide doesn't exist, find the next one up and copy it down
-                try:
-                    shutil.move(self.notepad + "/" + x,self.notepad + "/slide." + str(exists) + ".png")
-                except Exception, e:
-                    print("Failed to renumber slides. There may be an error in the sequence")
-            exists += 1
 
     def shutdown(self):
        """Return 0 if a shutdown message is received, else return 1."""
@@ -78,34 +70,28 @@ class CheckpointSequencer(Axon.Component.component):
         while self.shutdown():
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
-                if command == "delete": # MOVEME!!!!!
-                    try:
-                        os.remove(self.notepad + "/slide." + str(current) + ".png")
-                    except Exception, e:
-                        pass
+                if command == "delete":
+                    self.send(["delete",current],"toDecks")
                     
                     if current == highest and highest > 1:
                         # go to previous slide
                         dirty = False
                         command = "prev"
                         highest -= 1
-                        self.fixNumbering()
                     elif current < highest and current != 1:
                         # go to previous slide and fix numbering
                         dirty = False
                         command = "prev"
                         highest -= 1
-                        self.fixNumbering()
                     elif current == 1 and current < highest:
                         # fix numbering then reload current slide
                         highest -= 1
-                        self.fixNumbering()
                         self.send( self.loadMessage(current), "outbox")
                     else:
                         # Do nothing
                         pass
-                if command == "save": # MOVEME!!!!!
-                    self.send( self.saveMessage(current), "outbox")
+                #if command == "save": # MOVEME!!!!! - What does this even do? Commented out, appears pointless given that current remains unchanged
+                    #self.send( self.saveMessage(current), "outbox")
                 if command == "prev":
                     if current >1:
                         if dirty:

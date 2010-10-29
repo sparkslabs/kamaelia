@@ -81,7 +81,7 @@ def ClearScribbles(left,top):
     return Button(caption="Close Deck", size=(63,32), position=(left,top), msg="clearscribbles")
     
 def Delete(left,top):
-    return Button(caption="Delete Slide", size=(63,32), position=(left,top), msg="deleteslide")
+    return Button(caption="Delete Slide", size=(63,32), position=(left,top), msg="delete")
     
 def Quit(left,top):
     return Button(caption="Quit", size=(63,32), position=(left,top), msg="quit")  

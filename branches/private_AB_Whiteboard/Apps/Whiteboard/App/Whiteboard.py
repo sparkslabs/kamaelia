@@ -385,7 +385,6 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                                                     lambda X: [["CLEAR"]],
                                                     initial = 1,
                                                     highest = num_pages,
-                                                    notepad = config['directories']['scribbles'],
                                 ),
 
                       PAINT_SPLITTER = TwoWaySplitter(),
@@ -410,7 +409,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           ("LOADDECK", "outbox") : ("DECKMANAGER", "inbox"),
                           
                           ("CLOSEDECK", "outbox") : ("DECKMANAGER", "inbox"),
-                          ("DELETE", "outbox") : ("DECKMANAGER", "inbox"),
+                          ("DELETE", "outbox") : ("HISTORY", "inbox"),
                           
                           ("DECKMANAGER", "toTicker") : ("TICKER", "inbox"),
                           ("DECKMANAGER", "toCanvas") : ("CANVAS", "inbox"),
@@ -426,6 +425,8 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 
                           ("PAGINGCONTROLS","outbox") : ("HISTORY", "inbox"),
                           ("HISTORY","outbox")     : ("CANVAS", "inbox"),
+                          
+                          ("HISTORY","toDecks")     : ("DECKMANAGER", "inbox"),
 
                           ("CANVAS", "outbox")     : ("self", "outbox"),
                           ("CANVAS","surfacechanged") : ("HISTORY", "inbox"),
