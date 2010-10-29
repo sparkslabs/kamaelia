@@ -71,7 +71,7 @@ from Kamaelia.Apps.Whiteboard.CommandConsole import CommandConsole
 from Kamaelia.Apps.Whiteboard.Webcam import VideoCaptureSource, WebcamManager
 from Kamaelia.Apps.Whiteboard.Email import Email
 from Kamaelia.Apps.Whiteboard.Decks import Decks
-
+from Kamaelia.Apps.Whiteboard.ProperSurfaceDisplayer import ProperSurfaceDisplayer
 
 
 try:
@@ -442,55 +442,6 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           },
                     )
 
-class ProperSurfaceDisplayer(component):
-    Inboxes = {
-        "inbox" : "",
-        "control" : "",
-        "callback" : "",
-    }
-    Outboxes = {
-        "outbox" : "",
-        "signal" : "",
-        "display_signal" : "",
-    }
-
-    def __init__(self, **argd):
-        super(ProperSurfaceDisplayer, self).__init__(**argd)
-        self.disprequest = { "DISPLAYREQUEST" : True,
-                           "callback" : (self,"callback"),
-                           "size": self.displaysize,
-                           "position" : self.position,
-                           "bgcolour" : self.bgcolour}
-
-    def shutdown(self):
-       """Return 0 if a shutdown message is received, else return 1."""
-       if self.dataReady("control"):
-           msg=self.recv("control")
-           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
-               self.send(producerFinished(self),"signal")
-               return 0
-       return 1
-
-    def pygame_display_flip(self):
-        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
-
-    def getDisplay(self):
-       displayservice = PygameDisplay.getDisplayService()
-       self.link((self,"display_signal"), displayservice)
-       self.send(self.disprequest, "display_signal")
-       while not self.dataReady("callback"):
-           self.pause()
-           yield 1
-       self.display = self.recv("callback")
-       self.display.fill( (self.bgcolour) )
-
-    def main(self):
-       yield Axon.Ipc.WaitComplete(self.getDisplay())
-
-       while self.shutdown():
-          self.pause()
-          yield 1
-
 
 
 if __name__=="__main__":
@@ -500,7 +451,7 @@ if __name__=="__main__":
     width = 1024
     height = 768
     
-    BACKGROUND = ProperSurfaceDisplayer(displaysize = (width, height), position = (left, top), bgcolour=(0,0,0), webcam = 0).activate()
+    BACKGROUND = ProperSurfaceDisplayer(displaysize = (width, height), position = (left, top), bgcolour=(0,0,0)).activate()
     
     mainsketcher = \
         Graphline( SKETCHER = makeBasicSketcher(left,top+1,width,height-1),
@@ -512,13 +463,12 @@ if __name__=="__main__":
                      )
 
     camera = Graphline( LOCALWEBCAM = VideoCaptureSource(),
-                        WCCANVAS = WebcamManager(displaysize = (190, 140), position = (1024-191,32+2), bgcolour=(0,0,0), webcam = 1),
-                        REMWCCANVAS = WebcamManager(displaysize = (190, 140*4+4), position = (1024-191,32+140+3), bgcolour=(0,0,0), webcam = 2),
+                        WCMANAGER = WebcamManager(displaysize = (190, 140), position = (1024-191,32+2), bgcolour=(0,0,0), vertical = True),
                         CAM_SPLITTER = TwoWaySplitter(),
                         CONSOLE = ConsoleEchoer(),
-                        linkages = { ('self','inbox'):('REMWCCANVAS','inbox'),
+                        linkages = { ('self','inbox'):('WCMANAGER','inbox'),
                             ('LOCALWEBCAM','outbox'):('CAM_SPLITTER','inbox'),
-                            ('CAM_SPLITTER','outbox2'):('WCCANVAS','inbox'),
+                            ('CAM_SPLITTER','outbox2'):('WCMANAGER','inbox'),
                             ('CAM_SPLITTER','outbox'):('self','outbox'),
                           }
                       )

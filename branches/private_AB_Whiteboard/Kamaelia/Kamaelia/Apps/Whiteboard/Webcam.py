@@ -43,6 +43,7 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess, WaitComplete
 from Axon.Component import component
 
 from Kamaelia.UI.Pygame.Display import PygameDisplay
+from Kamaelia.Apps.Whiteboard.ProperSurfaceDisplayer import ProperSurfaceDisplayer
 
 pygame.init()        # Would be nice to be able to find out if pygame was already initialised or not.
 pygame.camera.init() # Ditto for camera subsystem
@@ -91,25 +92,25 @@ class VideoCaptureSource(threadedcomponent):
 
 
 class WebcamManager(component):
+    # I strongly suspect the creating / destroying of component here will create a memory leak (albeit a very small and slow one)
+    
     Inboxes = {
-        "inbox" : "",
+        "inbox" : "Receives webcam images in. For local cameras, plainly in the format: image. For remote cameras, in the format [tag,image]",
         "control" : "",
-        "callback" : "",
     }
     Outboxes = {
         "outbox" : "",
         "signal" : "",
-        "display_signal" : "",
     }
-    remotecams = [0,0,0,0]
-    remotecamcount = [25,25,25,25]
-    def __init__(self, **argd):
-        super(WebcamManager, self).__init__(**argd)
-        self.disprequest = { "DISPLAYREQUEST" : True,
-                           "callback" : (self,"callback"),
-                           "size": self.displaysize,
-                           "position" : self.position,
-                           "bgcolour" : self.bgcolour}
+    
+    def __init__(self, displaysize, position, bgcolour, vertical=True):
+        super(WebcamManager, self).__init__()
+        self.displaysize = displaysize
+        self.position = position
+        self.bgcolour = bgcolour
+        self.vertical = vertical
+        # [[camera,displayhandle,oldposition,timeout=25],[camera,displayhandle,oldposition,timeout]....]
+        self.cameralist = list()
 
     def shutdown(self):
        """Return 0 if a shutdown message is received, else return 1."""
@@ -120,99 +121,70 @@ class WebcamManager(component):
                return 0
        return 1
 
-    def pygame_display_flip(self):
-        self.send({"REDRAW":True, "surface":self.display}, "display_signal")
-
-    def getDisplay(self):
-       displayservice = PygameDisplay.getDisplayService()
-       self.link((self,"display_signal"), displayservice)
-       self.send(self.disprequest, "display_signal")
-       while not self.dataReady("callback"):
-           self.pause()
-           yield 1
-       self.display = self.recv("callback")
-       self.display.fill( (self.bgcolour) )
-
     def main(self):
-       yield WaitComplete(self.getDisplay())
-       # initialise five webcam windows
-       if self.webcam == 1:
-          snapshot = "No Local Camera"
-          font = pygame.font.Font(None,22)
-          self.display.fill( (0,0,0) )
-          snapshot = font.render(snapshot, False, (255,255,255))
-          self.display.blit(snapshot, (34,56))
-          self.pygame_display_flip()
-       elif self.webcam == 2:
-          snapshot = "No Remote Camera"
-          font = pygame.font.Font(None,22)
-          self.display.fill( (0,0,0),pygame.Rect(0,0,190,140*4))
-          snapshot = font.render(snapshot, False, (255,255,255))
-          self.display.blit(snapshot, (25,56)) 
-          self.display.blit(snapshot, (25,56+140*1+1)) 
-          self.display.blit(snapshot, (25,56+140*2+2)) 
-          self.display.blit(snapshot, (25,56+140*3+3)) 
-          self.pygame_display_flip()
        while self.shutdown():
-          if self.webcam:
-              while self.dataReady("inbox"):
-                  snapshot = self.recv("inbox")
-                  if self.webcam == 1:
-                      #snapshot=snapshot.convert()
-                      snapshot = pygame.transform.scale(snapshot,(190,140))
-                      self.display.blit(snapshot, (0,0))
-                      self.pygame_display_flip()
-                  elif self.webcam == 2:
-                      # remove tag
-                      tag = snapshot[0]
-                      data = snapshot[1]
-                      pretagged = False
-                      # allocate tag to a cam window
-                      for x in self.remotecams:
-                          if x == tag:
-                              pretagged = True
-                              
-                      if pretagged == False:
-                          if self.remotecams[0] == 0:
-                              self.remotecams[0] = tag
-                          elif self.remotecams[1] == 0:
-                              self.remotecams[1] = tag
-                          elif self.remotecams[2] == 0:
-                              self.remotecams[2] = tag
-                          elif self.remotecams[2] == 0:
-                              self.remotecams[3] = tag
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                
+                # Remove cameras where clients have disconnected
+                removallist = list()
+                for camera in self.cameralist:
+                    camera[3] -= 1
+                    if camera[3] == 0:
+                        # Camera has disconnected
+                        # DESTROY ITS SURFACE HERE
+                        camera[1].stop()
+                        removallist.append(x)
+                        
+                for entry in removallist:
+                    # Remove unused cameras from the camera list
+                    self.cameralist.pop(entry)
+                
+                if isinstance(data,list):
+                    # Received a remote camera image
+                    tag = data[0]
+                    snapshot = data[1]
+                else:
+                    # Received a local camera image
+                    tag = "local"
+                    snapshot = data
+                    
+                for camera in self.cameralist:
+                    if camera[0] == tag:
+                        # Found the camera in the positions index
+                        camera[3] = 25 # Reset the timeout
+                        handle = camera[1]
+                        oldposition = camera[2]
+                        cameraindex = self.cameralist.index(camera)
+                        break
+                else:
+                    # Camera not found in the index - let's add it.
+                    # Positioning calculated from the number of current active cams, along with specified display sizes and on screen position
+                    self.cameralist.append([tag,None,None,25])
+                    cameraindex = len(self.cameralist) - 1
+                    handle = None
+                    oldposition = None
+                    
+                if self.vertical:
+                    cameraposition = (self.position[0],self.position[1]+((self.displaysize[1]+1)*cameraindex))
+                else:
+                    cameraposition = (self.position[0]+((self.displaysize[0]+1)*cameraindex),self.position[1])
+                
+                if handle == None or oldposition != cameraposition:
+                    if oldposition != cameraposition and handle != None:
+                        # Need to destroy the old component here
+                        handle.stop()
+                    handle = ProperSurfaceDisplayer(displaysize = self.displaysize, position = cameraposition, bgcolour=self.bgcolour).activate()
+                    self.cameralist[cameraindex][1] = handle
+                    self.cameralist[cameraindex][2] = cameraposition
+                
+                # Create a temporary link to send out data to the display
+                self.link((self, "outbox"), (handle, "inbox"))
+                snapshot = pygame.transform.scale(snapshot,self.displaysize)
+                self.send(snapshot, "outbox")
+                self.unlink(thecomponent=handle)
 
-                      # public cam pic to window if one is available
-                      iteration = 0
-                      for x in self.remotecams:
-                          if self.remotecams[iteration] == tag:
-                              offset = (140 * iteration + iteration * 1)
-                              data = pygame.transform.scale(data,(190,140))
-                              self.display.blit(data, (0,0+offset))
-                              self.remotecamcount[iteration] = 25 # reset cam count to prevent 'no remote cam'
-                          iteration += 1
-
-                      # Reset remote cameras where clients have disconnected (remotecamcount = 0)
-                      iteration = 0
-                      for x in self.remotecamcount:
-                          if self.remotecamcount[iteration] == 0:
-                              snapshot = "No Remote Camera"
-                              font = pygame.font.Font(None,22)
-                              offset = (iteration * 140 + iteration * 1)
-                              self.display.fill( (0,0,0),pygame.Rect(0,offset,190,140))
-                              snapshot = font.render(snapshot, False, (255,255,255))
-                              self.display.blit(snapshot, (25,56+offset)) 
-                              self.remotecams[iteration] = 0
-                          elif self.remotecamcount[iteration] > 0:
-                              self.remotecamcount[iteration] -= 1
-                          iteration += 1
-
-                      self.pygame_display_flip()
-
-              while not self.anyReady():
+            while not self.anyReady():
                 self.pause()
                 yield 1
-              yield 1  
-          else:
-              self.pause()
-              yield 1
+            yield 1  
