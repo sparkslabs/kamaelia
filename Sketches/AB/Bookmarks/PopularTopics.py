@@ -63,6 +63,7 @@ if __name__ == "__main__":
         rawtext = "".join(progtext).lower()
         tokens = nltk.word_tokenize(rawtext)
         nltktext = nltk.Text(tokens)
+        collocations = nltktext.collocations()
         word_fd = FreqDist(tokens)
         index = 0
         print "\nPopular words:"
@@ -90,8 +91,5 @@ if __name__ == "__main__":
             if index == 10:
                 break
 
-
-        # Print the regularly occurring pairs of words
-        #print collocations
     else:
         print ("No tweets found for the entered pid")
