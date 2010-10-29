@@ -42,6 +42,7 @@ from Kamaelia.Util.NullSink import nullSinkComponent
 from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 from Kamaelia.Util.Detuple import SimpleDetupler
 from Kamaelia.Util.Console import ConsoleEchoer
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 # Ticker
 from Kamaelia.UI.Pygame.Ticker import Ticker
@@ -219,20 +220,22 @@ def clientconnector(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", po
         tokenlists_to_lines(),
         )
 
-class SurfaceToJpeg(component):
-    # This component converts images to strings or strings to images dependent on what it receives
+class StringToSurface(component):
+    # This component converts strings to pygame surfaces
 
     Inboxes = {
-        "inbox" : "Receives strings or images for conversion",
+        "inbox" : "Receives strings for conversion in the format",
         "control" : "",
     }
     Outboxes = {
-        "outbox" : "Outputs the opposite of what it received (images/strings)",
+        "outbox" : "Outputs pygame surfaces",
         "signal" : "",
     }
     
-    def __init__(self):
-        super(SurfaceToJpeg, self).__init__()
+    def __init__(self,width=190,height=140):
+        super(StringToSurface, self).__init__()
+        self.width = width
+        self.height = height
 
     def finished(self):
         while self.dataReady("control"):
@@ -243,20 +246,15 @@ class SurfaceToJpeg(component):
         return False
     
     def main(self):
-        while not self.shutdown():
+        while not self.finished():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                if isinstance(data,str):
-                    # Convert string to Pygame image using a particular size
-                    try: # Prevent crashing with malformed received images
-                        image = pygame.image.fromstring(data,(190,140),"RGB")
-                        self.send(image, "outbox")
-                    except Exception, e:
-                        pass
-                else:
-                    # Convert Pygame image to a string for transmission
-                    imagestring = pygame.image.tostring(data,"RGB")
-                    self.send(imagestring, "outbox")
+                # Convert string to Pygame image using a particular size
+                try: # Prevent crashing with malformed received images
+                    image = pygame.image.fromstring(data,(self.width,self.height),"RGB")
+                    self.send(image, "outbox")
+                except Exception, e:
+                    sys.stderr.write("Error converting string to PyGame surface in StringToSurface")
             self.pause()
             yield 1
 
@@ -265,19 +263,20 @@ def clientconnectorwc(webcamBackplane="WEBCAM", port=1501):
     return Pipeline(
         Graphline(
             WEBCAM = FilteringPubsubBackplane(webcamBackplane),
-            CONVERTER = SurfaceToJpeg(),
+            STRINGCONVERTER = PureTransformer(lambda x: pygame.image.tostring(x,"RGB")),
+            SURFACECONVERTER = StringToSurface(190,140),
             FRAMER = DataChunker(),
             CONSOLE = ConsoleEchoer(),
             DEFRAMER = DataDeChunker(),
             linkages = {
                 # Receive data from the network - deframe and convert to image for display
                 ("self", "inbox") : ("DEFRAMER", "inbox"),
-                ("DEFRAMER", "outbox") : ("CONVERTER", "inbox"),
+                ("DEFRAMER", "outbox") : ("SURFACECONVERTER", "inbox"),
                 # Send to display
-                ("CONVERTER", "outbox") : ("WEBCAM", "inbox"),
+                ("SURFACECONVERTER", "outbox") : ("WEBCAM", "inbox"),
                 # Forward local images to the network - convert to strings and frame
-                ("WEBCAM", "outbox") : ("CONVERTER", "inbox"),
-                ("CONVERTER", "outbox") : ("FRAMER", "inbox"),
+                ("WEBCAM", "outbox") : ("STRINGCONVERTER", "inbox"),
+                ("STRINGCONVERTER", "outbox") : ("FRAMER", "inbox"),
                 # Send to network
                 ("FRAMER", "outbox") : ("self", "outbox"),
                 },

@@ -239,17 +239,18 @@ class Decks(component):
             
     def saveslide(self): #FIXME
         # self.send( self.saveMessage(current), "outbox")
+	pass
     
     def quit(self):
-       root = Tk()
-       root.withdraw()
-       kill = False
-       if askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root):
-           # perform quit
-           kill = True
-           #pygame.quit() # This isn't the right way to do it!
-           # Also, saving won't work as the program exits before it's happened
-       root.destroy()
-       if kill:
-           print("Exiting")
-           self.scheduler.stop()
+    	root = Tk()
+       	root.withdraw()
+       	kill = False
+       	if askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root):
+            # perform quit
+            kill = True
+            #pygame.quit() # This isn't the right way to do it!
+            # Also, saving won't work as the program exits before it's happened
+        root.destroy()
+        if kill:
+            print("Exiting")
+            self.scheduler.stop()
