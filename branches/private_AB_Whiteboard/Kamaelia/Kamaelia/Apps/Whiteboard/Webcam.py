@@ -93,6 +93,8 @@ class VideoCaptureSource(threadedcomponent):
 
 class WebcamManager(component):
     # I strongly suspect the creating / destroying of component here will create a memory leak (albeit a very small and slow one)
+    # The other way to achieve this would be to create a single display and pass images to blit, along with a position to the ProperSurfaceDisplayer
+    # Need advice on the preferred approach
     
     Inboxes = {
         "inbox" : "Receives webcam images in. For local cameras, plainly in the format: image. For remote cameras, in the format [tag,image]",
