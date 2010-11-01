@@ -91,9 +91,8 @@ class Canvas(Axon.Component.component):
     def requestDisplay(self, **argd):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"toDisplay"), displayservice)
-        #argd["transparency"] = self.bgcolour # This causes problems when using OpenGL.
-	#Modified to something that works with most apps - not sure why it does
-	argd["transparency"] = (255,255,180)
+        argd["transparency"] = self.bgcolour # This causes problems when using OpenGL. Needs work TODO FIXME
+        #argd["transparency"] = (255,255,180)
         self.send(argd, "toDisplay")
         for _ in self.waitBox("fromDisplay"):
             yield 1
