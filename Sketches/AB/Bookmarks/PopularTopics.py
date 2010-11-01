@@ -27,6 +27,9 @@ def spellingFixer(text):
 
 if __name__ == "__main__":
 
+    # TODO NTLK does weird stuff with apostrophes in tokenization by default that I've still got to fathom out
+    # Will probably replace it with my own splitter for this purpose
+
     exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -67,7 +70,7 @@ if __name__ == "__main__":
 
     filter = ""
     while filter != "yes" and filter != "no":
-        filter = raw_input("Would you like to filter our programme keywords (yes/no)?: ")
+        filter = raw_input("Would you like to filter out programme keywords (yes/no)?: ")
 
     # Find all matching keywords
     if filter == "yes":
@@ -112,6 +115,8 @@ if __name__ == "__main__":
         rawtext = "".join(progtext)
 
         tokens = nltk.word_tokenize(rawtext)
+
+        #tokens = nltk.regexp_tokenize(rawtext,pattern)
         newtokenlist = list()
 
         for token in tokens:
