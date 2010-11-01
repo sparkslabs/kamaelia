@@ -71,8 +71,6 @@ class CheckpointSequencer(Axon.Component.component):
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
                 if command == "delete":
-                    self.send(["delete",current],"toDecks")
-                    
                     if current == highest and highest > 1:
                         # go to previous slide
                         dirty = False
@@ -86,10 +84,11 @@ class CheckpointSequencer(Axon.Component.component):
                     elif current == 1 and current < highest:
                         # fix numbering then reload current slide
                         highest -= 1
-                        self.send( self.loadMessage(current), "outbox")
+                        self.send( self.loadMessage(current+1), "outbox")
                     else:
                         # Do nothing
                         pass
+                    self.send(["delete",current],"toDecks")
                 #if command == "save": # MOVEME!!!!! - What does this even do? Commented out, appears pointless given that current remains unchanged
                     #self.send( self.saveMessage(current), "outbox")
                 if command == "prev":

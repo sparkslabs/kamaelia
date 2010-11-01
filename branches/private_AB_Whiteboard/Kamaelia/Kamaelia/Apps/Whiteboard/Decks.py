@@ -212,7 +212,7 @@ class Decks(component):
         except Exception, e:
             pass
         
-    def deleteslide(self,current): #FIXME
+    def deleteslide(self,current):
         try:
             os.remove(self.scribblesdir + "/slide." + str(current) + ".png")
         except Exception, e:
