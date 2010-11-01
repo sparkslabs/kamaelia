@@ -170,7 +170,6 @@ class LiveAnalysis(threadedcomponent):
                 tweetuser = result[4]
                 dbtime = datetime.utcfromtimestamp(tweettime)
                 dbtime = dbtime.replace(second=0)
-                dbtimestamp = time.mktime(dbtime.timetuple()) + (3600) #TODO FIXME
                 print "Analysis component: Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
                 print "Analysis component: '" + tweettext + "'"
                 cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s""",(pid))
@@ -185,6 +184,7 @@ class LiveAnalysis(threadedcomponent):
                 timediff = progdata[6]
                 timestamp = progdata[7]
                 utcoffset = progdata[8]
+                dbtimestamp = time.mktime(dbtime.timetuple()) + utcoffset
                 cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,dbtimestamp))
                 analyseddata = cursor.fetchone()
                 if analyseddata == None: # No tweets yet recorded for this minute
