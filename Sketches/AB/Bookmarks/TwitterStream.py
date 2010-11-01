@@ -155,6 +155,7 @@ class TwitterStream(threadedcomponent):
                             # Below modified to ensure reconnection is attempted if the timer expires
                             contentstring = "".join(content).replace("\\/","/")
                             if "\r\n" in contentstring:
+                                #print contentstring
                                 self.send([contentstring,pids],"outbox") # Send to data collector / analyser rather than back to requester
                                 failed = False
                             else:

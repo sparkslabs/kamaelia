@@ -170,6 +170,7 @@ class Requester(threadedcomponent):
                             twittags = self.officialseriestags[sidmod]
                             break
 
+                vidmod = ""
                 so = g.subject_objects(predicate=rdflib.URIRef('http://purl.org/ontology/po/version'))
                 # Pick a version, any version - for this which one doesn't matter
                 for x in so:
