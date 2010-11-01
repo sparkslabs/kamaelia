@@ -3,12 +3,27 @@
 
 import nltk
 from nltk import FreqDist
-from nltk.collocations import BigramCollocationFinder
+#from nltk.collocations import BigramCollocationFinder
 import re
 import os
 import cjson
 import sys
 import MySQLdb
+import string
+
+def spellingFixer(text):
+        # Fix ahahahahahaha and hahahahaha
+        text = re.sub("(ha){1,}$","haha",text,re.I)
+        # fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
+        # Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
+        x = re.findall(r'((\D)\2*)',text,re.I)
+        for entry in sorted(x,reverse=True):
+                if len(entry[0])>2:
+                        text = text.replace(entry[0],entry[1])
+                if len(text) == 1:
+                        text += text
+        return text
+
 
 if __name__ == "__main__":
 
@@ -50,6 +65,20 @@ if __name__ == "__main__":
         print ("This pid appears to be invalid, please try again")
         pid = raw_input("Please enter a pid to view the popular topics for: ")
 
+    filter = ""
+    while filter != "yes" and filter != "no":
+        filter = raw_input("Would you like to filter our programme keywords (yes/no)?: ")
+
+    # Find all matching keywords
+    if filter == "yes":
+        cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
+        result = cursor.fetchall()
+
+        if len(result) > 0:
+            keywords = list()
+            for row in result:
+                keywords.append(string.lower(row[0]))
+
     # Find all matching tweets
     cursor.execute("""SELECT text FROM rawdata WHERE pid = %s""",(pid))
     result = cursor.fetchall()
@@ -57,12 +86,38 @@ if __name__ == "__main__":
     if len(result) > 0:
         progtext = list()
         for row in result:
-            progtext.append(row[0])
+            data = string.lower(row[0])
+
+            # Filter out e-mail addresses, web addresses, retweets etc
+            data = re.sub("^\s","",re.sub("((^|\S{0,}\s){1,})(RT|rt|Rt|rT)\s@\S{1,}","",data,re.I))
+            data = re.sub("\s(via|Via|VIA)\s@\S{1,}$","",data,re.I)
+            # Web address filter
+            data = re.sub("http://\S{1,}","",data,re.I)
+            # E-mail filter
+            data = re.sub("\S{1,}@\S{1,}.\S{1,}","",data,re.I)
+
+            # Strip out words matching keywords
+            if filter == "yes":
+                for word in keywords:
+                    if "^" in word:
+                        wordbits = word.split("^")
+                        if wordbits[0] in data and wordbits[1] in data:
+                            data = data.replace(wordbits[0],"")
+                            data = data.replace(wordbits[1],"")
+                    else:
+                        data = data.replace(word,"")
+            progtext.append(data)
 
         # Split the text into words and pass to NLTK
-        rawtext = "".join(progtext).lower()
+        rawtext = "".join(progtext)
+
         tokens = nltk.word_tokenize(rawtext)
-        nltktext = nltk.Text(tokens)
+        newtokenlist = list()
+
+        for token in tokens:
+            newtokenlist.append(spellingFixer(token))
+
+        nltktext = nltk.Text(newtokenlist)
         collocations = nltktext.collocations()
         word_fd = FreqDist(tokens)
         index = 0

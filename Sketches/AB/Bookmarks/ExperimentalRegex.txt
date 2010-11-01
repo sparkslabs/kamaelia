@@ -14,7 +14,7 @@ Pretty rare - perhaps we'll ignore these
 # Requires individual words to be passed in for fixing
 def spellingFixer(text):
 	# Fix ahahahahahaha and hahahahaha
-	text = re.sub("[ha]{1,}$","haha",text,re.I)
+	text = re.sub("(ha){1,}$","haha",text,re.I)
 	# fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
 	# Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
 	x = re.findall(r'((\D)\2*)',text,re.I)
