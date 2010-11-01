@@ -24,3 +24,23 @@ def spellingFixer(text):
 		if len(text) == 1:
 			text += text
 	return text
+
+
+The above needs to be able to handle (YES/NO indicates current capabilities):
+
+hahahahahaha - YES
+ahahahaha - YES
+haaaaaaaaa - YES
+loooooool - YES
+lool - NO
+wellllll - NO
+hmmmmmm - NO
+soooooo - YES
+mmmmmm - YES
+ooooh - ISH, would be better returning ooh rather than oh
+aaawwww - YES
+aaawwwh - YES
+yaaaaay - YES
+eeeeewww - YES
+mwahahahaha - NO, converts to haha (I'm being pedantic, this should really be an evil laugh, but I doubt it matters)
+omggggg - YES
