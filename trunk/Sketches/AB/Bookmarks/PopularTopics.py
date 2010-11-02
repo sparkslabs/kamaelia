@@ -88,8 +88,10 @@ if __name__ == "__main__":
 
     if len(result) > 0:
         progtext = list()
+        rawprogtext = list()
         for row in result:
             data = string.lower(row[0])
+            rawprogtext.append(row[0])
 
             # Filter out e-mail addresses, web addresses, retweets etc
             data = re.sub("^\s","",re.sub("((^|\S{0,}\s){1,})(RT|rt|Rt|rT)\s@\S{1,}","",data,re.I))
@@ -154,6 +156,45 @@ if __name__ == "__main__":
             index += 1
             if index == 10:
                 break
+
+        print "\nMore trials:"
+        #print rawtext
+        #sentences = nltk.sent_tokenize(rawtext)
+        #print sentences
+        #sentences = nltk.word_tokenize(rawtext)
+        #sentences = tokens
+        #sentences = [nltk.pos_tag(sent) for sent in sentences]
+        #print sentences
+        #for sent in sentences:
+        #    print nltk.ne_chunk(sent)
+        #sentences = nltk.tag.untag(nltk.corpus.treebank.tagged_sents())
+        #rawtext = "This is one sentence. This is another sentence about John Smith."
+        #sentences = nltk.sent_tokenize(rawtext)
+        #print sentences
+        # Remove unicode:
+        for sentence in rawprogtext:
+            rawprogtext[rawprogtext.index(sentence)] = re.sub("\\u\w\w\w\w","",sentence,re.I)
+        #for sentence in rawprogtext:
+        #    rawprogtext[rawprogtext.index(sentence)] = re.sub("\\[x\w\w]","",sentence,re.I)
+        words = [nltk.word_tokenize(sent) for sent in rawprogtext]
+        print words
+        #progtext = nltk.word_tokenize(rawtext)
+        #print progtext
+        #words = [nltk.pos_tag(word) for word in progtext]
+        #print words
+        words = [nltk.pos_tag(word) for word in words]
+        print words
+        for item in words:
+            try:
+                print nltk.ne_chunk(item)
+            except UnicodeEncodeError, e:
+                print "Unicode error - ignoring these for now"
+        #nps_chat_train = nltk.corpus.brown.tagged_sents(categories='a')[100:]
+        #unigram_tagger = nltk.UnigramTagger(nps_chat_train)
+        #print nltk.tag.untag(nltk.corpus.brown.tagged_sents(categories='b')[:100][0])
+        #unigram_tagger.tag()
+
+
 
     else:
         print ("No tweets found for the entered pid")
