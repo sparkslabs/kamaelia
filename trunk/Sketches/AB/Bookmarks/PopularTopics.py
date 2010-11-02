@@ -157,43 +157,62 @@ if __name__ == "__main__":
             if index == 10:
                 break
 
+        # The below experimentation creates many amusing fails, including the evaluation of 'Monster Munch' as a person and 'LOL' as an organisation.
+        # It also appears to evaluate anything after an @ as an organisation - some Twitter convention filtering needed.
+
         print "\nMore trials:"
         #print rawtext
-        #sentences = nltk.sent_tokenize(rawtext)
-        #print sentences
-        #sentences = nltk.word_tokenize(rawtext)
-        #sentences = tokens
-        #sentences = [nltk.pos_tag(sent) for sent in sentences]
-        #print sentences
-        #for sent in sentences:
-        #    print nltk.ne_chunk(sent)
-        #sentences = nltk.tag.untag(nltk.corpus.treebank.tagged_sents())
-        #rawtext = "This is one sentence. This is another sentence about John Smith."
-        #sentences = nltk.sent_tokenize(rawtext)
-        #print sentences
+
+        #taggedsents = nltk.corpus.nps_chat.tagged_posts()
+        #unigram_tagger = nltk.UnigramTagger(taggedsents)
+
         # Remove unicode:
         for sentence in rawprogtext:
             rawprogtext[rawprogtext.index(sentence)] = re.sub("\\u\w\w\w\w","",sentence,re.I)
         #for sentence in rawprogtext:
         #    rawprogtext[rawprogtext.index(sentence)] = re.sub("\\[x\w\w]","",sentence,re.I)
         words = [nltk.word_tokenize(sent) for sent in rawprogtext]
-        print words
+        #print words
         #progtext = nltk.word_tokenize(rawtext)
         #print progtext
         #words = [nltk.pos_tag(word) for word in progtext]
         #print words
         words = [nltk.pos_tag(word) for word in words]
+        #words2 = [unigram_tagger.tag(word) for word in words]
         print words
+
+#        for sentence in words2:
+#            newsentence = ""
+#            for word in sentence:
+#                if word[1] == None:
+#                    print word
+#                    print word[0]
+#                    print word[1]
+#                    newsentence = unigram_tagger.tag(nltk.untag(sentence))
+#                    break
+#            if newsentence != "":
+#                words2[words2.index(sentence)] = newsentence
+#                print "Using standard corpus"
+#            else:
+#                print "Using chat corpus"
+                
+        #print words2
         for item in words:
             try:
-                print nltk.ne_chunk(item)
+                printrec = nltk.ne_chunk(item)
+                entityrec = str(printrec)
+                #print entityrec
+                if "ORGANIZATION" in entityrec or "PERSON" in entityrec or "GPE" in entityrec or "LOCATION" in entityrec or "DATE" in entityrec or "TIME" in entityrec or "MONEY" in entityrec or "PERCENT" in entityrec or "FACILITY" in entityrec:
+                    print printrec
             except UnicodeEncodeError, e:
                 print "Unicode error - ignoring these for now"
+            except AttributeError, e:
+                print "Attribute error - ignoring these for now"
         #nps_chat_train = nltk.corpus.brown.tagged_sents(categories='a')[100:]
         #unigram_tagger = nltk.UnigramTagger(nps_chat_train)
         #print nltk.tag.untag(nltk.corpus.brown.tagged_sents(categories='b')[:100][0])
         #unigram_tagger.tag()
-
+        
 
 
     else:
