@@ -114,7 +114,11 @@ if __name__ == "__main__":
         # Split the text into words and pass to NLTK
         rawtext = "".join(progtext)
 
-        tokens = nltk.word_tokenize(rawtext)
+        tokens = rawtext.split()
+        for token in tokens:
+            if token.lower() in exclusions:
+                tokens.pop(tokens.index(token))
+        #tokens = nltk.word_tokenize(rawtext)
 
         #tokens = nltk.regexp_tokenize(rawtext,pattern)
         newtokenlist = list()
