@@ -115,9 +115,9 @@ if __name__ == "__main__":
         rawtext = "".join(progtext)
 
         tokens = rawtext.split()
-        for token in tokens:
-            if token.lower() in exclusions:
-                tokens.pop(tokens.index(token))
+        #for token in tokens:
+        #    if token.lower() in exclusions:
+        #        tokens.pop(tokens.index(token))
         #tokens = nltk.word_tokenize(rawtext)
 
         #tokens = nltk.regexp_tokenize(rawtext,pattern)
@@ -144,11 +144,11 @@ if __name__ == "__main__":
         bigram_fd = FreqDist(nltk.bigrams(tokens))
         index = 0
         for entry in bigram_fd:
-            if re.match("\W",entry[0]) != None and re.match("\W",entry[1]) != None or entry[0].lower() in exclusions and entry[1].lower() in exclusions:
+            if (re.match("\W",entry[0]) != None or re.match("\W",entry[1]) != None) or (entry[0].lower() in exclusions or entry[1].lower() in exclusions):
                 index -= 1
                 # Ignore this one, it's just symbols
-            elif re.match("\W",entry[0]) != None or re.match("\W",entry[1]) != None:
-                print entry[0] + entry[1]
+            #elif re.match("\W",entry[0]) != None or re.match("\W",entry[1]) != None:
+            #    print entry[0] + entry[1]
             else:
                 print entry[0], entry[1]
             index += 1
