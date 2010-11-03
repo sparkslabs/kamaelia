@@ -169,6 +169,8 @@ def ChannelTranscoder(service_id, mencoder_options, dir_prefix): # BBC ONE
         }
     )
 
+__kamaelia_components__ = ( ProgrammeTranscoder, EITDemux)
+__kamaelia_prefabs__ = ( ChannelTranscoder, EITParsing )
 
 if __name__ == "__main__":
     location = "manchester"
