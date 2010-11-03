@@ -54,16 +54,12 @@ class Canvas(Axon.Component.component):
                  "control" : "",
                  "fromDisplay"  : "For receiving replies from PygameDisplay service",
                  "eventsIn" : "For receiving PygameDisplay events",
-                 "fromEmail" : "Accepts status messages back from the e-mail component - TEMPORARY",
                }
     Outboxes = { "outbox" : "Issues drawing instructions",
                  "signal" : "",
                  "toDisplay" : "For sending requests to PygameDisplay service",
                  "eventsOut" : "Events forwarded out of here",
                  "surfacechanged" : "If the surface gets changed from last load/save a 'dirty' message is emitted here",
-                 "toTicker" : "Send data to text ticker",
-                 "toHistory" : "Move to first slide",
-                 "toEmail" : "For sending out e-mails in list format - TEMPORARY",
                }
 
     def __init__(self, position=(0,0), size=(1024,768), bgcolour=(255,255,255)):
@@ -91,8 +87,8 @@ class Canvas(Axon.Component.component):
     def requestDisplay(self, **argd):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"toDisplay"), displayservice)
-        argd["transparency"] = self.bgcolour # This causes problems when using OpenGL. Needs work TODO FIXME
-        #argd["transparency"] = (255,255,180)
+        #argd["transparency"] = self.bgcolour # This causes problems when using OpenGL or a black background. Needs work TODO FIXME
+        argd["transparency"] = (255,255,180)
         self.send(argd, "toDisplay")
         for _ in self.waitBox("fromDisplay"):
             yield 1

@@ -27,26 +27,26 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class CheckpointSequencer(Axon.Component.component):
     Inboxes = {
-        "inbox" : "",
+        "inbox" : "Receives slide navigation instructions",
         "control" : "",
     }
     Outboxes = {
-        "outbox" : "",
+        "outbox" : "Sends canvas slide loading instructions",
         "signal" : "",
-        "toDecks" : "",
+        "toDecks" : "Sends messages relating to slide deletions", # Can't be moved to decks component as it needs to know the current slide number
     }
     
     def __init__(self, rev_access_callback = None,
                        rev_checkpoint_callback = None,
                        blank_slate_callback = None,
                        initial = 1,
-                       highest = 1):
+                       last = 1):
         super(CheckpointSequencer, self).__init__()
         if rev_access_callback: self.loadMessage = rev_access_callback
         if rev_checkpoint_callback: self.saveMessage = rev_checkpoint_callback
         if blank_slate_callback: self.newMessage = blank_slate_callback
         self.initial = initial
-        self.highest = highest
+        self.last = last
 
 
     def loadMessage(self, current): return current
@@ -64,31 +64,24 @@ class CheckpointSequencer(Axon.Component.component):
 
     def main(self):
         current = self.initial
-        highest = self.highest
+        last = self.last
         self.send( self.loadMessage(current), "outbox")
         dirty = False
         while self.shutdown():
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
                 if command == "delete":
-                    if current == highest and highest > 1:
+                    if current == last and last > 1:
                         # go to previous slide
                         dirty = False
                         command = "prev"
-                        highest -= 1
-                    elif current < highest and current != 1:
+                        last -= 1
+                    elif current < last and current != 1:
                         # go to previous slide and fix numbering
                         dirty = False
                         command = "prev"
-                        highest -= 1
-                    elif current == 1 and current < highest:
-                        # fix numbering then reload current slide
-                        highest -= 1
-                        self.send( self.loadMessage(current+1), "outbox")
-                    else:
-                        # Do nothing
-                        pass
-                    self.send(["delete",current],"toDecks")
+                        last -= 1
+                    
                 #if command == "save": # MOVEME!!!!! - What does this even do? Commented out, appears pointless given that current remains unchanged
                     #self.send( self.saveMessage(current), "outbox")
                 if command == "prev":
@@ -99,7 +92,7 @@ class CheckpointSequencer(Axon.Component.component):
                         current -= 1
                         self.send( self.loadMessage(current), "outbox")
                 if command == "next":
-                    if current <highest:
+                    if current <last:
                         if dirty:
                             self.send( self.saveMessage(current), "outbox")
                             dirty = False
@@ -110,27 +103,27 @@ class CheckpointSequencer(Axon.Component.component):
                         dirty = False
                     current = 1
                     self.send( self.loadMessage(current), "outbox")        
-                    highest = 0
+                    last = 0
                     for x in os.listdir(self.notepad):
                         if os.path.splitext(x)[1] == ".png":
-                            highest += 1
-                    if highest < 1:
-                        highest = 1
+                            last += 1
+                    if last < 1:
+                        last = 1
                 if command == "checkpoint":
-                    if current == highest:
+                    if current == last:
                         self.send( self.saveMessage(current), "outbox")
-                        highest += 1
-                        current = highest
+                        last += 1
+                        current = last
                     else:
-                        highest += 1
-                        current = highest
+                        last += 1
+                        current = last
                         self.send( self.saveMessage(current), "outbox")
-                        highest += 1
-                        current = highest
+                        last += 1
+                        current = last
                 if command == "new":
                     self.send( self.saveMessage(current), "outbox")
-                    highest += 1
-                    current = highest
+                    last += 1
+                    current = last
                     self.send( self.newMessage(current), "outbox")
                     self.send( self.saveMessage(current), "outbox")
                 if command == "undo":
@@ -151,7 +144,7 @@ class CheckpointSequencer(Axon.Component.component):
                         self.send( mess, "outbox")
 
                 if command == ("next", "local"):
-                    if current <highest:
+                    if current <last:
                         if dirty:
                             self.send( self.saveMessage(current), "outbox")
                             dirty = False
@@ -160,7 +153,13 @@ class CheckpointSequencer(Axon.Component.component):
                         mess[0].append("nopropogate")
                         self.send( mess, "outbox")
 #                        self.send( self.loadMessage(current), "outbox")
-
+                if command == "delete":
+                    if current == 1 and current < last:
+                        # fix numbering then reload current slide
+                        last -= 1
+                        #command = "next"
+                        self.send( self.loadMessage(current+1), "outbox")
+                    self.send(["delete",current],"toDecks")
 
             if not self.anyReady():
                 self.pause()
@@ -178,7 +177,7 @@ if __name__ == "__main__":
         CheckpointSequencer(lambda X: [["LOAD", "slide.%d.png" % (X,)]],
                             lambda X: [["SAVE", "slide.%d.png" % (X,)]],
                             initial=0,
-                            highest=0,
+                            last=0,
                            ),
         ConsoleEchoer(),
     ).run()
@@ -197,7 +196,7 @@ if __name__ == "__OLDmain__":
         CheckpointSequencer(lambda X: [["LOAD", "slide.%d.png" % (X,)]],
                             lambda X: [["SAVE", "slide.%d.png" % (X,)]],
                             initial=0,
-                            highest=0,
+                            last=0,
                            ),
         ConsoleEchoer(),
     ).run()

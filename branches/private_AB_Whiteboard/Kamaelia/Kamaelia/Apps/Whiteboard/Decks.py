@@ -31,6 +31,7 @@ from datetime import datetime
 
 import os
 import shutil
+import sys
 
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
@@ -44,9 +45,9 @@ class Decks(component):
     }
     Outboxes = {
         "outbox" : "",
-        "toTicker" : "Sends messages out to the Ticker component",
-        "toCanvas" : "Sends messages out to the Canvas component",
-        "toHistory" : "Sends messages out to the CheckpointSequencer component",
+        "toTicker" : "Sends text messages out to the Ticker component for display to the user",
+        "toCanvas" : "Sends drawing instructions out to the Canvas component",
+        "toSequencer" : "Sends slide navigation messages out to the CheckpointSequencer component",
         "toEmail" : "Requests to send e-mails are sent through this outbox",
         "signal" : "",
     }
@@ -98,8 +99,8 @@ class Decks(component):
                 try:
                     shutil.move(self.scribblesdir + "/" + x,self.scribblesdir + "/slide." + str(exists) + ".png")
                 except Exception, e:
-                    print("Failed to renumber slides. There may be an error in the sequence")
-                    print str(e)
+                    sys.stderr.write("Failed to renumber slides. There may be an error in the sequence")
+                    sys.stderr.write(str(e))
             exists += 1
                 
     def handleCommand(self, cmd):
@@ -131,7 +132,7 @@ class Decks(component):
                         unzipped.extractall(path=self.scribblesdir,pwd=password)
                     else:
                         unzipped.extractall(path=self.scribblesdir,pwd="")
-                    self.send("first", "toHistory")
+                    self.send("first", "toSequencer")
                     self.send(chr(0) + "CLRTKR", "toTicker")
                     self.send("Deck loaded successfully","toTicker")
                 except Exception, e:
@@ -208,15 +209,15 @@ class Decks(component):
                 if os.path.splitext(x)[1] == ".png":
                     os.remove(self.scribblesdir + "/" + x)
             self.send([["clear"]], "toCanvas")
-            self.send("first", "toHistory")
+            self.send("first", "toSequencer")
         except Exception, e:
-            pass
+            sys.stderr.write("Failed to clear scribbles - couldn't remove " + str(self.scribblesdir + "/" + x))
         
     def deleteslide(self,current):
         try:
             os.remove(self.scribblesdir + "/slide." + str(current) + ".png")
         except Exception, e:
-            pass
+            sys.stderr.write("Error deleting slide " + str(current))
         self.fixNumbering()
     
     def quit(self):

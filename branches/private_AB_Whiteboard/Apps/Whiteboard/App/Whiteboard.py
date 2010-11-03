@@ -384,7 +384,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                                                     lambda X: [["SAVE", SLIDESPEC % (X,)]],
                                                     lambda X: [["CLEAR"]],
                                                     initial = 1,
-                                                    highest = num_pages,
+                                                    last = num_pages,
                                 ),
 
                       PAINT_SPLITTER = TwoWaySplitter(),
@@ -413,7 +413,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
                           
                           ("DECKMANAGER", "toTicker") : ("TICKER", "inbox"),
                           ("DECKMANAGER", "toCanvas") : ("CANVAS", "inbox"),
-                          ("DECKMANAGER", "toHistory") : ("HISTORY", "inbox"),
+                          ("DECKMANAGER", "toSequencer") : ("HISTORY", "inbox"),
                           ("QUIT", "outbox") : ("DECKMANAGER", "inbox"),
                           
                           #("LOCALPAGINGCONTROLS","outbox")  : ("LOCALEVENT_SPLITTER", "inbox"),
@@ -430,9 +430,6 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 
                           ("CANVAS", "outbox")     : ("self", "outbox"),
                           ("CANVAS","surfacechanged") : ("HISTORY", "inbox"),
-                          
-                          ("CANVAS", "toTicker") : ("TICKER", "inbox"),
-                          ("CANVAS", "toHistory") : ("HISTORY", "inbox"),
                           
 #                          ("SMARTBOARD", "colour") : ("PAINTER", "colour"),
 #                          ("SMARTBOARD", "erase") : ("PAINTER", "erase"),
