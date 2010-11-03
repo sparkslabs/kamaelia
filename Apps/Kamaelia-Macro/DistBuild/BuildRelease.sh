@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Building the Distribution"
+echo "Building the Kamaelia Macro Distribution"
 
 echo
 echo "----------------------------------------------------"
