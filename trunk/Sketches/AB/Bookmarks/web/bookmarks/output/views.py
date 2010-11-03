@@ -372,7 +372,7 @@ def rawtweets(request,pid,timestamp):
         for entry in analysedtweets:
             output += "<br />" + entry.wordfreqexpected + "<br />" + entry.wordfrequnexpected
         output += "<br />"
-        rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).all()
+        rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('timestamp').all()
         output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
         for tweet in rawtweets:
             output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
