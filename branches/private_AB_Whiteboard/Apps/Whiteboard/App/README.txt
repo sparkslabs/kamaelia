@@ -34,3 +34,13 @@ and will use the following directories for Scribbles and Decks respectively:
 
 ~/.kamaelia/Kamaelia.Apps.Whiteboard/Scribbles/
 ~/Whiteboard/Decks/
+
+
+## Deck E-mail Support ##
+Whilst the whiteboard does support sending of decks by e-mail, it doesn't currently
+support the use of this function from behind a proxy server.
+
+
+## Webcams ##
+Please ensure that when using a webcam with the whiteboard it is UVC compatible.
+Whilst other cameras may work, some can exhibit issues of a varying nature.
