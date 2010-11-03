@@ -21,18 +21,29 @@
 
 from distutils.core import setup
 
-setup(name = "Kamaelia-Empty",
+setup(name = "Kamaelia-Macro",
       version = "1.0.0",
-      description = "Empty application bundle. Designed for making it simpler to create bundles",
+      description = "Kamaelia Macro application bundle",
       author = "Michael Sparks & Kamaelia Contributors",
-      author_email = "ms_@users.sourceforge.net",
+      author_email = "sparks.m@gmail.com",
       url = "http://www.kamaelia.org/Home.html",
-      license = "Copyright (c)2010 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
+      license = "Apache Software License",
       packages = [\
 # REPLACE
                   ""],
       long_description = """
-Empty app
+Kamaelia Macro is essentially a 'record everything PVR'. The system will
+need to be adapted to automate deleting content once it's been watched,
+rather than the current manual deletion approach.  This will be necessary
+due to system practicality constraints.  Actual earlier versions did this
+but using external shell scripts, later versions of this will do this
+automagically via a viewing front end.
+
+Using this code for anything other than timeshifting purposes is illegal in
+the UK.  However using this for timeshifting purposes is enshrined in UK
+law, since the effect of this is to simply time shift television programme
+services for later viewing.  It should however simply be a more convenient
+form of timeshifting.
 """,
       )
 
