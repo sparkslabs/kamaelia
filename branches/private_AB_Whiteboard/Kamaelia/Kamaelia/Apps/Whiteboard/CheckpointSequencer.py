@@ -98,17 +98,13 @@ class CheckpointSequencer(Axon.Component.component):
                             dirty = False
                         current += 1
                         self.send( self.loadMessage(current), "outbox")
-                if command == "first":
+                if command == "reset":
+                    # Used when a deck has been closed to reset counters
                     if dirty:
                         dirty = False
                     current = 1
                     self.send( self.loadMessage(current), "outbox")        
-                    last = 0
-                    for x in os.listdir(self.notepad):
-                        if os.path.splitext(x)[1] == ".png":
-                            last += 1
-                    if last < 1:
-                        last = 1
+                    last = 1
                 if command == "checkpoint":
                     if current == last:
                         self.send( self.saveMessage(current), "outbox")

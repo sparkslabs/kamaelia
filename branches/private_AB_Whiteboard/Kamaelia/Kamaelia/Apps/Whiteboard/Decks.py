@@ -209,7 +209,7 @@ class Decks(component):
                 if os.path.splitext(x)[1] == ".png":
                     os.remove(self.scribblesdir + "/" + x)
             self.send([["clear"]], "toCanvas")
-            self.send("first", "toSequencer")
+            self.send("reset", "toSequencer")
         except Exception, e:
             sys.stderr.write("Failed to clear scribbles - couldn't remove " + str(self.scribblesdir + "/" + x))
         
