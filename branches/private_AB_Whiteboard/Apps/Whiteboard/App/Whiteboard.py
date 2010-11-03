@@ -461,12 +461,14 @@ if __name__=="__main__":
                      )
 
     camera = Graphline( LOCALWEBCAM = VideoCaptureSource(),
-                        WCMANAGER = WebcamManager(displaysize = (190, 140), position = (1024-191,32+2), bgcolour=(0,0,0), vertical = True),
+                        WCMANAGER = WebcamManager(camerasize = (190,140), vertical = True),
+                        DISPLAY = ProperSurfaceDisplayer(displaysize = (190,height-34), position=(1024-191,32+2), bgcolour=(0,0,0)),
                         CAM_SPLITTER = TwoWaySplitter(),
                         CONSOLE = ConsoleEchoer(),
                         linkages = { ('self','inbox'):('WCMANAGER','inbox'),
                             ('LOCALWEBCAM','outbox'):('CAM_SPLITTER','inbox'),
                             ('CAM_SPLITTER','outbox2'):('WCMANAGER','inbox'),
+                            ('WCMANAGER','outbox'):('DISPLAY','inbox'),
                             ('CAM_SPLITTER','outbox'):('self','outbox'),
                           }
                       )

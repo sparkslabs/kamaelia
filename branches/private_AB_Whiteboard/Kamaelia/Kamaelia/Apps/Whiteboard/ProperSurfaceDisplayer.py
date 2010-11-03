@@ -71,7 +71,10 @@ class ProperSurfaceDisplayer(component):
        while self.shutdown():
           if self.dataReady("inbox"):
               data = self.recv("inbox")
-              self.display.blit(data, (0,0))
+              if isinstance(data,list):
+                  self.display.blit(data[0], data[1])
+              else:
+                  self.display.blit(data, (0,0))
               self.pygame_display_flip()
           self.pause()
           yield 1

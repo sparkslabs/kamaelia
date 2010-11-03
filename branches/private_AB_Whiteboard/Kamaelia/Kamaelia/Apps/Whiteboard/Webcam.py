@@ -21,6 +21,7 @@
 
 import time
 import pygame
+import sys
 
 try:
     import pygame.camera
@@ -76,19 +77,18 @@ class VideoCaptureSource(threadedcomponent):
         try:
             self.snapshot = self.camera.get_image()
         except Exception, e:
-            pass
+            sys.stderr.write("Faled to grab image. Is your camera UVC compatible?")
 
     def main(self):
         try:
             self.camera.start()
             while self.shutdown():
-                self.capture_one() # THIS IS FAILING - MAY BE THE CAMERA'S FAULT BUT NOT SURE
-                #self.snapshot = pygame.transform.scale(self.snapshot,(190,140))
+                self.capture_one() # Fails for PWC webcam, need UVC
                 self.snapshot=self.snapshot.convert()
                 self.send(self.snapshot, "outbox")
                 time.sleep(self.delay)
         except Exception, e:
-            pass
+            sys.stderr.write("Faled to connect to camera. Is it connected?")
 
 
 class WebcamManager(component):
@@ -105,13 +105,12 @@ class WebcamManager(component):
         "signal" : "",
     }
     
-    def __init__(self, displaysize, position, bgcolour, vertical=True):
+    def __init__(self, camerasize, vertical=True):
         super(WebcamManager, self).__init__()
-        self.displaysize = displaysize
-        self.position = position
-        self.bgcolour = bgcolour
+        self.camerasize = camerasize
         self.vertical = vertical
-        # [[camera,displayhandle,oldposition,timeout=25],[camera,displayhandle,oldposition,timeout]....]
+        
+        # [[camera,oldposition,timeout=25],[camera,oldposition,timeout]....]
         self.cameralist = list()
 
     def shutdown(self):
@@ -124,19 +123,26 @@ class WebcamManager(component):
        return 1
 
     def main(self):
-       while self.shutdown():
+        while self.shutdown():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 
                 # Remove cameras where clients have disconnected
                 removallist = list()
                 for camera in self.cameralist:
-                    camera[3] -= 1
-                    if camera[3] == 0:
+                    camera[2] -= 1
+                    if camera[2] == 0:
                         # Camera has disconnected
                         # DESTROY ITS SURFACE HERE
-                        camera[1].stop()
-                        removallist.append(x)
+                        surf = pygame.Surface((1200,700))
+                        surf.fill((255,255,0,255),pygame.Rect(0,0,200,700))
+                        surf.fill((0,255,255,255),pygame.Rect(200,0,200,700))
+                        surf.fill((128,255,0,255),pygame.Rect(400,0,200,700))
+                        surf.fill((255,0,128,255),pygame.Rect(600,0,200,700))
+                        surf.fill((255,0,0,255),pygame.Rect(800,0,200,700))
+                        surf.fill((0,0,255,255),pygame.Rect(1000,0,200,700))
+                        surf = pygame.transform.scale(surf,self.camerasize)
+                        self.send([surf,camera[1]], "outbox")
                         
                 for entry in removallist:
                     # Remove unused cameras from the camera list
@@ -154,37 +160,32 @@ class WebcamManager(component):
                 for camera in self.cameralist:
                     if camera[0] == tag:
                         # Found the camera in the positions index
-                        camera[3] = 25 # Reset the timeout
-                        handle = camera[1]
-                        oldposition = camera[2]
+                        camera[2] = 25 # Reset the timeout
+                        oldposition = camera[1]
                         cameraindex = self.cameralist.index(camera)
                         break
                 else:
                     # Camera not found in the index - let's add it.
                     # Positioning calculated from the number of current active cams, along with specified display sizes and on screen position
-                    self.cameralist.append([tag,None,None,25])
+                    self.cameralist.append([tag,None,25])
                     cameraindex = len(self.cameralist) - 1
-                    handle = None
                     oldposition = None
                     
                 if self.vertical:
-                    cameraposition = (self.position[0],self.position[1]+((self.displaysize[1]+1)*cameraindex))
+                    cameraposition = (0,((self.camerasize[1]+1)*cameraindex))
                 else:
-                    cameraposition = (self.position[0]+((self.displaysize[0]+1)*cameraindex),self.position[1])
+                    cameraposition = (((self.camerasize[0]+1)*cameraindex),0)
                 
-                if handle == None or oldposition != cameraposition:
-                    if oldposition != cameraposition and handle != None:
+                if oldposition != cameraposition:
+                    if oldposition != cameraposition and oldposition != None:
                         # Need to destroy the old component here
-                        handle.stop()
-                    handle = ProperSurfaceDisplayer(displaysize = self.displaysize, position = cameraposition, bgcolour=self.bgcolour).activate()
-                    self.cameralist[cameraindex][1] = handle
-                    self.cameralist[cameraindex][2] = cameraposition
+                        surf = pygame.Surface(self.camerasize)
+                        surf.fill((0,0,0,0))
+                        self.send([surf,oldposition], "outbox")
+                    self.cameralist[cameraindex][1] = cameraposition
                 
-                # Create a temporary link to send out data to the display
-                self.link((self, "outbox"), (handle, "inbox"))
-                snapshot = pygame.transform.scale(snapshot,self.displaysize)
-                self.send(snapshot, "outbox")
-                self.unlink(thecomponent=handle)
+                snapshot = pygame.transform.scale(snapshot,self.camerasize)
+                self.send([snapshot,cameraposition], "outbox")
 
             while not self.anyReady():
                 self.pause()
