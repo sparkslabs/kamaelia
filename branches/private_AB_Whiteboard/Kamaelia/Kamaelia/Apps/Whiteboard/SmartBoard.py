@@ -53,9 +53,6 @@ class SmartBoard(Axon.Component.component):
                  "erase" : "eraser selected",
                  "toTicker" : "data to ticker",
                 }
-          
-    def __init__(self):
-        super(SmartBoard,self).__init__()
 
     def shutdown(self):
        """Return 0 if a shutdown message is received, else return 1."""

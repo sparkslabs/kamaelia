@@ -55,13 +55,6 @@ class VideoCaptureSource(threadedcomponent):
     delay = 0.1
     fps = -1
     device = "/dev/video0"
- 
-    def __init__(self, **argd):
-        super(VideoCaptureSource, self).__init__(**argd)
-        self.camera = pygame.camera.Camera(self.device, self.capturesize)
-        if self.fps != -1:
-            self.delay = 1.0/self.fps
-        self.snapshot = None
 
     def shutdown(self):
        """Return 0 if a shutdown message is received, else return 1."""
@@ -80,6 +73,10 @@ class VideoCaptureSource(threadedcomponent):
             sys.stderr.write("Faled to grab image. Is your camera UVC compatible?")
 
     def main(self):
+        self.camera = pygame.camera.Camera(self.device, self.capturesize)
+        if self.fps != -1:
+            self.delay = 1.0/self.fps
+        self.snapshot = None
         try:
             self.camera.start()
             while self.shutdown():
