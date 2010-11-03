@@ -430,3 +430,8 @@ class TwitterStream(threadedcomponent):
                 self.link((datacapture, "outbox"), (self, "tweetsin"))
             while self.dataReady("tweetsin"):
                 self.send(self.recv("tweetsin"),"outbox")
+            if not self.dataReady("tweetsin"):
+                time.sleep(1) # This still isn't great at reducing busy wait CPU usage
+                # Intention is to identify whether this code solves the bottleneck with The Apprentice
+                # If it doesn't, we need to look at other code fails
+                
