@@ -1,494 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><id>http://jtauber.com/atom/full</id><title>James Tauber's Blog</title><updated>2008-06-04T10:15:48Z</updated><link href="http://jtauber.com/atom/full" rel="self"></link><link href="http://jtauber.com/blog/" rel="alternate"></link><author><name>James Tauber</name></author><generator version="r20" uri="http://code.google.com/p/django-atompub/">django-atompub</generator><entry><id>http://jtauber.com/blog/2008/06/04/two_podcast_interviews</id><title>Two Podcast Interviews</title><updated>2008-06-04T10:15:48Z</updated><published>2008-06-04T10:15:47Z</published><link href="/blog/2008/06/04/two_podcast_interviews/" rel="alternate"></link><content type="html">&lt;p&gt;In the last week two podcasts have come out which I appear on.
-&lt;/p&gt;
-&lt;p&gt;
-The first is the Google Summer of Code podcast where Titus Brown and I were interviewed about the Python Software Foundation's participation in both GSoC and GHOP.
-&lt;/p&gt;
-&lt;p&gt;
-&lt;a class="external" href="http://google-opensource.blogspot.com/2008/05/podcast-with-pythonistas.html"&gt;http://google-opensource.blogspot.com/2008/05/podcast-with-pythonistas.html&lt;/a&gt;
-&lt;/p&gt;
-&lt;p&gt;
-The second is This Week in Django where I talk a little about myself and (more importantly) Pinax and the Hot Club of France.
-&lt;/p&gt;
-&lt;p&gt;
-&lt;a class="external" href="http://blog.michaeltrier.com/2008/6/2/this-week-in-django-24-2008-06-01"&gt;http://blog.michaeltrier.com/2008/6/2/this-week-in-django-24-2008-06-01&lt;/a&gt;
-&lt;/p&gt;
-&lt;p&gt;
-I sound much better in the second one because I recorded my track locally with a large diaphragm condenser mic and sent the audio file for mixing. In the first one, it's just my laptop mic going over Skype.
-&lt;/p&gt;
-&lt;p&gt;
-They were both fun although I babble too much, especially on the TWiD podcast.&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/28/question_driven_commenting</id><title>Question-Driven Commenting</title><updated>2008-05-28T15:56:05Z</updated><published>2008-05-28T15:56:04Z</published><link href="/blog/2008/05/28/question_driven_commenting/" rel="alternate"></link><content type="html">&lt;p&gt;I've always loved Titus Brown's notion of &lt;a class="external" href="http://ivory.idyll.org/blog/feb-07/stupidity-driven-testing.html"&gt;stupidity driven testing&lt;/a&gt;. It's okay to make a mistake but you write a test to make sure you don't do it again.
-&lt;/p&gt;
-&lt;p&gt;
-With &lt;a href="/pinax"&gt;Pinax&lt;/a&gt;, I've been adopting the sister practice of &amp;quot;question-driven commenting&amp;quot;. When someone asks me what a function does or how to implement a particular extension, that's when I go and add comments to the code.
-&lt;/p&gt;
-&lt;p&gt;
-Of course, the person asking the question could be me :-)&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/26/pinax_progress_ii</id><title>Pinax Progress II</title><updated>2008-05-26T22:56:46Z</updated><published>2008-05-26T22:56:44Z</published><link href="/blog/2008/05/26/pinax_progress_ii/" rel="alternate"></link><content type="html">&lt;p&gt;Yesterday I reported that we'd added the following to &lt;a href="/pinax"&gt;Pinax&lt;/a&gt; in the last 24 hours:
-&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;user profile pages&lt;/li&gt;
-&lt;li&gt;gravatars&lt;/li&gt;
-&lt;li&gt;user-to-user messages (via django-messages)&lt;/li&gt;
-&lt;li&gt;announcements (a new app, django-announcements)&lt;/li&gt;
-&lt;li&gt;OpenID support&lt;/li&gt;
-&lt;li&gt;invitations to join&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;
-Well, in the last 24 hours we've added to that:
-&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;translations into German, Spanish and Swedish&lt;/li&gt;
-&lt;li&gt;a new design / logo&lt;/li&gt;
-&lt;li&gt;auto-completion on message recipient field&lt;/li&gt;
-&lt;li&gt;a basic Twitter clone&lt;/li&gt;
-&lt;li&gt;OEmbed support in tweets&lt;/li&gt;
-&lt;li&gt;the beginnings of tribes (i.e. groups)&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;
-I could not have hoped for a more productive weekend!
-&lt;/p&gt;
-&lt;p&gt;
-Earlier in the day I did a rough count purely based on file-size and estimated that Pinax is:
-&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;63% re-usable apps;&lt;/li&gt;
-&lt;li&gt;10% local app;&lt;/li&gt;
-&lt;li&gt;13% templates;&lt;/li&gt;
-&lt;li&gt;8% localization;&lt;/li&gt;
-&lt;li&gt;5% media;&lt;/li&gt;
-&lt;li&gt;1% util&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;
-which bodes well for the original goal of Pinax: to jump-start some reusable Django apps.&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/25/pinax_progress</id><title>Pinax Progress</title><updated>2008-05-25T04:41:15Z</updated><published>2008-05-25T04:41:12Z</published><link href="/blog/2008/05/25/pinax_progress/" rel="alternate"></link><content type="html">&lt;p&gt;Here is what the team of brosner, leidel, floguy and myself have added to &lt;a href="/pinax"&gt;Pinax&lt;/a&gt; in the last 24 hours:
-&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;user profile pages&lt;/li&gt;
-&lt;li&gt;gravatars&lt;/li&gt;
-&lt;li&gt;user-to-user messages (via django-messages)&lt;/li&gt;
-&lt;li&gt;announcements (a new app, django-announcements)&lt;/li&gt;
-&lt;li&gt;OpenID support&lt;/li&gt;
-&lt;li&gt;invitations to join&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;
-Check it out at &lt;a class="external" href="http://pinax.hotcluboffrance.com/"&gt;http://pinax.hotcluboffrance.com/&lt;/a&gt;&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/23/programming_as_jazz</id><title>Programming as Jazz</title><updated>2008-05-23T05:05:19Z</updated><published>2008-05-23T05:05:18Z</published><link href="/blog/2008/05/23/programming_as_jazz/" rel="alternate"></link><content type="html">&lt;p&gt;I'm starting to appreciate that programming has more similarities to Jazz than just the project naming conventions encouraged by &lt;a href="/django"&gt;Django&lt;/a&gt;.
-&lt;/p&gt;
-&lt;p&gt;
-When I started the Hot Club of France mailing list (named for Django Reinhardt's Quintet du Hot Club de France) I explicitly mentioned it was about writing reusable apps that &amp;quot;jam&amp;quot; well together. But I'm realising that it's as much about the developers jamming as the code itself.
-&lt;/p&gt;
-&lt;p&gt;
-Ever since the inception of the Hot Club project, I've thought about cloning Web 2.0 websites using reusable Django projects. I noticed at the time that this is sort of like the &amp;quot;contrafact&amp;quot; approach of early Jazz where you would improvise new songs using the chord progressions of existing songs. The analogy isn't perfect but I do think the term &amp;quot;contrafact&amp;quot; is a great one to use for the programming practice.
-&lt;/p&gt;
-&lt;p&gt;
-Things are really starting to come together with &lt;a href="/pinax"&gt;Pinax&lt;/a&gt; and the conversations I've been having recently with other Django developers keen to jam with me on it reminds me a lot of stories I've read of the bebop years. You check out someone's work, think it will work well with your own style and start doing some improv together. Awesome stuff!
-&lt;/p&gt;
-&lt;p&gt;
-Things are really starting to come together at &lt;a class="external" href="http://pinax.hotcluboffrance.com/"&gt;http://pinax.hotcluboffrance.com/&lt;/a&gt;
-&lt;/p&gt;
-&lt;p&gt;
-Just call me yardbird :-)&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/22/funcom_epic_fail</id><title>Funcom's Epic Fail</title><updated>2008-05-22T04:50:58Z</updated><published>2008-05-22T04:50:57Z</published><link href="/blog/2008/05/22/funcom_epic_fail/" rel="alternate"></link><content type="html">&lt;p&gt;So the other night I decided to purchase the adventure game Dreamfall by FUNCOM as a digital download. They provide their own downloader, that's fine. But
-&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;the downloader first requires you to install .NET 2.0 yourself&lt;/li&gt;
-&lt;li&gt;the downloader prompts you to enter &amp;quot;the provided key&amp;quot; but the email receipt from FUNCOM didn't mention the word &amp;quot;key&amp;quot;. It had something it called a &amp;quot;license number&amp;quot;.&lt;/li&gt;
-&lt;li&gt;I typed in the license number but the downloader came back &amp;quot;invalid coupon&amp;quot; (I'm thinking at this stage &amp;quot;is it a key, a number or a coupon&amp;quot; ?!?!)&lt;/li&gt;
-&lt;li&gt;the receipt says to email marketing@funcom.com if there are any problems with digital downloads so I email that address&lt;/li&gt;
-&lt;li&gt;I get back an autoresponse saying &amp;quot;If you have not submitted this via our web form at [link provided] then your mail may be removed by our spam filter. Please resubmit your request using this form.&amp;quot;&lt;/li&gt;
-&lt;li&gt;I click on said link and get a 404.&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;
-EPIC FAIL FUNCOM!
-&lt;/p&gt;
-</content></entry><entry><id>http://jtauber.com/blog/2008/05/18/creating_gradients_programmatically_in_python</id><title>Creating Gradients Programmatically in Python</title><updated>2008-05-18T02:38:06Z</updated><published>2008-05-18T02:30:22Z</published><link href="/blog/2008/05/18/creating_gradients_programmatically_in_python/" rel="alternate"></link><content type="html">&lt;p&gt;For various sites I often want to create a narrow gradient image. This site has two, for example, the grey background gradient and the purple header gradient.
-&lt;/p&gt;
-&lt;p&gt;
-Rather than having to open up a drawing tool every time I want to create one of these, I thought I'd write a Python script to generate a PNG of a gradient according to declarative specifications.
-&lt;/p&gt;
-&lt;p&gt;
-The result is 
-&lt;/p&gt;
-&lt;p&gt;
-&lt;blockquote&gt;&lt;a class="external" href="http://jtauber.com/2008/05/gradient.py"&gt;http://jtauber.com/2008/05/gradient.py&lt;/a&gt;&lt;/blockquote&gt;
-&lt;/p&gt;
-&lt;p&gt;
-Only linear gradients are currently supported although you can have any number of them at different vertical offsets and it's easy to modify the code to support other gradient functions.
-&lt;/p&gt;
-&lt;p&gt;
-The code itself is 50 lines long and has no dependencies other than the standard library. I've included some samples based on the gradients on jtauber.com and &lt;a href="/pinax"&gt;Pinax&lt;/a&gt;.
-&lt;/p&gt;
-&lt;p&gt;
-For example, this gradient:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;img src="http://jtauber.com/2008/05/test2.png" title="blah"/&gt;
-&lt;/p&gt;
-&lt;p&gt;
-is produced with the following code:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;write_png(&amp;quot;test2.png&amp;quot;, 50, 90, gradient([
-    (0.43, (0xBF, 0x94, 0xC0), (0x4C, 0x26, 0x4C)), # top
-    (0.85, (0x4C, 0x26, 0x4C), (0x27, 0x13, 0x27)), # bottom
-    (1.0,  (0x66, 0x66, 0x66), (0xFF, 0xFF, 0xFF)), # shadow
-]))&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-The 30-line write_png function could also be used more generally for generating any RGB PNGs.
-&lt;/p&gt;
-</content></entry><entry><id>http://jtauber.com/blog/2008/05/11/metrics_provide_an_inner_product</id><title>Metrics Provide An Inner Product</title><updated>2008-05-11T14:55:14Z</updated><published>2008-05-11T14:55:12Z</published><link href="/blog/2008/05/11/metrics_provide_an_inner_product/" rel="alternate"></link><content type="html">&lt;p&gt;Another post for the &lt;a href="/poincare_project"&gt;Poincaré Project&lt;/a&gt;.
-&lt;/p&gt;
-&lt;p&gt;
-We've already seen that a &lt;b&gt;one-form&lt;/b&gt; is a linear function from a vector to a (for our purposes) real number. On a manifold, one-forms correspond to stack-type vectors being applied to arrow-type vectors by counting how many &amp;quot;stacks&amp;quot; the arrow passes through.
-&lt;/p&gt;
-&lt;p&gt;
-In the previous post &lt;a href="/blog/2008/05/04/metrics_as_mappings_between_arrows_and_stacks/"&gt;Metrics As Mappings Between Arrows and Stacks&lt;/a&gt;, we saw that a &lt;b&gt;metric&lt;/b&gt; is an &lt;i&gt;extra&lt;/i&gt; bit of structure that describes how to map between arrow-type vectors and stack-type vectors.
-&lt;/p&gt;
-&lt;p&gt;
-So, in summary:
-&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;a metric tells you how to go from an arrow-type vector to a stack-type vector&lt;/li&gt;
-&lt;li&gt;a stack-type vector can be applied to another arrow-type vector to  get a real number&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;
-These two facts can be combined to let you take two &lt;i&gt;arrow-type&lt;/i&gt; vectors and get a real number out of them.
-&lt;/p&gt;
-&lt;p&gt;
-This has parallels with &lt;b&gt;currying&lt;/b&gt; in functional programming.
-&lt;/p&gt;
-&lt;p&gt;
-Recall that if a function &amp;quot;add&amp;quot; takes two integers and returns an integer, it can be viewed as a function that takes one integer and returns a function that takes one integer and returns an integer.
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;add :: Int -&amp;gt; Int -&amp;gt; Int&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-Now, a one-form is a function that takes a vector and returns a real. In other words:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;Vector -&amp;gt; Real&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-So it is easy to see that if you curry a real-valued function that takes two vectors you get:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;Vector -&amp;gt; Vector -&amp;gt; Real&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-In other words, a function taking two vectors to a real is equivalent to a function from a vector to a one-form.
-&lt;/p&gt;
-&lt;p&gt;
-So if you have a metric that can convert between vectors and one-forms (or, in the context of a manifold, between arrows and stacks) then you also have a function from two vectors to a real.
-&lt;/p&gt;
-&lt;p&gt;
-Such a function is called an &lt;b&gt;inner product&lt;/b&gt; or &lt;b&gt;dot product&lt;/b&gt;. Often the notion of an inner product is defined first, before one-forms are introduced (if at all). In fact, some texts will define a metric to be an inner product. It is best for our purposes, though, to think of the metric's fundamental purpose as being converting between arrows and stacks (and back again) and the inner product as being an extra concept we get for free.
-&lt;/p&gt;
-</content></entry><entry><id>http://jtauber.com/blog/2008/05/10/introducing_pinax</id><title>Introducing Pinax</title><updated>2008-05-10T15:22:40Z</updated><published>2008-05-10T15:22:38Z</published><link href="/blog/2008/05/10/introducing_pinax/" rel="alternate"></link><content type="html">&lt;p&gt;In the post &lt;a href="/blog/2008/05/06/reusable_django_apps_and_introducing_tabula_rasa/"&gt;Reusable Django Apps and Introducing Tabula Rasa&lt;/a&gt; I mentioned my project to create an out-of-the-box Django-based website with everything but the domain-specific functionality.
-&lt;/p&gt;
-&lt;p&gt;
-At the time I was calling it &lt;i&gt;Tabula Rasa&lt;/i&gt; but now I've settled on the Greek word &lt;i&gt;Pinax&lt;/i&gt;, proposed by Orestis Markou.
-&lt;/p&gt;
-&lt;p&gt;
-So far it's just my new django-email-confirmation app tied together with password change and reset, login/logout, with the beginnings of a tab-style UI. There's a ton more I want to refactor out of my existing websites to put into it as well as adding support for OpenID and the stuff I'm starting to do for django-friends.
-&lt;/p&gt;
-&lt;p&gt;
-Even if one doesn't use Pinax as the starting point of a website, I'm hoping it will prove very useful for another goal, namely a &amp;quot;host&amp;quot; project to develop and tryout reusable apps.
-&lt;/p&gt;
-&lt;p&gt;
-The initial code is available at &lt;a class="external" href="http://code.google.com/p/django-hotclub/"&gt;http://code.google.com/p/django-hotclub/&lt;/a&gt; under /trunk/projects/pinax and there is a running instance for you to try out at:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;&lt;a class="external" href="http://pinax.hotcluboffrance.com"&gt;http://pinax.hotcluboffrance.com&lt;/a&gt;&lt;/pre&gt;
-&lt;/p&gt;
-</content></entry><entry><id>http://jtauber.com/blog/2008/05/09/elite_oolite</id><title>Elite Oolite</title><updated>2008-05-09T23:34:36Z</updated><published>2008-05-09T23:27:59Z</published><link href="/blog/2008/05/09/elite_oolite/" rel="alternate"></link><content type="html">&lt;p&gt;When I lived in Brunei in the mid-80s, a neighbour had a &lt;a class="external" href="http://en.wikipedia.org/wiki/BBC_Micro"&gt;BBC Micro&lt;/a&gt; and I would go over there to play the space trading game &lt;a class="external" href="http://en.wikipedia.org/wiki/Elite_(computer_game)"&gt;Elite&lt;/a&gt;. The hidden-line wireframe graphics and massive procedurally-generated universe seemed amazing to me at the time and it was definitely the kind of software I aspired to one day write myself. At the time, I taught myself trigonometry to do 3D graphics but never got to hidden line removal :-)
-&lt;/p&gt;
-&lt;p&gt;
-I was aware of various Elite clones over the years, but the other day I stumbled across &lt;a class="external" href="http://oolite.aegidian.org/"&gt;Oolite&lt;/a&gt;, an open-source Mac OS X version with modern OpenGL graphics. Simply amazing and just as addictive as I remember the original being. It also seems to be highly pluggable, with numerous extensions available to add both to the UI and gameplay.&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/06/lotro_on_vmware_fusion</id><title>LOTRO on VMware Fusion</title><updated>2008-05-06T08:21:22Z</updated><published>2008-05-06T08:19:36Z</published><link href="/blog/2008/05/06/lotro_on_vmware_fusion/" rel="alternate"></link><content type="html">&lt;p&gt;I've hardly played Lord of the Rings Online at all the last six months and not at all the last three.
-&lt;/p&gt;
-&lt;p&gt;
-My only copy of Windows is a &lt;a class="external" href="http://vmware.com/products/fusion/"&gt;VMware Fusion&lt;/a&gt; instance and LOTRO doesn't work on VMware Fusion. That is...until now.
-&lt;/p&gt;
-&lt;p&gt;
-I was excited to hear that the new VMware Fusion 2.0 beta 1 supported pixel shaders in DirectX 9 and I wondered if that meant LOTRO would work. I downloaded the beta, which JUST WORKED with my existing VM (which wasn't even shut down). I spent an hour or so updating LOTRO but my first attempt to start the game failed.
-&lt;/p&gt;
-&lt;p&gt;
-The error message was different, though. Instead of being about the graphics adapter it was a complaint about a Game Error 127. A Google search revealed &lt;a class="external" href="http://forums.lotro.com/showthread.php?t=128648"&gt;this post&lt;/a&gt; and so I tried making the config change they suggested there.
-&lt;/p&gt;
-&lt;p&gt;
-And BINGO! I can now run Lord of the Rings Online on VMware Fusion!
-&lt;/p&gt;
-&lt;p&gt;
-I haven't tweaked the settings yet to see if it's playable but I'm hopeful.
-&lt;/p&gt;
-&lt;p&gt;
-VMware, you are amazing!
-&lt;/p&gt;
-&lt;p&gt;
-&lt;b&gt;UPDATE&lt;/b&gt;: I played LOTRO for a little bit tonight. I had to turn sound off as it was too jittery. Graphics were fine, though, on Low detail and low resolution. The mouse look problem mentioned in the comments was easily fixed by just going to options and changing the mouse look sensitivity.&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/06/reusable_django_apps_and_introducing_tabula_rasa</id><title>Reusable Django Apps And Introducing Tabula Rasa</title><updated>2008-05-09T23:18:45Z</updated><published>2008-05-06T05:49:35Z</published><link href="/blog/2008/05/06/reusable_django_apps_and_introducing_tabula_rasa/" rel="alternate"></link><content type="html">&lt;p&gt;The excellent 42 Topics blog has a post entitled &lt;a class="external" href="http://42topics.com/blog/2008/05/popularizing-django-or-reusable-apps-considered-harmful/"&gt;Popularizing Django —  Or Reusable apps considered harmful&lt;/a&gt; which makes (or attempts to make) the case for packaged apps over reusable apps.
-&lt;/p&gt;
-&lt;p&gt;
-He raises some good points, although of course the packaged apps he's talking about still use reusable apps so he's not actually talking about there being a problem with reusable apps per se, just that there should be packaged apps &lt;b&gt;as well&lt;/b&gt;.
-&lt;/p&gt;
-&lt;p&gt;
-I mentioned the &lt;a class="external" href="http://groups.google.com/group/django-hotclub"&gt;django-hotclub group&lt;/a&gt; in a comment on that post as I'd really like the discussion to take place there.
-&lt;/p&gt;
-&lt;p&gt;
-I also, in that comment, mention something I'm working on tentatively  called Tabula Rasa. (I'm toying with a Greek name rather than Latin but something tells me people are more comfortable with &lt;i&gt;tabula&lt;/i&gt; rather than &lt;i&gt;grammateion&lt;/i&gt;)
-&lt;/p&gt;
-&lt;p&gt;
-Basically, the goal of Tabula Rasa is an out-of-the-box Django-based website with everything &lt;b&gt;but&lt;/b&gt; the domain-specific functionality.
-&lt;/p&gt;
-&lt;p&gt;
-So far it's just my new &lt;a href="/django-email-confirmation"&gt;django-email-confirmation&lt;/a&gt; app tied together with password change and reset, login/logout, with the beginnings of a tab-style UI. There's a ton more I want to refactor out of my existing websites to put into it as well as adding support for OpenID and the stuff I'm starting to do for &lt;a href="/django-friends"&gt;django-friends&lt;/a&gt;.
-&lt;/p&gt;
-&lt;p&gt;
-Even if one doesn't use Tabula Rasa as the starting point of a website, I'm hoping it will prove very useful for another goal, namely a &amp;quot;host&amp;quot; project to develop and tryout reusable apps.
-&lt;/p&gt;
-&lt;p&gt;
-One of the challenges I know I've always had with writing or trying out reusable apps is the need for a project to provide the scaffolding.
-&lt;/p&gt;
-&lt;p&gt;
-So Tabula Rasa will hopefully serve that dual purpose.
-&lt;/p&gt;
-&lt;p&gt;
-&lt;b&gt;UPDATE&lt;/b&gt;: I've decided to switch to the Greek word &lt;i&gt;pinax&lt;/i&gt; suggested below by Orestis Markou.
-&lt;/p&gt;
-&lt;p&gt;
-&lt;b&gt;UPDATE 2&lt;/b&gt;: Now see &lt;a href="/blog/2008/05/10/introducing_pinax/"&gt;Introducing Pinax&lt;/a&gt;.&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/04/metrics_as_mappings_between_arrows_and_stacks</id><title>Metrics As Mappings Between Arrows and Stacks</title><updated>2008-05-04T23:49:20Z</updated><published>2008-05-04T23:17:29Z</published><link href="/blog/2008/05/04/metrics_as_mappings_between_arrows_and_stacks/" rel="alternate"></link><content type="html">&lt;p&gt;Another post for the &lt;a href="/poincare_project"&gt;Poincaré Project&lt;/a&gt;.
-&lt;/p&gt;
-&lt;p&gt;
-Back in &lt;a href="/blog/2006/11/19/coordinate_systems_and_metrics/"&gt;Coordinate Systems and Metrics&lt;/a&gt; we saw that a &lt;b&gt;metric&lt;/b&gt; for a coordinate system tells us the &amp;quot;distance travelled as proportion of coordinate change&amp;quot;. Then in the following post, &lt;a href="/blog/2007/01/15/metrics_in_two_or_more_dimensions/"&gt;Metrics in Two or More Dimensions&lt;/a&gt;:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;blockquote&gt;Imagine that you're at a particular point on a two-dimensional manifold. If you head off in a particular direction from that point at a particular rate, your coordinates will change. The metric tells you, from a given point, the rate of change of each of your coordinates given travel in a particular direction at a particular rate.&lt;/blockquote&gt;
-&lt;/p&gt;
-&lt;p&gt;
-Those two posts express two sides of the same coin: in one I said the metric tells us the rate of change of position given the rate of change of coordinates and in the other I said the metric tells us the rate of change of coordinates given a rate of change of position.
-&lt;/p&gt;
-&lt;p&gt;
-A rate of change of position is, as we've seen, an arrow-vector. A rate of change of a particular coordinate is, as we've also seen, a stack-vector in the dual space.
-&lt;/p&gt;
-&lt;p&gt;
-In fact, one can view a &lt;b&gt;metric&lt;/b&gt; as being a mapping between arrow-vectors and stack-vectors. You can use it, along with some calculus if the metric is different at different points, to calculate distances (as described in &lt;a href="/blog/2006/11/19/coordinate_systems_and_metrics/"&gt;Coordinate Systems and Metrics&lt;/a&gt;). It can also be used to calculate the length of a vector or the angle between two vectors (concepts which don't exist without a metric).
-&lt;/p&gt;
-&lt;p&gt;
-A metric ties those length and angle notions to the coordinate system and, in so doing, actually defines the coordinate system. 
-&lt;/p&gt;
-&lt;p&gt;
-Finally, a metric has within it, all the information necessary to describe the curvature of a manifold. It is ultimately this function that makes it relevant to both the General Theory of Relativity and the Poincaré Conjecture.
-&lt;/p&gt;
-&lt;p&gt;
-We will explore each of these in due course. The main takeaway at this point is that a metric is a mapping between arrow-vectors and stack-vectors.&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/05/02/factoring_out_common_args_to_zipped_generators</id><title>Factoring Out Common Args To Zipped Generators</title><updated>2008-05-03T00:03:41Z</updated><published>2008-05-02T23:28:24Z</published><link href="/blog/2008/05/02/factoring_out_common_args_to_zipped_generators/" rel="alternate"></link><content type="html">&lt;p&gt;I'm playing around with some &lt;a class="external" href="http://en.wikipedia.org/wiki/Additive_synthesis"&gt;additive synthesis&lt;/a&gt; in Python.
-&lt;/p&gt;
-&lt;p&gt;
-I've implemented an oscillator as a generator that takes a number of parameters. It is then possible to mix multiple oscillators using zip (or better, itertools.izip) over them and doing a (weighted) sum.
-&lt;/p&gt;
-&lt;p&gt;
-However, I wanted to be able to factor out common arguments to the oscillators so I didn't have to specify the frequency of each one individually.
-&lt;/p&gt;
-&lt;p&gt;
-I knew functools.partial would be part of the solution but it took me a while to work out how to combine its use with generators and itertools.izip.
-&lt;/p&gt;
-&lt;p&gt;
-Here is a simplified progression of what I came up with.
-&lt;/p&gt;
-&lt;h3&gt;Phase 1&lt;/h3&gt;
-&lt;p&gt;
-Rather than use oscillators, let's just imagine with have a generator that works a lot like xrange:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;def gen1(start, stop, step):
-    n = start
-    while n &amp;lt;= stop:
-        yield n
-        n += step&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-then we can combine multiple generators and, say, sum the corresponding elements like this:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;for x in zip(gen1(10, 20, 2), gen1(10, 25, 3)): print sum(x),&lt;/pre&gt;
-&lt;/p&gt;
-&lt;h3&gt;Phase 2&lt;/h3&gt;
-&lt;p&gt;
-Let's abstract this into a function that takes generators as arguments (and uses itertools.izip)
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;def mixer1(*generators):
-    return (sum(x) for x in izip(*generators))
-&lt;/p&gt;
-&lt;p&gt;
-for x in mixer1(gen1(10, 20, 2), gen1(10, 25, 3)): print x,&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-mixer1 is similar to my mixer (although without weighting)
-&lt;/p&gt;
-&lt;h3&gt;Phase 3&lt;/h3&gt;
-&lt;p&gt;
-But now say we wanted to factor out the common start parameter. First we need a partial version of function gen1:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;gen2 = lambda **kwargs: partial(gen1, **kwargs)&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-This allows one to say
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;partial_gen = gen2(stop=20, step=2)&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-and then later call
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;partial_gen(start=10)&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-to get the generator.
-&lt;/p&gt;
-&lt;p&gt;
-But what we now need is a new version of the mixer that takes the extra keyword args and passes them in to each partial function to turn them back into generators:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;def mixer2(*generators, **kwargs):
-    return mixer1(*[gen(**kwargs) for gen in generators])&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-and now we can say:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;for x in mixer2(gen2(stop=20, step=2), gen2(stop=25, step=3), start=10): print x,&lt;/pre&gt;
-&lt;/p&gt;
-&lt;h3&gt;Phase 4&lt;/h3&gt;
-&lt;p&gt;
-Here's the final version:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;gen2 = lambda **kwargs: partial(gen1, **kwargs)
-&lt;/p&gt;
-&lt;p&gt;
-def mixer3(*generators, **kwargs):
-    return (sum(x) for x in izip(*[gen(**kwargs) for gen in generators]))&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-The real thing is a little more involved because of the weighted summing, etc but the hard parts are shown.
-&lt;/p&gt;
-</content></entry><entry><id>http://jtauber.com/blog/2008/05/01/moire_waves</id><title>Moiré Waves</title><updated>2008-05-01T09:49:30Z</updated><published>2008-05-01T09:49:30Z</published><link href="/blog/2008/05/01/moire_waves/" rel="alternate"></link><content type="html">&lt;p&gt;I was playing around with some additive synthesis in Python, generating various basic waveforms and checking them visually, in Soundtrack Pro.
-&lt;/p&gt;
-&lt;p&gt;
-The moiré pattern of the waveforms in one test file was interesting:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;img src="/2008/05/waves.png" title="four shapes"/&gt;
-&lt;/p&gt;
-&lt;p&gt;
-That's actually 220 cycles of a sine wave, followed by the same for a sawtooth, square and triangle waveform.
-&lt;/p&gt;
-</content></entry><entry><id>http://jtauber.com/blog/2008/04/30/grammar_rules</id><title>Grammar Rules</title><updated>2008-05-01T08:08:07Z</updated><published>2008-05-01T07:17:49Z</published><link href="/blog/2008/04/30/grammar_rules/" rel="alternate"></link><content type="html">&lt;p&gt;One downside to having a background in linguistics is that one is more sensitive to various so-called grammar rules that people regurgitate from their school years.
-&lt;/p&gt;
-&lt;p&gt;
-The majority of linguists probably view these rules the way a doctor would view the &lt;a class="external" href="http://en.wikipedia.org/wiki/Humorism"&gt;four humours&lt;/a&gt;. But a more fundamental issue is not that some of the theories have been superseded but that their perpetuation reveals a very unscientific approach to language. It is as if these people are viewing rules of grammar like they would road rules&amp;#8212;human inventions that one may disagree with, but which are still, in some sense, what is &amp;quot;correct&amp;quot;&amp;#8212;rather than, say, laws of physics that attempt to model observations.
-&lt;/p&gt;
-&lt;p&gt;
-This means that when confronted with data that doesn't match the rules, such people will say the data is wrong (&amp;quot;that isn't correct English&amp;quot;) rather than ever consider that maybe it's their rules that need refinement.
-&lt;/p&gt;
-&lt;p&gt;
-Now it is certainly the case that people make mistakes when they speak (and that can be a revealing study in itself) and there is such a thing as good English usage (see the last paragraph) but most linguists focus on modeling the tacit intuitions native speakers have about their language which are very often at odds with the &amp;quot;rules of grammar&amp;quot; learnt at school.
-&lt;/p&gt;
-&lt;p&gt;
-Let me give an example. A common misconception is that English has cases that work in a similar way to Latin. I suspect the origins of this stem from attempts to model English after Latin as if Latin was somehow a better language.
-&lt;/p&gt;
-&lt;p&gt;
-It is easy to see on the surface there might be evidence for a nominative/accusative case distinction in English pronouns. Native speakers will say &amp;quot;I gave the book to him. He gave the money to me.&amp;quot; with the intuition that switching &amp;quot;I&amp;quot; and &amp;quot;me&amp;quot; or &amp;quot;he&amp;quot; and &amp;quot;him&amp;quot; would be incorrect. This is a valid observation that a linguist would want to capture in some kind of descriptive rule.
-&lt;/p&gt;
-&lt;p&gt;
-However, when asked &amp;quot;who is it?&amp;quot; native speakers will almost always answer &amp;quot;it's me&amp;quot; rather than &amp;quot;?it's I&amp;quot;.
-&lt;/p&gt;
-&lt;p&gt;
-I've had people try to tell me that the latter is &amp;quot;more correct&amp;quot; although they don't say it themselves. If they don't say it, as competent speakers of English, what is their claim to it being correct? Because their high school English teacher told them? Because Latin would use the nominative here?
-&lt;/p&gt;
-&lt;p&gt;
-If you ask a group of people &amp;quot;who wants to sit in the front?&amp;quot; they are far more likely to answer &amp;quot;me&amp;quot; than &amp;quot;?I&amp;quot;. And yet they would say &amp;quot;I do&amp;quot; rather than &amp;quot;*me do&amp;quot;. If you accuse someone you are probably more likely to say &amp;quot;it was him&amp;quot; not &amp;quot;?it was he&amp;quot;. So what's going on doesn't just involve using the nominative case for the subject and accusative case for the object.
-&lt;/p&gt;
-&lt;p&gt;
-The massive 1,800+ page Cambridge Grammar of the English Language gives more great examples &amp;quot;nobody can do it but her/*she&amp;quot;, &amp;quot;the only one who objected was me/?I&amp;quot; and (showing photos) &amp;quot;this one here is me/*I at the age of 12&amp;quot;.
-&lt;/p&gt;
-&lt;p&gt;
-Things become even more complex in the case of conjunctions. The Cambridge Grammar gives the example of &amp;quot;they invited my partner and I to lunch&amp;quot;. They point out that examples like this &amp;quot;are regularly used by a significant proportion of speakers of Standard English, and not generally thought by ordinary speakers to be non-standard&amp;quot;. They go on to argue against the prescriptivist use of analogy with &amp;quot;they invited me/*I to lunch&amp;quot; to justify why the use of &amp;quot;I&amp;quot; is incorrect.
-&lt;/p&gt;
-&lt;p&gt;
-The worst kinds of rules are ones that sound almost like superstitions: don't use passives, don't use adverbs, don't split infinitives, don't end sentences with a preposition, don't start a sentence with &amp;quot;however&amp;quot; etc. They may help one adopt a particular style of writing, but they certainly aren't rules of grammar in any scientific sense and are, in most cases, completely arbitrary.
-&lt;/p&gt;
-&lt;p&gt;
-Some of the usage guides these rules are found in are better than others. Strunk and White is full of these arbitrary superstitions. In fact, Professor Geoffrey Pullum, the co-editor of the previously mentioned Cambridge Grammar of the English Language &lt;a class="external" href="http://itre.cis.upenn.edu/~myl/languagelog/archives/001803.html"&gt;describes&lt;/a&gt; Strunk and White as a &amp;quot;horrid little notebook of nonsense&amp;quot; and instead recommends &lt;a href="http://www.amazon.com/exec/obidos/tg/detail/-/0877796335"&gt;Merriam-Webster's Concise Dictionary of English Usage&lt;/a&gt; which I own and agree is much more useful for evidence-based guidelines on subtle differences in usage between words.&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/04/29/ups_invents_time_travel</id><title>UPS Invents Time Travel</title><updated>2008-04-30T00:13:48Z</updated><published>2008-04-30T00:10:18Z</published><link href="/blog/2008/04/29/ups_invents_time_travel/" rel="alternate"></link><content type="html">&lt;p&gt;&lt;img src="http://jtauber.com/2008/04/ups.png" title="UPS tracking info with delivery date 2 years before shipping"/&gt;
-&lt;/p&gt;
-&lt;p&gt;
-and who is BERT in Provo?&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/04/29/why_colour_correction_only_needs_two_sliders</id><title>Why Colour Correction Only Needs Two Sliders</title><updated>2008-05-05T01:27:54Z</updated><published>2008-04-29T21:10:00Z</published><link href="/blog/2008/04/29/why_colour_correction_only_needs_two_sliders/" rel="alternate"></link><content type="html">&lt;p&gt;Duncan Davidson (who I still think of as James) &lt;a class="external" href="http://twitter.com/duncan/statuses/799926084"&gt;asked on Twitter&lt;/a&gt;:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;blockquote&gt;Color Temp works on the Blue/Yellow axis. Tint on the Green/Magenta. No need to tweak Red/Cyan?&lt;/blockquote&gt;
-&lt;/p&gt;
-&lt;p&gt;
-I responded there but decided to here as well as I've talked about colour theory &lt;a href="/blog/2004/06/07/primary_colours/"&gt;before&lt;/a&gt;.
-&lt;/p&gt;
-&lt;p&gt;
-The basic answer is that you only need two axes because colour (disregarding brightness/luminance) is two-dimensional. Red, Green and Blue form a triangle in that two-dimensional space (with Cyan, Magenta and Yellow  being on the opposite edges respectively).
-&lt;/p&gt;
-&lt;p&gt;
-Basic linear algebra tells us that, in an n-dimensional space, you only need n vectors to form a basis (actually, that's the definition of dimensionality) so you can adjust any point in two-dimensional colour space by translating it by a linear combination of any two, non-parallel vectors. Incidentally, Hue and Saturation would be almost polar coordinates on this space.
-&lt;/p&gt;
-&lt;p&gt;
-Because one form of colour modification is colour temperature, it makes sense to roughly make one of the axes the yellow-blue direction. I &lt;b&gt;think&lt;/b&gt; the magenta-green axes is largely arbitrary. Any other axis would have done fine.
-&lt;/p&gt;
-&lt;p&gt;
-Note I say &amp;quot;roughly&amp;quot; the first time in that previous paragraph because the black-body colours aren't a straight line in standard colour models. 
-&lt;/p&gt;
-&lt;p&gt;
-Hmm, that makes me wonder if colour correction sliders represent rectilinear bases at all.
-&lt;/p&gt;
-&lt;p&gt;
-&lt;b&gt;UPDATE (2008-05-04)&lt;/b&gt;: According to a reply in the Reddit thread, the slides aren't rectilinear but &lt;b&gt;are&lt;/b&gt; based on the black-body colours. The so-called &amp;quot;tint&amp;quot; is presumably then orthogonal to black-body line (the &lt;b&gt;Planckian locus&lt;/b&gt;)&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/04/28/auto-scrolling_is_jquery</id><title>Auto-Scrolling in jQuery</title><updated>2008-04-28T06:40:35Z</updated><published>2008-04-28T06:40:34Z</published><link href="/blog/2008/04/28/auto-scrolling_is_jquery/" rel="alternate"></link><content type="html">&lt;p&gt;I mentioned in my previous post &lt;a href="/blog/2008/04/27/new_site_look/"&gt;New Site Look&lt;/a&gt; that, inspired by 37 Signals, I wanted to auto-scroll pages in my website in two circumstances:
-&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;when there is an error in an Add Comment form, scroll down to the error message&lt;/li&gt;
-&lt;li&gt;when the user expands the Add Comment form, scroll to put the form in view&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;
-Here's the fragment of my &lt;a href="/django"&gt;Django&lt;/a&gt; template that achieves both of these with &lt;a href="/jquery"&gt;jQuery&lt;/a&gt;:
-&lt;/p&gt;
-&lt;p&gt;
-&lt;pre&gt;&amp;lt;script type=&amp;quot;text/javascript&amp;quot; src=&amp;quot;/static/jquery.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;
-&amp;lt;script type=&amp;quot;text/javascript&amp;quot;&amp;gt;
-    function scrollTo(selector) {
-        var targetOffset = $(selector).offset().top;
-        $('html,body').animate({scrollTop: targetOffset}, 500);
-    }
-    $(document).ready(function() {
-        $('#add_comment_toggle').click(function() {
-            $('form.add_comment').slideToggle();
-            scrollTo('form.add_comment');
-            return false;
-        });
-        {% if comment_error %}
-        $('form.add_comment').show();
-        scrollTo('.comment_error');
-        {% endif %}
-    });
-&amp;lt;/script&amp;gt;&lt;/pre&gt;
-&lt;/p&gt;
-&lt;p&gt;
-The only bit of Django, for those who don't know it, is the {% if ... %} which only includes that Javascript if a comment_error exists.
-&lt;/p&gt;
-&lt;p&gt;
-The scrollTo function scrolls to the element whose selector is given. Notice how, if a comment_error exists, I make sure the form is showing first, then call scrollTo.
-&lt;/p&gt;
-&lt;p&gt;
-Also, in my code for toggling the Add Comment form, I call the function to scroll to the form.&lt;/p&gt;</content></entry><entry><id>http://jtauber.com/blog/2008/04/27/new_site_look</id><title>New Site Look</title><updated>2008-04-27T07:47:51Z</updated><published>2008-04-27T07:44:15Z</published><link href="/blog/2008/04/27/new_site_look/" rel="alternate"></link><content type="html">&lt;p&gt;&lt;b&gt;If you read this in a feed reader, you might want to go to my actual site to see what I'm talking about&lt;/b&gt; :-)
-&lt;/p&gt;
-&lt;p&gt;
-Usually, when I rewrite the underlying code behind jtauber.com, I do a redesign of the look as well.  In the 14 years that jtauber.com has been around, it's probably had around 10 different looks. The last change took place when I wrote &lt;a href="/leonardo"&gt;Leonardo&lt;/a&gt; in 2003.
-&lt;/p&gt;
-&lt;p&gt;
-When I ported Leonardo to &lt;a href="/django"&gt;Django&lt;/a&gt; I really should have changed the look, in keeping with tradition, but I didn't.   I decided this weekend to do some code clean up and add a couple of new features and ended up doing a completely new look as well. I also switched from Django 0.96.1 to Django trunk (including qs-rf), although I don't make use of any of the new features yet.
-&lt;/p&gt;
-&lt;p&gt;
-Here's a brief list of what I did change:
-&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;changed colour from the green I've had for the last five years to a purple more like what I had in 2002 but with lickable gradient site title&lt;/li&gt;
-&lt;li&gt;went from a two-column to three-column layout so I'd have a place to put some Web 2.0 goodies on every page&lt;/li&gt;
-&lt;li&gt;added my photo to the home page :-)&lt;/li&gt;
-&lt;li&gt;added Twitter updates&lt;/li&gt;
-&lt;li&gt;added links to my Facebook and LinkedIn profiles&lt;/li&gt;
-&lt;li&gt;added an overflow property to pre so code examples don't overlap the right column&lt;/li&gt;
-&lt;li&gt;fixed an annoying bug where if you got the maths question wrong your comment would get forgotten&lt;/li&gt;
-&lt;li&gt;made add comment form initially hidden and available only via a toggle&lt;/li&gt;
-&lt;li&gt;inspired by &lt;a class="external" href="http://www.37signals.com/svn/posts/988-designing-details-autoscrolling-the-edit-state"&gt;this video&lt;/a&gt; at 37 Signals, I added some auto-scrolling to the add comment form&amp;#8212;when there is an error in submission, the page automatically scrolls to the errors; and when you toggle the comment form open, it automatically scrolls so the form is fully in view.&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;
-Had to trigger hasLayout in IE6 to get it to work there. Fortunately, I'd had that issue previously with Quisition so knew what to do. Thank goodness for VMware Fusion to enable me to check the site on IE6.
-&lt;/p&gt;
-&lt;p&gt;
-I quite like the new look, especially in comparison to the old look. I'm more than a little chuffed at getting the autoscrolling working too :-)&lt;/p&gt;</content></entry></feed>
