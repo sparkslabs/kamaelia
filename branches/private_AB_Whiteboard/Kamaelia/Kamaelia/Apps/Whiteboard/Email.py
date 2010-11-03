@@ -26,6 +26,8 @@ from email.MIMEText import MIMEText
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email.encoders import encode_base64
+import socket
+import os
 
 from Axon.Component import component
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
@@ -88,6 +90,7 @@ class Email(component):
                     s.login(self.username,self.password)
                     s.sendmail(self.fromaddr,emaildata[0],msg.as_string())
                     self.send("sent","outbox")
+                    s.quit()
                 except smtplib.SMTPRecipientsRefused:
                     self.send("Recipient refused","outbox")
                 except smtplib.SMTPHeloError:
@@ -102,6 +105,7 @@ class Email(component):
                     self.send("Server does not support STARTTLS","outbox")
                 except RuntimeError:
                     self.send("SSL/TLS support not found","outbox")
-                s.quit()
+                except socket.error, e:
+                    self.send("Socket error: " + str(e), "outbox")
             self.pause()
             yield 1
