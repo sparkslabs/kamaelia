@@ -216,16 +216,6 @@ service_ids = { "BBC ONE": 4164,
 
 print "-----STARTING MACRO----- time =",time.time()
 
-def repeatingFile():
-    def rfa_factory(_):
-        return RateControlledFileReader("junction.ts",readmode="bytes",rate=18000000/8,chunksize=2048)
-    return Graphline(CAROUSEL=Carousel(rfa_factory, make1stRequest=True),
-                     linkages = { ("CAROUSEL","requestNext") : ("CAROUSEL","next"),
-                                  ("CAROUSEL","outbox") : ("self", "outbox"),
-                                  ("CAROUSEL","signal") : ("self", "signal"),
-                                },
-                    )
-
 Graphline(
     SOURCE=DVB_Multiplex(freq, pids["BBC TWO"]+pids["EIT"], feparams), # BBC Channels + EIT data
     DEMUX=DVB_Demuxer({
