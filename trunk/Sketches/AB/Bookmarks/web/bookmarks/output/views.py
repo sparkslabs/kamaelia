@@ -6,6 +6,7 @@ from pygooglechart import SimpleLineChart, Axis #lc
 import time
 import cjson
 import string
+import re
 from django.core.exceptions import ObjectDoesNotExist
 #TODO: Replace ugly meta refresh tags with AJAX
 
@@ -230,18 +231,25 @@ def programme(request,pid):
                                     tweettext = string.lower(tweet.text)
                                     for items in """!"#$%&(),:;?@~[]'`{|}""":
                                         tweettext = string.replace(tweettext,items,"")
-                                    if str(keyword) in tweettext:
-                                        bookmarkstest.append(tweet.timestamp)
-                                        tweetset = True
+                                    try:
+                                        if str(keyword) in tweettext:
+                                            bookmarkstest.append(tweet.timestamp)
+                                            tweetset = True
+                                            break
+                                    except UnicodeEncodeError:
                                         break
+
                                 if not tweetset:
                                     rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=minute.timestamp,timestamp__lt=(minute.timestamp + 60)).order_by('timestamp').all()
                                     for tweet in rawtweets:
                                         tweettext = string.lower(tweet.text)
                                         for items in """!"#$%&(),:;?@~[]'`{|}""":
                                             tweettext = string.replace(tweettext,items,"")
-                                        if str(keyword) in tweettext:
-                                            bookmarkstest.append(tweet.timestamp)
+                                        try:
+                                            if str(keyword) in tweettext:
+                                                bookmarkstest.append(tweet.timestamp)
+                                                break
+                                        except UnicodeEncodeError:
                                             break
                         except cjson.DecodeError, e:
                             # Data is too old - no word freq data
