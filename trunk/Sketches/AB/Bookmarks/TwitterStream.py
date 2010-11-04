@@ -7,17 +7,17 @@
 # - Doesn't currently honour tweet deletion messages (TODO)
 
 import time
-import urllib2
+#import urllib2
 import urllib
 import sys
-from datetime import datetime
+#from datetime import datetime
 #import os
 #import cjson
 import socket
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-from threading import Timer
+#from threading import Timer
 import Axon
-import httplib
+#import httplib
 
 #import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
 #import urlparse
@@ -185,6 +185,7 @@ class HTTPClientResponseHandler(component):
 
 class LineFilter(component):
     eol = "\n"
+    includeeol = False
     def __init__(self,**argd):
         super(LineFilter,self).__init__(**argd)
         self.input_buffer = []
@@ -202,7 +203,10 @@ class LineFilter(component):
             if self.eol in edgecase:
                 rawline = self.line_buffer[-1]+self.input_buffer[0]
                 where = rawline.find(self.eol)
-                line = rawline[:where]
+                if self.includeeol:
+                    line = rawline[:where+len(self.eol)]
+                else:
+                    line = rawline[:where]
                 rest = rawline[where+len(self.eol):]
                 self.input_buffer[0] = rest
                 del self.line_buffer[-1]
@@ -212,7 +216,10 @@ class LineFilter(component):
 
         if self.eol in self.input_buffer[0]:
             where = self.input_buffer[0].find(self.eol)
-            line = self.input_buffer[0][:where]
+            if self.includeeol:
+                line = self.input_buffer[0][:where+len(self.eol)]
+            else:
+                line = self.input_buffer[0][:where]
             rest = self.input_buffer[0][where+len(self.eol):]
             if rest:
                 self.input_buffer[0] = rest
@@ -292,7 +299,6 @@ def parse_url(fullurl):
 
 from ComponentBoxTracer import ComponentBoxTracer
 from PureFilter import PureFilter
-#from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Util.PureTransformer import PureTransformer
@@ -382,10 +388,27 @@ class TwitterStream(threadedcomponent):
                 return True
         return False
 
-    def main(self):
-        URL = "http://stream.twitter.com/1/statuses/filter.json"
+    def connect(self,args,pids):
+        self.datacapture = Graphline(
+                        DATA = HTTPDataStreamingClient(self.url,proxy=self.proxy,
+                                                    username=self.username,
+                                                    password=self.password,
+                                                    headers = self.headers,
+                                                    method="POST",
+                                                    body=args),
+                        FILTER = LineFilter(eol="\r\n",includeeol=True), # Including EOL to pass through blank lines and help failure detection
+                        TRANSFORMER = PureTransformer(lambda x: [x,pids]),
+                        #ECHOER = ConsoleEchoer(),
+                        linkages = {("DATA", "outbox") : ("FILTER", "inbox"),
+                                    ("FILTER", "outbox") : ("TRANSFORMER", "inbox"),
+                                    ("TRANSFORMER", "outbox") : ("self", "outbox"),}
+                    ).activate()
+        self.link((self.datacapture, "outbox"), (self, "tweetsin"))
 
-        headers = {
+    def main(self):
+        self.url = "http://stream.twitter.com/1/statuses/filter.json"
+
+        self.headers = {
             "Accept-Encoding": "identity",
             "Keep-Alive": self.timeout,
             "Connection": "close",
@@ -393,13 +416,15 @@ class TwitterStream(threadedcomponent):
             "Content-Type": "application/x-www-form-urlencoded"
         }
 
-        datacapture = None
+        self.datacapture = None
+        counter = 0
 
         while not self.finished():
             if self.dataReady("inbox"):
-                if datacapture != None:
-                    self.unlink(datacapture)
-                    datacapture.stop()
+                if self.datacapture != None:
+                    self.unlink(self.datacapture)
+                    self.datacapture.stop()
+                    self.datacapture = None
                 recvdata = self.recv("inbox")
                 keywords = recvdata[0]
                 if len(keywords) > 400:
@@ -407,32 +432,31 @@ class TwitterStream(threadedcomponent):
 
                 pids = recvdata[1]
 
-                #searchterms = "we,I,in,lol,RT,to,that,is,are,a,mine,my,the,there"
                 args = urllib.urlencode({"track": ",".join(keywords)})
                 print ("Got keywords:", args)
 
-                datacapture = Graphline(
-                        DATA = HTTPDataStreamingClient(URL,proxy=self.proxy,
-                                                    username=self.username,
-                                                    password=self.password,
-                                                    headers = headers,
-                                                    method="POST",
-                                                    body=args),
-                        FILTER = LineFilter(eol="\r\n"),
-                        TRANSFORMER = PureTransformer(lambda x: [x,pids]),
-                        #REPLACER = PureTransformer(lambda x: x.replace("\\/","/")),
-                        #ECHOER = ConsoleEchoer(forwarder=True),
-                        linkages = {("DATA", "outbox") : ("FILTER", "inbox"),
-                                    ("FILTER", "outbox") : ("TRANSFORMER", "inbox"),
-                                    ("TRANSFORMER", "outbox") : ("self", "outbox"),}
-                    ).activate()
-                self.link((datacapture, "outbox"), (self, "tweetsin"))
+                self.connect(args,pids)
             while self.dataReady("tweetsin"):
+                counter = 0
                 self.send(self.recv("tweetsin"),"outbox")
                 if self.dataReady("inbox"):
                     break
             if not self.dataReady("tweetsin"):
-                time.sleep(1) # This still isn't great at reducing busy wait CPU usage
-                # Intention is to identify whether this code solves the bottleneck with The Apprentice
-                # If it doesn't, we need to look at other code fails
+                time.sleep(1)
+                if self.datacapture != None:
+                    counter += 1
+                else:
+                    counter = 0
+            if counter > self.timeout and self.datacapture != None:
+                sys.stderr.write("API Connection Failed: Reconnecting")
+                self.unlink(self.datacapture)
+                self.datacapture.stop()
+                self.datacapture = None
+                # Twitter connection has failed
+                counter = 0
+                self.connect(args,pids)
+                
+            # This still isn't great at reducing busy wait CPU usage
+            # Intention is to identify whether this code solves the bottleneck with The Apprentice
+            # If it doesn't, we need to look at other code fails
                 
