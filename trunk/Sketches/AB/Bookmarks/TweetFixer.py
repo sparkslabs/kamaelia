@@ -38,10 +38,14 @@ class RetweetFixer(component):
         while not self.finished():
             while self.dataReady("inbox"):
                 tweet = self.recv("inbox")
-                #re.sub("^\s","",re.sub("((^|\S{0,}\s){1,})(RT|rt|Rt|rT)\s@\S{1,}","",textgoeshere,re.I))
+                if not tweet.has_key('retweeted_status'):
+                    rtresults = re.findall("((^|\S{0,}\s){1,})(RT|rt|Rt|rT)\s@\S{1,}",tweet['text'],re.I)
+                    for entry in rtresults:
+                        print entry
+                    viaresults = re.findall("\s(via|Via|VIA)\s@\S{1,}$",tweet['text'],re.I)
+                    for entry in viaresults:
+                        print entry
                 #TODO
-                #re.sub("\s(via|Via|VIA)\s@\S{1,}$","",textgoeshere,re.I)
-
                 self.send(tweet,"outbox")
                 
             self.pause()
@@ -144,6 +148,8 @@ class LinkResolver(component):
                 for url in tweet['entities']['urls']:
                     if url['expanded_url'] == "null":
                         # Perform the lookup here!
+                        # Actually - aggregate the links into a list then request all at once to reduce API calls
+                        # Need to implement caching too
                         pass
                 #TODO
                 self.send(tweet,"outbox")
@@ -165,8 +171,13 @@ if __name__ == "__main__":
     DECODER = PureTransformer(lambda x: cjson.decode(x))
     CLEANER = TweetCleaner(['user_mentions','urls','hashtags'])
     WRITER = ConsoleEchoer()
+    FIXER = RetweetFixer()
 
-    Pipeline(READER,DECODER,CLEANER,WRITER).run()
+    if 0:
+        Pipeline(READER,DECODER,CLEANER,WRITER).run()
+
+    if 1:
+        Pipeline(READER,DECODER,FIXER,WRITER).run()
     
 
 # EXAMPLE TWEETS:
