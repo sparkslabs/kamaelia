@@ -54,6 +54,7 @@ class DataCollector(threadedcomponent):
             if len(twitdata) > 0:
 
                 for tweet in twitdata:
+                    tweet[0] = tweet[0].replace("\\/","/")
                     if tweet[0] != "\r\n":
                         # At this point, each 'tweet' contains tweetdata, and a list of possible pids
                         newdata = cjson.decode(tweet[0]) # Won't work - need keywords to be related to their pids - let's requery

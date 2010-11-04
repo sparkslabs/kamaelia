@@ -405,6 +405,7 @@ class Requester(threadedcomponent):
                 except IOError, e:
                     print ("Failed to save name cache - could cause rate limit problems")
 
+                keywords[pid] = "PID"
 
                 return [keywords,data]
             
