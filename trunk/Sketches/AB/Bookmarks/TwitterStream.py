@@ -420,11 +420,10 @@ class TwitterStream(threadedcomponent):
                                                     body=args),
                         FILTER = LineFilter(eol="\r\n"),
                         TRANSFORMER = PureTransformer(lambda x: [x,pids]),
-                        REPLACER = PureTransformer(lambda x: x.replace("\\/","/")),
+                        #REPLACER = PureTransformer(lambda x: x.replace("\\/","/")),
                         #ECHOER = ConsoleEchoer(forwarder=True),
                         linkages = {("DATA", "outbox") : ("FILTER", "inbox"),
-                                    ("FILTER", "outbox") : ("REPLACER", "inbox"),
-                                    ("REPLACER", "outbox") : ("TRANSFORMER", "inbox"),
+                                    ("FILTER", "outbox") : ("TRANSFORMER", "inbox"),
                                     ("TRANSFORMER", "outbox") : ("self", "outbox"),}
                     ).activate()
                 self.link((datacapture, "outbox"), (self, "tweetsin"))
