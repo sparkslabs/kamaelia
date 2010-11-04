@@ -234,6 +234,8 @@ class Requester(threadedcomponent):
 
                 keywords = dict()
 
+                keywords[pid] = "PID"
+
                 # Add official hashtags to the list
                 for tag in twittags:
                     keywords[tag] = "Twitter"
@@ -404,8 +406,6 @@ class Requester(threadedcomponent):
                     file.close()
                 except IOError, e:
                     print ("Failed to save name cache - could cause rate limit problems")
-
-                keywords[pid] = "PID"
 
                 return [keywords,data]
             
