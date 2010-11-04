@@ -165,6 +165,17 @@ def programme(request,pid):
         output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
         output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
         output += "<br />Total tweets: " + str(data[0].totaltweets)
+        #rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=data[0].timestamp,timestamp__lt=data[0].timestamp+data[0].duration).order_by('timestamp').all()
+        #tweetseccount = dict()
+        #for tweet in rawtweets:
+        #    if tweetseccount.has_key(tweet.timestamp):
+        #        tweetseccount[tweet.timestamp] += 1
+        #    else:
+        #        tweetseccount[tweet.timestamp] = 1
+        #if len(tweetseccount) > 0:
+        #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
+        #    tweetseccount.sort(reverse=True)
+        #    output += "<br />Tweets per second: " + str(tweetseccount)
         tweetmins = dict()
         tweetstamps = dict()
         #appender = ""
@@ -382,8 +393,17 @@ def rawtweets(request,pid,timestamp):
         output += "<br />"
         rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('timestamp').all()
         output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
+        #tweetseccount = dict()
         for tweet in rawtweets:
+        #    if tweetseccount.has_key(tweet.timestamp):
+        #        tweetseccount[tweet.timestamp] += 1
+        #    else:
+        #        tweetseccount[tweet.timestamp] = 1
             output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
         output += "</div>"
+        #if len(tweetseccount) > 0:
+        #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
+        #    tweetseccount.sort(reverse=True)
+        #    output += "<br />" + str(tweetseccount)
     output += footer
     return HttpResponse(output)
