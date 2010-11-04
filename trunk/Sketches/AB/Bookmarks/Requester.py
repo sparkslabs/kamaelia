@@ -15,6 +15,7 @@ import MySQLdb
 from datetime import date
 
 from Axon.ThreadedComponent import threadedcomponent
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 class Requester(threadedcomponent):
     Inboxes = {
@@ -83,7 +84,8 @@ class Requester(threadedcomponent):
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
         self.officialseriestags = {
             "b00v2z3s" : ["#askrhod"], # Ask Rhod Gilbert
-            "b00vd7qz" : ['film2010'] # Film 2010
+            "b00vd7qz" : ['film2010'], # Film 2010
+            "b00vsw36" : ['manlab'] # James May's Man Lab
         }
 
         self.firstrun = True
