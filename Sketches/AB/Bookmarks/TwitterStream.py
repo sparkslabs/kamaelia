@@ -374,7 +374,7 @@ class TwitterStream(threadedcomponent):
         self.username = username
         self.password = password
         # Reconnect on failure?
-        self.reconnect = reconnect # TODO: Re-implement this if required - needs further testing
+        self.reconnect = reconnect
         # In theory this won't matter, but add a timeout to be safe anyway
         self.timeout = timeout
         socket.setdefaulttimeout(self.timeout)
@@ -447,7 +447,8 @@ class TwitterStream(threadedcomponent):
                     counter += 1
                 else:
                     counter = 0
-            if counter > self.timeout and self.datacapture != None:
+                # This still isn't great at reducing busy wait CPU usage
+            if counter > self.timeout and self.datacapture != None and self.reconnect:
                 sys.stderr.write("API Connection Failed: Reconnecting")
                 self.unlink(self.datacapture)
                 self.datacapture.stop()
@@ -455,8 +456,4 @@ class TwitterStream(threadedcomponent):
                 # Twitter connection has failed
                 counter = 0
                 self.connect(args,pids)
-                
-            # This still isn't great at reducing busy wait CPU usage
-            # Intention is to identify whether this code solves the bottleneck with The Apprentice
-            # If it doesn't, we need to look at other code fails
                 
