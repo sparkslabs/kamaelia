@@ -293,21 +293,12 @@ class DVB_Multiplex(threadedcomponent):
         tosend_len =0
         while not self.shutdown():
             try:
-               data = os.read(fd, 2048)
-#               tosend.append(data) # Ensure we're sending collections of packets through Axon, not single ones
-#               tosend_len += len(data)
-#               if tosend_len > 2048:
-#                   self.send("".join(tosend), "outbox")
-#                   tosend = []
-#                   tosend_len = 0
+               data = os.read(fd, 188000)
                self.send(data, "outbox")
             except OSError:
-               pass
+               print "PASS"
 
-            # XXX: We should add the following:
-            # XXX: Handle shutdown messages
-            # XXX: Pass on shutdown messages/errors
-
+import dvbpacket
 class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
     """\
     This demuxer expects to recieve the output from a DVB_Multiplex
@@ -354,44 +345,16 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         buffers = []
         self.shuttingdown=False
         while (not self.shutdown()) or self.dataReady("inbox"):
-            if not self.dataReady("inbox"):
-               self.pause()
-               yield 1
-               continue
-            else:
-                while self.dataReady("inbox"):
-                    buffers.append(self.recv("inbox"))
-            while len(buffers)>0:
-                if len(buffer) == 0:
-                    buffer = buffers.pop(0)
-                else:
-                    buffer += buffers.pop(0)
-    
-                while len(buffer) >= DVB_PACKET_SIZE:
-                      i = buffer.find(DVB_RESYNC)
-                      if i == -1: # if not found
-                          "we have a dud"
-                          buffer = ""
-                          continue
-                      if i>0:
-                          #
-                          # We generally don't enter here when we're taking DVB Data off air.
-                          # IF however we take DVB data from a multicast DVB stream over RTP,
-                          # Then we do.
-                          #
-                          # print "X" # debug code, triggered when taking DVB streams from multicast RTP
-                          # if found remove all bytes preceeding that point in the buffers
-                          # And try again
-                          buffer = buffer[i:]
-                          continue
-                      # packet is the first 188 bytes in the buffer now
-                      packet, buffer = buffer[:DVB_PACKET_SIZE], buffer[DVB_PACKET_SIZE:]
-    
+            for buffer in self.Inbox("inbox"):
+                buffers.append(buffer)
+            for buffer in buffers:
+                packets = dvbpacket.packetise(buffer)
+                for packet in packets:
+
                       if self.errorIndicatorSet(packet): continue
                       if self.scrambledPacket(packet):   continue
-    
                       pid = struct.unpack(">H", packet[1: 3])[0] & 0x1fff
-    
+
                       # Send the packet to the outbox appropriate for this PID.
                       # "Fail" silently for PIDs we don't know about and weren't
                       # asked to demultiplex
@@ -403,7 +366,11 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                               for outbox in self.pidmap[ "default" ]:
                                   self.send(packet, outbox)
                           pass
+            buffers = []
+            if not self.anyReady():
+               self.pause()
 
+            yield 1
 
 __kamaelia_components__ = ( DVB_Multiplex, DVB_Demuxer, )
 
