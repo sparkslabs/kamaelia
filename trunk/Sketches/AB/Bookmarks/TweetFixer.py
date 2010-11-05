@@ -16,7 +16,7 @@ class RetweetFixer(component):
     # Steps:
     # - Receives tweet dictionary via 'inbox'
     # - Checks to see if retweeted_status key is set
-    # - If it isn't, looks for mentions of 'RT @PersonName:' or 'via @PersonName'
+    # - If it isn't, looks for mentions of 'RT @PersonName:' (or 'via @PersonName' - at a later date)
     # - Adds a retweeted_status key including as much information that can be gleaned from the tweet text as possible
     # - Sends the tweet dictionary back via 'outbox'
 
@@ -42,13 +42,41 @@ class RetweetFixer(component):
             while self.dataReady("inbox"):
                 tweet = self.recv("inbox")
                 if not tweet.has_key('retweeted_status'):
-                    rtresults = re.findall("((^|\S{0,}\s){1,})(RT|rt|Rt|rT)\s@\S{1,}",tweet['text'],re.I)
-                    for entry in rtresults:
-                        print entry
-                    viaresults = re.findall("\s(via|Via|VIA)\s@\S{1,}$",tweet['text'],re.I)
-                    for entry in viaresults:
-                        print entry
-                #TODO
+                    # Need to find the last match for an accurate retweet
+                    rtresults = ""
+                    usermention = ""
+                    newtweettext = tweet['text']
+                    while rtresults != None:
+                        rtresults = re.match("((^|\s)(RT|rt|Rt|rT)(\s@\S{1,}))",newtweettext,re.I)
+                        if rtresults != None:
+                            newtweettext = newtweettext.replace(rtresults.group(),"").strip()
+                            for entry in tweet['entities']['user_mentions']:
+                                if entry['indices'][0] > rtresults.start() and entry['indices'][1] <= rtresults.end():
+                                    usermention = entry['screen_name']
+                                    name = entry['name']
+                                    id = entry['id']
+
+                    rtlength = len(tweet['text']) - len(newtweettext)
+                    if usermention != "":
+                        indices = [tweet['text'].find(newtweettext),tweet['text'].find(newtweettext)+len(newtweettext)]
+                        entities = {"user_mentions":list(),"urls":list(),"hashtags":list()}
+                        for item in tweet['entities']['user_mentions']:
+                            if item['indices'][0] >= indices[0] and item['indices'][1] <= indices[1]:
+                                tempitem = item
+                                tempitem['indices'] = [tempitem['indices'][0]-rtlength,tempitem['indices'][1]-rtlength]
+                                entities['user_mentions'].append(tempitem)
+                        for item in tweet['entities']['urls']:
+                            if item['indices'][0] >= indices[0] and item['indices'][1] <= indices[1]:
+                                tempitem = item
+                                tempitem['indices'] = [tempitem['indices'][0]-rtlength,tempitem['indices'][1]-rtlength]
+                                entities['urls'].append(tempitem)
+                        for item in tweet['entities']['hashtags']:
+                            if item['indices'][0] >= indices[0] and item['indices'][1] <= indices[1]:
+                                tempitem = item
+                                tempitem['indices'] = [tempitem['indices'][0]-rtlength,tempitem['indices'][1]-rtlength]
+                                entities['hashtags'].append(tempitem)
+                        tweet['retweeted_status'] = {"user": {"id": id,"screen_name": usermention,"name": name}, "text": newtweettext, "entities": entities}
+
                 self.send(tweet,"outbox")
                 
             self.pause()
@@ -83,32 +111,40 @@ class TweetCleaner(component):
                 return True
         return False
 
+    def filterEntity(self,tweet):
+        removallist = list()
+        if "user_mentions" in self.filters:
+           for item in tweet['entities']['user_mentions']:
+               removallist.append(item['indices'])
+        if "urls" in self.filters:
+           for item in tweet['entities']['urls']:
+               removallist.append(item['indices'])
+        if "hashtags" in self.filters:
+           for item in tweet['entities']['hashtags']:
+               removallist.append(item['indices'])
+
+        tweettext = tweet['text']
+        newtweettext = ""
+        index = 0
+        for item in sorted(removallist):
+            newtweettext += tweettext[index:item[0]]
+            index = item[1]
+        if len(tweettext) > index:
+            newtweettext += tweettext[index:len(tweettext)]
+
+        return newtweettext.strip()
+
     def main(self):
         # possible filters: user_mentions, urls, hashtags
         while not self.finished():
             while self.dataReady("inbox"):
-                removallist = list()
                 tweet = self.recv("inbox")
-                if "user_mentions" in self.filters:
-                   for item in tweet['entities']['user_mentions']:
-                       removallist.append(item['indices'])
-                if "urls" in self.filters:
-                   for item in tweet['entities']['urls']:
-                       removallist.append(item['indices'])
-                if "hashtags" in self.filters:
-                   for item in tweet['entities']['hashtags']:
-                       removallist.append(item['indices'])
 
-                tweettext = tweet['text']
-                newtweettext = ""
-                index = 0
-                for item in sorted(removallist):
-                    newtweettext += tweettext[index:item[0]]
-                    index = item[1]
-                if len(tweettext) > index:
-                    newtweettext += tweettext[index:len(tweettext)]
-                    
-                tweet['filtered_text'] = newtweettext.strip()
+                #TODO: Something's gone a bit wrong here
+                tweet['filtered_text'] = self.filterEntity(tweet)
+
+                if tweet.has_key('retweeted_status'):
+                    tweet['retweeted_status']['filtered_text'] = self.filterEntity(tweet['retweeted_status'])
 
                 self.send(tweet,"outbox")
 
@@ -155,6 +191,10 @@ class LinkResolver(component):
                 for url in tweet['entities']['urls']:
                     if url['expanded_url'] == None and "bbc.in" in url['url']:
                         linkstoresolve.append(url['url'])
+                if tweet.has_key('retweeted_status'):
+                    for url in tweet['retweeted_status']['entities']['urls']:
+                        if url['expanded_url'] == None and "bbc.in" in url['url']:
+                            linkstoresolve.append(url['url'])
                 if len(linkstoresolve) > 0:
                     # Load the cache
                     homedir = os.path.expanduser("~")
@@ -200,8 +240,12 @@ class LinkResolver(component):
                     # Set the expanded URL fields in the tweet entity
                     for url in tweet['entities']['urls']:
                         if url['expanded_url'] == None and linkcache.has_key(url['url']):
-                            #tweet['entities']['urls'][tweet['entities']['urls'].index(url)]['expanded_url'] = linkcache[url['url']]
                             url['expanded_url'] = linkcache[url['url']]
+
+                    if tweet.has_key('retweeted_status'):
+                        for url in tweet['retweeted_status']['entities']['urls']:
+                            if url['expanded_url'] == None and linkcache.has_key(url['url']):
+                                url['expanded_url'] = linkcache[url['url']]
 
                     try:
                         file = open(homedir + "/linkcache.conf",'w')
@@ -269,12 +313,12 @@ if __name__ == "__main__":
     if 1:
         Graphline(READER=READER,DECODER=DECODER,LINKER=LINKER,REQUESTER=REQUESTER,FIXER=FIXER,CLEANER=CLEANER,WRITER=WRITER,
                 linkages = {("READER", "outbox") : ("DECODER", "inbox"),
-                            ("DECODER", "outbox") : ("LINKER", "inbox"),
+                            ("DECODER", "outbox") : ("FIXER", "inbox"),
+                            ("FIXER", "outbox") : ("LINKER", "inbox"),
                             ("LINKER", "urlrequests") : ("REQUESTER", "inbox"),
                             ("REQUESTER", "outbox") : ("LINKER", "responses"),
                             ("LINKER", "outbox") : ("CLEANER", "inbox"),
-                            ("CLEANER", "outbox") : ("FIXER", "inbox"),
-                            ("FIXER", "outbox") : ("WRITER", "inbox"),}).run()
+                            ("CLEANER", "outbox") : ("WRITER", "inbox"),}).run()
     
 
 # EXAMPLE TWEETS:
