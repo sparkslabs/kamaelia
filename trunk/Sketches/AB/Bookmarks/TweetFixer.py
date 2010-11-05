@@ -7,6 +7,9 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 import re
+import os
+import cjson
+from URLGetter import HTTPGetter
 
 
 class RetweetFixer(component):
@@ -105,7 +108,7 @@ class TweetCleaner(component):
                 if len(tweettext) > index:
                     newtweettext += tweettext[index:len(tweettext)]
                     
-                tweet['filtered_text'] = newtweettext
+                tweet['filtered_text'] = newtweettext.strip()
 
                 self.send(tweet,"outbox")
 
@@ -122,15 +125,18 @@ class LinkResolver(component):
 
     Inboxes = {
         "inbox" : "Receives tweet dict which may need links resolving",
+        "responses" : "Received HTTP request responses",
         "control" : "",
     }
     Outboxes = {
         "outbox" : "Sends out fixed dict",
+        "urlrequests" : "Sends out URLs for HTTP requests",
         "signal" : "",
     }
 
-    def __init__(self,apikey):
+    def __init__(self,username,apikey):
         super(LinkResolver, self).__init__()
+        self.username = username
         self.apikey = apikey
 
     def finished(self):
@@ -145,13 +151,66 @@ class LinkResolver(component):
         while not self.finished():
             while self.dataReady("inbox"):
                 tweet = self.recv("inbox")
+                linkstoresolve = list()
                 for url in tweet['entities']['urls']:
-                    if url['expanded_url'] == "null":
-                        # Perform the lookup here!
-                        # Actually - aggregate the links into a list then request all at once to reduce API calls
-                        # Need to implement caching too
-                        pass
-                #TODO
+                    if url['expanded_url'] == None and "bbc.in" in url['url']:
+                        linkstoresolve.append(url['url'])
+                if len(linkstoresolve) > 0:
+                    # Load the cache
+                    homedir = os.path.expanduser("~")
+                    linkcache = dict()
+                    try:
+                        homedir = os.path.expanduser("~")
+                        file = open(homedir + "/linkcache.conf",'r')
+                        raw_cache = file.read()
+                        try:
+                            linkcache = cjson.decode(raw_cache)
+                        except cjson.DecodeError, e:
+                            print ("Failed to decode link cache - will attempt to create a new file: " + str(e))
+                    except IOError, e:
+                        print ("Failed to load link cache - will attempt to create a new file: " + str(e))
+
+                    linkstring = ""
+                    for link in linkstoresolve:
+                        if not linkcache.has_key(link):
+                            # Need to look this link up, add it to the list
+                            linkstring += "&shortUrl=" + link
+
+                    if linkstring != "":
+                        url = "http://api.bit.ly/v3/expand?login=" + self.username + "&apiKey=" + self.apikey + "&format=json"
+                        url += linkstring
+                        self.send([url],"urlrequests")
+                        while not self.dataReady("responses"):
+                            self.pause()
+                            yield 1
+                        response = self.recv("responses")
+                        if response[0] == "OK":
+                            try:
+                                decodedresponse = cjson.decode(response[1])
+                                if decodedresponse['status_txt'] == "OK":
+                                    for resolvedlink in decodedresponse['data']['expand']:
+                                        if resolvedlink.has_key("long_url") and resolvedlink.has_key("short_url"):
+                                            # Resolution was successful for this link
+                                            long_url = resolvedlink['long_url'].replace("\\/","/")
+                                            short_url = resolvedlink['short_url'].replace("\\/","/")
+                                            linkcache[short_url] = long_url
+                            except cjson.DecodeError, e:
+                                print "Decode error in result from bit.ly: " + str(e)
+
+                    # Set the expanded URL fields in the tweet entity
+                    for url in tweet['entities']['urls']:
+                        if url['expanded_url'] == None and linkcache.has_key(url['url']):
+                            #tweet['entities']['urls'][tweet['entities']['urls'].index(url)]['expanded_url'] = linkcache[url['url']]
+                            url['expanded_url'] = linkcache[url['url']]
+
+                    try:
+                        file = open(homedir + "/linkcache.conf",'w')
+                        raw_cache = cjson.encode(linkcache)
+                        file.write(raw_cache)
+                        file.close()
+                    except IOError, e:
+                        print ("Failed to save name cache - could cause rate limit problems")
+                        
                 self.send(tweet,"outbox")
 
             self.pause()
@@ -162,22 +221,60 @@ class LinkResolver(component):
 
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Util.PureTransformer import PureTransformer
 import cjson
 
 if __name__ == "__main__":
+
+    # Load Config
+    try:
+        homedir = os.path.expanduser("~")
+        file = open(homedir + "/twitter-login.conf")
+    except IOError, e:
+        print ("Failed to load login data - exiting")
+        sys.exit(0)
+
+    raw_config = file.read()
+    file.close()
+
+    # Read Config
+    config = cjson.decode(raw_config)
+    bitlyusername = config['bitlyusername']
+    bitlyapikey = config['bitlyapikey']
+    proxy = config['proxy']
 
     READER = ConsoleReader()
     DECODER = PureTransformer(lambda x: cjson.decode(x))
     CLEANER = TweetCleaner(['user_mentions','urls','hashtags'])
     WRITER = ConsoleEchoer()
     FIXER = RetweetFixer()
+    LINKER = LinkResolver(bitlyusername,bitlyapikey)
+    REQUESTER = HTTPGetter(proxy, "BBC R&D Grabber")
 
     if 0:
         Pipeline(READER,DECODER,CLEANER,WRITER).run()
 
-    if 1:
+    if 0:
         Pipeline(READER,DECODER,FIXER,WRITER).run()
+
+    if 0:
+        Graphline(READER=READER,DECODER=DECODER,LINKER=LINKER,REQUESTER=REQUESTER,WRITER=WRITER,
+                linkages = {("READER", "outbox") : ("DECODER", "inbox"),
+                            ("DECODER", "outbox") : ("LINKER", "inbox"),
+                            ("LINKER", "urlrequests") : ("REQUESTER", "inbox"),
+                            ("REQUESTER", "outbox") : ("LINKER", "responses"),
+                            ("LINKER", "outbox") : ("WRITER", "inbox"),}).run()
+
+    if 1:
+        Graphline(READER=READER,DECODER=DECODER,LINKER=LINKER,REQUESTER=REQUESTER,FIXER=FIXER,CLEANER=CLEANER,WRITER=WRITER,
+                linkages = {("READER", "outbox") : ("DECODER", "inbox"),
+                            ("DECODER", "outbox") : ("LINKER", "inbox"),
+                            ("LINKER", "urlrequests") : ("REQUESTER", "inbox"),
+                            ("REQUESTER", "outbox") : ("LINKER", "responses"),
+                            ("LINKER", "outbox") : ("CLEANER", "inbox"),
+                            ("CLEANER", "outbox") : ("FIXER", "inbox"),
+                            ("FIXER", "outbox") : ("WRITER", "inbox"),}).run()
     
 
 # EXAMPLE TWEETS:
