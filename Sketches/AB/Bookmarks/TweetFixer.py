@@ -270,6 +270,20 @@ import cjson
 
 if __name__ == "__main__":
 
+    # This function won't live here - it's for testing only
+    def spellingFixer(text):
+	# Fix ahahahahahaha and hahahahaha
+	text = re.sub("(ha){1,}$","haha",text,re.I)
+	# fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
+	# Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
+	x = re.findall(r'((\D)\2*)',text,re.I)
+	for entry in sorted(x,reverse=True):
+		if len(entry[0])>2:
+			text = text.replace(entry[0],entry[1])
+		if len(text) == 1:
+			text += text
+	return text
+
     # Load Config
     try:
         homedir = os.path.expanduser("~")
@@ -292,6 +306,7 @@ if __name__ == "__main__":
     CLEANER = TweetCleaner(['user_mentions','urls','hashtags'])
     WRITER = ConsoleEchoer()
     FIXER = RetweetFixer()
+    SPELLING = PureTransformer(lambda x: spellingFixer(x))
     LINKER = LinkResolver(bitlyusername,bitlyapikey)
     REQUESTER = HTTPGetter(proxy, "BBC R&D Grabber")
 
@@ -309,7 +324,7 @@ if __name__ == "__main__":
                             ("REQUESTER", "outbox") : ("LINKER", "responses"),
                             ("LINKER", "outbox") : ("WRITER", "inbox"),}).run()
 
-    if 1:
+    if 0:
         Graphline(READER=READER,DECODER=DECODER,LINKER=LINKER,REQUESTER=REQUESTER,FIXER=FIXER,CLEANER=CLEANER,WRITER=WRITER,
                 linkages = {("READER", "outbox") : ("DECODER", "inbox"),
                             ("DECODER", "outbox") : ("FIXER", "inbox"),
@@ -318,6 +333,9 @@ if __name__ == "__main__":
                             ("REQUESTER", "outbox") : ("LINKER", "responses"),
                             ("LINKER", "outbox") : ("CLEANER", "inbox"),
                             ("CLEANER", "outbox") : ("WRITER", "inbox"),}).run()
+
+    if 1:
+        Pipeline(READER,SPELLING,WRITER).run()
     
 
 # EXAMPLE TWEETS:
