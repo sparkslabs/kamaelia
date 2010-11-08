@@ -62,18 +62,18 @@ class RetweetFixer(component):
                         entities = {"user_mentions":list(),"urls":list(),"hashtags":list()}
                         for item in tweet['entities']['user_mentions']:
                             if item['indices'][0] >= indices[0] and item['indices'][1] <= indices[1]:
-                                tempitem = item
-                                tempitem['indices'] = [tempitem['indices'][0]-rtlength,tempitem['indices'][1]-rtlength]
+                                tempitem = item.copy()
+                                tempitem['indices'] = [item['indices'][0]-rtlength,item['indices'][1]-rtlength]
                                 entities['user_mentions'].append(tempitem)
                         for item in tweet['entities']['urls']:
                             if item['indices'][0] >= indices[0] and item['indices'][1] <= indices[1]:
-                                tempitem = item
-                                tempitem['indices'] = [tempitem['indices'][0]-rtlength,tempitem['indices'][1]-rtlength]
+                                tempitem = item.copy()
+                                tempitem['indices'] = [item['indices'][0]-rtlength,item['indices'][1]-rtlength]
                                 entities['urls'].append(tempitem)
                         for item in tweet['entities']['hashtags']:
                             if item['indices'][0] >= indices[0] and item['indices'][1] <= indices[1]:
-                                tempitem = item
-                                tempitem['indices'] = [tempitem['indices'][0]-rtlength,tempitem['indices'][1]-rtlength]
+                                tempitem = item.copy()
+                                tempitem['indices'] = [item['indices'][0]-rtlength,item['indices'][1]-rtlength]
                                 entities['hashtags'].append(tempitem)
                         tweet['retweeted_status'] = {"user": {"id": id,"screen_name": usermention,"name": name}, "text": newtweettext, "entities": entities}
 
@@ -140,7 +140,6 @@ class TweetCleaner(component):
             while self.dataReady("inbox"):
                 tweet = self.recv("inbox")
 
-                #TODO: Something's gone a bit wrong here
                 tweet['filtered_text'] = self.filterEntity(tweet)
 
                 if tweet.has_key('retweeted_status'):
