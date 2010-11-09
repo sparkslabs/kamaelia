@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 09, 2010 at 01:40 PM
+-- Generation Time: Nov 09, 2010 at 02:11 PM
 -- Server version: 5.1.41
 -- PHP Version: 5.3.2-1ubuntu4.5
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `analyseddata` (
   `totaltweets` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`did`),
   KEY `pid_refs_pid_5901525b` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=230097 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=230237 ;
 
 -- --------------------------------------------------------
 
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `keywords` (
   `type` varchar(100) NOT NULL,
   PRIMARY KEY (`uid`),
   KEY `pid_refs_pid_38b0e356` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=99800 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=99923 ;
 
 -- --------------------------------------------------------
 
@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS `programmes` (
 --
 
 CREATE TABLE IF NOT EXISTS `rawdata` (
+  `tweet_id` double NOT NULL,
   `tid` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
   `timestamp` double NOT NULL,
@@ -91,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   PRIMARY KEY (`tid`),
   KEY `pid_refs_pid_458415f9` (`pid`),
   KEY `ANALYSED` (`analysed`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1215438 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1215785 ;
 
 -- --------------------------------------------------------
 
@@ -106,3 +107,18 @@ CREATE TABLE IF NOT EXISTS `rawtweets` (
   `tweet_stored_fraction` double NOT NULL,
   PRIMARY KEY (`tweet_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wordanalysis`
+--
+
+CREATE TABLE IF NOT EXISTS `wordanalysis` (
+  `wid` int(11) NOT NULL AUTO_INCREMENT,
+  `pid` varchar(10) NOT NULL,
+  `timestamp` double NOT NULL,
+  `word` varchar(30) NOT NULL,
+  `word_count` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`wid`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
