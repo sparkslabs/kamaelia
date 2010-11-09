@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 09, 2010 at 12:08 PM
+-- Generation Time: Nov 09, 2010 at 01:40 PM
 -- Server version: 5.1.41
 -- PHP Version: 5.3.2-1ubuntu4.5
 
@@ -28,14 +28,13 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 CREATE TABLE IF NOT EXISTS `analyseddata` (
   `did` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
-  `datetime_backup` varchar(100) NOT NULL,
   `timestamp` double NOT NULL,
   `wordfreqexpected` varchar(2000) NOT NULL,
   `wordfrequnexpected` varchar(2000) NOT NULL,
   `totaltweets` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`did`),
   KEY `pid_refs_pid_5901525b` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=229721 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=230097 ;
 
 -- --------------------------------------------------------
 
@@ -50,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `keywords` (
   `type` varchar(100) NOT NULL,
   PRIMARY KEY (`uid`),
   KEY `pid_refs_pid_38b0e356` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=99625 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=99800 ;
 
 -- --------------------------------------------------------
 
@@ -62,7 +61,6 @@ CREATE TABLE IF NOT EXISTS `programmes` (
   `pid` varchar(10) NOT NULL,
   `channel` varchar(20) NOT NULL,
   `title` varchar(200) CHARACTER SET utf8 NOT NULL,
-  `expectedstart_backup` varchar(100) NOT NULL,
   `timestamp` double NOT NULL,
   `utcoffset` int(11) NOT NULL DEFAULT '0',
   `timediff` int(11) NOT NULL DEFAULT '0',
@@ -74,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `programmes` (
   `mediantweets` int(11) NOT NULL DEFAULT '0',
   `modetweets` int(11) NOT NULL DEFAULT '0',
   `stdevtweets` double NOT NULL DEFAULT '0',
-  PRIMARY KEY (`pid`)
+  PRIMARY KEY (`pid`,`timestamp`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -86,7 +84,6 @@ CREATE TABLE IF NOT EXISTS `programmes` (
 CREATE TABLE IF NOT EXISTS `rawdata` (
   `tid` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
-  `datetime_backup` varchar(100) NOT NULL,
   `timestamp` double NOT NULL,
   `text` varchar(200) CHARACTER SET utf8 NOT NULL,
   `user` varchar(200) NOT NULL,
@@ -94,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   PRIMARY KEY (`tid`),
   KEY `pid_refs_pid_458415f9` (`pid`),
   KEY `ANALYSED` (`analysed`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1214713 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1215438 ;
 
 -- --------------------------------------------------------
 
