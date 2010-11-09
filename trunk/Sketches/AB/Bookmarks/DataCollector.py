@@ -69,6 +69,7 @@ class DataCollector(threadedcomponent):
                             file.write(filecontents + "\n" + str(datetime.utcnow()) + " " + cjson.encode(newdata))
                             file.close()
                         else:
+                            tweetid = newdata['new_id']
                             print "New tweet! @" + newdata['user']['screen_name'] + ": " + newdata['text']
                             for pid in tweet[1]:
                                 # Cycle through possible pids, grabbing that pid's keywords from the DB
@@ -87,7 +88,7 @@ class DataCollector(threadedcomponent):
                                                 if cursor.fetchone() == None:
                                                     print ("Storing tweet for pid " + pid)
                                                     timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
-                                                    cursor.execute("""INSERT INTO rawdata (pid,timestamp,text,user) VALUES (%s,%s,%s,%s)""", (pid,timestamp,newdata['text'],newdata['user']['screen_name']))
+                                                    cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user) VALUES (%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name']))
                                                     break # Break out of this loop and back to check the same tweet against the next programme
                                                 else:
                                                     print ("Duplicate user for current minute - ignoring")
@@ -100,7 +101,7 @@ class DataCollector(threadedcomponent):
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
                                                 timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
-                                                cursor.execute("""INSERT INTO rawdata (pid,timestamp,text,user) VALUES (%s,%s,%s,%s)""", (pid,timestamp,newdata['text'],newdata['user']['screen_name']))
+                                                cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user) VALUES (%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name']))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
                                                 print ("Duplicate user for current minute - ignoring")
