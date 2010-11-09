@@ -4,12 +4,14 @@
 # Needs to do limited analysis to work out which keywords in the tweet stream correspond to which programme
 # Keywords, and possibly PIDs and channels will most likely have to be passed here as well as to the TwitterStream from Requester
 
-import time
+import time as time2
 import MySQLdb
 import cjson
 import string
 from datetime import datetime
+from time import time
 from dateutil.parser import parse
+import _mysql_exceptions
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -58,23 +60,7 @@ class DataCollector(threadedcomponent):
                     if tweet[0] != "\r\n":
                         # At this point, each 'tweet' contains tweetdata, and a list of possible pids
                         newdata = cjson.decode(tweet[0]) # Won't work - need keywords to be related to their pids - let's requery
-                        if newdata.has_key('delete'):
-                            # Trying to work out what content is set to at the point it fails
-                            filepath = "contentDebug.txt"
-                            file = open(filepath, 'r')
-                            filecontents = file.read()
-                            file = open(filepath, 'w')
-                            file.write(filecontents + "\n" + str(datetime.utcnow()) + " " + cjson.encode(newdata))
-                            file.close()
-                        elif newdata.has_key('scrub_geo'):
-                            # Trying to work out what content is set to at the point it fails
-                            filepath = "contentDebug.txt"
-                            file = open(filepath, 'r')
-                            filecontents = file.read()
-                            file = open(filepath, 'w')
-                            file.write(filecontents + "\n" + str(datetime.utcnow()) + " " + cjson.encode(newdata))
-                            file.close()
-                        elif newdata.has_key('limit'):
+                        if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
                             # Trying to work out what content is set to at the point it fails
                             filepath = "contentDebug.txt"
                             file = open(filepath, 'r')
@@ -100,7 +86,7 @@ class DataCollector(threadedcomponent):
                                                 cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
                                                 if cursor.fetchone() == None:
                                                     print ("Storing tweet for pid " + pid)
-                                                    timestamp = time.mktime(parse(newdata['created_at']).timetuple())
+                                                    timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
                                                     cursor.execute("""INSERT INTO rawdata (pid,timestamp,text,user) VALUES (%s,%s,%s,%s)""", (pid,timestamp,newdata['text'],newdata['user']['screen_name']))
                                                     break # Break out of this loop and back to check the same tweet against the next programme
                                                 else:
@@ -113,7 +99,7 @@ class DataCollector(threadedcomponent):
                                             cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
-                                                timestamp = time.mktime(parse(newdata['created_at']).timetuple())
+                                                timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
                                                 cursor.execute("""INSERT INTO rawdata (pid,timestamp,text,user) VALUES (%s,%s,%s,%s)""", (pid,timestamp,newdata['text'],newdata['user']['screen_name']))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
@@ -123,4 +109,63 @@ class DataCollector(threadedcomponent):
                     
                     print ("Done!") # new line to break up display
             else:
-                time.sleep(0.1)
+                time2.sleep(0.1)
+
+
+class RawDataCollector(threadedcomponent):
+    Inboxes = {
+        "inbox" : "Receives data in the format [tweetjson,[pid,pid]]",
+        "control" : ""
+    }
+    Outboxes = {
+        "outbox" : "",
+        "signal" : ""
+    }
+
+    def __init__(self,dbuser,dbpass):
+        super(RawDataCollector, self).__init__()
+        self.dbuser = dbuser
+        self.dbpass = dbpass
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
+    def dbConnect(self):
+        db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
+        cursor = db.cursor()
+        return cursor
+
+    def main(self):
+        cursor = self.dbConnect()
+        while not self.finished():
+            twitdata = list()
+            while self.dataReady("inbox"):
+                data = self.recv("inbox")
+                twitdata.append(data[0])
+            if len(twitdata) > 0:
+
+                for tweet in twitdata:
+                    tweet = tweet.replace("\\/","/")
+                    if tweet != "\r\n":
+                        newdata = cjson.decode(tweet)
+                        if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
+                            print "Discarding tweet instruction"
+                        else:
+                            tweetid = newdata['new_id']
+                            tweetstamp = time()
+                            tweetsecs = int(tweetstamp)
+                            tweetfrac = tweetstamp - tweetsecs
+                            if len(tweet) < 16000:
+                                try:
+                                    cursor.execute("""INSERT INTO rawtweets (tweet_id,tweet_json,tweet_stored_seconds,tweet_stored_fraction) VALUES (%s,%s,%s,%s)""", (tweetid,tweet,tweetsecs,tweetfrac))
+                                except _mysql_exceptions.IntegrityError, e:
+                                    print "Duplicate tweet ID:", str(e)
+                            else:
+                                print "Discarding tweet - length limit exceeded"
+            else:
+                time2.sleep(0.1)

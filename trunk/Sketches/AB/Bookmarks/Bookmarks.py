@@ -18,7 +18,7 @@ from BBCProgrammes import WhatsOn
 from Requester import Requester
 from TwitterStream import TwitterStream
 from TwitterSearch import PeopleSearch
-from DataCollector import DataCollector
+from DataCollector import DataCollector, RawDataCollector
 from URLGetter import HTTPGetter
 from LiveAnalysis import LiveAnalysis
 
@@ -64,6 +64,7 @@ if __name__ == "__main__":
                     FIREHOSE = TwitterStream(username, password, proxy, True, 60), # Twitter API sends blank lines every 30 secs so timeout of 60 should be fine
                     SEARCH = PeopleSearch(consumerkeypair, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
+                    RAWCOLLECTOR = RawDataCollector(dbuser,dbpass),
                     HTTPGETTER = HTTPGetter(proxy, "BBC R&D Grabber"),
                     HTTPGETTERRDF = HTTPGetter(proxy, "BBC R&D Grabber"),
                     TWOWAY = TwoWaySplitter(),
@@ -71,7 +72,9 @@ if __name__ == "__main__":
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
                                 ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API
-                                ("FIREHOSE", "outbox") : ("COLLECTOR" , "inbox"),
+                                ("FIREHOSE", "outbox") : ("TWOWAY" , "inbox"),
+                                ("TWOWAY", "outbox") : ("COLLECTOR" , "inbox"),
+                                ("TWOWAY", "outbox2") : ("RAWCOLLECTOR" , "inbox"),
                                 ("REQUESTER", "search") : ("SEARCH", "inbox"), # Perform Twitter people search based on keywords
                                 ("SEARCH", "outbox") : ("REQUESTER", "search"), # Return Twitter people search results
                                 ("REQUESTER", "dataout") : ("HTTPGETTERRDF", "inbox"),
