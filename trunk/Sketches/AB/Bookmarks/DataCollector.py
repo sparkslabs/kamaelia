@@ -159,7 +159,7 @@ class RawDataCollector(threadedcomponent):
                     if tweet != "\r\n":
                         newdata = cjson.decode(tweet)
                         if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
-                            print "Discarding tweet instruction"
+                            print "Discarding tweet instruction - captured by other component"
                         else:
                             tweetid = newdata['new_id']
                             tweetstamp = time()
