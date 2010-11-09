@@ -12,6 +12,7 @@ from datetime import datetime
 from time import time
 from dateutil.parser import parse
 import _mysql_exceptions
+import os
 
 from Axon.ThreadedComponent import threadedcomponent
 
@@ -63,8 +64,11 @@ class DataCollector(threadedcomponent):
                         if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
                             # Trying to work out what content is set to at the point it fails
                             filepath = "contentDebug.txt"
-                            file = open(filepath, 'r')
-                            filecontents = file.read()
+                            if os.path.exists(filepath):
+                                file = open(filepath, 'r')
+                                filecontents = file.read()
+                            else:
+                                filecontents = ""
                             file = open(filepath, 'w')
                             file.write(filecontents + "\n" + str(datetime.utcnow()) + " " + cjson.encode(newdata))
                             file.close()
@@ -168,5 +172,21 @@ class RawDataCollector(threadedcomponent):
                                     print "Duplicate tweet ID:", str(e)
                             else:
                                 print "Discarding tweet - length limit exceeded"
+                                tweetcontents = ""
+                                homedir = os.path.expanduser("~")
+                                if os.path.exists(homedir + "/oversizedtweets.conf"):
+                                    try:
+                                        file = open(homedir + "/oversizedtweets.conf",'r')
+                                        tweetcontents = file.read()
+                                        file.close()
+                                    except IOError, e:
+                                        print ("Failed to load oversized tweet cache - it will be overwritten")
+                                try:
+                                    file = open(homedir + "/oversizedtweets.conf",'w')
+                                    tweetcontents = tweetcontents + tweet
+                                    file.write(tweetcontents)
+                                    file.close()
+                                except IOError, e:
+                                    print ("Failed to save oversized tweet cache")
             else:
                 time2.sleep(0.1)
