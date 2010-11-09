@@ -20,7 +20,7 @@ from TwitterStream import TwitterStream
 from TwitterSearch import PeopleSearch
 from DataCollector import DataCollector, RawDataCollector
 from URLGetter import HTTPGetter
-from LiveAnalysis import LiveAnalysis
+from LiveAnalysis import LiveAnalysis#, LiveAnalysisNLTK
 
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 
@@ -69,6 +69,9 @@ if __name__ == "__main__":
                     HTTPGETTERRDF = HTTPGetter(proxy, "BBC R&D Grabber"),
                     TWOWAY = TwoWaySplitter(),
                     ANALYSIS = LiveAnalysis(dbuser,dbpass),
+                    # NLTKANALYSIS = LiveAnalysisNLTK(dbuser,dbpass), # This will be used as a replacement to LiveAnalysis, using a DB row for each word being analysed
+                    # This will also make use of the link removal, retweet fixing and entity removal components etc
+                    # It is important for now that the two analysis components aren't run together as they will conflict
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
                                 ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API
