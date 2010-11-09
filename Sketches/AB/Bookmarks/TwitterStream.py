@@ -119,12 +119,13 @@ class HTTPClientResponseHandler(component):
 
             # Then parse the HTTP response line
             if line:
-                split_response = line.split()
+                split_response = line.split(" ",2)
                 if len(split_response) == 3:
                     proto_ver, status_code, status_message = split_response
                     proto, ver = proto_ver.split("/")
                 else:
-                    raise Exception("Broken Web Server")
+                    # Had less than 2 spaces in, so bust.
+                    raise Exception("Broken Web Server", line)
 
                 if status_code != "200":
                     raise Exception("Failure Status",status_code,status_message)
