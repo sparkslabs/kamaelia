@@ -56,13 +56,13 @@ def index(request):
                     fontcolour = "#FFFFFF"
                 bgval = str(int(255 - (255 * opacity)))
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
-                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
             else:
-                output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "No Data</div>"
         else:
-            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
 
     output += "<br /><br /></div><br /><br /><div style=\"display: inline; position: relative\"><h2>Radio</h2>"
@@ -78,13 +78,13 @@ def index(request):
                     fontcolour = "#FFFFFF"
                 bgval = str(int(255 - (255 * opacity)))
                 bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
-                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
             else:
-                output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "No Data</div>"
         else:
-            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channels/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
         
     output += "<br /><br /></div><br /><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
@@ -139,7 +139,112 @@ def channel(request,channel,year=0,month=0,day=0):
                     output += "<br />No data for this date - please select another from the picker above.<br />"
             else:
                 output += "<br />Please select a date from the picker above.<br />"
+        output += "<br /><br /><a href=\"/\">Back to index</a> - <a href=\"/channel-graph/" + channel + "/" + str(year) + "/" + str(month) + "/" + str(day) + "\">Graphical view</a>"
+
+    output += footer
+    return HttpResponse(output)
+
+def channelgraph(request,channel,year=0,month=0,day=0):
+    output = header
+    data = programmes.objects.filter(channel=channel)
+    if channel not in radiochannels and channel not in tvchannels:
+        output += "<br />Invalid channel supplied."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
+    else:
+        output += '<style type="text/css">@import "/media/jquery/jquery.datepick.css";</style>\n \
+                    <script type="text/javascript" src="/media/jquery/jquery.datepick.js"></script>\n'
+        output += "<script type=\"text/javascript\">\n \
+                        $(function() {\n "
+        if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
+            output += "$('#inlineDatepicker').datepick({onSelect: showDate, defaultDate: '" + month + "/" + day + "/" + year + "', selectDefaultDate: true});\n"
+        else:
+            output += "$('#inlineDatepicker').datepick({onSelect: showDate});\n "
+        output += "});\n \
+                        \n \
+                        function showDate(date) {\n \
+                            pickerYear = date[0].getFullYear().toString();\n \
+                            pickerMonth = (date[0].getMonth() + 1).toString();\n \
+                            pickerDay = date[0].getDate().toString();\n \
+                            if (pickerMonth.length < 2) {\n \
+                                pickerMonth = '0' + pickerMonth;\n \
+                            }\n \
+                            if (pickerDay.length < 2) {\n \
+                                pickerDay = '0' + pickerDay;\n \
+                            }\n \
+                            window.location = '/channel-graph/" + channel + "/' + pickerYear + '/' + pickerMonth + '/' + pickerDay + '/';\n \
+                        }\n \
+                    </script>\n"
+
+        output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+        if len(data) < 1:
+            output += "<br />Please note: No data has yet been captured for this channel."
+        else:
+            output += '<br /><div id="inlineDatepicker"></div>'
+            if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
+                output += "<br />Currently viewing shows for " + day + "/" + month + "/" + year + "<br />"
+                starttimestamp = time.mktime(datetime(int(year),int(month),int(day),0,0,0,0).timetuple())
+                endtimestamp = starttimestamp + 86400
+                data = programmes.objects.filter(channel__exact=channel,timestamp__gte=starttimestamp,timestamp__lt=endtimestamp).order_by('timestamp').all()
+                for programme in data:
+                    progdate = datetime.utcfromtimestamp(programme.timestamp) + timedelta(seconds=programme.utcoffset)
+
+                    if programme.totaltweets > 0:
+
+                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a> (see below)"
+
+                        actualstart = progdate - timedelta(seconds=programme.timediff)
+                        minutedata = analyseddata.objects.filter(pid=programme.pid).order_by('timestamp').all()
+
+                        tweetmins = dict()
+                        for minute in minutedata:
+                            tweettime = datetime.utcfromtimestamp(minute.timestamp) + timedelta(seconds=data[0].utcoffset)
+                            proghour = tweettime.hour - actualstart.hour
+                            progmin = tweettime.minute - actualstart.minute
+                            progsec = tweettime.second - actualstart.second
+                            playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
+                            if playertime > (programme.duration - 60):
+                                playertimemin = (programme.duration/60) - 1
+                            elif playertime > 0:
+                                playertimemin = playertime/60
+                            else:
+                                playertimemin = 0
+                            if not tweetmins.has_key(str(playertimemin)):
+                                tweetmins[str(playertimemin)] = int(minute.totaltweets)
+
+                        xlist = range(0,programme.duration/60)
+                        ylist = list()
+                        for min in xlist:
+                            if tweetmins.has_key(str(min)):
+                                ylist.append(tweetmins[str(min)])
+                            else:
+                                ylist.append(0)
+
+                        maxy = max(ylist)
+                        maxx = max(xlist)
+
+                        mainwidth = int(1000/(maxx+1)) * (maxx + 1)
+
+                        graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
+                        graph.add_data(ylist)
+
+                        #TODO: Fix the bad labelling!
+                        graph.set_title("Tweets per minute")
+                        left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
+                        bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
+                        graph.set_axis_labels(Axis.LEFT,left_axis)
+                        graph.set_axis_labels(Axis.BOTTOM,bottom_axis)
+                        output += "<br /><img src=\"" + graph.get_url() + "\"><br />"
+
+                    else:
+
+                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
+                        output += " - No data available<br />"
+
+                if len(data) < 1:
+                    output += "<br />No data for this date - please select another from the picker above.<br />"
+            else:
+                output += "<br />Please select a date from the picker above.<br />"
+        output += "<br /><br /><a href=\"/\">Back to index</a> - <a href=\"/channels/" + channel + "/" + str(year) + "/" + str(month) + "/" + str(day) + "\">Textual view</a>"
 
     output += footer
     return HttpResponse(output)
@@ -361,7 +466,7 @@ def programme(request,pid):
 
         output += "<br /><br />API: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
         # Reveal tweets is temporary - will allow selection and viewing of single minutes once the database has been redesigned.
-        output += "<br /><br /><a href=\"/channels/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
+        output += "<br /><br /><a href=\"/channel-graph/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
     else:
         output += "<br />Database consistency error - somehow a primary key appears twice. The world may have ended."
