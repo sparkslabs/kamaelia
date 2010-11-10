@@ -1,6 +1,7 @@
 from piston.handler import BaseHandler
-from bookmarks.output.models import programmes, keywords, analyseddata, rawdata
+from bookmarks.output.models import programmes, keywords, analyseddata, rawdata, rawtweets
 from datetime import timedelta,datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
 
@@ -127,7 +128,12 @@ class TweetHandler(BaseHandler):
         # Need to add full tweet dicts to this once the model has been added
         data = rawdata.objects.filter(pid=pid).order_by('timestamp').all()
         for tweet in data:
-            retdata['tweets'].append({"id" : tweet.tweet_id,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text})
+            try:
+                rawtweetquery = rawtweets.objects.get(tweet_id = tweet.tweet_id)
+                tweetjson = rawtweetquery.tweet_json
+            except ObjectDoesNotExist, e:
+                tweetjson = "{}"
+            retdata['tweets'].append({"id" : tweet.tweet_id,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson})
         return retdata
 
 class TimestampHandler(BaseHandler):
@@ -140,5 +146,10 @@ class TimestampHandler(BaseHandler):
         timestamp2 = timestamp + 60
         data = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=timestamp2).order_by('timestamp').all()
         for tweet in data:
-            retdata['tweets'].append({"id" : tweet.tweet_id,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text})
+            try:
+                rawtweetquery = rawtweets.objects.get(tweet_id = tweet.tweet_id)
+                tweetjson = rawtweetquery.tweet_json
+            except ObjectDoesNotExist, e:
+                tweetjson = "{}"
+            retdata['tweets'].append({"id" : tweet.tweet_id,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson})
         return retdata
