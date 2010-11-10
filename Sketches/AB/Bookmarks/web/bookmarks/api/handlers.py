@@ -133,9 +133,13 @@ class TweetHandler(BaseHandler):
             try:
                 rawtweetquery = rawtweets.objects.get(tweet_id = tweetid)
                 tweetjson = rawtweetquery.tweet_json
+                legacy = False
             except ObjectDoesNotExist, e:
-                tweetjson = None
-            retdata['tweets'].append({"id" : tweetid,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson})
+                legacy = True
+            if legacy:
+                retdata['tweets'].append({"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text, "legacy" : legacy})
+            else:
+                retdata['tweets'].append({"id" : tweetid,"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson, "legacy" : legacy})
         return retdata
 
 class TimestampHandler(BaseHandler):
@@ -152,7 +156,11 @@ class TimestampHandler(BaseHandler):
             try:
                 rawtweetquery = rawtweets.objects.get(tweet_id = tweetid)
                 tweetjson = rawtweetquery.tweet_json
+                legacy = False
             except ObjectDoesNotExist, e:
-                tweetjson = None
-            retdata['tweets'].append({"id" : tweetid,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson})
+                legacy = True
+            if legacy:
+                retdata['tweets'].append({"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text, "legacy" : legacy})
+            else:
+                retdata['tweets'].append({"id" : tweetid,"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson, "legacy" : legacy})
         return retdata
