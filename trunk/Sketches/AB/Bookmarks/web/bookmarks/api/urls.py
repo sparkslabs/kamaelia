@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 from piston.resource import Resource
-from bookmarks.api.handlers import ProgrammesHandler, SummaryHandler, TimestampHandler, TweetHandler
+from bookmarks.api.handlers import ProgrammesHandler, SummaryHandler, TimestampHandler, TweetHandler, ProgrammesHandlerV2
 
 programmes_handler = Resource(ProgrammesHandler)
 summary_handler = Resource(SummaryHandler)

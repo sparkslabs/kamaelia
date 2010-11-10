@@ -164,3 +164,10 @@ class TimestampHandler(BaseHandler):
             else:
                 retdata['tweets'].append({"id" : tweetid,"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson, "legacy" : legacy})
         return retdata
+
+class ProgrammesHandlerV2(BaseHandler):
+    allowed_methods = ('GET',)
+
+    def read(self, request, pid):
+        retdata = dict()
+        return retdata
