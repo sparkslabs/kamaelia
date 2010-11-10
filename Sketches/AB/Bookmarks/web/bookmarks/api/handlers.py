@@ -1,5 +1,5 @@
 from piston.handler import BaseHandler
-from bookmarks.output.models import programmes, keywords, analyseddata
+from bookmarks.output.models import programmes, keywords, analyseddata, rawdata
 from datetime import timedelta,datetime
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
@@ -117,4 +117,28 @@ class SummaryHandler(BaseHandler):
                 channelgroup.pop('stdev')
         retdata['status'] = "OK"
 
+        return retdata
+
+class TweetHandler(BaseHandler):
+    allowed_methods = ('GET',)
+
+    def read(self, request, pid):
+        retdata = {"tweets" : list()}
+        # Need to add full tweet dicts to this once the model has been added
+        data = rawdata.objects.filter(pid=pid).order_by('timestamp').all()
+        for tweet in data:
+            retdata['tweets'].append({"id" : tweet.tweet_id,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text})
+        return retdata
+
+class TimestampHandler(BaseHandler):
+    allowed_methods = ('GET',)
+
+    def read(self, request, pid, timestamp):
+        retdata = {"tweets" : list()}
+        timestamp = int(timestamp)
+        # Need to add full tweet dicts to this once the model has been added
+        timestamp2 = timestamp + 60
+        data = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=timestamp2).order_by('timestamp').all()
+        for tweet in data:
+            retdata['tweets'].append({"id" : tweet.tweet_id,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text})
         return retdata

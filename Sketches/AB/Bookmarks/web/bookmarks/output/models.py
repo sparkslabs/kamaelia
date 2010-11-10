@@ -46,6 +46,7 @@ class keywords(models.Model):
         db_table = 'keywords'
 
 class rawdata(models.Model):
+    tweet_id = models.FloatField(db_column="tweet_id")
     tid = models.IntegerField(primary_key=True,db_column="tid")
     pid = models.ForeignKey(programmes,db_column="pid")
     #datetime = models.CharField(max_length=100,db_column="datetime")
@@ -53,6 +54,7 @@ class rawdata(models.Model):
     text = models.CharField(max_length=200,db_column="text")
     user = models.CharField(max_length=200,db_column="user")
     analysed = models.BooleanField(db_column="analysed",default=0)
+    programme_position = models.IntegerField(db_column="programme_position")
 
     class Meta:
         db_table = 'rawdata'
