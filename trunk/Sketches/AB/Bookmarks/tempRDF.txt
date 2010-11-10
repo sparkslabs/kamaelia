@@ -13,48 +13,48 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/p00bqvhz.rdf">
+<rdf:Description rdf:about="/programmes/p00c2g9x.rdf">
   <rdfs:label>Description of a programme version of 10/11/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-22T07:41:18+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-22T07:41:18+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/p00bqvhz#programme"/>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-09T19:02:12Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-09T19:02:12Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/p00c2g9x#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/p00bqvhz#programme">
+<po:Version rdf:about="/programmes/p00c2g9x#programme">
 
   <rdfs:label>A version of 10/11/2010</rdfs:label>
   
   
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
-  <po:pid>p00bqvhz</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">600</po:duration>
+  <po:pid>p00c2g9x</po:pid>
   <po:time>
     <timeline:Interval>
       <rdfs:label>Time interval for a version of 10/11/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/p00bqvhz#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
+      <timeline:timeline rdf:resource="/programmes/p00c2g9x#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT600S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/p00bqvff#programme">
+<po:Episode rdf:about="/programmes/p00c2g9t#programme">
   <rdfs:label>10/11/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/p00bqvhz#programme" />
+  <po:version rdf:resource="/programmes/p00c2g9x#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/p00bqvhz#timeline">
+<timeline:TimeLine rdf:about="/programmes/p00c2g9x#timeline">
   <rdfs:label>Timeline of a version of 10/11/2010</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/p00bqvhz#p00bqvlv">
+<po:Broadcast rdf:about="/programmes/p00c2g9x#p00c2gb1">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00bqvlv</po:pid>
+  <po:pid>p00c2gb1</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-10</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T11:05:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T11:20:00Z</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T11:50:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T12:00:00Z</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
@@ -62,15 +62,15 @@
       <rdfs:label>BBC World Service</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/p00bqvhz#programme" />
+  <po:broadcast_of rdf:resource="/programmes/p00c2g9x#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T11:22:00Z</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-17T11:22:00Z</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T12:02:00Z</timeline:start>
+  
 </po:Availability>
 
 

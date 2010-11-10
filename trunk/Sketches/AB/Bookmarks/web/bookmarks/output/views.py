@@ -465,6 +465,7 @@ def programme(request,pid):
             output += "<br />Not enough data to generate statistics.<br />"
 
         output += "<br /><br />API: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
+        output += "<br />Tweets: <a href=\"/api/" + data[0].pid + "/tweets.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + "/tweets.xml\" target=\"_blank\">XML</a>"
         # Reveal tweets is temporary - will allow selection and viewing of single minutes once the database has been redesigned.
         output += "<br /><br /><a href=\"/channel-graph/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
@@ -505,7 +506,8 @@ def rawtweets(request,pid,timestamp):
         #    else:
         #        tweetseccount[tweet.timestamp] = 1
             output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
-        output += "</div>"
+        output += "</div><br /><br />"
+        output += "API: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a>"
         #if len(tweetseccount) > 0:
         #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
         #    tweetseccount.sort(reverse=True)
