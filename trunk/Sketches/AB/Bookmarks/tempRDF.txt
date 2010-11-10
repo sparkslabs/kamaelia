@@ -13,47 +13,62 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00vv0tx.rdf">
-  <rdfs:label>Description of the episode 10/11/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-03T00:07:47Z</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-03T00:07:47Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00vv0tx#programme"/>
+<rdf:Description rdf:about="/programmes/b00p1h9w.rdf">
+  <rdfs:label>Description of a programme version of Robot</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-11-07T00:10:01Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-11-07T00:10:01Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00p1h9w#programme"/>
 </rdf:Description>
 
-<po:Episode rdf:about="/programmes/b00vv0tx#programme">
+<po:Version rdf:about="/programmes/b00p1h9w#programme">
 
-  <po:pid>b00vv0tx</po:pid>
-  <dc:title>10/11/2010</dc:title>
-  <po:short_synopsis>British-Asian lifestyle programme with the best in music, chat and celebrity guests.</po:short_synopsis>
-  <po:medium_synopsis>British-Asian lifestyle programme with the best in music, chat and celebrity guests.</po:medium_synopsis>
-  
-
-  <po:microsite rdf:resource="http://www.bbc.co.uk/asiannetwork/soniadeol/"/>
-
-
-  <po:masterbrand rdf:resource="/asiannetwork#service"/>
-
-  
-
-  <po:genre rdf:resource="/programmes/genres/entertainment#genre" />
-  <po:genre rdf:resource="/programmes/genres/factual#genre" />
-  <po:genre rdf:resource="/programmes/genres/music/popandchart#genre" />
-
-  <po:format rdf:resource="/programmes/formats/phoneins#format" />
+  <rdfs:label>A version of Robot</rdfs:label>
+  <po:aspect_ratio>16:9</po:aspect_ratio>
+  <po:sound_format>Stereo</po:sound_format>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
+  <po:pid>b00p1h9w</po:pid>
+  <po:time>
+    <timeline:Interval>
+      <rdfs:label>Time interval for a version of Robot</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00p1h9w#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
+    </timeline:Interval>
+  </po:time>
 
 
+</po:Version>
 
-
-  <po:version rdf:resource="/programmes/b00vv0st#programme" />
-
-
+<po:Episode rdf:about="/programmes/b009g1kq#programme">
+  <rdfs:label>Robot</rdfs:label>
+  <po:version rdf:resource="/programmes/b00p1h9w#programme" />
 </po:Episode>
 
+<timeline:TimeLine rdf:about="/programmes/b00p1h9w#timeline">
+  <rdfs:label>Timeline of a version of Robot</rdfs:label>
+</timeline:TimeLine>
+
+<po:Broadcast rdf:about="/programmes/b00p1h9w#p00514vq">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
+  <po:pid>p00514vq</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2009-11-14</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-11-14T15:45:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-11-14T16:00:00Z</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/cbeebies#service">
+      <rdfs:label>CBeebies</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00p1h9w#programme" />
+</po:Broadcast>
 
 
-<po:Brand rdf:about="/programmes/b00jhgf4#programme">
-  <po:episode rdf:resource="/programmes/b00vv0tx#programme"/>
-</po:Brand>
+
+
+
 
 
 </rdf:RDF>
