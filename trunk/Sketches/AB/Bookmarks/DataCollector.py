@@ -57,7 +57,7 @@ class DataCollector(threadedcomponent):
             if len(twitdata) > 0:
 
                 for tweet in twitdata:
-                    tweet[0] = tweet[0].replace("\\/","/")
+                    tweet[0] = tweet[0].replace("\\/","/") # This may need moving further down the line - ideally it would be handled by cjson
                     if tweet[0] != "\r\n":
                         # At this point, each 'tweet' contains tweetdata, and a list of possible pids
                         newdata = cjson.decode(tweet[0]) # Won't work - need keywords to be related to their pids - let's requery
@@ -159,7 +159,7 @@ class RawDataCollector(threadedcomponent):
             if len(twitdata) > 0:
 
                 for tweet in twitdata:
-                    tweet = tweet.replace("\\/","/")
+                    tweet = tweet.replace("\\/","/") # This may need moving further down the line - ideally it would be handled by cjson
                     if tweet != "\r\n":
                         newdata = cjson.decode(tweet)
                         if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
