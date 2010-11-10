@@ -450,7 +450,7 @@ class Requester(threadedcomponent):
                     else:
                         # Fix for programmes where the duration is changed last minute
                         if progentrytest.duration[0] < duration:
-                            cursor.execute("""UPDATE programmes SET duration = %s WHERE pid != %s AND channel = %s""",(duration,pid,channel))
+                            cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s""",(duration,pid))
                     keywords = list()
                 else:
                     keywords = None
@@ -496,7 +496,7 @@ class Requester(threadedcomponent):
                         else:
                             # Fix for programmes where the duration is changed last minute
                             if progentrytest[0] < duration:
-                                cursor.execute("""UPDATE programmes SET duration = %s WHERE pid != %s AND channel = %s""",(duration,pid,channel))
+                                cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s""",(duration,pid))
 
                 currentpids = list()
                 for channel in self.channels:
