@@ -178,6 +178,8 @@ class HTTPClientResponseHandler(component):
 
         except ShutdownNow:
             pass
+        except Exception:
+            pass # Trying this to ensure the program doesn't crash as easily - just encountered ('Failure Status', '504', 'Gateway Time-out')
 
         if self.control_message:
             self.send(self.control_message, "signal")

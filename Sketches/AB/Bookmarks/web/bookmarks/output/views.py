@@ -6,7 +6,7 @@ from pygooglechart import SimpleLineChart, Axis #lc
 import time
 import cjson
 import string
-import re
+#import re
 from django.core.exceptions import ObjectDoesNotExist
 #TODO: Replace ugly meta refresh tags with AJAX
 
@@ -228,7 +228,7 @@ def channelgraph(request,channel,year=0,month=0,day=0):
                         graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
                         graph.add_data(ylist)
 
-                        #TODO: Fix the bad labelling!
+                        #TODO: Fix the bad labelling! - perhaps see if flotr is any better
                         graph.set_title("Tweets per minute")
                         left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
                         bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
@@ -433,7 +433,7 @@ def programme(request,pid):
             graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
             graph.add_data(ylist)
 
-            #TODO: Fix the bad labelling!
+            #TODO: Fix the bad labelling! - perhaps see if flotr is any better
             graph.set_title("Tweets per minute")
             left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
             bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
@@ -508,7 +508,7 @@ def rawtweets(request,pid,timestamp):
         #        tweetseccount[tweet.timestamp] = 1
             output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
         output += "</div><br /><br />"
-        output += "API: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a>"
+        output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a>"
         #if len(tweetseccount) > 0:
         #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
         #    tweetseccount.sort(reverse=True)
